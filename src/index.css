@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    @apply bg-cave-950 text-cave-200;
+    /* 16 px de base : toute l'échelle typographique en dépend. */
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /**
+   * Chiffres tabulaires PARTOUT.
+   *
+   * Sans ça, une colonne de montants danse d'une ligne à l'autre parce que le
+   * « 1 » est plus étroit que le « 8 » — on ne peut plus comparer deux nombres
+   * d'un coup d'œil, ce qui est précisément le geste qu'on fait toute la
+   * journée dans une compta.
+   */
+  .font-mono,
+  [class*='font-mono'] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1, 'zero' 1;
+  }
+
+  /* Un focus visible et franc : l'app se manipule aussi au clavier, au bureau. */
+  :focus-visible {
+    outline: 2px solid theme('colors.ebc.straw');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Les champs ne doivent jamais déclencher le zoom automatique d'iOS :
+     en dessous de 16 px, Safari zoome à chaque prise de focus. */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Supprime la croix de suppression et la loupe natives des input[type="search"] */
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button,
+  input[type="search"]::-webkit-search-results-button,
+  input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  /* Placeholder pour les champs contenteditable sur mobile (évite la barre d'accessoire Gboard/Chrome) */
+  .empty-text-input:empty::before {
+    content: attr(data-placeholder);
+    color: theme('colors.cave.600');
+    pointer-events: none;
+    display: inline-block;
+  }
+}
+
+@layer components {
+  /**
+   * Cible tactile minimale. Utilisée sur tout élément interactif : dans la
+   * cuverie, l'app se manipule avec des gants ou les doigts mouillés.
+   */
+  .touch-target {
+    @apply min-h-touch min-w-touch inline-flex items-center justify-center;
+  }
+
+  /* Surface de contenu — remplace la carte `rounded-3xl` omniprésente. */
+  .panel {
+    @apply bg-cave-900 border border-cave-800 rounded-panel;
+  }
+
+  /* Lecture d'instrument : le grand nombre et son unité. */
+  .reading {
+    @apply font-mono font-semibold tracking-tight text-cave-50;
+  }
+
+  .reading-unit {
+    @apply font-sans text-sm font-normal text-cave-400;
+  }
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Barre de défilement discrète, accordée au fond chaud. */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: theme('colors.cave.950');
+}
+::-webkit-scrollbar-thumb {
+  background: theme('colors.cave.700');
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.ebc.amber');
+}
+
+/**
+ * Mouvement : uniquement en réponse à une action, jamais à l'ouverture d'un
+ * écran. Et respect strict de la préférence système.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

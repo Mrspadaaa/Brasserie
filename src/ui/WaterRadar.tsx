@@ -1,0 +1,432 @@
+import React, { useCallback, useMemo } from 'react';
+import { WaterIons } from '../types';
+import { ION_LABEL, ION_ROLE, ION_SYMBOL, radarScaleMax } from '../domain/water';
+import { StyleWater } from '../domain/waterStyles';
+
+/**
+ * La toile d'araignée : l'eau de la brasserie, dans la fourchette du style.
+ *
+ * ⚠️ Trois corrections de fond, dans l'ordre où elles ont été faites.
+ *
+ * 1. **Une cible d'eau n'est pas une ligne, c'est une zone.** Dessiner un
+ *    polygone cible laissait croire qu'il fallait l'épouser exactement, alors
+ *    que la seule question est « suis-je dedans ou dehors ». D'où les SECTEURS
+ *    verts : chaque ion a son quartier, du minimum du style à son maximum.
+ *
+ * 2. **Recharts est parti.** La bande était obtenue en superposant un polygone
+ *    vert et un second rempli de la couleur du panneau, qui venait en découper
+ *    le centre — un trucage qui n'avait aucune chance de survivre à un
+ *    changement de fond, et qui interdisait les secteurs, les valeurs en ppm
+ *    autour de la toile et la mise en avant d'un ion.
+ *
+ * 3. **Chaque axe porte un GOÛT, et l'échelle est celle du style.** « SO₄²⁻
+ *    164 » ne dit rien à qui n'a pas la chimie en tête ; « houblon » dit
+ *    pourquoi on regarde cet axe. Et graduer sur des maxima absolus taillés
+ *    pour une West Coast recroquevillait toute bière normale dans le tiers
+ *    central — voir `radarScaleMax`.
+ */
+
+interface WaterRadarProps {
+  /** L'eau du réseau, coupée d'osmosée : ce qu'on a avant d'ouvrir un sachet. */
+  start: WaterIons;
+  /** L'eau obtenue une fois les sels pesés. */
+  achieved: WaterIons;
+  style: StyleWater;
+  /**
+   * Les ions déplacés par le sel qu'on manipule.
+   *
+   * Sans eux, la toile ne répond pas à la question que se pose le brasseur
+   * devant sa balance : « ce sel-là, il pousse quoi ? »
+   */
+  highlight?: Array<keyof WaterIons>;
+  className?: string;
+}
+
+/** Sens de lecture : Cl en haut, puis dans le sens des aiguilles. */
+const IONS: Array<keyof WaterIons> = ['cl', 'so4', 'ca', 'mg', 'na', 'hco3'];
+
+const W = 360;
+/**
+ * Rayon du dernier anneau, et la boîte qui en découle.
+ *
+ * ⚠️ La géométrie est calculée À L'ENVERS : c'est le rayon qu'on veut le plus
+ * grand possible, et la boîte s'ajuste. Les étiquettes du HAUT et du BAS ne
+ * portent que deux lignes — symbole et valeur sur la même —, celles des flancs
+ * trois : ce sont les premières qui commandent la hauteur, et leur faire tenir
+ * la valeur à côté du symbole a rendu vingt pixels de diamètre au cercle.
+ */
+const R = 133;
+/**
+ * Deux lignes en haut, deux en bas — et PAS UN PIXEL DE MOINS.
+ *
+ * ⚠️ Ces deux nombres ne sont pas des marges de confort : ils sont exactement
+ * la place que prennent les étiquettes, et ils se DÉDUISENT du placement plus
+ * bas — `ly` vaut 16 en haut, `CY + R + 18` en bas, la fourchette suivant
+ * 17 dessous.
+ *
+ *   en haut  : 16 (ligne symbole+valeur) + 17 (fourchette) + 3 (jambages) = 36
+ *   en bas   : 18 (descente sous l'anneau) + 17 + 3                       = 38
+ *
+ * Je les ai rabotés à 32 pour gagner dix pixels sur un écran de téléphone :
+ * « 0–20 » sous le magnésium s'est retrouvé coupé en deux, et « Cl⁻ 98 » au
+ * ras du bord. La hauteur de la toile se règle par sa LARGEUR — voir la borne
+ * `max-w` posée sur le SVG —, jamais en rognant sa boîte.
+ */
+const CY = 36 + R;
+const H = 74 + 2 * R;
+const CX = W / 2;
+const LABEL_R = R + 12;
+/**
+ * Demi-ouverture d'un secteur.
+ *
+ * ⚠️ 24° et non 27 : à la taille précédente les trois degrés d'écart
+ * suffisaient, mais sur une toile deux fois plus grande les six quartiers se
+ * rejoignaient en un disque vert barré de fentes noires. Douze degrés d'écart,
+ * et chaque ion retrouve son quartier.
+ */
+const HALF = 24;
+/** Un anneau tous les 50 ppm — c'est la graduation qu'on lit sur la toile. */
+const RING_STEP = 50;
+
+const GREEN = '#6E9B5B'; // hop — la fourchette du style
+const STRAW = '#F2C14E'; // ebc-straw — l'eau corrigée
+const BLUE = '#5B8AA6'; // water — l'eau de départ
+const AMBER = '#C87A2C'; // ebc-amber — hors fourchette
+const GRID = '#2C2521'; // cave-800
+
+const rad = (d: number) => (d * Math.PI) / 180;
+const angle = (i: number) => -90 + i * 60;
+const xy = (d: number, r: number): [number, number] => [
+  CX + r * Math.cos(rad(d)),
+  CY + r * Math.sin(rad(d))
+];
+const pt = ([x, y]: [number, number]) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+
+/** De quel côté de la toile l'étiquette se pose. */
+const anchorAt = (cos: number): 'start' | 'end' | 'middle' =>
+  cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle';
+
+/**
+ * Le quartier d'un ion : la portion d'anneau comprise entre son minimum et son
+ * maximum. Quand le minimum est nul, le secteur part du centre — l'arc
+ * intérieur dégénérerait en rayon nul, que les navigateurs traitent chacun à
+ * leur façon.
+ */
+function sector(d: number, r0: number, r1: number): string {
+  const outer = `A ${r1} ${r1} 0 0 1 ${pt(xy(d + HALF, r1))}`;
+  if (r0 < 1) return `M ${CX} ${CY} L ${pt(xy(d - HALF, r1))} ${outer} Z`;
+  return [
+    `M ${pt(xy(d - HALF, r1))}`,
+    outer,
+    `L ${pt(xy(d + HALF, r0))}`,
+    `A ${r0} ${r0} 0 0 0 ${pt(xy(d - HALF, r0))}`,
+    'Z'
+  ].join(' ');
+}
+
+export const WaterRadar: React.FC<WaterRadarProps> = ({
+  start,
+  achieved,
+  style,
+  highlight,
+  className = ''
+}) => {
+  const lit = useMemo(() => new Set(highlight ?? []), [highlight]);
+
+  /*
+   * ⚠️ UNE échelle pour les six axes, et elle contient TOUT ce qu'on dessine —
+   * les fourchettes du style, l'eau de départ et l'eau corrigée. C'est ce qui
+   * rend au vert son information : le liseré du magnésium et la large bande du
+   * chlorure ne se ressemblent plus, parce qu'ils ne vivent pas aux mêmes
+   * concentrations. Et rien ne sort jamais du disque.
+   */
+  const scale = useMemo(
+    () =>
+      radarScaleMax(
+        IONS.flatMap((ion) => [style.ions[ion].max, achieved[ion], start[ion]])
+      ),
+    [style, achieved, start]
+  );
+
+  /*
+   * Les anneaux, tous les 50 ppm — 100 quand l'échelle monte haut, sans quoi
+   * une eau très calcaire se retrouverait cerclée de huit traits illisibles.
+   */
+  const rings = useMemo(() => {
+    /*
+     * ⚠️ Le pas GRANDIT avec l'échelle, et la boucle est bornée en NOMBRE.
+     * Deux gardes plutôt qu'une : la première garde la toile lisible, la
+     * seconde garantit qu'aucune échelle, même absurde, ne peut faire tourner
+     * cette boucle plus de six fois. Le fuzz de saisie l'avait fait exploser en
+     * « Invalid array length » — vingt milliards d'anneaux pour une dose de sel
+     * à douze chiffres.
+     */
+    const pas = Math.max(RING_STEP, Math.ceil(scale / 5 / RING_STEP) * RING_STEP);
+    const out: number[] = [];
+    for (let v = pas; v <= scale + 0.5 && out.length < 6; v += pas) out.push(v);
+    return out;
+  }, [scale]);
+
+  /**
+   * Du ppm au rayon — en RACINE, pas en droite.
+   *
+   * ⚠️ L'échelle commune était la bonne idée, l'axe linéaire la mauvaise moitié.
+   * Sur une échelle 0–250 partagée, la fenêtre du magnésium (5 à 20 ppm) tenait
+   * entre 2.7 et 10.6 px de rayon : un point. Celles du sodium et du
+   * bicarbonate s'écrasaient au centre avec elle, et les trois sommets
+   * correspondants s'y empilaient. Le vert n'était plus lisible et la forme
+   * paraissait s'effondrer — « les zones vertes ne semblent toujours pas
+   * cohérentes ».
+   *
+   * La racine carrée étale le bas de l'échelle sans toucher à l'ordre : le
+   * magnésium occupe désormais 14 à 28 % du rayon, le chlorure 72 à 94 %. Les
+   * six fenêtres redeviennent comparables à l'œil tout en gardant leurs
+   * différences réelles, et « dedans ou dehors » se lit exactement pareil — la
+   * transformation est monotone.
+   *
+   * Les anneaux portent leur valeur en ppm : leur espacement inégal dit de
+   * lui-même que l'axe est compressé.
+   */
+  const rayon = useCallback(
+    (v: number) => R * Math.sqrt(Math.max(0, Math.min(1, v / scale))),
+    [scale]
+  );
+
+  const axes = useMemo(
+    () =>
+      IONS.map((ion, i) => {
+        const band = style.ions[ion];
+        const r = rayon;
+        const value = achieved[ion];
+        const d = angle(i);
+        const [lx, ly] = xy(d, LABEL_R);
+        const [ex, ey] = xy(d, R);
+        const cos = Math.cos(rad(d));
+        const sin = Math.sin(rad(d));
+        return {
+          ion,
+          d,
+          band,
+          value,
+          ex,
+          ey,
+          /** −1 sous la fourchette, 1 au-dessus, 0 dedans. */
+          out: value < band.min ? -1 : value > band.max ? 1 : 0,
+          /* Le bicarbonate garde sa flèche mais pas l'ambre : l'acide s'en charge. */
+          /* Depuis que la valeur tient compte de l'acide, le bicarbonate
+             s'alarme comme les autres : hors fourchette APRÈS acide, c'est
+             que l'acide n'y suffit pas. */
+          alarm: value < band.min || value > band.max,
+          rStart: r(start[ion]),
+          rNow: r(value),
+          rMin: r(band.min),
+          rMax: r(band.max),
+          lx,
+          /*
+           * En haut et en bas, la place manque : le symbole et la valeur
+           * partagent une ligne. Sur les flancs elle ne manque pas, et les
+           * trois lignes se centrent sur l'axe. Un décalage proportionnel
+           * unique faisait passer la ligne de goût par-dessus l'anneau.
+           */
+          serre: Math.abs(sin) > 0.7,
+          ly: sin < -0.7 ? 16 : sin > 0.7 ? CY + R + 18 : ly - 12,
+          anchor: anchorAt(cos)
+        };
+      }),
+    [start, achieved, style, rayon]
+  );
+
+  const path = (key: 'rStart' | 'rNow') =>
+    axes.map((a) => pt(xy(a.d, a[key]))).join(' ');
+
+  const résumé = axes
+    .map(
+      (a) =>
+        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${Math.round(a.value)} ppm pour ${a.band.min} à ${a.band.max}`
+    )
+    .join(', ');
+
+  return (
+    <div className={className}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        /*
+          ⚠️ LA TOILE EST BORNÉE EN LARGEUR PARCE QU'ELLE L'EST EN HAUTEUR.
+
+          Un SVG en `w-full` grandit en hauteur avec l'écran : sur un téléphone
+          de 375 px elle prenait 316 px des 767 disponibles — 41 % de la
+          colonne pour une seule pièce, et le curseur SO₄ ⇄ Cl, la grille des
+          sels et la rangée d'acide tombaient sous le pli. Or on ne règle un sel
+          qu'en REGARDANT la forme bouger : les quatre doivent tenir ensemble.
+
+          17.5 rem la borne à 280 px, soit 265 px de haut. Le texte suit
+          l'échelle : la graduation des anneaux tombe à 8.2 px — sous le
+          plancher du système de design, arbitrage assumé, et jamais sur un
+          chiffre qu'on doit lire. Les valeurs des ions, elles, sont dessinées
+          à 17 unités : 14 px à l'écran, le plancher du système de design pile.
+        */
+        className="block w-full max-w-[17.5rem] sm:max-w-[30rem] mx-auto"
+        role="img"
+        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}`}
+      >
+        {/* Les anneaux et les rayons — le repère, jamais la donnée. */}
+        {rings.map((ppm) => (
+          <circle
+            key={ppm}
+            cx={CX}
+            cy={CY}
+            r={rayon(ppm)}
+            fill="none"
+            stroke={GRID}
+            strokeWidth={ppm === scale ? 1.5 : 1}
+          />
+        ))}
+
+        {/* La fourchette du style, un quartier par ion. */}
+        {axes.map((a) => (
+          <path
+            key={`s-${a.ion}`}
+            d={sector(a.d, a.rMin, a.rMax)}
+            fill={GREEN}
+            fillOpacity={lit.has(a.ion) ? 0.5 : lit.size ? 0.14 : 0.28}
+          />
+        ))}
+
+        {axes.map((a) => (
+          <line
+            key={`a-${a.ion}`}
+            x1={CX}
+            y1={CY}
+            x2={a.ex}
+            y2={a.ey}
+            stroke={lit.has(a.ion) ? STRAW : GRID}
+            strokeWidth={lit.has(a.ion) ? 1.5 : 1}
+            strokeOpacity={lit.has(a.ion) ? 0.7 : 1}
+          />
+        ))}
+
+        {/* L'eau de départ : un trait tireté, qui ne réclame pas l'attention. */}
+        <polygon
+          points={path('rStart')}
+          fill="none"
+          stroke={BLUE}
+          strokeWidth={1.5}
+          strokeDasharray="5 4"
+          strokeLinejoin="round"
+        />
+
+        {/* L'eau corrigée : c'est elle qu'on lit. */}
+        <polygon
+          points={path('rNow')}
+          fill={STRAW}
+          fillOpacity={0.12}
+          stroke={STRAW}
+          strokeWidth={2.5}
+          strokeLinejoin="round"
+        />
+
+        {axes.map((a) => {
+          const [x, y] = xy(a.d, a.rNow);
+          return (
+            <circle
+              key={`d-${a.ion}`}
+              cx={x}
+              cy={y}
+              r={lit.has(a.ion) ? 6 : 4.5}
+              fill={a.alarm ? AMBER : GREEN}
+              stroke="#12100E"
+              strokeWidth={1.5}
+            />
+          );
+        })}
+
+        {/*
+          Trois lignes par coin : le symbole, la valeur, et CE QUE ÇA FAIT.
+          C'est la ligne du goût qui transforme six symboles chimiques en un
+          profil qu'on peut lire sans avoir la table de Kolbach en tête.
+        */}
+        {/*
+          ⚠️ LA GRADUATION EN PPM, posée sur la diagonale entre le chlorure et
+          le sulfate — le seul endroit du disque qu'aucune étiquette d'axe ne
+          réclame. Sans elle, l'échelle commune ne se lit pas : on voit bien
+          qu'une bande est plus large qu'une autre, sans savoir de combien.
+        */}
+        {rings.map((ppm) => {
+          const [tx, ty] = xy(-60, rayon(ppm));
+          return (
+            <text
+              key={`g-${ppm}`}
+              x={tx}
+              y={ty - 2}
+              textAnchor="middle"
+              fontSize={10}
+              fill="#574A42"
+            >
+              {ppm}
+            </text>
+          );
+        })}
+
+        {axes.map((a) => {
+          /* Le sens de l'écart, en petit : le chiffre reste le sujet. */
+          const flèche = a.out !== 0 && (
+            <tspan fontSize={10} dy={-1}>
+              {a.out === 1 ? ' ▲' : ' ▼'}
+            </tspan>
+          );
+          const valeur = (
+            <tspan fontSize={17} fontWeight={700} fill={a.alarm ? AMBER : '#D8CEC5'}>
+              {Math.round(a.value)}
+              {flèche}
+            </tspan>
+          );
+          return (
+            <g key={`t-${a.ion}`}>
+              <text
+                x={a.lx}
+                y={a.ly}
+                textAnchor={a.anchor}
+                fontSize={12.5}
+                fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
+              >
+                {ION_SYMBOL[a.ion]}
+                {a.serre && <> {valeur}</>}
+              </text>
+              {!a.serre && (
+                <text x={a.lx} y={a.ly + 17} textAnchor={a.anchor} fontSize={17}>
+                  {valeur}
+                </text>
+              )}
+              {/*
+                ⚠️ La FOURCHETTE, et non plus un mot de goût.
+                « houblon » sous 43 ppm de sulfate était joli et faux : ni le
+                sulfate ni le chlorure ne se goûtent seuls, c'est leur rapport
+                qui se goûte — et il a son curseur. « 50–150 » ne raconte rien,
+                mais c'est la seule chose qu'on veut savoir devant la balance :
+                où il faut tomber. Ce que chaque ion fait pour de vrai est dit
+                sous la toile, sur le sel qu'on touche.
+              */}
+              <text
+                x={a.lx}
+                y={a.ly + (a.serre ? 17 : 31)}
+                textAnchor={a.anchor}
+                fontSize={11.5}
+                fill={lit.has(a.ion) ? STRAW : '#574A42'}
+              >
+                {a.band.min}–{a.band.max}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      {/*
+        ⚠️ La légende a disparu. Trois pastilles pour dire ce que le vert, le
+        tireté bleu et le trait paille désignent — vingt pixels dépensés à
+        redire ce que la toile montre déjà, sur une feuille où chaque ligne se
+        dispute la place avec la grille des sels. Le lecteur d'écran, lui,
+        garde tout : le résumé complet est dans la description du graphique.
+      */}
+    </div>
+  );
+};

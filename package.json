@@ -1,0 +1,52 @@
+{
+  "name": "brasserie-laffinee-admin",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && firebase deploy --only hosting",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "cmdk": "^1.1.1",
+    "dexie": "^4.0.11",
+    "firebase": "^11.4.0",
+    "fuse.js": "^7.5.0",
+    "jspdf": "^3.0.0",
+    "lucide-react": "^1.16.0",
+    "motion": "^13.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-virtuoso": "^4.18.12",
+    "recharts": "^3.10.1",
+    "swissqrbill": "^4.4.1",
+    "vaul": "^1.1.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^3.2.7",
+    "autoprefixer": "^10.4.21",
+    "firebase-tools": "^15.29.0",
+    "jsdom": "^30.0.1",
+    "postcss": "^8.5.3",
+    "puppeteer-core": "^25.10.0",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.2.7"
+  }
+}

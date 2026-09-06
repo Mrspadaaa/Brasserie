@@ -1,0 +1,51 @@
+# Dépendances & artefacts de build
+node_modules/
+dist/
+functions/lib/
+functions/node_modules/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+firestore-debug.log
+ui-debug.log
+.firebaserc.local
+
+# Variables d'environnement — contiennent des clés, ne JAMAIS committer
+.env
+.env.*
+!.env.example
+
+# ⚠️ Données financières réelles de la brasserie : hors du dépôt.
+L-Affinee_Admin_2026_v2.xlsx
+seed_data.json
+*.local
+
+# Système
+.DS_Store
+Thumbs.db
+
+# ============================================================================
+# Dépôt PUBLIC — ce qui suit ne doit jamais y entrer.
+# ============================================================================
+
+# ⚠️ Le jeu de données initial contient la comptabilité réelle : apports
+# personnels, références bancaires, identité et adresse de l'exploitant,
+# fichier clients. Le gabarit `seedData.example.ts`, lui, est versionné :
+# on le copie en `seedData.ts` après un clone.
+src/data/seedData.ts
+!src/data/seedData.example.ts
+
+# Identifiant du projet Firebase — sert au déploiement, pas au code.
+.firebaserc
+*.xlsx
+
+# Artefacts de travail : audits, brouillons, dumps, couverture.
+.cov/
+scratch_guidance.txt
+scripts/all_fields_dump.json
+AUDIT-EAU-BRIEF*.md
+
+# Réglages locaux de l'outillage (chemins de la machine).
+.claude/settings.local.json

@@ -1,0 +1,100 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore — Brasserie L'Affinée
+//
+// C'EST ICI que se décide qui peut lire et écrire, et nulle part ailleurs.
+// La liste d'e-mails autorisés qui existait dans firebaseAuth.ts vivait dans le
+// navigateur : n'importe qui pouvait la contourner depuis les outils de
+// développement. Ces règles-ci s'exécutent sur les serveurs de Google et ne
+// peuvent pas être contournées depuis le client.
+//
+// Déploiement : npx firebase deploy --only firestore:rules
+//
+// ⚠️ STRUCTURE : une seule liste de collections, pas un bloc `match` par
+// collection. La version précédente en avait seize écrits à la main, et il en
+// manquait un (`equipment`) : toute lecture de cette collection tombait dans le
+// refus par défaut, ce qui faisait échouer la migration entière. Une liste
+// unique rend cette dérive impossible — elle doit rester alignée sur
+// ALL_COLLECTIONS dans src/services/firestoreRepo.ts.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Comptes autorisés à ouvrir la comptabilité de la brasserie ---
+    //
+    // ⚠️⚠️ ADRESSE ANONYMISÉE POUR LE DÉPÔT PUBLIC. Les règles Firestore ne
+    // savent pas lire de variable d'environnement : l'adresse réelle doit être
+    // remise ICI avant tout `firebase deploy --only firestore:rules`, sinon le
+    // déploiement VERROUILLE la base pour tout le monde.
+    // (`npm run deploy` ne déploie que l'hébergement : il ne touche pas à ce
+    // fichier.)
+    function autorises() {
+      return [
+        'proprietaire@exemple.ch'
+      ];
+    }
+
+    function estAutorise() {
+      // `get(clé, défaut)` plutôt qu'un accès direct : un champ absent du jeton
+      // lèverait une erreur et refuserait tout, au lieu de simplement échouer
+      // sur la condition.
+      return request.auth != null
+        && request.auth.token.get('email', '') != ''
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.email.lower() in autorises();
+    }
+
+    /**
+     * Collections métier ordinaires : lecture et écriture complètes pour un
+     * compte autorisé.
+     *
+     * `movements` et `auditLogs` en sont volontairement ABSENTES : ce sont des
+     * registres, traités plus bas.
+     */
+    function collectionsMetier() {
+      return [
+        'transactions',
+        'stockItems',
+        'equipment',
+        'kegs',
+        'batches',
+        'finishedGoods',
+        'reservations',
+        'recipes',
+        'clients',
+        'planning',
+        'budgetLines',
+        'tarifs',
+        'creativeItems',
+        'expenseTemplates',
+        'config'
+      ];
+    }
+
+    match /{collection}/{docId} {
+      allow read, write: if estAutorise() && collection in collectionsMetier();
+    }
+
+    /**
+     * Le journal des mouvements de stock est un registre comptable :
+     * on y ajoute, on ne réécrit jamais. Annuler un mouvement, c'est en poster
+     * un opposé — pas effacer l'original.
+     *
+     * Les règles Firestore s'additionnent : ce bloc accorde la lecture et la
+     * création sur `movements`, que le bloc générique ci-dessus refuse (la
+     * collection n'est pas dans `collectionsMetier`). La modification et la
+     * suppression ne sont accordées nulle part, donc elles restent refusées.
+     */
+    match /movements/{id} {
+      allow read, create: if estAutorise();
+    }
+
+    // Idem pour le journal d'audit : sa valeur tient à son immuabilité.
+    match /auditLogs/{id} {
+      allow read, create: if estAutorise();
+    }
+
+    // Tout le reste est refusé : une collection inconnue n'est accordée par
+    // aucun des blocs ci-dessus, donc elle est inaccessible par défaut.
+  }
+}

@@ -1,0 +1,1211 @@
+import {
+  Transaction,
+  StockItem,
+  EquipmentItem,
+  KegItem,
+  Recipe,
+  Batch,
+  Client,
+  GanttTask,
+  PricingItem,
+  BudgetLine,
+  AppConfig,
+  FinanceCategory,
+  AuditLog,
+  ExpenseTemplate,
+  CreativeItem
+} from '../types';
+
+import { initialCompany, initialBrewhouses } from '../data/seedData';
+import { FirestoreRepo, CollectionName } from './firestoreRepo';
+import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
+import { Units } from './units';
+
+/**
+ * Façade de données de l'application.
+ *
+ * L'interface publique n'a pas changé (`getTransactions()` renvoie toujours un
+ * tableau synchrone), mais les données vivent désormais dans **Firestore** et
+ * non plus dans `localStorage` :
+ *   - plus de plafond de 5 Mo ;
+ *   - fonctionnement hors-ligne conservé (cache IndexedDB de Firestore) ;
+ *   - les mêmes données sur le téléphone dans la cuverie et sur l'ordinateur.
+ *
+ * Restent volontairement en `localStorage`, parce que ce sont des préférences
+ * PROPRES À CHAQUE APPAREIL et non des données métier : l'état de l'interface
+ * (onglet courant, recherches, accordéons) et l'utilisateur sélectionné.
+ */
+
+const LOCAL_KEYS = {
+  UI_STATE: 'laffinee_ui_state',
+  CURRENT_USER: 'laffinee_current_user'
+};
+
+export const defaultExpenseTemplates: ExpenseTemplate[] = [
+  {
+    id: 'TPL-001',
+    title: '🌾 Commande Malt & Houblon (Brau-Rauchshop)',
+    vendor: 'Brau-Rauchshop',
+    category: 'brassage',
+    subcategory: 'Malt & Houblon',
+    tvaRate: 0.026,
+    defaultAmountHT: 110.39,
+    description: 'Commande matières premières brassage'
+  },
+  {
+    id: 'TPL-002',
+    title: '⚙️ Bacs & Raccords Inox (Bauhaus)',
+    vendor: 'Bauhaus',
+    category: 'materiel',
+    subcategory: 'Quincaillerie & Raccords',
+    tvaRate: 0.081,
+    defaultAmountHT: 45.0,
+    description: 'Bacs alimentaires & raccords inox'
+  },
+  {
+    id: 'TPL-003',
+    title: '🏢 Facture Électricité (Groupe E)',
+    vendor: 'Groupe E',
+    category: 'chargesFixes',
+    subcategory: 'Électricité',
+    tvaRate: 0.081,
+    defaultAmountHT: 20.5,
+    description: 'Consommation électrique brasserie'
+  },
+  {
+    id: 'TPL-004',
+    title: '🧼 Produits Nettoyage CIP (Brau-Rauchshop)',
+    vendor: 'Brau-Rauchshop',
+    category: 'nettoyage',
+    subcategory: 'CIP & Hygiène',
+    tvaRate: 0.081,
+    defaultAmountHT: 65.0,
+    description: 'Lessive alcaline & désinfectant peracétique'
+  },
+  {
+    id: 'TPL-005',
+    title: '🧤 Gants & Masques EPI',
+    vendor: 'EPI Suisse',
+    category: 'nettoyage',
+    subcategory: 'Consommables',
+    tvaRate: 0.081,
+    defaultAmountHT: 23.0,
+    description: 'Équipements de protection individuelle'
+  }
+];
+
+export const defaultCreativeItems: CreativeItem[] = [
+  {
+    id: 'CR-001',
+    type: 'equipment',
+    title: "Système d'embouteillage 4 becs inox",
+    description:
+      "Remplisseuse à contre-pression ou gravité pour embouteiller 30L en 15 minutes sans oxydation.",
+    status: 'research',
+    estimatedCost: 1200,
+    notes: 'Fournisseurs potentiels : Polsinelli, Brouwland ou occasion Anibis.'
+  },
+  {
+    id: 'CR-002',
+    type: 'equipment',
+    title: 'Chambre chaude régulée (20-22°C)',
+    description:
+      'Armoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.',
+    status: 'idea',
+    estimatedCost: 350,
+    notes: 'Élément chauffant tubulaire + ventilation douce.'
+  },
+  {
+    id: 'CR-003',
+    type: 'event',
+    title: "Marché d'Automne de Villars-sur-Glâne",
+    description: 'Stand de dégustation et vente directe de cartons 12x 75cl.',
+    status: 'todo',
+    date: '10.10.2026',
+    notes: "Prendre contact avec l'administration communale pour autorisation et emplacement."
+  },
+  {
+    id: 'CR-004',
+    type: 'recipe-idea',
+    title: "Bière d'Hiver Pain d'Épices & Miel de Fribourg",
+    description:
+      'Dubbel ou Brown Ale 7.2% avec miel de forêt local et cannelle/anis étoilé au whirlpool.',
+    status: 'idea',
+    notes: 'Visuel étiquette : dessin kraft montrant les Préalpes fribourgeoises enneigées.'
+  },
+  {
+    id: 'CR-005',
+    type: 'prospect',
+    title: 'Le Carnotzet Gourmand',
+    description:
+      'Bistrot du centre intéressé par une bière artisanale locale en bouteille 75cl sur table.',
+    status: 'quote',
+    contactName: 'Stéphane',
+    contactPhone: '+41 79 345 67 89',
+    notes:
+      'A adoré la Milk Stout lors de la première dégustation. Proposer un tarif pro à 5.50 CHF HT la 75cl.'
+  }
+];
+
+export const defaultConfig: AppConfig = {
+  company: initialCompany,
+  fiscal: {
+    // L'Affinée démarre : tant que le chiffre d'affaires reste sous le seuil,
+    // elle n'est pas assujettie à la TVA. À basculer le jour où elle le franchit.
+    isTvaRegistered: false,
+    tvaReducedRate: 0.026,
+    tvaNormalRate: 0.081,
+    tvaThresholdTurnover: 100000,
+    // ⚠️ À vérifier contre le tarif OFDF en vigueur avant toute déclaration.
+    beerTaxFullRatePerHl: 25.2,
+    beerTaxSmallBrewerMaxHl: 55000,
+    beerTaxReliefTiersHl: [
+      { upToHl: 15000, reductionPct: 40 },
+      { upToHl: 22000, reductionPct: 20 },
+      { upToHl: 45000, reductionPct: 10 }
+    ]
+  },
+  brewhouses: initialBrewhouses,
+  activeBrewhouseId: 'bh-30',
+  security: {
+    currentUser: 'Gaëtan'
+  }
+};
+
+// --- Préférences locales (non synchronisées) ---------------------------------
+
+const localCache: Record<string, any> = {};
+let lastWriteError: string | null = null;
+
+function safeWriteLocal(key: string, value: unknown): boolean {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (err: any) {
+    lastWriteError = `Préférence d'affichage non sauvegardée : ${err?.message || 'erreur inconnue'}`;
+    console.error('[Storage] écriture locale impossible', key, err);
+    return false;
+  }
+}
+
+// --- Aides Firestore ---------------------------------------------------------
+
+/**
+ * Écrit un tableau complet en ne poussant QUE les différences.
+ *
+ * Les composants appellent volontiers `saveStocks(toutLeStock)` alors qu'un
+ * seul article a bougé. Réécrire les 30 documents à chaque fois brûlerait le
+ * quota d'écritures pour rien : on compare avec le cache et on n'écrit que ce
+ * qui a réellement changé.
+ */
+function syncCollection<T>(
+  name: CollectionName,
+  items: T[],
+  idOf: (item: T, index: number) => string
+): void {
+  const current = FirestoreRepo.all<any>(name);
+  const currentById = new Map(current.map((d) => [d.__docId as string, d]));
+  const nextIds = new Set<string>();
+
+  items.forEach((item, i) => {
+    const id = idOf(item, i);
+    if (!id) return;
+    nextIds.add(id);
+    const existing = currentById.get(id);
+    if (!existing || !sameDoc(existing, item)) {
+      FirestoreRepo.put(name, id, item);
+    }
+  });
+
+  currentById.forEach((_, id) => {
+    if (!nextIds.has(id)) FirestoreRepo.remove(name, id);
+  });
+}
+
+/** Comparaison de documents en ignorant l'identifiant technique interne. */
+function sameDoc(a: any, b: any): boolean {
+  const { __docId: _ignored, ...clean } = a ?? {};
+  return JSON.stringify(sortKeys(clean)) === JSON.stringify(sortKeys(b ?? {}));
+}
+
+function sortKeys(v: any): any {
+  if (Array.isArray(v)) return v.map(sortKeys);
+  if (v && typeof v === 'object' && !(v instanceof Date)) {
+    return Object.keys(v)
+      .filter((k) => v[k] !== undefined)
+      .sort()
+      .reduce((acc: any, k) => {
+        acc[k] = sortKeys(v[k]);
+        return acc;
+      }, {});
+  }
+  return v;
+}
+
+/** Retire le champ technique `__docId` avant de rendre les données au reste de l'app. */
+function clean<T>(docs: any[]): T[] {
+  return docs.map(({ __docId, ...rest }) => rest as T);
+}
+
+/**
+ * Motifs d'une correction d'inventaire. Obligatoire : un écart sans raison
+ * n'apprend rien, et c'est justement l'écart qui est l'information.
+ */
+export const INVENTORY_REASONS = {
+  comptage: 'Inventaire physique',
+  casse: 'Casse',
+  perte: 'Perte ou péremption',
+  saisie: 'Erreur de saisie',
+  don: 'Don ou dégustation'
+} as const;
+
+export type InventoryReason = keyof typeof INVENTORY_REASONS;
+
+/**
+ * Compteur d'écritures au journal, monotone sur la durée de vie de l'onglet.
+ * Il départage deux entrées écrites dans la même milliseconde.
+ */
+let auditSequence = 0;
+
+// --- Service -----------------------------------------------------------------
+
+export const StorageService = {
+  listeners: new Set<() => void>(),
+
+  // Les erreurs viennent maintenant de Firestore (règles de sécurité, réseau)
+  // autant que du stockage local.
+  consumeWriteError(): string | null {
+    const firestoreErr = FirestoreRepo.consumeError();
+    const localErr = lastWriteError;
+    lastWriteError = null;
+    return firestoreErr || localErr;
+  },
+
+  hasWriteError(): boolean {
+    return lastWriteError !== null;
+  },
+
+  subscribe(callback: () => void) {
+    this.listeners.add(callback);
+    const unsubRepo = FirestoreRepo.subscribe(callback);
+    return () => {
+      this.listeners.delete(callback);
+      unsubRepo();
+    };
+  },
+
+  notify() {
+    this.listeners.forEach((cb) => cb());
+  },
+
+  /** Coupe la synchronisation Firestore (déconnexion). */
+  clearMemoryCache(): void {
+    FirestoreRepo.stopSync();
+    Object.keys(localCache).forEach((k) => delete localCache[k]);
+  },
+
+  startSync(): void {
+    FirestoreRepo.startSync();
+  },
+
+  isReady(): boolean {
+    return FirestoreRepo.isReady();
+  },
+
+  // 0. JOURNAL D'AUDIT
+  getAuditLogs(): AuditLog[] {
+    return clean<AuditLog>(FirestoreRepo.all('auditLogs')).sort((a, b) =>
+      (b.id || '').localeCompare(a.id || '')
+    );
+  },
+
+  logAction(
+    action: string,
+    category: AuditLog['category'],
+    entityId: string,
+    summary: string,
+    details?: string
+  ) {
+    const user = this.getCurrentUser();
+    /*
+     * ⚠️ L'identifiant sert AUSSI de clé de tri : `getAuditLogs()` classe par
+     * `id` décroissant. Le suffixe était ALÉATOIRE — deux écritures dans la
+     * même milliseconde s'ordonnaient donc au hasard, et une création suivie
+     * de sa suppression pouvait s'afficher à l'envers dans le journal.
+     *
+     * Un compteur monotone, complété à six chiffres pour que la comparaison
+     * lexicale corresponde à la comparaison numérique, rend l'ordre certain.
+     */
+    auditSequence += 1;
+    const id = `LOG-${String(Date.now()).padStart(14, '0')}-${String(auditSequence).padStart(6, '0')}`;
+    const newLog: AuditLog = {
+      id,
+      timestamp: new Date().toLocaleString('fr-CH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }),
+      user,
+      action,
+      category,
+      entityId,
+      summary,
+      details
+    };
+    FirestoreRepo.put('auditLogs', id, newLog);
+  },
+
+  clearAuditLogs() {
+    FirestoreRepo.all<any>('auditLogs').forEach((l) =>
+      FirestoreRepo.remove('auditLogs', l.__docId)
+    );
+  },
+
+  // 0.1 ÉTAT D'INTERFACE (local, propre à l'appareil)
+  getUiState<T>(key: string, fallback: T): T {
+    if (!localCache[LOCAL_KEYS.UI_STATE]) {
+      try {
+        const raw = localStorage.getItem(LOCAL_KEYS.UI_STATE);
+        localCache[LOCAL_KEYS.UI_STATE] = raw ? JSON.parse(raw) : {};
+      } catch {
+        localCache[LOCAL_KEYS.UI_STATE] = {};
+      }
+    }
+    const state = localCache[LOCAL_KEYS.UI_STATE];
+    return state[key] !== undefined ? state[key] : fallback;
+  },
+
+  setUiState<T>(key: string, val: T): void {
+    if (!localCache[LOCAL_KEYS.UI_STATE]) {
+      try {
+        const raw = localStorage.getItem(LOCAL_KEYS.UI_STATE);
+        localCache[LOCAL_KEYS.UI_STATE] = raw ? JSON.parse(raw) : {};
+      } catch {
+        localCache[LOCAL_KEYS.UI_STATE] = {};
+      }
+    }
+    localCache[LOCAL_KEYS.UI_STATE][key] = val;
+    safeWriteLocal(LOCAL_KEYS.UI_STATE, localCache[LOCAL_KEYS.UI_STATE]);
+  },
+
+  // 0.2 UTILISATEUR COURANT (local — qui saisit sur CET appareil)
+  getCurrentUser(): 'Gaëtan' | 'Aricia' {
+    return (localStorage.getItem(LOCAL_KEYS.CURRENT_USER) as any) || 'Gaëtan';
+  },
+
+  setCurrentUser(user: 'Gaëtan' | 'Aricia') {
+    try {
+      localStorage.setItem(LOCAL_KEYS.CURRENT_USER, user);
+    } catch (err) {
+      console.error('[Storage] utilisateur non persisté', err);
+    }
+    this.notify();
+  },
+
+  // 1. ÉCRITURES COMPTABLES
+  getTransactions(): Transaction[] {
+    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) => t.amountHT > 0);
+  },
+
+  saveTransactions(transactions: Transaction[]) {
+    syncCollection('transactions', transactions, (t) => t.id);
+  },
+
+  addTransaction(tx: Transaction) {
+    FirestoreRepo.put('transactions', tx.id, tx);
+    this.logAction(
+      'Création',
+      'Finances',
+      tx.id,
+      `Nouvelle écriture : ${tx.description} (${tx.amountTTC.toFixed(2)} CHF)`,
+      `Catégorie : ${tx.category} · TVA : ${(tx.tvaRate * 100).toFixed(1)}%`
+    );
+  },
+
+  updateTransaction(tx: Transaction) {
+    const old = this.getTransactions().find((t) => t.id === tx.id);
+    FirestoreRepo.put('transactions', tx.id, tx);
+    this.logAction(
+      'Modification',
+      'Finances',
+      tx.id,
+      `Écriture ${tx.id} modifiée : ${tx.description} (${tx.amountTTC.toFixed(2)} CHF)`,
+      old
+        ? `Ancien : ${old.description} (${old.amountTTC.toFixed(2)} CHF) [${old.category}] ➔ Nouveau : [${tx.category}]`
+        : undefined
+    );
+  },
+
+  deleteTransaction(id: string) {
+    const target = this.getTransactions().find((t) => t.id === id);
+    FirestoreRepo.remove('transactions', id);
+    if (target) {
+      this.logAction(
+        'Suppression',
+        'Finances',
+        id,
+        `Suppression écriture ${id} : ${target.description} (${target.amountTTC.toFixed(2)} CHF)`
+      );
+    }
+  },
+
+  // Annule une écriture et défait son impact sur les stocks
+  revertTransaction(id: string): { success: boolean; message: string } {
+    const target = this.getTransactions().find((t) => t.id === id);
+    if (!target) return { success: false, message: 'Écriture introuvable' };
+
+    if (target.stockImpact && target.stockImpact.length > 0) {
+      const stocks = this.getStocks();
+      target.stockImpact.forEach((impact) => {
+        const list = stocks[impact.itemType];
+        const item = list.find((s) => s.ref === impact.itemRef);
+        if (item) {
+          item.currentStock = Math.max(
+            0,
+            Math.round((item.currentStock - impact.addedQty) * 100) / 100
+          );
+          item.reorder = item.currentStock <= item.minStock;
+          FirestoreRepo.put('stockItems', item.ref, { ...item, kind: impact.itemType });
+        }
+      });
+    }
+
+    this.deleteTransaction(id);
+    this.logAction(
+      'Suppression',
+      'Finances',
+      id,
+      `↩️ Annulation écriture ${id} et restauration des stocks antérieurs (${target.description})`
+    );
+    return { success: true, message: `Écriture ${id} annulée et stocks restaurés avec succès !` };
+  },
+
+  // 2. STOCKS
+  getStocks(): {
+    rawMaterials: StockItem[];
+    cleaning: StockItem[];
+    equipment: EquipmentItem[];
+    kegs: KegItem[];
+  } {
+    const items = FirestoreRepo.all<any>('stockItems');
+    const strip = (d: any): StockItem => {
+      const { __docId, kind, ...rest } = d;
+      return rest as StockItem;
+    };
+    return {
+      rawMaterials: items.filter((i) => i.kind !== 'cleaning').map(strip),
+      cleaning: items.filter((i) => i.kind === 'cleaning').map(strip),
+      equipment: clean<EquipmentItem>(FirestoreRepo.all('equipment')),
+      kegs: clean<KegItem>(FirestoreRepo.all('kegs'))
+    };
+  },
+
+  saveStocks(stocks: {
+    rawMaterials: StockItem[];
+    cleaning: StockItem[];
+    equipment: EquipmentItem[];
+    kegs: KegItem[];
+  }) {
+    const tagged = [
+      ...(stocks.rawMaterials || []).map((s) => ({ ...s, kind: 'rawMaterials' as const })),
+      ...(stocks.cleaning || []).map((s) => ({ ...s, kind: 'cleaning' as const }))
+    ];
+    syncCollection('stockItems', tagged, (s) => s.ref);
+    syncCollection('equipment', stocks.equipment || [], (e) => e.ref);
+    syncCollection('kegs', stocks.kegs || [], (k) => k.id);
+  },
+
+  addStockItem(type: 'rawMaterials' | 'cleaning', item: StockItem) {
+    FirestoreRepo.put('stockItems', item.ref, { ...item, kind: type });
+    this.logAction(
+      'Création',
+      'Stocks',
+      item.ref,
+      `Nouvel article créé : ${item.name} (${item.currentStock} ${item.unit})`,
+      `Catégorie : ${item.category} · Min : ${item.minStock} · Max : ${item.maxStock || 'illimité'}`
+    );
+  },
+
+  deleteStockItem(type: 'rawMaterials' | 'cleaning', ref: string) {
+    const target = this.getStocks()[type].find((s) => s.ref === ref);
+    FirestoreRepo.remove('stockItems', ref);
+    if (target) {
+      this.logAction('Suppression', 'Stocks', ref, `Article supprimé du stock : ${target.name}`);
+    }
+  },
+
+  updateStockItem(type: 'rawMaterials' | 'cleaning', item: StockItem) {
+    const old = this.getStocks()[type].find((s) => s.ref === item.ref);
+    FirestoreRepo.put('stockItems', item.ref, { ...item, kind: type });
+    this.logAction(
+      'Modification',
+      'Stocks',
+      item.ref,
+      `Ajustement stock ${item.name} : ${item.currentStock} ${item.unit} (Min: ${item.minStock}, Max: ${item.maxStock || '—'})`,
+      old ? `Précédent : ${old.currentStock} ${old.unit}` : undefined
+    );
+  },
+
+  /**
+   * Correction d'inventaire — le SEUL moyen de modifier un stock à la main.
+   *
+   * ⚠️ Pourquoi c'est séparé : les listes portaient des boutons `+/−` directs.
+   * Or un stock de malt ne baisse qu'en brassant, et ne monte qu'à la
+   * réception d'un achat. Retoucher la quantité d'un doigt qui glisse
+   * détruisait silencieusement la traçabilité — et l'écart n'apparaissait
+   * nulle part.
+   *
+   * On saisit désormais le stock RÉELLEMENT COMPTÉ, et un motif. L'écart entre
+   * le théorique et le compté est calculé, journalisé, et c'est lui
+   * l'information : un écart récurrent sur un article dit qu'il se casse, se
+   * perd, ou que les réceptions sont mal saisies.
+   */
+  adjustInventory(
+    type: 'rawMaterials' | 'cleaning',
+    ref: string,
+    countedQty: number,
+    reason: InventoryReason,
+    note?: string
+  ): { delta: number } | null {
+    const item = this.getStocks()[type].find((s) => s.ref === ref);
+    if (!item) return null;
+
+    const delta = Units.round(countedQty - item.currentStock, item.unit);
+    FirestoreRepo.put('stockItems', ref, {
+      ...item,
+      currentStock: Units.round(countedQty, item.unit),
+      kind: type
+    });
+
+    this.logAction(
+      'Modification',
+      'Stocks',
+      ref,
+      `Inventaire ${item.name} : ${Units.format(item.currentStock, item.unit)} ➔ ${Units.format(countedQty, item.unit)} (${delta >= 0 ? '+' : ''}${Units.format(delta, item.unit)})`,
+      `Motif : ${INVENTORY_REASONS[reason]}${note ? ` — ${note}` : ''}`
+    );
+
+    return { delta };
+  },
+
+  /*
+   * Matériel et fûts.
+   *
+   * ⚠️ Ils n'avaient AUCUNE méthode d'écriture individuelle : ni création, ni
+   * modification, ni suppression. Un fût cassé restait dans la liste pour
+   * toujours, et un nouvel appareil ne pouvait entrer que par une réécriture
+   * complète du tableau depuis `saveStocks`.
+   */
+
+  addEquipment(item: EquipmentItem) {
+    FirestoreRepo.put('equipment', item.ref, item);
+    this.logAction(
+      'Création',
+      'Stocks',
+      item.ref,
+      `Matériel ajouté : ${item.name}`,
+      `Catégorie : ${item.category} · État : ${item.state}`
+    );
+  },
+
+  updateEquipment(item: EquipmentItem) {
+    const old = this.getStocks().equipment.find((e) => e.ref === item.ref);
+    FirestoreRepo.put('equipment', item.ref, item);
+    this.logAction(
+      'Modification',
+      'Stocks',
+      item.ref,
+      `Matériel ${item.name} : état [${item.state}]`,
+      old ? `Ancien état : [${old.state}]` : undefined
+    );
+  },
+
+  deleteEquipment(ref: string) {
+    const target = this.getStocks().equipment.find((e) => e.ref === ref);
+    FirestoreRepo.remove('equipment', ref);
+    if (target) {
+      this.logAction('Suppression', 'Stocks', ref, `Matériel supprimé : ${target.name}`);
+    }
+  },
+
+  addKeg(keg: KegItem) {
+    FirestoreRepo.put('kegs', keg.id, keg);
+    this.logAction(
+      'Création',
+      'Fûts',
+      keg.id,
+      `Fût ajouté : ${keg.id} (${keg.capacityL} L)`,
+      `État initial : [${keg.state}]`
+    );
+  },
+
+  updateKeg(keg: KegItem) {
+    const old = this.getStocks().kegs.find((k) => k.id === keg.id);
+    FirestoreRepo.put('kegs', keg.id, keg);
+    this.logAction(
+      'Statut',
+      'Fûts',
+      keg.id,
+      `Fût ${keg.id} : état passé à [${keg.state.toUpperCase()}]`,
+      old ? `Ancien état : [${old.state}] · Bière : ${keg.beerName || 'aucune'}` : undefined
+    );
+  },
+
+  // 3. PRODUCTION
+  /**
+   * Les brassins, ramenés à la forme courante À LA LECTURE.
+   *
+   * Les enregistrements antérieurs à la refonte portent `step: '60 min'` et
+   * `yeastName: 'US-05'`. On les traduit ici plutôt que de réécrire la base :
+   * une migration qui touche de vraies données ne se rejoue pas.
+   */
+  getBatches(): Batch[] {
+    return clean<Batch>(FirestoreRepo.all('batches')).map(normalizeBatch);
+  },
+
+  saveBatches(batches: Batch[]) {
+    syncCollection('batches', batches, (b) => b.id);
+  },
+
+  addBatch(batch: Batch) {
+    FirestoreRepo.put('batches', batch.id, batch);
+    this.logAction(
+      'Création',
+      'Production',
+      batch.id,
+      `Nouveau lot créé : ${batch.id} - ${batch.name} (${batch.volumeL}L)`,
+      `Style : ${batch.style} · Statut : ${batch.status}`
+    );
+  },
+
+  updateBatch(batch: Batch) {
+    const old = this.getBatches().find((b) => b.id === batch.id);
+    FirestoreRepo.put('batches', batch.id, batch);
+    this.logAction(
+      'Modification',
+      'Production',
+      batch.id,
+      `Brassin ${batch.id} mis à jour : Statut [${batch.status}] · OG ${batch.og || '—'} · FG ${batch.fg || '—'}`,
+      old ? `Ancien statut : ${old.status} · Vol : ${batch.volumeL}L` : undefined
+    );
+  },
+
+  /**
+   * Lance un brassin depuis une recette et déduit les ingrédients.
+   *
+   * Le rapprochement se fait sur le nom complet, catégorie par catégorie, et la
+   * conversion d'unités passe par `Units` : la version précédente cherchait le
+   * premier article contenant le premier mot du nom (« Malt Pale Ale » ➔ jeton
+   * « malt »), ce qui pouvait débiter silencieusement le mauvais malt.
+   */
+  brewRecipeAndDeductStocks(recipe: Recipe, batchId: string): Batch {
+    const stocks = this.getStocks();
+    const touched: StockItem[] = [];
+
+    const findIn = (pool: StockItem[], needle: string, category?: string) => {
+      const n = needle.trim().toLowerCase();
+      if (!n) return undefined;
+      const scoped = category ? pool.filter((p) => p.category === category) : pool;
+      return (
+        scoped.find((p) => p.name.toLowerCase() === n) ||
+        scoped.find(
+          (p) => p.name.toLowerCase().includes(n) || n.includes(p.name.toLowerCase())
+        )
+      );
+    };
+
+    const deduct = (item: StockItem | undefined, qty: number, fromUnit: string) => {
+      if (!item) return;
+      const converted = Units.convert(qty, fromUnit, item.unit);
+      if (converted === null) {
+        console.warn(
+          `[Brassin] ${item.name} : ${qty} ${fromUnit} non convertible en ${item.unit}, stock inchangé.`
+        );
+        return;
+      }
+      item.currentStock = Units.round(Math.max(0, item.currentStock - converted), item.unit);
+      item.reorder = item.currentStock <= item.minStock;
+      touched.push(item);
+    };
+
+    /*
+     * ⚠️ On lit `fermentables` et non `recipe.malts`.
+     *
+     * Le champ hérité n'existe plus sur aucune recette créée depuis la refonte :
+     * `recipe.malts.forEach` JETAIT, et le lancement d'un brassin depuis
+     * l'action rapide échouait sans rien déduire du tout.
+     *
+     * Le sucre et le lactose se déduisent aussi : ils sortent du stock au même
+     * titre que le grain, seule leur catégorie d'article change.
+     */
+    const fermentables = normalizeRecipe(recipe).fermentables;
+    fermentables.forEach((f) =>
+      deduct(
+        findIn(stocks.rawMaterials, f.name, f.kind === 'grain' ? 'Malt' : undefined),
+        f.weightKg,
+        'kg'
+      )
+    );
+    (recipe.hops ?? []).forEach((h) =>
+      deduct(findIn(stocks.rawMaterials, h.name, 'Houblon'), h.weightG, 'g')
+    );
+
+    // La levure sort du stock comme le reste — elle s'y comptait sans jamais
+    // en sortir, et le nombre de sachets ne baissait donc jamais.
+    const yeast = recipe.yeast;
+    if (yeast?.name) {
+      deduct(
+        findIn(stocks.rawMaterials, yeast.name, 'Levure'),
+        yeast.qty || 1,
+        yeast.unit || 'sachet'
+      );
+    }
+
+    touched.forEach((item) =>
+      FirestoreRepo.put('stockItems', item.ref, { ...item, kind: 'rawMaterials' })
+    );
+
+    const newBatch: Batch = {
+      id: batchId,
+      brewDate: new Date().toLocaleDateString('fr-CH'),
+      name: recipe.name,
+      style: recipe.style,
+      volumeL: recipe.volumeL,
+      // Les densités visées sont FACULTATIVES : une recette sans cible ne doit
+      // pas empêcher de lancer le brassin, ni afficher « NaN ».
+      og: recipe.ogTarget ? recipe.ogTarget.toFixed(3) : undefined,
+      fg: recipe.fgTarget ? recipe.fgTarget.toFixed(3) : undefined,
+      abv: recipe.abvTarget ? `${recipe.abvTarget}%` : undefined,
+      status: 'fermentation',
+      recipeRef: recipe.id,
+      // Le brassin fige la recette : corriger la recette demain ne réécrira pas
+      // ce qu'on a réellement brassé aujourd'hui.
+      recipeSnapshot: captureSnapshot(recipe),
+      gravityLog: recipe.ogTarget
+        ? [
+            {
+              date: new Date().toLocaleDateString('fr-CH'),
+              sg: recipe.ogTarget,
+              tempC: 18.5,
+              notes: 'Ensemencement initial'
+            }
+          ]
+        : []
+    };
+
+    this.addBatch(newBatch);
+    this.logAction(
+      'Création',
+      'Production',
+      batchId,
+      `Lancement du brassin ${recipe.name} (${recipe.volumeL}L) — ${touched.length} ingrédient(s) déduit(s) du stock`
+    );
+    return newBatch;
+  },
+
+  /**
+   * Supprime un brassin.
+   *
+   * ⚠️ Ne restaure PAS les ingrédients consommés : supprimer n'est pas annuler.
+   * Pour rendre les ingrédients au stock, passer le brassin en « annulé », qui
+   * conserve la trace de ce qui s'est passé. La suppression est faite pour les
+   * saisies erronées, pas pour les brassins ratés.
+   */
+  deleteBatch(id: string) {
+    const target = this.getBatches().find((b) => b.id === id);
+    FirestoreRepo.remove('batches', id);
+    if (target) {
+      this.logAction(
+        'Suppression',
+        'Production',
+        id,
+        `Brassin supprimé : ${target.id} — ${target.name}`,
+        `Statut au moment de la suppression : ${target.status}`
+      );
+    }
+  },
+
+  // 4. RECETTES
+  getRecipes(): Recipe[] {
+    return clean<Recipe>(FirestoreRepo.all('recipes')).map(normalizeRecipe);
+  },
+
+  /**
+   * Met à jour UNE recette.
+   *
+   * ⚠️ Cette méthode manquait : `saveRecipes()` réécrivait tout le tableau,
+   * donc éditer une recette rejouait l'écriture de toutes les autres — et deux
+   * onglets ouverts pouvaient s'écraser mutuellement.
+   */
+  updateRecipe(recipe: Recipe) {
+    const old = this.getRecipes().find((r) => r.id === recipe.id);
+    FirestoreRepo.put('recipes', recipe.id, recipe);
+    this.logAction(
+      'Modification',
+      'Production',
+      recipe.id,
+      `Recette « ${recipe.name} » mise à jour`,
+      // ⚠️ Lire `malts` ici LEVAIT sur toute recette créée depuis la refonte :
+      // le champ est déprécié et absent, seul `fermentables` existe. Modifier
+      // une recette récente plantait donc au moment d'écrire le journal.
+      old
+        ? `${(old.fermentables ?? []).length} ➔ ${(recipe.fermentables ?? []).length} fermentescibles · ` +
+          `${(old.hops ?? []).length} ➔ ${(recipe.hops ?? []).length} houblons`
+        : undefined
+    );
+  },
+
+  saveRecipes(recipes: Recipe[]) {
+    syncCollection('recipes', recipes, (r) => r.id);
+  },
+
+  addRecipe(recipe: Recipe) {
+    FirestoreRepo.put('recipes', recipe.id, recipe);
+    this.logAction(
+      'Création',
+      'Production',
+      recipe.id,
+      `Nouvelle fiche recette : ${recipe.name} (${recipe.volumeL}L)`
+    );
+  },
+
+  deleteRecipe(id: string) {
+    const target = this.getRecipes().find((r) => r.id === id);
+    FirestoreRepo.remove('recipes', id);
+    if (target) {
+      this.logAction('Suppression', 'Production', id, `Recette supprimée : ${target.name}`);
+    }
+  },
+
+  // 5. CLIENTS
+  getClients(): Client[] {
+    return clean<Client>(FirestoreRepo.all('clients'));
+  },
+
+  saveClients(clients: Client[]) {
+    syncCollection('clients', clients, (c) => c.id);
+  },
+
+  updateClient(client: Client) {
+    FirestoreRepo.put('clients', client.id, client);
+    this.logAction(
+      'Modification',
+      'Clients',
+      client.id,
+      `Fiche client ${client.name} modifiée`,
+      `Contact : ${client.contact} · Tél : ${client.phone} · Email : ${client.email}`
+    );
+  },
+
+  deleteClient(id: string) {
+    const target = this.getClients().find((c) => c.id === id);
+    FirestoreRepo.remove('clients', id);
+    if (target) {
+      this.logAction('Suppression', 'Clients', id, `Client supprimé : ${target.name}`);
+    }
+  },
+
+  deleteKeg(id: string) {
+    const target = this.getStocks().kegs.find((k) => k.id === id);
+    FirestoreRepo.remove('kegs', id);
+    if (target) {
+      this.logAction(
+        'Suppression',
+        'Fûts',
+        id,
+        `Fût supprimé : ${target.id} (${target.capacityL} L)`,
+        target.beerName ? `Contenait : ${target.beerName}` : undefined
+      );
+    }
+  },
+
+  // 6. PLANNING
+  getPlanning(): GanttTask[] {
+    return clean<GanttTask>(FirestoreRepo.all('planning'));
+  },
+
+  savePlanning(planning: GanttTask[]) {
+    syncCollection('planning', planning, (p) => p.id);
+  },
+
+  // 7. BUDGET
+  getBudgetLines(): BudgetLine[] {
+    return clean<BudgetLine>(FirestoreRepo.all('budgetLines'));
+  },
+
+  saveBudgetLines(lines: BudgetLine[]) {
+    syncCollection('budgetLines', lines, (l, i) => `LINE-${l.row ?? i}`);
+  },
+
+  // 8. TARIFS
+  getTarifs(): PricingItem[] {
+    return clean<PricingItem>(FirestoreRepo.all('tarifs'));
+  },
+
+  /*
+   * Tarifs et planning.
+   *
+   * ⚠️ Ils s'affichaient mais ne se modifiaient pas : aucune méthode d'écriture
+   * ligne à ligne n'existait. Un prix devenu faux restait affiché, une tâche
+   * terminée restait ouverte.
+   *
+   * Ni l'un ni l'autre ne porte d'identifiant : on adresse donc par le libellé
+   * (`product`, `description`), qui est ce que Gaëtan lit à l'écran.
+   */
+
+  updateTarif(tarif: PricingItem) {
+    const all = this.getTarifs();
+    const i = all.findIndex((t) => t.product === tarif.product);
+    const next = i >= 0 ? all.map((t, j) => (j === i ? tarif : t)) : [...all, tarif];
+    this.saveTarifs(next);
+    this.logAction(
+      i >= 0 ? 'Modification' : 'Création',
+      'Clients',
+      tarif.product,
+      `Tarif ${tarif.product} : ${tarif.priceHT.toFixed(2)} CHF HT · marge ${tarif.marginPercent.toFixed(1)} %`
+    );
+  },
+
+  deleteTarif(product: string) {
+    const target = this.getTarifs().find((t) => t.product === product);
+    this.saveTarifs(this.getTarifs().filter((t) => t.product !== product));
+    if (target) {
+      this.logAction('Suppression', 'Clients', product, `Tarif supprimé : ${product}`);
+    }
+  },
+
+  updatePlanningTask(task: GanttTask) {
+    const all = this.getPlanning();
+    const i = all.findIndex((t) => t.id === task.id);
+    this.savePlanning(i >= 0 ? all.map((t, j) => (j === i ? task : t)) : [...all, task]);
+    this.logAction(
+      i >= 0 ? 'Modification' : 'Création',
+      'Configuration',
+      task.id,
+      `Tâche ${task.description}${task.completed ? ' — terminée' : ''}`
+    );
+  },
+
+  deletePlanningTask(id: string) {
+    const target = this.getPlanning().find((t) => t.id === id);
+    this.savePlanning(this.getPlanning().filter((t) => t.id !== id));
+    if (target) {
+      this.logAction('Suppression', 'Configuration', id, `Tâche supprimée : ${target.description}`);
+    }
+  },
+
+  saveTarifs(tarifs: PricingItem[]) {
+    syncCollection('tarifs', tarifs, (t, i) => slugify(t.product) || `TARIF-${i}`);
+  },
+
+  // 9. CONFIGURATION
+  getConfig(): AppConfig {
+    const docs = FirestoreRepo.all<any>('config');
+    const stored = docs.find((d) => d.__docId === 'app');
+    if (!stored) return defaultConfig;
+    const { __docId, ...rest } = stored;
+    return {
+      ...defaultConfig,
+      ...rest,
+      company: { ...defaultConfig.company, ...(rest.company || {}) },
+      fiscal: { ...defaultConfig.fiscal, ...(rest.fiscal || {}) },
+      security: { ...defaultConfig.security, ...(rest.security || {}) }
+    };
+  },
+
+  saveConfig(config: AppConfig) {
+    FirestoreRepo.put('config', 'app', config);
+  },
+
+  // 10. GABARITS DE DÉPENSE
+  getExpenseTemplates(): ExpenseTemplate[] {
+    const stored = clean<ExpenseTemplate>(FirestoreRepo.all('expenseTemplates'));
+    return stored.length > 0 ? stored : defaultExpenseTemplates;
+  },
+
+  saveExpenseTemplates(templates: ExpenseTemplate[]) {
+    syncCollection('expenseTemplates', templates, (t) => t.id);
+  },
+
+  addExpenseTemplate(tpl: ExpenseTemplate) {
+    FirestoreRepo.put('expenseTemplates', tpl.id, tpl);
+  },
+
+  deleteExpenseTemplate(id: string) {
+    FirestoreRepo.remove('expenseTemplates', id);
+  },
+
+  /**
+   * Fournisseurs récurrents, déduits UNIQUEMENT des écritures réelles.
+   * Pour chaque fournisseur on retient la catégorie et le taux de TVA les plus
+   * fréquemment utilisés, afin de pré-remplir la saisie suivante.
+   */
+  getFrequentVendors(): Array<{
+    name: string;
+    category: FinanceCategory;
+    tvaRate: number;
+    count: number;
+  }> {
+    const txs = this.getTransactions();
+    const vendorMap = new Map<
+      string,
+      { count: number; categories: Map<FinanceCategory, number>; rates: Map<number, number> }
+    >();
+
+    txs.forEach((t) => {
+      if (t.category === 'recettes' || t.category === 'apports') return;
+
+      const name = (t.proofNotes?.replace(/^Fournisseur:\s*/i, '') || '').split('·')[0].trim();
+      if (!name || name.length < 3) return;
+
+      const entry = vendorMap.get(name) ?? {
+        count: 0,
+        categories: new Map<FinanceCategory, number>(),
+        rates: new Map<number, number>()
+      };
+      entry.count += 1;
+      entry.categories.set(t.category, (entry.categories.get(t.category) ?? 0) + 1);
+      entry.rates.set(t.tvaRate, (entry.rates.get(t.tvaRate) ?? 0) + 1);
+      vendorMap.set(name, entry);
+    });
+
+    const mostFrequent = <T,>(m: Map<T, number>, fallback: T): T => {
+      let best = fallback;
+      let bestCount = 0;
+      m.forEach((count, key) => {
+        if (count > bestCount) {
+          bestCount = count;
+          best = key;
+        }
+      });
+      return best;
+    };
+
+    return Array.from(vendorMap.entries())
+      .map(([name, data]) => ({
+        name,
+        count: data.count,
+        category: mostFrequent<FinanceCategory>(data.categories, 'divers'),
+        tvaRate: mostFrequent<number>(data.rates, 0.081)
+      }))
+      .sort((a, b) => b.count - a.count);
+  },
+
+  // 11. ATELIER R&D
+  getCreativeItems(): CreativeItem[] {
+    const stored = clean<CreativeItem>(FirestoreRepo.all('creativeItems'));
+    return stored.length > 0 ? stored : defaultCreativeItems;
+  },
+
+  saveCreativeItems(items: CreativeItem[]) {
+    syncCollection('creativeItems', items, (i) => i.id);
+  },
+
+  addCreativeItem(item: CreativeItem) {
+    FirestoreRepo.put('creativeItems', item.id, item);
+  },
+
+  updateCreativeItem(item: CreativeItem) {
+    FirestoreRepo.put('creativeItems', item.id, item);
+  },
+
+  deleteCreativeItem(id: string) {
+    FirestoreRepo.remove('creativeItems', id);
+  },
+
+  /**
+   * Épingle ou dépingle une entité.
+   *
+   * Un seul point d'entrée pour les quatre types concernés : les favoris
+   * remontent ensuite automatiquement en tête des listes, des autocomplétions
+   * et de la palette de recherche.
+   */
+  toggleFavorite(kind: 'stockItem' | 'recipe' | 'client' | 'template', id: string) {
+    switch (kind) {
+      case 'stockItem': {
+        const stocks = this.getStocks();
+        const item =
+          stocks.rawMaterials.find((s) => s.ref === id) ||
+          stocks.cleaning.find((s) => s.ref === id);
+        if (!item) return;
+        const type = stocks.cleaning.some((s) => s.ref === id) ? 'cleaning' : 'rawMaterials';
+        FirestoreRepo.put('stockItems', id, { ...item, kind: type, favorite: !item.favorite });
+        break;
+      }
+      case 'recipe': {
+        const r = this.getRecipes().find((x) => x.id === id);
+        if (r) FirestoreRepo.put('recipes', id, { ...r, favorite: !r.favorite });
+        break;
+      }
+      case 'client': {
+        const c = this.getClients().find((x) => x.id === id);
+        if (c) FirestoreRepo.put('clients', id, { ...c, favorite: !c.favorite });
+        break;
+      }
+      case 'template': {
+        const t = this.getExpenseTemplates().find((x) => x.id === id);
+        if (t) FirestoreRepo.put('expenseTemplates', id, { ...t, favorite: !t.favorite });
+        break;
+      }
+    }
+  },
+
+  // SAUVEGARDE & RESTAURATION
+  exportAllData(): string {
+    return JSON.stringify(
+      {
+        transactions: this.getTransactions(),
+        stocks: this.getStocks(),
+        production: this.getBatches(),
+        recipes: this.getRecipes(),
+        clients: this.getClients(),
+        planning: this.getPlanning(),
+        budgetLines: this.getBudgetLines(),
+        tarifs: this.getTarifs(),
+        config: this.getConfig(),
+        auditLogs: this.getAuditLogs(),
+        exportedAt: new Date().toISOString(),
+        schemaVersion: 2
+      },
+      null,
+      2
+    );
+  },
+
+  importAllData(jsonStr: string) {
+    const data = JSON.parse(jsonStr);
+    if (data.transactions) this.saveTransactions(data.transactions);
+    if (data.stocks) this.saveStocks(data.stocks);
+    if (data.production) this.saveBatches(data.production);
+    if (data.recipes) this.saveRecipes(data.recipes);
+    if (data.clients) this.saveClients(data.clients);
+    if (data.planning) this.savePlanning(data.planning);
+    if (data.budgetLines) this.saveBudgetLines(data.budgetLines);
+    if (data.tarifs) this.saveTarifs(data.tarifs);
+    if (data.config) this.saveConfig(data.config);
+  },
+
+  /**
+   * Efface les préférences locales. Ne touche PAS aux données Firestore :
+   * supprimer la comptabilité doit être une action délibérée et explicite,
+   * pas un effet de bord d'un bouton « réinitialiser ».
+   */
+  resetToInitial() {
+    localStorage.removeItem(LOCAL_KEYS.UI_STATE);
+    Object.keys(localCache).forEach((k) => delete localCache[k]);
+    this.notify();
+  }
+};
+
+function slugify(s: string): string {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80);
+}
