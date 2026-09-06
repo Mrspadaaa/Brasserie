@@ -141,3 +141,17 @@ approximatifs : le pH estimé à 5,50 ne valide pas le pH réel de cette recette
 `stoutAlkalinity.test.ts` vérifie ce bilan de masse et 90 combinaisons de dilution,
 ratio SO₄:Cl, volume et répartition des sels. `stoutWaterProfile.test.tsx` vérifie
 les affichages, les acides manuels et le cycle sauvegarde/export/réouverture.
+
+La commande `npm run test:smoke:stout` exécute cette régression et les cas limites
+de `stoutEdgeCases.test.ts` et `stoutSmoke.test.tsx` : les 512 combinaisons de sels
+disponibles, les eaux déjà au-dessus des plafonds, le KCl en solution de repli,
+les cibles explicites Mg/Na, les volumes nuls ou très différents, les dilutions
+indépendantes et les factures incomplètes. Les gestes UI couvrent Doser répété,
+les exclusions puis réactivations, le slider, les ajouts manuels et les zones fixes.
+
+Cette campagne a révélé un défaut : une fois le HCO₃ affiché à zéro, le pH estimé
+cessait de baisser malgré l'ajout d'acide. Le bilan destiné au modèle de pH conserve
+désormais tous les équivalents acides (`mashPhRa`), y compris ceux dépassant
+l'alcalinité de l'eau. Le graphe garde un HCO₃ non négatif et l'AR ionique reste
+distincte. Cette correction de l'estimation ne change ni les sels proposés ni
+les doses d'acide calculées. Elle ne valide pas la précision du modèle de pH.

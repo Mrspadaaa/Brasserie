@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only hosting,firestore",
     "test": "vitest run",
+    "test:smoke:stout": "vitest run tests/unit/stoutAlkalinity.test.ts tests/unit/stoutEdgeCases.test.ts tests/integration/stoutWaterProfile.test.tsx tests/integration/stoutSmoke.test.tsx",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "rules": "node scripts/build-rules.mjs",

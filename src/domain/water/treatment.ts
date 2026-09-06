@@ -1,6 +1,6 @@
 import { AcidId, SaltId, WaterIons, WaterSource, WaterPlan } from '../../types';
 import { addIons, dilute, residualAlkalinity, sulfateChlorideRatio } from './ions';
-import { ionsFromSalts } from './substances';
+import { ACIDS, ionsFromSalts } from './substances';
 import { acidNeeded, ionsAfterAcid, spargeAcidNeeded, SPARGE_TARGET_PH } from './acid';
 import { RaBand, raAcidTarget } from './mashPh';
 import { splitDoses, waterFromPlan } from './plan';
@@ -84,6 +84,13 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     sparge: ionsAfterAcid(raw.sparge, spargeAcid.amount, acidId, spargeWaterL)
   };
   const total = average(raw.mash, raw.sparge);
+  const raBefore = residualAlkalinity(raw.mash);
+  // The graph cannot show negative bicarbonate. For the mash buffer model,
+  // however, acid beyond the water's alkalinity still consumes grain buffers.
+  // Keep the full acid equivalents here; never use this estimate to prescribe acid.
+  const acidAlkalinity = Number.isFinite(mashWaterL) && mashWaterL > 0
+    ? (mashAcid.amount / mashWaterL) * ACIDS[acidId].hco3NeutralizedPerUnit * 50 / 61
+    : 0;
   return {
     start,
     startSparge,
@@ -96,8 +103,9 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     spargeAcidCalculated,
     mashAcid,
     spargeAcid,
-    raBefore: residualAlkalinity(raw.mash),
+    raBefore,
     raAfter: residualAlkalinity(treated.mash),
+    mashPhRa: raBefore - acidAlkalinity,
     ratio: sulfateChlorideRatio(total),
     split
   };

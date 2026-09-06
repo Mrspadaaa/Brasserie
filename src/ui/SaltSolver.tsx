@@ -606,8 +606,8 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   /** Le pH que devrait donner cette facture dans CETTE eau d'empâtage. */
   const phEstimate = useMemo(
-    () => estimateMashPh(brew?.grist, treatment.raAfter, mashRatioLPerKg),
-    [brew?.grist, treatment.raAfter, mashRatioLPerKg]
+    () => estimateMashPh(brew?.grist, treatment.mashPhRa, mashRatioLPerKg),
+    [brew?.grist, treatment.mashPhRa, mashRatioLPerKg]
   );
 
   /**
