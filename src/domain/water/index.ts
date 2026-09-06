@@ -2,6 +2,7 @@ export type { SaltDef } from './substances';
 export { SALTS } from './substances';
 export { SALT_IDS } from './substances';
 export { CAUTION_APPROACH } from './practice';
+export { alkalineSaltGoal } from './practice';
 export type { SaltCaution } from './practice';
 export { saltCautions } from './practice';
 export { ALKALINE_SALTS } from './substances';

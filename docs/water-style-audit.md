@@ -121,3 +121,23 @@ des références et le bouton Doser. Le solveur donne désormais la même priori
 aux minima explicites de Mg/Na quel que soit le style ; entre pesées proches,
 il préfère celle qui satisfait les planchers sans franchir les plafonds.
 Ces tests vérifient le logiciel ; ils ne remplacent pas une validation sensorielle.
+
+### Régression : impériale sur eau 100 % osmosée
+
+Avec 8,1 kg de Maris Otter à 5 EBC, 1 kg d’orge rôtie à 1150 EBC,
+34,6 L d’empâtage et 11 L de rinçage, 3,9 g de NaHCO₃ apportent
+81,9 ppm de HCO₃ à l’empâtage et 62,1 ppm sur l’ensemble des eaux.
+Le graphe décrit ces eaux avant extraction des malts et ébullition : Mg à zéro
+ne signifie donc pas zéro magnésium dans le moût.
+
+Le modèle simplifié de pH limite ici l’objectif des sels à environ −18 ppm d’AR,
+alors que le repère de couleur vaut 110–166 ppm. L’atelier et le récapitulatif
+affichent maintenant l’objectif réellement utilisé, sans présenter ce repère de
+couleur comme un manque à combler. Les doses restent inchangées. L’estimation
+de pH est recalculée avec l’acide retenu ; elle ne modifie pas la prescription
+d’acide. Les paramètres d’acidité et de pouvoir tampon déduits de l’EBC restent
+approximatifs : le pH estimé à 5,50 ne valide pas le pH réel de cette recette.
+
+`stoutAlkalinity.test.ts` vérifie ce bilan de masse et 90 combinaisons de dilution,
+ratio SO₄:Cl, volume et répartition des sels. `stoutWaterProfile.test.tsx` vérifie
+les affichages, les acides manuels et le cycle sauvegarde/export/réouverture.

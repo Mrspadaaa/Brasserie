@@ -38,6 +38,8 @@ import {
   calculateWaterTreatment,
   splitDoses,
   targetRaForGrist,
+  raSaltCeilingForGrist,
+  alkalineSaltGoal,
 } from '../domain/water';
 import { styleWaterForName, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
 import { PageShell, Section } from './PageShell';
@@ -591,6 +593,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const band = targetRaForGrist(color?.ebc ?? null, grains,
       totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
     const treatment = calculateWaterTreatment(waterSource, water, band);
+    const alkaliGoal = alkalineSaltGoal(band, raSaltCeilingForGrist(grains,
+      totalGrist > 0 ? water.mashWaterL / totalGrist : 0));
     const r1 = (n: number) => Math.round(n * 10) / 10;
 
     /* La cible saisie l'emporte sur le style de la liste — comme dans l'atelier. */
@@ -620,6 +624,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ra: Math.round(treatment.raAfter),
       raBefore: Math.round(treatment.raBefore),
       raBand: band,
+      raSaltTarget: alkaliGoal.limitedByGrist ? alkaliGoal.target : undefined,
       ratio: treatment.ratio,
       doses: water.doses,
       split: treatment.split,

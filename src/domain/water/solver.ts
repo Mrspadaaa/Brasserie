@@ -2,7 +2,7 @@ import type { WaterIons, SaltId, IonBand } from '../../types';
 import type { RaBand } from './mashPh';
 import { ZERO, round1, residualAlkalinity } from './ions';
 import { saltIons, netRaPerGramPerLitre, ALKALINE_SALTS } from './substances';
-import { CHALK_RA_CAP_PPM, mineralTarget, MineralTargetMode } from './practice';
+import { CHALK_RA_CAP_PPM, mineralTarget, MineralTargetMode, alkalineSaltGoal } from './practice';
 import { waterFromPlan } from './plan';
 import { solveMinerals, TASTE_IONS } from './mineralSolver';
 import type { SolveIssue } from './solverMessages';
@@ -103,12 +103,8 @@ export function solveSaltsCore(
     return combined(w.mash, w.sparge);
   };
   const band = input.targetRa;
-  const saltTarget = band
-    ? Math.min(
-        band.min,
-        Number.isFinite(input.raCeiling) && input.raCeiling != null ? input.raCeiling : Infinity
-      )
-    : -Infinity;
+  const alkaliGoal = alkalineSaltGoal(band, input.raCeiling);
+  const saltTarget = alkaliGoal.target;
   const needsAlkaline = band && band.min >= 0;
   const alkaline = (flavour: Partial<Record<SaltId, number>>) => {
     const doses = { ...flavour };
@@ -193,7 +189,7 @@ export function solveSaltsCore(
         : 'bounded';
   }
   if (band) {
-    if (needsAlkaline && saltTarget < band.min - 5)
+    if (alkaliGoal.limitedByGrist)
       issues.push({ code: 'grist', target: saltTarget, colour: band.min });
     if (needsAlkaline && ra < saltTarget - 10)
       issues.push({

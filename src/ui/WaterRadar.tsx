@@ -387,6 +387,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           );
         })}
       </svg>
+      <p className="text-center text-[0.625rem] sm:text-2xs text-cave-400 leading-tight pb-0.5">
+        Eau totale · avant apports des malts et ébullition
+      </p>
 
       {/*
         ⚠️ La légende a disparu. Trois pastilles pour dire ce que le vert, le

@@ -46,3 +46,18 @@ export const monSuperStout: Recipe = {
   ],
   steps: [], notes: []
 };
+
+/** Second report: the same grist, entirely RO, with 11 L of sparge water. */
+export const monSuperStoutRo: Recipe = {
+  ...monSuperStout,
+  mash: { ...monSuperStout.mash!, ratioLPerKg: 34.6 / 9.1 },
+  waterPlan: {
+    ...monSuperStout.waterPlan!,
+    diRatioPct: 100, targetProfileId: '20C',
+    startIons: { ca: 0, mg: 0, na: 0, so4: 0, cl: 0, hco3: 0 },
+    wortIons: { ca: 92, mg: 0, na: 23.4, so4: 50.2, cl: 125.9, hco3: 62.1 },
+    mashWaterL: 34.6, spargeWaterL: 11,
+    mash: { gypse: 4.1, cacl2: 11.9, nahco3: 3.9 }, sparge: {},
+    acid: { id: 'lactique', mash: 0, sparge: 0 }, acidOverride: undefined
+  }
+};

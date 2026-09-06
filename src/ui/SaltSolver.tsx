@@ -2,6 +2,7 @@ import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from '
 import { NumberInput } from './NumberInput';
 import { formatDecimal, useHoldRepeat } from './numericInput';
 import { WaterSource, SaltId, AcidId, WaterIons } from '../types';
+import { describeSolveIssue } from '../domain/water/solverMessages';
 import {
   SALTS,
   calculateWaterTreatment,
@@ -20,6 +21,7 @@ import {
   residualAlkalinity,
   targetRaForGrist,
   raSaltCeilingForGrist,
+  alkalineSaltGoal,
 
   estimateMashPh,
   hopBalanceHint,
@@ -572,6 +574,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
     () => raSaltCeilingForGrist(brew?.grist, mashRatioLPerKg),
     [brew?.grist, mashRatioLPerKg]
   );
+  const alkaliGoal = alkalineSaltGoal(raBand, raCeiling);
 
   /** Si activé, tous les sels vont à l'empâtage (aucun sel au rinçage). */
   /*
@@ -603,8 +606,8 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   /** Le pH que devrait donner cette facture dans CETTE eau d'empâtage. */
   const phEstimate = useMemo(
-    () => estimateMashPh(brew?.grist, ra, mashRatioLPerKg),
-    [brew?.grist, ra, mashRatioLPerKg]
+    () => estimateMashPh(brew?.grist, treatment.raAfter, mashRatioLPerKg),
+    [brew?.grist, treatment.raAfter, mashRatioLPerKg]
   );
 
   /**
@@ -836,11 +839,11 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
   const messagesSolveur = useMemo(
     () =>
       planApplied
-        ? solution.unreachable.filter(
-            (msg) => !(acideSuffit && /^Alcalinité résiduelle à /.test(msg))
-          )
+        ? (solution.issues ?? [])
+            .filter((issue) => issue.code !== 'grist' && !(acideSuffit && issue.code === 'alkalinity-high'))
+            .map(describeSolveIssue)
         : [],
-    [planApplied, solution.unreachable, acideSuffit]
+    [planApplied, solution.issues, acideSuffit]
   );
 
   /** L'alcalinité qui reste dans l'eau de rinçage — c'est elle qu'on acidifie. */
@@ -1483,7 +1486,9 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             <div className="panel p-2.5 sm:p-3 space-y-1">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-xs sm:text-sm text-cave-400">
-                  Alcalinité résiduelle — cible {raBand.min} à {raBand.max} ppm (
+                  {alkaliGoal.limitedByGrist
+                    ? `Alcalinité résiduelle — objectif des sels ≈ ${alkaliGoal.target} ppm (`
+                    : `Alcalinité résiduelle — cible ${raBand.min} à ${raBand.max} ppm (`}
                   {/*
                     ⚠️ DIRE CE QUI COMMANDE, pas seulement la teinte.
 
@@ -1495,7 +1500,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                     Elle n'est qu'un substitut de l'acidité du grain, employé
                     quand on n'a pas mieux.
                   */}
-                  {raBand.from === 'facture' ? 'd’après ta facture' : raBand.label})
+                  {alkaliGoal.limitedByGrist ? 'estimation du mash' : raBand.from === 'facture' ? 'd’après ta facture' : raBand.label})
                 </span>
                 {/*
                   ⚠️ LE GRAND CHIFFRE RESTE L'ALCALINITÉ DE L'EAU, pas celle
@@ -1514,7 +1519,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                 */}
                 <span
                   className={`reading text-base sm:text-lg font-bold shrink-0 ${
-                    ra >= raBand.min && ra <= raBand.max ? 'text-hop' : 'text-ebc-amber'
+                    alkaliGoal.limitedByGrist ? 'text-cave-100' : ra >= raBand.min && ra <= raBand.max ? 'text-hop' : 'text-ebc-amber'
                   }`}
                 >
                   {Math.round(ra)}
@@ -1532,13 +1537,15 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                   <span className="text-cave-500">Après l’acide : </span>
                   <span
                     className={`reading font-semibold ${
-                      placeAcide === 'juste' ? 'text-hop' : 'text-ebc-amber'
+                      alkaliGoal.limitedByGrist ? 'text-cave-100' : placeAcide === 'juste' ? 'text-hop' : 'text-ebc-amber'
                     }`}
                   >
                     {Math.round(raApresAcide)} ppm
                   </span>
                   <span className="text-cave-500">
-                    {placeAcide === 'juste'
+                    {alkaliGoal.limitedByGrist
+                      ? ' — effet inclus dans l’estimation du pH ci-dessous.'
+                      : placeAcide === 'juste'
                       ? ' — dans la cible.'
                       : placeAcide === 'haut'
                         ? ' — encore au-dessus : coupe davantage à l’osmosée.'
@@ -2013,6 +2020,18 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
         </section>
         </div>
 
+        {alkaliGoal.limitedByGrist && (
+          <p className="px-1 text-2xs text-cave-300 leading-snug" aria-label="Objectif du bicarbonate">
+            HCO₃ : {formatDecimal(achievedTotalApresAcide.hco3)} ppm sur l’eau totale ; {formatDecimal(Math.round(treatment.treated.mash.hco3 * 10) / 10)} à l’empâtage.
+            {' '}Ajout automatique limité par l’estimation du mash. Avec ces doses : pH estimé {phEstimate.phPredicted.toFixed(2)} ±{phEstimate.uncertainty}, à vérifier au brassage.
+            {!state.customTarget && ' La plage du style reste un repère, pas une dose à atteindre.'}
+          </p>
+        )}
+        {achievedTotalApresAcide.mg === 0 && style.ions.mg.min === 0 && (brew?.totalGristKg ?? 0) > 0 && (
+          <p className="px-1 text-2xs text-cave-400 leading-snug">
+            Mg : 0 ppm dans l’eau. Ajout facultatif pour ce profil ; les malts en apportent au moût, hors de ce graphique.
+          </p>
+        )}
         {differentProfile && (
           <div className="px-1 text-2xs text-cave-300 leading-snug">
             Profil d’eau différent de la recette.{' '}

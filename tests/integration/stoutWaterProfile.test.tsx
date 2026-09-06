@@ -5,7 +5,7 @@ import { BrewWizard } from '../../src/pages/BrewWizard';
 import { defaultConfig } from '../../src/services/storage';
 import { writeRecipeText, readRecipeText } from '../../src/domain/recipeTransfer';
 import { Recipe } from '../../src/types';
-import { monSuperStout } from '../fixtures/monSuperStout';
+import { monSuperStout, monSuperStoutRo } from '../fixtures/monSuperStout';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 afterEach(cleanup);
@@ -30,6 +30,56 @@ function selectBeerStyle(name: string) {
 }
 
 describe('Mon super stout — recipe profile, manual acid and Doser', () => {
+  it('RO stout: explains the real bicarbonate objective consistently in the workshop and recap', () => {
+    const save = mount(monSuperStoutRo);
+    click('Eau et sels');
+    expect(screen.getByText(/Alcalinité résiduelle — objectif des sels/)).toHaveTextContent('≈ -18 ppm');
+    expect(screen.queryByText(/Alcalinité résiduelle — cible 110 à 166/)).not.toBeInTheDocument();
+    const explanation = screen.getByLabelText('Objectif du bicarbonate');
+    expect(explanation).toHaveTextContent('62,1 ppm sur l’eau totale ; 81,9 à l’empâtage');
+    expect(explanation).toHaveTextContent('pH estimé 5.50 ±0.15');
+    expect(explanation).toHaveTextContent('à vérifier au brassage');
+    expect(screen.getByText(/Mg : 0 ppm dans l’eau/)).toHaveTextContent('les malts en apportent au moût');
+    const graphBefore = radar().getAttribute('aria-label');
+    click('Récapitulatif');
+    expect(screen.getByText(/Alcalinité résiduelle après acide/)).toHaveTextContent('objectif des sels ≈ -18 ppm');
+    expect(radar().getAttribute('aria-label')).toBe(graphBefore);
+    click('Enregistrer la recette');
+    const saved = save.mock.calls[0][0];
+    expect(saved.waterPlan.mash).toEqual(monSuperStoutRo.waterPlan.mash);
+    expect(saved.waterPlan.wortIons).toEqual(monSuperStoutRo.waterPlan.wortIons);
+    const copied = readRecipeText(writeRecipeText(saved));
+    expect(copied.waterPlan.wortIons).toEqual(saved.waterPlan.wortIons);
+    cleanup();
+    mount(copied);
+    click('Eau et sels');
+    expect(radar().getAttribute('aria-label')).toBe(graphBefore);
+  });
+
+  it('RO stout: manual acid updates the estimated mash pH without moving the style zone or the alkali objective', () => {
+    mount(monSuperStoutRo);
+    click('Eau et sels');
+    const ph = () => screen.getByText(/^pH estimé — cible/).parentElement!;
+    const zone = () => radar().querySelector('[data-ion-target="hco3"]')!.getAttribute('d');
+    const zoneBefore = zone();
+    expect(ph()).toHaveTextContent('5.50');
+    fireEvent.change(acid(), { target: { value: '2' } });
+    fireEvent.blur(acid());
+    expect(ph()).toHaveTextContent('5.45');
+    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('pH estimé 5.45');
+    expect(screen.getByText(/Alcalinité résiduelle — objectif des sels/)).toHaveTextContent('≈ -18 ppm');
+    expect(zone()).toBe(zoneBefore);
+    click('Revenir aux doses d’acide calculées');
+    expect(acid()).toHaveValue('0');
+    expect(ph()).toHaveTextContent('5.50');
+    click('Proposer les doses');
+    expect(acid()).toHaveValue('0');
+    const graph = radar().getAttribute('aria-label');
+    click('Proposer les doses');
+    expect(radar().getAttribute('aria-label')).toBe(graph);
+    expect(zone()).toBe(zoneBefore);
+  });
+
   it('preserves the saved choices and exposes the two causes before making a correction', () => {
     mount();
     click('Eau et sels');

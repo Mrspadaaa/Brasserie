@@ -150,6 +150,7 @@ export interface WaterRecap {
   style?: StyleWater;
   ra: number;
   raBand: { min: number; max: number; label: string };
+  raSaltTarget?: number;
   ratio: { ratio: number | null; label: string };
   doses: Partial<Record<SaltId, number>>;
   split: { mash: Partial<Record<SaltId, number>>; sparge: Partial<Record<SaltId, number>> };
@@ -727,14 +728,16 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                   Alcalinité résiduelle après acide{' '}
                   <span
                     className={`reading text-sm ${
-                      water.ra >= water.raBand.min && water.ra <= water.raBand.max
+                      water.raSaltTarget != null ? 'text-cave-100' : water.ra >= water.raBand.min && water.ra <= water.raBand.max
                         ? 'text-hop'
                         : 'text-ebc-amber'
                     }`}
                   >
                     {water.ra}
                   </span>{' '}
-                  — cible {water.raBand.min} à {water.raBand.max} ({water.raBand.label})
+                  {water.raSaltTarget != null
+                    ? `— objectif des sels ≈ ${water.raSaltTarget} ppm (estimation du mash)`
+                    : `— cible ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
                 </span>
                 <span className="text-cave-500">
                   SO₄:Cl{' '}

@@ -1,6 +1,14 @@
 import { WaterIons, IonBand, SaltId } from '../../types';
 
 export type MineralTargetMode = 'minimum' | 'target' | 'modest';
+/** The alkali goal is distinct from the conservative band used to dose acid. */
+export function alkalineSaltGoal(band?: IonBand, gristCeiling?: number | null) {
+  const target = band
+    ? Math.min(band.min, gristCeiling != null && Number.isFinite(gristCeiling) ? gristCeiling : Infinity)
+    : -Infinity;
+  return { target, limitedByGrist: !!band && band.min >= 0 && target < band.min - 5 };
+}
+
 /** Policy stays explicit and independent of the numerical optimizer. */
 export function mineralTarget(target: WaterIons, ranges: Record<keyof WaterIons, IonBand>, mode: MineralTargetMode): WaterIons {
   if (mode === 'target') return { ...target };

@@ -1024,8 +1024,9 @@ describe('Une noire sur osmosée reçoit du bicarbonate, et l’écran dit jusqu
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
     /* Le nombre suit le rapport eau/grain — on vérifie la phrase, pas le chiffre. */
     // This is a target ceiling, not a claim that the actual water equals it.
-    expect(alertes()).toMatch(/Alcalinité : la facture limite l’objectif à -?\d+ ppm au lieu des \d+ que demanderait la couleur/);
-    expect(alertes()).toMatch(/c’est le pH qui commande/);
+    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('Ajout automatique limité par l’estimation du mash');
+    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('La plage du style reste un repère');
+    expect(alertes()).not.toMatch(/la facture limite l’objectif/);
   });
 
   /* Sans facture, la couleur commande seule : rien ne doit plafonner. */
