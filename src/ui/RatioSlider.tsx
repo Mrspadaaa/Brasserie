@@ -32,6 +32,9 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
   const thumb = followingTarget ? value : (shown ?? (ions?.so4 ? max : value));
   const clamped = Math.max(0, Math.min(max, Number.isFinite(thumb) ? thumb : 0));
   const inRange = shown !== null && (!target || (shown >= target.min && shown <= target.max));
+  // Don't display "0.9 — outside 0.4–0.9" when the actual ratio is 0.91.
+  const rounded = shown === null ? null : Number(shown.toFixed(1));
+  const precision = !inRange && target && rounded !== null && rounded >= target.min && rounded <= target.max ? 2 : 1;
   const pct = (v: number) => (Math.max(0, Math.min(v, max)) / max) * 100;
   const label = ions
     ? sulfateChlorideRatio(ions).label
@@ -58,7 +61,7 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
           {label}
         </span>
         <span className="reading text-base sm:text-lg text-cave-50 shrink-0">
-          {shown === null ? '—' : shown.toFixed(1)}
+          {shown === null ? '—' : shown.toFixed(precision)}
           {shown !== null && <span className="reading-unit"> : 1</span>}
         </span>
       </div>

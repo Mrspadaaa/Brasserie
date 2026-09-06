@@ -5,6 +5,11 @@ import { RatioSlider } from '../../src/ui/RatioSlider';
 
 afterEach(cleanup);
 describe('Le ratio réel reste distinct de la consigne', () => {
+  it.each([0.39, 0.91])('rend visible un écart de bord masqué par l’arrondi : %s', (achieved) => {
+    render(<RatioSlider value={0.9} achieved={achieved} target={{ min: 0.4, max: 0.9 }} onChange={() => {}} />);
+    expect(screen.getByText(achieved.toFixed(2))).toBeVisible();
+    expect(screen.getByText('Profil 0.4–0.9 · hors plage')).toBeVisible();
+  });
   it('Black IPA : lit 1.9 réel, sans le confondre avec la consigne 2.8', () => {
     render(
       <RatioSlider value={2.8} achieved={1.9} target={{ min: 1.5, max: 2.5 }} onChange={() => {}} />

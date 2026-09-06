@@ -151,7 +151,7 @@ describe('La dose posée à la main gèle l’acide — et le dit', () => {
     clic(/Ajouter 0\.5 mL — empâtage/i);
     expect(doseAcide('empâtage')).not.toBe(calcule);
 
-    fireEvent.click(screen.getByRole('button', { name: /^↺/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir aux doses d’acide calculées' }));
     expect(doseAcide('empâtage')).toBe(calcule);
 
     // Et il suit de nouveau.
@@ -164,7 +164,7 @@ describe('La dose posée à la main gèle l’acide — et le dit', () => {
     const calcule = doseAcide('empâtage');
     clic(/Ajouter 0\.5 mL — empâtage/i);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
-    expect(screen.queryByRole('button', { name: /^↺/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Revenir aux doses d’acide calculées' })).not.toBeInTheDocument();
     expect(doseAcide('empâtage')).not.toBe(calcule + 0.5);
   });
 });

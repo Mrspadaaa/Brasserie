@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from './NumberInput';
-import { useHoldRepeat } from './numericInput';
+import { formatDecimal, useHoldRepeat } from './numericInput';
 import { WaterSource, SaltId, AcidId, WaterIons } from '../types';
 import {
   SALTS,
@@ -37,6 +37,7 @@ import {
   STYLE_WATERS,
   WATER_PROFILE_SOURCES,
   styleByCode,
+  styleWaterForName,
   midpoint,
   styleFromTargetIons,
   StyleWater,
@@ -149,6 +150,8 @@ export interface WaterState {
  * s'ouvre aussi seul, depuis le banc d'essai.
  */
 export interface WaterBrewContext {
+  /** Used to offer the matching profile, without replacing a chosen target. */
+  style?: string;
   /** La facture de grain — pour le pH d'empâtage estimé. */
   grist?: Array<{
     name?: string;
@@ -537,6 +540,8 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
         : styleByCode(state.styleCode),
     [state.customTarget, state.styleCode]
   );
+  const recipeStyle = styleWaterForName(brew?.style ?? '');
+  const differentProfile = !state.customTarget && recipeStyle.code !== '—' && recipeStyle.code !== style.code;
   const start = useMemo(() => dilute(source, state.diRatioPct), [source, state.diRatioPct]);
 
   /** La part d'osmosée réellement appliquée au rinçage. */
@@ -633,12 +638,12 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
        * pour l'honorer — sinon le curseur deviendrait inerte au-delà du style.
        */
       const ranges = {} as Record<keyof typeof style.ions, IonBand>;
+      const outsideStyleRatio = ratio < style.ratio.min || ratio > style.ratio.max;
       (Object.keys(style.ions) as Array<keyof typeof style.ions>).forEach((ion) => {
         const band = style.ions[ion];
-        ranges[ion] = {
-          min: Math.min(band.min, target[ion]),
-          max: Math.max(band.max, target[ion])
-        };
+        ranges[ion] = outsideStyleRatio && (ion === 'so4' || ion === 'cl')
+          ? { min: Math.min(band.min, target[ion]), max: Math.max(band.max, target[ion]) }
+          : { ...band };
       });
 
       return solveSalts({
@@ -783,6 +788,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
   /** Le brasseur a-t-il posé une dose à la main ? */
   const acideForce =
     state.acidOverride?.mash != null || state.acidOverride?.sparge != null;
+  const mashAcidDiffers = state.acidOverride?.mash != null && Math.abs(mashAcid.amount - mashAcidCalcule.amount) >= 0.05;
 
   /**
    * L'alcalinité résiduelle UNE FOIS L'ACIDE VERSÉ.
@@ -1536,7 +1542,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                       ? ' — dans la cible.'
                       : placeAcide === 'haut'
                         ? ' — encore au-dessus : coupe davantage à l’osmosée.'
-                        : ' — SOUS la cible : c’est trop d’acide, le pH descendra trop bas.'}
+                        : ' — SOUS la cible d’alcalinité : vérifier le pH au brassage avant toute correction.'}
                   </span>
                 </p>
               )}
@@ -1974,11 +1980,12 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                   <button
                     type="button"
                     onClick={() => set({ acidOverride: undefined })}
+                    aria-label="Revenir aux doses d’acide calculées"
                     className="block max-w-full mt-0.5 text-left text-[0.625rem] leading-tight
                                text-ebc-straw hover:text-ebc-gold underline underline-offset-2 truncate"
                   >
-                    ↺ {mashAcidCalcule.amount}
-                    {hasSparge && ` + ${spargeAcidCalcule.amount}`} {mashAcidCalcule.unit}
+                    Calcul : {formatDecimal(mashAcidCalcule.amount)}
+                    {hasSparge && ` + ${formatDecimal(spargeAcidCalcule.amount)}`} {mashAcidCalcule.unit}
                   </button>
                 )}
               </div>
@@ -2005,6 +2012,23 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           </div>
         </section>
         </div>
+
+        {differentProfile && (
+          <div className="px-1 text-2xs text-cave-300 leading-snug">
+            Profil d’eau différent de la recette.{' '}
+            <button type="button"
+              onClick={() => set({ styleCode: recipeStyle.code, ratioOverride: undefined })}
+              className="text-ebc-straw underline underline-offset-2 py-1">
+              Utiliser {recipeStyle.name}
+            </button>
+          </div>
+        )}
+        {mashAcidDiffers && (
+          <p role="status" className="px-1 text-2xs text-cave-300 leading-snug">
+            Acide empâtage manuel : {formatDecimal(mashAcid.amount)} {mashAcid.unit} ; calcul : {formatDecimal(mashAcidCalcule.amount)} {mashAcidCalcule.unit}.
+            {' '}HCO₃ de l’empâtage : {Math.round(achievedMash.hco3)} → {Math.round(treatment.treated.mash.hco3)} ppm.
+          </p>
+        )}
 
         {activeSalt && (
           <p className="text-2xs text-cave-300 leading-snug px-1">

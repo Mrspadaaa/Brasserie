@@ -381,7 +381,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 fontSize={11.5}
                 fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
               >
-                {a.targeted ? `${a.band.min}–${a.band.max}` : 'sans cible'}
+                {a.targeted ? `${a.indicative ? '≈ ' : ''}${a.band.min}–${a.band.max}` : 'sans cible'}
               </text>
             </g>
           );

@@ -955,9 +955,7 @@ describe('Alcalinité, acide et bouton Doser', () => {
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
 
     expect(champAcide().value).not.toBe('15');
-    /* Le retour au calcul a rejoint l'en-tête de la rangée, sous le tag de
-       l'acidifiant : « ↺ 2.8 + 2.7 mL ». Il ne doit plus rien avoir à défaire. */
-    expect(screen.queryByRole('button', { name: /^↺/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Revenir aux doses d’acide calculées' })).not.toBeInTheDocument();
   });
 
   /*

@@ -1,6 +1,6 @@
 import { MaltDetails } from '../ui/MaltDetails';
 import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../ui/NumberInput';
 import {
   Recipe,
@@ -429,6 +429,16 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     spargePh: base?.waterPlan?.measuredSpargePh
   }));
 
+  // Follow the beer style until an explicit water profile is chosen. Saved
+  // profiles (including the neutral profile) and numeric targets stay intentional.
+  const waterProfileAuto = useRef(!base?.waterPlan?.targetProfileId && !base?.waterPlan?.targetIons);
+  const changeStyle = (next: string) => {
+    setStyle(next);
+    if (waterProfileAuto.current) {
+      setWater(w => ({ ...w, styleCode: styleWaterForName(next).code, ratioOverride: undefined }));
+    }
+  };
+
   /**
    * Les volumes ont-ils été posés à la main ?
    *
@@ -633,6 +643,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   /** Une saisie manuelle de volume fige les volumes : le grain ne les pilote plus. */
   const onWaterChange = (next: WaterState) => {
+    if (next.styleCode !== water.styleCode || next.customTarget !== water.customTarget) {
+      waterProfileAuto.current = false;
+    }
     if (next.mashWaterL !== water.mashWaterL || next.spargeWaterL !== water.spargeWaterL) {
       setVolumesEdited(true);
     }
@@ -850,6 +863,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         r.dryHopNote ? 'HOUBLONNAGE À CRU — ' + r.dryHopNote : null].filter(v => v != null).join('\n\n'));
     }
     const plan = r.waterPlan;
+    if (r.complete) {
+      waterProfileAuto.current = !plan?.targetProfileId && !plan?.targetIons && !r.waterTarget;
+    } else if (plan?.targetProfileId != null || plan?.targetIons || r.waterTarget) {
+      waterProfileAuto.current = false;
+    }
     if (plan?.sourceSnapshot) setRecipeWaterSource(plan.sourceSnapshot);
     else if (plan?.sourceId) setRecipeWaterSource(config.waterSources?.find(source => source.id === plan.sourceId));
     else if (r.complete) setRecipeWaterSource(undefined);
@@ -864,7 +882,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 0, spargeWaterL: 0,
         allSaltsInMash: true
       } as WaterState : { ...w };
-      if (r.style != null && !plan?.targetProfileId && !next.customTarget) next.styleCode = styleWaterForName(r.style).code;
+      if (r.style != null && waterProfileAuto.current && !next.customTarget) next.styleCode = styleWaterForName(r.style).code;
       if (mashL != null) next.mashWaterL = mashL;
       if (spargeL != null) next.spargeWaterL = spargeL;
       else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
@@ -1204,12 +1222,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <Field label="Style">
               <Combobox
                 value={style}
-                onChange={setStyle}
+                onChange={changeStyle}
                 options={knownStyles.map((s) => ({ value: s, label: s }))}
                 placeholder="NEIPA, Stout, Saison…"
                 ariaLabel="Style de la bière"
                 allowCreate
-                onCreate={setStyle}
+                onCreate={changeStyle}
                 createLabel={(v) => `Nouveau style « ${v} »`}
               />
             </Field>
@@ -2064,6 +2082,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
              * un houblon ou la durée d'ébullition redescend jusqu'aux sels.
              */
             brew={{
+              style,
               grist: grains,
               totalGristKg: totalGrist,
               hops,
@@ -2173,7 +2192,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           name={name}
           onName={setName}
           style={style}
-          onStyle={setStyle}
+          onStyle={changeStyle}
           volumeL={volumeL}
           onVolumeL={setVolumeL}
           boilMin={boilMin}

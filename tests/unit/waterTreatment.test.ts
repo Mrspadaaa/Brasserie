@@ -9,6 +9,7 @@ import {
   dilute
 } from '../../src/domain/water';
 import { WaterPlan } from '../../src/types';
+import { monSuperStout } from '../fixtures/monSuperStout';
 
 const base = {
   diRatioPct: 0,
@@ -22,6 +23,22 @@ const base = {
 const band = targetRaForGrist(8, undefined, 4);
 
 describe('One retained water treatment for all recipe views', () => {
+  it('stout: 7.5 mL is a manual override, not the calculated acid prescription', () => {
+    const p = monSuperStout.waterPlan!;
+    const band = targetRaForGrist(98.8, monSuperStout.fermentables, 5);
+    const input = { ...p, doses: p.mash, acidId: p.acid!.id };
+    const manual = calculateWaterTreatment(p.sourceSnapshot!, input, band);
+    const automatic = calculateWaterTreatment(p.sourceSnapshot!, { ...input, acidOverride: undefined }, band);
+    // 250 ppm × 80% network; 7.5 mL × 600 mg/mL neutralised over 45.5 L.
+    expect(manual.treated.mash.hco3).toBeCloseTo(200 - 7.5 * 600 / 45.5, 6);
+    expect(manual.treatedTotal.hco3).toBe(101.3);
+    expect(manual.raAfter).toBeCloseTo(5, 0);
+    expect(automatic.mashAcid.amount).toBe(0);
+    expect(automatic.treated.mash.hco3).toBe(200);
+    expect(automatic.raAfter).toBeGreaterThanOrEqual(band.min);
+    expect(automatic.raAfter).toBeLessThanOrEqual(band.max);
+    expect(automatic.split).toEqual(manual.split);
+  });
   it.each([0, 40, 100])('retains manual acid including zero, at %s%% RO', (diRatioPct) => {
     const input = { ...base, diRatioPct, acidOverride: { mash: 0, sparge: 0.7 } };
     const t = calculateWaterTreatment(DEFAULT_WATER_SOURCE, input, band);
