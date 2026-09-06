@@ -6,8 +6,11 @@ import {
   FermentationStep,
   WaterIons,
   SaltId,
-  AcidId
+  AcidId,
+  AdjunctIngredient,
+  Recipe
 } from '../types';
+import { writeRecipeText } from './recipeTransfer';
 import { HOP_STAGE } from './hopStage';
 import { SALTS, ACIDS, ION_SYMBOL_SHORT } from './water';
 import { Units } from '../services/units';
@@ -36,6 +39,8 @@ import { Units } from '../services/units';
  */
 
 export interface RecipeTextInput {
+  /** Saved business fields are the authority for a complete, lossless copy. */
+  recipe?: Recipe;
   name: string;
   style: string;
   volumeL: number;
@@ -47,6 +52,10 @@ export interface RecipeTextInput {
   ibu?: number | null;
   ebc?: number | null;
   efficiencyPct?: number | null;
+  carboTarget?: string;
+  mashRatioLPerKg?: number;
+  spargeType?: string;
+  adjuncts?: AdjunctIngredient[];
 
   fermentables: Fermentable[];
   totalGristKg: number;
@@ -65,6 +74,16 @@ export interface RecipeTextInput {
     mashOsmoseeL: number;
     spargeOsmoseeL: number;
     wortIons?: WaterIons;
+    sourceIons?: WaterIons;
+    startIons?: WaterIons;
+    mashIons?: WaterIons;
+    spargeIons?: WaterIons;
+    style?: {
+      ions: Record<keyof WaterIons, { min: number; max: number }>;
+      ratio: { min: number; max: number };
+    };
+    split?: { mash: Partial<Record<SaltId, number>>; sparge: Partial<Record<SaltId, number>> };
+    raBefore?: number;
     doses: Partial<Record<SaltId, number>>;
     acidId: AcidId;
     mashAcid: { amount: number; unit: string };
@@ -93,12 +112,18 @@ const grammes = (g: number) => Units.format(Math.round(g), 'g');
 
 /** Les grammes sous le kilo, les kilos au-delà — comme on pèse. */
 const masse = (kg: number) =>
-  kg < 1 ? Units.format(Math.round(kg * 1000), 'g') : Units.format(Math.round(kg * 100) / 100, 'kg');
+  kg < 1
+    ? Units.format(Math.round(kg * 1000), 'g')
+    : Units.format(Math.round(kg * 100) / 100, 'kg');
 
 /** Un titre de section, souligné — c'est ce qui rend la fiche parcourable. */
 const titre = (t: string) => [``, t.toUpperCase(), '─'.repeat(t.length)];
 
 export function recipeToText(r: RecipeTextInput, date = new Date()): string {
+  if (r.recipe) return writeRecipeText(r.recipe, {
+    og: r.og, fg: r.fg, abv: r.abv, ibu: r.ibu, ebc: r.ebc,
+    mashIons: r.water?.mashIons, spargeIons: r.water?.spargeIons, ra: r.water?.ra
+  });
   const l: string[] = [];
 
   l.push(`${r.name || 'Recette sans nom'}${r.style ? ` — ${r.style}` : ''}`);
@@ -131,6 +156,10 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
       const detail = [
         part,
         f.colorEbc != null ? `${f.colorEbc} EBC` : null,
+        f.potentialPpg != null ? `${f.potentialPpg} PPG` : null,
+        f.use,
+        f.dayOffset != null ? `jour ${f.dayOffset}` : null,
+        f.fermentabilityPct != null ? `${f.fermentabilityPct} % fermentescible` : null,
         f.kind !== 'grain' ? f.kind : null
       ]
         .filter(Boolean)
@@ -189,8 +218,20 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
   }
 
   // --- Empâtage ------------------------------------------------------------
+  if (r.carboTarget) l.push(`  Carbonatation : ${r.carboTarget}`);
+  if (r.adjuncts?.length) {
+    l.push(...titre('Autres ajouts'));
+    r.adjuncts.forEach((a) =>
+      l.push(`  ${a.name} — ${a.amount} ${a.unit} · ${a.step}${a.notes ? ` · ${a.notes}` : ''}`)
+    );
+  }
   if (r.mashSteps.length) {
     l.push(...titre('Empâtage'));
+    if (r.mashRatioLPerKg != null) l.push(`  Épaisseur : ${n(r.mashRatioLPerKg, 2)} L/kg`);
+    if (r.spargeType)
+      l.push(
+        `  Rinçage : ${{ batch: 'par lots', fly: 'continu', none: 'aucun' }[r.spargeType] ?? r.spargeType}`
+      );
     r.mashSteps.forEach((s) =>
       l.push(`  ${`${n(s.tempC)} °C`.padEnd(9)} ${s.durationMin} min — ${s.name}`)
     );
@@ -220,25 +261,56 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
       const ions = (Object.keys(ION_SYMBOL_SHORT) as Array<keyof WaterIons>)
         .map((i) => `${ION_SYMBOL_SHORT[i]} ${Math.round(w.wortIons![i])}`)
         .join(' · ');
-      l.push(`  Moût : ${ions} (ppm)`);
+      l.push(
+        `  Eau traitée, moyenne pondérée après acide : ${ions} (ppm, avant extraction et ébullition)`
+      );
     }
-    if (w.ra != null) l.push(`  Alcalinité résiduelle : ${Math.round(w.ra)} ppm`);
+    if (w.ra != null) l.push(`  Alcalinité résiduelle après acide : ${Math.round(w.ra)} ppm CaCO3`);
+    if (w.raBefore != null)
+      l.push(`  Alcalinité résiduelle avant acide : ${Math.round(w.raBefore)} ppm CaCO3`);
+    for (const [label, ions] of [
+      ['Source non diluée', w.sourceIons],
+      ['Départ dilué', w.startIons],
+      ['Empâtage après acide', w.mashIons],
+      ['Rinçage après acide', w.spargeIons]
+    ] as const) {
+      if (ions)
+        l.push(
+          `  ${label} : ${Object.keys(ION_SYMBOL_SHORT)
+            .map((k: keyof WaterIons) => `${ION_SYMBOL_SHORT[k]} ${n(ions[k])}`)
+            .join(' · ')} ppm`
+        );
+    }
+    if (w.style) {
+      l.push(
+        `  Cibles d'eau : ${Object.entries(w.style.ions)
+          .map(([k, band]) => `${ION_SYMBOL_SHORT[k]} ${band.min}–${band.max}`)
+          .join(' · ')} ppm`
+      );
+      l.push(
+        `  SO4/Cl visé : ${w.style.ratio.min}–${w.style.ratio.max} ; HCO3 indicatif, à confronter à la facture et au pH.`
+      );
+    }
 
     const sels = (Object.entries(w.doses) as Array<[SaltId, number]>).filter(([, g]) => g > 0);
     if (sels.length) {
       l.push(`  Sels :`);
-      sels.forEach(([id, g]) => l.push(`    ${`${n(g, 2)} g`.padEnd(9)} ${SALTS[id].name}`));
+      sels.forEach(([id, g]) =>
+        l.push(
+          `    ${`${n(g, 2)} g`.padEnd(9)} ${SALTS[id].name}${w.split ? ` — empâtage ${n(w.split.mash[id] ?? 0, 2)} g ; rinçage ${n(w.split.sparge[id] ?? 0, 2)} g` : ''}`
+        )
+      );
     }
 
     const acides = [
-      w.mashAcid.amount > 0
-        ? `${n(w.mashAcid.amount, 2)} ${w.mashAcid.unit} à l’empâtage`
-        : null,
+      w.mashAcid.amount > 0 ? `${n(w.mashAcid.amount, 2)} ${w.mashAcid.unit} à l’empâtage` : null,
       w.spargeAcid.amount > 0
         ? `${n(w.spargeAcid.amount, 2)} ${w.spargeAcid.unit} au rinçage`
         : null
     ].filter(Boolean);
-    if (acides.length) l.push(`  ${ACIDS[w.acidId].name} : ${acides.join(' · ')}`);
+    l.push(
+      `  ${ACIDS[w.acidId].name} : ${acides.length ? acides.join(' · ') : 'aucun ajout retenu'}`
+    );
     if (w.mashPh != null) l.push(`  pH d’empâtage relevé : ${n(w.mashPh, 2)}`);
   }
 

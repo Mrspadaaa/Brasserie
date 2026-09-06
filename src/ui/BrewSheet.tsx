@@ -1,3 +1,5 @@
+import { MaltDetails } from './MaltDetails';
+import { LearnIngredient } from '../domain/ingredientFacts';
 import React, { useState } from 'react';
 import { Trash2, AlertTriangle, Check, Droplets, ClipboardCopy } from 'lucide-react';
 import {
@@ -81,24 +83,28 @@ const Cell: React.FC<{
   min?: number;
   max?: number;
   label: string;
-}> = ({ value, onValue, unit, width = 'w-18 sm:w-20', integer, emptyValue, min, max, label }) => (
-  <span className="flex items-baseline gap-1">
-    <NumberInput
-      value={value}
-      onValue={onValue}
-      integer={integer}
-      emptyValue={emptyValue}
-      min={min}
-      max={max}
-      pad
-      aria-label={label}
-      className={`${width} min-h-[34px] sm:min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
-                  font-mono font-semibold text-right text-sm sm:text-base text-cave-50
-                  focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40`}
-    />
-    <span className="reading-unit w-6 sm:w-8 text-2xs sm:text-sm shrink-0">{unit}</span>
-  </span>
-);
+}> = (props) => {
+  const { value, onValue, unit, width = 'w-[4.5rem] sm:w-20', integer, min, max, label } = props;
+  const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
+  return (
+    <span className="flex items-baseline gap-1">
+      <NumberInput
+        value={value}
+        onValue={onValue}
+        integer={integer}
+        emptyValue={emptyValue}
+        min={min}
+        max={max}
+        pad
+        aria-label={label}
+        className={`${width} min-h-[34px] sm:min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
+                    font-mono font-semibold text-right text-sm sm:text-base text-cave-50
+                    focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40`}
+      />
+      <span className="reading-unit w-6 sm:w-8 text-2xs sm:text-sm shrink-0">{unit}</span>
+    </span>
+  );
+};
 
 /** Bloc titré de la fiche. Plus serré qu'une `Section` : il y en a huit. */
 const Block: React.FC<{
@@ -157,6 +163,8 @@ export interface WaterRecap {
 }
 
 export interface BrewSheetProps {
+  onLearnIngredient?: LearnIngredient;
+  reviewData?: unknown;
   name: string;
   onName: (v: string) => void;
   style: string;
@@ -221,6 +229,8 @@ export interface BrewSheetProps {
 }
 
 export const BrewSheet: React.FC<BrewSheetProps> = ({
+  onLearnIngredient,
+  reviewData,
   name,
   onName,
   style,
@@ -344,15 +354,15 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           <p className="py-2 text-sm text-cave-500">Aucun fermentescible.</p>
         ) : (
           fermentables.map((f, i) => (
+            <div key={`${f.name}-${i}`} className="pb-1">
             <Row
-              key={`${f.name}-${i}`}
               label={f.name}
               hint={
                 <>
                   {f.kind === 'grain' && totalGristKg > 0
                     ? `${((f.weightKg / totalGristKg) * 100).toFixed(0)} % du grain`
                     : f.kind}
-                  {f.colorEbc != null ? ` · ${f.colorEbc} EBC` : ' · couleur inconnue'}
+
                 </>
               }
               onDelete={() => onFermentables(fermentables.filter((_, j) => j !== i))}
@@ -365,6 +375,9 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 min={0}
               />
             </Row>
+              {f.kind === 'grain' && <MaltDetails malt={f} onChange={patch => patchFerm(i, patch)}
+                onLearnIngredient={onLearnIngredient} />}
+            </div>
           ))
         )}
       </Block>
@@ -675,15 +688,8 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 <span className="text-2xs sm:text-sm text-cave-500">
                   Profil visé — {water.styleName}
                 </span>
-                {/*
-                  ⚠️ « moût » et non « eau d'empâtage ». La toile dessine les
-                  deux eaux RÉUNIES — c'est la bière que le style décrit, et la
-                  maische titre légitimement plus fort quand tous les sels y
-                  vont. Le libellé était resté à l'ancienne grille de chiffres,
-                  qui montrait bien la maische, elle.
-                */}
                 <span className="text-2xs sm:text-sm text-cave-500 shrink-0">
-                  {water.wortIons ? 'moût, ppm' : 'eau d’empâtage, ppm'}
+                  {water.wortIons ? 'eau traitée, ppm' : 'eau d’empâtage, ppm'}
                 </span>
               </div>
 
@@ -718,7 +724,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
 
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xs sm:text-sm">
                 <span className="text-cave-500">
-                  Alcalinité résiduelle{' '}
+                  Alcalinité résiduelle après acide{' '}
                   <span
                     className={`reading text-sm ${
                       water.ra >= water.raBand.min && water.ra <= water.raBand.max
@@ -879,7 +885,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
         modèle lit ce que Gaëtan lit, donc chaque remarque se vérifie ligne à
         ligne dans le presse-papier.
       */}
-      {onExportText && <RecipeReview buildText={onExportText} />}
+      {onExportText && <RecipeReview buildText={onExportText} data={reviewData} />}
     </div>
   );
 };

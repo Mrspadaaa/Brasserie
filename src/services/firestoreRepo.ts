@@ -207,7 +207,7 @@ export const FirestoreRepo = {
    * tout de suite), et se charge de la pousser au serveur dès que possible.
    * Attendre la promesse bloquerait l'interface hors-ligne pour rien.
    */
-  put(name: CollectionName, id: string, data: any): void {
+  put(name: CollectionName, id: string, data: any, options: { merge?: boolean } = {}): void {
     if (
       import.meta.env.DEV &&
       typeof location !== 'undefined' &&
@@ -215,7 +215,7 @@ export const FirestoreRepo = {
     ) {
       if (!cache[name]) cache[name] = [];
       const idx = cache[name]!.findIndex((d: any) => d.id === id || d.__docId === id);
-      const itemWithDoc = { ...data, id: data.id ?? id, __docId: id };
+      const itemWithDoc = { ...(options.merge && idx >= 0 ? cache[name]![idx] : {}), ...data, id: data.id ?? id, __docId: id };
       if (idx >= 0) {
         cache[name]![idx] = itemWithDoc;
       } else {
@@ -225,7 +225,7 @@ export const FirestoreRepo = {
       return;
     }
 
-    setDoc(doc(db, name, id), stripUndefined(data), { merge: false }).catch((err) => {
+    setDoc(doc(db, name, id), stripUndefined(data), { merge: options.merge === true }).catch((err) => {
       lastError = `Sauvegarde de ${name}/${id} impossible : ${err.message}`;
       console.error('[Firestore] setDoc', name, id, err);
       notify();

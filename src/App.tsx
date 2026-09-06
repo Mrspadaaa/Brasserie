@@ -433,18 +433,7 @@ export const App: React.FC = () => {
    * générique du malteur, et lui seul le sait. On ne comble que les trous.
    */
   const learnIngredient = (name: string, facts: Partial<StockItem>) => {
-    const item = allStockItems.find((s) => s.name.toLowerCase() === name.trim().toLowerCase());
-    if (!item) return;
-
-    const patch: Partial<StockItem> = {};
-    (Object.entries(facts) as Array<[keyof StockItem, unknown]>).forEach(([cle, valeur]) => {
-      if (valeur === undefined || valeur === null) return;
-      if (item[cle] !== undefined && item[cle] !== null && item[cle] !== '') return;
-      (patch as Record<string, unknown>)[cle] = valeur;
-    });
-    if (Object.keys(patch).length === 0) return;
-
-    StorageService.updateStockItem('rawMaterials', { ...item, ...patch });
+    StorageService.learnIngredient(name, facts);
   };
 
   /** Enregistre la recette, et lance éventuellement le brassin dans la foulée. */
@@ -494,10 +483,10 @@ export const App: React.FC = () => {
     showToast(`Analyse « ${updated.name} » enregistrée.`);
   };
 
-  /** Clôture du jour de brassage : déstockage réel, puis fermentation. */
+  /** Clôture du jour de brassage : sauvegarde des relevés, puis fermentation. */
   const finishBrewDay = (updated: Batch) => {
     StorageService.updateBatch(updated);
-    showToast(`${updated.id} en fermentation. Ingrédients déstockés.`);
+    showToast(`${updated.id} en fermentation. Relevés de brassage enregistrés.`);
     route.close();
   };
 
@@ -809,8 +798,10 @@ export const App: React.FC = () => {
 
       {routedBatch && (
         <BrewDayPage
+          key={routedBatch.id}
           batch={routedBatch}
           config={config}
+          stockItems={allStockItems}
           onClose={route.close}
           onSave={(b) => StorageService.updateBatch(b)}
           onFinish={finishBrewDay}

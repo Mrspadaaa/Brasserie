@@ -88,15 +88,15 @@ export const SALTS: Record<SaltId, SaltDef> = {
     ions: { ca: 272.6, cl: 482.3 },
     effect: 'Arrondit, épaissit la sensation de bouche, souligne le malt.',
     caution:
-      'Dosé pour du dihydrate (CaCl₂·2H₂O). L’anhydre en apporte 32 % de plus ; un sachet ouvert qui a pris l’humidité, 10 à 20 % de moins.'
+      'Dosé pour du dihydrate (CaCl₂·2H₂O). L’anhydre en apporte 32 % de plus. L’humidité du sachet modifie sa concentration : vérifier le produit utilisé.'
   },
   epsom: {
     id: 'epsom',
     name: 'Sel d’Epsom',
     formula: 'MgSO₄·7H₂O',
     ions: { mg: 98.6, so4: 389.6 },
-    effect: 'Sulfate plus âpre que le gypse ; apporte le magnésium dont la levure a besoin.',
-    caution: 'au-delà de 30, l’eau devient amère et laxative.',
+    effect: 'Apporte sulfate et magnésium ; le malt fournit déjà ce nutriment.',
+    caution: 'repère de 30 ppm dépassé ou proche ; un excès de magnésium peut renforcer amertume et astringence.',
     cautionThreshold: { ion: 'mg', ppm: 30, label: 'Magnésium' }
   },
   mgcl2: {
@@ -111,8 +111,8 @@ export const SALTS: Record<SaltId, SaltDef> = {
     name: 'Sel de table',
     formula: 'NaCl',
     ions: { na: 393.4, cl: 606.6 },
-    effect: 'Rehausse la perception du malt. Indispensable à une Gose.',
-    caution: 'au-delà de 150, le goût devient franchement salé.',
+    effect: 'Apporte chlorure et sodium ; utile au caractère salin d’une Gose.',
+    caution: 'repère de 150 ppm dépassé ou proche ; surveiller la salinité, surtout avec beaucoup de sulfate.',
     cautionThreshold: { ion: 'na', ppm: 150, label: 'Sodium' }
   },
   nahco3: {
@@ -121,7 +121,7 @@ export const SALTS: Record<SaltId, SaltDef> = {
     formula: 'NaHCO₃',
     ions: { na: 273.7, hco3: 726.3 },
     effect: 'Remonte l’alcalinité — pour les bières très torréfiées dont le pH chute trop.',
-    caution: 'et c’est lui qui l’apporte — il verse autant de sodium que d’alcalinité.',
+    caution: 'le bicarbonate apporte aussi du sodium : en tenir compte avant d’en ajouter.',
     cautionThreshold: { ion: 'na', ppm: 150, label: 'Sodium' }
   },
   caco3: {
@@ -160,7 +160,7 @@ export const SALTS: Record<SaltId, SaltDef> = {
      * d'atteindre la fenêtre d'alcalinité.
      */
     ions: { ca: 540.9, hco3: 1647 },
-    effect: 'Remonte l’alcalinité sans sodium. La seule option des bières très foncées.',
+    effect: 'Remonte l’alcalinité sans sodium ; sa dose doit rester précise.',
     caution:
       'Base forte : dans la maische avec le grain, au dixième de gramme — jamais dans l’eau seule (elle y précipite le calcaire), jamais au rinçage. Elle se carbonate à l’air : si une goutte d’acide la fait mousser, c’est déjà de la craie.'
   },
@@ -171,7 +171,7 @@ export const SALTS: Record<SaltId, SaltDef> = {
     ions: { cl: 475.6 },
     untracked: { label: 'potassium', ppmPerGramPerLitre: 524.4, maxPpm: 50 },
     effect: 'Chlorure sans sodium ni calcium.',
-    caution: 'au-delà de 50, le goût tourne au métallique. Le solveur s’arrête avant.',
+    caution: 'repère maison de 50 ppm d’apport de potassium ; le solveur conserve ce plafond.',
     cautionThreshold: { ion: 'untracked', ppm: 50, label: 'Potassium' }
   }
 };
@@ -337,4 +337,3 @@ export const DEFAULT_WATER_SOURCE: WaterSource = {
   ph: 7.4,
   note: 'Valeurs de départ, à remplacer par l’analyse du distributeur.'
 };
-

@@ -54,6 +54,7 @@ export { ION_ROLE } from './labels';
 export { radarScaleMax } from './labels';
 export { splitDoses } from './plan';
 export { waterFromPlan } from './plan';
+export { calculateWaterTreatment, savedWaterDisplay } from './treatment';
 export type { MinimalDilutionInput } from './dilution';
 export type { MinimalDilution } from './dilution';
 export { HCO3_ACID_TOLERANCE_PPM } from './dilution';

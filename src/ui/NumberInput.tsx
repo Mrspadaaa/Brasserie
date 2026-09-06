@@ -48,22 +48,23 @@ interface NumberInputProps {
   'aria-label'?: string;
 }
 
-export const NumberInput: React.FC<NumberInputProps> = ({
-  value,
-  onValue,
-  className = '',
-  min,
-  max,
-  integer = false,
-  emptyValue = 0,
-  pad: _pad = false,
-  placeholder,
-  disabled,
-  required,
-  autoFocus,
-  id,
-  'aria-label': ariaLabel
-}) => {
+export const NumberInput: React.FC<NumberInputProps> = (props) => {
+  const {
+    value,
+    onValue,
+    className = '',
+    min,
+    max,
+    integer = false,
+    pad: _pad = false,
+    placeholder,
+    disabled,
+    required,
+    autoFocus,
+    id,
+    'aria-label': ariaLabel
+  } = props;
+  const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
   const inputRef = useRef<HTMLInputElement>(null);
   const coarse = useCoarsePointer();
   const { draft, push, settle } = useNumericDraft(value, onValue, { emptyValue });

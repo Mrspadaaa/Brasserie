@@ -1,24 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AiClient } from '../services/aiClient';
 import { Loader2, Sparkles, AlertTriangle, Check, Info, HelpCircle } from 'lucide-react';
 
-/**
- * La recette entière, relue par un expert.
- *
- * ⚠️ Demandé ainsi : « je veux aussi une IA qui analyse tout le truc ».
- *
- * Ce qu'elle reçoit : l'EXPORT TEXTE, exactement celui du bouton d'à côté.
- * C'est délibéré et ça vaut mieux qu'un objet JSON reconstruit pour
- * l'occasion — le modèle lit la même chose que Gaëtan, ce qui rend ses
- * remarques vérifiables ligne à ligne. Le jour où l'export gagne une section,
- * l'analyse la voit sans qu'on ait rien à recâbler ; le jour où l'export ment,
- * les deux mentent ensemble, et ça se remarque.
- *
- * ⚠️ ELLE NE MODIFIE RIEN. Aucune valeur de la recette n'est écrite depuis sa
- * réponse — c'est un avis, pas une correction automatique. La règle tenue
- * partout ailleurs — montrer d'où ça vient, laisser le dernier mot au
- * brasseur — vaut d'autant plus ici que l'analyse porte sur un jugement de
- * goût et non sur une fiche technique vérifiable.
+/** Reviews the current export and complete structured recipe together.
+ * Editing any input invalidates both the displayed review and in-flight results.
+ * The response is advisory: it never modifies recipe data.
  */
 
 interface Finding {
@@ -42,7 +28,10 @@ interface Review {
  * premier arrête le brassin, le second se discute. Les mélanger dans une liste
  * à plat oblige à tout lire pour trouver ce qui compte.
  */
-const GRAVITE: Record<Finding['severity'], { rang: number; label: string; tone: string; Icone: typeof AlertTriangle }> = {
+const GRAVITE: Record<
+  Finding['severity'],
+  { rang: number; label: string; tone: string; Icone: typeof AlertTriangle }
+> = {
   bloquant: {
     rang: 0,
     label: 'Bloquant',
@@ -66,35 +55,60 @@ const GRAVITE: Record<Finding['severity'], { rang: number; label: string; tone: 
 interface RecipeReviewProps {
   /** Rend la recette en texte — la même que celle qu'on exporte. */
   buildText: () => string;
+  data?: unknown;
   className?: string;
 }
 
-export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, className = '' }) => {
+export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, className = '' }) => {
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const text = buildText();
+  const snapshot = JSON.stringify({ recette: text, fiche: data });
+  const request = useRef(0);
+  useEffect(() => {
+    request.current += 1;
+    setReview(null);
+    setError(null);
+    setBusy(false);
+    return () => {
+      request.current += 1;
+    };
+  }, [snapshot]);
 
   const analyser = async () => {
+    const id = ++request.current;
     setBusy(true);
     setError(null);
     setReview(null);
 
-    const res = await AiClient.run<Review>({
-      task: 'reviewRecipe',
-      tier: 'max',
-      context: { recette: buildText() }
-    });
+    try {
+      const res = await AiClient.run<Review>({
+        task: 'reviewRecipe',
+        tier: 'max',
+        context: JSON.parse(snapshot)
+      });
 
-    setBusy(false);
-    if (!res.ok || !res.data) {
-      setError(res.error ?? 'Analyse impossible.');
-      return;
+      if (request.current !== id) return;
+      if (!res.ok || !res.data) {
+        setError(res.error ?? 'Analyse impossible.');
+        return;
+      }
+      if (!Array.isArray(res.data.findings)) {
+        setError('Réponse incomplète. Relance la relecture.');
+        return;
+      }
+      setReview(res.data);
+    } catch {
+      if (request.current === id) setError('Analyse interrompue. Tu peux réessayer.');
+    } finally {
+      if (request.current === id) setBusy(false);
     }
-    setReview(res.data);
   };
 
   const findings = [...(review?.findings ?? [])].sort(
-    (a, b) => GRAVITE[a.severity].rang - GRAVITE[b.severity].rang
+    (a, b) =>
+      (GRAVITE[a.severity] ?? GRAVITE.detail).rang - (GRAVITE[b.severity] ?? GRAVITE.detail).rang
   );
 
   return (

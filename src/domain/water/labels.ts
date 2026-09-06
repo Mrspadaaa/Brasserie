@@ -69,11 +69,11 @@ export const ION_SYMBOL_SHORT: Record<keyof WaterIons, string> = {
  * passé 30. Le sulfate et le chlorure, eux, renvoient au curseur.
  */
 export const ION_ROLE: Record<keyof WaterIons, string> = {
-  ca: 'levure, pH — mini 40',
-  mg: 'nutriment — amer > 30',
-  na: 'se goûte > 150',
-  so4: 'sec — avec le Cl',
-  cl: 'rond — avec le SO₄',
+  ca: 'pH, clarification',
+  mg: 'nutriment, aussi dans le malt',
+  na: 'rondeur, salinité',
+  so4: 'soutient la finale sèche',
+  cl: 'soutient la rondeur',
   hco3: 'remonte le pH'
 };
 
@@ -121,4 +121,3 @@ export function radarScaleMax(values: number[]): number {
    */
   return Math.min(2000, Math.max(100, Math.ceil(plus / 50) * 50));
 }
-

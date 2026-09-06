@@ -529,6 +529,37 @@ export const StorageService = {
     );
   },
 
+  /** Persist accepted technical facts without replacing quantities or other stock fields. */
+  learnIngredient(name: string, facts: Partial<StockItem>) {
+    const key = name.trim().toLocaleLowerCase('fr').replace(/\s+/g, ' ');
+    if (!key) return;
+    const item = this.getStocks().rawMaterials.find(s =>
+      s.name.trim().toLocaleLowerCase('fr').replace(/\s+/g, ' ') === key &&
+      (!facts.category || s.category.toLocaleLowerCase('fr') === facts.category.toLocaleLowerCase('fr')));
+    const fields: Array<keyof StockItem> = ['colorEbc', 'potentialPpg', 'alphaPct', 'yeastLab',
+      'yeastStrain', 'yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC'];
+    const patch: Partial<StockItem> = {};
+    for (const field of fields) {
+      const value = facts[field];
+      if (value == null || value === '' || (typeof value === 'number' && !Number.isFinite(value))) continue;
+      const missing = item?.[field] == null || item[field] === '' ||
+        (item[field] === 0 && ['potentialPpg', 'alphaPct', 'yeastAttenuationPct'].includes(field));
+      if (!missing) continue;
+      (patch as Record<string, unknown>)[field] = value;
+    }
+    if (!Object.keys(patch).length) return;
+    if (facts.technicalSource) patch.technicalSource = facts.technicalSource;
+    if (item) {
+      FirestoreRepo.put('stockItems', item.ref, patch, { merge: true });
+    } else if (['Malt', 'Houblon', 'Levure'].includes(facts.category)) {
+      // Stable key prevents duplicate catalogue entries while the Firestore snapshot catches up.
+      const ref = `FICHE-${encodeURIComponent(facts.category + ':' + key)}`;
+      FirestoreRepo.put('stockItems', ref, { id: ref, ref, name: name.trim(), category: facts.category,
+        unit: facts.category === 'Levure' ? 'sachet' : facts.category === 'Houblon' ? 'g' : 'kg',
+        currentStock: 0, minStock: 0, reorder: false, kind: 'rawMaterials', ...patch }, { merge: true });
+    }
+  },
+
   deleteStockItem(type: 'rawMaterials' | 'cleaning', ref: string) {
     const target = this.getStocks()[type].find((s) => s.ref === ref);
     FirestoreRepo.remove('stockItems', ref);

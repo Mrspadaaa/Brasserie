@@ -17,7 +17,14 @@ import { WaterSource } from '../../src/types';
 afterEach(cleanup);
 
 const FRIBOURG: WaterSource = {
-  id: 'fribourg', name: 'Fribourg', ca: 85, mg: 14, na: 8, so4: 28, cl: 22, hco3: 250
+  id: 'fribourg',
+  name: 'Fribourg',
+  ca: 85,
+  mg: 14,
+  na: 8,
+  so4: 28,
+  cl: 22,
+  hco3: 250
 };
 
 const BASE: WaterState = {
@@ -64,9 +71,9 @@ const clic = (nom: string | RegExp) => fireEvent.click(screen.getByRole('button'
 
 /** La dose d'acide affichée dans la rangée d'acide, côté empâtage ou rinçage. */
 const doseAcide = (cote: 'empâtage' | 'rinçage'): number => {
-  const champ = screen.queryByLabelText(new RegExp(`à l’${cote}, en |au ${cote}, en `)) as
-    | HTMLInputElement
-    | null;
+  const champ = screen.queryByLabelText(
+    new RegExp(`à l’${cote}, en |au ${cote}, en `)
+  ) as HTMLInputElement | null;
   if (!champ) return NaN;
   return parseFloat((champ.value || '0').replace(',', '.'));
 };
@@ -183,62 +190,35 @@ describe('La Gose — le sel fait la recette', () => {
   });
 });
 
-describe('L’axe alcalinité dit la même chose que le panneau', () => {
-  /*
-   * ⚠️ LE DÉFAUT SIGNALÉ, FIXÉ À L'ÉCRAN.
-   *
-   * Sur une Gose, l'écran affichait en même temps :
-   *   panneau  « Après l'acide : −15 ppm — dans la cible. »
-   *   toile    « HCO₃⁻ éq. 45, cible 0–40 »          en ambre
-   *
-   * Deux verdicts contraires sur l'alcalinité de la même eau. Ce test lit les
-   * DEUX et exige qu'ils s'accordent : si l'AR est dans sa fenêtre, l'axe de
-   * l'alcalinité ne doit pas être hors de la sienne.
-   */
-  const lireAxe = (): { valeur: number; min: number; max: number } | null => {
-    const svg = document.querySelector('svg[role=img]');
-    const texte = svg?.getAttribute('aria-label') ?? '';
-    const m = texte.match(/Alcalinité[^)]*\)\s*([\d.]+) ppm pour (-?[\d.]+) à (-?[\d.]+)/);
-    return m ? { valeur: +m[1], min: +m[2], max: +m[3] } : null;
-  };
-
-  const lirePanneau = (): { ra: number; min: number; max: number } | null => {
-    const t = document.body.textContent ?? '';
-    const cible = t.match(/cible (-?\d+) à (-?\d+) ppm/);
-    const apres = t.match(/Après l’acide\s*:\s*(-?\d+) ppm/);
-    return cible && apres ? { ra: +apres[1], min: +cible[1], max: +cible[2] } : null;
-  };
-
+describe('L’alcalinité se juge à la maische, pas sur une cible mobile de style', () => {
   for (const [nom, over] of [
-    ['Gose sur eau du réseau', {}],
-    ['Gose depuis l’osmosée', { diRatioPct: 100 }],
+    ['Gose sur réseau', {}],
+    ['Gose sur osmosée', { diRatioPct: 100 }],
     ['Gose sans rinçage', { spargeWaterL: 0 }]
   ] as Array<[string, Partial<WaterState>]>) {
-    it(`⚠️ ${nom} : les deux verdicts s’accordent`, () => {
+    it(nom, () => {
       monter(over);
       fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
-
-      const axe = lireAxe();
-      expect(axe).not.toBeNull();
-
-      const panneau = lirePanneau();
-      if (panneau && panneau.ra >= panneau.min && panneau.ra <= panneau.max) {
-        // L'AR est dans sa fenêtre : l'axe doit l'être aussi.
-        expect(axe!.valeur).toBeGreaterThanOrEqual(axe!.min - 1);
-        expect(axe!.valeur).toBeLessThanOrEqual(axe!.max + 1);
-      }
+      const label = screen.getByRole('img', { name: /Profil ionique/ }).getAttribute('aria-label');
+      expect(label).toMatch(
+        /Alcalinité[^)]*\)\s*[\d.]+ ppm pour [\d.]+ à [\d.]+ \(repère indicatif ; dosage selon le pH d’empâtage\)/
+      );
+      expect(document.body.textContent).toMatch(/Après l’acide|rien à corriger/);
+      expect(document.body.textContent).toMatch(/cible -?\d+ à -?\d+ ppm/);
     });
   }
 
-  /* La fenêtre affichée dépend du CALCIUM : ce n'est plus celle du profil. */
-  it('⚠️ la fenêtre de l’axe suit l’eau, pas le guide de style', () => {
-    monter();
-    const dure = lireAxe();
-    cleanup();
-    monter({ diRatioPct: 100 }); // presque plus de calcium
-    const douce = lireAxe();
-    expect(dure).not.toBeNull();
-    expect(douce).not.toBeNull();
-    expect(dure!.max).toBeGreaterThan(douce!.max);
+  it('la mesure de bicarbonate réagit toujours à l’acide', () => {
+    monter({ acidOverride: { mash: 0, sparge: 0 } });
+    const mesure = () =>
+      Number(
+        screen
+          .getByRole('img', { name: /Profil ionique/ })
+          .getAttribute('aria-label')!
+          .match(/Alcalinité[^)]*\)\s*([\d.]+) ppm/)?.[1]
+      );
+    const avant = mesure();
+    fireEvent.change(screen.getByLabelText(/à l’empâtage, en /), { target: { value: '4' } });
+    expect(mesure()).toBeLessThan(avant);
   });
 });

@@ -151,6 +151,7 @@ type View = 'recette' | 'assistant' | 'brassage' | 'eau';
 export const BrewPreview: React.FC = () => {
   const initialView = (new URLSearchParams(location.search).get('view') as View) || 'recette';
   const [view, setView] = useState<View>(initialView);
+  const [previewRecipe, setPreviewRecipe] = useState(NEIPA);
   const [batch, setBatch] = useState(BATCH);
   const [waterSource, setWaterSource] = useState<WaterSource>(SAMPLE_WATER);
   const [waterState, setWaterState] = useState<WaterState>({
@@ -221,7 +222,7 @@ export const BrewPreview: React.FC = () => {
 
       {view === 'recette' && (
         <RecipePage
-          recipe={NEIPA}
+          recipe={previewRecipe}
           batches={[{ ...batch, og: '1.058', status: 'fermentation' }]}
           config={CONFIG}
           onClose={() => log('Fermeture demandée')}
@@ -235,7 +236,7 @@ export const BrewPreview: React.FC = () => {
 
       {view === 'assistant' && (
         <BrewWizard
-          seed={{ recipe: NEIPA }}
+          seed={{ recipe: previewRecipe }}
           stockItems={STOCK}
           config={CONFIG}
           knownStyles={['NEIPA', 'Stout', 'Saison', 'Pilsner']}
@@ -269,6 +270,7 @@ export const BrewPreview: React.FC = () => {
           }}
           onSaveWaterSource={(w) => log(`Analyse « ${w.name} » enregistrée.`)}
           onSave={(r, brew) => {
+            setPreviewRecipe(r);
             log(`Enregistré : ${r.name} · ${r.hops.length} houblons · ${brew ? 'brassin lancé' : 'recette seule'}`);
             setView(brew ? 'brassage' : 'recette');
           }}
@@ -279,6 +281,7 @@ export const BrewPreview: React.FC = () => {
         <BrewDayPage
           batch={batch}
           config={CONFIG}
+          stockItems={STOCK}
           onClose={() => setView('recette')}
           onSave={(b) => setBatch(b)}
           onFinish={(b) => {

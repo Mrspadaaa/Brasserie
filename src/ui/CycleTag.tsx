@@ -65,7 +65,7 @@ export function CycleTag<T extends string>({
                     tone ? tone(value) : 'border-cave-700 text-cave-300'
                   } ${className}`}
     >
-      {label(value)}
+      <span className="truncate">{label(value)}</span>
       {/*
         Le chevron de rotation : c'est lui qui distingue une pastille qu'on
         appuie d'une étiquette qu'on lit. Deux traits, pas une icône importée —

@@ -16,12 +16,23 @@ export type Route =
   | { view: 'tabs' }
   | { view: 'recipe'; recipeId: string }
   | { view: 'brewday'; batchId: string }
-  | { view: 'wizard'; recipeId?: string; title?: string; description?: string; duplicate?: boolean };
+  | {
+      view: 'wizard';
+      recipeId?: string;
+      title?: string;
+      description?: string;
+      duplicate?: boolean;
+    };
 
 const MARKER = 'laffinee-page';
 
 export function useFullScreenRoute() {
-  const [route, setRoute] = useState<Route>({ view: 'tabs' });
+  const [route, setRoute] = useState<Route>(() => {
+    const batchId = new URLSearchParams(window.location.search).get('brewday');
+    return batchId && /^[\w-]{1,100}$/.test(batchId)
+      ? { view: 'brewday', batchId }
+      : { view: 'tabs' };
+  });
   // Compte les entrées poussées par l'application, pour ne dépiler que les
   // nôtres — sinon fermer une page ferait reculer dans l'historique du site.
   const pushed = useRef(0);
@@ -38,6 +49,9 @@ export function useFullScreenRoute() {
       // qu'il n'y ait qu'un seul chemin de fermeture.
       window.history.back();
     } else {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('brewday');
+      window.history.replaceState({}, '', url);
       setRoute({ view: 'tabs' });
     }
   }, []);

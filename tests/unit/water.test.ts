@@ -330,8 +330,8 @@ describe('Acidification', () => {
 
 describe('Rapport sulfate / chlorure', () => {
   it('interprète le rapport en bouche', () => {
-    expect(sulfateChlorideRatio({ ...FRIBOURG, so4: 300, cl: 60 }).label).toMatch(/houblonn/i);
-    expect(sulfateChlorideRatio({ ...FRIBOURG, so4: 100, cl: 200 }).label).toMatch(/malt/i);
+    expect(sulfateChlorideRatio({ ...FRIBOURG, so4: 300, cl: 60 }).label).toMatch(/sèche/i);
+    expect(sulfateChlorideRatio({ ...FRIBOURG, so4: 100, cl: 200 }).label).toMatch(/rond/i);
   });
 
   it('sans chlorure, le dit franchement au lieu de diviser par zéro', () => {
@@ -648,7 +648,7 @@ describe('Fourchettes de style', () => {
     expect(styleWaterForName('NEIPA Tropicale').code).toBe('21C');
     expect(styleWaterForName('Milk Stout #2').code).toBe('16A');
     expect(styleWaterForName('Pilsner maison').code).toBe('05D');
-    expect(styleWaterForName('Gose au sel de mer').code).toBe('27');
+    expect(styleWaterForName('Gose au sel de mer').code).toBe('23G');
   });
 
   it('un style inconnu retombe sur le profil neutre plutôt que de planter', () => {

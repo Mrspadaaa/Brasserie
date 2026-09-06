@@ -4,7 +4,7 @@ import { Units } from '../services/units';
 import { BrewingMath } from '../services/brewingMath';
 import { computeBeerColor, missingColorData } from '../domain/beerColor';
 import { HOP_STAGE, groupByStage, describeMoment, normalizeHop } from '../domain/hopStage';
-import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS } from '../domain/water';
+import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS, savedWaterDisplay } from '../domain/water';
 import { styleByCode, styleFromTargetIons } from '../domain/waterStyles';
 import { WaterRadar } from '../ui/WaterRadar';
 import { PHASE_LABEL } from '../domain/brewPrograms';
@@ -83,6 +83,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onOpenBatch
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
 
   const brewhouse =
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -105,12 +106,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const points = useMemo(
     () =>
-      BrewingMath.extractPoints(fermentables, recipe.volumeL, brewhouse?.efficiencyPct ?? 75),
-    [fermentables, recipe.volumeL, brewhouse]
+      BrewingMath.extractPoints(fermentables, recipe.volumeL, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75),
+    [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct]
   );
   const ogPredicted = useMemo(
-    () => BrewingMath.calculateOg(fermentables, recipe.volumeL, brewhouse?.efficiencyPct ?? 75),
-    [fermentables, recipe.volumeL, brewhouse]
+    () => BrewingMath.calculateOg(fermentables, recipe.volumeL, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75),
+    [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct]
   );
 
   const og = recipe.ogTarget || ogPredicted || 0;
@@ -266,7 +267,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       <Section
         title="Grain"
         hint={`${Units.formatDual(totalGrist, 'kg')} au total · ${
-          brewhouse ? `${brewhouse.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
+          (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${recipe.efficiencyPct ?? brewhouse?.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
         }`}
       >
         {grains.length === 0 ? (
@@ -522,10 +523,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               Un plan enregistré avant cette version ne porte pas les deux
               eaux : on n'affiche alors rien plutôt qu'une toile fausse.
             */}
-            {recipe.waterPlan.wortIons && recipe.waterPlan.startIons && (
+            {waterDisplay && (
               <WaterRadar
-                start={recipe.waterPlan.startIons}
-                achieved={recipe.waterPlan.wortIons}
+                start={waterDisplay.start}
+                achieved={waterDisplay.achieved}
                 style={
                   recipe.waterPlan.targetIons
                     ? styleFromTargetIons(
@@ -737,7 +738,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               const measured = b.og ? parseFloat(b.og) : null;
               const gap =
                 measured && og > 1
-                  ? BrewingMath.brewEfficiency(og, measured, brewhouse?.efficiencyPct ?? 75)
+                  ? BrewingMath.brewEfficiency(og, measured, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75)
                   : null;
               return (
                 <li key={b.id}>

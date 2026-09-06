@@ -35,7 +35,7 @@ import { Units } from '../services/units';
  */
 export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   const steps: BrewDayStep[] = [];
-  const boilMin = recipe.boilMin ?? 60;
+  const boilMin = Math.max(0, recipe.boilMin ?? 60);
   const mash = recipe.mash;
 
   // Le concassage ne concerne que le GRAIN : le sucre et le lactose ne se
@@ -108,7 +108,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       : recipe.water
         ? `${recipe.water.diRatioPct} % d’osmosée · gypse ${recipe.water.salts.gypseG} g · CaCl₂ ${recipe.water.salts.cacl2G} g · acide ${recipe.water.salts.acidLacticMl} mL`
         : 'Préparer et traiter l’eau de brassage.',
-    durationMin: 15
+    durationMin: 0
   });
 
   steps.push({
@@ -120,7 +120,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
             .map((m) => `${m.name} ${Units.format(m.weightKg, 'kg')}`)
             .join(' · ')}`
         : undefined,
-    durationMin: 15
+    durationMin: 0
   });
 
   (mash?.steps ?? [{ name: 'Empâtage', tempC: 67, durationMin: 60 }]).forEach((s, i) => {
@@ -143,12 +143,22 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     });
   }
 
+  const byStage = groupByStage(recipe.hops ?? []);
+  const firstWort = byStage.find((g) => g.stage === 'firstWort')?.hops ?? [];
+  const boilHops = byStage.find((g) => g.stage === 'boil')?.hops ?? [];
+  const whirlpool = byStage.find((g) => g.stage === 'whirlpool')?.hops ?? [];
+  if (firstWort.length) steps.push({
+    id: 'fwh', label: HOP_STAGE.firstWort.label,
+    detail: `Dans la cuve, avant de recueillir le premier moût : ${firstWort.map((h) => `${h.name} ${Units.format(h.weightG, 'g')}`).join(' · ')}`,
+    durationMin: 0, hopNames: firstWort.map((h) => h.name)
+  });
+
   if (mash?.spargeType && mash.spargeType !== 'none') {
     steps.push({
       id: 'sparge',
       label: mash.spargeType === 'fly' ? 'Rinçage continu' : 'Rinçage par bacs',
       detail: plan?.spargeWaterL ? `${plan.spargeWaterL} L d’eau de rinçage` : undefined,
-      durationMin: mash.spargeType === 'fly' ? 45 : 20,
+      durationMin: 0,
       tempC: mash.spargeTempC
     });
   }
@@ -179,20 +189,6 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   }
 
   // --- Ébullition, découpée aux ajouts de houblon ---------------------------
-  const byStage = groupByStage(recipe.hops ?? []);
-  const firstWort = byStage.find((g) => g.stage === 'firstWort')?.hops ?? [];
-  const boilHops = byStage.find((g) => g.stage === 'boil')?.hops ?? [];
-  const whirlpool = byStage.find((g) => g.stage === 'whirlpool')?.hops ?? [];
-
-  if (firstWort.length > 0) {
-    steps.push({
-      id: 'fwh',
-      label: HOP_STAGE.firstWort.label,
-      detail: firstWort.map((h) => `${h.name} ${Units.format(h.weightG, 'g')}`).join(' · '),
-      durationMin: 0,
-      hopNames: firstWort.map((h) => h.name)
-    });
-  }
 
   /*
    * Les houblons d'ébullition se comptent EN MINUTES AVANT LA FIN. On les
@@ -203,13 +199,15 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
    */
   const additions = new Map<number, string[]>();
   boilHops.forEach((h) => {
-    const elapsed = Math.max(0, boilMin - (h.timeMin ?? 0));
+    const elapsed = Math.min(boilMin, Math.max(0, boilMin - (h.timeMin ?? 0)));
     const list = additions.get(elapsed) ?? [];
     list.push(`${h.name} ${Units.format(h.weightG, 'g')} (${describeMoment(h)})`);
     additions.set(elapsed, list);
   });
 
-  const marks = [...additions.keys()].sort((a, b) => a - b);
+  const boilAdditions = (recipe.fermentables ?? []).filter((f) => f.use === 'ebullition' && f.weightKg > 0);
+  const sugarMark = Math.max(0, boilMin - 10);
+  const marks = [...new Set([...additions.keys(), ...(boilAdditions.length ? [sugarMark] : [])])].sort((a, b) => a - b);
   let cursor = 0;
 
   marks.forEach((mark, i) => {
@@ -222,16 +220,23 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
           minutesLeft === 0
             ? 'Jusqu’à la fin de l’ébullition.'
             : `Jusqu’à l’ajout suivant, à ${minutesLeft} min de la fin.`,
-        durationMin: mark - cursor
+        durationMin: mark - cursor,
+        boilElapsedMin: cursor
       });
       cursor = mark;
     }
-    steps.push({
+    if (additions.has(mark)) steps.push({
       id: `hop-${mark}`,
       label: `Houblon à ${boilMin - mark} min`,
       detail: (additions.get(mark) ?? []).join(' · '),
       durationMin: 0,
-      hopNames: additions.get(mark)
+      hopNames: additions.get(mark),
+      boilElapsedMin: mark
+    });
+    if (boilAdditions.length && mark === sugarMark) steps.push({
+      id: 'sucres', label: `Sucres — ${boilMin - mark} dernières minutes`,
+      detail: `${boilAdditions.map((f) => `${f.name} ${Units.format(f.weightKg, 'kg')}`).join(' · ')} — baisser le feu et remuer pour dissoudre.`,
+      durationMin: 0, boilElapsedMin: mark
     });
   });
 
@@ -239,30 +244,8 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: 'boil-fin',
       label: cursor === 0 ? 'Ébullition' : 'Fin d’ébullition',
-      durationMin: boilMin - cursor
-    });
-  }
-
-  /*
-   * ⚠️ LES SUCRES DE L'ÉBULLITION — ils n'apparaissaient NULLE PART.
-   *
-   * Le concassage ne liste que le grain, et c'est juste : le lactose ne se
-   * moud pas. Mais rien ensuite ne disait de le verser. Sur la Milk Stout de
-   * la brasserie, le déroulé complet de la journée ne mentionnait pas une
-   * seule fois les 500 g de lactose — c'est-à-dire ce qui fait la bière.
-   */
-  const boilAdditions = (recipe.fermentables ?? []).filter(
-    (f) => f.use === 'ebullition' && f.weightKg > 0
-  );
-
-  if (boilAdditions.length > 0) {
-    steps.push({
-      id: 'sucres',
-      label: 'Sucres et ajouts — 10 dernières minutes',
-      detail: `${boilAdditions
-        .map((f) => `${f.name} ${Units.format(f.weightKg, 'kg')}`)
-        .join(' · ')} — feu coupé ou baissé le temps de dissoudre, sinon ça caramélise au fond.`,
-      durationMin: 0
+      durationMin: boilMin - cursor,
+      boilElapsedMin: cursor
     });
   }
 
@@ -286,7 +269,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     detail: recipe.yeast?.pitchTempC
       ? `Descendre à ${recipe.yeast.pitchTempC} °C avant d’ensemencer.`
       : 'Descendre à la température d’ensemencement.',
-    durationMin: 30,
+    durationMin: 0,
     tempC: recipe.yeast?.pitchTempC
   });
 
@@ -310,7 +293,7 @@ export function remainingMs(step: BrewDayStep, now: number): number | null {
   // `== null` et non `!startedAt` : une étape démarrée est reconnue à ce que
   // l'horodatage EXISTE, pas à ce qu'il soit non nul.
   if (step.startedAt == null || step.durationMin <= 0) return null;
-  return step.startedAt + step.durationMin * 60_000 - now;
+  return step.startedAt + step.durationMin * 60_000 - (step.pausedAt ?? now);
 }
 
 /** « 12:04 », « −00:38 » quand l'étape est dépassée. */

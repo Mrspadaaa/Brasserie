@@ -92,29 +92,27 @@ export function rebalanceRatio(target: WaterIons, ratio: number): WaterIons {
   };
 }
 
-/** Ratio sulfate/chlorure, et ce qu'il annonce en bouche. */
+/** Orientation, pas une mesure d’IBU ou de sucre. Bru’n Water, Water Knowledge §4.4. */
+export function ratioLabel(ratio: number): string {
+  if (ratio >= 2) return 'Finale plus sèche';
+  if (ratio > 1.2) return 'Côté sec';
+  if (ratio >= 0.8) return 'SO₄ et Cl proches';
+  return 'Côté rond';
+}
+
+/** Rapport de l’eau de traitement, à interpréter avec les concentrations. */
 export function sulfateChlorideRatio(ions: WaterIons): {
   ratio: number | null;
   label: string;
 } {
   if (ions.cl <= 0) {
-    return { ratio: null, label: 'aucun chlorure — amertume nue' };
+    return { ratio: null, label: ions.so4 > 0 ? 'Sans chlorure' : 'Eau très peu minéralisée' };
   }
   const ratio = Math.round((ions.so4 / ions.cl) * 100) / 100;
-  const label =
-    ratio >= 3
-      ? 'très houblonné, amertume sèche'
-      : ratio >= 1.5
-        ? 'houblonné'
-        : ratio >= 0.8
-          ? 'équilibré'
-          : ratio >= 0.4
-            ? 'malté, rond'
-            : 'très malté, moelleux';
+  const label = ions.cl < 25 && ions.so4 < 25 ? 'Eau très peu minéralisée' : ratioLabel(ratio);
   return { ratio, label };
 }
 
 export function round1(n: number): number {
   return Math.round(n * 10) / 10;
 }
-

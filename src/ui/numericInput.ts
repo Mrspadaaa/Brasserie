@@ -60,8 +60,9 @@ interface DraftOptions {
 export function useNumericDraft(
   value: number | undefined,
   onChange: (next: any) => void,
-  { emptyValue = 0 }: DraftOptions = {}
+  options: DraftOptions = {}
 ) {
+  const emptyValue = 'emptyValue' in options ? options.emptyValue : 0;
   const [draft, setDraft] = useState(() => formatDecimal(value));
 
   /*

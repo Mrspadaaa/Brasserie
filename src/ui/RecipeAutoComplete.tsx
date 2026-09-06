@@ -1,8 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Sparkles, Loader2, AlertTriangle, Check } from 'lucide-react';
-import { Fermentable, HopIngredient, YeastSpec } from '../types';
+import { Fermentable, HopIngredient, YeastSpec, StockItem } from '../types';
 import { AiClient } from '../services/aiClient';
-import { IngredientFacts, IngredientKind } from './AiAssist';
+import {
+  IngredientFacts,
+  IngredientGap,
+  LearnIngredient,
+  ingredientGaps,
+  ingredientKey,
+  applyMaltFacts,
+  applyHopFacts,
+  applyYeastFacts,
+  factsForStock,
+  factsFromStock,
+  sanitizeFacts,
+  fillsGap
+} from '../domain/ingredientFacts';
 
 /**
  * Compléter TOUTE la fiche d'un coup, avec l'IA.
@@ -27,19 +40,9 @@ import { IngredientFacts, IngredientKind } from './AiAssist';
  * variété.
  */
 
-/** Ce qui manque à un ingrédient, et ce qu'on ira chercher pour lui. */
-interface Gap {
-  key: string;
-  kind: IngredientKind;
-  name: string;
-  /** Libellés des champs vides, pour la consigne et pour l'affichage. */
-  missing: string[];
-}
-
-interface Found extends Gap {
+interface Found extends IngredientGap {
   facts: IngredientFacts;
 }
-
 interface RecipeAutoCompleteProps {
   fermentables: Fermentable[];
   onFermentables: (v: Fermentable[]) => void;
@@ -47,44 +50,8 @@ interface RecipeAutoCompleteProps {
   onHops: (v: HopIngredient[]) => void;
   yeast: YeastSpec;
   onYeast: (v: YeastSpec) => void;
-}
-
-/**
- * Ce qui manque, ingrédient par ingrédient.
- *
- * Les grains sans couleur rendent l'EBC incalculable ; sans potentiel, c'est
- * l'OG. Un houblon d'ébullition sans alpha ne donne pas d'IBU — mais un houblon
- * à cru n'amérise pas, on ne lui réclame donc rien.
- */
-function findGaps(
-  fermentables: Fermentable[],
-  hops: HopIngredient[],
-  yeast: YeastSpec
-): Gap[] {
-  const gaps: Gap[] = [];
-
-  fermentables.forEach((f, i) => {
-    if (!f.name?.trim() || f.kind !== 'grain') return;
-    const missing: string[] = [];
-    if (f.colorEbc == null) missing.push('couleur EBC');
-    if (f.potentialPpg == null) missing.push('potentiel PPG');
-    if (missing.length) gaps.push({ key: `f${i}`, kind: 'malt', name: f.name, missing });
-  });
-
-  hops.forEach((h, i) => {
-    if (!h.name?.trim() || h.stage === 'dryHop') return;
-    if (!h.alpha) gaps.push({ key: `h${i}`, kind: 'houblon', name: h.name, missing: ['acides alpha'] });
-  });
-
-  if (yeast.name?.trim()) {
-    const missing: string[] = [];
-    if (!yeast.attenuationPct) missing.push('atténuation');
-    if (yeast.fermTempMinC == null) missing.push('plage de température');
-    if (!yeast.lab) missing.push('laboratoire');
-    if (missing.length) gaps.push({ key: 'y', kind: 'levure', name: yeast.name, missing });
-  }
-
-  return gaps;
+  onLearnIngredient?: LearnIngredient;
+  stockItems?: StockItem[];
 }
 
 export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
@@ -93,7 +60,9 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   hops,
   onHops,
   yeast,
-  onYeast
+  onYeast,
+  onLearnIngredient,
+  stockItems = []
 }) => {
   const [busy, setBusy] = useState(false);
   const [found, setFound] = useState<Found[] | null>(null);
@@ -101,92 +70,116 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const gaps = useMemo(
-    () => findGaps(fermentables, hops, yeast),
+    () => ingredientGaps(fermentables, hops, yeast),
     [fermentables, hops, yeast]
   );
 
+  const request = useRef(0);
+  useEffect(
+    () => () => {
+      request.current += 1;
+    },
+    []
+  );
+
   const search = async () => {
+    const id = ++request.current;
     setBusy(true);
     setError(null);
     setFound(null);
     setMissed([]);
-
-    /*
-     * En parallèle : onze recherches à la file prendraient une minute, et le
-     * brasseur regarderait tourner une roue. Elles sont indépendantes, chacune
-     * ne concerne qu'un ingrédient.
-     */
-    const results = await Promise.all(
-      gaps.map(async (g) => {
-        const res = await AiClient.run<IngredientFacts>({
-          task: 'lookupIngredient',
-          tier: 'fast',
-          instruction: `${g.kind} : ${g.name.trim()}`,
-          context: { kind: g.kind, name: g.name.trim(), manquant: g.missing }
-        });
-        return { gap: g, res };
-      })
-    );
-
-    setBusy(false);
-
+    // Three requests at most at once; identical names share one lookup.
+    const queue = [...gaps];
     const ok: Found[] = [];
     const ko: string[] = [];
-    results.forEach(({ gap, res }) => {
-      if (res.ok && res.data?.found) ok.push({ ...gap, facts: res.data });
-      else ko.push(gap.name);
-    });
-
-    if (ok.length === 0) {
-      setError(
-        results.find((r) => !r.res.ok)?.res.error ??
-          'Rien de publié retrouvé pour ces ingrédients.'
+    let failure: string | undefined;
+    try {
+      await Promise.all(
+        Array.from({ length: Math.min(3, queue.length) }, async () => {
+          while (queue.length && request.current === id) {
+            const gap = queue.shift()!;
+            try {
+              const item = stockItems.find(
+                (s) =>
+                  ingredientKey(gap.kind, s.name) === gap.key &&
+                  s.category.toLocaleLowerCase('fr') === gap.kind
+              );
+              const cached = item && factsFromStock(item);
+              const remaining =
+                cached &&
+                ingredientGaps(
+                  gap.kind === 'malt'
+                    ? fermentables
+                        .filter((f) => ingredientKey('malt', f.name) === gap.key)
+                        .map((f) => applyMaltFacts(f, cached))
+                    : [],
+                  gap.kind === 'houblon'
+                    ? hops
+                        .filter((h) => ingredientKey('houblon', h.name) === gap.key)
+                        .map((h) => applyHopFacts(h, cached))
+                    : [],
+                  gap.kind === 'levure'
+                    ? applyYeastFacts(yeast, cached)
+                    : ({ name: '' } as YeastSpec)
+                );
+              if (cached && remaining?.length === 0) {
+                ok.push({ ...gap, facts: cached });
+                continue;
+              }
+              const res = await AiClient.run<IngredientFacts>({
+                task: 'lookupIngredient',
+                tier: 'fast',
+                instruction: gap.kind + ' : ' + gap.name.trim(),
+                context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing }
+              });
+              if (res.ok && res.data?.found && fillsGap(gap, res.data)) {
+                ok.push({ ...gap, facts: sanitizeFacts(res.data) });
+              } else {
+                ko.push(gap.name);
+                failure ||= res.error;
+              }
+            } catch {
+              ko.push(gap.name);
+              failure = 'Recherche interrompue. Tu peux réessayer.';
+            }
+          }
+        })
       );
+      if (request.current !== id) return;
       setMissed(ko);
-      return;
+      if (ok.length) setFound(ok);
+      else setError(failure ?? 'Rien de publié retrouvé pour ces ingrédients.');
+    } finally {
+      if (request.current === id) setBusy(false);
     }
-    setFound(ok);
-    setMissed(ko);
   };
 
-  /** N'écrit que dans les cases restées vides. */
   const apply = () => {
     if (!found) return;
-
-    const nextFerms = [...fermentables];
-    const nextHops = [...hops];
-    let nextYeast = { ...yeast };
-
-    found.forEach((f) => {
-      if (f.key === 'y') {
-        nextYeast = {
-          ...nextYeast,
-          lab: nextYeast.lab ?? f.facts.lab,
-          strain: nextYeast.strain ?? f.facts.strain,
-          form: nextYeast.form ?? f.facts.form,
-          attenuationPct: nextYeast.attenuationPct ?? f.facts.attenuationPct,
-          fermTempMinC: nextYeast.fermTempMinC ?? f.facts.tempMinC,
-          fermTempMaxC: nextYeast.fermTempMaxC ?? f.facts.tempMaxC
-        };
-        return;
-      }
-      const i = parseInt(f.key.slice(1), 10);
-      if (f.key.startsWith('f') && nextFerms[i]) {
-        nextFerms[i] = {
-          ...nextFerms[i],
-          colorEbc: nextFerms[i].colorEbc ?? f.facts.colorEbc,
-          potentialPpg: nextFerms[i].potentialPpg ?? f.facts.potentialPpg
-        };
-      }
-      if (f.key.startsWith('h') && nextHops[i]) {
-        nextHops[i] = { ...nextHops[i], alpha: nextHops[i].alpha || (f.facts.alphaPct ?? 0) };
-      }
+    const byKey = new Map(found.map((f) => [f.key, f]));
+    const accepted = new Set<string>();
+    const nextFerms = fermentables.map((f) => {
+      const result = byKey.get(ingredientKey('malt', f.name));
+      if (!result || f.kind !== 'grain') return f;
+      accepted.add(result.key);
+      return applyMaltFacts(f, result.facts);
     });
-
+    const nextHops = hops.map((h) => {
+      const result = byKey.get(ingredientKey('houblon', h.name));
+      if (!result) return h;
+      accepted.add(result.key);
+      return applyHopFacts(h, result.facts);
+    });
+    const yeastResult = byKey.get(ingredientKey('levure', yeast.name));
+    if (yeastResult) accepted.add(yeastResult.key);
     onFermentables(nextFerms);
     onHops(nextHops);
-    onYeast(nextYeast);
+    onYeast(yeastResult ? applyYeastFacts(yeast, yeastResult.facts) : yeast);
+    found
+      .filter((f) => accepted.has(f.key))
+      .forEach((f) => onLearnIngredient?.(f.name, factsForStock(f.kind, f.facts)));
     setFound(null);
+    setError(null);
   };
 
   // Rien à compléter : le bouton n'a pas lieu d'être. C'est aussi le signal que
@@ -250,22 +243,34 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             {found.map((f) => (
               <li key={f.key} className="py-1.5">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-sm sm:text-base text-cave-100 truncate">{f.facts.name}</span>
+                  <span className="text-sm sm:text-base text-cave-100 truncate">
+                    {f.facts.name}
+                  </span>
                   <span className="reading text-xs sm:text-sm text-ebc-straw shrink-0">
                     {f.kind === 'malt' &&
                       [
-                        f.facts.colorEbc != null ? `${f.facts.colorEbc} EBC` : null,
-                        f.facts.potentialPpg != null ? `${f.facts.potentialPpg} PPG` : null
+                        f.missing.includes('couleur EBC') && f.facts.colorEbc != null
+                          ? `${f.facts.colorEbc} EBC`
+                          : null,
+                        f.missing.includes('potentiel PPG') && f.facts.potentialPpg != null
+                          ? `${f.facts.potentialPpg} PPG`
+                          : null
                       ]
                         .filter(Boolean)
                         .join(' · ')}
                     {f.kind === 'houblon' && f.facts.alphaPct != null && `${f.facts.alphaPct} % AA`}
                     {f.kind === 'levure' &&
                       [
-                        f.facts.attenuationPct != null ? `${f.facts.attenuationPct} %` : null,
-                        f.facts.tempMinC != null && f.facts.tempMaxC != null
-                          ? `${f.facts.tempMinC}–${f.facts.tempMaxC} °C`
-                          : null
+                        f.missing.includes('atténuation') && f.facts.attenuationPct != null
+                          ? `${f.facts.attenuationPct} %`
+                          : null,
+                        f.missing.includes('température minimale') && f.facts.tempMinC != null
+                          ? `mini ${f.facts.tempMinC} °C`
+                          : null,
+                        f.missing.includes('température maximale') && f.facts.tempMaxC != null
+                          ? `maxi ${f.facts.tempMaxC} °C`
+                          : null,
+                        f.missing.includes('laboratoire') ? f.facts.lab : null
                       ]
                         .filter(Boolean)
                         .join(' · ')}

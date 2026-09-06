@@ -62,6 +62,8 @@ export interface StockItem {
   /** Malt : potentiel d'extrait en PPG. Nécessaire à la prédiction de l'OG. */
   potentialPpg?: number;
 
+  technicalSource?: string;
+
   /** Levure : laboratoire, souche, forme, atténuation, fourchette de fermentation. */
   yeastLab?: string;
   yeastStrain?: string;
@@ -261,6 +263,11 @@ export type AcidId = 'lactique' | 'phosphorique' | 'maltAcidule';
  */
 export interface WaterPlan {
   sourceId: string;
+  /** Analysis used for this recipe; later source edits must not change it. */
+  sourceSnapshot?: WaterSource;
+  /** v2 stores weighted treatment water AFTER the retained acid doses. */
+  treatmentVersion?: 2;
+  acidOverride?: { mash?: number; sparge?: number };
   /** Part d'eau osmosée mélangée à la source, en %. Vaut pour l'EMPÂTAGE. */
   diRatioPct: number;
   /**
@@ -278,7 +285,7 @@ export interface WaterPlan {
    * Cible CHIFFRÉE, quand la recette donne son eau en ppm plutôt qu'un style.
    * Présente, elle prime sur `targetProfileId`.
    */
-  targetIons?: WaterIons;
+  targetIons?: Partial<WaterIons>;
   targetName?: string;
   /**
    * L'eau de départ et le MOÛT obtenu, FIGÉS au plan.
@@ -377,6 +384,10 @@ export interface Recipe {
   abvTarget: number;
   ibuTarget?: number;
   carboTarget?: string;
+  /** Values supplied by the recipe author, distinct from calculated estimates. */
+  colorEbc?: number;
+  efficiencyPct?: number;
+  preBoilL?: number;
   /**
    * Tout ce qui apporte du sucre : grains, sucres, lactose, fruits, extraits.
    * Le nom a changé de `malts` parce qu'un malt n'est pas un sucre — et que
@@ -439,6 +450,21 @@ export interface BrewDayStep {
    */
   startedAt?: number;
   doneAt?: number;
+  pausedAt?: number;
+  /** Minutes écoulées depuis le début réel de l'ébullition. */
+  boilElapsedMin?: number;
+}
+
+export interface BrewDayReading {
+  id?: string;
+  at: number;
+  stepId?: string;
+  kind: 'volume' | 'densite' | 'ph' | 'temperature';
+  value: number;
+  unit: string;
+  note?: string;
+  /** pH mesuré sur un échantillon refroidi, pas dans le moût chaud. */
+  roomTemp?: boolean;
 }
 
 export interface BrewDayState {
@@ -448,13 +474,16 @@ export interface BrewDayState {
   startedAt?: number;
   finishedAt?: number;
   /** Relevés horodatés saisis pendant le brassage. */
-  readings?: Array<{
-    at: number;
-    kind: 'volume' | 'densite' | 'ph' | 'temperature';
-    value: number;
-    unit: string;
-    note?: string;
-  }>;
+  readings?: BrewDayReading[];
+  boilStartedAt?: number;
+  /** Ajustement du jour, sans réécrire la recette. */
+  boilDurationMin?: number;
+  boilFinishedAt?: number;
+  additions?: Record<string, { amount: number; doneAt?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
+  preparations?: Record<string, boolean>;
+  notes?: Array<{ id: string; at: number; stepId: string; text: string }>;
+  acidCorrections?: Array<{ id: string; at: number; stepId: string; readingAt: number; acid: AcidId; amount: number }>;
+  mashContext?: { waterL: number; gristKg: number; acid: AcidId };
 }
 
 // Le brassage dure une journée : c'est un ÉVÉNEMENT (qui déstocke et enregistre

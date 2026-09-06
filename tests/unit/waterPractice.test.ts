@@ -25,7 +25,7 @@ const OSMOSEE: WaterIons = { ca: 0, mg: 0, na: 0, so4: 0, cl: 0, hco3: 0 };
 /** Couleur typique de chaque style, en EBC. */
 const EBC: Record<string, number> = {
   '01A': 5, '05B': 7, '05D': 7, '04A': 8, '06C': 45, '08B': 60, '10A': 8, '11C': 20, '13C': 50,
-  '15B': 80, '16A': 70, '20C': 90, '18B': 14, '21A': 12, '21B': 70, '21C': 10, '23A': 6, '27': 6,
+  '15B': 80, '16A': 70, '20C': 90, '18B': 14, '21A': 12, '21B': 70, '21C': 10, '23A': 6, '23G': 6, '27': 6,
   '24A': 6, '24C': 16, '25B': 8, '26C': 9, '26D': 40, 'NA-BLONDE': 8, 'NA-IPA': 10, 'NA-WEISS': 8,
   'NA-STOUT': 70, 'NA-LAGER': 6, '—': 15
 };
@@ -74,7 +74,7 @@ describe('Ce qu’un brasseur verserait — tous les styles, deux eaux', () => {
 
       it(`${label} : le sodium reste sous le plafond, sans le frôler par du sel`, () => {
         expect(r.achievedWort.na).toBeLessThanOrEqual(style.ions.na.max + 2);
-        if ((r.doses.nacl ?? 0) > 0 && style.code !== '27') {
+        if ((r.doses.nacl ?? 0) > 0 && style.code !== '23G') {
           expect(r.achievedWort.na).toBeLessThan(style.ions.na.max);
         }
       });

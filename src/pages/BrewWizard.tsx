@@ -1,3 +1,5 @@
+import { MaltDetails } from '../ui/MaltDetails';
+import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { useEffect, useMemo, useState } from 'react';
 import { NumberInput } from '../ui/NumberInput';
 import {
@@ -13,13 +15,15 @@ import {
   TempStep,
   FermentationStep,
   SaltId,
+  WaterPlan,
   WaterSource,
   WaterIons
 } from '../types';
 import { Units } from '../services/units';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
-import { computeBeerColor, maltGrade } from '../domain/beerColor';
+import { computeBeerColor } from '../domain/beerColor';
 import { recipeToText } from '../domain/recipeText';
+import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import {
   MASH_PROGRAMS,
@@ -31,16 +35,9 @@ import {
 } from '../domain/brewPrograms';
 import {
   DEFAULT_WATER_SOURCE,
+  calculateWaterTreatment,
   splitDoses,
-  dilute,
-  waterFromPlan,
   targetRaForGrist,
-  raAcidTarget,
-  acidNeeded,
-  spargeAcidNeeded,
-  residualAlkalinity,
-  sulfateChlorideRatio,
-  SPARGE_TARGET_PH
 } from '../domain/water';
 import { styleWaterForName, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
 import { PageShell, Section } from './PageShell';
@@ -74,9 +71,20 @@ function mergeDoses(
   const out: Partial<Record<SaltId, number>> = {};
   new Set([...Object.keys(mash), ...Object.keys(sparge)]).forEach((k) => {
     const id = k as SaltId;
-    out[id] = Math.round(((mash[id] ?? 0) + (sparge[id] ?? 0)) * 10) / 10;
+    out[id] = (mash[id] ?? 0) + (sparge[id] ?? 0);
   });
   return out;
+}
+
+/** Standard allocations keep following the volumes; only a custom split is frozen. */
+function customSaltSplit(plan: Partial<WaterPlan>): WaterState['saltSplit'] {
+  const split = { mash: plan.mash ?? {}, sparge: plan.sparge ?? {} };
+  const normal = splitDoses(mergeDoses(split.mash, split.sparge), plan.mashWaterL ?? 0,
+    plan.spargeWaterL ?? 0, plan.allSaltsInMash !== false);
+  const same = (['mash', 'sparge'] as const).every(side =>
+    Object.keys(normal[side]).length === Object.keys(split[side]).length &&
+    Object.entries(split[side]).every(([k, g]) => Math.abs((normal[side][k] ?? 0) - g) < 1e-9));
+  return same ? undefined : split;
 }
 
 /**
@@ -305,6 +313,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   onSaveWaterSource
 }) => {
   const base = seed?.recipe;
+  const [details, setDetails] = useState<Partial<Recipe>>(base ?? {});
   const brewhouse =
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
 
@@ -380,7 +389,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
+  const [recipeWaterSource, setRecipeWaterSource] = useState<WaterSource | undefined>(base?.waterPlan?.sourceSnapshot);
   const waterSource =
+    recipeWaterSource ??
+    config.waterSources?.find((w) => w.id === base?.waterPlan?.sourceId) ??
     config.waterSources?.find((w) => w.id === config.activeWaterSourceId) ??
     config.waterSources?.[0] ??
     DEFAULT_WATER_SOURCE;
@@ -403,8 +415,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     doses: base?.waterPlan?.mash
       ? mergeDoses(base.waterPlan.mash, base.waterPlan.sparge)
       : {},
+    saltSplit: base?.waterPlan ? customSaltSplit(base.waterPlan) : undefined,
     disabled: base?.waterPlan?.disabled ?? [],
     acidId: base?.waterPlan?.acid?.id ?? 'lactique',
+    acidOverride: base?.waterPlan?.acidOverride ?? (base?.waterPlan?.treatmentVersion === 2
+      ? undefined : base?.waterPlan?.acid && { mash: base.waterPlan.acid.mash, sparge: base.waterPlan.acid.sparge }),
     mashWaterL: base?.waterPlan?.mashWaterL ?? 0,
     spargeWaterL: base?.waterPlan?.spargeWaterL ?? 0,
     allSaltsInMash: base?.waterPlan?.allSaltsInMash ?? true,
@@ -450,7 +465,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   // La couleur ne vient que du grain : le sucre clair n'en apporte pas.
   const color = useMemo(() => computeBeerColor(grains, volumeL), [grains, volumeL]);
 
-  const efficiency = brewhouse?.efficiencyPct ?? 75;
+  const efficiency = details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75;
+  // Preserve the author's stated targets until their calculation inputs change.
+  const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency]);
+  const [targetBasis, setTargetBasis] = useState(metricKey);
+  const keepTargets = metricKey === targetBasis;
   const points = useMemo(
     () => BrewingMath.extractPoints(fermentables, volumeL, efficiency),
     [fermentables, volumeL, efficiency]
@@ -557,58 +576,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * quels sels peser — il fallait remonter à l'étape 6 pour les relire.
    */
   const waterRecap = useMemo(() => {
-    const start = dilute(waterSource, water.diRatioPct);
-    // Le rinçage peut être coupé à l'osmosée indépendamment de la maische :
-    // son acide se calcule donc sur SA dilution, pas sur celle de l'empâtage.
     const spargeDi = water.spargeDiRatioPct ?? water.diRatioPct;
-    const startSparge = dilute(waterSource, spargeDi);
     const allSaltsInMash = water.allSaltsInMash !== false;
-    const w = waterFromPlan(
-      start,
-      water.doses,
-      water.mashWaterL,
-      water.spargeWaterL,
-      startSparge,
-      allSaltsInMash
-    );
-    /*
-     * ⚠️ La couleur ne suffit pas : deux bières de la même teinte n'ont pas la
-     * même acidité, et le malt acidulé est invisible à la couleur. La fenêtre
-     * ne peut être que RELÂCHÉE par la facture, jamais durcie — pas une goutte
-     * d'acide de plus qu'avant.
-     */
-    const band = targetRaForGrist(
-      color?.ebc ?? null,
-      grains,
-      totalGrist > 0 ? water.mashWaterL / totalGrist : 0
-    );
-    const mashAcid = acidNeeded(w.mash, water.mashWaterL, raAcidTarget(band), water.acidId);
-    const spargeAcid = spargeAcidNeeded(
-      w.sparge,
-      water.spargeWaterL,
-      water.acidId,
-      SPARGE_TARGET_PH,
-      waterSource.ph ?? 7.4
-    );
+    const band = targetRaForGrist(color?.ebc ?? null, grains,
+      totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
+    const treatment = calculateWaterTreatment(waterSource, water, band);
     const r1 = (n: number) => Math.round(n * 10) / 10;
-
-    /*
-     * Le MOÛT — les deux eaux réunies dans la cuve d'ébullition. C'est lui que
-     * la fourchette du style décrit, et lui que la toile dessine : la maische
-     * peut légitimement titrer plus fort quand tous les sels y sont versés.
-     */
-    const totalL = water.mashWaterL + water.spargeWaterL;
-    const wortIons = (() => {
-      if (totalL <= 0) return w.mash;
-      const out = {} as WaterIons;
-      (Object.keys(w.mash) as Array<keyof WaterIons>).forEach((k) => {
-        out[k] =
-          Math.round(
-            ((w.mash[k] * water.mashWaterL + w.sparge[k] * water.spargeWaterL) / totalL) * 10
-          ) / 10;
-      });
-      return out;
-    })();
 
     /* La cible saisie l'emporte sur le style de la liste — comme dans l'atelier. */
     const style = water.customTarget
@@ -619,8 +592,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       sourceName: waterSource.name,
       styleName: style.name,
       style,
-      startIons: start,
-      wortIons,
+      sourceIons: waterSource,
+      startIons: treatment.startTotal,
+      wortIons: treatment.treatedTotal,
       mashWaterL: water.mashWaterL,
       spargeWaterL: water.spargeWaterL,
       diRatioPct: water.diRatioPct,
@@ -631,21 +605,22 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
          emporte au bidon — le pourcentage ne se verse pas. */
       mashOsmoseeL: r1((water.mashWaterL * water.diRatioPct) / 100),
       spargeOsmoseeL: r1((water.spargeWaterL * spargeDi) / 100),
-      mashIons: w.mash,
-      spargeIons: w.sparge,
-      ra: Math.round(residualAlkalinity(w.mash)),
+      mashIons: treatment.treated.mash,
+      spargeIons: treatment.treated.sparge,
+      ra: Math.round(treatment.raAfter),
+      raBefore: Math.round(treatment.raBefore),
       raBand: band,
-      ratio: sulfateChlorideRatio(w.mash),
+      ratio: treatment.ratio,
       doses: water.doses,
-      split: splitDoses(water.doses, water.mashWaterL, water.spargeWaterL, allSaltsInMash),
+      split: treatment.split,
       acidId: water.acidId,
-      mashAcid,
-      spargeAcid,
+      mashAcid: treatment.mashAcid,
+      spargeAcid: treatment.spargeAcid,
       disabled: water.disabled,
       mashPh: water.mashPh,
       spargePh: water.spargePh
     };
-  }, [waterSource, water, color]);
+  }, [waterSource, water, color, grains, totalGrist]);
 
   const waterAcid = useMemo(
     () => ({
@@ -660,6 +635,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const onWaterChange = (next: WaterState) => {
     if (next.mashWaterL !== water.mashWaterL || next.spargeWaterL !== water.spargeWaterL) {
       setVolumesEdited(true);
+    }
+    if (next.allSaltsInMash !== water.allSaltsInMash || JSON.stringify(next.doses) !== JSON.stringify(water.doses)) {
+      next = { ...next, saltSplit: undefined };
     }
     setWater(next);
   };
@@ -845,87 +823,83 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
   const applyImport = (r: ImportedRecipe) => {
-    if (r.name) setName(r.name);
-    if (r.style) {
-      setStyle(r.style);
-      setWater((w) => ({ ...w, styleCode: styleWaterForName(r.style!).code }));
-      setMashSteps(mashProgramForStyle(r.style).steps);
-      setFerment(fermentProgramForStyle(r.style).steps);
-    }
-    if (r.volumeL) setVolumeL(r.volumeL);
-    if (r.boilMin) setBoilMin(r.boilMin);
-    if (r.fermentables.length) setFermentables(r.fermentables);
-    if (r.hops.length) setHops(r.hops);
+    const has = (key: string) => r.complete || (r.present.includes(key) &&
+      (!Array.isArray(r[key]) || r[key].length > 0));
+    const content = readRecipeFields(r);
+    setDetails(previous => r.complete ? content : {
+      ...previous, ...content,
+      mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
+      waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
+    });
+    if (r.name != null) setName(r.name);
+    if (r.style != null) setStyle(r.style);
+    if (r.volumeL != null) setVolumeL(r.volumeL);
+    if (r.boilMin != null) setBoilMin(r.boilMin);
+    if (r.brewDate != null || r.complete) setBrewDate(r.brewDate ?? '');
+    if (has('fermentables')) setFermentables(r.fermentables);
+    if (has('hops')) setHops(r.hops);
     if (r.yeast) setYeast(r.yeast);
-    // Les paliers de la recette priment sur le programme déduit du style.
-    if (r.mashSteps.length) setMashSteps(r.mashSteps);
-    if (r.fermentation.length) setFerment(r.fermentation);
-    /*
-     * ⚠️ Le PROCÉDÉ, qui se perdait entièrement à l'import — il est écrit dans
-     * le déroulé, jamais dans la liste d'ingrédients.
-     */
-    if (r.mashWaterL || r.spargeWaterL) {
-      // Un volume lu dans la recette fait foi : le grain ne le recalcule plus.
-      setVolumesEdited(true);
-      const importedGrist = r.fermentables?.length
-        ? r.fermentables.filter((f) => f.kind === 'grain').reduce((s, f) => s + (f.weightKg || 0), 0)
-        : totalGrist;
-      const grist = importedGrist > 0 ? importedGrist : (totalGrist > 0 ? totalGrist : 0);
-      const grainAbsorptionL = grist * 0.96;
-
-      setWater((w) => {
-        let spargeL = w.spargeWaterL;
-        if (r.spargeWaterL) {
-          spargeL = r.spargeWaterL;
-        } else if (r.preBoilL && r.mashWaterL) {
-          spargeL = Math.max(0, Math.round((r.preBoilL - (r.mashWaterL - grainAbsorptionL)) * 10) / 10);
+    if (r.mashSteps.length || r.complete) setMashSteps(r.mashSteps);
+    if (has('fermentation')) setFerment(r.fermentation);
+    if (r.mash?.spargeType != null || r.complete) setSpargeType(r.mash?.spargeType ?? 'batch');
+    if (r.mash?.ratioLPerKg != null || r.complete) setMashRatioOverride(r.mash?.ratioLPerKg ?? null);
+    if (r.carboTarget != null || r.complete) setCarboTarget(r.carboTarget ?? '');
+    else if (r.carboVolumes != null) setCarboTarget(r.carboVolumes + ' vol');
+    if (r.instructions != null || r.waterNote || r.dryHopNote || r.complete) {
+      setNotes([r.instructions, r.waterNote ? 'EAU — ' + r.waterNote : null,
+        r.dryHopNote ? 'HOUBLONNAGE À CRU — ' + r.dryHopNote : null].filter(v => v != null).join('\n\n'));
+    }
+    const plan = r.waterPlan;
+    if (plan?.sourceSnapshot) setRecipeWaterSource(plan.sourceSnapshot);
+    else if (plan?.sourceId) setRecipeWaterSource(config.waterSources?.find(source => source.id === plan.sourceId));
+    else if (r.complete) setRecipeWaterSource(undefined);
+    const mashL = plan?.mashWaterL ?? r.mashWaterL;
+    const spargeL = plan?.spargeWaterL ?? r.spargeWaterL;
+    if (mashL != null || spargeL != null || r.complete) setVolumesEdited(mashL != null || spargeL != null);
+    const importedGrist = (has('fermentables') ? r.fermentables : fermentables)
+      .filter(f => f.kind === 'grain').reduce((sum, f) => sum + f.weightKg, 0);
+    setWater(w => {
+      const next = r.complete ? {
+        diRatioPct: 0, styleCode: styleWaterForName(r.style ?? '').code,
+        doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 0, spargeWaterL: 0,
+        allSaltsInMash: true
+      } as WaterState : { ...w };
+      if (r.style != null && !plan?.targetProfileId && !next.customTarget) next.styleCode = styleWaterForName(r.style).code;
+      if (mashL != null) next.mashWaterL = mashL;
+      if (spargeL != null) next.spargeWaterL = spargeL;
+      else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
+      if (plan) {
+        if (plan.diRatioPct != null) next.diRatioPct = plan.diRatioPct;
+        if (plan.spargeDiRatioPct != null || r.complete) next.spargeDiRatioPct = plan.spargeDiRatioPct;
+        if (plan.targetProfileId != null) next.styleCode = plan.targetProfileId;
+        if (plan.allSaltsInMash != null) next.allSaltsInMash = plan.allSaltsInMash;
+        else if (plan.sparge && Object.values(plan.sparge).some(g => g > 0)) next.allSaltsInMash = false;
+        if (plan.mash || plan.sparge) {
+          const split = { mash: plan.mash ?? {}, sparge: plan.sparge ?? {} };
+          next.doses = mergeDoses(split.mash, split.sparge);
+          next.saltSplit = customSaltSplit({ ...plan, mashWaterL: next.mashWaterL,
+            spargeWaterL: next.spargeWaterL, allSaltsInMash: next.allSaltsInMash });
         }
-        return {
-          ...w,
-          mashWaterL: r.mashWaterL ?? w.mashWaterL,
-          spargeWaterL: spargeL
-        };
-      });
-    }
-    /*
-     * ⚠️ LA CIBLE D'EAU, quand la recette la donne en ppm.
-     *
-     * Elle se perdait dans `waterNote`, en texte libre : le brasseur lisait
-     * « Ca 110, SO₄ 200, Cl 55 » dans une note et devait choisir à la main le
-     * style BJCP le plus proche — c'est-à-dire viser une eau qui n'est pas
-     * celle de la recette. Elle prime désormais sur le style deviné du nom.
-     *
-     * Les ions que la recette ne mentionne pas restent à zéro plutôt que d'être
-     * inventés : c'est une cible partielle, et la fourchette de ±20 % qu'elle
-     * engendre le montre à l'écran.
-     */
-    if (r.waterTarget && Object.keys(r.waterTarget).length > 0) {
-      const ions: WaterIons = {
-        ca: r.waterTarget.ca ?? 0,
-        mg: r.waterTarget.mg ?? 0,
-        na: r.waterTarget.na ?? 0,
-        so4: r.waterTarget.so4 ?? 0,
-        cl: r.waterTarget.cl ?? 0,
-        hco3: r.waterTarget.hco3 ?? 0
-      };
-      setWater((w) => ({
-        ...w,
-        customTarget: { name: r.waterTargetName?.trim() || 'Cible de la recette', ions },
-        ratioOverride: undefined
-      }));
-    }
-    if (r.carboVolumes) setCarboTarget(`${r.carboVolumes} vol`);
-    if (r.instructions || r.waterNote || r.dryHopNote) {
-      setNotes(
-        [
-          r.instructions,
-          r.waterNote ? `EAU — ${r.waterNote}` : null,
-          r.dryHopNote ? `HOUBLONNAGE À CRU — ${r.dryHopNote}` : null
-        ]
-          .filter(Boolean)
-          .join('\n\n')
-      );
-    }
+        if (plan.disabled) next.disabled = plan.disabled;
+        if (plan.acid) {
+          next.acidId = plan.acid.id;
+          next.acidOverride = plan.acidOverride ?? (plan.treatmentVersion === 2 ? undefined : { mash: plan.acid.mash, sparge: plan.acid.sparge });
+        } else if (plan.acidOverride) next.acidOverride = plan.acidOverride;
+        if (plan.measuredPh != null) next.mashPh = plan.measuredPh;
+        if (plan.measuredSpargePh != null) next.spargePh = plan.measuredSpargePh;
+        if (plan.targetIons) next.customTarget = { name: plan.targetName ?? 'Cible de la recette', ions: plan.targetIons };
+      }
+      if (r.waterTarget && Object.keys(r.waterTarget).length) {
+        next.customTarget = { name: r.waterTargetName ?? 'Cible de la recette', ions: r.waterTarget };
+        next.ratioOverride = undefined;
+      }
+      return next;
+    });
+    setTargetBasis(JSON.stringify([
+      r.volumeL ?? volumeL, r.boilMin ?? boilMin,
+      has('fermentables') ? r.fermentables : fermentables, has('hops') ? r.hops : hops,
+      r.yeast ?? yeast, r.efficiencyPct ?? (r.complete ? brewhouse?.efficiencyPct ?? 75 : efficiency)
+    ]));
     setStep('fermentescibles');
   };
 
@@ -951,6 +925,20 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const patchHop = (index: number, patch: Partial<HopIngredient>) =>
     setHops(hops.map((h, i) => (i === index ? { ...h, ...patch } : h)));
 
+  const selectYeast = (selectedName: string, item?: StockItem) => {
+    setYeast(current => {
+      if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr')) return current;
+      const unit = item?.unit ?? 'sachet';
+      return {
+        ...current, name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
+        form: item?.yeastForm ?? 'sèche', unit, qty: current.unit === unit ? current.qty : 1,
+        attenuationPct: item?.yeastAttenuationPct,
+        fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
+        notes: undefined
+      };
+    });
+  };
+
   const build = (): Recipe => ({
     id: base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`,
     name: name.trim(),
@@ -958,30 +946,36 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     volumeL,
     brewDate,
     boilMin,
-    ogTarget: ogPredicted ?? base?.ogTarget ?? 0,
+    ogTarget: (keepTargets ? details.ogTarget : undefined) ?? ogPredicted ?? 0,
     // La densité finale tient compte de ce que la levure ne peut PAS manger.
-    fgTarget: fgPredicted ?? base?.fgTarget ?? 0,
-    abvTarget:
+    fgTarget: (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? 0,
+    abvTarget: keepTargets && details.abvTarget != null ? details.abvTarget :
       ogPredicted && fgPredicted
         ? BrewingMath.calculateABV(ogPredicted, fgPredicted)
-        : (base?.abvTarget ?? 0),
-    ibuTarget: ibu ?? undefined,
+        : 0,
+    ibuTarget: (keepTargets ? details.ibuTarget : undefined) ?? ibu ?? undefined,
+    colorEbc: details.colorEbc,
+    efficiencyPct: details.efficiencyPct,
+    preBoilL: details.preBoilL,
     carboTarget: carboTarget.trim() || undefined,
     fermentables,
-    totalGristKg: Math.round(totalGrist * 100) / 100,
+    totalGristKg: totalGrist,
     hops,
     yeast,
-    adjuncts: base?.adjuncts,
+    adjuncts: details.adjuncts,
     mash: {
       steps: mashSteps,
       ratioLPerKg:
-        totalGrist > 0 ? Math.round((water.mashWaterL / totalGrist) * 10) / 10 : 3,
-      mashoutTempC: 76,
-      spargeTempC: 76,
+        totalGrist > 0 ? water.mashWaterL / totalGrist : mashRatioOverride ?? undefined,
+      mashoutTempC: details.mash?.mashoutTempC ?? 76,
+      spargeTempC: details.mash?.spargeTempC ?? 76,
       spargeType
     },
     waterPlan: {
       sourceId: waterSource.id,
+      sourceSnapshot: { ...waterSource },
+      treatmentVersion: 2,
+      acidOverride: water.acidOverride,
       diRatioPct: water.diRatioPct,
       spargeDiRatioPct: water.spargeDiRatioPct,
       targetProfileId: water.styleCode,
@@ -998,7 +992,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       mashWaterL: water.mashWaterL,
       spargeWaterL: water.spargeWaterL,
       allSaltsInMash: water.allSaltsInMash !== false,
-      ...splitDoses(water.doses, water.mashWaterL, water.spargeWaterL, water.allSaltsInMash !== false),
+      ...waterRecap.split,
       /*
        * ⚠️ L'ACIDE, qui ne s'enregistrait pas. Le type le prévoyait, l'atelier
        * le calculait, l'écran l'affichait — et `build()` ne le recopiait pas.
@@ -1007,15 +1001,16 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        */
       acid: waterAcid,
       disabled: water.disabled,
-      targetPh: 5.4,
+      targetPh: details.waterPlan?.targetPh ?? 5.4,
       // Les pH relevés à la cuve : la seule boucle de retour du modèle.
       measuredPh: water.mashPh,
       measuredSpargePh: water.spargePh
     },
     fermentation: ferment,
-    instructions: notes.trim() || undefined,
-    steps: base?.steps ?? [],
-    notes: base?.notes ?? [],
+    instructions: notes || undefined,
+    steps: details.steps ?? [],
+    notes: details.notes ?? [],
+    notesCreation: details.notesCreation,
     favorite: base?.favorite
   });
 
@@ -1144,8 +1139,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       */}
       {hasMetrics && (
         <div
-          className="panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 flex items-baseline justify-between gap-2
-                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch"
+          className={`panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
+                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' ? 'hidden' : 'flex'}`}
         >
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
             <span className="text-2xs text-cave-400">Grain</span>
@@ -1340,27 +1335,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             Le MOMENT, lui, tourne — comme l'étape d'un houblon.
                           */}
                           <span className="flex items-center gap-1 flex-wrap mt-0.5">
-                            {f.kind === 'grain' ? (
-                              (() => {
-                                const g = maltGrade(f.colorEbc);
-                                return g ? (
-                                  <span
-                                    title={g.hint}
-                                    className={`inline-block text-2xs px-1.5 py-0.5 rounded-full border ${g.tone}`}
-                                  >
-                                    {g.label} · {f.colorEbc} EBC
-                                  </span>
-                                ) : (
-                                  <span className="inline-block text-2xs px-1.5 py-0.5 rounded-full border border-cave-700 text-cave-500">
-                                    couleur ?
-                                  </span>
-                                );
-                              })()
-                            ) : (
-                              <span className="inline-block text-2xs px-1.5 py-0.5 rounded-full border border-cave-700 text-cave-300">
-                                {KIND_DEF[f.kind].label}
-                              </span>
-                            )}
+                            {f.kind !== 'grain' && <span className="text-2xs text-cave-300">{KIND_DEF[f.kind].label}</span>}
                             <CycleTag
                               name={`Moment de ${f.name}`}
                               value={f.use}
@@ -1427,30 +1402,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         </p>
                       )}
 
-                      {/* Sans couleur ni potentiel, ni l'EBC ni l'OG ne se
-                          calculent. Le malteur les publie : on va les chercher. */}
-                      {f.kind === 'grain' && (
-                        <AiAssist
-                          kind="malt"
-                          name={f.name}
-                          missing={[
-                            f.colorEbc == null ? 'couleur EBC' : null,
-                            f.potentialPpg == null ? 'potentiel PPG' : null
-                          ].filter(Boolean) as string[]}
-                          onApply={(facts) => {
-                            patchFermentable(i, {
-                              colorEbc: facts.colorEbc ?? f.colorEbc,
-                              potentialPpg: facts.potentialPpg ?? f.potentialPpg
-                            });
-                            // La couleur et le potentiel appartiennent au MALT,
-                            // pas à cette recette : ils rejoignent le stock.
-                            onLearnIngredient(f.name, {
-                              colorEbc: facts.colorEbc,
-                              potentialPpg: facts.potentialPpg
-                            });
-                          }}
-                        />
-                      )}
+                      {f.kind === 'grain' && <MaltDetails malt={f}
+                        onChange={patch => patchFermentable(i, patch)}
+                        onLearnIngredient={onLearnIngredient} />}
                     </li>
                   );
                 })}
@@ -1679,10 +1633,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                       <AiAssist
                         kind="houblon"
                         name={h.name}
-                        missing={!h.alpha ? ['acides alpha'] : []}
+                        missing={h.stage !== 'dryHop' && !h.alpha ? ['acides alpha'] : []}
                         onApply={(facts) => {
-                          patchHop(i, { alpha: facts.alphaPct ?? h.alpha });
-                          onLearnIngredient(h.name, { alphaPct: facts.alphaPct });
+                          patchHop(i, applyHopFacts(h, facts));
+                          onLearnIngredient(h.name, factsForStock('houblon', facts));
                         }}
                       />
 
@@ -1712,21 +1666,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 categories={['Levure']}
                 items={stockItems}
                 value={yeast.name}
-                onChange={(n, item) =>
-                  setYeast({
-                    ...yeast,
-                    name: n,
-                    lab: item?.yeastLab ?? yeast.lab,
-                    strain: item?.yeastStrain ?? yeast.strain,
-                    form: item?.yeastForm ?? yeast.form,
-                    attenuationPct: item?.yeastAttenuationPct ?? yeast.attenuationPct,
-                    fermTempMinC: item?.yeastTempMinC ?? yeast.fermTempMinC,
-                    fermTempMaxC: item?.yeastTempMaxC ?? yeast.fermTempMaxC
-                  })
-                }
+                onChange={selectYeast}
                 onCreate={(n) => {
                   const created = onCreateStockItem(n, 'Levure', 'sachet');
-                  setYeast({ ...yeast, name: created.name });
+                  selectYeast(created.name, created);
                 }}
                 placeholder="US-05, Verdant IPA, WLP095…"
                 /* Le placeholder énumère des exemples : il ne peut pas servir
@@ -1838,31 +1781,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             name={yeast.name}
             missing={[
               yeast.attenuationPct == null ? 'atténuation' : null,
-              yeast.fermTempMinC == null ? 'plage de température' : null,
+              yeast.fermTempMinC == null ? 'température minimale' : null,
+              yeast.fermTempMaxC == null ? 'température maximale' : null,
               !yeast.lab ? 'laboratoire' : null
             ].filter(Boolean) as string[]}
             onApply={(f) => {
-              setYeast({
-                ...yeast,
-                lab: f.lab ?? yeast.lab,
-                strain: f.strain ?? yeast.strain,
-                form: f.form ?? yeast.form,
-                attenuationPct: f.attenuationPct ?? yeast.attenuationPct,
-                fermTempMinC: f.tempMinC ?? yeast.fermTempMinC,
-                fermTempMaxC: f.tempMaxC ?? yeast.fermTempMaxC,
-                notes: [yeast.notes, f.flocculation ? `Floculation ${f.flocculation}` : null, f.source]
-                  .filter(Boolean)
-                  .join(' · ')
-              });
-              // La fiche du fabricant décrit la SOUCHE, pas ce brassin-ci.
-              onLearnIngredient(yeast.name, {
-                yeastLab: f.lab,
-                yeastStrain: f.strain,
-                yeastForm: f.form,
-                yeastAttenuationPct: f.attenuationPct,
-                yeastTempMinC: f.tempMinC,
-                yeastTempMaxC: f.tempMaxC
-              });
+              setYeast(current => applyYeastFacts(current, f));
+              onLearnIngredient(yeast.name, factsForStock('levure', f));
             }}
           />
 
@@ -2123,16 +2048,42 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
       {/* ---------------------------------------------------- ÉTAPE 6 */}
       {step === 'eau' && (
-        <Section
-          title="Eau et sels"
-          /*
-            ⚠️ Le chapeau expliquait POURQUOI cette étape vient après le grain,
-            sur trois lignes, à chaque brassin. On l'apprend une fois. Et il
-            ouvrait sur le nom de la source, qui figure déjà dans le tableau
-            d'analyse juste en dessous.
-          */
-          hint="La cible d’alcalinité suit la couleur de la bière."
-        >
+        <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
+          <SaltSolver
+            source={waterSource}
+            onSourceChange={(source) => {
+              setRecipeWaterSource(source);
+              onSaveWaterSource(source);
+            }}
+            beerEbc={color?.ebc ?? null}
+            beerVolumeL={volumeL}
+            /*
+             * ⚠️ Tout ce que la recette sait déjà et que l'eau ignorait :
+             * l'acidité de la facture, la direction du houblonnage, et d'où
+             * sortent les volumes. Chaque champ est vivant — changer un malt,
+             * un houblon ou la durée d'ébullition redescend jusqu'aux sels.
+             */
+            brew={{
+              grist: grains,
+              totalGristKg: totalGrist,
+              hops,
+              ibu,
+              og: ogPredicted,
+              volumes: suggestedVolumes,
+              boilMin
+            }}
+            onMashRatioChange={(lPerKg) => {
+              setMashRatioOverride(lPerKg);
+              // Le ratio REPREND la main sur les volumes : c'est une consigne,
+              // pas une suggestion de plus à côté d'un volume figé.
+              setVolumesEdited(false);
+            }}
+            state={water}
+            onChange={onWaterChange}
+            noSparge={spargeType === 'none'}
+            onNoSpargeChange={setNoSparge}
+          />
+
           {volumesStale && (
             <button
               type="button"
@@ -2165,38 +2116,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             </button>
           )}
 
-          <SaltSolver
-            source={waterSource}
-            onSourceChange={onSaveWaterSource}
-            beerEbc={color?.ebc ?? null}
-            beerVolumeL={volumeL}
-            /*
-             * ⚠️ Tout ce que la recette sait déjà et que l'eau ignorait :
-             * l'acidité de la facture, la direction du houblonnage, et d'où
-             * sortent les volumes. Chaque champ est vivant — changer un malt,
-             * un houblon ou la durée d'ébullition redescend jusqu'aux sels.
-             */
-            brew={{
-              grist: grains,
-              totalGristKg: totalGrist,
-              hops,
-              ibu,
-              og: ogPredicted,
-              volumes: suggestedVolumes,
-              boilMin
-            }}
-            onMashRatioChange={(lPerKg) => {
-              setMashRatioOverride(lPerKg);
-              // Le ratio REPREND la main sur les volumes : c'est une consigne,
-              // pas une suggestion de plus à côté d'un volume figé.
-              setVolumesEdited(false);
-            }}
-            state={water}
-            onChange={onWaterChange}
-            noSparge={spargeType === 'none'}
-            onNoSpargeChange={setNoSparge}
-          />
-
           {/* L'aller-retour eau ⇄ fiche coûtait de remonter tout le fil d'étapes. */}
           <button
             type="button"
@@ -2208,7 +2127,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <ClipboardList className="w-4 h-4" />
             Retour à la fiche de brassage
           </button>
-        </Section>
+        </div>
       )}
 
       {/* ---------------------------------------------------- RÉCAP */}
@@ -2229,6 +2148,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           la fiche est complète.
         */}
         <RecipeAutoComplete
+          onLearnIngredient={onLearnIngredient}
+          stockItems={stockItems}
           fermentables={fermentables}
           onFermentables={setFermentables}
           hops={hops}
@@ -2237,6 +2158,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           onYeast={setYeast}
         />
         <BrewSheet
+          onLearnIngredient={onLearnIngredient}
+          reviewData={{
+            recipe: { ...build(), id: undefined },
+            estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
+              efficiencyPct: efficiency, volumes: suggestedVolumes },
+            waterTreatment: waterRecap,
+            conventions: { ions: 'mg/L dans les eaux de traitement, avant extraction et ébullition',
+              salts: 'grammes réellement retenus, répartis entre empâtage et rinçage',
+              acid: 'doses retenues, concentration indiquée dans le nom du produit',
+              ra: 'alcalinité résiduelle après acide, ppm CaCO3 ; approximation, pas un pH mesuré',
+              hco3: 'repère indicatif du style ; ne commande pas seul un ajout alcalin' }
+          }}
           name={name}
           onName={setName}
           style={style}
@@ -2285,6 +2218,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           */
           onExportText={() =>
             recipeToText({
+              recipe: build(),
               name,
               style,
               volumeL,
@@ -2298,6 +2232,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               ibu,
               ebc: color?.ebc ?? null,
               efficiencyPct: efficiency,
+              carboTarget,
+              mashRatioLPerKg: totalGrist > 0 ? water.mashWaterL / totalGrist : undefined,
+              spargeType,
+              adjuncts: details.adjuncts,
               fermentables,
               totalGristKg: totalGrist,
               hops,
@@ -2306,6 +2244,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               mashSteps,
               fermentation: ferment,
               water: waterRecap && {
+                ...waterRecap,
                 sourceName: waterRecap.sourceName,
                 styleName: waterRecap.styleName,
                 mashWaterL: waterRecap.mashWaterL,

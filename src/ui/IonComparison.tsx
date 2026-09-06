@@ -1,7 +1,7 @@
 import React from 'react';
 import { WaterIons } from '../types';
 import { ION_LABEL, ION_SYMBOL } from '../domain/water';
-import { StyleWater, positionInRange } from '../domain/waterStyles';
+import { StyleWater, positionInRange, styleIonRange, isIndicativeIon } from '../domain/waterStyles';
 
 /**
  * L'eau de départ face à l'eau corrigée, ion par ion.
@@ -65,21 +65,10 @@ const Rang: React.FC<{
   achieved: number;
   style: StyleWater;
 }> = ({ ion, start, achieved, style }) => {
-  const range = style.ions[ion];
-  /*
-   * ⚠️ LE BICARBONATE S'ALARME COMME LES AUTRES, depuis que la valeur affichée
-   * tient compte de l'acide.
-   *
-   * Il en était exempté (`ionAlarms`), et pour une bonne raison à l'époque :
-   * l'eau montrée était celle d'AVANT traitement, donc le HCO₃ restait en ambre
-   * sur presque tous les styles alors que la ligne d'acide l'avait déjà pris en
-   * charge. C'était une alerte qu'aucun geste ne pouvait éteindre.
-   *
-   * Maintenant que le rang montre l'eau APRÈS acide, le raisonnement s'inverse :
-   * un bicarbonate encore hors fourchette signifie que l'acide n'y suffit pas —
-   * il faut couper à l'osmosée. C'est exactement ce qu'une alerte doit dire.
-   */
-  const dehors = positionInRange(achieved, range);
+  const range = styleIonRange(style, ion);
+  const targeted = !style.untargetedIons?.includes(ion);
+  const indicative = isIndicativeIon(style, ion);
+  const dehors = !targeted || indicative ? 0 : positionInRange(achieved, range);
   const max = echelle(range.max, start, achieved);
   const pct = (v: number) => Math.max(0, Math.min(100, (v / max) * 100));
   const bouge = Math.round(achieved) !== Math.round(start);
@@ -123,7 +112,7 @@ const Rang: React.FC<{
       <span className="relative flex-1 min-w-0 h-1.5 rounded-full bg-cave-850" aria-hidden>
         <span
           className="absolute inset-y-0 rounded-full bg-hop/25"
-          style={{ left: `${pct(range.min)}%`, right: `${100 - pct(range.max)}%` }}
+          style={{ left: `${pct(range.min)}%`, right: `${100 - pct(range.max)}%`, opacity: targeted ? 1 : 0 }}
         />
         {bouge && (
           <span
@@ -133,14 +122,15 @@ const Rang: React.FC<{
         )}
         <span
           className={`absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border border-cave-950 ${
-            dehors === 0 ? 'bg-hop' : 'bg-ebc-amber'
+            !targeted ? 'bg-cave-400' : indicative ? 'bg-ebc-straw' : dehors === 0 ? 'bg-hop' : 'bg-ebc-amber'
           }`}
           style={{ left: `calc(${pct(achieved)}% - 4px)` }}
         />
       </span>
 
-      <span className="w-14 shrink-0 reading text-2xs text-cave-600 text-right whitespace-nowrap">
-        {range.min}–{range.max}
+      <span className="w-14 shrink-0 reading text-2xs text-cave-400 text-right whitespace-nowrap"
+        title={!targeted ? 'Aucune cible renseignée pour cet ion.' : indicative ? 'Repère HCO₃ du profil ; dosage selon le pH d’empâtage.' : undefined}>
+        {targeted ? `${range.min}–${range.max}` : '—'}
       </span>
     </li>
   );

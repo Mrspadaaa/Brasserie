@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
 import { WaterSource, SaltId, AcidId, WaterIons } from '../types';
 import {
   SALTS,
+  calculateWaterTreatment,
   SALT_IDS,
   SaltDef,
   ACIDS,
@@ -14,32 +15,27 @@ import {
   CAUTION_APPROACH,
   LACTATE_TASTE_THRESHOLD,
   saltCautions,
-  SPARGE_TARGET_PH,
   dilute,
   alkalinityAsCaCO3,
   residualAlkalinity,
   targetRaForGrist,
   raSaltCeilingForGrist,
-  raAcidTarget,
-  hco3BandForRa,
+
   estimateMashPh,
   hopBalanceHint,
   MASH_PH_BAND,
   acidNeeded,
-  acidCorrectionFromMeasuredPh,
-  ionsAfterAcid,
-  spargeAcidNeeded,
   lactateInBeer,
   sulfateChlorideRatio,
   rebalanceRatio,
   solveSalts,
   minimalDilution,
   splitDoses,
-  waterFromPlan,
   IonBand
 } from '../domain/water';
 import {
   STYLE_WATERS,
+  WATER_PROFILE_SOURCES,
   styleByCode,
   midpoint,
   styleFromTargetIons,
@@ -50,7 +46,7 @@ import { WaterTargetSheet, CustomTarget } from './WaterTargetSheet';
 import { WaterAnalysisTable } from './WaterAnalysisTable';
 import { WaterRadar } from './WaterRadar';
 import { CycleTag } from './CycleTag';
-import { RatioSlider, ratioLabel } from './RatioSlider';
+import { RatioSlider } from './RatioSlider';
 import { IonComparison } from './IonComparison';
 import { DilutionField } from './DilutionField';
 import { WaterAdditivesTable } from './WaterAdditivesTable';
@@ -116,6 +112,8 @@ export interface WaterState {
    */
   customTarget?: CustomTarget;
   doses: Partial<Record<SaltId, number>>;
+  /** Exact per-water additions retained from a recipe, until doses are edited. */
+  saltSplit?: { mash: Partial<Record<SaltId, number>>; sparge: Partial<Record<SaltId, number>> };
   disabled: SaltId[];
   acidId: AcidId;
   mashWaterL: number;
@@ -290,7 +288,7 @@ const SaltCell: React.FC<{
           onPointerDown={() => onActivate(id)}
           onPointerEnter={() => onActivate(id)}
           onFocusCapture={() => onActivate(id)}
-          className={`p-1 rounded-control border transition-all min-w-0 ${
+          className={`px-1 py-0.5 sm:p-1 rounded-control border transition-all min-w-0 ${
             off
               ? 'bg-cave-950/40 border-cave-850/60 opacity-45'
               : active
@@ -300,7 +298,7 @@ const SaltCell: React.FC<{
                   : 'bg-cave-900/50 border-cave-800'
           }`}
         >
-          <div className="flex items-start justify-between gap-1 min-w-0">
+          <div className="flex items-center sm:items-start justify-between gap-1 min-w-0">
             <div className="min-w-0 flex-1">
               {/* Le nom court : « Chlorure de calcium » ne tient pas
                   dans un tiers d'écran, et la formule le désigne mieux
@@ -308,7 +306,7 @@ const SaltCell: React.FC<{
               <span className="block text-2xs font-semibold text-cave-100 leading-none truncate">
                 {SALT_SHORT[id]}
               </span>
-              <span className="block text-[0.6875rem] leading-none text-cave-500 font-mono truncate">
+              <span className="sr-only sm:not-sr-only sm:block text-[0.6875rem] leading-none text-cave-500 font-mono truncate">
                 {ions.map((ion) => ION_SYMBOL_SHORT[ion]).join(' ')}
               </span>
             </div>
@@ -334,7 +332,7 @@ const SaltCell: React.FC<{
                * seule zone cliquable de 8 px sur les quatre côtés, sans
                * déplacer un pixel à l'écran.
                */
-              className="shrink-0 p-2 -m-1.5 -mr-2"
+              className="shrink-0 px-1 py-0.5 sm:p-2 sm:-m-1.5 sm:-mr-2"
             >
               <span
                 className={`block w-7 h-4 rounded-full relative transition-colors ${
@@ -488,6 +486,39 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    */
   const [activeSalt, setActiveSalt] = useState<SaltId | 'acide' | null>(null);
   const [targetOpen, setTargetOpen] = useState(false);
+  const workbenchRef = useRef<HTMLDivElement>(null);
+
+  // Réserve les commandes à leur hauteur réelle, puis donne tout le reste au
+  // Spider. Le cadre diffère entre atelier et assistant : pas de forfait en vh.
+  useLayoutEffect(() => {
+    const root = workbenchRef.current;
+    const main = root?.closest('main');
+    if (!root || !main) return;
+    const measure = () => {
+      if (window.innerWidth >= 640) {
+        root.style.removeProperty('--water-radar-max-height');
+        return;
+      }
+      const svg = root.querySelector<SVGSVGElement>('svg[role="img"]');
+      if (!svg || !root.offsetHeight) return;
+      const box = root.getBoundingClientRect();
+      const controls = box.height - svg.getBoundingClientRect().height;
+      // Le défilement ne doit pas faire grandir/rétrécir le graphique.
+      const top = box.top + main.scrollTop;
+      const available = main.getBoundingClientRect().bottom - top - controls - 8;
+      root.style.setProperty('--water-radar-max-height', `${Math.max(160, Math.floor(available))}px`);
+    };
+    const observer = new ResizeObserver(measure);
+    observer.observe(root);
+    observer.observe(main);
+    if (main.firstElementChild) observer.observe(main.firstElementChild);
+    window.addEventListener('resize', measure);
+    measure();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [activeStep]);
 
   const handleStepChange = (step: MobileStep) => {
     setActiveStep(step);
@@ -556,27 +587,11 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    * les sels alcalins (et tous les sels si `allSaltsInMash`) vont à l'empâtage,
    * les deux eaux n'ont plus la même composition — et c'est bien ce qu'on verse dans la cuve.
    */
-  const water = useMemo(
-    () => waterFromPlan(start, state.doses, state.mashWaterL, state.spargeWaterL, startSparge, allSaltsInMash),
-    [start, startSparge, state.doses, state.mashWaterL, state.spargeWaterL, allSaltsInMash]
-  );
-  const achievedMash = water.mash;
-  const achievedSparge = water.sparge;
-
-  /**
-   * Profil ionique combiné dans la cuve d'ébullition (moût pré-ébullition et bière finie).
-   * Issu du mélange du premier jus et du second jus de rinçage.
-   */
-  const achievedTotal: WaterIons = useMemo(() => {
-    if (totalWaterL <= 0) return achievedMash;
-    const out = {} as WaterIons;
-    (Object.keys(achievedMash) as Array<keyof WaterIons>).forEach((k) => {
-      out[k] = Math.round(
-        ((achievedMash[k] * state.mashWaterL + achievedSparge[k] * state.spargeWaterL) / totalWaterL) * 10
-      ) / 10;
-    });
-    return out;
-  }, [achievedMash, achievedSparge, state.mashWaterL, state.spargeWaterL, totalWaterL]);
+  const treatment = useMemo(() => calculateWaterTreatment(source, state, raBand),
+    [source, state, raBand]);
+  const achievedMash = treatment.raw.mash;
+  const achievedSparge = treatment.raw.sparge;
+  const achievedTotal = treatment.total;
 
   const ra = residualAlkalinity(achievedMash);
   const ratio = sulfateChlorideRatio(achievedTotal);
@@ -603,22 +618,10 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
   const wantedRatio =
     state.ratioOverride ?? hopHint?.ratio ?? (style.ratio.min + style.ratio.max) / 2;
 
-  /**
-   * Le plan complet pour UN rapport SO₄:Cl donné — cible, plafonds, doses.
-   *
-   * ⚠️ C'étaient trois `useMemo` enchaînés, donc calculables pour le seul
-   * rapport courant. Le curseur ne pouvait alors que noter une intention et
-   * attendre un appui sur « Proposer les doses » : on le tirait, et rien ne
-   * bougeait — ni la toile, ni la balance. On réglait le goût à l'aveugle.
-   *
-   * En fonction, le plan se calcule pour le rapport qu'on est en train de
-   * tirer, et les doses partent dans l'état au même instant. Le solveur est une
-   * passe droite d'arithmétique, sans boucle d'approximation : le rejouer à
-   * chaque cran du curseur ne coûte rien.
-   */
+  /** Proposition globale pour une consigne SO4/Cl ; indépendante des doses manuelles. */
   const planFor = useCallback(
     (ratio: number) => {
-      const target = rebalanceRatio(state.customTarget?.ions ?? midpoint(style), ratio);
+      const target = rebalanceRatio(state.customTarget ? { ...start, ...state.customTarget.ions } : midpoint(style), ratio);
 
       /*
        * Les plafonds du solveur.
@@ -727,7 +730,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   /** La part d'osmosée la plus basse qui atteigne encore le style. */
   const justEnough = useMemo(() => {
-    const target = rebalanceRatio(state.customTarget?.ions ?? midpoint(style), wantedRatio);
+    const target = rebalanceRatio(state.customTarget ? { ...start, ...state.customTarget.ions } : midpoint(style), wantedRatio);
     const ranges = {} as Record<keyof typeof style.ions, IonBand>;
     (Object.keys(style.ions) as Array<keyof typeof style.ions>).forEach((ion) => {
       ranges[ion] = {
@@ -767,55 +770,15 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
   };
 
   const split = useMemo(
-    () => splitDoses(state.doses, state.mashWaterL, state.spargeWaterL, allSaltsInMash),
-    [state.doses, state.mashWaterL, state.spargeWaterL, allSaltsInMash]
+    () => treatment.split,
+    [treatment]
   );
 
   /** La dose que le CALCUL propose — celle vers laquelle « recalculer » revient. */
-  const mashAcidCalcule = useMemo(
-    () => acidNeeded(achievedMash, state.mashWaterL, raAcidTarget(raBand), state.acidId),
-    [achievedMash, state.mashWaterL, raBand, state.acidId]
-  );
-
-  /*
-   * (La correction d'acide sur pH mesuré a suivi le relevé : elle vit dans le
-   * jour de brassage, `BrewDayPage`, à l'étape d'empâtage. Ici on planifie, on
-   * ne mesure pas.)
-   */
-  const spargeAcidCalcule = useMemo(
-    () =>
-      spargeAcidNeeded(
-        achievedSparge,
-        state.spargeWaterL,
-        state.acidId,
-        SPARGE_TARGET_PH,
-        source.ph ?? 7.4
-      ),
-    [achievedSparge, state.spargeWaterL, state.acidId, source.ph]
-  );
-
-  /**
-   * Les doses RETENUES : celle du brasseur si elle existe, sinon celle du calcul.
-   *
-   * ⚠️ Tout ce qui suit consomme celles-ci — la toile, le tableau de pesée, le
-   * lactate cumulé, l'export. Sans quoi on retomberait sur le défaut qu'on vient
-   * de chasser ailleurs : un écran qui montre une valeur pendant qu'une autre
-   * est en vigueur.
-   */
-  const mashAcid = useMemo(
-    () =>
-      state.acidOverride?.mash != null
-        ? { ...mashAcidCalcule, amount: state.acidOverride.mash }
-        : mashAcidCalcule,
-    [mashAcidCalcule, state.acidOverride?.mash]
-  );
-  const spargeAcid = useMemo(
-    () =>
-      state.acidOverride?.sparge != null
-        ? { ...spargeAcidCalcule, amount: state.acidOverride.sparge }
-        : spargeAcidCalcule,
-    [spargeAcidCalcule, state.acidOverride?.sparge]
-  );
+  const mashAcidCalcule = treatment.mashAcidCalculated;
+  const spargeAcidCalcule = treatment.spargeAcidCalculated;
+  const mashAcid = treatment.mashAcid;
+  const spargeAcid = treatment.spargeAcid;
 
   /** Le brasseur a-t-il posé une dose à la main ? */
   const acideForce =
@@ -841,13 +804,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    * Même correction que pour le bicarbonate de la toile : on montre l'arrivée,
    * pas seulement le départ.
    */
-  const raApresAcide = useMemo(
-    () =>
-      residualAlkalinity(
-        ionsAfterAcid(achievedMash, mashAcid.amount, state.acidId, state.mashWaterL)
-      ),
-    [achievedMash, mashAcid.amount, state.acidId, state.mashWaterL]
-  );
+  const raApresAcide = treatment.raAfter;
   /**
    * Où l'acide amène l'alcalinité : trop haut, juste, ou TROP BAS.
    *
@@ -897,33 +854,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    * une eau déjà acidifiée donnerait zéro à chaque tour. Celui-ci ne sert qu'à
    * l'AFFICHAGE — toile et comparaison des ions.
    */
-  const achievedTotalApresAcide: WaterIons = useMemo(() => {
-    const mash = ionsAfterAcid(achievedMash, mashAcid.amount, state.acidId, state.mashWaterL);
-    const sparge = ionsAfterAcid(
-      achievedSparge,
-      spargeAcid.amount,
-      state.acidId,
-      state.spargeWaterL
-    );
-    if (totalWaterL <= 0) return mash;
-    const out = {} as WaterIons;
-    (Object.keys(mash) as Array<keyof WaterIons>).forEach((k) => {
-      out[k] =
-        Math.round(
-          ((mash[k] * state.mashWaterL + sparge[k] * state.spargeWaterL) / totalWaterL) * 10
-        ) / 10;
-    });
-    return out;
-  }, [
-    achievedMash,
-    achievedSparge,
-    mashAcid.amount,
-    spargeAcid.amount,
-    state.acidId,
-    state.mashWaterL,
-    state.spargeWaterL,
-    totalWaterL
-  ]);
+  const achievedTotalApresAcide = treatment.treatedTotal;
 
   /**
    * Ce que les deux acides CUMULÉS laissent dans la bière.
@@ -947,37 +878,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    * 150 ppm, pas celui d'un plan qu'on n'a peut-être pas appliqué.
    */
 
-  /**
-   * Le style TEL QUE LA TOILE LE MONTRE — avec sa fenêtre d'alcalinité refaite.
-   *
-   * ⚠️ Signalé ainsi : « le HCO₃ n'est pas toujours dans le target ». Le même
-   * écran disait deux choses contraires sur la même grandeur :
-   *
-   *   panneau      « Après l'acide : −15 ppm — dans la cible. »       ✓
-   *   toile        « HCO₃⁻ éq. 45, cible 0–40 »                ✗ en ambre
-   *
-   * Le panneau juge sur l'alcalinité RÉSIDUELLE, qui retranche le calcium ; la
-   * toile jugeait sur le bicarbonate brut du profil de style, qui l'ignore. Sur
-   * une eau calcaire les deux ne peuvent pas s'accorder — mesuré sur 145
-   * combinaisons style × eau, 37 % tombaient hors de la fourchette du style
-   * alors que l'AR était sur sa cible.
-   *
-   * C'est l'AR que l'acide vise et c'est elle qui décide du pH ; la fourchette
-   * de bicarbonate d'un guide de style n'est qu'un raccourci, et le solveur ne
-   * s'en sert jamais. C'est donc elle qui cède : le secteur vert de cet axe est
-   * désormais la fenêtre d'AR retraduite en HCO₃ pour le calcium et le
-   * magnésium de CETTE eau.
-   *
-   * Les cinq autres axes ne bougent pas : eux se jugent bien sur le style.
-   */
-  const styleAffiche = useMemo(
-    () => ({
-      ...style,
-      ions: { ...style.ions, hco3: hco3BandForRa(raBand, achievedTotalApresAcide) }
-    }),
-    [style, raBand, achievedTotalApresAcide]
-  );
-
+  // Les plages restent fixes ; le pH de la maische juge l’alcalinité.
   const cautions = useMemo(
     () => saltCautions(state.doses, state.disabled, achievedTotalApresAcide, totalWaterL),
     [state.doses, state.disabled, achievedTotalApresAcide, totalWaterL]
@@ -1167,7 +1068,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           téléphone, et le bicarbonate tombait hors écran. Il est revenu en
           rangs.
         */}
-        <IonComparison start={start} achieved={achievedTotalApresAcide} style={styleAffiche} />
+        <IonComparison start={treatment.startTotal} achieved={achievedTotalApresAcide} style={style} />
 
         {/* 3. Volumes & Procédé de Rinçage */}
         <div className="panel p-3 bg-cave-900/60 border border-cave-750 space-y-3">
@@ -1826,9 +1727,9 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           un écran de 767 px. Au-dessus du point de rupture sm, la place ne
           manque plus et on revient à la respiration normale.
         */}
-        <div className="space-y-1 sm:space-y-4">
+        <div ref={workbenchRef} className="space-y-1 pb-[env(safe-area-inset-bottom)] sm:pb-0 sm:space-y-4" aria-label="Profil et commandes de dosage">
         <div className="flex items-center gap-2 px-1">
-          <label htmlFor="w-style" className="text-2xs text-cave-400 shrink-0">
+          <label htmlFor="w-style" className="sr-only sm:not-sr-only text-2xs text-cave-400 shrink-0">
             Cible
           </label>
           <div className="min-w-0 flex-1">
@@ -1927,9 +1828,10 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
         <div className="panel px-1 py-0.5 sm:p-3 space-y-0 sm:space-y-1">
           <WaterRadar
-            start={start}
+            fitToControls
+            start={treatment.startTotal}
             achieved={achievedTotalApresAcide}
-            style={styleAffiche}
+            style={style}
             /* L'acide n'apporte pas d'ion : il en RETIRE un, le bicarbonate.
                C'est donc lui que la toile allume. */
             highlight={
@@ -1941,92 +1843,15 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             }
           />
 
-          {/*
-            La légende du sel actif. Elle remplace l'invite dès qu'on touche une
-            case : le brasseur voit CE QUE FAIT le sel qu'il a sous les doigts,
-            à l'endroit où il en lit l'effet.
-
-            ⚠️ HAUTEUR FIXE, ET NON UN PLANCHER. Le plancher ne retenait que les
-            légendes courtes : celle de l'acide en fait trois lignes, et la
-            grille des sels descendait de trente-trois pixels au moment PRÉCIS
-            où l'on touchait la rangée pour la régler — la toile qu'on venait
-            regarder sortait de l'écran. Deux lignes, coupées net s'il le faut :
-            la fin d'une phrase vaut moins que la stabilité de ce qu'on règle.
-          */}
-          <div className="h-[1.55rem] sm:h-auto sm:min-h-[2.4rem] flex items-center justify-center text-center px-1">
-            {activeSalt === 'acide' ? (
-              /*
-                L'acide ne se lit pas comme un sel : il ne dépose rien, il
-                NEUTRALISE. Sa légende dit donc ce qu'il enlève, et à quoi ça
-                sert — pas quels ions il apporte.
-              */
-              <p className="text-[0.6875rem] sm:text-2xs text-cave-300 leading-tight line-clamp-2">
-                <span className="font-semibold text-ebc-straw">{ACIDS[state.acidId].name}</span> —
-                neutralise le bicarbonate, la seule façon de faire baisser
-                l’alcalinité sans diluer.{' '}
-                <span className="text-cave-500">{ION_SYMBOL.hco3} {ION_ROLE.hco3}</span>
-              </p>
-            ) : activeSalt ? (
-              /*
-                ⚠️ La formule chimique a cédé la place au RÔLE de chaque ion.
-                « CaSO₄·2H₂O » ne dit rien qu'on ne lise déjà sur le sachet ;
-                « Ca²⁺ levure, pH — mini 40 » dit pourquoi on en met. Et c'est
-                ici qu'on peut le dire honnêtement — le seuil du sodium, le
-                plancher du calcium — là où la toile ne peut afficher qu'un
-                chiffre.
-              */
-              <p className="text-[0.6875rem] sm:text-2xs text-cave-300 leading-tight line-clamp-2">
-                <span className="font-semibold text-ebc-straw">{SALTS[activeSalt].name}</span> —{' '}
-                {SALTS[activeSalt].effect}{' '}
-                <span className="text-cave-500">
-                  {ionsOf(activeSalt)
-                    .map((ion) => `${ION_SYMBOL[ion]} ${ION_ROLE[ion]}`)
-                    .join(' · ')}
-                </span>
-              </p>
-            ) : (
-              /*
-                ⚠️ La phrase du houblonnage n'est PLUS le repli de cette ligne.
-                Elle s'affichait sous la toile, collée à elle, où elle se lisait
-                comme sa légende — alors qu'elle ne parle pas des ions mais de
-                la DIRECTION sulfate/chlorure, c'est-à-dire du curseur d'en
-                dessous. Elle a rejoint son curseur ; il ne reste ici que ce qui
-                concerne la toile.
-              */
-              <p className="text-[0.6875rem] sm:text-2xs text-cave-500 leading-tight line-clamp-2">
-                Touchez un sel : la toile allume les ions qu’il déplace.
-              </p>
-            )}
-          </div>
         </div>
 
-        {/*
-          ⚠️ LE POUCE SUIT LES SELS, PAS SEULEMENT LA CONSIGNE.
-
-          Demandé ainsi : « je veux que le slider de ratio bouge aussi quand je
-          change manuellement les sels ». Il était fixé sur `wantedRatio`, la
-          consigne — donc immobile quand on poussait un gramme de gypse à la
-          main, pendant que le rapport réel, lui, se déplaçait. Une commande
-          qui montre une intention périmée est la même faute que le panneau
-          d'alcalinité qui montrait le plan du solveur au lieu de l'eau : un
-          chiffre affiché qui ne décrit pas l'état.
-
-          `planApplied` dit déjà lequel des deux est vrai, sans qu'on ait besoin
-          de retenir quoi que ce soit :
-
-          — les doses SONT celles du solveur (on vient de tirer le curseur ou
-            d'appuyer sur Doser) : la consigne commande, et l'écart réel se dit
-            à côté quand les plafonds l'ont empêchée d'aboutir ;
-          — les doses ont été retouchées à la main : la consigne ne commande
-            plus rien, et le pouce se pose sur le rapport RÉEL.
-
-          Le geste de glissement reste fluide : tirer réapplique le plan, donc
-          `planApplied` redevient vrai dans le même mouvement.
-        */}
+        {/* Consigne au doigt, lecture réelle ; une retouche de sel reprend la poignée. */}
         <RatioSlider
-          value={planApplied ? wantedRatio : (ratio.ratio ?? wantedRatio)}
+          value={wantedRatio}
           onChange={applyRatio}
-          achieved={planApplied ? ratio.ratio : null}
+          achieved={ratio.ratio}
+          followingTarget={planApplied}
+          ions={achievedTotalApresAcide}
           target={style.ratio}
         />
 
@@ -2128,7 +1953,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             */}
             <div
               className={`grid gap-1 items-end ${
-                hasSparge ? 'grid-cols-[auto_1fr_1fr]' : 'grid-cols-[auto_1fr]'
+                hasSparge ? 'grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)]' : 'grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]'
               }`}
             >
               <div className="min-w-0">
@@ -2138,7 +1963,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                   options={Object.keys(ACIDS) as AcidId[]}
                   onChange={(id) => set({ acidId: id })}
                   label={(id) => ACID_SHORT[id]}
-                  className="shrink-0"
+                  className="max-w-full min-w-0"
                 />
                 {/*
                   Le retour au calcul, visible SEULEMENT quand on s'en est
@@ -2180,6 +2005,17 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           </div>
         </section>
         </div>
+
+        {activeSalt && (
+          <p className="text-2xs text-cave-300 leading-snug px-1">
+            <span className="font-semibold text-ebc-straw">
+              {activeSalt === 'acide' ? ACIDS[state.acidId].name : SALTS[activeSalt].name}
+            </span> —{' '}
+            {activeSalt === 'acide'
+              ? 'Neutralise le bicarbonate ; vérifier la correction sur l’alcalinité de l’empâtage.'
+              : SALTS[activeSalt].effect}
+          </p>
+        )}
 
         {/*
           ⚠️ TOUT CE QUI SUIT EST PASSÉ SOUS LA GRAPPE.
@@ -2262,6 +2098,16 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           Ce que le HOUBLONNAGE dit de la direction à prendre. Il ne commande
           pas — le style tient la fourchette, le brasseur tient le curseur.
         */}
+        {!state.customTarget && (
+          <details className="text-2xs text-cave-400 px-1">
+            <summary className="cursor-pointer py-1">Repères du profil · sources</summary>
+            <p className="pt-1">{style.note}</p>
+            <p className="pt-1">Plages indicatives pour l’eau, pas des normes BJCP. La zone HCO₃ est un repère fixe du profil. Le dosage des alcalins et de l’acide dépend de la maische et du pH.</p>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1">
+              {WATER_PROFILE_SOURCES.map((s) => <a key={s.url} href={s.url} target="_blank" rel="noreferrer" className="underline text-water">{s.name}</a>)}
+            </div>
+          </details>
+        )}
         {hopHint?.note && (
           <p className="text-2xs text-cave-500 leading-snug px-1">{hopHint.note}</p>
         )}

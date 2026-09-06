@@ -156,8 +156,8 @@ check(
 );
 
 // --- 5. Ratio sulfate / chlorure ---------------------------------------------
-check('West Coast : très houblonné', W.sulfateChlorideRatio({ ...FRIBOURG, so4: 300, cl: 60 }).label, 'très houblonné, amertume sèche');
-check('NEIPA : très malté', W.sulfateChlorideRatio({ ...FRIBOURG, so4: 100, cl: 200 }).label, 'malté, rond');
+check('West Coast : finale plus sèche', W.sulfateChlorideRatio({ ...FRIBOURG, so4: 300, cl: 60 }).label, 'Finale plus sèche');
+check('NEIPA : côté rond', W.sulfateChlorideRatio({ ...FRIBOURG, so4: 100, cl: 200 }).label, 'Côté rond');
 check('aucun chlorure : dit franchement', W.sulfateChlorideRatio({ ...FRIBOURG, cl: 0 }).ratio, null);
 
 // --- 6. Solveur ---------------------------------------------------------------

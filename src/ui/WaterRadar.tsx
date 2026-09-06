@@ -1,30 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { WaterIons } from '../types';
 import { ION_LABEL, ION_ROLE, ION_SYMBOL, radarScaleMax } from '../domain/water';
-import { StyleWater } from '../domain/waterStyles';
+import { StyleWater, styleIonRange, isIndicativeIon } from '../domain/waterStyles';
 
-/**
- * La toile d'araignée : l'eau de la brasserie, dans la fourchette du style.
- *
- * ⚠️ Trois corrections de fond, dans l'ordre où elles ont été faites.
- *
- * 1. **Une cible d'eau n'est pas une ligne, c'est une zone.** Dessiner un
- *    polygone cible laissait croire qu'il fallait l'épouser exactement, alors
- *    que la seule question est « suis-je dedans ou dehors ». D'où les SECTEURS
- *    verts : chaque ion a son quartier, du minimum du style à son maximum.
- *
- * 2. **Recharts est parti.** La bande était obtenue en superposant un polygone
- *    vert et un second rempli de la couleur du panneau, qui venait en découper
- *    le centre — un trucage qui n'avait aucune chance de survivre à un
- *    changement de fond, et qui interdisait les secteurs, les valeurs en ppm
- *    autour de la toile et la mise en avant d'un ion.
- *
- * 3. **Chaque axe porte un GOÛT, et l'échelle est celle du style.** « SO₄²⁻
- *    164 » ne dit rien à qui n'a pas la chimie en tête ; « houblon » dit
- *    pourquoi on regarde cet axe. Et graduer sur des maxima absolus taillés
- *    pour une West Coast recroquevillait toute bière normale dans le tiers
- *    central — voir `radarScaleMax`.
- */
+/** Profil ionique mesuré face aux repères du style. HCO3 se juge à la maische. */
 
 interface WaterRadarProps {
   /** L'eau du réseau, coupée d'osmosée : ce qu'on a avant d'ouvrir un sachet. */
@@ -39,6 +18,8 @@ interface WaterRadarProps {
    * devant sa balance : « ce sel-là, il pousse quoi ? »
    */
   highlight?: Array<keyof WaterIons>;
+  /** Prend la hauteur laissée par les commandes de pesée sur mobile. */
+  fitToControls?: boolean;
   className?: string;
 }
 
@@ -129,23 +110,18 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   achieved,
   style,
   highlight,
+  fitToControls = false,
   className = ''
 }) => {
   const lit = useMemo(() => new Set(highlight ?? []), [highlight]);
 
-  /*
-   * ⚠️ UNE échelle pour les six axes, et elle contient TOUT ce qu'on dessine —
-   * les fourchettes du style, l'eau de départ et l'eau corrigée. C'est ce qui
-   * rend au vert son information : le liseré du magnésium et la large bande du
-   * chlorure ne se ressemblent plus, parce qu'ils ne vivent pas aux mêmes
-   * concentrations. Et rien ne sort jamais du disque.
-   */
+  /** Échelle commune fixée par la source et le profil : les zones ne se déplacent pas avec les doses. Les valeurs hors échelle restent chiffrées, au bord du tracé. */
   const scale = useMemo(
     () =>
       radarScaleMax(
-        IONS.flatMap((ion) => [style.ions[ion].max, achieved[ion], start[ion]])
+        IONS.flatMap((ion) => [style.ions[ion].max, start[ion]])
       ),
-    [style, achieved, start]
+    [style, start]
   );
 
   /*
@@ -195,7 +171,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   const axes = useMemo(
     () =>
       IONS.map((ion, i) => {
-        const band = style.ions[ion];
+        const band = styleIonRange(style, ion);
+        const targeted = !style.untargetedIons?.includes(ion);
+        const indicative = isIndicativeIon(style, ion);
         const r = rayon;
         const value = achieved[ion];
         const d = angle(i);
@@ -207,16 +185,14 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           ion,
           d,
           band,
+          targeted,
+          indicative,
           value,
           ex,
           ey,
           /** −1 sous la fourchette, 1 au-dessus, 0 dedans. */
-          out: value < band.min ? -1 : value > band.max ? 1 : 0,
-          /* Le bicarbonate garde sa flèche mais pas l'ambre : l'acide s'en charge. */
-          /* Depuis que la valeur tient compte de l'acide, le bicarbonate
-             s'alarme comme les autres : hors fourchette APRÈS acide, c'est
-             que l'acide n'y suffit pas. */
-          alarm: value < band.min || value > band.max,
+          out: !targeted || indicative ? 0 : value < band.min ? -1 : value > band.max ? 1 : 0,
+          alarm: targeted && !indicative && (value < band.min || value > band.max),
           rStart: r(start[ion]),
           rNow: r(value),
           rMin: r(band.min),
@@ -242,7 +218,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   const résumé = axes
     .map(
       (a) =>
-        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${Math.round(a.value)} ppm pour ${a.band.min} à ${a.band.max}`
+        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${Math.round(a.value)} ppm ${a.targeted ? `pour ${a.band.min} à ${a.band.max}` : 'sans cible renseignée'}${a.indicative ? ' (repère indicatif ; dosage selon le pH d’empâtage)' : ''}`
     )
     .join(', ');
 
@@ -250,24 +226,13 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
     <div className={className}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        /*
-          ⚠️ LA TOILE EST BORNÉE EN LARGEUR PARCE QU'ELLE L'EST EN HAUTEUR.
-
-          Un SVG en `w-full` grandit en hauteur avec l'écran : sur un téléphone
-          de 375 px elle prenait 316 px des 767 disponibles — 41 % de la
-          colonne pour une seule pièce, et le curseur SO₄ ⇄ Cl, la grille des
-          sels et la rangée d'acide tombaient sous le pli. Or on ne règle un sel
-          qu'en REGARDANT la forme bouger : les quatre doivent tenir ensemble.
-
-          17.5 rem la borne à 280 px, soit 265 px de haut. Le texte suit
-          l'échelle : la graduation des anneaux tombe à 8.2 px — sous le
-          plancher du système de design, arbitrage assumé, et jamais sur un
-          chiffre qu'on doit lire. Les valeurs des ions, elles, sont dessinées
-          à 17 unités : 14 px à l'écran, le plancher du système de design pile.
-        */
-        className="block w-full max-w-[17.5rem] sm:max-w-[30rem] mx-auto"
+        /* Sur mobile, la pesée réserve ses commandes et le Spider prend
+           toute la place restante. Le viewBox garde les étiquettes intactes. */
+        className={`block w-full mx-auto ${fitToControls
+          ? 'max-h-[var(--water-radar-max-height,24rem)] sm:max-h-none sm:max-w-[30rem]'
+          : 'max-w-[30rem]'}`}
         role="img"
-        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}`}
+        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}. Échelle fixe 0 à ${scale} ppm ; valeurs supérieures au bord.`}
       >
         {/* Les anneaux et les rayons — le repère, jamais la donnée. */}
         {rings.map((ppm) => (
@@ -283,13 +248,16 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
         ))}
 
         {/* La fourchette du style, un quartier par ion. */}
-        {axes.map((a) => (
+        {axes.filter(a => a.targeted).map((a) => (
           <path
             key={`s-${a.ion}`}
+            data-ion-target={a.ion}
             d={sector(a.d, a.rMin, a.rMax)}
             fill={GREEN}
             fillOpacity={lit.has(a.ion) ? 0.5 : lit.size ? 0.14 : 0.28}
-          />
+          >
+            <title>{`${ION_SYMBOL[a.ion]} : ${a.band.min}–${a.band.max} ppm${a.indicative ? ' · repère du profil, à ajuster selon l’empâtage' : ''}`}</title>
+          </path>
         ))}
 
         {axes.map((a) => (
@@ -333,7 +301,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
               cx={x}
               cy={y}
               r={lit.has(a.ion) ? 6 : 4.5}
-              fill={a.alarm ? AMBER : GREEN}
+              fill={a.indicative ? STRAW : a.alarm ? AMBER : GREEN}
               stroke="#12100E"
               strokeWidth={1.5}
             />
@@ -369,9 +337,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
 
         {axes.map((a) => {
           /* Le sens de l'écart, en petit : le chiffre reste le sujet. */
-          const flèche = a.out !== 0 && (
+          const flèche = (a.out !== 0 || a.value > scale) && (
             <tspan fontSize={10} dy={-1}>
-              {a.out === 1 ? ' ▲' : ' ▼'}
+              {a.out === 1 || a.value > scale ? ' ▲' : ' ▼'}
             </tspan>
           );
           const valeur = (
@@ -411,9 +379,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 y={a.ly + (a.serre ? 17 : 31)}
                 textAnchor={a.anchor}
                 fontSize={11.5}
-                fill={lit.has(a.ion) ? STRAW : '#574A42'}
+                fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
               >
-                {a.band.min}–{a.band.max}
+                {a.targeted ? `${a.band.min}–${a.band.max}` : 'sans cible'}
               </text>
             </g>
           );

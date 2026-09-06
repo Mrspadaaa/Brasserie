@@ -7,3 +7,4 @@ initializeApp();
 setGlobalOptions({ region: 'europe-west6' });
 
 export { aiTask } from './ai.js';
+export { syncBrewAlarms, deliverBrewAlarm } from './brewAlarms.js';

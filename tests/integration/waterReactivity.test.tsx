@@ -319,20 +319,14 @@ describe('Le style pilote les cibles', () => {
     expect(within(comparaison()).getByText('20–50')).toBeInTheDocument();
   });
 
-  /*
-   * ⚠️ Et l'axe de l'alcalinité, lui, suit la fenêtre d'AR — pas le profil.
-   *
-   * Signalé : « le HCO₃ n'est pas toujours dans le target ». Le même écran
-   * affichait deux verdicts contraires sur la même eau ; il n'en affiche plus
-   * qu'un. La fenêtre dépend du CALCIUM de l'eau, elle ne peut donc pas être
-   * celle du guide de style.
-   */
-  it('⚠️ l’alcalinité ne se juge plus sur le bicarbonate brut du style', () => {
+  it('le repère HCO₃ reste visible et change uniquement avec le profil', () => {
     monter({}, 6);
-    // Ni la fourchette de l'impériale, ni celle de la Pils après bascule.
-    expect(within(comparaison()).queryByText('120–250')).not.toBeInTheDocument();
+    expect(within(comparaison()).getByText('120–250')).toHaveAttribute(
+      'title', 'Repère HCO₃ du profil ; dosage selon le pH d’empâtage.'
+    );
     clic('style Pils');
-    expect(within(comparaison()).queryByText('0–40')).not.toBeInTheDocument();
+    expect(within(comparaison()).queryByText('120–250')).not.toBeInTheDocument();
+    expect(within(comparaison()).getByText('0–40')).toBeInTheDocument();
   });
 });
 
@@ -1058,7 +1052,7 @@ describe('Les avertissements de seuil, à l’écran', () => {
 
   it('⚠️ et il parle quand le sodium y arrive vraiment', () => {
     monter({ doses: { nacl: 10 } });
-    expect(texte()).toMatch(/Sodium à \d+ ppm — au-delà de 150, le goût devient franchement salé/);
+    expect(texte()).toMatch(/Sodium à \d+ ppm — repère de 150 ppm dépassé ou proche/);
   });
 
   /* Un fait de manipulation n'a pas de seuil : il vaut dès le premier gramme. */

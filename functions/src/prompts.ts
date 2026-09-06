@@ -181,7 +181,29 @@ PALIERS ET FERMENTATION. Si la recette donne des paliers d'empâtage ou un
 programme de fermentation, remplis « mashSteps » et « fermentation ». Un repos
 diacétyle et une garde à froid sont des phases à part entière, pas de la
 fermentation primaire qui durerait longtemps. Si elle donne un traitement d'eau
-(sels, acide, eau osmosée), recopie-le dans « waterNote ».
+(sels, acide, eau osmosée), structure les quantités explicites dans « waterPlan »
+et garde les consignes non chiffrées dans « waterNote ».
+
+TRAITEMENT D’EAU. « waterPlan.mash » et « waterPlan.sparge » portent les grammes
+réellement ajoutés, eau par eau. Identifiants : gypse (CaSO4·2H2O), cacl2
+(CaCl2·2H2O), epsom (MgSO4·7H2O), mgcl2 (MgCl2·6H2O), nacl, nahco3,
+caco3, chaux (Ca(OH)2), kcl. Ne convertis jamais des ppm en grammes sans volume.
+« acid » porte le produit et ses deux doses : lactique = acide lactique 80 % en mL,
+phosphorique = acide phosphorique 75 % en mL, maltAcidule = grammes de malt acidulé.
+Si la concentration, l’hydratation d’un sel ou l’étape d’ajout est inconnue ou différente,
+conserve la prescription dans waterNote et ne transforme pas sa dose en un autre produit.
+Les doses écrites deviennent les doses manuelles « acidOverride » de la même eau.
+Osmosée : diRatioPct pour l’empâtage, spargeDiRatioPct uniquement si le rinçage est
+réglé séparément. Zéro est une vraie valeur. Aucune estimation d’ions après traitement.
+Analyse de source complète uniquement si les SIX ions sont explicitement connus :
+sourceSnapshot inclut nom, id descriptif, ions en ppm et pH si donné ; sourceId reprend
+cet id. Une analyse partielle reste dans waterNote. Ne confonds pas source et cible.
+
+TOUS LES CHAMPS. Garde la date de brassage, le rendement annoncé, les volumes,
+les notes, les ajouts autres que malts/houblons, les températures de mash-out/rinçage,
+le type de rinçage, la souche/laboratoire et les notes de levure, chaque note de phase.
+Les propriétés non écrites restent ABSENTES, jamais nulles ou remplacées par zéro.
+« mash » reprend le programme complet ; « mashSteps » est le même programme si présent.
 
 CIBLE D'EAU. Beaucoup de recettes ne nomment pas un style d'eau : elles donnent le
 PROFIL VISÉ en ppm — « Target water profile: Ca 110, Mg 5, Na 12, SO4 200, Cl 55,
@@ -235,6 +257,10 @@ propage jusque dans l'amertume calculée.`,
         name: str,
         style: str,
         volumeL: num,
+        brewDate: str,
+        efficiencyPct: num,
+        carboTarget: str,
+        notesCreation: str,
         boilMin: num,
         ogTarget: num,
         fgTarget: num,
@@ -279,7 +305,7 @@ propage jusque dans l'amertume calculée.`,
             ['name', 'weightG', 'stage']
           )
         ),
-        adjuncts: arr(S({ name: str, amount: num, unit: str, step: str }, ['name', 'amount', 'unit'])),
+        adjuncts: arr(S({ name: str, amount: num, unit: str, step: str, notes: str }, ['name', 'amount', 'unit'])),
         yeast: S(
           {
             name: str,
@@ -292,7 +318,8 @@ propage jusque dans l'amertume calculée.`,
             fermTempMinC: num,
             fermTempMaxC: num,
             attenuationPct: num,
-            fermentDays: num
+            fermentDays: num,
+            notes: str
           },
           ['name', 'form', 'qty', 'unit']
         ),
@@ -314,6 +341,25 @@ propage jusque dans l'amertume calculée.`,
             ['kind', 'name', 'tempC']
           )
         ),
+        mash: S({
+          steps: arr(S({ name: str, tempC: num, durationMin: num }, ['name', 'tempC', 'durationMin'])),
+          ratioLPerKg: num, mashoutTempC: num, spargeTempC: num,
+          spargeType: { type: 'STRING', enum: ['fly', 'batch', 'none'] }
+        }, []),
+        steps: arr(S({ step: str, tempC: num, durationMin: num, notes: str }, ['step', 'tempC', 'durationMin', 'notes'])),
+        waterPlan: S({
+          sourceId: str,
+          sourceSnapshot: S({ id: str, name: str, ca: num, mg: num, na: num, so4: num, cl: num, hco3: num, ph: num, note: str, updatedAt: str }, ['id', 'name', 'ca', 'mg', 'na', 'so4', 'cl', 'hco3']),
+          diRatioPct: num, spargeDiRatioPct: num, targetProfileId: str,
+          targetName: str, targetIons: S({ ca: num, mg: num, na: num, so4: num, cl: num, hco3: num }, []),
+          mashWaterL: num, spargeWaterL: num, allSaltsInMash: { type: 'BOOLEAN' },
+          mash: S({ gypse: num, cacl2: num, epsom: num, mgcl2: num, nacl: num, nahco3: num, caco3: num, chaux: num, kcl: num }, []),
+          sparge: S({ gypse: num, cacl2: num, epsom: num, mgcl2: num, nacl: num, nahco3: num, caco3: num, chaux: num, kcl: num }, []),
+          acid: S({ id: { type: 'STRING', enum: ['lactique', 'phosphorique', 'maltAcidule'] }, mash: num, sparge: num }, ['id']),
+          acidOverride: S({ mash: num, sparge: num }, []),
+          disabled: arr({ type: 'STRING', enum: ['gypse', 'cacl2', 'epsom', 'mgcl2', 'nacl', 'nahco3', 'caco3', 'chaux', 'kcl'] }),
+          targetPh: num, measuredPh: num, measuredSpargePh: num
+        }, []),
         waterNote: str,
         /*
          * La cible d'eau CHIFFRÉE, quand la recette en donne une. Aucun ion
@@ -329,6 +375,7 @@ propage jusque dans l'amertume calculée.`,
          * d'ingrédients — c'est pour ça qu'elles passaient à travers.
          */
         mashWaterL: num,
+        spargeWaterL: num,
         preBoilL: num,
         carboVolumes: num,
         dryHopNote: str,
@@ -635,7 +682,10 @@ Cherche, dans cet ordre :
 
 RÈGLES DE RÉDACTION, à tenir strictement :
 - Ne complimente pas pour meubler. Si tout est correct, dis-le en une phrase et arrête-toi.
-- Chaque remarque cite le CHIFFRE de la recette qu'elle vise, et propose une correction chiffrée.
+- Chaque remarque cite la donnée de la recette qu'elle vise. Ne chiffre une correction que si les données permettent de la calculer.
+- La fiche structurée et le texte décrivent le même état actuel : vérifie notamment waterPlan (sels par eau, acide retenu) et waterTreatment (source, cible, ions après traitement). Ne substitue pas des doses suggérées aux doses retenues.
+- Les concentrations fournies sont celles des eaux de traitement avant extraction/ébullition, pas des mesures dans la bière finie. Ne compare pas la maische concentrée à une cible définie sur toute l'eau.
+- La cible HCO3 d'un style est indicative. N'impose pas un ajout de bicarbonate pour la seule couleur EBC. Le pH dépend de la facture et se vérifie sur un échantillon refroidi le jour du brassage ; ne prescris pas une hausse d'acide sur une estimation incertaine.
 - Si une donnée manque (couleur d'un malt, acides alpha d'un houblon, analyse d'eau), signale-le
   comme un manque À COMBLER — ne raisonne jamais sur une valeur que tu aurais supposée.
 - "severity" : "bloquant" si le brassin échouera, "gout" si la bière sera buvable mais hors

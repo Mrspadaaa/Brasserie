@@ -64,6 +64,7 @@ describe('Combobox — défiler la liste au doigt', () => {
     // défilement, pas un choix.
     fireEvent.pointerDown(option, { pointerType: 'touch', clientX: 100, clientY: 300 });
     fireEvent.pointerUp(option, { pointerType: 'touch', clientX: 100, clientY: 220 });
+    fireEvent.click(option);
 
     expect(onChange).not.toHaveBeenCalled();
     // Et la liste doit rester ouverte : c'est tout l'intérêt d'avoir défilé.
@@ -79,6 +80,9 @@ describe('Combobox — défiler la liste au doigt', () => {
 
     fireEvent.pointerDown(option, { pointerType: 'touch', clientX: 100, clientY: 300 });
     fireEvent.pointerUp(option, { pointerType: 'touch', clientX: 102, clientY: 303 });
+    expect(onChange).not.toHaveBeenCalled();
+    expect(option).toBeInTheDocument();
+    fireEvent.click(option);
 
     expect(onChange).toHaveBeenCalledWith('REF-3');
   });
@@ -92,6 +96,7 @@ describe('Combobox — défiler la liste au doigt', () => {
 
     fireEvent.pointerDown(option, { pointerType: 'touch', clientX: 100, clientY: 300 });
     fireEvent.pointerUp(option, { pointerType: 'touch', clientX: 100, clientY: 297 });
+    fireEvent.click(option);
 
     expect(onChange).toHaveBeenCalledWith('REF-5');
   });
@@ -106,6 +111,7 @@ describe('Combobox — défiler la liste au doigt', () => {
 
     fireEvent.pointerDown(option, { pointerType: 'mouse', clientX: 50, clientY: 80 });
     fireEvent.pointerUp(option, { pointerType: 'mouse', clientX: 50, clientY: 80 });
+    fireEvent.click(option);
 
     expect(onChange).toHaveBeenCalledWith('REF-7');
   });
@@ -695,6 +701,7 @@ describe('Combobox — créer une valeur inédite', () => {
     const option = screen.getByText('Pilsner');
     fireEvent.pointerDown(option, { pointerType: 'touch', clientX: 40, clientY: 90 });
     fireEvent.pointerUp(option, { pointerType: 'touch', clientX: 40, clientY: 90 });
+    fireEvent.click(option);
 
     expect(champ.value).toBe('Pilsner');
   });

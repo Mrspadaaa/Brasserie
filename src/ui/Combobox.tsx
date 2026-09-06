@@ -199,11 +199,13 @@ export const Combobox: React.FC<ComboboxProps> = ({
    * qu'au relâchement, si le doigt n'a pas bougé.
    */
   const press = useRef<{ x: number; y: number; index: number } | null>(null);
+  const cancelledClick = useRef(false);
   /** Au-delà de ce déplacement, le geste était un défilement, pas un choix. */
   const DRAG_TOLERANCE_PX = 12;
 
   const onOptionPointerDown = useCallback((e: React.PointerEvent, index: number) => {
     press.current = { x: e.clientX, y: e.clientY, index };
+    cancelledClick.current = false;
     // À la souris uniquement : garder le focus dans le champ de recherche.
     if (e.pointerType === 'mouse') e.preventDefault();
   }, []);
@@ -211,10 +213,25 @@ export const Combobox: React.FC<ComboboxProps> = ({
   const onOptionPointerUp = (e: React.PointerEvent, index: number) => {
     const start = press.current;
     press.current = null;
-    if (!start || start.index !== index) return;
+    if (!start || start.index !== index) {
+      cancelledClick.current = true;
+      return;
+    }
     const travelled = Math.hypot(e.clientX - start.x, e.clientY - start.y);
-    if (travelled > DRAG_TOLERANCE_PX) return;
-    commit(index);
+    cancelledClick.current = travelled > DRAG_TOLERANCE_PX;
+  };
+
+  const onOptionClick = (e: React.MouseEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Keep the list mounted until click: closing on pointerup can send the
+    // following mobile click to the navigation button underneath it.
+    if (!cancelledClick.current) commit(index);
+  };
+
+  const onOptionPointerCancel = () => {
+    press.current = null;
+    cancelledClick.current = true;
   };
 
   const commit = (index: number) => {
@@ -437,7 +454,8 @@ export const Combobox: React.FC<ComboboxProps> = ({
                 aria-selected={isSelected}
                 onPointerDown={(e) => onOptionPointerDown(e, i)}
                 onPointerUp={(e) => onOptionPointerUp(e, i)}
-                onPointerCancel={() => (press.current = null)}
+                onPointerCancel={onOptionPointerCancel}
+                onClick={(e) => onOptionClick(e, i)}
                 // Le survol ne surligne qu'à la souris : au doigt, il se
                 // déclencherait à chaque option traversée en défilant.
                 onPointerEnter={(e) => e.pointerType === 'mouse' && setActive(i)}
@@ -465,7 +483,8 @@ export const Combobox: React.FC<ComboboxProps> = ({
               aria-selected={false}
               onPointerDown={(e) => onOptionPointerDown(e, results.length)}
               onPointerUp={(e) => onOptionPointerUp(e, results.length)}
-              onPointerCancel={() => (press.current = null)}
+              onPointerCancel={onOptionPointerCancel}
+              onClick={(e) => onOptionClick(e, results.length)}
               onPointerEnter={(e) => e.pointerType === 'mouse' && setActive(results.length)}
               className={`min-h-touch px-4 py-2 flex items-center gap-3 cursor-pointer
                           border-t border-cave-800 text-ebc-straw

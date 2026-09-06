@@ -1,14 +1,9 @@
-import React, { useRef, useState } from 'react';
-import {
-  Fermentable,
-  HopIngredient,
-  YeastSpec,
-  TempStep,
-  FermentationStep,
-  WaterIons
-} from '../types';
+import React, { useEffect, useRef, useState } from 'react';
 import { AiClient } from '../services/aiClient';
-import { RecipeTextParser } from '../services/recipeParser';
+import { ImportedRecipe, normalizeRecipeImport, parseLocalRecipe } from '../domain/recipeImport';
+import { readRecipeText } from '../domain/recipeTransfer';
+import { ACIDS, SALTS } from '../domain/water';
+export type { ImportedRecipe } from '../domain/recipeImport';
 import { Units } from '../services/units';
 import { HOP_STAGE, describeMoment } from '../domain/hopStage';
 import { Sheet } from './Sheet';
@@ -22,53 +17,12 @@ import { Sparkles, Loader2, AlertTriangle, Camera, Check } from 'lucide-react';
  * moment, la levure, les paliers, le déroulé. Vingt minutes de recopie, et
  * autant d'occasions de se tromper d'un facteur mille sur un grammage.
  *
- * Deux chemins, dans cet ordre :
- *   1. **Gemini**, avec la recherche Google ancrée : il lit la recette ET va
- *      chercher ce qu'elle ne dit pas — l'alpha d'un houblon, la couleur d'un
- *      malt, l'atténuation d'une levure. C'est ce qui évite de rester bloqué à
- *      la fin de la saisie sur des valeurs pourtant publiées.
- *   2. **Le parseur local**, si l'IA ne répond pas. Il lit les unités
- *      américaines et les moments de houblonnage, mais ne complète rien.
+ * Une copie L’Affinée se relit exactement, en local. Les autres textes passent
+ * par l’IA, puis par le lecteur local si elle est indisponible. Le texte que ce
+ * dernier ne sait pas structurer reste conservé dans les notes de création.
  *
  * Dans les deux cas, RIEN n'est écrit sans que Gaëtan ait vu ce qui va l'être.
  */
-
-export interface ImportedRecipe {
-  name?: string;
-  style?: string;
-  volumeL?: number;
-  boilMin?: number;
-  ogTarget?: number;
-  fgTarget?: number;
-  abvTarget?: number;
-  ibuTarget?: number;
-  colorEbc?: number;
-  fermentables: Fermentable[];
-  hops: HopIngredient[];
-  yeast?: YeastSpec;
-  mashSteps: TempStep[];
-  fermentation: FermentationStep[];
-  instructions?: string;
-  waterNote?: string;
-  /**
-   * La cible d'eau CHIFFRÉE, quand la recette en donne une plutôt qu'un style.
-   *
-   * ⚠️ Partielle par nature : une recette qui n'annonce que le sulfate et le
-   * chlorure ne doit pas voir les quatre autres ions arriver à zéro — zéro est
-   * une cible, et le solveur la viserait.
-   */
-  waterTarget?: Partial<WaterIons>;
-  waterTargetName?: string;
-  /* Le procédé, écrit dans le déroulé et jamais dans la liste d'ingrédients. */
-  mashWaterL?: number;
-  spargeWaterL?: number;
-  preBoilL?: number;
-  carboVolumes?: number;
-  dryHopNote?: string;
-  /** D'où vient chaque chose, et ce qui manque encore. */
-  warnings: string[];
-  via: 'ia' | 'local';
-}
 
 interface RecipeImportSheetProps {
   open: boolean;
@@ -76,220 +30,73 @@ interface RecipeImportSheetProps {
   onApply: (recipe: ImportedRecipe) => void;
 }
 
-/** Réponse brute de la passerelle IA, avant normalisation. */
-interface AiRecipe {
-  name?: string;
-  style?: string;
-  volumeL?: number;
-  boilMin?: number;
-  ogTarget?: number;
-  fgTarget?: number;
-  abvTarget?: number;
-  ibuTarget?: number;
-  colorEbc?: number;
-  fermentables?: Array<Partial<Fermentable>>;
-  hops?: Array<Partial<HopIngredient>>;
-  yeast?: Partial<YeastSpec>;
-  mashSteps?: TempStep[];
-  fermentation?: FermentationStep[];
-  instructions?: string;
-  waterNote?: string;
-  waterTarget?: Partial<WaterIons>;
-  waterTargetName?: string;
-  mashWaterL?: number;
-  spargeWaterL?: number;
-  preBoilL?: number;
-  carboVolumes?: number;
-  dryHopNote?: string;
-  notes?: string;
-}
-
-/** Zéro reste zéro : une valeur absente ne doit pas devenir une valeur plausible. */
-const num = (v: unknown): number | undefined =>
-  typeof v === 'number' && Number.isFinite(v) && v !== 0 ? v : undefined;
-
-export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
-  open,
-  onClose,
-  onApply
-}) => {
+export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onClose, onApply }) => {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ImportedRecipe | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const request = useRef(0);
+  useEffect(() => {
+    if (!open) {
+      request.current++;
+      setBusy(false);
+    }
+    return () => {
+      request.current++;
+    };
+  }, [open]);
   const reset = () => {
+    request.current++;
+    setBusy(false);
     setText('');
     setResult(null);
     setError(null);
   };
 
-  /** Repli local : lit les unités et les moments, ne complète rien. */
-  const parseLocally = (raw: string): ImportedRecipe => {
-    const p = RecipeTextParser.parse(raw);
-    return {
-      name: p.name || undefined,
-      style: p.style || undefined,
-      volumeL: p.volumeL ?? undefined,
-      boilMin: p.boilMin ?? undefined,
-      ogTarget: p.ogTarget ?? undefined,
-      fgTarget: p.fgTarget ?? undefined,
-      abvTarget: p.abvTarget ?? undefined,
-      ibuTarget: p.ibuTarget ?? undefined,
-      colorEbc: p.colorEbc ?? undefined,
-      fermentables: p.malts.map((m) => ({
-        ...m,
-        kind: 'grain' as const,
-        use: 'empatage' as const
-      })),
-      hops: p.hops,
-      yeast: p.yeast ?? undefined,
-      mashSteps: p.mashSteps,
-      fermentation: p.fermentation,
-      instructions: p.instructions || undefined,
-      waterNote: p.waterNote ?? undefined,
-      mashWaterL: p.mashWaterL ?? undefined,
-      spargeWaterL: p.spargeWaterL ?? undefined,
-      preBoilL: p.preBoilL ?? undefined,
-      carboVolumes: p.carboVolumes ?? undefined,
-      dryHopNote: p.dryHopNote ?? undefined,
-      warnings: p.warnings,
-      via: 'local'
-    };
-  };
-
   const run = async (file?: File) => {
-    if (!file && text.trim().length < 20) {
+    const raw = text.trim();
+    if (!file && raw.length < 20) {
       setError('Colle d’abord la recette — au moins quelques lignes.');
       return;
     }
+    const token = ++request.current;
     setBusy(true);
     setError(null);
     setResult(null);
-
-    const res = await AiClient.run<AiRecipe>({
-      task: 'importRecipe',
-      tier: 'max',
-      instruction: text.trim() || 'Lis la recette sur ce document.',
-      file
-    });
-
-    if (res.ok && res.data) {
-      const d = res.data;
-      const warnings: string[] = [];
-
-      const fermentables: Fermentable[] = (d.fermentables ?? [])
-        .filter((f) => f.name && f.weightKg)
-        .map((f) => ({
-          name: f.name!,
-          weightKg: f.weightKg!,
-          kind: f.kind ?? 'grain',
-          use: f.use ?? 'empatage',
-          fermentabilityPct:
-            f.fermentabilityPct ?? (f.kind === 'lactose' ? 0 : f.kind === 'fruit' ? 90 : 100),
-          colorEbc: num(f.colorEbc),
-          potentialPpg: num(f.potentialPpg),
-          dayOffset: num(f.dayOffset)
-        }));
-
-      const hops: HopIngredient[] = (d.hops ?? [])
-        .filter((h) => h.name && h.weightG)
-        .map((h) => ({
-          name: h.name!,
-          weightG: h.weightG!,
-          // Alpha absent = 0 : `hopIbu` ne compte alors rien, plutôt que
-          // d'attribuer une amertume qui n'a pas été mesurée.
-          alpha: num(h.alpha) ?? 0,
-          stage: h.stage ?? 'boil',
-          timeMin: h.timeMin,
-          tempC: num(h.tempC),
-          dayOffset: h.dayOffset
-        }));
-
-      if (fermentables.length === 0) warnings.push('Aucun fermentescible reconnu.');
-      if (hops.length === 0) warnings.push('Aucun houblon reconnu.');
-      if (!d.yeast?.name) warnings.push('Aucune levure reconnue.');
-      const noAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
-      if (noAlpha.length) {
-        warnings.push(`Alpha absent : ${[...new Set(noAlpha)].join(', ')} — l’IBU sera partiel.`);
+    try {
+      const own = !file && readRecipeText(raw);
+      if (own) {
+        setResult(normalizeRecipeImport(own, 'local', true));
+        return;
       }
-      const noColor = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null);
-      if (noColor.length) {
-        warnings.push(`Couleur absente : ${noColor.map((f) => f.name).join(', ')}.`);
+      let res;
+      try {
+        res = await AiClient.run<unknown>({
+          task: 'importRecipe',
+          tier: 'max',
+          instruction: raw || 'Lis la recette sur ce document.',
+          file
+        });
+      } catch (e) {
+        res = { ok: false, error: e instanceof Error ? e.message : 'Lecture indisponible' };
       }
-
-      setResult({
-        name: d.name,
-        style: d.style,
-        volumeL: num(d.volumeL),
-        boilMin: num(d.boilMin),
-        ogTarget: num(d.ogTarget),
-        fgTarget: num(d.fgTarget),
-        abvTarget: num(d.abvTarget),
-        ibuTarget: num(d.ibuTarget),
-        colorEbc: num(d.colorEbc),
-        fermentables,
-        hops,
-        yeast: d.yeast?.name
-          ? {
-              name: d.yeast.name,
-              lab: d.yeast.lab,
-              strain: d.yeast.strain,
-              form: d.yeast.form ?? 'sèche',
-              qty: d.yeast.qty ?? 1,
-              unit: d.yeast.unit ?? 'sachet',
-              pitchTempC: num(d.yeast.pitchTempC),
-              fermTempMinC: num(d.yeast.fermTempMinC),
-              fermTempMaxC: num(d.yeast.fermTempMaxC),
-              attenuationPct: num(d.yeast.attenuationPct),
-              fermentDays: num(d.yeast.fermentDays),
-              notes: d.yeast.notes
-            }
-          : undefined,
-        mashSteps: d.mashSteps ?? [],
-        fermentation: d.fermentation ?? [],
-        instructions: d.instructions,
-        waterNote: d.waterNote,
-        /*
-         * ⚠️ On ne garde que les ions RÉELLEMENT chiffrés, et on garde le zéro
-         * quand il est écrit. C'est l'inverse de `num()` ailleurs : ici « HCO₃
-         * 0 » est une consigne du brasseur — une eau désalcalinisée — alors
-         * qu'un ion absent doit le rester, faute de quoi le solveur viserait
-         * zéro sur un ion dont la recette ne dit rien.
-         */
-        waterTarget: d.waterTarget
-          ? (Object.fromEntries(
-              (['ca', 'mg', 'na', 'so4', 'cl', 'hco3'] as Array<keyof WaterIons>)
-                .map((ion) => [ion, d.waterTarget?.[ion]])
-                .filter(([, v]) => typeof v === 'number' && Number.isFinite(v as number))
-            ) as Partial<WaterIons>)
-          : undefined,
-        waterTargetName: d.waterTargetName,
-        mashWaterL: num(d.mashWaterL),
-        spargeWaterL: num(d.spargeWaterL),
-        preBoilL: num(d.preBoilL),
-        carboVolumes: num(d.carboVolumes),
-        dryHopNote: d.dryHopNote,
-        warnings,
-        via: 'ia'
-      });
-      setBusy(false);
-      return;
+      if (token !== request.current) return;
+      if (res.ok && res.data) setResult(normalizeRecipeImport(res.data, 'ia'));
+      else if (raw) {
+        const local = parseLocalRecipe(raw);
+        local.warnings.unshift(
+          'Lecture locale : seules les valeurs reconnues sont structurées. Le texte complet est conservé dans les notes de création.'
+        );
+        setResult(local);
+      } else setError(res.error ?? 'Lecture impossible.');
+    } catch (e) {
+      if (token === request.current)
+        setError(e instanceof Error ? e.message : 'Recette illisible.');
+    } finally {
+      if (token === request.current) setBusy(false);
     }
-
-    // L'IA n'a pas répondu : on lit quand même, sans rien compléter.
-    if (text.trim()) {
-      const local = parseLocally(text);
-      local.warnings = [
-        `L’IA n’a pas répondu (${res.error ?? 'erreur inconnue'}). Lecture locale : les valeurs absentes de la recette resteront vides.`,
-        ...local.warnings
-      ];
-      setResult(local);
-    } else {
-      setError(res.error ?? 'Lecture impossible.');
-    }
-    setBusy(false);
   };
 
   const grains = result?.fermentables.filter((f) => f.kind === 'grain') ?? [];
@@ -379,12 +186,12 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
       {!result && (
         <div className="space-y-3">
           <p className="text-sm text-cave-400 leading-relaxed">
-            Colle la recette telle quelle — site anglophone, forum, carnet photographié.
-            Les livres, onces et gallons sont convertis ; le moment de chaque houblon est
-            conservé.
+            Colle la recette telle quelle — site anglophone, forum, carnet photographié. Les livres,
+            onces et gallons sont convertis ; le moment de chaque houblon est conservé.
           </p>
 
           <textarea
+            aria-label="Texte de la recette"
             name="recipe_import_text_input"
             autoComplete="off"
             autoCorrect="off"
@@ -421,8 +228,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
             <p className="text-sm text-cave-400">
               {[
                 result.style,
-                result.volumeL ? `${result.volumeL} L` : null,
-                result.boilMin ? `ébullition ${result.boilMin} min` : null
+                result.volumeL != null ? `${result.volumeL} L` : null,
+                result.boilMin != null ? `ébullition ${result.boilMin} min` : null
               ]
                 .filter(Boolean)
                 .join(' · ') || '—'}
@@ -433,7 +240,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
                 ['FG', result.fgTarget?.toFixed(3)],
                 ['IBU', result.ibuTarget?.toString()],
                 ['EBC', result.colorEbc?.toString()],
-                ['ABV', result.abvTarget ? `${result.abvTarget} %` : undefined]
+                ['ABV', result.abvTarget != null ? `${result.abvTarget} %` : undefined]
               ].map(([k, v]) => (
                 <div key={k as string}>
                   <dt className="text-sm text-cave-500">{k}</dt>
@@ -451,9 +258,13 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
               <ul className="divide-y divide-cave-850">
                 {grains.map((f, i) => (
                   <li key={i} className="py-1.5 flex items-baseline gap-3">
-                    <span className="min-w-0 flex-1 text-base text-cave-200 truncate">{f.name}</span>
+                    <span className="min-w-0 flex-1 text-base text-cave-200 truncate">
+                      {f.name}
+                    </span>
                     {f.colorEbc != null && (
-                      <span className="reading text-sm text-cave-500 shrink-0">{f.colorEbc} EBC</span>
+                      <span className="reading text-sm text-cave-500 shrink-0">
+                        {f.colorEbc} EBC
+                      </span>
                     )}
                     <span className="reading text-base shrink-0">
                       {Units.format(f.weightKg, 'kg')}
@@ -528,6 +339,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
               </p>
               <p className="text-sm text-cave-500">
                 {[
+                  `${result.yeast.qty} ${result.yeast.unit}`,
                   result.yeast.form,
                   result.yeast.attenuationPct ? `${result.yeast.attenuationPct} % att.` : null,
                   result.yeast.fermTempMinC != null && result.yeast.fermTempMaxC != null
@@ -548,7 +360,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
                   <li key={i} className="py-1.5 flex items-baseline gap-3 text-base">
                     <span className="flex-1 text-cave-200">{s.name}</span>
                     <span className="reading text-water">{s.tempC} °C</span>
-                    <span className="reading text-cave-400 w-16 text-right">
+                    <span className="reading text-cave-400 w-20 shrink-0 whitespace-nowrap text-right">
                       {s.durationMin} min
                     </span>
                   </li>
@@ -566,7 +378,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
                     <span className="flex-1 text-cave-200 truncate">{s.name}</span>
                     <span className="reading text-water">{s.tempC} °C</span>
                     <span className="reading text-cave-400 w-16 text-right">
-                      {s.days ? `${s.days} j` : '—'}
+                      {s.days != null ? `${s.days} j` : '—'}
                     </span>
                   </li>
                 ))}
@@ -579,6 +391,77 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({
               <h3 className="text-base font-semibold text-cave-100 mb-1">Eau</h3>
               <p className="text-base text-cave-300 leading-relaxed">{result.waterNote}</p>
             </section>
+          )}
+
+          {result.adjuncts?.length > 0 && (
+            <section aria-label="Autres ajouts importés">
+              <h3 className="text-base font-semibold text-cave-100 mb-1">Autres ajouts</h3>
+              {result.adjuncts.map((a, i) => (
+                <p key={i} className="text-sm text-cave-300 py-1">
+                  {a.name} · {a.amount} {a.unit} · {a.step}
+                  {a.notes && ` — ${a.notes}`}
+                </p>
+              ))}
+            </section>
+          )}
+          {result.waterPlan && (
+            <section
+              aria-label="Traitement d’eau importé"
+              className="panel p-3 space-y-1 text-sm text-cave-300"
+            >
+              <h3 className="font-semibold text-cave-100">Eau, sels et acides</h3>
+              {result.waterPlan.sourceSnapshot && <p>{result.waterPlan.sourceSnapshot.name}</p>}
+              {(['mash', 'sparge'] as const).map((side) => (
+                <div key={side}>
+                  <p className="text-cave-100">
+                    {side === 'mash' ? 'Empâtage' : 'Rinçage'}
+                    {result.waterPlan[`${side}WaterL`] != null &&
+                      ` · ${result.waterPlan[`${side}WaterL`]} L`}
+                  </p>
+                  {Object.entries(result.waterPlan[side] ?? {}).map(([id, g]) => (
+                    <p key={id}>
+                      {SALTS[id].name} · {g} g
+                    </p>
+                  ))}
+                  {result.waterPlan.acid?.[side] != null && (
+                    <p>
+                      {ACIDS[result.waterPlan.acid.id]?.name} · {result.waterPlan.acid[side]}{' '}
+                      {ACIDS[result.waterPlan.acid.id]?.unit}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </section>
+          )}
+          {result.waterTarget && (
+            <p className="text-sm text-cave-300">
+              Cible d’eau :{' '}
+              {Object.entries(result.waterTarget)
+                .map(([k, v]) => `${k} ${v}`)
+                .join(' · ')}{' '}
+              ppm
+            </p>
+          )}
+          {(result.notes?.length > 0 ||
+            result.notesCreation ||
+            result.mash?.mashoutTempC != null ||
+            result.carboTarget) && (
+            <details className="text-sm text-cave-300">
+              <summary className="cursor-pointer py-2 text-cave-100">
+                Consignes et notes importées
+              </summary>
+              {result.carboTarget && <p>Carbonatation : {result.carboTarget}</p>}
+              {result.mash?.mashoutTempC != null && <p>Mash-out : {result.mash.mashoutTempC} °C</p>}
+              {result.mash?.spargeTempC != null && <p>Rinçage : {result.mash.spargeTempC} °C</p>}
+              {result.notes?.map((note, i) => (
+                <p key={i} className="whitespace-pre-wrap">
+                  {note}
+                </p>
+              ))}
+              {result.notesCreation && (
+                <p className="whitespace-pre-wrap">{result.notesCreation}</p>
+              )}
+            </details>
           )}
 
           {result.instructions && (

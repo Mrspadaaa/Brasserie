@@ -25,7 +25,7 @@ import { ClipboardPaste, Check, AlertTriangle } from 'lucide-react';
 
 export interface CustomTarget {
   name: string;
-  ions: WaterIons;
+  ions: Partial<WaterIons>;
 }
 
 interface WaterTargetSheetProps {
@@ -39,7 +39,7 @@ interface WaterTargetSheetProps {
 }
 
 const IONS: Array<keyof WaterIons> = ['ca', 'mg', 'na', 'so4', 'cl', 'hco3'];
-const ZERO: WaterIons = { ca: 0, mg: 0, na: 0, so4: 0, cl: 0, hco3: 0 };
+const ZERO: Partial<WaterIons> = {};
 
 export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
   open,
@@ -49,7 +49,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
   onRemove
 }) => {
   const [name, setName] = useState(value?.name ?? '');
-  const [ions, setIons] = useState<WaterIons>(value?.ions ?? ZERO);
+  const [ions, setIons] = useState<Partial<WaterIons>>(value?.ions ?? ZERO);
   const [colle, setColle] = useState('');
   const [lu, setLu] = useState<{ found: Array<keyof WaterIons>; unit: ReturnType<typeof parseWaterTarget>["alkalinityUnit"] } | null>(null);
 
@@ -81,7 +81,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
   };
 
   const apercu = styleFromTargetIons(ions, name.trim() || 'Cible de la recette');
-  const vide = IONS.every((ion) => !ions[ion]);
+  const vide = IONS.every((ion) => ions[ion] == null);
 
   return (
     <Sheet
@@ -221,7 +221,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
           <div className="rounded-control border border-cave-800 bg-cave-950/70 p-2.5 space-y-1">
             <p className="text-2xs text-cave-400">Fourchette qui en découle</p>
             <p className="text-2xs text-cave-300 leading-snug">
-              {IONS.map(
+              {IONS.filter(ion => ions[ion] != null).map(
                 (ion) => `${ION_SYMBOL[ion]} ${apercu.ions[ion].min}–${apercu.ions[ion].max}`
               ).join(' · ')}
             </p>

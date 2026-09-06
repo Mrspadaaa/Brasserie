@@ -49,7 +49,7 @@ function brassin(stepId: string, ph?: number): Batch {
       steps: [{ id: stepId, label: 'Étape', durationMin: 60 }],
       currentIndex: 0,
       readings:
-        ph == null ? [] : [{ at: Date.now(), kind: 'ph', value: ph, unit: '' }]
+        ph == null ? [] : [{ at: Date.now(), stepId, roomTemp:true, kind: 'ph', value: ph, unit: '' }]
     }
   } as unknown as Batch;
 }
@@ -70,8 +70,8 @@ describe('pH de maische, le jour du brassage', () => {
     monter(brassin('mash-0', 5.7));
     // 20 L à 4 L/kg, écart de 0.3 pH : environ 6.9 mL de lactique.
     expect(screen.getByText(/Au-dessus de la fenêtre/)).toBeInTheDocument();
-    expect(screen.getByText(/mL/)).toBeInTheDocument();
-    expect(screen.getByText(/acide lactique/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', {name:/J’ai ajouté/})).toBeInTheDocument();
+    expect(screen.getByText(/Moitié de l’estimation totale.*acide lactique/i)).toBeInTheDocument();
   });
 
   it('se tait quand le pH relevé est dans la fenêtre', () => {

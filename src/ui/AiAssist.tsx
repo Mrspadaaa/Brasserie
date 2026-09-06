@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AiClient } from '../services/aiClient';
 import { Sparkles, Check, AlertTriangle, Loader2 } from 'lucide-react';
 
@@ -26,37 +26,20 @@ import { Sparkles, Check, AlertTriangle, Loader2 } from 'lucide-react';
  * dernier mot au brasseur.
  */
 
-export type IngredientKind = 'levure' | 'malt' | 'houblon';
-
-export interface IngredientFacts {
-  found: boolean;
-  name: string;
-  source: string;
-  note?: string;
-
-  lab?: string;
-  strain?: string;
-  form?: 'sèche' | 'liquide' | 'levain';
-  attenuationPct?: number;
-  tempMinC?: number;
-  tempMaxC?: number;
-  flocculation?: string;
-  alcoholTolerancePct?: number;
-
-  colorEbc?: number;
-  potentialPpg?: number;
-  grainType?: string;
-  diastaticPower?: number;
-
-  alphaPct?: number;
-  betaPct?: number;
-  usage?: string;
-  aroma?: string;
-  substitutes?: string[];
-}
+import {
+  IngredientFacts,
+  IngredientKind,
+  sanitizeFacts,
+  fillsGap,
+  ingredientKey
+} from '../domain/ingredientFacts';
+export type { IngredientFacts, IngredientKind } from '../domain/ingredientFacts';
 
 /** Ce qu'on affiche d'une fiche retrouvée, selon le type d'ingrédient. */
-const SHOWN: Record<IngredientKind, Array<{ key: keyof IngredientFacts; label: string; unit?: string }>> = {
+const SHOWN: Record<
+  IngredientKind,
+  Array<{ key: keyof IngredientFacts; label: string; unit?: string }>
+> = {
   levure: [
     { key: 'lab', label: 'Laboratoire' },
     { key: 'strain', label: 'Souche' },
@@ -101,29 +84,51 @@ export const AiAssist: React.FC<AiAssistProps> = ({
   const [busy, setBusy] = useState(false);
   const [facts, setFacts] = useState<IngredientFacts | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const request = useRef(0);
+  useEffect(() => {
+    request.current += 1;
+    setFacts(null);
+    setError(null);
+    setBusy(false);
+    return () => {
+      request.current += 1;
+    };
+  }, [kind, name]);
 
   const search = async () => {
+    const id = ++request.current;
     setBusy(true);
     setError(null);
     setFacts(null);
 
-    const res = await AiClient.run<IngredientFacts>({
-      task: 'lookupIngredient',
-      tier: 'fast',
-      instruction: `${kind} : ${name.trim()}`,
-      context: { kind, name: name.trim(), manquant: missing }
-    });
+    try {
+      const res = await AiClient.run<IngredientFacts>({
+        task: 'lookupIngredient',
+        tier: 'fast',
+        instruction: `${kind} : ${name.trim()}`,
+        context: { kind, name: name.trim(), manquant: missing }
+      });
 
-    setBusy(false);
-    if (!res.ok || !res.data) {
-      setError(res.error ?? 'Recherche impossible.');
-      return;
+      if (request.current !== id) return;
+      if (!res.ok || !res.data) {
+        setError(res.error ?? 'Recherche impossible.');
+        return;
+      }
+      if (!res.data.found) {
+        setError(res.data.note || `Rien de publié trouvé pour « ${name} ».`);
+        return;
+      }
+      const clean = sanitizeFacts(res.data);
+      if (!fillsGap({ kind, name, key: ingredientKey(kind, name), missing }, clean)) {
+        setError('Aucune caractéristique exploitable retrouvée.');
+        return;
+      }
+      setFacts(clean);
+    } catch {
+      if (request.current === id) setError('Recherche interrompue. Tu peux réessayer.');
+    } finally {
+      if (request.current === id) setBusy(false);
     }
-    if (!res.data.found) {
-      setError(res.data.note || `Rien de publié trouvé pour « ${name} ».`);
-      return;
-    }
-    setFacts(res.data);
   };
 
   const rows = facts

@@ -1,10 +1,24 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NumberInput } from '../ui/NumberInput';
-import { Batch, BrewDayState, BrewDayStep, AppConfig } from '../types';
+import { Pause, Play, Volume2, VolumeX, Sun, Sparkles } from 'lucide-react';
+import { AppConfig, Batch, BrewDayState, RecipeSnapshot, StockItem } from '../types';
 import { ingredientsOf } from '../domain/recipeSnapshot';
-import { BrewingMath } from '../services/brewingMath';
-import { acidCorrectionFromMeasuredPh, MASH_PH_BAND } from '../domain/water';
-import { Units } from '../services/units';
+import { brewAdviceKey, finalBrewReadings, restoreBrewDay, startBrewStep } from '../domain/brewDay';
+import {
+  actualAmount,
+  areaOf,
+  BrewArea,
+  brewAlarms,
+  brewBitterness,
+  brewIngredients,
+  boilMinutes,
+  changeBoilMinutes,
+  effectiveFermentables,
+  isBoilStep,
+  isUsefulTimer,
+  measuredEfficiency,
+  mineralFeedback,
+  PREPARATIONS
+} from '../domain/brewCompanion';
 import {
   buildTimeline,
   remainingMs,
@@ -14,633 +28,762 @@ import {
   keepScreenAwake,
   releaseScreen
 } from '../services/brewTimer';
-import { PageShell, Section } from './PageShell';
-import { SegmentedControl } from '../ui/SegmentedControl';
-import { Field, inputClass } from '../ui/FormNav';
+import { AiClient } from '../services/aiClient';
+import { Units } from '../services/units';
+import { PageShell } from './PageShell';
 import { ConfirmSheet } from '../ui/Sheet';
-import { Play, Check, SkipForward, Volume2, VolumeX, Sun, Plus } from 'lucide-react';
+import { BrewDayMeasurements, BrewUpdate, brewControl } from '../ui/BrewDayMeasurements';
+import { BrewIngredients } from '../ui/BrewIngredients';
+import { BrewJournal } from '../ui/BrewJournal';
+import { BrewAlarmSettings } from '../ui/BrewAlarmSettings';
+import { NumberInput } from '../ui/NumberInput';
 
-/**
- * Le jour de brassage, minuté.
- *
- * ⚠️ Ce que ça remplace : `BatchAssistantModal`, cinq onglets de calculs (eau,
- * empâtage, ébullition, fermentation, conditionnement) qu'il fallait consulter
- * en gardant en tête où l'on en était. Aucun minuteur : le brasseur comptait
- * sur la minuterie du four, et ratait les ajouts de houblon.
- *
- * Ici le déroulé est **une seule liste**, dérivée de la recette figée dans le
- * brassin. Une étape est en cours, les autres attendent. Le décompte est ancré
- * à l'horloge murale : verrouiller l'écran, recharger la page ou perdre le
- * réseau ne fausse rien.
- *
- * Tous les calculs de l'ancien assistant sont conservés — sels, réfractomètre,
- * carbonatation — mais ils apparaissent AU MOMENT où ils servent, pas dans un
- * onglet qu'il faut penser à ouvrir.
- */
-
-type ReadingKind = 'volume' | 'densite' | 'ph' | 'temperature';
-
-const READING_UNITS: Record<ReadingKind, string> = {
-  volume: 'L',
-  densite: 'SG',
-  ph: '',
-  temperature: '°C'
-};
-
-interface BrewDayPageProps {
+interface Props {
   batch: Batch;
   config: AppConfig;
+  stockItems?: StockItem[];
   onClose: () => void;
   onSave: (batch: Batch) => void;
-  /** Clôture : déstocke les ingrédients et passe le brassin en fermentation. */
   onFinish: (batch: Batch) => void;
 }
+const AREA: Record<BrewArea, string> = {
+  preparation: 'Préparer',
+  mash: 'Empâter',
+  boil: 'Ébullition',
+  finish: 'Refroidir'
+};
+const time = (at: number) =>
+  new Date(at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' });
 
-export const BrewDayPage: React.FC<BrewDayPageProps> = ({
-  batch,
-  config,
-  onClose,
-  onSave,
-  onFinish
-}) => {
-  const brewhouse =
-    config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
-
-  const recipe = batch.recipeSnapshot;
-  const ingredients = useMemo(() => ingredientsOf(batch), [batch]);
-
-  /** Le déroulé : celui déjà entamé, sinon construit depuis la recette figée. */
-  const [state, setState] = useState<BrewDayState>(
+export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, onFinish }: Props) {
+  const recipe = useMemo(
     () =>
-      batch.brewDay ?? {
-        steps: recipe
-          ? buildTimeline(recipe)
-          : buildTimeline({
-              ...batch,
-              fermentables: ingredients.fermentables,
-              hops: ingredients.hops,
-              yeast: ingredients.yeast
-            } as never),
-        currentIndex: 0,
-        readings: []
-      }
+      batch.recipeSnapshot ?? ({ ...batch, ...ingredientsOf(batch) } as unknown as RecipeSnapshot),
+    [batch.recipeSnapshot, batch.id]
   );
-
-  const [now, setNow] = useState(() => Date.now());
-  const [soundOn, setSoundOn] = useState(false);
-  const [screenAwake, setScreenAwake] = useState(false);
-  const [confirmFinish, setConfirmFinish] = useState(false);
-  const alerted = useRef<Set<string>>(new Set());
-
-  // Relevés
-  const [readingKind, setReadingKind] = useState<ReadingKind>('densite');
-  const [readingValue, setReadingValue] = useState('');
-  const [readingNote, setReadingNote] = useState('');
-
-  const current = state.steps[state.currentIndex];
-  const left = current ? remainingMs(current, now) : null;
-
-  /** Une seconde suffit : c'est l'horloge qui compte, pas le nombre de ticks. */
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
-
-  // L'alarme ne sonne qu'une fois par étape, même si l'onglet revient au premier
-  // plan longtemps après l'échéance.
-  useEffect(() => {
-    if (!current || left === null || left > 0) return;
-    if (alerted.current.has(current.id)) return;
-    alerted.current.add(current.id);
-    if (soundOn) beep(current.hopNames?.length ? 4 : 3);
-  }, [current, left, soundOn]);
-
-  useEffect(() => () => void releaseScreen(), []);
-
-  const persist = useCallback(
-    (next: BrewDayState) => {
+  const [state, setState] = useState<BrewDayState>(() =>
+    restoreBrewDay(batch.brewDay ?? { steps: buildTimeline(recipe), currentIndex: 0, readings: [] })
+  );
+  const latest = useRef(state);
+  const batchRef = useRef(batch);
+  batchRef.current = batch;
+  const update: BrewUpdate = useCallback(
+    (fn) => {
+      const next = fn(latest.current);
+      if (next === latest.current) return;
+      latest.current = next;
       setState(next);
-      onSave({ ...batch, brewDay: next });
+      onSave({ ...batchRef.current, brewDay: next });
     },
-    [batch, onSave]
+    [onSave]
   );
-
-  const startStep = () => {
-    // Le son s'arme ICI : c'est le seul endroit garanti d'être un geste réel.
-    if (!soundOn && armAudio()) setSoundOn(true);
-    if (!screenAwake) void keepScreenAwake().then(setScreenAwake);
-
-    persist({
-      ...state,
-      startedAt: state.startedAt ?? Date.now(),
-      steps: state.steps.map((s, i) =>
-        i === state.currentIndex ? { ...s, startedAt: Date.now() } : s
-      )
+  const [view, setView] = useState<BrewArea | 'recipe' | 'journal'>(() =>
+    areaOf(state.steps[state.currentIndex]?.id ?? 'eau')
+  );
+  const [now, setNow] = useState(Date.now);
+  const [sound, setSound] = useState(false);
+  const [awake, setAwake] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [confirmFinish, setConfirmFinish] = useState(false);
+  const [note, setNote] = useState('');
+  const [advice, setAdvice] = useState<{ key: string; verdict: string; action?: string } | null>(
+    null
+  );
+  const [busy, setBusy] = useState(false);
+  const aiLock = useRef(false);
+  const mounted = useRef(true);
+  const current = state.steps[state.currentIndex] ?? {
+    id: 'eau',
+    label: 'Préparation',
+    durationMin: 0
+  };
+  const alarms = useMemo(() => brewAlarms(state, recipe), [state, recipe]);
+  const alarmed = useRef(new Set<string>());
+  const area = view === 'recipe' || view === 'journal' ? areaOf(current.id) : view;
+  const boiled = isBoilStep(current);
+  const duration = boiled ? boilMinutes(state, recipe) : current.durationMin;
+  const left =
+    boiled && state.boilStartedAt != null && state.boilFinishedAt == null
+      ? state.boilStartedAt + duration * 60000 - now
+      : !boiled && isUsefulTimer(current) && current.doneAt == null
+        ? remainingMs(current, now)
+        : null;
+  const running = boiled
+    ? state.boilStartedAt != null && state.boilFinishedAt == null
+    : current.startedAt != null && current.pausedAt == null && current.doneAt == null;
+  const showTimer = boiled || isUsefulTimer(current);
+  const due = alarms.filter((a) => a.at <= now);
+  const upcoming = due[0] ?? alarms.find((a) => a.at > now);
+  const actualRecipe = useMemo(() => {
+    const fermentables = effectiveFermentables(recipe, state);
+    return {
+      ...recipe,
+      fermentables,
+      totalGristKg: fermentables.length
+        ? fermentables
+            .filter((f) => f.kind === 'grain' && f.use === 'empatage')
+            .reduce((sum, f) => sum + f.weightKg, 0)
+        : recipe.totalGristKg,
+      waterPlan: recipe.waterPlan
+        ? {
+            ...recipe.waterPlan,
+            mashWaterL: state.additions?.['water-mash']?.amount ?? recipe.waterPlan.mashWaterL
+          }
+        : undefined
+    };
+  }, [recipe, state.additions]);
+  const ingredients = brewIngredients(recipe);
+  const bitterness = brewBitterness(recipe, state);
+  const signature =
+    brewAdviceKey(state) +
+    JSON.stringify(state.additions) +
+    JSON.stringify(state.preparations) +
+    view;
+  const signatureRef = useRef(signature);
+  signatureRef.current = signature;
+  useEffect(() => {
+    mounted.current = true;
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      mounted.current = false;
+      clearInterval(tick);
+      void releaseScreen();
+    };
+  }, []);
+  useEffect(() => {
+    for (const a of due) {
+      const key = `${a.id}:${a.at}`;
+      if (!alarmed.current.has(key)) {
+        alarmed.current.add(key);
+        if (sound) beep(4);
+      }
+    }
+  }, [due, sound]);
+  useEffect(() => {
+    const visible = () => {
+      if (awake && document.visibilityState === 'visible') void keepScreenAwake().then(setAwake);
+    };
+    document.addEventListener('visibilitychange', visible);
+    return () => document.removeEventListener('visibilitychange', visible);
+  }, [awake]);
+  const choose = (index: number) => {
+    setView(areaOf(state.steps[index].id));
+    update((s) => ({ ...s, currentIndex: index }));
+  };
+  const navigate = (next: typeof view) => {
+    setView(next);
+    if (next === 'recipe' || next === 'journal') return;
+    const first = state.steps.findIndex((s) => areaOf(s.id) === next);
+    if (first >= 0) update((s) => ({ ...s, currentIndex: first }));
+  };
+  const start = () => {
+    if (armAudio()) setSound(true);
+    if (boiled)
+      update((s) => {
+        const n = { ...s, boilStartedAt: s.boilStartedAt ?? Date.now() };
+        delete n.boilFinishedAt;
+        return n;
+      });
+    else update((s) => startBrewStep(s, Date.now()));
+  };
+  const setDuration = (minutes: number) => {
+    if (!Number.isFinite(minutes)) return;
+    if (boiled) update((s) => changeBoilMinutes(s, recipe, minutes - boilMinutes(s, recipe)));
+    else
+      update((s) => ({
+        ...s,
+        steps: s.steps.map((x, i) =>
+          i === s.currentIndex ? { ...x, durationMin: Math.max(1, Math.min(480, minutes)) } : x
+        )
+      }));
+  };
+  const completed = boiled ? state.boilFinishedAt != null : current.doneAt != null;
+  const toggleComplete = () => {
+    update((s) => {
+      if (boiled) {
+        const n = { ...s };
+        if (n.boilFinishedAt != null) delete n.boilFinishedAt;
+        else n.boilFinishedAt = Date.now();
+        return n;
+      }
+      return {
+        ...s,
+        steps: s.steps.map((x, i) => {
+          if (i !== s.currentIndex) return x;
+          const n = { ...x };
+          if (n.doneAt != null) delete n.doneAt;
+          else n.doneAt = Date.now();
+          return n;
+        })
+      };
     });
   };
-
-  const completeStep = () => {
-    const nextIndex = Math.min(state.currentIndex + 1, state.steps.length - 1);
-    const finished = state.currentIndex >= state.steps.length - 1;
-    persist({
-      ...state,
-      currentIndex: nextIndex,
-      finishedAt: finished ? Date.now() : state.finishedAt,
-      steps: state.steps.map((s, i) =>
-        i === state.currentIndex
-          ? { ...s, doneAt: Date.now() }
-          : // L'étape suivante démarre d'elle-même : sur un brassage, on
-            // enchaîne, on ne rappuie pas sur « démarrer » les mains mouillées.
-            i === nextIndex && !finished
-            ? { ...s, startedAt: Date.now() }
-            : s
-      )
-    });
-  };
-
-  const addReading = () => {
-    const v = parseFloat(readingValue.replace(',', '.'));
-    if (!Number.isFinite(v)) return;
-    persist({
-      ...state,
-      readings: [
-        ...(state.readings ?? []),
-        {
-          at: Date.now(),
-          kind: readingKind,
-          value: v,
-          unit: READING_UNITS[readingKind],
-          note: readingNote.trim() || undefined
-        }
+  const addNote = () => {
+    if (!note.trim()) return;
+    update((s) => ({
+      ...s,
+      notes: [
+        ...(s.notes ?? []),
+        { id: crypto.randomUUID(), at: Date.now(), stepId: current.id, text: note.trim() }
       ]
-    });
-    setReadingValue('');
-    setReadingNote('');
+    }));
+    setNote('');
+    setNotice('Note ajoutée au journal.');
   };
-
-  /** La densité relevée la plus récente : c'est elle qui devient l'OG. */
-  const lastGravity = [...(state.readings ?? [])]
-    .reverse()
-    .find((r) => r.kind === 'densite');
-
-  /**
-   * La correction d'acide, calculée sur le pH RELEVÉ DANS LA MAISCHE.
-   *
-   * ⚠️ Elle vivait dans l'assistant de recette, et Gaëtan a mis le doigt
-   * dessus : « lors de la création je connais pas le pH du mash ». C'est exact
-   * — on ne mesure rien tant que l'eau n'a pas touché le grain. L'outil n'a
-   * donc de sens qu'ICI, minuteur en main, pH-mètre dans la cuve.
-   *
-   * ⚠️ ET SEULEMENT PENDANT L'EMPÂTAGE. Un relevé de pH ne dit pas de quelle
-   * eau il vient ; c'est l'ÉTAPE EN COURS qui le dit. Passé la filtration, le
-   * grain n'est plus dans l'eau : corriger le pH de maische n'a plus d'objet,
-   * et proposer une dose à ce moment-là serait proposer un geste impossible.
-   *
-   * Le plan d'eau est celui FIGÉ dans le brassin — volumes et acide choisis le
-   * jour où la recette a été pensée. C'est bien lui qu'on est en train de
-   * verser.
-   */
-  const enMaische = !!current && /^mash/.test(current.id);
-  const lastPh = [...(state.readings ?? [])].reverse().find((r) => r.kind === 'ph');
-  const mashPhFix = useMemo(() => {
-    const plan = recipe?.waterPlan;
-    if (!enMaische || !lastPh || !plan) return null;
-    const grist = recipe?.totalGristKg ?? 0;
-    return acidCorrectionFromMeasuredPh(
-      lastPh.value,
-      plan.mashWaterL,
-      grist > 0 ? plan.mashWaterL / grist : 0,
-      plan.acid?.id ?? 'lactique'
+  const analyse = async () => {
+    if (aiLock.current) return;
+    aiLock.current = true;
+    setBusy(true);
+    setNotice('');
+    if (note.trim()) addNote();
+    const s = latest.current;
+    const key =
+      brewAdviceKey(s) + JSON.stringify(s.additions) + JSON.stringify(s.preparations) + view;
+    const response = await AiClient.run<{ verdict: string; immediateAction?: string }>({
+      task: 'diagnoseBatch',
+      tier: 'fast',
+      context: {
+        recipe: actualRecipe,
+        currentStep: current,
+        phase: 'jour de brassage',
+        readings: s.readings,
+        notes: s.notes,
+        acidCorrections: s.acidCorrections,
+        ingredients: ingredients
+          .filter((i) => i.planned || s.additions?.[i.id])
+          .map((i) => ({ ...i, actual: actualAmount(i, s), ...s.additions?.[i.id] })),
+        mineralFeedback: mineralFeedback(recipe, s),
+        stock: stockItems.map((x) => ({
+          name: x.name,
+          category: x.category,
+          unit: x.unit,
+          currentStock: x.currentStock,
+          colorEbc: x.colorEbc,
+          potentialPpg: x.potentialPpg
+        })),
+        boilMin: boilMinutes(s, recipe)
+      },
+      instruction:
+        'Aide concrète à la cuve : un constat chiffré, une action possible et sa limite. Analyse les écarts réels, ingrédients déjà versés, disponibilités et remplacement demandés. Une bière hors profil n’est pas nécessairement perdue. Distingue risque sensoriel et risque sanitaire ; ne déclare pas un produit sûr ou perdu sans preuve. Ne prescris pas de dose acide/base : le calculateur de pH mesuré gère cette correction. Ne conseille pas d’ajouter un ingrédient déjà versé. 3 phrases maximum.'
+    });
+    if (mounted.current) {
+      if (signatureRef.current !== key)
+        setNotice('Les mesures ont changé pendant l’analyse. Relance pour un conseil à jour.');
+      else if (response.ok && typeof response.data?.verdict === 'string')
+        setAdvice({
+          key,
+          verdict: response.data.verdict,
+          ...(typeof response.data.immediateAction === 'string'
+            ? { action: response.data.immediateAction }
+            : {})
+        });
+      else setNotice(response.error ?? 'Conseil indisponible. Les calculs locaux restent actifs.');
+      setBusy(false);
+    }
+    aiLock.current = false;
+  };
+  const rig = config.brewhouses?.find((b) => b.id === config.activeBrewhouseId);
+  const efficiency = ['preboil', 'ensemencement'].includes(current.id)
+    ? measuredEfficiency(actualRecipe, state, current.id)
+    : null;
+  const stepsHere = state.steps
+    .map((s, i) => ({ s, i }))
+    .filter(
+      ({ s }) =>
+        areaOf(s.id) === area && (!isBoilStep(s) || s.id === state.steps.find(isBoilStep)?.id)
     );
-  }, [enMaische, lastPh, recipe]);
-
-  const ogTarget = recipe?.ogTarget ?? 0;
-  const efficiency =
-    lastGravity && ogTarget > 1
-      ? BrewingMath.brewEfficiency(ogTarget, lastGravity.value, brewhouse?.efficiencyPct ?? 75)
-      : null;
-
-  const doneCount = state.steps.filter((s) => s.doneAt).length;
-  const allDone = doneCount === state.steps.length;
+  const displayRecipe = view === 'recipe';
+  const activeTimers = state.steps.filter(
+    (s) => isUsefulTimer(s) && s.startedAt != null && s.doneAt == null
+  );
+  const finishedReadings = finalBrewReadings(state);
+  const confirmed = ingredients.filter(
+    (i) => i.planned > 0 && state.additions?.[i.id]?.doneAt != null
+  ).length;
 
   return (
     <PageShell
-      title={`${batch.id} — ${batch.name}`}
-      subtitle={`Jour de brassage · ${doneCount}/${state.steps.length} étapes`}
-      onClose={onClose}
+      title={batch.name}
+      subtitle={`${batch.id} · ${recipe.volumeL ?? batch.volumeL} L${recipe.ogTarget ? ` · OG ${recipe.ogTarget.toFixed(3)}` : ''}`}
+      onClose={() => (confirmFinish ? setConfirmFinish(false) : onClose())}
       actions={
         <>
           <button
             type="button"
+            className={`${brewControl} !border-0 !bg-transparent !px-2`}
+            aria-label={sound ? 'Couper les alertes sonores' : 'Activer les alertes sonores'}
+            aria-pressed={sound}
             onClick={() => {
-              if (soundOn) {
-                setSoundOn(false);
-              } else if (armAudio()) {
-                setSoundOn(true);
+              if (sound) setSound(false);
+              else if (armAudio()) {
+                setSound(true);
                 beep(1);
               }
             }}
-            aria-label={soundOn ? 'Couper les alarmes' : 'Activer les alarmes'}
-            aria-pressed={soundOn}
-            className={`touch-target rounded-control ${soundOn ? 'text-ebc-straw' : 'text-cave-500'}`}
           >
-            {soundOn ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+            {sound ? <Volume2 size={19} /> : <VolumeX size={19} />}
           </button>
           <button
             type="button"
-            onClick={() => {
-              if (screenAwake) {
-                void releaseScreen();
-                setScreenAwake(false);
-              } else {
-                void keepScreenAwake().then(setScreenAwake);
-              }
+            className={`${brewControl} !border-0 !bg-transparent !px-2`}
+            aria-label="Garder l’écran allumé"
+            aria-pressed={awake}
+            onClick={async () => {
+              if (awake) {
+                await releaseScreen();
+                setAwake(false);
+              } else setAwake(await keepScreenAwake());
             }}
-            aria-label={screenAwake ? 'Laisser l’écran s’éteindre' : 'Garder l’écran allumé'}
-            aria-pressed={screenAwake}
-            className={`touch-target rounded-control ${screenAwake ? 'text-ebc-straw' : 'text-cave-500'}`}
           >
-            <Sun className="w-5 h-5" />
+            <Sun size={19} />
           </button>
         </>
       }
-      footer={
-        allDone ? (
-          <button
-            type="button"
-            onClick={() => setConfirmFinish(true)}
-            className="w-full min-h-touch rounded-control bg-hop text-cave-950 font-semibold"
-          >
-            Clôturer le brassage
-          </button>
-        ) : !current?.startedAt ? (
-          <button
-            type="button"
-            onClick={startStep}
-            className="w-full min-h-touch rounded-control bg-ebc-straw text-cave-950
-                       font-semibold flex items-center justify-center gap-2"
-          >
-            <Play className="w-5 h-5" />
-            Démarrer « {current?.label} »
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={completeStep}
-            className={`w-full min-h-touch rounded-control font-semibold
-                        flex items-center justify-center gap-2 ${
-                          left !== null && left > 0
-                            ? 'border border-cave-700 text-cave-100'
-                            : 'bg-hop text-cave-950'
-                        }`}
-          >
-            {left !== null && left > 0 ? (
-              <>
-                <SkipForward className="w-5 h-5" />
-                Passer à l’étape suivante
-              </>
-            ) : (
-              <>
-                <Check className="w-5 h-5" />
-                Étape terminée
-              </>
-            )}
-          </button>
-        )
+      progress={
+        upcoming ? (
+          <div className="flex justify-between gap-2 text-2xs text-ebc-straw" aria-live="off">
+            <span className="truncate">
+              {upcoming.title === 'Ajout en cuve' ? upcoming.body : upcoming.title} ·{' '}
+              {time(upcoming.at)}
+            </span>
+            <span className="reading shrink-0">{formatCountdown(upcoming.at - now)}</span>
+          </div>
+        ) : undefined
       }
     >
-      {/* --- L'étape en cours, en grand ---------------------------------- */}
-      {current && (
-        <section className="panel p-3 sm:p-4 space-y-2">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-base sm:text-lg font-semibold text-cave-50 min-w-0">{current.label}</h2>
-            {current.tempC != null && (
-              <span className="reading text-base sm:text-lg text-water shrink-0">{current.tempC} °C</span>
-            )}
-          </div>
-
-          {current.detail && (
-            <p className="text-sm sm:text-base text-cave-200 leading-snug sm:leading-relaxed">{current.detail}</p>
-          )}
-
-          {current.durationMin > 0 && (
-            <div
-              className={`reading text-3xl sm:text-4xl tabular-nums font-bold tracking-tight ${
-                left === null
-                  ? 'text-cave-600'
-                  : left > 60_000
-                    ? 'text-cave-50'
-                    : left > 0
-                      ? 'text-ebc-straw'
-                      : 'text-alert'
-              }`}
-              aria-live="polite"
+      <div className="space-y-3 pb-3">
+        <nav
+          aria-label="Phases du brassage"
+          className="sticky top-0 z-10 flex flex-wrap gap-1 bg-cave-950 py-1"
+        >
+          {([...Object.keys(AREA), 'recipe', 'journal'] as (typeof view)[]).map((v) => (
+            <button
+              type="button"
+              key={v}
+              aria-pressed={view === v}
+              className={`min-h-10 px-2 text-sm rounded-control border ${view === v ? 'border-ebc-straw/60 text-ebc-straw bg-ebc-straw/10' : 'border-cave-700 text-cave-200'}`}
+              onClick={() => navigate(v)}
             >
-              {left === null ? `${current.durationMin}:00` : formatCountdown(left)}
-            </div>
-          )}
-
-          {current.durationMin === 0 && (
-            <p className="text-sm sm:text-base text-ebc-straw">Geste immédiat — pas de minuteur.</p>
-          )}
-
-          {left !== null && left <= 0 && (
-            <p className="text-xs sm:text-sm text-alert font-medium">
-              Échéance dépassée{current.hopNames?.length ? ' — houblon à ajouter.' : '.'}
-            </p>
-          )}
-
-          {!soundOn && (
-            <p className="text-xs sm:text-sm text-cave-600 leading-snug">
-              Les alarmes sont muettes. Démarrer une étape les active — le navigateur
-              exige un appui pour autoriser le son.
-            </p>
-          )}
-
-          {/*
-            --- Le pH de maische, et quoi en faire --------------------------
-
-            Placé DANS l'étape en cours, pas dans les relevés : c'est là que le
-            brasseur regarde, minuteur sous les yeux. Tant qu'aucun pH n'est
-            relevé, l'encadré rappelle simplement le geste ; dès qu'il l'est, il
-            dit s'il faut verser, et combien.
-          */}
-          {enMaische && recipe?.waterPlan && (
-            <div className="rounded-control bg-cave-950/70 border border-cave-800 p-2.5 space-y-1">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="text-xs sm:text-sm text-cave-400">
-                  pH de maische — cible {MASH_PH_BAND.min}–{MASH_PH_BAND.max}
-                </span>
-                {lastPh && (
-                  <span
-                    className={`reading text-base sm:text-lg font-bold shrink-0 ${
-                      lastPh.value > MASH_PH_BAND.max || lastPh.value < MASH_PH_BAND.min
-                        ? 'text-ebc-amber'
-                        : 'text-hop'
-                    }`}
-                  >
-                    {lastPh.value.toFixed(2)}
-                  </span>
-                )}
-              </div>
-
-              {!lastPh ? (
-                <p className="text-xs sm:text-sm text-cave-500 leading-snug">
-                  Mesure dix à quinze minutes après l’empâtage, puis enregistre-la en relevé
-                  « pH » : la dose d’acide à rattraper se calcule ici.
-                </p>
-              ) : !mashPhFix?.known ? (
-                /* Même règle que dans l'atelier : sans rapport eau/grain, on ne
-                   chiffre pas une dose d'acide sur une épaisseur inventée. */
-                <p className="text-xs sm:text-sm text-cave-500 leading-snug">
-                  La correction demande le volume d’empâtage et la facture de grain du plan
-                  d’eau — ils manquent sur ce brassin.
-                </p>
-              ) : mashPhFix.amount > 0 ? (
-                <p className="text-xs sm:text-sm text-cave-200 leading-snug">
-                  Au-dessus de la fenêtre — ajoute{' '}
-                  <span className="reading text-ebc-straw font-semibold">
-                    {mashPhFix.amount} {mashPhFix.unit}
-                  </span>{' '}
-                  d’{mashPhFix.name.charAt(0).toLowerCase()}
-                  {mashPhFix.name.slice(1)}, brasse, puis remesure.{' '}
-                  <span className="text-cave-500">
-                    En plus de ce qui est déjà dans la cuve — la mesure en tient compte.
-                  </span>
-                </p>
-              ) : (
-                <p className="text-xs sm:text-sm text-hop leading-snug">
-                  {lastPh.value < MASH_PH_BAND.min
-                    ? 'Sous la fenêtre : cette maische est déjà acide, n’ajoute rien.'
-                    : 'Dans la fenêtre : rien à ajouter.'}
-                </p>
-              )}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* --- Relevés ------------------------------------------------------ */}
-      <Section
-        title="Relevés"
-        hint="Horodatés à la saisie. C’est l’écart entre le visé et le mesuré qui informe."
-      >
-        <div className="space-y-2 sm:space-y-3">
-          <SegmentedControl
-            label="Type de relevé"
-            value={readingKind}
-            onChange={setReadingKind}
-            options={[
-              { value: 'densite', label: 'Densité' },
-              { value: 'volume', label: 'Volume' },
-              { value: 'ph', label: 'pH' },
-              { value: 'temperature', label: 'Temp.' }
-            ]}
-          />
-
-          <div className="space-y-1.5">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  enterKeyHint="done"
-                  name="brewday_reading_val"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  data-form-type="other"
-                  data-lpignore="true"
-                  data-1p-ignore="true"
-                  data-bwignore="true"
-                  placeholder={
-                    readingKind === 'densite'
-                      ? '1.061'
-                      : readingKind === 'ph'
-                        ? '5.4'
-                        : readingKind === 'volume'
-                          ? '30'
-                          : '67'
-                  }
-                  className={`${inputClass} reading text-base pr-12`}
-                  value={readingValue}
-                  onChange={(e) => setReadingValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') addReading();
-                  }}
-                />
-                {READING_UNITS[readingKind] && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-cave-400 font-mono pointer-events-none">
-                    {READING_UNITS[readingKind]}
-                  </span>
-                )}
-              </div>
+              {v === 'recipe' ? 'Recette' : v === 'journal' ? 'Journal' : AREA[v]}
+            </button>
+          ))}
+        </nav>
+        {activeTimers.length > 0 && (
+          <div aria-label="Minuteurs actifs" className="flex flex-wrap gap-2">
+            {activeTimers.map((s) => (
               <button
                 type="button"
-                onClick={addReading}
-                aria-label="Enregistrer le relevé"
-                className="touch-target px-3.5 min-h-[40px] rounded-control bg-ebc-straw text-cave-950 font-semibold flex items-center justify-center gap-1.5 shrink-0 active:opacity-80"
+                key={s.id}
+                className="text-2xs px-2 min-h-9 border border-cave-700 rounded-control text-cave-200"
+                onClick={() => choose(state.steps.indexOf(s))}
               >
-                <Plus className="w-4 h-4" />
-                <span className="text-xs font-semibold">Ajouter</span>
+                {s.label} · {s.pausedAt != null ? 'pause · ' : ''}
+                <span className="reading">{formatCountdown(remainingMs(s, now) ?? 0)}</span>
               </button>
-            </div>
-            <input
-              type="text"
-              name="brewday_reading_note"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              data-form-type="other"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-              className={`${inputClass} text-xs sm:text-sm`}
-              placeholder="Note facultative (odeur, aspect, incident…)"
-              value={readingNote}
-              onChange={(e) => setReadingNote(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') addReading();
-              }}
-            />
+            ))}
           </div>
-
-          {(state.readings?.length ?? 0) > 0 && (
-            <ul className="divide-y divide-cave-850">
-              {[...(state.readings ?? [])].reverse().map((r, i) => (
-                <li key={i} className="py-1.5 flex items-baseline gap-2 text-sm">
-                  <span className="reading text-xs text-cave-500 shrink-0 w-11">
-                    {new Date(r.at).toLocaleTimeString('fr-CH', {
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate">
-                    <span className="text-sm text-cave-100">
-                      {r.kind === 'densite'
-                        ? 'Densité'
-                        : r.kind === 'ph'
-                          ? 'pH'
-                          : r.kind === 'volume'
-                            ? 'Volume'
-                            : 'Température'}
-                    </span>
-                    {r.note && <span className="text-xs text-cave-500 ml-1.5 truncate">({r.note})</span>}
-                  </span>
-                  <span className="reading text-sm sm:text-base shrink-0 font-medium">
-                    {r.value} {r.unit}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {efficiency && (
-            <div className="panel p-2.5 space-y-0.5 text-xs sm:text-sm">
-              <p className="text-cave-500">
-                Densité visée {ogTarget.toFixed(3)} · mesurée {lastGravity?.value.toFixed(3)}
-              </p>
-              <p
-                className={`reading text-base sm:text-lg ${
-                  Math.abs(efficiency.deltaPoints) <= 2 ? 'text-hop' : 'text-ebc-amber'
-                }`}
-              >
-                {efficiency.deltaPoints >= 0 ? '+' : ''}
-                {efficiency.deltaPoints} points · {efficiency.realEfficiencyPct} % d’efficacité réelle
-              </p>
-              <p className="text-cave-400 leading-snug">{efficiency.verdict}</p>
-            </div>
-          )}
-        </div>
-      </Section>
-
-      {/* --- Le déroulé complet ------------------------------------------- */}
-      <Section title="Déroulé" hint="Toutes les étapes, pour savoir ce qui vient.">
-        <ol className="divide-y divide-cave-850">
-          {state.steps.map((s: BrewDayStep, i) => {
-            const isCurrent = i === state.currentIndex;
-            const isDone = Boolean(s.doneAt);
-            return (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => persist({ ...state, currentIndex: i })}
-                  className={`w-full py-1.5 sm:py-2 flex items-baseline gap-2.5 text-left ${
-                    isCurrent ? 'text-cave-50' : isDone ? 'text-cave-600' : 'text-cave-300'
-                  }`}
-                >
-                  <span
-                    className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${
-                      isDone ? 'bg-hop' : isCurrent ? 'bg-ebc-straw' : 'bg-cave-700'
-                    }`}
-                    aria-hidden
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className={`block text-sm sm:text-base truncate ${isDone ? 'line-through' : ''}`}>
-                      {s.label}
-                    </span>
-                    {s.detail && (
-                      <span className="block text-xs text-cave-600 truncate">{s.detail}</span>
+        )}
+        {view === 'journal' ? (
+          <BrewJournal state={state} recipe={recipe} update={update} />
+        ) : (
+          <>
+            {displayRecipe ? (
+              <section className="space-y-2">
+                <div className="flex gap-4 flex-wrap text-sm text-cave-200">
+                  <span>{recipe.style}</span>
+                  <span>{actualRecipe.totalGristKg ?? '—'} kg de grain</span>
+                  <span>{boilMinutes(state, recipe)} min d’ébullition</span>
+                </div>
+                <details>
+                  <summary className="min-h-10 text-sm text-cave-200 cursor-pointer">
+                    Programme et notes de recette
+                  </summary>
+                  <ul className="text-sm text-cave-200 space-y-1">
+                    {state.steps
+                      .filter((s) => !isBoilStep(s))
+                      .map((s) => (
+                        <li key={s.id}>
+                          {s.label}
+                          {s.tempC ? ` · ${s.tempC} °C` : ''}
+                          {isUsefulTimer(s) ? ` · ${s.durationMin} min` : ''}
+                        </li>
+                      ))}
+                  </ul>
+                  <p className="text-sm text-cave-400 whitespace-pre-wrap mt-2">
+                    {recipe.instructions}
+                  </p>
+                  {(recipe.notes ?? []).map((n, i) => (
+                    <p key={i} className="text-sm text-cave-400">
+                      {n}
+                    </p>
+                  ))}
+                </details>
+                {((recipe.hops ?? []).some((h) => h.stage === 'dryHop') ||
+                  recipe.fermentation?.length ||
+                  recipe.fermentables?.some((f) => f.use === 'fermentation')) && (
+                  <details>
+                    <summary className="min-h-10 text-sm text-cave-200 cursor-pointer">
+                      Après le brassage · fermentation et houblonnage à cru
+                    </summary>
+                    <ul className="text-sm text-cave-200 space-y-1">
+                      {(recipe.hops ?? [])
+                        .filter((h) => h.stage === 'dryHop')
+                        .map((h, i) => (
+                          <li key={'h' + i}>
+                            {h.name} · {Units.format(h.weightG, 'g')} · houblonnage à cru
+                            {h.dayOffset != null ? ' · J' + h.dayOffset : ''}
+                          </li>
+                        ))}
+                      {recipe.fermentables
+                        ?.filter((f) => f.use === 'fermentation')
+                        .map((f, i) => (
+                          <li key={'f' + i}>
+                            {f.name} · {Units.format(f.weightKg, 'kg')} · fermentation
+                          </li>
+                        ))}
+                      {recipe.fermentation?.map((f, i) => (
+                        <li key={'p' + i}>
+                          {f.name} · {f.tempC} °C · {f.days} jours{f.note ? ' · ' + f.note : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </section>
+            ) : (
+              <>
+                {stepsHere.length > 1 && (
+                  <div aria-label="Étapes disponibles" className="flex flex-wrap gap-1">
+                    {stepsHere.map(({ s, i }) => (
+                      <button
+                        type="button"
+                        key={s.id}
+                        className={`min-h-9 px-2 text-2xs rounded-control ${current.id === s.id ? 'bg-cave-800 text-ebc-straw' : 'text-cave-200'}`}
+                        aria-pressed={current.id === s.id}
+                        onClick={() => choose(i)}
+                      >
+                        {s.doneAt != null ? '✓ ' : ''}
+                        {isBoilStep(s) ? 'Cuve en ébullition' : s.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <section aria-label="Étape consultée" className="space-y-2">
+                  <div className="flex gap-2 justify-between items-center">
+                    <h2 className="text-lg font-semibold text-cave-50">
+                      {boiled ? 'Ébullition' : current.label}
+                      {current.tempC != null && (
+                        <span className="reading text-ebc-straw ml-2">{current.tempC} °C</span>
+                      )}
+                    </h2>
+                    <label className="text-2xs text-cave-200 flex items-center gap-2 min-h-10">
+                      <input
+                        type="checkbox"
+                        checked={completed}
+                        onChange={toggleComplete}
+                        className="w-4 h-4 accent-ebc-straw"
+                      />
+                      {boiled ? 'Feu coupé' : 'Terminé'}
+                    </label>
+                  </div>
+                  {!showTimer &&
+                    current.id !== 'eau' &&
+                    current.id !== 'concassage' &&
+                    current.detail && <p className="text-sm text-cave-200">{current.detail}</p>}
+                  {showTimer && (
+                    <div className="rounded-panel border border-cave-700 bg-cave-900 px-3 py-2 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <output
+                          aria-label="Temps restant"
+                          aria-live="off"
+                          className={`reading text-3xl flex-1 ${left != null && left < 0 ? 'text-ebc-straw' : 'text-cave-50'}`}
+                        >
+                          {formatCountdown(left ?? duration * 60000)}
+                        </output>
+                        {!running && !completed ? (
+                          <button
+                            type="button"
+                            onClick={start}
+                            className={`${brewControl} !bg-ebc-straw !text-cave-950 flex items-center gap-1`}
+                          >
+                            <Play size={16} />
+                            {current.pausedAt != null
+                              ? 'Reprendre'
+                              : boiled
+                                ? 'Ébullition atteinte'
+                                : 'Démarrer'}
+                          </button>
+                        ) : !boiled && running ? (
+                          <button
+                            type="button"
+                            aria-label="Mettre le minuteur en pause"
+                            className={brewControl}
+                            onClick={() =>
+                              update((s) => ({
+                                ...s,
+                                steps: s.steps.map((x, i) =>
+                                  i === s.currentIndex ? { ...x, pausedAt: Date.now() } : x
+                                )
+                              }))
+                            }
+                          >
+                            <Pause size={18} />
+                          </button>
+                        ) : null}
+                      </div>
+                      <div
+                        className="flex items-center gap-1"
+                        role="group"
+                        aria-label="Ajuster la durée"
+                      >
+                        {[-5, -1].map((d) => (
+                          <button
+                            type="button"
+                            key={d}
+                            className={`${brewControl} !px-2`}
+                            aria-label={`Retirer ${-d} minutes`}
+                            onClick={() => setDuration(duration + d)}
+                          >
+                            {d}
+                          </button>
+                        ))}
+                        <label className="flex items-center gap-1 text-2xs text-cave-200 flex-1">
+                          <NumberInput
+                            value={duration}
+                            min={1}
+                            max={480}
+                            integer
+                            onValue={setDuration}
+                            aria-label="Durée totale en minutes"
+                            className="w-full min-w-0 h-10 reading text-center bg-cave-950 border border-cave-600 rounded-control text-base text-cave-50"
+                          />
+                          min
+                        </label>
+                        {[1, 5].map((d) => (
+                          <button
+                            type="button"
+                            key={d}
+                            className={`${brewControl} !px-2`}
+                            aria-label={`Ajouter ${d} minutes`}
+                            onClick={() => setDuration(duration + d)}
+                          >
+                            +{d}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-2xs text-cave-400">
+                        {boiled
+                          ? 'Les prochains ajouts suivent le temps avant la fin. Ceux déjà versés restent consignés à leur heure réelle.'
+                          : 'Démarre à température atteinte. Tu peux consulter les autres tâches pendant ce palier.'}
+                      </p>
+                    </div>
+                  )}
+                  {boiled &&
+                    bitterness &&
+                    Math.abs(bitterness.projected - bitterness.planned) >= 1 && (
+                      <p className="text-2xs text-ebc-straw">
+                        ≈ {bitterness.projected} IBU avec ces ajouts et durées · recette{' '}
+                        {bitterness.planned}. Projection au volume et à l’OG prévus ; une ébullition
+                        prolongée concentre aussi le moût.
+                      </p>
                     )}
-                  </span>
-                  <span className="reading text-xs sm:text-sm text-cave-500 shrink-0">
-                    {s.durationMin > 0 ? `${s.durationMin} min` : '—'}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-      </Section>
-
-      {/* --- Houblonnage à cru : après le brassage, rappelé ici ----------- */}
-      {ingredients.hops.some((h) => h.stage === 'dryHop') && (
-        <Section
-          title="Houblonnage à cru"
-          hint="En fermenteur, les jours suivants — pas aujourd’hui."
-        >
-          <ul className="divide-y divide-cave-850">
-            {ingredients.hops
-              .filter((h) => h.stage === 'dryHop')
-              .sort((a, b) => (a.dayOffset ?? 0) - (b.dayOffset ?? 0))
-              .map((h, i) => (
-                <li key={i} className="py-1.5 flex items-baseline gap-2">
-                  <span className="reading text-xs text-hop shrink-0 w-10">
-                    J+{h.dayOffset ?? 0}
-                  </span>
-                  <span className="min-w-0 flex-1 text-sm text-cave-100 truncate">{h.name}</span>
-                  <span className="reading text-sm shrink-0">
-                    {Units.format(h.weightG, 'g')}
-                  </span>
-                </li>
-              ))}
-          </ul>
-        </Section>
-      )}
-
+                </section>
+                {due.length > 0 && (
+                  <aside
+                    role="status"
+                    className="text-sm text-ebc-straw border-l-2 border-ebc-straw pl-2"
+                  >
+                    {due.map((a) => (
+                      <p key={a.id}>
+                        <strong>{a.title}</strong> · {a.body}
+                      </p>
+                    ))}
+                  </aside>
+                )}
+              </>
+            )}
+            <BrewIngredients
+              recipe={recipe}
+              state={state}
+              stock={stockItems}
+              area={area}
+              overview={displayRecipe}
+              update={update}
+            />
+            {!displayRecipe && (
+              <section aria-label="Préparations" className="border-t border-cave-800 pt-1">
+                <h3 className="text-sm text-cave-50 font-semibold py-1">À préparer</h3>
+                {PREPARATIONS.filter((p) => p.area === area).map((p) => (
+                  <label
+                    key={p.id}
+                    className="flex items-center gap-2 min-h-10 text-sm text-cave-200"
+                  >
+                    <input
+                      className="w-4 h-4 accent-ebc-straw"
+                      type="checkbox"
+                      checked={!!state.preparations?.[p.id]}
+                      onChange={(e) =>
+                        update((s) => ({
+                          ...s,
+                          preparations: { ...s.preparations, [p.id]: e.target.checked }
+                        }))
+                      }
+                    />
+                    {p.label}
+                  </label>
+                ))}
+              </section>
+            )}
+            {!displayRecipe && area !== 'preparation' && (
+              <div className="border-t border-cave-800 pt-3">
+                <BrewDayMeasurements
+                  key={current.id}
+                  step={current}
+                  recipe={actualRecipe}
+                  state={state}
+                  update={update}
+                />
+              </div>
+            )}
+            {!displayRecipe && area === 'preparation' && (
+              <details>
+                <summary className="min-h-10 text-sm text-cave-200 cursor-pointer">
+                  Relever un volume, une température ou une mesure d’eau
+                </summary>
+                <BrewDayMeasurements
+                  key={current.id}
+                  step={current}
+                  recipe={actualRecipe}
+                  state={state}
+                  update={update}
+                />
+              </details>
+            )}
+            {efficiency && !displayRecipe && (
+              <section
+                aria-label="Rendement mesuré"
+                className="rounded-control border border-cave-700 p-3"
+              >
+                <h3 className="text-sm font-semibold text-cave-50">
+                  {current.id === 'preboil'
+                    ? 'Rendement d’empâtage + filtration'
+                    : 'Rendement global en fermenteur'}
+                </h3>
+                {efficiency.known ? (
+                  <>
+                    <p
+                      className={`reading text-2xl ${efficiency.questionable ? 'text-ebc-straw' : 'text-cave-50'}`}
+                    >
+                      {efficiency.pct} %{' '}
+                      {efficiency.approximate && <span className="text-sm">≈</span>}
+                    </p>
+                    <p className="text-2xs text-cave-200">
+                      {efficiency.volumeL} L × densité {efficiency.sg.toFixed(3)} / potentiel des
+                      ingrédients.{efficiency.direct && ' Sucres et extraits pris en compte.'}
+                    </p>
+                    <p className="text-2xs text-cave-400 mt-1">
+                      {efficiency.questionable
+                        ? 'Résultat impossible : vérifie unités, volume, densité et potentiels.'
+                        : efficiency.approximate
+                          ? 'Estimation : confirme densité corrigée et volume ramené à 20 °C.'
+                          : rig && current.id === 'ensemencement'
+                            ? `Repère matériel : ${rig.efficiencyPct} %. Compare aussi les pertes de transfert.`
+                            : 'Volume et densité doivent correspondre au même moût.'}
+                    </p>
+                    {efficiency.spreadMin > 30 && (
+                      <p className="text-2xs text-ebc-straw">
+                        Les deux relevés sont espacés de plus de 30 minutes : confirme qu’ils
+                        décrivent le même volume.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-sm text-cave-400">{efficiency.reason}</p>
+                )}
+              </section>
+            )}
+            {area === 'finish' && !displayRecipe && (
+              <button
+                type="button"
+                className={`${brewControl} w-full !bg-ebc-straw !text-cave-950 font-semibold`}
+                onClick={() => setConfirmFinish(true)}
+              >
+                Clôturer le brassage
+              </button>
+            )}
+          </>
+        )}
+        <section aria-label="Notes et conseil" className="space-y-2">
+          <label htmlFor="brew-note" className="text-sm font-semibold text-cave-50">
+            Un imprévu à la cuve ?
+          </label>
+          <textarea
+            id="brew-note"
+            aria-label="Carnet de cuve"
+            value={note}
+            rows={2}
+            maxLength={2000}
+            placeholder="Trop d’Epsom, malt manquant, débit faible…"
+            onChange={(e) => {
+              setNote(e.target.value);
+              setNotice('');
+            }}
+            className="w-full text-base text-cave-50 bg-cave-900 border border-cave-700 rounded-control px-3 py-2 focus:border-ebc-straw outline-none"
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className={`${brewControl} flex-1`}
+              disabled={!note.trim()}
+              onClick={addNote}
+            >
+              Noter
+            </button>
+            <button
+              type="button"
+              className={`${brewControl} flex-1 flex justify-center items-center gap-1`}
+              disabled={busy}
+              onClick={analyse}
+            >
+              <Sparkles size={16} />
+              {busy ? 'Analyse…' : 'Conseil IA'}
+            </button>
+          </div>
+          {notice && (
+            <p role="status" className="text-2xs text-cave-200">
+              {notice}
+            </p>
+          )}
+          {advice?.key === signature && (
+            <aside role="status" className="border-l-2 border-water pl-2 text-sm text-cave-200">
+              <p>{advice.verdict}</p>
+              {advice.action && <p className="text-cave-50 mt-1">{advice.action}</p>}
+            </aside>
+          )}
+          {advice && advice.key !== signature && (
+            <p className="text-2xs text-cave-400">Le contexte a changé : actualise le conseil.</p>
+          )}
+        </section>
+        <BrewAlarmSettings batchId={batch.id} alarms={alarms} />
+      </div>
       <ConfirmSheet
         open={confirmFinish}
         onClose={() => setConfirmFinish(false)}
         title="Clôturer le brassage ?"
-        what={`${batch.id} — ${batch.name}`}
-        consequence={`Les ingrédients de la recette sortent du stock, le brassin passe en fermentation${
-          lastGravity ? `, et l’OG est enregistrée à ${lastGravity.value.toFixed(3)}` : ''
-        }. Le déstockage est journalisé et reste annulable depuis le brassin.`}
-        confirmLabel="Clôturer et déstocker"
+        what={`OG ${finishedReadings.gravity?.value.toFixed(3) ?? 'non relevée'} · ${finishedReadings.volume?.value ?? '—'} L en fermenteur.`}
+        consequence={`${confirmed}/${ingredients.filter((i) => i.planned > 0).length} ajouts cochés. Le journal et les écarts resteront consultables. Le brassin passera en fermentation.`}
+        confirmLabel="Clôturer"
         onConfirm={() => {
-          setConfirmFinish(false);
-          void releaseScreen();
+          const f = finalBrewReadings(latest.current);
           onFinish({
-            ...batch,
-            brewDay: { ...state, finishedAt: Date.now() },
-            og: lastGravity ? lastGravity.value.toFixed(3) : batch.og,
-            volumeBrewedL:
-              [...(state.readings ?? [])].reverse().find((r) => r.kind === 'volume')?.value ??
-              batch.volumeBrewedL,
+            ...batchRef.current,
+            brewDay: { ...latest.current, finishedAt: Date.now() },
+            ...(f.gravity ? { og: f.gravity.value.toFixed(3) } : {}),
+            ...(f.volume ? { volumeBrewedL: f.volume.value } : {}),
             status: 'fermentation'
           });
         }}
       />
     </PageShell>
   );
-};
+}

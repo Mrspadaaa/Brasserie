@@ -104,20 +104,11 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       }
     });
 
-    /*
-     * ⚠️ Le bicarbonate compte AUSSI, dans la limite de ce que l'acide corrige
-     * honnêtement. Sans ce critère, une Pils depuis Fribourg sortait à 0 %
-     * d'osmosée au phosphorique : 250 ppm de bicarbonate « neutralisés », mais
-     * l'anion de l'acide reste dans la bière (4 mmol/L de phosphate ou de
-     * lactate), le calcium précipite en phosphate, et ce n'est plus une eau de
-     * Pils. Au-delà de 100 ppm de HCO₃ au-dessus du maximum du style — ce que
-     * n'importe quel brasseur corrige à l'acide sans y penser —, on coupe.
-     * Sur une porter (max 180) ou une stout (250), Fribourg passe tel quel.
-     */
+    /** Repère de confort maison pour limiter les acides. Ce seuil de dilution est une politique, pas une limite chimique de neutralisation. */
     const hco3Max = input.ranges?.hco3?.max;
     if (hco3Max != null && Number.isFinite(hco3Max) && start.hco3 > hco3Max + HCO3_ACID_TOLERANCE_PPM) {
       reasons.push(
-        `bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm pour ${hco3Max} au maximum du style — l’acide n’en corrige raisonnablement que ${HCO3_ACID_TOLERANCE_PPM} de plus`
+        `bicarbonate du réseau à ${Math.round(input.source.hco3)} ppm ; repère de dilution ${hco3Max + HCO3_ACID_TOLERANCE_PPM} ppm pour limiter la charge d’acide`
       );
     }
 

@@ -1,5 +1,11 @@
 # Solveur de sels — vérification du plan et résultat
 
+Suite de cet audit : [profils, sources et interface du 6 septembre](water-style-audit.md).
+Les mesures comparatives ci-dessous décrivent la passe initiale. Le solveur donne
+désormais davantage de priorité aux planchers explicites Mg/Na ; NaCl porte une
+borne de dose dérivée du sodium demandé. Les plages de HCO₃ par style ne sont
+plus présentées comme une cible de pH sur le radar.
+
 Le solveur minéral résout maintenant les sels simultanément. Le cas de référence
 d’Angles, sur **30 L traités**, donne **CaCl₂ 5,6 g, Epsom 7,2 g, NaCl 1 g**.
 

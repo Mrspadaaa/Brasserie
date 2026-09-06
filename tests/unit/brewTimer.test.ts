@@ -107,8 +107,8 @@ describe('Étapes de préparation', () => {
 });
 
 describe('Cas dégradés', () => {
-  it('sans houblon d’ébullition, une seule étape couvre toute la durée', () => {
-    const steps = buildTimeline(recipe({ hops: [] }));
+  it('sans aucun ajout d’ébullition, une seule étape couvre toute la durée', () => {
+    const steps = buildTimeline(recipe({ hops: [], fermentables: [] }));
     const boil = steps.filter((s) => s.id.startsWith('boil'));
     expect(boil).toHaveLength(1);
     expect(boil[0].durationMin).toBe(75);
