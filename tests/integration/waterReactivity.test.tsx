@@ -296,16 +296,43 @@ describe('Le style pilote les cibles', () => {
   const comparaison = () =>
     screen.getByRole('list', { name: /Eau de départ et eau corrigée/i });
 
+  /*
+   * ⚠️ CE TEST LISAIT L'ALCALINITÉ, ET C'EST JUSTEMENT L'AXE QUI A CHANGÉ.
+   *
+   * Il attendait « 120–250 » puis « 0–40 » : les fourchettes de bicarbonate
+   * brutes d'une impériale et d'une Pils. Depuis que l'axe alcalinité se juge
+   * sur la fenêtre d'AR retraduite pour le calcium de l'eau, ces deux nombres
+   * n'y sont plus — et c'était le but : la toile disait « HCO₃ hors cible »
+   * pendant que le panneau disait « après l'acide, dans la cible ».
+   *
+   * On vérifie donc la même chose sur un ion de GOÛT, qui lui se juge toujours
+   * sur le style. Le chlorure sépare bien les deux : 80–160 pour une impériale,
+   * 20–50 pour une Pils.
+   */
   it('changer de style change la fourchette affichée et la proposition', () => {
     monter({}, 6);
-    // L'alcalinité d'une impériale : 120 à 250 ppm.
-    expect(within(comparaison()).getByText('120–250')).toBeInTheDocument();
+    expect(within(comparaison()).getByText('80–160')).toBeInTheDocument();
 
     clic('style Pils');
 
+    expect(within(comparaison()).queryByText('80–160')).not.toBeInTheDocument();
+    expect(within(comparaison()).getByText('20–50')).toBeInTheDocument();
+  });
+
+  /*
+   * ⚠️ Et l'axe de l'alcalinité, lui, suit la fenêtre d'AR — pas le profil.
+   *
+   * Signalé : « le HCO₃ n'est pas toujours dans le target ». Le même écran
+   * affichait deux verdicts contraires sur la même eau ; il n'en affiche plus
+   * qu'un. La fenêtre dépend du CALCIUM de l'eau, elle ne peut donc pas être
+   * celle du guide de style.
+   */
+  it('⚠️ l’alcalinité ne se juge plus sur le bicarbonate brut du style', () => {
+    monter({}, 6);
+    // Ni la fourchette de l'impériale, ni celle de la Pils après bascule.
     expect(within(comparaison()).queryByText('120–250')).not.toBeInTheDocument();
-    // Celle d'une Pils : quasi nulle.
-    expect(within(comparaison()).getByText('0–40')).toBeInTheDocument();
+    clic('style Pils');
+    expect(within(comparaison()).queryByText('0–40')).not.toBeInTheDocument();
   });
 });
 

@@ -17,6 +17,8 @@ import {
   raForGrist,
   raSaltCeilingForGrist,
   raAcidTarget,
+
+  hco3BandForRa,
   MALT_BUFFER_MEQ_PER_KG_PH,
   CHALK_RA_CAP_PPM,
   estimateMashPh,
@@ -1607,5 +1609,54 @@ describe('Le seuil d’achat d’alcalinité, et lui seul', () => {
   /* Les deux autres marches d'avant — 30 et 60 EBC — ont disparu. */
   it('⚠️ ni autour de 30, ni autour de 60 EBC', () => {
     expect(balaye(25, 70)).toEqual([]);
+  });
+});
+
+/*
+ * ⚠️ « Le HCO₃ n'est pas toujours dans le target. »
+ *
+ * Le même écran donnait deux verdicts contraires sur la même eau : le panneau
+ * jugeait l'alcalinité sur l'AR — qui retranche le calcium — et la toile sur le
+ * bicarbonate brut du profil de style, qui l'ignore. Mesuré sur 145
+ * combinaisons style × eau : 37 % tombaient hors de la fourchette du style
+ * alors que l'AR était sur sa cible.
+ */
+describe('La fenêtre d’alcalinité, retraduite en bicarbonate', () => {
+  const eau = (ca: number, mg: number) => ({ ca, mg });
+
+  it('⚠️ inverse exactement la définition de Kolbach', () => {
+    const bande = { min: -46, max: 14 };
+    const b = hco3BandForRa(bande, eau(68, 5));
+    // compensation = 68/1.4 + 5/1.7 = 48.6 + 2.9 = 51.5 ppm de CaCO₃
+    // bas  = (-46 + 51.5) × 61/50 = 6.7   →  7
+    // haut = ( 14 + 51.5) × 61/50 = 79.9  →  80
+    expect(b.min).toBe(7);
+    expect(b.max).toBe(80);
+  });
+
+  /* Aller-retour : une eau posée sur une borne y retombe. */
+  it('une eau dont l’AR vaut la borne tombe sur la borne', () => {
+    for (const [ca, mg] of [[0, 0], [68, 5], [150, 30], [275, 40]] as Array<[number, number]>) {
+      for (const cible of [-60, -30, 0, 60, 150]) {
+        const b = hco3BandForRa({ min: cible, max: cible }, eau(ca, mg));
+        const ra = residualAlkalinity({ ca, mg, na: 0, so4: 0, cl: 0, hco3: b.min });
+        // ±1 ppm : la fenêtre est arrondie au ppm entier.
+        if (b.min > 0) expect(Math.abs(ra - cible)).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it('plus l’eau est calcaire, plus la fenêtre monte', () => {
+    const douce = hco3BandForRa({ min: -30, max: 30 }, eau(20, 2));
+    const dure = hco3BandForRa({ min: -30, max: 30 }, eau(120, 25));
+    expect(dure.min).toBeGreaterThan(douce.min);
+    expect(dure.max).toBeGreaterThan(douce.max);
+  });
+
+  it('ne descend jamais sous zéro, et survit aux entrées cassées', () => {
+    expect(hco3BandForRa({ min: -60, max: 0 }, eau(0, 0)).min).toBe(0);
+    const casse = hco3BandForRa({ min: -30, max: 30 }, { ca: NaN, mg: Infinity } as never);
+    expect(Number.isFinite(casse.min)).toBe(true);
+    expect(Number.isFinite(casse.max)).toBe(true);
   });
 });

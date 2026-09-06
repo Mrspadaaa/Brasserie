@@ -30,6 +30,7 @@ export { MASH_PH_UNCERTAINTY } from './mashPh';
 export { raSaltCeilingForGrist } from './mashPh';
 export { raForGrist } from './mashPh';
 export { raAcidTarget } from './mashPh';
+export { hco3BandForRa } from './mashPh';
 export { RA_BAND_REFERENCE_RATIO } from './mashPh';
 export { scaleBandForMashRatio } from './mashPh';
 export { targetRaForGrist } from './mashPh';

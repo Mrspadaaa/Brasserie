@@ -21,6 +21,7 @@ import {
   targetRaForGrist,
   raSaltCeilingForGrist,
   raAcidTarget,
+  hco3BandForRa,
   estimateMashPh,
   hopBalanceHint,
   MASH_PH_BAND,
@@ -945,6 +946,38 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    * proposition du solveur : c'est le sodium qu'on boira qu'on compare à
    * 150 ppm, pas celui d'un plan qu'on n'a peut-être pas appliqué.
    */
+
+  /**
+   * Le style TEL QUE LA TOILE LE MONTRE — avec sa fenêtre d'alcalinité refaite.
+   *
+   * ⚠️ Signalé ainsi : « le HCO₃ n'est pas toujours dans le target ». Le même
+   * écran disait deux choses contraires sur la même grandeur :
+   *
+   *   panneau      « Après l'acide : −15 ppm — dans la cible. »       ✓
+   *   toile        « HCO₃⁻ éq. 45, cible 0–40 »                ✗ en ambre
+   *
+   * Le panneau juge sur l'alcalinité RÉSIDUELLE, qui retranche le calcium ; la
+   * toile jugeait sur le bicarbonate brut du profil de style, qui l'ignore. Sur
+   * une eau calcaire les deux ne peuvent pas s'accorder — mesuré sur 145
+   * combinaisons style × eau, 37 % tombaient hors de la fourchette du style
+   * alors que l'AR était sur sa cible.
+   *
+   * C'est l'AR que l'acide vise et c'est elle qui décide du pH ; la fourchette
+   * de bicarbonate d'un guide de style n'est qu'un raccourci, et le solveur ne
+   * s'en sert jamais. C'est donc elle qui cède : le secteur vert de cet axe est
+   * désormais la fenêtre d'AR retraduite en HCO₃ pour le calcium et le
+   * magnésium de CETTE eau.
+   *
+   * Les cinq autres axes ne bougent pas : eux se jugent bien sur le style.
+   */
+  const styleAffiche = useMemo(
+    () => ({
+      ...style,
+      ions: { ...style.ions, hco3: hco3BandForRa(raBand, achievedTotalApresAcide) }
+    }),
+    [style, raBand, achievedTotalApresAcide]
+  );
+
   const cautions = useMemo(
     () => saltCautions(state.doses, state.disabled, achievedTotalApresAcide, totalWaterL),
     [state.doses, state.disabled, achievedTotalApresAcide, totalWaterL]
@@ -1134,7 +1167,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           téléphone, et le bicarbonate tombait hors écran. Il est revenu en
           rangs.
         */}
-        <IonComparison start={start} achieved={achievedTotalApresAcide} style={style} />
+        <IonComparison start={start} achieved={achievedTotalApresAcide} style={styleAffiche} />
 
         {/* 3. Volumes & Procédé de Rinçage */}
         <div className="panel p-3 bg-cave-900/60 border border-cave-750 space-y-3">
@@ -1896,7 +1929,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           <WaterRadar
             start={start}
             achieved={achievedTotalApresAcide}
-            style={style}
+            style={styleAffiche}
             /* L'acide n'apporte pas d'ion : il en RETIRE un, le bicarbonate.
                C'est donc lui que la toile allume. */
             highlight={

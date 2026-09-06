@@ -1,3 +1,5 @@
+import { CA_DIVISOR, MG_DIVISOR } from './ions';
+
 
 
 
@@ -431,6 +433,56 @@ export function raForGrist(
   if (!est.known) return null;
   const ratio = mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;
   return Math.round(((MASH_PH_BAND.target - est.phDistilled) * RA_PH_DIVISOR) / ratio);
+}
+
+/**
+ * La fenêtre d'AR, retraduite en BICARBONATE pour une eau donnée.
+ *
+ * ⚠️ Signalé ainsi : « le HCO₃ n'est pas toujours dans la cible ». Vérifié dans
+ * l'app sur une Gose, et le même écran disait deux choses contraires sur la
+ * même grandeur :
+ *
+ *   panneau d'alcalinité   « Après l'acide : −15 ppm — dans la cible. »   ✓
+ *   toile et tableau       « HCO₃⁻ éq. 45, cible 0–40 »          ✗ en ambre
+ *
+ * Les deux jugeaient l'alcalinité de la même eau après le même acide. Le
+ * panneau la juge sur l'ALCALINITÉ RÉSIDUELLE — qui retranche le calcium et le
+ * magnésium, parce que ce sont eux qui acidifient la maische. La toile la
+ * jugeait sur le bicarbonate BRUT du profil de style, un chiffre statique qui
+ * ignore le calcium. Sur une eau calcaire, les deux ne peuvent pas tomber
+ * d'accord : mesuré sur 145 combinaisons style × eau, 37 % finissaient hors de
+ * la fourchette du style alors que l'AR, elle, était sur sa cible.
+ *
+ * Or c'est l'AR que l'acide vise, et c'est elle qui décide du pH. La fourchette
+ * de bicarbonate du profil n'est qu'un raccourci d'auteur de guide de style, et
+ * le solveur ne s'en sert jamais. C'est donc elle qui cède.
+ *
+ * On inverse la définition de Kolbach :
+ *
+ *   AR   = alcalinité − Ca/1.4 − Mg/1.7          (en ppm de CaCO₃)
+ *   d'où   alcalinité = AR + Ca/1.4 + Mg/1.7
+ *   et     HCO₃       = alcalinité × 61/50
+ *
+ * La fenêtre obtenue dépend donc de l'eau qu'on regarde — c'est le but. Sur la
+ * Gose ci-dessus (Ca 68, Mg 5), la fenêtre d'AR −46..14 devient 7 à 80 ppm de
+ * HCO₃, et les 45 ppm affichés y tombent : l'axe dit enfin la même chose que le
+ * panneau.
+ *
+ * ⚠️ On la calcule sur l'eau REPRÉSENTÉE, pas sur la maische. La cible d'AR est
+ * une grandeur de maische, mais la toile montre le moût ; dériver la fenêtre du
+ * calcium du moût est ce qui rend l'axe cohérent avec ce qu'il trace. La
+ * question qu'il pose devient : « cette eau-là, une fois son propre calcium
+ * retranché, tombe-t-elle dans la fenêtre visée ? »
+ */
+export function hco3BandForRa(
+  band: { min: number; max: number },
+  ions: { ca: number; mg: number }
+): { min: number; max: number } {
+  const ca = Number.isFinite(ions?.ca) ? Math.max(0, ions.ca) : 0;
+  const mg = Number.isFinite(ions?.mg) ? Math.max(0, ions.mg) : 0;
+  const compense = ca / CA_DIVISOR + mg / MG_DIVISOR;
+  const enHco3 = (ra: number) => Math.max(0, Math.round(((ra + compense) * 61) / 50));
+  return { min: enHco3(band.min), max: enHco3(band.max) };
 }
 
 /**
