@@ -1,4 +1,13 @@
 import React, { useState } from 'react';
+import {
+  ArrowLeftRight,
+  Check,
+  Droplets,
+  Wheat,
+  Flower2,
+  FlaskConical,
+  Clock3
+} from 'lucide-react';
 import { BrewDayState, RecipeSnapshot, StockItem } from '../types';
 import {
   actualAmount,
@@ -7,14 +16,17 @@ import {
   brewIngredients,
   maltAlternatives,
   effectiveFermentables,
-  mineralFeedback
+  mineralFeedback,
+  boilMinutes
 } from '../domain/brewCompanion';
 import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
 import { NumberInput } from './NumberInput';
 import { Units } from '../services/units';
 import { useHoldRepeat } from './numericInput';
+import { BrewChoice } from './BrewChoice';
+import { BrewTag } from './BrewTag';
 
-const f = (n: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 2 }).format(n);
+const f = (n: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 }).format(n);
 function IngredientRow({
   item,
   recipe,
@@ -33,6 +45,7 @@ function IngredientRow({
   const actual = state.additions?.[item.id];
   const amount = actualAmount(item, state);
   const [alternatives, setAlternatives] = useState(false);
+  const [editingDose, setEditingDose] = useState(false);
   const [replacementName, setReplacementName] = useState('');
   const named = actual?.replacement?.name ?? item.name;
   const patch = (p: Partial<NonNullable<BrewDayState['additions']>[string]>) => {
@@ -41,7 +54,11 @@ function IngredientRow({
       ...s,
       additions: {
         ...s.additions,
-        [item.id]: { amount: actualAmount(item, s), ...s.additions?.[item.id], ...p }
+        [item.id]: {
+          amount: actualAmount(item, s),
+          ...s.additions?.[item.id],
+          ...p
+        }
       }
     }));
   };
@@ -74,13 +91,71 @@ function IngredientRow({
     ? Units.convert(available.currentStock, available.unit, item.unit)
     : null;
   const shortage = availableQty != null && availableQty < amount;
+  const changed = Math.abs(amount - item.planned) > 0.001;
   return (
-    <div className="py-1.5 border-b border-cave-800 last:border-0">
-      <div className="flex gap-2 items-start">
-        <label
-          className="min-h-11 w-8 shrink-0 flex items-center justify-center"
-          title="Cocher après l’ajout réel"
+    <div className={`brew-ingredient ${actual?.doneAt != null ? 'is-added' : ''}`}>
+      <div className="brew-ingredient-heading">
+        <div className="brew-ingredient-name">
+          <strong>{named}</strong>
+          {changed && (
+            <span>
+              Prévu {f(item.planned)} {item.unit}
+              <em>
+                Écart {amount > item.planned ? '+' : ''}
+                {f(amount - item.planned)} {item.unit}
+              </em>
+            </span>
+          )}
+        </div>
+        {fermentable?.kind === 'grain' && (
+          <button
+            type="button"
+            className="brew-replace-button"
+            aria-label="Remplacer ce malt"
+            title="Remplacer ce malt"
+            aria-expanded={alternatives}
+            onClick={() => setAlternatives((v) => !v)}
+          >
+            <ArrowLeftRight size={17} />
+            <span>Remplacer</span>
+          </button>
+        )}
+      </div>
+      {item.kind === 'water' && recipe.waterPlan && (
+        <div className="brew-water-split">
+          <Droplets size={15} />
+          {(() => {
+            const pct =
+              item.side === 'mash'
+                ? recipe.waterPlan.diRatioPct
+                : (recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct);
+            return (
+              <>
+                <span>
+                  <strong>{f(amount * (1 - (pct ?? 0) / 100))} L</strong> réseau
+                </span>
+                <span>+</span>
+                <span>
+                  <strong>{f((amount * (pct ?? 0)) / 100)} L</strong> osmosée
+                </span>
+              </>
+            );
+          })()}
+        </div>
+      )}
+      <div className="brew-ingredient-controls">
+        <button
+          type="button"
+          className="brew-amount"
+          aria-label={`Modifier la quantité de ${named}${item.side ? ' au ' + item.side : ''}`}
+          aria-describedby={`brew-dose-value-${item.id} brew-dose-unit-${item.id}`}
+          aria-expanded={editingDose}
+          onClick={() => setEditingDose((value) => !value)}
         >
+          <strong id={`brew-dose-value-${item.id}`}>{f(amount)}</strong>{' '}
+          <span id={`brew-dose-unit-${item.id}`}>{item.unit}</span>
+        </button>
+        <label className="brew-add-check" title="Cocher après l’ajout réel">
           <input
             type="checkbox"
             aria-label={`Ajouté : ${named}`}
@@ -95,93 +170,61 @@ function IngredientRow({
                   return { ...s, additions: { ...s.additions, [item.id]: a } };
                 });
             }}
-            className="accent-ebc-straw w-5 h-5"
           />
+          <span className="brew-check-box" aria-hidden="true">
+            {actual?.doneAt != null && <Check size={16} />}
+          </span>
+          <span className="sr-only">{actual?.doneAt != null ? 'Ajouté' : 'À ajouter'}</span>
         </label>
-        <div className="min-w-0 flex-1">
-          <div
-            className={`text-sm font-semibold leading-tight ${actual?.doneAt != null ? 'text-cave-400' : 'text-cave-50'}`}
-          >
-            {named}
-          </div>
-          <p className="text-2xs text-cave-400">
-            Prévu {f(item.planned)} {item.unit}
-            {item.side ? ` · ${item.side === 'mash' ? 'empâtage' : 'rinçage'}` : ''}
-            {item.beforeEndMin != null
-              ? ` · ${item.beforeEndMin} min avant la fin`
-              : item.kind === 'hop'
-                ? ` · ${item.stepId === 'fwh' ? 'premier moût' : 'whirlpool'}`
-                : ''}
-            {actual?.doneAt != null ? ' · ajouté' : ''}
-            {fermentable?.kind === 'grain' && (
-              <button
-                type="button"
-                className="min-h-8 text-2xs text-water underline ml-2"
-                onClick={() => setAlternatives((v) => !v)}
-              >
-                Remplacer ce malt
-              </button>
-            )}
-          </p>
-          {item.kind === 'water' && recipe.waterPlan && (
-            <p className="text-2xs text-cave-200">
-              {(() => {
-                const pct =
-                  item.side === 'mash'
-                    ? recipe.waterPlan.diRatioPct
-                    : (recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct);
-                return (
-                  f(amount * (1 - (pct ?? 0) / 100)) +
-                  ' L réseau + ' +
-                  f((amount * (pct ?? 0)) / 100) +
-                  ' L osmosée'
-                );
-              })()}
-            </p>
-          )}
-          {shortage && (
-            <p className="text-2xs text-ebc-straw">
-              Stock indiqué : {f(availableQty!)} {item.unit}
-            </p>
-          )}
-        </div>
-        <div className="shrink-0 text-right">
-          <div className="flex items-center">
+      </div>
+      {editingDose && (
+        <div className="brew-dose-edit" aria-label={`Ajuster ${named}`}>
+          <div className="brew-dose" data-changed={changed || undefined}>
             {(item.kind === 'salt' || item.kind === 'acid') && (
-              <button
-                type="button"
-                {...press(-rung)}
-                aria-label={`Diminuer ${named}`}
-                className="w-7 h-11 text-cave-200 bg-cave-850 rounded-l-control"
-              >
+              <button type="button" {...press(-rung)} aria-label={`Diminuer ${named}`}>
                 −
               </button>
             )}
-            <NumberInput
-              value={amount}
-              min={0}
-              max={100000}
-              onValue={(n: number) => {
-                if (Number.isFinite(n) && n >= 0 && n <= 100000) patch({ amount: n });
-              }}
-              aria-label={`Quantité réelle de ${named}${item.side ? ' au ' + item.side : ''}`}
-              className={`${brewInput} !w-16 !px-1 text-center`}
-            />
+            <div className="brew-dose-value">
+              <NumberInput
+                value={amount}
+                min={0}
+                max={100000}
+                emptyValue={undefined}
+                onValue={(n) => {
+                  if (Number.isFinite(n) && n >= 0 && n <= 100000) patch({ amount: n });
+                }}
+                aria-label={`Quantité réelle de ${named}${item.side ? ' au ' + item.side : ''}`}
+              />
+              <span>{item.unit}</span>
+            </div>
             {(item.kind === 'salt' || item.kind === 'acid') && (
-              <button
-                type="button"
-                {...press(rung)}
-                aria-label={`Augmenter ${named}`}
-                className="w-7 h-11 text-cave-200 bg-cave-850 rounded-r-control"
-              >
+              <button type="button" {...press(rung)} aria-label={`Augmenter ${named}`}>
                 +
               </button>
             )}
           </div>
+          <button type="button" className="brew-text-button" onClick={() => setEditingDose(false)}>
+            Fermer l’ajustement
+          </button>
         </div>
-      </div>
+      )}
+      {actual?.doneAt != null && (
+        <p className="brew-added-time">
+          Ajout consigné à{' '}
+          {new Date(actual.doneAt).toLocaleTimeString('fr-CH', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </p>
+      )}
+      {shortage && (
+        <p className="brew-stock-hint">
+          Stock indiqué : {f(availableQty!)} {item.unit}
+        </p>
+      )}
       {fermentable?.kind === 'grain' && (
-        <div className="pl-10">
+        <div className="brew-alternatives">
           {alternatives && (
             <div className="space-y-1 pb-1">
               {choices.map((c) => (
@@ -290,7 +333,9 @@ export function BrewIngredients({
   stock = [],
   area,
   update,
-  overview = false
+  overview = false,
+  now = Date.now(),
+  stepId
 }: {
   recipe: RecipeSnapshot;
   state: BrewDayState;
@@ -298,67 +343,193 @@ export function BrewIngredients({
   area: BrewArea;
   update: BrewUpdate;
   overview?: boolean;
+  now?: number;
+  stepId?: string;
 }) {
   const [extra, setExtra] = useState<string[]>([]);
   const [activeItem, setActiveItem] = useState<string | null>(null);
   const items = brewIngredients(recipe);
+  const forStep = (i: BrewIngredient) => {
+    if (overview) return true;
+    if (!stepId) return i.area === area || (area === 'mash' && i.kind === 'grain');
+    if (area === 'preparation')
+      return (
+        i.area === area &&
+        (stepId === 'concassage' ? i.stepId === 'concassage' : i.stepId !== 'concassage')
+      );
+    if (area === 'mash')
+      return (
+        (i.kind === 'grain' && /^mash/.test(stepId)) ||
+        (i.side === 'sparge' && stepId === 'sparge') ||
+        (i.area === 'mash' && (i.stepId === 'fwh' ? stepId === 'fwh' : /^mash/.test(stepId)))
+      );
+    if (area === 'boil')
+      return (
+        i.area === area &&
+        (stepId === 'whirlpool' ? i.stepId === 'whirlpool' : i.stepId !== 'whirlpool')
+      );
+    return i.area === area && (i.id !== 'yeast' || stepId === 'ensemencement');
+  };
   const shown = items.filter(
-    (i) =>
-      (overview || i.area === area || (area === 'mash' && i.kind === 'grain')) &&
-      (i.planned > 0 || state.additions?.[i.id] || extra.includes(i.id))
+    (i) => forStep(i) && (i.planned > 0 || state.additions?.[i.id] || extra.includes(i.id))
   );
   const inlineImpact = shown.some(
     (i) => i.id === activeItem && ['salt', 'acid', 'water'].includes(i.kind)
   );
+  const groups = new Map<
+    string,
+    {
+      label: string;
+      hint: string;
+      icon: typeof Droplets;
+      items: BrewIngredient[];
+      at?: number;
+    }
+  >();
+  const end =
+    state.boilStartedAt != null
+      ? state.boilStartedAt + boilMinutes(state, recipe) * 60000
+      : undefined;
+  const areaOrder = { preparation: 0, mash: 1, boil: 2, finish: 3 };
+  const ordered = [...shown].sort(
+    (a, b) =>
+      (overview ? areaOrder[a.area] - areaOrder[b.area] : 0) ||
+      (b.beforeEndMin ?? -1) - (a.beforeEndMin ?? -1)
+  );
+  for (const i of ordered) {
+    const group = i.side
+      ? {
+          key: i.side,
+          label: i.side === 'mash' ? 'Eau d’empâtage' : 'Eau de rinçage',
+          hint: 'Eau et traitement à préparer ensemble',
+          icon: Droplets
+        }
+      : i.beforeEndMin != null
+        ? {
+            key: `boil-${i.beforeEndMin}`,
+            label:
+              i.beforeEndMin === 0 ? 'À la coupure du feu' : `${i.beforeEndMin} min avant la fin`,
+            hint: 'Ébullition',
+            icon: Clock3
+          }
+        : i.kind === 'grain'
+          ? {
+              key: 'grain',
+              label: 'Grains à l’empâtage',
+              hint: 'Pesée et concassage',
+              icon: Wheat
+            }
+          : i.kind === 'hop'
+            ? {
+                key: i.stepId,
+                label: i.stepId === 'fwh' ? 'Premier moût' : 'Whirlpool',
+                hint:
+                  i.stepId === 'fwh'
+                    ? 'Avant de recueillir le moût'
+                    : 'À la température de consigne',
+                icon: Flower2
+              }
+            : {
+                key: i.area,
+                label: i.id === 'yeast' ? 'Levure et ensemencement' : 'Autres ingrédients',
+                hint: 'Selon la recette',
+                icon: FlaskConical
+              };
+    if (!groups.has(group.key))
+      groups.set(group.key, {
+        ...group,
+        items: [],
+        ...(end != null && i.beforeEndMin != null
+          ? { at: Math.max(state.boilStartedAt!, end - i.beforeEndMin * 60000) }
+          : {})
+      });
+    groups.get(group.key)!.items.push(i);
+  }
   return (
-    <section
-      aria-label="Ingrédients à ajouter"
-      className="rounded-panel border border-cave-700 bg-cave-900 px-2 sm:px-3"
-    >
-      <div className="flex items-center justify-between py-2">
-        <h2 className="text-base font-semibold text-cave-50">
-          {overview ? 'Tous les ingrédients' : 'À peser · à ajouter'}
+    <section aria-label="Ingrédients à ajouter" className="brew-ingredients">
+      <div className="brew-section-heading">
+        <h2>
+          {overview
+            ? 'Tous les ingrédients'
+            : area === 'boil' && stepId !== 'whirlpool'
+              ? 'Programme des ajouts'
+              : 'Ingrédients'}
         </h2>
-        <span className="text-2xs text-cave-400">Cocher après ajout</span>
+        <span className="brew-count">
+          {shown.filter((i) => state.additions?.[i.id]?.doneAt != null).length}/{shown.length}{' '}
+          ajoutés
+        </span>
       </div>
+      {shown.length > 0 && <p className="brew-ingredient-help">Cocher après ajout en cuve.</p>}
       {(area === 'preparation' || overview) && !inlineImpact && (
         <BrewMinerals recipe={recipe} state={state} />
       )}
-      {shown.map((i) => (
-        <React.Fragment key={i.id}>
-          <IngredientRow
-            key={i.id}
-            item={i}
-            recipe={recipe}
-            state={state}
-            stock={stock}
-            update={update}
-            onInteract={() => setActiveItem(i.id)}
-          />
-          {inlineImpact && i.id === activeItem && <BrewMinerals recipe={recipe} state={state} />}
-        </React.Fragment>
-      ))}
-      {area === 'preparation' && !overview && (
-        <label className="block text-2xs text-cave-200 py-2">
-          Ajout non prévu
-          <select
-            aria-label="Autre sel ou acide à consigner"
+      {[...groups.entries()].map(([key, group]) => {
+        const allAdded = group.items.every((i) => state.additions?.[i.id]?.doneAt != null);
+        const due =
+          !allAdded && group.at != null && group.at <= now && state.boilFinishedAt == null;
+        const Icon = group.icon;
+        return (
+          <div key={key} className={`brew-ingredient-group ${due ? 'is-due' : ''}`}>
+            <div className="brew-ingredient-group-heading">
+              <Icon size={19} />
+              <div>
+                <h3>{group.label}</h3>
+                {group.label === 'Premier moût' && <span>{group.hint}</span>}
+              </div>
+              {allAdded ? (
+                <BrewTag tone="done">{group.items.length > 1 ? 'Ajoutés' : 'Ajouté'}</BrewTag>
+              ) : group.at != null && state.boilFinishedAt == null ? (
+                <BrewTag tone={due ? 'due' : 'info'}>
+                  {due
+                    ? 'Maintenant'
+                    : new Date(group.at).toLocaleTimeString('fr-CH', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                </BrewTag>
+              ) : null}
+            </div>
+            {group.items.map((i) => (
+              <React.Fragment key={i.id}>
+                <IngredientRow
+                  key={i.id}
+                  item={i}
+                  recipe={recipe}
+                  state={state}
+                  stock={stock}
+                  update={update}
+                  onInteract={() => setActiveItem(i.id)}
+                />
+                {inlineImpact && i.id === activeItem && (
+                  <BrewMinerals recipe={recipe} state={state} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        );
+      })}
+      {area === 'preparation' && stepId !== 'concassage' && !overview && (
+        <div className="brew-extra-addition">
+          <BrewChoice
+            label="Autre sel ou acide à consigner"
+            title="Ajouter un sel ou un acide"
+            placeholder="Ajouter un produit non prévu"
             value=""
-            onChange={(e) => setExtra((v) => [...v, e.target.value])}
-            className={`${brewInput} mt-1`}
-          >
-            <option value="">Choisir un ajout…</option>
-            {items
+            searchable
+            onChange={(value) => setExtra((v) => [...v, value])}
+            options={items
               .filter(
                 (i) => (i.kind === 'salt' || i.kind === 'acid') && !shown.some((s) => s.id === i.id)
               )
-              .map((i) => (
-                <option key={i.id} value={i.id}>
-                  {i.name} · {i.side === 'mash' ? 'empâtage' : 'rinçage'}
-                </option>
-              ))}
-          </select>
-        </label>
+              .map((i) => ({
+                value: i.id,
+                label: i.name,
+                group: i.side === 'mash' ? 'Eau d’empâtage' : 'Eau de rinçage',
+                detail: i.side === 'mash' ? 'À l’empâtage' : 'Au rinçage'
+              }))}
+          />
+        </div>
       )}
       {!shown.length && (
         <p className="text-sm text-cave-400 pb-2">Pas d’ingrédient prévu à cette phase.</p>
@@ -395,7 +566,16 @@ export function BrewMinerals({ recipe, state }: { recipe: RecipeSnapshot; state:
       <div className="flex flex-wrap gap-x-3 gap-y-1 text-2xs reading text-cave-200 my-1">
         {(['ca', 'mg', 'na', 'so4', 'cl', 'hco3'] as const).map((k) => (
           <span key={k}>
-            {{ ca: 'Ca', mg: 'Mg', na: 'Na', so4: 'SO₄', cl: 'Cl', hco3: 'HCO₃' }[k]}{' '}
+            {
+              {
+                ca: 'Ca',
+                mg: 'Mg',
+                na: 'Na',
+                so4: 'SO₄',
+                cl: 'Cl',
+                hco3: 'HCO₃'
+              }[k]
+            }{' '}
             {Math.round(ions[k])} ppm
           </span>
         ))}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, within } from '@testing-library/react';
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { defaultConfig } from '../../src/services/storage';
 import { AppConfig, Batch } from '../../src/types';
@@ -49,7 +49,9 @@ function brassin(stepId: string, ph?: number): Batch {
       steps: [{ id: stepId, label: 'Étape', durationMin: 60 }],
       currentIndex: 0,
       readings:
-        ph == null ? [] : [{ at: Date.now(), stepId, roomTemp:true, kind: 'ph', value: ph, unit: '' }]
+        ph == null
+          ? []
+          : [{ at: Date.now(), stepId, roomTemp: true, kind: 'ph', value: ph, unit: '' }]
     }
   } as unknown as Batch;
 }
@@ -69,19 +71,31 @@ describe('pH de maische, le jour du brassage', () => {
   it('⚠️ chiffre la dose d’acide à rattraper, sur le pH relevé', () => {
     monter(brassin('mash-0', 5.7));
     // 20 L à 4 L/kg, écart de 0.3 pH : environ 6.9 mL de lactique.
-    expect(screen.getByText(/Au-dessus de la fenêtre/)).toBeInTheDocument();
-    expect(screen.getByRole('button', {name:/J’ai ajouté/})).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('region', { name: 'Mesures de cette étape' })).getByText(
+        /Au-dessus de la fenêtre/
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /J’ai ajouté/ })).toBeInTheDocument();
     expect(screen.getByText(/Moitié de l’estimation totale.*acide lactique/i)).toBeInTheDocument();
   });
 
   it('se tait quand le pH relevé est dans la fenêtre', () => {
     monter(brassin('mash-0', 5.35));
-    expect(screen.getByText(/rien à ajouter/i)).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('region', { name: 'Mesures de cette étape' })).getByText(
+        /rien à ajouter/i
+      )
+    ).toBeInTheDocument();
   });
 
   it('sous la fenêtre, il dit de ne RIEN ajouter — jamais de sel pour remonter', () => {
     monter(brassin('mash-0', 5.05));
-    expect(screen.getByText(/déjà acide/i)).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('region', { name: 'Mesures de cette étape' })).getByText(
+        /déjà acide/i
+      )
+    ).toBeInTheDocument();
   });
 
   it('sans relevé, il rappelle le geste au lieu d’un chiffre', () => {

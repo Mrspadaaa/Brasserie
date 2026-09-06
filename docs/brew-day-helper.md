@@ -4,12 +4,26 @@ Quatre phases libres — préparation, empâtage, ébullition, refroidissement �
 plus recette complète et journal. Consulter une phase ne termine aucune tâche
 et ne démarre aucun minuteur.
 
+La [réflexion UX et les vérifications de la refonte](brew-day-ux.md) détaillent
+le poste de brassage mobile, les groupes d'ingrédients par étape et le journal
+chronologique des ajouts, relevés, notes et validations.
+
 ## À la cuve
 
 - Préparations à cocher : moulin, balance, eau, doses de houblon, pH-mètre,
   refroidisseur, fermenteur, levure, aération.
 - Ingrédients prévus/réels et case à cocher **après ajout**. Boutons ± et appui
-  prolongé pour sels et acides ; ajouts initialement nuls accessibles.
+  prolongé pour sels et acides en touchant la dose ; ajouts initialement nuls accessibles.
+- Sur téléphone, « Mesurer » et « Note » restent au pouce. Les panneaux gardent
+  les brouillons à la fermeture ; une note conserve son étape d'origine et les
+  mesures inachevées retrouvent leur palier. Les relevés enregistrés restent visibles.
+- Arrêt anticipé d'un minuteur et clôture : confirmation avec état réel du brassin.
+- Étapes et produits non prévus : grandes listes tactiles avec noms complets,
+  recherche des sels/acides, sélection courante et état de chaque palier.
+  Les concentrations d'acide se choisissent sur des lignes radio entières.
+- Badges colorés : vert en cours/terminé, jaune en pause, corail à l'échéance,
+  bleu pour les ajouts attendus. L'anneau tourne seulement pour un minuteur actif,
+  sauf si l'appareil demande une réduction des animations.
 - Litres réseau/RO calculés avec la coupe propre à chaque eau.
 - Impact des écarts directement sous la dose modifiée, avec les constantes
   chimiques du plan d'eau. Projection de tous les ajouts de la liste, même
@@ -63,6 +77,21 @@ Calculs locaux utilisables hors réseau. Aucun appel Gemini payant utilisé aux 
 Clôture : densité du moût refroidi et volume en fermenteur, journal conservé.
 Le parcours d'inventaire existant reste inchangé : consigner une différence de
 quantité ne réalise pas un nouveau mouvement de stock.
+
+## Sonnerie dans l'application
+
+Une échéance déclenche 30 secondes de notes alternées (880/1 175 Hz), avec un
+signal renforcé et une vibration plus longue sur les appareils compatibles.
+Les ajouts simultanés partagent une seule sonnerie. Le bandeau garde le nom de
+l'action attendue et permet d'ouvrir son étape, même pendant la consultation
+de la recette ou du journal.
+
+« Arrêter » coupe immédiatement son et vibration, sans valider le geste de
+brassage et sans désactiver les prochaines alertes. Cocher tous les ajouts
+concernés ou terminer le palier arrête également sa sonnerie. « Tester la
+sonnerie » utilise exactement le même signal ; quitter le compagnon le coupe.
+Le volume reste celui du téléphone. Cette sonnerie de 30 secondes concerne
+l'application ouverte ; le son des notifications écran fermé dépend d'Android.
 
 ## Chrome Android, navigateur fermé
 

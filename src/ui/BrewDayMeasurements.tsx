@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { Check, Minus, Plus } from 'lucide-react';
 import { AcidId, BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import {
@@ -6,7 +6,7 @@ import {
   isMash,
   parseReading,
   READING,
-  readingFeedback,
+  measuredReadingFeedback,
   readingKey,
   ReadingKind
 } from '../domain/brewDay';
@@ -19,6 +19,12 @@ export const brewControl =
 export const brewInput =
   'w-full min-w-0 h-11 rounded-control border border-cave-600 bg-cave-950 px-3 text-base text-cave-50 reading outline-none focus:border-ebc-straw';
 export type BrewUpdate = (update: (state: BrewDayState) => BrewDayState) => void;
+export interface BrewReadingDraft {
+  kind: ReadingKind;
+  raw: string;
+  roomTemp: boolean;
+  editing: string | null;
+}
 
 /** Départ volontairement fractionné : cette estimation de tampon n'est pas une titration. */
 function MashCorrection({
@@ -34,6 +40,7 @@ function MashCorrection({
   recipe?: RecipeSnapshot;
   update: BrewUpdate;
 }) {
+  const acidChoiceId = useId();
   const plan = recipe?.waterPlan;
   const ctx = state.mashContext ?? {
     waterL: plan?.mashWaterL ?? 0,
@@ -122,24 +129,30 @@ function MashCorrection({
                   className={brewInput}
                 />
               </label>
-              <label className="col-span-2 text-cave-200">
-                Acide disponible
-                <select
-                  aria-label="Acide pour la correction"
-                  value={ctx.acid}
-                  onChange={(e) => {
-                    setOverride(null);
-                    patchContext({ acid: e.target.value as AcidId });
-                  }}
-                  className={brewInput}
-                >
-                  {ctx.acid === 'maltAcidule' && (
-                    <option value="maltAcidule">Malt acidulé du plan</option>
-                  )}
-                  <option value="lactique">Acide lactique 80 %</option>
-                  <option value="phosphorique">Acide phosphorique 75 %</option>
-                </select>
-              </label>
+              <fieldset
+                className="brew-acid-choice col-span-2"
+                aria-label="Acide pour la correction"
+              >
+                <legend>Acide disponible</legend>
+                {[
+                  ...(ctx.acid === 'maltAcidule'
+                    ? [{ id: 'maltAcidule', label: 'Malt acidulé du plan' }]
+                    : []),
+                  { id: 'lactique', label: 'Acide lactique 80 %' },
+                  { id: 'phosphorique', label: 'Acide phosphorique 75 %' }
+                ].map((acid) => (
+                  <label key={acid.id}>
+                    <input
+                      type="radio"
+                      name={acidChoiceId}
+                      value={acid.id}
+                      checked={ctx.acid === acid.id}
+                      onChange={() => patchContext({ acid: acid.id as AcidId })}
+                    />
+                    <span>{acid.label}</span>
+                  </label>
+                ))}
+              </fieldset>
             </div>
             {!contextValid && (
               <p className="text-ebc-straw">
@@ -234,23 +247,35 @@ export function BrewDayMeasurements({
   step,
   state,
   recipe,
-  update
+  update,
+  drafts
 }: {
   step: BrewDayStep;
   state: BrewDayState;
   recipe?: RecipeSnapshot;
   update: BrewUpdate;
+  drafts?: Map<string, BrewReadingDraft>;
 }) {
-  const [kind, setKind] = useState<ReadingKind>(() => defaultReading(step));
-  const [raw, setRaw] = useState('');
+  const [kind, setKind] = useState<ReadingKind>(
+    () => drafts?.get(step.id)?.kind ?? defaultReading(step)
+  );
+  const [raw, setRaw] = useState(() => drafts?.get(step.id)?.raw ?? '');
   const [roomTemp, setRoomTemp] = useState(
     () =>
-      !![...(state.readings ?? [])].reverse().find((r) => r.kind === 'ph' && r.stepId === step.id)
-        ?.roomTemp
+      drafts?.get(step.id)?.roomTemp ??
+      !![...(state.readings ?? [])]
+        .reverse()
+        .find((r) => r.kind === defaultReading(step) && r.stepId === step.id)?.roomTemp
   );
-  const [editing, setEditing] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(
+    () => drafts?.get(step.id)?.editing ?? null
+  );
   const [notice, setNotice] = useState('');
-  const value = parseReading(raw, kind);
+  useEffect(() => {
+    drafts?.set(step.id, { kind, raw, roomTemp, editing });
+  }, [drafts, step.id, kind, raw, roomTemp, editing]);
+  const incomplete = /[.,]$/.test(raw.trim());
+  const value = incomplete ? null : parseReading(raw, kind);
   const last = [...(state.readings ?? [])]
     .reverse()
     .find((r) => r.kind === kind && r.stepId === step.id);
@@ -266,22 +291,7 @@ export function BrewDayMeasurements({
           roomTemp
         }
     : last;
-  const corrected =
-    reading &&
-    kind === 'ph' &&
-    isMash(step.id) &&
-    state.acidCorrections?.some((c) => c.at >= reading.at);
-  const feedback = !reading
-    ? null
-    : corrected
-      ? { tone: 'neutral', title: `pH précédent : ${reading.value} · à remesurer`, detail: '' }
-      : kind === 'ph' && isMash(step.id) && !reading.roomTemp
-        ? {
-            tone: 'neutral',
-            title: `pH ${reading.value} · à confirmer à froid`,
-            detail: 'La cible 5,2–5,5 concerne un échantillon à 20–25 °C.'
-          }
-        : readingFeedback(kind, reading.value, step, recipe);
+  const feedback = reading ? measuredReadingFeedback(reading, state, step, recipe) : null;
   const save = (e: React.FormEvent) => {
     e.preventDefault();
     if (value == null) return;
@@ -307,13 +317,14 @@ export function BrewDayMeasurements({
     });
     setRaw('');
     setEditing(null);
-    setNotice(`${READING[kind].label} ${value} ${READING[kind].unit} ajouté au journal`);
+    setNotice(
+      `${READING[kind].label} ${kind === 'densite' ? value.toFixed(3) : String(value).replace('.', ',')} ${READING[kind].unit} ajouté au journal`
+    );
   };
   return (
     <section aria-label="Mesures de cette étape" className="space-y-2">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-cave-50">À la cuve</h3>
-        <span className="text-2xs text-cave-400">Retour immédiat</span>
+        <h3 className="font-semibold text-cave-50">Mesurer à la cuve</h3>
       </div>
       <div className="flex gap-1" role="group" aria-label="Type de mesure">
         {(Object.keys(READING) as ReadingKind[]).map((k) => (
@@ -335,7 +346,7 @@ export function BrewDayMeasurements({
             }}
             className={`flex-1 min-h-10 px-1 rounded-control text-sm border ${kind === k ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-700 text-cave-200 hover:bg-cave-850'}`}
           >
-            {READING[k].label}
+            {k === 'temperature' ? 'Temp.' : READING[k].label}
             {(() => {
               const recent = [...(state.readings ?? [])]
                 .reverse()
@@ -367,7 +378,7 @@ export function BrewDayMeasurements({
           <input
             id="brew-reading"
             aria-describedby="brew-reading-feedback"
-            aria-invalid={!!raw.trim() && value == null}
+            aria-invalid={!!raw.trim() && !incomplete && value == null}
             autoComplete="off"
             inputMode="decimal"
             enterKeyHint="done"
@@ -405,7 +416,9 @@ export function BrewDayMeasurements({
         )}
       </form>
       <div id="brew-reading-feedback" aria-live="polite" className="text-sm">
-        {raw.trim() && value == null ? (
+        {incomplete ? (
+          <p className="text-cave-400">Complète la valeur.</p>
+        ) : raw.trim() && value == null ? (
           <p className="text-ebc-straw">
             Saisis {READING[kind].min} à {READING[kind].max}
             {kind === 'densite' ? ' SG (ou 1056 pour 1,056)' : ` ${READING[kind].unit}`}.

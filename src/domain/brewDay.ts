@@ -41,7 +41,9 @@ export const isFinalWort = (id = '') => ['refroidissement', 'ensemencement'].inc
 export const readingKey = (r: BrewDayReading) => r.id ?? `${r.at}-${r.kind}-${r.stepId ?? ''}`;
 export const defaultReading = (s?: BrewDayStep): ReadingKind =>
   isMash(s?.id)
-    ? 'ph'
+    ? s?.tempC != null && s.tempC >= 75
+      ? 'temperature'
+      : 'ph'
     : s?.id === 'preboil' || s?.id === 'ensemencement'
       ? 'densite'
       : s?.tempC
@@ -61,6 +63,29 @@ export interface ReadingFeedback {
   tone: 'ok' | 'watch' | 'neutral';
   title: string;
   detail: string;
+}
+/** Même retour pour la saisie et le résumé : un pH ancien ou à chaud ne devient pas valide en fermant le formulaire. */
+export function measuredReadingFeedback(
+  reading: BrewDayReading,
+  state: BrewDayState,
+  step: BrewDayStep,
+  recipe?: RecipeSnapshot
+): ReadingFeedback {
+  if (reading.kind === 'ph' && isMash(step.id)) {
+    if (state.acidCorrections?.some((c) => c.at >= reading.at))
+      return {
+        tone: 'neutral',
+        title: `pH précédent : ${reading.value} · à remesurer`,
+        detail: ''
+      };
+    if (!reading.roomTemp)
+      return {
+        tone: 'neutral',
+        title: `pH ${reading.value} · à confirmer à froid`,
+        detail: 'La cible 5,2–5,5 concerne un échantillon à 20–25 °C.'
+      };
+  }
+  return readingFeedback(reading.kind, reading.value, step, recipe);
 }
 export function readingFeedback(
   kind: ReadingKind,

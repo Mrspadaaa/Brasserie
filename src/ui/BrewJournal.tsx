@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
+import {
+  Check,
+  Clock3,
+  Download,
+  FlaskConical,
+  NotebookPen,
+  Pencil,
+  Thermometer,
+  Trash2,
+  X
+} from 'lucide-react';
 import { BrewDayState, RecipeSnapshot } from '../types';
 import { READING, parseReading, readingKey } from '../domain/brewDay';
-import { brewIngredients } from '../domain/brewCompanion';
+import { brewIngredients, isBoilStep } from '../domain/brewCompanion';
 import { ACIDS } from '../domain/water';
 import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
 
@@ -18,6 +29,7 @@ export function BrewJournal({
   const [text, setText] = useState('');
   const [error, setError] = useState('');
   const [undo, setUndo] = useState<(() => void) | null>(null);
+  const [filter, setFilter] = useState('all');
   const ingredients = brewIngredients(recipe);
   const entries = [
     ...(state.readings ?? []).map((r) => ({
@@ -57,6 +69,104 @@ export function BrewJournal({
       identity: c.id
     }))
   ].sort((a, b) => b.at - a.at);
+  type Event = {
+    key: string;
+    at: number;
+    step?: string;
+    label: string;
+    value: string;
+    unit: string;
+    category: string;
+    entry?: (typeof entries)[number];
+    detail?: string;
+  };
+  const events: Event[] = entries.map((entry) => ({
+    ...entry,
+    value:
+      entry.kind === 'densite'
+        ? Number(entry.value).toFixed(3)
+        : entry.type === 'notes'
+          ? entry.value
+          : entry.value.replace('.', ','),
+    category:
+      entry.type === 'readings' ? 'measurements' : entry.type === 'notes' ? 'notes' : 'additions',
+    entry,
+    detail:
+      entry.type === 'readings' && entry.raw.roomTemp
+        ? entry.kind === 'ph'
+          ? 'Échantillon refroidi'
+          : entry.kind === 'volume'
+            ? 'Volume à 20 °C'
+            : 'Densité refroidie ou corrigée'
+        : undefined
+  }));
+  for (const ingredient of ingredients) {
+    const actual = state.additions?.[ingredient.id];
+    if (actual?.doneAt == null) continue;
+    events.push({
+      key: `addition-${ingredient.id}`,
+      at: actual.doneAt,
+      step: ingredient.stepId,
+      label: actual.replacement?.name ?? ingredient.name,
+      value: String(actual.amount).replace('.', ','),
+      unit: ingredient.unit,
+      category: 'additions',
+      detail: `Ajout en cuve · prévu ${ingredient.planned} ${ingredient.unit}${ingredient.side ? (ingredient.side === 'mash' ? ' · eau d’empâtage' : ' · eau de rinçage') : ''}${actual.replacement ? ` · remplace ${ingredient.name}` : ''}`
+    });
+  }
+  for (const step of state.steps.filter((s) => !isBoilStep(s))) {
+    // startedAt est déplacé à la reprise : ce n'est pas une heure historique.
+    // Seule la validation explicite fournit ici un événement fiable.
+    if (step.doneAt != null)
+      events.push({
+        key: `done-${step.id}`,
+        at: step.doneAt,
+        step: step.id,
+        label: 'Étape terminée',
+        value: step.label,
+        unit: '',
+        category: 'steps'
+      });
+  }
+  const boilId = state.steps.find(isBoilStep)?.id;
+  if (state.boilStartedAt != null)
+    events.push({
+      key: 'boil-start',
+      at: state.boilStartedAt,
+      step: boilId,
+      label: 'Ébullition atteinte',
+      value: 'Horloge démarrée',
+      unit: '',
+      category: 'steps'
+    });
+  if (state.boilFinishedAt != null)
+    events.push({
+      key: 'boil-finish',
+      at: state.boilFinishedAt,
+      step: boilId,
+      label: 'Feu coupé',
+      value: 'Fin d’ébullition',
+      unit: '',
+      category: 'steps'
+    });
+  if (state.finishedAt != null)
+    events.push({
+      key: 'finished',
+      at: state.finishedAt,
+      label: 'Brassage clôturé',
+      value: 'Passage en fermentation',
+      unit: '',
+      category: 'steps'
+    });
+  events.sort((a, b) => b.at - a.at);
+  const visible = events.filter((e) => filter === 'all' || e.category === filter);
+  const filters = [
+    ['all', 'Tout'],
+    ['measurements', 'Mesures'],
+    ['additions', 'Ajouts'],
+    ['notes', 'Notes'],
+    ['steps', 'Étapes']
+  ];
   const remove = (entry: (typeof entries)[number]) => {
     const match = (x: any) =>
       entry.type === 'readings' ? readingKey(x) === entry.identity : x.id === entry.identity;
@@ -117,9 +227,9 @@ export function BrewJournal({
             `${state.additions?.[i.id]?.doneAt != null ? '[x]' : '[ ]'} ${state.additions?.[i.id]?.replacement?.name ?? i.name} : ${state.additions?.[i.id]?.amount ?? i.planned} ${i.unit} (prévu ${i.planned})`
         ),
       '',
-      ...entries.map(
+      ...events.map(
         (e) =>
-          `${new Date(e.at).toLocaleString('fr-CH')} · ${state.steps.find((s) => s.id === e.step)?.label ?? 'Sans étape'} · ${e.label} ${e.value} ${e.unit}`
+          `${new Date(e.at).toLocaleString('fr-CH')} · ${state.steps.find((s) => s.id === e.step)?.label ?? 'Sans étape'} · ${e.label} ${e.value} ${e.unit}${e.detail ? ' · ' + e.detail : ''}`
       )
     ];
     const url = URL.createObjectURL(
@@ -132,19 +242,31 @@ export function BrewJournal({
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
   return (
-    <section aria-label="Journal modifiable" className="space-y-2">
-      <div className="flex justify-between items-center">
-        <h2 className="font-semibold text-cave-50">Journal de cuve</h2>
-        <button type="button" className={brewControl} onClick={download}>
-          Exporter .txt
+    <section aria-label="Journal modifiable" className="brew-journal">
+      <div className="brew-section-heading">
+        <div>
+          <h2>Journal de cuve</h2>
+        </div>
+        <button type="button" className="brew-export" onClick={download}>
+          <Download size={17} />
+          <span>Exporter .txt</span>
         </button>
       </div>
+      <div className="brew-journal-filters" role="group" aria-label="Filtrer le journal">
+        {filters.map(([id, label]) => (
+          <button key={id} type="button" aria-pressed={filter === id} onClick={() => setFilter(id)}>
+            {label}
+            <span>
+              {id === 'all' ? events.length : events.filter((e) => e.category === id).length}
+            </span>
+          </button>
+        ))}
+      </div>
       {undo && (
-        <p role="status" className="text-sm text-cave-200">
-          Entrée retirée.{' '}
+        <div role="status" className="brew-journal-undo">
+          <span>Entrée retirée.</span>
           <button
             type="button"
-            className="underline text-ebc-straw min-h-10"
             onClick={() => {
               undo();
               setUndo(null);
@@ -152,95 +274,152 @@ export function BrewJournal({
           >
             Annuler la suppression
           </button>
-        </p>
+        </div>
       )}
       {error && (
-        <p role="alert" className="text-2xs text-ebc-straw">
+        <p role="alert" className="brew-feedback">
           {error}
         </p>
       )}
-      {!entries.length && (
-        <p className="text-sm text-cave-400">
-          Les relevés, corrections de pH et notes seront réunis ici.
+      {!visible.length && (
+        <div className="brew-journal-empty">
+          <NotebookPen size={30} />
+          <h3>{events.length ? 'Aucune entrée dans ce filtre' : 'Aucune entrée'}</h3>
+          <p>
+            {events.length
+              ? 'Les autres événements restent accessibles avec « Tout ».'
+              : 'Les ajouts confirmés, les mesures, les notes et les étapes terminées sont consignés ici.'}
+          </p>
+        </div>
+      )}
+      <div className="brew-journal-timeline">
+        {visible.map((event, index) => {
+          const e = event.entry;
+          const Icon =
+            event.category === 'measurements'
+              ? Thermometer
+              : event.category === 'notes'
+                ? NotebookPen
+                : event.category === 'additions'
+                  ? FlaskConical
+                  : Check;
+          const date = new Date(event.at).toLocaleDateString('fr-CH', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+          });
+          const previousDate = index ? new Date(visible[index - 1].at).toDateString() : null;
+          return (
+            <React.Fragment key={event.key}>
+              {previousDate !== new Date(event.at).toDateString() && (
+                <p className="brew-journal-date">{date}</p>
+              )}
+              <article className={`brew-journal-event is-${event.category}`}>
+                <div className="brew-journal-time">
+                  <time dateTime={new Date(event.at).toISOString()}>
+                    {new Date(event.at).toLocaleTimeString('fr-CH', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </time>
+                  <span>
+                    <Icon size={16} />
+                  </span>
+                </div>
+                <div className="brew-journal-body">
+                  <div className="brew-journal-event-heading">
+                    <span>{state.steps.find((s) => s.id === event.step)?.label ?? 'Brassin'}</span>
+                    {e && editing !== e.key && (
+                      <div className="brew-journal-actions">
+                        <button
+                          type="button"
+                          aria-label="Modifier"
+                          title="Modifier cette entrée"
+                          onClick={() => {
+                            setEditing(e.key);
+                            setError('');
+                            setText(e.value);
+                          }}
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Supprimer"
+                          title="Supprimer cette entrée"
+                          onClick={() => remove(e)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <strong className="brew-journal-event-label">{event.label}</strong>
+                  <p
+                    className={
+                      event.category === 'notes' || event.category === 'steps'
+                        ? 'brew-journal-text'
+                        : 'brew-journal-value'
+                    }
+                  >
+                    {event.value}
+                    {event.unit && <span> {event.unit}</span>}
+                  </p>
+                  {event.detail && <p className="brew-journal-detail">{event.detail}</p>}
+                  {e && editing === e.key && (
+                    <form
+                      className="brew-journal-edit"
+                      onSubmit={(formEvent) => {
+                        formEvent.preventDefault();
+                        save(e);
+                      }}
+                    >
+                      {e.kind === 'note' ? (
+                        <textarea
+                          aria-label={`Corriger ${e.label}`}
+                          value={text}
+                          maxLength={2000}
+                          onChange={(v) => setText(v.target.value)}
+                          className={`${brewInput} !h-20`}
+                        />
+                      ) : (
+                        <input
+                          aria-label={`Corriger ${e.label}`}
+                          value={text}
+                          onChange={(v) => setText(v.target.value)}
+                          inputMode="decimal"
+                          className={brewInput}
+                        />
+                      )}
+                      <button className={brewControl} type="submit">
+                        Enregistrer
+                      </button>
+                      <button
+                        aria-label="Annuler la modification"
+                        className={brewControl}
+                        type="button"
+                        onClick={() => {
+                          setEditing(null);
+                          setError('');
+                        }}
+                      >
+                        <X size={17} />
+                      </button>
+                    </form>
+                  )}
+                </div>
+              </article>
+            </React.Fragment>
+          );
+        })}
+      </div>
+      {events.length > 0 && (
+        <p className="brew-journal-footnote">
+          <Clock3 size={16} />
+          Pour corriger un ingrédient versé, modifie sa quantité dans la liste des ingrédients.
+          Effacer un relevé ne retire rien de la cuve.
         </p>
       )}
-      {entries.map((e) => (
-        <article key={e.key} className="border-b border-cave-800 py-2 text-sm text-cave-200">
-          <p className="text-2xs text-cave-400">
-            {new Date(e.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} ·{' '}
-            {state.steps.find((s) => s.id === e.step)?.label ?? 'Étape non renseignée'}
-          </p>
-          <p className="break-words">
-            <strong>{e.label}</strong> · {e.value} {e.unit}
-          </p>
-          {editing === e.key ? (
-            <form
-              className="flex flex-wrap gap-2 mt-1"
-              onSubmit={(event) => {
-                event.preventDefault();
-                save(e);
-              }}
-            >
-              {e.kind === 'note' ? (
-                <textarea
-                  aria-label={`Corriger ${e.label}`}
-                  value={text}
-                  maxLength={2000}
-                  onChange={(v) => setText(v.target.value)}
-                  className={`${brewInput} !h-20`}
-                />
-              ) : (
-                <input
-                  aria-label={`Corriger ${e.label}`}
-                  value={text}
-                  onChange={(v) => setText(v.target.value)}
-                  inputMode={e.kind === 'note' ? 'text' : 'decimal'}
-                  className={`${brewInput} flex-1 !w-24`}
-                />
-              )}
-              <button className={brewControl} type="submit">
-                Enregistrer
-              </button>
-              <button
-                aria-label="Annuler la modification"
-                className={brewControl}
-                type="button"
-                onClick={() => {
-                  setEditing(null);
-                  setError('');
-                }}
-              >
-                ×
-              </button>
-            </form>
-          ) : (
-            <div className="flex gap-4">
-              <button
-                type="button"
-                className="min-h-10 underline text-2xs"
-                onClick={() => {
-                  setEditing(e.key);
-                  setError('');
-                  setText(e.value);
-                }}
-              >
-                Modifier
-              </button>
-              <button
-                type="button"
-                className="min-h-10 underline text-2xs text-cave-400"
-                onClick={() => remove(e)}
-              >
-                Supprimer
-              </button>
-            </div>
-          )}
-        </article>
-      ))}
-      <p className="text-2xs text-cave-400">
-        Pour corriger un ingrédient versé, modifie sa quantité dans la liste des ingrédients.
-        Effacer un relevé ne retire rien de la cuve.
-      </p>
     </section>
   );
 }

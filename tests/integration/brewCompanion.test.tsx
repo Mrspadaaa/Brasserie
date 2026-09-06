@@ -42,11 +42,29 @@ function mount(over: Partial<BrewDayState> = {}, stock: StockItem[] = []) {
 }
 const phase = (name: string) =>
   fireEvent.click(
-    within(screen.getByRole('navigation', { name: 'Phases du brassage' })).getByRole('button', {
+    within(
+      screen.getByRole('navigation', {
+        name: ['Recette', 'Journal', 'Conduite'].includes(name)
+          ? 'Vues du brassin'
+          : 'Phases du brassage'
+      })
+    ).getByRole('button', {
       name,
       exact: true
     })
   );
+
+const chooseStep = (label: string) => {
+  fireEvent.click(screen.getByRole('button', { name: 'Choisir une étape' }));
+  fireEvent.click(
+    within(screen.getByRole('dialog', { name: 'Choisir une étape' })).getByRole('button', {
+      name: label,
+      exact: true
+    })
+  );
+};
+const editDose = (name: string | RegExp) => fireEvent.click(screen.getByRole('button', { name }));
+
 describe('Gestes à la cuve', () => {
   it('préparation sans minuteur, navigation libre sans validation ni départ implicite', () => {
     const v = mount();
@@ -66,6 +84,7 @@ describe('Gestes à la cuve', () => {
   });
   it('la quantité réellement versée est persistée, corrigible, avec impact immédiat', () => {
     const v = mount();
+    editDose(/Modifier la quantité de Sel d’Epsom/);
     const dose = screen.getByLabelText(/Quantité réelle de Sel d’Epsom/);
     fireEvent.change(dose, { target: { value: '15' } });
     expect(
@@ -85,22 +104,31 @@ describe('Gestes à la cuve', () => {
   });
   it('modifier les acides sans clavier et consigner un sel initialement absent', () => {
     const v = mount();
+    editDose(/Modifier la quantité de Acide lactique.*au mash/);
     fireEvent.click(screen.getAllByRole('button', { name: /Augmenter Acide lactique/ })[0]);
     expect(v.latest().additions!['acid-mash'].amount).toBe(1.1);
-    fireEvent.change(screen.getByLabelText('Autre sel ou acide à consigner'), {
-      target: { value: 'salt-mash-kcl' }
-    });
+    fireEvent.click(screen.getByRole('button', { name: 'Autre sel ou acide à consigner' }));
+    fireEvent.click(
+      within(screen.getByRole('dialog', { name: 'Ajouter un sel ou un acide' })).getAllByRole(
+        'button',
+        { name: 'Chlorure de potassium', exact: true }
+      )[0]
+    );
+    editDose(/Modifier la quantité de Chlorure de potassium/);
     fireEvent.click(screen.getByRole('button', { name: 'Augmenter Chlorure de potassium' }));
     expect(v.latest().additions!['salt-mash-kcl'].amount).toBe(0.1);
   });
   it('substitution en stock sans écraser la recette ni hériter d’un potentiel inconnu', () => {
     const v = mount({}, [malt('Pale', 1), malt('Pils', 10, 4)]);
+    chooseStep('Concassage');
     fireEvent.click(screen.getByRole('button', { name: 'Remplacer ce malt' }));
     fireEvent.click(screen.getByRole('button', { name: /Pils · 5 kg/ }));
     expect(v.latest().additions!['grain-0'].replacement).toEqual({ name: 'Pils', colorEbc: 4 });
     expect(screen.getByLabelText('Ajouté : Pils')).toBeInTheDocument();
     phase('Recette');
-    expect(screen.getByLabelText('Quantité réelle de Pils')).toHaveValue('5');
+    expect(screen.getByRole('button', { name: 'Modifier la quantité de Pils' })).toHaveTextContent(
+      '5 kg'
+    );
   });
   it('le journal corrige, supprime et restaure sans perte des autres infos', () => {
     const v = mount({
@@ -121,7 +149,7 @@ describe('Gestes à la cuve', () => {
     expect(v.latest().notes).toHaveLength(1);
     fireEvent.click(screen.getByRole('button', { name: 'Annuler la suppression' }));
     expect(v.latest().readings![0].value).toBe(-5);
-    const note = screen.getByText('Note', { exact: true }).closest('article')!;
+    const note = screen.getByText('Pompe coupée').closest('article')!;
     fireEvent.click(within(note).getByRole('button', { name: 'Modifier' }));
     fireEvent.change(screen.getByLabelText('Corriger Note'), {
       target: { value: 'Pompe rétablie\nFiltre rincé' }
@@ -132,7 +160,7 @@ describe('Gestes à la cuve', () => {
   it('volume et densité à froid produisent un rendement, persisté après navigation', () => {
     const v = mount();
     phase('Empâter');
-    fireEvent.click(screen.getByRole('button', { name: 'Contrôle avant ébullition' }));
+    chooseStep('Contrôle avant ébullition');
     const region = within(screen.getByRole('region', { name: 'Mesures de cette étape' }));
     fireEvent.change(screen.getByLabelText('Densité (SG)'), { target: { value: '1040' } });
     fireEvent.click(screen.getByLabelText('Densité refroidie ou corrigée à l’étalonnage'));
@@ -147,6 +175,7 @@ describe('Gestes à la cuve', () => {
   });
   it('fuzz de quantité : les saisies hostiles ne cassent ni l’écran ni les doses des autres lignes', () => {
     const v = mount();
+    editDose(/Modifier la quantité de Sel d’Epsom/);
     const input = screen.getByLabelText(/Quantité réelle de Sel d’Epsom/);
     for (const raw of [
       '',
@@ -166,7 +195,9 @@ describe('Gestes à la cuve', () => {
       expect(screen.getByRole('region', { name: 'Ingrédients à ajouter' }).textContent).not.toMatch(
         /NaN|Infinity|undefined/
       );
-      expect(screen.getByLabelText(/Quantité réelle de Chlorure de calcium/)).toHaveValue('2');
+      expect(
+        screen.getByRole('button', { name: /Modifier la quantité de Chlorure de calcium/ })
+      ).toHaveTextContent('2 g');
       const n = v.latest()?.additions?.['salt-mash-epsom']?.amount;
       if (n != null) expect(Number.isFinite(n) && n >= 0 && n <= 100000).toBe(true);
     }

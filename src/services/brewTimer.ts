@@ -2,6 +2,7 @@ import { Recipe, RecipeSnapshot, BrewDayStep, SaltId } from '../types';
 import { SALTS, ACIDS } from '../domain/water';
 import { HOP_STAGE, groupByStage, describeMoment } from '../domain/hopStage';
 import { Units } from '../services/units';
+import { BREW_ALARM_VIBRATION, scheduleBrewAlarm } from './brewSound';
 
 /**
  * Le déroulé minuté du jour de brassage.
@@ -77,17 +78,19 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
           const spargeReseauL = Math.round((spargeL - spargeOsmoseL) * 10) / 10;
           const totalOsmoseL = Math.round((mashOsmoseL + spargeOsmoseL) * 10) / 10;
 
-          const mashWaterDesc = mashL > 0
-            ? mashDi > 0
-              ? `empâtage ${mashL} L (${mashReseauL} L réseau + ${mashOsmoseL} L osmosée)`
-              : `empâtage ${mashL} L`
-            : '';
+          const mashWaterDesc =
+            mashL > 0
+              ? mashDi > 0
+                ? `empâtage ${mashL} L (${mashReseauL} L réseau + ${mashOsmoseL} L osmosée)`
+                : `empâtage ${mashL} L`
+              : '';
 
-          const spargeWaterDesc = spargeL > 0
-            ? spargeDi > 0
-              ? `rinçage ${spargeL} L (${spargeReseauL} L réseau + ${spargeOsmoseL} L osmosée)`
-              : `rinçage ${spargeL} L`
-            : '';
+          const spargeWaterDesc =
+            spargeL > 0
+              ? spargeDi > 0
+                ? `rinçage ${spargeL} L (${spargeReseauL} L réseau + ${spargeOsmoseL} L osmosée)`
+                : `rinçage ${spargeL} L`
+              : '';
 
           const globalOsmose = totalOsmoseL > 0 ? `Total osmosée : ${totalOsmoseL} L` : '';
 
@@ -147,11 +150,14 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   const firstWort = byStage.find((g) => g.stage === 'firstWort')?.hops ?? [];
   const boilHops = byStage.find((g) => g.stage === 'boil')?.hops ?? [];
   const whirlpool = byStage.find((g) => g.stage === 'whirlpool')?.hops ?? [];
-  if (firstWort.length) steps.push({
-    id: 'fwh', label: HOP_STAGE.firstWort.label,
-    detail: `Dans la cuve, avant de recueillir le premier moût : ${firstWort.map((h) => `${h.name} ${Units.format(h.weightG, 'g')}`).join(' · ')}`,
-    durationMin: 0, hopNames: firstWort.map((h) => h.name)
-  });
+  if (firstWort.length)
+    steps.push({
+      id: 'fwh',
+      label: HOP_STAGE.firstWort.label,
+      detail: `Dans la cuve, avant de recueillir le premier moût : ${firstWort.map((h) => `${h.name} ${Units.format(h.weightG, 'g')}`).join(' · ')}`,
+      durationMin: 0,
+      hopNames: firstWort.map((h) => h.name)
+    });
 
   if (mash?.spargeType && mash.spargeType !== 'none') {
     steps.push({
@@ -174,9 +180,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
    */
   const preBoilL =
     plan?.mashWaterL && grist > 0
-      ? Math.round(
-          (plan.mashWaterL - grist * 0.96 + (plan.spargeWaterL ?? 0)) * 10
-        ) / 10
+      ? Math.round((plan.mashWaterL - grist * 0.96 + (plan.spargeWaterL ?? 0)) * 10) / 10
       : null;
 
   if (preBoilL && preBoilL > 0) {
@@ -205,9 +209,13 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     additions.set(elapsed, list);
   });
 
-  const boilAdditions = (recipe.fermentables ?? []).filter((f) => f.use === 'ebullition' && f.weightKg > 0);
+  const boilAdditions = (recipe.fermentables ?? []).filter(
+    (f) => f.use === 'ebullition' && f.weightKg > 0
+  );
   const sugarMark = Math.max(0, boilMin - 10);
-  const marks = [...new Set([...additions.keys(), ...(boilAdditions.length ? [sugarMark] : [])])].sort((a, b) => a - b);
+  const marks = [
+    ...new Set([...additions.keys(), ...(boilAdditions.length ? [sugarMark] : [])])
+  ].sort((a, b) => a - b);
   let cursor = 0;
 
   marks.forEach((mark, i) => {
@@ -225,19 +233,23 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       });
       cursor = mark;
     }
-    if (additions.has(mark)) steps.push({
-      id: `hop-${mark}`,
-      label: `Houblon à ${boilMin - mark} min`,
-      detail: (additions.get(mark) ?? []).join(' · '),
-      durationMin: 0,
-      hopNames: additions.get(mark),
-      boilElapsedMin: mark
-    });
-    if (boilAdditions.length && mark === sugarMark) steps.push({
-      id: 'sucres', label: `Sucres — ${boilMin - mark} dernières minutes`,
-      detail: `${boilAdditions.map((f) => `${f.name} ${Units.format(f.weightKg, 'kg')}`).join(' · ')} — baisser le feu et remuer pour dissoudre.`,
-      durationMin: 0, boilElapsedMin: mark
-    });
+    if (additions.has(mark))
+      steps.push({
+        id: `hop-${mark}`,
+        label: `Houblon à ${boilMin - mark} min`,
+        detail: (additions.get(mark) ?? []).join(' · '),
+        durationMin: 0,
+        hopNames: additions.get(mark),
+        boilElapsedMin: mark
+      });
+    if (boilAdditions.length && mark === sugarMark)
+      steps.push({
+        id: 'sucres',
+        label: `Sucres — ${boilMin - mark} dernières minutes`,
+        detail: `${boilAdditions.map((f) => `${f.name} ${Units.format(f.weightKg, 'kg')}`).join(' · ')} — baisser le feu et remuer pour dissoudre.`,
+        durationMin: 0,
+        boilElapsedMin: mark
+      });
   });
 
   if (cursor < boilMin) {
@@ -308,20 +320,26 @@ export function formatCountdown(ms: number): string {
 // --- Son ---------------------------------------------------------------------
 
 let audioContext: AudioContext | null = null;
+let stopAlarmAudio: (() => void) | null = null;
 
 /**
  * Arme le son. À appeler depuis un vrai geste de l'utilisateur — un appui sur
  * « Démarrer » —, sinon iOS et Safari refusent toute lecture ultérieure.
  */
 export function armAudio(): boolean {
-  if (audioContext) return true;
+  if (audioContext?.state === 'closed') audioContext = null;
+  if (audioContext) {
+    void audioContext.resume().catch(() => {});
+    return true;
+  }
   try {
     const Ctor =
-      window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctor) return false;
     audioContext = new Ctor();
     // Un contexte créé hors geste naît « suspended » : on le réveille tout de suite.
-    void audioContext.resume();
+    void audioContext.resume().catch(() => {});
     return true;
   } catch {
     return false;
@@ -332,14 +350,40 @@ export function isAudioArmed(): boolean {
   return audioContext !== null;
 }
 
-/**
- * Trois bips courts. Assez perçants pour passer par-dessus une pompe et un
- * brûleur, assez brefs pour ne pas devenir insupportables.
- */
+/** Une seule sonnerie à la fois, même si plusieurs ajouts tombent ensemble. */
+export function playBrewAlarm(): boolean {
+  if (!audioContext || audioContext.state === 'closed') return false;
+  stopBrewAlarm();
+  try {
+    void audioContext.resume().catch(() => {});
+    stopAlarmAudio = scheduleBrewAlarm(audioContext);
+    try {
+      navigator.vibrate?.(BREW_ALARM_VIBRATION);
+    } catch {
+      /* Optionnel selon l'appareil. */
+    }
+    return true;
+  } catch {
+    stopBrewAlarm();
+    return false;
+  }
+}
+
+export function stopBrewAlarm(): void {
+  stopAlarmAudio?.();
+  stopAlarmAudio = null;
+  try {
+    navigator.vibrate?.(0);
+  } catch {
+    /* Aucun vibreur ou contexte déjà fermé. */
+  }
+}
+
+/** Confirmation brève d’activation du son ; les échéances utilisent playBrewAlarm. */
 export function beep(times = 3): void {
   if (!audioContext) return;
   const ctx = audioContext;
-  void ctx.resume();
+  void ctx.resume().catch(() => {});
 
   for (let i = 0; i < times; i += 1) {
     const at = ctx.currentTime + i * 0.28;

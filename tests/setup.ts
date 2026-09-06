@@ -9,6 +9,15 @@ import '@testing-library/jest-dom/vitest';
  */
 
 if (typeof window !== 'undefined') {
+  // Le rendu et le focus natifs des dialogues sont vérifiés dans Chrome.
+  if (!HTMLDialogElement.prototype.showModal) {
+    HTMLDialogElement.prototype.showModal = function () {
+      this.setAttribute('open', '');
+    };
+    HTMLDialogElement.prototype.close = function () {
+      this.removeAttribute('open');
+    };
+  }
   /*
    * `matchMedia` n'existe pas dans jsdom, et plusieurs composants s'en servent
    * pour respecter la préférence de mouvement réduit. Sans ce bouchon, ils

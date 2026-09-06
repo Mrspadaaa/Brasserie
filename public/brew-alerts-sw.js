@@ -15,7 +15,7 @@ self.addEventListener('push', (event) => {
       tag: p.tag,
       renotify: false,
       requireInteraction: true,
-      vibrate: [250, 120, 250, 120, 500],
+      vibrate: [700, 150, 700, 150, 1000, 300, 700, 150, 700, 150, 1000],
       data: { batchId: p.batchId }
     })
   );

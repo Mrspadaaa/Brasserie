@@ -32,6 +32,7 @@ interface SheetProps {
   snapPoints?: (string | number)[];
   /** Empêche la fermeture accidentelle quand une saisie est en cours. */
   dismissible?: boolean;
+  className?: string;
 }
 
 export const Sheet: React.FC<SheetProps> = ({
@@ -42,7 +43,8 @@ export const Sheet: React.FC<SheetProps> = ({
   children,
   footer,
   snapPoints,
-  dismissible = true
+  dismissible = true,
+  className = ''
 }) => {
   /*
    * ⚠️ Le clavier virtuel ne réduit NI `dvh`, NI `window.innerHeight` : une
@@ -79,10 +81,10 @@ export const Sheet: React.FC<SheetProps> = ({
           bottom: keyboardInset || undefined,
           maxHeight: keyboardInset ? `calc(94dvh - ${keyboardInset}px)` : undefined
         }}
-        className="fixed inset-x-0 bottom-0 z-50 flex flex-col
+        className={`fixed inset-x-0 bottom-0 z-50 flex flex-col
                    max-h-[94dvh] rounded-t-sheet
                    bg-cave-900 border-t border-cave-700 shadow-sheet
-                   focus:outline-none"
+                   focus:outline-none ${className}`}
       >
         {/* Poignée : indique qu'on peut glisser, et sert de zone de préhension. */}
         <div
@@ -166,11 +168,13 @@ export const ConfirmSheet: React.FC<{
   what: string;
   consequence?: string;
   confirmLabel?: string;
-}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer' }) => (
+  className?: string;
+}> = ({ open, onClose, onConfirm, title, what, consequence, confirmLabel = 'Supprimer', className }) => (
   <Sheet
     open={open}
     onClose={onClose}
     title={title}
+    className={className}
     footer={
       <div className="flex gap-3">
         <button
