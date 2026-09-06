@@ -209,6 +209,8 @@ export interface MashProfile {
 }
 
 /** Panneau ionique d'une eau, en ppm (mg/L). */
+export interface IonBand { min: number; max: number }
+
 export interface WaterIons {
   ca: number;
   mg: number;

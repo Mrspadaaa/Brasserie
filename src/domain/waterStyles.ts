@@ -1,4 +1,4 @@
-import { WaterIons } from '../types';
+import { WaterIons, IonBand } from '../types';
 
 /**
  * Fourchettes d'eau par style de bière.
@@ -13,10 +13,7 @@ import { WaterIons } from '../types';
  * recettes publiées.
  */
 
-export interface IonRange {
-  min: number;
-  max: number;
-}
+export type IonRange = IonBand;
 
 export interface StyleWater {
   /** Code BJCP — « 21C », « 20C ». */

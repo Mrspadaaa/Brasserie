@@ -443,10 +443,13 @@ describe('Solveur de sels', () => {
   });
 
   /* ⚠️ Le potassium n'a pas de champ : il était versé sans que rien ne le dise. */
-  it('⚠️ le KCl annonce le potassium qu’il apporte, faute de pouvoir le suivre', () => {
+  it('le KCl est plafonné, ses informations de seuil viennent des doses réelles', () => {
     const r = solveFor('21C', OSMOSEE, 20, 10, 12, ['cacl2', 'mgcl2']);
     expect(r.doses.kcl ?? 0).toBeGreaterThan(0);
-    expect(r.unreachable.some((m) => /potassium/i.test(m))).toBe(true);
+    // A contribution is not an unreachable target. saltCautions handles the
+    // conditional threshold warning, avoiding a permanent solver warning.
+    expect((r.doses.kcl ?? 0) * 524.4 / 30).toBeLessThanOrEqual(50);
+    expect(r.unreachable.some((m) => /potassium/i.test(m))).toBe(false);
   });
 
   /*
@@ -1163,7 +1166,7 @@ describe('Audit 05.09 — facture, rinçage coupé, magnésium, unités', () => 
     expect(ph).toBeLessThanOrEqual(MASH_PH_BAND.max);
 
     // 3. Et l'écart avec la fourchette du style est DIT, pas subi en silence.
-    expect(r.unreachable.join(' ')).toMatch(/Alcalinité tenue à .* au lieu des 120/);
+    expect(r.unreachable.join(' ')).toMatch(/la facture limite l’objectif à .* au lieu des 120/);
   });
 
   /*
@@ -1232,9 +1235,11 @@ describe('Audit 05.09 — facture, rinçage coupé, magnésium, unités', () => 
     expect(r.achievedWort.so4 / r.achievedWort.cl).toBeCloseTo(102 / 98, 1);
   });
 
-  it('⚠️ le sodium n’est pas une cible : pas de sel de table sur une stout, du sel sur une Gose', () => {
+  it('sodium modéré sur une stout, prioritaire sur une Gose', () => {
     const stout = solve('20C', FRIBOURG, {}, 376);
-    expect(stout.doses.nacl ?? 0).toBe(0);
+    // The global fit uses 1 g to carry chloride when calcium is constrained.
+    // Test the resulting sodium, not the old order's exclusion of table salt.
+    expect(stout.achievedWort.na).toBeLessThan(40);
     expect(stout.achievedWort.na).toBeLessThan(styleByCode('20C').ions.na.max);
     const gose = solve('27', OSMOSEE, {}, 8);
     expect(gose.doses.nacl ?? 0).toBeGreaterThan(0);
@@ -1577,8 +1582,10 @@ describe('Le seuil d’achat d’alcalinité, et lui seul', () => {
         targetRa: targetRaForColor(ebc),
         allSaltsInMash: true
       });
-      const alcalins = ALKALINE_SALTS.reduce((s, id) => s + (r.doses[id] ?? 0), 0);
-      if (precedent !== null && Math.abs(alcalins - precedent) > 0.4) {
+      // Grams of lime and bicarbonate are not interchangeable. Check their
+      // actual alkalinity; waterSweep also checks continuity of all six ions.
+      const alcalins = residualAlkalinity(r.achievedMash);
+      if (precedent !== null && Math.abs(alcalins - precedent) > 10) {
         sauts.push({ ebc, delta: alcalins - precedent });
       }
       precedent = alcalins;

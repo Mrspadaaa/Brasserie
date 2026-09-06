@@ -617,7 +617,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    */
   const planFor = useCallback(
     (ratio: number) => {
-      const target = rebalanceRatio(midpoint(style), ratio);
+      const target = rebalanceRatio(state.customTarget?.ions ?? midpoint(style), ratio);
 
       /*
        * Les plafonds du solveur.
@@ -641,6 +641,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
         start,
         startSparge,
         target,
+        mineralTargetMode: state.customTarget ? 'target' : 'minimum',
         ranges,
         totalWaterL,
         mashWaterL: state.mashWaterL,
@@ -651,7 +652,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
         allSaltsInMash
       });
     },
-    [style, start, startSparge, totalWaterL, state.mashWaterL, state.disabled, raBand, raCeiling, allSaltsInMash]
+    [style, start, startSparge, totalWaterL, state.mashWaterL, state.disabled, state.customTarget, raBand, raCeiling, allSaltsInMash]
   );
 
   const solution = useMemo(() => planFor(wantedRatio), [planFor, wantedRatio]);
@@ -725,7 +726,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   /** La part d'osmosée la plus basse qui atteigne encore le style. */
   const justEnough = useMemo(() => {
-    const target = rebalanceRatio(midpoint(style), wantedRatio);
+    const target = rebalanceRatio(state.customTarget?.ions ?? midpoint(style), wantedRatio);
     const ranges = {} as Record<keyof typeof style.ions, IonBand>;
     (Object.keys(style.ions) as Array<keyof typeof style.ions>).forEach((ion) => {
       ranges[ion] = {
@@ -736,6 +737,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
     return minimalDilution({
       source,
       target,
+      mineralTargetMode: state.customTarget ? 'target' : 'minimum',
       ranges,
       totalWaterL,
       mashWaterL: state.mashWaterL,
@@ -749,7 +751,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
       beerVolumeL,
       sourcePh: source.ph ?? 7.4
     });
-  }, [style, wantedRatio, source, totalWaterL, state.mashWaterL, state.spargeWaterL, raBand, raCeiling, state.disabled, allSaltsInMash, state.acidId, beerVolumeL]);
+  }, [style, wantedRatio, source, totalWaterL, state.mashWaterL, state.spargeWaterL, raBand, raCeiling, state.disabled, state.customTarget, allSaltsInMash, state.acidId, beerVolumeL]);
 
   /**
    * Tirer le curseur REFAIT la pesée, dans le même geste.
@@ -1871,7 +1873,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           <button
             type="button"
             aria-label="Proposer les doses"
-            disabled={rienAProposer}
+            disabled={totalWaterL <= 0 || (rienAProposer && !acideForce)}
             /*
               ⚠️ IL REND AUSSI L'ACIDE AU CALCUL. « Vérifie que le bouton de
               génération fonctionne comme il faut avec les acides aussi » — il
@@ -1879,7 +1881,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
               l'appui, et le « plan proposé » sortait moitié calculé, moitié
               forcé, sans que rien ne le dise. Doser propose un plan ENTIER.
             */
-            onClick={() => set({ doses: solution.doses, acidOverride: undefined })}
+            onClick={() => set({ doses: rienAProposer ? state.doses : solution.doses, acidOverride: undefined })}
             className="shrink-0 h-9 px-2.5 rounded-control bg-ebc-straw text-cave-950 font-bold text-2xs
                        flex items-center gap-1 hover:bg-ebc-amber active:scale-[0.98] transition-all shadow-sm
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ebc-straw"

@@ -22,6 +22,26 @@ import { WaterSource } from '../../src/types';
 
 afterEach(cleanup);
 
+it('Doser respecte les cinq ions d’une cible personnalisée (Angles), puis suit les modifications manuelles', () => {
+  const source: WaterSource = { id: 'angles', name: 'Angles', ca: 49, mg: 1.1, na: 1.9, so4: 7.1, cl: 1.3, hco3: 157.4 };
+  function Host() {
+    const [state, setState] = useState<WaterState>({
+      diRatioPct: 0, styleCode: '—', doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 30, spargeWaterL: 0,
+      customTarget: { name: 'American Wheat de référence', ions: { ca: 100, mg: 25, na: 15, so4: 100, cl: 111, hco3: 0 } }
+    });
+    return <SaltSolver source={source} onSourceChange={() => {}} beerEbc={8} beerVolumeL={25} state={state} onChange={setState} noSparge />;
+  }
+  render(<Host />);
+  fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
+  expect((screen.getByLabelText(/Dose de Sel d’Epsom en grammes/) as HTMLInputElement).value).toBe('7,2');
+  expect((screen.getByLabelText(/Dose de Sel de table en grammes/) as HTMLInputElement).value).toBe('1');
+  expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('0');
+  const slider = screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' }) as HTMLInputElement;
+  const before = slider.value;
+  fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
+  expect(Number(slider.value)).toBeGreaterThan(Number(before));
+});
+
 const ETAT: WaterState = {
   diRatioPct: 0,
   styleCode: '20C',
@@ -849,6 +869,14 @@ describe('Le bouton Doser ne doit jamais effacer', () => {
     expect(screen.getByText(/tous les sels sont écartés/i)).toBeInTheDocument();
   });
 
+  it('recalcule un acide manuel même sans proposition de sels, sans effacer les doses', () => {
+    monter({ doses: { gypse: 2 }, disabled: TOUS, acidOverride: { mash: 15 } }, 6);
+    expect(doser()).toBeEnabled();
+    fireEvent.click(doser());
+    expect((screen.getByLabelText(/Dose d’acide lactique.*à l’empâtage/) as HTMLInputElement).value).not.toBe('15');
+    expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('2');
+  });
+
   /*
    * ⚠️ La preuve que la correction du KCl sert : sur ce même Kölsch depuis
    * Fribourg, le bouton était bloqué et le chlorure restait 17 ppm sous son
@@ -976,7 +1004,8 @@ describe('Une noire sur osmosée reçoit du bicarbonate, et l’écran dit jusqu
     monter({ doses: {}, diRatioPct: 100 }, 80, 30, STOUT);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
     /* Le nombre suit le rapport eau/grain — on vérifie la phrase, pas le chiffre. */
-    expect(alertes()).toMatch(/Alcalinité tenue à -?\d+ ppm au lieu des \d+ que demanderait la couleur/);
+    // This is a target ceiling, not a claim that the actual water equals it.
+    expect(alertes()).toMatch(/Alcalinité : la facture limite l’objectif à -?\d+ ppm au lieu des \d+ que demanderait la couleur/);
     expect(alertes()).toMatch(/c’est le pH qui commande/);
   });
 
@@ -984,7 +1013,7 @@ describe('Une noire sur osmosée reçoit du bicarbonate, et l’écran dit jusqu
   it('sans facture de grain, aucun message de plafond', () => {
     monter({ doses: {}, diRatioPct: 100 }, 80);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
-    expect(alertes()).not.toMatch(/Alcalinité tenue à/);
+    expect(alertes()).not.toMatch(/la facture limite l’objectif/);
   });
 });
 

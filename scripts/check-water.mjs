@@ -21,24 +21,19 @@ import { dirname, join } from 'node:path';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const require_ = createRequire(join(ROOT, 'package.json'));
-const { transformSync } = require_('esbuild');
+const { buildSync } = require_('esbuild');
 
 const OUT = join(ROOT, 'node_modules', '.check-water');
 mkdirSync(OUT, { recursive: true });
 
 function compile(name, relPath, rewrites = {}) {
-  const ts = readFileSync(join(ROOT, relPath), 'utf8');
-  let js = transformSync(ts, { loader: 'ts', format: 'esm' }).code;
-  for (const [from, to] of Object.entries(rewrites)) {
-    js = js.split(`'${from}'`).join(`'${to}'`).split(`"${from}"`).join(`"${to}"`);
-  }
   const file = join(OUT, `${name}.mjs`);
-  writeFileSync(file, js);
+  buildSync({ entryPoints: [join(ROOT, relPath)], bundle: true, platform: 'node', format: 'esm', outfile: file });
   return file;
 }
 
 compile('types', 'src/types/index.ts');
-compile('water', 'src/domain/water.ts', { '../types': './types.mjs' });
+compile('water', 'src/domain/water/index.ts');
 compile('waterStyles', 'src/domain/waterStyles.ts', { '../types': './types.mjs' });
 
 const load = (name) => import(`file:///${join(OUT, name).split('\\').join('/')}`);
@@ -236,7 +231,9 @@ check('le repli ne noie pas la bière de magnésium', replis.achievedWort.mg <= 
 
 // Le potassium n'a pas de champ dans le modèle : on annonce ce qu'on verse.
 const viaKcl = solve('21C', OSMOSEE, 20, 10, 12, ['cacl2', 'mgcl2']);
-check('le KCl annonce son potassium', viaKcl.unreachable.some((m) => /potassium/i.test(m)), true);
+// A potassium contribution is not an unreachable target. Actual threshold
+// warnings are handled by saltCautions; the optimizer must respect the cap.
+check('le KCl respecte son plafond de potassium', (viaKcl.doses.kcl ?? 0) * 524.4 / 30 <= 50, true);
 
 // Une source déjà au-dessus de la cible ne peut que se diluer.
 const dure = solve('01A', FRIBOURG, 20, 10, 6);
