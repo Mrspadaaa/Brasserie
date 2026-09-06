@@ -26,11 +26,19 @@ export { firebaseConfig } from './firebase';
 /*
  * ⚠️ L'adresse réelle n'est PAS écrite ici : le dépôt est public, et publier la
  * liste blanche revient à désigner le compte à attaquer. Elle se lit dans
- * `.env` (`VITE_AUTHORIZED_ACCOUNTS`, séparées par des virgules), jamais
- * committé. Le repli ci-dessous n'autorise personne de réel.
+ * `.env` (`VITE_AUTHORIZED_ACCOUNTS`, adresses séparées par des virgules),
+ * jamais committé.
+ *
+ * ⚠️ Le repli était une adresse d'exemple, et c'était une FAUTE : un `.env`
+ * oublié au moment du build produisait une application qui refusait son propre
+ * propriétaire, avec un message l'accusant de se tromper de compte. Une liste
+ * absente ne veut pas dire « personne n'est autorisé », elle veut dire « cette
+ * copie ne sait pas » — et dans ce cas c'est aux serveurs de Google de
+ * trancher, comme le dit le commentaire ci-dessus. Liste vide = on laisse
+ * passer, `firestore.rules` refusera si besoin.
  */
-export const AUTHORIZED_ACCOUNTS = (
-  import.meta.env.VITE_AUTHORIZED_ACCOUNTS || 'proprietaire@exemple.ch'
+export const AUTHORIZED_ACCOUNTS: string[] = (
+  import.meta.env.VITE_AUTHORIZED_ACCOUNTS || ''
 )
   .split(',')
   .map((a: string) => a.trim().toLowerCase())
@@ -72,6 +80,9 @@ function setDriveToken(token: string | null, lifetimeSeconds = 3600) {
 
 function isEmailAuthorized(email?: string | null): boolean {
   if (!email) return false;
+  // Liste absente : cette copie ne sait pas qui est autorisé. On laisse Google
+  // trancher plutôt que de fermer la porte au propriétaire.
+  if (AUTHORIZED_ACCOUNTS.length === 0) return true;
   const clean = email.toLowerCase().trim();
   return AUTHORIZED_ACCOUNTS.some((a) => a.toLowerCase().trim() === clean);
 }

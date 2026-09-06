@@ -39,6 +39,11 @@ src/data/seedData.ts
 
 # Identifiant du projet Firebase — sert au déploiement, pas au code.
 .firebaserc
+
+# ⚠️ Règles Firestore GÉNÉRÉES (npm run rules) : elles portent les adresses
+# autorisées réelles. Le dépôt ne versionne que le gabarit.
+firestore.rules
+!firestore.rules.template
 *.xlsx
 
 # Artefacts de travail : audits, brouillons, dumps, couverture.

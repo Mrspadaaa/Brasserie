@@ -63,8 +63,19 @@ les tests passent.
 npm run deploy
 ```
 
-Construit le bundle et le publie sur Firebase Hosting. Demande un `.firebaserc`
-local pointant sur le projet (`{"projects":{"default":"<id-du-projet>"}}`).
+Construit le bundle, régénère les règles Firestore depuis `.env`, puis publie
+les deux sur Firebase. Demande un `.firebaserc` local pointant sur le projet
+(`{"projects":{"default":"<id-du-projet>"}}`).
+
+⚠️ `firestore.rules` est **généré** par `npm run rules` depuis
+`firestore.rules.template` : le dépôt ne versionne que le gabarit, où la liste
+des comptes autorisés est un jeton. Ne pas lancer `firebase deploy` à la main —
+il enverrait un fichier de règles périmé ou vide, ce qui ferme la base à tout le
+monde. Voir [DEPLOY.md](DEPLOY.md).
+
+Les Cloud Functions lisent leur liste d'autorisation dans `functions/.env`
+(gabarit : `functions/.env.example`) et se déploient par
+`npm run deploy:functions`.
 
 ## Licence
 

@@ -7,10 +7,13 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "deploy": "vite build && firebase deploy --only hosting",
+    "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only hosting,firestore",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "rules": "node scripts/build-rules.mjs",
+    "deploy:rules": "node scripts/build-rules.mjs && firebase deploy --only firestore",
+    "deploy:functions": "firebase deploy --only functions"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

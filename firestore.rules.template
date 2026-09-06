@@ -8,7 +8,12 @@ rules_version = '2';
 // développement. Ces règles-ci s'exécutent sur les serveurs de Google et ne
 // peuvent pas être contournées depuis le client.
 //
-// Déploiement : npx firebase deploy --only firestore:rules
+// ⚠️ CE FICHIER EST GÉNÉRÉ. Ne pas l'éditer à la main : il est réécrit par
+// `node scripts/build-rules.mjs` depuis `firestore.rules.template` et la
+// variable `VITE_AUTHORIZED_ACCOUNTS` de `.env`. Il reste hors du dépôt
+// (public), parce qu'il porte les adresses réelles.
+//
+// Déploiement : npm run deploy — build, règles et hébergement, dans cet ordre.
 //
 // ⚠️ STRUCTURE : une seule liste de collections, pas un bloc `match` par
 // collection. La version précédente en avait seize écrits à la main, et il en
@@ -22,15 +27,10 @@ service cloud.firestore {
 
     // --- Comptes autorisés à ouvrir la comptabilité de la brasserie ---
     //
-    // ⚠️⚠️ ADRESSE ANONYMISÉE POUR LE DÉPÔT PUBLIC. Les règles Firestore ne
-    // savent pas lire de variable d'environnement : l'adresse réelle doit être
-    // remise ICI avant tout `firebase deploy --only firestore:rules`, sinon le
-    // déploiement VERROUILLE la base pour tout le monde.
-    // (`npm run deploy` ne déploie que l'hébergement : il ne touche pas à ce
-    // fichier.)
+    // Les adresses réelles sont injectées à la génération, depuis `.env`.
     function autorises() {
       return [
-        'proprietaire@exemple.ch'
+__AUTHORIZED_ACCOUNTS__
       ];
     }
 

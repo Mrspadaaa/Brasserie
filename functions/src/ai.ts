@@ -30,15 +30,26 @@ export const GEMINI_API_KEY = defineSecret('GEMINI_API_KEY');
  * règles sont les seules qui protègent réellement quelque chose.
  */
 /*
- * ⚠️ L'adresse réelle vit dans la configuration de la Function, pas dans le
- * code : le dépôt est public. À poser au déploiement —
- * `firebase functions:secrets:set AUTHORIZED_ACCOUNTS`, ou une variable
- * d'environnement. Le repli n'autorise personne de réel.
+ * ⚠️ L'adresse réelle vit dans `functions/.env` — jamais committé, chargé
+ * automatiquement dans l'environnement de la Function par le CLI Firebase. Le
+ * dépôt est public : elle n'a rien à faire dans le code.
+ *
+ * ⚠️ Ici, et CONTRAIREMENT au client, la liste vide ferme la porte. Le client
+ * n'affiche qu'un message ; cette passerelle-ci dépense un quota Gemini payé.
+ * Une passerelle ouverte par accident, c'est une facture pour des inconnus.
+ * Le refus est donc explicite, et il dit quoi faire.
  */
-const AUTHORIZED = (process.env.AUTHORIZED_ACCOUNTS || 'proprietaire@exemple.ch')
+const AUTHORIZED = (process.env.AUTHORIZED_ACCOUNTS || '')
   .split(',')
   .map((a) => a.trim().toLowerCase())
   .filter(Boolean);
+
+if (AUTHORIZED.length === 0) {
+  console.error(
+    '[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. ' +
+      'Renseigne-la dans functions/.env, puis redéploie les Functions.'
+  );
+}
 
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
 

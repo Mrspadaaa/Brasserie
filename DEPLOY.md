@@ -58,13 +58,44 @@ bière ratée ou une déclaration fausse.
 
 ## Déploiement
 
+Une seule commande. Elle construit le bundle, **régénère les règles Firestore
+depuis `.env`**, puis publie les deux.
+
 ```bash
-npx firebase deploy --only firestore   # règles + index
-npx firebase deploy --only functions   # passerelle IA
-npx firebase deploy --only hosting     # application
+npm run deploy
 ```
 
-Ou tout d'un coup : `npx firebase deploy`
+Les Cloud Functions se déploient à part, parce qu'elles sont lentes et changent
+rarement :
+
+```bash
+npm run deploy:functions
+```
+
+### ⚠️ Ne jamais lancer `firebase deploy` à la main
+
+C'est la panne qui a eu lieu. `firestore.rules` est **généré** : le dépôt étant
+public, il ne versionne que `firestore.rules.template`, où la liste des comptes
+autorisés est remplacée par un jeton. Un `npx firebase deploy --only firestore`
+lancé sans avoir régénéré le fichier a déployé des règles qui n'autorisaient
+personne — plus aucune donnée ne remontait, et l'application annonçait « ce
+compte n'est pas autorisé ».
+
+`npm run deploy` régénère toujours les règles avant de les envoyer, et
+`scripts/build-rules.mjs` refuse d'écrire une liste vide ou une adresse
+d'exemple. Pour ne toucher que les règles :
+
+```bash
+npm run deploy:rules
+```
+
+### Se rouvrir l'accès si les règles ont verrouillé la base
+
+Les règles s'appliquent aussi à celui qui déploie. Si l'accès est déjà perdu,
+`npm run deploy:rules` reste le chemin — le déploiement des règles passe par
+l'authentification du CLI Firebase, pas par les règles elles-mêmes. En dernier
+recours, l'éditeur de règles de la console Firebase permet de les corriger à la
+main.
 
 ---
 

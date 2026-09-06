@@ -1,2 +1,7 @@
 lib/
 node_modules/
+
+# Variables d'environnement des Functions — contiennent la liste blanche.
+.env
+.env.*
+!.env.example
