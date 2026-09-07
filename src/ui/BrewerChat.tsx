@@ -147,6 +147,7 @@ function ScopedChat({
   }, []);
   useEffect(() => {
     if (!open) return;
+    void brewerJobs.refresh();
     let live = true;
     const version = epoch.current;
     setLoading(true);
@@ -624,17 +625,18 @@ function ScopedChat({
             </button>
           </p>
         )}
-        {!hideLauncher && jobs.some(
-          (j) =>
-            j.status === 'done' &&
-            j.contextSignature &&
-            j.contextSignature !== JSON.stringify([draft, localJournal, phase])
-        ) && (
-          <p className="brewer-chat-status">
-            Le contexte a changé pendant ou depuis l’analyse. Pose une nouvelle question pour tenir
-            compte de tes derniers changements.
-          </p>
-        )}
+        {!hideLauncher &&
+          jobs.some(
+            (j) =>
+              j.status === 'done' &&
+              j.contextSignature &&
+              j.contextSignature !== JSON.stringify([draft, localJournal, phase])
+          ) && (
+            <p className="brewer-chat-status">
+              Le contexte a changé pendant ou depuis l’analyse. Pose une nouvelle question pour
+              tenir compte de tes derniers changements.
+            </p>
+          )}
         {error && (
           <p role="alert" className="brewer-chat-error">
             {error}
@@ -671,7 +673,7 @@ function BrewerWorkCard({
             <LoaderCircle size={17} className="brewer-chat-spin" />
           )}
           <strong>{brewerJobStatus(job)}</strong>
-          <time>
+          <time aria-hidden="true">
             {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
           </time>
         </div>

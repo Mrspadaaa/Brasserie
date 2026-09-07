@@ -40,7 +40,7 @@ export function createBrewerJobStore() {
       if (uid)
         localStorage.setItem(
           `brewer-jobs:${uid}`,
-          JSON.stringify(state.jobs.map(({ turn, ...j }) => j).slice(-60))
+          JSON.stringify(state.jobs.map(({ turn, contextSignature, ...j }) => j).slice(-60))
         );
     } catch {
       /* Server receipts remain recoverable; retain the outbox in memory. */
@@ -52,6 +52,14 @@ export function createBrewerJobStore() {
     jobs.forEach((job) => {
       if (job.generation < (minimumGenerations.get(key(job.scope)) ?? 0)) return;
       const old = next.get(job.operationId);
+      // A delayed HTTP acknowledgement must not rewind newer progress from polling.
+      if (
+        old &&
+        old.id !== old.operationId &&
+        job.id !== job.operationId &&
+        job.updatedAt < old.updatedAt
+      )
+        return;
       next.set(job.operationId, {
         ...old,
         ...job,
@@ -88,6 +96,9 @@ export function createBrewerJobStore() {
       void refresh();
     } catch (error) {
       if (version !== epoch) return;
+      // The request may have timed out after polling already recovered its durable receipt.
+      const current = state.jobs.find((j) => j.operationId === job.operationId);
+      if (current && current.id !== current.operationId) return;
       const reason = (error as any)?.details?.reason;
       if (reason === 'chat-reset') {
         forget(job.scope, (error as any)?.details?.generation ?? job.generation + 1);
@@ -142,7 +153,14 @@ export function createBrewerJobStore() {
       if (pollVersion === version) pollVersion = -1;
       if (started && version === epoch) {
         clearTimeout(timer);
-        timer = setTimeout(() => void refresh(), state.jobs.some(isBrewerWorking) ? 3000 : 15000);
+        timer = setTimeout(
+          () => void refresh(),
+          document.visibilityState === 'hidden'
+            ? 30000
+            : state.jobs.some(isBrewerWorking)
+              ? 3000
+              : 60000
+        );
       }
     }
   };
@@ -230,7 +248,10 @@ export function createBrewerJobStore() {
         sending: true
       };
       merge([job]);
-      void start().then(() => send(job));
+      const version = epoch;
+      void start().then(() => {
+        if (version === epoch && started) void send(job);
+      });
     },
     retry: (job: ClientBrewerJob) => void send(job),
     retrySaved: (previous: ClientBrewerJob) => {
@@ -252,7 +273,10 @@ export function createBrewerJobStore() {
         sending: true
       };
       merge([job]);
-      void start().then(() => send(job));
+      const version = epoch;
+      void start().then(() => {
+        if (version === epoch && started) void send(job);
+      });
     },
     markRead: (job: ClientBrewerJob) => {
       if (job.readAt || isBrewerWorking(job) || reading.has(job.operationId)) return;

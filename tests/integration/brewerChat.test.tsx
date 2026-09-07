@@ -69,6 +69,64 @@ afterEach(() => {
   brewerJobs.stop();
 });
 describe('Conversation dans la recette / le brassin', () => {
+  it('ne transforme pas une réponse récupérée en erreur si le premier envoi expire ensuite', async () => {
+    let reject!: (error: Error) => void;
+    vi.mocked(api.submit).mockImplementation(
+      () =>
+        new Promise((_, no) => {
+          reject = no;
+        })
+    );
+    render(<BrewerChat {...props} />);
+    await open();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Réponse récupérée' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
+    const current = brewerJobs.snapshot().jobs[0];
+    await act(async () =>
+      brewerJobs.merge([
+        {
+          ...current,
+          id: 'f'.repeat(64),
+          status: 'done',
+          sending: false,
+          turn: turn(current.question, current.operationId),
+          updatedAt: Date.now() + 1000
+        }
+      ])
+    );
+    await screen.findByText('Mesure avant de corriger.');
+    await act(async () => reject(new Error('HTTP timeout')));
+    expect(brewerJobs.snapshot().jobs[0].sendError).toBeUndefined();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+  it('ignore un ancien accusé de réception arrivé après la réponse', async () => {
+    let resolve!: (value: any) => void;
+    vi.mocked(api.submit).mockImplementation(
+      () =>
+        new Promise((r) => {
+          resolve = r;
+        })
+    );
+    render(<BrewerChat {...props} />);
+    await open();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Un accusé retardé' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
+    const original = { ...brewerJobs.snapshot().jobs[0], id: 'f'.repeat(64), sending: false };
+    await act(async () =>
+      brewerJobs.merge([
+        {
+          ...original,
+          status: 'done',
+          turn: turn(original.question, original.operationId),
+          updatedAt: Date.now() + 1000
+        }
+      ])
+    );
+    await act(async () => resolve({ job: original }));
+    expect(brewerJobs.snapshot().jobs[0].status).toBe('done');
+  });
   it('place les questions dans le fil immédiatement et laisse saisir la suivante sans attendre Gemini', async () => {
     let resolve!: (value: any) => void;
     vi.mocked(api.submit).mockImplementation(
