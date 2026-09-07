@@ -431,6 +431,10 @@
   color: var(--brew-gold);
 }
 .brew-layout {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
   gap: 32px;
@@ -2254,6 +2258,20 @@
 }
 .brew-assist-result small {
   color: #b6c6bc;
+}
+.brew-assist-result.is-attention {
+  border-color: #e8a986;
+  background: #e8a98612;
+}
+.brew-assist-result.is-attention > strong {
+  color: #f1b99b;
+}
+.brew-assist-result.is-info {
+  border-color: #a7cee4;
+  background: #a7cee40c;
+}
+.brew-assist-result.is-info > strong {
+  color: #b8dcef;
 }
 .brew-assist-pills {
   display: flex;

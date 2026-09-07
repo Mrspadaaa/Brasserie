@@ -639,6 +639,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               type="button"
               className="brew-quick-entry"
               aria-label="Relever une mesure"
+              disabled={!session.canStart}
               onClick={() => openCapture('measure')}
             >
               <Thermometer size={20} />
@@ -648,6 +649,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               type="button"
               className="brew-quick-entry"
               aria-label="Ajouter une note"
+              disabled={!session.canStart}
               onClick={() => openCapture('note')}
             >
               <NotebookPen size={20} />
@@ -692,7 +694,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 <button
                   type="button"
                   key={v}
-                  disabled={!phaseSteps.length}
+                  disabled={!phaseSteps.length || !session.canStart}
                   aria-label={AREA[v]}
                   aria-pressed={!isConsulting && view === v}
                   className={`brew-phase ${phaseDone ? 'is-complete' : ''}`}
@@ -715,6 +717,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 type="button"
                 key={s.id}
                 className="brew-timer-chip"
+                disabled={!session.canStart}
                 onClick={() => choose(state.steps.indexOf(s))}
               >
                 <Clock3 size={15} />
@@ -729,6 +732,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               <button
                 type="button"
                 className="brew-timer-chip"
+                disabled={!session.canStart}
                 onClick={() => choose(state.steps.findIndex(isBoilStep))}
               >
                 <Clock3 size={15} />
@@ -741,8 +745,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           </div>
         )}
 
-        <div
+        <fieldset
           className={`brew-layout ${isConsulting ? 'is-consulting' : ''}`}
+          disabled={!session.canStart}
+          aria-label="Conduite du brassage"
           data-area={isConsulting ? undefined : area}
         >
           <div className="brew-main-column">
@@ -1361,33 +1367,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 )}
               </section>
             </BrewCapturePanel>
-            {session.status && (
-              <div className="brew-sync" role="status">
-                <BrewTag tone={session.error ? 'due' : session.pending ? 'pause' : 'done'}>
-                  {session.status}
-                </BrewTag>
-                {session.error && (
-                  <>
-                    <p>{session.error}</p>
-                    <button
-                      type="button"
-                      className={brewControl}
-                      onClick={() => void session.retry()}
-                    >
-                      Réessayer
-                    </button>
-                    <button
-                      type="button"
-                      className={brewControl}
-                      onClick={() => void session.reload()}
-                    >
-                      Recharger le serveur
-                    </button>
-                    <small>La version non envoyée reste en sauvegarde locale.</small>
-                  </>
-                )}
-              </div>
-            )}
             <details className="brew-options">
               <summary>
                 <span>
@@ -1427,7 +1406,26 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               />
             </details>
           </div>
-        </div>
+        </fieldset>
+        {session.status && (
+          <div className="brew-sync" role="status">
+            <BrewTag tone={session.error ? 'due' : session.pending ? 'pause' : 'done'}>
+              {session.status}
+            </BrewTag>
+            {session.error && (
+              <>
+                <p>{session.error}</p>
+                <button type="button" className={brewControl} onClick={() => void session.retry()}>
+                  Réessayer
+                </button>
+                <button type="button" className={brewControl} onClick={() => void session.reload()}>
+                  Recharger le serveur
+                </button>
+                <small>La version non envoyée reste en sauvegarde locale.</small>
+              </>
+            )}
+          </div>
+        )}
       </div>
       <ConfirmSheet
         open={confirmAdvance}

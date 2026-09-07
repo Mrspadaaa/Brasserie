@@ -211,6 +211,7 @@ export function startBrewStep(state: BrewDayState, now: number): BrewDayState {
       : state.boilStartedAt;
   const next: BrewDayStep = {
     ...s,
+    holdStartedAt: s.holdStartedAt ?? s.startedAt ?? now,
     startedAt:
       s.pausedAt != null
         ? s.startedAt! + now - s.pausedAt

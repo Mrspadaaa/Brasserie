@@ -4,6 +4,7 @@ import { auth, functions } from '../services/firebase';
 import { Batch, BrewDayState } from '../types';
 import { restoreBrewDay } from '../domain/brewDay';
 import { brewNow, setBrewClock } from '../services/brewClock';
+import { mergeBrewTimestamps } from '../domain/brewSessionMerge';
 
 type Queued = {
   operationId: string;
@@ -29,6 +30,8 @@ export function useBrewSession(
   const flight = useRef<Promise<boolean> | null>(null),
     mounted = useRef(true),
     ready = useRef(!live);
+  const writer = useRef(!live),
+    acquireWriter = useRef<() => void>(() => {});
   const batchRef = useRef(batch);
   batchRef.current = batch;
   const [status, setStatus] = useState(live ? 'Connexion au journal…' : '');
@@ -51,14 +54,14 @@ export function useBrewSession(
   const pump = useCallback((): Promise<boolean> => {
     if (flight.current) return flight.current;
     if (!live || !queue.current.length) return Promise.resolve(true);
-    if (!ready.current) return Promise.resolve(false);
+    if (!ready.current || !writer.current) return Promise.resolve(false);
     const work = async () => {
       if (mounted.current) {
         setError('');
         setStatus('Enregistrement…');
       }
       try {
-        while (queue.current.length) {
+        while (queue.current.length && mounted.current) {
           const op = queue.current[0];
           op.baseRevision ??= revision.current;
           persist();
@@ -71,11 +74,19 @@ export function useBrewSession(
           setBrewClock(res.data.serverNow, performance.now() - before);
           revision.current = res.data.state.revision ?? revision.current;
           queue.current.shift();
+          queue.current = queue.current.map((pending) => ({
+            ...pending,
+            state: mergeBrewTimestamps(pending.state, op.state, res.data.state!)
+          }));
           persist();
           if (!queue.current.length) adopt(res.data.state);
+          else {
+            latest.current = queue.current[queue.current.length - 1].state;
+            if (mounted.current) setState(latest.current);
+          }
         }
-        if (mounted.current) setStatus('Sauvegardé');
-        return true;
+        if (mounted.current) setStatus(queue.current.length ? 'À synchroniser' : 'Sauvegardé');
+        return queue.current.length === 0;
       } catch (e) {
         if (mounted.current) {
           setError(e instanceof Error ? e.message : 'Enregistrement interrompu.');
@@ -90,12 +101,14 @@ export function useBrewSession(
     return flight.current;
   }, [batch.id, live]);
   const refresh = useCallback(async () => {
+    if (!writer.current) return false;
     try {
       const before = performance.now();
       const res = await httpsCallable<{ batchId: string }, Response>(
         functions,
         'getBrewSession'
       )({ batchId: batch.id });
+      if (!writer.current) return false;
       setBrewClock(res.data.serverNow, performance.now() - before);
       if (res.data.state && !queue.current.length) adopt(res.data.state);
       else if (res.data.state && queue.current[0]?.baseRevision == null)
@@ -120,31 +133,89 @@ export function useBrewSession(
       return () => {
         mounted.current = false;
       };
-    try {
-      const saved = JSON.parse(localStorage.getItem(key) ?? '[]');
-      if (
-        Array.isArray(saved) &&
-        saved.length &&
-        saved.every((op) => op.operationId && op.state?.steps)
-      ) {
-        queue.current = saved;
-        latest.current = restoreBrewDay(saved[saved.length - 1].state);
-        setState(latest.current);
+    writer.current = false;
+    ready.current = false;
+    let cancelled = false,
+      acquiring = false,
+      release: (() => void) | undefined;
+    const controller = new AbortController();
+    let pendingNotice: ReturnType<typeof setTimeout> | undefined;
+    const begin = async () => {
+      if (cancelled) return;
+      writer.current = true;
+      try {
+        const saved = JSON.parse(localStorage.getItem(key) ?? '[]');
+        if (
+          Array.isArray(saved) &&
+          saved.length &&
+          saved.every((op) => op.operationId && op.state?.steps)
+        ) {
+          queue.current = saved;
+          latest.current = restoreBrewDay(saved[saved.length - 1].state);
+          setState(latest.current);
+        }
+      } catch {
+        setError('Le brouillon local ne peut pas être relu.');
       }
-    } catch {
-      setError('Le brouillon local ne peut pas être relu.');
-    }
+      await refresh();
+    };
+    acquireWriter.current = () => {
+      if (writer.current) {
+        void refresh();
+        return;
+      }
+      if (acquiring) return;
+      if (typeof navigator.locks?.request !== 'function') {
+        void begin();
+        return;
+      }
+      acquiring = true;
+      pendingNotice = setTimeout(() => {
+        if (!cancelled && !writer.current) {
+          setStatus('Ouvert dans un autre onglet');
+          setError(
+            'Le journal est déjà ouvert dans un autre onglet. Ferme-le là-bas : la saisie reprendra automatiquement ici.'
+          );
+        }
+      }, 400);
+      void navigator.locks
+        .request(`brew-writer-${key}`, { signal: controller.signal }, async (lock) => {
+          clearTimeout(pendingNotice);
+          acquiring = false;
+          if (cancelled) return;
+          const held = new Promise<void>((resolve) => {
+            release = resolve;
+          });
+          await begin();
+          if (cancelled) release?.();
+          await held;
+          writer.current = false;
+        })
+        .catch(() => {
+          acquiring = false;
+          clearTimeout(pendingNotice);
+          if (!cancelled) {
+            ready.current = false;
+            setError('Impossible de réserver ce journal sur cet appareil. Réessaie.');
+          }
+        });
+    };
     const online = () => {
       void refresh();
     };
     const visible = () => {
       if (document.visibilityState === 'visible') void refresh();
     };
-    void refresh();
+    acquireWriter.current();
     window.addEventListener('online', online);
     document.addEventListener('visibilitychange', visible);
     return () => {
       mounted.current = false;
+      cancelled = true;
+      controller.abort();
+      clearTimeout(pendingNotice);
+      if (flight.current) void flight.current.finally(() => release?.());
+      else release?.();
       window.removeEventListener('online', online);
       document.removeEventListener('visibilitychange', visible);
     };
@@ -160,6 +231,7 @@ export function useBrewSession(
   }, [batch.brewDay, live]);
   const update = useCallback(
     (fn: (s: BrewDayState) => BrewDayState) => {
+      if (live && (!writer.current || !ready.current)) return;
       const next = fn(latest.current);
       if (next === latest.current) return;
       latest.current = next;
@@ -180,6 +252,10 @@ export function useBrewSession(
     [onSave, pump, live]
   );
   const reload = async () => {
+    if (live && !writer.current) {
+      acquireWriter.current();
+      return;
+    }
     if (flight.current) await flight.current;
     try {
       const before = performance.now();
@@ -207,10 +283,14 @@ export function useBrewSession(
     update,
     status,
     error,
-    retry: refresh,
+    retry: () => {
+      if (writer.current) return refresh();
+      acquireWriter.current();
+      return Promise.resolve(false);
+    },
     reload,
     flush: pump,
-    canStart: !live || ready.current,
+    canStart: !live || (ready.current && writer.current),
     pending: queue.current.length > 0,
     live
   };

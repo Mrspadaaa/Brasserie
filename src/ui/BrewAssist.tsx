@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Calculator, ChevronDown, Sparkles, Thermometer } from 'lucide-react';
 import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem } from '../types';
 import { ReadingKind } from '../domain/brewDay';
@@ -54,6 +54,20 @@ function NumberField({
   );
 }
 
+/** Follow the live journal until a what-if draft is edited, then preserve that draft. */
+function useScenarioValue<T>(source: T, scope = ''): [T, (value: T) => void] {
+  const [draft, setDraft] = useState({ source, value: source, scope });
+  useEffect(() => {
+    setDraft((d) =>
+      d.scope !== scope || Object.is(d.value, source) || Object.is(d.source, d.value)
+        ? { source, value: source, scope }
+        : d
+    );
+  }, [source, scope]);
+  const dirty = draft.scope === scope && !Object.is(draft.source, draft.value);
+  return [dirty ? draft.value : source, (value: T) => setDraft({ source, value, scope })];
+}
+
 /** One collapsed, contextual workbench. A simulation never records a physical action. */
 export function BrewAssist({
   recipe,
@@ -77,8 +91,11 @@ export function BrewAssist({
   const heating = /^mash/.test(step.id);
   const water = step.id === 'eau' || step.id === 'sparge';
   const [side, setSide] = useState<'mash' | 'sparge'>(step.id === 'sparge' ? 'sparge' : 'mash');
-  const [ro, setRo] = useState<number | undefined>(actualWater(recipe, state, side).roL);
-  const [minutes, setMinutes] = useState<number | undefined>(boilMinutes(state, recipe));
+  const [ro, setRo] = useScenarioValue<number | undefined>(
+    actualWater(recipe, state, side).roL,
+    side
+  );
+  const [minutes, setMinutes] = useScenarioValue<number | undefined>(boilMinutes(state, recipe));
   const hops = (recipe.hops ?? [])
     .map((h, i) => ({ ...h, id: `hop-${i}` }))
     .filter((h) => h.stage === 'boil');
@@ -91,9 +108,12 @@ export function BrewAssist({
       ? round((done - state.boilStartedAt) / 60000)
       : (state.hopElapsedMin?.[id] ?? Math.max(0, boilMinutes(state, recipe) - (h?.timeMin ?? 0)));
   };
-  const [elapsed, setElapsed] = useState<number | undefined>(hop ? elapsedOf(hop.id) : undefined);
-  const [evap, setEvap] = useState<number | undefined>(state.boilOffLPerHour);
-  const [coolant, setCoolant] = useState<number | undefined>(state.coolingWaterC);
+  const [elapsed, setElapsed] = useScenarioValue<number | undefined>(
+    hop ? elapsedOf(hop.id) : undefined,
+    hopId
+  );
+  const [evap, setEvap] = useScenarioValue<number | undefined>(state.boilOffLPerHour);
+  const [coolant, setCoolant] = useScenarioValue<number | undefined>(state.coolingWaterC);
   const [notice, setNotice] = useState('');
   const [question, setQuestion] = useState('');
   const [advice, setAdvice] = useState<{ key: string; text: string }>();
@@ -107,7 +127,9 @@ export function BrewAssist({
       ? thermalEstimate(state, step, target, now, coolant, recipe.mash?.heatingRateCPerMin)
       : null;
   const exposure = heating ? rampExposure(state, step) : 0;
-  const rescue = wortRescue(state, step.id, recipe.ogTarget);
+  const thermalAttention =
+    thermal && ['overshoot', 'below', 'stalled', 'unreachable'].includes(thermal.status);
+  const rescue = wortRescue(state, step.id, recipe.ogTarget, recipe);
   const grist = effectiveFermentables(recipe, state)
     .filter((f) => f.kind === 'grain' && f.use === 'empatage')
     .reduce((sum, f) => sum + f.weightKg, 0);
@@ -139,6 +161,7 @@ export function BrewAssist({
         tier: 'max',
         context: {
           phase: 'jour de brassage',
+          asOf: new Date(now).toISOString(),
           recipe,
           currentStep: step,
           journal: state,
@@ -190,16 +213,34 @@ export function BrewAssist({
           <Calculator size={18} /> Aide à cette étape
         </span>
         <span className="brew-assist-summary">
-          <BrewTag tone={cooling ? 'info' : water ? 'info' : 'pause'}>
-            {cooling
-              ? 'Refroidir'
-              : heating
-                ? 'Chauffer'
-                : water
-                  ? 'Ajuster l’eau'
-                  : boil
-                    ? 'Simuler'
-                    : 'Rattraper'}
+          <BrewTag
+            tone={
+              thermalAttention
+                ? 'due'
+                : thermal?.status === 'reached'
+                  ? 'done'
+                  : thermal?.status === 'estimate'
+                    ? 'active'
+                    : cooling
+                      ? 'info'
+                      : water
+                        ? 'info'
+                        : 'pause'
+            }
+          >
+            {thermalAttention
+              ? 'À ajuster'
+              : thermal?.status === 'reached'
+                ? 'À consigne'
+                : cooling
+                  ? 'Refroidir'
+                  : heating
+                    ? 'Chauffer'
+                    : water
+                      ? 'Ajuster l’eau'
+                      : boil
+                        ? 'Simuler'
+                        : 'Rattraper'}
           </BrewTag>
           <ChevronDown size={16} />
         </span>
@@ -343,11 +384,13 @@ export function BrewAssist({
                 </div>
               )}
             {thermal && (
-              <div className="brew-assist-result">
+              <div
+                className={`brew-assist-result ${thermalAttention ? 'is-attention' : thermal.status === 'reached' ? '' : 'is-info'}`}
+              >
                 <strong>
                   {thermal.status === 'estimate'
                     ? `Encore ≈ ${thermal.low}–${thermal.high} min vers ${target} °C`
-                    : `${target} °C · ${thermal.status === 'reached' ? 'relevé conforme' : 'à confirmer'}`}
+                    : `${target} °C · ${thermal.status === 'reached' ? 'relevé conforme' : thermal.status === 'below' ? 'sous la consigne' : 'à confirmer'}`}
                 </strong>
                 <p>{thermal.message}</p>
                 {thermal.status === 'estimate' && (
@@ -400,7 +443,8 @@ export function BrewAssist({
                   automatiquement.
                 </p>
                 {step.rampStartedAt != null &&
-                  (step.startedAt ?? now) - step.rampStartedAt >= 20 * 60000 && (
+                  (step.holdStartedAt ?? step.startedAt ?? now) - step.rampStartedAt >=
+                    20 * 60000 && (
                     <p className="brew-feedback">
                       Montée de plus de 20 min : vérifie la chauffe et confirme la conversion avant
                       le mash-out. Si la consigne reste inaccessible, consigne la température
@@ -415,7 +459,9 @@ export function BrewAssist({
                 )}
               </>
             )}
-            {cooling && thermal?.last && <p>{pitchFeedback(recipe, thermal.last.value)}</p>}
+            {cooling && step.id !== 'whirlpool' && thermal?.last && (
+              <p>{pitchFeedback(recipe, thermal.last.value)}</p>
+            )}
             {cooling && (
               <p className="brew-muted">
                 Le refroidissement ralentit près de la température de l’eau. Mesure au même endroit,
@@ -491,11 +537,16 @@ export function BrewAssist({
                       Après évaporation : ≈ {round(simulation.finalL)} L · OG{' '}
                       {simulation.finalOg.toFixed(3)}, avant pertes de transfert. Calcul à partir du
                       volume et de la densité avant ébullition, ramenés à 20 °C.
+                      {simulation.extract.names.length > 0 &&
+                        ` Apport dissous inclus après ce relevé : ${simulation.extract.names.join(', ')}. Confirme le volume final après dissolution.`}
                     </p>
                   ) : (
                     <p>
                       Pour projeter volume et OG : relève le volume et la densité avant ébullition à
                       20 °C, puis renseigne l’évaporation de ton matériel.
+                      {simulation.extract.names.length > 0 &&
+                        simulation.extract.pointsLitres == null &&
+                        ` Potentiel ou usage à préciser : ${simulation.extract.names.join(', ')}. Leur extrait ne peut pas être ignoré.`}
                     </p>
                   )}
                   {simulation.extraEvapL != null && (
@@ -507,7 +558,7 @@ export function BrewAssist({
                 </div>
                 <p className="brew-muted">
                   Les IBU restent une estimation Tinseth.{' '}
-                  {simulation.finalL != null && simulation.finalL > 0
+                  {simulation.finalL != null && simulation.finalL > 0 && simulation.finalOg != null
                     ? 'Le volume et l’OG projetés sont pris en compte.'
                     : 'Le calcul utilise le volume et l’OG de la recette.'}{' '}
                   Un houblon déjà ajouté conserve son heure réelle, sauf correction explicite du
@@ -533,7 +584,7 @@ export function BrewAssist({
                               }
                             }
                           : {}),
-                        ...(evap != null && evap > 0 ? { boilOffLPerHour: evap } : {})
+                        ...(evap != null && evap >= 0 ? { boilOffLPerHour: evap } : {})
                       }),
                       'Programme et prochaines alertes ajustés. Un houblon déjà versé conserve son heure réelle.'
                     )
@@ -585,12 +636,19 @@ export function BrewAssist({
             {rescue ? (
               <div className="brew-assist-result">
                 <strong>
-                  À sucre constant : {round(rescue.targetL)} L pour OG {recipe.ogTarget?.toFixed(3)}
+                  Volume final théorique : {round(rescue.targetL)} L pour OG{' '}
+                  {recipe.ogTarget?.toFixed(3)}
                 </strong>
                 <p>
-                  {rescue.deltaL < 0
-                    ? `Évaporer environ ${round(-rescue.deltaL)} L.`
-                    : `Appoint théorique de ${round(rescue.deltaL)} L.`}{' '}
+                  {rescue.actionDeltaL == null
+                    ? ''
+                    : rescue.actionDeltaL < -0.05
+                      ? `Évaporer environ ${round(-rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' en plus de l’ébullition prévue' : ''}.`
+                      : rescue.actionDeltaL > 0.05
+                        ? `Appoint théorique de ${round(rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' avant l’ébullition' : ''}.`
+                        : 'Le volume suit la cible avec les hypothèses renseignées.'}{' '}
+                  {rescue.evaporationL != null &&
+                    `Évaporation prévue prise en compte : ${round(rescue.evaporationL)} L. `}
                   {rescue.message}
                 </p>
               </div>
@@ -633,7 +691,19 @@ export function BrewAssist({
               value={question}
               maxLength={1500}
               rows={2}
-              placeholder="Je n’ai plus d’osmosée, le pH est à…"
+              placeholder={
+                water
+                  ? 'Je n’ai que… L d’osmosée. Que corriger ?'
+                  : heating
+                    ? 'La maische reste à… °C depuis… min.'
+                    : step.id === 'preboil'
+                      ? 'J’ai… L à 1.… avant ébullition. Comment rattraper ?'
+                      : cooling
+                        ? 'Le moût reste à… °C malgré le refroidissement.'
+                        : boil
+                          ? 'J’ai versé… g de houblon à +… min. Quel impact ?'
+                          : 'Il me manque… kg de malt. Quel remplacement ?'
+              }
               onChange={(e) => setQuestion(e.target.value)}
             />
           </label>

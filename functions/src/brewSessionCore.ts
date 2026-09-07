@@ -8,6 +8,7 @@ export interface SessionStep {
   doneAt?: number;
   tempC?: number;
   rampStartedAt?: number;
+  holdStartedAt?: number;
   boilElapsedMin?: number;
 }
 export interface SessionState {
@@ -68,7 +69,7 @@ export function sessionEvents(state: SessionState, recipe: SessionRecipe) {
       if (actual?.doneAt != null || (actual?.amount ?? planned) <= 0) return;
       const at =
         state.hopElapsedMin?.[id] != null
-          ? start + state.hopElapsedMin[id] * 60000
+          ? Math.min(end, Math.max(start, start + state.hopElapsedMin[id] * 60000))
           : Math.max(start, end - remaining * 60000);
       grouped.set(at, [
         ...(grouped.get(at) ?? []),
@@ -128,7 +129,13 @@ export function validateSession(input: unknown): SessionState {
     )
       throw new Error('Palier invalide.');
     ids.add(step.id);
-    for (const key of ['startedAt', 'pausedAt', 'doneAt', 'rampStartedAt'] as const)
+    for (const key of [
+      'startedAt',
+      'pausedAt',
+      'doneAt',
+      'rampStartedAt',
+      'holdStartedAt'
+    ] as const)
       if (step[key] != null && (!Number.isFinite(step[key]) || step[key]! < 0))
         throw new Error('Horodatage invalide.');
     if (step.pausedAt != null && (step.startedAt == null || step.pausedAt < step.startedAt))
@@ -191,7 +198,7 @@ export function stampSession(
     for (const [key, value] of Object.entries(obj)) {
       if (
         typeof value === 'number' &&
-        /^(at|startedAt|pausedAt|doneAt|rampStartedAt|boilStartedAt|boilFinishedAt|finishedAt)$/.test(
+        /^(at|startedAt|pausedAt|doneAt|rampStartedAt|holdStartedAt|boilStartedAt|boilFinishedAt|finishedAt)$/.test(
           key
         ) &&
         value !== old?.[key] &&
@@ -209,6 +216,11 @@ export function stampSession(
     }
   };
   shift(next, previous);
+  const readingTimes = new Map(
+    (input.readings ?? []).map((r, i) => [r.at, next.readings?.[i]?.at ?? r.at])
+  );
+  for (const correction of next.acidCorrections ?? [])
+    correction.readingAt = readingTimes.get(correction.readingAt) ?? correction.readingAt;
   next.revision = (previous?.revision ?? 0) + 1;
   next.savedAt = serverNow;
   return validateSession(next);

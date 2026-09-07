@@ -1,6 +1,6 @@
 import { BrewDayState, BrewDayStep, RecipeSnapshot, WaterIons } from '../types';
 import { BrewingMath } from '../services/brewingMath';
-import { boilMinutes, brewBitterness } from './brewCompanion';
+import { boilMinutes, brewBitterness, effectiveFermentables } from './brewCompanion';
 import { ionsFromSalts, addIons, ionsAfterAcid } from './water';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -15,11 +15,14 @@ export function actualWater(recipe: RecipeSnapshot, state: BrewDayState, side: '
     (side === 'mash' ? p?.mashWaterL : p?.spargeWaterL) ??
     0;
   const plannedPct = (side === 'sparge' ? p?.spargeDiRatioPct : undefined) ?? p?.diRatioPct ?? 0;
-  const roL = Math.max(
-    0,
-    Math.min(litres, state.waterMix?.[side]?.roL ?? (litres * plannedPct) / 100)
-  );
-  return { litres, roL, tapL: Math.max(0, litres - roL), plannedPct };
+  const roL = state.waterMix?.[side]?.roL ?? (litres * plannedPct) / 100;
+  return {
+    litres,
+    roL,
+    tapL: Math.max(0, litres - roL),
+    plannedPct,
+    invalidMix: roL < 0 || roL > litres
+  };
 }
 
 /** Mass balance only. Replacement applies to untreated water before contact with grain. */
@@ -92,11 +95,15 @@ export function waterScenario(
     : desired < 1
       ? (desired * w.litres - roL) / (1 - desired)
       : null;
-  const treated = Object.entries(state.additions ?? {}).some(
-    ([id, a]) =>
-      a.doneAt != null &&
-      (id === `water-${side}` || id.startsWith(`salt-${side}-`) || id === `acid-${side}`)
-  );
+  const treated =
+    state.acidCorrections?.some((c) =>
+      side === 'mash' ? /^mash/.test(c.stepId) : c.stepId === 'sparge'
+    ) ||
+    Object.entries(state.additions ?? {}).some(
+      ([id, a]) =>
+        a.doneAt != null &&
+        (id === `water-${side}` || id.startsWith(`salt-${side}-`) || id === `acid-${side}`)
+    );
   const grainIn =
     state.steps.some(
       (s) => /^mash/.test(s.id) && (s.startedAt != null || s.rampStartedAt != null)
@@ -160,15 +167,28 @@ export function thermalEstimate(
       status: 'stale' as const,
       message: 'Le dernier relevé a plus de 15 min : remesure avant de projeter l’arrivée.'
     };
-  if (Math.abs(last.value - target) <= 0.5 || (cooling && last.value < target))
+  if (cooling && last.value < target - 0.5)
+    return {
+      ...basis,
+      status: 'below' as const,
+      message:
+        step.id === 'whirlpool'
+          ? 'Le moût est sous la consigne de whirlpool : consigne la température réelle de contact. L’extraction des houblons change ; prolonger automatiquement ne reproduit pas le programme prévu.'
+          : 'Le moût est sous la consigne. Vérifie la plage de la levure et homogénéise avant de décider d’ensemencer ; la température cible n’est pas confirmée.'
+    };
+  if (Math.abs(last.value - target) <= 0.5)
     return {
       ...basis,
       status: 'reached' as const,
       minutes: 0,
       message:
-        last.value < target - 0.5
-          ? 'Le dernier relevé est sous la consigne. Vérifie la plage de la levure avant d’ensemencer ; le whirlpool n’aura pas les conditions prévues.'
-          : 'Consigne atteinte sur le dernier relevé. Homogénéise et confirme avant de démarrer le maintien.'
+        'Consigne atteinte sur le dernier relevé. Homogénéise et confirme avant de poursuivre.'
+    };
+  if (!cooling && last.value > target + 0.5)
+    return {
+      ...basis,
+      status: 'overshoot' as const,
+      message: `Le dernier relevé dépasse la consigne de ${round(last.value - target)} °C. Réduis ou coupe la chauffe, homogénéise et remesure. Si le maintien a déjà commencé, consigne l’écart ; ne rallonge pas automatiquement le palier.`
     };
   if (cooling && finite(coolantC) && target <= coolantC + 0.5)
     return {
@@ -194,7 +214,12 @@ export function thermalEstimate(
       rates.push(Math.log((a.value - coolantC) / (b.value - coolantC)) / dt);
   }
   const slope = slopes.length ? median(slopes) : undefined;
-  if (slope != null && (cooling ? slope >= -0.05 : slope <= 0.05))
+  const previous = points.at(-2);
+  const recentDt = previous ? (last.at - previous.at) / 60000 : 0;
+  const recentSlope =
+    recentDt >= 2 && recentDt <= 30 ? (last.value - previous!.value) / recentDt : undefined;
+  const stalled = (v: number | undefined) => v != null && (cooling ? v >= -0.05 : v <= 0.05);
+  if (stalled(slope) || stalled(recentSlope))
     return {
       ...basis,
       status: 'stalled' as const,
@@ -256,7 +281,8 @@ export function rampExposure(state: BrewDayState, step: BrewDayStep) {
         r.stepId === step.id &&
         r.kind === 'temperature' &&
         r.at >= step.rampStartedAt! &&
-        (step.startedAt == null || r.at <= step.startedAt)
+        ((step.holdStartedAt ?? step.startedAt) == null ||
+          r.at <= (step.holdStartedAt ?? step.startedAt)!)
     )
     .sort((a, b) => a.at - b.at);
   let enzymeMinutes = 0;
@@ -276,6 +302,18 @@ export function rampExposure(state: BrewDayState, step: BrewDayStep) {
     enzymeMinutes += dt * fraction;
   }
   return round(enzymeMinutes);
+}
+
+/** Extract added after the sampled wort. No mash efficiency applies to dissolved sugars. */
+export function laterExtract(recipe: RecipeSnapshot, state: BrewDayState, after: number) {
+  const pending = effectiveFermentables(recipe, state).filter((f, i) => {
+    const a = state.additions?.[`grain-${i}`];
+    return f.use === 'ebullition' && f.weightKg > 0 && (a?.doneAt == null || a.doneAt > after);
+  });
+  if (pending.some((f) => f.kind === 'grain'))
+    return { pointsLitres: null, names: pending.map((f) => f.name) };
+  const points = pending.length ? (BrewingMath.extractPoints(pending, 1, 100)?.total ?? null) : 0;
+  return { pointsLitres: points, names: pending.map((f) => f.name) };
 }
 
 export function boilScenario(
@@ -312,14 +350,18 @@ export function boilScenario(
   delete snapshot.boilFinishedAt;
   let bitterness = brewBitterness(recipe, snapshot);
   const volume = lastWortPair(state, 'preboil');
+  const extract = volume
+    ? laterExtract(recipe, state, Math.min(volume.volume.at, volume.gravity.at))
+    : { pointsLitres: null, names: [] };
   const rate = evaporationLh ?? state.boilOffLPerHour;
   const extraEvapL =
-    finite(rate) && rate > 0 ? (rate * (minutes - (recipe.boilMin ?? 60))) / 60 : null;
+    finite(rate) && rate >= 0 ? (rate * (minutes - (recipe.boilMin ?? 60))) / 60 : null;
   const finalL =
-    volume && finite(rate) && rate > 0 ? volume.volume.value - (rate * minutes) / 60 : null;
+    volume && finite(rate) && rate >= 0 ? volume.volume.value - (rate * minutes) / 60 : null;
   const finalOg =
-    volume && finalL && finalL > 0
-      ? 1 + ((volume.gravity.value - 1) * volume.volume.value) / finalL
+    volume && finalL && finalL > 0 && extract.pointsLitres != null
+      ? 1 +
+        ((volume.gravity.value - 1) * volume.volume.value + extract.pointsLitres / 1000) / finalL
       : null;
   if (bitterness && finalL && finalL > 0 && finalOg) {
     const adjusted = brewBitterness({ ...recipe, volumeL: finalL, ogTarget: finalOg }, snapshot);
@@ -332,6 +374,7 @@ export function boilScenario(
     extraEvapL,
     finalL,
     finalOg,
+    extract,
     needsVolume: !volume,
     hasBoilHops: hops.length > 0,
     message:
@@ -340,13 +383,35 @@ export function boilScenario(
 }
 
 export function lastWortPair(state: BrewDayState, stepId: string) {
-  const rs = (state.readings ?? [])
-    .filter((r) => r.stepId === stepId && r.roomTemp)
-    .sort((a, b) => b.at - a.at);
+  const rs = (state.readings ?? []).filter((r) => r.stepId === stepId).sort((a, b) => b.at - a.at);
   const volume = rs.find((r) => r.kind === 'volume'),
     gravity = rs.find((r) => r.kind === 'densite');
+  if (volume && gravity) {
+    const first = Math.min(volume.at, gravity.at),
+      last = Math.max(volume.at, gravity.at);
+    if (
+      Object.entries(state.additions ?? {}).some(
+        ([id, a]) =>
+          /^(water-|grain-)/.test(id) &&
+          a.amount > 0 &&
+          a.doneAt != null &&
+          a.doneAt > first &&
+          a.doneAt <= last
+      )
+    )
+      return null;
+    if (
+      stepId === 'preboil' &&
+      state.boilStartedAt != null &&
+      state.boilStartedAt > first &&
+      state.boilStartedAt <= last
+    )
+      return null;
+  }
   return volume &&
     gravity &&
+    volume.roomTemp &&
+    gravity.roomTemp &&
     volume.value > 0 &&
     gravity.value > 1 &&
     Math.abs(volume.at - gravity.at) <= 30 * 60000
@@ -354,24 +419,54 @@ export function lastWortPair(state: BrewDayState, stepId: string) {
     : null;
 }
 
-export function wortRescue(state: BrewDayState, stepId: string, targetOg?: number) {
+export function wortRescue(
+  state: BrewDayState,
+  stepId: string,
+  targetOg?: number,
+  recipe?: RecipeSnapshot
+) {
   const pair = lastWortPair(state, stepId);
   if (!pair || !targetOg || targetOg <= 1) return null;
-  const targetL = (pair.volume.value * (pair.gravity.value - 1)) / (targetOg - 1);
+  const preboil = stepId === 'preboil';
+  const extract =
+    preboil && recipe
+      ? laterExtract(recipe, state, Math.min(pair.volume.at, pair.gravity.at))
+      : { pointsLitres: 0, names: [] };
+  if (extract.pointsLitres == null) return null;
+  const pointsLitres = pair.volume.value * (pair.gravity.value - 1) * 1000 + extract.pointsLitres;
+  const targetL = pointsLitres / ((targetOg - 1) * 1000);
+  const evaporationL =
+    preboil && state.boilOffLPerHour != null && recipe
+      ? (state.boilOffLPerHour * boilMinutes(state, recipe)) / 60
+      : null;
+  const actionDeltaL = preboil
+    ? evaporationL == null
+      ? null
+      : targetL + evaporationL - pair.volume.value
+    : targetL - pair.volume.value;
   return {
     targetL,
     deltaL: targetL - pair.volume.value,
-    pointsLitres: pair.volume.value * (pair.gravity.value - 1) * 1000,
+    actionDeltaL,
+    evaporationL,
+    extract,
+    pointsLitres,
     message:
-      targetL < pair.volume.value
-        ? 'Concentrer par évaporation peut atteindre la densité, au prix d’un volume plus faible. Vérifie le programme houblon avant de prolonger.'
-        : 'Un appoint dilue à la cible mais dilue aussi l’amertume et les minéraux. Après refroidissement, utilise une eau adaptée et du matériel désinfecté.'
+      preboil && actionDeltaL == null
+        ? 'C’est le volume final théorique. Renseigne l’évaporation pour calculer un appoint avant ébullition : diluer directement à l’OG finale maintenant ignorerait la concentration à venir.'
+        : actionDeltaL! < 0
+          ? 'Concentrer par évaporation peut atteindre la densité, au prix d’un volume plus faible. Vérifie le programme houblon avant de prolonger.'
+          : 'Un appoint dilue à la cible mais dilue aussi l’amertume et les minéraux. Après refroidissement, utilise une eau adaptée et du matériel désinfecté.'
   };
 }
 
 export function readingPrompt(step: BrewDayStep, state: BrewDayState, now: number) {
   const rs = (state.readings ?? []).filter((r) => r.stepId === step.id);
   const missing = (kind: string) => !rs.some((r) => r.kind === kind);
+  const latestPh = rs.filter((r) => r.kind === 'ph').sort((a, b) => b.at - a.at)[0];
+  const latestAcid = (state.acidCorrections ?? [])
+    .filter((c) => c.stepId === step.id)
+    .sort((a, b) => b.at - a.at)[0];
   if (['preboil', 'ensemencement'].includes(step.id) && (missing('volume') || missing('densite')))
     return {
       kind: missing('volume') ? 'volume' : 'densite',
@@ -387,7 +482,9 @@ export function readingPrompt(step: BrewDayStep, state: BrewDayState, now: numbe
     step.tempC < 75 &&
     step.startedAt != null &&
     now - step.startedAt >= 10 * 60000 &&
-    missing('ph')
+    (!latestPh ||
+      !latestPh.roomTemp ||
+      (latestAcid && latestAcid.at >= latestPh.at && now - latestAcid.at >= 5 * 60000))
   )
     return {
       kind: 'ph',
@@ -413,11 +510,13 @@ export function pitchFeedback(recipe: RecipeSnapshot, temp: number) {
   const y = recipe.yeast,
     target = y?.pitchTempC ?? recipe.fermentation?.[0]?.tempC;
   if (!finite(target)) return 'Consigne de levure absente : consulte sa fiche avant d’ensemencer.';
-  if (temp > (y?.fermTempMaxC ?? target + 2))
+  if (y?.fermTempMaxC != null && temp > y.fermTempMaxC)
     return 'Au-dessus de la plage renseignée de la levure : continue le refroidissement avant d’ensemencer. Un départ trop chaud peut favoriser des arômes indésirables.';
   if (temp > target + 1)
     return 'Encore au-dessus de la consigne. Ce n’est pas une preuve de brassin perdu : termine le refroidissement, garde le matériel désinfecté et confirme la température avant la levure.';
-  if (temp < (y?.fermTempMinC ?? target - 2))
+  if (y?.fermTempMinC != null && temp < y.fermTempMinC)
     return 'En dessous de la plage renseignée : le démarrage peut être ralenti. Ramène progressivement le moût à la consigne.';
+  if (y?.fermTempMinC == null && temp < target - 2)
+    return 'Sous la consigne du brassin : vérifie la fiche levure avant d’ensemencer. Sa plage de travail n’est pas renseignée ici.';
   return 'Température proche de la consigne ou dans la plage renseignée. Vérifie homogénéité et conditions de la fiche levure.';
 }

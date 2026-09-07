@@ -457,6 +457,8 @@ export interface BrewDayStep {
   doneAt?: number;
   pausedAt?: number;
   rampStartedAt?: number;
+  /** Actual start of the hold, never shifted by pause/resume. */
+  holdStartedAt?: number;
   /** Minutes écoulées depuis le début réel de l'ébullition. */
   boilElapsedMin?: number;
 }

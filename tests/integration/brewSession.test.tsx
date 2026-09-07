@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor, cleanup } from '@testing-library/react';
+import React from 'react';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 const mock = vi.hoisted(() => ({ call: vi.fn() }));
 vi.mock('../../src/services/firebase', () => ({
@@ -24,8 +25,71 @@ beforeEach(() => {
   localStorage.clear();
   mock.call.mockReset();
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
+function useMockLocks() {
+  let held = false;
+  const queued: Array<() => void> = [];
+  vi.stubGlobal('navigator', {
+    locks: {
+      request: (_name: string, options: any, callback: any) =>
+        new Promise<void>((resolve, reject) => {
+          const acquire = async () => {
+            if (options.signal?.aborted) {
+              reject(new DOMException('Aborted', 'AbortError'));
+              queued.shift()?.();
+              return;
+            }
+            held = true;
+            try {
+              await callback({ name: _name });
+              resolve();
+            } catch (e) {
+              reject(e);
+            } finally {
+              held = false;
+              queued.shift()?.();
+            }
+          };
+          if (held) queued.push(acquire);
+          else void acquire();
+        })
+    }
+  });
+}
 describe('Journal navigateur : file persistante et conflits', () => {
+  it('deux onglets du même appareil ne peuvent pas écraser leur file locale', async () => {
+    useMockLocks();
+    let server = batch().brewDay!;
+    mock.call.mockImplementation(async (name, data) => {
+      if (name === 'saveBrewSession') server = { ...data.state, revision: 3 };
+      return { data: { state: server, serverNow: Date.now() } };
+    });
+    const b = batch();
+    const first = renderHook(() => useBrewSession(b, () => b.brewDay!, vi.fn()));
+    await waitFor(() => expect(first.result.current.canStart).toBe(true));
+    const second = renderHook(() => useBrewSession(b, () => b.brewDay!, vi.fn()));
+    await waitFor(() => expect(second.result.current.error).toContain('autre onglet'));
+    act(() => second.result.current.update((s) => ({ ...s, currentIndex: 4 })));
+    expect(second.result.current.state.currentIndex).toBe(0);
+    expect(mock.call.mock.calls.filter((c) => c[0] === 'saveBrewSession')).toHaveLength(0);
+    first.unmount();
+    await waitFor(() => expect(second.result.current.canStart).toBe(true));
+    act(() => second.result.current.update((s) => ({ ...s, currentIndex: 4 })));
+    await waitFor(() => expect(second.result.current.state.revision).toBe(3));
+  });
+  it('le double montage React ne conserve pas une réservation abandonnée', async () => {
+    useMockLocks();
+    const b = batch();
+    mock.call.mockResolvedValue({ data: { state: b.brewDay, serverNow: Date.now() } });
+    const view = renderHook(() => useBrewSession(b, () => b.brewDay!, vi.fn()), {
+      wrapper: React.StrictMode
+    });
+    await waitFor(() => expect(view.result.current.canStart).toBe(true));
+    expect(view.result.current.error).toBe('');
+  });
   it('envoie deux changements dans l’ordre, en utilisant la révision confirmée pour le second', async () => {
     let release: (v: any) => void = () => {};
     mock.call.mockImplementation((name, data) =>
@@ -37,7 +101,11 @@ describe('Journal navigateur : file persistante et conflits', () => {
             release = () =>
               resolve({
                 data: {
-                  state: { ...data.state, revision: data.baseRevision + 1 },
+                  state: {
+                    ...data.state,
+                    startedAt: 1234567891500,
+                    revision: data.baseRevision + 1
+                  },
                   serverNow: Date.now()
                 }
               });
@@ -47,7 +115,7 @@ describe('Journal navigateur : file persistante et conflits', () => {
     const b = batch();
     const { result } = renderHook(() => useBrewSession(b, () => b.brewDay!, saved));
     await waitFor(() => expect(result.current.canStart).toBe(true));
-    act(() => result.current.update((s) => ({ ...s, currentIndex: 1 })));
+    act(() => result.current.update((s) => ({ ...s, currentIndex: 1, startedAt: 1234567890000 })));
     act(() => result.current.update((s) => ({ ...s, currentIndex: 2 })));
     expect(mock.call.mock.calls.filter((c) => c[0] === 'saveBrewSession')).toHaveLength(1);
     await act(async () => release({}));
@@ -57,6 +125,9 @@ describe('Journal navigateur : file persistante et conflits', () => {
     expect(mock.call.mock.calls.filter((c) => c[0] === 'saveBrewSession')[1][1].baseRevision).toBe(
       3
     );
+    expect(
+      mock.call.mock.calls.filter((c) => c[0] === 'saveBrewSession')[1][1].state.startedAt
+    ).toBe(1234567891500);
     await act(async () => release({}));
     expect(result.current.state.currentIndex).toBe(2);
     expect(result.current.state.revision).toBe(4);

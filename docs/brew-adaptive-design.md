@@ -81,11 +81,22 @@ prévus pour sa fermentation. L'historique du lot n'est pas réécrit.
 - Version 2 créée dans la base ; lecture de contrôle de l’originale : date de modification
   inchangée. Les versions conservent leur provenance à la duplication et à l’édition.
 
-Validation locale : 52 fichiers de tests, 1 555 tests passants. Contrôles ciblés repassés
+Validation locale : 53 fichiers de tests, 1 572 tests passants. Contrôles ciblés repassés
 après les derniers ajustements. Build TypeScript, Vite et fonctions réussi. Trois scripts
 Chrome couvrent 45 captures et 51 contrôles de disposition, dont 320 px, paysage,
 clavier simulé, eau réelle, refroidissement, ancienne échéance et menus tactiles.
 Les captures sont conservées localement dans `.codex-remote-attachments/`.
+
+Seconde passe sur les conditions réelles : bilan des sucres ajoutés après le prélèvement,
+appoint avant ébullition corrigé de l’évaporation, invalidation des relevés incompatibles,
+détection d’un plateau récent et distinction entre consigne atteinte, dépassement et
+température trop basse. Les avertissements thermiques utilisent une couleur dédiée.
+Le début physique du maintien reste immuable malgré les pauses. Les horaires confirmés
+par le serveur sont répercutés dans les gestes encore en attente, y compris les références
+aux relevés de pH. Une réservation par navigateur empêche deux onglets d’écraser leur
+file locale ; le second reste consultable et reprend après fermeture du premier.
+Les tests couvrent aussi le double montage React et les brouillons de simulation :
+les données suivent le brassin tant que le brasseur n’a pas commencé un scénario.
 
 Limite vérifiable : les tests serveur vérifient programmation, chiffrement confié à
 web-push, invalidation, expiration et retries avec les services externes simulés.

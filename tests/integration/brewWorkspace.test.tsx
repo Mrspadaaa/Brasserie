@@ -5,6 +5,7 @@ import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { defaultConfig } from '../../src/services/storage';
 import { Batch, BrewDayState } from '../../src/types';
 import { brewState, recipe } from '../fixtures/brewCompanion';
+import * as sessionModule from '../../src/ui/useBrewSession';
 
 vi.mock('../../src/services/brewAlarms', () => ({
   enableBrewAlerts: vi.fn(),
@@ -297,6 +298,32 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     expect(journal.getByRole('article')).toHaveTextContent('Chlorure de calcium');
     expect(journal.getByRole('article')).toHaveTextContent('prévu 2 g');
     expect(v.save).not.toHaveBeenCalled();
+  });
+
+  it('garde les reprises de connexion accessibles sans laisser consigner dans un onglet en lecture seule', () => {
+    const state = brewState(),
+      retry = vi.fn();
+    vi.spyOn(sessionModule, 'useBrewSession').mockReturnValue({
+      state,
+      latest: { current: state },
+      update: vi.fn(),
+      status: 'Ouvert dans un autre onglet',
+      error: 'Ferme l’autre onglet pour reprendre ici.',
+      retry,
+      reload: vi.fn(),
+      flush: vi.fn(),
+      canStart: false,
+      pending: false,
+      live: true
+    });
+    mount();
+    expect(screen.getByRole('group', { name: 'Conduite du brassage' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Relever une mesure' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Ajouter une note' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Recharger le serveur' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    expect(retry).toHaveBeenCalledOnce();
+    expect(screen.getByRole('button', { name: 'Recette', exact: true })).toBeEnabled();
   });
 
   it('repart des dates absolues et des doses enregistrées après remontage de la page', () => {

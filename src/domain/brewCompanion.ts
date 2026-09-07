@@ -251,7 +251,13 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
       ) {
         const at =
           state.hopElapsedMin?.[i.id] != null
-            ? state.boilStartedAt + state.hopElapsedMin[i.id] * 60000
+            ? Math.min(
+                end,
+                Math.max(
+                  state.boilStartedAt,
+                  state.boilStartedAt + state.hopElapsedMin[i.id] * 60000
+                )
+              )
             : Math.max(state.boilStartedAt, end - i.beforeEndMin * 60000);
         grouped.set(at, [...(grouped.get(at) ?? []), i]);
       }
@@ -278,9 +284,20 @@ export function changeBoilMinutes(
   recipe: RecipeSnapshot,
   delta: number
 ): BrewDayState {
+  const duration = Math.max(1, Math.min(480, Math.round(boilMinutes(s, recipe) + delta)));
   return {
     ...s,
-    boilDurationMin: Math.max(1, Math.min(480, Math.round(boilMinutes(s, recipe) + delta)))
+    boilDurationMin: duration,
+    ...(s.hopElapsedMin
+      ? {
+          hopElapsedMin: Object.fromEntries(
+            Object.entries(s.hopElapsedMin).map(([id, minute]) => [
+              id,
+              s.additions?.[id]?.doneAt != null ? minute : Math.min(minute, duration)
+            ])
+          )
+        }
+      : {})
   };
 }
 export const PREPARATIONS = [
@@ -318,6 +335,14 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
       s.additions?.[`water-${side}`]?.amount ?? (side === 'mash' ? p.mashWaterL : p.spargeWaterL)
   );
   const total = water[0] + water[1];
+  if (
+    sides.some(
+      (side, i) =>
+        s.waterMix?.[side] != null &&
+        (s.waterMix[side]!.roL < 0 || s.waterMix[side]!.roL > water[i])
+    )
+  )
+    return null;
   if (!Number.isFinite(total) || total <= 0) return null;
   // Le point de départ est l'eau mélangée figée dans la recette. Ajouter de l'eau
   // ici suppose le même mélange ; une dilution osmosée de secours n'est pas appliquée.
