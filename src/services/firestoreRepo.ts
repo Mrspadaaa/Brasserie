@@ -5,6 +5,7 @@ import {
   writeBatch,
   getDocs,
   getDocsFromServer,
+  getDocFromServer,
   waitForPendingWrites,
   deleteField,
   query,
@@ -60,7 +61,15 @@ const cache: Partial<Record<CollectionName, any[]>> = {};
 /** Collections dont le premier snapshot est arrivé. */
 const loaded = new Set<CollectionName>();
 
-let unsubscribers: Unsubscribe[] = [];
+const unsubscribers = new Map<CollectionName, Unsubscribe>();
+const subscriptionTokens = new Map<CollectionName, object>();
+let syncEpoch = 0;
+let removeRecoveryListeners: (() => void) | undefined;
+let lastResumeAt = 0;
+const refreshFailures = new Set<string>();
+const refreshing = new Map<string, Promise<boolean>>();
+// A reconnect can emit an older cache-only query before its server snapshot arrives.
+const confirmedReads = new Map<string, { name: CollectionName; id: string; value: any | null }>();
 let syncing = false;
 
 const listeners = new Set<() => void>();
@@ -112,6 +121,56 @@ function notify() {
   });
 }
 
+function openCollection(name: CollectionName) {
+  const token = {};
+  subscriptionTokens.set(name, token);
+  unsubscribers.get(name)?.();
+  const current = () => syncing && subscriptionTokens.get(name) === token;
+  unsubscribers.set(name, onSnapshot(
+    collection(db, name),
+    { includeMetadataChanges: true },
+    snap => {
+      if (!current()) return;
+      for (const path of pendingDocuments) if (path.startsWith(`${name}/`)) pendingDocuments.delete(path);
+      snap.docs.forEach(d => { if (d.metadata?.hasPendingWrites) pendingDocuments.add(`${name}/${d.id}`); });
+      let items = snap.docs.map(d => ({ ...(d.data() as any), __docId: d.id }));
+      for (const [path, read] of confirmedReads) {
+        if (read.name !== name) continue;
+        if (!snap.metadata.fromCache || hasPendingDocumentWrite(name, read.id)) {
+          confirmedReads.delete(path);
+        } else {
+          items = items.filter(d => d.__docId !== read.id);
+          if (read.value) items.push(read.value);
+        }
+      }
+      cache[name] = items;
+      if (!snap.metadata.fromCache) {
+        for (const path of refreshFailures) if (path.startsWith(`${name}/`)) refreshFailures.delete(path);
+      }
+      loaded.add(name);
+      failedCollections.delete(name);
+      collectionState.set(name, { pending: snap.metadata.hasPendingWrites, fromCache: snap.metadata.fromCache });
+      notify();
+    },
+    err => {
+      if (!current()) return;
+      lastError = err.code === 'permission-denied'
+        ? "Accès refusé par les règles de sécurité Firestore. Ce compte Google n'est pas autorisé."
+        : `Synchronisation ${name} impossible : ${err.message}`;
+      console.error(`[Firestore] onSnapshot ${name}`, err);
+      // A failed Firestore listener is terminal; it must be attached again on recovery.
+      failedCollections.add(name);
+      notify();
+    }
+  ));
+}
+
+function hasPendingDocumentWrite(name: CollectionName, id: string) {
+  const path = `${name}/${id}`;
+  return pendingDocuments.has(path) || queuedWrites.some(op => op.name === name && op.id === id) ||
+    [...inFlightTargets.values()].some(paths => paths.has(path));
+}
+
 /**
  * Firestore refuse les valeurs `undefined`. L'application en produit
  * naturellement (champs optionnels non remplis) : on les retire avant écriture
@@ -149,7 +208,10 @@ export const FirestoreRepo = {
     return {
       pending: queuedWrites.length > 0 || inFlight.size > 0 || [...collectionState.values()].some(s => s.pending),
       fromCache: collectionState.size === 0 || [...collectionState.values()].some(s => s.fromCache),
-      error: writeFailure || (failedCollections.size ? 'Certaines données ne sont pas accessibles.' : null)
+      refreshing: refreshing.size > 0,
+      needsRefresh: failedCollections.size > 0 || refreshFailures.size > 0,
+      error: writeFailure || (failedCollections.size ? 'Certaines données ne sont pas accessibles.' :
+        refreshFailures.size ? 'Modifications enregistrées · actualisation en attente.' : null)
     };
   },
 
@@ -182,6 +244,10 @@ export const FirestoreRepo = {
     return syncing;
   },
 
+  syncSession(): number {
+    return syncEpoch;
+  },
+
   /** Vrai quand toutes les collections ont reçu leur premier snapshot. */
   isReady(): boolean {
     return failedCollections.size === 0 && ALL_COLLECTIONS.every((c) => loaded.has(c));
@@ -197,13 +263,69 @@ export const FirestoreRepo = {
   },
 
   find<T extends { id?: string }>(name: CollectionName, id: string): T | undefined {
-    return ((cache[name] ?? []) as T[]).find((d: any) => d.id === id);
+    return ((cache[name] ?? []) as T[]).find((d: any) => d.id === id || d.__docId === id);
+  },
+
+  /** Read after a server-side mutation, without replaying the mutation if the network drops. */
+  async refreshDocument(name: CollectionName, id: string): Promise<boolean> {
+    const epoch = syncEpoch;
+    if (!syncing) return false;
+    const path = `${name}/${id}`;
+    // A second mutation must read after the first refresh, not reuse its older result.
+    const preceding = refreshing.get(path);
+    const work = (async () => {
+      await preceding;
+      if (!syncing || epoch !== syncEpoch) return false;
+      const previous = this.find(name, id);
+      try {
+        const snap = await getDocFromServer(doc(db, name, id));
+        if (!syncing || epoch !== syncEpoch) return false;
+        // SDK snapshots and local writes may have advanced while the read was in flight.
+        if (this.find(name, id) === previous && !hasPendingDocumentWrite(name, id) && !snap.metadata.hasPendingWrites) {
+          const items = (cache[name] ?? []).filter(d => d.__docId !== id && d.id !== id);
+          const value = snap.exists() ? { ...snap.data(), __docId: snap.id } : null;
+          if (value) items.push(value);
+          cache[name] = items;
+          confirmedReads.set(path, { name, id, value });
+        }
+        refreshFailures.delete(path);
+        return true;
+      } catch {
+        if (syncing && epoch === syncEpoch) refreshFailures.add(path);
+        return false;
+      }
+    })();
+    refreshing.set(path, work);
+    notify();
+    try { return await work; }
+    finally {
+      if (refreshing.get(path) === work) refreshing.delete(path);
+      if (syncing && epoch === syncEpoch) notify();
+    }
+  },
+
+  /** Resume only interrupted streams. No polling or full database download on every focus. */
+  resumeSync(force = false): void {
+    if (!syncing || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
+    if (!force && Date.now() - lastResumeAt < 15000) return;
+    lastResumeAt = Date.now();
+    for (const name of ALL_COLLECTIONS) {
+      if (failedCollections.has(name) || collectionState.get(name)?.fromCache) openCollection(name);
+    }
+    for (const path of refreshFailures) {
+      if (!refreshing.has(path)) {
+        const slash = path.indexOf('/');
+        void this.refreshDocument(path.slice(0, slash) as CollectionName, path.slice(slash + 1));
+      }
+    }
   },
 
   /** Ouvre les abonnements temps réel. Idempotent. */
   startSync(): void {
     if (syncing) return;
     syncing = true;
+    syncEpoch += 1;
+    lastResumeAt = 0;
     loaded.clear();
     failedCollections.clear();
     collectionState.clear();
@@ -217,37 +339,29 @@ export const FirestoreRepo = {
       return;
     }
 
-    unsubscribers = ALL_COLLECTIONS.map((name) =>
-      onSnapshot(
-        collection(db, name),
-        { includeMetadataChanges: true },
-        (snap) => {
-          for (const path of pendingDocuments) if (path.startsWith(`${name}/`)) pendingDocuments.delete(path);
-          snap.docs.forEach(d => { if (d.metadata?.hasPendingWrites) pendingDocuments.add(`${name}/${d.id}`); });
-          cache[name] = snap.docs.map((d) => ({ ...(d.data() as any), __docId: d.id }));
-          loaded.add(name);
-          failedCollections.delete(name);
-          collectionState.set(name, { pending: snap.metadata.hasPendingWrites, fromCache: snap.metadata.fromCache });
-          notify();
-        },
-        (err) => {
-          // `permission-denied` ici signifie que les règles Firestore ont fait
-          // leur travail : le compte connecté n'est pas dans la liste autorisée.
-          const isPermission = (err as any)?.code === 'permission-denied';
-          lastError = isPermission
-            ? "Accès refusé par les règles de sécurité Firestore. Ce compte Google n'est pas autorisé."
-            : `Synchronisation ${name} impossible : ${err.message}`;
-          console.error(`[Firestore] onSnapshot ${name}`, err);
-          failedCollections.add(name);
-          notify();
-        }
-      )
-    );
+    ALL_COLLECTIONS.forEach(openCollection);
+    if (typeof window !== 'undefined') {
+      const resume = () => { if (document.visibilityState !== 'hidden') this.resumeSync(); };
+      window.addEventListener('online', resume);
+      window.addEventListener('pageshow', resume);
+      window.addEventListener('focus', resume);
+      document.addEventListener('visibilitychange', resume);
+      removeRecoveryListeners = () => {
+        window.removeEventListener('online', resume);
+        window.removeEventListener('pageshow', resume);
+        window.removeEventListener('focus', resume);
+        document.removeEventListener('visibilitychange', resume);
+      };
+    }
   },
 
   stopSync(): void {
     // Queue business writes under the current identity before clearing the views.
     flushWrites();
+    syncEpoch += 1;
+    subscriptionTokens.clear();
+    removeRecoveryListeners?.();
+    removeRecoveryListeners = undefined;
     unsubscribers.forEach((u) => {
       try {
         u();
@@ -255,7 +369,10 @@ export const FirestoreRepo = {
         /* ignore */
       }
     });
-    unsubscribers = [];
+    unsubscribers.clear();
+    refreshFailures.clear();
+    refreshing.clear();
+    confirmedReads.clear();
     syncing = false;
     loaded.clear();
     failedCollections.clear();

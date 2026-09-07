@@ -3,6 +3,7 @@ import { NumberInput } from './NumberInput';
 import { WaterSource, WaterIons } from '../types';
 import { ION_LABEL } from '../domain/water';
 import { Pencil, Check, X, Info } from 'lucide-react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 /**
  * L'analyse de l'eau, telle qu'on la recopie de la feuille du distributeur.
@@ -51,9 +52,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
   display
 }) => {
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<WaterSource>(source);
-
-  React.useEffect(() => setDraft(source), [source]);
+  const [draft, setDraft] = useSyncedDraft(source, source.id);
 
   const save = () => {
     onChange({ ...draft, updatedAt: new Date().toISOString() });

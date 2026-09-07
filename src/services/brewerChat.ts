@@ -113,7 +113,9 @@ export const BrewerChat = {
       import('./firebase')
     ]);
     const { StorageService } = await import('./storage');
-    return (
+    const { FirestoreRepo } = await import('./firestoreRepo');
+    const session = FirestoreRepo.syncSession();
+    const result = (
       await httpsCallable<unknown, { turn: BrewerTurn; value?: any }>(
         functions,
         'applyBrewerProposal'
@@ -127,6 +129,12 @@ export const BrewerChat = {
         ...(draft ? { draft } : {})
       })
     ).data;
+    if (decision === 'apply' && scope.kind !== 'draft' && session === FirestoreRepo.syncSession()) {
+      // The callable transaction is committed; read through the same cache used by every screen.
+      // A failed read is shown by PersistenceStatus and retried without reapplying the proposal.
+      void FirestoreRepo.refreshDocument(scope.kind === 'recipe' ? 'recipes' : 'batches', scope.id);
+    }
+    return result;
   },
   async ask(input: BrewerChatInput, options?: BrewerRequestOptions): Promise<BrewerTurn> {
     const [{ httpsCallable }, { functions }] = await Promise.all([

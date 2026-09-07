@@ -25,6 +25,7 @@ import { StorageService } from '../services/storage';
 import { CreativeItemSheet } from '../ui/CreativeItemSheet';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
+import { useLiveSelection, useStorageValue } from '../hooks/useLiveData';
 
 interface CreativeLabTabProps {
   onSuccessMessage?: (msg: string) => void;
@@ -44,7 +45,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 }) => {
   const [activeSection, setActiveSection] = useState<'equipment' | 'recipe-idea' | 'pricing-test' | 'prospect' | 'event'>('equipment');
 
-  const [items, setItems] = useState<CreativeItem[]>(() => StorageService.getCreativeItems());
+  const items = useStorageValue(StorageService.getCreativeItems);
 
   // Quick addition state
   const [isAdding, setIsAdding] = useState(false);
@@ -95,7 +96,6 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
     };
 
     StorageService.addCreativeItem(newItem);
-    setItems([...StorageService.getCreativeItems()]);
     setNewTitle('');
     setNewDescription('');
     setNewCost('');
@@ -120,20 +120,17 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
     const updated = { ...item, status: nextStatus };
     StorageService.updateCreativeItem(updated);
-    setItems([...StorageService.getCreativeItems()]);
   };
 
   /** Entrée en cours d'édition. Ouvre la fiche, qui porte aussi la suppression. */
-  const [editing, setEditing] = useState<CreativeItem | null>(null);
+  const [editing, setEditing] = useLiveSelection(items, 'id');
 
   const handleDelete = (id: string) => {
     StorageService.deleteCreativeItem(id);
-    setItems([...StorageService.getCreativeItems()]);
   };
 
   const handleSaveEdit = (updated: CreativeItem) => {
     StorageService.updateCreativeItem(updated);
-    setItems([...StorageService.getCreativeItems()]);
     onSuccessMessage?.(`« ${updated.title} » mis à jour.`);
   };
 
@@ -175,7 +172,6 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
     // Update creative item status to validated
     StorageService.updateCreativeItem({ ...item, status: 'validated' });
-    setItems([...StorageService.getCreativeItems()]);
 
     try {
       confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 }, colors: ['#3B82F6', '#10B981'] });

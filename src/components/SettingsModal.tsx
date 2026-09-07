@@ -21,6 +21,7 @@ import { inputClass } from '../ui/FormNav';
 import { BrewhouseSettings } from '../ui/BrewhouseSettings';
 import { equipmentErrors } from '../domain/brewEquipment';
 import { exportConfirmedBackup } from '../services/dataBackup';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -38,12 +39,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onOpenAuditLogs
 }) => {
   const [activeTab, setActiveTab] = useState<'fiscal' | 'brewhouse' | 'security' | 'backup'>('fiscal');
-  const [formData, setFormData] = useState<AppConfig>(config);
+  const [formData, setFormData] = useSyncedDraft(config, isOpen);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [busy, setBusy] = useState(false);
   const [dataMessage, setDataMessage] = useState('');
   const [dataError, setDataError] = useState(false);
-  useEffect(()=>{if(isOpen){setFormData(config);setSavedSuccess(false);}},[isOpen]);
+  useEffect(()=>{if(isOpen) setSavedSuccess(false);},[isOpen]);
 
   if (!isOpen) return null;
 

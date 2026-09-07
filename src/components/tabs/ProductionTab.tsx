@@ -20,6 +20,7 @@ import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
 import { statusOf } from '../../domain/batchStatus';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
+import { useLiveSelection } from '../../hooks/useLiveData';
 import { BrewingMath } from '../../services/brewingMath';
 import { DateUtils } from '../../services/dateUtils';
 import { FermentationCurveChart } from '../charts/FermentationCurveChart';
@@ -73,9 +74,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
 
   // Peut être indéfini : au tout premier lancement la base est vide, et il n'y
   // a alors aucune recette à mettre à l'échelle.
-  const [selectedRecipeToScale, setSelectedRecipeToScale] = useState<Recipe | null>(
-    recipes[0] ?? null
-  );
+  const [selectedRecipeToScale, setSelectedRecipeToScale] = useLiveSelection(recipes, 'id');
 
   // Dès qu'une première recette arrive (synchronisation Firestore), on la
   // sélectionne pour que le calculateur cesse d'être vide.
@@ -85,7 +84,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     }
   }, [recipes, selectedRecipeToScale]);
   const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
-  const [detailBatch, setDetailBatch] = useState<Batch | null>(null);
+  const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
 
   useEffect(() => {
     if (targetSubTab) {

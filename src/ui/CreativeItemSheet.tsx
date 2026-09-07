@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from './NumberInput';
 import { CreativeItem } from '../types';
 import { Sheet, ConfirmSheet } from './Sheet';
@@ -47,10 +48,9 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
   onSave,
   onDelete
 }) => {
-  const [draft, setDraft] = useState<CreativeItem | null>(item);
+  const [draft, setDraft] = useSyncedDraft(item, item?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => setDraft(item), [item]);
 
   if (!item || !draft) return null;
 

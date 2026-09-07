@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 import { X, Save, User, FileText } from 'lucide-react';
 import { Client } from '../types';
 import { StorageService } from '../services/storage';
@@ -18,30 +19,16 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
   onClose,
   onSave
 }) => {
-  if (!isOpen || !client) return null;
-
-  const [name, setName] = useState(client.name);
-  const [type, setType] = useState(client.type);
-  const [contact, setContact] = useState(client.contact);
-  const [phone, setPhone] = useState(client.phone);
-  const [email, setEmail] = useState(client.email);
-  const [notes, setNotes] = useState(client.notes || '');
-
-  useEffect(() => {
-    if (client) {
-      setName(client.name);
-      setType(client.type);
-      setContact(client.contact);
-      setPhone(client.phone);
-      setEmail(client.email);
-      setNotes(client.notes || '');
-    }
-  }, [client]);
+  const [draft, setDraft] = useSyncedDraft(isOpen ? client : null, client?.id);
+  if (!isOpen || !client || !draft) return null;
+  const { name, type, contact, phone, email, notes = '' } = draft;
+  const field = <K extends keyof Client>(key: K, value: Client[K]) =>
+    setDraft(current => ({ ...current, [key]: value }));
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const updated: Client = {
-      ...client,
+      ...draft,
       name: name.trim(),
       type,
       contact: contact.trim(),
@@ -85,7 +72,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
             name="cl_company_label"
             required
             value={name}
-            onChange={setName}
+            onChange={value => field('name', value)}
             className={`${inputClass} font-bold`}
           />
         </div>
@@ -98,7 +85,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
               autoComplete="off"
               data-form-type="other"
               value={type}
-              onChange={(e) => setType(e.target.value as 'Pro' | 'Privé')}
+              onChange={(e) => field('type', e.target.value as 'Pro' | 'Privé')}
               className={inputClass}
             >
               <option value="Pro">Professionnel (Restaurant/Bar/Cave)</option>
@@ -120,7 +107,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
             <TextInput
               name="cl_contact_person_label"
               value={contact}
-              onChange={setContact}
+              onChange={value => field('contact', value)}
               placeholder="ex: M. Martin, Mme Dupont..."
             />
           </div>
@@ -138,7 +125,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
               data-1p-ignore="true"
               data-bwignore="true"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => field('phone', e.target.value)}
               placeholder="026 408 33 33"
               className={`${inputClass} font-mono`}
             />
@@ -159,7 +146,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
             data-1p-ignore="true"
             data-bwignore="true"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => field('email', e.target.value)}
             placeholder="contact@restaurant.ch"
             className={inputClass}
           />
@@ -180,7 +167,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
             data-1p-ignore="true"
             data-bwignore="true"
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) => field('notes', e.target.value)}
             placeholder="ex: Consignes de dépôt, créneaux horaires, jours de fermeture..."
             className={inputClass}
           />
@@ -207,4 +194,3 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
     </ModalShell>
   );
 };
-

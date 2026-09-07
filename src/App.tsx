@@ -220,6 +220,7 @@ export const App: React.FC = () => {
       setTarifs([]);
       setAuditLogs([]);
       setCreativeItems([]);
+      setIsDataReady(false);
     }
   }, [currentUser]);
 
@@ -240,7 +241,7 @@ export const App: React.FC = () => {
   // Subscribe to storage changes ONLY when authenticated
   useEffect(() => {
     if (!currentUser) return;
-    const unsubscribe = StorageService.subscribe(() => {
+    const refresh = () => {
       setTransactions([...StorageService.getTransactions()]);
       setStocks({ ...StorageService.getStocks() });
       setBatches([...StorageService.getBatches()]);
@@ -252,8 +253,12 @@ export const App: React.FC = () => {
       setConfig({ ...StorageService.getConfig() });
       setAuditLogs([...StorageService.getAuditLogs()]);
       setCreativeItems([...StorageService.getCreativeItems()]);
-      setIsDataReady(StorageService.isReady());
-    });
+      // Once opened, keep cached screens and their drafts mounted during a stream outage.
+      // PersistenceStatus exposes the error; signing out still resets readiness above.
+      setIsDataReady(ready => ready || StorageService.isReady());
+    };
+    const unsubscribe = StorageService.subscribe(refresh);
+    refresh();
     return unsubscribe;
   }, [currentUser]);
 
