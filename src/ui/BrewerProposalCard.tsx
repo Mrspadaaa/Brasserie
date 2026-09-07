@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Check, ClipboardCheck, LoaderCircle } from 'lucide-react';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
-import { sameField } from '../../functions/src/brewerProposals';
+import { sameField } from '../../functions/src/brewerFields';
+import { SALTS, ACIDS } from '../domain/water';
 
 const names: Record<string, string> = {
   name: 'Nom',
@@ -55,12 +56,15 @@ const words: Record<string, string> = {
   ajout: 'Ajout'
 };
 Object.assign(names, {
+  ...Object.fromEntries(Object.entries(SALTS).map(([id, salt]) => [id, `${salt.name} (g)`])),
+  mash: 'Empâtage', sparge: 'Rinçage', id: 'Produit',
   at: 'Date du relevé',
   kind: 'Type',
   value: 'Valeur',
   roomTemp: 'Échantillon refroidi'
 });
-const valueText = (v: any, label = '') =>
+Object.assign(words, Object.fromEntries(Object.entries(ACIDS).map(([id, acid]) => [id, `${acid.name} · ${acid.unit}`])));
+const valueText = (v: any, label = '', unit = '') =>
   v == null
     ? 'Non renseigné'
     : typeof v === 'boolean'
@@ -70,7 +74,7 @@ const valueText = (v: any, label = '') =>
       : label.endsWith('Date du relevé')
         ? new Date(v).toLocaleString('fr-CH')
         : typeof v === 'number'
-          ? v.toLocaleString('fr-CH', { maximumFractionDigits: 4 })
+          ? v.toLocaleString('fr-CH', { maximumFractionDigits: unit === '%' ? 2 : 4 })
           : (words[v] ?? String(v));
 function differences(
   before: any,
@@ -142,6 +146,7 @@ export function BrewerProposalCard({
       </header>
       {!done && (
         <>
+          {proposal.changes.some(ch => ch.group === 'water') && <p className="brewer-proposal-note">Eau et traitement liés : une seule sélection pour garder les litres, les sels et l’acide cohérents.</p>}
           <div className="brewer-proposal-changes">
             {proposal.changes.map((ch) => (
               <div key={ch.id} className="brewer-proposal-change">
@@ -151,9 +156,10 @@ export function BrewerProposalCard({
                     checked={selected.includes(ch.id)}
                     disabled={busy || disabled}
                     onChange={(e) =>
-                      setSelected((ids) =>
-                        e.target.checked ? [...ids, ch.id] : ids.filter((id) => id !== ch.id)
-                      )
+                      setSelected((ids) => {
+                        const linked = proposal.changes.filter(other => ch.group ? other.group === ch.group : other.id === ch.id).map(other => other.id);
+                        return e.target.checked ? [...new Set([...ids, ...linked])] : ids.filter(id => !linked.includes(id));
+                      })
                     }
                   />
                   <strong>{ch.label}</strong>
@@ -165,13 +171,13 @@ export function BrewerProposalCard({
                       <dd>
                         <span>
                           <small>Actuel</small>
-                          {valueText(diff.before, diff.label)}
-                          {ch.unit && diff.before != null ? ` ${ch.unit}` : ''}
+                          {valueText(diff.before, diff.label, ch.unit)}
+                          {ch.unit && typeof diff.before === 'number' ? ` ${ch.unit}` : ''}
                         </span>
                         <span>
                           <small>Proposé</small>
-                          {valueText(diff.after, diff.label)}
-                          {ch.unit && diff.after != null ? ` ${ch.unit}` : ''}
+                          {valueText(diff.after, diff.label, ch.unit)}
+                          {ch.unit && typeof diff.after === 'number' ? ` ${ch.unit}` : ''}
                         </span>
                       </dd>
                     </div>

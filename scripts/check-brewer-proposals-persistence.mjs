@@ -137,6 +137,54 @@ await applyBrewerProposal.run(
 );
 assert.equal((await db.doc(`recipes/${recipeId}`).get()).data().boilMin, 70);
 checks++;
+// A single stock constraint expands server-side into a coupled water treatment.
+await db.doc(`recipes/${recipeId}`).update({ 'waterPlan.diRatioPct': 80 });
+const water = await seed('recipe', [['waterPlan.roLimitL', 10]]);
+const waterProposal = water.turn.proposal;
+const waterId = waterProposal.changes.find((ch) => ch.path === 'waterPlan.roLimitL').id;
+await rejected(
+  () =>
+    applyBrewerProposal.run(request({ ...apply, turnId: water.turn.id, selectedIds: [waterId] })),
+  'failed-precondition'
+);
+assert.equal((await db.doc(`recipes/${recipeId}`).get()).data().waterPlan.diRatioPct, 80);
+checks++;
+const waterDecision = {
+  ...apply,
+  turnId: water.turn.id,
+  selectedIds: waterProposal.changes.map((ch) => ch.id)
+};
+await applyBrewerProposal.run(request(waterDecision));
+const waterSaved = (await db.doc(`recipes/${recipeId}`).get()).data();
+const wp = waterSaved.waterPlan;
+assert.ok(
+  Math.abs(
+    (wp.mashWaterL * wp.diRatioPct + wp.spargeWaterL * (wp.spargeDiRatioPct ?? wp.diRatioPct)) /
+      100 -
+      10
+  ) < 1e-9
+);
+assert.equal(wp.autoTreatment, true);
+assert.equal(wp.roLimitL, 10);
+assert.ok(Object.values(wp.mash).some((g) => g > 0));
+assert.ok(wp.acid.mash > 0);
+assert.equal(wp.saltOverrides, undefined);
+assert.equal(wp.acidOverride, undefined);
+assert.equal(waterSaved.volumeL, testRecipe.volumeL);
+assert.equal(waterSaved.mash.ratioLPerKg, wp.mashWaterL / testRecipe.totalGristKg);
+checks += 9;
+await applyBrewerProposal.run(request(waterDecision));
+assert.deepEqual((await db.doc(`recipes/${recipeId}`).get()).data(), waterSaved);
+const waterAudit = await db
+  .collection('auditLogs')
+  .where('proposalTurnId', '==', water.turn.id)
+  .get();
+assert.equal(waterAudit.size, 1);
+assert.deepEqual(
+  waterAudit.docs[0].data().changes.map((ch) => ch.path),
+  waterProposal.changes.map((ch) => ch.path)
+);
+checks += 3;
 const draftScope = { kind: 'draft', id: `DRAFT-${uid}` },
   draft = await seed('recipe', [['boilMin', 90]], draftScope);
 const draftResult = await applyBrewerProposal.run(

@@ -294,7 +294,7 @@ export const applyBrewerProposal = onCall(
       !/^[a-f0-9]{64}$/.test(turnId) ||
       !['apply', 'dismiss'].includes(decision) ||
       !Array.isArray(selectedIds) ||
-      selectedIds.length > 20 ||
+      selectedIds.length > 64 ||
       selectedIds.some((x: unknown) => typeof x !== 'string')
     )
       throw new HttpsError('invalid-argument', 'Validation explicite des modifications requise.');
@@ -411,7 +411,7 @@ export const applyBrewerProposal = onCall(
             proposal.target === 'recipe' &&
             roots.some((root) => ['fermentables', 'waterPlan'].includes(root))
           )
-            roots.push('preBoilL', 'preBoilHotL', 'waterPlan');
+            roots.push('preBoilL', 'preBoilHotL', 'waterPlan', 'mash');
           tx.update(entity!.ref, pick(next, roots));
         }
         const auditId = `LOG-${String(now).padStart(14, '0')}-companion-${turnId.slice(0, 16)}`;

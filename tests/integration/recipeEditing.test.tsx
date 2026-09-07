@@ -7,6 +7,9 @@ import { RecipeReview } from '../../src/ui/RecipeReview';
 import { defaultConfig } from '../../src/services/storage';
 import { Recipe, StockItem } from '../../src/types';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
+import { replanRecipeWater, recipeWaterSummary } from '../../src/domain/recipeWater';
+import { prepareProposal, applyProposal } from '../../functions/src/brewerProposals';
+import type { BrewerContext } from '../../functions/src/companionTypes';
 
 const run = vi.fn();
 vi.mock('../../src/services/aiClient', () => ({
@@ -106,6 +109,65 @@ const change = (el: HTMLElement, value: string) => {
 const radar = () => screen.getByRole('img', { name: /Profil ionique/ }).getAttribute('aria-label');
 
 describe('Recipe data entry regressions', () => {
+  it('treats the callable null representation as a linked sparge percentage', () => {
+    const original = structuredClone(base);
+    original.waterPlan!.spargeDiRatioPct = null as any;
+    wizard(original);
+    step(/^Eau/);
+    expect(screen.getByText(/Rinçage identique/)).toBeInTheDocument();
+    expect(screen.queryByLabelText('Litres d’osmosée (Osmosée — rinçage)')).toBeNull();
+  });
+  it('keeps the companion water proposal identical after import, manual changes, save and reopen', () => {
+    const original = structuredClone(base);
+    original.waterPlan = { ...original.waterPlan!, diRatioPct: 80, spargeDiRatioPct: 100,
+      targetProfileId: '21C', acidOverride: undefined };
+    original.waterPlan = replanRecipeWater(original).plan;
+    const c: BrewerContext = { recipe: original, inventory: [], material: [], waterSources: [DEFAULT_WATER_SOURCE],
+      editableTargets: ['recipe'], provenance: [], now: Date.now(), phase: 'Recette' };
+    const proposal = prepareProposal(c, { target: 'recipe', title: 'Seulement 10 L', changes: [
+      { path: 'waterPlan.roLimitL', valueJson: '10', reason: 'Stock disponible.' }
+    ] });
+    const applied = applyProposal(c, proposal, proposal.changes.map(ch => ch.id));
+    const save = vi.fn();
+    const view = wizard(applied, save);
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
+    expect(save.mock.calls[0][0].waterPlan.mash).toEqual(applied.waterPlan.mash);
+    expect(save.mock.calls[0][0].waterPlan.acid).toEqual(applied.waterPlan.acid);
+    expect(save.mock.calls[0][0].waterPlan.wortIons).toEqual(applied.waterPlan.wortIons);
+    step(/^Eau/);
+    fireEvent.click(screen.getByText(/Osmosée : 10 L disponibles/));
+    change(screen.getByLabelText('Osmosée disponible au total (L)'), '5');
+    expect(screen.getByLabelText('Sels et acides suivent la recette')).toBeChecked();
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
+    const saved = save.mock.calls[1][0];
+    expect(recipeWaterSummary(saved)!.totalRoL).toBe(5);
+    expect(saved.waterPlan.mash).not.toEqual(applied.waterPlan.mash);
+    expect(saved.waterPlan.acid).not.toEqual(applied.waterPlan.acid);
+    expect(saved.waterPlan.roLimitL).toBe(5);
+    view.unmount();
+    const again = vi.fn();
+    wizard(saved, again);
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
+    expect(again.mock.calls[0][0].waterPlan).toEqual(saved.waterPlan);
+  });
+  it('recalculates around a manually retained salt dose when the water changes', () => {
+    const original = structuredClone(base);
+    original.waterPlan = { ...original.waterPlan!, autoTreatment: true, diRatioPct: 80, targetProfileId: '21C', acidOverride: undefined };
+    const save = vi.fn();
+    wizard(original, save);
+    step(/^Eau/);
+    change(screen.getByLabelText(/Dose de Gypse en grammes/), '1.2');
+    fireEvent.click(screen.getByText('Disponibilité & recalcul automatique'));
+    change(screen.getByLabelText('Osmosée disponible au total (L)'), '5');
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
+    expect(save.mock.calls[0][0].waterPlan.mash.gypse).toBe(1.2);
+    expect(save.mock.calls[0][0].waterPlan.saltOverrides.mash.gypse).toBe(1.2);
+    expect(recipeWaterSummary(save.mock.calls[0][0])!.totalRoL).toBe(5);
+  });
   it('lets the brewer explicitly update a saved source snapshot', async () => {
     wizard();
     step(/^Eau/);

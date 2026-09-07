@@ -103,6 +103,7 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
         max={100}
         step={5}
         unit="%"
+        displayDigits={2}
         hint={hint}
         disabled={disabled}
         /*
@@ -129,7 +130,7 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
               onValue={(litres: number) => {
                 if (!hasVolume) return;
                 const pct = Math.max(0, Math.min(100, (litres / volumeL) * 100));
-                onChange(Math.round(pct));
+                onChange(pct);
               }}
               disabled={disabled || !hasVolume}
               pad

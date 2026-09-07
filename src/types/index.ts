@@ -265,6 +265,12 @@ export type AcidId = 'lactique' | 'phosphorique' | 'maltAcidule';
  * total, ce qui surdose d'un facteur deux.
  */
 export interface WaterPlan {
+  /** Saved constraint, across mash and sparge together. Absent = unrestricted. */
+  roLimitL?: number;
+  ratioOverride?: number;
+  /** Refit unpinned salt and acid doses when the recipe inputs change. */
+  autoTreatment?: boolean;
+  saltOverrides?: { mash?: Partial<Record<SaltId, number>>; sparge?: Partial<Record<SaltId, number>> };
   sourceId: string;
   /** Analysis used for this recipe; later source edits must not change it. */
   sourceSnapshot?: WaterSource;

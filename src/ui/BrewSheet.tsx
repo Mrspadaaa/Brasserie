@@ -608,7 +608,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             : undefined
         }
       >
-        <Row label="Empâtage" hint={water ? `${water.diRatioPct} % d’osmosée` : undefined}>
+        <Row label="Empâtage" hint={water ? `${Number(water.diRatioPct.toFixed(2))} % d’osmosée` : undefined}>
           <Cell
             label="Eau d’empâtage"
             value={mashWaterL}
@@ -623,7 +623,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             water
               ? water.spargeWaterL <= 0
                 ? 'aucun — tout passe par la maische'
-                : `${water.spargeDiRatioPct} % d’osmosée${water.spargeLinked ? '' : ' · délié'}`
+                : `${Number(water.spargeDiRatioPct.toFixed(2))} % d’osmosée${water.spargeLinked ? '' : ' · délié'}`
               : undefined
           }
         >

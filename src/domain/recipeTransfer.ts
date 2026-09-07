@@ -138,6 +138,10 @@ export const recipeFields = {
     )
   }),
   waterPlan: o('Eau', {
+    roLimitL: n('Osmosée disponible au total (L)', 0, 1000),
+    ratioOverride: n('Rapport sulfate chlorure choisi', 0, 20),
+    autoTreatment: b('Sels et acides suivent la recette'),
+    saltOverrides: o('Doses manuelles de sels', { mash: o('Empâtage', salts), sparge: o('Rinçage', salts) }),
     sourceId: t('Référence de source'),
     sourceSnapshot: o('Analyse de source', {
       id: t('Référence'),

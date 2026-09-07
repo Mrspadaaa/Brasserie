@@ -58,3 +58,29 @@ Les captures couvrent 320 et 390 px, la saisie pendant une réponse, l’accès 
 Déployer les index puis toutes les fonctions de ce flux : `askBrewer`, `getBrewerConversation`, `resetBrewerConversation`, `applyBrewerProposal`, `dispatchBrewerQuestion`, `processBrewerQuestion`, `getBrewerActivity`, `markBrewerRead`, `retryBrewerQuestion`, `registerBrewerNotifications`, `notifyBrewerAnswer`, et l’hébergement. Le compte de service de Cloud Tasks doit pouvoir appeler `processBrewerQuestion` ; valider une exécution réelle après le premier déploiement.
 
 Pour les modes et budgets : déployer `askBrewer`, `retryBrewerQuestion`, `getBrewerConversation`, `processBrewerQuestion`, `getBrewerAiBudget` et `setBrewerAiBudget` avant l’hébergement. Les nouveaux documents de contrôle restent privés (refus Firestore par défaut).
+# Eau et dépendances de recette
+
+Le compagnon peut proposer les neuf sels (empâtage/rinçage), l’acidifiant et ses doses,
+les sources enregistrées, les cibles minérales, les exclusions, les autres additifs et
+les paramètres d’empâtage. Les champs calculés (pourcentages du grain, rapport eau/grain,
+ions obtenus) suivent leurs entrées ; les objectifs déclarés restent distincts des prévisions.
+
+`plan_recipe_water` utilise le solveur de l’atelier, sans requête Gemini supplémentaire.
+Une disponibilité telle que 10 L s’exprime par `waterPlan.roLimitL`, maximum commun aux
+deux eaux. Le partage existant entre empâtage et rinçage est réduit proportionnellement
+si nécessaire, sans changer les volumes totaux ni forcer la consommation du stock restant.
+L’outil ne réécrit pas les gestes d’un brassage commencé.
+
+`prepareProposal` calcule les dépendances avant la relecture et ajoute leurs vrais
+avant/après à un groupe d’approbation. Le serveur refuse une sélection partielle du groupe.
+Les mêmes doses sont affichées, appliquées en transaction et consignées dans l’audit.
+`autoTreatment` conserve ensuite le recalcul dans le formulaire et à sa réouverture.
+Les doses manuelles (`saltOverrides`, `acidOverride`) restent prioritaires, sauf les sels
+explicitement écartés. Une commande permet de rendre ces exceptions au calculateur.
+Le plafond et les exceptions sont également conservés par l’export/import de recette.
+
+Le modèle reçoit le bilan litres/ions, les écarts au profil, le produit acide exact et
+une estimation de pH identifiée comme telle. Une analyse source absente bloque le dosage.
+Les équations existantes d’alcalinité et les contrôles de pH sont conservés :
+[Bru’n Water](https://www.brunwater.com/water-knowledge) et
+[Brewer’s Friend](https://www.brewersfriend.com/mash-chemistry-and-brewing-water-calculator/).

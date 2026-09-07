@@ -1,4 +1,7 @@
 import type { BrewerContext, BrewerProposal, BrewerFieldChange } from './companionTypes.js';
+import { reconcileRecipeWater, refreshCompanionRecipe, waterRelatedPath } from './brewerTools.js';
+import { sameField } from './brewerFields.js';
+export { sameField } from './brewerFields.js';
 
 type Spec = {
   label: string;
@@ -9,6 +12,8 @@ type Spec = {
   shape?: string;
   text?: number;
   type?: 'boolean';
+  nullable?: boolean;
+  list?: Spec;
 };
 const n = (label: string, min: number, max: number, unit = ''): Spec => ({ label, min, max, unit });
 const t = (label: string, text = 200): Spec => ({ label, text });
@@ -60,10 +65,68 @@ const fermentationStep = {
   days: n('Durée', 0, 365, 'j'),
   note: t('Note', 2000)
 };
+const salts = Object.fromEntries(
+  [
+    ['gypse', 'Gypse'],
+    ['cacl2', 'Chlorure de calcium'],
+    ['epsom', 'Sel d’Epsom'],
+    ['mgcl2', 'Chlorure de magnésium'],
+    ['nacl', 'Sel de table'],
+    ['nahco3', 'Bicarbonate de sodium'],
+    ['caco3', 'Craie'],
+    ['chaux', 'Chaux'],
+    ['kcl', 'Chlorure de potassium']
+  ].map(([id, label]) => [id, n(label, 0, 1000, 'g')])
+);
+const ions = Object.fromEntries(
+  ['ca', 'mg', 'na', 'so4', 'cl', 'hco3'].map((id) => [id, n(id.toUpperCase(), 0, 2000, 'mg/L')])
+);
+const acid = {
+  id: choice('Acidifiant', ['lactique', 'phosphorique', 'maltAcidule']),
+  mash: n('Dose empâtage', 0, 2000),
+  sparge: n('Dose rinçage', 0, 2000)
+};
+const adjunct = {
+  name: t('Nom'),
+  amount: n('Quantité', 0, 10000),
+  unit: t('Unité', 30),
+  step: t('Ajout'),
+  notes: t('Notes', 2000)
+};
+const recipeStep = {
+  step: t('Étape'),
+  tempC: n('Température', -5, 110, '°C'),
+  durationMin: n('Durée', 0, 1440, 'min'),
+  notes: t('Notes', 2000)
+};
 export const proposalValueSchemas: Record<
   string,
   { fields: Record<string, Spec>; required: string[]; array?: boolean }
 > = {
+  salts: { fields: salts, required: [] },
+  ions: { fields: ions, required: [] },
+  saltOverrides: {
+    fields: {
+      mash: { label: 'Empâtage', shape: 'salts' },
+      sparge: { label: 'Rinçage', shape: 'salts' }
+    },
+    required: []
+  },
+  acid: { fields: acid, required: ['id', 'mash', 'sparge'] },
+  acidOverride: { fields: { mash: acid.mash, sparge: acid.sparge }, required: [] },
+  source: {
+    fields: {
+      ...ions,
+      id: t('ID'),
+      name: t('Source'),
+      ph: n('pH', 0, 14),
+      note: t('Provenance', 2000),
+      updatedAt: t('Date')
+    },
+    required: ['id', 'name', ...Object.keys(ions)]
+  },
+  adjuncts: { fields: adjunct, required: ['name', 'amount', 'unit', 'step'], array: true },
+  recipeSteps: { fields: recipeStep, required: ['step', 'tempC', 'durationMin'], array: true },
   fermentables: { fields: grain, required: ['name', 'weightKg', 'kind', 'use'], array: true },
   hops: { fields: hop, required: ['name', 'weightG', 'alpha', 'stage'], array: true },
   yeast: { fields: yeast, required: ['name', 'form', 'qty', 'unit'] },
@@ -105,7 +168,6 @@ const stable = (v: any): string =>
       ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)))
       : value
   );
-export const sameField = (a: any, b: any) => stable(a ?? null) === stable(b ?? null);
 
 /** This closed list is shared by generation, preview and application. No arbitrary JSON patches. */
 export function editableFields(
@@ -131,25 +193,77 @@ export function editableFields(
       efficiencyPct: n('Rendement', 1, 100, '%'),
       instructions: t('Instructions', 8000),
       notesCreation: t('Notes de recette', 4000),
+      notes: { label: 'Notes', list: t('Note', 2000) },
+      ogTarget: n('Densité initiale cible', 1, 1.3, 'SG'),
+      fgTarget: n('Densité finale cible', 0.98, 1.3, 'SG'),
+      abvTarget: n('Alcool cible', 0, 30, '%'),
+      ibuTarget: n('Amertume cible', 0, 300, 'IBU'),
+      colorEbc: n('Couleur annoncée', 0, 500, 'EBC'),
       carboTarget: t('Carbonatation cible', 100),
       fermentables: { label: 'Fermentescibles', shape: 'fermentables' },
       hops: { label: 'Houblons', shape: 'hops' },
+      adjuncts: { label: 'Autres ingrédients', shape: 'adjuncts' },
+      steps: { label: 'Étapes complémentaires', shape: 'recipeSteps' },
       yeast: { label: 'Levure', shape: 'yeast' },
       'mash.steps': { label: 'Paliers d’empâtage', shape: 'mash' },
       fermentation: { label: 'Programme de fermentation', shape: 'fermentation' },
       'mash.mashoutTempC': n('Mashout', 65, 85, '°C'),
       'mash.mashoutDurationMin': n('Maintien mashout', 1, 60, 'min'),
       'mash.spargeTempC': n('Eau de rinçage', 20, 85, '°C'),
+      'mash.spargeType': choice('Méthode de rinçage', ['batch', 'fly', 'none']),
+      'mash.ratioLPerKg': n('Rapport eau / grain', 0.5, 12, 'L/kg'),
+      'mash.heatingRateCPerMin': n('Vitesse de chauffe indicative', 0.01, 10, '°C/min'),
+      'waterPlan.roLimitL': { ...n('Osmosée disponible · total', 0, 1000, 'L'), nullable: true },
+      'waterPlan.autoTreatment': { label: 'Sels et acides suivent la recette', type: 'boolean' },
+      'waterPlan.ratioOverride': { ...n('Rapport sulfate / chlorure', 0, 20), nullable: true },
+      'waterPlan.sourceId': choice('Source d’eau', [
+        ...new Set(
+          [c.recipe.waterPlan?.sourceId, ...c.waterSources.map((s) => s.id)].filter(Boolean)
+        )
+      ]),
+      'waterPlan.sourceSnapshot': { label: 'Analyse de l’eau', shape: 'source' },
+      'waterPlan.targetProfileId': t('Profil d’eau'),
+      'waterPlan.targetName': t('Nom du profil d’eau'),
+      'waterPlan.targetIons': { label: 'Cible minérale', shape: 'ions', nullable: true },
+      'waterPlan.mash': { label: 'Sels · empâtage', shape: 'salts' },
+      'waterPlan.sparge': { label: 'Sels · rinçage', shape: 'salts' },
+      'waterPlan.acid': { label: 'Acidification', shape: 'acid' },
+      'waterPlan.acidOverride': {
+        label: 'Doses d’acide manuelles',
+        shape: 'acidOverride',
+        nullable: true
+      },
+      'waterPlan.saltOverrides': {
+        label: 'Doses de sels manuelles',
+        shape: 'saltOverrides',
+        nullable: true
+      },
+      'waterPlan.disabled': { label: 'Sels écartés', list: choice('Sel', Object.keys(salts)) },
+      'waterPlan.allSaltsInMash': { label: 'Tous les sels à l’empâtage', type: 'boolean' },
       'waterPlan.mashWaterL': n('Eau d’empâtage', 1, 1000, 'L'),
       'waterPlan.spargeWaterL': n('Eau de rinçage', 0, 1000, 'L'),
       'waterPlan.diRatioPct': n('Osmosée à l’empâtage', 0, 100, '%'),
-      'waterPlan.spargeDiRatioPct': n('Osmosée au rinçage', 0, 100, '%'),
-      'waterPlan.targetPh': n('pH cible à l’empâtage', 5, 5.8)
+      'waterPlan.spargeDiRatioPct': { ...n('Osmosée au rinçage', 0, 100, '%'), nullable: true },
+      'waterPlan.targetPh': n('pH cible à l’empâtage', 5, 5.8),
+      'waterPlan.measuredPh': n('pH mesuré · empâtage', 0, 14),
+      'waterPlan.measuredSpargePh': n('pH mesuré · rinçage', 0, 14)
     });
     addRows('fermentables', c.recipe.fermentables, grain);
+    (c.recipe.fermentables ?? []).forEach(
+      (_: unknown, i: number) => delete fields[`fermentables.${i}.pct`]
+    );
     addRows('hops', c.recipe.hops, hop);
     addRows('mash.steps', c.recipe.mash?.steps, mashStep);
     addRows('fermentation', c.recipe.fermentation, fermentationStep);
+    addRows('adjuncts', c.recipe.adjuncts, adjunct);
+    addRows('steps', c.recipe.steps, recipeStep);
+    for (const side of ['mash', 'sparge'])
+      for (const [id, spec] of Object.entries(salts))
+        fields[`waterPlan.${side}.${id}`] = {
+          ...spec,
+          label: `${spec.label} · ${side === 'mash' ? 'empâtage' : 'rinçage'}`
+        };
+    for (const [key, spec] of Object.entries(acid)) fields[`waterPlan.acid.${key}`] = spec;
     for (const [key, spec] of Object.entries(yeast))
       fields[`yeast.${key}`] = { ...spec, label: `Levure · ${spec.label}` };
   }
@@ -197,7 +311,16 @@ export function editableFields(
   return fields;
 }
 function checked(value: any, spec: Spec, optional = true): any {
-  if (value === null && optional) return null;
+  if (value === null && (optional || spec.nullable)) return null;
+  if (spec.type === 'boolean') {
+    if (typeof value !== 'boolean') throw Error(`${spec.label} invalide.`);
+    return value;
+  }
+  if (spec.list) {
+    if (!Array.isArray(value) || value.length > 60) throw Error('Liste invalide.');
+    value.forEach((v) => checked(v, spec.list!, false));
+    return value;
+  }
   if (spec.shape === 'reading') {
     if (
       !value ||
@@ -309,7 +432,7 @@ export function prepareProposal(c: BrewerContext, args: any): BrewerProposal {
     )
   )
     throw Error('Champs inconnus, doublonnés ou imbriqués.');
-  const changes: BrewerFieldChange[] = args.changes
+  let changes: BrewerFieldChange[] = args.changes
     .map((change: any, i: number) => {
       const spec = fields[change.path];
       if (
@@ -344,7 +467,72 @@ export function prepareProposal(c: BrewerContext, args: any): BrewerProposal {
       };
     })
     .filter((ch: BrewerFieldChange) => !sameField(ch.before, ch.value));
+  if (target === 'recipe' && changes.some((ch) => waterRelatedPath(ch.path))) {
+    const raw = structuredClone(c.recipe);
+    changes.forEach((ch) => put(raw, ch.path, ch.value));
+    const next = reconcileRecipeWater(
+      raw,
+      changes.map((ch) => ch.path),
+      c.waterSources
+    );
+    const roots = [
+      'waterPlan.roLimitL',
+      'waterPlan.diRatioPct',
+      'waterPlan.spargeDiRatioPct',
+      'waterPlan.mashWaterL',
+      'waterPlan.spargeWaterL',
+      'waterPlan.autoTreatment',
+      'waterPlan.sourceSnapshot',
+      'waterPlan.mash',
+      'waterPlan.sparge',
+      'waterPlan.acid',
+      'waterPlan.acidOverride',
+      'waterPlan.saltOverrides'
+    ];
+    for (const path of roots) {
+      const before = readField(c.recipe, path),
+        value = readField(next, path);
+      const explicit = changes.filter((ch) => ch.path === path || ch.path.startsWith(path + '.'));
+      if (sameField(before, value) && !explicit.length) continue;
+      changes = changes.filter((ch) => !explicit.includes(ch));
+      if (!sameField(before, value))
+        changes.push({
+          id: '',
+          path,
+          before,
+          value,
+          label: fields[path].label,
+          ...(fields[path].unit ? { unit: fields[path].unit } : {}),
+          reason:
+            explicit.map((ch) => ch.reason).join(' ; ') || 'Recalcul lié à l’eau et à la recette.'
+        });
+    }
+    // A water constraint and its doses are one decision, including the inputs that caused them.
+    if (changes.some((ch) => ch.path.startsWith('waterPlan.'))) {
+      changes.forEach((ch) => {
+        if (waterRelatedPath(ch.path)) ch.group = 'water';
+      });
+    }
+    changes.forEach((ch, i) => {
+      ch.id = `C${i + 1}`;
+    });
+  }
   if (!changes.length) throw Error('Ces champs ont déjà les valeurs proposées.');
+  for (const change of changes) {
+    if (change.path === 'waterPlan.acid') {
+      const id = change.value?.id as 'lactique' | 'phosphorique' | 'maltAcidule';
+      const product = {
+        lactique: 'Acide lactique 80 %',
+        phosphorique: 'Acide phosphorique 75 %',
+        maltAcidule: 'Malt acidulé'
+      }[id];
+      if (product) {
+        change.label = `Acidification · ${product}`;
+        change.unit = id === 'maltAcidule' ? 'g' : 'mL';
+      }
+    }
+  }
+  if (changes.length > 64) throw Error('Trop de champs liés dans cette proposition.');
   const proposal: BrewerProposal = {
     target,
     title: args.title,
@@ -370,6 +558,10 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
     throw Error('Les champs ont changé depuis ce conseil. Demande une proposition actualisée.');
   const fields = editableFields(c, proposal.target),
     next = structuredClone(c[proposal.target]);
+  for (const ch of proposal.changes.filter((ch) => ch.group && ids.includes(ch.id))) {
+    if (proposal.changes.some((other) => other.group === ch.group && !ids.includes(other.id)))
+      throw Error('L’eau, ses doses et les paramètres liés doivent être validés ensemble.');
+  }
   for (const change of proposal.changes.filter((ch) => ids.includes(ch.id))) {
     if (!own(fields, change.path) || !sameField(readField(next, change.path), change.before))
       throw Error('La proposition ne correspond plus à ce formulaire.');
@@ -384,6 +576,16 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
     next.totalGristKg = (next.fermentables ?? [])
       .filter((f: any) => f.kind === 'grain')
       .reduce((sum: number, f: any) => sum + f.weightKg, 0);
+    const p = next.waterPlan;
+    if (p?.acid && (p.acid.id == null || p.acid.mash == null || p.acid.sparge == null))
+      throw Error('Acidifiant et doses des deux eaux requis ensemble.');
+    if (
+      p &&
+      (p.spargeWaterL === 0 || p.allSaltsInMash === true) &&
+      Object.values(p.sparge ?? {}).some((v) => Number(v) > 0)
+    )
+      throw Error('Des sels sont prévus au rinçage : adapte aussi leur répartition.');
+    return refreshCompanionRecipe(next);
   }
   if (proposal.target === 'journal') {
     const duration = next.boilDurationMin ?? c.recipe?.boilMin ?? 60;

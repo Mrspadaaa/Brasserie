@@ -60,6 +60,7 @@ import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
 import { AiAssist } from '../ui/AiAssist';
 import { BrewerChat } from '../ui/BrewerChat';
+import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import { RecipeImportSheet, ImportedRecipe } from '../ui/RecipeImportSheet';
 import { BrewSheet } from '../ui/BrewSheet';
 import { RecipeAutoComplete } from '../ui/RecipeAutoComplete';
@@ -406,7 +407,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     config.waterSources?.[0] ??
     DEFAULT_WATER_SOURCE;
 
-  const [water, setWater] = useState<WaterState>(() => ({
+  const [waterDraft, setWater] = useState<WaterState>(() => ({
+    roLimitL: base?.waterPlan?.roLimitL,
+    autoTreatment: base?.waterPlan?.autoTreatment,
+    saltOverrides: base?.waterPlan?.saltOverrides,
+    ratioOverride: base?.waterPlan?.ratioOverride,
     diRatioPct: base?.waterPlan?.diRatioPct ?? base?.water?.diRatioPct ?? 50,
     // Absent = le rinçage suit l'empâtage. On ne le recopie surtout pas : la
     // valeur `undefined` porte l'information « lié ».
@@ -437,6 +442,26 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     mashPh: base?.waterPlan?.measuredPh,
     spargePh: base?.waterPlan?.measuredSpargePh
   }));
+  const automaticWater = useMemo(() => {
+    const state = constrainRo(waterDraft);
+    if (!state.autoTreatment || state.mashWaterL <= 0) return { water: state, error: '' };
+    try {
+      const { plan } = replanRecipeWater({
+        style, volumeL, fermentables, hops, boilMin,
+        efficiencyPct: details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75,
+        waterPlan: { ...state, sourceId: waterSource.id, sourceSnapshot: waterSource,
+          targetProfileId: state.styleCode, targetIons: state.customTarget?.ions,
+          targetName: state.customTarget?.name, targetPh: details.waterPlan?.targetPh ?? 5.4,
+          ...splitDoses(state.doses, state.mashWaterL, state.spargeWaterL, state.allSaltsInMash !== false),
+          acid: { id: state.acidId, mash: 0, sparge: 0 } }
+      });
+      return { water: { ...state, doses: mergeDoses(plan.mash, plan.sparge),
+        saltSplit: { mash: plan.mash, sparge: plan.sparge } }, error: '' };
+    } catch (e) {
+      return { water: state, error: (e as Error).message };
+    }
+  }, [waterDraft, waterSource, name, style, volumeL, fermentables, hops, boilMin, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
+  const water = automaticWater.water;
 
   // Follow the beer style until an explicit water profile is chosen. Saved
   // profiles (including the neutral profile) and numeric targets stay intentional.
@@ -620,7 +645,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       spargeWaterL: water.spargeWaterL,
       diRatioPct: water.diRatioPct,
       spargeDiRatioPct: spargeDi,
-      spargeLinked: water.spargeDiRatioPct === undefined,
+      spargeLinked: water.spargeDiRatioPct == null,
       allSaltsInMash,
       /* Les litres d'osmosée à préparer, eau par eau. C'est la donnée qu'on
          emporte au bidon — le pourcentage ne se verse pas. */
@@ -655,6 +680,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   /** Une saisie manuelle de volume fige les volumes : le grain ne les pilote plus. */
   const onWaterChange = (next: WaterState) => {
+    if (water.autoTreatment && next.autoTreatment === false) {
+      next = { ...next, acidOverride: { mash: waterAcid.mash, sparge: waterAcid.sparge } };
+    }
     if (next.styleCode !== water.styleCode || next.customTarget !== water.customTarget) {
       waterProfileAuto.current = false;
     }
@@ -899,8 +927,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       if (spargeL != null) next.spargeWaterL = spargeL;
       else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
       if (plan) {
+        if (r.complete || plan.roLimitL != null) next.roLimitL = plan.roLimitL;
+        if (r.complete || plan.autoTreatment != null) next.autoTreatment = plan.autoTreatment;
+        if (r.complete || plan.saltOverrides != null) next.saltOverrides = plan.saltOverrides;
+        if (r.complete || plan.ratioOverride != null) next.ratioOverride = plan.ratioOverride;
         if (plan.diRatioPct != null) next.diRatioPct = plan.diRatioPct;
-        if (plan.spargeDiRatioPct != null || r.complete) next.spargeDiRatioPct = plan.spargeDiRatioPct;
+        if (plan.spargeDiRatioPct != null || r.complete) next.spargeDiRatioPct = plan.spargeDiRatioPct ?? undefined;
         if (plan.targetProfileId != null) next.styleCode = plan.targetProfileId;
         if (plan.allSaltsInMash != null) next.allSaltsInMash = plan.allSaltsInMash;
         else if (plan.sparge && Object.values(plan.sparge).some(g => g > 0)) next.allSaltsInMash = false;
@@ -1008,6 +1040,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       spargeType
     },
     waterPlan: {
+      roLimitL: water.roLimitL,
+      autoTreatment: water.autoTreatment,
+      saltOverrides: water.saltOverrides,
+      ratioOverride: water.ratioOverride,
       sourceId: waterSource.id,
       sourceSnapshot: { ...waterSource },
       treatmentVersion: 2,
@@ -2106,6 +2142,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {/* ---------------------------------------------------- ÉTAPE 6 */}
       {step === 'eau' && (
         <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
+          {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
           <SaltSolver
             source={waterSource}
             onSourceChange={(source) => {

@@ -482,7 +482,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
            * jamais : la fiche affichait « personnalisé » sur toutes les
            * recettes. C'est `styleByCode` qui connaît ces codes.
            */
-          hint={`${recipe.waterPlan.diRatioPct} % d’osmosée · ${
+          hint={`${Number(recipe.waterPlan.diRatioPct.toFixed(2))} % d’osmosée · ${
             recipe.waterPlan.targetIons
               ? recipe.waterPlan.targetName ?? 'cible de la recette'
               : styleByCode(recipe.waterPlan.targetProfileId).name
@@ -496,7 +496,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 <div className="reading text-base">{recipe.waterPlan.mashWaterL} L</div>
                 {((recipe.waterPlan.diRatioPct ?? 0) > 0) && (
                   <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                    {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({recipe.waterPlan.diRatioPct} %)
+                    {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({Number(recipe.waterPlan.diRatioPct.toFixed(2))} %)
                   </div>
                 )}
               </div>
@@ -511,7 +511,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     const reseauL = Math.round((recipe.waterPlan.spargeWaterL - osmoseeL) * 10) / 10;
                     return (
                       <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                        {reseauL} L réseau · {osmoseeL} L osmosée ({spargeDi} %)
+                        {reseauL} L réseau · {osmoseeL} L osmosée ({Number(spargeDi.toFixed(2))} %)
                       </div>
                     );
                   })()

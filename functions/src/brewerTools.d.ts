@@ -11,3 +11,5 @@ export declare function runBrewerTool(
 ): Omit<BrewerEvidence, 'id'>;
 export declare function normalizeRecipe(recipe: any): any;
 export declare function refreshCompanionRecipe(recipe: any): any;
+export declare function reconcileRecipeWater(recipe: any, paths: string[], sources?: any[]): any;
+export declare function waterRelatedPath(path: string): boolean;

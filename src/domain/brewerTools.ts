@@ -19,6 +19,8 @@ import { saccharificationTemp } from './brewPrograms';
 export { normalizeRecipe } from './recipeSnapshot';
 export { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { refreshCompanionRecipe } from './brewerRecipeRefresh';
+export { reconcileRecipeWater, waterRelatedPath } from './recipeWater';
+import { replanRecipeWater, recipeWaterSummary } from './recipeWater';
 import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
@@ -76,6 +78,11 @@ export const brewerToolDeclarations = [
       evaporationLh: num('Évaporation chaude observée en L/h, facultatif')
     },
     ['minutes']
+  ),
+  tool(
+    'plan_recipe_water',
+    'Recalculer ensemble osmosée/réseau, sels et acides de la recette. availableRoL est le stock MAXIMUM total (ex 10 L), pas 10 L dans chaque cuve. Préserve les volumes de brassage et les doses manuelles. Pour appliquer, propose uniquement waterPlan.roLimitL et les autres ENTRÉES voulues : propose_changes ajoute les dépendances automatiquement. Ne recopier ni les pourcentages ni les doses calculées. Avant préparation seulement ; ne remplace pas des sels déjà versés.',
+    { availableRoL: num('Litres d’osmosée disponibles au total ; facultatif') }
   ),
   tool(
     'simulate_water',
@@ -198,6 +205,35 @@ export function runBrewerTool(
     throw new Error(
       'Recette manquante pour ce lot : demander les données utiles sans les inventer.'
     );
+  if (name === 'plan_recipe_water') {
+    if (!r.waterPlan) throw Error('Plan d’eau manquant.');
+    if (
+      c.journal?.startedAt ||
+      Object.values(c.journal?.additions ?? {}).some((v: any) => v.doneAt)
+    )
+      throw Error(
+        'Brassage commencé : utiliser simulate_water pour les quantités réelles et les ajouts déjà versés.'
+      );
+    const recipe = { ...structuredClone(r), id: 'simulation' };
+    if (a.availableRoL != null) recipe.waterPlan.roLimitL = number(a, 'availableRoL', 0, 1000);
+    if (!recipe.waterPlan.sourceSnapshot)
+      recipe.waterPlan.sourceSnapshot = c.waterSources.find(
+        (s) => s.id === recipe.waterPlan.sourceId
+      );
+    const { plan, warnings } = replanRecipeWater(recipe);
+    recipe.waterPlan = plan;
+    return result(
+      'Eau · plan complet recalculé',
+      { plan, ...recipeWaterSummary(recipe) },
+      [
+        'Volumes totaux conservés, osmosée limitée au stock indiqué, sels et acides recalculés par le solveur.'
+      ],
+      [
+        ...warnings,
+        'Prévision avant traitement. Le pH estimé n’est pas une mesure ; contrôler sur échantillon refroidi.'
+      ]
+    );
+  }
   if (name === 'calculate_recipe') {
     const rig = r.brewhouse ?? c.equipment;
     const volumeL = number(a, 'volumeL', 0.1, 500, r.volumeL);
@@ -280,6 +316,7 @@ export function runBrewerTool(
         ibu,
         color,
         water,
+        waterSummary: recipeWaterSummary(recipe),
         equipment,
         recommendedWater,
         ingredients: { fermentables: recipe.fermentables, hops: recipe.hops, yeast: recipe.yeast },
@@ -296,7 +333,7 @@ export function runBrewerTool(
       ],
       [
         'Valeurs prévisionnelles, pas des relevés. Limite utile de cuve provisoire si workingVolumeConfirmed=false.',
-        'recommendedWater est un calcul de besoin, pas une quantité déjà saisie ou versée. Les sels et acides restent aux doses saisies : leur adéquation et le pH doivent être revus si les volumes changent, sans dosage improvisé.',
+        'recommendedWater est un calcul de besoin, pas une quantité déjà saisie ou versée. Le preview reflète les doses proposées ; propose_changes recalcule le traitement si les entrées d’eau changent ou si autoTreatment est actif.',
         ...(scaled
           ? [
               'Ce scénario redimensionne les ingrédients et l’eau ensemble ; aucune modification du formulaire.'

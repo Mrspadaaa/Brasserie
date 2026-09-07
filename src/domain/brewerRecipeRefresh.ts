@@ -9,6 +9,13 @@ export function refreshCompanionRecipe(recipe: Recipe): Recipe {
   next.totalGristKg = (next.fermentables ?? [])
     .filter((f) => f.kind === 'grain')
     .reduce((sum, f) => sum + f.weightKg, 0);
+  next.fermentables = (next.fermentables ?? []).map((f) =>
+    f.kind === 'grain'
+      ? { ...f, pct: next.totalGristKg > 0 ? (f.weightKg / next.totalGristKg) * 100 : 0 }
+      : f
+  );
+  if (p && next.totalGristKg > 0 && next.mash)
+    next.mash.ratioLPerKg = p.mashWaterL / next.totalGristKg;
   if (p && rig) {
     next.preBoilL =
       Math.round(

@@ -79,6 +79,8 @@ export interface BrewerFieldChange {
   value: any;
   reason: string;
   unit?: string;
+  /** Coupled physical changes must be approved or dismissed together. */
+  group?: string;
 }
 export interface BrewerProposal {
   target: 'recipe' | 'journal' | 'batch';
