@@ -1146,6 +1146,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       update={update}
                       onMeasure={requestMeasure}
                       stock={stockItems}
+                      brewhouse={config.brewhouses.find(b=>b.id===config.activeBrewhouseId)??recipe.brewhouse}
                     />
                     {due.length > 0 && !staleTimer && (
                       <aside role="status" className="brew-due-alert">

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Calculator, ChevronDown, Sparkles, Thermometer } from 'lucide-react';
-import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem } from '../types';
+import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem, BrewhouseProfile } from '../types';
+import { BrewEquipmentSummary } from './BrewEquipmentSummary';
 import { ReadingKind } from '../domain/brewDay';
 import {
   actualWater,
@@ -76,7 +77,8 @@ export function BrewAssist({
   now,
   update,
   onMeasure,
-  stock = []
+  stock = [],
+  brewhouse
 }: {
   recipe: RecipeSnapshot;
   state: BrewDayState;
@@ -85,6 +87,7 @@ export function BrewAssist({
   update: BrewUpdate;
   onMeasure: (kind: ReadingKind) => void;
   stock?: StockItem[];
+  brewhouse?: BrewhouseProfile;
 }) {
   const boil = isBoilStep(step) || step.id === 'preboil' || step.id === 'fwh';
   const cooling = ['refroidissement', 'whirlpool', 'ensemencement'].includes(step.id);
@@ -112,7 +115,9 @@ export function BrewAssist({
     hop ? elapsedOf(hop.id) : undefined,
     hopId
   );
-  const [evap, setEvap] = useScenarioValue<number | undefined>(state.boilOffLPerHour);
+  const [evap, setEvap] = useScenarioValue<number | undefined>(
+    state.boilOffLPerHour ?? recipe.brewhouse?.equipment?.boilOffLPerHour
+  );
   const [coolant, setCoolant] = useScenarioValue<number | undefined>(state.coolingWaterC);
   const [notice, setNotice] = useState('');
   const [question, setQuestion] = useState('');
@@ -165,6 +170,7 @@ export function BrewAssist({
           recipe,
           currentStep: step,
           journal: state,
+          equipment: brewhouse?.equipment ?? recipe.brewhouse?.equipment,
           simulation: {
             water: water ? w : undefined,
             boil: boil ? simulation : undefined,
@@ -246,6 +252,7 @@ export function BrewAssist({
         </span>
       </summary>
       <div className="brew-assist-body">
+        <BrewEquipmentSummary recipe={recipe} profile={brewhouse} state={state} stepId={step.id} />
         {water && (
           <section aria-label="Ajuster la coupe d’eau">
             <h3>La bonne eau, avec ce que tu as</h3>
@@ -485,7 +492,11 @@ export function BrewAssist({
                 max={480}
               />
               <NumberField
-                label="Évaporation mesurée (L/h)"
+                label={
+                  recipe.brewhouse?.equipment
+                    ? 'Évaporation à chaud (L/h)'
+                    : 'Évaporation mesurée (L/h)'
+                }
                 value={evap}
                 set={setEvap}
                 min={0}

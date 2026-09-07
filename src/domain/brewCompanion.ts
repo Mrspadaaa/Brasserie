@@ -207,7 +207,7 @@ export function brewIngredients(recipe: RecipeSnapshot): BrewIngredient[] {
 }
 export const actualAmount = (i: BrewIngredient, s: BrewDayState) =>
   s.additions?.[i.id]?.amount ?? i.planned;
-export function effectiveFermentables(recipe: RecipeSnapshot, state: BrewDayState): Fermentable[] {
+export function effectiveFermentables(recipe: Pick<RecipeSnapshot,'fermentables'>, state: BrewDayState): Fermentable[] {
   return (recipe.fermentables ?? []).map((f, i) => {
     const actual = state.additions?.[`grain-${i}`];
     return {

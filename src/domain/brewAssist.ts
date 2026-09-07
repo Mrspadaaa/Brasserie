@@ -2,13 +2,14 @@ import { BrewDayState, BrewDayStep, RecipeSnapshot, WaterIons } from '../types';
 import { BrewingMath } from '../services/brewingMath';
 import { boilMinutes, brewBitterness, effectiveFermentables } from './brewCompanion';
 import { ionsFromSalts, addIons, ionsAfterAcid } from './water';
+import { equipmentErrors } from './brewEquipment';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const median = (values: number[]) =>
   [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
 export const round = (n: number, digits = 1) => Number(n.toFixed(digits));
 
-export function actualWater(recipe: RecipeSnapshot, state: BrewDayState, side: 'mash' | 'sparge') {
+export function actualWater(recipe: Pick<RecipeSnapshot,'waterPlan'>, state: BrewDayState, side: 'mash' | 'sparge') {
   const p = recipe.waterPlan;
   const litres =
     state.additions?.[`water-${side}`]?.amount ??
@@ -353,11 +354,13 @@ export function boilScenario(
   const extract = volume
     ? laterExtract(recipe, state, Math.min(volume.volume.at, volume.gravity.at))
     : { pointsLitres: null, names: [] };
-  const rate = evaporationLh ?? state.boilOffLPerHour;
+  const equipment=recipe.brewhouse?.equipment && !equipmentErrors(recipe.brewhouse.equipment).length ? recipe.brewhouse.equipment : undefined;
+  const rate = evaporationLh ?? state.boilOffLPerHour ?? equipment?.boilOffLPerHour;
+  const coldFactor=equipment ? 1-equipment.coolingShrinkagePct/100 : 1;
   const extraEvapL =
-    finite(rate) && rate >= 0 ? (rate * (minutes - (recipe.boilMin ?? 60))) / 60 : null;
+    finite(rate) && rate >= 0 ? (rate * coldFactor * (minutes - (recipe.boilMin ?? 60))) / 60 : null;
   const finalL =
-    volume && finite(rate) && rate >= 0 ? volume.volume.value - (rate * minutes) / 60 : null;
+    volume && finite(rate) && rate >= 0 ? volume.volume.value - (rate * coldFactor * minutes) / 60 : null;
   const finalOg =
     volume && finalL && finalL > 0 && extract.pointsLitres != null
       ? 1 +
@@ -435,9 +438,10 @@ export function wortRescue(
   if (extract.pointsLitres == null) return null;
   const pointsLitres = pair.volume.value * (pair.gravity.value - 1) * 1000 + extract.pointsLitres;
   const targetL = pointsLitres / ((targetOg - 1) * 1000);
+  const rate=state.boilOffLPerHour??recipe?.brewhouse?.equipment?.boilOffLPerHour;
   const evaporationL =
-    preboil && state.boilOffLPerHour != null && recipe
-      ? (state.boilOffLPerHour * boilMinutes(state, recipe)) / 60
+    preboil && rate != null && recipe
+      ? (rate * (1-(recipe.brewhouse?.equipment?.coolingShrinkagePct??0)/100) * boilMinutes(state, recipe)) / 60
       : null;
   const actionDeltaL = preboil
     ? evaporationL == null

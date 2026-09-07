@@ -17,7 +17,7 @@ interface TreatmentInput {
   acidOverride?: { mash?: number; sparge?: number };
 }
 
-function averageWater(
+export function averageWater(
   mash: WaterIons,
   sparge: WaterIons,
   mashL: number,

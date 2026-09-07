@@ -393,6 +393,10 @@ export interface Recipe {
   colorEbc?: number;
   efficiencyPct?: number;
   preBoilL?: number;
+  /** Same planned wort at boiling temperature, when the equipment model is known. */
+  preBoilHotL?: number;
+  /** Frozen physical assumptions used to build this recipe. */
+  brewhouse?: BrewhouseProfile;
   /**
    * Tout ce qui apporte du sucre : grains, sucres, lactose, fruits, extraits.
    * Le nom a changé de `malts` parce qu'un malt n'est pas un sucre — et que
@@ -637,6 +641,23 @@ export interface BudgetLine {
   realiseYTD: number;
 }
 
+export interface BrewingEquipment {
+  kettleCapacityL: number;
+  /** Working volume including hot water and grain, below the rim. */
+  kettleWorkingL: number;
+  workingVolumeConfirmed?: boolean;
+  spargeCapacityL: number;
+  fermenterCapacityL: number;
+  /** Percentage of the TOTAL vessel reserved for krausen. */
+  fermenterHeadspacePct: number;
+  roPackL: number;
+  boilOffLPerHour: number;
+  grainAbsorptionLPerKg: number;
+  grainDisplacementLPerKg: number;
+  coolingShrinkagePct: number;
+  heatingRateCPerMin: number;
+}
+
 export interface BrewhouseProfile {
   id: string;
   name: string;
@@ -645,6 +666,7 @@ export interface BrewhouseProfile {
   boilOffRatePct: number; // e.g. 10%/hr
   deadSpaceL: number;
   mashRatioLPerKg: number; // e.g. 3.0 L/kg
+  equipment?: BrewingEquipment;
 }
 
 export interface AppConfig {

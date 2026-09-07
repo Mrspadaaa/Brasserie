@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { COMPANY_FALLBACK } from '../domain/companyDefaults';
 import { NumberInput } from '../ui/NumberInput';
 import { 
@@ -18,6 +18,8 @@ import { StorageService } from '../services/storage';
 import { DriveService } from '../services/driveService';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
+import { BrewhouseSettings } from '../ui/BrewhouseSettings';
+import { equipmentErrors } from '../domain/brewEquipment';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -37,10 +39,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [activeTab, setActiveTab] = useState<'fiscal' | 'brewhouse' | 'security' | 'backup'>('fiscal');
   const [formData, setFormData] = useState<AppConfig>(config);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  useEffect(()=>{if(isOpen){setFormData(config);setSavedSuccess(false);}},[isOpen]);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
+    if (formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)) return;
     StorageService.saveConfig(formData);
     onConfigUpdated(formData);
     setSavedSuccess(true);
@@ -288,7 +292,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {activeTab === 'brewhouse' && (
           <div className="space-y-3">
             <p className="text-cave-400 text-xs sm:text-sm">
-              Système actif actuel : <strong>Système 30L</strong>.
+              Système actif : <strong>{formData.brewhouses.find(b=>b.id===formData.activeBrewhouseId)?.name}</strong>.
             </p>
 
             {formData.brewhouses.map((bh) => (
@@ -296,7 +300,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-cave-50">{bh.name}</span>
                   <span className="text-footnote bg-ebc-straw/20 text-ebc-gold font-semibold px-2 py-0.5 rounded-full font-mono">
-                    {bh.volumeL} Litres
+                    {bh.volumeL} L visés
                   </span>
                 </div>
 
@@ -307,13 +311,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </div>
                   <div className="bg-cave-900/60 p-2 rounded-xl">
                     <span className="text-cave-400">Évaporation</span>
-                    <div className="font-bold text-cave-200">{bh.boilOffRatePct}%/h</div>
+                    <div className="font-bold text-cave-200">{bh.equipment ? `${bh.equipment.boilOffLPerHour} L/h` : `${bh.boilOffRatePct}%/h`}</div>
                   </div>
                   <div className="bg-cave-900/60 p-2 rounded-xl">
-                    <span className="text-cave-400">Faux-fond</span>
+                    <span className="text-cave-400">Pertes cuve</span>
                     <div className="font-bold text-cave-200">{bh.deadSpaceL} L</div>
                   </div>
                 </div>
+
+                {bh.id===formData.activeBrewhouseId&&<BrewhouseSettings profile={bh} onChange={next=>setFormData(f=>({...f,brewhouses:f.brewhouses.map(b=>b.id===next.id?next:b)}))}/>}
               </div>
             ))}
           </div>
@@ -419,6 +425,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <button
           type="button"
           onClick={handleSave}
+          disabled={formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)}
           className="px-5 py-2.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-bold text-sm rounded-xl shadow-lg transition flex items-center ml-auto"
         >
           {savedSuccess ? <Check className="w-4 h-4 mr-1.5" /> : <Save className="w-4 h-4 mr-1.5" />}
@@ -428,4 +435,3 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     </ModalShell>
   );
 };
-

@@ -193,7 +193,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: 'preboil',
       label: 'Contrôle avant ébullition',
-      detail: `Environ ${preBoilL} L collectés. Relève le volume et la densité : c’est ici qu’un rinçage court ou un rendement bas se rattrape encore.`,
+      detail: `Environ ${preBoilL} L ${recipe.preBoilHotL != null ? `à froid, soit ≈ ${recipe.preBoilHotL} L à ébullition` : 'collectés'}. Relève le volume et la densité : c’est ici qu’un rinçage court ou un rendement bas se rattrape encore.`,
       durationMin: 0
     });
   }

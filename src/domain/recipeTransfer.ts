@@ -64,6 +64,13 @@ export const recipeFields = {
   colorEbc: n('Couleur annoncée (EBC)'),
   efficiencyPct: pct('Rendement (%)'),
   preBoilL: n('Volume avant ébullition (L)'),
+  preBoilHotL: n('Volume avant ébullition à chaud (L)'),
+  brewhouse: o('Matériel du plan', {
+    id:t('Identifiant matériel'),name:t('Nom matériel'),volumeL:n('Volume visé (L)'),efficiencyPct:pct('Rendement matériel (%)'),boilOffRatePct:pct('Ancien débit (%/h)'),deadSpaceL:n('Pertes fond de cuve (L)'),mashRatioLPerKg:n('Épaisseur de maische (L/kg)'),
+    equipment:o('Capacités et calibration',{
+      kettleCapacityL:n('Cuve totale (L)'),kettleWorkingL:n('Cuve utile à chaud (L)'),workingVolumeConfirmed:b('Limite vérifiée'),spargeCapacityL:n('Sparger (L)'),fermenterCapacityL:n('Fermenteur total (L)'),fermenterHeadspacePct:pct('Marge de mousse (%)'),roPackL:n('Pack osmosée (L)'),boilOffLPerHour:n('Évaporation à chaud (L/h)'),grainAbsorptionLPerKg:n('Absorption (L/kg)'),grainDisplacementLPerKg:n('Déplacement grain (L/kg)'),coolingShrinkagePct:pct('Rétraction (%)'),heatingRateCPerMin:n('Chauffe (°C/min)')
+    })
+  }),
   carboTarget: t('Carbonatation'),
   boilMin: n('Ébullition (min)'),
   totalGristKg: n('Grain total (kg)'),

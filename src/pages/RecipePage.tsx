@@ -71,6 +71,8 @@ const Metric: React.FC<{
   </div>
 );
 
+import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
+
 export const RecipePage: React.FC<RecipePageProps> = ({
   recipe,
   batches,
@@ -484,6 +486,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           }`}
         >
           <div className="space-y-3">
+            <BrewEquipmentSummary recipe={recipe} profile={brewhouse}/>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-500">Empâtage</div>
