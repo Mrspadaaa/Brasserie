@@ -19,7 +19,12 @@ try {
     let checks = 0,
       latest;
     page.on('pageerror', (e) => errors.push(e.message));
-    await page.setViewport({ width, height: 844, isMobile: true, hasTouch: true });
+    await page.setViewport({
+      width,
+      height: 844,
+      isMobile: true,
+      hasTouch: true
+    });
     await page.setRequestInterception(true);
     page.on('request', async (req) => {
       if (!/\/(askBrewer|getBrewerConversation)$/.test(req.url())) return req.continue();
@@ -60,9 +65,9 @@ try {
             operationId: latest.operationId,
             question: latest.question,
             mode: latest.mode,
-            model: latest.mode === 'deep' ? 'gemini-3.1-pro-preview' : 'gemini-3.8-flash',
-            reviewModel: latest.mode === 'deep' ? 'gemini-3.1-pro-preview' : 'gemini-3.8-flash',
-            reviewReason: latest.mode === 'deep' ? 'requested' : 'fast',
+            model: 'gemini-3.1-pro-preview',
+            reviewModel: 'gemini-3.1-pro-preview',
+            reviewReason: latest.mode === 'deep' ? 'requested' : 'research',
             reviewed: true,
             createdAt: Date.now(),
             contextLabel: 'Stout de contrôle · Recette',
@@ -80,6 +85,7 @@ try {
               {
                 id: 'E1',
                 name: 'find_brewing_suppliers',
+                model: 'gemini-3.1-pro-preview',
                 label: 'Fournisseurs suisses',
                 facts: ['Disponibilité de contrôle simulée pour cette capture.'],
                 limits: ['Les contrôles serveur réels sont séparés.'],
@@ -114,7 +120,11 @@ try {
             ]
           }
         };
-      await req.respond({ status: 200, headers, body: JSON.stringify({ data: result }) });
+      await req.respond({
+        status: 200,
+        headers,
+        body: JSON.stringify({ data: result })
+      });
     });
     await page.goto('http://127.0.0.1:3007/?preview=brew&view=brassage', {
       waitUntil: 'networkidle0'
@@ -160,7 +170,12 @@ try {
     assert.ok(dimensions.links.every((h) => h >= 44));
     assert.ok(!dimensions.error);
     report.push({ width, recovery: true, ...dimensions });
-    await page.setViewport({ width, height: 480, isMobile: true, hasTouch: true });
+    await page.setViewport({
+      width,
+      height: 480,
+      isMobile: true,
+      hasTouch: true
+    });
     await page.screenshot({ path: resolve(out, `compact-${width}.png`) });
     dimensions = await measure();
     assert.ok(dimensions.composerBottom <= dimensions.height + 1);

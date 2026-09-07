@@ -15,7 +15,12 @@ const context = (): BrewerContext => ({
   inventory: [],
   material: [],
   waterSources: [],
-  equipment: { id: 'test', volumeL: 24, efficiencyPct: 75, equipment: practicalEquipment }
+  equipment: {
+    id: 'test',
+    volumeL: 24,
+    efficiencyPct: 75,
+    equipment: practicalEquipment
+  }
 });
 const advice = {
   level: 'info',
@@ -28,7 +33,12 @@ const advice = {
 };
 const done = (a = advice) => ({
   candidates: [
-    { content: { role: 'model', parts: [{ functionCall: { name: 'finish_advice', args: a } }] } }
+    {
+      content: {
+        role: 'model',
+        parts: [{ functionCall: { name: 'finish_advice', args: a } }]
+      }
+    }
   ]
 });
 const json = (v: unknown) => ({
@@ -102,7 +112,13 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       (
         runBrewerTool(
           'check_ph',
-          { ph: 5.8, reliable: true, roomTemp: true, acid: 'phosphorique', concentrationPct: 10 },
+          {
+            ph: 5.8,
+            reliable: true,
+            roomTemp: true,
+            acid: 'phosphorique',
+            concentrationPct: 10
+          },
           context()
         ).data as any
       ).correction
@@ -111,7 +127,13 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       (
         runBrewerTool(
           'check_ph',
-          { ph: 5.8, reliable: true, roomTemp: true, acid: 'phosphorique', concentrationPct: 75 },
+          {
+            ph: 5.8,
+            reliable: true,
+            roomTemp: true,
+            acid: 'phosphorique',
+            concentrationPct: 75
+          },
           context()
         ).data as any
       ).correction.amount
@@ -122,7 +144,13 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     c.phase = 'fermentation';
     const result = runBrewerTool(
       'check_ph',
-      { ph: 4.2, reliable: true, roomTemp: true, acid: 'lactique', concentrationPct: 80 },
+      {
+        ph: 4.2,
+        reliable: true,
+        roomTemp: true,
+        acid: 'lactique',
+        concentrationPct: 80
+      },
       c
     );
     expect((result.data as any).low).toBeUndefined();
@@ -173,7 +201,9 @@ describe('Validation serveur et relecture indépendante', () => {
     };
     const call = vi
       .fn()
-      .mockResolvedValueOnce({ candidates: [{ content: { role: 'model', parts: [part] } }] })
+      .mockResolvedValueOnce({
+        candidates: [{ content: { role: 'model', parts: [part] } }]
+      })
       .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
       .mockResolvedValueOnce(json({ approved: true, issues: [] }));
     const result = await runBrewerHarness(context(), '28L67à80°C1000W', [], call);
@@ -194,6 +224,7 @@ describe('Validation serveur et relecture indépendante', () => {
     const result = await runBrewerHarness(context(), 'Question', [], call);
     expect(result.advice.action).toBe('Mesure le volume réel.');
     expect(call).toHaveBeenCalledTimes(4);
+    expect(call.mock.calls[2][0]).toBe('gemini-3.1-pro-preview');
     expect(call.mock.calls[3][0]).toBe('gemini-3.1-pro-preview');
     expect(result.reviewReason).toBe('repair');
   });
@@ -202,12 +233,175 @@ describe('Validation serveur et relecture indépendante', () => {
       .fn()
       .mockResolvedValueOnce(done())
       .mockResolvedValueOnce(json({ approved: true, issues: [] }));
-    const result = await runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' });
+    const result = await runBrewerHarness(context(), 'Question', [], call, {
+      mode: 'deep'
+    });
     expect(call.mock.calls.map((c) => c[0])).toEqual([
       'gemini-3.1-pro-preview',
       'gemini-3.1-pro-preview'
     ]);
     expect(result.reviewReason).toBe('requested');
+  });
+  it('laisse Flash choisir Pro après un calcul, en transférant les résultats sans signatures étrangères', async () => {
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  thoughtSignature: 'flash-calculation-signature',
+                  functionCall: {
+                    name: 'heating_power',
+                    args: { volumeL: 28, fromC: 67, targetC: 80, watts: 1000 }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      })
+      .mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  thoughtSignature: 'flash-routing-signature',
+                  functionCall: {
+                    name: 'request_deep_analysis',
+                    args: { reason: 'arbitrage_recette' }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      })
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+      .mockResolvedValueOnce(json({ approved: true, issues: [] }));
+    const result = await runBrewerHarness(
+      context(),
+      'Quels compromis pour mon empâtage ?',
+      [],
+      call
+    );
+    expect(call.mock.calls.map((c) => c[0])).toEqual([
+      'gemini-3.8-flash',
+      'gemini-3.8-flash',
+      'gemini-3.1-pro-preview',
+      'gemini-3.1-pro-preview'
+    ]);
+    const handoff = call.mock.calls[2][1].contents[0].parts[0].text;
+    expect(handoff).toContain('Quels compromis');
+    expect(handoff).toContain('heating_power');
+    expect(handoff).toContain('E1');
+    expect(handoff).not.toContain('signature');
+    expect(result.reviewReason).toBe('complexity');
+    expect(result.trace.some((t) => t.name === 'request_deep_analysis')).toBe(true);
+    expect(
+      call.mock.calls[2][1].tools[0].functionDeclarations.some(
+        (t: any) => t.name === 'request_deep_analysis'
+      )
+    ).toBe(false);
+  });
+  it.each(['lookup_brewing_reference', 'find_brewing_suppliers'])(
+    'utilise Pro pour %s, puis sa synthèse et sa relecture',
+    async (name) => {
+      const call = vi
+        .fn()
+        .mockResolvedValueOnce({
+          candidates: [
+            {
+              content: {
+                role: 'model',
+                parts: [
+                  {
+                    thoughtSignature: 'flash-web-signature',
+                    functionCall: {
+                      name,
+                      args: { query: 'Malt Pale Ale Suisse' }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        })
+        .mockResolvedValueOnce({
+          candidates: [
+            {
+              content: {
+                role: 'model',
+                parts: [{ text: 'Fiche documentaire.' }]
+              },
+              groundingMetadata: {
+                groundingChunks: [
+                  {
+                    web: {
+                      title: 'Document',
+                      uri: 'https://example.invalid/document'
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        })
+        .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+        .mockResolvedValueOnce(json({ approved: true, issues: [] }));
+      const result = await runBrewerHarness(context(), 'Cherche une référence', [], call);
+      expect(call.mock.calls.map((c) => c[0])).toEqual([
+        'gemini-3.8-flash',
+        'gemini-3.1-pro-preview',
+        'gemini-3.1-pro-preview',
+        'gemini-3.1-pro-preview'
+      ]);
+      expect(call.mock.calls[1][1].tools).toEqual([{ googleSearch: {} }]);
+      expect(result.evidence[0].model).toBe('gemini-3.1-pro-preview');
+      expect(result.reviewReason).toBe('research');
+      expect(call.mock.calls[2][1].contents[0].parts[0].text).not.toContain('flash-web-signature');
+      expect(call.mock.calls[2][1].contents[0].parts[0].text).toContain('Fiche documentaire');
+    }
+  );
+  it('ne remplace pas Pro forcé par Flash ou Pro 2.5 lorsque le fournisseur échoue', async () => {
+    const call = vi.fn().mockRejectedValue(new Error('Gemini HTTP 503'));
+    await expect(
+      runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' })
+    ).rejects.toThrow(/3.1 Pro.*indisponible/);
+    expect(call.mock.calls.map((c) => c[0])).toEqual(['gemini-3.1-pro-preview']);
+  });
+  it('ne dégrade pas non plus une recherche web vers Flash en cas de panne de Pro', async () => {
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  functionCall: {
+                    name: 'lookup_brewing_reference',
+                    args: { query: 'Fiche levure' }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      })
+      .mockRejectedValueOnce(new Error('Gemini HTTP 503'));
+    await expect(runBrewerHarness(context(), 'Cherche la fiche', [], call)).rejects.toThrow(
+      /3.1 Pro.*indisponible/
+    );
+    expect(call.mock.calls.map((c) => c[0])).toEqual([
+      'gemini-3.8-flash',
+      'gemini-3.1-pro-preview'
+    ]);
   });
   it('renforce la relecture pour un geste urgent et transmet le contexte de la conversation au relecteur', async () => {
     const call = vi
@@ -215,7 +409,12 @@ describe('Validation serveur et relecture indépendante', () => {
       .mockResolvedValueOnce(done({ ...advice, level: 'urgent' }))
       .mockResolvedValueOnce(json({ approved: true, issues: [] }));
     const past = [
-      { question: 'Mon Maris Otter est épuisé', advice, createdAt: Date.now(), evidence: [] }
+      {
+        question: 'Mon Maris Otter est épuisé',
+        advice,
+        createdAt: Date.now(),
+        evidence: []
+      }
     ] as any;
     const result = await runBrewerHarness(context(), 'Une alternative ?', past, call);
     expect(call.mock.calls[1][0]).toBe('gemini-3.1-pro-preview');

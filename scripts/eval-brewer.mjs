@@ -15,7 +15,8 @@ async function worker() {
   while (next < selected.length) {
     const scenario = selected[next++],
       c = context(),
-      start = Date.now();
+      start = Date.now(),
+      modelCalls = [];
     if (scenario.phase) {
       c.phase = scenario.phase;
       c.batch = { status: scenario.phase, volumeL: 24, gravityLog: [] };
@@ -26,27 +27,60 @@ async function worker() {
         c,
         scenario.question,
         scenario.history ?? [],
-        geminiTransport(process.env.GEMINI_API_KEY),
+        async (model, body, signal) => {
+          const began = Date.now();
+          const response = await geminiTransport(process.env.GEMINI_API_KEY)(model, body, signal);
+          modelCalls.push({
+            model,
+            elapsedMs: Date.now() - began,
+            kind: body.tools?.[0]?.googleSearch
+              ? 'web'
+              : body.generationConfig?.responseSchema?.properties?.approved
+                ? 'review'
+                : 'analysis',
+            output: response.candidates?.[0]?.content?.parts
+              ?.filter((p) => !p.thought)
+              .map((p) => (p.functionCall ? { functionCall: p.functionCall } : { text: p.text }))
+          });
+          return response;
+        },
         { mode: process.env.BREWER_EVAL_MODE === 'deep' ? 'deep' : 'auto' }
       );
       await writeFile(
         `${output}/${scenario.id}.json`,
-        JSON.stringify({ scenario, ...result }, null, 2)
+        JSON.stringify({ scenario, modelCalls, ...result }, null, 2)
       );
       if (
         scenario.id === 'supplier-followup' &&
         !result.trace.some((t) => t.name === 'find_brewing_suppliers' && t.resultId)
       )
         throw Error('La demande de fournisseur doit déclencher une recherche réelle.');
+      if (
+        scenario.id === 'supplier-followup' &&
+        !result.evidence.some(
+          (e) => e.name === 'find_brewing_suppliers' && e.model === 'gemini-3.1-pro-preview'
+        )
+      )
+        throw Error('La recherche web doit être réalisée avec Gemini 3.1 Pro.');
+      if (
+        scenario.id === 'routing-complex' &&
+        !result.trace.some((t) => t.name === 'request_deep_analysis')
+      )
+        throw Error('Le compagnon doit juger cet arbitrage complexe et choisir Pro.');
       results.push({
         id: scenario.id,
         ok: true,
         elapsedMs: Date.now() - start,
         model: result.model,
         reviewModel: result.reviewModel,
+        reviewReason: result.reviewReason,
         tools: result.trace.map((t) => t.name)
       });
     } catch (e) {
+      await writeFile(
+        `${output}/${scenario.id}-failure.json`,
+        JSON.stringify({ scenario, error: e.message, modelCalls }, null, 2)
+      );
       results.push({ id: scenario.id, ok: false, error: e.message });
     }
     console.log(results.at(-1));

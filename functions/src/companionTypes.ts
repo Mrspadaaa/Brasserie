@@ -21,6 +21,7 @@ export interface BrewerEvidence {
   data: unknown;
   sources?: Array<{ title: string; url: string }>;
   products?: BrewerProduct[];
+  model?: string;
 }
 export interface BrewerProduct {
   name: string;
@@ -62,7 +63,7 @@ export interface BrewerTurn {
   model: string;
   reviewed: boolean;
   reviewModel?: string;
-  reviewReason?: 'fast' | 'requested' | 'sensitive' | 'repair';
+  reviewReason?: 'fast' | 'requested' | 'sensitive' | 'repair' | 'complexity' | 'research';
   mode?: 'auto' | 'deep';
   contextLabel: string;
 }

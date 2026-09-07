@@ -36,7 +36,14 @@ export const testRecipe = {
   steps: [],
   notes: [],
   fermentables: [
-    { name: 'Pale', kind: 'grain', use: 'empatage', weightKg: 6, colorEbc: 6, potentialPpg: 36 }
+    {
+      name: 'Pale',
+      kind: 'grain',
+      use: 'empatage',
+      weightKg: 6,
+      colorEbc: 6,
+      potentialPpg: 36
+    }
   ],
   hops: [
     { name: 'Cascade', stage: 'boil', weightG: 35, alpha: 6, timeMin: 60 },
@@ -53,7 +60,10 @@ export const testRecipe = {
     attenuationPct: 81
   },
   boilMin: 60,
-  mash: { steps: [{ name: 'Saccharification', tempC: 67, durationMin: 60 }], spargeType: 'batch' },
+  mash: {
+    steps: [{ name: 'Saccharification', tempC: 67, durationMin: 60 }],
+    spargeType: 'batch'
+  },
   brewhouse: equipment,
   waterPlan: {
     sourceId: 'test-water',
@@ -77,6 +87,13 @@ export const testRecipe = {
   }
 };
 export const cases = [
+  {
+    id: 'routing-complex',
+    question:
+      'Ma chauffe plafonne à 1000 W, je manque d’eau osmosée et je devrai faire un rinçage plus court. Je veux conserver du corps sans trop d’astringence. Comment hiérarchiser les compromis entre empâtage, rinçage, volume final et ébullition ? Donne-moi un plan cohérent avec mon matériel, sans inventer mes mesures.',
+    expect:
+      'Le compagnon choisit lui-même Pro pour cet arbitrage à plusieurs contraintes, puis utilise les calculateurs nécessaires.'
+  },
   {
     id: 'supplier-followup',
     question: 'Plus en stock chez mon fournisseur chercher une alternative.',

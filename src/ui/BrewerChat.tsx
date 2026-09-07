@@ -247,9 +247,7 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
                 <Sparkles size={14} />
                 <span>Analyse approfondie</span>
               </label>
-              <small>
-                {mode === 'deep' ? 'Gemini Pro · plus lent' : 'Rapide · Pro si nécessaire'}
-              </small>
+              <small>{mode === 'deep' ? 'Pro 3.1 · plus lent' : 'Auto · Pro selon besoin'}</small>
             </div>
             {pending && !busy && (
               <div className="brewer-chat-retry">
@@ -377,9 +375,13 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
                         ? ' · analyse approfondie demandée'
                         : t.reviewReason === 'sensitive'
                           ? ' · situation sensible'
-                          : t.reviewReason === 'repair'
-                            ? ' · vérification renforcée'
-                            : ' · rapide'}
+                          : t.reviewReason === 'research'
+                            ? ' · recherche web avec Pro'
+                            : t.reviewReason === 'complexity'
+                              ? ' · analyse approfondie choisie par le compagnon'
+                              : t.reviewReason === 'repair'
+                                ? ' · vérification renforcée'
+                                : ' · rapide'}
                       .
                     </p>
                   )}
@@ -390,6 +392,7 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
                         <Calculator size={14} />
                         {e.label}
                       </strong>
+                      {e.model && <small>Recherche : {e.model}</small>}
                       {e.facts.map((f, i) => (
                         <p key={i}>{f}</p>
                       ))}

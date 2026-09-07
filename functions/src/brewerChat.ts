@@ -4,7 +4,7 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { requireBrewer } from './brewSession.js';
 import { GEMINI_API_KEY } from './ai.js';
-import { geminiTransport, runBrewerHarness } from './brewerHarness.js';
+import { geminiTransport, runBrewerHarness, BrewerProUnavailableError } from './brewerHarness.js';
 import { normalizeRecipe } from './brewerTools.js';
 import {
   BATCH_FIELDS,
@@ -222,7 +222,7 @@ export const askBrewer = onCall(
           operationId: input.operationId,
           inputDigest: digest,
           question: input.question,
-          until: Date.now() + (input.mode === 'deep' ? 250000 : 180000)
+          until: Date.now() + 250000
         },
         updatedAt: Date.now()
       });
@@ -274,7 +274,12 @@ export const askBrewer = onCall(
           );
         if (!previousContext.exists) tx.create(contextRef, { id: contextId, context: snapshot });
         tx.create(turnRef, turn);
-        tx.set(lock, { uid, scope: input.scope, active: null, updatedAt: Date.now() });
+        tx.set(lock, {
+          uid,
+          scope: input.scope,
+          active: null,
+          updatedAt: Date.now()
+        });
       });
       logger.info('brewer-answer', {
         model: result.model,
@@ -303,6 +308,10 @@ export const askBrewer = onCall(
             : 'provider-or-format'
       });
       if (e instanceof HttpsError) throw e;
+      if (e instanceof BrewerProUnavailableError)
+        throw new HttpsError('unavailable', e.message, {
+          reason: 'pro-unavailable'
+        });
       throw new HttpsError(
         'unavailable',
         'Le conseil n’a pas pu être vérifié. Réessaie ; les calculateurs restent disponibles.'

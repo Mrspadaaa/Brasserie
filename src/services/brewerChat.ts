@@ -52,6 +52,8 @@ export const BrewerChat = {
   }
 };
 export function brewerChatError(error: unknown) {
+  if ((error as { details?: { reason?: string } })?.details?.reason === 'pro-unavailable')
+    return 'Gemini 3.1 Pro est momentanément indisponible. Ta question est conservée ; réessaie dans un instant.';
   const code = String((error as { code?: string })?.code ?? '');
   if (/unauthenticated|permission-denied/.test(code))
     return 'Connecte-toi à la brasserie pour discuter avec le compagnon.';
