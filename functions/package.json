@@ -7,7 +7,7 @@
     "node": "22"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node build-brewer-tools.mjs && tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "logs": "firebase functions:log"
   },

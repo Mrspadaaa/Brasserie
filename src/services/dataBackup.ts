@@ -24,6 +24,8 @@ export function restoreBackup(json: string): Promise<{ changed: number; journals
   if (import.meta.env.DEV && new URLSearchParams(location.search).has('dev-local')) {
     let changed = 0;
     for (const [name, rows] of Object.entries(backup.collections)) for (const row of rows ?? []) {
+      // Server-only AI history is restored by the callable, never through browser writes.
+      if (!(BUSINESS_COLLECTIONS as readonly string[]).includes(name)) continue;
       const col = name as BusinessCollection;
       if (IMMUTABLE_COLLECTIONS.has(col) && FirestoreRepo.all<any>(col).some(d => d.__docId === row.id)) continue;
       FirestoreRepo.put(col, row.id, row.data); changed++;

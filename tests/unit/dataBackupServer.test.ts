@@ -1,7 +1,7 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
 import { parseBackup } from '../../functions/src/backupCore';
-import { BUSINESS_COLLECTIONS } from '../../functions/src/dataSchema';
+import { BACKUP_COLLECTIONS } from '../../functions/src/dataSchema';
 import { sessionEvents } from '../../functions/src/brewSessionCore';
 
 const mock = vi.hoisted(() => ({
@@ -78,7 +78,9 @@ describe('Export et restauration serveur', () => {
     mock.docs.set('creativeItems/idea', { id: 'idea', title: 'À conserver' });
     const result = await exportBreweryData.run(request() as any);
     const b = parseBackup(result.json);
-    expect(Object.keys(b.collections)).toHaveLength(BUSINESS_COLLECTIONS.length);
+    expect(Object.keys(b.collections)).toHaveLength(BACKUP_COLLECTIONS.length);
+    expect(b.collections.brewerChats).toEqual([]);
+    expect(b.collections.brewerContexts).toEqual([]);
     expect(b.collections.auditLogs).toHaveLength(650);
     expect(b.collections.creativeItems![0].data.title).toBe('À conserver');
     expect(createHash('sha256').update(result.json).digest('hex')).toBe(result.sha256);

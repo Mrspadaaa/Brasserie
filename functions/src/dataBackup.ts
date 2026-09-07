@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { BUSINESS_COLLECTIONS, IMMUTABLE_COLLECTIONS, BusinessCollection } from './dataSchema.js';
+import { BACKUP_COLLECTIONS as BUSINESS_COLLECTIONS, IMMUTABLE_COLLECTIONS, BackupCollection as BusinessCollection } from './dataSchema.js';
 import { BreweryBackup, parseBackup, stableJson } from './backupCore.js';
 import { requireBrewer } from './brewSession.js';
 

@@ -59,6 +59,7 @@ import { IngredientPicker } from '../ui/IngredientPicker';
 import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
 import { AiAssist } from '../ui/AiAssist';
+import { BrewerChat } from '../ui/BrewerChat';
 import { RecipeImportSheet, ImportedRecipe } from '../ui/RecipeImportSheet';
 import { BrewSheet } from '../ui/BrewSheet';
 import { RecipeAutoComplete } from '../ui/RecipeAutoComplete';
@@ -319,6 +320,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   onSaveWaterSource
 }) => {
   const base = seed?.recipe;
+  const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
   const [details, setDetails] = useState<Partial<Recipe>>(base ?? {});
   const brewhouse =
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -968,7 +970,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   };
 
   const build = (): Recipe => ({
-    id: base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`,
+    id: draftRecipeId,
     version: base?.version,
     parentRecipeId: base?.parentRecipeId,
     name: name.trim(),
@@ -1214,6 +1216,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         </div>
       )}
 
+      <BrewerChat scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
       {step === 'identite' && (
         <>

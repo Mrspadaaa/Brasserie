@@ -6,6 +6,7 @@ import { StorageService } from '../services/storage';
 import { BrewingMath } from '../services/brewingMath';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { Button } from '../components/ui/Button';
+import { BrewerChat } from './BrewerChat';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -65,6 +66,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({ batch, onClo
         }
       >
         <div className="space-y-7">
+          <BrewerChat scope={{kind:'batch',id:batch.id}} label={draft.name} phase={draft.status} />
           <section className="space-y-3">
             <div className="flex items-center gap-2">
               <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>

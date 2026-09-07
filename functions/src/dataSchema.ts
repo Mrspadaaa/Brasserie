@@ -5,4 +5,7 @@ export const BUSINESS_COLLECTIONS = [
   'tarifs', 'creativeItems', 'expenseTemplates', 'auditLogs', 'config'
 ] as const;
 export type BusinessCollection = typeof BUSINESS_COLLECTIONS[number];
-export const IMMUTABLE_COLLECTIONS = new Set<BusinessCollection>(['auditLogs', 'movements']);
+/** Server-only conversations are exported, without loading every chat into the app cache. */
+export const BACKUP_COLLECTIONS = [...BUSINESS_COLLECTIONS, 'brewerChats', 'brewerContexts'] as const;
+export type BackupCollection = typeof BACKUP_COLLECTIONS[number];
+export const IMMUTABLE_COLLECTIONS = new Set<BackupCollection>(['auditLogs', 'movements', 'brewerChats', 'brewerContexts']);

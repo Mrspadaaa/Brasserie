@@ -27,6 +27,8 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  * vide, parce qu'on brasserait dessus.
  */
 
+import { BrewerChat } from '../ui/BrewerChat';
+
 interface RecipePageProps {
   recipe: Recipe;
   /** Brassins issus de cette recette, pour confronter le visé au mesuré. */
@@ -192,6 +194,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         </button>
       }
     >
+      <BrewerChat scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
       {/* --- Les cinq mesures ------------------------------------------- */}
       <section className="panel p-4">
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">

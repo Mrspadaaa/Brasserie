@@ -1,4 +1,4 @@
-import { BUSINESS_COLLECTIONS, BusinessCollection } from './dataSchema.js';
+import { BACKUP_COLLECTIONS as BUSINESS_COLLECTIONS, BackupCollection as BusinessCollection } from './dataSchema.js';
 
 export interface BackupDocument { id: string; data: Record<string, any> }
 export interface BreweryBackup {

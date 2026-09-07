@@ -1,6 +1,14 @@
 {
   "indexes": [
     {
+      "collectionGroup": "brewerChats",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "threadId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "movements",
       "queryScope": "COLLECTION",
       "fields": [
@@ -34,6 +42,11 @@
     }
   ],
   "fieldOverrides": [
+    { "collectionGroup": "brewerContexts", "fieldPath": "context", "indexes": [] },
+    { "collectionGroup": "brewerChats", "fieldPath": "context", "indexes": [] },
+    { "collectionGroup": "brewerChats", "fieldPath": "evidence", "indexes": [] },
+    { "collectionGroup": "brewerChats", "fieldPath": "trace", "indexes": [] },
+    { "collectionGroup": "brewerChats", "fieldPath": "advice", "indexes": [] },
     { "collectionGroup": "brewSessionOperations", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
     { "collectionGroup": "restoreOperations", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
     { "collectionGroup": "brewAlarmDevices", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },

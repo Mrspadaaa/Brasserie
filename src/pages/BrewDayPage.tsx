@@ -69,6 +69,7 @@ import { NumberInput } from '../ui/NumberInput';
 import { useBrewSession } from '../ui/useBrewSession';
 import { brewNow } from '../services/brewClock';
 import { BrewAssist } from '../ui/BrewAssist';
+import { BrewerChat } from '../ui/BrewerChat';
 import { readingPrompt } from '../domain/brewAssist';
 import { ReadingKind } from '../domain/brewDay';
 
@@ -675,6 +676,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         </div>
       }
     >
+      <BrewerChat scope={{kind:'batch',id:batch.id}} label={recipe.name} phase={state.finishedAt?'fermentation':current?.label} localJournal={state}
+        onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
       <div ref={contentRef} className="brew-workspace">
         {notice && !capture && (
           <div className="brew-toast" role="status">

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Calculator, ChevronDown, Sparkles, Thermometer } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Calculator, ChevronDown, Thermometer } from 'lucide-react';
 import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem, BrewhouseProfile } from '../types';
 import { BrewEquipmentSummary } from './BrewEquipmentSummary';
 import { ReadingKind } from '../domain/brewDay';
@@ -20,7 +20,6 @@ import {
   isBoilStep
 } from '../domain/brewCompanion';
 import { brewNow } from '../services/brewClock';
-import { AiClient } from '../services/aiClient';
 import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
 import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
@@ -120,10 +119,6 @@ export function BrewAssist({
   );
   const [coolant, setCoolant] = useScenarioValue<number | undefined>(state.coolingWaterC);
   const [notice, setNotice] = useState('');
-  const [question, setQuestion] = useState('');
-  const [advice, setAdvice] = useState<{ key: string; text: string }>();
-  const [busy, setBusy] = useState(false);
-  const aiLock = useRef(false);
   const w = waterScenario(recipe, state, side, ro!);
   const simulation = boilScenario(recipe, state, minutes!, hopId || undefined, elapsed, evap);
   const target = step.tempC ?? recipe.fermentation?.[0]?.tempC ?? recipe.yeast?.pitchTempC;
@@ -139,75 +134,6 @@ export function BrewAssist({
     .filter((f) => f.kind === 'grain' && f.use === 'empatage')
     .reduce((sum, f) => sum + f.weightKg, 0);
   const ratio = grist > 0 ? actualWater(recipe, state, 'mash').litres / grist : null;
-  const contextKey = JSON.stringify([
-    state,
-    question,
-    side,
-    ro,
-    minutes,
-    hopId,
-    elapsed,
-    evap,
-    coolant
-  ]);
-  const currentKey = useRef(contextKey);
-  currentKey.current = contextKey;
-  const ask = async () => {
-    if (aiLock.current || !question.trim()) return;
-    aiLock.current = true;
-    setBusy(true);
-    const key = contextKey;
-    try {
-      const response = await AiClient.run<{
-        verdict: string;
-        immediateAction?: string;
-      }>({
-        task: 'diagnoseBatch',
-        tier: 'max',
-        context: {
-          phase: 'jour de brassage',
-          asOf: new Date(now).toISOString(),
-          recipe,
-          currentStep: step,
-          journal: state,
-          equipment: brewhouse?.equipment ?? recipe.brewhouse?.equipment,
-          simulation: {
-            water: water ? w : undefined,
-            boil: boil ? simulation : undefined,
-            thermal
-          },
-          stock: stock.map((s) => ({
-            name: s.name,
-            category: s.category,
-            currentStock: s.currentStock,
-            unit: s.unit
-          }))
-        },
-        instruction: `Question du brasseur : ${question.trim()}\nRéponds en français, 4 phrases maximum : constat, rattrapage faisable maintenant, conséquence et prochain relevé. Distingue simulation et gestes consignés. Ne suppose ni ajout ni température non mesurée. Une rampe de chauffe ne remplace pas automatiquement le maintien enzymatique ; ne quantifie pas l’atténuation sans données. Ne prescris pas de dose acide/base : renvoie au calculateur basé sur le pH refroidi. Ne garantis ni innocuité ni température future. Ne modifie pas la recette.`
-      });
-      if (currentKey.current !== key)
-        setAdvice({
-          key: currentKey.current,
-          text: 'Le contexte a changé pendant l’analyse. Relance avec les derniers relevés.'
-        });
-      else
-        setAdvice({
-          key,
-          text:
-            response.ok && response.data?.verdict
-              ? [response.data.verdict, response.data.immediateAction].filter(Boolean).join(' ')
-              : (response.error ?? 'Conseil indisponible. Les calculateurs restent utilisables.')
-        });
-    } catch {
-      setAdvice({
-        key,
-        text: 'Conseil indisponible pour le moment. Les calculateurs restent utilisables.'
-      });
-    } finally {
-      aiLock.current = false;
-      setBusy(false);
-    }
-  };
   const save = (fn: Parameters<BrewUpdate>[0], message: string) => {
     update(fn);
     setNotice(message);
@@ -691,49 +617,6 @@ export function BrewAssist({
             </p>
           </section>
         )}
-        <section className="brew-assist-ai">
-          <h3>
-            <Sparkles size={17} /> Un imprévu particulier ?
-          </h3>
-          <label>
-            <span className="sr-only">Question au compagnon IA</span>
-            <textarea
-              aria-label="Question au compagnon IA"
-              value={question}
-              maxLength={1500}
-              rows={2}
-              placeholder={
-                water
-                  ? 'Je n’ai que… L d’osmosée. Que corriger ?'
-                  : heating
-                    ? 'La maische reste à… °C depuis… min.'
-                    : step.id === 'preboil'
-                      ? 'J’ai… L à 1.… avant ébullition. Comment rattraper ?'
-                      : cooling
-                        ? 'Le moût reste à… °C malgré le refroidissement.'
-                        : boil
-                          ? 'J’ai versé… g de houblon à +… min. Quel impact ?'
-                          : 'Il me manque… kg de malt. Quel remplacement ?'
-              }
-              onChange={(e) => setQuestion(e.target.value)}
-            />
-          </label>
-          <button
-            type="button"
-            className={brewControl}
-            disabled={busy || !question.trim()}
-            onClick={() => void ask()}
-          >
-            {busy ? 'Analyse du brassin…' : 'Demander un conseil IA'}
-          </button>
-          {advice && (
-            <p className="brew-advice" role="status">
-              {advice.key === contextKey
-                ? advice.text
-                : 'Les données ont changé. Relance pour un conseil à jour.'}
-            </p>
-          )}
-        </section>
         {notice && (
           <p className="brew-feedback" role="status">
             {notice}

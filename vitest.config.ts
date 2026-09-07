@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Tests unitaires et d'intégration.
@@ -21,6 +22,8 @@ import react from '@vitejs/plugin-react';
  */
 export default defineConfig({
   plugins: [react()],
+  // Server deployment bundles this exact domain entry; tests use its TypeScript source.
+  resolve: { alias: [{ find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) }] },
   test: {
     globals: true,
     environment: 'node',
