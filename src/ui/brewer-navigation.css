@@ -1,18 +1,21 @@
-.brewer-global-plus {
+.brewer-global-companion {
   position: fixed;
-  right: 16px;
-  bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+  right: 20px;
+  bottom: calc(10.25rem + env(safe-area-inset-bottom, 0px));
   z-index: 51;
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  background: #223d34;
+  color: #deebdc;
+  border: 1px solid #648e72;
   display: grid;
   place-items: center;
   box-shadow: 0 6px 20px #0005;
   pointer-events: auto;
 }
-.brewer-global-plus:active { transform: scale(.95); }
-.brewer-global-plus:focus-visible { outline: 2px solid #e5d9bb; outline-offset: 4px; }
+.brewer-global-companion:active { transform: scale(.95); }
+.brewer-global-companion:focus-visible { outline: 2px solid #e5d9bb; outline-offset: 4px; }
 .brewer-conversation { border: 1px solid #53604d; border-radius: 14px; overflow: hidden; }
 .brewer-conversation-row { display: flex; align-items: center; }
 .brewer-activity-list .brewer-conversation-open { flex: 1; min-width: 0; border: 0; border-radius: 0; }

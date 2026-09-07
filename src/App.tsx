@@ -358,8 +358,8 @@ export const App: React.FC = () => {
   };
 
   /**
-   * L'appui long sur le raccourci du compagnon conserve l'action de création
-   * de l'écran courant (article, recette, écriture…).
+   * Le bouton + conserve l'action de création de l'écran courant
+   * (article, recette, écriture…). Le compagnon dispose de son propre bouton.
    */
   const fabAction = fabActionFor(activeTab, subTab);
 
@@ -608,7 +608,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
-      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} onQuickAction={runFabAction} />
+      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
@@ -729,6 +729,9 @@ export const App: React.FC = () => {
           setSubTab(null);
           setActiveTab(tab);
         }}
+        action={fabAction}
+        onAction={runFabAction}
+        onOpenQuickAction={() => setIsQuickActionOpen(true)}
         criticalStockCount={criticalStockCount}
       />
 

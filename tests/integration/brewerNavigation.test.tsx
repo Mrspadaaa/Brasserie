@@ -6,6 +6,7 @@ import { BrewerChat } from '../../src/ui/BrewerChat';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import { brewerJobs } from '../../src/services/brewerJobs';
 import { brewerAppScreen } from '../../functions/src/brewerAppScreens';
+import { BottomNav } from '../../src/components/BottomNav';
 import type { BrewerJob } from '../../functions/src/companionTypes';
 
 vi.mock('../../src/services/brewerChat', () => ({
@@ -47,6 +48,24 @@ async function ask() {
   await waitFor(() => expect(api.submit).toHaveBeenCalled());
 }
 describe('Raccourci contextuel et gestion des conversations', () => {
+  it('conserve toutes les actions du bouton + et sépare clairement le compagnon', async () => {
+    const create = vi.fn(), quick = vi.fn();
+    render(<><BrewerActivity context={brewerAppScreen('stocks', 'materiel')} />
+      <BottomNav activeTab="stocks" onChangeTab={() => {}}
+        action={{ intent: 'newEquipment', label: 'Nouveau matériel' }}
+        onAction={create} onOpenQuickAction={quick} criticalStockCount={0} /></>);
+    const add = screen.getByRole('button', { name: 'Nouveau matériel' });
+    expect(add).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Ouvrir le compagnon brasseur' })).toBeVisible();
+    fireEvent.click(add);
+    expect(create).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    fireEvent.contextMenu(add);
+    expect(quick).toHaveBeenCalledOnce();
+    await plus();
+    expect(screen.getByRole('dialog')).toHaveTextContent('Matériel');
+    expect(create).toHaveBeenCalledOnce();
+  });
   it('ouvre le contexte de l’écran courant et le change après navigation', async () => {
     const view = render(<BrewerActivity context={brewerAppScreen('stocks', 'materiel')} />);
     await plus();

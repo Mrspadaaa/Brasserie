@@ -1,11 +1,17 @@
 import React from 'react';
-import { LayoutDashboard, Wallet, Beer, Boxes, Users } from 'lucide-react';
+import { LayoutDashboard, Wallet, Beer, Boxes, Users, Plus, ClipboardList } from 'lucide-react';
+import { FabAction } from '../domain/fabActions';
 
 export type TabType = 'dashboard' | 'finances' | 'production' | 'stocks' | 'clients';
 
 interface BottomNavProps {
   activeTab: TabType;
   onChangeTab: (tab: TabType) => void;
+  /** Ce que crée le bouton ici — dépend de l'onglet ET du sous-onglet. */
+  action: FabAction;
+  onAction: () => void;
+  /** Appui long : la saisie rapide, quel que soit l'écran. */
+  onOpenQuickAction: () => void;
   criticalStockCount: number;
 }
 
@@ -17,6 +23,7 @@ interface BottomNavProps {
  * Les libellés passent de 10 px à 12 px : ils sont épaulés par une icône, mais
  * 10 px restait illisible en lumière faible.
  *
+ * Le bouton d'action mesure 56 px et conserve son action contextuelle.
  */
 
 const TABS: Array<{
@@ -35,9 +42,44 @@ const TABS: Array<{
 export const BottomNav: React.FC<BottomNavProps> = ({
   activeTab,
   onChangeTab,
+  action,
+  onAction,
+  onOpenQuickAction,
   criticalStockCount
 }) => (
   <>
+    <div
+      className="fixed right-4 z-40 flex items-center gap-2"
+      style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}
+    >
+      <span
+        className="hidden sm:block px-3 py-1.5 rounded-control bg-cave-850/95 backdrop-blur-sm
+                   border border-cave-700 text-sm text-cave-200 shadow-lift"
+        aria-hidden
+      >
+        {action.label}
+      </span>
+      <button
+        type="button"
+        onClick={onAction}
+        onContextMenu={(event) => {
+          event.preventDefault();
+          onOpenQuickAction();
+        }}
+        aria-label={action.label}
+        className="w-touch-lg h-touch-lg rounded-full shrink-0
+                   bg-ebc-straw text-cave-950 shadow-lift
+                   flex items-center justify-center
+                   transition-transform active:scale-95
+                   focus-visible:outline-2 focus-visible:outline-offset-4"
+      >
+        {action.intent === 'copyShoppingList' ? (
+          <ClipboardList className="w-7 h-7" strokeWidth={2.5} />
+        ) : (
+          <Plus className="w-7 h-7" strokeWidth={2.5} />
+        )}
+      </button>
+    </div>
     <nav
       aria-label="Navigation principale"
       className="fixed bottom-0 inset-x-0 z-40 bg-cave-900/95 backdrop-blur-xl

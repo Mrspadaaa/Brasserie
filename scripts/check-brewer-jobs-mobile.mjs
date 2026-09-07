@@ -97,13 +97,13 @@ try {
     await page.goto('http://127.0.0.1:3007/?preview=brew&view=assistant', {
       waitUntil: 'networkidle0'
     });
-    await page.waitForSelector('.brewer-global-plus', { visible: true });
-    assert.ok(await page.$eval('.brewer-global-plus', (e) => {
+    await page.waitForSelector('.brewer-global-companion', { visible: true });
+    assert.ok(await page.$eval('.brewer-global-companion', (e) => {
       const r = e.getBoundingClientRect();
       return r.width >= 44 && r.height >= 44 && e.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
     }));
     await page.screenshot({ path: resolve(out, `shortcut-${width}.png`) });
-    await page.click('.brewer-global-plus');
+    await page.click('.brewer-global-companion');
     await page.waitForSelector('.brewer-chat-welcome');
     await page.click('.brewer-budget > summary');
     await page.waitForSelector('.brewer-budget .is-stop');
@@ -233,7 +233,7 @@ try {
     assert.equal(jobs.length, 0);
     await page.screenshot({ path: resolve(out, `deleted-${width}.png`) });
     await page.reload({ waitUntil: 'networkidle0' });
-    await page.click('.brewer-global-plus');
+    await page.click('.brewer-global-companion');
     await page.waitForSelector('.brewer-chat-welcome');
     assert.equal(await page.$$eval('.brewer-chat-question', (items) => items.length), 0);
     assert.equal(inputs.length, 3, 'Deleted questions must never be resent');

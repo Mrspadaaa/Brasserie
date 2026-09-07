@@ -208,6 +208,9 @@ export const DesignPreview: React.FC = () => {
                 <BottomNav
                   activeTab="dashboard"
                   onChangeTab={() => {}}
+                  action={{ intent: 'quickAction', label: 'Saisie rapide' }}
+                  onAction={() => {}}
+                  onOpenQuickAction={() => {}}
                   criticalStockCount={8}
                 />
               </div>

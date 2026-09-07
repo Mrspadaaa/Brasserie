@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MessageCircle, LoaderCircle, Plus, Trash2 } from 'lucide-react';
+import { MessageCircle, LoaderCircle, Trash2 } from 'lucide-react';
 import { brewerJobs, useBrewerJobs, isBrewerWorking, brewerJobStatus, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
 import { BrewerChat as api } from '../services/brewerChat';
 import { brewerLauncher, useBrewerDialogOpen } from '../services/brewerLauncher';
@@ -21,9 +21,8 @@ export function brewerConversations(jobs: ClientBrewerJob[]) {
 }
 
 /** Root inbox and contextual shortcut survive page navigation. */
-export function BrewerActivity({ context = brewerAppScreen('dashboard'), onQuickAction }: {
+export function BrewerActivity({ context = brewerAppScreen('dashboard') }: {
   context?: Focus;
-  onQuickAction?: () => void;
 }) {
   const state = useBrewerJobs(), dialogOpen = useBrewerDialogOpen();
   const [inbox, setInbox] = useState(false);
@@ -79,10 +78,9 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), onQuick
   };
   return <>
     {!dialogOpen && !inbox && !focus && <>
-      <button type="button" className="brewer-global-plus bg-ebc-straw text-cave-950" aria-label="Ouvrir le compagnon brasseur" title="Compagnon brasseur"
-        onClick={() => { if (!brewerLauncher.open()) setFocus(context); }}
-        onContextMenu={onQuickAction ? (e) => { e.preventDefault(); onQuickAction(); } : undefined}>
-        <Plus size={28} strokeWidth={2.5} />
+      <button type="button" className="brewer-global-companion" aria-label="Ouvrir le compagnon brasseur" title="Compagnon brasseur"
+        onClick={() => { if (!brewerLauncher.open()) setFocus(context); }}>
+        <MessageCircle size={23} strokeWidth={2.2} />
       </button>
       {state.jobs.length > 0 && <button type="button"
         className={`brewer-activity-pill${unread.length || unconfirmed.length ? ' has-answer' : ''}`}
