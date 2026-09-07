@@ -16,7 +16,14 @@ import {
   validateScope
 } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
-import type { BrewerChatInput, BrewerContext, BrewerScope, BrewerTurn } from './companionTypes.js';
+import type {
+  BrewerChatInput,
+  BrewerContext,
+  BrewerScope,
+  BrewerTurn,
+  BrewerPending,
+  BrewerReply
+} from './companionTypes.js';
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 // A saved recipe retains conversations held while editing its draft.
 const threadKey = (uid: string, scope: BrewerScope) =>
@@ -31,8 +38,19 @@ const publicTurn = (d: any): BrewerTurn =>
     'createdAt',
     'model',
     'reviewed',
+    'reviewModel',
+    'reviewReason',
+    'mode',
     'contextLabel'
   ]);
+const publicPending = (active: any): BrewerPending | undefined =>
+  active?.until > Date.now() && typeof active.operationId === 'string'
+    ? {
+        operationId: active.operationId,
+        question: String(active.question ?? ''),
+        until: active.until
+      }
+    : undefined;
 export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerContext> {
   const db = getFirestore();
   const [config, stock, material, doc] = await Promise.all([
@@ -129,7 +147,28 @@ export const getBrewerConversation = onCall(
     const before = request.data?.before;
     if (before != null && (!Number.isFinite(before) || before <= 0))
       throw new HttpsError('invalid-argument', 'Date invalide.');
-    return { turns: await history(threadKey(uid, scope), before) };
+    const threadId = threadKey(uid, scope),
+      operationId = request.data?.operationId;
+    if (operationId != null) {
+      if (typeof operationId !== 'string' || !/^[\w-]{16,100}$/.test(operationId))
+        throw new HttpsError('invalid-argument', 'Identifiant de message invalide.');
+      const db = getFirestore();
+      // One consistent read: never observe an unlocked conversation without its committed answer.
+      return db.runTransaction(async (tx) => {
+        const [turn, session] = await Promise.all([
+          tx.get(db.doc(`brewerChats/${hash(uid + ':' + operationId)}`)),
+          tx.get(db.doc(`brewerConversations/${threadId}`))
+        ]);
+        if (turn.exists && turn.data()?.threadId !== threadId)
+          throw new HttpsError(
+            'invalid-argument',
+            'Ce message appartient à une autre conversation.'
+          );
+        const pending = publicPending(session.data()?.active);
+        return turn.exists ? { turn: publicTurn(turn.data()) } : pending ? { pending } : {};
+      });
+    }
+    return { turns: await history(threadId, before) };
   }
 );
 
@@ -155,38 +194,54 @@ export const askBrewer = onCall(
     const turnRef = db.doc(`brewerChats/${hash(uid + ':' + input.operationId)}`),
       lock = db.doc(`brewerConversations/${threadId}`),
       fence = randomUUID();
-    const cached = await db.runTransaction(async (tx) => {
+    const startedAt = Date.now();
+    const cached = await db.runTransaction(async (tx): Promise<BrewerReply | null> => {
       const [turn, session] = await Promise.all([tx.get(turnRef), tx.get(lock)]);
       if (turn.exists) {
         if (turn.data()!.inputDigest !== digest)
           throw new HttpsError('already-exists', 'Ce message a déjà un autre contenu.');
-        return publicTurn(turn.data());
+        return { turn: publicTurn(turn.data()) };
       }
       const active = session.data()?.active;
-      if (active?.until > Date.now())
-        throw new HttpsError(
-          'aborted',
-          'Une réponse est encore en cours. Attends quelques instants puis réessaie.'
-        );
-      // Lease outlives the callable; fencing prevents a late result overwriting a retry.
+      const pending = publicPending(active);
+      if (pending) {
+        if (
+          active.operationId === input.operationId &&
+          active.inputDigest &&
+          active.inputDigest !== digest
+        )
+          throw new HttpsError('already-exists', 'Ce message a déjà un autre contenu.');
+        return { pending };
+      }
+      // The lease outlives the harness deadline. Fencing prevents late results overwriting a retry.
       tx.set(lock, {
         uid,
         scope: input.scope,
-        active: { fence, operationId: input.operationId, until: Date.now() + 330000 },
+        active: {
+          fence,
+          operationId: input.operationId,
+          inputDigest: digest,
+          question: input.question,
+          until: Date.now() + (input.mode === 'deep' ? 250000 : 180000)
+        },
         updatedAt: Date.now()
       });
       return null;
     });
-    if (cached) return { turn: cached };
+    if (cached) return cached;
+    let stage = 'context';
     try {
       const context = await loadBrewerContext(input),
         past = await history(threadId);
+      stage = 'analysis';
       const result = await runBrewerHarness(
         context,
         input.question,
         past,
-        geminiTransport(GEMINI_API_KEY.value())
+        geminiTransport(GEMINI_API_KEY.value()),
+        { mode: input.mode }
       );
+      stage = 'persistence';
       // Reuse identical context snapshots: repeated questions don't duplicate recipe + inventory.
       const snapshot = cleanContext({ ...context, now: undefined }),
         contextId = hash(stableJson(snapshot));
@@ -223,6 +278,9 @@ export const askBrewer = onCall(
       });
       logger.info('brewer-answer', {
         model: result.model,
+        reviewModel: result.reviewModel,
+        reviewReason: result.reviewReason,
+        elapsedMs: Date.now() - startedAt,
         tools: result.trace.length,
         reviewed: true
       });
@@ -235,7 +293,14 @@ export const askBrewer = onCall(
         })
         .catch(() => {});
       logger.warn('brewer-answer-failed', {
-        type: e instanceof HttpsError ? e.code : 'provider-or-validation'
+        type: e instanceof HttpsError ? e.code : 'provider-or-validation',
+        stage,
+        elapsedMs: Date.now() - startedAt,
+        reason: /vérification/.test(String((e as Error)?.message))
+          ? 'review-rejected'
+          : /timeout|aborted/i.test(String((e as Error)?.message))
+            ? 'deadline'
+            : 'provider-or-format'
       });
       if (e instanceof HttpsError) throw e;
       throw new HttpsError(

@@ -20,17 +20,24 @@ async function worker() {
       c.phase = scenario.phase;
       c.batch = { status: scenario.phase, volumeL: 24, gravityLog: [] };
     }
+    if (scenario.fermentables) c.recipe.fermentables = scenario.fermentables;
     try {
       const result = await runBrewerHarness(
         c,
         scenario.question,
-        [],
-        geminiTransport(process.env.GEMINI_API_KEY)
+        scenario.history ?? [],
+        geminiTransport(process.env.GEMINI_API_KEY),
+        { mode: process.env.BREWER_EVAL_MODE === 'deep' ? 'deep' : 'auto' }
       );
       await writeFile(
         `${output}/${scenario.id}.json`,
         JSON.stringify({ scenario, ...result }, null, 2)
       );
+      if (
+        scenario.id === 'supplier-followup' &&
+        !result.trace.some((t) => t.name === 'find_brewing_suppliers' && t.resultId)
+      )
+        throw Error('La demande de fournisseur doit déclencher une recherche réelle.');
       results.push({
         id: scenario.id,
         ok: true,

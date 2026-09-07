@@ -5,7 +5,12 @@ import { BrewerChat } from '../../src/ui/BrewerChat';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import type { BrewerTurn } from '../../src/services/brewerChat';
 vi.mock('../../src/services/brewerChat', () => ({
-  BrewerChat: { userKey: vi.fn().mockResolvedValue('test-user'), history: vi.fn(), ask: vi.fn() },
+  BrewerChat: {
+    userKey: vi.fn().mockResolvedValue('test-user'),
+    history: vi.fn(),
+    ask: vi.fn(),
+    status: vi.fn()
+  },
   brewerChatError: () => 'Question conservée, réessaie.'
 }));
 vi.mock('../../src/ui/Sheet', () => ({
@@ -48,6 +53,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   localStorage.clear();
   vi.mocked(api.history).mockResolvedValue([]);
+  vi.mocked(api.status).mockResolvedValue({});
 });
 afterEach(cleanup);
 describe('Conversation dans la recette / le brassin', () => {
@@ -79,7 +85,8 @@ describe('Conversation dans la recette / le brassin', () => {
       expect.objectContaining({
         draft: { name: 'Brouillon', volumeL: 24 },
         question: 'Mon pH est trop bas'
-      })
+      }),
+      expect.objectContaining({ signal: expect.any(AbortSignal), onProgress: expect.any(Function) })
     );
     expect(keep).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('Garder dans les notes du journal'));
@@ -117,6 +124,78 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByText('Chauffe bloquée')).toBeVisible();
     expect(api.ask).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox')).toHaveValue('');
+  });
+  it('permet de forcer le modèle approfondi, avec le choix conservé pour une reprise', async () => {
+    vi.mocked(api.ask).mockRejectedValueOnce(new Error('network'));
+    render(<BrewerChat {...props} />);
+    await open();
+    const mode = screen.getByRole('checkbox', { name: /Analyse approfondie/ });
+    expect(mode).not.toBeChecked();
+    fireEvent.click(mode);
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Compare mes malts' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await screen.findByRole('alert');
+    expect(vi.mocked(api.ask).mock.calls[0][0].mode).toBe('deep');
+    expect(mode).toBeDisabled();
+    expect(
+      JSON.parse(localStorage.getItem('brewer-chat-pending:test-user:recipe:REC-A')!).mode
+    ).toBe('deep');
+  });
+  it('rejoint automatiquement la question qui tourne encore après rechargement', async () => {
+    const pending = {
+      scope: props.scope,
+      operationId: 'operation-running-12345',
+      question: 'Un substitut en Suisse ?',
+      mode: 'deep'
+    };
+    localStorage.setItem('brewer-chat-pending:test-user:recipe:REC-A', JSON.stringify(pending));
+    vi.mocked(api.status).mockResolvedValue({ pending: { ...pending, until: Date.now() + 60000 } });
+    vi.mocked(api.ask).mockResolvedValue(turn(pending.question, pending.operationId));
+    render(<BrewerChat {...props} />);
+    await open();
+    await screen.findByText('Mesure avant de corriger.');
+    expect(vi.mocked(api.ask).mock.calls[0][0]).toEqual(pending);
+    expect(screen.getByRole('textbox')).toHaveValue('');
+  });
+  it('affiche les vrais liens d’achat et ne présente pas un ancien stock comme actuel', async () => {
+    const t = turn();
+    t.evidence = [
+      {
+        id: 'E1',
+        name: 'find_brewing_suppliers',
+        label: 'Suisse',
+        facts: [],
+        limits: [],
+        data: {},
+        products: [
+          {
+            name: 'Maris Otter, Kg',
+            supplier: 'Brau- und Rauchshop',
+            url: 'https://www.brauundrauchshop.ch/maris-otter',
+            availability: 'in_stock',
+            availabilityText: 'En stock',
+            checkedAt: Date.now()
+          },
+          {
+            name: 'Röstgerste, Kg',
+            supplier: 'Brau- und Rauchshop',
+            url: 'https://www.brauundrauchshop.ch/r%C3%B6stgerste',
+            availability: 'in_stock',
+            availabilityText: 'En stock',
+            checkedAt: Date.now() - 172800000
+          }
+        ]
+      }
+    ];
+    vi.mocked(api.history).mockResolvedValue([t]);
+    render(<BrewerChat {...props} />);
+    await open();
+    expect(screen.getByRole('link', { name: /Maris Otter/ })).toHaveAttribute(
+      'href',
+      'https://www.brauundrauchshop.ch/maris-otter'
+    );
+    expect(screen.getByText('Annoncé en stock')).toBeVisible();
+    expect(screen.getByText('Stock à revérifier')).toBeVisible();
   });
   it('ne place jamais une réponse tardive dans une autre recette', async () => {
     let resolve!: (value: BrewerTurn) => void;

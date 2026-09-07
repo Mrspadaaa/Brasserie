@@ -18,26 +18,22 @@ const { parseBackup } = await import('../functions/lib/backupCore.js');
 const runId = randomUUID(),
   recipeId = `REC-${runId}`,
   batchId = `LOT-${runId}`;
-await db
-  .doc('config/app')
-  .set({
-    activeBrewhouseId: equipment.id,
-    brewhouses: [equipment],
-    bankAccount: 'PRIVATE-DONT-SEND',
-    waterSources: []
-  });
+await db.doc('config/app').set({
+  activeBrewhouseId: equipment.id,
+  brewhouses: [equipment],
+  bankAccount: 'PRIVATE-DONT-SEND',
+  waterSources: []
+});
 await db.doc(`recipes/${recipeId}`).set({ ...testRecipe, id: recipeId, name: 'Catalogue modifié' });
-await db
-  .doc(`batches/${batchId}`)
-  .set({
-    id: batchId,
-    name: 'Lot test',
-    status: 'planifie',
-    volumeL: 24,
-    recipeRef: recipeId,
-    recipeSnapshot: { ...testRecipe, name: 'Recette figée' },
-    brewDay: { steps: [], currentIndex: 0, revision: 3 }
-  });
+await db.doc(`batches/${batchId}`).set({
+  id: batchId,
+  name: 'Lot test',
+  status: 'planifie',
+  volumeL: 24,
+  recipeRef: recipeId,
+  recipeSnapshot: { ...testRecipe, name: 'Recette figée' },
+  brewDay: { steps: [], currentIndex: 0, revision: 3 }
+});
 const data = {
   scope: { kind: 'batch', id: batchId },
   operationId: randomUUID(),
@@ -56,25 +52,52 @@ assert.equal(ctx.recipe.name, 'Recette figée');
 assert.ok(!JSON.stringify(ctx).includes('PRIVATE-DONT-SEND'));
 const initial = askBrewer.run(request);
 await new Promise((r) => setTimeout(r, 1200));
+const joined = await askBrewer.run(request);
+assert.equal(joined.pending.operationId, data.operationId);
+const queuedInput = {
+  ...data,
+  operationId: randomUUID(),
+  question: 'Et avec1500W pour le même volume mesuré et la même montée de température ?'
+};
+const queued = await askBrewer.run({ ...request, data: queuedInput });
+assert.equal(queued.pending.operationId, data.operationId);
+const during = await getBrewerConversation.run({
+  ...request,
+  data: { scope: data.scope, operationId: data.operationId }
+});
+assert.equal(during.pending.operationId, data.operationId);
 await assert.rejects(
-  () => askBrewer.run(request),
-  (e) => e.code === 'aborted'
+  () =>
+    askBrewer.run({
+      ...request,
+      data: { ...data, question: 'Autre contenu pendant le traitement' }
+    }),
+  (e) => e.code === 'already-exists'
 );
 const first = await initial;
 assert.equal(first.turn.reviewed, true);
 const retry = await askBrewer.run(request);
 assert.deepEqual(retry, first);
+const received = await getBrewerConversation.run({
+  ...request,
+  data: { scope: data.scope, operationId: data.operationId }
+});
+assert.deepEqual(received.turn, first.turn);
+await assert.rejects(
+  () =>
+    getBrewerConversation.run({
+      ...request,
+      data: { scope: { kind: 'recipe', id: recipeId }, operationId: data.operationId }
+    }),
+  (e) => e.code === 'invalid-argument'
+);
 await assert.rejects(
   () => askBrewer.run({ ...request, data: { ...data, question: 'Un autre contenu' } }),
   (e) => e.code === 'already-exists'
 );
 const second = await askBrewer.run({
   ...request,
-  data: {
-    ...data,
-    operationId: randomUUID(),
-    question: 'Et avec1500W pour le même volume mesuré et la même montée de température ?'
-  }
+  data: queuedInput
 });
 assert.notEqual(second.turn.id, first.turn.id);
 const history = await getBrewerConversation.run({ ...request, data: { scope: data.scope } });
@@ -98,6 +121,11 @@ console.log(
       'context-snapshot',
       'private-fields-excluded',
       'concurrent-lease',
+      'join-inflight',
+      'queued-followup',
+      'running-digest-protected',
+      'durable-receipt-recovery',
+      'receipt-scope-protected',
       'idempotent-retry',
       'mismatched-retry-rejected',
       'history-followup',

@@ -258,6 +258,95 @@
   gap: 8px;
   align-items: end;
 }
+.brewer-chat-mode {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 10px;
+  color: #cbd4bf;
+}
+.brewer-chat-mode label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.brewer-chat-mode input {
+  width: 17px;
+  height: 17px;
+  accent-color: #c7d4aa;
+}
+.brewer-chat-mode small {
+  font-size: 10px;
+  color: #aeb5a6;
+}
+.brewer-chat-suppliers {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 10px;
+}
+.brewer-chat-suppliers > strong {
+  color: #d0d8c6;
+  font-size: 12px;
+}
+.brewer-chat-suppliers small {
+  color: #aeb7ad;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.brewer-chat-product {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  padding: 12px;
+  border: 1px solid #69795755;
+  background: #a6cb9207;
+  border-radius: 11px;
+  text-decoration: none;
+  color: #e5e9df;
+}
+.brewer-chat-product-name {
+  grid-column: 1/-1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+.brewer-chat-product-name svg {
+  flex-shrink: 0;
+  color: #c7d4aa;
+}
+.brewer-chat-product-supplier {
+  color: #c2c8ba;
+  font-size: 11px;
+}
+.brewer-chat-product small {
+  grid-column: 1/-1;
+}
+.brewer-chat-stock {
+  font-size: 10px;
+  color: #d2c5a8;
+  border-radius: 20px;
+  padding: 2px 6px;
+  background: #d2c5a810;
+}
+.brewer-chat-stock.is-in_stock {
+  color: #bcdda9;
+  background: #97b38318;
+}
+.brewer-chat-stock.is-out_of_stock {
+  color: #edbaab;
+  background: #e3947610;
+}
+.brewer-chat-product:focus-visible,
+.brewer-chat-mode input:focus-visible {
+  outline: 2px solid #c7d4aa;
+  outline-offset: 3px;
+}
 .brewer-chat-compose textarea {
   width: 100%;
   min-height: 64px;

@@ -152,6 +152,9 @@ describe('Validation serveur et relecture indépendante', () => {
       draft: { name: 'Test', apiKey: 'secret', clients: [{ name: 'privé' }] }
     };
     expect(validateChatInput(input).draft).toEqual({ name: 'Test' });
+    expect(validateChatInput(input)).not.toHaveProperty('mode');
+    expect(validateChatInput({ ...input, mode: 'deep' }).mode).toBe('deep');
+    expect(() => validateChatInput({ ...input, mode: 'mystery' })).toThrow(/Mode/);
     expect(() => validateChatInput({ ...input, scope: { kind: 'recipe', id: 'a/b' } })).toThrow();
     expect(() => validateChatInput({ ...input, question: 'x'.repeat(3001) })).toThrow();
     expect(() => validateChatInput({ ...input, draft: { volumeL: Infinity } })).toThrow();
@@ -160,7 +163,7 @@ describe('Validation serveur et relecture indépendante', () => {
     expect(() => validateAdvice({ ...advice, evidenceIds: ['FAKE'] }, [])).toThrow();
     expect(() => validateAdvice({ ...advice, action: '' }, [])).toThrow();
   });
-  it('préserve les signatures de raisonnement et relit avec un autre modèle', async () => {
+  it('préserve les signatures et relit indépendamment avec Flash par défaut', async () => {
     const part = {
       functionCall: {
         name: 'heating_power',
@@ -175,7 +178,9 @@ describe('Validation serveur et relecture indépendante', () => {
       .mockResolvedValueOnce(json({ approved: true, issues: [] }));
     const result = await runBrewerHarness(context(), '28L67à80°C1000W', [], call);
     expect(call.mock.calls[1][1].contents[1].parts[0]).toEqual(part);
-    expect(call.mock.calls[2][0]).toBe('gemini-3.1-pro-preview');
+    expect(call.mock.calls[2][0]).toBe('gemini-3.8-flash');
+    expect(call.mock.calls[2][1].contents).not.toBe(call.mock.calls[1][1].contents);
+    expect(result.reviewReason).toBe('fast');
     expect(result.evidence[0].name).toBe('heating_power');
     expect(result.reviewed).toBe(true);
   });
@@ -189,6 +194,33 @@ describe('Validation serveur et relecture indépendante', () => {
     const result = await runBrewerHarness(context(), 'Question', [], call);
     expect(result.advice.action).toBe('Mesure le volume réel.');
     expect(call).toHaveBeenCalledTimes(4);
+    expect(call.mock.calls[3][0]).toBe('gemini-3.1-pro-preview');
+    expect(result.reviewReason).toBe('repair');
+  });
+  it('force Pro pour l’analyse et la relecture approfondies', async () => {
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce(done())
+      .mockResolvedValueOnce(json({ approved: true, issues: [] }));
+    const result = await runBrewerHarness(context(), 'Question', [], call, { mode: 'deep' });
+    expect(call.mock.calls.map((c) => c[0])).toEqual([
+      'gemini-3.1-pro-preview',
+      'gemini-3.1-pro-preview'
+    ]);
+    expect(result.reviewReason).toBe('requested');
+  });
+  it('renforce la relecture pour un geste urgent et transmet le contexte de la conversation au relecteur', async () => {
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce(done({ ...advice, level: 'urgent' }))
+      .mockResolvedValueOnce(json({ approved: true, issues: [] }));
+    const past = [
+      { question: 'Mon Maris Otter est épuisé', advice, createdAt: Date.now(), evidence: [] }
+    ] as any;
+    const result = await runBrewerHarness(context(), 'Une alternative ?', past, call);
+    expect(call.mock.calls[1][0]).toBe('gemini-3.1-pro-preview');
+    expect(call.mock.calls[1][1].contents[0].parts[0].text).toContain('Mon Maris Otter est épuisé');
+    expect(result.reviewReason).toBe('sensitive');
   });
   it('n’affiche pas un conseil refusé deux fois', async () => {
     const call = vi

@@ -63,6 +63,8 @@ export function validateChatInput(raw: any): BrewerChatInput {
   )
     throw new Error('Écris une question de2 à3000 caractères.');
   if (Buffer.byteLength(JSON.stringify(raw)) > 100000) throw new Error('Contexte trop volumineux.');
+  if (raw.mode != null && !['auto', 'deep'].includes(raw.mode))
+    throw new Error('Mode d’analyse invalide.');
   if (
     scope.kind === 'draft' &&
     (!raw.draft || typeof raw.draft !== 'object' || Array.isArray(raw.draft))
@@ -72,6 +74,8 @@ export function validateChatInput(raw: any): BrewerChatInput {
     scope,
     operationId: raw.operationId,
     question: raw.question.trim(),
+    // Keep old operation digests compatible when no mode was provided.
+    ...(raw.mode != null ? { mode: raw.mode } : {}),
     ...(scope.kind === 'draft' ? { draft: pick(raw.draft, RECIPE_FIELDS) } : {}),
     ...(scope.kind === 'batch' && raw.localJournal
       ? { localJournal: cleanContext(raw.localJournal) }

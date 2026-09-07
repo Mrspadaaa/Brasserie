@@ -20,6 +20,24 @@ export interface BrewerEvidence {
   limits: string[];
   data: unknown;
   sources?: Array<{ title: string; url: string }>;
+  products?: BrewerProduct[];
+}
+export interface BrewerProduct {
+  name: string;
+  supplier: string;
+  url: string;
+  availability: 'in_stock' | 'out_of_stock' | 'unknown';
+  availabilityText: string;
+  checkedAt: number;
+}
+export interface BrewerPending {
+  operationId: string;
+  question: string;
+  until: number;
+}
+export interface BrewerReply {
+  turn?: BrewerTurn;
+  pending?: BrewerPending;
 }
 export interface BrewerContext {
   recipe?: any;
@@ -43,6 +61,9 @@ export interface BrewerTurn {
   createdAt: number;
   model: string;
   reviewed: boolean;
+  reviewModel?: string;
+  reviewReason?: 'fast' | 'requested' | 'sensitive' | 'repair';
+  mode?: 'auto' | 'deep';
   contextLabel: string;
 }
 export interface BrewerChatInput {
@@ -52,4 +73,5 @@ export interface BrewerChatInput {
   draft?: unknown;
   localJournal?: unknown;
   phase?: string;
+  mode?: 'auto' | 'deep';
 }

@@ -78,6 +78,51 @@ export const testRecipe = {
 };
 export const cases = [
   {
+    id: 'supplier-followup',
+    question: 'Plus en stock chez mon fournisseur chercher une alternative.',
+    fermentables: [
+      {
+        name: 'Maris Otter',
+        kind: 'grain',
+        use: 'empatage',
+        weightKg: 7.6,
+        colorEbc: 6,
+        potentialPpg: 37
+      },
+      {
+        name: 'Röstgerste',
+        kind: 'grain',
+        use: 'empatage',
+        weightKg: 0.5,
+        colorEbc: 1100,
+        potentialPpg: 25
+      }
+    ],
+    history: [
+      {
+        id: 'synthetic-history',
+        operationId: 'synthetic-question',
+        question: 'Quel malt puis-je remplacer ?',
+        createdAt: Date.now() - 60000,
+        model: 'fixture',
+        reviewed: true,
+        contextLabel: 'Stout de test',
+        evidence: [],
+        advice: {
+          level: 'info',
+          summary: 'Maris Otter et Röstgerste manquent dans le stock personnel.',
+          action: 'Il existe d’autres malts de base et de l’orge torréfiée.',
+          why: 'La Röstgerste est non maltée.',
+          watch: '',
+          question: '',
+          evidenceIds: []
+        }
+      }
+    ],
+    expect:
+      'Recherche suisse réelle, alternatives hors stock personnel, liens produits et disponibilité uniquement si vérifiée directement.'
+  },
+  {
     id: 'ph-meter',
     question: 'Mon pH-mètre est en panne. Comment continuer ?',
     expect: 'Pas de dose à l’aveugle ; électrode/étalonnage et prochaine mesure.'
