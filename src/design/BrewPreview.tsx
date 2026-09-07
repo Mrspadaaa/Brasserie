@@ -1,3 +1,4 @@
+import { BrewerActivity } from '../ui/BrewerActivity';
 import React, { useState } from 'react';
 import { Recipe, Batch, StockItem, AppConfig, WaterSource } from '../types';
 import { RecipePage } from '../pages/RecipePage';
@@ -189,6 +190,7 @@ export const BrewPreview: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-200 font-sans">
+      <BrewerActivity />
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         <header className="space-y-2">
           <h1 className="text-xl font-semibold text-cave-50">Brassage — banc d’essai</h1>

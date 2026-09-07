@@ -6,8 +6,41 @@ import type {
 } from '../../functions/src/companionTypes';
 import { awaitBrewerReply, type BrewerRequestOptions } from './brewerRecovery';
 export type { BrewerChatInput, BrewerScope, BrewerTurn } from '../../functions/src/companionTypes';
-export type BrewerHistory = BrewerTurn[] & { generation?: number };
+export type BrewerHistory = BrewerTurn[] & { generation?: number; draft?: unknown };
 export const BrewerChat = {
+  async retry(jobId: string, operationId: string): Promise<BrewerReply> {
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('./firebase');
+    return (
+      await httpsCallable<unknown, BrewerReply>(functions, 'retryBrewerQuestion', {
+        timeout: 35000
+      })({ jobId, operationId })
+    ).data;
+  },
+  async submit(input: BrewerChatInput): Promise<BrewerReply> {
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('./firebase');
+    return (
+      await httpsCallable<BrewerChatInput, BrewerReply>(functions, 'askBrewer', { timeout: 35000 })(
+        input
+      )
+    ).data;
+  },
+  async activity(): Promise<import('../../functions/src/companionTypes').BrewerJob[]> {
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('./firebase');
+    return (
+      await httpsCallable<
+        unknown,
+        { jobs: import('../../functions/src/companionTypes').BrewerJob[] }
+      >(functions, 'getBrewerActivity', { timeout: 15000 })({})
+    ).data.jobs;
+  },
+  async markRead(jobId: string) {
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('./firebase');
+    await httpsCallable(functions, 'markBrewerRead')({ jobId });
+  },
   async userKey() {
     const { auth } = await import('./firebase');
     return auth.currentUser?.uid ?? 'disconnected';
@@ -19,10 +52,10 @@ export const BrewerChat = {
     ]);
     const call = httpsCallable<
       { scope: BrewerScope; before?: number },
-      { turns: BrewerTurn[]; generation: number }
+      { turns: BrewerTurn[]; generation: number; draft?: unknown }
     >(functions, 'getBrewerConversation');
     const result = (await call({ scope, ...(before ? { before } : {}) })).data;
-    return Object.assign(result.turns, { generation: result.generation ?? 0 });
+    return Object.assign(result.turns, { generation: result.generation ?? 0, draft: result.draft });
   },
   async status(input: BrewerChatInput): Promise<BrewerReply> {
     const [{ httpsCallable }, { functions }] = await Promise.all([

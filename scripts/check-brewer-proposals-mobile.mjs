@@ -25,7 +25,7 @@ try {
     await page.setRequestInterception(true);
     page.on('request', async (req) => {
       if (
-        !/\/(askBrewer|getBrewerConversation|applyBrewerProposal|resetBrewerConversation)$/.test(
+        !/\/(askBrewer|getBrewerConversation|applyBrewerProposal|resetBrewerConversation|getBrewerActivity|markBrewerRead)$/.test(
           req.url()
         )
       )
@@ -40,7 +40,9 @@ try {
       if (req.method() === 'OPTIONS') return req.respond({ status: 204, headers });
       const data = JSON.parse(req.postData()).data;
       let result;
-      if (req.url().endsWith('/askBrewer')) {
+      if (req.url().endsWith('/getBrewerActivity')) result = { jobs: [] };
+      else if (req.url().endsWith('/markBrewerRead')) result = { ok: true };
+      else if (req.url().endsWith('/askBrewer')) {
         asks.push(data);
         const turn = {
           id: `fixture-${asks.length}`,

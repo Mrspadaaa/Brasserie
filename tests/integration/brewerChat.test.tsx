@@ -2,13 +2,16 @@ import React, { StrictMode } from 'react';
 import { render, screen, fireEvent, waitFor, cleanup, act } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import { BrewerChat } from '../../src/ui/BrewerChat';
+import { brewerJobs } from '../../src/services/brewerJobs';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import type { BrewerTurn } from '../../src/services/brewerChat';
 vi.mock('../../src/services/brewerChat', () => ({
   BrewerChat: {
     userKey: vi.fn().mockResolvedValue('test-user'),
     history: vi.fn(),
-    ask: vi.fn(),
+    submit: vi.fn(),
+    activity: vi.fn(),
+    markRead: vi.fn(),
     status: vi.fn(),
     reset: vi.fn(),
     apply: vi.fn()
@@ -52,17 +55,116 @@ async function open() {
   );
 }
 beforeEach(() => {
+  brewerJobs.stop();
   vi.clearAllMocks();
   localStorage.clear();
   vi.mocked(api.history).mockResolvedValue([]);
   vi.mocked(api.status).mockResolvedValue({});
+  vi.mocked(api.activity).mockImplementation(async () => brewerJobs.snapshot().jobs);
+  vi.mocked(api.markRead).mockResolvedValue(undefined);
   vi.mocked(api.reset).mockResolvedValue({ generation: 1 });
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  brewerJobs.stop();
+});
 describe('Conversation dans la recette / le brassin', () => {
+  it('place les questions dans le fil immédiatement et laisse saisir la suivante sans attendre Gemini', async () => {
+    let resolve!: (value: any) => void;
+    vi.mocked(api.submit).mockImplementation(
+      () =>
+        new Promise((r) => {
+          resolve = r;
+        })
+    );
+    render(<BrewerChat {...props} />);
+    await open();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Trouve un nom' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    expect(screen.getByText('Trouve un nom')).toBeVisible();
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    expect(screen.getByRole('textbox')).not.toHaveAttribute('readonly');
+    expect(screen.queryByText('On regarde ça ensemble.')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Et si je remplace' } });
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
+    await act(async () =>
+      resolve({ turn: turn('Trouve un nom', vi.mocked(api.submit).mock.calls[0][0].operationId) })
+    );
+    await screen.findByText('Mesure avant de corriger.');
+    expect(screen.getByRole('textbox')).toHaveValue('Et si je remplace');
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(2));
+  });
+  it('suit une réponse après démontage de la page et la retrouve dans le bon fil', async () => {
+    let resolve!: (value: any) => void;
+    vi.mocked(api.submit).mockImplementation(
+      () =>
+        new Promise((r) => {
+          resolve = r;
+        })
+    );
+    const view = render(<BrewerChat {...props} />);
+    await open();
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'Une question en arrière-plan' }
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
+    view.unmount();
+    await act(async () =>
+      resolve({
+        turn: turn(
+          'Une question en arrière-plan',
+          vi.mocked(api.submit).mock.calls[0][0].operationId
+        )
+      })
+    );
+    expect(brewerJobs.snapshot().jobs[0].status).toBe('done');
+    render(<BrewerChat {...props} />);
+    await open();
+    expect(screen.getByText('Mesure avant de corriger.')).toBeVisible();
+  });
+  it('affiche le modèle et la vraie étape, puis une erreur serveur explicite attachée à la question', async () => {
+    const job: any = {
+      id: 'a'.repeat(64),
+      operationId: 'operation-server-1234',
+      scope: props.scope,
+      generation: 0,
+      question: 'Vérifie ma recette',
+      label: 'RecetteA',
+      status: 'running',
+      stage: 'review',
+      detail: 'Vérification indépendante du conseil',
+      model: 'gemini-3.1-pro-preview',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      attempt: 1
+    };
+    vi.mocked(api.activity).mockResolvedValue([job]);
+    render(<BrewerChat {...props} />);
+    await open();
+    expect(screen.getByText('Relecture du conseil')).toBeVisible();
+    expect(screen.getByText('Gemini 3.1 Pro')).toBeVisible();
+    await act(async () =>
+      brewerJobs.merge([
+        {
+          ...job,
+          status: 'error',
+          error: {
+            code: 'review-rejected',
+            message: 'Réponse écartée à la relecture. Aucun champ changé.',
+            retryable: true
+          }
+        }
+      ])
+    );
+    expect(screen.getByRole('alert')).toHaveTextContent('Réponse écartée à la relecture.');
+    expect(screen.getByRole('button', { name: 'Relancer l’analyse' })).toBeEnabled();
+    expect(screen.getByRole('textbox')).toHaveValue('');
+  });
   it('demande confirmation pour vider le chat et ignore une réponse arrivée après le reset', async () => {
-    let complete!: (t: BrewerTurn) => void;
-    vi.mocked(api.ask).mockImplementation(
+    let complete!: (t: { turn: BrewerTurn }) => void;
+    vi.mocked(api.submit).mockImplementation(
       () =>
         new Promise((r) => {
           complete = r;
@@ -72,20 +174,23 @@ describe('Conversation dans la recette / le brassin', () => {
     await open();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Ma question' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
     fireEvent.click(screen.getByRole('button', { name: 'Réinitialiser la conversation' }));
     expect(api.reset).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Effacer les échanges' }));
     await screen.findByText('Conversation réinitialisée.');
     await act(async () => {
-      complete(turn('Ancienne réponse'));
+      complete({ turn: turn('Ancienne réponse') });
     });
     expect(screen.queryByText('Ancienne réponse')).not.toBeInTheDocument();
     expect(screen.getByRole('textbox')).toHaveValue('');
-    vi.mocked(api.ask).mockResolvedValue(turn('Nouvelle question'));
+    vi.mocked(api.submit).mockImplementation(async (input) => ({
+      turn: turn(input.question, input.operationId)
+    }));
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Nouvelle question' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await screen.findByText('Mesure avant de corriger.');
-    expect(vi.mocked(api.ask).mock.calls[1][0].generation).toBe(1);
+    expect(vi.mocked(api.submit).mock.calls[1][0].generation).toBe(1);
   });
   it('ne remplit aucun champ avant validation et transmet seulement les cases cochées', async () => {
     const apply = vi.fn(),
@@ -203,7 +308,9 @@ describe('Conversation dans la recette / le brassin', () => {
   });
   it('envoie le brouillon actuel, continue la conversation et garde sur action explicite', async () => {
     const keep = vi.fn();
-    vi.mocked(api.ask).mockImplementation(async (input) => turn(input.question, input.operationId));
+    vi.mocked(api.submit).mockImplementation(async (input) => ({
+      turn: turn(input.question, input.operationId)
+    }));
     render(
       <StrictMode>
         <BrewerChat
@@ -218,12 +325,11 @@ describe('Conversation dans la recette / le brassin', () => {
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Mon pH est trop bas' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await screen.findByText('Mesure avant de corriger.');
-    expect(api.ask).toHaveBeenCalledWith(
+    expect(api.submit).toHaveBeenCalledWith(
       expect.objectContaining({
         draft: { name: 'Brouillon', volumeL: 24 },
         question: 'Mon pH est trop bas'
-      }),
-      expect.objectContaining({ signal: expect.any(AbortSignal), onProgress: expect.any(Function) })
+      })
     );
     expect(keep).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('Garder dans les notes du journal'));
@@ -231,22 +337,22 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
   it('conserve exactement le même identifiant et les mêmes données à la relance', async () => {
-    vi.mocked(api.ask)
+    vi.mocked(api.submit)
       .mockRejectedValueOnce(new Error('network'))
-      .mockImplementationOnce(async (input) => turn(input.question, input.operationId));
+      .mockImplementationOnce(async (input) => ({ turn: turn(input.question, input.operationId) }));
     render(<BrewerChat {...props} />);
     await open();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Chauffe bloquée' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await screen.findByRole('alert');
-    const first = vi.mocked(api.ask).mock.calls[0][0];
-    expect(
-      JSON.parse(localStorage.getItem('brewer-chat-pending:test-user:recipe:REC-A')!).operationId
-    ).toBe(first.operationId);
-    fireEvent.click(screen.getByRole('button', { name: 'Réessayer la question' }));
+    const first = vi.mocked(api.submit).mock.calls[0][0];
+    expect(JSON.parse(localStorage.getItem('brewer-jobs:test-user')!)[0].operationId).toBe(
+      first.operationId
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Réessayer l’envoi' }));
     await screen.findByText('Mesure avant de corriger.');
-    expect(vi.mocked(api.ask).mock.calls[1][0]).toEqual(first);
-    expect(localStorage.getItem('brewer-chat-pending:test-user:recipe:REC-A')).toBeNull();
+    expect(vi.mocked(api.submit).mock.calls[1][0]).toEqual(first);
+    expect(JSON.parse(localStorage.getItem('brewer-jobs:test-user')!)[0].input).toBeUndefined();
   });
   it('retrouve après rechargement une réponse déjà enregistrée sans renvoyer la question', async () => {
     const pending = {
@@ -259,11 +365,11 @@ describe('Conversation dans la recette / le brassin', () => {
     render(<BrewerChat {...props} />);
     await open();
     expect(screen.getByText('Chauffe bloquée')).toBeVisible();
-    expect(api.ask).not.toHaveBeenCalled();
+    expect(api.submit).not.toHaveBeenCalled();
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
   it('permet de forcer le modèle approfondi, avec le choix conservé pour une reprise', async () => {
-    vi.mocked(api.ask).mockRejectedValueOnce(new Error('network'));
+    vi.mocked(api.submit).mockRejectedValueOnce(new Error('network'));
     render(<BrewerChat {...props} />);
     await open();
     const mode = screen.getByRole('checkbox', { name: /Analyse approfondie/ });
@@ -272,11 +378,9 @@ describe('Conversation dans la recette / le brassin', () => {
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Compare mes malts' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await screen.findByRole('alert');
-    expect(vi.mocked(api.ask).mock.calls[0][0].mode).toBe('deep');
-    expect(mode).toBeDisabled();
-    expect(
-      JSON.parse(localStorage.getItem('brewer-chat-pending:test-user:recipe:REC-A')!).mode
-    ).toBe('deep');
+    expect(vi.mocked(api.submit).mock.calls[0][0].mode).toBe('deep');
+    expect(mode).toBeEnabled();
+    expect(JSON.parse(localStorage.getItem('brewer-jobs:test-user')!)[0].input.mode).toBe('deep');
   });
   it('rejoint automatiquement la question qui tourne encore après rechargement', async () => {
     const pending = {
@@ -287,11 +391,11 @@ describe('Conversation dans la recette / le brassin', () => {
     };
     localStorage.setItem('brewer-chat-pending:test-user:recipe:REC-A', JSON.stringify(pending));
     vi.mocked(api.status).mockResolvedValue({ pending: { ...pending, until: Date.now() + 60000 } });
-    vi.mocked(api.ask).mockResolvedValue(turn(pending.question, pending.operationId));
+    vi.mocked(api.submit).mockResolvedValue({ turn: turn(pending.question, pending.operationId) });
     render(<BrewerChat {...props} />);
     await open();
     await screen.findByText('Mesure avant de corriger.');
-    expect(vi.mocked(api.ask).mock.calls[0][0]).toEqual(pending);
+    expect(vi.mocked(api.submit).mock.calls[0][0]).toEqual(pending);
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
   it('affiche les vrais liens d’achat et ne présente pas un ancien stock comme actuel', async () => {
@@ -335,8 +439,8 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByText('Stock à revérifier')).toBeVisible();
   });
   it('ne place jamais une réponse tardive dans une autre recette', async () => {
-    let resolve!: (value: BrewerTurn) => void;
-    vi.mocked(api.ask).mockImplementation(
+    let resolve!: (value: { turn: BrewerTurn }) => void;
+    vi.mocked(api.submit).mockImplementation(
       () =>
         new Promise((r) => {
           resolve = r;
@@ -346,15 +450,16 @@ describe('Conversation dans la recette / le brassin', () => {
     await open();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'RecetteA' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
     view.rerender(<BrewerChat scope={{ kind: 'recipe', id: 'REC-B' }} label="RecetteB" />);
     await open();
-    await act(async () => resolve(turn('Ancien conseil')));
+    await act(async () => resolve({ turn: turn('Ancien conseil') }));
     expect(screen.queryByText('Ancien conseil')).toBeNull();
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
   it('signale un contexte modifié pendant l’analyse et ne prétend pas que le conseil est à jour', async () => {
     let resolve!: (value: BrewerTurn) => void;
-    vi.mocked(api.ask).mockImplementation(
+    vi.mocked(api.submit).mockImplementation(
       () =>
         new Promise((r) => {
           resolve = r;
@@ -364,8 +469,9 @@ describe('Conversation dans la recette / le brassin', () => {
     await open();
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Vérifie mon volume' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
     view.rerender(<BrewerChat {...props} draft={{ volumeL: 23 }} />);
-    await act(async () => resolve(turn()));
+    await act(async () => resolve({ turn: turn() }));
     expect(screen.getByText(/contexte a changé pendant/)).toBeVisible();
   });
 });

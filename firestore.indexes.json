@@ -4,58 +4,189 @@
       "collectionGroup": "brewerChats",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "threadId", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
+        {
+          "fieldPath": "threadId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "movements",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "sourceId", "order": "ASCENDING" },
-        { "fieldPath": "ts", "order": "DESCENDING" }
+        {
+          "fieldPath": "sourceId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ts",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "movements",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "itemRef", "order": "ASCENDING" },
-        { "fieldPath": "ts", "order": "DESCENDING" }
+        {
+          "fieldPath": "itemRef",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "ts",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "transactions",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "category", "order": "ASCENDING" },
-        { "fieldPath": "dateIso", "order": "DESCENDING" }
+        {
+          "fieldPath": "category",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateIso",
+          "order": "DESCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "finishedGoods",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "batchId", "order": "ASCENDING" },
-        { "fieldPath": "format", "order": "ASCENDING" }
+        {
+          "fieldPath": "batchId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "format",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "brewerJobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "brewerJobs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "threadId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
       ]
     }
   ],
   "fieldOverrides": [
-    { "collectionGroup": "brewerContexts", "fieldPath": "context", "indexes": [] },
-    { "collectionGroup": "brewerChats", "fieldPath": "context", "indexes": [] },
-    { "collectionGroup": "brewerChats", "fieldPath": "evidence", "indexes": [] },
-    { "collectionGroup": "brewerChats", "fieldPath": "trace", "indexes": [] },
-    { "collectionGroup": "brewerChats", "fieldPath": "advice", "indexes": [] },
-    { "collectionGroup": "brewerChats", "fieldPath": "proposal", "indexes": [] },
-    { "collectionGroup": "auditLogs", "fieldPath": "changes", "indexes": [] },
-    { "collectionGroup": "brewSessionOperations", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
-    { "collectionGroup": "restoreOperations", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
-    { "collectionGroup": "brewAlarmDevices", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
-    { "collectionGroup": "batches", "fieldPath": "brewDay", "indexes": [] },
-    { "collectionGroup": "batches", "fieldPath": "recipeSnapshot", "indexes": [] },
-    { "collectionGroup": "recipes", "fieldPath": "instructions", "indexes": [] },
-    { "collectionGroup": "dataHistory", "fieldPath": "before", "indexes": [] },
-    { "collectionGroup": "dataHistory", "fieldPath": "after", "indexes": [] }
+    {
+      "collectionGroup": "brewerContexts",
+      "fieldPath": "context",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerChats",
+      "fieldPath": "context",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerChats",
+      "fieldPath": "evidence",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerChats",
+      "fieldPath": "trace",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerChats",
+      "fieldPath": "advice",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerChats",
+      "fieldPath": "proposal",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "auditLogs",
+      "fieldPath": "changes",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewSessionOperations",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "restoreOperations",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewAlarmDevices",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": []
+    },
+    {
+      "collectionGroup": "batches",
+      "fieldPath": "brewDay",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "batches",
+      "fieldPath": "recipeSnapshot",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "recipes",
+      "fieldPath": "instructions",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "dataHistory",
+      "fieldPath": "before",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "dataHistory",
+      "fieldPath": "after",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerJobs",
+      "fieldPath": "input",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerNotificationDevices",
+      "fieldPath": "subscription",
+      "indexes": []
+    }
   ]
 }

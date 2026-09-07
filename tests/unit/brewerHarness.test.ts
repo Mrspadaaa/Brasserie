@@ -116,6 +116,10 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       .mockResolvedValueOnce(json({ approved: true, proposalApproved: true, issues: [] }));
     const result = await runBrewerHarness(c, 'Question', [], call);
     expect(result.proposal).toBeUndefined();
+    expect(result.evidence.some((e) => e.name === 'propose_changes')).toBe(false);
+    const repairedReview = JSON.parse(call.mock.calls[4][1].contents[0].parts[0].text);
+    expect(repairedReview.evidence).toEqual([]);
+    expect(repairedReview.proposal).toBeUndefined();
   });
   it('calcule une borne basse physique, pas une ETA de chauffe', () => {
     const r = runBrewerTool(

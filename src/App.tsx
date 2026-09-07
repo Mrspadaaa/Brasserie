@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
+import { BrewerActivity } from './ui/BrewerActivity';
 import { BottomNav, TabType } from './components/BottomNav';
 import { QuickActionModal } from './components/QuickActionModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -605,6 +606,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
+      <BrewerActivity />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}

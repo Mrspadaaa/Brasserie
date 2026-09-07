@@ -40,6 +40,36 @@ export interface BrewerReply {
   turn?: BrewerTurn;
   pending?: BrewerPending;
   generation?: number;
+  job?: BrewerJob;
+}
+export type BrewerStage =
+  | 'queued'
+  | 'context'
+  | 'analysis'
+  | 'tools'
+  | 'research'
+  | 'review'
+  | 'repair'
+  | 'saving'
+  | 'retry';
+export interface BrewerJob {
+  id: string;
+  operationId: string;
+  scope: BrewerScope;
+  generation: number;
+  question: string;
+  label: string;
+  status: 'queued' | 'running' | 'done' | 'error' | 'cancelled';
+  stage: BrewerStage;
+  detail?: string;
+  model?: string;
+  createdAt: number;
+  updatedAt: number;
+  startedAt?: number;
+  finishedAt?: number;
+  readAt?: number;
+  attempt: number;
+  error?: { code: string; message: string; retryable: boolean };
 }
 export interface BrewerFieldChange {
   id: string;

@@ -12,4 +12,18 @@ export { getBrewSession, saveBrewSession } from './brewSession.js';
 export { getBrewAlertConfig, registerBrewDevice, rescheduleBrewAlarms } from './brewPush.js';
 export { exportBreweryData, restoreBreweryData } from './dataBackup.js';
 export { recordDataChange } from './dataHistory.js';
-export { askBrewer, getBrewerConversation, resetBrewerConversation, applyBrewerProposal } from './brewerChat.js';
+export {
+  askBrewer,
+  getBrewerConversation,
+  resetBrewerConversation,
+  applyBrewerProposal
+} from './brewerChat.js';
+
+export {
+  dispatchBrewerQuestion,
+  processBrewerQuestion,
+  getBrewerActivity,
+  markBrewerRead,
+  retryBrewerQuestion
+} from './brewerJobs.js';
+export { registerBrewerNotifications, notifyBrewerAnswer } from './brewerNotifications.js';

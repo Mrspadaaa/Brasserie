@@ -1,10 +1,7 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { logger } from 'firebase-functions';
 import { requireBrewer } from './brewSession.js';
-import { GEMINI_API_KEY } from './ai.js';
-import { geminiTransport, runBrewerHarness, BrewerProUnavailableError } from './brewerHarness.js';
 import { normalizeRecipe, refreshCompanionRecipe } from './brewerTools.js';
 import {
   BATCH_FIELDS,
@@ -12,9 +9,9 @@ import {
   cleanContext,
   pick,
   scopeKey,
-  validateChatInput,
   validateScope
 } from './brewerContext.js';
+import { publicJob } from './brewerJobs.js';
 import { stableJson } from './backupCore.js';
 import { applyProposal, proposalBasis } from './brewerProposals.js';
 import { stampSession } from './brewSessionCore.js';
@@ -23,14 +20,13 @@ import type {
   BrewerContext,
   BrewerScope,
   BrewerTurn,
-  BrewerPending,
-  BrewerReply
+  BrewerPending
 } from './companionTypes.js';
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 // A saved recipe retains conversations held while editing its draft.
-const threadKey = (uid: string, scope: BrewerScope) =>
+export const threadKey = (uid: string, scope: BrewerScope) =>
   hash(`${uid}:${scopeKey(scope.kind === 'draft' ? { ...scope, kind: 'recipe' } : scope)}`);
-const publicTurn = (d: any): BrewerTurn =>
+export const publicTurn = (d: any): BrewerTurn =>
   pick(d, [
     'id',
     'operationId',
@@ -131,7 +127,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     )
   });
 }
-async function history(threadId: string, before?: number, resetAt = 0) {
+export async function history(threadId: string, before?: number, resetAt = 0) {
   let query = getFirestore()
     .collection('brewerChats')
     .where('threadId', '==', threadId)
@@ -162,9 +158,10 @@ export const getBrewerConversation = onCall(
       const db = getFirestore();
       // One consistent read: never observe an unlocked conversation without its committed answer.
       return db.runTransaction(async (tx) => {
-        const [turn, session] = await Promise.all([
+        const [turn, session, job] = await Promise.all([
           tx.get(db.doc(`brewerChats/${hash(uid + ':' + operationId)}`)),
-          tx.get(db.doc(`brewerConversations/${threadId}`))
+          tx.get(db.doc(`brewerConversations/${threadId}`)),
+          tx.get(db.doc(`brewerJobs/${hash(uid + ':' + operationId)}`))
         ]);
         const generation = session.data()?.generation ?? 0;
         if ((request.data?.generation ?? 0) !== generation)
@@ -172,7 +169,10 @@ export const getBrewerConversation = onCall(
             reason: 'chat-reset',
             generation
           });
-        if (turn.exists && turn.data()?.threadId !== threadId)
+        if (
+          (turn.exists && turn.data()?.threadId !== threadId) ||
+          (job.exists && job.data()?.threadId !== threadId)
+        )
           throw new HttpsError(
             'invalid-argument',
             'Ce message appartient à une autre conversation.'
@@ -180,178 +180,36 @@ export const getBrewerConversation = onCall(
         const pending = publicPending(session.data()?.active);
         return turn.exists && (turn.data()?.generation ?? 0) === generation
           ? { turn: publicTurn(turn.data()) }
-          : pending
-            ? { pending }
-            : {};
+          : job.exists && job.data()?.generation === generation
+            ? { job: publicJob(job.data()), ...(pending ? { pending } : {}) }
+            : pending
+              ? { pending }
+              : {};
       });
     }
     const session = (await getFirestore().doc(`brewerConversations/${threadId}`).get()).data();
+    let draft;
+    if (scope.kind === 'draft') {
+      const last = await getFirestore()
+        .collection('brewerChats')
+        .where('threadId', '==', threadId)
+        .orderBy('createdAt', 'desc')
+        .limit(1)
+        .get();
+      const row = last.docs[0]?.data();
+      if (row?.contextId && (row.generation ?? 0) === (session?.generation ?? 0))
+        draft = (await getFirestore().doc(`brewerContexts/${row.contextId}`).get()).data()?.context
+          ?.recipe;
+    }
     return {
       turns: await history(threadId, before, session?.resetAt),
-      generation: session?.generation ?? 0
+      generation: session?.generation ?? 0,
+      ...(draft ? { draft } : {})
     };
   }
 );
 
-export const askBrewer = onCall(
-  {
-    region: 'europe-west6',
-    timeoutSeconds: 300,
-    memory: '512MiB',
-    maxInstances: 3,
-    secrets: [GEMINI_API_KEY]
-  },
-  async (request) => {
-    const uid = requireBrewer(request);
-    let input: BrewerChatInput;
-    try {
-      input = validateChatInput(request.data);
-    } catch (e) {
-      throw new HttpsError('invalid-argument', (e as Error).message);
-    }
-    const db = getFirestore(),
-      threadId = threadKey(uid, input.scope),
-      digest = hash(stableJson(input));
-    const turnRef = db.doc(`brewerChats/${hash(uid + ':' + input.operationId)}`),
-      lock = db.doc(`brewerConversations/${threadId}`),
-      fence = randomUUID();
-    const startedAt = Date.now();
-    const cached = await db.runTransaction(async (tx): Promise<BrewerReply | null> => {
-      const [turn, session] = await Promise.all([tx.get(turnRef), tx.get(lock)]);
-      const generation = session.data()?.generation ?? 0;
-      if ((input.generation ?? 0) !== generation)
-        throw new HttpsError('failed-precondition', 'Cette conversation a été réinitialisée.', {
-          reason: 'chat-reset',
-          generation
-        });
-      if (turn.exists) {
-        if (turn.data()!.inputDigest !== digest)
-          throw new HttpsError('already-exists', 'Ce message a déjà un autre contenu.');
-        return { turn: publicTurn(turn.data()) };
-      }
-      const active = session.data()?.active;
-      const pending = publicPending(active);
-      if (pending) {
-        if (
-          active.operationId === input.operationId &&
-          active.inputDigest &&
-          active.inputDigest !== digest
-        )
-          throw new HttpsError('already-exists', 'Ce message a déjà un autre contenu.');
-        return { pending };
-      }
-      // The lease outlives the harness deadline. Fencing prevents late results overwriting a retry.
-      tx.set(lock, {
-        ...session.data(),
-        uid,
-        scope: input.scope,
-        active: {
-          fence,
-          operationId: input.operationId,
-          inputDigest: digest,
-          question: input.question,
-          until: Date.now() + 250000
-        },
-        updatedAt: Date.now()
-      });
-      return null;
-    });
-    if (cached) return cached;
-    let stage = 'context';
-    try {
-      const context = await loadBrewerContext(input),
-        session = (await lock.get()).data(),
-        past = await history(threadId, undefined, session?.resetAt);
-      stage = 'analysis';
-      const result = await runBrewerHarness(
-        context,
-        input.question,
-        past,
-        geminiTransport(GEMINI_API_KEY.value()),
-        { mode: input.mode }
-      );
-      stage = 'persistence';
-      // Reuse identical context snapshots: repeated questions don't duplicate recipe + inventory.
-      const snapshot = cleanContext({ ...context, now: undefined }),
-        contextId = hash(stableJson(snapshot));
-      const contextRef = db.doc(`brewerContexts/${contextId}`);
-      const turn = cleanContext({
-        id: turnRef.id,
-        threadId,
-        uid,
-        scope: input.scope,
-        inputDigest: digest,
-        operationId: input.operationId,
-        generation: input.generation ?? 0,
-        question: input.question,
-        ...result,
-        // The immutable context snapshot is the baseline; don't duplicate it in every proposal.
-        ...(result.proposal ? { proposal: { ...result.proposal, basis: undefined } } : {}),
-        createdAt: Math.max(Date.now(), (session?.resetAt ?? 0) + 1),
-        contextLabel: `${context.recipe?.name || context.batch?.name || 'Brouillon'} · ${context.phase}`,
-        contextId,
-        contextAt: context.now
-      });
-      if (
-        Buffer.byteLength(JSON.stringify(turn)) > 650000 ||
-        Buffer.byteLength(JSON.stringify(snapshot)) > 650000
-      )
-        throw new Error('Conversation trop volumineuse.');
-      await db.runTransaction(async (tx) => {
-        const [current, previousContext] = await Promise.all([tx.get(lock), tx.get(contextRef)]);
-        if (current.data()?.active?.fence !== fence)
-          throw new HttpsError(
-            'aborted',
-            'Une nouvelle analyse a repris ce message. Réessaie pour retrouver la réponse.'
-          );
-        if (!previousContext.exists) tx.create(contextRef, { id: contextId, context: snapshot });
-        tx.create(turnRef, turn);
-        tx.set(lock, {
-          ...current.data(),
-          uid,
-          scope: input.scope,
-          active: null,
-          updatedAt: Date.now()
-        });
-      });
-      logger.info('brewer-answer', {
-        model: result.model,
-        reviewModel: result.reviewModel,
-        reviewReason: result.reviewReason,
-        elapsedMs: Date.now() - startedAt,
-        tools: result.trace.length,
-        reviewed: true
-      });
-      return { turn: publicTurn(turn) };
-    } catch (e) {
-      await db
-        .runTransaction(async (tx) => {
-          const s = await tx.get(lock);
-          if (s.data()?.active?.fence === fence) tx.update(lock, { active: null });
-        })
-        .catch(() => {});
-      logger.warn('brewer-answer-failed', {
-        type: e instanceof HttpsError ? e.code : 'provider-or-validation',
-        stage,
-        elapsedMs: Date.now() - startedAt,
-        reason: /vérification/.test(String((e as Error)?.message))
-          ? 'review-rejected'
-          : /timeout|aborted/i.test(String((e as Error)?.message))
-            ? 'deadline'
-            : 'provider-or-format'
-      });
-      if (e instanceof HttpsError) throw e;
-      if (e instanceof BrewerProUnavailableError)
-        throw new HttpsError('unavailable', e.message, {
-          reason: 'pro-unavailable'
-        });
-      throw new HttpsError(
-        'unavailable',
-        'Le conseil n’a pas pu être vérifié. Réessaie ; les calculateurs restent disponibles.'
-      );
-    }
-  }
-);
+export { askBrewer } from './brewerJobs.js';
 
 /** Reset is durable and fences in-flight requests before removing their old receipts. */
 export const resetBrewerConversation = onCall(
@@ -409,6 +267,10 @@ export const resetBrewerConversation = onCall(
       const batch = db.batch();
       rows.docs.forEach((doc) => batch.delete(doc.ref));
       await batch.commit();
+    }
+    const oldJobs = await db.collection('brewerJobs').where('threadId', '==', threadId).get();
+    for (const job of oldJobs.docs) {
+      if (job.data().generation < reset.generation) await job.ref.delete();
     }
     return { generation: reset.generation };
   }

@@ -49,6 +49,117 @@
   max-width: 760px;
   margin-inline: auto;
 }
+
+.brewer-work-card {
+  padding: 15px;
+  border: 1px solid #46736a;
+  border-radius: 14px;
+  background: #18312c;
+  color: #d4e7dc;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.brewer-work-card.is-error {
+  border-color: #96594b;
+  background: #362621;
+  color: #f4d2bd;
+}
+.brewer-work-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brewer-work-heading strong {
+  flex: 1;
+}
+.brewer-work-heading time {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: #b8cabe;
+}
+.brewer-work-heading svg {
+  flex-shrink: 0;
+}
+.brewer-work-card p {
+  margin-top: 9px;
+}
+.brewer-work-card small,
+.brewer-work-away {
+  font-size: 11px;
+  opacity: 0.85;
+}
+.brewer-work-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.brewer-work-actions button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+}
+.brewer-notification-option {
+  font-size: 11px;
+  color: #b5c9bd;
+  margin: 0 0 12px;
+}
+.brewer-notification-option span,
+.brewer-notification-option button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.brewer-notification-option button {
+  min-height: 44px;
+}
+.brewer-notification-option p {
+  color: #edbb98;
+}
+.brewer-activity-pill {
+  position: fixed;
+  z-index: 51;
+  bottom: calc(82px + env(safe-area-inset-bottom));
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 100px);
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 24px;
+  background: #223d34;
+  color: #deebdc;
+  border: 1px solid #648e72;
+  box-shadow: 0 4px 16px #0006;
+  font-size: 12px;
+}
+.brewer-activity-pill.has-answer {
+  background: #435b32;
+  border-color: #bed19a;
+}
+.brewer-activity-list {
+  display: grid;
+  gap: 10px;
+  padding: 8px 0 24px;
+}
+.brewer-activity-list button {
+  text-align: left;
+  display: grid;
+  gap: 5px;
+  padding: 14px;
+  border: 1px solid #53604d;
+  border-radius: 14px;
+  color: #e0e5d4;
+  overflow-wrap: anywhere;
+}
+.brewer-activity-list small {
+  color: #b5caa1;
+}
+.brewer-activity-list span {
+  font-size: 13px;
+}
 .brewer-chat-context {
   display: flex;
   align-items: center;
@@ -615,4 +726,8 @@
   .brewer-chat-launch strong {
     font-size: 13px;
   }
+}
+
+body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill {
+  display: none;
 }

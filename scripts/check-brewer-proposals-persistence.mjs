@@ -16,6 +16,7 @@ const {
   applyBrewerProposal,
   loadBrewerContext
 } = await import('../functions/lib/brewerChat.js');
+const { processBrewerQuestion } = await import('../functions/lib/brewerJobs.js');
 const { prepareProposal } = await import('../functions/lib/brewerProposals.js');
 const db = getFirestore(),
   uid = randomUUID(),
@@ -30,20 +31,18 @@ await db
   .doc('config/app')
   .set({ activeBrewhouseId: equipment.id, brewhouses: [equipment], waterSources: [] });
 await db.doc(`recipes/${recipeId}`).set({ ...testRecipe, id: recipeId });
-await db
-  .doc(`batches/${batchId}`)
-  .set({
-    id: batchId,
-    name: 'Test',
-    status: 'planifie',
-    volumeL: 24,
-    recipeSnapshot: testRecipe,
-    brewDay: {
-      steps: [{ id: 'mash-0', label: 'Empâtage', durationMin: 60, tempC: 67 }],
-      currentIndex: 0,
-      revision: 1
-    }
-  });
+await db.doc(`batches/${batchId}`).set({
+  id: batchId,
+  name: 'Test',
+  status: 'planifie',
+  volumeL: 24,
+  recipeSnapshot: testRecipe,
+  brewDay: {
+    steps: [{ id: 'mash-0', label: 'Empâtage', durationMin: 60, tempC: 67 }],
+    currentIndex: 0,
+    revision: 1
+  }
+});
 let checks = 0;
 async function rejected(fn, code) {
   await assert.rejects(fn, (e) => e.code === code);
@@ -230,9 +229,10 @@ globalThis.fetch = async (url) => {
   );
 };
 const oldOperation = randomUUID(),
-  late = askBrewer.run(
+  receipt = await askBrewer.run(
     request({ scope, operationId: oldOperation, question: 'Question avant reset', generation: 0 })
   );
+const late = processBrewerQuestion.run({ data: { jobId: receipt.job.id } });
 const lateResult = late.then(
   () => null,
   (e) => e
@@ -247,7 +247,7 @@ checks++;
 assert.equal((await getBrewerConversation.run(request({ scope }))).turns.length, 0);
 checks++;
 release();
-assert.equal((await lateResult).code, 'aborted');
+assert.equal(await lateResult, null);
 checks++;
 assert.equal(
   (await db.collection('auditLogs').where('proposalTurnId', '==', first.turn.id).get()).size,

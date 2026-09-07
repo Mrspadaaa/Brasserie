@@ -1,3 +1,4 @@
+import { Units } from '../services/units';
 import React, { useEffect, useState } from 'react';
 import { Calculator, ChevronDown, Thermometer } from 'lucide-react';
 import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem, BrewhouseProfile } from '../types';
@@ -437,7 +438,7 @@ export function BrewAssist({
                   options={hops.map((h) => ({
                     value: h.id,
                     label: h.name,
-                    detail: `${h.weightG} g · recette : ${h.timeMin ?? 0} min avant la fin`
+                    detail: `${Units.format(h.weightG, 'g')} · recette : ${h.timeMin ?? 0} min avant la fin`
                   }))}
                   onChange={(id) => {
                     setHopId(id);

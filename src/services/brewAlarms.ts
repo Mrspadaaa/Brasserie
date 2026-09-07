@@ -5,7 +5,7 @@ import type { BrewAlarm } from '../domain/brewCompanion';
 /** Public key comes from the authenticated backend, independent of build-time flags. */
 export const remoteAlarmsConfigured = () => true;
 let subscriptionPromise: Promise<PushSubscription> | undefined;
-async function deviceSubscription() {
+export async function deviceSubscription() {
   if (!auth.currentUser) throw new Error('Connecte-toi pour activer les alertes.');
   if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window))
     throw new Error('Ce navigateur ne propose pas les notifications push.');

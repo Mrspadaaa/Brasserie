@@ -14,7 +14,15 @@ import { Sheet } from './Sheet';
 import { BrewerChat as api, brewerChatError } from '../services/brewerChat';
 import type { BrewerChatInput, BrewerScope, BrewerTurn } from '../services/brewerChat';
 import type { BrewerProduct } from '../../functions/src/companionTypes';
-import type { BrewerProgress } from '../services/brewerRecovery';
+import {
+  brewerJobs,
+  useBrewerJobs,
+  sameBrewerScope,
+  isBrewerWorking,
+  brewerJobStatus,
+  type ClientBrewerJob
+} from '../services/brewerJobs';
+import { BrewerNotificationOption } from './BrewerNotifications';
 import './brewer-chat.css';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
@@ -30,6 +38,9 @@ interface Props {
   onDraftApply?: (value: any) => void;
   beforeApply?: () => Promise<boolean>;
   onApplied?: () => void;
+  initialOpen?: boolean;
+  hideLauncher?: boolean;
+  onClose?: () => void;
 }
 const merge = (a: BrewerTurn[], b: BrewerTurn[]) =>
   [
@@ -72,26 +83,28 @@ function ScopedChat({
   scope,
   label,
   phase,
-  draft,
+  draft: currentDraft,
   localJournal,
   onKeep,
   editableTargets,
   onDraftApply,
   beforeApply,
-  onApplied
+  onApplied,
+  initialOpen = false,
+  hideLauncher = false,
+  onClose
 }: Props) {
-  const [open, setOpen] = useState(false),
+  const [savedDraft, setSavedDraft] = useState<unknown>();
+  const draft = currentDraft ?? savedDraft;
+  const [open, setOpen] = useState(initialOpen),
     [turns, setTurns] = useState<BrewerTurn[]>([]),
     [question, setQuestion] = useState('');
-  const [busy, setBusy] = useState(false),
-    [loading, setLoading] = useState(false),
+  const [loading, setLoading] = useState(false),
     [error, setError] = useState(''),
     [more, setMore] = useState(false),
     [kept, setKept] = useState<string[]>([]);
-  const [pending, setPending] = useState<BrewerChatInput | null>(null),
-    [changed, setChanged] = useState(false);
-  const [mode, setMode] = useState<'auto' | 'deep'>('auto'),
-    [progress, setProgress] = useState<BrewerProgress>('answering');
+  const [mode, setMode] = useState<'auto' | 'deep'>('auto');
+  const activity = useBrewerJobs();
   const [confirmReset, setConfirmReset] = useState(false),
     [resetting, setResetting] = useState(false),
     [notice, setNotice] = useState('');
@@ -112,89 +125,65 @@ function ScopedChat({
         : (['batch'] as const));
   const alive = useRef(true),
     lock = useRef(false),
-    storageKey = useRef(''),
-    end = useRef<HTMLDivElement>(null),
-    context = useRef(''),
-    request = useRef<AbortController | null>(null);
-  context.current = JSON.stringify([draft, localJournal, phase]);
+    end = useRef<HTMLDivElement>(null);
+  const jobs = activity.jobs.filter(
+    (j) => sameBrewerScope(j.scope, scope) && j.generation === generation.current
+  );
+  const timeline: Array<{ turn?: BrewerTurn; job?: ClientBrewerJob; at: number }> = [
+    ...turns.map((turn) => ({
+      turn,
+      at: jobs.find((j) => j.operationId === turn.operationId)?.createdAt ?? turn.createdAt
+    })),
+    ...jobs
+      .filter((job) => !turns.some((t) => t.operationId === job.operationId))
+      .map((job) => ({ job, at: job.createdAt }))
+  ].sort((a, b) => a.at - b.at);
   useEffect(() => {
     alive.current = true;
+    void brewerJobs.start();
     return () => {
       alive.current = false;
-      request.current?.abort();
     };
   }, []);
-  const persist = (input: BrewerChatInput | null) => {
-    setPending(input);
-    if (storageKey.current)
-      try {
-        input
-          ? localStorage.setItem(storageKey.current, JSON.stringify(input))
-          : localStorage.removeItem(storageKey.current);
-      } catch {
-        /* Memory retry remains available. */
-      }
-  };
   useEffect(() => {
     if (!open) return;
     let live = true;
     const version = epoch.current;
-    const current = () => live && version === epoch.current;
     setLoading(true);
     setError('');
     void (async () => {
       try {
-        storageKey.current = `brewer-chat-pending:${await api.userKey()}:${scope.kind}:${scope.id}`;
-        const saved = localStorage.getItem(storageKey.current);
-        let recovered: BrewerChatInput | null = null;
-        try {
-          const parsed = saved ? JSON.parse(saved) : null;
-          if (
-            parsed?.scope?.kind === scope.kind &&
-            parsed?.scope?.id === scope.id &&
-            typeof parsed.question === 'string' &&
-            typeof parsed.operationId === 'string'
-          )
-            recovered = parsed;
-        } catch {
-          /* Ignore malformed device draft. */
-        }
-        if (recovered && current()) {
-          setPending(recovered);
-          setQuestion(recovered.question);
-          setMode(recovered.mode ?? 'auto');
-        }
         const history = await api.history(scope);
-        if (!current()) return;
+        if (!live || version !== epoch.current) return;
         const nextGeneration = history.generation ?? 0;
+        if (history.draft) setSavedDraft(history.draft);
         const sameGeneration = nextGeneration === generation.current;
-        setTurns((t) => (sameGeneration ? merge(t, history) : history));
         generation.current = nextGeneration;
+        brewerJobs.forget(scope, nextGeneration);
+        setTurns((t) => (sameGeneration ? merge(t, history) : history));
         setMore(history.length === 20);
-        if (recovered && (recovered.generation ?? 0) !== nextGeneration) {
-          persist(null);
-          setQuestion('');
-          recovered = null;
-        }
-        if (recovered && history.some((t) => t.operationId === recovered.operationId)) {
-          persist(null);
-          setQuestion('');
-        } else if (recovered && !lock.current) {
-          const state = await api.status(recovered);
-          if (!current()) return;
-          if (state.turn) {
-            setTurns((t) => merge(t, [state.turn!]));
-            persist(null);
-            setQuestion('');
-          } else if (state.pending) {
-            // Rejoin work already running after reload; failed/idle requests keep an explicit retry.
-            void requestAnswer(recovered);
+        // Move the old single-message outbox into the conversation after upgrading.
+        const oldKey =
+          'brewer-chat-pending:' + (await api.userKey()) + ':' + scope.kind + ':' + scope.id;
+        const old = localStorage.getItem(oldKey);
+        if (old && live && version === epoch.current) {
+          try {
+            const input = JSON.parse(old);
+            if (
+              sameBrewerScope(input.scope, scope) &&
+              (input.generation ?? 0) === nextGeneration &&
+              !history.some((t) => t.operationId === input.operationId)
+            )
+              brewerJobs.submit(input, label);
+          } catch {
+            /* Invalid legacy outbox. */
           }
+          localStorage.removeItem(oldKey);
         }
       } catch (e) {
-        if (current()) setError(brewerChatError(e));
+        if (live && version === epoch.current) setError(brewerChatError(e));
       } finally {
-        if (current()) setLoading(false);
+        if (live && version === epoch.current) setLoading(false);
       }
     })();
     return () => {
@@ -202,43 +191,27 @@ function ScopedChat({
     };
   }, [open, scope.kind, scope.id]);
   useEffect(() => {
+    const current = activity.jobs.filter(
+      (j) => sameBrewerScope(j.scope, scope) && j.generation === generation.current
+    );
+    const received = current.flatMap((j) => (j.turn ? [j.turn] : []));
+    if (received.length) setTurns((t) => merge(t, received));
+    if (open && document.visibilityState !== 'hidden')
+      current
+        .filter(
+          (j) =>
+            j.status === 'error' ||
+            (j.status === 'done' && (j.turn || turns.some((t) => t.operationId === j.operationId)))
+        )
+        .forEach((j) => brewerJobs.markRead(j));
+  }, [activity.jobs, open, turns.length]);
+  useEffect(() => {
     if (open) end.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
-  }, [turns.length, busy, open]);
-  const requestAnswer = async (input: BrewerChatInput) => {
-    if (lock.current) return;
-    lock.current = true;
-    setBusy(true);
-    setError('');
-    setChanged(false);
-    const signature = context.current;
-    const version = epoch.current;
-    request.current = new AbortController();
-    persist(input);
-    try {
-      const turn = await api.ask(input, {
-        signal: request.current.signal,
-        onProgress: (value) => {
-          if (alive.current && epoch.current === version) setProgress(value);
-        }
-      });
-      if (!alive.current || epoch.current !== version) return;
-      setTurns((t) => merge(t, [turn]));
-      persist(null);
-      setQuestion('');
-      setChanged(context.current !== signature);
-    } catch (e) {
-      if (alive.current && epoch.current === version) setError(brewerChatError(e));
-    } finally {
-      if (epoch.current === version) {
-        lock.current = false;
-        if (alive.current) setBusy(false);
-      }
-    }
-  };
+  }, [turns.length, jobs.length, open]);
   const ask = () => {
-    if (!question.trim()) return;
-    return requestAnswer(
-      pending ?? {
+    if (question.trim().length < 2 || loading || resetting || applying) return;
+    brewerJobs.submit(
+      {
         scope,
         operationId: crypto.randomUUID(),
         question: question.trim(),
@@ -248,8 +221,11 @@ function ScopedChat({
         mode,
         generation: generation.current,
         editableTargets: [...targets]
-      }
+      },
+      label
     );
+    setQuestion('');
+    setError('');
   };
   const older = async () => {
     const version = epoch.current;
@@ -273,10 +249,8 @@ function ScopedChat({
   const reset = async () => {
     if (resetting) return;
     epoch.current++;
-    request.current?.abort();
     lock.current = true;
     setResetting(true);
-    setBusy(false);
     setLoading(false);
     setError('');
     resetOperation.current ||= crypto.randomUUID();
@@ -286,10 +260,9 @@ function ScopedChat({
       generation.current = result.generation;
       setTurns([]);
       setQuestion('');
-      persist(null);
+      brewerJobs.forget(scope, result.generation);
       setMore(false);
       setKept([]);
-      setChanged(false);
       setConfirmReset(false);
       resetOperation.current = '';
       setNotice('Conversation réinitialisée.');
@@ -329,25 +302,36 @@ function ScopedChat({
   };
   return (
     <>
-      <button type="button" className="brewer-chat-launch" onClick={() => setOpen(true)}>
-        <span className="brewer-chat-mark">
-          <MessageCircle size={19} />
-        </span>
-        <span>
-          <strong>Compagnon brasseur</strong>
-          <small>
-            {phase && /ferment|garde/.test(phase)
-              ? 'Fermentation, dégustation, imprévus'
-              : 'Une question, un imprévu ?'}
-          </small>
-        </span>
-        <span className="brewer-chat-badge">Gemini</span>
-        <ChevronRight size={17} />
-      </button>
+      {!hideLauncher && (
+        <button type="button" className="brewer-chat-launch" onClick={() => setOpen(true)}>
+          <span className="brewer-chat-mark">
+            <MessageCircle size={19} />
+          </span>
+          <span>
+            <strong>Compagnon brasseur</strong>
+            <small>
+              {phase && /ferment|garde/.test(phase)
+                ? 'Fermentation, dégustation, imprévus'
+                : 'Une question, un imprévu ?'}
+            </small>
+          </span>
+          <span className="brewer-chat-badge">
+            {jobs.some(isBrewerWorking)
+              ? 'En cours'
+              : jobs.some((j) => !j.readAt && j.status === 'done')
+                ? 'Réponse prête'
+                : 'Gemini'}
+          </span>
+          <ChevronRight size={17} />
+        </button>
+      )}
       <Sheet
         open={open}
         onClose={() => {
-          if (!applying) setOpen(false);
+          if (!applying) {
+            setOpen(false);
+            onClose?.();
+          }
         }}
         dismissible={!applying}
         title="Compagnon brasseur"
@@ -366,7 +350,7 @@ function ScopedChat({
                 <input
                   type="checkbox"
                   checked={mode === 'deep'}
-                  disabled={busy || applying || resetting || !!pending}
+                  disabled={applying || resetting}
                   onChange={(e) => setMode(e.target.checked ? 'deep' : 'auto')}
                 />
                 <Sparkles size={14} />
@@ -374,20 +358,6 @@ function ScopedChat({
               </label>
               <small>{mode === 'deep' ? 'Pro 3.1 · plus lent' : 'Auto · Pro selon besoin'}</small>
             </div>
-            {pending && !busy && (
-              <div className="brewer-chat-retry">
-                <span>Question conservée</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    persist(null);
-                    setError('');
-                  }}
-                >
-                  Modifier la question
-                </button>
-              </div>
-            )}
             <label className="sr-only" htmlFor={`brewer-question-${scope.id}`}>
               Question au compagnon brasseur
             </label>
@@ -397,16 +367,22 @@ function ScopedChat({
               maxLength={3000}
               rows={2}
               placeholder="Décris ce que tu observes…"
-              readOnly={busy || applying || resetting || !!pending}
+              readOnly={applying || resetting}
               onChange={(e) => setQuestion(e.target.value)}
             />
             <button
               type="submit"
-              disabled={busy || applying || loading || resetting || !question.trim()}
-              aria-label={pending ? 'Réessayer la question' : 'Envoyer la question'}
+              disabled={
+                applying ||
+                loading ||
+                resetting ||
+                question.trim().length < 2 ||
+                (scope.kind === 'draft' && !draft)
+              }
+              aria-label="Envoyer la question"
             >
-              {busy ? <LoaderCircle className="brewer-chat-spin" size={20} /> : <Send size={20} />}
-              <span>{busy ? 'Analyse…' : pending ? 'Réessayer' : 'Envoyer'}</span>
+              <Send size={20} />
+              <span>Envoyer</span>
             </button>
           </form>
         }
@@ -428,6 +404,13 @@ function ScopedChat({
             <RotateCcw size={17} />
           </button>
         </div>
+        <BrewerNotificationOption />
+        {scope.kind === 'draft' && !currentDraft && (
+          <p className="brewer-chat-status">
+            Cette vue reprend le dernier brouillon analysé. Rouvre l’assistant recette pour valider
+            des champs ou envoyer tes dernières modifications.
+          </p>
+        )}
         {confirmReset && (
           <div
             className="brewer-reset-confirm"
@@ -464,7 +447,7 @@ function ScopedChat({
             Échanges précédents
           </button>
         )}
-        {!turns.length && !loading && (
+        {!timeline.length && !loading && (
           <div className="brewer-chat-welcome">
             <Sparkles size={25} />
             <h3>On regarde ça ensemble.</h3>
@@ -474,12 +457,7 @@ function ScopedChat({
             </p>
             <div className="brewer-chat-prompts">
               {prompts(scope.kind, phase).map((p) => (
-                <button
-                  type="button"
-                  key={p}
-                  disabled={busy || resetting || !!pending}
-                  onClick={() => setQuestion(p)}
-                >
+                <button type="button" key={p} disabled={resetting} onClick={() => setQuestion(p)}>
                   {p}
                   <ArrowUpRight size={15} />
                 </button>
@@ -492,135 +470,169 @@ function ScopedChat({
           </div>
         )}
         <div className="brewer-chat-history" aria-label="Conversation avec le compagnon">
-          {turns.map((t) => (
-            <article key={t.id} className="brewer-chat-turn">
-              <p className="brewer-chat-question">{t.question}</p>
-              <div className={`brewer-chat-answer is-${t.advice.level}`}>
-                <div className="brewer-chat-answer-meta">
-                  <span>
-                    <Sparkles size={14} /> Compagnon
-                  </span>
-                  <time dateTime={new Date(t.createdAt).toISOString()}>
-                    {new Date(t.createdAt).toLocaleString('fr-CH', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </time>
-                </div>
-                <h3>{t.advice.summary}</h3>
-                <p className="brewer-chat-action">{t.advice.action}</p>
-                {t.advice.why && <p>{t.advice.why}</p>}
-                {t.advice.watch && (
-                  <p className="brewer-chat-watch">
-                    <strong>Prochain contrôle</strong>
-                    {t.advice.watch}
-                  </p>
-                )}
-                {t.advice.question && <p className="brewer-chat-followup">{t.advice.question}</p>}
-                <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} />
-                {t.proposal && (
-                  <BrewerProposalCard
-                    proposal={t.proposal}
-                    draft={scope.kind === 'draft'}
-                    disabled={
-                      busy || applying || resetting || (scope.kind === 'draft' && !onDraftApply)
-                    }
-                    onDecide={(ids, decision) => decide(t, ids, decision)}
-                  />
-                )}
-                <details className="brewer-chat-proof">
-                  <summary>
-                    <CheckCheck size={15} />
-                    {t.reviewed ? 'Conseil relu' : 'Conseil'}
-                    {t.evidence.length > 0 ? ' · calculs et sources' : ''}
-                  </summary>
-                  <p>
-                    {t.contextLabel} · {t.model}
-                  </p>
-                  {t.reviewModel && (
-                    <p>
-                      Relecture : {t.reviewModel}
-                      {t.reviewReason === 'requested'
-                        ? ' · analyse approfondie demandée'
-                        : t.reviewReason === 'sensitive'
-                          ? ' · situation sensible'
-                          : t.reviewReason === 'research'
-                            ? ' · recherche web avec Pro'
-                            : t.reviewReason === 'complexity'
-                              ? ' · analyse approfondie choisie par le compagnon'
-                              : t.reviewReason === 'repair'
-                                ? ' · vérification renforcée'
-                                : ' · rapide'}
-                      .
+          {timeline.map(({ turn: t, job }) =>
+            !t && job ? (
+              <BrewerWorkCard
+                key={job.operationId}
+                job={job}
+                onRetry={() => {
+                  if (job.sendError) brewerJobs.retry(job);
+                  else if (scope.kind === 'draft' && !draft) {
+                    brewerJobs.markRead(job);
+                    brewerJobs.retrySaved(job);
+                  } else {
+                    brewerJobs.markRead(job);
+                    brewerJobs.submit(
+                      {
+                        ...(job.input ?? {}),
+                        scope,
+                        operationId: crypto.randomUUID(),
+                        question: job.question,
+                        ...(draft ? { draft } : {}),
+                        ...(localJournal ? { localJournal } : {}),
+                        phase,
+                        mode,
+                        generation: generation.current,
+                        editableTargets: [...targets]
+                      },
+                      label
+                    );
+                  }
+                }}
+                onEdit={() => {
+                  setQuestion(job!.question);
+                  document.getElementById('brewer-question-' + scope.id)?.focus();
+                }}
+              />
+            ) : t ? (
+              <article key={t.id} className="brewer-chat-turn">
+                <p className="brewer-chat-question">{t.question}</p>
+                <div className={`brewer-chat-answer is-${t.advice.level}`}>
+                  <div className="brewer-chat-answer-meta">
+                    <span>
+                      <Sparkles size={14} /> Compagnon
+                    </span>
+                    <time dateTime={new Date(t.createdAt).toISOString()}>
+                      {new Date(t.createdAt).toLocaleString('fr-CH', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </time>
+                  </div>
+                  <h3>{t.advice.summary}</h3>
+                  <p className="brewer-chat-action">{t.advice.action}</p>
+                  {t.advice.why && <p>{t.advice.why}</p>}
+                  {t.advice.watch && (
+                    <p className="brewer-chat-watch">
+                      <strong>Prochain contrôle</strong>
+                      {t.advice.watch}
                     </p>
                   )}
-                  <p>Seconde relecture IA. Les estimations restent à confirmer à la cuve.</p>
-                  {t.evidence.map((e) => (
-                    <div key={e.id}>
-                      <strong>
-                        <Calculator size={14} />
-                        {e.label}
-                      </strong>
-                      {e.model && <small>Recherche : {e.model}</small>}
-                      {e.facts.map((f, i) => (
-                        <p key={i}>{f}</p>
-                      ))}
-                      {e.limits.map((l, i) => (
-                        <small key={i}>{l}</small>
-                      ))}
-                      {e.sources
-                        ?.filter((s) => /^https:\/\//.test(s.url))
-                        .map((s, i) => (
-                          <a key={i} href={s.url} target="_blank" rel="noopener noreferrer">
-                            {s.title}
-                            <ArrowUpRight size={12} />
-                          </a>
+                  {t.advice.question && <p className="brewer-chat-followup">{t.advice.question}</p>}
+                  <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} />
+                  {t.proposal && (
+                    <BrewerProposalCard
+                      proposal={t.proposal}
+                      draft={scope.kind === 'draft'}
+                      disabled={applying || resetting || (scope.kind === 'draft' && !onDraftApply)}
+                      onDecide={(ids, decision) => decide(t, ids, decision)}
+                    />
+                  )}
+                  <details className="brewer-chat-proof">
+                    <summary>
+                      <CheckCheck size={15} />
+                      {t.reviewed ? 'Conseil relu' : 'Conseil'}
+                      {t.evidence.length > 0 ? ' · calculs et sources' : ''}
+                    </summary>
+                    <p>
+                      {t.contextLabel} · {t.model}
+                    </p>
+                    {t.reviewModel && (
+                      <p>
+                        Relecture : {t.reviewModel}
+                        {t.reviewReason === 'requested'
+                          ? ' · analyse approfondie demandée'
+                          : t.reviewReason === 'sensitive'
+                            ? ' · situation sensible'
+                            : t.reviewReason === 'research'
+                              ? ' · recherche web avec Pro'
+                              : t.reviewReason === 'complexity'
+                                ? ' · analyse approfondie choisie par le compagnon'
+                                : t.reviewReason === 'repair'
+                                  ? ' · vérification renforcée'
+                                  : ' · rapide'}
+                        .
+                      </p>
+                    )}
+                    <p>Seconde relecture IA. Les estimations restent à confirmer à la cuve.</p>
+                    {t.evidence.map((e) => (
+                      <div key={e.id}>
+                        <strong>
+                          <Calculator size={14} />
+                          {e.label}
+                        </strong>
+                        {e.model && <small>Recherche : {e.model}</small>}
+                        {e.facts.map((f, i) => (
+                          <p key={i}>{f}</p>
                         ))}
-                    </div>
-                  ))}
-                </details>
-                {onKeep && (
-                  <button
-                    className="brewer-chat-keep"
-                    type="button"
-                    disabled={kept.includes(t.id)}
-                    onClick={() => {
-                      onKeep(`Conseil IA — ${t.question}\n${t.advice.action}\n${t.advice.watch}`);
-                      setKept((k) => [...k, t.id]);
-                    }}
-                  >
-                    {kept.includes(t.id)
-                      ? 'Ajouté aux notes du journal'
-                      : 'Garder dans les notes du journal'}
-                  </button>
-                )}
-              </div>
-            </article>
-          ))}
+                        {e.limits.map((l, i) => (
+                          <small key={i}>{l}</small>
+                        ))}
+                        {e.sources
+                          ?.filter((s) => /^https:\/\//.test(s.url))
+                          .map((s, i) => (
+                            <a key={i} href={s.url} target="_blank" rel="noopener noreferrer">
+                              {s.title}
+                              <ArrowUpRight size={12} />
+                            </a>
+                          ))}
+                      </div>
+                    ))}
+                  </details>
+                  {onKeep && (
+                    <button
+                      className="brewer-chat-keep"
+                      type="button"
+                      disabled={kept.includes(t.id)}
+                      onClick={() => {
+                        onKeep(`Conseil IA — ${t.question}\n${t.advice.action}\n${t.advice.watch}`);
+                        setKept((k) => [...k, t.id]);
+                      }}
+                    >
+                      {kept.includes(t.id)
+                        ? 'Ajouté aux notes du journal'
+                        : 'Garder dans les notes du journal'}
+                    </button>
+                  )}
+                </div>
+              </article>
+            ) : null
+          )}
         </div>
         {loading && (
           <p className="brewer-chat-status" role="status">
             Chargement des échanges…
           </p>
         )}
-        {busy && (
-          <p className="brewer-chat-status" role="status">
-            <LoaderCircle className="brewer-chat-spin" size={17} />
-            {progress === 'waiting'
-              ? 'La réponse précédente se termine. Ta question suivra automatiquement…'
-              : progress === 'recovering'
-                ? 'Reconnexion au serveur, ta question est conservée…'
-                : mode === 'deep'
-                  ? 'Analyse approfondie avec Gemini Pro, puis relecture…'
-                  : 'Analyse, recherche si nécessaire et relecture…'}
+        {activity.connectionError && (
+          <p className="brewer-chat-error" role="status">
+            {activity.connectionError}{' '}
+            <button type="button" onClick={() => void brewerJobs.refresh()}>
+              Actualiser
+            </button>
           </p>
         )}
-        {changed && (
-          <p className="brewer-chat-status" role="status">
-            Le contexte a changé pendant l’analyse. Le conseil ci-dessus utilise les données à
-            l’envoi ; pose une nouvelle question pour l’actualiser.
+        {!hideLauncher && jobs.some(
+          (j) =>
+            j.status === 'done' &&
+            j.contextSignature &&
+            j.contextSignature !== JSON.stringify([draft, localJournal, phase])
+        ) && (
+          <p className="brewer-chat-status">
+            Le contexte a changé pendant ou depuis l’analyse. Pose une nouvelle question pour tenir
+            compte de tes derniers changements.
           </p>
         )}
         {error && (
@@ -631,6 +643,80 @@ function ScopedChat({
         <div ref={end} />
       </Sheet>
     </>
+  );
+}
+
+function BrewerWorkCard({
+  job,
+  onRetry,
+  onEdit
+}: {
+  job: ClientBrewerJob;
+  onRetry: () => void;
+  onEdit: () => void;
+}) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const failed = job.status === 'error' || !!job.sendError;
+  const seconds = Math.max(0, Math.floor(((job.finishedAt ?? now) - job.createdAt) / 1000));
+  return (
+    <article className="brewer-chat-turn">
+      <p className="brewer-chat-question">{job.question}</p>
+      <div className={`brewer-work-card${failed ? ' is-error' : ''}`}>
+        <div role="status" className="brewer-work-heading">
+          {!failed && isBrewerWorking(job) && (
+            <LoaderCircle size={17} className="brewer-chat-spin" />
+          )}
+          <strong>{brewerJobStatus(job)}</strong>
+          <time>
+            {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
+          </time>
+        </div>
+        {failed ? (
+          <>
+            <p role="alert">{job.sendError || job.error?.message}</p>
+            <div className="brewer-work-actions">
+              {(job.sendError || job.error?.retryable) && (
+                <button type="button" onClick={onRetry}>
+                  {job.sendError ? 'Réessayer l’envoi' : 'Relancer l’analyse'}
+                </button>
+              )}
+              <button type="button" onClick={onEdit}>
+                Reformuler
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {job.detail && <p>{job.detail}</p>}
+            <small>
+              {job.model?.includes('pro')
+                ? 'Gemini 3.1 Pro'
+                : job.model
+                  ? 'Gemini Flash'
+                  : job.sending
+                    ? 'En attente de l’accusé de réception'
+                    : 'Enregistrée sur le serveur'}
+              {job.attempt > 1 ? ' · reprise' : ''}
+            </small>
+            {!job.sending && (
+              <p className="brewer-work-away">
+                Tu peux continuer ailleurs. La réponse restera dans ce fil.
+              </p>
+            )}
+            {job.status === 'running' && now - job.updatedAt > 90000 && (
+              <p>
+                Cette étape prend du temps. Le serveur poursuit l’analyse et signalera tout échec
+                ici.
+              </p>
+            )}
+          </>
+        )}
+      </div>
+    </article>
   );
 }
 

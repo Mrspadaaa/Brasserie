@@ -202,10 +202,10 @@ export const rescheduleBrewAlarms = onDocumentWritten(
   }
 );
 
-export async function sendNativePush(subscription: PushSubscription, data: Record<string, string>) {
+export async function sendNativePush(subscription: PushSubscription, data: Record<string, string>, ttl = 300) {
   const keys = await vapidKeys();
   return webpush.sendNotification(subscription, JSON.stringify({ data }), {
-    TTL: 300,
+    TTL: ttl,
     urgency: 'high',
     timeout: 15000,
     topic: data.tag.slice(0, 32),

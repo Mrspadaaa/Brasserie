@@ -13,6 +13,7 @@ process.env.AUTHORIZED_ACCOUNTS = 'brewer@example.invalid';
 const { askBrewer, getBrewerConversation, loadBrewerContext } = await import(
   '../functions/lib/brewerChat.js'
 );
+const { processBrewerQuestion } = await import('../functions/lib/brewerJobs.js');
 const { exportBreweryData } = await import('../functions/lib/dataBackup.js');
 const { parseBackup } = await import('../functions/lib/backupCore.js');
 const runId = randomUUID(),
@@ -50,22 +51,23 @@ await assert.rejects(
 const ctx = await loadBrewerContext(data);
 assert.equal(ctx.recipe.name, 'Recette figée');
 assert.ok(!JSON.stringify(ctx).includes('PRIVATE-DONT-SEND'));
-const initial = askBrewer.run(request);
+const receipt = await askBrewer.run(request);
+const initial = processBrewerQuestion.run({ data: { jobId: receipt.job.id } });
 await new Promise((r) => setTimeout(r, 1200));
 const joined = await askBrewer.run(request);
-assert.equal(joined.pending.operationId, data.operationId);
+assert.equal(joined.job.operationId, data.operationId);
 const queuedInput = {
   ...data,
   operationId: randomUUID(),
   question: 'Et avec1500W pour le même volume mesuré et la même montée de température ?'
 };
 const queued = await askBrewer.run({ ...request, data: queuedInput });
-assert.equal(queued.pending.operationId, data.operationId);
+assert.equal(queued.job.operationId, queuedInput.operationId);
 const during = await getBrewerConversation.run({
   ...request,
   data: { scope: data.scope, operationId: data.operationId }
 });
-assert.equal(during.pending.operationId, data.operationId);
+assert.equal(during.job.operationId, data.operationId);
 await assert.rejects(
   () =>
     askBrewer.run({
@@ -74,7 +76,8 @@ await assert.rejects(
     }),
   (e) => e.code === 'already-exists'
 );
-const first = await initial;
+await initial;
+const first = await getBrewerConversation.run({ ...request, data: { scope: data.scope, operationId: data.operationId } });
 assert.equal(first.turn.reviewed, true);
 const retry = await askBrewer.run(request);
 assert.deepEqual(retry, first);
@@ -95,6 +98,7 @@ await assert.rejects(
   () => askBrewer.run({ ...request, data: { ...data, question: 'Un autre contenu' } }),
   (e) => e.code === 'already-exists'
 );
+await processBrewerQuestion.run({ data: { jobId: queued.job.id } });
 const second = await askBrewer.run({
   ...request,
   data: queuedInput

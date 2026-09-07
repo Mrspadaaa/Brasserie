@@ -73,6 +73,15 @@ export async function awaitBrewerReply(
       continue;
     }
     if (state.turn) return state.turn;
+    if (state.job?.status === 'error')
+      throw Object.assign(new Error(state.job.error?.message ?? 'L’analyse n’a pas abouti.'), {
+        code: 'functions/unavailable',
+        details: { reason: state.job.error?.code }
+      });
+    if (state.job && ['queued', 'running'].includes(state.job.status)) {
+      options.onProgress?.(state.job.status === 'queued' ? 'waiting' : 'answering');
+      continue;
+    }
     if (state.pending) {
       options.onProgress?.(
         state.pending.operationId === input.operationId ? 'answering' : 'waiting'
