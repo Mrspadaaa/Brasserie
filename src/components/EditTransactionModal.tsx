@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from '../ui/NumberInput';
 import { X, Save, FileText, Check, Copy, Camera, UploadCloud, Download } from 'lucide-react';
 import { Transaction, FinanceCategory } from '../types';
@@ -21,36 +22,19 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   onClose,
   onSave
 }) => {
-  if (!isOpen || !transaction) return null;
-
-  const [description, setDescription] = useState(transaction.description);
-  const [category, setCategory] = useState<FinanceCategory>(transaction.category);
-  const [subcategory, setSubcategory] = useState(transaction.subcategory || '');
-  const [date, setDate] = useState(transaction.date);
-  const [amountHT, setAmountHT] = useState<number>(transaction.amountHT);
-  const [tvaRate, setTvaRate] = useState<number>(transaction.tvaRate);
-  const [proofNotes, setProofNotes] = useState(transaction.proofNotes || '');
-  const [proofUrl, setProofUrl] = useState<string | undefined>(transaction.proofUrl);
-  const [proofFileName, setProofFileName] = useState<string | undefined>(transaction.proofFileName);
+  const [draft, setDraft] = useSyncedDraft(isOpen ? transaction : null, transaction?.id);
   const [copiedDrive, setCopiedDrive] = useState(false);
-
-  useEffect(() => {
-    setDescription(transaction.description);
-    setCategory(transaction.category);
-    setSubcategory(transaction.subcategory || '');
-    setDate(transaction.date);
-    setAmountHT(transaction.amountHT);
-    setTvaRate(transaction.tvaRate);
-    setProofNotes(transaction.proofNotes || '');
-    setProofUrl(transaction.proofUrl);
-    setProofFileName(transaction.proofFileName);
-  }, [transaction]);
+  if (!isOpen || !transaction || !draft) return null;
+  const { description, category, subcategory = '', date, amountHT, tvaRate,
+    proofNotes = '', proofUrl, proofFileName } = draft;
+  const field = <K extends keyof Transaction>(key: K, value: Transaction[K]) =>
+    setDraft(current => current?.id === transaction.id ? { ...current, [key]: value } : current);
 
   const tvaAmount = Math.round(amountHT * tvaRate * 100) / 100;
   const amountTTC = Math.round((amountHT + tvaAmount) * 100) / 100;
 
   const currentDrivePath = DriveService.generateDrivePath({
-    ...transaction,
+    ...draft,
     category,
     date,
     amountHT,
@@ -61,7 +45,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const updated: Transaction = {
-      ...transaction,
+      ...draft,
       description: description.trim(),
       category,
       subcategory: subcategory.trim() || 'Divers',
@@ -122,7 +106,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             data-bwignore="true"
             required
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => field('description', e.target.value)}
             className={inputClass}
           />
         </div>
@@ -136,7 +120,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               autoComplete="off"
               data-form-type="other"
               value={category}
-              onChange={(e) => setCategory(e.target.value as FinanceCategory)}
+              onChange={(e) => field('category', e.target.value as FinanceCategory)}
               className={inputClass}
             >
               <option value="brassage">🌾 Frais de brassage (Malt/Houblon)</option>
@@ -163,7 +147,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               data-1p-ignore="true"
               data-bwignore="true"
               value={subcategory}
-              onChange={(e) => setSubcategory(e.target.value)}
+              onChange={(e) => field('subcategory', e.target.value)}
               placeholder="ex: CIP, Malt, Outillage..."
               className={inputClass}
             />
@@ -187,7 +171,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 data-bwignore="true"
                 required
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => field('date', e.target.value)}
                 placeholder="JJ.MM.AAAA"
                 className={`${inputClass} font-mono text-center px-2`}
               />
@@ -199,7 +183,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 autoComplete="off"
                 data-form-type="other"
                 value={tvaRate}
-                onChange={(e) => setTvaRate(parseFloat(e.target.value))}
+                onChange={(e) => field('tvaRate', parseFloat(e.target.value))}
                 className={`${inputClass} text-center`}
               >
                 <option value={0.0}>0.0% (Exonéré)</option>
@@ -213,7 +197,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Montant HT</label>
             <NumberInput
               value={amountHT}
-              onValue={(v) => setAmountHT(v)}
+              onValue={(v) => field('amountHT', v)}
               pad={false}
               className={`${inputClass} font-mono font-bold text-center`}
             />
@@ -226,7 +210,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               autoComplete="off"
               data-form-type="other"
               value={tvaRate}
-              onChange={(e) => setTvaRate(parseFloat(e.target.value))}
+              onChange={(e) => field('tvaRate', parseFloat(e.target.value))}
               className={`${inputClass} text-center`}
             >
               <option value={0.0}>0.0% (Exonéré)</option>
@@ -262,7 +246,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             data-1p-ignore="true"
             data-bwignore="true"
             value={proofNotes}
-            onChange={(e) => setProofNotes(e.target.value)}
+            onChange={(e) => field('proofNotes', e.target.value)}
             placeholder="ex: Brau-Rauchshop Cmd 686863, Bauhaus..."
             className={inputClass}
           />
@@ -307,7 +291,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             {proofUrl && (
               <button
                 type="button"
-                onClick={() => { setProofUrl(undefined); setProofFileName(undefined); }}
+                onClick={() => { field('proofUrl', undefined); field('proofFileName', undefined); }}
                 className="text-footnote text-alert font-bold hover:underline"
               >
                 Supprimer
@@ -333,8 +317,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                   if (f) {
                     const reader = new FileReader();
                     reader.onload = () => {
-                      setProofUrl(reader.result as string);
-                      setProofFileName(f.name);
+                      field('proofUrl', reader.result as string);
+                      field('proofFileName', f.name);
                     };
                     reader.readAsDataURL(f);
                   }
@@ -385,4 +369,3 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
     </ModalShell>
   );
 };
-

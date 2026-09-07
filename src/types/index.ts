@@ -206,6 +206,9 @@ export interface MashProfile {
   /** Rapport eau/grain en L/kg. */
   ratioLPerKg?: number;
   mashoutTempC?: number;
+  mashoutDurationMin?: number;
+  /** Vitesse indicative du système, distincte des durées de maintien. */
+  heatingRateCPerMin?: number;
   spargeTempC?: number;
   spargeType?: 'fly' | 'batch' | 'none';
 }
@@ -262,6 +265,12 @@ export type AcidId = 'lactique' | 'phosphorique' | 'maltAcidule';
  * total, ce qui surdose d'un facteur deux.
  */
 export interface WaterPlan {
+  /** Saved constraint, across mash and sparge together. Absent = unrestricted. */
+  roLimitL?: number;
+  ratioOverride?: number;
+  /** Refit unpinned salt and acid doses when the recipe inputs change. */
+  autoTreatment?: boolean;
+  saltOverrides?: { mash?: Partial<Record<SaltId, number>>; sparge?: Partial<Record<SaltId, number>> };
   sourceId: string;
   /** Analysis used for this recipe; later source edits must not change it. */
   sourceSnapshot?: WaterSource;
@@ -288,12 +297,9 @@ export interface WaterPlan {
   targetIons?: Partial<WaterIons>;
   targetName?: string;
   /**
-   * L'eau de départ et le MOÛT obtenu, FIGÉS au plan.
-   *
-   * ⚠️ Ils ne se recalculent pas à la lecture, et c'est délibéré : l'analyse de
-   * la source peut être corrigée des mois plus tard, et la fiche doit continuer
-   * de montrer l'eau sur laquelle la recette a été pensée. Même principe que
-   * `Batch.recipeSnapshot` — on fige ce qui a servi à décider.
+   * Cache du profil moyen des eaux de traitement, avant/après sels et acide.
+   * Si sourceSnapshot existe, l'affichage se recalcule depuis cette analyse
+   * figée et les doses retenues, jamais depuis une analyse réseau ultérieure.
    */
   startIons?: WaterIons;
   wortIons?: WaterIons;
@@ -374,6 +380,8 @@ export interface RecipeStep {
 
 export interface Recipe {
   id: string;
+  version?: number;
+  parentRecipeId?: string;
   batchRef?: string;
   name: string;
   style: string;
@@ -388,6 +396,10 @@ export interface Recipe {
   colorEbc?: number;
   efficiencyPct?: number;
   preBoilL?: number;
+  /** Same planned wort at boiling temperature, when the equipment model is known. */
+  preBoilHotL?: number;
+  /** Frozen physical assumptions used to build this recipe. */
+  brewhouse?: BrewhouseProfile;
   /**
    * Tout ce qui apporte du sucre : grains, sucres, lactose, fruits, extraits.
    * Le nom a changé de `malts` parce qu'un malt n'est pas un sucre — et que
@@ -451,6 +463,9 @@ export interface BrewDayStep {
   startedAt?: number;
   doneAt?: number;
   pausedAt?: number;
+  rampStartedAt?: number;
+  /** Actual start of the hold, never shifted by pause/resume. */
+  holdStartedAt?: number;
   /** Minutes écoulées depuis le début réel de l'ébullition. */
   boilElapsedMin?: number;
 }
@@ -473,6 +488,13 @@ export interface BrewDayState {
   currentIndex: number;
   startedAt?: number;
   finishedAt?: number;
+  revision?: number;
+  savedAt?: number;
+  /** Dernière version confirmée par le serveur, sans déduire les gestes manquants. */
+  waterMix?: Partial<Record<'mash' | 'sparge', { roL: number }>>;
+  hopElapsedMin?: Record<string, number>;
+  coolingWaterC?: number;
+  boilOffLPerHour?: number;
   /** Relevés horodatés saisis pendant le brassage. */
   readings?: BrewDayReading[];
   boilStartedAt?: number;
@@ -622,6 +644,23 @@ export interface BudgetLine {
   realiseYTD: number;
 }
 
+export interface BrewingEquipment {
+  kettleCapacityL: number;
+  /** Working volume including hot water and grain, below the rim. */
+  kettleWorkingL: number;
+  workingVolumeConfirmed?: boolean;
+  spargeCapacityL: number;
+  fermenterCapacityL: number;
+  /** Percentage of the TOTAL vessel reserved for krausen. */
+  fermenterHeadspacePct: number;
+  roPackL: number;
+  boilOffLPerHour: number;
+  grainAbsorptionLPerKg: number;
+  grainDisplacementLPerKg: number;
+  coolingShrinkagePct: number;
+  heatingRateCPerMin: number;
+}
+
 export interface BrewhouseProfile {
   id: string;
   name: string;
@@ -630,6 +669,7 @@ export interface BrewhouseProfile {
   boilOffRatePct: number; // e.g. 10%/hr
   deadSpaceL: number;
   mashRatioLPerKg: number; // e.g. 3.0 L/kg
+  equipment?: BrewingEquipment;
 }
 
 export interface AppConfig {

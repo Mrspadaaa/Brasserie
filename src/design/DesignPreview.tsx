@@ -209,8 +209,8 @@ export const DesignPreview: React.FC = () => {
                   activeTab="dashboard"
                   onChangeTab={() => {}}
                   action={{ intent: 'quickAction', label: 'Saisie rapide' }}
-              onAction={() => {}}
-              onOpenQuickAction={() => {}}
+                  onAction={() => {}}
+                  onOpenQuickAction={() => {}}
                   criticalStockCount={8}
                 />
               </div>

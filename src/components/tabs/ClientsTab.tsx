@@ -19,6 +19,7 @@ import { ClientStatsService } from '../../services/clientStats';
 import { EditClientModal } from '../EditClientModal';
 import { TarifSheet } from '../../ui/TarifSheet';
 import { nextClientId } from '../../services/refs';
+import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
 
 interface ClientsTabProps {
   clients: Client[];
@@ -49,9 +50,9 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   );
 
   const [copiedTax, setCopiedTax] = useState(false);
-  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [editingClient, setEditingClient] = useLiveSelection(clients, 'id');
   /** Fiche tarif ouverte. Un tarif sans produit vaut création. */
-  const [tarifSheet, setTarifSheet] = useState<PricingItem | null>(null);
+  const [tarifSheet, setTarifSheet] = useLiveSelection(tarifs, 'product');
 
   const blankTarif = (): PricingItem => ({
     product: '',
@@ -104,9 +105,10 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   );
 
   // Chiffres clients calculés depuis les ventes réelles (jamais stockés).
+  const transactions = useStorageValue(StorageService.getTransactions);
   const clientStats = useMemo(
-    () => ClientStatsService.forAll(clients, StorageService.getTransactions()),
-    [clients]
+    () => ClientStatsService.forAll(clients, transactions),
+    [clients, transactions]
   );
 
   const handleCopyOfdfValues = () => {

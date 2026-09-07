@@ -15,6 +15,8 @@ import {
   addIons,
   ionsFromSalts,
   ionsAfterAcid,
+  averageWater,
+  waterSourceFromPlan,
   lactateInBeer,
   LACTATE_TASTE_THRESHOLD
 } from './water';
@@ -37,7 +39,9 @@ export function brewBitterness(recipe: RecipeSnapshot, state: BrewDayState) {
       h.stage === 'boil'
         ? actual?.doneAt != null && end != null && state.boilStartedAt != null
           ? Math.max(0, (end - Math.max(state.boilStartedAt, actual.doneAt)) / 60000)
-          : Math.min(h.timeMin ?? 0, duration)
+          : state.hopElapsedMin?.['hop-' + i] != null
+            ? Math.max(0, duration - state.hopElapsedMin['hop-' + i])
+            : Math.min(h.timeMin ?? 0, duration)
         : h.timeMin;
     return { ...h, weightG: actual?.amount ?? h.weightG, timeMin };
   });
@@ -205,7 +209,7 @@ export function brewIngredients(recipe: RecipeSnapshot): BrewIngredient[] {
 }
 export const actualAmount = (i: BrewIngredient, s: BrewDayState) =>
   s.additions?.[i.id]?.amount ?? i.planned;
-export function effectiveFermentables(recipe: RecipeSnapshot, state: BrewDayState): Fermentable[] {
+export function effectiveFermentables(recipe: Pick<RecipeSnapshot,'fermentables'>, state: BrewDayState): Fermentable[] {
   return (recipe.fermentables ?? []).map((f, i) => {
     const actual = state.additions?.[`grain-${i}`];
     return {
@@ -247,7 +251,16 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
         state.additions?.[i.id]?.doneAt == null &&
         actualAmount(i, state) > 0
       ) {
-        const at = Math.max(state.boilStartedAt, end - i.beforeEndMin * 60000);
+        const at =
+          state.hopElapsedMin?.[i.id] != null
+            ? Math.min(
+                end,
+                Math.max(
+                  state.boilStartedAt,
+                  state.boilStartedAt + state.hopElapsedMin[i.id] * 60000
+                )
+              )
+            : Math.max(state.boilStartedAt, end - i.beforeEndMin * 60000);
         grouped.set(at, [...(grouped.get(at) ?? []), i]);
       }
     for (const [at, items] of grouped)
@@ -273,9 +286,20 @@ export function changeBoilMinutes(
   recipe: RecipeSnapshot,
   delta: number
 ): BrewDayState {
+  const duration = Math.max(1, Math.min(480, Math.round(boilMinutes(s, recipe) + delta)));
   return {
     ...s,
-    boilDurationMin: Math.max(1, Math.min(480, Math.round(boilMinutes(s, recipe) + delta)))
+    boilDurationMin: duration,
+    ...(s.hopElapsedMin
+      ? {
+          hopElapsedMin: Object.fromEntries(
+            Object.entries(s.hopElapsedMin).map(([id, minute]) => [
+              id,
+              s.additions?.[id]?.doneAt != null ? minute : Math.min(minute, duration)
+            ])
+          )
+        }
+      : {})
   };
 }
 export const PREPARATIONS = [
@@ -305,7 +329,7 @@ export const PREPARATIONS = [
 export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
   const p = recipe.waterPlan;
   if (!p) return null;
-  const knownBase = !!p.startIons;
+  const knownBase = !!(p.sourceSnapshot || p.startIons);
   const ingredients = brewIngredients(recipe);
   const sides = ['mash', 'sparge'] as const;
   const water = sides.map(
@@ -313,41 +337,49 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
       s.additions?.[`water-${side}`]?.amount ?? (side === 'mash' ? p.mashWaterL : p.spargeWaterL)
   );
   const total = water[0] + water[1];
+  if (
+    sides.some(
+      (side, i) =>
+        s.waterMix?.[side] != null &&
+        (s.waterMix[side]!.roL < 0 || s.waterMix[side]!.roL > water[i])
+    )
+  )
+    return null;
   if (!Number.isFinite(total) || total <= 0) return null;
-  // Le point de départ est l'eau mélangée figée dans la recette. Ajouter de l'eau
-  // ici suppose le même mélange ; une dilution osmosée de secours n'est pas appliquée.
-  // startIons décrit l'empâtage. Le rinçage peut avoir une autre coupe.
+  // Reconstituer la source figée, puis traiter chaque eau dans son propre volume.
+  // Les anciens startIons décrivent l'empâtage ; en v2, ils décrivent la moyenne.
   const mashFraction = 1 - (p.diRatioPct ?? 0) / 100;
   const spargeFraction = 1 - (p.spargeDiRatioPct ?? p.diRatioPct ?? 0) / 100;
-  const currentFraction = (mashFraction * water[0] + spargeFraction * water[1]) / total;
-  let ions = { ...(p.startIons ?? { ca: 0, mg: 0, na: 0, so4: 0, cl: 0, hco3: 0 }) };
-  if (mashFraction > 0) {
-    for (const k of Object.keys(ions) as (keyof WaterIons)[])
-      ions[k] *= currentFraction / mashFraction;
-  } else if (spargeFraction > 0 && knownBase) {
-    const plannedL = p.mashWaterL + p.spargeWaterL;
-    if (!p.wortIons || plannedL <= 0 || p.spargeWaterL <= 0) return null;
-    const plannedDoses = Object.fromEntries(
-      SALT_IDS.map((id) => [id, (p.mash?.[id] ?? 0) + (p.sparge?.[id] ?? 0)])
-    );
-    const plannedSalts = ionsFromSalts(plannedDoses, plannedL);
-    const plannedFraction = (spargeFraction * p.spargeWaterL) / plannedL;
-    for (const k of Object.keys(ions) as (keyof WaterIons)[])
-      ions[k] = (Math.max(0, p.wortIons[k] - plannedSalts[k]) * currentFraction) / plannedFraction;
-  }
-  for (const side of sides) {
+  const actualFractions = sides.map((side, i) =>
+    s.waterMix?.[side] != null && water[i] > 0
+      ? 1 - Math.max(0, Math.min(water[i], s.waterMix[side]!.roL)) / water[i]
+      : side === 'mash'
+        ? mashFraction
+        : spargeFraction
+  );
+  const currentFraction = (actualFractions[0] * water[0] + actualFractions[1] * water[1]) / total;
+  const frozenSource = waterSourceFromPlan(p);
+  if (!frozenSource && currentFraction > 0 && knownBase) return null;
+  const source = frozenSource ?? { ca: 0, mg: 0, na: 0, so4: 0, cl: 0, hco3: 0 };
+  const treated = sides.map((side, index) => {
+    const litres = water[index];
+    const start = Object.fromEntries(
+      Object.entries(source).map(([k, v]) => [k, v * actualFractions[index]])
+    ) as unknown as WaterIons;
     const doses = Object.fromEntries(
       ingredients
         .filter((i) => i.kind === 'salt' && i.side === side)
         .map((i) => [i.salt, actualAmount(i, s)])
     );
-    ions = addIons(ions, ionsFromSalts(doses, total));
-  }
-  for (const side of sides) {
+    let ions = addIons(start, ionsFromSalts(doses, litres));
     const acid = ingredients.find((i) => i.kind === 'acid' && i.side === side);
-    if (acid) ions = ionsAfterAcid(ions, actualAmount(acid, s), acid.acid!, total);
-  }
-  for (const c of s.acidCorrections ?? []) ions = ionsAfterAcid(ions, c.amount, c.acid, total);
+    if (acid) ions = ionsAfterAcid(ions, actualAmount(acid, s), acid.acid!, litres);
+    for (const c of s.acidCorrections ?? [])
+      if (side === 'mash' ? isMash(c.stepId) : c.stepId === 'sparge')
+        ions = ionsAfterAcid(ions, c.amount, c.acid, litres);
+    return ions;
+  });
+  const ions = averageWater(treated[0], treated[1], water[0], water[1]);
   const style = p.targetIons
     ? styleFromTargetIons(p.targetIons, p.targetName)
     : p.targetProfileId

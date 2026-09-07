@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Tests unitaires et d'intégration.
@@ -15,19 +16,34 @@ import react from '@vitejs/plugin-react';
  *                            avec un dépôt en mémoire, un écran monté avec ses
  *                            vraies dépendances. Environnement `jsdom`.
  *
+ * Les tests qui appellent réellement Gemini vivent hors de cette sélection et
+ * exigent une confirmation explicite. La suite normale doit rester sans coût.
+ *
  * La couverture ne vise QUE `src/domain` et `src/services` : c'est là que vit
  * ce qui rend de la bière ratée ou une déclaration fausse. Mettre les
  * composants dans le même seuil diluerait le signal.
  */
 export default defineConfig({
   plugins: [react()],
+  // Server deployment bundles this exact domain entry; tests use its TypeScript source.
+  resolve: { alias: [{ find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) }] },
   test: {
     globals: true,
     environment: 'node',
     testTimeout: 15000,
     setupFiles: ['tests/setup.ts'],
     environmentMatchGlobs: [['tests/integration/**', 'jsdom']],
-    include: ['tests/**/*.test.{ts,tsx}'],
+    include: [
+      'tests/unit/**/*.test.{ts,tsx}',
+      'tests/integration/**/*.test.{ts,tsx}',
+      'tests/fuzz/**/*.test.{ts,tsx}'
+    ],
+    exclude: [
+      'tests/ai/**',
+      'tests/live/**',
+      'tests/**/*.ai.test.{ts,tsx}',
+      'tests/**/*.live.test.{ts,tsx}'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'html'],

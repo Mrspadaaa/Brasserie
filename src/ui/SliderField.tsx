@@ -41,6 +41,7 @@ interface SliderFieldProps {
    */
   after?: React.ReactNode;
   disabled?: boolean;
+  displayDigits?: number;
 }
 
 export const SliderField: React.FC<SliderFieldProps> = ({
@@ -55,7 +56,8 @@ export const SliderField: React.FC<SliderFieldProps> = ({
   hint,
   readout,
   after,
-  disabled = false
+  disabled = false,
+  displayDigits
 }) => {
   const id = useId();
   const decimals = step < 1 ? String(step).split('.')[1]?.length ?? 1 : 0;
@@ -73,7 +75,7 @@ export const SliderField: React.FC<SliderFieldProps> = ({
             id={id}
             min={min}
             max={max}
-            value={value}
+            value={displayDigits == null ? value : Number(value.toFixed(displayDigits))}
             onValue={onChange}
             emptyValue={min}
             disabled={disabled}

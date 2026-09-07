@@ -49,6 +49,11 @@ tenus hors du dépôt :
 npm test
 ```
 
+Cette commande exécute uniquement les tests locaux avec fournisseurs IA
+simulés. Elle n'utilise ni clé Gemini ni quota facturable. Les rares contrôles
+contre un vrai modèle sont séparés et protégés par une confirmation explicite ;
+voir `docs/compagnon-brasseur.md`.
+
 ```bash
 node scripts/check-water.mjs
 ```

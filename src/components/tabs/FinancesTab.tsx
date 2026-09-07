@@ -29,6 +29,7 @@ import { ExcelService } from '../../services/excelService';
 import { DriveService } from '../../services/driveService';
 import { ReceiptService } from '../../services/receiptService';
 import { EditTransactionModal } from '../EditTransactionModal';
+import { useLiveSelection } from '../../hooks/useLiveData';
 import { ConfirmModal } from '../ConfirmModal';
 import { ExpenseDonutChart } from '../charts/ExpenseDonutChart';
 import { CashflowBarChart } from '../charts/CashflowBarChart';
@@ -73,7 +74,7 @@ export const FinancesTab: React.FC<FinancesTabProps> = ({
   );
 
   const [expandedTxId, setExpandedTxId] = useState<string | null>(null);
-  const [editingTx, setEditingTx] = useState<Transaction | null>(null);
+  const [editingTx, setEditingTx] = useLiveSelection(transactions, 'id');
   const [deletingTxId, setDeletingTxId] = useState<string | null>(null);
   const [revertingTxId, setRevertingTxId] = useState<string | null>(null);
   const [activeProofModal, setActiveProofModal] = useState<string | null>(null);

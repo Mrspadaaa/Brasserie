@@ -160,7 +160,7 @@ export function readingFeedback(
       step.id === 'ensemencement'
         ? recipe?.volumeL
         : step.id === 'preboil' && plan
-          ? plan.mashWaterL + plan.spargeWaterL - grain * 0.96
+          ? recipe?.preBoilL ?? plan.mashWaterL + plan.spargeWaterL - grain * (recipe?.brewhouse?.equipment?.grainAbsorptionLPerKg ?? 0.96)
           : undefined;
     if (target && target > 0)
       return {
@@ -211,6 +211,7 @@ export function startBrewStep(state: BrewDayState, now: number): BrewDayState {
       : state.boilStartedAt;
   const next: BrewDayStep = {
     ...s,
+    holdStartedAt: s.holdStartedAt ?? s.startedAt ?? now,
     startedAt:
       s.pausedAt != null
         ? s.startedAt! + now - s.pausedAt

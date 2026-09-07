@@ -112,4 +112,28 @@ describe('One retained water treatment for all recipe views', () => {
     };
     expect(savedWaterDisplay(JSON.parse(JSON.stringify(saved)))).toEqual(savedWaterDisplay(plan));
   });
+
+  it('recomputes a saved v2 display from its frozen source and retained sparge acid', () => {
+    const plan: WaterPlan = {
+      sourceId: DEFAULT_WATER_SOURCE.id,
+      sourceSnapshot: { ...DEFAULT_WATER_SOURCE, hco3: 250 },
+      treatmentVersion: 2,
+      diRatioPct: 0,
+      mashWaterL: 20,
+      spargeWaterL: 10,
+      mash: {}, sparge: {}, targetPh: 5.4,
+      startIons: { ...DEFAULT_WATER_SOURCE, hco3: 250 },
+      wortIons: { ...DEFAULT_WATER_SOURCE, hco3: 250 },
+      acid: { id: 'lactique', mash: 0, sparge: 2 }
+    };
+    expect(savedWaterDisplay(plan)!.achieved.hco3).toBe(210);
+    plan.acid!.sparge = 3;
+    expect(savedWaterDisplay(JSON.parse(JSON.stringify(plan)))!.achieved.hco3).toBe(190);
+    const legacySource = { ...plan, sourceSnapshot: undefined };
+    expect(savedWaterDisplay(legacySource)!.achieved.hco3).toBe(190);
+    expect(plan.wortIons!.hco3).toBe(250); // Reading does not mutate the recipe.
+    delete plan.wortIons;
+    delete plan.startIons;
+    expect(savedWaterDisplay(plan)!.achieved.hco3).toBe(190);
+  });
 });

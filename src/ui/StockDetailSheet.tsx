@@ -11,6 +11,7 @@ import { LevelGauge } from './LevelGauge';
 import { Button } from '../components/ui/Button';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Combobox, ComboOption } from './Combobox';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 /**
  * Fiche d'un article de stock : ajuster, modifier, épingler, supprimer.
@@ -40,10 +41,9 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   onCorrectInventory,
   onToggleFavorite
 }) => {
-  const [draft, setDraft] = useState<StockItem | null>(item);
+  const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => setDraft(item), [item]);
 
   if (!item || !draft) return null;
 

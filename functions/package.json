@@ -3,18 +3,26 @@
   "description": "Passerelle IA et services serveur de la Brasserie L'Affinée",
   "type": "module",
   "main": "lib/index.js",
-  "engines": { "node": "22" },
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "node build-brewer-tools.mjs && tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "cheerio": "1.1.2",
     "firebase-admin": "^13.0.2",
-    "firebase-functions": "^6.3.2"
+    "firebase-functions": "^6.3.2",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@types/web-push": "^3.6.4",
     "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "qs": "6.16.0"
   },
   "private": true
 }

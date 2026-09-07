@@ -6,6 +6,7 @@ import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { SegmentedControl } from './SegmentedControl';
 import { DateField } from './DateField';
 import { Trash2 } from 'lucide-react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 /**
  * Fiche matériel : créer, modifier, supprimer.
@@ -39,10 +40,9 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
   onSave,
   onDelete
 }) => {
-  const [draft, setDraft] = useState<EquipmentItem | null>(item);
+  const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => setDraft(item), [item]);
   if (!item || !draft) return null;
 
   const isNew = !item.name;

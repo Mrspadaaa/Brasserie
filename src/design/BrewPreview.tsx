@@ -1,3 +1,4 @@
+import { BrewerActivity } from '../ui/BrewerActivity';
 import React, { useState } from 'react';
 import { Recipe, Batch, StockItem, AppConfig, WaterSource } from '../types';
 import { RecipePage } from '../pages/RecipePage';
@@ -8,6 +9,9 @@ import { PageShell } from '../pages/PageShell';
 import { captureSnapshot } from '../domain/recipeSnapshot';
 import { defaultConfig } from '../services/storage';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
+import { practicalEquipment } from '../domain/brewEquipment';
+import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
+import { SettingsModal } from '../components/SettingsModal';
 
 /**
  * Banc d'essai du brassage, sans connexion.
@@ -18,7 +22,8 @@ import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
  * le déroulé minuté sur un cas réel plutôt que sur des données rondes.
  */
 
-const CONFIG: AppConfig = defaultConfig;
+const hardwarePreview=new URLSearchParams(location.search).has('hardware');
+const CONFIG: AppConfig = hardwarePreview ? {...defaultConfig,brewhouses:defaultConfig.brewhouses.map((b,i)=>i===0?{...b,name:'Royal Catering · cuve 45 L',volumeL:24,equipment:{...practicalEquipment}}:b),activeBrewhouseId:defaultConfig.brewhouses[0].id} : defaultConfig;
 
 const NEIPA: Recipe = {
   id: 'REC-DEMO',
@@ -146,13 +151,13 @@ const SAMPLE_WATER: WaterSource = {
   note: 'Analyse communale 2026'
 };
 
-type View = 'recette' | 'assistant' | 'brassage' | 'eau';
+type View = 'recette' | 'assistant' | 'brassage' | 'eau' | 'materiel';
 
 export const BrewPreview: React.FC = () => {
   const initialView = (new URLSearchParams(location.search).get('view') as View) || 'recette';
   const [view, setView] = useState<View>(initialView);
-  const [previewRecipe, setPreviewRecipe] = useState(NEIPA);
-  const [batch, setBatch] = useState(BATCH);
+  const [previewRecipe, setPreviewRecipe] = useState(()=>hardwarePreview?adaptRecipeEquipment(NEIPA,CONFIG.brewhouses[0],24):NEIPA);
+  const [batch, setBatch] = useState(()=>hardwarePreview?{...BATCH,volumeL:24,recipeSnapshot:captureSnapshot(previewRecipe)}:BATCH);
   const [waterSource, setWaterSource] = useState<WaterSource>(SAMPLE_WATER);
   const [waterState, setWaterState] = useState<WaterState>({
     diRatioPct: 70,
@@ -185,6 +190,7 @@ export const BrewPreview: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-200 font-sans">
+      <BrewerActivity />
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         <header className="space-y-2">
           <h1 className="text-xl font-semibold text-cave-50">Brassage — banc d’essai</h1>
@@ -219,6 +225,8 @@ export const BrewPreview: React.FC = () => {
           </ul>
         )}
       </div>
+
+      {view === 'materiel' && <SettingsModal isOpen config={CONFIG} onClose={()=>setView('recette')} onConfigUpdated={()=>log('Réglages enregistrés')} onOpenAuditLogs={()=>{}}/>}
 
       {view === 'recette' && (
         <RecipePage

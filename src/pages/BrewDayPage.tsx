@@ -66,6 +66,12 @@ import { useBrewSound } from '../ui/useBrewSound';
 import { BrewReadingsSummary } from '../ui/BrewReadingsSummary';
 import { BrewAlarmSettings } from '../ui/BrewAlarmSettings';
 import { NumberInput } from '../ui/NumberInput';
+import { useBrewSession } from '../ui/useBrewSession';
+import { brewNow } from '../services/brewClock';
+import { BrewAssist } from '../ui/BrewAssist';
+import { BrewerChat } from '../ui/BrewerChat';
+import { readingPrompt } from '../domain/brewAssist';
+import { ReadingKind } from '../domain/brewDay';
 
 interface Props {
   batch: Batch;
@@ -93,32 +99,25 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       batch.recipeSnapshot ?? ({ ...batch, ...ingredientsOf(batch) } as unknown as RecipeSnapshot),
     [batch.recipeSnapshot, batch.id]
   );
-  const [state, setState] = useState<BrewDayState>(() =>
-    restoreBrewDay(
-      batch.brewDay ?? {
-        steps: buildTimeline(recipe),
-        currentIndex: 0,
-        readings: []
-      }
-    )
+  const session = useBrewSession(
+    batch,
+    () =>
+      restoreBrewDay(
+        batch.brewDay ?? {
+          steps: buildTimeline(recipe),
+          currentIndex: 0,
+          readings: []
+        }
+      ),
+    onSave
   );
-  const latest = useRef(state);
+  const { state, latest, update } = session;
   const batchRef = useRef(batch);
   batchRef.current = batch;
-  const update: BrewUpdate = useCallback(
-    (fn) => {
-      const next = fn(latest.current);
-      if (next === latest.current) return;
-      latest.current = next;
-      setState(next);
-      onSave({ ...batchRef.current, brewDay: next });
-    },
-    [onSave]
-  );
   const [view, setView] = useState<BrewArea | 'recipe' | 'journal'>(() =>
     areaOf(state.steps[state.currentIndex]?.id ?? 'eau')
   );
-  const [now, setNow] = useState(Date.now);
+  const [now, setNow] = useState(brewNow);
   const [sound, setSound] = useState(false);
   const [awake, setAwake] = useState(false);
   const [notice, setNotice] = useState('');
@@ -133,6 +132,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const [noteStepId, setNoteStepId] = useState<string>();
   const [capture, setCapture] = useState<'measure' | 'note' | null>(null);
   const readingDrafts = useRef(new Map<string, BrewReadingDraft>());
+  const [requestedReading, setRequestedReading] = useState<{
+    kind: ReadingKind;
+    token: number;
+  }>();
   const [durationOpen, setDurationOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [advice, setAdvice] = useState<{
@@ -163,7 +166,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     : current.startedAt != null && current.pausedAt == null && current.doneAt == null;
   const showTimer = boiled || isUsefulTimer(current);
   const due = alarms.filter((a) => a.at <= now);
-  const alarmSound = useBrewSound(due, sound);
+  const alarmSound = useBrewSound(
+    due.filter((a) => now - a.at <= 5 * 60000),
+    sound
+  );
   const upcoming = due[0] ?? alarms.find((a) => a.at > now);
   const actualRecipe = useMemo(() => {
     const fermentables = effectiveFermentables(recipe, state);
@@ -194,7 +200,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   signatureRef.current = signature;
   useEffect(() => {
     mounted.current = true;
-    const tick = setInterval(() => setNow(Date.now()), 1000);
+    const tick = setInterval(() => setNow(brewNow()), 1000);
     return () => {
       mounted.current = false;
       clearInterval(tick);
@@ -214,6 +220,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     setView(areaOf(state.steps[index].id));
     update((s) => ({ ...s, currentIndex: index }));
     setDurationOpen(false);
+    setRequestedReading(undefined);
     contentRef.current?.closest('main')?.scrollTo?.({ top: 0 });
   };
   const navigate = (next: typeof view) => {
@@ -230,15 +237,16 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     if (first >= 0 || fallback >= 0) choose(first >= 0 ? first : fallback);
   };
   const start = () => {
+    if (!session.canStart) return;
     setNotice('');
     if (armAudio()) setSound(true);
     if (boiled)
       update((s) => {
-        const n = { ...s, boilStartedAt: s.boilStartedAt ?? Date.now() };
+        const n = { ...s, boilStartedAt: s.boilStartedAt ?? brewNow() };
         delete n.boilFinishedAt;
         return n;
       });
-    else update((s) => startBrewStep(s, Date.now()));
+    else update((s) => startBrewStep(s, brewNow()));
   };
   const setDuration = (minutes: number) => {
     if (!Number.isFinite(minutes)) return;
@@ -257,7 +265,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       if (boiled) {
         const n = { ...s };
         if (n.boilFinishedAt != null) delete n.boilFinishedAt;
-        else n.boilFinishedAt = Date.now();
+        else n.boilFinishedAt = brewNow();
         return n;
       }
       return {
@@ -266,7 +274,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           if (i !== s.currentIndex) return x;
           const n = { ...x };
           if (n.doneAt != null) delete n.doneAt;
-          else n.doneAt = Date.now();
+          else n.doneAt = brewNow();
           return n;
         })
       };
@@ -280,7 +288,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         ...(s.notes ?? []),
         {
           id: crypto.randomUUID(),
-          at: Date.now(),
+          at: brewNow(),
           stepId: noteStepId ?? current.id,
           text: note.trim()
         }
@@ -372,6 +380,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const route = state.steps.filter(
     (s) => !isBoilStep(s) || s.id === state.steps.find(isBoilStep)?.id
   );
+  const recipeSteps = buildTimeline(recipe);
+  const plannedRoute = recipeSteps.filter(
+    (s) => !isBoilStep(s) || s.id === recipeSteps.find(isBoilStep)?.id
+  );
+  const prompt = readingPrompt(current, state, now);
+  const staleTimer = running && left != null && left < -30 * 60000;
   const routeIndex = route.findIndex((s) => s.id === current.id || (boiled && isBoilStep(s)));
   const stepTag = (step: typeof current): { label: string; tone: BrewTagTone } => {
     const boil = isBoilStep(step);
@@ -418,6 +432,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     state.boilStartedAt != null && state.boilFinishedAt == null && (isConsulting || !boiled);
   const headerAlarm =
     upcoming &&
+    now - upcoming.at <= 30 * 60000 &&
     (upcoming.at <= now ||
       upcoming.title === 'Ajout en cuve' ||
       isConsulting ||
@@ -463,6 +478,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           ?.focus({ preventScroll: true });
       });
   };
+  const requestMeasure = (kind: ReadingKind) => {
+    setRequestedReading({ kind, token: performance.now() });
+    openCapture('measure');
+  };
 
   const viewNavigation = (
     <nav aria-label="Vues du brassin" className="brew-view-tabs">
@@ -502,7 +521,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       wide
       className="brew-page"
       title={batch.name}
-      subtitle={`Jour de brassage · ${batch.id} · ${recipe.volumeL ?? batch.volumeL ?? '—'} L`}
+      subtitle={
+        session.error
+          ? 'Journal à synchroniser · brouillon conservé'
+          : `Jour de brassage · ${batch.id} · ${recipe.volumeL ?? batch.volumeL ?? '—'} L`
+      }
       onClose={() =>
         capture
           ? setCapture(null)
@@ -617,6 +640,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               type="button"
               className="brew-quick-entry"
               aria-label="Relever une mesure"
+              disabled={!session.canStart}
               onClick={() => openCapture('measure')}
             >
               <Thermometer size={20} />
@@ -626,12 +650,18 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               type="button"
               className="brew-quick-entry"
               aria-label="Ajouter une note"
+              disabled={!session.canStart}
               onClick={() => openCapture('note')}
             >
               <NotebookPen size={20} />
               <span>{note.trim() ? 'Brouillon' : 'Note'}</span>
             </button>
-            <button type="button" className="brew-primary" onClick={primaryAction}>
+            <button
+              type="button"
+              className="brew-primary"
+              disabled={!session.canStart}
+              onClick={primaryAction}
+            >
               {isConsulting ? (
                 <ArrowLeft size={18} />
               ) : showTimer && !running && !completed && !lastStep ? (
@@ -646,6 +676,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         </div>
       }
     >
+      <BrewerChat scope={{kind:'batch',id:batch.id}} label={recipe.name} phase={state.finishedAt?'fermentation':current?.label} localJournal={state}
+        editableTargets={session.canStart ? ['journal','batch'] : []} beforeApply={session.flush}
+        onApplied={()=>session.live ? session.reload() : undefined}
+        onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
       <div ref={contentRef} className="brew-workspace">
         {notice && !capture && (
           <div className="brew-toast" role="status">
@@ -665,7 +699,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 <button
                   type="button"
                   key={v}
-                  disabled={!phaseSteps.length}
+                  disabled={!phaseSteps.length || !session.canStart}
                   aria-label={AREA[v]}
                   aria-pressed={!isConsulting && view === v}
                   className={`brew-phase ${phaseDone ? 'is-complete' : ''}`}
@@ -688,6 +722,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 type="button"
                 key={s.id}
                 className="brew-timer-chip"
+                disabled={!session.canStart}
                 onClick={() => choose(state.steps.indexOf(s))}
               >
                 <Clock3 size={15} />
@@ -702,6 +737,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               <button
                 type="button"
                 className="brew-timer-chip"
+                disabled={!session.canStart}
                 onClick={() => choose(state.steps.findIndex(isBoilStep))}
               >
                 <Clock3 size={15} />
@@ -714,8 +750,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           </div>
         )}
 
-        <div
+        <fieldset
           className={`brew-layout ${isConsulting ? 'is-consulting' : ''}`}
+          disabled={!session.canStart}
+          aria-label="Conduite du brassage"
           data-area={isConsulting ? undefined : area}
         >
           <div className="brew-main-column">
@@ -727,7 +765,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   <section className="brew-recipe-summary">
                     <div className="brew-section-heading">
                       <div>
-                        <h2>Recette</h2>
+                        <h2>
+                          Recette{' '}
+                          {recipe.version != null && (
+                            <BrewTag tone="info">v{recipe.version}</BrewTag>
+                          )}
+                        </h2>
                       </div>
                       <BookOpen size={24} />
                     </div>
@@ -747,20 +790,24 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <div>
                         <span>Grain</span>
                         <strong>
-                          {actualRecipe.totalGristKg ?? '—'} <small>kg</small>
+                          {recipe.totalGristKg ?? '—'} <small>kg</small>
                         </strong>
                       </div>
                       <div>
                         <span>Ébullition</span>
                         <strong>
-                          {boilMinutes(state, recipe)} <small>min</small>
+                          {recipe.boilMin ?? 60} <small>min</small>
                         </strong>
                       </div>
                     </div>
                     <details className="brew-disclosure">
                       <summary>Programme et notes de recette</summary>
+                      <p className="brew-muted">
+                        Maintien à la consigne, hors montée en température. Les ajustements du jour
+                        restent dans le journal.
+                      </p>
                       <ul className="brew-program">
-                        {route.map((s) => (
+                        {plannedRoute.map((s) => (
                           <li key={s.id}>
                             <span>{isBoilStep(s) ? 'Ébullition' : s.label}</span>
                             <strong>
@@ -768,7 +815,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                               {isUsefulTimer(s)
                                 ? ` · ${s.durationMin} min`
                                 : isBoilStep(s)
-                                  ? `${boilMinutes(state, recipe)} min`
+                                  ? `${recipe.boilMin ?? 60} min`
                                   : ''}
                             </strong>
                           </li>
@@ -906,7 +953,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                     ? 'En pause'
                                     : running
                                       ? left != null && left < 0
-                                        ? 'Temps dépassé'
+                                        ? staleTimer
+                                          ? 'Palier à vérifier'
+                                          : 'Temps dépassé'
                                         : 'Temps restant'
                                       : 'Durée du palier'}
                               </span>
@@ -916,7 +965,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                   aria-live="off"
                                   className={`brew-digits ${left != null && left < 0 ? 'is-due' : ''}`}
                                 >
-                                  {formatCountdown(completed ? 0 : (left ?? duration * 60000))}
+                                  {staleTimer
+                                    ? '00:00'
+                                    : formatCountdown(completed ? 0 : (left ?? duration * 60000))}
                                 </output>
                                 {!boiled && running && (
                                   <button
@@ -927,7 +978,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                                       update((s) => ({
                                         ...s,
                                         steps: s.steps.map((x, i) =>
-                                          i === s.currentIndex ? { ...x, pausedAt: Date.now() } : x
+                                          i === s.currentIndex ? { ...x, pausedAt: brewNow() } : x
                                         )
                                       }))
                                     }
@@ -945,7 +996,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           <div className="brew-clock-meta">
                             <span>
                               {running && left != null
-                                ? `Fin prévue à ${time(now + left)}`
+                                ? `Fin prévue ${staleTimer ? new Date(now + left).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' }) + ' à ' : 'à '}${time(now + left)}`
                                 : completed
                                   ? 'Étape consignée dans le journal'
                                   : current.pausedAt != null
@@ -1014,6 +1065,51 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           )}
                         </>
                       )}
+                      {staleTimer && (
+                        <aside className="brew-recovery" role="status">
+                          <BrewTag tone="due">Reprise du journal</BrewTag>
+                          <p>
+                            Échéance dépassée de {formatCountdown(Math.abs(left!))}. Aucune fin n’a
+                            été consignée. Vérifie ce qui s’est réellement passé à la cuve.
+                          </p>
+                          <button type="button" className={brewControl} onClick={toggleComplete}>
+                            Consigner la fin maintenant
+                          </button>
+                          <button
+                            type="button"
+                            className={brewControl}
+                            onClick={() =>
+                              update((s) => ({
+                                ...s,
+                                ...(boiled
+                                  ? { boilStartedAt: brewNow() }
+                                  : {
+                                      steps: s.steps.map((x) =>
+                                        x.id === current.id
+                                          ? {
+                                              ...x,
+                                              startedAt: brewNow(),
+                                              pausedAt: undefined
+                                            }
+                                          : x
+                                      )
+                                    }),
+                                notes: [
+                                  ...(s.notes ?? []),
+                                  {
+                                    id: crypto.randomUUID(),
+                                    at: brewNow(),
+                                    stepId: current.id,
+                                    text: `Minuteur relancé explicitement après ${formatCountdown(Math.abs(left!))} de dépassement ; ancienne échéance ${new Date(now + left!).toLocaleString('fr-CH')}.`
+                                  }
+                                ]
+                              }))
+                            }
+                          >
+                            Relancer {duration} min maintenant
+                          </button>
+                        </aside>
+                      )}
                       {boiled &&
                         bitterness &&
                         Math.abs(bitterness.projected - bitterness.planned) >= 1 && (
@@ -1032,7 +1128,32 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </details>
                         )}
                     </section>
-                    {due.length > 0 && (
+                    {prompt && current.doneAt == null && (
+                      <button
+                        type="button"
+                        className="brew-reading-prompt"
+                        onClick={() => requestMeasure(prompt.kind as ReadingKind)}
+                      >
+                        <Thermometer size={18} />
+                        <span>
+                          <strong>{prompt.title}</strong>
+                          <small>{prompt.detail}</small>
+                        </span>
+                        <ChevronRight size={18} />
+                      </button>
+                    )}
+                    <BrewAssist
+                      key={current.id}
+                      recipe={recipe}
+                      state={state}
+                      step={current}
+                      now={now}
+                      update={update}
+                      onMeasure={requestMeasure}
+                      stock={stockItems}
+                      brewhouse={config.brewhouses.find(b=>b.id===config.activeBrewhouseId)??recipe.brewhouse}
+                    />
+                    {due.length > 0 && !staleTimer && (
                       <aside role="status" className="brew-due-alert">
                         <BellRing size={20} />
                         <div>
@@ -1108,6 +1229,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   key={current.id}
                   step={current}
                   recipe={actualRecipe}
+                  requestedKind={requestedReading}
                   state={state}
                   update={update}
                   drafts={readingDrafts.current}
@@ -1251,29 +1373,65 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 )}
               </section>
             </BrewCapturePanel>
-            <section className="brew-sound-settings" aria-label="Sonnerie dans l’application">
-              <div>
-                <h3>Sonnerie</h3>
-                <BrewTag tone={sound ? 'info' : 'neutral'}>{sound ? 'Activée' : 'Muette'}</BrewTag>
-              </div>
-              <p>30 secondes · deux notes alternées. Le volume suit celui du téléphone.</p>
-              <button
-                type="button"
-                className={brewControl}
-                onClick={() => {
-                  if (alarmSound.ringing) alarmSound.stop();
-                  else if (armAudio()) {
-                    setSound(true);
-                    if (!alarmSound.test()) setNotice('Le navigateur n’a pas pu activer le son.');
-                  } else setNotice('Le navigateur n’a pas pu activer le son.');
-                }}
-              >
-                {alarmSound.ringing ? 'Arrêter la sonnerie' : 'Tester la sonnerie'}
-              </button>
-            </section>
-            <BrewAlarmSettings batchId={batch.id} alarms={alarms} />
+            <details className="brew-options">
+              <summary>
+                <span>
+                  <SlidersHorizontal size={17} /> Options et alertes
+                </span>
+                <ChevronDown size={16} />
+              </summary>
+              <details className="brew-sound-settings">
+                <summary>
+                  Sonnerie · option de test <ChevronDown size={16} />
+                </summary>
+                <div>
+                  <h3>Sonnerie</h3>
+                  <BrewTag tone={sound ? 'info' : 'neutral'}>
+                    {sound ? 'Activée' : 'Muette'}
+                  </BrewTag>
+                </div>
+                <p>30 secondes · deux notes alternées. Le volume suit celui du téléphone.</p>
+                <button
+                  type="button"
+                  className={brewControl}
+                  onClick={() => {
+                    if (alarmSound.ringing) alarmSound.stop();
+                    else if (armAudio()) {
+                      setSound(true);
+                      if (!alarmSound.test()) setNotice('Le navigateur n’a pas pu activer le son.');
+                    } else setNotice('Le navigateur n’a pas pu activer le son.');
+                  }}
+                >
+                  {alarmSound.ringing ? 'Arrêter la sonnerie' : 'Tester la sonnerie'}
+                </button>
+              </details>
+              <BrewAlarmSettings
+                batchId={batch.id}
+                alarms={alarms}
+                ready={!session.pending && session.canStart}
+              />
+            </details>
           </div>
-        </div>
+        </fieldset>
+        {session.status && (
+          <div className="brew-sync" role="status">
+            <BrewTag tone={session.error ? 'due' : session.pending ? 'pause' : 'done'}>
+              {session.status}
+            </BrewTag>
+            {session.error && (
+              <>
+                <p>{session.error}</p>
+                <button type="button" className={brewControl} onClick={() => void session.retry()}>
+                  Réessayer
+                </button>
+                <button type="button" className={brewControl} onClick={() => void session.reload()}>
+                  Recharger le serveur
+                </button>
+                <small>La version non envoyée reste en sauvegarde locale.</small>
+              </>
+            )}
+          </div>
+        )}
       </div>
       <ConfirmSheet
         open={confirmAdvance}
@@ -1293,11 +1451,18 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         what={`OG ${finishedReadings.gravity?.value.toFixed(3) ?? 'non relevée'} · ${finishedReadings.volume?.value ?? '—'} L en fermenteur.`}
         consequence={`${confirmed}/${ingredients.filter((i) => i.planned > 0).length} ajouts cochés. Le journal et les écarts resteront consultables. Le brassin passera en fermentation.`}
         confirmLabel="Clôturer"
-        onConfirm={() => {
+        onConfirm={async () => {
           const f = finalBrewReadings(latest.current);
+          update((s) => ({ ...s, finishedAt: brewNow() }));
+          if (!(await session.flush())) {
+            setNotice(
+              'Clôture conservée sur cet appareil. Réessaie après synchronisation du journal.'
+            );
+            return;
+          }
           onFinish({
             ...batchRef.current,
-            brewDay: { ...latest.current, finishedAt: Date.now() },
+            brewDay: latest.current,
             ...(f.gravity ? { og: f.gravity.value.toFixed(3) } : {}),
             ...(f.volume ? { volumeBrewedL: f.volume.value } : {}),
             status: 'fermentation'

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Transaction, Batch, StockItem, GanttTask, AppConfig, TimeFilterPeriod, CreativeItem } from '../../types';
 import { StorageService } from '../../services/storage';
+import { useStorageValue } from '../../hooks/useLiveData';
 import { DateUtils } from '../../services/dateUtils';
 import { BrewingMath } from '../../services/brewingMath';
 
@@ -53,7 +54,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   onOpenQuickAction
 }) => {
   // Read creative tasks/events from storage
-  const [creativeItems, setCreativeItems] = useState<CreativeItem[]>(() => StorageService.getCreativeItems());
+  const creativeItems = useStorageValue(StorageService.getCreativeItems);
 
   // Interactive checklist state for official Swiss deadlines
   const [completedDeadlines, setCompletedDeadlines] = useState<Record<string, boolean>>(() =>
@@ -177,7 +178,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     const nextStatus = item.status === 'done' ? 'todo' : 'done';
     const updated = { ...item, status: nextStatus as any };
     StorageService.updateCreativeItem(updated);
-    setCreativeItems([...StorageService.getCreativeItems()]);
   };
 
   const periodLabel = DateUtils.getPeriodLabel(globalTimeFilter);

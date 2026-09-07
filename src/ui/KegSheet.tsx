@@ -6,6 +6,7 @@ import { SegmentedControl } from './SegmentedControl';
 import { Combobox } from './Combobox';
 import { DateField, swissToday } from './DateField';
 import { Trash2 } from 'lucide-react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 /**
  * Fiche fût : créer, modifier, supprimer.
@@ -42,10 +43,9 @@ export const KegSheet: React.FC<KegSheetProps> = ({
   onSave,
   onDelete
 }) => {
-  const [draft, setDraft] = useState<KegItem | null>(keg);
+  const [draft, setDraft] = useSyncedDraft(keg, keg?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => setDraft(keg), [keg]);
   if (!keg || !draft) return null;
 
   const isNew = !keg.beerName && keg.state === 'propre' && !keg.fillDate;

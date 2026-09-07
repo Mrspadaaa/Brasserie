@@ -3,6 +3,7 @@ import { Beer, Droplets, Sparkles, Truck, Trash2 } from 'lucide-react';
 import { KegItem, KegState, Batch } from '../types';
 import { StorageService } from '../services/storage';
 import { Sheet, ConfirmSheet } from './Sheet';
+import { useLiveSelection } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
 
 /**
@@ -57,7 +58,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
   batches,
   className = ''
 }) => {
-  const [selected, setSelected] = useState<KegItem | null>(null);
+  const [selected, setSelected] = useLiveSelection(kegs, 'id');
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const fillable = batches.filter(

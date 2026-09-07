@@ -4,6 +4,7 @@ import { PricingItem, AppConfig } from '../types';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Trash2, AlertTriangle } from 'lucide-react';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 /**
  * Fiche tarif : créer, modifier, supprimer.
@@ -34,10 +35,9 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({
   onSave,
   onDelete
 }) => {
-  const [draft, setDraft] = useState<PricingItem | null>(item);
+  const [draft, setDraft] = useSyncedDraft(item, item?.product);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  useEffect(() => setDraft(item), [item]);
   if (!item || !draft) return null;
 
   const isNew = !item.product;

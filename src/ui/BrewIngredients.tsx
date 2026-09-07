@@ -1,3 +1,4 @@
+import { brewNow } from '../services/brewClock';
 import React, { useState } from 'react';
 import {
   ArrowLeftRight,
@@ -25,6 +26,7 @@ import { Units } from '../services/units';
 import { useHoldRepeat } from './numericInput';
 import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
+import { actualWater } from '../domain/brewAssist';
 
 const f = (n: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 }).format(n);
 function IngredientRow({
@@ -125,18 +127,22 @@ function IngredientRow({
         <div className="brew-water-split">
           <Droplets size={15} />
           {(() => {
-            const pct =
-              item.side === 'mash'
-                ? recipe.waterPlan.diRatioPct
-                : (recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct);
+            const split = actualWater(recipe, state, item.side ?? 'mash');
+            if (split.invalidMix)
+              return (
+                <span className="brew-feedback">
+                  Coupe à revoir : {f(split.roL)} L d’osmosée dépassent le total de{' '}
+                  {f(split.litres)} L. Corrige la coupe dans l’aide.
+                </span>
+              );
             return (
               <>
                 <span>
-                  <strong>{f(amount * (1 - (pct ?? 0) / 100))} L</strong> réseau
+                  <strong>{f(split.tapL)} L</strong> réseau
                 </span>
                 <span>+</span>
                 <span>
-                  <strong>{f((amount * (pct ?? 0)) / 100)} L</strong> osmosée
+                  <strong>{f(split.roL)} L</strong> osmosée
                 </span>
               </>
             );
@@ -162,7 +168,7 @@ function IngredientRow({
             checked={actual?.doneAt != null}
             onChange={(e) => {
               onInteract();
-              if (e.target.checked) patch({ doneAt: Date.now() });
+              if (e.target.checked) patch({ doneAt: brewNow() });
               else
                 update((s) => {
                   const a = { amount: actualAmount(item, s), ...s.additions?.[item.id] };
@@ -334,7 +340,7 @@ export function BrewIngredients({
   area,
   update,
   overview = false,
-  now = Date.now(),
+  now = brewNow(),
   stepId
 }: {
   recipe: RecipeSnapshot;
@@ -391,11 +397,20 @@ export function BrewIngredients({
       ? state.boilStartedAt + boilMinutes(state, recipe) * 60000
       : undefined;
   const areaOrder = { preparation: 0, mash: 1, boil: 2, finish: 3 };
-  const ordered = [...shown].sort(
-    (a, b) =>
-      (overview ? areaOrder[a.area] - areaOrder[b.area] : 0) ||
-      (b.beforeEndMin ?? -1) - (a.beforeEndMin ?? -1)
-  );
+  const ordered = shown
+    .map((i) =>
+      i.beforeEndMin != null && state.hopElapsedMin?.[i.id] != null
+        ? {
+            ...i,
+            beforeEndMin: Math.max(0, boilMinutes(state, recipe) - state.hopElapsedMin[i.id])
+          }
+        : i
+    )
+    .sort(
+      (a, b) =>
+        (overview ? areaOrder[a.area] - areaOrder[b.area] : 0) ||
+        (b.beforeEndMin ?? -1) - (a.beforeEndMin ?? -1)
+    );
   for (const i of ordered) {
     const group = i.side
       ? {
@@ -475,6 +490,11 @@ export function BrewIngredients({
               <Icon size={19} />
               <div>
                 <h3>{group.label}</h3>
+                {key === 'sparge' && (
+                  <span className="brew-water-temperature">
+                    Consigne {recipe.mash?.spargeTempC ?? 76} °C
+                  </span>
+                )}
                 {group.label === 'Premier moût' && <span>{group.hint}</span>}
               </div>
               {allAdded ? (

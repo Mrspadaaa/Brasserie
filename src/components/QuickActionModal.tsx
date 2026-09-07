@@ -32,6 +32,9 @@ import { ReceiptService } from '../services/receiptService';
 import { CloudConfigModal } from './CloudConfigModal';
 import { FinanceCategory, Transaction, Recipe, StockItem } from '../types';
 import { Units } from '../services/units';
+import { nextBatchId } from '../services/refs';
+import { captureSnapshot } from '../domain/recipeSnapshot';
+import { BrewingMath } from '../services/brewingMath';
 import { Combobox, ComboOption } from '../ui/Combobox';
 import { QuantityStepper } from '../ui/QuantityStepper';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
@@ -508,10 +511,13 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   // Launch Brew Batch
   const handleLaunchBrew = () => {
-    const recipe = recipes.find((r) => r.id === selectedRecipeId);
-    if (!recipe) return;
+    const selected = recipes.find((r) => r.id === selectedRecipeId);
+    if (!selected || !(batchVolumeL > 0)) return;
+    const cfg = StorageService.getConfig();
+    const profile = cfg.brewhouses.find(b => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
+    const recipe = batchVolumeL === selected.volumeL ? selected : BrewingMath.scaleRecipe(selected, batchVolumeL, profile, profile).scaledRecipe;
 
-    const newBatchId = `LOT-${String(Date.now()).slice(-3)}`;
+    const newBatchId = nextBatchId(StorageService.getBatches().map(b => b.id));
 
     if (autoDeductStock) {
       StorageService.brewRecipeAndDeductStocks(recipe, newBatchId);
@@ -523,11 +529,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
         name: recipe.name,
         style: recipe.style,
         volumeL: batchVolumeL,
-        og: recipe.ogTarget ? recipe.ogTarget.toString() : '1.062',
-        fg: '(en fermentation)',
-        abv: '(en cours)',
-        status: 'fermentation',
-        recipeRef: recipe.id
+        status: 'planifie',
+        recipeRef: recipe.id,
+        recipeSnapshot: captureSnapshot(recipe)
       });
     }
 

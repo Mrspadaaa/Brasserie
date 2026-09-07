@@ -64,6 +64,13 @@ export const recipeFields = {
   colorEbc: n('Couleur annoncée (EBC)'),
   efficiencyPct: pct('Rendement (%)'),
   preBoilL: n('Volume avant ébullition (L)'),
+  preBoilHotL: n('Volume avant ébullition à chaud (L)'),
+  brewhouse: o('Matériel du plan', {
+    id:t('Identifiant matériel'),name:t('Nom matériel'),volumeL:n('Volume visé (L)'),efficiencyPct:pct('Rendement matériel (%)'),boilOffRatePct:pct('Ancien débit (%/h)'),deadSpaceL:n('Pertes fond de cuve (L)'),mashRatioLPerKg:n('Épaisseur de maische (L/kg)'),
+    equipment:o('Capacités et calibration',{
+      kettleCapacityL:n('Cuve totale (L)'),kettleWorkingL:n('Cuve utile à chaud (L)'),workingVolumeConfirmed:b('Limite vérifiée'),spargeCapacityL:n('Sparger (L)'),fermenterCapacityL:n('Fermenteur total (L)'),fermenterHeadspacePct:pct('Marge de mousse (%)'),roPackL:n('Pack osmosée (L)'),boilOffLPerHour:n('Évaporation à chaud (L/h)'),grainAbsorptionLPerKg:n('Absorption (L/kg)'),grainDisplacementLPerKg:n('Déplacement grain (L/kg)'),coolingShrinkagePct:pct('Rétraction (%)'),heatingRateCPerMin:n('Chauffe (°C/min)')
+    })
+  }),
   carboTarget: t('Carbonatation'),
   boilMin: n('Ébullition (min)'),
   totalGristKg: n('Grain total (kg)'),
@@ -121,6 +128,8 @@ export const recipeFields = {
   mash: o('Empâtage', {
     ratioLPerKg: n('Épaisseur (L/kg)'),
     mashoutTempC: temp('Mash-out (°C)'),
+    mashoutDurationMin: n('Maintien mash-out (min)'),
+    heatingRateCPerMin: n('Vitesse de chauffe (°C/min)'),
     spargeTempC: temp('Rinçage (°C)'),
     spargeType: t('Méthode de rinçage', ['fly', 'batch', 'none']),
     steps: a(
@@ -129,6 +138,10 @@ export const recipeFields = {
     )
   }),
   waterPlan: o('Eau', {
+    roLimitL: n('Osmosée disponible au total (L)', 0, 1000),
+    ratioOverride: n('Rapport sulfate chlorure choisi', 0, 20),
+    autoTreatment: b('Sels et acides suivent la recette'),
+    saltOverrides: o('Doses manuelles de sels', { mash: o('Empâtage', salts), sparge: o('Rinçage', salts) }),
     sourceId: t('Référence de source'),
     sourceSnapshot: o('Analyse de source', {
       id: t('Référence'),
@@ -186,7 +199,9 @@ export const recipeFields = {
     })
   ),
   notes: a('Notes', t('')),
-  notesCreation: t('Notes de création')
+  notesCreation: t('Notes de création'),
+  version: n('Version'),
+  parentRecipeId: t('Recette d’origine')
 } satisfies Record<
   Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water'>,
   Field

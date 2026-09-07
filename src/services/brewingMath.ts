@@ -1,6 +1,7 @@
 import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind,
   Fermentable
 } from '../types';
+import { equipmentErrors } from '../domain/brewEquipment';
 
 /**
  * Les grammes de houblon qui RESTENT dans la cuve d'ébullition.
@@ -434,6 +435,7 @@ export const BrewingMath = {
     mashWaterL: number;
     spargeWaterL: number;
     preBoilVolumeL: number;
+    preBoilHotL?: number;
     grainAbsorptionL: number;
     boilOffL: number;
     hopLossL: number;
@@ -467,6 +469,21 @@ export const BrewingMath = {
     const safeHopG = Number.isFinite(kettleHopG) && kettleHopG > 0 ? kettleHopG : 0;
     const hopLossL = round1(safeHopG * 0.006);
     const deadSpaceL = Number.isFinite(brewhouse?.deadSpaceL) ? Math.max(0, brewhouse!.deadSpaceL!) : 2.0;
+    const e = brewhouse?.equipment;
+    if (e && !equipmentErrors(e).length) {
+      const coldFactor = 1-e.coolingShrinkagePct/100;
+      const evaporationHot = e.boilOffLPerHour*safeBoilMin/60;
+      const preHot = (volumeL+deadSpaceL+hopLossL)/coldFactor+evaporationHot;
+      const preCold = preHot*coldFactor;
+      const absorption = totalGristKg*e.grainAbsorptionLPerKg;
+      const totalWater = round1(preCold+absorption);
+      const preferred = totalGristKg*(brewhouse?.mashRatioLPerKg || 3);
+      const maxMash = Math.max(0,Math.floor(((e.kettleWorkingL-totalGristKg*e.grainDisplacementLPerKg)/1.03)*10)/10);
+      // Move water to the sparge, never discard water required for the final volume.
+      // No-sparge remains full-volume: the capacity check must show if it cannot fit.
+      const mash = spargeType==='none' ? totalWater : Math.min(totalWater,maxMash,round1(preferred));
+      return {mashWaterL:mash,spargeWaterL:round1(totalWater-mash),preBoilVolumeL:round1(preCold),preBoilHotL:round1(preHot),grainAbsorptionL:round1(absorption),boilOffL:round1(evaporationHot*coldFactor),hopLossL,mashRatioLPerKg:round1(mash/totalGristKg)};
+    }
     const coolingShrinkageL = volumeL * 0.04;
     const preBoilVolumeL = round1(
       Math.max(0, volumeL + boilOffL + deadSpaceL + hopLossL + coolingShrinkageL)
@@ -786,4 +803,3 @@ export const BrewingMath = {
     return Number.isFinite(bar) ? bar : 0;
   }
 };
-

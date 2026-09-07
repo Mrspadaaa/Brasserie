@@ -139,7 +139,10 @@ describe('Lancer un brassin déduit le stock', () => {
     const batch = StorageService.getBatches().find((b) => b.id === 'LOT-1')!;
     expect(batch.recipeSnapshot?.fermentables).toHaveLength(2);
     expect(batch.recipeSnapshot?.yeast?.name).toBe('SafAle US-05');
-    expect(batch.status).toBe('fermentation');
+    expect(batch.status).toBe('planifie');
+    expect(batch.og).toBeUndefined();
+    expect(batch.fg).toBeUndefined();
+    expect(batch.gravityLog).toEqual([]);
   });
 
   it('modifier la recette ensuite ne réécrit pas le brassin', () => {
@@ -263,16 +266,18 @@ describe('Épinglage', () => {
 });
 
 describe('Export et réimport', () => {
-  it('rend les données telles qu’elles étaient', () => {
+  it('rend les données telles qu’elles étaient', async () => {
+    window.history.replaceState({}, '', '/?dev-local');
     StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1');
     const dump = StorageService.exportAllData();
 
     store.clear();
     expect(StorageService.getBatches()).toHaveLength(0);
 
-    StorageService.importAllData(dump);
+    await StorageService.importAllData(dump);
     expect(StorageService.getBatches().map((b) => b.id)).toContain('LOT-1');
     expect(refStock('MP-001')).toBe(19);
+    window.history.replaceState({}, '', '/');
   });
 
   it('refuse un contenu qui n’est pas une sauvegarde', () => {

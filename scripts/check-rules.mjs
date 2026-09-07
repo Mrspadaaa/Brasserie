@@ -10,9 +10,9 @@
  */
 import { readFileSync } from 'node:fs';
 
-const repo = readFileSync('src/services/firestoreRepo.ts', 'utf8');
-const start = repo.indexOf('ALL_COLLECTIONS');
-const block = repo.slice(start, repo.indexOf('];', start));
+const repo = readFileSync('functions/src/dataSchema.ts', 'utf8');
+const start = repo.indexOf('BUSINESS_COLLECTIONS');
+const block = repo.slice(start, repo.indexOf('] as const', start));
 const collections = [...block.matchAll(/'([a-zA-Z]+)'/g)].map((m) => m[1]);
 
 const rules = readFileSync('firestore.rules', 'utf8');

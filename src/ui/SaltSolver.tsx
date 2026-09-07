@@ -1,7 +1,7 @@
 import React, { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { formatDecimal, useHoldRepeat } from './numericInput';
-import { WaterSource, SaltId, AcidId, WaterIons } from '../types';
+import { WaterSource, SaltId, AcidId, WaterIons, WaterPlan } from '../types';
 import { describeSolveIssue } from '../domain/water/solverMessages';
 import {
   SALTS,
@@ -91,6 +91,9 @@ import {
  */
 
 export interface WaterState {
+  roLimitL?: number;
+  autoTreatment?: boolean;
+  saltOverrides?: WaterPlan['saltOverrides'];
   /** Part d'osmosée de l'eau d'EMPÂTAGE, en %. */
   diRatioPct: number;
   /**
@@ -478,6 +481,15 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
   onNoSpargeChange
 }) => {
   const set = (patch: Partial<WaterState>) => onChange({ ...state, ...patch });
+  const setDose = (id: SaltId, value: number) => {
+    const doses = { ...state.doses, [id]: value };
+    const split = splitDoses(doses, state.mashWaterL, state.spargeWaterL, state.allSaltsInMash !== false);
+    const saltOverrides = state.autoTreatment ? {
+      mash: { ...state.saltOverrides?.mash, [id]: split.mash[id] ?? 0 },
+      sparge: { ...state.saltOverrides?.sparge, [id]: split.sparge[id] ?? 0 }
+    } : state.saltOverrides;
+    set({ doses, saltOverrides });
+  };
   const [tab, setTab] = useState<Tab>('empatage');
   const [activeStep, setActiveStep] = useState<MobileStep>('eau');
   /** Le sel qu'on manipule — ses ions s'allument sur la toile. */
@@ -548,7 +560,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   /** La part d'osmosée réellement appliquée au rinçage. */
   const spargeDi = state.spargeDiRatioPct ?? state.diRatioPct;
-  const spargeLinked = state.spargeDiRatioPct === undefined;
+  const spargeLinked = state.spargeDiRatioPct == null;
   const startSparge = useMemo(() => dilute(source, spargeDi), [source, spargeDi]);
 
   /**
@@ -624,7 +636,9 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   /** La cible : ce que le houblonnage suggère, sinon le milieu de fourchette. */
   const wantedRatio =
-    state.ratioOverride ?? hopHint?.ratio ?? (style.ratio.min + style.ratio.max) / 2;
+    state.ratioOverride ?? (state.customTarget?.ions.so4 != null && (state.customTarget?.ions.cl ?? 0) > 0
+      ? state.customTarget.ions.so4 / state.customTarget.ions.cl
+      : hopHint?.ratio ?? (style.ratio.min + style.ratio.max) / 2);
 
   /** Proposition globale pour une consigne SO4/Cl ; indépendante des doses manuelles. */
   const planFor = useCallback(
@@ -774,7 +788,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
    * n'a pas trouvé le bouton qui la valide n'est pas une commande.
    */
   const applyRatio = (ratio: number) => {
-    onChange({ ...state, ratioOverride: ratio, doses: planFor(ratio).doses });
+    onChange({ ...state, ratioOverride: ratio, doses: planFor(ratio).doses, saltOverrides: undefined });
   };
 
   const split = useMemo(
@@ -846,8 +860,8 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
     [planApplied, solution.issues, acideSuffit]
   );
 
-  /** L'alcalinité qui reste dans l'eau de rinçage — c'est elle qu'on acidifie. */
-  const spargeAlkalinity = Math.round(alkalinityAsCaCO3(achievedSparge.hco3));
+  /** Le résultat suit la dose retenue, y compris un zéro saisi à la main. */
+  const spargeAlkalinity = Math.round(alkalinityAsCaCO3(treatment.treated.sparge.hco3));
 
   /**
    * Le moût TEL QU'IL SERA, acide compris — c'est lui que la toile montre.
@@ -951,7 +965,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
 
   const bump = (id: SaltId, delta: number) => {
     const next = Math.max(0, Math.round(((state.doses[id] ?? 0) + delta) * 10) / 10);
-    set({ doses: { ...state.doses, [id]: next } });
+    setDose(id, next);
   };
 
   const toggleSalt = (id: SaltId) => {
@@ -1047,7 +1061,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             ions: start,
             caption:
               state.diRatioPct > 0
-                ? `${source.name} · coupée à ${state.diRatioPct} % d’osmosée`
+                ? `${source.name} · coupée à ${Number(state.diRatioPct.toFixed(2))} % d’osmosée`
                 : source.name
           }}
         />
@@ -1293,6 +1307,29 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             <Droplets className="w-3.5 h-3.5 text-water shrink-0" />
             Coupe à l’osmosée
           </h3>
+          <details className="rounded-control border border-water/25 bg-water/5 px-3 py-1">
+            <summary className="min-h-11 flex items-center cursor-pointer text-sm text-water">
+              {state.roLimitL != null ? `Osmosée : ${formatDecimal(state.roLimitL)} L disponibles` : 'Disponibilité & recalcul automatique'}
+            </summary>
+            <div className="space-y-3 py-2 text-sm">
+              <label className="block text-cave-300">Osmosée disponible au total (L)
+                <NumberInput aria-label="Osmosée disponible au total (L)" value={state.roLimitL} min={0} max={1000} emptyValue={undefined}
+                  placeholder="Sans limite" className="mt-1 w-full min-h-11 rounded-control bg-cave-900 border border-cave-700 px-3 text-base"
+                  onValue={value => set({ roLimitL: value == null ? undefined : Math.max(0, Math.min(1000, value)), autoTreatment: true })} />
+              </label>
+              <p className="text-cave-400">Empâtage et rinçage réunis. Le reste vient du réseau, les volumes de brassage sont conservés.</p>
+              <label className="min-h-11 flex items-center gap-3 text-cave-200">
+                <input type="checkbox" aria-label="Sels et acides suivent la recette" className="w-5 h-5 accent-water" checked={state.autoTreatment === true}
+                  onChange={e => set({ autoTreatment: e.target.checked })} />
+                Sels et acides suivent la recette
+              </label>
+              {(state.saltOverrides || state.acidOverride) && <button type="button" className="min-h-11 text-water underline"
+                onClick={() => set({ saltOverrides: undefined, acidOverride: undefined, autoTreatment: true })}>
+                Recalculer aussi les doses manuelles
+              </button>}
+              <p className="text-cave-400">Les doses modifiées à la main restent prioritaires. Préparation de la recette uniquement.</p>
+            </div>
+          </details>
 
           {/*
             ⚠️ UNE SEULE COMMANDE tant que le rinçage suit l'empâtage.
@@ -1316,7 +1353,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
           <button
             type="button"
             onClick={() => set({ diRatioPct: justEnough.pct, spargeDiRatioPct: undefined })}
-            disabled={totalWaterL <= 0}
+            disabled={totalWaterL <= 0 || (state.roLimitL != null && totalWaterL * justEnough.pct / 100 > state.roLimitL)}
             className="w-full text-2xs flex items-center gap-1.5 py-1.5 px-2 rounded-control bg-cave-800 border border-cave-700 hover:border-water transition-colors disabled:opacity-50"
           >
             <Droplets className="w-3.5 h-3.5 text-water shrink-0" />
@@ -1325,6 +1362,9 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             </span>
             <span className="shrink-0 reading font-semibold text-water">{justEnough.pct} %</span>
           </button>
+          {state.roLimitL != null && totalWaterL * justEnough.pct / 100 > state.roLimitL && (
+            <p className="text-xs text-water">Ce repère demanderait {formatDecimal(Math.round(totalWaterL * justEnough.pct / 10) / 10)} L d’osmosée. Ton plan reste limité à {formatDecimal(state.roLimitL)} L ; les écarts du profil restent visibles.</p>
+          )}
           {totalWaterL > 0 && (
             <p className="text-2xs text-cave-500 leading-snug">
               {/*
@@ -1347,7 +1387,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                 'Le réseau suffit tel quel : aucun ion ne dépasse le style, l’acide reste sous son seuil.'
               ) : state.diRatioPct > justEnough.pct ? (
                 <>
-                  Coupe en place {state.diRatioPct} %, minimum {justEnough.pct} % — descendre plus
+                  Coupe en place {Number(state.diRatioPct.toFixed(2))} %, minimum {justEnough.pct} % — descendre plus
                   bas buterait sur : {justEnough.reasons.join(' ; ')}.
                 </>
               ) : state.diRatioPct === justEnough.pct ? (
@@ -1409,7 +1449,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                     <span className="min-w-0 flex-1 text-left truncate">
                       Rinçage réglé à part
                     </span>
-                    <span className="shrink-0 text-cave-400">relier à {state.diRatioPct} %</span>
+                    <span className="shrink-0 text-cave-400">relier à {Number(state.diRatioPct.toFixed(2))} %</span>
                   </>
                 )}
               </button>
@@ -1664,24 +1704,38 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             <div className="panel p-2.5 sm:p-3 space-y-1.5">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-xs sm:text-sm text-cave-400">
-                  Alcalinité restante — cible pH {spargeAcid.targetPh}
+                  Alcalinité restante après acide
                 </span>
                 <span
                   className={`reading text-base sm:text-lg font-bold shrink-0 ${
                     spargeAlkalinity <= 25 ? 'text-hop' : 'text-cave-100'
                   }`}
                 >
-                  {spargeAlkalinity} ppm
+                  {spargeAlkalinity} <span className="reading-unit text-2xs">ppm CaCO₃</span>
                 </span>
               </div>
+              <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
+                HCO₃ : {formatDecimal(Math.round(achievedSparge.hco3 * 10) / 10)} →{' '}
+                {formatDecimal(Math.round(treatment.treated.sparge.hco3 * 10) / 10)} ppm.
+                {' '}Cible pH {spargeAcid.targetPh}, à vérifier au pH-mètre.
+              </p>
               {spargeAcid.amount > 0 ? (
                 <p className="text-2xs sm:text-sm text-cave-300 leading-snug">
-                  Soit{' '}
+                  Avec{' '}
                   <span className="reading text-water font-semibold">
                     {spargeAcid.amount} {spargeAcid.unit}
                   </span>{' '}
                   d’{ACIDS[state.acidId].name.charAt(0).toLowerCase()}
-                  {ACIDS[state.acidId].name.slice(1)} — ou davantage d’osmosée.
+                  {ACIDS[state.acidId].name.slice(1)} dans {formatDecimal(state.spargeWaterL)} L de rinçage.
+                </p>
+              ) : spargeAcidCalcule.amount > 0 ? (
+                <p className="text-2xs sm:text-sm text-ebc-straw leading-snug">
+                  Dose retenue : 0 {spargeAcid.unit}. L’alcalinité reste à traiter ; le calcul propose{' '}
+                  {formatDecimal(spargeAcidCalcule.amount)} {spargeAcid.unit}.
+                </p>
+              ) : achievedSparge.hco3 > 0 ? (
+                <p className="text-2xs sm:text-sm text-cave-300 leading-snug">
+                  {spargeAcid.warning ?? 'Dose calculée nulle : vérifier le pH de cette eau avant tout ajout.'}
                 </p>
               ) : (
                 <p className="text-2xs sm:text-sm text-hop leading-snug">
@@ -1828,7 +1882,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
               l'appui, et le « plan proposé » sortait moitié calculé, moitié
               forcé, sans que rien ne le dise. Doser propose un plan ENTIER.
             */
-            onClick={() => set({ doses: rienAProposer ? state.doses : solution.doses, acidOverride: undefined })}
+            onClick={() => set({ doses: rienAProposer ? state.doses : solution.doses, acidOverride: undefined, saltOverrides: undefined })}
             className="shrink-0 h-9 px-2.5 rounded-control bg-ebc-straw text-cave-950 font-bold text-2xs
                        flex items-center gap-1 hover:bg-ebc-amber active:scale-[0.98] transition-all shadow-sm
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ebc-straw"
@@ -1901,7 +1955,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                   ions={ionsOf(id)}
                   achievedTotal={achievedTotal}
                   style={style}
-                  onDose={(v) => set({ doses: { ...state.doses, [id]: v } })}
+                  onDose={(v) => setDose(id, v)}
                   onToggle={toggleSalt}
                   onActivate={setActiveSalt}
                 />
@@ -2016,9 +2070,30 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                 />
               )}
             </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 pt-1.5 text-2xs text-cave-300">
+              <span>HCO₃ après acide</span>
+              <span aria-label="HCO₃ après acide — empâtage">
+                Empâtage <strong className="reading text-water">{formatDecimal(Math.round(treatment.treated.mash.hco3 * 10) / 10)}</strong> ppm
+              </span>
+              {hasSparge && (
+                <span aria-label="HCO₃ après acide — rinçage">
+                  Rinçage <strong className="reading text-water">{formatDecimal(Math.round(treatment.treated.sparge.hco3 * 10) / 10)}</strong> ppm
+                </span>
+              )}
+            </div>
           </div>
         </section>
         </div>
+
+        {((mashAcid.amount > 0 && treatment.treated.mash.hco3 === 0) ||
+          (hasSparge && spargeAcid.amount > 0 && treatment.treated.sparge.hco3 === 0)) && (
+          <p className="px-1 text-2xs text-cave-300 leading-snug">
+            {[
+              mashAcid.amount > 0 && treatment.treated.mash.hco3 === 0 ? 'Empâtage' : '',
+              hasSparge && spargeAcid.amount > 0 && treatment.treated.sparge.hco3 === 0 ? 'Rinçage' : ''
+            ].filter(Boolean).join(' · ')} : HCO₃ estimé à 0. Ajouter de l’acide ne diminue plus le HCO₃ affiché ; le pH peut encore baisser. Vérifie-le avant tout ajout.
+          </p>
+        )}
 
         {alkaliGoal.limitedByGrist && (
           <p className="px-1 text-2xs text-cave-300 leading-snug" aria-label="Objectif du bicarbonate">

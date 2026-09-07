@@ -27,6 +27,8 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  * vide, parce qu'on brasserait dessus.
  */
 
+import { BrewerChat } from '../ui/BrewerChat';
+
 interface RecipePageProps {
   recipe: Recipe;
   /** Brassins issus de cette recette, pour confronter le visé au mesuré. */
@@ -70,6 +72,8 @@ const Metric: React.FC<{
     )}
   </div>
 );
+
+import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
 
 export const RecipePage: React.FC<RecipePageProps> = ({
   recipe,
@@ -190,6 +194,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         </button>
       }
     >
+      <BrewerChat scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
       {/* --- Les cinq mesures ------------------------------------------- */}
       <section className="panel p-4">
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
@@ -477,20 +482,21 @@ export const RecipePage: React.FC<RecipePageProps> = ({
            * jamais : la fiche affichait « personnalisé » sur toutes les
            * recettes. C'est `styleByCode` qui connaît ces codes.
            */
-          hint={`${recipe.waterPlan.diRatioPct} % d’osmosée · ${
+          hint={`${Number(recipe.waterPlan.diRatioPct.toFixed(2))} % d’osmosée · ${
             recipe.waterPlan.targetIons
               ? recipe.waterPlan.targetName ?? 'cible de la recette'
               : styleByCode(recipe.waterPlan.targetProfileId).name
           }`}
         >
           <div className="space-y-3">
+            <BrewEquipmentSummary recipe={recipe} profile={brewhouse}/>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-500">Empâtage</div>
                 <div className="reading text-base">{recipe.waterPlan.mashWaterL} L</div>
                 {((recipe.waterPlan.diRatioPct ?? 0) > 0) && (
                   <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                    {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({recipe.waterPlan.diRatioPct} %)
+                    {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({Number(recipe.waterPlan.diRatioPct.toFixed(2))} %)
                   </div>
                 )}
               </div>
@@ -505,7 +511,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     const reseauL = Math.round((recipe.waterPlan.spargeWaterL - osmoseeL) * 10) / 10;
                     return (
                       <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                        {reseauL} L réseau · {osmoseeL} L osmosée ({spargeDi} %)
+                        {reseauL} L réseau · {osmoseeL} L osmosée ({Number(spargeDi.toFixed(2))} %)
                       </div>
                     );
                   })()
@@ -668,7 +674,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       : ''}
                 </h3>
                 <ul className="divide-y divide-cave-850">
-                  {recipe.mash.steps.map((s, i) => (
+                  {[...recipe.mash.steps, ...(recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
                     <li key={i} className="py-2 flex items-baseline gap-3">
                       <span className="flex-1 text-base text-cave-100">{s.name}</span>
                       <span className="reading text-base text-water">{s.tempC} °C</span>
@@ -678,6 +684,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     </li>
                   ))}
                 </ul>
+                <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
+                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {recipe.mash.heatingRateCPerMin.toFixed(2)} °C/min. La montée est suivie séparément dans le journal.</p>}
               </div>
             )}
 

@@ -19,6 +19,7 @@ import { InventoryCorrectionSheet } from '../../ui/InventoryCorrectionSheet';
 import { INVENTORY_REASONS, InventoryReason } from '../../services/storage';
 import { EquipmentSheet } from '../../ui/EquipmentSheet';
 import { KegSheet } from '../../ui/KegSheet';
+import { useLiveSelection } from '../../hooks/useLiveData';
 
 interface StocksTabProps {
   stocks: {
@@ -77,7 +78,11 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [subTab, setSubTab] = useState<SubTab>(() =>
     StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
   );
-  const [selected, setSelected] = useState<StockItem | null>(null);
+  const allItems = useMemo(
+    () => [...stocks.rawMaterials, ...stocks.cleaning],
+    [stocks.rawMaterials, stocks.cleaning]
+  );
+  const [selected, setSelected] = useLiveSelection(allItems, 'ref');
   const [creating, setCreating] = useState(false);
   const [copiedSupplier, setCopiedSupplier] = useState<string | null>(null);
 
@@ -85,8 +90,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
    * Matériel et fûts : ils n'étaient consultables qu'en lecture. Une fiche
    * ouverte à `null` ferme la feuille ; une fiche vide vaut création.
    */
-  const [equipmentSheet, setEquipmentSheet] = useState<EquipmentItem | null>(null);
-  const [kegSheet, setKegSheet] = useState<KegItem | null>(null);
+  const [equipmentSheet, setEquipmentSheet] = useLiveSelection(stocks.equipment, 'ref');
+  const [kegSheet, setKegSheet] = useLiveSelection(stocks.kegs, 'id');
 
   const blankEquipment = (): EquipmentItem => ({
     id: `EQ-${Date.now()}`,
@@ -158,12 +163,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     StorageService.setUiState('stocks_subtab', subTab);
   }, [subTab]);
 
-  /** Matières premières et hygiène dans une seule liste : c'est du stock. */
-  const allItems = useMemo(
-    () => [...stocks.rawMaterials, ...stocks.cleaning],
-    [stocks.rawMaterials, stocks.cleaning]
-  );
-
   const typeOf = (item: StockItem): 'rawMaterials' | 'cleaning' =>
     stocks.cleaning.some((c) => c.ref === item.ref) ? 'cleaning' : 'rawMaterials';
 
@@ -172,7 +171,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
    * chaque ligne. On saisit le stock COMPTÉ et un motif ; l'écart est calculé
    * et journalisé. Le stock ne bouge autrement que par achat et par brassage.
    */
-  const [correcting, setCorrecting] = useState<StockItem | null>(null);
+  const [correcting, setCorrecting] = useLiveSelection(allItems, 'ref');
 
   const applyCorrection = (
     item: StockItem,
@@ -439,7 +438,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         }}
         onToggleFavorite={(item) => {
           StorageService.toggleFavorite('stockItem', item.ref);
-          setSelected({ ...item, favorite: !item.favorite });
         }}
       />
 

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
+import { PersistenceStatus } from './ui/PersistenceStatus';
+import { BrewerActivity } from './ui/BrewerActivity';
+import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
 import { QuickActionModal } from './components/QuickActionModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -218,6 +221,7 @@ export const App: React.FC = () => {
       setTarifs([]);
       setAuditLogs([]);
       setCreativeItems([]);
+      setIsDataReady(false);
     }
   }, [currentUser]);
 
@@ -238,7 +242,7 @@ export const App: React.FC = () => {
   // Subscribe to storage changes ONLY when authenticated
   useEffect(() => {
     if (!currentUser) return;
-    const unsubscribe = StorageService.subscribe(() => {
+    const refresh = () => {
       setTransactions([...StorageService.getTransactions()]);
       setStocks({ ...StorageService.getStocks() });
       setBatches([...StorageService.getBatches()]);
@@ -250,8 +254,12 @@ export const App: React.FC = () => {
       setConfig({ ...StorageService.getConfig() });
       setAuditLogs([...StorageService.getAuditLogs()]);
       setCreativeItems([...StorageService.getCreativeItems()]);
-      setIsDataReady(StorageService.isReady());
-    });
+      // Once opened, keep cached screens and their drafts mounted during a stream outage.
+      // PersistenceStatus exposes the error; signing out still resets readiness above.
+      setIsDataReady(ready => ready || StorageService.isReady());
+    };
+    const unsubscribe = StorageService.subscribe(refresh);
+    refresh();
     return unsubscribe;
   }, [currentUser]);
 
@@ -350,12 +358,8 @@ export const App: React.FC = () => {
   };
 
   /**
-   * Ce que crée le bouton d'action, ici et maintenant.
-   *
-   * ⚠️ Il ouvrait toujours le même menu de saisie rapide, quel que soit
-   * l'écran : sur l'onglet Fûts il proposait d'enregistrer une facture, sur
-   * Tarifs de brasser. Le geste le plus visible de l'application ne créait
-   * jamais ce qu'on avait sous les yeux.
+   * Le bouton + conserve l'action de création de l'écran courant
+   * (article, recette, écriture…). Le compagnon dispose de son propre bouton.
    */
   const fabAction = fabActionFor(activeTab, subTab);
 
@@ -593,7 +597,10 @@ export const App: React.FC = () => {
           Synchronisation des données de la brasserie...
         </span>
         {writeError && (
-          <p className="text-sm text-alert text-center max-w-xs leading-relaxed">{writeError}</p>
+          <div className="text-center space-y-3">
+            <p className="text-sm text-alert max-w-xs leading-relaxed">{writeError}</p>
+            <button type="button" className="min-h-11 rounded-xl border border-cave-700 px-4" onClick={() => window.location.reload()}>Réessayer la synchronisation</button>
+          </div>
         )}
       </div>
     );
@@ -601,6 +608,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
+      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
@@ -625,6 +633,7 @@ export const App: React.FC = () => {
       )}
 
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
+      <PersistenceStatus />
       <Header
         config={config}
         globalTimeFilter={globalTimeFilter}

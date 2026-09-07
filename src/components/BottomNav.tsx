@@ -23,9 +23,7 @@ interface BottomNavProps {
  * Les libellés passent de 10 px à 12 px : ils sont épaulés par une icône, mais
  * 10 px restait illisible en lumière faible.
  *
- * Le bouton d'action flottait avec une classe `w-13` qui n'existe pas dans
- * Tailwind : sa taille dépendait en réalité du seul padding. Il fait désormais
- * 56 px déclarés.
+ * Le bouton d'action mesure 56 px et conserve son action contextuelle.
  */
 
 const TABS: Array<{
@@ -50,21 +48,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   criticalStockCount
 }) => (
   <>
-    {/*
-      Le bouton crée CE QU'ON A SOUS LES YEUX.
-
-      ⚠️ Il ouvrait auparavant toujours le même menu — achat, vente, brassin —
-      quel que soit l'écran : sur l'onglet Fûts il proposait d'enregistrer une
-      facture, sur Tarifs de brasser. Son libellé change désormais avec
-      l'endroit, et un appui long ramène la saisie rapide pour les cas où l'on
-      veut autre chose que ce que l'écran montre.
-    */}
     <div
       className="fixed right-4 z-40 flex items-center gap-2"
       style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}
     >
-      {/* Le libellé n'apparaît que quand il y a la place : sur téléphone, la
-          barre du bas dit déjà où l'on est. */}
       <span
         className="hidden sm:block px-3 py-1.5 rounded-control bg-cave-850/95 backdrop-blur-sm
                    border border-cave-700 text-sm text-cave-200 shadow-lift"
@@ -72,13 +59,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       >
         {action.label}
       </span>
-
       <button
+        type="button"
         onClick={onAction}
-        onContextMenu={(e) => {
-          // Appui long sur téléphone, clic droit sur ordinateur : la saisie
-          // rapide reste à un geste, sans occuper de place à l'écran.
-          e.preventDefault();
+        onContextMenu={(event) => {
+          event.preventDefault();
           onOpenQuickAction();
         }}
         aria-label={action.label}
@@ -95,7 +80,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         )}
       </button>
     </div>
-
     <nav
       aria-label="Navigation principale"
       className="fixed bottom-0 inset-x-0 z-40 bg-cave-900/95 backdrop-blur-xl

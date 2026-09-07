@@ -6,6 +6,7 @@ import { Sheet } from './Sheet';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { SegmentedControl } from './SegmentedControl';
 import { QuantityStepper } from './QuantityStepper';
+import { useSyncedDraft } from '../hooks/useLiveData';
 
 /**
  * Correction d'inventaire — le seul chemin pour modifier un stock à la main.
@@ -37,7 +38,7 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
   onClose,
   onConfirm
 }) => {
-  const [counted, setCounted] = useState(0);
+  const [counted, setCounted] = useSyncedDraft(item?.currentStock ?? 0, open ? item?.ref : null);
   const [reason, setReason] = useState<InventoryReason>('comptage');
   const [note, setNote] = useState('');
   const [touched, setTouched] = useState(false);
@@ -45,12 +46,11 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
   // Se recale sur l'article dès qu'on en ouvre un autre.
   React.useEffect(() => {
     if (open && item) {
-      setCounted(item.currentStock);
       setReason('comptage');
       setNote('');
       setTouched(false);
     }
-  }, [open, item]);
+  }, [open, item?.ref]);
 
   if (!item) return null;
 

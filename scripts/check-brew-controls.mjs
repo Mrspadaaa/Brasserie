@@ -211,6 +211,8 @@ try {
     'Acid concentration choices are large radio rows and preserve explicit dose confirmation'
   );
 
+  await page.click('.brew-options > summary');
+  await page.click('.brew-sound-settings > summary');
   await click('Tester la sonnerie');
   await page.waitForSelector('.brew-ringing');
   await top();

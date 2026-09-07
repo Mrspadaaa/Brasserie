@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 /**
  * Contrôle des calculs de brassage.
@@ -20,32 +20,24 @@ import { dirname, join } from 'node:path';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const require_ = createRequire(join(ROOT, 'package.json'));
-const { transformSync } = require_('esbuild');
+const { buildSync } = require_('esbuild');
 
 const OUT = join(ROOT, 'node_modules', '.check-brewing');
 mkdirSync(OUT, { recursive: true });
 
-/** Compile un module TypeScript en ESM lisible par Node, imports réécrits. */
-function compile(name, relPath, rewrites = {}) {
-  const ts = readFileSync(join(ROOT, relPath), 'utf8');
-  let js = transformSync(ts, { loader: 'ts', format: 'esm' }).code;
-  for (const [from, to] of Object.entries(rewrites)) {
-    js = js.split(`'${from}'`).join(`'${to}'`).split(`"${from}"`).join(`"${to}"`);
-  }
-  const file = join(OUT, `${name}.mjs`);
-  writeFileSync(file, js);
+/** Bundle chaque entrée avec ses dépendances TypeScript, comme le build applicatif. */
+function compile(name, relPath) {
+  const file = join(OUT, name + '.mjs');
+  buildSync({ entryPoints: [join(ROOT, relPath)], outfile: file, bundle: true, platform: 'node', format: 'esm', target: 'node22', logLevel: 'silent' });
   return file;
 }
 
 compile('types', 'src/types/index.ts');
 compile('units', 'src/services/units.ts');
-compile('hopStage', 'src/domain/hopStage.ts', { '../types': './types.mjs' });
-compile('beerColor', 'src/domain/beerColor.ts', { '../types': './types.mjs' });
-compile('brewingMath', 'src/services/brewingMath.ts', { '../types': './types.mjs' });
-compile('recipeParser', 'src/services/recipeParser.ts', {
-  '../types': './types.mjs',
-  './units': './units.mjs'
-});
+compile('hopStage', 'src/domain/hopStage.ts');
+compile('beerColor', 'src/domain/beerColor.ts');
+compile('brewingMath', 'src/services/brewingMath.ts');
+compile('recipeParser', 'src/services/recipeParser.ts');
 
 const { BrewingMath } = await import(`file:///${join(OUT, 'brewingMath.mjs').split('\\').join('/')}`);
 const { computeBeerColor } = await import(`file:///${join(OUT, 'beerColor.mjs').split('\\').join('/')}`);
@@ -281,6 +273,7 @@ check('une impériale perd du rendement', imperiale.lostPoints, 7, 0.5);
 check('le rendement corrigé est annoncé', imperiale.correctedPct, 68, 0.5);
 
 // --- Verdict -----------------------------------------------------------------
+if (resolve(OUT) !== resolve(ROOT, 'node_modules', '.check-brewing')) throw Error('Unexpected check output path.');
 rmSync(OUT, { recursive: true, force: true });
 
 if (failed > 0) {
