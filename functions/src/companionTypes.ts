@@ -103,6 +103,7 @@ export interface BrewerContext {
   localJournal?: any;
   editableTargets?: BrewerProposal['target'][];
 }
+export type BrewerMode = 'fast' | 'auto' | 'deep';
 export interface BrewerTurn {
   id: string;
   operationId: string;
@@ -114,7 +115,7 @@ export interface BrewerTurn {
   reviewed: boolean;
   reviewModel?: string;
   reviewReason?: 'fast' | 'requested' | 'sensitive' | 'repair' | 'complexity' | 'research';
-  mode?: 'auto' | 'deep';
+  mode?: BrewerMode;
   contextLabel: string;
   proposal?: BrewerProposal;
 }
@@ -125,7 +126,7 @@ export interface BrewerChatInput {
   draft?: unknown;
   localJournal?: unknown;
   phase?: string;
-  mode?: 'auto' | 'deep';
+  mode?: BrewerMode;
   generation?: number;
   editableTargets?: BrewerProposal['target'][];
 }

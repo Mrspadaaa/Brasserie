@@ -5,9 +5,31 @@ import type {
   BrewerReply
 } from '../../functions/src/companionTypes';
 import { awaitBrewerReply, type BrewerRequestOptions } from './brewerRecovery';
+import type { BrewerAiBudget, BrewerAiLimits } from '../../functions/src/brewerLimits';
 export type { BrewerChatInput, BrewerScope, BrewerTurn } from '../../functions/src/companionTypes';
 export type BrewerHistory = BrewerTurn[] & { generation?: number; draft?: unknown };
 export const BrewerChat = {
+  async budget(): Promise<BrewerAiBudget> {
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('./firebase');
+    return (
+      await httpsCallable<unknown, BrewerAiBudget>(functions, 'getBrewerAiBudget', {
+        timeout: 15000
+      })({})
+    ).data;
+  },
+  async setBudget(
+    paused: boolean | undefined,
+    limits?: Partial<BrewerAiLimits>
+  ): Promise<BrewerAiBudget> {
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('./firebase');
+    return (
+      await httpsCallable<unknown, BrewerAiBudget>(functions, 'setBrewerAiBudget', {
+        timeout: 15000
+      })({ ...(paused != null ? { paused } : {}), ...(limits ? { limits } : {}) })
+    ).data;
+  },
   async retry(jobId: string, operationId: string): Promise<BrewerReply> {
     const { httpsCallable } = await import('firebase/functions');
     const { functions } = await import('./firebase');

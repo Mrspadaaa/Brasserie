@@ -5,6 +5,7 @@ import { practicalEquipment } from '../../src/domain/brewEquipment';
 import { validateChatInput } from '../../functions/src/brewerContext';
 import { runBrewerHarness, validateAdvice } from '../../functions/src/brewerHarness';
 import { applyProposal } from '../../functions/src/brewerProposals';
+import { BrewerBudgetError } from '../../functions/src/brewerLimits';
 import type { BrewerContext } from '../../functions/src/companionTypes';
 
 const context = (): BrewerContext => ({
@@ -56,6 +57,133 @@ const fields = (changes: Array<{ path: string; valueJson: string }>) => ({
 const approved = () => json({ approved: true, proposalApproved: true, issues: [] });
 
 describe('Outils du compagnon : mêmes modèles et données explicites', () => {
+  it.each(['fast', 'auto', 'deep'] as const)(
+    'ne contourne jamais un plafond via un autre modèle (%s)',
+    async (mode) => {
+      const failure = new BrewerBudgetError('ai-daily-limit', 'Plafond atteint');
+      const generate = vi.fn().mockRejectedValue(failure);
+      await expect(runBrewerHarness(context(), 'Question', [], generate, { mode })).rejects.toBe(
+        failure
+      );
+      expect(generate).toHaveBeenCalledTimes(1);
+    }
+  );
+  it.each(['fast', 'auto', 'deep'] as const)('accepte le mode %s côté serveur', (mode) => {
+    expect(
+      validateChatInput({
+        scope: { kind: 'recipe', id: 'REC-A' },
+        operationId: 'operation-123456789',
+        question: 'Une question',
+        mode
+      }).mode
+    ).toBe(mode);
+  });
+  it.each([false, true])(
+    'prépare les champs sans deuxième message du brasseur (JSON=%s)',
+    async (asJson) => {
+      const c = context();
+      c.editableTargets = ['recipe'];
+      const offer = { ...advice, question: 'Veux-tu que je te prépare les quantités exactes ?' };
+      const generate = vi
+        .fn()
+        .mockResolvedValueOnce(asJson ? json(offer) : done(offer))
+        .mockResolvedValueOnce(
+          toolCall(
+            'propose_changes',
+            fields([
+              { path: 'name', valueJson: '"La Belle Mousse"' },
+              { path: 'boilMin', valueJson: '70' }
+            ])
+          )
+        )
+        .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+        .mockResolvedValueOnce(approved());
+      const result = await runBrewerHarness(
+        c,
+        'Un nom et des modifications pertinentes',
+        [],
+        generate
+      );
+      expect(result.proposal.changes.map((ch) => ch.path)).toEqual(['name', 'boilMin']);
+      expect(result.advice.question).toBe('');
+      expect(JSON.stringify(generate.mock.calls[1][1].contents)).toContain('Prépare maintenant');
+    }
+  );
+  it('le mode rapide conserve Flash pour une réparation et une relecture urgente', async () => {
+    const generate = vi
+      .fn()
+      .mockResolvedValueOnce(done({ ...advice, level: 'urgent' }))
+      .mockResolvedValueOnce(json({ approved: false, issues: ['Clarifie le volume.'] }))
+      .mockResolvedValueOnce(done(advice))
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(context(), 'Une question', [], generate, {
+      mode: 'fast'
+    });
+    expect(generate.mock.calls.map((c) => c[0])).toEqual(Array(4).fill('gemini-3.8-flash'));
+    expect(result.reviewed).toBe(true);
+    expect(
+      generate.mock.calls[0][1].tools[0].functionDeclarations.some(
+        (t: any) => t.name === 'request_deep_analysis'
+      )
+    ).toBe(false);
+  });
+  it('refuse une bascule Pro non autorisée en mode rapide', async () => {
+    const generate = vi
+      .fn()
+      .mockResolvedValueOnce(toolCall('request_deep_analysis', { reason: 'arbitrage_recette' }))
+      .mockResolvedValueOnce(done())
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(context(), 'Une question', [], generate, {
+      mode: 'fast'
+    });
+    expect(generate.mock.calls.every((c) => c[0] === 'gemini-3.8-flash')).toBe(true);
+    expect(result.trace[0].error).toMatch(/Mode rapide/);
+  });
+  it('le mode rapide confie le web à Pro puis reprend conseil et relecture avec Flash', async () => {
+    const generate = vi
+      .fn()
+      .mockResolvedValueOnce(toolCall('lookup_brewing_reference', { query: 'Une fiche fabricant' }))
+      .mockResolvedValueOnce(json({ reference: 'Fiche trouvée' }))
+      .mockResolvedValueOnce(done())
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(context(), 'Cherche une fiche', [], generate, {
+      mode: 'fast'
+    });
+    expect(generate.mock.calls.map((c) => c[0])).toEqual([
+      'gemini-3.8-flash',
+      'gemini-3.1-pro-preview',
+      'gemini-3.8-flash',
+      'gemini-3.8-flash'
+    ]);
+    expect(result.evidence[0].model).toBe('gemini-3.1-pro-preview');
+    expect(result.mode).toBe('fast');
+  });
+  it('adapte l’effort de Pro aux étapes, sans retirer la relecture indépendante', async () => {
+    const generate = vi
+      .fn()
+      .mockResolvedValueOnce(toolCall('calculate_recipe', {}))
+      .mockResolvedValueOnce(done())
+      .mockResolvedValueOnce(approved());
+    await runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' });
+    expect(
+      generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
+    ).toEqual(['medium', 'low', 'low']);
+    expect(
+      generate.mock.calls[2][1].generationConfig.responseSchema.properties.approved
+    ).toBeDefined();
+  });
+  it('conserve un effort élevé pour réparer un conseil refusé, même avec Pro forcé', async () => {
+    const generate = vi
+      .fn()
+      .mockResolvedValueOnce(done())
+      .mockResolvedValueOnce(json({ approved: false, issues: ['Donnée non vérifiée.'] }))
+      .mockResolvedValueOnce(done())
+      .mockResolvedValueOnce(approved());
+    await runBrewerHarness(context(), 'Une question', [], generate, { mode: 'deep' });
+    expect(
+      generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
+    ).toEqual(['medium', 'low', 'high', 'high']);
+  });
   it('redimensionne aussi l’eau et fournit les ingrédients réellement utilisés par le scénario', () => {
     const c = context();
     c.recipe.volumeL = 30;

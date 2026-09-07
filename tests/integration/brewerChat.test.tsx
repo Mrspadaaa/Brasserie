@@ -430,7 +430,7 @@ describe('Conversation dans la recette / le brassin', () => {
     vi.mocked(api.submit).mockRejectedValueOnce(new Error('network'));
     render(<BrewerChat {...props} />);
     await open();
-    const mode = screen.getByRole('checkbox', { name: /Analyse approfondie/ });
+    const mode = screen.getByRole('radio', { name: 'Pro 3.1' });
     expect(mode).not.toBeChecked();
     fireEvent.click(mode);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Compare mes malts' } });
@@ -439,6 +439,29 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(vi.mocked(api.submit).mock.calls[0][0].mode).toBe('deep');
     expect(mode).toBeEnabled();
     expect(JSON.parse(localStorage.getItem('brewer-jobs:test-user')!)[0].input.mode).toBe('deep');
+  });
+  it('mémorise le mode rapide entre recettes et le transmet sans bloquer la saisie', async () => {
+    vi.mocked(api.submit).mockImplementation(() => new Promise(() => {}));
+    const mounted = render(<BrewerChat {...props} />);
+    await open();
+    expect(screen.getByRole('radio', { name: 'Auto' })).toBeChecked();
+    fireEvent.click(screen.getByRole('radio', { name: 'Rapide' }));
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Propose un nom' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalled());
+    expect(vi.mocked(api.submit).mock.calls[0][0].mode).toBe('fast');
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    expect(screen.getByRole('radio', { name: 'Pro 3.1' })).toBeEnabled();
+    mounted.unmount();
+    render(<BrewerChat {...props} scope={{ kind: 'recipe', id: 'REC-B' }} />);
+    await open();
+    expect(screen.getByRole('radio', { name: 'Rapide' })).toBeChecked();
+  });
+  it('ignore une préférence de mode inconnue', async () => {
+    localStorage.setItem('brewer-chat-mode', 'obsolete');
+    render(<BrewerChat {...props} />);
+    await open();
+    expect(screen.getByRole('radio', { name: 'Auto' })).toBeChecked();
   });
   it('rejoint automatiquement la question qui tourne encore après rechargement', async () => {
     const pending = {

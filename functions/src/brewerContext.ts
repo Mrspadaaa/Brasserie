@@ -63,7 +63,7 @@ export function validateChatInput(raw: any): BrewerChatInput {
   )
     throw new Error('Écris une question de2 à3000 caractères.');
   if (Buffer.byteLength(JSON.stringify(raw)) > 100000) throw new Error('Contexte trop volumineux.');
-  if (raw.mode != null && !['auto', 'deep'].includes(raw.mode))
+  if (raw.mode != null && !['fast', 'auto', 'deep'].includes(raw.mode))
     throw new Error('Mode d’analyse invalide.');
   if (raw.generation != null && (!Number.isSafeInteger(raw.generation) || raw.generation < 0))
     throw new Error('Version de conversation invalide.');

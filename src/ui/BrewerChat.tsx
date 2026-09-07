@@ -3,6 +3,7 @@ import {
   MessageCircle,
   ChevronRight,
   Sparkles,
+  Zap,
   Send,
   CheckCheck,
   Calculator,
@@ -13,7 +14,7 @@ import {
 import { Sheet } from './Sheet';
 import { BrewerChat as api, brewerChatError } from '../services/brewerChat';
 import type { BrewerChatInput, BrewerScope, BrewerTurn } from '../services/brewerChat';
-import type { BrewerProduct } from '../../functions/src/companionTypes';
+import type { BrewerMode, BrewerProduct } from '../../functions/src/companionTypes';
 import {
   brewerJobs,
   useBrewerJobs,
@@ -23,6 +24,7 @@ import {
   type ClientBrewerJob
 } from '../services/brewerJobs';
 import { BrewerNotificationOption } from './BrewerNotifications';
+import { BrewerBudget } from './BrewerBudget';
 import './brewer-chat.css';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
@@ -74,6 +76,20 @@ const prompts = (kind: string, phase = '') =>
           'Ma chauffe est bloquée à 1000 W',
           'Je n’atteins pas la consigne'
         ];
+const responseModes: Array<{ value: BrewerMode; label: string; description: string }> = [
+  { value: 'fast', label: 'Rapide', description: 'Flash pour le conseil · Pro pour le web' },
+  { value: 'auto', label: 'Auto', description: 'Le compagnon choisit Pro si nécessaire' },
+  { value: 'deep', label: 'Pro 3.1', description: 'Pro pour toute l’analyse · plus de temps' }
+];
+const modePreference = (): BrewerMode => {
+  try {
+    const saved = localStorage.getItem('brewer-chat-mode');
+    if (responseModes.some((m) => m.value === saved)) return saved as BrewerMode;
+  } catch {
+    /* Private browsing may disable preference storage. */
+  }
+  return 'auto';
+};
 
 /** Keying by scope prevents async responses and text drafts leaking into another recipe. */
 export function BrewerChat(props: Props) {
@@ -103,7 +119,7 @@ function ScopedChat({
     [error, setError] = useState(''),
     [more, setMore] = useState(false),
     [kept, setKept] = useState<string[]>([]);
-  const [mode, setMode] = useState<'auto' | 'deep'>('auto');
+  const [mode, setMode] = useState<BrewerMode>(modePreference);
   const activity = useBrewerJobs();
   const [confirmReset, setConfirmReset] = useState(false),
     [resetting, setResetting] = useState(false),
@@ -347,17 +363,41 @@ function ScopedChat({
             }}
           >
             <div className="brewer-chat-mode">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={mode === 'deep'}
-                  disabled={applying || resetting}
-                  onChange={(e) => setMode(e.target.checked ? 'deep' : 'auto')}
-                />
-                <Sparkles size={14} />
-                <span>Analyse approfondie</span>
-              </label>
-              <small>{mode === 'deep' ? 'Pro 3.1 · plus lent' : 'Auto · Pro selon besoin'}</small>
+              <fieldset
+                disabled={applying || resetting}
+                aria-describedby={`brewer-mode-${scope.id}`}
+              >
+                <legend className="sr-only">Mode de réponse</legend>
+                {responseModes.map((option) => (
+                  <label key={option.value} data-mode={option.value}>
+                    <input
+                      type="radio"
+                      name={`brewer-mode-${scope.id}`}
+                      value={option.value}
+                      checked={mode === option.value}
+                      onChange={() => {
+                        setMode(option.value);
+                        try {
+                          localStorage.setItem('brewer-chat-mode', option.value);
+                        } catch {
+                          /* Optional preference. */
+                        }
+                      }}
+                    />
+                    <span>
+                      {option.value === 'fast' ? (
+                        <Zap size={14} />
+                      ) : option.value === 'deep' ? (
+                        <Sparkles size={14} />
+                      ) : null}
+                      {option.label}
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
+              <small id={`brewer-mode-${scope.id}`}>
+                {responseModes.find((option) => option.value === mode)!.description}
+              </small>
             </div>
             <label className="sr-only" htmlFor={`brewer-question-${scope.id}`}>
               Question au compagnon brasseur
@@ -406,6 +446,7 @@ function ScopedChat({
           </button>
         </div>
         <BrewerNotificationOption />
+        <BrewerBudget />
         {scope.kind === 'draft' && !currentDraft && (
           <p className="brewer-chat-status">
             Cette vue reprend le dernier brouillon analysé. Rouvre l’assistant recette pour valider
@@ -550,6 +591,7 @@ function ScopedChat({
                     <p>
                       {t.contextLabel} · {t.model}
                     </p>
+                    {t.mode === 'fast' && <p>Mode rapide · calculs et relecture conservés.</p>}
                     {t.reviewModel && (
                       <p>
                         Relecture : {t.reviewModel}

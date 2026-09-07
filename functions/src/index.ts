@@ -27,3 +27,4 @@ export {
   retryBrewerQuestion
 } from './brewerJobs.js';
 export { registerBrewerNotifications, notifyBrewerAnswer } from './brewerNotifications.js';
+export { getBrewerAiBudget, setBrewerAiBudget } from './brewerBudget.js';

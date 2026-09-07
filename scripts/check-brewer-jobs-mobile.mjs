@@ -18,13 +18,26 @@ try {
       jobs = [],
       turns = [],
       inputs = [];
+    const budget = {
+      paused: false,
+      day: '2026-09-07',
+      usage: { calls: 4, proCalls: 1, tokens: 4200 },
+      limits: {
+        dailyCalls: 120,
+        dailyProCalls: 40,
+        dailyTokens: 1500000,
+        questionCalls: 12,
+        questionTokens: 240000
+      }
+    };
     await page.setViewport({ width, height: 844, isMobile: true, hasTouch: true });
     page.on('pageerror', (e) => errors.push(e.message));
     await page.setRequestInterception(true);
     page.on('request', async (req) => {
-      const endpoint = /\/(askBrewer|getBrewerConversation|getBrewerActivity|markBrewerRead)$/.exec(
-        req.url()
-      )?.[1];
+      const endpoint =
+        /\/(askBrewer|getBrewerConversation|getBrewerActivity|markBrewerRead|getBrewerAiBudget|setBrewerAiBudget)$/.exec(
+          req.url()
+        )?.[1];
       if (!endpoint) return req.continue();
       const headers = {
         'Access-Control-Allow-Origin': 'http://127.0.0.1:3007',
@@ -36,7 +49,12 @@ try {
       if (req.method() === 'OPTIONS') return req.respond({ status: 204, headers });
       const data = JSON.parse(req.postData()).data;
       let result;
-      if (endpoint === 'askBrewer') {
+      if (endpoint === 'getBrewerAiBudget') result = budget;
+      else if (endpoint === 'setBrewerAiBudget') {
+        if (data.paused != null) budget.paused = data.paused;
+        Object.assign(budget.limits, data.limits);
+        result = budget;
+      } else if (endpoint === 'askBrewer') {
         inputs.push(data);
         const job = {
           id: String(inputs.length).repeat(64),
@@ -74,6 +92,18 @@ try {
     });
     await page.click('.brewer-chat-launch');
     await page.waitForSelector('.brewer-chat-welcome');
+    await page.click('.brewer-budget > summary');
+    await page.waitForSelector('.brewer-budget .is-stop');
+    await page.screenshot({ path: resolve(out, `budget-${width}.png`) });
+    await page.click('.brewer-budget .is-stop');
+    await page.waitForSelector('.brewer-budget .is-resume');
+    assert.equal(budget.paused, true);
+    await page.click('.brewer-budget .is-resume');
+    await page.waitForSelector('.brewer-budget .is-stop');
+    assert.equal(budget.paused, false);
+    await page.click('.brewer-budget > summary');
+    await page.click('.brewer-chat-mode input[value="fast"]');
+    assert.equal(await page.$eval('.brewer-chat-mode input[value="fast"]', (e) => e.checked), true);
     await page.type(
       '.brewer-chat-compose textarea',
       'Trouve-moi un nom et des ajustements pour cette bière.'
@@ -91,6 +121,8 @@ try {
     );
     await page.screenshot({ path: resolve(out, `queued-${width}.png`) });
     assert.equal(inputs.length, 2);
+    assert.equal(inputs[0].mode, 'fast');
+    assert.equal(inputs[1].mode, 'fast');
     await page.click('.brewer-chat-sheet button[aria-label="Fermer"]');
     await page.waitForSelector('.brewer-activity-pill', { visible: true });
     const visiblePill = await page.$eval('.brewer-activity-pill', (el) => {
@@ -150,13 +182,18 @@ try {
       sheet: document.querySelector('.brewer-chat-sheet').scrollWidth,
       actions: [...document.querySelectorAll('.brewer-work-actions button')].map(
         (e) => e.getBoundingClientRect().height
+      ),
+      modes: [...document.querySelectorAll('.brewer-chat-mode label')].map(
+        (e) => e.getBoundingClientRect().height
       )
     }));
     assert.ok(dimensions.page <= width + 1 && dimensions.sheet <= width + 1);
     assert.ok(dimensions.actions.every((h) => h >= 44));
+    assert.ok(dimensions.modes.every((h) => h >= 44));
     await page.reload({ waitUntil: 'networkidle0' });
     await page.click('.brewer-chat-launch');
     await page.waitForSelector('.brewer-work-card.is-error');
+    assert.equal(await page.$eval('.brewer-chat-mode input[value="fast"]', (e) => e.checked), true);
     assert.equal(inputs.length, 2, 'Reload must not resend acknowledged questions');
     await page.setViewport({ width, height: 480, isMobile: true, hasTouch: true });
     await page.screenshot({ path: resolve(out, `compact-${width}.png`) });

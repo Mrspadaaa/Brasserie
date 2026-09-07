@@ -8,6 +8,8 @@ import { logger } from 'firebase-functions';
 import { requireBrewer } from './brewSession.js';
 import { GEMINI_API_KEY } from './ai.js';
 import { geminiTransport, runBrewerHarness, BrewerProUnavailableError } from './brewerHarness.js';
+import { budgetedBrewerTransport } from './brewerBudget.js';
+import { BrewerBudgetError } from './brewerLimits.js';
 import { cleanContext, pick, validateChatInput } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
 import { loadBrewerContext, history, threadKey, publicTurn } from './brewerChat.js';
@@ -36,6 +38,8 @@ export const publicJob = (job: any): BrewerJob =>
     'error'
   ]);
 export function jobError(error: unknown): NonNullable<BrewerJob['error']> {
+  if (error instanceof BrewerBudgetError)
+    return { code: error.code, message: error.message, retryable: true };
   if (error instanceof BrewerProUnavailableError)
     return {
       code: 'pro-unavailable',
@@ -259,6 +263,7 @@ export const processBrewerQuestion = onTaskDispatched(
     };
     const progress = (stage: BrewerStage, detail = '', model = '') =>
       updateJob({ stage, detail, ...(model ? { model } : {}) });
+    const guarded = budgetedBrewerTransport(geminiTransport(GEMINI_API_KEY.value()), id, fence);
     try {
       const context = await loadBrewerContext(job.input),
         session = (await lock.get()).data();
@@ -266,19 +271,13 @@ export const processBrewerQuestion = onTaskDispatched(
         label: String(context.recipe?.name || context.batch?.name || 'Brouillon').slice(0, 160)
       });
       const past = await history(job.threadId, undefined, session?.resetAt);
-      const result = await runBrewerHarness(
-        context,
-        job.question,
-        past,
-        geminiTransport(GEMINI_API_KEY.value()),
-        {
-          mode: job.input.mode,
-          onProgress: progress,
-          // Private diagnostics record concrete reviewer objections and tool errors,
-          // never model thoughts or credentials. Public receipts exclude this field.
-          onDiagnostic: (diagnostics) => updateJob({ diagnostics })
-        }
-      );
+      const result = await runBrewerHarness(context, job.question, past, guarded.generate, {
+        mode: job.input.mode,
+        onProgress: progress,
+        // Private diagnostics record concrete reviewer objections and tool errors,
+        // never model thoughts or credentials. Public receipts exclude this field.
+        onDiagnostic: (diagnostics) => updateJob({ diagnostics })
+      });
       await progress('saving', 'Enregistrement de la réponse vérifiée');
       const snapshot = cleanContext({ ...context, now: undefined }),
         contextId = hash(stableJson(snapshot));
@@ -373,6 +372,8 @@ export const processBrewerQuestion = onTaskDispatched(
         elapsedMs: Date.now() - job.startedAt
       });
       if (recorded && retry) throw Error('Reprise du traitement Gemini.');
+    } finally {
+      guarded.close();
     }
   }
 );

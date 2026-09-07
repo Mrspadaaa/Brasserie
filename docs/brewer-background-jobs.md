@@ -16,6 +16,24 @@ Les états publics décrivent les appels effectués : contexte, modèle, outils,
 
 Le reset invalide les exécutions et supprime les anciens travaux et échanges. Les propositions appliquées, recettes et journaux d’audit restent conservés. Le contexte d’entrée des travaux réussis est retiré de la file : le snapshot immuable de `brewerContexts` reste la référence du conseil.
 
+## Modes et orchestration
+
+Le choix Rapide / Auto / Pro 3.1 est mémorisé sur l’appareil et enregistré avec chaque question. Rapide garde Flash pour le conseil, les calculs, la réparation et la relecture ; seule la recherche web utilise Pro avant de rendre les preuves à Flash. Auto laisse le modèle choisir Pro selon le besoin. Pro force ce modèle pour l’analyse et la relecture.
+
+L’effort de Pro dépend de l’étape : medium pour la première décision, low pour les suivis d’outils et la relecture courante, high pour une réparation ou une situation sensible. Les paramètres suivent la [documentation Gemini](https://ai.google.dev/gemini-api/docs/generate-content/thinking). Le conseil doit préparer dès la première réponse les champs justifiés par une demande de nom ou d’adaptation, avec validation humaine ultérieure. Un simple report « veux-tu que je prépare les champs ? » est renvoyé au modèle dans la même question.
+
+L’orchestration reste un générateur et une relecture indépendante, avec les calculs déterministes de l’application. Les appels d’outils indépendants peuvent être regroupés dans un tour ; les étapes dépendantes attendent leurs résultats, conformément au [protocole d’appels de fonctions Gemini](https://ai.google.dev/gemini-api/docs/generate-content/function-calling). Aucun outil ne crée de sous-agent, de nouvelle question, ni ne modifie les limites. Ajouter une équipe d’agents n’apporterait ici aucune réduction garantie de délai ou de coût.
+
+## Plafonds et arrêt
+
+`brewerBudget.ts` réserve une marge de tokens avant **chaque** appel payé, dans une transaction Firestore commune à toutes les conversations. Par défaut : 120 appels par jour, dont 40 Pro, et 1 500 000 tokens comptabilisés ; par question, 12 appels et 240 000 tokens, reprises automatiques comprises. Le jour suit Europe/Zurich. Le nombre d’appels et de recherches web reste plafonné même si le fournisseur ne renvoie pas ses métadonnées d’usage. Une panne de contrôle bloque les nouveaux appels.
+
+Les métadonnées de consommation réconcilient la réservation après réception. Un timeout ou une interruption conserve sa marge, car l’appel peut rester facturé. Une erreur de réconciliation ne déclenche jamais une seconde génération payante. `brewerAiUsage/{jour}` conserve les compteurs partagés et `brewerJobs.budget` les réservations privées. Les compteurs ne sont pas remis à zéro par un reset de chat, un changement de mode ou une nouvelle tentative.
+
+`getBrewerAiBudget` et `setBrewerAiBudget` sont réservés au brasseur connecté. Le menu replié « Limites IA » montre l’usage, règle les plafonds du jour et suspend/réactive le compagnon. Un abonnement serveur à `brewerAiControls/current` interrompt les requêtes en cours lors d’une suspension ; les appels suivants sont aussi bloqués par la transaction. Enregistrer des plafonds ne réactive jamais une suspension concurrente. Une limite atteinte reste une erreur explicite et ne déclenche pas de reprise automatique. Une relance manuelle est possible après réactivation, sans effacer le compteur du jour.
+
+Ces contrôles concernent le compagnon et ne constituent pas un plafond monétaire de toute la facturation Google ni des autres assistants de l’application. Un appel transmis avant l’arrêt peut continuer d’être facturé par le fournisseur.
+
 ## Vérification
 
 Avec Firestore Emulator sur `127.0.0.1:8080`, projet `demo-brewer-chat` :
@@ -25,6 +43,7 @@ npm --prefix functions run build
 $env:FIRESTORE_EMULATOR_HOST='127.0.0.1:8080'
 node scripts/check-brewer-jobs.mjs
 node scripts/check-brewer-proposals-persistence.mjs
+node scripts/check-brewer-budget.mjs
 ```
 
 Avec Vite sur le port 3007 :
@@ -37,3 +56,5 @@ node scripts/check-brewer-proposals-mobile.mjs
 Les captures couvrent 320 et 390 px, la saisie pendant une réponse, l’accès hors du chat, l’erreur persistante et la récupération après rechargement. Les notifications et leurs liens sont vérifiés dans `tests/unit/brewerPush.test.ts`.
 
 Déployer les index puis toutes les fonctions de ce flux : `askBrewer`, `getBrewerConversation`, `resetBrewerConversation`, `applyBrewerProposal`, `dispatchBrewerQuestion`, `processBrewerQuestion`, `getBrewerActivity`, `markBrewerRead`, `retryBrewerQuestion`, `registerBrewerNotifications`, `notifyBrewerAnswer`, et l’hébergement. Le compte de service de Cloud Tasks doit pouvoir appeler `processBrewerQuestion` ; valider une exécution réelle après le premier déploiement.
+
+Pour les modes et budgets : déployer `askBrewer`, `retryBrewerQuestion`, `getBrewerConversation`, `processBrewerQuestion`, `getBrewerAiBudget` et `setBrewerAiBudget` avant l’hébergement. Les nouveaux documents de contrôle restent privés (refus Firestore par défaut).
