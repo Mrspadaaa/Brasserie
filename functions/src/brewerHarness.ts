@@ -2,6 +2,7 @@ import { brewerToolDeclarations, runBrewerTool, refreshCompanionRecipe } from '.
 import { BREWER_PLAYBOOK, BREWER_SOURCES } from './brewerKnowledge.js';
 import { modelChain } from './models.js';
 import { BrewerBudgetError } from './brewerLimits.js';
+import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
 import { verifySupplierPages } from './brewerSuppliers.js';
 import {
   editableFields,
@@ -82,6 +83,7 @@ export class BrewerProUnavailableError extends Error {
 export type BrewerDiagnostics = {
   reviews: Array<{ approved: boolean; proposalApproved: boolean; issues: string[] }>;
   toolErrors: Array<{ name: string; error: string }>;
+  providerErrors?: Array<ReturnType<GeminiApiError['diagnostic']>>;
 };
 export class BrewerReviewError extends Error {
   constructor(readonly diagnostics: BrewerDiagnostics) {
@@ -163,7 +165,10 @@ export function geminiTransport(key: string): Generate {
         signal
       }
     );
-    if (!res.ok) throw new Error(`Gemini HTTP ${res.status}`); // Provider body/URL may contain private data.
+    if (!res.ok) {
+      const payload = await res.json().catch(() => undefined);
+      throw parseGeminiError(res.status, model, payload, res.headers.get('retry-after'));
+    }
     return res.json();
   };
 }
@@ -296,10 +301,16 @@ export async function runBrewerHarness(
         return result;
       } catch (e) {
         if (e instanceof BrewerBudgetError) throw e;
+        if (e instanceof GeminiApiError) {
+          (diagnostics.providerErrors ??= []).push(e.diagnostic());
+          await options.onDiagnostic?.(diagnostics);
+          if (!e.canTryAnotherModel) throw e;
+        }
         last = e;
         if (signal.aborted) throw e;
       }
     }
+    if (last instanceof GeminiApiError) throw last;
     if (wantsPro) throw new BrewerProUnavailableError();
     throw last;
   };
@@ -588,6 +599,7 @@ Cherche une source fabricant pour une spécification absente, et pour une inform
           if (
             err instanceof BrewerProUnavailableError ||
             err instanceof BrewerBudgetError ||
+            err instanceof GeminiApiError ||
             signal.aborted
           )
             throw err;

@@ -220,6 +220,33 @@ describe('Conversation dans la recette / le brassin', () => {
     expect(screen.getByRole('button', { name: 'Relancer l’analyse' })).toBeEnabled();
     expect(screen.getByRole('textbox')).toHaveValue('');
   });
+  it('explique le plafond Google avec un accès aux dépenses, sans relancer automatiquement', async () => {
+    vi.mocked(api.activity).mockResolvedValue([{
+      id: 'a'.repeat(64),
+      operationId: 'operation-spend-cap-1234',
+      scope: props.scope,
+      generation: 0,
+      question: 'Vérifie ma recette et mon matériel',
+      label: 'RecetteA',
+      status: 'error',
+      stage: 'error',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      attempt: 1,
+      error: {
+        code: 'gemini-spend-cap',
+        message: 'Google bloque les appels : le plafond de dépenses Gemini du projet est atteint.',
+        retryable: true
+      }
+    }]);
+    render(<BrewerChat {...props} />);
+    await open();
+    expect(await screen.findByRole('alert')).toHaveTextContent('plafond de dépenses Gemini');
+    expect(screen.getByRole('link', { name: 'Ouvrir les dépenses Google' })).toHaveAttribute('href', 'https://ai.studio/spend');
+    expect(screen.getByRole('button', { name: 'Relancer l’analyse' })).toBeEnabled();
+    expect(api.submit).not.toHaveBeenCalled();
+    expect(screen.getByRole('textbox')).toHaveValue('');
+  });
   it('demande confirmation pour vider le chat et ignore une réponse arrivée après le reset', async () => {
     let complete!: (t: { turn: BrewerTurn }) => void;
     vi.mocked(api.submit).mockImplementation(

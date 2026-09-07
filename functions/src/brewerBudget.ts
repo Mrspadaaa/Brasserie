@@ -5,6 +5,7 @@ import { logger } from 'firebase-functions';
 import { requireBrewer } from './brewSession.js';
 import { DEFAULT_BREWER_LIMITS, BrewerBudgetError } from './brewerLimits.js';
 import type { BrewerAiLimits } from './brewerLimits.js';
+import { GeminiApiError } from './geminiErrors.js';
 
 const controlPath = 'brewerAiControls/current';
 const emptyUsage = () => ({ calls: 0, proCalls: 0, tokens: 0 });
@@ -202,14 +203,11 @@ export function budgetedBrewerTransport(generate: Generate, jobId: string, fence
         if (e instanceof BrewerBudgetError || e instanceof HttpsError) throw e;
         throw unavailable();
       }
-      try {
-        const result = await generate(
-          model,
-          requestBody,
-          AbortSignal.any([signal, stopped.signal])
-        );
-        const reported = result.usageMetadata?.totalTokenCount;
-        const charged = Number.isSafeInteger(reported) && reported > 0 ? reported : reserve;
+      const settle = async (
+        charged: number,
+        status: 'completed' | 'rejected',
+        failure?: GeminiApiError
+      ) => {
         await db
           .runTransaction(async (tx) => {
             const [daily, job] = await Promise.all([tx.get(dailyRef), tx.get(jobRef)]),
@@ -225,7 +223,8 @@ export function budgetedBrewerTransport(generate: Generate, jobId: string, fence
                 model,
                 reserved: reserve,
                 charged,
-                status: 'completed'
+                status,
+                ...(failure ? { provider: failure.diagnostic() } : {})
               }
             });
           })
@@ -234,9 +233,23 @@ export function budgetedBrewerTransport(generate: Generate, jobId: string, fence
             // second generation just because reconciliation could not be saved.
             logger.warn('brewer-budget-reservation-kept', { jobId, callId });
           });
+      };
+      try {
+        const result = await generate(
+          model,
+          requestBody,
+          AbortSignal.any([signal, stopped.signal])
+        );
+        const reported = result.usageMetadata?.totalTokenCount;
+        const charged = Number.isSafeInteger(reported) && reported > 0 ? reported : reserve;
+        await settle(charged, 'completed');
         if (stopped.signal.aborted) throw stopped.signal.reason;
         return result;
       } catch (e) {
+        // Google explicitly rejected these requests before generation. Keep the
+        // attempted-call counter to bound loops, but release the unused tokens.
+        // Timeouts, transport failures and 5xx keep their conservative reservation.
+        if (e instanceof GeminiApiError && e.rejectedBeforeGeneration) await settle(0, 'rejected', e);
         if (stopped.signal.aborted) throw stopped.signal.reason;
         throw e;
       }

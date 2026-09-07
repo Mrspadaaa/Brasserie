@@ -167,14 +167,16 @@ try {
     );
     jobs[1].status = 'error';
     jobs[1].error = {
-      code: 'review-rejected',
-      message: 'La réponse a été écartée à la relecture. Aucun champ n’a changé.',
+      code: 'gemini-spend-cap',
+      message: 'Google bloque les appels : le plafond de dépenses Gemini du projet est atteint. Vérifie le plafond mensuel dans Google AI Studio → Dépenses. Les limites « Limites IA » de cette application sont distinctes. Après régularisation, relance cette question.',
       retryable: true
     };
     jobs[1].finishedAt = Date.now();
     await page.waitForSelector('.brewer-work-card.is-error');
     await page.$eval('.brewer-work-card.is-error', (e) => e.scrollIntoView({ block: 'center' }));
     await page.screenshot({ path: resolve(out, `error-${width}.png`) });
+    assert.equal(await page.$eval('.brewer-work-card.is-error a', (e) => e.href), 'https://ai.studio/spend');
+    assert.ok(await page.$eval('.brewer-work-card.is-error a', (e) => e.getBoundingClientRect().height >= 44));
     assert.equal(await page.$eval('.brewer-chat-compose textarea', (e) => e.value), '');
     const dimensions = await page.evaluate(() => ({
       viewport: innerWidth,

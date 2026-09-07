@@ -10,6 +10,7 @@ import { GEMINI_API_KEY } from './ai.js';
 import { geminiTransport, runBrewerHarness, BrewerProUnavailableError } from './brewerHarness.js';
 import { budgetedBrewerTransport } from './brewerBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
+import { GeminiApiError } from './geminiErrors.js';
 import { cleanContext, pick, validateChatInput } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
 import { loadBrewerContext, history, threadKey, publicTurn } from './brewerChat.js';
@@ -38,6 +39,7 @@ export const publicJob = (job: any): BrewerJob =>
     'error'
   ]);
 export function jobError(error: unknown): NonNullable<BrewerJob['error']> {
+  if (error instanceof GeminiApiError) return error.publicError();
   if (error instanceof BrewerBudgetError)
     return { code: error.code, message: error.message, retryable: true };
   if (error instanceof BrewerProUnavailableError)
@@ -341,7 +343,7 @@ export const processBrewerQuestion = onTaskDispatched(
       // explicit failure if review still rejects it; retry transport outages once.
       const retry =
         job.attempt < 2 &&
-        ['service-unavailable', 'pro-unavailable', 'deadline'].includes(failure.code);
+        ['service-unavailable', 'pro-unavailable', 'deadline', 'gemini-server'].includes(failure.code);
       const recorded = await db.runTransaction(async (tx) => {
         const [session, current] = await Promise.all([tx.get(lock), tx.get(ref)]);
         if (
@@ -369,6 +371,7 @@ export const processBrewerQuestion = onTaskDispatched(
         code: failure.code,
         attempt: job.attempt,
         retry: recorded && retry,
+        ...(error instanceof GeminiApiError ? { provider: error.diagnostic() } : {}),
         elapsedMs: Date.now() - job.startedAt
       });
       if (recorded && retry) throw Error('Reprise du traitement Gemini.');

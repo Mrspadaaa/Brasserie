@@ -722,6 +722,12 @@ function BrewerWorkCard({
         {failed ? (
           <>
             <p role="alert">{job.sendError || job.error?.message}</p>
+            {job.error?.code === 'gemini-spend-cap' && (
+              <a href="https://ai.studio/spend" target="_blank" rel="noopener noreferrer"
+                className="inline-flex min-h-touch items-center text-ebc-straw underline underline-offset-2">
+                Ouvrir les dépenses Google
+              </a>
+            )}
             <div className="brewer-work-actions">
               {(job.sendError || job.error?.retryable) && (
                 <button type="button" onClick={onRetry}>
