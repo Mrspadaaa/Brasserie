@@ -20,5 +20,8 @@
     "@types/web-push": "^3.6.4",
     "typescript": "^5.8.2"
   },
+  "overrides": {
+    "qs": "6.16.0"
+  },
   "private": true
 }

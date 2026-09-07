@@ -226,12 +226,11 @@ export async function runMigrationIfNeeded(): Promise<MigrationReport> {
   try {
     // Si la base contient déjà des écritures ou des stocks, un autre appareil
     // a déjà fait le travail : on se contente de poser le drapeau.
-    const [txEmpty, stockEmpty] = await Promise.all([
-      FirestoreRepo.isEmpty('transactions'),
-      FirestoreRepo.isEmpty('stockItems')
-    ]);
+    const empty = await Promise.all(
+      ['config', 'transactions', 'stockItems', 'recipes', 'batches'].map(c => FirestoreRepo.isEmpty(c as CollectionName))
+    );
 
-    if (!txEmpty || !stockEmpty) {
+    if (empty.some(value => !value)) {
       markMigrated();
       return { ran: false, source: 'aucune', counts: {} };
     }

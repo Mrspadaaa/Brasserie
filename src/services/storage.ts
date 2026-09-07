@@ -18,6 +18,7 @@ import {
 
 import { initialCompany, initialBrewhouses } from '../data/seedData';
 import { FirestoreRepo, CollectionName } from './firestoreRepo';
+import { deviceBackup, restoreBackup } from './dataBackup';
 import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
 import { Units } from './units';
 
@@ -337,7 +338,7 @@ export const StorageService = {
      * lexicale corresponde à la comparaison numérique, rend l'ordre certain.
      */
     auditSequence += 1;
-    const id = `LOG-${String(Date.now()).padStart(14, '0')}-${String(auditSequence).padStart(6, '0')}`;
+    const id = `LOG-${String(Date.now()).padStart(14, '0')}-${String(auditSequence).padStart(6, '0')}-${crypto.randomUUID().slice(0, 8)}`;
     const newLog: AuditLog = {
       id,
       timestamp: new Date().toLocaleString('fr-CH', {
@@ -805,26 +806,13 @@ export const StorageService = {
       name: recipe.name,
       style: recipe.style,
       volumeL: recipe.volumeL,
-      // Les densités visées sont FACULTATIVES : une recette sans cible ne doit
-      // pas empêcher de lancer le brassin, ni afficher « NaN ».
-      og: recipe.ogTarget ? recipe.ogTarget.toFixed(3) : undefined,
-      fg: recipe.fgTarget ? recipe.fgTarget.toFixed(3) : undefined,
-      abv: recipe.abvTarget ? `${recipe.abvTarget}%` : undefined,
-      status: 'fermentation',
+      // Targets belong to the snapshot; only actual readings belong to the lot.
+      status: 'planifie',
       recipeRef: recipe.id,
       // Le brassin fige la recette : corriger la recette demain ne réécrira pas
       // ce qu'on a réellement brassé aujourd'hui.
       recipeSnapshot: captureSnapshot(recipe),
-      gravityLog: recipe.ogTarget
-        ? [
-            {
-              date: new Date().toLocaleDateString('fr-CH'),
-              sg: recipe.ogTarget,
-              tempC: 18.5,
-              notes: 'Ensemencement initial'
-            }
-          ]
-        : []
+      gravityLog: []
     };
 
     this.addBatch(newBatch);
@@ -1051,10 +1039,12 @@ export const StorageService = {
     FirestoreRepo.put('config', 'app', config);
   },
 
+  confirmPendingWrites() { return FirestoreRepo.waitForWrites(); },
+
   // 10. GABARITS DE DÉPENSE
   getExpenseTemplates(): ExpenseTemplate[] {
     const stored = clean<ExpenseTemplate>(FirestoreRepo.all('expenseTemplates'));
-    return stored.length > 0 ? stored : defaultExpenseTemplates;
+    return stored;
   },
 
   saveExpenseTemplates(templates: ExpenseTemplate[]) {
@@ -1128,7 +1118,7 @@ export const StorageService = {
   // 11. ATELIER R&D
   getCreativeItems(): CreativeItem[] {
     const stored = clean<CreativeItem>(FirestoreRepo.all('creativeItems'));
-    return stored.length > 0 ? stored : defaultCreativeItems;
+    return stored;
   },
 
   saveCreativeItems(items: CreativeItem[]) {
@@ -1186,37 +1176,11 @@ export const StorageService = {
 
   // SAUVEGARDE & RESTAURATION
   exportAllData(): string {
-    return JSON.stringify(
-      {
-        transactions: this.getTransactions(),
-        stocks: this.getStocks(),
-        production: this.getBatches(),
-        recipes: this.getRecipes(),
-        clients: this.getClients(),
-        planning: this.getPlanning(),
-        budgetLines: this.getBudgetLines(),
-        tarifs: this.getTarifs(),
-        config: this.getConfig(),
-        auditLogs: this.getAuditLogs(),
-        exportedAt: new Date().toISOString(),
-        schemaVersion: 2
-      },
-      null,
-      2
-    );
+    return deviceBackup();
   },
 
   importAllData(jsonStr: string) {
-    const data = JSON.parse(jsonStr);
-    if (data.transactions) this.saveTransactions(data.transactions);
-    if (data.stocks) this.saveStocks(data.stocks);
-    if (data.production) this.saveBatches(data.production);
-    if (data.recipes) this.saveRecipes(data.recipes);
-    if (data.clients) this.saveClients(data.clients);
-    if (data.planning) this.savePlanning(data.planning);
-    if (data.budgetLines) this.saveBudgetLines(data.budgetLines);
-    if (data.tarifs) this.saveTarifs(data.tarifs);
-    if (data.config) this.saveConfig(data.config);
+    return restoreBackup(jsonStr);
   },
 
   /**

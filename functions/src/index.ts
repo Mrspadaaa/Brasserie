@@ -10,3 +10,5 @@ export { aiTask } from './ai.js';
 export { syncBrewAlarms, deliverBrewAlarm } from './brewAlarms.js';
 export { getBrewSession, saveBrewSession } from './brewSession.js';
 export { getBrewAlertConfig, registerBrewDevice, rescheduleBrewAlarms } from './brewPush.js';
+export { exportBreweryData, restoreBreweryData } from './dataBackup.js';
+export { recordDataChange } from './dataHistory.js';

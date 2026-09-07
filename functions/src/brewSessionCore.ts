@@ -12,6 +12,7 @@ export interface SessionStep {
   boilElapsedMin?: number;
 }
 export interface SessionState {
+  restoredFromBackup?: boolean;
   steps: SessionStep[];
   currentIndex: number;
   revision?: number;
@@ -44,7 +45,7 @@ export interface SessionRecipe {
 }
 export function sessionEvents(state: SessionState, recipe: SessionRecipe) {
   const events: Array<{ id: string; at: number; title: string; body: string }> = [];
-  if (state.finishedAt != null) return events;
+  if (state.finishedAt != null || state.restoredFromBackup) return events;
   for (const s of state.steps ?? [])
     if (
       (/^mash/.test(s.id) || s.id === 'whirlpool') &&
@@ -222,6 +223,7 @@ export function stampSession(
   for (const correction of next.acidCorrections ?? [])
     correction.readingAt = readingTimes.get(correction.readingAt) ?? correction.readingAt;
   next.revision = (previous?.revision ?? 0) + 1;
+  delete next.restoredFromBackup;
   next.savedAt = serverNow;
   return validateSession(next);
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
+import { PersistenceStatus } from './ui/PersistenceStatus';
 import { BottomNav, TabType } from './components/BottomNav';
 import { QuickActionModal } from './components/QuickActionModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -593,7 +594,10 @@ export const App: React.FC = () => {
           Synchronisation des données de la brasserie...
         </span>
         {writeError && (
-          <p className="text-sm text-alert text-center max-w-xs leading-relaxed">{writeError}</p>
+          <div className="text-center space-y-3">
+            <p className="text-sm text-alert max-w-xs leading-relaxed">{writeError}</p>
+            <button type="button" className="min-h-11 rounded-xl border border-cave-700 px-4" onClick={() => window.location.reload()}>Réessayer la synchronisation</button>
+          </div>
         )}
       </div>
     );
@@ -625,6 +629,7 @@ export const App: React.FC = () => {
       )}
 
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
+      <PersistenceStatus />
       <Header
         config={config}
         globalTimeFilter={globalTimeFilter}

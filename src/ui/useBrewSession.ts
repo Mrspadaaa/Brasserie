@@ -5,6 +5,7 @@ import { Batch, BrewDayState } from '../types';
 import { restoreBrewDay } from '../domain/brewDay';
 import { brewNow, setBrewClock } from '../services/brewClock';
 import { mergeBrewTimestamps } from '../domain/brewSessionMerge';
+import { FirestoreRepo } from '../services/firestoreRepo';
 
 type Queued = {
   operationId: string;
@@ -103,6 +104,8 @@ export function useBrewSession(
   const refresh = useCallback(async () => {
     if (!writer.current) return false;
     try {
+      // A new lot is visible locally before Firestore acknowledges its creation.
+      await FirestoreRepo.waitForDocument('batches', batch.id);
       const before = performance.now();
       const res = await httpsCallable<{ batchId: string }, Response>(
         functions,

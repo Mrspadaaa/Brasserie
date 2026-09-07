@@ -12,9 +12,10 @@ vi.mock('../../src/services/firebase', () => ({ db: {} }));
 vi.mock('firebase/firestore', () => ({
   collection: (_: unknown, name: string) => name,
   doc: (_: unknown, name: string, id: string) => ({ name, id }),
-  onSnapshot: (name: string, next: (snap: any) => void) => {
+  onSnapshot: (name: string, _options: unknown, next: (snap: any) => void) => {
     mock.listeners.set(name, next);
     next({
+      metadata: { hasPendingWrites: false, fromCache: false },
       docs: [...(mock.docs.get(name)?.entries() ?? [])].map(([id, data]) => ({
         id,
         data: () => data
@@ -24,7 +25,14 @@ vi.mock('firebase/firestore', () => ({
   },
   setDoc: (...args: unknown[]) => mock.setDoc(...args),
   deleteDoc: vi.fn(),
-  writeBatch: vi.fn(),
+  writeBatch: () => {
+    const writes: any[][] = [];
+    return { set: (...args: any[]) => writes.push(args), delete: vi.fn(),
+      commit: async () => { for (const args of writes) await mock.setDoc(...args); } };
+  },
+  waitForPendingWrites: async () => {},
+  getDocsFromServer: vi.fn(),
+  deleteField: () => ({ _methodName: 'deleteField' }),
   getDocs: vi.fn(),
   query: vi.fn(),
   limit: vi.fn()
@@ -43,6 +51,7 @@ beforeEach(() => {
     );
     collection.set(id, saved);
     mock.listeners.get(name)?.({
+      metadata: { hasPendingWrites: false, fromCache: false },
       docs: [...collection].map(([id, data]) => ({ id, data: () => data }))
     });
   });
@@ -50,7 +59,7 @@ beforeEach(() => {
 });
 
 describe('AI facts through storage and the real Firestore adapter (SDK mocked)', () => {
-  it('merges only missing facts, preserves stock, and reads them after restarting sync', () => {
+  it('merges only missing facts, preserves stock, and reads them after restarting sync', async () => {
     const item: StockItem = {
       id: 'm',
       ref: 'M-1',
@@ -63,6 +72,7 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
       colorEbc: 5
     };
     StorageService.addStockItem('rawMaterials', item);
+    await FirestoreRepo.waitForWrites();
     mock.setDoc.mockClear();
     StorageService.learnIngredient(' Maris Otter ', {
       category: 'Malt',
@@ -71,6 +81,7 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
       currentStock: 0,
       technicalSource: 'Fiche du malteur'
     });
+    await FirestoreRepo.waitForWrites();
     expect(mock.setDoc).toHaveBeenCalledWith(
       { name: 'stockItems', id: 'M-1' },
       { potentialPpg: 38, technicalSource: 'Fiche du malteur' },
@@ -84,7 +95,7 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
       technicalSource: 'Fiche du malteur'
     });
   });
-  it('keeps a reusable zero-stock record for an imported ingredient absent from stock', () => {
+  it('keeps a reusable zero-stock record for an imported ingredient absent from stock', async () => {
     StorageService.learnIngredient('Malt inconnu', {
       category: 'Malt',
       colorEbc: 120,
@@ -95,6 +106,7 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
       colorEbc: 120,
       potentialPpg: 34
     });
+    await FirestoreRepo.waitForWrites();
     FirestoreRepo.stopSync();
     FirestoreRepo.startSync();
     expect(StorageService.getStocks().rawMaterials).toHaveLength(1);
@@ -106,7 +118,7 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
       category: 'Malt'
     });
   });
-  it('serializes manual malt data and zero acid overrides without losing them on readback', () => {
+  it('serializes manual malt data and zero acid overrides without losing them on readback', async () => {
     const recipe: any = {
       id: 'R-test',
       name: 'Test',
@@ -151,6 +163,7 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
       notes: []
     };
     StorageService.addRecipe(recipe);
+    await FirestoreRepo.waitForWrites();
     FirestoreRepo.stopSync();
     FirestoreRepo.startSync();
     expect(StorageService.getRecipes().find((r) => r.id === recipe.id)).toMatchObject(recipe);
@@ -161,13 +174,14 @@ describe('AI facts through storage and the real Firestore adapter (SDK mocked)',
     mock.setDoc.mockRejectedValueOnce(new Error('permission-denied'));
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
     StorageService.learnIngredient('Rejected', { category: 'Malt', colorEbc: 6 });
-    await Promise.resolve();
+    await expect(FirestoreRepo.waitForWrites()).rejects.toThrow('permission-denied');
     expect(FirestoreRepo.consumeError()).toMatch(/permission-denied/);
     spy.mockRestore();
   });
-  it('persists all imported recipe fields through the actual storage adapter', () => {
+  it('persists all imported recipe fields through the actual storage adapter', async () => {
     const imported = { ...readRecipeText(writeRecipeText(fullRecipe)), id: 'copie-test' };
     StorageService.addRecipe(imported);
+    await FirestoreRepo.waitForWrites();
     FirestoreRepo.stopSync();
     FirestoreRepo.startSync();
     const restored = StorageService.getRecipes().find(r => r.id === imported.id);

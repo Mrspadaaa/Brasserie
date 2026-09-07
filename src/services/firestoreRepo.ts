@@ -2,15 +2,17 @@ import {
   collection,
   doc,
   onSnapshot,
-  setDoc,
-  deleteDoc,
   writeBatch,
   getDocs,
+  getDocsFromServer,
+  waitForPendingWrites,
+  deleteField,
   query,
   limit,
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { BUSINESS_COLLECTIONS } from '../../functions/src/dataSchema';
 
 /**
  * Couche d'accès Firestore.
@@ -50,25 +52,7 @@ export type CollectionName =
   | 'auditLogs'
   | 'config';
 
-export const ALL_COLLECTIONS: CollectionName[] = [
-  'transactions',
-  'stockItems',
-  'equipment',
-  'kegs',
-  'movements',
-  'batches',
-  'finishedGoods',
-  'reservations',
-  'recipes',
-  'clients',
-  'planning',
-  'budgetLines',
-  'tarifs',
-  'creativeItems',
-  'expenseTemplates',
-  'auditLogs',
-  'config'
-];
+export const ALL_COLLECTIONS: CollectionName[] = [...BUSINESS_COLLECTIONS];
 
 /** Cache mémoire : source de vérité des lectures synchrones. */
 const cache: Partial<Record<CollectionName, any[]>> = {};
@@ -81,6 +65,42 @@ let syncing = false;
 
 const listeners = new Set<() => void>();
 let lastError: string | null = null;
+const collectionState = new Map<CollectionName, { pending: boolean; fromCache: boolean }>();
+const failedCollections = new Set<CollectionName>();
+type QueuedWrite = { name: CollectionName; id: string; data?: any; merge?: boolean; mergeFields?: string[]; remove?: boolean };
+let queuedWrites: QueuedWrite[] = [];
+const inFlight = new Set<Promise<void>>();
+const inFlightTargets = new Map<Promise<void>, Set<string>>();
+const pendingDocuments = new Set<string>();
+let writeFailure: string | null = null;
+
+function flushWrites(): void {
+  if (!queuedWrites.length) return;
+  const operations = queuedWrites;
+  queuedWrites = [];
+  const promise = (async () => {
+    if (operations.length > 450) throw new Error('Plus de 450 modifications simultanées. Utilise la restauration serveur. Aucune de ces modifications n’a été enregistrée.');
+    const batch = writeBatch(db);
+    for (const op of operations) {
+      const ref = doc(db, op.name, op.id);
+      if (op.remove) batch.delete(ref);
+      else batch.set(ref, op.data, op.mergeFields ? { mergeFields: op.mergeFields } : { merge: op.merge === true });
+    }
+    await batch.commit();
+  })();
+  inFlight.add(promise);
+  inFlightTargets.set(promise, new Set(operations.map(op => `${op.name}/${op.id}`)));
+  promise.then(() => { writeFailure = null; }, err => {
+    writeFailure = `Enregistrement refusé : ${err.message}`;
+    lastError = writeFailure;
+    console.error('[Firestore] atomic write', err);
+  }).finally(() => { inFlight.delete(promise); inFlightTargets.delete(promise); notify(); });
+  notify();
+}
+function enqueueWrite(operation: QueuedWrite): void {
+  if (!queuedWrites.length) queueMicrotask(flushWrites);
+  queuedWrites.push(operation);
+}
 
 function notify() {
   listeners.forEach((cb) => {
@@ -100,12 +120,12 @@ function notify() {
 export function stripUndefined<T>(value: T): T {
   if (value === null || value === undefined) return value;
   if (Array.isArray(value)) {
-    return value.map((v) => stripUndefined(v)) as unknown as T;
+    return value.map((v) => v === undefined ? null : stripUndefined(v)) as unknown as T;
   }
-  if (typeof value === 'object' && !(value instanceof Date)) {
+  if (typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
     const out: Record<string, any> = {};
     Object.entries(value as Record<string, any>).forEach(([k, v]) => {
-      if (v !== undefined) out[k] = stripUndefined(v);
+      if (v !== undefined && k !== '__docId') out[k] = stripUndefined(v);
     });
     return out as T;
   }
@@ -113,9 +133,43 @@ export function stripUndefined<T>(value: T): T {
 }
 
 export const FirestoreRepo = {
+  async waitForDocument(name: CollectionName, id: string, timeoutMs = 15000) {
+    flushWrites();
+    const path = `${name}/${id}`;
+    const writes = [...inFlightTargets].filter(([, paths]) => paths.has(path)).map(([promise]) => promise);
+    if (!writes.length && !pendingDocuments.has(path)) return;
+    let timer: ReturnType<typeof setTimeout>;
+    try {
+      await Promise.race([Promise.all([...writes, waitForPendingWrites(db)]), new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Création du brassin à synchroniser. Réessaie au retour du réseau.')), timeoutMs);
+      })]);
+    } finally { clearTimeout(timer!); }
+  },
+  syncStatus() {
+    return {
+      pending: queuedWrites.length > 0 || inFlight.size > 0 || [...collectionState.values()].some(s => s.pending),
+      fromCache: collectionState.size === 0 || [...collectionState.values()].some(s => s.fromCache),
+      error: writeFailure || (failedCollections.size ? 'Certaines données ne sont pas accessibles.' : null)
+    };
+  },
+
+  /** Resolves only after server acknowledgement. A timeout never claims success or cancels the queue. */
+  async waitForWrites(timeoutMs = 15000): Promise<void> {
+    if (import.meta.env.DEV && typeof location !== 'undefined' && new URLSearchParams(location.search).has('dev-local')) return;
+    flushWrites();
+    const work = Promise.all([...inFlight, waitForPendingWrites(db)]).then(() => {
+      if (writeFailure) throw new Error(writeFailure);
+    });
+    let timer: ReturnType<typeof setTimeout>;
+    try {
+      await Promise.race([work, new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error('Confirmation serveur en attente. Les modifications locales restent en file de synchronisation.')), timeoutMs);
+      })]);
+    } finally { clearTimeout(timer!); }
+  },
   subscribe(cb: () => void) {
     listeners.add(cb);
-    return () => listeners.delete(cb);
+    return () => { listeners.delete(cb); };
   },
 
   consumeError(): string | null {
@@ -130,7 +184,7 @@ export const FirestoreRepo = {
 
   /** Vrai quand toutes les collections ont reçu leur premier snapshot. */
   isReady(): boolean {
-    return ALL_COLLECTIONS.every((c) => loaded.has(c));
+    return failedCollections.size === 0 && ALL_COLLECTIONS.every((c) => loaded.has(c));
   },
 
   readyCount(): { loaded: number; total: number } {
@@ -151,22 +205,29 @@ export const FirestoreRepo = {
     if (syncing) return;
     syncing = true;
     loaded.clear();
+    failedCollections.clear();
+    collectionState.clear();
 
     if (
       import.meta.env.DEV &&
       typeof location !== 'undefined' &&
       new URLSearchParams(location.search).has('dev-local')
     ) {
-      ALL_COLLECTIONS.forEach((c) => loaded.add(c));
+      ALL_COLLECTIONS.forEach((c) => { loaded.add(c); collectionState.set(c, { pending: false, fromCache: false }); });
       return;
     }
 
     unsubscribers = ALL_COLLECTIONS.map((name) =>
       onSnapshot(
         collection(db, name),
+        { includeMetadataChanges: true },
         (snap) => {
+          for (const path of pendingDocuments) if (path.startsWith(`${name}/`)) pendingDocuments.delete(path);
+          snap.docs.forEach(d => { if (d.metadata?.hasPendingWrites) pendingDocuments.add(`${name}/${d.id}`); });
           cache[name] = snap.docs.map((d) => ({ ...(d.data() as any), __docId: d.id }));
           loaded.add(name);
+          failedCollections.delete(name);
+          collectionState.set(name, { pending: snap.metadata.hasPendingWrites, fromCache: snap.metadata.fromCache });
           notify();
         },
         (err) => {
@@ -177,9 +238,7 @@ export const FirestoreRepo = {
             ? "Accès refusé par les règles de sécurité Firestore. Ce compte Google n'est pas autorisé."
             : `Synchronisation ${name} impossible : ${err.message}`;
           console.error(`[Firestore] onSnapshot ${name}`, err);
-          // On marque quand même la collection comme « arrivée » pour ne pas
-          // bloquer l'application sur un écran de chargement infini.
-          loaded.add(name);
+          failedCollections.add(name);
           notify();
         }
       )
@@ -187,6 +246,8 @@ export const FirestoreRepo = {
   },
 
   stopSync(): void {
+    // Queue business writes under the current identity before clearing the views.
+    flushWrites();
     unsubscribers.forEach((u) => {
       try {
         u();
@@ -197,7 +258,10 @@ export const FirestoreRepo = {
     unsubscribers = [];
     syncing = false;
     loaded.clear();
+    failedCollections.clear();
+    collectionState.clear();
     ALL_COLLECTIONS.forEach((c) => delete cache[c]);
+    pendingDocuments.clear();
     notify();
   },
 
@@ -230,11 +294,13 @@ export const FirestoreRepo = {
     const managedJournal = name === 'batches' && (data.brewDay?.revision != null || cached?.brewDay?.revision != null);
     const payload = { ...data };
     if (managedJournal) delete payload.brewDay;
-    setDoc(doc(db, name, id), stripUndefined(payload), { merge: managedJournal || options.merge === true }).catch((err) => {
-      lastError = `Sauvegarde de ${name}/${id} impossible : ${err.message}`;
-      console.error('[Firestore] setDoc', name, id, err);
-      notify();
-    });
+    const cleaned = stripUndefined(payload);
+    if (managedJournal) for (const [key, value] of Object.entries(payload)) {
+      if (value === undefined && key !== '__docId') cleaned[key] = deleteField();
+    }
+    // One user gesture may write stock, a lot and its audit entry. Commit them together.
+    enqueueWrite({ name, id, data: cleaned, merge: options.merge === true,
+      ...(managedJournal ? { mergeFields: Object.keys(cleaned) } : {}) });
   },
 
   remove(name: CollectionName, id: string): void {
@@ -250,11 +316,7 @@ export const FirestoreRepo = {
       return;
     }
 
-    deleteDoc(doc(db, name, id)).catch((err) => {
-      lastError = `Suppression de ${name}/${id} impossible : ${err.message}`;
-      console.error('[Firestore] deleteDoc', name, id, err);
-      notify();
-    });
+    enqueueWrite({ name, id, remove: true });
   },
 
   /**
@@ -319,7 +381,7 @@ export const FirestoreRepo = {
     ) {
       return (cache[name]?.length ?? 0) === 0;
     }
-    const snap = await getDocs(query(collection(db, name), limit(1)));
+    const snap = await getDocsFromServer(query(collection(db, name), limit(1)));
     return snap.empty;
   },
 

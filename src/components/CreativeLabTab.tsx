@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { parseDecimal } from '../ui/numericInput';
+import { nextClientId } from '../services/refs';
 import { NumberInput } from '../ui/NumberInput';
 import { 
   X,
@@ -154,7 +155,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
   // PASSERELLE MAGIQUE 2: Convertir un prospect en vrai Client CRM
   const handleConvertToClient = (item: CreativeItem) => {
-    const newClientId = `CL-${String(Date.now()).slice(-3)}`;
+    const newClientId = nextClientId(StorageService.getClients().map(c => c.id));
     const newClient: Client = {
       id: newClientId,
       name: item.title,

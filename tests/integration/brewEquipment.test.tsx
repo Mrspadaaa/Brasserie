@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { BrewhouseSettings } from '../../src/ui/BrewhouseSettings';
 import { BrewEquipmentSummary } from '../../src/ui/BrewEquipmentSummary';
@@ -51,7 +51,8 @@ describe('Réglages matériels discrets', () => {
     });
     expect(change.mock.calls[0][0].volumeL).toBe(22.5);
   });
-  it('enregistre le profil de l’onglet Brasserie et empêche une limite utile supérieure à la cuve', () => {
+  it('enregistre le profil de l’onglet Brasserie et empêche une limite utile supérieure à la cuve', async () => {
+    vi.spyOn(StorageService, 'confirmPendingWrites').mockResolvedValue();
     const saved = vi.spyOn(StorageService, 'saveConfig').mockImplementation(() => {});
     const cfg = { ...defaultConfig, brewhouses: [rig], activeBrewhouseId: rig.id };
     render(
@@ -68,7 +69,7 @@ describe('Réglages matériels discrets', () => {
     fireEvent.change(screen.getByLabelText('Place pour la mousse (%)'), {
       target: { value: '25' }
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' }));
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' })));
     expect(saved.mock.calls[0][0].brewhouses[0].volumeL).toBe(22.5);
     fireEvent.change(screen.getByLabelText('Cuve · limite utile à chaud (L)'), {
       target: { value: '50' }

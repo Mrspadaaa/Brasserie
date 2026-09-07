@@ -20,6 +20,7 @@ import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
 import { BrewhouseSettings } from '../ui/BrewhouseSettings';
 import { equipmentErrors } from '../domain/brewEquipment';
+import { exportConfirmedBackup } from '../services/dataBackup';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -39,20 +40,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [activeTab, setActiveTab] = useState<'fiscal' | 'brewhouse' | 'security' | 'backup'>('fiscal');
   const [formData, setFormData] = useState<AppConfig>(config);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [dataMessage, setDataMessage] = useState('');
+  const [dataError, setDataError] = useState(false);
   useEffect(()=>{if(isOpen){setFormData(config);setSavedSuccess(false);}},[isOpen]);
 
   if (!isOpen) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)) return;
+    setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
+    try {
     StorageService.saveConfig(formData);
     onConfigUpdated(formData);
+    await StorageService.confirmPendingWrites();
     setSavedSuccess(true);
+    setDataMessage('Enregistré sur le serveur.');
     setTimeout(() => setSavedSuccess(false), 2000);
+    } catch (err) { setDataError(true); setDataMessage((err as Error).message); }
+    finally { setBusy(false); }
   };
 
-  const handleExportBackup = () => {
-    const json = StorageService.exportAllData();
+  const handleExportBackup = async () => {
+    setBusy(true); setDataError(false); setDataMessage('Préparation de la copie serveur…');
+    try {
+    const json = await exportConfirmedBackup();
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -60,21 +72,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     a.download = `laffinee_backup_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setDataMessage('Copie complète téléchargée, intégrité vérifiée.');
+    } catch (err) { setDataError(true); setDataMessage((err as Error).message); }
+    finally { setBusy(false); }
   };
 
   const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
+    setBusy(true); setDataError(false); setDataMessage('Restauration en cours… Garde cette fenêtre ouverte.');
+    reader.onload = async () => {
       try {
-        StorageService.importAllData(reader.result as string);
-        alert('Sauvegarde restaurée avec succès !');
-        window.location.reload();
-      } catch {
-        alert('Erreur lors de la lecture du fichier de sauvegarde.');
-      }
+        const result = await StorageService.importAllData(reader.result as string);
+        setDataMessage(`Restauration confirmée : ${result.changed} fiche(s) enregistrée(s).${result.journalsPreserved ? ' Journaux de brassage actuels conservés.' : ''}`);
+      } catch (err) { setDataError(true); setDataMessage(`${(err as Error).message} Réimporte le même fichier pour reprendre si nécessaire.`); }
+      finally { setBusy(false); e.target.value = ''; }
     };
+    reader.onerror = () => { setDataError(true); setDataMessage('Lecture du fichier impossible.'); setBusy(false); };
     reader.readAsText(file);
   };
 
@@ -382,12 +397,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="p-3 bg-cave-850/40 rounded-xl border border-cave-800 space-y-2">
               <h4 className="font-bold text-cave-200 text-xs sm:text-sm">Sauvegarder les données</h4>
               <p className="text-xs text-cave-400">
-                Téléchargez une copie intégrale de toutes vos transactions, recettes, fûts et stocks en JSON.
+                Copie confirmée par le serveur : recettes, brassins et relevés, stocks, configuration, idées et historique complet. Les fichiers Drive restent sur Drive.
               </p>
               <button
                 type="button"
                 onClick={handleExportBackup}
-                className="w-full py-2 bg-cave-850 hover:bg-cave-800 text-cave-200 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 text-xs sm:text-sm"
+                disabled={busy}
+                className="w-full min-h-11 py-2 bg-cave-850 hover:bg-cave-800 disabled:opacity-50 text-cave-200 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 text-xs sm:text-sm"
               >
                 <Download className="w-3.5 h-3.5 text-ebc-straw" />
                 <span>Exporter la sauvegarde</span>
@@ -396,10 +412,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
             <div className="p-3 bg-cave-850/40 rounded-xl border border-cave-800 space-y-2">
               <h4 className="font-bold text-cave-200 text-xs sm:text-sm">Restaurer une sauvegarde</h4>
-              <label className="w-full py-2 bg-cave-850 hover:bg-cave-800 text-cave-200 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer text-xs sm:text-sm">
+              <p className="text-xs text-cave-400">Les fiches du fichier remplacent leurs versions actuelles. Les autres fiches, les registres existants et les journaux de brassage actuels sont conservés.</p>
+              <label className="w-full min-h-11 py-2 bg-cave-850 hover:bg-cave-800 text-cave-200 font-bold rounded-xl transition flex items-center justify-center space-x-1.5 cursor-pointer text-xs sm:text-sm">
                 <Upload className="w-3.5 h-3.5 text-water" />
                 <span>Importer un fichier JSON</span>
-                <input type="file" accept=".json" onChange={handleImportBackup} className="hidden" />
+                <input type="file" accept=".json" disabled={busy} onChange={handleImportBackup} className="hidden" />
               </label>
             </div>
 
@@ -410,7 +427,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="w-full py-2 text-alert hover:text-alert text-xs sm:text-sm font-semibold rounded-xl border border-alert/20 hover:bg-alert/10 transition flex items-center justify-center space-x-1"
               >
                 <RotateCcw className="w-3.5 h-3.5 mr-1" />
-                <span>Réinitialiser aux valeurs d'origine</span>
+                <span>Réinitialiser l’affichage de cet appareil</span>
               </button>
             </div>
           </div>
@@ -418,6 +435,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       </div>
 
       {/* Sticky Actions */}
+      {dataMessage && <p role={dataError ? 'alert' : 'status'} className={`px-4 py-2 text-xs ${dataError ? 'text-alert' : 'text-hop'}`}>{dataMessage}</p>}
       <div className="p-3 border-t border-cave-800 bg-cave-900 flex items-center justify-between shrink-0">
         <span className="text-xs sm:text-sm text-hop font-semibold">
           {savedSuccess ? 'Modifications enregistrées !' : ''}
@@ -425,7 +443,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <button
           type="button"
           onClick={handleSave}
-          disabled={formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)}
+          disabled={busy || formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)}
           className="px-5 py-2.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-bold text-sm rounded-xl shadow-lg transition flex items-center ml-auto"
         >
           {savedSuccess ? <Check className="w-4 h-4 mr-1.5" /> : <Save className="w-4 h-4 mr-1.5" />}
