@@ -15,6 +15,7 @@ import { publicJob } from './brewerJobs.js';
 import { stableJson } from './backupCore.js';
 import { applyProposal, proposalBasis } from './brewerProposals.js';
 import { stampSession } from './brewSessionCore.js';
+import { loadBrewerAppContext } from './brewerAppContext.js';
 import type {
   BrewerChatInput,
   BrewerContext,
@@ -56,7 +57,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     db.doc('config/app').get(),
     db.collection('stockItems').limit(500).get(),
     db.collection('equipment').limit(200).get(),
-    input.scope.kind === 'draft'
+    ['draft', 'app'].includes(input.scope.kind)
       ? Promise.resolve(null)
       : db.doc(`${input.scope.kind === 'batch' ? 'batches' : 'recipes'}/${input.scope.id}`).get()
   ]);
@@ -69,7 +70,9 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
       ? input.draft
       : (batch?.recipeSnapshot ?? (input.scope.kind === 'recipe' ? doc?.data() : undefined));
   const provenance = [
-    input.scope.kind === 'draft'
+    input.scope.kind === 'app'
+      ? 'Écran de la brasserie : données serveur de cette section, aucune recette sélectionnée. Aucun champ modifiable depuis cette vue. Les filtres locaux de période ne sont pas appliqués à cet aperçu.'
+      : input.scope.kind === 'draft'
       ? 'Brouillon non enregistré'
       : batch?.recipeSnapshot
         ? 'Recette figée au lancement du lot'
@@ -93,15 +96,19 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     provenance.push(
       'Le journal affiché diffère du journal serveur : les valeurs locales sont non confirmées, les outils utilisent le serveur.'
     );
-  if (!recipe)
+  if (!recipe && input.scope.kind !== 'app')
     provenance.push(
       'Aucune recette retrouvée : ingrédients/cibles inconnus, ne pas reconstruire le lot par supposition.'
     );
-  const phase =
+  const workspace = input.scope.kind === 'app' ? await loadBrewerAppContext(input.scope.id) : undefined;
+  if (workspace?.truncated.length)
+    provenance.push(`Aperçu limité à 80 lignes par collection : ${workspace.truncated.join(', ')}. Ne pas présenter cet échantillon comme un total exhaustif.`);
+  const phase = workspace?.screen ?? (
     batch?.status && batch.status !== 'planifie'
       ? batch.status
-      : (journal?.steps?.[journal.currentIndex]?.label ?? input.phase ?? input.scope.kind);
+      : (journal?.steps?.[journal.currentIndex]?.label ?? input.phase ?? input.scope.kind));
   return cleanContext({
+    workspace,
     recipe: recipe ? normalizeRecipe(pick(recipe, RECIPE_FIELDS)) : undefined,
     journal,
     localJournal: local,
@@ -110,7 +117,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     inventory: stock.docs.map((d) =>
       pick(
         { ...d.data(), id: d.id },
-        'id name category currentStock unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC'.split(
+        'id name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC'.split(
           ' '
         )
       )
@@ -122,7 +129,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     phase,
     now: Date.now(),
     provenance,
-    editableTargets: (input.editableTargets ?? []).filter(
+    editableTargets: input.scope.kind === 'app' ? [] : (input.editableTargets ?? []).filter(
       (target) => target !== 'journal' || !local
     )
   });
@@ -281,6 +288,8 @@ export const applyBrewerProposal = onCall(
   { region: 'europe-west6', timeoutSeconds: 30, maxInstances: 3 },
   async (request) => {
     const uid = requireBrewer(request);
+    if (request.data?.scope?.kind === 'app')
+      throw new HttpsError('failed-precondition', 'Ouvre la recette ou le brassin pour valider ses modifications.');
     const { turnId, selectedIds, decision, confirmed } = request.data ?? {};
     let scope: BrewerScope;
     try {

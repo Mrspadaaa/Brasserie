@@ -18,6 +18,7 @@ try {
       jobs = [],
       turns = [],
       inputs = [];
+    let generation = 0;
     const budget = {
       paused: false,
       day: '2026-09-07',
@@ -35,7 +36,7 @@ try {
     await page.setRequestInterception(true);
     page.on('request', async (req) => {
       const endpoint =
-        /\/(askBrewer|getBrewerConversation|getBrewerActivity|markBrewerRead|getBrewerAiBudget|setBrewerAiBudget)$/.exec(
+        /\/(askBrewer|getBrewerConversation|getBrewerActivity|markBrewerRead|getBrewerAiBudget|setBrewerAiBudget|resetBrewerConversation)$/.exec(
           req.url()
         )?.[1];
       if (!endpoint) return req.continue();
@@ -50,6 +51,12 @@ try {
       const data = JSON.parse(req.postData()).data;
       let result;
       if (endpoint === 'getBrewerAiBudget') result = budget;
+      else if (endpoint === 'resetBrewerConversation') {
+        assert.equal(data.generation, generation);
+        jobs.splice(0);
+        turns.splice(0);
+        result = { generation: ++generation };
+      }
       else if (endpoint === 'setBrewerAiBudget') {
         if (data.paused != null) budget.paused = data.paused;
         Object.assign(budget.limits, data.limits);
@@ -60,7 +67,7 @@ try {
           id: String(inputs.length).repeat(64),
           operationId: data.operationId,
           scope: data.scope,
-          generation: 0,
+          generation,
           question: data.question,
           label: data.draft.name,
           status: inputs.length === 1 ? 'running' : 'queued',
@@ -84,13 +91,19 @@ try {
           ? { turn: turns.find((t) => t.operationId === data.operationId) }
           : { job: jobs.find((j) => j.operationId === data.operationId) };
       else
-        result = { turns, generation: 0, ...(inputs[0]?.draft ? { draft: inputs[0].draft } : {}) };
+        result = { turns, generation, ...(inputs[0]?.draft ? { draft: inputs[0].draft } : {}) };
       await req.respond({ status: 200, headers, body: JSON.stringify({ data: result }) });
     });
     await page.goto('http://127.0.0.1:3007/?preview=brew&view=assistant', {
       waitUntil: 'networkidle0'
     });
-    await page.click('.brewer-chat-launch');
+    await page.waitForSelector('.brewer-global-plus', { visible: true });
+    assert.ok(await page.$eval('.brewer-global-plus', (e) => {
+      const r = e.getBoundingClientRect();
+      return r.width >= 44 && r.height >= 44 && e.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+    }));
+    await page.screenshot({ path: resolve(out, `shortcut-${width}.png`) });
+    await page.click('.brewer-global-plus');
     await page.waitForSelector('.brewer-chat-welcome');
     await page.click('.brewer-budget > summary');
     await page.waitForSelector('.brewer-budget .is-stop');
@@ -158,9 +171,7 @@ try {
     await page.screenshot({ path: resolve(out, `notification-${width}.png`) });
     await page.click('.brewer-activity-pill');
     await page.waitForSelector('.brewer-activity-list button');
-    await page.$$eval('.brewer-activity-list button', (buttons) =>
-      buttons.find((b) => b.textContent.includes('Trouve-moi'))?.click()
-    );
+    await page.click('.brewer-conversation-open');
     await page.waitForSelector('.brewer-chat-answer');
     assert.ok(
       await page.$eval('.brewer-chat-answer', (e) => e.textContent.includes('La Mousse Vagabonde'))
@@ -205,12 +216,35 @@ try {
         (e) => e.getBoundingClientRect().bottom <= innerHeight + 1
       )
     );
+    await page.setViewport({ width, height: 844, isMobile: true, hasTouch: true });
+    await page.type('.brewer-chat-compose textarea', 'Une autre question en cours');
+    await page.click('.brewer-chat-compose button[type=submit]');
+    await page.waitForFunction(() => document.querySelectorAll('.brewer-chat-question').length === 3);
+    await page.click('button[aria-label="Mes conversations"]');
+    await page.waitForSelector('.brewer-conversation-delete');
+    assert.equal(await page.$$eval('.brewer-conversation', (items) => items.length), 1);
+    assert.ok(await page.$eval('.brewer-conversation-delete', (e) => e.getBoundingClientRect().height >= 44));
+    await page.click('.brewer-conversation-delete');
+    await page.screenshot({ path: resolve(out, `delete-confirm-${width}.png`) });
+    assert.equal(generation, 0, 'Opening confirmation must not delete anything');
+    await page.click('.brewer-conversation-confirm .is-destructive');
+    await page.waitForSelector('.brewer-inbox-empty');
+    assert.equal(generation, 1);
+    assert.equal(jobs.length, 0);
+    await page.screenshot({ path: resolve(out, `deleted-${width}.png`) });
+    await page.reload({ waitUntil: 'networkidle0' });
+    await page.click('.brewer-global-plus');
+    await page.waitForSelector('.brewer-chat-welcome');
+    assert.equal(await page.$$eval('.brewer-chat-question', (items) => items.length), 0);
+    assert.equal(inputs.length, 3, 'Deleted questions must never be resent');
     results.push({
       width,
       messages: inputs.length,
       backgroundReply: true,
       reloadRecovered: true,
       visibleGlobalStatus: true,
+      contextualShortcut: true,
+      deletionRecoveredAfterReload: true,
       ...dimensions
     });
     await page.close();

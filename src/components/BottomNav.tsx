@@ -1,17 +1,11 @@
 import React from 'react';
-import { LayoutDashboard, Wallet, Beer, Boxes, Users, Plus, ClipboardList } from 'lucide-react';
-import { FabAction } from '../domain/fabActions';
+import { LayoutDashboard, Wallet, Beer, Boxes, Users } from 'lucide-react';
 
 export type TabType = 'dashboard' | 'finances' | 'production' | 'stocks' | 'clients';
 
 interface BottomNavProps {
   activeTab: TabType;
   onChangeTab: (tab: TabType) => void;
-  /** Ce que crée le bouton ici — dépend de l'onglet ET du sous-onglet. */
-  action: FabAction;
-  onAction: () => void;
-  /** Appui long : la saisie rapide, quel que soit l'écran. */
-  onOpenQuickAction: () => void;
   criticalStockCount: number;
 }
 
@@ -23,9 +17,6 @@ interface BottomNavProps {
  * Les libellés passent de 10 px à 12 px : ils sont épaulés par une icône, mais
  * 10 px restait illisible en lumière faible.
  *
- * Le bouton d'action flottait avec une classe `w-13` qui n'existe pas dans
- * Tailwind : sa taille dépendait en réalité du seul padding. Il fait désormais
- * 56 px déclarés.
  */
 
 const TABS: Array<{
@@ -44,58 +35,9 @@ const TABS: Array<{
 export const BottomNav: React.FC<BottomNavProps> = ({
   activeTab,
   onChangeTab,
-  action,
-  onAction,
-  onOpenQuickAction,
   criticalStockCount
 }) => (
   <>
-    {/*
-      Le bouton crée CE QU'ON A SOUS LES YEUX.
-
-      ⚠️ Il ouvrait auparavant toujours le même menu — achat, vente, brassin —
-      quel que soit l'écran : sur l'onglet Fûts il proposait d'enregistrer une
-      facture, sur Tarifs de brasser. Son libellé change désormais avec
-      l'endroit, et un appui long ramène la saisie rapide pour les cas où l'on
-      veut autre chose que ce que l'écran montre.
-    */}
-    <div
-      className="fixed right-4 z-40 flex items-center gap-2"
-      style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}
-    >
-      {/* Le libellé n'apparaît que quand il y a la place : sur téléphone, la
-          barre du bas dit déjà où l'on est. */}
-      <span
-        className="hidden sm:block px-3 py-1.5 rounded-control bg-cave-850/95 backdrop-blur-sm
-                   border border-cave-700 text-sm text-cave-200 shadow-lift"
-        aria-hidden
-      >
-        {action.label}
-      </span>
-
-      <button
-        onClick={onAction}
-        onContextMenu={(e) => {
-          // Appui long sur téléphone, clic droit sur ordinateur : la saisie
-          // rapide reste à un geste, sans occuper de place à l'écran.
-          e.preventDefault();
-          onOpenQuickAction();
-        }}
-        aria-label={action.label}
-        className="w-touch-lg h-touch-lg rounded-full shrink-0
-                   bg-ebc-straw text-cave-950 shadow-lift
-                   flex items-center justify-center
-                   transition-transform active:scale-95
-                   focus-visible:outline-2 focus-visible:outline-offset-4"
-      >
-        {action.intent === 'copyShoppingList' ? (
-          <ClipboardList className="w-7 h-7" strokeWidth={2.5} />
-        ) : (
-          <Plus className="w-7 h-7" strokeWidth={2.5} />
-        )}
-      </button>
-    </div>
-
     <nav
       aria-label="Navigation principale"
       className="fixed bottom-0 inset-x-0 z-40 bg-cave-900/95 backdrop-blur-xl

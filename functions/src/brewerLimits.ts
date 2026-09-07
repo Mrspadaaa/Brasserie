@@ -15,7 +15,7 @@ export interface BrewerAiBudget {
 }
 export class BrewerBudgetError extends Error {
   constructor(
-    readonly code: 'ai-paused' | 'ai-daily-limit' | 'ai-question-limit' | 'ai-budget-unavailable',
+    readonly code: 'ai-paused' | 'ai-stopped' | 'ai-daily-limit' | 'ai-question-limit' | 'ai-budget-unavailable',
     message: string
   ) {
     super(message);

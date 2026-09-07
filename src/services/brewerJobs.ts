@@ -16,7 +16,7 @@ export type ClientBrewerJob = BrewerJob & {
   sourceJobId?: string;
 };
 export const sameBrewerScope = (a: BrewerScope, b: BrewerScope) =>
-  a.id === b.id && (a.kind === 'batch') === (b.kind === 'batch');
+  a.id === b.id && (a.kind === 'draft' ? 'recipe' : a.kind) === (b.kind === 'draft' ? 'recipe' : b.kind);
 export const isBrewerWorking = (j: ClientBrewerJob) =>
   !j.sendError && (j.status === 'running' || j.status === 'queued');
 type State = { jobs: ClientBrewerJob[]; connectionError: string };
@@ -33,7 +33,7 @@ export function createBrewerJobStore() {
     sending = new Set<string>(),
     reading = new Set<string>();
   const minimumGenerations = new Map<string, number>();
-  const key = (s: BrewerScope) => `${s.kind === 'batch' ? 'batch' : 'recipe'}:${s.id}`;
+  const key = (s: BrewerScope) => `${s.kind === 'draft' ? 'recipe' : s.kind}:${s.id}`;
   const emit = (next: State) => {
     state = next;
     try {
@@ -200,6 +200,7 @@ export function createBrewerJobStore() {
     return init;
   };
   const forget = (scope: BrewerScope, generation: number) => {
+    generation = Math.max(generation, minimumGenerations.get(key(scope)) ?? 0);
     minimumGenerations.set(key(scope), generation);
     emit({
       ...state,

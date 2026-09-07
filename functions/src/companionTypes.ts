@@ -1,6 +1,6 @@
 /** JSON-only contract shared with the browser. No credentials or Firebase dependencies. */
 export interface BrewerScope {
-  kind: 'recipe' | 'batch' | 'draft';
+  kind: 'recipe' | 'batch' | 'draft' | 'app';
   id: string;
 }
 export interface BrewerAdvice {
@@ -92,6 +92,7 @@ export interface BrewerProposal {
   decidedAt?: number;
 }
 export interface BrewerContext {
+  workspace?: { screen: string; records: Record<string, any[]>; truncated: string[] };
   recipe?: any;
   journal?: any;
   batch?: any;

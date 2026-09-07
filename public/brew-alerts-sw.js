@@ -10,7 +10,7 @@ self.addEventListener('push', (event) => {
   }
   const p = payload?.data;
   if (!p || typeof p.title !== 'string') return;
-  const companion = p.kind === 'companion' && ['recipe', 'draft', 'batch'].includes(p.scopeKind) && /^[\w-]{1,100}$/.test(p.scopeId);
+  const companion = p.kind === 'companion' && ['recipe', 'draft', 'batch', 'app'].includes(p.scopeKind) && /^[\w-]{1,100}$/.test(p.scopeId);
   if (!companion && typeof p.batchId !== 'string') return;
   // Expiry is checked by the server and the push provider's 300 s TTL.
   // A phone clock set ahead must not silently discard a current reminder.

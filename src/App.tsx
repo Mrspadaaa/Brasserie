@@ -3,6 +3,7 @@ import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { BrewerActivity } from './ui/BrewerActivity';
+import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
 import { QuickActionModal } from './components/QuickActionModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -357,12 +358,8 @@ export const App: React.FC = () => {
   };
 
   /**
-   * Ce que crée le bouton d'action, ici et maintenant.
-   *
-   * ⚠️ Il ouvrait toujours le même menu de saisie rapide, quel que soit
-   * l'écran : sur l'onglet Fûts il proposait d'enregistrer une facture, sur
-   * Tarifs de brasser. Le geste le plus visible de l'application ne créait
-   * jamais ce qu'on avait sous les yeux.
+   * L'appui long sur le raccourci du compagnon conserve l'action de création
+   * de l'écran courant (article, recette, écriture…).
    */
   const fabAction = fabActionFor(activeTab, subTab);
 
@@ -611,7 +608,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
-      <BrewerActivity />
+      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} onQuickAction={runFabAction} />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
@@ -732,9 +729,6 @@ export const App: React.FC = () => {
           setSubTab(null);
           setActiveTab(tab);
         }}
-        action={fabAction}
-        onAction={runFabAction}
-        onOpenQuickAction={() => setIsQuickActionOpen(true)}
         criticalStockCount={criticalStockCount}
       />
 

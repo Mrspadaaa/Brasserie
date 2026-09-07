@@ -27,6 +27,7 @@ import { BrewerNotificationOption } from './BrewerNotifications';
 import { BrewerBudget } from './BrewerBudget';
 import './brewer-chat.css';
 import { BrewerProposalCard } from './BrewerProposalCard';
+import { brewerLauncher } from '../services/brewerLauncher';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
 
 interface Props {
@@ -59,7 +60,9 @@ const merge = (a: BrewerTurn[], b: BrewerTurn[]) =>
     ).values()
   ].sort((a, b) => a.createdAt - b.createdAt);
 const prompts = (kind: string, phase = '') =>
-  kind === 'draft' || kind === 'recipe'
+  kind === 'app'
+    ? ['Aide-moi sur cet écran', 'Que dois-je vérifier en priorité ?', 'Que puis-je améliorer ?']
+    : kind === 'draft' || kind === 'recipe'
     ? [
         'Vérifie ma recette et mon matériel',
         'Quel malt puis-je remplacer ?',
@@ -132,7 +135,7 @@ function ScopedChat({
     resetOperation = useRef('');
   const targets =
     editableTargets ??
-    (scope.kind === 'draft'
+    (scope.kind === 'app' ? [] : scope.kind === 'draft'
       ? onDraftApply
         ? (['recipe'] as const)
         : []
@@ -142,6 +145,12 @@ function ScopedChat({
   const alive = useRef(true),
     lock = useRef(false),
     end = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!hideLauncher) return brewerLauncher.register(scope, () => setOpen(true));
+  }, [scope.kind, scope.id, hideLauncher]);
+  useEffect(() => {
+    if (open) return brewerLauncher.dialog();
+  }, [open]);
   const jobs = activity.jobs.filter(
     (j) => sameBrewerScope(j.scope, scope) && j.generation === generation.current
   );
@@ -434,6 +443,16 @@ function ScopedChat({
             {scope.kind === 'draft' ? 'Brouillon en cours' : phase || 'Recette'} · contexte
             actualisé à chaque question
           </span>
+          <button
+            type="button"
+            className="brewer-chat-reset"
+            aria-label="Mes conversations"
+            title="Mes conversations"
+            disabled={resetting || applying}
+            onClick={() => { setOpen(false); onClose?.(); window.dispatchEvent(new Event('brewer-inbox-open')); }}
+          >
+            <MessageCircle size={17} />
+          </button>
           <button
             type="button"
             className="brewer-chat-reset"

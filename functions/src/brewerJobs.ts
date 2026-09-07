@@ -11,6 +11,7 @@ import { geminiTransport, runBrewerHarness, BrewerProUnavailableError } from './
 import { budgetedBrewerTransport } from './brewerBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
 import { GeminiApiError } from './geminiErrors.js';
+import { BREWER_APP_SCREENS } from './brewerAppScreens.js';
 import { cleanContext, pick, validateChatInput } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
 import { loadBrewerContext, history, threadKey, publicTurn } from './brewerChat.js';
@@ -142,7 +143,7 @@ export const askBrewer = onCall(
         generation,
         sequence,
         question: input.question,
-        label: String((input.draft as any)?.name ?? 'Compagnon brasseur').slice(0, 160),
+        label: String((input.draft as any)?.name ?? (input.scope.kind === 'app' ? BREWER_APP_SCREENS[input.scope.id] : 'Compagnon brasseur')).slice(0, 160),
         status: 'queued',
         stage: 'queued',
         createdAt: now,
@@ -270,7 +271,7 @@ export const processBrewerQuestion = onTaskDispatched(
       const context = await loadBrewerContext(job.input),
         session = (await lock.get()).data();
       await ref.update({
-        label: String(context.recipe?.name || context.batch?.name || 'Brouillon').slice(0, 160)
+        label: String(context.recipe?.name || context.batch?.name || context.workspace?.screen || 'Brouillon').slice(0, 160)
       });
       const past = await history(job.threadId, undefined, session?.resetAt);
       const result = await runBrewerHarness(context, job.question, past, guarded.generate, {
@@ -298,7 +299,7 @@ export const processBrewerQuestion = onTaskDispatched(
         ...(result.proposal ? { proposal: { ...result.proposal, basis: undefined } } : {}),
         createdAt: Math.max(Date.now(), (session?.resetAt ?? 0) + 1),
         askedAt: job.createdAt,
-        contextLabel: `${context.recipe?.name || context.batch?.name || 'Brouillon'} · ${context.phase}`,
+        contextLabel: `${context.recipe?.name || context.batch?.name || context.workspace?.screen || 'Brouillon'} · ${context.phase}`,
         contextId,
         contextAt: context.now
       });

@@ -1,12 +1,14 @@
 import type { BrewerChatInput, BrewerScope } from './companionTypes.js';
+import { BREWER_APP_SCREENS } from './brewerAppScreens.js';
 export const scopeKey = (s: BrewerScope) => `${s.kind}:${s.id}`;
 export function validateScope(s: unknown): BrewerScope {
   const v = s as BrewerScope;
   if (
     !v ||
-    !['recipe', 'batch', 'draft'].includes(v.kind) ||
+    !['recipe', 'batch', 'draft', 'app'].includes(v.kind) ||
     typeof v.id !== 'string' ||
-    !/^[\w-]{1,100}$/.test(v.id)
+    !/^[\w-]{1,100}$/.test(v.id) ||
+    (v.kind === 'app' && !Object.prototype.hasOwnProperty.call(BREWER_APP_SCREENS, v.id))
   )
     throw new Error('Contexte de conversation invalide.');
   return { kind: v.kind, id: v.id };
@@ -67,7 +69,7 @@ export function validateChatInput(raw: any): BrewerChatInput {
     throw new Error('Mode d’analyse invalide.');
   if (raw.generation != null && (!Number.isSafeInteger(raw.generation) || raw.generation < 0))
     throw new Error('Version de conversation invalide.');
-  const allowedTargets = scope.kind === 'batch' ? ['journal', 'batch'] : ['recipe'];
+  const allowedTargets = scope.kind === 'app' ? [] : scope.kind === 'batch' ? ['journal', 'batch'] : ['recipe'];
   if (
     raw.editableTargets != null &&
     (!Array.isArray(raw.editableTargets) ||

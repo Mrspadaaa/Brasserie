@@ -123,8 +123,16 @@ export function budgetedBrewerTransport(generate: Generate, jobId: string, fence
     },
     () => stopped.abort(unavailable())
   );
+  const unsubscribeJob = jobRef.onSnapshot(
+    (snapshot) => {
+      const job = snapshot.data();
+      if (job?.status !== 'running' || job?.fence !== fence)
+        stopped.abort(new BrewerBudgetError('ai-stopped', 'Cette conversation a été arrêtée.'));
+    },
+    () => stopped.abort(unavailable())
+  );
   return {
-    close: unsubscribe,
+    close: () => { unsubscribe(); unsubscribeJob(); },
     generate: async (model: string, body: Record<string, unknown>, signal: AbortSignal) => {
       if (stopped.signal.aborted) throw stopped.signal.reason;
       const day = brewerBudgetDay(),

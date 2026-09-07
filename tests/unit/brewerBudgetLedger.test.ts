@@ -4,13 +4,15 @@ const state = vi.hoisted(() => ({
   docs: new Map<string, any>(),
   transactions: 0,
   failSettlement: false,
-  unsubscribe: vi.fn()
+  unsubscribe: vi.fn(),
+  watchers: new Map<string, (snapshot: any) => void>()
 }));
 function doc(path: string): any {
   return {
     path,
     get: async () => ({ data: () => structuredClone(state.docs.get(path)) }),
     onSnapshot: (next: any) => {
+      state.watchers.set(path, next);
       next({ data: () => structuredClone(state.docs.get(path)) });
       return state.unsubscribe;
     }
@@ -58,11 +60,30 @@ beforeEach(() => {
   state.transactions = 0;
   state.failSettlement = false;
   state.unsubscribe.mockClear();
+  state.watchers.clear();
   state.docs.set(jobPath, { status: 'running', fence: 'test-fence' });
   state.docs.set('brewerAiControls/current', { paused: false });
 });
 
 describe('Réconciliation des réservations Gemini, sans appel réseau', () => {
+  it('interrompt un appel en cours lorsque sa conversation est supprimée', async () => {
+    let started!: () => void;
+    const entered = new Promise<void>((resolve) => { started = resolve; });
+    const generate = vi.fn((_model, _body, signal: AbortSignal) => new Promise((_resolve, reject) => {
+      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
+      started();
+    }));
+    const guard = budgetedBrewerTransport(generate, 'test-job', 'test-fence');
+    const pending = guard.generate('gemini-test', request, signal());
+    await entered;
+    state.docs.delete(jobPath);
+    state.watchers.get(jobPath)!({ data: () => undefined });
+    await expect(pending).rejects.toMatchObject({ code: 'ai-stopped' });
+    await expect(guard.generate('gemini-test', request, signal())).rejects.toMatchObject({ code: 'ai-stopped' });
+    expect(generate).toHaveBeenCalledOnce();
+    expect(daily().tokens).toBeGreaterThan(0);
+    guard.close();
+  });
   it('libère les tokens refusés mais garde les tentatives et le plafond par question', async () => {
     state.docs.set('brewerAiControls/current', { limits: { questionCalls: 1 } });
     const error = new GeminiApiError(429, 'gemini-test-pro', 'spend-cap');
@@ -77,7 +98,7 @@ describe('Réconciliation des réservations Gemini, sans appel réseau', () => {
     await expect(guard.generate('gemini-test-pro', request, signal())).rejects.toMatchObject({ code: 'ai-question-limit' });
     expect(generate).toHaveBeenCalledTimes(1);
     guard.close();
-    expect(state.unsubscribe).toHaveBeenCalledOnce();
+    expect(state.unsubscribe).toHaveBeenCalledTimes(2);
   });
 
   it('préserve les tokens réellement utilisés lors du refus suivant', async () => {
