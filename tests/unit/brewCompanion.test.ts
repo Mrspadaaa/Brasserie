@@ -112,6 +112,35 @@ describe('Écarts minéraux, sans nouveau solveur', () => {
     expect(b.ions.hco3).toBeLessThan(a.ions.hco3);
     expect(b.ions.mg).toBe(a.ions.mg);
   });
+  it('neutralise chaque eau séparément avant de pondérer les HCO3 du journal', () => {
+    const r = recipe();
+    r.waterPlan!.acid = { id: 'lactique', mash: 1, sparge: 3 };
+    const s = brewState(r);
+    // Empâtage : 120 − 1 × 600 / 20 = 90 ; rinçage : max(0, 120 − 180) = 0.
+    expect(mineralFeedback(r, s)!.ions.hco3).toBe(60);
+    const moreSparge = { ...s, additions: { 'acid-sparge': { amount: 4 } } };
+    expect(mineralFeedback(r, moreSparge)!.ions.hco3).toBe(60);
+    expect(mineralFeedback(r, { ...moreSparge, additions: {
+      ...moreSparge.additions, 'acid-mash': { amount: 0 }
+    } })!.ions.hco3).toBe(80);
+    const corrected = { ...s, acidCorrections: [{
+      id: 'acid-correction', stepId: 'sparge', at: 100, readingAt: 50,
+      acid: 'phosphorique' as const, amount: 2
+    }] };
+    expect(mineralFeedback(r, corrected)!.ions.hco3).toBe(60);
+    corrected.acidCorrections[0].stepId = 'mash-0';
+    expect(mineralFeedback(r, corrected)!.ions.hco3).toBe(10);
+  });
+  it('retrouve la bonne source depuis un snapshot v2 pondéré entre deux coupes', () => {
+    const r = recipe();
+    Object.assign(r.waterPlan!, {
+      treatmentVersion: 2, diRatioPct: 50, spargeDiRatioPct: 0,
+      mash: {}, sparge: {}, acid: { id: 'lactique', mash: 0, sparge: 1 },
+      startIons: { ca: 60, mg: 6, na: 12, so4: 30, cl: 24, hco3: 120 }
+    });
+    // Source : 180 ppm ; empâtage : 90 ; rinçage après 1 mL : 120.
+    expect(mineralFeedback(r, brewState(r))!.ions.hco3).toBe(100);
+  });
   it('empâtage et rinçage à des coupes différentes sont pondérés correctement', () => {
     const r = recipe();
     r.waterPlan!.mash = {};

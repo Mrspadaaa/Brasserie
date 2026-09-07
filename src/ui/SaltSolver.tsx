@@ -860,8 +860,8 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
     [planApplied, solution.issues, acideSuffit]
   );
 
-  /** L'alcalinité qui reste dans l'eau de rinçage — c'est elle qu'on acidifie. */
-  const spargeAlkalinity = Math.round(alkalinityAsCaCO3(achievedSparge.hco3));
+  /** Le résultat suit la dose retenue, y compris un zéro saisi à la main. */
+  const spargeAlkalinity = Math.round(alkalinityAsCaCO3(treatment.treated.sparge.hco3));
 
   /**
    * Le moût TEL QU'IL SERA, acide compris — c'est lui que la toile montre.
@@ -1704,24 +1704,38 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
             <div className="panel p-2.5 sm:p-3 space-y-1.5">
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-xs sm:text-sm text-cave-400">
-                  Alcalinité restante — cible pH {spargeAcid.targetPh}
+                  Alcalinité restante après acide
                 </span>
                 <span
                   className={`reading text-base sm:text-lg font-bold shrink-0 ${
                     spargeAlkalinity <= 25 ? 'text-hop' : 'text-cave-100'
                   }`}
                 >
-                  {spargeAlkalinity} ppm
+                  {spargeAlkalinity} <span className="reading-unit text-2xs">ppm CaCO₃</span>
                 </span>
               </div>
+              <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
+                HCO₃ : {formatDecimal(Math.round(achievedSparge.hco3 * 10) / 10)} →{' '}
+                {formatDecimal(Math.round(treatment.treated.sparge.hco3 * 10) / 10)} ppm.
+                {' '}Cible pH {spargeAcid.targetPh}, à vérifier au pH-mètre.
+              </p>
               {spargeAcid.amount > 0 ? (
                 <p className="text-2xs sm:text-sm text-cave-300 leading-snug">
-                  Soit{' '}
+                  Avec{' '}
                   <span className="reading text-water font-semibold">
                     {spargeAcid.amount} {spargeAcid.unit}
                   </span>{' '}
                   d’{ACIDS[state.acidId].name.charAt(0).toLowerCase()}
-                  {ACIDS[state.acidId].name.slice(1)} — ou davantage d’osmosée.
+                  {ACIDS[state.acidId].name.slice(1)} dans {formatDecimal(state.spargeWaterL)} L de rinçage.
+                </p>
+              ) : spargeAcidCalcule.amount > 0 ? (
+                <p className="text-2xs sm:text-sm text-ebc-straw leading-snug">
+                  Dose retenue : 0 {spargeAcid.unit}. L’alcalinité reste à traiter ; le calcul propose{' '}
+                  {formatDecimal(spargeAcidCalcule.amount)} {spargeAcid.unit}.
+                </p>
+              ) : achievedSparge.hco3 > 0 ? (
+                <p className="text-2xs sm:text-sm text-cave-300 leading-snug">
+                  {spargeAcid.warning ?? 'Dose calculée nulle : vérifier le pH de cette eau avant tout ajout.'}
                 </p>
               ) : (
                 <p className="text-2xs sm:text-sm text-hop leading-snug">
@@ -2056,9 +2070,30 @@ export const SaltSolver: React.FC<SaltSolverProps> = ({
                 />
               )}
             </div>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 pt-1.5 text-2xs text-cave-300">
+              <span>HCO₃ après acide</span>
+              <span aria-label="HCO₃ après acide — empâtage">
+                Empâtage <strong className="reading text-water">{formatDecimal(Math.round(treatment.treated.mash.hco3 * 10) / 10)}</strong> ppm
+              </span>
+              {hasSparge && (
+                <span aria-label="HCO₃ après acide — rinçage">
+                  Rinçage <strong className="reading text-water">{formatDecimal(Math.round(treatment.treated.sparge.hco3 * 10) / 10)}</strong> ppm
+                </span>
+              )}
+            </div>
           </div>
         </section>
         </div>
+
+        {((mashAcid.amount > 0 && treatment.treated.mash.hco3 === 0) ||
+          (hasSparge && spargeAcid.amount > 0 && treatment.treated.sparge.hco3 === 0)) && (
+          <p className="px-1 text-2xs text-cave-300 leading-snug">
+            {[
+              mashAcid.amount > 0 && treatment.treated.mash.hco3 === 0 ? 'Empâtage' : '',
+              hasSparge && spargeAcid.amount > 0 && treatment.treated.sparge.hco3 === 0 ? 'Rinçage' : ''
+            ].filter(Boolean).join(' · ')} : HCO₃ estimé à 0. Ajouter de l’acide ne diminue plus le HCO₃ affiché ; le pH peut encore baisser. Vérifie-le avant tout ajout.
+          </p>
+        )}
 
         {alkaliGoal.limitedByGrist && (
           <p className="px-1 text-2xs text-cave-300 leading-snug" aria-label="Objectif du bicarbonate">

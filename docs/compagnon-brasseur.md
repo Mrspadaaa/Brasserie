@@ -58,6 +58,7 @@ Les clés sont exclusivement dans Secret Manager/côté serveur. Les collections
 - `node scripts/check-brewer-shopping-mobile.mjs` : même environnement, choix de modèle, reprise d’une question en attente et cartes fournisseurs, en passant par le vrai service navigateur avec réponses réseau simulées.
 - `node scripts/check-brewer-proposals-persistence.mjs` : Firestore émulé, fournisseur simulé ; autorisations, sélection, brouillon sans écriture métier, idempotence, audit, conflit, relevé et réponse tardive après reset.
 - `node scripts/check-brewer-proposals-mobile.mjs` : véritable formulaire de recette en 390/320px, API simulée ; aucune application avant validation, valeur relue dans la question suivante, annulation/confirmation du reset et vérification de la nouvelle génération.
+- `node scripts/check-water-acid-mobile.mjs` : HCO₃ après acide par eau, graphique et panneau de rinçage en 390/320px ; appels externes bloqués, aucun coût IA.
 
 Le contrôle visuel confirme que les conseils longs défilent dans la feuille, les preuves restent repliées et le champ de réponse reste accessible. Les mesures réelles et les caractéristiques provisoires du matériel restent nécessaires : le compagnon ne pilote pas la cuve.
 

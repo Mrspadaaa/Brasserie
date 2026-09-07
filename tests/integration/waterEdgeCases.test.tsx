@@ -78,6 +78,39 @@ const doseAcide = (cote: 'empâtage' | 'rinçage'): number => {
   return parseFloat((champ.value || '0').replace(',', '.'));
 };
 
+describe('Le rinçage affiche son alcalinité après la dose retenue', () => {
+  it('actualise le panneau et le graphique quand seule la dose de rinçage change', () => {
+    monter({ acidOverride: { mash: 0, sparge: 2 } });
+    fireEvent.click(screen.getByRole('tab', { name: 'Rinçage' }));
+    // 250 − 2 × 600 / 10 = 130 ppm HCO3, soit 107 ppm équivalent CaCO3.
+    const remaining = () => screen.getByText(/Alcalinité restante/).parentElement!;
+    const radar = () => screen.getByRole('img', { name: /Profil ionique/ });
+    expect(remaining()).toHaveTextContent('107');
+    expect(radar()).toHaveAccessibleName(/Alcalinité .*210 ppm/);
+
+    clic(/Ajouter 0\.5 mL — rinçage/i);
+    expect(doseAcide('empâtage')).toBe(0);
+    expect(remaining()).toHaveTextContent('82');
+    expect(radar()).toHaveAccessibleName(/Alcalinité .*200 ppm/);
+    expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('100');
+  });
+
+  it('ne déclare pas le rinçage sans alcalinité quand la dose est ramenée à zéro', () => {
+    monter({ acidOverride: { mash: 0, sparge: 0 } });
+    fireEvent.click(screen.getByRole('tab', { name: 'Rinçage' }));
+    expect(screen.queryByText(/Rien à acidifier/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Alcalinité restante/).parentElement).toHaveTextContent('205');
+  });
+
+  it('explique le plancher zéro sans annoncer que le pH est validé', () => {
+    monter({ acidOverride: { mash: 0, sparge: 5 } });
+    fireEvent.click(screen.getByRole('tab', { name: 'Rinçage' }));
+    expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('0');
+    expect(screen.getByText(/ne diminue plus le HCO₃/)).toHaveTextContent(/pH/);
+    expect(screen.getByRole('img', { name: /Profil ionique/ })).toHaveAccessibleName(/Alcalinité .*167 ppm/);
+  });
+});
+
 describe('L’acide suit son eau', () => {
   /*
    * ⚠️ LE CŒUR DU SIGNALEMENT. Chaque entrée qui change la composition de l'eau

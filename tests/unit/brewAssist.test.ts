@@ -36,6 +36,20 @@ describe('Aides aux imprévus : bilans physiques et limites', () => {
     expect(waterScenario(r, s, 'mash', 15)).toBeNull();
     expect(waterScenario(r, s, 'mash', 5)?.actualPct).toBe(50);
   });
+  it('calcule les deux eaux après acide depuis le même snapshot v2 que le journal', () => {
+    const r = recipe();
+    Object.assign(r.waterPlan!, {
+      treatmentVersion: 2, diRatioPct: 50, spargeDiRatioPct: 0,
+      mash: {}, sparge: {}, acid: { id: 'lactique', mash: 0, sparge: 1 },
+      startIons: { ca: 60, mg: 6, na: 12, so4: 30, cl: 24, hco3: 120 }
+    });
+    const s = brewState(r);
+    expect(waterScenario(r, s, 'mash', 10)!.ions!.hco3).toBe(90);
+    expect(waterScenario(r, s, 'sparge', 0)!.ions!.hco3).toBe(120);
+    s.additions = { 'acid-sparge': { amount: 2 } };
+    expect(waterScenario(r, s, 'sparge', 0)!.ions!.hco3).toBe(60);
+    expect(waterScenario(r, s, 'mash', 10)!.ions!.hco3).toBe(90);
+  });
   it('attend cinq minutes après une correction acide, puis redemande un pH refroidi', () => {
     const r = recipe(),
       s = brewState(r),

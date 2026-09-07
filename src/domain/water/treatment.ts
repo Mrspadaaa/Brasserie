@@ -1,6 +1,6 @@
 import { AcidId, SaltId, WaterIons, WaterSource, WaterPlan } from '../../types';
-import { addIons, dilute, residualAlkalinity, sulfateChlorideRatio } from './ions';
-import { ACIDS, ionsFromSalts } from './substances';
+import { addIons, dilute, residualAlkalinity, sulfateChlorideRatio, ZERO } from './ions';
+import { ACIDS, SALT_IDS, ionsFromSalts } from './substances';
 import { acidNeeded, ionsAfterAcid, spargeAcidNeeded, SPARGE_TARGET_PH } from './acid';
 import { RaBand, raAcidTarget } from './mashPh';
 import { splitDoses, waterFromPlan } from './plan';
@@ -111,25 +111,46 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
   };
 }
 
-/** Upgrade the old pre-acid display from its own frozen data, never today's network analysis. */
+/** Recover only the frozen source: legacy startIons are mash-only; v2 startIons are weighted. */
+export function waterSourceFromPlan(plan: WaterPlan): WaterIons | null {
+  const keys = ['ca', 'mg', 'na', 'so4', 'cl', 'hco3'] as const;
+  const map = (value: (key: keyof WaterIons) => number) =>
+    Object.fromEntries(keys.map(k => [k, value(k)])) as unknown as WaterIons;
+  if (plan.sourceSnapshot) return map(k => plan.sourceSnapshot![k]);
+  if (!plan.startIons) return null;
+  const mashTap = 1 - plan.diRatioPct / 100;
+  const spargeTap = 1 - (plan.spargeDiRatioPct ?? plan.diRatioPct) / 100;
+  const totalL = plan.mashWaterL + plan.spargeWaterL;
+  const fraction = plan.treatmentVersion === 2 && totalL > 0
+    ? (plan.mashWaterL * mashTap + plan.spargeWaterL * spargeTap) / totalL
+    : mashTap;
+  if (fraction > 0) return map(k => plan.startIons![k] / fraction);
+  // Only pre-acid legacy totals can recover a source absent from a pure-RO mash.
+  if (plan.treatmentVersion !== 2 && plan.wortIons && totalL > 0 && spargeTap > 0 && plan.spargeWaterL > 0) {
+    const doses = Object.fromEntries(SALT_IDS.map(id => [id, (plan.mash?.[id] ?? 0) + (plan.sparge?.[id] ?? 0)]));
+    const salts = ionsFromSalts(doses, totalL);
+    const spargeFraction = spargeTap * plan.spargeWaterL / totalL;
+    return map(k => Math.max(0, plan.wortIons![k] - salts[k]) / spargeFraction);
+  }
+  return null;
+}
+
+/** Recompute from the recipe's frozen analysis and retained doses, never today's source or a new prescription. */
 export function savedWaterDisplay(plan: WaterPlan | undefined) {
-  if (!plan?.startIons || !plan.wortIons) return null;
-  if (plan.treatmentVersion === 2) return { start: plan.startIons, achieved: plan.wortIons };
-  const start = plan.startIons;
+  if (!plan) return null;
   const spargeDi = plan.spargeDiRatioPct ?? plan.diRatioPct;
-  if (plan.diRatioPct >= 100 && spargeDi < 100 && plan.spargeWaterL > 0) return null;
-  const factor = plan.diRatioPct >= 100 ? 1 : (100 - spargeDi) / (100 - plan.diRatioPct);
-  const spargeStart = Object.fromEntries(
-    Object.entries(start).map(([k, v]) => [k, v * factor])
-  ) as unknown as WaterIons;
-  const mash = addIons(start, ionsFromSalts(plan.mash, plan.mashWaterL));
-  const sparge = addIons(spargeStart, ionsFromSalts(plan.sparge, plan.spargeWaterL));
-  const acid = plan.acid;
+  const pureRo = plan.diRatioPct === 100 && (spargeDi === 100 || plan.spargeWaterL <= 0);
+  const source = waterSourceFromPlan(plan) ?? (pureRo ? ZERO : null);
+  if (!source) return null;
+  const startMash = dilute(source, plan.diRatioPct);
+  const startSparge = dilute(source, spargeDi);
+  const mash = addIons(startMash, ionsFromSalts(plan.mash, plan.mashWaterL));
+  const sparge = addIons(startSparge, ionsFromSalts(plan.sparge, plan.spargeWaterL));
   return {
-    start: averageWater(start, spargeStart, plan.mashWaterL, plan.spargeWaterL),
+    start: averageWater(startMash, startSparge, plan.mashWaterL, plan.spargeWaterL),
     achieved: averageWater(
-      acid ? ionsAfterAcid(mash, acid.mash, acid.id, plan.mashWaterL) : mash,
-      acid ? ionsAfterAcid(sparge, acid.sparge, acid.id, plan.spargeWaterL) : sparge,
+      plan.acid ? ionsAfterAcid(mash, plan.acid.mash, plan.acid.id, plan.mashWaterL) : mash,
+      plan.acid ? ionsAfterAcid(sparge, plan.acid.sparge, plan.acid.id, plan.spargeWaterL) : sparge,
       plan.mashWaterL,
       plan.spargeWaterL
     )

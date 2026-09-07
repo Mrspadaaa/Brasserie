@@ -256,6 +256,31 @@ describe('Recipe data entry regressions', () => {
     change(screen.getByLabelText('Masse de Pilsner'), '5.5');
     expect(screen.queryByText('À jour')).toBeNull();
   });
+  it('retains a sparge-only acid change in the graph, recap and reopened recipe', () => {
+    const original = structuredClone(base);
+    original.waterPlan!.acid = { id: 'lactique', mash: 0, sparge: 0 };
+    original.waterPlan!.acidOverride = { mash: 0, sparge: 0 };
+    const save = vi.fn();
+    const view = wizard(original, save);
+    step(/^Eau/);
+    expect(radar()).toMatch(/Alcalinité .*207 ppm/);
+    change(screen.getByLabelText(/Dose d’acide lactique .*au rinçage/), '1');
+    // 25 L at 250 ppm + 10 L at (100 − 600 / 10) ppm = 190 ppm overall.
+    expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('40');
+    expect(radar()).toMatch(/Alcalinité .*190 ppm/);
+    const changed = radar();
+    step(/^Récapitulatif$/);
+    expect(radar()).toBe(changed);
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
+    const saved = save.mock.calls[0][0];
+    expect(saved.waterPlan.acid).toEqual({ id: 'lactique', mash: 0, sparge: 1 });
+    expect(saved.waterPlan.wortIons.hco3).toBe(190);
+    view.unmount();
+    wizard(saved);
+    step(/^Eau/);
+    expect(radar()).toBe(changed);
+    expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('40');
+  });
   it('keeps optional empty numbers missing while quantities default to zero', () => {
     const optional = vi.fn(),
       quantity = vi.fn();

@@ -297,12 +297,9 @@ export interface WaterPlan {
   targetIons?: Partial<WaterIons>;
   targetName?: string;
   /**
-   * L'eau de départ et le MOÛT obtenu, FIGÉS au plan.
-   *
-   * ⚠️ Ils ne se recalculent pas à la lecture, et c'est délibéré : l'analyse de
-   * la source peut être corrigée des mois plus tard, et la fiche doit continuer
-   * de montrer l'eau sur laquelle la recette a été pensée. Même principe que
-   * `Batch.recipeSnapshot` — on fige ce qui a servi à décider.
+   * Cache du profil moyen des eaux de traitement, avant/après sels et acide.
+   * Si sourceSnapshot existe, l'affichage se recalcule depuis cette analyse
+   * figée et les doses retenues, jamais depuis une analyse réseau ultérieure.
    */
   startIons?: WaterIons;
   wortIons?: WaterIons;

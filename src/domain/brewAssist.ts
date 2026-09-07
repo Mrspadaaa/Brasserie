@@ -1,7 +1,7 @@
 import { BrewDayState, BrewDayStep, RecipeSnapshot, WaterIons } from '../types';
 import { BrewingMath } from '../services/brewingMath';
 import { boilMinutes, brewBitterness, effectiveFermentables } from './brewCompanion';
-import { ionsFromSalts, addIons, ionsAfterAcid } from './water';
+import { ionsFromSalts, addIons, ionsAfterAcid, waterSourceFromPlan } from './water';
 import { equipmentErrors } from './brewEquipment';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -38,14 +38,7 @@ export function waterScenario(
   if (!p || !finite(roL) || roL < 0 || roL > w.litres || w.litres <= 0) return null;
   const desired = w.plannedPct / 100;
   const actual = roL / w.litres;
-  const initialTapFraction = 1 - (p.diRatioPct ?? 0) / 100;
-  const source =
-    p.sourceSnapshot ??
-    (p.startIons && initialTapFraction > 0
-      ? (Object.fromEntries(
-          Object.entries(p.startIons).map(([k, v]) => [k, v / initialTapFraction])
-        ) as unknown as WaterIons)
-      : undefined);
+  const source = waterSourceFromPlan(p);
   let ions = source
     ? (Object.fromEntries(
         ['ca', 'mg', 'na', 'so4', 'cl', 'hco3'].map((k) => [
