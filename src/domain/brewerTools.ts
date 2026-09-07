@@ -18,10 +18,11 @@ import { computeBeerColor } from './beerColor';
 import { saccharificationTemp } from './brewPrograms';
 export { normalizeRecipe } from './recipeSnapshot';
 export { refreshCompanionRecipe } from './brewerRecipeRefresh';
+import { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
-import type { RecipeSnapshot, BrewDayState, AcidId } from '../types';
+import type { Recipe, RecipeSnapshot, BrewDayState, AcidId } from '../types';
 
 const number = (
   a: Record<string, unknown>,
@@ -62,7 +63,7 @@ export const brewerToolDeclarations = [
   ),
   tool(
     'calculate_recipe',
-    'Calculer OG, FG, IBU, couleur, eau, encombrement et mousse avec les modèles de l’application. Redimensionnement facultatif simulé.',
+    'Calculer la recette actuelle. Avec volumeL, simuler une mise à l’échelle COMPLÈTE : ingrédients ET eau recalculés. Les valeurs ingredients et water du scénario doivent toutes être proposées pour le reproduire ; changer seulement volumeL ne suffit pas. recommendedWater calcule le besoin d’eau, distinct des volumes saisis.',
     { volumeL: num('Volume froid souhaité en fermenteur, L ; facultatif') }
   ),
   tool(
@@ -202,10 +203,21 @@ export function runBrewerTool(
     const volumeL = number(a, 'volumeL', 0.1, 500, r.volumeL);
     if (volumeL !== r.volumeL && !rig)
       throw new Error('Profil matériel nécessaire au redimensionnement.');
-    const recipe =
-      volumeL === r.volumeL
-        ? r
-        : BrewingMath.scaleRecipe({ ...r, id: 'simulation' }, volumeL, rig, rig).scaledRecipe;
+    const scaled = volumeL !== r.volumeL;
+    let scenario: Recipe = { ...structuredClone(r), id: 'simulation' };
+    if (scaled) {
+      const sizing = BrewingMath.scaleRecipe({ ...r, id: 'simulation' }, volumeL, rig, rig);
+      scenario = sizing.scaledRecipe;
+      // scaleRecipe returns its water volumes separately from scaledRecipe.
+      // Keeping the old waterPlan here produced contradictory capacity checks.
+      if (scenario.waterPlan)
+        scenario.waterPlan = {
+          ...scenario.waterPlan,
+          mashWaterL: sizing.mashWaterL,
+          spargeWaterL: sizing.spargeWaterL
+        };
+    }
+    const recipe = refreshCompanionRecipe(scenario);
     const efficiency = recipe.efficiencyPct ?? rig?.efficiencyPct;
     const og =
       efficiency != null ? BrewingMath.calculateOg(recipe.fermentables, volumeL, efficiency) : null;
@@ -229,18 +241,51 @@ export function runBrewerTool(
         : null;
     const color = computeBeerColor(recipe.fermentables, volumeL);
     const water = recipe.waterPlan;
+    const recommendedWater = rig
+      ? BrewingMath.waterVolumes(
+          recipe.totalGristKg,
+          volumeL,
+          rig,
+          recipe.mash?.spargeType ?? 'batch',
+          recipe.boilMin,
+          recipe.hops.filter((h) => h.stage !== 'dryHop').reduce((sum, h) => sum + h.weightG, 0)
+        )
+      : null;
+    const preBoilL =
+      water && rig?.equipment
+        ? water.mashWaterL +
+          water.spargeWaterL -
+          recipe.totalGristKg * rig.equipment.grainAbsorptionLPerKg
+        : recipe.preBoilL;
+    const preBoilHotL =
+      preBoilL != null && rig?.equipment
+        ? preBoilL / (1 - rig.equipment.coolingShrinkagePct / 100)
+        : recipe.preBoilHotL;
     const equipment = water
       ? equipmentCheck(rig?.equipment, {
           volumeL,
           grainKg: recipe.totalGristKg,
           mashL: water.mashWaterL,
           spargeL: water.spargeWaterL,
-          preBoilHotL: recipe.preBoilHotL
+          preBoilHotL
         })
       : null;
     return result(
       'Recette · simulation',
-      { volumeL, og, fg, ibu, color, water, equipment },
+      {
+        scenario: scaled ? 'scaled_recipe' : 'current_recipe',
+        volumeL,
+        og,
+        fg,
+        ibu,
+        color,
+        water,
+        equipment,
+        recommendedWater,
+        ingredients: { fermentables: recipe.fermentables, hops: recipe.hops, yeast: recipe.yeast },
+        preBoilL,
+        preBoilHotL
+      },
       [
         `${volumeL} L · OG ${fmt(og, 3)} · FG ${fmt(fg, 3)} · ${fmt(ibu, 0)} IBU · ${fmt(color?.ebc)} EBC`,
         ...(equipment
@@ -251,6 +296,12 @@ export function runBrewerTool(
       ],
       [
         'Valeurs prévisionnelles, pas des relevés. Limite utile de cuve provisoire si workingVolumeConfirmed=false.',
+        'recommendedWater est un calcul de besoin, pas une quantité déjà saisie ou versée. Les sels et acides restent aux doses saisies : leur adéquation et le pH doivent être revus si les volumes changent, sans dosage improvisé.',
+        ...(scaled
+          ? [
+              'Ce scénario redimensionne les ingrédients et l’eau ensemble ; aucune modification du formulaire.'
+            ]
+          : []),
         ...(equipment &&
         (equipment.mashTooFull || equipment.boilTooFull || equipment.fermenterTooFull)
           ? [

@@ -4,6 +4,7 @@ import { recipe, brewState } from '../fixtures/brewCompanion';
 import { practicalEquipment } from '../../src/domain/brewEquipment';
 import { validateChatInput } from '../../functions/src/brewerContext';
 import { runBrewerHarness, validateAdvice } from '../../functions/src/brewerHarness';
+import { applyProposal } from '../../functions/src/brewerProposals';
 import type { BrewerContext } from '../../functions/src/companionTypes';
 
 const context = (): BrewerContext => ({
@@ -44,8 +45,145 @@ const done = (a = advice) => ({
 const json = (v: unknown) => ({
   candidates: [{ content: { role: 'model', parts: [{ text: JSON.stringify(v) }] } }]
 });
+const toolCall = (name: string, args: unknown) => ({
+  candidates: [{ content: { role: 'model', parts: [{ functionCall: { name, args } }] } }]
+});
+const fields = (changes: Array<{ path: string; valueJson: string }>) => ({
+  target: 'recipe',
+  title: 'Ajustement',
+  changes: changes.map((change) => ({ ...change, reason: 'Ajustement demandé' }))
+});
+const approved = () => json({ approved: true, proposalApproved: true, issues: [] });
 
 describe('Outils du compagnon : mêmes modèles et données explicites', () => {
+  it('redimensionne aussi l’eau et fournit les ingrédients réellement utilisés par le scénario', () => {
+    const c = context();
+    c.recipe.volumeL = 30;
+    c.recipe.fermentables[0].weightKg = 6;
+    c.recipe.waterPlan.mashWaterL = 33.6;
+    c.recipe.waterPlan.spargeWaterL = 8.4;
+    const before = structuredClone(c);
+    const data = runBrewerTool('calculate_recipe', { volumeL: 22 }, c).data as any;
+    expect(data.ingredients.fermentables[0].weightKg).toBe(4.4);
+    expect(data.water.mashWaterL).not.toBe(33.6);
+    expect(data.water.mashWaterL).toBe(data.recommendedWater.mashWaterL);
+    expect(data.water.spargeWaterL).toBe(data.recommendedWater.spargeWaterL);
+    expect(data.equipment.mashTooFull).toBe(false);
+    expect(data.equipment.fermenterTooFull).toBe(false);
+    expect(data.equipment.boilTooFull).toBe(false);
+    expect(data.water.mash).toEqual(before.recipe.waterPlan.mash);
+    expect(data.water.acid).toEqual(before.recipe.waterPlan.acid);
+    expect(c).toEqual(before);
+  });
+  it('distingue la recette saisie du besoin en eau et détecte le débordement à l’ébullition', () => {
+    const c = context();
+    c.recipe.waterPlan.mashWaterL = 33.6;
+    c.recipe.waterPlan.spargeWaterL = 16.4;
+    c.recipe.totalGristKg = 999; // stale derived field must not influence the calculation
+    const data = runBrewerTool('calculate_recipe', {}, c).data as any;
+    expect(data.water.mashWaterL).toBe(33.6);
+    expect(data.recommendedWater.mashWaterL).not.toBe(33.6);
+    expect(data.equipment.mashTooFull).toBe(true);
+    expect(data.equipment.boilTooFull).toBe(true);
+    expect(data.preBoilL).toBeCloseTo(45.2);
+  });
+  it('remplace une proposition après lecture du preview sans réutiliser ses preuves périmées', async () => {
+    const c = context();
+    c.editableTargets = ['recipe'];
+    const before = structuredClone(c);
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce(
+        toolCall('propose_changes', fields([{ path: 'volumeL', valueJson: '22' }]))
+      )
+      .mockResolvedValueOnce(toolCall('calculate_recipe', {}))
+      .mockResolvedValueOnce(
+        toolCall(
+          'propose_changes',
+          fields([
+            { path: 'volumeL', valueJson: '22' },
+            { path: 'waterPlan.mashWaterL', valueJson: '15' },
+            { path: 'waterPlan.spargeWaterL', valueJson: '16' }
+          ])
+        )
+      )
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E3'] }))
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(c, 'Adapte le volume', [], call);
+    expect(result.proposal.changes).toHaveLength(3);
+    expect(result.evidence.map((e) => e.id)).toEqual(['E2', 'E3']);
+    expect((result.evidence[1].data as any).supersedes).toEqual(['E1']);
+    const applied = applyProposal(
+      c,
+      result.proposal,
+      result.proposal.changes.map((ch) => ch.id)
+    );
+    expect((result.evidence[1].data as any).preview).toEqual(
+      runBrewerTool('calculate_recipe', {}, { ...c, recipe: applied }).data
+    );
+    expect(c).toEqual(before);
+    const reviewInput = JSON.parse(call.mock.calls[4][1].contents[0].parts[0].text);
+    expect(reviewInput.evidence.map((e: any) => e.id)).toEqual(['E2', 'E3']);
+  });
+  it('garde la dernière proposition valide si sa révision est mal formée', async () => {
+    const c = context();
+    c.editableTargets = ['recipe'];
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce(
+        toolCall('propose_changes', fields([{ path: 'boilMin', valueJson: '70' }]))
+      )
+      .mockResolvedValueOnce(
+        toolCall('propose_changes', fields([{ path: 'boilMin', valueJson: '-1' }]))
+      )
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(c, 'Adapte', [], call);
+    expect(result.proposal.changes[0].value).toBe(70);
+    expect(result.evidence.map((e) => e.id)).toEqual(['E1']);
+    expect(result.trace[1].error).toBeTruthy();
+  });
+  it('la réparation utilise les outils puis soumet les champs corrigés à une nouvelle relecture', async () => {
+    const c = context();
+    c.editableTargets = ['recipe'];
+    const diagnostic = vi.fn();
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce(
+        toolCall('propose_changes', fields([{ path: 'boilMin', valueJson: '80' }]))
+      )
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+      .mockResolvedValueOnce(
+        json({ approved: false, proposalApproved: false, issues: ['Durée incohérente.'] })
+      )
+      .mockResolvedValueOnce(
+        toolCall('propose_changes', fields([{ path: 'boilMin', valueJson: '70' }]))
+      )
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E2'] }))
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(c, 'Adapte', [], call, { onDiagnostic: diagnostic });
+    expect(
+      call.mock.calls[3][1].tools[0].functionDeclarations.some(
+        (t: any) => t.name === 'propose_changes'
+      )
+    ).toBe(true);
+    expect(call.mock.calls[3][0]).toBe('gemini-3.1-pro-preview');
+    expect(result.proposal.changes[0].value).toBe(70);
+    expect(result.evidence.map((e) => e.id)).toEqual(['E2']);
+    expect(diagnostic).toHaveBeenCalledTimes(2);
+    expect(diagnostic.mock.lastCall[0].reviews.map((r: any) => r.approved)).toEqual([false, true]);
+  });
+  it('un reset pendant la progression arrête l’analyse sans essayer un autre modèle', async () => {
+    const generate = vi.fn();
+    await expect(
+      runBrewerHarness(context(), 'Question', [], generate, {
+        onProgress: async () => {
+          throw Error('Conversation réinitialisée.');
+        }
+      })
+    ).rejects.toThrow('réinitialisée');
+    expect(generate).not.toHaveBeenCalled();
+  });
   it('prépare des champs, les fait relire et ne modifie jamais la recette pendant le chat', async () => {
     const c = context();
     c.editableTargets = ['recipe'];

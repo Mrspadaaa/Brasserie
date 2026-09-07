@@ -147,6 +147,10 @@ check(
     failure.question === rejectedInput.question
 );
 check(!(await db.doc(`brewerChats/${failed.job.id}`).get()).exists);
+const failureRecord = (await db.doc(`brewerJobs/${failed.job.id}`).get()).data();
+check(failureRecord.diagnostics.reviews.length === 2);
+check(failureRecord.diagnostics.reviews[1].issues[0] === 'Conseil à corriger.');
+check(!('diagnostics' in failure));
 mode = 'network';
 const retry = await askBrewer.run(request(input('Panne temporaire')));
 await assert.rejects(() => processBrewerQuestion.run({ data: { jobId: retry.job.id } }), /Reprise/);

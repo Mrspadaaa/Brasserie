@@ -403,7 +403,7 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
 export const proposalTool = {
   name: 'propose_changes',
   description:
-    'Préparer des changements de champs à montrer au brasseur. AUCUNE écriture : il doit sélectionner puis valider. Utilise les chemins de editableFields. Pour compléter seulement un champ vide, garde toute valeur déjà saisie. Pour ajouter/remplacer une ligne entière, utilise la liste complète. Les quantités, mesures ou spécifications doivent avoir une preuve. Une seule proposition cohérente par réponse.',
+    'Préparer des changements de champs à montrer au brasseur. AUCUNE écriture : il doit sélectionner puis valider. Utilise les chemins de editableFields et proposalValueSchemas. Pour compléter seulement un champ vide, garde toute valeur déjà saisie. Pour ajouter/remplacer une ligne entière, utilise la liste complète. Les quantités, mesures ou spécifications doivent avoir une preuve. Lis le preview calculé puis rappelle cet outil avec la liste COMPLÈTE des changements si une correction est nécessaire : la dernière proposition réussie remplace la précédente. Une seule version finale par réponse.',
   parameters: {
     type: 'OBJECT',
     properties: {

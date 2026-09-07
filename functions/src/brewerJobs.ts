@@ -245,7 +245,7 @@ export const processBrewerQuestion = onTaskDispatched(
     if (!claimed) return;
     const job: Record<string, any> = claimed,
       lock = db.doc(`brewerConversations/${job.threadId}`);
-    const progress = async (stage: BrewerStage, detail = '', model = '') => {
+    const updateJob = async (fields: Record<string, unknown>) => {
       await db.runTransaction(async (tx) => {
         const [session, current] = await Promise.all([tx.get(lock), tx.get(ref)]);
         if (
@@ -254,9 +254,11 @@ export const processBrewerQuestion = onTaskDispatched(
           current.data()?.status !== 'running'
         )
           throw new HttpsError('aborted', 'Conversation réinitialisée.');
-        tx.update(ref, { stage, detail, ...(model ? { model } : {}), updatedAt: Date.now() });
+        tx.update(ref, { ...fields, updatedAt: Date.now() });
       });
     };
+    const progress = (stage: BrewerStage, detail = '', model = '') =>
+      updateJob({ stage, detail, ...(model ? { model } : {}) });
     try {
       const context = await loadBrewerContext(job.input),
         session = (await lock.get()).data();
@@ -269,7 +271,13 @@ export const processBrewerQuestion = onTaskDispatched(
         job.question,
         past,
         geminiTransport(GEMINI_API_KEY.value()),
-        { mode: job.input.mode, onProgress: progress }
+        {
+          mode: job.input.mode,
+          onProgress: progress,
+          // Private diagnostics record concrete reviewer objections and tool errors,
+          // never model thoughts or credentials. Public receipts exclude this field.
+          onDiagnostic: (diagnostics) => updateJob({ diagnostics })
+        }
       );
       await progress('saving', 'Enregistrement de la réponse vérifiée');
       const snapshot = cleanContext({ ...context, now: undefined }),
@@ -330,7 +338,8 @@ export const processBrewerQuestion = onTaskDispatched(
       });
     } catch (error) {
       const failure = jobError(error);
-      // Invalid/rejected advice needs a user decision. Transient provider errors get one automatic retry.
+      // The harness already attempted a tool-enabled repair. Keep a persistent,
+      // explicit failure if review still rejects it; retry transport outages once.
       const retry =
         job.attempt < 2 &&
         ['service-unavailable', 'pro-unavailable', 'deadline'].includes(failure.code);
