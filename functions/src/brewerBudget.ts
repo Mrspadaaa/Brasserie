@@ -3,7 +3,11 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { requireBrewer } from './brewSession.js';
-import { DEFAULT_BREWER_LIMITS, BrewerBudgetError } from './brewerLimits.js';
+import {
+  DEFAULT_BREWER_LIMITS,
+  BREWER_LIMIT_BOUNDS,
+  BrewerBudgetError
+} from './brewerLimits.js';
 import type { BrewerAiLimits } from './brewerLimits.js';
 import { GeminiApiError } from './geminiErrors.js';
 
@@ -63,24 +67,19 @@ export const setBrewerAiBudget = onCall(
       (input.paused == null && input.limits == null)
     )
       throw new HttpsError('invalid-argument', 'État IA invalide.');
-    const bounds: Record<keyof BrewerAiLimits, [number, number]> = {
-      dailyCalls: [1, 1000],
-      dailyProCalls: [0, 500],
-      dailyTokens: [50000, 5000000],
-      questionCalls: [4, 20],
-      questionTokens: [50000, 1000000]
-    };
     if (
       input.limits != null &&
       (typeof input.limits !== 'object' ||
         Array.isArray(input.limits) ||
-        Object.entries(input.limits).some(
-          ([key, value]) =>
-            !bounds[key as keyof BrewerAiLimits] ||
+        Object.entries(input.limits).some(([key, value]) => {
+          const bound = BREWER_LIMIT_BOUNDS[key as keyof BrewerAiLimits];
+          return (
+            !bound ||
             !Number.isSafeInteger(value) ||
-            Number(value) < bounds[key as keyof BrewerAiLimits][0] ||
-            Number(value) > bounds[key as keyof BrewerAiLimits][1]
-        ))
+            Number(value) < bound.min ||
+            Number(value) > bound.max
+          );
+        }))
     )
       throw new HttpsError('invalid-argument', 'Plafonds IA invalides.');
     const db = getFirestore(),

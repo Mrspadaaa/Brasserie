@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/re
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import { BrewerBudget } from '../../src/ui/BrewerBudget';
 import { BrewerChat as api } from '../../src/services/brewerChat';
-import { DEFAULT_BREWER_LIMITS } from '../../functions/src/brewerLimits';
+import { DEFAULT_BREWER_LIMITS, BREWER_LIMIT_BOUNDS } from '../../functions/src/brewerLimits';
 vi.mock('../../src/services/brewerChat', () => ({
   BrewerChat: { budget: vi.fn(), setBudget: vi.fn() }
 }));
@@ -54,9 +54,6 @@ describe('Limites du compagnon', () => {
     render(<BrewerBudget />);
     expand();
     await screen.findByRole('button', { name: 'Suspendre le compagnon' });
-    const inner = screen.getByText('Modifier les plafonds du jour').closest('details')!;
-    inner.open = true;
-    fireEvent(inner, new Event('toggle'));
     fireEvent.change(screen.getByLabelText('Appels Gemini'), { target: { value: '40' } });
     fireEvent.submit(
       screen.getByRole('button', { name: 'Enregistrer les plafonds' }).closest('form')!
@@ -65,6 +62,28 @@ describe('Limites du compagnon', () => {
       expect(api.setBudget).toHaveBeenCalledWith(undefined, {
         ...DEFAULT_BREWER_LIMITS,
         dailyCalls: 40
+      })
+    );
+  });
+  it('règle aussi les limites par question et ramène un plafond hors bornes', async () => {
+    vi.mocked(api.setBudget).mockResolvedValue(state());
+    render(<BrewerBudget />);
+    expand();
+    // Aucun repli à ouvrir : les champs sont le panneau lui-même.
+    fireEvent.change(await screen.findByLabelText('Appels par question'), {
+      target: { value: '18' }
+    });
+    fireEvent.change(screen.getByLabelText('Tokens par question'), {
+      target: { value: '9999999' }
+    });
+    fireEvent.submit(
+      screen.getByRole('button', { name: 'Enregistrer les plafonds' }).closest('form')!
+    );
+    await waitFor(() =>
+      expect(api.setBudget).toHaveBeenCalledWith(undefined, {
+        ...DEFAULT_BREWER_LIMITS,
+        questionCalls: 18,
+        questionTokens: BREWER_LIMIT_BOUNDS.questionTokens.max
       })
     );
   });

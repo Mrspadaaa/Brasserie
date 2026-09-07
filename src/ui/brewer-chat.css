@@ -632,13 +632,22 @@
 .brewer-budget-body [role='status'] {
   color: #c7d4aa;
 }
-.brewer-budget-body dl div {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 4px 0;
+.brewer-budget-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 122px;
+  align-items: center;
+  gap: 10px;
 }
-.brewer-budget-body dd {
+.brewer-budget-field > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.brewer-budget-field label {
+  color: #cbd4bf;
+}
+.brewer-budget-field small {
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 .brewer-budget-body button {
@@ -663,10 +672,6 @@
 .brewer-budget-body form {
   display: grid;
   gap: 10px;
-}
-.brewer-budget-body form label {
-  display: grid;
-  gap: 5px;
 }
 .brewer-budget-body input {
   min-height: 44px;
