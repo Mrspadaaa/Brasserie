@@ -4,6 +4,13 @@ import { randomUUID } from 'node:crypto';
 import { initializeApp } from '../functions/node_modules/firebase-admin/lib/esm/app/index.js';
 import { getFirestore } from '../functions/node_modules/firebase-admin/lib/esm/firestore/index.js';
 import { testRecipe, equipment } from './fixtures/brewerCases.mjs';
+import { requirePaidAiTestOptIn } from './paid-ai-test-guard.mjs';
+
+requirePaidAiTestOptIn({
+  label: 'persistance du compagnon avec Gemini réel',
+  command: 'npm run test:ai:persistence -- --confirm-paid-ai'
+});
+
 if (process.env.FIRESTORE_EMULATOR_HOST !== '127.0.0.1:8080')
   throw Error('Requires isolated Firestore emulator on127.0.0.1:8080');
 if (!process.env.GEMINI_API_KEY) throw Error('GEMINI_API_KEY required');

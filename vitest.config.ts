@@ -16,6 +16,9 @@ import { fileURLToPath } from 'node:url';
  *                            avec un dépôt en mémoire, un écran monté avec ses
  *                            vraies dépendances. Environnement `jsdom`.
  *
+ * Les tests qui appellent réellement Gemini vivent hors de cette sélection et
+ * exigent une confirmation explicite. La suite normale doit rester sans coût.
+ *
  * La couverture ne vise QUE `src/domain` et `src/services` : c'est là que vit
  * ce qui rend de la bière ratée ou une déclaration fausse. Mettre les
  * composants dans le même seuil diluerait le signal.
@@ -30,7 +33,17 @@ export default defineConfig({
     testTimeout: 15000,
     setupFiles: ['tests/setup.ts'],
     environmentMatchGlobs: [['tests/integration/**', 'jsdom']],
-    include: ['tests/**/*.test.{ts,tsx}'],
+    include: [
+      'tests/unit/**/*.test.{ts,tsx}',
+      'tests/integration/**/*.test.{ts,tsx}',
+      'tests/fuzz/**/*.test.{ts,tsx}'
+    ],
+    exclude: [
+      'tests/ai/**',
+      'tests/live/**',
+      'tests/**/*.ai.test.{ts,tsx}',
+      'tests/**/*.live.test.{ts,tsx}'
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text-summary', 'html'],

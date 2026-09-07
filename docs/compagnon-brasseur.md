@@ -50,16 +50,21 @@ Les clés sont exclusivement dans Secret Manager/côté serveur. Les collections
 
 ## Contrôles reproductibles
 
-- `npx vitest run` : suite métier/UI, avec tests de préconditions, erreurs, signatures Gemini, refus de relecture, contexte périmé et reprise réseau.
+- `npm test` : suite métier/UI locale, avec tests de préconditions, erreurs, signatures Gemini simulées, refus de relecture, contexte périmé et reprise réseau. Aucun appel Gemini réel et aucun coût IA.
 - `npm --prefix functions run build` : compile les fonctions et assemble les calculateurs partagés.
-- `node scripts/eval-brewer.mjs` : évaluation réelle facultative, clé dans `GEMINI_API_KEY`. Treize scénarios synthétiques, dont le choix autonome de Pro, la recherche suisse avec Pro et la préparation d'un champ alpha à valider. `BREWER_EVAL_CASES` sélectionne des scénarios ; `BREWER_EVAL_MODE=deep` force Pro. Résultats privés sous `.codex-remote-attachments/`.
-- `node scripts/check-brewer-persistence.mjs` : Firestore émulé uniquement (`demo-brewer-chat`, `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080`), appels Gemini réels. Vérifie authentification, snapshot, exclusion des champs privés, concurrence, relance, historique, déduplication, export et journal inchangé.
+- `npm run test:ai:eval -- --confirm-paid-ai` : évaluation réelle facultative et facturable, clé dans `GEMINI_API_KEY`. Treize scénarios synthétiques, dont le choix autonome de Pro, la recherche suisse avec Pro et la préparation d'un champ alpha à valider. `BREWER_EVAL_CASES` sélectionne des scénarios ; `BREWER_EVAL_MODE=deep` force Pro. Résultats privés sous `.codex-remote-attachments/`.
+- `npm run test:ai:persistence -- --confirm-paid-ai` : Firestore émulé uniquement (`demo-brewer-chat`, `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080`), appels Gemini réels et facturables. Vérifie authentification, snapshot, exclusion des champs privés, concurrence, relance, historique, déduplication, export et journal inchangé.
 - `node scripts/check-brewer-mobile.mjs` : Vite sur3007, Chrome local, transport de contrôle explicitement simulé. Captures390/320px et écran réduit à480px, absence de débordement, saisie et bouton accessibles. Les essais modèle/serveur sont séparés.
 - `node scripts/check-brewer-shopping-mobile.mjs` : même environnement, choix de modèle, reprise d’une question en attente et cartes fournisseurs, en passant par le vrai service navigateur avec réponses réseau simulées.
 - `node scripts/check-brewer-proposals-persistence.mjs` : Firestore émulé, fournisseur simulé ; autorisations, sélection, brouillon sans écriture métier, idempotence, audit, conflit, relevé et réponse tardive après reset.
 - `node scripts/check-brewer-proposals-mobile.mjs` : véritable formulaire de recette en 390/320px, API simulée ; aucune application avant validation, valeur relue dans la question suivante, annulation/confirmation du reset et vérification de la nouvelle génération.
 
 Le contrôle visuel confirme que les conseils longs défilent dans la feuille, les preuves restent repliées et le champ de réponse reste accessible. Les mesures réelles et les caractéristiques provisoires du matériel restent nécessaires : le compagnon ne pilote pas la cuve.
+
+Les deux commandes `test:ai:*` refusent de démarrer sans
+`--confirm-paid-ai`. Dans une CI, elles restent bloquées même avec ce flag tant
+que `ALLOW_PAID_AI_TESTS_IN_CI=1` n'est pas défini. Elles ne font partie ni de
+`npm test`, ni du build, ni du déploiement.
 
 ## Références utilisées
 

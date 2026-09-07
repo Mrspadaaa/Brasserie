@@ -2,6 +2,13 @@
 import { runBrewerHarness, geminiTransport } from '../functions/lib/brewerHarness.js';
 import { context, cases } from './fixtures/brewerCases.mjs';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { requirePaidAiTestOptIn } from './paid-ai-test-guard.mjs';
+
+requirePaidAiTestOptIn({
+  label: 'évaluation réelle du compagnon brasseur',
+  command: 'npm run test:ai:eval -- --confirm-paid-ai'
+});
+
 if (!process.env.GEMINI_API_KEY)
   throw Error('GEMINI_API_KEY required server-side for this opt-in evaluation');
 const results = [],

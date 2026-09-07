@@ -20,8 +20,11 @@ node scripts/check-units.mjs          # 5. aucune unité codée en dur
 node scripts/check-brewing.mjs        # 6. amertume, couleur, densité, ensemencement, unités US
 node scripts/check-water.mjs          # 7. ions, alcalinité résiduelle, solveur de sels
 node scripts/check-prompts.mjs        # 8. schémas IA : champs requis ⇔ propriétés
-npm test                              # 9. 288 tests unitaires et d'intégration
+npm test                              # 9. tests locaux, aucun appel Gemini facturable
 ```
+
+Les évaluations avec un vrai modèle sont exclues de cette checklist et de
+Vitest. Elles ne doivent pas être ajoutées à un pipeline normal.
 
 Le contrôle 5 interdit les conversions kg↔g écrites à la main : c'est de là que
 venait le houblon affiché « 20000g ». Toute quantité doit passer par
