@@ -3,7 +3,15 @@ import { BrewAlarm } from '../domain/brewCompanion';
 import { enableBrewAlerts, syncBrewAlerts } from '../services/brewAlarms';
 import { brewControl } from './BrewDayMeasurements';
 
-export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms: BrewAlarm[] }) {
+export function BrewAlarmSettings({
+  batchId,
+  alarms,
+  ready = true
+}: {
+  batchId: string;
+  alarms: BrewAlarm[];
+  ready?: boolean;
+}) {
   const storageKey = `brew-push-${batchId}`;
   const [enabled, setEnabled] = useState(() => localStorage.getItem(storageKey) === 'true');
   const [notice, setNotice] = useState('');
@@ -15,7 +23,7 @@ export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms
   const latest = useRef(scheduleKey);
   latest.current = scheduleKey;
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !ready) return;
     const sync = () => {
       const key = scheduleKey;
       serial.current = serial.current
@@ -23,10 +31,14 @@ export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms
         .then(async () => {
           if (latest.current !== key || cancelling.current) return;
           try {
-            await syncBrewAlerts(
+            const result = await syncBrewAlerts(
               batchId,
               alarms.filter((a) => a.at > Date.now())
             );
+            if (result && !result.synced)
+              throw new Error(
+                'Programmation encore en cours. Réessaie dans les options d’alertes.'
+              );
             setConfirmed(key);
             setNotice('');
           } catch (e) {
@@ -47,7 +59,7 @@ export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms
       // Une fermeture juste après +5 doit aussi envoyer le dernier horaire.
       if (pending && latest.current === scheduleKey && !cancelling.current) sync();
     };
-  }, [enabled, scheduleKey, batchId]);
+  }, [enabled, scheduleKey, batchId, ready]);
   const toggle = async () => {
     setBusy(true);
     setNotice('');
@@ -56,7 +68,7 @@ export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms
         cancelling.current = true;
         setConfirmed('');
         await serial.current;
-        await syncBrewAlerts(batchId, []);
+        await syncBrewAlerts(batchId, [], false);
         setEnabled(false);
         localStorage.removeItem(storageKey);
         setConfirmed('');
@@ -76,8 +88,16 @@ export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms
     <details className="border-t border-cave-800 text-sm">
       <summary className="min-h-11 cursor-pointer flex items-center justify-between text-cave-200">
         Alertes Android / écran fermé{' '}
-        <span className={enabled && confirmed === scheduleKey ? 'text-cave-200' : 'text-cave-400'}>
-          {enabled ? (confirmed === scheduleKey ? 'Synchronisées' : 'À synchroniser') : 'Inactives'}{' '}
+        <span
+          className={
+            enabled && ready && confirmed === scheduleKey ? 'text-cave-200' : 'text-cave-400'
+          }
+        >
+          {enabled
+            ? ready && confirmed === scheduleKey
+              ? 'Synchronisées'
+              : 'À synchroniser'
+            : 'Inactives'}{' '}
           ⌄
         </span>
       </summary>
@@ -89,29 +109,53 @@ export function BrewAlarmSettings({ batchId, alarms }: { batchId: string; alarms
               ? 'Désactiver sur cet appareil'
               : 'Activer sur cet appareil'}
         </button>
+        {enabled && (
+          <button
+            type="button"
+            disabled={busy}
+            className={brewControl}
+            onClick={async () => {
+              setBusy(true);
+              try {
+                await syncBrewAlerts(batchId, alarms, true, true);
+                setNotice(
+                  'Test programmé dans 10 secondes. Verrouille l’écran pour vérifier la réception.'
+                );
+              } catch (e) {
+                setNotice(e instanceof Error ? e.message : 'Test non programmé.');
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            Tester écran fermé
+          </button>
+        )}
         {notice && (
           <p role="status" className="text-ebc-straw text-2xs">
             {notice}
           </p>
         )}
-        {enabled && confirmed !== scheduleKey && (
+        {enabled && (!ready || confirmed !== scheduleKey) && (
           <p className="text-ebc-straw text-2xs">
             Les derniers horaires ne sont pas encore confirmés par le serveur. Garde l’application
             ouverte.
           </p>
         )}
         <p className="text-2xs text-cave-400">
-          Les notifications push arrivent aussi quand Chrome est fermé. Réseau, autorisations
-          Android et économie de batterie peuvent les retarder : pour une alarme exacte hors réseau,
-          reporte l’échéance dans l’application Horloge.
+          Les rappels sont programmés sur le serveur. Leur réception écran fermé dépend du réseau et
+          des réglages du téléphone ; vérifie-la avec le test.
         </p>
         {alarms
           .filter((a) => a.at > Date.now())
           .slice(0, 4)
           .map((a) => (
             <p key={a.id} className="text-2xs text-cave-200">
-              {new Date(a.at).toLocaleTimeString('fr-CH', { hour: '2-digit', minute: '2-digit' })} ·{' '}
-              {a.title} · {a.body}
+              {new Date(a.at).toLocaleTimeString('fr-CH', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}{' '}
+              · {a.title} · {a.body}
             </p>
           ))}
       </div>

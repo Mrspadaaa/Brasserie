@@ -1,3 +1,4 @@
+import { brewNow } from '../services/brewClock';
 import React, { useEffect, useId, useState } from 'react';
 import { Check, Minus, Plus } from 'lucide-react';
 import { AcidId, BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
@@ -211,7 +212,7 @@ function MashCorrection({
                           ...(s.acidCorrections ?? []),
                           {
                             id: crypto.randomUUID(),
-                            at: Date.now(),
+                            at: brewNow(),
                             readingAt: reading.at,
                             stepId: reading.stepId!,
                             acid: ctx.acid,
@@ -248,13 +249,15 @@ export function BrewDayMeasurements({
   state,
   recipe,
   update,
-  drafts
+  drafts,
+  requestedKind
 }: {
   step: BrewDayStep;
   state: BrewDayState;
   recipe?: RecipeSnapshot;
   update: BrewUpdate;
   drafts?: Map<string, BrewReadingDraft>;
+  requestedKind?: {kind: ReadingKind; token: number};
 }) {
   const [kind, setKind] = useState<ReadingKind>(
     () => drafts?.get(step.id)?.kind ?? defaultReading(step)
@@ -272,6 +275,9 @@ export function BrewDayMeasurements({
   );
   const [notice, setNotice] = useState('');
   useEffect(() => {
+    if (requestedKind) { setKind(requestedKind.kind); setRaw(''); setEditing(null); setNotice(''); }
+  }, [requestedKind?.token]);
+  useEffect(() => {
     drafts?.set(step.id, { kind, raw, roomTemp, editing });
   }, [drafts, step.id, kind, raw, roomTemp, editing]);
   const incomplete = /[.,]$/.test(raw.trim());
@@ -283,7 +289,7 @@ export function BrewDayMeasurements({
     ? value == null
       ? undefined
       : {
-          at: Date.now(),
+          at: brewNow(),
           stepId: step.id,
           kind,
           value,
@@ -297,7 +303,7 @@ export function BrewDayMeasurements({
     if (value == null) return;
     const r: BrewDayReading = {
       id: crypto.randomUUID(),
-      at: Date.now(),
+      at: brewNow(),
       stepId: step.id,
       kind,
       value,

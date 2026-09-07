@@ -206,6 +206,9 @@ export interface MashProfile {
   /** Rapport eau/grain en L/kg. */
   ratioLPerKg?: number;
   mashoutTempC?: number;
+  mashoutDurationMin?: number;
+  /** Vitesse indicative du système, distincte des durées de maintien. */
+  heatingRateCPerMin?: number;
   spargeTempC?: number;
   spargeType?: 'fly' | 'batch' | 'none';
 }
@@ -374,6 +377,8 @@ export interface RecipeStep {
 
 export interface Recipe {
   id: string;
+  version?: number;
+  parentRecipeId?: string;
   batchRef?: string;
   name: string;
   style: string;
@@ -451,6 +456,7 @@ export interface BrewDayStep {
   startedAt?: number;
   doneAt?: number;
   pausedAt?: number;
+  rampStartedAt?: number;
   /** Minutes écoulées depuis le début réel de l'ébullition. */
   boilElapsedMin?: number;
 }
@@ -473,6 +479,13 @@ export interface BrewDayState {
   currentIndex: number;
   startedAt?: number;
   finishedAt?: number;
+  revision?: number;
+  savedAt?: number;
+  /** Dernière version confirmée par le serveur, sans déduire les gestes manquants. */
+  waterMix?: Partial<Record<'mash' | 'sparge', { roL: number }>>;
+  hopElapsedMin?: Record<string, number>;
+  coolingWaterC?: number;
+  boilOffLPerHour?: number;
   /** Relevés horodatés saisis pendant le brassage. */
   readings?: BrewDayReading[];
   boilStartedAt?: number;

@@ -8,7 +8,9 @@ self.addEventListener('push', (event) => {
   }
   const p = payload?.data;
   if (!p || typeof p.title !== 'string' || typeof p.batchId !== 'string') return;
-  if (!Number.isFinite(Number(p.at)) || Date.now() - Number(p.at) > 300000) return;
+  // Expiry is checked by the server and the push provider's 300 s TTL.
+  // A phone clock set ahead must not silently discard a current reminder.
+  if (!Number.isFinite(Number(p.at)) || Number(p.at) < 0) return;
   event.waitUntil(
     self.registration.showNotification(p.title, {
       body: p.body || '',

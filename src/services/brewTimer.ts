@@ -136,12 +136,17 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     });
   });
 
-  if (mash?.mashoutTempC) {
+  if (
+    mash?.mashoutTempC &&
+    !mash.steps?.some(
+      (s) => Math.abs(s.tempC - mash.mashoutTempC!) < 0.5 && /mash.?out/i.test(s.name)
+    )
+  ) {
     steps.push({
       id: 'mashout',
       label: 'Mashout',
       detail: 'Monter en température pour arrêter l’activité enzymatique.',
-      durationMin: 10,
+      durationMin: mash.mashoutDurationMin ?? 10,
       tempC: mash.mashoutTempC
     });
   }
@@ -165,7 +170,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       label: mash.spargeType === 'fly' ? 'Rinçage continu' : 'Rinçage par bacs',
       detail: plan?.spargeWaterL ? `${plan.spargeWaterL} L d’eau de rinçage` : undefined,
       durationMin: 0,
-      tempC: mash.spargeTempC
+      tempC: mash.spargeTempC ?? 76
     });
   }
 
@@ -179,9 +184,10 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
    * regarder la cuve, alors que tout le calcul d'eau vise ce volume-là.
    */
   const preBoilL =
-    plan?.mashWaterL && grist > 0
+    recipe.preBoilL ??
+    (plan?.mashWaterL && grist > 0
       ? Math.round((plan.mashWaterL - grist * 0.96 + (plan.spargeWaterL ?? 0)) * 10) / 10
-      : null;
+      : null);
 
   if (preBoilL && preBoilL > 0) {
     steps.push({
@@ -310,10 +316,13 @@ export function remainingMs(step: BrewDayStep, now: number): number | null {
 
 /** « 12:04 », « −00:38 » quand l'étape est dépassée. */
 export function formatCountdown(ms: number): string {
+  if (!Number.isFinite(ms)) return '—';
   const negative = ms < 0;
   const total = Math.floor(Math.abs(ms) / 1000);
   const m = Math.floor(total / 60);
   const s = total % 60;
+  if (m >= 60)
+    return `${negative ? '−' : ''}${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`;
   return `${negative ? '−' : ''}${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 

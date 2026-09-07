@@ -4,6 +4,8 @@ import { onTaskDispatched } from 'firebase-functions/v2/tasks';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 import { getFunctions } from 'firebase-admin/functions';
 import { getMessaging } from 'firebase-admin/messaging';
+import { sendNativePush } from './brewPush.js';
+import { sessionEvents } from './brewSessionCore.js';
 
 export interface AlarmEvent {
   id: string;
@@ -87,7 +89,10 @@ export const syncBrewAlarms = onCall(
       events.map((e) =>
         queue.enqueue(
           { docId, revision, eventId: e.id },
-          { scheduleTime: new Date(Math.max(Date.now() + 3000, e.at)), dispatchDeadlineSeconds: 60 }
+          {
+            scheduleTime: new Date(Math.max(Date.now() + 3000, e.at)),
+            dispatchDeadlineSeconds: 60
+          }
         )
       )
     );
@@ -118,12 +123,63 @@ export const deliverBrewAlarm = onTaskDispatched(
     const ref = getFirestore().doc(`brewAlarmDevices/${docId}`);
     const data = (await ref.get()).data();
     if (!data || data.revision !== revision) return;
+    if (data.v2 && !data.enabled) return;
     if (!data.active) throw new Error('Synchronisation encore en cours.');
     const batch = (await getFirestore().doc(`batches/${data.batchId}`).get()).data();
-    if (!batch || batch.brewDay?.finishedAt != null) return;
-    const event = (data.events as AlarmEvent[]).find((e) => e.id === eventId);
+    if (!batch || (batch.brewDay?.finishedAt != null && data.testEvent?.id !== eventId)) return;
+    const event =
+      data.testEvent?.id === eventId
+        ? (data.testEvent as AlarmEvent)
+        : (data.events as AlarmEvent[]).find((e) => e.id === eventId);
     if (!event || Date.now() - event.at > 5 * 60000 || event.at > Date.now() + 5000) return;
-    const eventTag = digest(`${docId}:${revision}:${eventId}`);
+    const eventTag = digest(`${docId}:${eventId}:${event.at}`);
+    if (data.v2) {
+      if (!data.enabled) return;
+      if (
+        data.testEvent?.id !== eventId &&
+        !sessionEvents(
+          batch.brewDay ?? { steps: [], currentIndex: 0 },
+          batch.recipeSnapshot ?? {}
+        ).some((e) => e.id === event.id && e.at === event.at)
+      )
+        return;
+      const claimed = await getFirestore().runTransaction(async (tx) => {
+        const fresh = (await tx.get(ref)).data();
+        if (!fresh?.enabled || fresh.revision !== revision || fresh.delivered?.[eventTag])
+          return false;
+        if (fresh.delivering?.[eventTag] > Date.now()) throw new Error('Livraison déjà en cours.');
+        tx.update(ref, { [`delivering.${eventTag}`]: Date.now() + 30000 });
+        return true;
+      });
+      if (!claimed) return;
+      try {
+        await sendNativePush(data.subscription, {
+          title: event.title,
+          body: event.body,
+          batchId: data.batchId,
+          tag: eventTag,
+          at: String(event.at)
+        });
+        await ref.update({
+          [`delivered.${eventTag}`]: Timestamp.now(),
+          [`delivering.${eventTag}`]: 0,
+          lastDeliveryAt: Timestamp.now()
+        });
+      } catch (e) {
+        const code = (e as { statusCode?: number }).statusCode;
+        if (code === 404 || code === 410) {
+          await ref.update({
+            enabled: false,
+            active: false,
+            lastError: 'Abonnement expiré. Réactive les alertes sur cet appareil.'
+          });
+          return;
+        }
+        await ref.update({ [`delivering.${eventTag}`]: 0 });
+        throw e;
+      }
+      return;
+    }
     // Le même tag remplace une éventuelle notification issue d'une nouvelle
     // livraison Cloud Tasks. TTL court : pas d'alarme houblon des heures après.
     await getMessaging().send({

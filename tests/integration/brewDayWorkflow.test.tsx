@@ -241,7 +241,7 @@ describe('Assistant pendant le brassage', () => {
     await waitFor(() => expect(screen.getByText('Maintiens ce palier.')).toBeInTheDocument());
     expect(screen.getByLabelText(/pH de maische/)).toBeEnabled();
   });
-  it('clôture explicite : un relevé pré-ébullition ne remplace pas l’OG', () => {
+  it('clôture explicite : un relevé pré-ébullition ne remplace pas l’OG', async () => {
     const v = mount({
       steps: [
         {
@@ -259,12 +259,12 @@ describe('Assistant pendant le brassage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Clôturer le brassage' }));
     expect(v.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Clôturer', exact: true }));
-    expect(v.finish).toHaveBeenCalledWith(
+    await waitFor(() => expect(v.finish).toHaveBeenCalledWith(
       expect.objectContaining({
         og: '1.050',
         volumeBrewedL: 25,
         status: 'fermentation'
       })
-    );
+    ));
   });
 });

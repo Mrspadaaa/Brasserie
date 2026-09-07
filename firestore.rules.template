@@ -72,7 +72,11 @@ __AUTHORIZED_ACCOUNTS__
     }
 
     match /{collection}/{docId} {
-      allow read, write: if estAutorise() && collection in collectionsMetier();
+      allow read, create, delete: if estAutorise() && collection in collectionsMetier();
+      allow update: if estAutorise() && collection in collectionsMetier()
+        && (collection != 'batches'
+          || resource.data.get('brewDay', {}).get('revision', null) == null
+          || request.resource.data.get('brewDay', {}) == resource.data.brewDay);
     }
 
     /**

@@ -225,7 +225,12 @@ export const FirestoreRepo = {
       return;
     }
 
-    setDoc(doc(db, name, id), stripUndefined(data), { merge: options.merge === true }).catch((err) => {
+    // Once migrated, the journal is written exclusively through its revisioned server endpoint.
+    const cached = cache[name]?.find((d: any) => d.id === id || d.__docId === id);
+    const managedJournal = name === 'batches' && (data.brewDay?.revision != null || cached?.brewDay?.revision != null);
+    const payload = { ...data };
+    if (managedJournal) delete payload.brewDay;
+    setDoc(doc(db, name, id), stripUndefined(payload), { merge: managedJournal || options.merge === true }).catch((err) => {
       lastError = `Sauvegarde de ${name}/${id} impossible : ${err.message}`;
       console.error('[Firestore] setDoc', name, id, err);
       notify();

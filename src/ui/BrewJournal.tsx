@@ -1,3 +1,4 @@
+import { brewNow } from '../services/brewClock';
 import React, { useState } from 'react';
 import {
   Check,
@@ -115,6 +116,7 @@ export function BrewJournal({
     });
   }
   for (const step of state.steps.filter((s) => !isBoilStep(s))) {
+    if (step.rampStartedAt != null) events.push({key:`ramp-${step.id}`,at:step.rampStartedAt,step:step.id,label:'Suivi thermique commencé',value:step.label,unit:'',category:'steps',detail:'Montée ou refroidissement suivi séparément du temps de maintien.'});
     // startedAt est déplacé à la reprise : ce n'est pas une heure historique.
     // Seule la validation explicite fournit ici un événement fiable.
     if (step.doneAt != null)

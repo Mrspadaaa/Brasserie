@@ -121,6 +121,8 @@ export const recipeFields = {
   mash: o('Empâtage', {
     ratioLPerKg: n('Épaisseur (L/kg)'),
     mashoutTempC: temp('Mash-out (°C)'),
+    mashoutDurationMin: n('Maintien mash-out (min)'),
+    heatingRateCPerMin: n('Vitesse de chauffe (°C/min)'),
     spargeTempC: temp('Rinçage (°C)'),
     spargeType: t('Méthode de rinçage', ['fly', 'batch', 'none']),
     steps: a(
@@ -186,7 +188,9 @@ export const recipeFields = {
     })
   ),
   notes: a('Notes', t('')),
-  notesCreation: t('Notes de création')
+  notesCreation: t('Notes de création'),
+  version: n('Version'),
+  parentRecipeId: t('Recette d’origine')
 } satisfies Record<
   Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water'>,
   Field

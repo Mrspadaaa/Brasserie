@@ -668,7 +668,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       : ''}
                 </h3>
                 <ul className="divide-y divide-cave-850">
-                  {recipe.mash.steps.map((s, i) => (
+                  {[...recipe.mash.steps, ...(recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
                     <li key={i} className="py-2 flex items-baseline gap-3">
                       <span className="flex-1 text-base text-cave-100">{s.name}</span>
                       <span className="reading text-base text-water">{s.tempC} °C</span>
@@ -678,6 +678,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     </li>
                   ))}
                 </ul>
+                <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
+                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {recipe.mash.heatingRateCPerMin.toFixed(2)} °C/min. La montée est suivie séparément dans le journal.</p>}
               </div>
             )}
 

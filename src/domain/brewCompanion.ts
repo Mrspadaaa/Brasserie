@@ -37,7 +37,9 @@ export function brewBitterness(recipe: RecipeSnapshot, state: BrewDayState) {
       h.stage === 'boil'
         ? actual?.doneAt != null && end != null && state.boilStartedAt != null
           ? Math.max(0, (end - Math.max(state.boilStartedAt, actual.doneAt)) / 60000)
-          : Math.min(h.timeMin ?? 0, duration)
+          : state.hopElapsedMin?.['hop-' + i] != null
+            ? Math.max(0, duration - state.hopElapsedMin['hop-' + i])
+            : Math.min(h.timeMin ?? 0, duration)
         : h.timeMin;
     return { ...h, weightG: actual?.amount ?? h.weightG, timeMin };
   });
@@ -247,7 +249,10 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
         state.additions?.[i.id]?.doneAt == null &&
         actualAmount(i, state) > 0
       ) {
-        const at = Math.max(state.boilStartedAt, end - i.beforeEndMin * 60000);
+        const at =
+          state.hopElapsedMin?.[i.id] != null
+            ? state.boilStartedAt + state.hopElapsedMin[i.id] * 60000
+            : Math.max(state.boilStartedAt, end - i.beforeEndMin * 60000);
         grouped.set(at, [...(grouped.get(at) ?? []), i]);
       }
     for (const [at, items] of grouped)
@@ -305,7 +310,7 @@ export const PREPARATIONS = [
 export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
   const p = recipe.waterPlan;
   if (!p) return null;
-  const knownBase = !!p.startIons;
+  const knownBase = !!(p.sourceSnapshot || p.startIons);
   const ingredients = brewIngredients(recipe);
   const sides = ['mash', 'sparge'] as const;
   const water = sides.map(
@@ -319,12 +324,23 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
   // startIons décrit l'empâtage. Le rinçage peut avoir une autre coupe.
   const mashFraction = 1 - (p.diRatioPct ?? 0) / 100;
   const spargeFraction = 1 - (p.spargeDiRatioPct ?? p.diRatioPct ?? 0) / 100;
-  const currentFraction = (mashFraction * water[0] + spargeFraction * water[1]) / total;
+  const actualFractions = sides.map((side, i) =>
+    s.waterMix?.[side] != null && water[i] > 0
+      ? 1 - Math.max(0, Math.min(water[i], s.waterMix[side]!.roL)) / water[i]
+      : side === 'mash'
+        ? mashFraction
+        : spargeFraction
+  );
+  const currentFraction = (actualFractions[0] * water[0] + actualFractions[1] * water[1]) / total;
   let ions = { ...(p.startIons ?? { ca: 0, mg: 0, na: 0, so4: 0, cl: 0, hco3: 0 }) };
-  if (mashFraction > 0) {
+  if (p.sourceSnapshot) {
+    for (const k of Object.keys(ions) as (keyof WaterIons)[])
+      ions[k] = p.sourceSnapshot[k] * currentFraction;
+  } else if (mashFraction > 0) {
     for (const k of Object.keys(ions) as (keyof WaterIons)[])
       ions[k] *= currentFraction / mashFraction;
-  } else if (spargeFraction > 0 && knownBase) {
+  } else if (currentFraction > 0 && knownBase) {
+    if (spargeFraction <= 0) return null;
     const plannedL = p.mashWaterL + p.spargeWaterL;
     if (!p.wortIons || plannedL <= 0 || p.spargeWaterL <= 0) return null;
     const plannedDoses = Object.fromEntries(

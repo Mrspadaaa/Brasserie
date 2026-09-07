@@ -964,6 +964,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   const build = (): Recipe => ({
     id: base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`,
+    version: base?.version,
+    parentRecipeId: base?.parentRecipeId,
     name: name.trim(),
     style: style.trim(),
     volumeL,
@@ -991,6 +993,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ratioLPerKg:
         totalGrist > 0 ? water.mashWaterL / totalGrist : mashRatioOverride ?? undefined,
       mashoutTempC: details.mash?.mashoutTempC ?? 76,
+      mashoutDurationMin: details.mash?.mashoutDurationMin,
+      heatingRateCPerMin: details.mash?.heatingRateCPerMin,
       spargeTempC: details.mash?.spargeTempC ?? 76,
       spargeType
     },
