@@ -7,7 +7,8 @@ import {
   CheckCheck,
   Calculator,
   ArrowUpRight,
-  LoaderCircle
+  LoaderCircle,
+  RotateCcw
 } from 'lucide-react';
 import { Sheet } from './Sheet';
 import { BrewerChat as api, brewerChatError } from '../services/brewerChat';
@@ -15,6 +16,8 @@ import type { BrewerChatInput, BrewerScope, BrewerTurn } from '../services/brewe
 import type { BrewerProduct } from '../../functions/src/companionTypes';
 import type { BrewerProgress } from '../services/brewerRecovery';
 import './brewer-chat.css';
+import { BrewerProposalCard } from './BrewerProposalCard';
+import type { BrewerProposal } from '../../functions/src/companionTypes';
 
 interface Props {
   scope: BrewerScope;
@@ -23,11 +26,25 @@ interface Props {
   draft?: unknown;
   localJournal?: unknown;
   onKeep?: (text: string) => void;
+  editableTargets?: BrewerProposal['target'][];
+  onDraftApply?: (value: any) => void;
+  beforeApply?: () => Promise<boolean>;
+  onApplied?: () => void;
 }
 const merge = (a: BrewerTurn[], b: BrewerTurn[]) =>
-  [...new Map([...a, ...b].map((t) => [t.id, t])).values()].sort(
-    (a, b) => a.createdAt - b.createdAt
-  );
+  [
+    ...new Map(
+      [
+        ...a,
+        ...b.map((t) => {
+          const previous = a.find((old) => old.id === t.id);
+          return previous?.proposal?.status && t.proposal && !t.proposal.status
+            ? { ...t, proposal: previous.proposal }
+            : t;
+        })
+      ].map((t) => [t.id, t])
+    ).values()
+  ].sort((a, b) => a.createdAt - b.createdAt);
 const prompts = (kind: string, phase = '') =>
   kind === 'draft' || kind === 'recipe'
     ? [
@@ -51,7 +68,18 @@ const prompts = (kind: string, phase = '') =>
 export function BrewerChat(props: Props) {
   return <ScopedChat key={`${props.scope.kind}:${props.scope.id}`} {...props} />;
 }
-function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props) {
+function ScopedChat({
+  scope,
+  label,
+  phase,
+  draft,
+  localJournal,
+  onKeep,
+  editableTargets,
+  onDraftApply,
+  beforeApply,
+  onApplied
+}: Props) {
   const [open, setOpen] = useState(false),
     [turns, setTurns] = useState<BrewerTurn[]>([]),
     [question, setQuestion] = useState('');
@@ -64,6 +92,24 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
     [changed, setChanged] = useState(false);
   const [mode, setMode] = useState<'auto' | 'deep'>('auto'),
     [progress, setProgress] = useState<BrewerProgress>('answering');
+  const [confirmReset, setConfirmReset] = useState(false),
+    [resetting, setResetting] = useState(false),
+    [notice, setNotice] = useState('');
+  const [applying, setApplying] = useState(false);
+  const draftControl = useRef({ draft, onDraftApply });
+  draftControl.current = { draft, onDraftApply };
+  const generation = useRef(0),
+    epoch = useRef(0),
+    resetOperation = useRef('');
+  const targets =
+    editableTargets ??
+    (scope.kind === 'draft'
+      ? onDraftApply
+        ? (['recipe'] as const)
+        : []
+      : scope.kind === 'recipe'
+        ? (['recipe'] as const)
+        : (['batch'] as const));
   const alive = useRef(true),
     lock = useRef(false),
     storageKey = useRef(''),
@@ -92,6 +138,8 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
   useEffect(() => {
     if (!open) return;
     let live = true;
+    const version = epoch.current;
+    const current = () => live && version === epoch.current;
     setLoading(true);
     setError('');
     void (async () => {
@@ -111,21 +159,29 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
         } catch {
           /* Ignore malformed device draft. */
         }
-        if (recovered && live) {
+        if (recovered && current()) {
           setPending(recovered);
           setQuestion(recovered.question);
           setMode(recovered.mode ?? 'auto');
         }
         const history = await api.history(scope);
-        if (!live) return;
-        setTurns((t) => merge(t, history));
+        if (!current()) return;
+        const nextGeneration = history.generation ?? 0;
+        const sameGeneration = nextGeneration === generation.current;
+        setTurns((t) => (sameGeneration ? merge(t, history) : history));
+        generation.current = nextGeneration;
         setMore(history.length === 20);
+        if (recovered && (recovered.generation ?? 0) !== nextGeneration) {
+          persist(null);
+          setQuestion('');
+          recovered = null;
+        }
         if (recovered && history.some((t) => t.operationId === recovered.operationId)) {
           persist(null);
           setQuestion('');
         } else if (recovered && !lock.current) {
           const state = await api.status(recovered);
-          if (!live) return;
+          if (!current()) return;
           if (state.turn) {
             setTurns((t) => merge(t, [state.turn!]));
             persist(null);
@@ -136,9 +192,9 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
           }
         }
       } catch (e) {
-        if (live) setError(brewerChatError(e));
+        if (current()) setError(brewerChatError(e));
       } finally {
-        if (live) setLoading(false);
+        if (current()) setLoading(false);
       }
     })();
     return () => {
@@ -155,25 +211,28 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
     setError('');
     setChanged(false);
     const signature = context.current;
+    const version = epoch.current;
     request.current = new AbortController();
     persist(input);
     try {
       const turn = await api.ask(input, {
         signal: request.current.signal,
         onProgress: (value) => {
-          if (alive.current) setProgress(value);
+          if (alive.current && epoch.current === version) setProgress(value);
         }
       });
-      if (!alive.current) return;
+      if (!alive.current || epoch.current !== version) return;
       setTurns((t) => merge(t, [turn]));
       persist(null);
       setQuestion('');
       setChanged(context.current !== signature);
     } catch (e) {
-      if (alive.current) setError(brewerChatError(e));
+      if (alive.current && epoch.current === version) setError(brewerChatError(e));
     } finally {
-      lock.current = false;
-      if (alive.current) setBusy(false);
+      if (epoch.current === version) {
+        lock.current = false;
+        if (alive.current) setBusy(false);
+      }
     }
   };
   const ask = () => {
@@ -186,23 +245,86 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
         ...(draft ? { draft } : {}),
         ...(localJournal ? { localJournal } : {}),
         phase,
-        mode
+        mode,
+        generation: generation.current,
+        editableTargets: [...targets]
       }
     );
   };
   const older = async () => {
+    const version = epoch.current;
     setLoading(true);
     setError('');
     try {
       const old = await api.history(scope, turns[0]?.createdAt);
-      if (alive.current) {
-        setTurns((t) => merge(old, t));
+      if (alive.current && version === epoch.current) {
+        const nextGeneration = old.generation ?? 0;
+        const sameGeneration = nextGeneration === generation.current;
+        setTurns((t) => (sameGeneration ? merge(old, t) : old));
+        generation.current = nextGeneration;
         setMore(old.length === 20);
       }
     } catch (e) {
+      if (alive.current && version === epoch.current) setError(brewerChatError(e));
+    } finally {
+      if (alive.current && version === epoch.current) setLoading(false);
+    }
+  };
+  const reset = async () => {
+    if (resetting) return;
+    epoch.current++;
+    request.current?.abort();
+    lock.current = true;
+    setResetting(true);
+    setBusy(false);
+    setLoading(false);
+    setError('');
+    resetOperation.current ||= crypto.randomUUID();
+    try {
+      const result = await api.reset(scope, generation.current, resetOperation.current);
+      if (!alive.current) return;
+      generation.current = result.generation;
+      setTurns([]);
+      setQuestion('');
+      persist(null);
+      setMore(false);
+      setKept([]);
+      setChanged(false);
+      setConfirmReset(false);
+      resetOperation.current = '';
+      setNotice('Conversation réinitialisée.');
+    } catch (e) {
       if (alive.current) setError(brewerChatError(e));
     } finally {
-      if (alive.current) setLoading(false);
+      lock.current = false;
+      if (alive.current) setResetting(false);
+    }
+  };
+  const decide = async (turn: BrewerTurn, ids: string[], decision: 'apply' | 'dismiss') => {
+    if (resetting || lock.current) return;
+    lock.current = true;
+    const version = epoch.current;
+    const signature = JSON.stringify(draftControl.current.draft);
+    setApplying(true);
+    try {
+      if (decision === 'apply' && beforeApply && !(await beforeApply()))
+        throw Error('Synchronise le journal avant de valider ces modifications.');
+      const result = await api.apply(scope, turn.id, ids, decision, draft);
+      if (!alive.current || epoch.current !== version) return;
+      if (decision === 'apply' && scope.kind === 'draft') {
+        if (JSON.stringify(draftControl.current.draft) !== signature)
+          throw Error(
+            'Le brouillon a changé pendant la validation. Aucun champ n’a été écrasé ; demande une proposition actualisée.'
+          );
+        draftControl.current.onDraftApply?.(result.value);
+      }
+      setTurns((t) => merge(t, [result.turn]));
+      if (decision === 'apply') await onApplied?.();
+    } catch (e) {
+      throw new Error((e as { code?: string })?.code ? brewerChatError(e) : (e as Error).message);
+    } finally {
+      if (epoch.current === version) lock.current = false;
+      if (alive.current) setApplying(false);
     }
   };
   return (
@@ -224,7 +346,10 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
       </button>
       <Sheet
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() => {
+          if (!applying) setOpen(false);
+        }}
+        dismissible={!applying}
         title="Compagnon brasseur"
         subtitle={label}
         className="brewer-chat-sheet"
@@ -241,7 +366,7 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
                 <input
                   type="checkbox"
                   checked={mode === 'deep'}
-                  disabled={busy || !!pending}
+                  disabled={busy || applying || resetting || !!pending}
                   onChange={(e) => setMode(e.target.checked ? 'deep' : 'auto')}
                 />
                 <Sparkles size={14} />
@@ -272,12 +397,12 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
               maxLength={3000}
               rows={2}
               placeholder="Décris ce que tu observes…"
-              readOnly={busy || !!pending}
+              readOnly={busy || applying || resetting || !!pending}
               onChange={(e) => setQuestion(e.target.value)}
             />
             <button
               type="submit"
-              disabled={busy || loading || !question.trim()}
+              disabled={busy || applying || loading || resetting || !question.trim()}
               aria-label={pending ? 'Réessayer la question' : 'Envoyer la question'}
             >
               {busy ? <LoaderCircle className="brewer-chat-spin" size={20} /> : <Send size={20} />}
@@ -292,7 +417,43 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
             {scope.kind === 'draft' ? 'Brouillon en cours' : phase || 'Recette'} · contexte
             actualisé à chaque question
           </span>
+          <button
+            type="button"
+            className="brewer-chat-reset"
+            aria-label="Réinitialiser la conversation"
+            title="Réinitialiser la conversation"
+            disabled={resetting || applying || loading}
+            onClick={() => setConfirmReset(true)}
+          >
+            <RotateCcw size={17} />
+          </button>
         </div>
+        {confirmReset && (
+          <div
+            className="brewer-reset-confirm"
+            role="group"
+            aria-label="Confirmer la remise à zéro"
+          >
+            <strong>Repartir à zéro ?</strong>
+            <p>
+              Les échanges et la réponse en cours seront effacés. Ta recette et les notes déjà
+              conservées restent intactes.
+            </p>
+            <div>
+              <button type="button" disabled={resetting} onClick={() => setConfirmReset(false)}>
+                Annuler
+              </button>
+              <button type="button" disabled={resetting} onClick={() => void reset()}>
+                {resetting ? 'Remise à zéro…' : 'Effacer les échanges'}
+              </button>
+            </div>
+          </div>
+        )}
+        {notice && (
+          <p className="brewer-chat-notice" role="status">
+            {notice}
+          </p>
+        )}
         {more && (
           <button
             type="button"
@@ -316,7 +477,7 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
                 <button
                   type="button"
                   key={p}
-                  disabled={busy || !!pending}
+                  disabled={busy || resetting || !!pending}
                   onClick={() => setQuestion(p)}
                 >
                   {p}
@@ -359,6 +520,16 @@ function ScopedChat({ scope, label, phase, draft, localJournal, onKeep }: Props)
                 )}
                 {t.advice.question && <p className="brewer-chat-followup">{t.advice.question}</p>}
                 <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} />
+                {t.proposal && (
+                  <BrewerProposalCard
+                    proposal={t.proposal}
+                    draft={scope.kind === 'draft'}
+                    disabled={
+                      busy || applying || resetting || (scope.kind === 'draft' && !onDraftApply)
+                    }
+                    onDecide={(ids, decision) => decide(t, ids, decision)}
+                  />
+                )}
                 <details className="brewer-chat-proof">
                   <summary>
                     <CheckCheck size={15} />

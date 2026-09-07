@@ -22,6 +22,7 @@ async function worker() {
       c.batch = { status: scenario.phase, volumeL: 24, gravityLog: [] };
     }
     if (scenario.fermentables) c.recipe.fermentables = scenario.fermentables;
+    if (scenario.editableTargets) c.editableTargets = scenario.editableTargets;
     try {
       const result = await runBrewerHarness(
         c,
@@ -50,6 +51,12 @@ async function worker() {
         `${output}/${scenario.id}.json`,
         JSON.stringify({ scenario, modelCalls, ...result }, null, 2)
       );
+      if (
+        scenario.id === 'edit-recipe' &&
+        (!result.proposal?.changes.some((ch) => ch.path === 'hops.0.alpha' && ch.value === 5.2) ||
+          result.proposal?.status)
+      )
+        throw Error('La correction du champ alpha doit rester une proposition à valider.');
       if (
         scenario.id === 'supplier-followup' &&
         !result.trace.some((t) => t.name === 'find_brewing_suppliers' && t.resultId)

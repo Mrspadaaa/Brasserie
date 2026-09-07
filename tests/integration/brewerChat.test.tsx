@@ -9,7 +9,9 @@ vi.mock('../../src/services/brewerChat', () => ({
     userKey: vi.fn().mockResolvedValue('test-user'),
     history: vi.fn(),
     ask: vi.fn(),
-    status: vi.fn()
+    status: vi.fn(),
+    reset: vi.fn(),
+    apply: vi.fn()
   },
   brewerChatError: () => 'Question conservée, réessaie.'
 }));
@@ -54,9 +56,144 @@ beforeEach(() => {
   localStorage.clear();
   vi.mocked(api.history).mockResolvedValue([]);
   vi.mocked(api.status).mockResolvedValue({});
+  vi.mocked(api.reset).mockResolvedValue({ generation: 1 });
 });
 afterEach(cleanup);
 describe('Conversation dans la recette / le brassin', () => {
+  it('demande confirmation pour vider le chat et ignore une réponse arrivée après le reset', async () => {
+    let complete!: (t: BrewerTurn) => void;
+    vi.mocked(api.ask).mockImplementation(
+      () =>
+        new Promise((r) => {
+          complete = r;
+        })
+    );
+    render(<BrewerChat {...props} />);
+    await open();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Ma question' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Réinitialiser la conversation' }));
+    expect(api.reset).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Effacer les échanges' }));
+    await screen.findByText('Conversation réinitialisée.');
+    await act(async () => {
+      complete(turn('Ancienne réponse'));
+    });
+    expect(screen.queryByText('Ancienne réponse')).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox')).toHaveValue('');
+    vi.mocked(api.ask).mockResolvedValue(turn('Nouvelle question'));
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Nouvelle question' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await screen.findByText('Mesure avant de corriger.');
+    expect(vi.mocked(api.ask).mock.calls[1][0].generation).toBe(1);
+  });
+  it('ne remplit aucun champ avant validation et transmet seulement les cases cochées', async () => {
+    const apply = vi.fn(),
+      t = turn();
+    t.proposal = {
+      target: 'recipe',
+      title: 'Allonger l’ébullition',
+      basis: 'test',
+      changes: [
+        {
+          id: 'C1',
+          path: 'boilMin',
+          label: 'Ébullition',
+          before: 60,
+          value: 70,
+          reason: 'Durée souhaitée',
+          unit: 'min'
+        },
+        {
+          id: 'C2',
+          path: 'name',
+          label: 'Nom',
+          before: 'Pale',
+          value: 'Pale v2',
+          reason: 'Nouveau nom'
+        }
+      ]
+    };
+    vi.mocked(api.history).mockResolvedValue([t]);
+    vi.mocked(api.apply).mockResolvedValue({
+      turn: { ...t, proposal: { ...t.proposal, status: 'applied', acceptedIds: ['C1'] } },
+      value: { name: 'Pale', boilMin: 70 }
+    });
+    render(
+      <BrewerChat
+        {...props}
+        scope={{ kind: 'draft', id: 'REC-A' }}
+        draft={{ name: 'Pale', boilMin: 60 }}
+        onDraftApply={apply}
+      />
+    );
+    await open();
+    expect(screen.getByText('60 min')).toBeVisible();
+    expect(screen.getByText('70 min')).toBeVisible();
+    expect(api.apply).not.toHaveBeenCalled();
+    expect(apply).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Nom' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Valider 1 modification' }));
+    await screen.findByText('Champs appliqués au brouillon');
+    expect(api.apply).toHaveBeenCalledWith({ kind: 'draft', id: 'REC-A' }, t.id, ['C1'], 'apply', {
+      name: 'Pale',
+      boilMin: 60
+    });
+    expect(apply).toHaveBeenCalledWith({ name: 'Pale', boilMin: 70 });
+  });
+  it('écarte une proposition sans appliquer de champ', async () => {
+    const t = turn();
+    t.proposal = {
+      target: 'recipe',
+      title: 'Ajuster',
+      basis: 'test',
+      changes: [
+        { id: 'C1', path: 'boilMin', label: 'Ébullition', before: 60, value: 70, reason: 'Test' }
+      ]
+    };
+    vi.mocked(api.history).mockResolvedValue([t]);
+    vi.mocked(api.apply).mockResolvedValue({
+      turn: { ...t, proposal: { ...t.proposal, status: 'dismissed' } }
+    });
+    render(<BrewerChat {...props} />);
+    await open();
+    fireEvent.click(screen.getByRole('button', { name: 'Écarter' }));
+    await screen.findByText('Proposition écartée');
+    expect(api.apply).toHaveBeenCalledWith(props.scope, t.id, [], 'dismiss', undefined);
+  });
+  it('ne remplace pas un brouillon changé pendant la validation réseau', async () => {
+    const apply = vi.fn(),
+      t = turn();
+    t.proposal = {
+      target: 'recipe',
+      title: 'Ajuster',
+      basis: 'test',
+      changes: [
+        { id: 'C1', path: 'boilMin', label: 'Ébullition', before: 60, value: 70, reason: 'Test' }
+      ]
+    };
+    vi.mocked(api.history).mockResolvedValue([t]);
+    let finish!: (v: any) => void;
+    vi.mocked(api.apply).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    const base = { ...props, scope: { kind: 'draft' as const, id: 'REC-A' }, onDraftApply: apply };
+    const view = render(<BrewerChat {...base} draft={{ boilMin: 60 }} />);
+    await open();
+    fireEvent.click(screen.getByRole('button', { name: 'Valider 1 modification' }));
+    view.rerender(<BrewerChat {...base} draft={{ boilMin: 80 }} />);
+    await act(async () =>
+      finish({
+        turn: { ...t, proposal: { ...t.proposal, status: 'applied' } },
+        value: { boilMin: 70 }
+      })
+    );
+    expect(apply).not.toHaveBeenCalled();
+    expect(await screen.findByRole('alert')).toHaveTextContent('Aucun champ n’a été écrasé');
+  });
   it('reste discrète et ne charge aucun historique avant ouverture', async () => {
     render(<BrewerChat {...props} />);
     expect(api.history).not.toHaveBeenCalled();

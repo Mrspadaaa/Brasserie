@@ -17,6 +17,7 @@ import {
 import { computeBeerColor } from './beerColor';
 import { saccharificationTemp } from './brewPrograms';
 export { normalizeRecipe } from './recipeSnapshot';
+export { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';

@@ -8,7 +8,7 @@ export interface BrewerRequestOptions {
   maxWaitMs?: number;
 }
 const terminal = (error: unknown) =>
-  /unauthenticated|permission-denied|invalid-argument|already-exists|not-found/.test(
+  /unauthenticated|permission-denied|invalid-argument|already-exists|not-found|failed-precondition/.test(
     String((error as { code?: string })?.code)
   );
 function pause(ms: number, signal?: AbortSignal) {

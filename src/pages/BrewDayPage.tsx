@@ -677,6 +677,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       }
     >
       <BrewerChat scope={{kind:'batch',id:batch.id}} label={recipe.name} phase={state.finishedAt?'fermentation':current?.label} localJournal={state}
+        editableTargets={session.canStart ? ['journal','batch'] : []} beforeApply={session.flush}
+        onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
       <div ref={contentRef} className="brew-workspace">
         {notice && !capture && (

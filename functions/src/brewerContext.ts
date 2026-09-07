@@ -45,7 +45,7 @@ export function pick(value: any, keys: string[]) {
   );
 }
 export const RECIPE_FIELDS =
-  'id name style volumeL ogTarget fgTarget abvTarget ibuTarget colorEbc efficiencyPct preBoilL preBoilHotL fermentables malts totalGristKg hops adjuncts yeast boilMin mash waterPlan fermentation instructions steps notes notesCreation brewhouse sourceRecipeId capturedAt'.split(
+  'id name style volumeL ogTarget fgTarget abvTarget ibuTarget colorEbc efficiencyPct preBoilL preBoilHotL fermentables malts totalGristKg hops adjuncts yeast boilMin mash waterPlan fermentation instructions steps notes notesCreation carboTarget brewhouse sourceRecipeId capturedAt'.split(
     ' '
   );
 export const BATCH_FIELDS =
@@ -65,6 +65,16 @@ export function validateChatInput(raw: any): BrewerChatInput {
   if (Buffer.byteLength(JSON.stringify(raw)) > 100000) throw new Error('Contexte trop volumineux.');
   if (raw.mode != null && !['auto', 'deep'].includes(raw.mode))
     throw new Error('Mode d’analyse invalide.');
+  if (raw.generation != null && (!Number.isSafeInteger(raw.generation) || raw.generation < 0))
+    throw new Error('Version de conversation invalide.');
+  const allowedTargets = scope.kind === 'batch' ? ['journal', 'batch'] : ['recipe'];
+  if (
+    raw.editableTargets != null &&
+    (!Array.isArray(raw.editableTargets) ||
+      raw.editableTargets.length > 2 ||
+      raw.editableTargets.some((x: string) => !allowedTargets.includes(x)))
+  )
+    throw new Error('Formulaire de modification invalide.');
   if (
     scope.kind === 'draft' &&
     (!raw.draft || typeof raw.draft !== 'object' || Array.isArray(raw.draft))
@@ -76,6 +86,8 @@ export function validateChatInput(raw: any): BrewerChatInput {
     question: raw.question.trim(),
     // Keep old operation digests compatible when no mode was provided.
     ...(raw.mode != null ? { mode: raw.mode } : {}),
+    ...(raw.generation != null ? { generation: raw.generation } : {}),
+    ...(raw.editableTargets != null ? { editableTargets: raw.editableTargets } : {}),
     ...(scope.kind === 'draft' ? { draft: pick(raw.draft, RECIPE_FIELDS) } : {}),
     ...(scope.kind === 'batch' && raw.localJournal
       ? { localJournal: cleanContext(raw.localJournal) }

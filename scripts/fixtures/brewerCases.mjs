@@ -88,6 +88,14 @@ export const testRecipe = {
 };
 export const cases = [
   {
+    id: 'edit-recipe',
+    question:
+      'Le sachet de Cascade indique exactement 5,2 % d’acides alpha. Corrige ce champ pour mon ajout de 35 g, calcule ce que cela change et prépare la modification à valider.',
+    editableTargets: ['recipe'],
+    expect:
+      'Propose seulement la correction alpha du premier houblon avec le nouvel IBU calculé, sans enregistrer quoi que ce soit.'
+  },
+  {
     id: 'routing-complex',
     question:
       'Ma chauffe plafonne à 1000 W, je manque d’eau osmosée et je devrai faire un rinçage plus court. Je veux conserver du corps sans trop d’astringence. Comment hiérarchiser les compromis entre empâtage, rinçage, volume final et ébullition ? Donne-moi un plan cohérent avec mon matériel, sans inventer mes mesures.',

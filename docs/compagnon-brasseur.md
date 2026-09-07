@@ -4,7 +4,7 @@
 
 Un brasseur seul doit pouvoir décider du prochain geste avec les mains occupées : faut-il agir maintenant, mesurer d’abord ou laisser le procédé continuer ? L’assistant commence par une action courte, explique l’impact, puis propose le prochain contrôle. Il pose seulement les questions qui changent la conduite à tenir.
 
-Une entrée discrète ouvre une feuille mobile dans la recette, son brouillon, le jour de brassage et la fiche du lot. Les discussions du brouillon suivent la recette lors de son enregistrement. Les calculs, limites et sources sont repliés. La saisie reste en pied de feuille et utilise une police de16px. Aucune modification de recette, dose, mesure ou minuterie n’est faite par le modèle. « Garder dans les notes du journal » est une action explicite du brasseur.
+Une entrée discrète ouvre une feuille mobile dans la recette, son brouillon, le jour de brassage et la fiche du lot. Les discussions du brouillon suivent la recette lors de son enregistrement. Les calculs, limites et sources sont repliés. La saisie reste en pied de feuille et utilise une police de16px. Le modèle prépare des propositions de champs ; seuls les champs cochés puis explicitement validés sont appliqués. « Garder dans les notes du journal » reste une action explicite du brasseur.
 
 L’analyse exploratoire avec Gemini a fait apparaître des conseils trop automatiques (prolonger une ébullition de15min, refroidir immédiatement un dry-hop, doser une base d’après le volume seul). Ces propositions ont été écartées : les préconditions, la phase et les relevés décident du conseil.
 
@@ -30,6 +30,16 @@ Points sensibles : aucun acide pour remonter un pH, aucune dose de base improvis
 
 ## Persistance
 
+### Champs proposés et remise à zéro
+
+`propose_changes` utilise une liste fermée de champs et de types, partagée avec la validation serveur. Il prépare un avant/après, sans écriture, puis recalcule la recette simulée. La relecture contrôle aussi ces modifications ; une proposition refusée est retirée. Le brasseur peut écarter la proposition ou sélectionner les groupes de champs à appliquer. Les choix partiels sont revalidés ensemble (températures minimum/maximum, durée et houblons).
+
+`applyBrewerProposal` accepte uniquement l'identifiant d'une proposition vérifiée, les cases cochées et une confirmation explicite. Le serveur retrouve son contexte d'origine, compare la version actuelle dans une transaction et refuse tout écrasement d'une correction plus récente. La recette enregistrée et les relevés du lot sont modifiés au serveur ; le journal passe par la même normalisation d'horloge et de révision que la saisie manuelle. Les recettes figées des lots, les stocks et les gestes terminés sont protégés. Les changements de recette recalculent l'affichage des ions sans changer les doses physiques. Les validations enregistrées gardent une trace avant/après dans l'audit, même après remise à zéro du chat. Un double clic retrouve le reçu de validation.
+
+Dans le formulaire de création, seuls les champs du brouillon sont remplis après validation ; l'enregistrement de la recette reste une action distincte. Une évolution du brouillon pendant la validation empêche l'application de la réponse tardive. Ce statut local n'est pas persisté comme une écriture de recette réussie.
+
+Le bouton de remise à zéro demande confirmation dans la feuille. `resetBrewerConversation` change la génération et invalide le traitement courant avant d'effacer les anciens échanges. Chaque nouvelle question porte la génération du chat : une ancienne page ou réponse ne peut réintroduire l'historique. La recette, le journal de brassage et les notes conservées restent intacts. Les snapshots de contexte partagés ne sont pas supprimés tant qu'ils peuvent servir aux autres archives.
+
 `brewerChats` conserve chaque échange terminé, ses outils et sa relecture. `brewerContexts` déduplique les snapshots identiques par empreinte ; chaque réponse conserve la date du contexte. Les19 collections exportables incluent ces deux collections serveur, sans charger tout l’historique IA dans le cache de l’interface. La restauration est additive pour ces archives.
 
 Un identifiant d’opération rend une relance idempotente. Un verrou transactionnel par conversation évite les générations concurrentes, avec bail et jeton contre les réponses tardives. Un identifiant réutilisé avec un autre contenu est refusé, même pendant la génération. Une relance rejoint l’opération existante ; une question différente attend la précédente, puis démarre automatiquement avec son historique actualisé. Le navigateur lit le reçu serveur toutes les 2,5 secondes pendant l’attente et peut retrouver une réponse même si la requête HTTP originale est interrompue. Réponse et libération du verrou sont atomiques ; le statut est lu dans une transaction cohérente. Le traitement est borné à 220 secondes dans les deux modes pour permettre une sélection tardive de Pro ; le bail ajoute 30 secondes pour l’enregistrement. Chaque recherche web dispose au maximum de 90 secondes, dans cette même limite globale.
@@ -42,10 +52,12 @@ Les clés sont exclusivement dans Secret Manager/côté serveur. Les collections
 
 - `npx vitest run` : suite métier/UI, avec tests de préconditions, erreurs, signatures Gemini, refus de relecture, contexte périmé et reprise réseau.
 - `npm --prefix functions run build` : compile les fonctions et assemble les calculateurs partagés.
-- `node scripts/eval-brewer.mjs` : évaluation réelle facultative, clé dans `GEMINI_API_KEY`. Douze scénarios synthétiques, dont le choix autonome de Pro sur un arbitrage complexe et la recherche suisse obligatoirement réalisée par Pro. `BREWER_EVAL_CASES` sélectionne des scénarios ; `BREWER_EVAL_MODE=deep` force Pro. Résultats privés sous `.codex-remote-attachments/`.
+- `node scripts/eval-brewer.mjs` : évaluation réelle facultative, clé dans `GEMINI_API_KEY`. Treize scénarios synthétiques, dont le choix autonome de Pro, la recherche suisse avec Pro et la préparation d'un champ alpha à valider. `BREWER_EVAL_CASES` sélectionne des scénarios ; `BREWER_EVAL_MODE=deep` force Pro. Résultats privés sous `.codex-remote-attachments/`.
 - `node scripts/check-brewer-persistence.mjs` : Firestore émulé uniquement (`demo-brewer-chat`, `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080`), appels Gemini réels. Vérifie authentification, snapshot, exclusion des champs privés, concurrence, relance, historique, déduplication, export et journal inchangé.
 - `node scripts/check-brewer-mobile.mjs` : Vite sur3007, Chrome local, transport de contrôle explicitement simulé. Captures390/320px et écran réduit à480px, absence de débordement, saisie et bouton accessibles. Les essais modèle/serveur sont séparés.
 - `node scripts/check-brewer-shopping-mobile.mjs` : même environnement, choix de modèle, reprise d’une question en attente et cartes fournisseurs, en passant par le vrai service navigateur avec réponses réseau simulées.
+- `node scripts/check-brewer-proposals-persistence.mjs` : Firestore émulé, fournisseur simulé ; autorisations, sélection, brouillon sans écriture métier, idempotence, audit, conflit, relevé et réponse tardive après reset.
+- `node scripts/check-brewer-proposals-mobile.mjs` : véritable formulaire de recette en 390/320px, API simulée ; aucune application avant validation, valeur relue dans la question suivante, annulation/confirmation du reset et vérification de la nouvelle génération.
 
 Le contrôle visuel confirme que les conseils longs défilent dans la feuille, les preuves restent repliées et le champ de réponse reste accessible. Les mesures réelles et les caractéristiques provisoires du matériel restent nécessaires : le compagnon ne pilote pas la cuve.
 

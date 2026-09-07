@@ -1216,7 +1216,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         </div>
       )}
 
-      <BrewerChat scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()} />
+      <BrewerChat scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
+        onDraftApply={value => {
+          applyImport({...value, mashSteps:value.mash?.steps ?? [], present:Object.keys(value), complete:true} as ImportedRecipe);
+          setStep(step);
+        }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
       {step === 'identite' && (
         <>

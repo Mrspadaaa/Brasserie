@@ -47,6 +47,8 @@
     { "collectionGroup": "brewerChats", "fieldPath": "evidence", "indexes": [] },
     { "collectionGroup": "brewerChats", "fieldPath": "trace", "indexes": [] },
     { "collectionGroup": "brewerChats", "fieldPath": "advice", "indexes": [] },
+    { "collectionGroup": "brewerChats", "fieldPath": "proposal", "indexes": [] },
+    { "collectionGroup": "auditLogs", "fieldPath": "changes", "indexes": [] },
     { "collectionGroup": "brewSessionOperations", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
     { "collectionGroup": "restoreOperations", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },
     { "collectionGroup": "brewAlarmDevices", "fieldPath": "expiresAt", "ttl": true, "indexes": [] },

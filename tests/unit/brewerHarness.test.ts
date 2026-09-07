@@ -46,6 +46,77 @@ const json = (v: unknown) => ({
 });
 
 describe('Outils du compagnon : mêmes modèles et données explicites', () => {
+  it('prépare des champs, les fait relire et ne modifie jamais la recette pendant le chat', async () => {
+    const c = context();
+    c.editableTargets = ['recipe'];
+    const before = JSON.stringify(c);
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  functionCall: {
+                    name: 'propose_changes',
+                    args: {
+                      target: 'recipe',
+                      title: 'Ébullition allongée',
+                      changes: [{ path: 'boilMin', valueJson: '70', reason: 'Durée demandée' }]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      })
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+      .mockResolvedValueOnce(json({ approved: true, proposalApproved: true, issues: [] }));
+    const result = await runBrewerHarness(c, 'Mets 70 minutes dans le champ ébullition', [], call);
+    expect(result.proposal?.changes[0].value).toBe(70);
+    expect(JSON.stringify(c)).toBe(before);
+    expect(
+      JSON.parse(call.mock.calls[2][1].contents[0].parts[0].text).proposal.changes
+    ).toHaveLength(1);
+  });
+  it('retire les champs refusés à la relecture au lieu de présenter une proposition non vérifiée', async () => {
+    const c = context();
+    c.editableTargets = ['recipe'];
+    const call = vi
+      .fn()
+      .mockResolvedValueOnce({
+        candidates: [
+          {
+            content: {
+              role: 'model',
+              parts: [
+                {
+                  functionCall: {
+                    name: 'propose_changes',
+                    args: {
+                      target: 'recipe',
+                      title: 'Ébullition',
+                      changes: [{ path: 'boilMin', valueJson: '70', reason: 'Test' }]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      })
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+      .mockResolvedValueOnce(
+        json({ approved: false, proposalApproved: false, issues: ['Valeur sans preuve'] })
+      )
+      .mockResolvedValueOnce(json(advice))
+      .mockResolvedValueOnce(json({ approved: true, proposalApproved: true, issues: [] }));
+    const result = await runBrewerHarness(c, 'Question', [], call);
+    expect(result.proposal).toBeUndefined();
+  });
   it('calcule une borne basse physique, pas une ETA de chauffe', () => {
     const r = runBrewerTool(
       'heating_power',

@@ -39,6 +39,25 @@ export interface BrewerPending {
 export interface BrewerReply {
   turn?: BrewerTurn;
   pending?: BrewerPending;
+  generation?: number;
+}
+export interface BrewerFieldChange {
+  id: string;
+  path: string;
+  label: string;
+  before: any;
+  value: any;
+  reason: string;
+  unit?: string;
+}
+export interface BrewerProposal {
+  target: 'recipe' | 'journal' | 'batch';
+  title: string;
+  changes: BrewerFieldChange[];
+  basis?: string;
+  status?: 'applied' | 'dismissed';
+  acceptedIds?: string[];
+  decidedAt?: number;
 }
 export interface BrewerContext {
   recipe?: any;
@@ -52,6 +71,7 @@ export interface BrewerContext {
   now: number;
   provenance: string[];
   localJournal?: any;
+  editableTargets?: BrewerProposal['target'][];
 }
 export interface BrewerTurn {
   id: string;
@@ -66,6 +86,7 @@ export interface BrewerTurn {
   reviewReason?: 'fast' | 'requested' | 'sensitive' | 'repair' | 'complexity' | 'research';
   mode?: 'auto' | 'deep';
   contextLabel: string;
+  proposal?: BrewerProposal;
 }
 export interface BrewerChatInput {
   scope: BrewerScope;
@@ -75,4 +96,6 @@ export interface BrewerChatInput {
   localJournal?: unknown;
   phase?: string;
   mode?: 'auto' | 'deep';
+  generation?: number;
+  editableTargets?: BrewerProposal['target'][];
 }

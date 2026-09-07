@@ -6,21 +6,23 @@ import type {
 } from '../../functions/src/companionTypes';
 import { awaitBrewerReply, type BrewerRequestOptions } from './brewerRecovery';
 export type { BrewerChatInput, BrewerScope, BrewerTurn } from '../../functions/src/companionTypes';
+export type BrewerHistory = BrewerTurn[] & { generation?: number };
 export const BrewerChat = {
   async userKey() {
     const { auth } = await import('./firebase');
     return auth.currentUser?.uid ?? 'disconnected';
   },
-  async history(scope: BrewerScope, before?: number): Promise<BrewerTurn[]> {
+  async history(scope: BrewerScope, before?: number): Promise<BrewerHistory> {
     const [{ httpsCallable }, { functions }] = await Promise.all([
       import('firebase/functions'),
       import('./firebase')
     ]);
-    const call = httpsCallable<{ scope: BrewerScope; before?: number }, { turns: BrewerTurn[] }>(
-      functions,
-      'getBrewerConversation'
-    );
-    return (await call({ scope, ...(before ? { before } : {}) })).data.turns;
+    const call = httpsCallable<
+      { scope: BrewerScope; before?: number },
+      { turns: BrewerTurn[]; generation: number }
+    >(functions, 'getBrewerConversation');
+    const result = (await call({ scope, ...(before ? { before } : {}) })).data;
+    return Object.assign(result.turns, { generation: result.generation ?? 0 });
   },
   async status(input: BrewerChatInput): Promise<BrewerReply> {
     const [{ httpsCallable }, { functions }] = await Promise.all([
@@ -30,7 +32,45 @@ export const BrewerChat = {
     return (
       await httpsCallable<unknown, BrewerReply>(functions, 'getBrewerConversation', {
         timeout: 15000
-      })({ scope: input.scope, operationId: input.operationId })
+      })({ scope: input.scope, operationId: input.operationId, generation: input.generation ?? 0 })
+    ).data;
+  },
+  async reset(scope: BrewerScope, generation: number, operationId: string) {
+    const [{ httpsCallable }, { functions }] = await Promise.all([
+      import('firebase/functions'),
+      import('./firebase')
+    ]);
+    return (
+      await httpsCallable<unknown, { generation: number }>(functions, 'resetBrewerConversation', {
+        timeout: 65000
+      })({ scope, generation, operationId })
+    ).data;
+  },
+  async apply(
+    scope: BrewerScope,
+    turnId: string,
+    selectedIds: string[],
+    decision: 'apply' | 'dismiss',
+    draft?: unknown
+  ) {
+    const [{ httpsCallable }, { functions }] = await Promise.all([
+      import('firebase/functions'),
+      import('./firebase')
+    ]);
+    const { StorageService } = await import('./storage');
+    return (
+      await httpsCallable<unknown, { turn: BrewerTurn; value?: any }>(
+        functions,
+        'applyBrewerProposal'
+      )({
+        scope,
+        turnId,
+        selectedIds,
+        decision,
+        confirmed: true,
+        actor: StorageService.getCurrentUser(),
+        ...(draft ? { draft } : {})
+      })
     ).data;
   },
   async ask(input: BrewerChatInput, options?: BrewerRequestOptions): Promise<BrewerTurn> {
@@ -52,6 +92,11 @@ export const BrewerChat = {
   }
 };
 export function brewerChatError(error: unknown) {
+  const reason = (error as { details?: { reason?: string } })?.details?.reason;
+  if (reason === 'chat-reset')
+    return 'La conversation a été réinitialisée. Rouvre le compagnon pour repartir à zéro.';
+  if (reason === 'proposal-stale')
+    return (error as Error).message || 'Les champs ont changé. Demande une proposition actualisée.';
   if ((error as { details?: { reason?: string } })?.details?.reason === 'pro-unavailable')
     return 'Gemini 3.1 Pro est momentanément indisponible. Ta question est conservée ; réessaie dans un instant.';
   const code = String((error as { code?: string })?.code ?? '');

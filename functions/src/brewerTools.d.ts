@@ -10,3 +10,4 @@ export declare function runBrewerTool(
   context: BrewerContext
 ): Omit<BrewerEvidence, 'id'>;
 export declare function normalizeRecipe(recipe: any): any;
+export declare function refreshCompanionRecipe(recipe: any): any;
