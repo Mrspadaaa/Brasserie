@@ -75,7 +75,7 @@ describe('Live records and unsaved forms', () => {
       activeBrewhouseId={defaultConfig.activeBrewhouseId} globalTimeFilter="all" targetSubTab="batches"
       onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenBrewDay={vi.fn()} onOpenRecipe={vi.fn()} />;
     const { rerender } = render(view(batch));
-    fireEvent.click(screen.getByTitle('Modifier la fiche'));
+    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le brassin B-live' }));
     const density = document.querySelector('input[name="batch_sheet_og"]')!;
     fireEvent.change(density, { target: { value: '1.054' } });
     rerender(view({ ...batch, name: 'Nom confirmé par IA', volumeL: 24 }));

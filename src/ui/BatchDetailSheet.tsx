@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button';
 import { BrewerChat } from './BrewerChat';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { HopTastingsPanel } from './hopIndex/HopTastingsPanel';
+import { FermentationCurveChart } from '../components/charts/FermentationCurveChart';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -110,6 +111,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({ batch, onClo
             </div>
           </section>
 
+          <FermentationCurveChart batch={draft} />
           <section className="space-y-4">
             <h3 className="text-base font-semibold text-cave-100">Mesures</h3>
 

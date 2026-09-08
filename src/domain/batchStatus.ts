@@ -29,7 +29,7 @@ export interface StatusStyle {
 export const BATCH_STATUS: Record<BatchStatus, StatusStyle> = {
   planifie: {
     label: 'Planifié',
-    hint: 'Recette prête, rien n’est encore déstocké',
+    hint: 'Brassin prévu, production non confirmée',
     chip: 'bg-cave-850 text-cave-200 border-cave-700',
     active: true,
     order: 0
@@ -64,7 +64,7 @@ export const BATCH_STATUS: Record<BatchStatus, StatusStyle> = {
   },
   annule: {
     label: 'Annulé',
-    hint: 'Brassin abandonné — ne compte plus nulle part',
+    hint: 'Brassin abandonné, historique conservé',
     chip: 'bg-alert/15 text-alert border-alert/40',
     active: false,
     order: 5

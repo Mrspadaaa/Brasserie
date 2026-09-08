@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { defaultConfig } from '../../src/services/storage';
+import { brewerJobs } from '../../src/services/brewerJobs';
 import { writeRecipeText, readRecipeText } from '../../src/domain/recipeTransfer';
 import { Recipe } from '../../src/types';
 import { monSuperStout, monSuperStoutRo } from '../fixtures/monSuperStout';
@@ -10,7 +11,7 @@ import { styleByCode } from '../../src/domain/waterStyles';
 import { PROFILE_IONS } from '../../src/domain/water/profileAssessment';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
-afterEach(cleanup);
+afterEach(() => { cleanup(); brewerJobs.stop(); });
 
 const click = (name: string | RegExp) => fireEvent.click(screen.getAllByRole('button', { name })[0]);
 const acid = () => screen.getByRole('textbox', { name: /Dose d’acide lactique.*à l’empâtage/ });

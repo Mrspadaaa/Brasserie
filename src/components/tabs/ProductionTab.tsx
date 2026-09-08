@@ -1,33 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Beer, 
-  Calendar, 
-  Clock, 
-  Sparkles, 
-  ChevronRight, 
-  Plus, 
-  Edit3, 
-  Activity, 
-  AlertTriangle,
-  Sliders,
-  Scale,
-  Wrench,
-  Droplets,
-  Check,
-  FileText
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
-import { statusOf } from '../../domain/batchStatus';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import { BrewingMath } from '../../services/brewingMath';
-import { DateUtils } from '../../services/dateUtils';
-import { FermentationCurveChart } from '../charts/FermentationCurveChart';
 import { CreativeLabTab } from '../CreativeLabTab';
-import { computeBeerColor } from '../../domain/beerColor';
 import { describeMoment } from '../../domain/hopStage';
 import { Units } from '../../services/units';
+import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
 
 interface ProductionTabProps {
   batches: Batch[];
@@ -44,6 +25,7 @@ interface ProductionTabProps {
   createRequest?: { kind: string; at: number } | null;
   /** Ouvre la fiche recette en plein écran. */
   onOpenRecipe: (recipe: Recipe) => void;
+  onEditRecipe?: (recipe: Recipe) => void;
   /** Ouvre le déroulé minuté du jour de brassage. */
   onOpenBrewDay: (batch: Batch) => void;
   /** Ouvre l'assistant de recette, prérempli depuis une idée du labo. */
@@ -63,6 +45,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onSubTabChange,
   createRequest,
   onOpenRecipe,
+  onEditRecipe,
   onOpenBrewDay,
   onDraftRecipe,
   onSuccessMessage
@@ -109,14 +92,11 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     StorageService.setUiState('production_subtab', subTab);
   }, [subTab]);
 
-  const periodBatches = batches.filter((b) => DateUtils.isDateInPeriod(b.brewDate, globalTimeFilter));
-  const displayedBatches = periodBatches.length > 0 ? periodBatches : batches;
-  const activeBatch = displayedBatches.find((b) => b.status === 'fermentation' || b.status === 'garde') || batches.find((b) => b.status === 'fermentation' || b.status === 'garde');
   const sourceBh = brewhouses.find((b) => b.id === activeBrewhouseId) || brewhouses[0];
   const targetBh = targetVolumeL >= 250 ? (brewhouses.find((b) => b.volumeL >= 250) || sourceBh) : sourceBh;
   // Sans recette ni cuverie configurée, on ne calcule rien plutôt que de planter.
   const scaleResult =
-    selectedRecipeToScale && sourceBh
+    subTab === 'scaler' && selectedRecipeToScale && sourceBh
       ? BrewingMath.scaleRecipe(selectedRecipeToScale, targetVolumeL, sourceBh, targetBh)
       : null;
 
@@ -125,300 +105,55 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {/* 1. Sub-navigation Pills */}
       <div className="flex bg-cave-900 p-1 rounded-2xl border border-cave-800 shadow-md overflow-x-auto scrollbar-none space-x-1">
         <button
+          type="button"
+          aria-pressed={subTab === 'batches'}
           onClick={() => setSubTab('batches')}
-          className={`px-3.5 py-2 text-sm font-bold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
             subTab === 'batches' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
           🍺 Brassins ({batches.length})
         </button>
         <button
+          type="button"
+          aria-pressed={subTab === 'recipes'}
           onClick={() => setSubTab('recipes')}
-          className={`px-3.5 py-2 text-sm font-bold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
             subTab === 'recipes' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
           📜 Recettes ({recipes.length})
         </button>
         <button
+          type="button"
+          aria-pressed={subTab === 'lab'}
           onClick={() => setSubTab('lab')}
-          className={`px-3.5 py-2 text-sm font-bold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
             subTab === 'lab' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
           🧪 Atelier R&D
         </button>
         <button
+          type="button"
+          aria-pressed={subTab === 'scaler'}
           onClick={() => setSubTab('scaler')}
-          className={`px-3.5 py-2 text-sm font-bold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
             subTab === 'scaler' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          ⚖️ Scaler 30L / 300L
+          ⚖️ Volumes
         </button>
       </div>
 
-      {/* 2. SUBTAB: BATCHES */}
-      {subTab === 'batches' && (
-        <div className="space-y-4">
-          {/* Active Fermentation Curve (Recharts) */}
-          {activeBatch && (
-            <FermentationCurveChart batch={activeBatch} />
-          )}
-
-          {/* Batches Header */}
-          <div className="flex items-center justify-between px-1">
-            <div>
-              <h3 className="font-bold text-sm text-cave-50">Journal des Brassins</h3>
-              <p className="text-sm text-cave-400">Suivi intelligent, chimie de l'eau et densités</p>
-            </div>
-            <button
-              onClick={onOpenCreateBatch}
-              className="px-3 py-1.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition"
-            >
-              + Nouveau Brassin
-            </button>
-          </div>
-
-          {/* Batches List */}
-          <div className="space-y-3">
-            {displayedBatches.map((batch) => {
-              // Source unique et exhaustive : ajouter un statut au type sans le
-              // décrire dans BATCH_STATUS casse la compilation. C'est ce qui
-              // empêche le retour du bug « annulé affiché Planifié ».
-              const s = statusOf(batch.status);
-              const hasWater = batch.waterSalts && batch.waterSalts.isApplied;
-
-              return (
-                <div
-                  key={batch.id}
-                  className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-3 hover:border-cave-700 transition shadow-sm"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-mono text-sm font-bold text-cave-500">{batch.id}</span>
-                        <h4 className="font-bold text-sm text-cave-50">{batch.name}</h4>
-                        <span className={`text-sm font-medium px-2 py-0.5 rounded-control border ${s.chip}`}>
-                          {s.label}
-                        </span>
-                      </div>
-                      <div className="text-sm text-cave-400 mt-0.5">
-                        Style : <strong className="text-cave-200">{batch.style}</strong> · {batch.volumeL}L
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-1.5">
-                      {/* ASSISTANT BRASSIN BOUTON */}
-                      <button
-                        onClick={() => onOpenBrewDay(batch)}
-                        className="px-3 py-1.5 bg-gradient-to-r from-ebc-straw/20 to-ebc-amber/20 hover:from-ebc-straw/30 text-ebc-gold border border-ebc-straw/40 rounded-xl transition flex items-center space-x-1 text-sm font-black shadow-sm"
-                        title="Ouvrir l'assistant eau, sels, empattage et réfractomètre"
-                      >
-                        <span className="text-sm">🧙‍♂️</span>
-                        <span>Assistant</span>
-                      </button>
-
-                      <button
-                        onClick={() => setDetailBatch(batch)}
-                        className="p-1.5 bg-cave-850 hover:bg-cave-800 text-cave-400 hover:text-cave-200 rounded-xl transition"
-                        title="Modifier la fiche"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Water Profile & Stock Deduction Status */}
-                  <div className="flex flex-wrap items-center gap-2 text-sm font-mono">
-                    <span className="text-cave-400 font-sans">Statut :</span>
-                    {batch.status === 'planifie' ? (
-                      <span className="px-2 py-0.5 rounded-lg bg-cave-850 text-cave-400 border border-cave-700 text-footnote font-bold font-sans">
-                        Stock non déduit (planifié)
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 rounded-lg bg-hop/10 text-hop border border-hop/20 text-footnote font-bold font-sans">
-                        Ingrédients déduits du stock
-                      </span>
-                    )}
-
-                    {batch.volumePackagedL ? (
-                      <span className="px-2 py-0.5 rounded-lg bg-ebc-copper/10 text-ebc-copper border border-ebc-copper/20 text-footnote font-bold font-sans">
-                        {batch.volumePackagedL} L conditionnés
-                      </span>
-                    ) : null}
-
-                    <span className={`px-2 py-0.5 rounded-lg border font-bold flex items-center font-sans ${
-                      hasWater 
-                        ? 'bg-hop/10 text-hop border-hop/30' 
-                        : 'bg-cave-850 text-cave-400 border-cave-700'
-                    }`}>
-                      <Droplets className="w-3 h-3 mr-1 text-water" />
-                      {batch.waterDilutionPct !== undefined ? `${100 - batch.waterDilutionPct}/${batch.waterDilutionPct} DI` : '50/50 DI'}
-                      {hasWater ? ' · Sels ajoutés' : ' · Sels à doser'}
-                    </span>
-                    {batch.mashPhActual && (
-                      <span className="text-hop font-bold">pH: {batch.mashPhActual}</span>
-                    )}
-                  </div>
-
-                  {/* Batch Metric Badges */}
-                  <div className="grid grid-cols-4 gap-1.5 bg-cave-950/70 p-2.5 rounded-2xl text-center text-sm">
-                    <div>
-                      <span className="text-footnote text-cave-500">Brassé le</span>
-                      <div className="font-semibold text-cave-200 text-sm">{batch.brewDate}</div>
-                    </div>
-                    <div>
-                      <span className="text-footnote text-cave-500">Densité OG</span>
-                      <div className="font-mono font-bold text-ebc-gold">{batch.og}</div>
-                    </div>
-                    <div>
-                      <span className="text-footnote text-cave-500">Densité FG</span>
-                      <div className="font-mono font-bold text-cave-200">{batch.fg}</div>
-                    </div>
-                    <div>
-                      <span className="text-footnote text-cave-500">Alcool ABV</span>
-                      <div className="font-mono font-bold text-hop">{batch.abv}</div>
-                    </div>
-                  </div>
-
-                  {/* Brewer's Notes in 3 Phases */}
-                  {(batch.notesCreation || batch.notesBrewDay || batch.notesTasting) && (
-                    <div className="p-3 bg-cave-950/60 rounded-2xl border border-cave-800 text-sm space-y-1">
-                      <div className="flex items-center space-x-1.5 text-footnote font-bold text-ebc-straw uppercase tracking-wider mb-1">
-                        <FileText className="w-3.5 h-3.5" />
-                        <span>Carnet de Notes du Brasseur :</span>
-                      </div>
-                      {batch.notesCreation && (
-                        <p className="text-sm text-cave-200 leading-relaxed">
-                          <strong className="text-ebc-gold">💡 Avant / Création :</strong> {batch.notesCreation}
-                        </p>
-                      )}
-                      {batch.notesBrewDay && (
-                        <p className="text-sm text-cave-200 leading-relaxed">
-                          <strong className="text-alert">🔥 Pendant / Brassage :</strong> {batch.notesBrewDay}
-                        </p>
-                      )}
-                      {batch.notesTasting && (
-                        <p className="text-sm text-cave-200 leading-relaxed">
-                          <strong className="text-hop">🍺 Après / Dégustation :</strong> {batch.notesTasting}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Gravity Logs History */}
-                  {batch.gravityLog && batch.gravityLog.length > 0 && (
-                    <div className="p-2.5 bg-cave-950/50 rounded-xl border border-cave-800 text-sm space-y-1">
-                      <span className="text-footnote font-bold text-cave-400 uppercase">Derniers relevés :</span>
-                      {batch.gravityLog.map((log, i) => (
-                        <div key={i} className="flex justify-between text-sm text-cave-200 font-mono">
-                          <span>{log.date} : <strong>{log.sg}</strong> ({log.tempC}°C)</span>
-                          <span className="text-cave-500 italic">{log.notes || ''}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+      {(subTab === 'batches' || subTab === 'recipes') && <>
+        <div className="flex items-center justify-between gap-3 px-1">
+          <h2 className="text-lg font-semibold text-cave-50">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>
+          <button type="button" onClick={onOpenCreateBatch} className="min-h-touch px-3 shrink-0 rounded-control bg-ebc-straw text-cave-950 font-semibold text-sm inline-flex items-center gap-1.5"><Plus className="h-4 w-4" />{subTab === 'recipes' ? 'Créer' : 'Planifier'}</button>
         </div>
-      )}
-
-      {/* 3. SUBTAB: RECIPES */}
-      {subTab === 'recipes' && (
-        <div className="space-y-3">
-          {/*
-            ⚠️ Trois lignes pour une rangée de titre — titre, phrase
-            d'explication, puis un bouton qui repassait à la ligne — au-dessus
-            d'un en-tête d'application et d'une rangée de pastilles. Sur un
-            375 × 812, la première recette commençait au tiers de l'écran. La
-            phrase ne se lit qu'une fois : elle reste sur grand écran, où elle
-            ne coûte rien.
-          */}
-          <div className="flex items-center justify-between gap-2 px-1">
-            <div className="min-w-0">
-              <h3 className="font-bold text-sm text-cave-50 truncate">Mes Recettes & Ingrédients</h3>
-              <p className="hidden sm:block text-sm text-cave-400">
-                Saisie libre ou import magique par copier-coller web
-              </p>
-            </div>
-            <button
-              onClick={onOpenCreateBatch}
-              className="shrink-0 min-h-touch px-3 flex items-center gap-1.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition"
-            >
-              <Plus className="w-4 h-4 shrink-0" />
-              <span className="hidden xs:inline">Importer / Créer</span>
-              <span className="xs:hidden">Recette</span>
-            </button>
-          </div>
-          {/* Une recette se LIT sur sa fiche, pas dans une carte de liste :
-              on montre ici de quoi la reconnaître — la couleur calculée, le
-              grain, le nombre d'ajouts de houblon — et on ouvre pour le reste. */}
-          {recipes.map((r) => {
-            /*
-             * ⚠️ `r.malts` est déprécié et ABSENT de toute recette créée
-             * depuis la refonte : `normalizeRecipe` remplit `fermentables`
-             * depuis `malts`, jamais l'inverse. `r.malts.reduce` JETAIT donc
-             * ici, et TOUTE la liste des recettes disparaissait derrière un
-             * écran blanc. Même correction qu'à trois autres endroits du dépôt.
-             *
-             * Le grain SEUL, comme sur la fiche : ni la couleur ni la facture
-             * de grain ne comptent le sucre.
-             */
-            const grains = (r.fermentables ?? []).filter((f) => f.kind === 'grain');
-            const color = computeBeerColor(grains, r.volumeL);
-            const grist = grains.reduce((s, f) => s + f.weightKg, 0);
-            const hopG = (r.hops ?? []).reduce((s, h) => s + h.weightG, 0);
-            return (
-              <div
-                key={r.id}
-                className="panel p-3 flex items-center gap-3"
-              >
-                <button
-                  onClick={() => onOpenRecipe(r)}
-                  className="min-w-0 flex-1 flex items-center gap-3 text-left min-h-touch"
-                >
-                  <span
-                    className={`w-8 h-8 rounded-full border border-cave-700 shrink-0 ${
-                      color ? color.swatch : 'bg-cave-850'
-                    }`}
-                    aria-hidden
-                    title={color ? `${color.label} — ${color.ebc} EBC` : 'couleur incalculable'}
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-base font-semibold text-cave-50 truncate">
-                      {r.name}
-                    </span>
-                    <span className="block text-sm text-cave-400 truncate">
-                      {[r.style, `${r.volumeL} L`, Units.format(grist, 'kg'), `${(r.hops ?? []).length} ajouts · ${Units.format(hopG, 'g')}`]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    setSelectedRecipeToScale(r);
-                    setSubTab('scaler');
-                  }}
-                  aria-label={`Adapter le volume de ${r.name}`}
-                  className="touch-target rounded-control text-cave-400 hover:text-ebc-straw shrink-0"
-                >
-                  <Scale className="w-5 h-5" />
-                </button>
-              </div>
-            );
-          })}
-          {recipes.length === 0 && (
-            <p className="text-sm text-cave-500 px-1">
-              Aucune recette. Crée-la pas à pas, ou colle-en une trouvée sur le web.
-            </p>
-          )}
-        </div>
-      )}
+        <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={batches} globalTimeFilter={globalTimeFilter}
+          onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={setDetailBatch} onOpenBrewDay={onOpenBrewDay} />
+      </>}
 
       {/* 4. SUBTAB: CREATIVE LAB (ATELIER R&D DE LA BRASSERIE) */}
       {subTab === 'lab' && (

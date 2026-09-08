@@ -688,6 +688,7 @@ export const App: React.FC = () => {
             onOpenCreateBatch={() => openWizard()}
             onOpenQuickAction={() => setIsQuickActionOpen(true)}
             onOpenRecipe={openRecipe}
+            onEditRecipe={(recipe) => openWizard({ recipe })}
             onOpenBrewDay={openBrewDay}
             onSubTabChange={(sub) => setSubTab(sub as never)}
             createRequest={createRequest}

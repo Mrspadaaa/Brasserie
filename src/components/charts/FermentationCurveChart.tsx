@@ -1,114 +1,115 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Batch } from '../../types';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine
+} from 'recharts';
+import type { Batch } from '../../types';
+import { fermentationReadings } from '../../domain/fermentationReadings';
 
-interface FermentationCurveChartProps {
-  batch: Batch;
-}
-
-export const FermentationCurveChart: React.FC<FermentationCurveChartProps> = ({ batch }) => {
-  const ogNum = parseFloat(batch.og || '1.062');
-  const fgTarget = 1.018;
-
-  // Build points
-  const data: Array<{ name: string; date: string; sg: number; tempC?: number; isTarget?: boolean }> = [];
-
-  data.push({
-    name: 'Brassage',
-    date: batch.brewDate || '01.05',
-    sg: ogNum,
-    tempC: 18.5
-  });
-
-  if (batch.gravityLog && batch.gravityLog.length > 0) {
-    batch.gravityLog.forEach((log, idx) => {
-      data.push({
-        name: `Relevé ${idx + 1}`,
-        date: log.date,
-        sg: log.sg,
-        tempC: log.tempC
-      });
-    });
-  }
-
-  // Add target FG reference point
-  data.push({
-    name: 'Cible FG',
-    date: 'Est. J+14',
-    sg: fgTarget,
-    isTarget: true
-  });
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const p = payload[0].payload;
-      return (
-        <div className="bg-cave-900 border border-cave-700 p-2.5 rounded-2xl shadow-xl text-sm text-cave-50">
-          <div className="font-bold text-ebc-straw">{p.name} ({p.date})</div>
-          <div className="text-cave-200 mt-1 font-mono">
-            Densité : <strong>{p.sg.toFixed(3)}</strong>
-          </div>
-          {p.tempC && (
-            <div className="text-cave-400 text-footnote">Température : {p.tempC}°C</div>
-          )}
-        </div>
-      );
-    }
-    return null;
-  };
-
+export function FermentationCurveChart({ batch }: { batch: Batch }) {
+  const { points, target, latest, attenuation } = fermentationReadings(batch);
   return (
-    <div className="p-4 rounded-3xl bg-cave-900 border border-cave-800 shadow-xl space-y-3">
-      <div className="flex justify-between items-center">
+    <section className="panel p-4 space-y-3" aria-label="Courbe des densités mesurées">
+      <div className="flex justify-between items-start gap-3">
         <div>
-          <span className="text-footnote text-ebc-straw uppercase font-bold tracking-wider">
-            Courbe de Fermentation Active
-          </span>
-          <h3 className="font-bold text-sm text-cave-50">{batch.name} ({batch.id})</h3>
+          <h3 className="text-base font-semibold text-cave-50">Densité au fil du brassin</h3>
+          <p className="text-sm text-cave-400">
+            {points.length} mesure{points.length > 1 ? 's' : ''} enregistrée
+            {points.length > 1 ? 's' : ''}
+          </p>
         </div>
-        <div className="text-right font-mono">
-          <span className="text-sm font-black text-hop">
-            {batch.fg || '1.032'}
-          </span>
-          <span className="text-footnote text-cave-400 block">Cible : {fgTarget}</span>
-        </div>
+        {latest !== undefined && (
+          <span className="reading text-lg text-hop">{latest.toFixed(3)}</span>
+        )}
       </div>
-
-      <div className="h-44 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-            <XAxis 
-              dataKey="name" 
-              stroke="#64748b" 
-              fontSize={10} 
-              tickLine={false} 
-            />
-            <YAxis 
-              domain={[1.010, 1.070]} 
-              stroke="#64748b" 
-              fontSize={10} 
-              tickLine={false}
-              tickFormatter={(v) => v.toFixed(3)}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <ReferenceLine y={fgTarget} stroke="#10b981" strokeDasharray="3 3" label={{ value: 'FG', fill: '#10b981', fontSize: 10 }} />
-            <Line
-              type="monotone"
-              dataKey="sg"
-              stroke="#f59e0b"
-              strokeWidth={3}
-              dot={{ fill: '#f59e0b', r: 4 }}
-              activeDot={{ r: 6, fill: '#fbbf24' }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      {points.length ? (
+        <>
+          <div
+            className="h-48 w-full"
+            role="img"
+            aria-label="Courbe des relevés réels, détail disponible sous le graphique"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={points} margin={{ left: -15, right: 8, top: 10 }}>
+                <XAxis dataKey="name" tick={{ fill: '#9A8A7E', fontSize: 12 }} />
+                <YAxis
+                  domain={['auto', 'auto']}
+                  tickFormatter={(value: number) => value.toFixed(3)}
+                  tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    const p = payload?.[0]?.payload;
+                    return active && p ? (
+                      <div className="p-3 bg-cave-850 border border-cave-700 rounded-control text-sm text-cave-50">
+                        <p>
+                          {p.name} · {p.date}
+                        </p>
+                        <p>
+                          {p.sg.toFixed(3)}
+                          {p.tempC != null ? ` · ${p.tempC} °C` : ''}
+                        </p>
+                      </div>
+                    ) : null;
+                  }}
+                />
+                {target !== undefined && (
+                  <ReferenceLine
+                    y={target}
+                    ifOverflow="extendDomain"
+                    stroke="#6E9B5B"
+                    strokeDasharray="4 4"
+                    label={{
+                      value: 'FG cible',
+                      fill: '#8DAE79',
+                      fontSize: 12,
+                      position: 'insideTopRight'
+                    }}
+                  />
+                )}
+                <Line
+                  type="linear"
+                  dataKey="sg"
+                  stroke="#F2C14E"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <details className="text-sm text-cave-400">
+            <summary className="min-h-touch flex items-center cursor-pointer">
+              Voir les relevés
+            </summary>
+            <ul className="space-y-2">
+              {points.map((p, i) => (
+                <li key={i} className="flex justify-between gap-3">
+                  <span>
+                    {p.name} · {p.date}
+                  </span>
+                  <span className="reading">{p.sg.toFixed(3)}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </>
+      ) : (
+        <p className="text-sm text-cave-400 py-3">
+          Renseigne l’OG ou un relevé de densité pour tracer la courbe.
+        </p>
+      )}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-cave-400">
+        {target !== undefined && <span>FG cible de la recette : {target.toFixed(3)}</span>}
+        {attenuation !== undefined && (
+          <span>Atténuation apparente : {Math.round(attenuation)} %</span>
+        )}
       </div>
-
-      <div className="flex justify-between items-center text-footnote text-cave-400 bg-cave-950/60 p-2 rounded-xl border border-cave-800/80">
-        <span>Densité Initiale : <strong className="text-cave-200 font-mono">{batch.og || '1.062'}</strong></span>
-        <span>Atténuation apparente : <strong className="text-hop font-mono">~48%</strong></span>
-        <span>Cible : <strong className="text-cave-200 font-mono">{fgTarget}</strong></span>
-      </div>
-    </div>
+    </section>
   );
-};
+}
