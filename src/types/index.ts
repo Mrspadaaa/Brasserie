@@ -579,7 +579,7 @@ export interface Batch {
   recipeSnapshot?: RecipeSnapshot;
   /** Déroulé du jour de brassage : minuteurs et étapes cochées. */
   brewDay?: BrewDayState;
-  gravityLog?: Array<{ date: string; sg: number; tempC: number; notes?: string }>;
+  gravityLog?: Array<{ date: string; sg: number; tempC?: number; notes?: string }>;
   waterDilutionPct?: number; // e.g. 50 for 50-50 tap/DI
   waterSalts?: {
     gypseG: number;

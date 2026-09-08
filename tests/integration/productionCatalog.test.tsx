@@ -84,6 +84,7 @@ beforeEach(() => {
     StorageService.setUiState(`catalog-${kind}-filters`, { ...DEFAULT_CATALOG_FILTERS });
     StorageService.setUiState(`catalog-${kind}-view`, 'list');
   }
+  StorageService.setUiState('catalog-batches-work', 'all');
 });
 afterEach(() => {
   cleanup();
@@ -171,6 +172,7 @@ describe('Recipe and batch catalog interactions', () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
     expect(screen.getByLabelText('Analyses des recettes')).toHaveTextContent('3 recettes');
+    fireEvent.click(screen.getByRole('button', { name: 'Explorer les profils et ingrédients' }));
     fireEvent.click(screen.getByRole('button', { name: 'Filtrer : Citra, 2 sur 3' }));
     expect(screen.getByRole('button', { name: 'Afficher la liste' })).toHaveAttribute(
       'aria-pressed',
@@ -180,6 +182,7 @@ describe('Recipe and batch catalog interactions', () => {
       within(screen.getByLabelText('Liste des recettes')).getAllByRole('article')
     ).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Explorer les profils et ingrédients' }));
     expect(screen.getByRole('button', { name: 'Filtrer : Citra, 2 sur 2' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Filtrer : Fuggle/ })).not.toBeInTheDocument();
   });
@@ -207,5 +210,79 @@ describe('Recipe and batch catalog interactions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
     expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('23');
     expect(screen.getByLabelText('Analyses des brassins')).toHaveTextContent('1 lot');
+  });
+  it('compares exactly two recipes with normalized doses, without editing them', () => {
+    const { actions } = mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Choisir des recettes à comparer' }));
+    const selection = screen.getByRole('region', { name: 'Sélection à comparer' });
+    expect(within(selection).getByRole('button', { name: 'Comparer' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Comparer Écume, V1' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Comparer Écume v2, V2' }));
+    expect(screen.getByRole('checkbox', { name: 'Comparer Nocturne, V1' })).toBeDisabled();
+    fireEvent.click(within(selection).getByRole('button', { name: 'Comparer' }));
+    const dialog = screen.getByRole('dialog', { name: 'Comparer les recettes' });
+    expect(within(dialog).getByLabelText('Grains comparés')).toHaveTextContent('100 %');
+    expect(within(dialog).getByLabelText('Houblons comparés')).toHaveTextContent('2,08 g/L');
+    expect(within(dialog).getByLabelText('Houblons comparés')).toHaveTextContent('2 g/L');
+    expect(actions.onEditRecipe).not.toHaveBeenCalled();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Revenir au carnet' }));
+    expect(screen.getByRole('checkbox', { name: 'Comparer Écume, V1' })).toHaveAttribute(
+      'aria-checked',
+      'true'
+    );
+  });
+  it('opens the lots linked to a recipe and their measurements directly', () => {
+    const { actions } = mount();
+    fireEvent.click(screen.getByRole('button', { name: 'Voir les brassins de Écume, V1' }));
+    const dialog = screen.getByRole('dialog', { name: 'Brassins de Écume' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Compléter les mesures · LOT1' }));
+    expect(actions.onOpenBatch).toHaveBeenCalledWith(batches[0], 'measurements');
+    expect(actions.onOpenBrewDay).not.toHaveBeenCalled();
+  });
+  it('filters missing measurements without flagging an unfinished fermentation for missing FG', () => {
+    const list = [
+      { ...batches[0], id: 'FERM', og: '1.060' },
+      { ...batches[0], id: 'MISSING', status: 'conditionne' as const, og: '1.060' },
+      { ...batches[0], id: 'DONE', status: 'termine' as const, og: '1.060', fg: '1.010' }
+    ];
+    const actions = callbacks();
+    render(
+      <ProductionCatalog
+        kind="batches"
+        recipes={recipes}
+        batches={list}
+        globalTimeFilter="all"
+        {...actions}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Mesures manquantes' }));
+    expect(
+      within(screen.getByLabelText('Liste des brassins')).getAllByRole('article')
+    ).toHaveLength(1);
+    expect(screen.getByLabelText('Liste des brassins')).toHaveTextContent('MISSING');
+    fireEvent.click(screen.getByRole('button', { name: 'Notes à compléter' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Noter la dégustation · DONE' }));
+    expect(actions.onOpenBatch).toHaveBeenCalledWith(list[2], 'tasting');
+    expect(actions.onOpenBrewDay).not.toHaveBeenCalled();
+  });
+  it('uses the same filtered lots for target deltas and opens their actual measurements', () => {
+    const lot = { ...batches[0], og: '1.060', volumeBrewedL: 20 };
+    const actions = callbacks();
+    render(
+      <ProductionCatalog
+        kind="batches"
+        recipes={recipes}
+        batches={[lot]}
+        globalTimeFilter="all"
+        {...actions}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher les analyses' }));
+    const outcomes = screen.getByLabelText('Écarts entre cible et résultat');
+    expect(outcomes).toHaveTextContent('-4,7 pts');
+    fireEvent.click(within(outcomes).getByRole('button', { name: 'Comparer volume en cuve' }));
+    expect(outcomes).toHaveTextContent('-4 L');
+    fireEvent.click(within(outcomes).getByRole('button', { name: 'Mesures du brassin LOT1' }));
+    expect(actions.onOpenBatch).toHaveBeenCalledWith(lot, 'measurements');
   });
 });

@@ -1,5 +1,57 @@
 # Catalogue des recettes et des brassins
 
+## Seconde passe : un carnet utile au brasseur
+
+La première passe rendait les fiches filtrables mais donnait le même poids aux
+statistiques de catalogue et aux décisions de brassage. La seconde commence par
+le travail : retrouver les lots en cuve, lire les mesures face aux cibles figées,
+consulter les dégustations, comparer deux recettes indépendamment de leur volume.
+
+Direction conservée : cave `#12100E`, surface `#1A1613`, texte `#F5F0EA`, paille
+`#F2C14E`, houblon `#6E9B5B`, eau `#5B8AA6`. Source Sans 3 pour les noms et les
+actions, IBM Plex Mono pour les mesures. Alignement à gauche ; noms dominants,
+mesures en colonnes, actions explicites. Pas de jauge de fermentation inventée,
+de feu vert automatique de conditionnement, ni de date de fin déduite d'un délai.
+
+Disposition retenue sur mobile :
+
+```
+[Carnet                  | Bilan]
+[Rechercher...           ][Filtres]
+[Tous] [En cuve] [À brasser] ...
+Nombre de fiches          Tri / Comparer
+Nom du brassin           Phase
+OG mesurée      Relevé       Volume
+cible           cible FG    prévu
+Contexte utile           Voir les mesures
+```
+
+Les graphiques d'écarts cible/mesure précèdent les distributions. La comparaison
+des recettes se fait dans une feuille à deux colonnes : pourcentages de grain,
+g/L de houblon par étape, levure, cibles et procédé. Les critères de catalogue
+restent disponibles, sans imposer une grille de statistiques en tête de liste.
+
+Le tri « À suivre d'abord » met le brassage démarré, les lots en cuve puis les
+brassins à venir avant l'historique. Les raccourcis portent des nombres calculés
+sur les autres critères sélectionnés. Les mesures manquantes concernent l'OG
+des lots produits et la FG des lots conditionnés ou terminés, jamais la FG d'une
+fermentation en cours. Aucune durée ne déclenche une déclaration « prêt ».
+
+Les boutons des lots ouvrent la rubrique Mesures, Carnet ou Dossier selon le
+besoin. La fiche reçoit les relevés intermédiaires, en conservant OG et FG ; une
+température absente reste absente. Les densités acceptent la virgule française.
+Les dates futures ou antérieures au brassage sont refusées pour ces relevés.
+
+Les écarts OG/FG sont exprimés en points de densité (écart de SG × 1000) et les
+valeurs exactes affichées permettent de les relire. La part conditionnée est
+pondérée par les litres et calculée uniquement sur les mêmes lots conditionnés
+ou terminés ayant les deux volumes : le volume encore en cuve n'est pas une perte.
+
+La comparaison accepte deux recettes, reste consultable à 320 px sans tableau
+horizontal, et conserve le grain en %, les autres fermentescibles en g/L,
+les houblons en g/L par moment d'ajout, les levures, les paliers et les cibles.
+La température, la durée et le jour d'un houblonnage ne sont pas confondus.
+
 ## Périmètre
 
 Cette évolution porte sur les vues, les critères de sélection et les analyses.
@@ -68,7 +120,12 @@ ont été retirés.
 
 - `domain/productionCatalog.ts` : projection, recherche, filtrage, tri et agrégats.
 - `domain/fermentationReadings.ts` : lectures de densité sans valeurs fictives.
-- `ui/production/ProductionCatalog.tsx` : cartes et préférences de présentation.
+- `domain/productionInsights.ts` : écarts, complétude des mesures et doses comparables.
+- `ui/production/ProductionCatalog.tsx` : préférences, sélection et navigation.
+- `ui/production/CatalogCards.tsx` : cartes adaptées aux recettes et à la phase des lots.
+- `ui/production/RecipeComparison.tsx` : comparaison de deux recettes.
+- `ui/production/BatchOutcomeAnalysis.tsx` : écarts cible/résultat et volumes appariés.
+- `ui/production/BatchGravityEntry.tsx` : saisie de relevés intermédiaires.
 - `ui/production/CatalogToolbar.tsx` : recherche, feuille de filtres et tri.
 - `ui/production/CatalogAnalysis.tsx` : graphiques et exploration par critère.
 - `ProductionTab.tsx` : navigation et branchement des actions de l’application.

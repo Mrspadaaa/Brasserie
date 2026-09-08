@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -19,6 +19,10 @@ import {
   measuredProduction
 } from '../../domain/productionCatalog';
 import { BATCH_STATUSES, statusOf } from '../../domain/batchStatus';
+import type { Batch } from '../../types';
+import { batchEntries } from '../../domain/productionCatalog';
+import { type BatchDetailSection, isPackaged, isProduced } from '../../domain/productionInsights';
+import { BatchOutcomeAnalysis } from './BatchOutcomeAnalysis';
 
 const number = (value: number) => value.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
 const chartTooltip = {
@@ -98,22 +102,36 @@ function Distribution({
 export function CatalogAnalysis({
   kind,
   entries,
-  onFilter
+  onFilter,
+  onOpenBatch
 }: {
   kind: CatalogKind;
   entries: CatalogEntry[];
   onFilter: (field: 'style' | 'hop' | 'status', value: string) => void;
+  onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
 }) {
+  const [exploring, setExploring] = useState(false);
   const production = measuredProduction(entries);
   const points = entries
     .filter((e) => e.abv !== undefined && e.ibu !== undefined)
     .map((e) => ({ name: e.name, id: e.id, abv: e.abv, ibu: e.ibu, volume: e.volumeL }));
   const noun = kind === 'recipes' ? 'recette' : 'brassin';
+  const resultEntries =
+    kind === 'batches'
+      ? entries
+      : batchEntries([
+          ...new Map(entries.flatMap((e) => e.linkedBatches).map((b) => [b.id, b])).values()
+        ]);
+  const tastingEntries = resultEntries.filter(
+    (e) => e.batch && isPackaged(e.batch) && e.batch.notesTasting?.trim()
+  );
   return (
     <div className="space-y-4" aria-label={`Analyses des ${noun}s`}>
       <div className="border-y border-cave-800 py-4">
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className="text-lg font-semibold text-cave-50">Le carnet en chiffres</h3>
+          <h3 className="text-lg font-semibold text-cave-50">
+            {kind === 'recipes' ? 'Les résultats de mes recettes' : 'Le bilan des brassins'}
+          </h3>
           <span className="text-sm text-cave-400 text-right">
             {entries.length} {noun}
             {entries.length > 1 ? 's' : ''}
@@ -124,20 +142,20 @@ export function CatalogAnalysis({
         {kind === 'recipes' ? (
           <dl className="grid grid-cols-3 gap-3">
             <div>
-              <dt className="text-sm text-cave-400">Styles</dt>
+              <dt className="text-sm text-cave-400">Brassées</dt>
               <dd className="reading text-xl text-ebc-straw">
-                {countGroups(entries, 'style').length}
+                {entries.filter((e) => e.linkedBatches.some(isProduced)).length}
               </dd>
             </div>
             <div>
-                <dt className="text-sm text-cave-400">Avec brassin</dt>
+              <dt className="text-sm text-cave-400">À essayer</dt>
               <dd className="reading text-xl text-cave-50">
-                {entries.filter((e) => e.linkedBatches.length).length}
+                {entries.filter((e) => !e.linkedBatches.some(isProduced)).length}
               </dd>
             </div>
             <div>
-              <dt className="text-sm text-cave-400">Houblons</dt>
-              <dd className="reading text-xl text-hop">{countGroups(entries, 'hops').length}</dd>
+              <dt className="text-sm text-cave-400">Dégustations</dt>
+              <dd className="reading text-xl text-hop">{tastingEntries.length}</dd>
             </div>
           </dl>
         ) : (
@@ -172,6 +190,40 @@ export function CatalogAnalysis({
           </>
         )}
       </div>
+      {(kind === 'batches' || resultEntries.length > 0) && (
+        <BatchOutcomeAnalysis entries={resultEntries} onOpenBatch={onOpenBatch} />
+      )}
+      {kind === 'recipes' && resultEntries.length === 0 && (
+        <p className="text-sm text-cave-200 border-l-2 border-water pl-3 py-1">
+          Les résultats apparaîtront après les premiers brassins. Pour choisir entre deux recettes,
+          utilise « Comparer » dans le carnet.
+        </p>
+      )}
+      {tastingEntries.length > 0 && (
+        <section className="panel p-4" aria-label="Retours de dégustation">
+          <h4 className="font-semibold text-cave-50">Retours de dégustation</h4>
+          <p className="text-sm text-cave-400 mt-1">
+            Tes notes de dégustation, reliées au lot concerné.
+          </p>
+          <ul className="divide-y divide-cave-800 mt-2">
+            {tastingEntries.slice(0, 4).map((e) => (
+              <li key={e.id}>
+                <button
+                  type="button"
+                  onClick={() => onOpenBatch(e.batch!, 'tasting')}
+                  className="w-full min-h-touch text-left py-3"
+                >
+                  <span className="block text-base text-cave-50 font-semibold">{e.name}</span>
+                  <span className="text-sm text-cave-400">{e.id}</span>
+                  <span className="block text-sm text-cave-200 mt-1 line-clamp-3">
+                    {e.batch!.notesTasting}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {kind === 'batches' && (
         <section className="panel p-4 space-y-3" aria-label="Volumes par mois de brassage">
           <div>
@@ -253,120 +305,136 @@ export function CatalogAnalysis({
           )}
         </section>
       )}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Distribution
-          title="Styles de la sélection"
-          data={countGroups(entries, 'style')}
-          total={entries.length}
-          onSelect={(name) => onFilter('style', name)}
-          color="#F2C14E"
-        />
-        <Distribution
-          title="Houblons les plus utilisés"
-          data={countGroups(entries, 'hops')}
-          total={entries.length}
-          onSelect={(name) => onFilter('hop', name)}
-          color="#8DAE79"
-        />
-      </div>
-      <p className="text-sm text-cave-400 px-1">
-        Touche un style ou un houblon pour retrouver les fiches correspondantes. Chaque fiche compte
-        une fois par houblon.
-      </p>
-      {kind === 'batches' && (
-        <Distribution
-          title="Avancement des lots"
-          data={BATCH_STATUSES.map((status) => ({
-            name: statusOf(status).label,
-            count: entries.filter((e) => e.batch?.status === status).length
-          })).filter((row) => row.count)}
-          total={entries.length}
-          onSelect={(label) =>
-            onFilter('status', BATCH_STATUSES.find((s) => statusOf(s).label === label)!)
-          }
-          color="#5B8AA6"
-        />
-      )}
-      <section className="panel p-4 space-y-3" aria-label="Comparaison alcool et amertume">
-        <div>
-          <h4 className="font-semibold text-cave-50">Alcool et amertume</h4>
-          <p className="text-sm text-cave-400">
-            {kind === 'recipes' ? 'Cibles des recettes' : 'Alcool mesuré et IBU cible du lot'} ·{' '}
-            {points.length}/{entries.length} fiches renseignées
+      <button
+        type="button"
+        className="min-h-touch w-full text-left px-3 border-y border-cave-700 text-base text-cave-200"
+        aria-expanded={exploring}
+        aria-controls="catalog-exploration"
+        onClick={() => setExploring(!exploring)}
+      >
+        <span className="float-right text-ebc-straw" aria-hidden>
+          {exploring ? '−' : '+'}
+        </span>
+        Explorer les profils et ingrédients
+      </button>
+      {exploring && (
+        <div id="catalog-exploration" className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <Distribution
+              title="Styles de la sélection"
+              data={countGroups(entries, 'style')}
+              total={entries.length}
+              onSelect={(name) => onFilter('style', name)}
+              color="#F2C14E"
+            />
+            <Distribution
+              title="Houblons les plus utilisés"
+              data={countGroups(entries, 'hops')}
+              total={entries.length}
+              onSelect={(name) => onFilter('hop', name)}
+              color="#8DAE79"
+            />
+          </div>
+          <p className="text-sm text-cave-400 px-1">
+            Touche un style ou un houblon pour retrouver les fiches correspondantes. Chaque fiche
+            compte une fois par houblon.
           </p>
-        </div>
-        {points.length ? (
-          <>
-            <div
-              className="h-56 w-full"
-              role="img"
-              aria-label="Nuage de points : alcool en pourcentage, amertume cible en IBU"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <ScatterChart margin={{ top: 5, left: -15, bottom: 14, right: 10 }}>
-                  <CartesianGrid stroke="#3D342E" />
-                  <XAxis
-                    type="number"
-                    dataKey="abv"
-                    name="Alcool"
-                    unit=" %"
-                    tick={{ fill: '#9A8A7E', fontSize: 12 }}
-                    label={{
-                      value: 'Alcool (%)',
-                      position: 'bottom',
-                      fill: '#9A8A7E',
-                      fontSize: 12
-                    }}
-                  />
-                  <YAxis
-                    type="number"
-                    dataKey="ibu"
-                    name="Amertume cible"
-                    unit=" IBU"
-                    tick={{ fill: '#9A8A7E', fontSize: 12 }}
-                  />
-                  <ZAxis range={[65, 65]} />
-                  <Tooltip
-                    cursor={{ strokeDasharray: '3 3' }}
-                    content={({ active, payload }) =>
-                      active && payload?.[0] ? (
-                        <div className="p-3 rounded-control text-sm" style={chartTooltip}>
-                          <strong>{payload[0].payload.name}</strong>
-                          <p>
-                            {number(payload[0].payload.abv)} % · {number(payload[0].payload.ibu)}{' '}
-                            IBU
-                          </p>
-                        </div>
-                      ) : null
-                    }
-                  />
-                  <Scatter data={points} fill="#F2C14E" isAnimationActive={false} />
-                </ScatterChart>
-              </ResponsiveContainer>
+          {kind === 'batches' && (
+            <Distribution
+              title="Avancement des lots"
+              data={BATCH_STATUSES.map((status) => ({
+                name: statusOf(status).label,
+                count: entries.filter((e) => e.batch?.status === status).length
+              })).filter((row) => row.count)}
+              total={entries.length}
+              onSelect={(label) =>
+                onFilter('status', BATCH_STATUSES.find((s) => statusOf(s).label === label)!)
+              }
+              color="#5B8AA6"
+            />
+          )}
+          <section className="panel p-4 space-y-3" aria-label="Comparaison alcool et amertume">
+            <div>
+              <h4 className="font-semibold text-cave-50">Alcool et amertume</h4>
+              <p className="text-sm text-cave-400">
+                {kind === 'recipes' ? 'Cibles des recettes' : 'Alcool mesuré et IBU cible du lot'} ·{' '}
+                {points.length}/{entries.length} fiches renseignées
+              </p>
             </div>
-            <details className="text-sm text-cave-400">
-              <summary className="min-h-touch flex items-center cursor-pointer">
-                Détail des {points.length} points
-              </summary>
-              <ul className="space-y-2">
-                {points.map((p) => (
-                  <li key={p.id} className="flex justify-between gap-4">
-                    <span>{p.name}</span>
-                    <span className="shrink-0">
-                      {number(p.abv!)} % · {number(p.ibu!)} IBU
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          </>
-        ) : (
-          <p className="py-4 text-sm text-cave-400">
-            Aucune fiche ne possède encore les deux valeurs. Les données absentes ne sont pas
-            remplacées par zéro.
-          </p>
-        )}
-      </section>
+            {points.length ? (
+              <>
+                <div
+                  className="h-56 w-full"
+                  role="img"
+                  aria-label="Nuage de points : alcool en pourcentage, amertume cible en IBU"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 5, left: -15, bottom: 14, right: 10 }}>
+                      <CartesianGrid stroke="#3D342E" />
+                      <XAxis
+                        type="number"
+                        dataKey="abv"
+                        name="Alcool"
+                        unit=" %"
+                        tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                        label={{
+                          value: 'Alcool (%)',
+                          position: 'bottom',
+                          fill: '#9A8A7E',
+                          fontSize: 12
+                        }}
+                      />
+                      <YAxis
+                        type="number"
+                        dataKey="ibu"
+                        name="Amertume cible"
+                        unit=" IBU"
+                        tick={{ fill: '#9A8A7E', fontSize: 12 }}
+                      />
+                      <ZAxis range={[65, 65]} />
+                      <Tooltip
+                        cursor={{ strokeDasharray: '3 3' }}
+                        content={({ active, payload }) =>
+                          active && payload?.[0] ? (
+                            <div className="p-3 rounded-control text-sm" style={chartTooltip}>
+                              <strong>{payload[0].payload.name}</strong>
+                              <p>
+                                {number(payload[0].payload.abv)} % ·{' '}
+                                {number(payload[0].payload.ibu)} IBU
+                              </p>
+                            </div>
+                          ) : null
+                        }
+                      />
+                      <Scatter data={points} fill="#F2C14E" isAnimationActive={false} />
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                </div>
+                <details className="text-sm text-cave-400">
+                  <summary className="min-h-touch flex items-center cursor-pointer">
+                    Détail des {points.length} points
+                  </summary>
+                  <ul className="space-y-2">
+                    {points.map((p) => (
+                      <li key={p.id} className="flex justify-between gap-4">
+                        <span>{p.name}</span>
+                        <span className="shrink-0">
+                          {number(p.abv!)} % · {number(p.ibu!)} IBU
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              </>
+            ) : (
+              <p className="py-4 text-sm text-cave-400">
+                Aucune fiche ne possède encore les deux valeurs. Les données absentes ne sont pas
+                remplacées par zéro.
+              </p>
+            )}
+          </section>
+        </div>
+      )}
     </div>
   );
 }

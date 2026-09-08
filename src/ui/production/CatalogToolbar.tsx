@@ -12,6 +12,7 @@ import {
 } from '../../domain/productionCatalog';
 import { TimeFilterPeriod } from '../../types';
 import { DateUtils } from '../../services/dateUtils';
+import { matchesWorkFilter, type WorkFilter } from '../../domain/productionInsights';
 
 export const catalogField =
   'w-full min-h-touch rounded-control border border-cave-700 bg-cave-950 px-3 text-base text-cave-50 focus:border-ebc-straw focus:outline-none';
@@ -32,21 +33,33 @@ const filterLabel: Partial<Record<keyof CatalogFilters, string>> = {
 export function CatalogToolbar({
   kind,
   entries,
+  facetEntries,
   count,
   filters,
   onChange,
   view,
   onViewChange,
-  globalPeriod
+  globalPeriod,
+  work,
+  onWorkChange,
+  comparing,
+  onCompare,
+  onCreate
 }: {
   kind: CatalogKind;
   entries: CatalogEntry[];
+  facetEntries: CatalogEntry[];
   count: number;
   filters: CatalogFilters;
   onChange: (next: CatalogFilters) => void;
   view: 'list' | 'analysis';
   onViewChange: (view: 'list' | 'analysis') => void;
   globalPeriod: TimeFilterPeriod;
+  work: WorkFilter;
+  onWorkChange: (work: WorkFilter) => void;
+  comparing: boolean;
+  onCompare: () => void;
+  onCreate?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const set = (patch: Partial<CatalogFilters>) => onChange({ ...filters, ...patch });
@@ -56,7 +69,10 @@ export function CatalogToolbar({
   const periodIsActive =
     filters.period !== 'all' && (filters.period !== 'global' || globalPeriod !== 'all');
   const moreCount = active.length + Number(filters.versions !== 'all') + Number(periodIsActive);
-  const reset = () => onChange({ ...DEFAULT_CATALOG_FILTERS, sort: filters.sort });
+  const reset = () => {
+    onChange({ ...DEFAULT_CATALOG_FILTERS, sort: filters.sort });
+    onWorkChange('all');
+  };
   const noun = kind === 'recipes' ? 'recette' : 'brassin';
   const select = (field: 'style' | 'hop' | 'malt' | 'yeast', options: string[]) => (
     <label className="block space-y-1.5">
@@ -123,7 +139,9 @@ export function CatalogToolbar({
       ? [
           ['', 'Tous'],
           ['active', 'En cuve'],
-          ['planifie', 'Planifiés'],
+          ['planifie', 'À brasser'],
+          ['work:measurements', 'Mesures manquantes'],
+          ['work:tasting', 'Notes à compléter'],
           ['conditionne', 'Conditionnés'],
           ['termine', 'Terminés'],
           ['annule', 'Annulés']
@@ -131,11 +149,42 @@ export function CatalogToolbar({
       : [
           ['all', 'Toutes'],
           ['brewed', 'Avec brassin'],
-        ['unbrewed', 'Sans brassin'],
+          ['unbrewed', 'Sans brassin'],
           ['favorite', 'Favoris']
         ];
   return (
     <section aria-label={`Recherche et filtres des ${noun}s`} className="space-y-3">
+      <div className="flex gap-1 border-b border-cave-700" aria-label="Présentation">
+        <button
+          type="button"
+          aria-label="Afficher la liste"
+          aria-pressed={view === 'list'}
+          onClick={() => onViewChange('list')}
+          className={`min-h-touch flex-1 flex items-center justify-center gap-2 border-b-2 text-base ${view === 'list' ? 'border-ebc-straw text-ebc-straw font-semibold' : 'border-transparent text-cave-400'}`}
+        >
+          <List className="h-4 w-4" />
+          Carnet
+        </button>
+        <button
+          type="button"
+          aria-label="Afficher les analyses"
+          aria-pressed={view === 'analysis'}
+          onClick={() => onViewChange('analysis')}
+          className={`min-h-touch flex-1 flex items-center justify-center gap-2 border-b-2 text-base ${view === 'analysis' ? 'border-ebc-straw text-ebc-straw font-semibold' : 'border-transparent text-cave-400'}`}
+        >
+          <ChartNoAxesCombined className="h-4 w-4" />
+          Bilan
+        </button>
+        {onCreate && (
+          <button
+            type="button"
+            onClick={onCreate}
+            className="min-h-touch shrink-0 rounded-control bg-ebc-straw px-3 mb-1 ml-2 text-sm font-semibold text-cave-950"
+          >
+            {kind === 'recipes' ? '+ Recette' : '+ Brassin'}
+          </button>
+        )}
+      </div>
       <div className="flex gap-2">
         <label className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-3.5 h-4 w-4 text-cave-400" aria-hidden />
@@ -165,22 +214,70 @@ export function CatalogToolbar({
         className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none"
         aria-label={kind === 'batches' ? 'Avancement des brassins' : 'Usage des recettes'}
       >
-        {quick.map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={(kind === 'batches' ? filters.status : filters.use) === value}
-            onClick={() =>
-              set(kind === 'batches' ? { status: value } : { use: value as CatalogFilters['use'] })
-            }
-            className={`min-h-touch shrink-0 rounded-full px-3 text-sm border ${(kind === 'batches' ? filters.status : filters.use) === value ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-800 text-cave-400'}`}
-          >
-            {label}
-          </button>
-        ))}
+        {quick.map(([value, label]) => {
+          const current =
+            kind === 'batches' ? (work !== 'all' ? `work:${work}` : filters.status) : filters.use;
+          const quantity = facetEntries.filter((e) =>
+            kind === 'recipes'
+              ? value === 'all' ||
+                (value === 'favorite'
+                  ? e.favorite
+                  : value === 'brewed'
+                    ? e.linkedBatches.length > 0
+                    : e.linkedBatches.length === 0)
+              : value.startsWith('work:')
+                ? matchesWorkFilter(e, value.slice(5) as WorkFilter)
+                : !value ||
+                  (value === 'active'
+                    ? ['fermentation', 'garde'].includes(e.batch?.status ?? '')
+                    : e.batch?.status === value)
+          ).length;
+          return (
+            <button
+              key={value}
+              type="button"
+              aria-label={label}
+              aria-pressed={current === value}
+              onClick={() => {
+                if (kind === 'batches') {
+                  onWorkChange(value.startsWith('work:') ? (value.slice(5) as WorkFilter) : 'all');
+                  set({ status: value.startsWith('work:') ? '' : value });
+                } else set({ use: value as CatalogFilters['use'] });
+              }}
+              className={`min-h-touch shrink-0 rounded-full px-3 text-sm border ${current === value ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-800 text-cave-400'}`}
+            >
+              {label}{' '}
+              <span className="ml-1 tabular-nums opacity-75" aria-hidden>
+                {quantity}
+              </span>
+            </button>
+          );
+        })}
       </div>
-      {(active.length > 0 || filters.versions !== 'all' || periodIsActive) && (
+      {(active.length > 0 ||
+        filters.versions !== 'all' ||
+        periodIsActive ||
+        work !== 'all' ||
+        (filters.status && !quick.some(([value]) => value === filters.status))) && (
         <div className="flex flex-wrap gap-1.5" aria-label="Filtres actifs">
+          {work !== 'all' && (
+            <button
+              type="button"
+              onClick={() => onWorkChange('all')}
+              className="min-h-touch px-2.5 rounded-control bg-cave-850 text-sm text-cave-200"
+            >
+              {work === 'measurements' ? 'Mesures manquantes' : 'Dégustation à noter'} ×
+            </button>
+          )}
+          {filters.status && !quick.some(([value]) => value === filters.status) && (
+            <button
+              type="button"
+              onClick={() => set({ status: '' })}
+              className="min-h-touch px-2.5 rounded-control bg-cave-850 text-sm text-cave-200"
+            >
+              {statusOf(filters.status as Parameters<typeof statusOf>[0]).label} ×
+            </button>
+          )}
           {active.map((key) => (
             <button
               type="button"
@@ -238,6 +335,7 @@ export function CatalogToolbar({
             value={filters.sort}
             onChange={(e) => set({ sort: e.target.value as CatalogFilters['sort'] })}
           >
+            {kind === 'batches' && <option value="work">À suivre d’abord</option>}
             <option value="recent">Date ↓</option>
             <option value="oldest">Date ↑</option>
             <option value="name">Nom A–Z</option>
@@ -249,29 +347,17 @@ export function CatalogToolbar({
               {kind === 'batches' ? 'Avancement' : 'Nombre de lots ↓'}
             </option>
           </select>
-          <div
-            className="flex rounded-control border border-cave-700 p-0.5"
-            aria-label="Présentation"
-          >
+          {kind === 'recipes' && (
             <button
               type="button"
-              aria-label="Afficher la liste"
-              aria-pressed={view === 'list'}
-              onClick={() => onViewChange('list')}
-              className={`touch-target rounded-control ${view === 'list' ? 'bg-cave-800 text-ebc-straw' : 'text-cave-400'}`}
+              aria-label="Choisir des recettes à comparer"
+              aria-pressed={comparing}
+              onClick={onCompare}
+              className={`min-h-touch px-2 text-sm ${comparing ? 'text-ebc-straw' : 'text-cave-200'}`}
             >
-              <List className="h-5 w-5" />
+              Comparer
             </button>
-            <button
-              type="button"
-              aria-label="Afficher les analyses"
-              aria-pressed={view === 'analysis'}
-              onClick={() => onViewChange('analysis')}
-              className={`touch-target rounded-control ${view === 'analysis' ? 'bg-cave-800 text-ebc-straw' : 'text-cave-400'}`}
-            >
-              <ChartNoAxesCombined className="h-5 w-5" />
-            </button>
-          </div>
+          )}
         </div>
       </div>
       <Sheet
@@ -310,7 +396,10 @@ export function CatalogToolbar({
               <select
                 aria-label="Filtrer par avancement"
                 value={filters.status}
-                onChange={(e) => set({ status: e.target.value })}
+                onChange={(e) => {
+                  set({ status: e.target.value });
+                  onWorkChange('all');
+                }}
                 className={catalogField}
               >
                 <option value="">Tous</option>

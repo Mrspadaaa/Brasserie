@@ -13,6 +13,7 @@ export type CatalogSort =
   | 'abv'
   | 'ibu'
   | 'color'
+  | 'work'
   | 'activity';
 export interface CatalogFilters {
   search: string;
@@ -206,10 +207,12 @@ export function catalogOptions(
   field: 'style' | 'hops' | 'malts' | 'yeast'
 ): string[] {
   const options = new Map<string, string>();
-  entries.flatMap(e => Array.isArray(e[field]) ? e[field] : [e[field]]).forEach(value => {
-    const key = catalogText(value);
-    if (key && !options.has(key)) options.set(key, value.trim());
-  });
+  entries
+    .flatMap((e) => (Array.isArray(e[field]) ? e[field] : [e[field]]))
+    .forEach((value) => {
+      const key = catalogText(value);
+      if (key && !options.has(key)) options.set(key, value.trim());
+    });
   return [...options.values()].sort((a, b) => a.localeCompare(b, 'fr'));
 }
 function inRange(value: number | undefined, min: string, max: string): boolean {
@@ -296,23 +299,38 @@ export function filterCatalog(
   });
   const numeric = (a: number | undefined, b: number | undefined, ascending = false) =>
     a === undefined ? (b === undefined ? 0 : 1) : b === undefined ? -1 : ascending ? a - b : b - a;
+  const workRank = (batch?: Batch) => {
+    if (!batch) return 99;
+    if (batch.status === 'planifie' && batch.brewDay?.startedAt && !batch.brewDay.finishedAt)
+      return 0;
+    if (['fermentation', 'garde'].includes(batch.status)) return 1;
+    if (batch.status === 'planifie') return 2;
+    return batch.status === 'conditionne' ? 3 : batch.status === 'termine' ? 4 : 5;
+  };
   return matches.sort((a, b) => {
     const order =
-      filters.sort === 'name'
-        ? a.name.localeCompare(b.name, 'fr')
-        : filters.sort === 'recent' || filters.sort === 'oldest'
-          ? numeric(a.timestamp, b.timestamp, filters.sort === 'oldest')
-          : filters.sort === 'volume'
-            ? numeric(a.volumeL, b.volumeL)
-            : filters.sort === 'abv'
-              ? numeric(a.abv, b.abv)
-              : filters.sort === 'ibu'
-                ? numeric(a.ibu, b.ibu)
-                : filters.sort === 'color'
-                  ? numeric(a.ebc, b.ebc)
-                  : a.batch && b.batch
-                    ? statusOf(a.batch.status).order - statusOf(b.batch.status).order
-                    : b.linkedBatches.length - a.linkedBatches.length;
+      filters.sort === 'work'
+        ? workRank(a.batch) - workRank(b.batch) ||
+          numeric(
+            a.timestamp,
+            b.timestamp,
+            a.batch?.status === 'planifie' && b.batch?.status === 'planifie'
+          )
+        : filters.sort === 'name'
+          ? a.name.localeCompare(b.name, 'fr')
+          : filters.sort === 'recent' || filters.sort === 'oldest'
+            ? numeric(a.timestamp, b.timestamp, filters.sort === 'oldest')
+            : filters.sort === 'volume'
+              ? numeric(a.volumeL, b.volumeL)
+              : filters.sort === 'abv'
+                ? numeric(a.abv, b.abv)
+                : filters.sort === 'ibu'
+                  ? numeric(a.ibu, b.ibu)
+                  : filters.sort === 'color'
+                    ? numeric(a.ebc, b.ebc)
+                    : a.batch && b.batch
+                      ? statusOf(a.batch.status).order - statusOf(b.batch.status).order
+                      : b.linkedBatches.length - a.linkedBatches.length;
     return order || a.name.localeCompare(b.name, 'fr') || a.id.localeCompare(b.id);
   });
 }

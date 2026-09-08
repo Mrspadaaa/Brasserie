@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
@@ -9,6 +8,7 @@ import { CreativeLabTab } from '../CreativeLabTab';
 import { describeMoment } from '../../domain/hopStage';
 import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
+import type { BatchDetailSection } from '../../domain/productionInsights';
 
 interface ProductionTabProps {
   batches: Batch[];
@@ -68,6 +68,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   }, [recipes, selectedRecipeToScale]);
   const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
+  const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
 
   useEffect(() => {
     if (targetSubTab) {
@@ -147,12 +148,10 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       </div>
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
-        <div className="flex items-center justify-between gap-3 px-1">
-          <h2 className="text-lg font-semibold text-cave-50">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>
-          <button type="button" onClick={onOpenCreateBatch} className="min-h-touch px-3 shrink-0 rounded-control bg-ebc-straw text-cave-950 font-semibold text-sm inline-flex items-center gap-1.5"><Plus className="h-4 w-4" />{subTab === 'recipes' ? 'Créer' : 'Planifier'}</button>
-        </div>
+        <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>
         <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={batches} globalTimeFilter={globalTimeFilter}
-          onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={setDetailBatch} onOpenBrewDay={onOpenBrewDay} />
+          onCreate={onOpenCreateBatch}
+          onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} />
       </>}
 
       {/* 4. SUBTAB: CREATIVE LAB (ATELIER R&D DE LA BRASSERIE) */}
@@ -281,7 +280,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         </div>
       )}
 
-      <BatchDetailSheet batch={detailBatch} onClose={() => setDetailBatch(null)} />
+      <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onClose={() => setDetailBatch(null)} />
     </div>
   );
 };

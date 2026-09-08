@@ -117,7 +117,7 @@ export const Sheet: React.FC<SheetProps> = ({
           <button
             onClick={onClose}
             aria-label="Fermer"
-            className="w-8 h-8 rounded-control text-cave-400
+            className="min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
                        hover:text-cave-100 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />

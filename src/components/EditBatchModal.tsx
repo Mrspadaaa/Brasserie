@@ -32,7 +32,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
   const [bottlingDate, setBottlingDate] = useState(batch.bottlingDate || '');
   
   // Gravity log entries
-  const [gravityLog, setGravityLog] = useState<Array<{ date: string; sg: number; tempC: number; notes?: string }>>(
+  const [gravityLog, setGravityLog] = useState<NonNullable<Batch['gravityLog']>>(
     batch.gravityLog || []
   );
   const [newLogDate, setNewLogDate] = useState(new Date().toLocaleDateString('fr-CH'));
