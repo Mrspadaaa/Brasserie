@@ -47,7 +47,7 @@ export function pick(value: any, keys: string[]) {
   );
 }
 export const RECIPE_FIELDS =
-  'id name style volumeL ogTarget fgTarget abvTarget ibuTarget colorEbc efficiencyPct preBoilL preBoilHotL fermentables malts totalGristKg hops adjuncts yeast boilMin mash waterPlan fermentation instructions steps notes notesCreation carboTarget brewhouse sourceRecipeId capturedAt'.split(
+  'id name style volumeL ogTarget fgTarget abvTarget ibuTarget colorEbc efficiencyPct preBoilL preBoilHotL fermentables malts totalGristKg hops adjuncts yeast boilMin mash waterPlan fermentation instructions steps notes notesCreation carboTarget brewhouse sourceRecipeId capturedAt hopMatrixId hopAromaTarget hopPredictionIds'.split(
     ' '
   );
 export const BATCH_FIELDS =

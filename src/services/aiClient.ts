@@ -31,7 +31,9 @@ export type AiTaskId =
   /** Relecture critique d'une recette complète, eau comprise. */
   | 'reviewRecipe'
   /** Caractéristiques publiées d'un ingrédient, cherchées avec l'ancrage Google. */
-  | 'lookupIngredient';
+  | 'lookupIngredient'
+  | 'lookupHopVariety'
+  | 'readHopCoa';
 
 export const TIER_LABEL: Record<AiTier, string> = {
   fast: '⚡ Rapide',

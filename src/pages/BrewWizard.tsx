@@ -29,6 +29,7 @@ import { computeBeerColor } from '../domain/beerColor';
 import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
+import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -875,15 +876,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe) => {
+  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds'>) => {
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
-    setDetails(previous => r.complete ? content : {
+    setDetails(previous => ({ ...(r.complete ? content : {
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
       waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    });
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds } : {}) }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -985,7 +986,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   };
 
   const patchHop = (index: number, patch: Partial<HopIngredient>) =>
-    setHops(hops.map((h, i) => (i === index ? { ...h, ...patch } : h)));
+    setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
     setYeast(current => {
@@ -996,7 +997,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         form: item?.yeastForm ?? 'sèche', unit, qty: current.unit === unit ? current.qty : 1,
         attenuationPct: item?.yeastAttenuationPct,
         fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
-        notes: undefined
+        notes: undefined, hopIndexId: undefined
       };
     });
   };
@@ -1028,6 +1029,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     totalGristKg: totalGrist,
     hops,
     yeast,
+    hopMatrixId: details.hopMatrixId,
+    hopAromaTarget: details.hopAromaTarget,
+    hopPredictionIds: details.hopPredictionIds,
     adjuncts: details.adjuncts,
     mash: {
       steps: mashSteps,
@@ -1108,7 +1112,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     try {
       if(!brewhouse)return;
       const resized=adaptRecipeEquipment(build(),brewhouse,defaultBrewVolume(brewhouse));
-      applyImport(normalizeRecipeImport(resized,'local',true));
+      applyImport(normalizeRecipeImport(resized,'local',true), resized);
       setStep('identite');
       setEquipmentNotice(`Recette adaptée à ${resized.volumeL} L : ingrédients, eaux, sels et acide recalculés.`);
     }catch(e){setEquipmentNotice(e instanceof Error?e.message:'Adaptation impossible.');}
@@ -1254,7 +1258,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
       <BrewerChat scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
         onDraftApply={value => {
-          applyImport({...value, mashSteps:value.mash?.steps ?? [], present:Object.keys(value), complete:true} as ImportedRecipe);
+          applyImport({...value, mashSteps:value.mash?.steps ?? [], present:Object.keys(value), complete:true} as ImportedRecipe, value);
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}

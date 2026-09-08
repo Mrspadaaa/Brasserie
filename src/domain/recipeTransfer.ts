@@ -203,7 +203,8 @@ export const recipeFields = {
   version: n('Version'),
   parentRecipeId: t('Recette d’origine')
 } satisfies Record<
-  Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water'>,
+  // Index IDs and local axis definitions travel with a database backup, not a standalone recipe.
+  Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds'>,
   Field
 >;
 
@@ -218,7 +219,7 @@ const estimates = o('Estimations au moment de la copie', {
   ra: n('Alcalinité résiduelle après acide (ppm CaCO₃)', -1e7)
 });
 const root = o('', { ...recipeFields, estimates });
-export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water'>;
+export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds'>;
 export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
 
 /** Shared boundary for text and AI data: finite values, known keys and enums only.

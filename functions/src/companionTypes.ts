@@ -92,6 +92,7 @@ export interface BrewerProposal {
   decidedAt?: number;
 }
 export interface BrewerContext {
+  hopIndex?: import('./hopPredictionCore.js').HopEngineData & { predictions: import('./hopPredictionSchema.js').HopPredictionComparison[]; tastings: import('./hopPredictionSchema.js').HopTasting[]; truncated: string[] };
   workspace?: { screen: string; records: Record<string, any[]>; truncated: string[] };
   recipe?: any;
   journal?: any;

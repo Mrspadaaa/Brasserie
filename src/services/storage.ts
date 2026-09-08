@@ -21,6 +21,10 @@ import { FirestoreRepo, CollectionName } from './firestoreRepo';
 import { deviceBackup, restoreBackup } from './dataBackup';
 import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
 import { Units } from './units';
+import { HopVariety, HopLot, assertHopDocument } from '../../functions/src/hopIndexSchema';
+import { parseBackup } from '../../functions/src/backupCore';
+import { HopKnowledge, HopPredictionSnapshot, HopTasting, assertHopKnowledge, assertHopTasting } from '../../functions/src/hopPredictionSchema';
+import { assertHopPredictionSnapshot } from '../../functions/src/hopPredictionValidation';
 
 /**
  * Façade de données de l'application.
@@ -482,6 +486,84 @@ export const StorageService = {
       `↩️ Annulation écriture ${id} et restauration des stocks antérieurs (${target.description})`
     );
     return { success: true, message: `Écriture ${id} annulée et stocks restaurés avec succès !` };
+  },
+
+  // Documentary hop index. Upserts never replace a filtered collection or copy inherited facts.
+  getHopVarieties(): HopVariety[] {
+    return clean<HopVariety>(FirestoreRepo.all('hopVarieties'));
+  },
+  getHopLots(): HopLot[] {
+    return clean<HopLot>(FirestoreRepo.all('hopLots'));
+  },
+  getHopKnowledge(): HopKnowledge[] { return clean<HopKnowledge>(FirestoreRepo.all('hopKnowledge')); },
+  getHopPredictions(): HopPredictionSnapshot[] { return clean<HopPredictionSnapshot>(FirestoreRepo.all('hopPredictions')); },
+  getHopTastings(): HopTasting[] { return clean<HopTasting>(FirestoreRepo.all('hopTastings')); },
+  saveHopKnowledge(item: HopKnowledge): void {
+    assertHopKnowledge(item);
+    const previous = this.getHopKnowledge().find(row => row.id === item.id);
+    if (previous && sameDoc(previous, item)) return;
+    if (previous && previous.kind !== item.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
+    if (previous && previous.kind === 'model' && item.kind === 'model' && previous.version === item.version) throw Error('Changer la version du modèle pour conserver une révision identifiable.');
+    if (previous && previous.kind === 'axis' && item.kind === 'axis' && previous.version === item.version) throw Error('Changer la version de l’axe pour conserver son échelle historique.');
+    FirestoreRepo.put('hopKnowledge', item.id, item);
+  },
+  saveHopPrediction(item: HopPredictionSnapshot): void {
+    assertHopPredictionSnapshot(item);
+    const previous = this.getHopPredictions().find(row => row.id === item.id);
+    if (previous) { if (!sameDoc(previous, item)) throw Error('Une prédiction figée ne peut pas être remplacée.'); return; }
+    FirestoreRepo.put('hopPredictions', item.id, item);
+  },
+  saveHopTasting(item: HopTasting): void {
+    assertHopTasting(item);
+    const previous = this.getHopTastings().find(row => row.id === item.id);
+    if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopTastings', item.id, item);
+  },
+  saveHopVariety(item: HopVariety): void {
+    assertHopDocument('hopVarieties', item);
+    const previous = FirestoreRepo.all<any>('hopVarieties').find(row => row.id === item.id || row.__docId === item.id);
+    if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopVarieties', item.id, item);
+  },
+  saveHopLot(item: HopLot): void {
+    assertHopDocument('hopLots', item);
+    const previous = FirestoreRepo.all<any>('hopLots').find(row => row.id === item.id || row.__docId === item.id);
+    if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopLots', item.id, item);
+  },
+  /** A backup or a documentary pack; both pass the same full validation before any write. */
+  async importHopIndex(json: string): Promise<number> {
+    const indexCollections = ['hopVarieties', 'hopLots', 'hopKnowledge', 'hopPredictions', 'hopTastings'];
+    const input = JSON.parse(json), raw = Array.isArray(input) ? { hopKnowledge: input } : input;
+    const isPack = raw && typeof raw === 'object' && !raw.schemaVersion && Object.keys(raw).length > 0 && Object.keys(raw).every(name => indexCollections.includes(name));
+    const normalized = isPack ? JSON.stringify({ schemaVersion: 3, source: 'device', exportedAt: new Date().toISOString(), collections: Object.fromEntries(Object.entries(raw).map(([name, rows]) => {
+      if (!Array.isArray(rows) || rows.some(row => !row || typeof row.id !== 'string')) throw Error('Pack documentaire : chaque collection doit contenir des fiches identifiées.');
+      return [name, rows.map(data => ({ id: data.id, data }))];
+    })) }) : json;
+    const backup = parseBackup(normalized);
+    const entries = Object.entries(backup.collections);
+    if (entries.some(([name]) => !indexCollections.includes(name))) throw Error('Ce fichier doit contenir seulement les collections de l’index houblon.');
+    const changes: Array<{ name: CollectionName; id: string; data: unknown }> = [];
+    for (const [name, rows] of entries) {
+      const current = new Map(FirestoreRepo.all<any>(name as CollectionName).map(d => [d.__docId || d.id, d]));
+      for (const row of rows ?? []) {
+        const previous = current.get(row.id), unchanged = previous && sameDoc(previous, row.data);
+        if (previous && !unchanged && name === 'hopPredictions') throw Error('Une prédiction figée différente existe déjà. Aucun import effectué.');
+        if (previous && !unchanged && name === 'hopKnowledge') {
+          if (previous.kind !== row.data.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
+          if (['model', 'axis'].includes(previous.kind) && previous.version === row.data.version) throw Error('La connaissance importée doit porter une nouvelle version.');
+        }
+        if (!unchanged) changes.push({ name: name as CollectionName, ...row });
+      }
+    }
+    if (changes.length) await FirestoreRepo.bulkWrite(changes);
+    return changes.length;
+  },
+  exportHopIndex(): string {
+    return JSON.stringify({ schemaVersion: 3, source: 'device', exportedAt: new Date().toISOString(), collections: {
+      hopVarieties: this.getHopVarieties().map(data => ({ id: data.id, data })),
+      hopLots: this.getHopLots().map(data => ({ id: data.id, data })),
+      hopKnowledge: this.getHopKnowledge().map(data => ({ id: data.id, data })),
+      hopPredictions: this.getHopPredictions().map(data => ({ id: data.id, data })),
+      hopTastings: this.getHopTastings().map(data => ({ id: data.id, data }))
+    } }, null, 2);
   },
 
   // 2. STOCKS

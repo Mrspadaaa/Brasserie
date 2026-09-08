@@ -169,6 +169,12 @@ export interface HopIngredient {
   dayOffset?: number;
   /** Ancien champ libre. Conservé en lecture pour les brassins déjà enregistrés. */
   step?: string;
+  /** Explicit index association; never guessed from a partial ingredient name. */
+  hopVarietyId?: string;
+  hopLotId?: string;
+  aromaTiming?: import('../../functions/src/hopPredictionSchema').HopTiming;
+  aromaContactHours?: number;
+  aromaTemperatureC?: number;
 }
 
 /**
@@ -178,6 +184,7 @@ export interface HopIngredient {
  */
 export interface YeastSpec {
   name: string;
+  hopIndexId?: string;
   /** Lallemand, White Labs, Fermentis, GigaYeast, Omega… */
   lab?: string;
   /** Référence de souche : US-05, WLP095, GY054. */
@@ -411,6 +418,9 @@ export interface Recipe {
   /** Masse de GRAIN seul — le sucre n'entre pas dans une facture de grain. */
   totalGristKg: number;
   hops: HopIngredient[];
+  hopMatrixId?: string;
+  hopAromaTarget?: Record<string, import('../../functions/src/hopIndexSchema').HopRange>;
+  hopPredictionIds?: string[];
   adjuncts?: AdjunctIngredient[];
   yeast: YeastSpec;
   /** Durée d'ébullition. Les recettes américaines montent souvent à 75 ou 90 min. */

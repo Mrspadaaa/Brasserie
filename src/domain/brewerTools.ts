@@ -25,6 +25,11 @@ import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
 import type { Recipe, RecipeSnapshot, BrewDayState, AcidId } from '../types';
+import { compareHopTasting, hopTripletsOfRecipe, rankHopTriplets, recipeForHopAnalysis } from '../../functions/src/hopPredictionCore';
+import { assertHopTriplet, HopAxis, HopTriplet } from '../../functions/src/hopPredictionSchema';
+import { HopRange } from '../../functions/src/hopIndexSchema';
+import { searchHopVarieties } from '../../functions/src/hopIndexFacts';
+import { hopIndexOverview } from '../../functions/src/hopCompanionContext';
 
 const number = (
   a: Record<string, unknown>,
@@ -55,11 +60,20 @@ const tool = (
 ) => ({ name, description, parameters: { type: 'OBJECT', properties, required } });
 
 export const brewerToolDeclarations = [
+  tool('lookup_hop_reference', 'Rechercher les fiches et COA complets par nom, alias, région ou ID exact. Renvoie chaque source séparément ; aucune fusion de plages.', { query: str('Nom, alias ou ID de variété/lot') }, ['query']),
+  tool('predict_hop_aroma', 'Évaluer et classer des triplets avec les modèles sourcés de l’index. Sans argument, évalue les ajouts et la cible de la recette. Aucun chiffre inventé.', {
+    triplets: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+      varietyId: str('ID exact de variété'), lotId: str('ID exact de lot, facultatif'), yeastId: str('ID exact de levure'), timing: str('Moment biologique', ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation']),
+      doseGL: num('Dose g/L'), temperatureC: num('Température °C'), contactHours: num('Contact heures'), matrixId: str('ID de la matrice documentée')
+    }, required: ['varietyId', 'yeastId', 'timing', 'doseGL', 'temperatureC', 'contactHours', 'matrixId'] } },
+    target: { type: 'ARRAY', items: { type: 'OBJECT', properties: { axisId: str('ID de l’axe'), min: num('Borne basse'), max: num('Borne haute') }, required: ['axisId', 'min', 'max'] } }
+  }),
+  tool('compare_hop_tasting', 'Comparer une dégustation à sa prédiction figée, avec ses anciennes sources et coefficients.', { tastingId: str('ID exact de dégustation') }, ['tastingId']),
   tool(
     'inspect_brewery',
     'Lire recette et IDs ingrédients, matériel, stock disponible, eau, journal horodaté ou fermentation. Les valeurs prévues ne sont pas des relevés.',
     {
-      section: str('Section', ['recipe', 'equipment', 'stock', 'water', 'journal', 'fermentation'])
+      section: str('Section', ['recipe', 'equipment', 'stock', 'water', 'journal', 'fermentation', 'hopIndex'])
     },
     ['section']
   ),
@@ -178,10 +192,56 @@ export function runBrewerTool(
       stock: c.inventory,
       water: { plan: r?.waterPlan, sources: c.waterSources },
       journal: { confirmed: c.journal, localNotConfirmed: c.localJournal, now: c.now },
-      fermentation: c.batch ?? null
+      fermentation: c.batch ?? null,
+      hopIndex: hopIndexOverview(c.hopIndex)
     };
     if (!(String(a.section) in sections)) throw new Error('Section inconnue.');
     return result('Contexte de la brasserie', sections[String(a.section)], [], c.provenance);
+  }
+  if (name === 'lookup_hop_reference') {
+    if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom ou identifiant de houblon requis.');
+    const index = c.hopIndex;
+    if (!index) return result('Index houblon non chargé', null, [], ['Données indisponibles.']);
+    const query = a.query.trim(), fold = (v: string) => v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr');
+    const terms = fold(query).split(/\s+/);
+    const exactLot = index.lots.find(l => l.id === query || l.lotNumber === query);
+    const matchingLots = exactLot ? [exactLot] : index.lots.filter(l => !l.archived && terms.every(t => fold([l.name, l.lotNumber, l.growingRegion, l.grower, l.harvestYear].join(' ')).includes(t)));
+    const lotVarieties = new Set(matchingLots.map(l => l.varietyId));
+    const exact = index.varieties.find(v => v.id === (exactLot?.varietyId ?? query));
+    const byName = searchHopVarieties(index.varieties, query);
+    const matches = exact ? [exact] : [...new Map([...byName, ...index.varieties.filter(v => lotVarieties.has(v.id))].map(v => [v.id, v])).values()];
+    const varieties = matches.slice(0, 10), ids = new Set(varieties.map(v => v.id));
+    const lots = matchingLots.length ? matchingLots : index.lots.filter(l => ids.has(l.varietyId));
+    return result('Références documentaires et COA', { varieties, lots: lots.slice(0, 20), totalMatches: matches.length, totalLots: lots.length }, [], [
+      'Descripteurs documentaires : aucune intensité en bière sans calcul du triplet. Année de publication ≠ année de récolte.',
+      ...index.truncated, ...(matches.length > 10 || lots.length > 20 ? ['Résultats limités : préciser le nom ou utiliser un identifiant exact.'] : [])
+    ]);
+  }
+  if (name === 'predict_hop_aroma') {
+    const data = c.hopIndex ?? { varieties: [], lots: [], knowledge: [], truncated: [] };
+    let triplets: HopTriplet[] = hopTripletsOfRecipe(r ? recipeForHopAnalysis(r, c.journal) : undefined);
+    if (a.triplets != null) {
+      if (!Array.isArray(a.triplets) || a.triplets.length > 100) throw Error('Au maximum 100 triplets par calcul.');
+      a.triplets.forEach(t => assertHopTriplet(t)); triplets = a.triplets as HopTriplet[];
+    }
+    let target: Record<string, HopRange> = r?.hopAromaTarget ?? {};
+    if (a.target != null) {
+      if (!Array.isArray(a.target) || a.target.length > 100) throw Error('Cible invalide.');
+      target = Object.fromEntries(a.target.map(t => {
+        if (!t || typeof t.axisId !== 'string' || ['__proto__', 'constructor', 'prototype'].includes(t.axisId)) throw Error('Axe cible invalide.');
+        return [t.axisId, { min: t.min, max: t.max }];
+      }));
+    }
+    return result('Houblon × levure × timing', rankHopTriplets(triplets, target, data), [], [
+      'Plages et confiance obligatoires. Valeur inconnue ≠ zéro. Aucun profil total d’assemblage calculé.',
+      ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
+    ]);
+  }
+  if (name === 'compare_hop_tasting') {
+    const tasting = c.hopIndex?.tastings.find(t => t.id === a.tastingId);
+    if (!tasting) return result('Dégustation introuvable', null, [], ['Observation non disponible dans le contexte chargé.']);
+    const snapshot = c.hopIndex?.predictions.find(p => p.id === tasting.predictionId);
+    return result('Écart aromatique historique', compareHopTasting(tasting, snapshot?.prediction, snapshot?.evidence.knowledge.filter((k): k is HopAxis => k.kind === 'axis') ?? []), [], ['Écart perçu moins prévu, avec les deux marges ; aucune attribution causale automatique.']);
   }
   if (name === 'heating_power') {
     const volume = number(a, 'volumeL', 0.1, 500),

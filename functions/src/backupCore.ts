@@ -1,4 +1,7 @@
 import { BACKUP_COLLECTIONS as BUSINESS_COLLECTIONS, BackupCollection as BusinessCollection } from './dataSchema.js';
+import { assertHopDocument } from './hopIndexSchema.js';
+import { assertHopKnowledge, assertHopTasting } from './hopPredictionSchema.js';
+import { assertHopPredictionSnapshot } from './hopPredictionValidation.js';
 
 export interface BackupDocument { id: string; data: Record<string, any> }
 export interface BreweryBackup {
@@ -67,6 +70,10 @@ export function parseBackup(json: string): BreweryBackup {
       if (!plain(row) || !validId(row.id) || !plain(row.data) || !Object.keys(row.data).length || seen.has(row.id)) throw new Error(`Document invalide ou dupliqué dans ${name}.`);
       seen.add(row.id);
       checkValue(row.data);
+      if (name === 'hopVarieties' || name === 'hopLots') assertHopDocument(name, row.data, row.id);
+      if (name === 'hopKnowledge') assertHopKnowledge(row.data, row.id);
+      if (name === 'hopPredictions') assertHopPredictionSnapshot(row.data, row.id);
+      if (name === 'hopTastings') assertHopTasting(row.data, row.id);
       const numericFields: Record<string, string[]> = {
         recipes: ['volumeL', 'boilMin'], batches: ['volumeL'], stockItems: ['currentStock', 'minStock', 'maxStock'],
         transactions: ['amountHT', 'amountTTC', 'tvaRate'], kegs: ['capacityL']

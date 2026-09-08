@@ -8,6 +8,7 @@ import { Sheet, ConfirmSheet } from './Sheet';
 import { Button } from '../components/ui/Button';
 import { BrewerChat } from './BrewerChat';
 import { useSyncedDraft } from '../hooks/useLiveData';
+import { HopTastingsPanel } from './hopIndex/HopTastingsPanel';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -67,6 +68,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({ batch, onClo
       >
         <div className="space-y-7">
           <BrewerChat scope={{kind:'batch',id:batch.id}} label={draft.name} phase={draft.status} />
+          <HopTastingsPanel batch={draft} />
           <section className="space-y-3">
             <div className="flex items-center gap-2">
               <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>

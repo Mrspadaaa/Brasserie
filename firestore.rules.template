@@ -67,7 +67,11 @@ __AUTHORIZED_ACCOUNTS__
         'tarifs',
         'creativeItems',
         'expenseTemplates',
-        'config'
+        'config',
+        'hopVarieties',
+        'hopLots',
+        'hopKnowledge',
+        'hopTastings'
       ];
     }
 
@@ -95,6 +99,11 @@ __AUTHORIZED_ACCOUNTS__
 
     // Idem pour le journal d'audit : sa valeur tient à son immuabilité.
     match /auditLogs/{id} {
+      allow read, create: if estAutorise();
+    }
+
+    // A prediction records what was known before tasting; subsequent models cannot rewrite it.
+    match /hopPredictions/{id} {
       allow read, create: if estAutorise();
     }
 

@@ -13,7 +13,7 @@ import {
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { BUSINESS_COLLECTIONS } from '../../functions/src/dataSchema';
+import { BUSINESS_COLLECTIONS, BusinessCollection } from '../../functions/src/dataSchema';
 
 /**
  * Couche d'accès Firestore.
@@ -34,24 +34,7 @@ import { BUSINESS_COLLECTIONS } from '../../functions/src/dataSchema';
  * fonctionnement hors-ligne, plus la synchro entre le téléphone et l'ordinateur.
  */
 
-export type CollectionName =
-  | 'transactions'
-  | 'stockItems'
-  | 'equipment'
-  | 'kegs'
-  | 'movements'
-  | 'batches'
-  | 'finishedGoods'
-  | 'reservations'
-  | 'recipes'
-  | 'clients'
-  | 'planning'
-  | 'budgetLines'
-  | 'tarifs'
-  | 'creativeItems'
-  | 'expenseTemplates'
-  | 'auditLogs'
-  | 'config';
+export type CollectionName = BusinessCollection;
 
 export const ALL_COLLECTIONS: CollectionName[] = [...BUSINESS_COLLECTIONS];
 
@@ -546,8 +529,8 @@ export const FirestoreRepo = {
       if (err?.code === 'permission-denied') {
         const collections = [...new Set(entries.map((e) => e.name))].join(', ');
         throw new Error(
-          "Écriture refusée par les règles Firestore. Le lot est atomique : une seule " +
-            "collection non autorisée le fait échouer entièrement. Collections concernées : " +
+          "Écriture refusée par les règles Firestore. Chaque groupe d’écritures est atomique ; " +
+            "un import en plusieurs groupes peut être partiel et doit être rejoué. Collections concernées : " +
             collections +
             ". Vérifie qu'elles figurent toutes dans collectionsMetier() de firestore.rules " +
             "(script de contrôle : node scripts/check-rules.mjs)."

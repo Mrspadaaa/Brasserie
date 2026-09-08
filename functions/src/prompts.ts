@@ -1,4 +1,5 @@
 import { AiTier } from './models.js';
+import { HOP_ANALYTES, HOP_FORMS, HOP_UNITS } from './hopIndexSchema.js';
 
 /**
  * Catalogue des tâches IA.
@@ -30,7 +31,9 @@ export type TaskId =
   | 'naturalSearch'
   /** Relecture critique d'une recette complète, eau comprise. */
   | 'reviewRecipe'
-  | 'lookupIngredient';
+  | 'lookupIngredient'
+  | 'lookupHopVariety'
+  | 'readHopCoa';
 
 export interface TaskDef {
   /** Consigne système, en français : les réponses sont lues par Gaëtan. */
@@ -73,7 +76,64 @@ const str = { type: 'STRING' };
 const num = { type: 'NUMBER' };
 const arr = (items: unknown) => ({ type: 'ARRAY', items });
 
+const hopSourceSchema = S({ title: str, author: str, reference: str, locator: str,
+  year: { type: 'INTEGER', nullable: true },
+  kind: { type: 'STRING', enum: ['coa', 'manufacturer', 'research', 'review', 'observation', 'community', 'judgment'] }
+}, ['title', 'author', 'reference', 'year', 'kind']);
+const hopMeasurementSchema = S({
+  analyte: { type: 'STRING', enum: [...HOP_ANALYTES] }, unit: { type: 'STRING', enum: [...HOP_UNITS] },
+  basis: { type: 'STRING', enum: ['asIs', 'dryMatter', 'oil', 'beer', 'unknown'] },
+  kind: { type: 'STRING', enum: ['point', 'range', 'below', 'unknown'] },
+  value: num, range: S({ min: num, max: num }, ['min', 'max']), limit: num,
+  limitKind: { type: 'STRING', enum: ['lod', 'loq'] }, source: hopSourceSchema,
+  confidence: { type: 'STRING', enum: ['low'] }, method: str, note: str
+}, ['analyte', 'unit', 'basis', 'kind', 'source', 'confidence']);
+const hopEvidenceInstructions = `RÈGLE ABSOLUE : transcris uniquement des informations explicitement publiées ou visibles.
+N'invente aucune valeur, plage, marge, rendement, année ou source. Un champ absent reste absent, jamais zéro.
+Une valeur ponctuelle est kind=point (value), une plage publiée kind=range (range), une non-détection kind=below
+(limit et limitKind seulement si publiés). Ne calcule aucune marge autour d'un point.
+Chaque mesure porte sa propre source : auteur/organisme, titre, référence vérifiable, année ou null si inconnue,
+et page/table dans locator. La date de consultation ne remplace pas l'année. Confidence=low : proposition à relire.
+Garde les unités et la base exactes, sans conversion supposée. Distingue thiol libre, cystéinylé et glutathionylé.
+4MSP est synonyme de 4MMP, 3SH/3SHol de 3MH. Ne déduis jamais des concentrations de leurs descripteurs d'arôme.
+3S4MP (3M4MP) est un autre composé : analyte=3s4mpFree, jamais 3mhFree ni 4mmpFree.
+3SHA et 3MHA désignent l'acétate de 3-sulfanylhexyle : analyte=3mhaFree, distinct de 3SH/3MH.
+Le 2-methylbutyl isobutyrate (CAS 2445-69-4) utilise 2methylbutylIsobutyrate. L'abréviation 2MIB seule
+est ambiguë avec le 2-méthylisobornéol (CAS 2371-42-8) : n'attribue pas de mesure sans identité explicite.
+gammaNonalactone désigne la γ-nonalactone, pas les autres lactones gamma/delta.
+Une dose ajoutée pour un kit sensoriel ou un essai, un seuil olfactif et un rendement ne sont pas des
+analyses du lot : conserve leur contexte en description, sans les transcrire dans analysis.
+Les µg/kg en équivalents thiol libre utilisent ugKgThiolEquivalent, pas ugKg (masse du composé).
+Les µg/L en équivalents d'étalon interne utilisent ugLInternalStandardEquivalent, pas une concentration absolue.
+Une concentration absolue explicitement mesurée en µg/L de bière utilise ugL ; ne convertis pas ngL en ugL.
+Si la source ne distingue pas matière sèche et produit tel quel, basis=unknown. Les pourcentages de profil GC restent percentOil, sans conversion en mg/100g.
+Aucune prédiction sensorielle, aucun score, aucun enrichissement de la mesure à partir de la mémoire du modèle.`;
+
 export const TASKS: Record<TaskId, TaskDef> = {
+  lookupHopVariety: {
+    defaultTier: 'fast', acceptsFile: false, grounded: true,
+    system: `${BRASSERIE}\nRecherche la fiche officielle de la variété demandée chez son producteur ou un organisme de recherche.
+${hopEvidenceInstructions}
+La référence doit être l'URL de la page qui contient la donnée. Si rien n'est trouvé, found=false, analysis=[] et descriptions=[].
+Les descriptions indiquent leur contexte (rawHop, infusion, beer, unspecified) ; une fiche commerciale sans protocole est unspecified.
+Ne fournis pas de contexte de bière ou de forme de produit non documenté ; utilise unknown pour la forme.`,
+    schema: S({ found: { type: 'BOOLEAN' }, name: str, aliases: arr(str), origin: str,
+      form: { type: 'STRING', enum: [...HOP_FORMS] }, analysis: arr(hopMeasurementSchema),
+      descriptions: arr(S({ text: str, context: { type: 'STRING', enum: ['rawHop', 'infusion', 'beer', 'unspecified'] }, source: hopSourceSchema }, ['text', 'context', 'source'])), note: str
+    }, ['found', 'name', 'aliases', 'form', 'analysis', 'descriptions'])
+  },
+  readHopCoa: {
+    defaultTier: 'fast', acceptsFile: true,
+    system: `${BRASSERIE}\nTranscris uniquement le certificat d'analyse de houblon joint.
+${hopEvidenceInstructions}
+La référence est le numéro du COA ou le nom du fichier fourni ; cite la page dans locator.
+Ne complète aucun champ à partir d'une moyenne variétale. Récolte et date du certificat sont deux informations distinctes.
+Région de culture, producteur et conditions de stockage ne sont transcrits que s'ils figurent dans le document ; le pays d'origine d'une variété ne donne pas la région de ce lot.
+Si le document n'est pas exploitable, found=false, analysis=[] et explique dans note.`,
+    schema: S({ found: { type: 'BOOLEAN' }, lotNumber: str, harvestYear: { type: 'INTEGER' }, growingRegion: str, grower: str, storageNotes: str,
+      form: { type: 'STRING', enum: [...HOP_FORMS] }, analysis: arr(hopMeasurementSchema), note: str
+    }, ['found', 'analysis'])
+  },
   // --- 1. Lecture de facture (existant, rebranché) -------------------------
   scanInvoice: {
     defaultTier: 'fast',

@@ -375,6 +375,7 @@ export const App: React.FC = () => {
         setCreateRequest({ kind: 'newIdea', at: Date.now() });
         break;
       case 'newStockItem':
+      case 'newHopVariety':
       case 'newKeg':
       case 'newEquipment':
       case 'newClient':

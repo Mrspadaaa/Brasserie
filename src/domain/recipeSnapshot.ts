@@ -104,7 +104,7 @@ export function normalizeBatch(batch: Batch): Batch {
 export function captureSnapshot(recipe: Recipe): RecipeSnapshot {
   const { id, favorite, batchRef, ...rest } = normalizeRecipe(recipe);
   return {
-    ...rest,
+    ...structuredClone(rest),
     sourceRecipeId: id,
     capturedAt: new Date().toISOString()
   };

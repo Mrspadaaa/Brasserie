@@ -16,6 +16,7 @@ import { stableJson } from './backupCore.js';
 import { applyProposal, proposalBasis } from './brewerProposals.js';
 import { stampSession } from './brewSessionCore.js';
 import { loadBrewerAppContext } from './brewerAppContext.js';
+import { loadBrewerHopContext } from './brewerHopContext.js';
 import type {
   BrewerChatInput,
   BrewerContext,
@@ -101,13 +102,15 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
       'Aucune recette retrouvée : ingrédients/cibles inconnus, ne pas reconstruire le lot par supposition.'
     );
   const workspace = input.scope.kind === 'app' ? await loadBrewerAppContext(input.scope.id) : undefined;
+  const hopIndex = input.scope.kind === 'app' && input.scope.id === 'stocks-hops' ? await loadBrewerHopContext() : undefined;
+  if (hopIndex?.truncated.length) provenance.push(`Aperçu de l’index houblon tronqué : ${hopIndex.truncated.join(', ')}. Recherche non exhaustive.`);
   if (workspace?.truncated.length)
     provenance.push(`Aperçu limité à 80 lignes par collection : ${workspace.truncated.join(', ')}. Ne pas présenter cet échantillon comme un total exhaustif.`);
   const phase = workspace?.screen ?? (
     batch?.status && batch.status !== 'planifie'
       ? batch.status
       : (journal?.steps?.[journal.currentIndex]?.label ?? input.phase ?? input.scope.kind));
-  return cleanContext({
+  return { ...cleanContext({
     workspace,
     recipe: recipe ? normalizeRecipe(pick(recipe, RECIPE_FIELDS)) : undefined,
     journal,
@@ -132,7 +135,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     editableTargets: input.scope.kind === 'app' ? [] : (input.editableTargets ?? []).filter(
       (target) => target !== 'journal' || !local
     )
-  });
+  }), ...(hopIndex ? { hopIndex } : {}) };
 }
 export async function history(threadId: string, before?: number, resetAt = 0) {
   let query = getFirestore()

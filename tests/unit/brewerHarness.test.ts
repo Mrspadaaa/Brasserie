@@ -7,6 +7,7 @@ import { runBrewerHarness, validateAdvice } from '../../functions/src/brewerHarn
 import { applyProposal } from '../../functions/src/brewerProposals';
 import { BrewerBudgetError } from '../../functions/src/brewerLimits';
 import type { BrewerContext } from '../../functions/src/companionTypes';
+import { testHopData } from '../fixtures/hopPrediction';
 
 const context = (): BrewerContext => ({
   recipe: recipe({ efficiencyPct: 75 }),
@@ -57,6 +58,19 @@ const fields = (changes: Array<{ path: string; valueJson: string }>) => ({
 const approved = () => json({ approved: true, proposalApproved: true, issues: [] });
 
 describe('Outils du compagnon : mêmes modèles et données explicites', () => {
+  it('charge l’index à la demande une seule fois, depuis un autre écran', async () => {
+    const c = context(); delete c.recipe;
+    const data = { ...testHopData(), predictions: [], tastings: [], truncated: [] };
+    const loadHopIndex = vi.fn().mockResolvedValue(data);
+    const generate = vi.fn().mockResolvedValueOnce(toolCall('inspect_brewery', { section: 'hopIndex' }))
+      .mockResolvedValueOnce(toolCall('inspect_brewery', { section: 'hopIndex' }))
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] })).mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(c, 'Consulte mon index houblon', [], generate, { loadHopIndex });
+    expect(loadHopIndex).toHaveBeenCalledTimes(1);
+    expect(c.hopIndex).toEqual(data);
+    expect(JSON.stringify(generate.mock.calls[1][1].contents)).toContain('fixture-beer');
+    expect(result.trace.filter(entry => entry.error)).toEqual([]);
+  });
   it.each(['fast', 'auto', 'deep'] as const)(
     'ne contourne jamais un plafond via un autre modèle (%s)',
     async (mode) => {

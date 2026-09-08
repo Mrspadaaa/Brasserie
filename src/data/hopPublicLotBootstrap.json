@@ -1,0 +1,1852 @@
+{
+  "hopVarieties": [
+    {
+      "id": "public-coa-cascade-yqh",
+      "name": "Cascade · COA publics",
+      "aliases": [
+        "Cascade"
+      ],
+      "form": "pelletT90",
+      "descriptions": [
+        {
+          "text": "Référence regroupant uniquement les échantillons publiés ci-dessous. Aucune plage variétale déduite de ces lots.",
+          "context": "unspecified",
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "public-coa-idaho-7-yqh",
+      "name": "Idaho-7 · COA publics",
+      "aliases": [
+        "Idaho-7"
+      ],
+      "form": "pelletT90",
+      "descriptions": [
+        {
+          "text": "Référence regroupant uniquement les échantillons publiés ci-dessous. Aucune plage variétale déduite de ces lots.",
+          "context": "unspecified",
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "public-coa-motueka-clayton",
+      "name": "Motueka · COA publics",
+      "aliases": [
+        "Motueka"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Référence regroupant uniquement les échantillons publiés ci-dessous. Aucune plage variétale déduite de ces lots.",
+          "context": "unspecified",
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "public-coa-riwaka-clayton",
+      "name": "Riwaka · COA publics",
+      "aliases": [
+        "Riwaka"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Référence regroupant uniquement les échantillons publiés ci-dessous. Aucune plage variétale déduite de ces lots.",
+          "context": "unspecified",
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "public-coa-nelson-sauvin-clayton",
+      "name": "Nelson Sauvin · COA publics",
+      "aliases": [
+        "Nelson Sauvin"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Référence regroupant uniquement les échantillons publiés ci-dessous. Aucune plage variétale déduite de ces lots.",
+          "context": "unspecified",
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "cascade-t90-samia2026",
+      "name": "Cascade T90 · étude Samia 2026",
+      "aliases": [
+        "Cascade"
+      ],
+      "form": "pelletT90",
+      "descriptions": [
+        {
+          "text": "Un seul lot YCH étudié ; ni numéro commercial ni récolte publiés. Les mesures sont attachées à l’échantillon, sans plage variétale supposée.",
+          "context": "unspecified",
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          }
+        }
+      ],
+      "analysis": []
+    }
+  ],
+  "hopLots": [
+    {
+      "id": "public-coa-cas-2400",
+      "varietyId": "public-coa-cascade-yqh",
+      "name": "Cascade · CAS-2400 · référence publiée",
+      "lotNumber": "CAS-2400",
+      "referenceOnly": true,
+      "form": "pelletT90",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 7.2,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 6.1,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.253,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.1,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 69.8,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.03,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.19,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 8.35,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 4.2,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2400",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5dc608758f7b77e831a698577489998b36d50b1f34f95909d60deaf0b1fb5315."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot."
+    },
+    {
+      "id": "public-coa-cas-2401",
+      "varietyId": "public-coa-cascade-yqh",
+      "name": "Cascade · CAS-2401 · référence publiée",
+      "lotNumber": "CAS-2401",
+      "referenceOnly": true,
+      "form": "pelletT90",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 5.7,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 7.5,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.233,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.4,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 73.06,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.02,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.19,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 7.97,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 2.49,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2401",
+            "author": "Yakima Quality Hops · HopTechnic",
+            "year": 2024,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf",
+            "locator": "Certificat du 2024-11-19 ; pages 1–2 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a0d71cdceb49ea8f373cdbda4e64a9bdbbe063500e505bd1e2a3271e1eff72c5."
+          },
+          "confidence": "low",
+          "method": "GC-FID, ASBC Hops-17 modifiée",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot."
+    },
+    {
+      "id": "public-coa-cas-2519",
+      "varietyId": "public-coa-cascade-yqh",
+      "name": "Cascade · CAS-2519 · référence publiée",
+      "lotNumber": "CAS-2519",
+      "referenceOnly": true,
+      "form": "pelletT90",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 5.8,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 7.8,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.228,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.7,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 42.4,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.3,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.5,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 17.3,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 7.8,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2519",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5d6b7fcb36eb6ff5d8c2ef8dbdc74260ad1227226118a8faeaada6dbed514470."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot.",
+      "harvestYear": 2025
+    },
+    {
+      "id": "public-coa-cas-2520",
+      "varietyId": "public-coa-cascade-yqh",
+      "name": "Cascade · CAS-2520 · référence publiée",
+      "lotNumber": "CAS-2520",
+      "referenceOnly": true,
+      "form": "pelletT90",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 4.9,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 8.4,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.251,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.1,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 46.2,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.3,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.3,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 18.2,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 8.1,
+          "source": {
+            "title": "Certificate of Analysis · CAS-2520",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf",
+            "locator": "Certificat du 2025-10-31 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 5521a29f257e5a0c4ac2ed98911264463f261bf8ea9766df44cb2b01745f2c84."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot.",
+      "harvestYear": 2025
+    },
+    {
+      "id": "public-coa-id7-2573",
+      "varietyId": "public-coa-idaho-7-yqh",
+      "name": "Idaho-7 · ID7-2573 · référence publiée",
+      "lotNumber": "ID7-2573",
+      "referenceOnly": true,
+      "form": "pelletT90",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 12.0,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 3.9,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.257,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 2.5,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 45.4,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.4,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 0.6,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 11.6,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "percentOil",
+          "basis": "oil",
+          "kind": "point",
+          "value": 5.7,
+          "source": {
+            "title": "Certificate of Analysis · ID7-2573",
+            "author": "Yakima Quality Hops · laboratoire YCH",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf",
+            "locator": "Certificat du 2025-11-21 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 a70f0041bed5f363f78c92eae1f2926b6bf79a8ad35c9bf28c37bd38262e3f88."
+          },
+          "confidence": "low",
+          "method": "Profil GC, EBC 7.12",
+          "note": "Valeur publiée sans marge analytique fournie. Profil d’huile ; aucune conversion en masse de composé par kg de houblon."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot.",
+      "harvestYear": 2025
+    },
+    {
+      "id": "public-coa-ch25-bh01-mka",
+      "varietyId": "public-coa-motueka-clayton",
+      "name": "Motueka · CH25-BH01-MKA · référence publiée",
+      "lotNumber": "CH25-BH01-MKA",
+      "referenceOnly": true,
+      "form": "unknown",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 8.36,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 4.98,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.22,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.66,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 52.79,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Myrcene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.03,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Linalool (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.83,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Geraniol (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.76,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Humulene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.91,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BH01-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 b171a3f1cfcf2a24fba69d2fee26d5989a5d839e131aa9a789e7a34abd91deb2."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Caryophyllene (%). Dénominateur non explicité sur cette fiche."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot. Récolte publiée : 26 February 2025 - 28 February 2025. Forme du produit non précisée dans le certificat.",
+      "growingRegion": "Tapawera, Nouvelle-Zélande",
+      "grower": "Battery Hill Hop Farm",
+      "harvestYear": 2025
+    },
+    {
+      "id": "public-coa-ch25-ma02-mka",
+      "varietyId": "public-coa-motueka-clayton",
+      "name": "Motueka · CH25-MA02-MKA · référence publiée",
+      "lotNumber": "CH25-MA02-MKA",
+      "referenceOnly": true,
+      "form": "unknown",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 8.02,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 4.86,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.22,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.85,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 58.61,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Myrcene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.04,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Linalool (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.97,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Geraniol (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 4.29,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Humulene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.89,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA02-MKA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 727f88fdf1bf324407215dcdc36095c5fc28a248a3967e4ef37a6ec8bc122f16."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Caryophyllene (%). Dénominateur non explicité sur cette fiche."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot. Récolte publiée : 27 February 2025 - 3 March 2025. Forme du produit non précisée dans le certificat.",
+      "growingRegion": "Tapawera, Nouvelle-Zélande",
+      "grower": "Mount Arthur Hop Farm",
+      "harvestYear": 2025
+    },
+    {
+      "id": "public-coa-ch25-ma09-rwa",
+      "varietyId": "public-coa-riwaka-clayton",
+      "name": "Riwaka · CH25-MA09-RWA · référence publiée",
+      "lotNumber": "CH25-MA09-RWA",
+      "referenceOnly": true,
+      "form": "unknown",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 8.12,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 4.38,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.24,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.93,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 55.07,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Myrcene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.76,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Linalool (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.48,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Geraniol (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 11.46,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Humulene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 4.98,
+          "source": {
+            "title": "Certificate of Analysis · CH25-MA09-RWA",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Riwaka-CH25-MA09-RWA-COA.pdf",
+            "locator": "Certificat du 2025-04-02 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 4948fd37e5048b92a179cb119559f85ac26c5847feaf1ce48d089bd80f0e5472."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Caryophyllene (%). Dénominateur non explicité sur cette fiche."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot. Récolte publiée : 11 March 2025 - 15 March 2025. Forme du produit non précisée dans le certificat.",
+      "growingRegion": "Tapawera, Nouvelle-Zélande",
+      "grower": "Mount Arthur Hop Farm",
+      "harvestYear": 2025
+    },
+    {
+      "id": "public-coa-ch25-br05-nsn",
+      "varietyId": "public-coa-nelson-sauvin-clayton",
+      "name": "Nelson Sauvin · CH25-BR05-NSN · référence publiée",
+      "lotNumber": "CH25-BR05-NSN",
+      "referenceOnly": true,
+      "form": "unknown",
+      "analysis": [
+        {
+          "analyte": "alpha",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 12.27,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "beta",
+          "unit": "percentMass",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 5.89,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "hsi",
+          "unit": "index",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.21,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "totalOil",
+          "unit": "ml100g",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.39,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode telle que portée sur le COA ; %v/w = mL/100g pour les huiles totales.",
+          "note": "Valeur publiée sans marge analytique fournie. Base sèche/tel quel non explicitée ; aucun recalcul supposé."
+        },
+        {
+          "analyte": "myrcene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 44.71,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Myrcene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "linalool",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 0.37,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Linalool (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "geraniol",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 1.7,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Geraniol (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "humulene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 25.95,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Humulene (%). Dénominateur non explicité sur cette fiche."
+        },
+        {
+          "analyte": "caryophyllene",
+          "unit": "unknown",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 7.23,
+          "source": {
+            "title": "Certificate of Analysis · CH25-BR05-NSN",
+            "author": "Clayton Hops · Plant & Food Research",
+            "year": 2025,
+            "kind": "coa",
+            "reference": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf",
+            "locator": "Certificat du 2025-04-28 ; pages 1 ; données vérifiées visuellement le 8 septembre 2026. SHA-256 d0330aa759ec70fa3d12d69a36db8e96026430b04646e009b4bed9b4ce2203df."
+          },
+          "confidence": "low",
+          "method": "Méthode par composé non explicitée.",
+          "note": "Valeur publiée sans marge analytique fournie. Colonne source : Caryophyllene (%). Dénominateur non explicité sur cette fiche."
+        }
+      ],
+      "notes": "Échantillon documentaire, sans lien au stock. Aucune marge, LOD ou LOQ par composé inventée ; les valeurs ne prouvent pas la représentativité de tout le lot. Récolte publiée : 14 March 2025 - 17 March 2025. Forme du produit non précisée dans le certificat.",
+      "growingRegion": "Tapawera, Nouvelle-Zélande",
+      "grower": "Blue Rock Hop Farm",
+      "harvestYear": 2025
+    },
+    {
+      "id": "cascade-t90-samia2026-sample",
+      "varietyId": "cascade-t90-samia2026",
+      "name": "Cascade T90 · échantillon Samia 2026",
+      "referenceOnly": true,
+      "form": "pelletT90",
+      "analysis": [
+        {
+          "analyte": "3s4mpFree",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 8.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        },
+        {
+          "analyte": "3mhFree",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 2.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        },
+        {
+          "analyte": "3mhCys",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 192.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        },
+        {
+          "analyte": "3mhGsh",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 7920.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        },
+        {
+          "analyte": "4mmpFree",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 2.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        },
+        {
+          "analyte": "4mmpCys",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 5.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        },
+        {
+          "analyte": "4mmpGsh",
+          "unit": "ugKgThiolEquivalent",
+          "basis": "unknown",
+          "kind": "point",
+          "value": 2.0,
+          "source": {
+            "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+            "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer",
+            "year": 2026,
+            "kind": "research",
+            "reference": "https://doi.org/10.1016/j.fochms.2026.100445",
+            "locator": "Publication électronique du 30 juillet 2026 ; tableau 2, première ligne seulement ; §2.3 et 2.7. XML primaire : https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=13476479&retmode=xml. SHA-256 a1f57d0384bc7c4e7daa52bbd8e5f04d04712b519892e02eba8713c56ed914d5."
+          },
+          "confidence": "low",
+          "method": "Thiols liés : SIDA-UPLC-MS/MS ; texte §2.7.",
+          "note": "Valeur publiée sans marge analytique fournie. Équivalents thiol libre ; pas masse du conjugué. Base sèche/tel quel non explicitée. La plage globale de LOD/LOQ ne permet pas d’assigner une limite à ce composé."
+        }
+      ],
+      "notes": "Échantillon de recherche, pas lot détenu par la brasserie. Les lignes de contribution théorique supposant 100 % de transfert ne sont pas importées comme mesures de bière."
+    }
+  ]
+}

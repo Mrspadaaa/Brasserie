@@ -1,6 +1,8 @@
 import type { BrewerContext, BrewerProposal, BrewerFieldChange } from './companionTypes.js';
 import { reconcileRecipeWater, refreshCompanionRecipe, waterRelatedPath } from './brewerTools.js';
 import { sameField } from './brewerFields.js';
+import { usableHopKnowledge } from './hopPredictionCore.js';
+import { validHopRange } from './hopIndexSchema.js';
 export { sameField } from './brewerFields.js';
 
 type Spec = {
@@ -37,10 +39,16 @@ const hop = {
   timeMin: n('Temps de contact', 0, 480, 'min'),
   tempC: n('Température', 0, 110, '°C'),
   dayOffset: n('Jour d’ajout', 0, 365, 'j'),
-  step: t('Ancienne indication')
+  step: t('Ancienne indication'),
+  hopVarietyId: { ...t('Variété de l’index', 120), nullable: true },
+  hopLotId: { ...t('Lot de l’index', 120), nullable: true },
+  aromaTiming: { ...choice('Moment biologique', ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation']), nullable: true },
+  aromaContactHours: { ...n('Contact aromatique', 0, 10000, 'h'), nullable: true },
+  aromaTemperatureC: { ...n('Température de contact aromatique', -10, 110, '°C'), nullable: true }
 };
 const yeast = {
   name: t('Nom'),
+  hopIndexId: { ...t('Souche de l’index', 120), nullable: true },
   lab: t('Laboratoire'),
   strain: t('Souche'),
   form: choice('Forme', ['sèche', 'liquide', 'levain']),
@@ -253,6 +261,13 @@ export function editableFields(
       (_: unknown, i: number) => delete fields[`fermentables.${i}.pct`]
     );
     addRows('hops', c.recipe.hops, hop);
+    const hopKnowledge = usableHopKnowledge(c.hopIndex?.knowledge ?? []).valid;
+    fields.hopMatrixId = { ...choice('Contexte de bière documenté', [...new Set([c.recipe.hopMatrixId,
+      ...hopKnowledge.filter(k => k.kind === 'model').map(k => k.scope.matrixId)].filter(Boolean))]), nullable: true };
+    for (const axis of hopKnowledge.filter(k => k.kind === 'axis')) {
+      fields[`hopAromaTarget.${axis.id}.min`] = n(`${axis.name} recherché · minimum`, axis.scale.min, axis.scale.max);
+      fields[`hopAromaTarget.${axis.id}.max`] = n(`${axis.name} recherché · maximum`, axis.scale.min, axis.scale.max);
+    }
     addRows('mash.steps', c.recipe.mash?.steps, mashStep);
     addRows('fermentation', c.recipe.fermentation, fermentationStep);
     addRows('adjuncts', c.recipe.adjuncts, adjunct);
@@ -517,6 +532,7 @@ export function prepareProposal(c: BrewerContext, args: any): BrewerProposal {
       ch.id = `C${i + 1}`;
     });
   }
+  for (const ch of changes) if (ch.path.startsWith('hopAromaTarget.')) ch.group = ch.path.split('.').slice(0, 2).join('.');
   if (!changes.length) throw Error('Ces champs ont déjà les valeurs proposées.');
   for (const change of changes) {
     if (change.path === 'waterPlan.acid') {
@@ -560,7 +576,7 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
     next = structuredClone(c[proposal.target]);
   for (const ch of proposal.changes.filter((ch) => ch.group && ids.includes(ch.id))) {
     if (proposal.changes.some((other) => other.group === ch.group && !ids.includes(other.id)))
-      throw Error('L’eau, ses doses et les paramètres liés doivent être validés ensemble.');
+      throw Error('Les champs liés doivent être validés ensemble (eau, doses ou bornes aromatiques).');
   }
   for (const change of proposal.changes.filter((ch) => ids.includes(ch.id))) {
     if (!own(fields, change.path) || !sameField(readField(next, change.path), change.before))
@@ -568,7 +584,27 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
     put(next, change.path, checked(change.value, fields[change.path], false));
   }
   if (proposal.target === 'recipe') {
+    for (const [axisId, range] of Object.entries(next.hopAromaTarget ?? {})) {
+      if (!sameField(range, c.recipe?.hopAromaTarget?.[axisId])) {
+        const axis = usableHopKnowledge(c.hopIndex?.knowledge ?? []).valid.find(k => k.kind === 'axis' && k.id === axisId);
+        if (axis?.kind !== 'axis' || !validHopRange(range) || range.min < axis.scale.min || range.max > axis.scale.max) throw Error('Cible aromatique incomplète ou hors de son échelle documentée.');
+      }
+    }
     const y = next.yeast;
+    if (y?.hopIndexId && y.hopIndexId !== c.recipe?.yeast?.hopIndexId && !c.hopIndex?.knowledge.some(k => k.kind === 'yeast' && k.id === y.hopIndexId)) throw Error('Souche de l’index inconnue.');
+    if (y?.hopIndexId && y.hopIndexId === c.recipe?.yeast?.hopIndexId && y.name !== c.recipe?.yeast?.name) throw Error('La souche change : retirer ou actualiser aussi son association à l’index.');
+    for (const [i, h] of (next.hops ?? []).entries()) {
+      const before = c.recipe?.hops?.[i];
+      if (h.hopVarietyId && h.hopVarietyId !== before?.hopVarietyId && !c.hopIndex?.varieties.some(v => v.id === h.hopVarietyId)) throw Error('Variété de l’index inconnue.');
+      if (h.hopVarietyId && h.hopVarietyId === before?.hopVarietyId && h.name !== before?.name) throw Error('Le houblon change : retirer ou actualiser aussi son association à l’index.');
+      if (h.hopLotId && (h.hopLotId !== before?.hopLotId || h.hopVarietyId !== before?.hopVarietyId) && !c.hopIndex?.lots.some(l => l.id === h.hopLotId && l.varietyId === h.hopVarietyId && !l.referenceOnly)) throw Error('Lot absent, documentaire ou incompatible avec la variété.');
+      if (before) {
+        const stageChanged = h.stage !== before.stage;
+        const stale = (key: 'aromaTiming' | 'aromaContactHours' | 'aromaTemperatureC') => h[key] != null && sameField(h[key], before[key]);
+        if ((stageChanged && stale('aromaTiming')) || ((stageChanged || h.timeMin !== before.timeMin) && stale('aromaContactHours')) || ((stageChanged || h.tempC !== before.tempC) && stale('aromaTemperatureC')))
+          throw Error('Le procédé change : retirer ou actualiser aussi les précisions de timing, durée ou température aromatiques concernées.');
+      }
+    }
     if (y?.fermTempMinC != null && y?.fermTempMaxC != null && y.fermTempMinC > y.fermTempMaxC)
       throw Error('La température minimum dépasse la température maximum.');
     if (next.hops?.some((h: any) => h.stage === 'boil' && h.timeMin > (next.boilMin ?? 60)))

@@ -28,6 +28,8 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  */
 
 import { BrewerChat } from '../ui/BrewerChat';
+import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
+import { StorageService } from '../services/storage';
 
 interface RecipePageProps {
   recipe: Recipe;
@@ -403,6 +405,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             })}
           </div>
         )}
+      </Section>
+
+      <Section title="Potentiel aromatique">
+        <HopRecipePanel recipe={recipe} onSave={updated => StorageService.updateRecipe(updated)} />
       </Section>
 
       {/* --- Levure ------------------------------------------------------ */}

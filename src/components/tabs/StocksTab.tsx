@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
+import { HopIndexWorkspace as HopIndexPanel } from '../../ui/hopIndex/HopIndexWorkspace';
 import { StockItem, EquipmentItem, KegItem, Batch } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
@@ -37,7 +38,7 @@ interface StocksTabProps {
   onSuccessMessage?: (msg: string) => void;
 }
 
-type SubTab = 'stock' | 'courses' | 'futs' | 'materiel';
+type SubTab = 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
 
 /**
  * Écran Stocks.
@@ -78,6 +79,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [subTab, setSubTab] = useState<SubTab>(() =>
     StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
   );
+  const tabsRef = useRef<HTMLElement>(null);
+  useEffect(() => { tabsRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [subTab]);
   const allItems = useMemo(
     () => [...stocks.rawMaterials, ...stocks.cleaning],
     [stocks.rawMaterials, stocks.cleaning]
@@ -261,18 +264,19 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     { id: 'stock', label: 'Stock', Icon: Boxes, badge: criticalCount },
     { id: 'courses', label: 'Courses', Icon: ShoppingCart, badge: totalToOrder },
     { id: 'futs', label: 'Fûts', Icon: Beer },
-    { id: 'materiel', label: 'Matériel', Icon: Wrench }
+    { id: 'materiel', label: 'Matériel', Icon: Wrench },
+    { id: 'hops', label: 'Houblons', Icon: Hop }
   ];
 
   return (
     <div className="flex flex-col h-[calc(100dvh-8.5rem)] pt-3">
-      <nav className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 mb-3">
+      <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 mb-3 overflow-x-auto">
         {tabs.map(({ id, label, Icon, badge }) => (
           <button
             key={id}
             onClick={() => setSubTab(id)}
             aria-current={subTab === id ? 'page' : undefined}
-            className={`flex-1 min-h-touch rounded-control flex items-center justify-center gap-1.5
+            className={`flex-1 min-w-fit px-2 min-h-touch rounded-control flex items-center justify-center gap-1.5
                         text-sm font-medium transition-colors ${
                           subTab === id
                             ? 'bg-ebc-straw text-cave-950'
@@ -293,6 +297,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           </button>
         ))}
       </nav>
+
+      {subTab === 'hops' && <HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} />}
 
       {subTab === 'stock' && (
         <EntityList

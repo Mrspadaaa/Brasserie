@@ -845,6 +845,7 @@
   }
 }
 
-body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill {
+body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill,
+body:has([data-vaul-drawer][data-state='open']) .brewer-global-companion {
   display: none;
 }

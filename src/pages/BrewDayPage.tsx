@@ -70,6 +70,8 @@ import { useBrewSession } from '../ui/useBrewSession';
 import { brewNow } from '../services/brewClock';
 import { BrewAssist } from '../ui/BrewAssist';
 import { BrewerChat } from '../ui/BrewerChat';
+import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
+import { recipeForHopAnalysis } from '../domain/hopIndex/engine';
 import { readingPrompt } from '../domain/brewAssist';
 import { ReadingKind } from '../domain/brewDay';
 
@@ -681,6 +683,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
       <div ref={contentRef} className="brew-workspace">
+        <details className="my-3 rounded-control border border-cave-700 p-3"><summary className="cursor-pointer min-h-touch text-cave-200">Vigilances et potentiel des houblons</summary><p className="text-sm text-cave-400">Quantités du journal si renseignées, au volume prévu de la recette. Les temps de contact à l’ébullition suivent les ajouts terminés.</p><HopRecipePanel recipe={recipeForHopAnalysis(actualRecipe, state)} batchId={batch.id} /></details>
         {notice && !capture && (
           <div className="brew-toast" role="status">
             {notice}

@@ -14,6 +14,7 @@ import {
 } from '../types';
 import { Units } from '../services/units';
 import { HOP_STAGE } from '../domain/hopStage';
+import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { ION_LABEL, SALTS } from '../domain/water';
 import { NumberInput } from './NumberInput';
 import { WaterAdditivesTable } from './WaterAdditivesTable';
@@ -272,7 +273,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   const patchFerm = (i: number, patch: Partial<Fermentable>) =>
     onFermentables(fermentables.map((f, j) => (j === i ? { ...f, ...patch } : f)));
   const patchHop = (i: number, patch: Partial<HopIngredient>) =>
-    onHops(hops.map((h, j) => (j === i ? { ...h, ...patch } : h)));
+    onHops(hops.map((h, j) => (j === i ? patchIndexedHop(h, patch) : h)));
 
   const totalHopG = hops.reduce((s, h) => s + h.weightG, 0);
 
