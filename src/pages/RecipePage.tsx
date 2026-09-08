@@ -30,6 +30,7 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  */
 
 import { BrewerChat } from '../ui/BrewerChat';
+import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { StorageService } from '../services/storage';
 
@@ -431,8 +432,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <dt className="text-sm text-cave-500">Quantité</dt>
                 <dd className="reading text-base">
-                  {recipe.yeast.qty} {recipe.yeast.unit}
-                  {recipe.yeast.qty > 1 ? 's' : ''}
+                  {recipe.yeast.qty > 0 ? Units.format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner'}
                 </dd>
               </div>
               <div>
@@ -460,6 +460,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           </div>
         )}
       </Section>
+
+      <FermentationRecipeSummary recipe={recipe} onEdit={onEdit} />
 
       {/* --- Additifs ---------------------------------------------------- */}
       {recipe.adjuncts && recipe.adjuncts.length > 0 && (

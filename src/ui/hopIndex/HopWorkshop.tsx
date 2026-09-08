@@ -68,8 +68,8 @@ export function HopTrialComparison({ recipe, trial }: { recipe: TrialRecipe; tri
   </section>;
 }
 
-export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onEditAdditions }: {
-  recipe?: TrialRecipe; onChange?: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void; contextEditor?: React.ReactNode; onEditAdditions?: () => void;
+export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onEditAdditions, onChooseYeast }: {
+  recipe?: TrialRecipe; onChange?: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void; contextEditor?: React.ReactNode; onEditAdditions?: () => void; onChooseYeast?: () => void;
 }) {
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const { varieties, loading, error: catalogueError } = useHopCatalogue();
@@ -122,6 +122,7 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
       <p className="text-xs uppercase tracking-widest text-hop mb-2">Houblon × levure × timing</p>
       <h2 className="font-serif text-2xl sm:text-3xl text-cave-50">Construire le goût de ta bière</h2>
       <p className="text-sm text-cave-200 mt-2 max-w-2xl">Pars d’un essai documenté ou simule ta propre combinaison, puis compare les variantes avant de composer.</p>
+      {onChooseYeast && <div className="mt-3"><Button disabled={busy} onClick={onChooseYeast}>Banane, girofle : choisir la levure et les paliers →</Button></div>}
     </header>
     <div className="p-3 sm:p-5 space-y-5">
       <nav aria-label="Étapes de l’atelier aromatique" className="grid grid-cols-2 sm:grid-cols-4 gap-1">

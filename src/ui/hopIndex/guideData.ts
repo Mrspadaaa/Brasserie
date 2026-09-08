@@ -8,6 +8,8 @@ import extrapolationPack from '../../data/hopExtrapolationBootstrap.json';
 import legacyExtrapolationPack from '../../data/hopExtrapolationLegacyBootstrap.json';
 import solverPack from '../../data/hopSolverBootstrap.json';
 import doseStudyPack from '../../data/hopDoseStudyBootstrap.json';
+import fermentationPack from '../../data/fermentationGuideBootstrap.json';
+import type { FermentationGuide } from '../../../functions/src/fermentationGuideSchema';
 import type { HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
@@ -47,14 +49,21 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 }
 
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
-  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...validKnowledge(knowledge)];
+  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...validKnowledge(knowledge)];
   const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
   return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
-    const aliases = yeastNameVariants[yeast.id];
+    const aliases = yeastNameVariants[yeast.id] ?? guideFermentations(knowledge).find(g => g.yeastId === yeast.id)?.aliases;
     const trial = guideTrials(knowledge).find(t => t.yeastId === yeast.id);
     const builtin = initialYeasts.find(y => y.id === yeast.id);
     const form = yeast.form ?? trial?.yeastForm ?? builtin?.form;
     return { ...yeast, ...(form ? { form: form as HopYeast['form'] } : {}), ...(aliases ? { aliases: [...aliases] } : {}) };
+  });
+}
+
+/** A saved disabled or invalid guide is never silently replaced by its bootstrap. */
+export function guideFermentations(knowledge: HopKnowledge[]): FermentationGuide[] {
+  return [...new Map([...checkedKnowledge(fermentationPack), ...knowledge].map((k, i) => [k?.id ?? `invalid-${i}`, k])).values()].filter((k): k is FermentationGuide => {
+    try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; }
   });
 }
 
@@ -80,9 +89,15 @@ export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledg
   return [...new Map([...proposed, ...knowledge.map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
 }
 export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {
-  return guidePredictionKnowledge(knowledge).find((k): k is HopSolverPolicy => {
+  const policy = guidePredictionKnowledge(knowledge).find((k): k is HopSolverPolicy => {
     try { assertHopKnowledge(k); return k.kind === 'solver' && k.enabled; } catch { return false; }
   });
+  if (!policy) return undefined;
+  const fermentation = guideFermentations(knowledge);
+  return { ...policy,
+    yeastPhenols: [...new Map([...fermentation.filter(g => g.aroma.pof !== 'unknown').map(g => ({ yeastId: g.yeastId, status: g.aroma.pof as 'positive' | 'negative', source: g.aroma.source })), ...policy.yeastPhenols].map(p => [p.yeastId, p])).values()],
+    yeastConditions: [...new Map([...fermentation.map(g => ({ yeastId: g.yeastId, temperatureC: g.temperatureC.range, source: g.temperatureC.source })), ...(policy.yeastConditions ?? [])].map(p => [p.yeastId, p])).values()]
+  };
 }
 
 /** Proposed policies only; an explicit action must persist any missing references. */

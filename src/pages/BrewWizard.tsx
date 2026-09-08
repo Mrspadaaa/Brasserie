@@ -31,6 +31,7 @@ import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
+import { FermentationWorkshop } from '../ui/FermentationWorkshop';
 import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import {
@@ -891,7 +892,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent'>) => {
+  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide'>) => {
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
@@ -899,7 +900,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
       waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent } : {}) }));
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide } : {}) }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -1004,6 +1005,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
+    if (yeast.name.trim().toLocaleLowerCase('fr') !== selectedName.trim().toLocaleLowerCase('fr')) {
+      setDetails(previous => ({ ...previous, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+    }
     setYeast(current => {
       if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr')) return current;
       const unit = item?.unit ?? 'sachet';
@@ -1044,6 +1048,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     totalGristKg: totalGrist,
     hops,
     yeast,
+    yeastGuide: details.yeastGuide,
     hopMatrixId: details.hopMatrixId,
     hopTrialId: details.hopTrialId,
     hopSolverIntent: details.hopSolverIntent,
@@ -1285,6 +1290,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step !== 'houblons' && step !== 'eau' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
         <span className="block text-base font-semibold text-cave-50">{details.hopTrialId ? 'Affiner mon programme aromatique' : 'Construire le goût de ma bière'}</span>
         <span className="block text-xs sm:text-sm text-cave-200 mt-1">Essais documentés, houblons, levure et timing · ouvrir l’atelier →</span>
+      </button>}
+      {step === 'identite' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('levure')} className="w-full text-left rounded-panel border border-ebc-straw/30 bg-ebc-straw/5 p-3 sm:p-4">
+        <span className="block text-base font-semibold text-cave-50">Choisir les arômes de levure</span>
+        <span className="block text-xs sm:text-sm text-cave-200 mt-1">Weissbier banane ou équilibre · souches, dose et paliers de fermentation →</span>
       </button>}
       {step === 'identite' && (
         <>
@@ -1549,7 +1558,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
-            <HopWorkshop recipe={build()} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
+            <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
               setHops(next.hops);
               setYeast(next.yeast);
               setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
@@ -1796,6 +1805,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {/* ---------------------------------------------------- ÉTAPE 4 */}
       {step === 'levure' && (
         <Section title="Levure" hint="Souche, quantité, et la fenêtre de température à tenir.">
+          <FermentationWorkshop recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
+            setYeast(next.yeast); setFerment(next.fermentation ?? []);
+            setDetails(previous => ({ ...previous, yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+          }} />
+
           <FormNav className="space-y-2.5 sm:space-y-3">
             <Field label="Souche">
               <IngredientPicker
@@ -1876,7 +1890,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               max={28}
               step={0.5}
               unit="°C"
-              hint="Ensemencer plus chaud produit des faux-goûts."
+              hint="Règle la température du moût selon la souche et le profil recherché ; une hausse n’a pas le même effet pour toutes les levures."
             />
 
             <div className="grid grid-cols-2 gap-2 sm:gap-3">
@@ -1927,7 +1941,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             }}
           />
 
-          {pitch && (
+          {pitch && !(details.yeastGuide?.applied?.yeast?.hopIndexId === yeast.hopIndexId && yeast.hopIndexId) && (
             <div className="panel p-2.5 sm:p-3 mt-3 space-y-1.5">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="min-w-0">

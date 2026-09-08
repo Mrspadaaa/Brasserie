@@ -3,6 +3,7 @@ import { hopTestLot, hopTestVariety } from '../fixtures/hopIndex';
 import { parseBackup } from '../../functions/src/backupCore';
 import { publicHopData } from '../fixtures/hopPublicPacks';
 import researchNotes from '../../src/data/hopResearchBootstrap.json';
+import fermentationPack from '../../src/data/fermentationGuideBootstrap.json';
 const memory = vi.hoisted(() => ({ docs: new Map<string, any>(), writes: vi.fn() }));
 vi.mock('../../src/services/firestoreRepo', () => ({ FirestoreRepo: {
   all: (name: string) => [...memory.docs.entries()].filter(([key]) => key.startsWith(name + '/')).map(([key, value]) => ({ ...structuredClone(value), __docId: key.split('/')[1] })),
@@ -15,6 +16,19 @@ const backup = (varieties: any[], lots: any[] = []) => JSON.stringify({ schemaVe
   collections: { hopVarieties: varieties.map(data => ({ id: data.id, data })), hopLots: lots.map(data => ({ id: data.id, data })) } });
 
 describe('Persistance du référentiel houblon', () => {
+  it('importe, révise et restaure les guides de fermentation sans écrire au rejeu', async () => {
+    const guide = structuredClone(fermentationPack.find(k => k.kind === 'fermentation')!);
+    const pack = () => JSON.stringify({ hopKnowledge: [guide] });
+    expect(await StorageService.importHopIndex(pack())).toBe(1);
+    memory.writes.mockClear(); expect(await StorageService.importHopIndex(pack())).toBe(0); expect(memory.writes).not.toHaveBeenCalled();
+    guide.plans![0].phases[0].days.central = 6;
+    await expect(StorageService.importHopIndex(pack())).rejects.toThrow(/version/);
+    expect(memory.writes).not.toHaveBeenCalled();
+    guide.version = 'personal-v2'; expect(await StorageService.importHopIndex(pack())).toBe(1);
+    const exported = StorageService.exportHopIndex(); memory.docs.clear();
+    expect(await StorageService.importHopIndex(exported)).toBe(1);
+    expect(StorageService.getHopKnowledge()[0]).toEqual(guide);
+  });
   it('accepte un pack actualisé sans redéploiement, avec la même validation et sans réécriture au rejeu', async () => {
     const pack = { hopVarieties: [hopTestVariety()] };
     expect(await StorageService.importHopIndex(JSON.stringify(pack))).toBe(1);

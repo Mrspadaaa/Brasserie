@@ -426,6 +426,8 @@ export interface Recipe {
   hopPredictionIds?: string[];
   adjuncts?: AdjunctIngredient[];
   yeast: YeastSpec;
+  /** Frozen guide and adopted fermentation settings, independent of later catalogue edits. */
+  yeastGuide?: import('../domain/fermentationGuide').FermentationGuideSnapshot;
   /** Durée d'ébullition. Les recettes américaines montent souvent à 75 ou 90 min. */
   boilMin?: number;
   mash?: MashProfile;
