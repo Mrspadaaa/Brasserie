@@ -4,7 +4,7 @@ import { ION_LABEL, ION_ROLE, ION_SYMBOL, radarScaleMax } from '../domain/water'
 import { StyleWater, styleIonRange } from '../domain/waterStyles';
 import { formatIonReading } from './waterReadings';
 
-/** Profil ionique mesuré face aux repères du style. HCO3 se juge à la maische. */
+/** Profil ionique des deux eaux traitées face aux repères du style. */
 
 interface WaterRadarProps {
   /** L'eau du réseau, coupée d'osmosée : ce qu'on a avant d'ouvrir un sachet. */
@@ -388,11 +388,11 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           );
         })}
       </svg>
-      <p className="text-center text-2xs text-cave-400 leading-tight pb-0.5">
+      <p className="water-radar-caption text-center text-2xs text-cave-400 leading-tight pb-0.5">
         Eau totale après sels et acide
         <span className="block">Avant apports des malts et ébullition</span>
       </p>
-      <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400" aria-hidden>
+      <div className="water-radar-legend flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400" aria-hidden>
         <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-dashed border-water" />Départ</span>
         <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />Corrigée</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-hop/50" />Cible</span>

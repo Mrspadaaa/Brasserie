@@ -1282,7 +1282,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-      {step !== 'houblons' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
+      {step !== 'houblons' && step !== 'eau' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
         <span className="block text-base font-semibold text-cave-50">{details.hopTrialId ? 'Affiner mon programme aromatique' : 'Construire le goût de ma bière'}</span>
         <span className="block text-xs sm:text-sm text-cave-200 mt-1">Essais documentés, houblons, levure et timing · ouvrir l’atelier →</span>
       </button>}

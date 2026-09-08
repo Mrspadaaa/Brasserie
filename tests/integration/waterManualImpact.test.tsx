@@ -24,7 +24,7 @@ function acid(side: string, value: string) {
   fireEvent.blur(field);
 }
 
-describe('Manual water edits explain their actual consequences beside the control', () => {
+describe('Manual water edits explain their actual consequences below the complete dosing surface', () => {
   it('shows gypsum ion increments, the newly exceeded calcium bound and the balance shift', () => {
     mount();
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
@@ -35,7 +35,9 @@ describe('Manual water edits explain their actual consequences beside the contro
     expect(impact).toHaveTextContent('Ca sort de la cible');
     expect(impact).toHaveTextContent('Orientation plus sèche');
     expect(impact).toHaveTextContent('pH estimé');
-    expect(impact.closest('li')).toContainElement(screen.getByRole('textbox', { name: 'Dose de Gypse en grammes' }));
+    const controls = screen.getByRole('textbox', { name: 'Dose de Gypse en grammes' }).closest('[data-water-controls]')!;
+    expect(controls).not.toContainElement(impact);
+    expect(controls.compareDocumentPosition(impact) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('shows the total bicarbonate change from sparge acid without attributing a mash pH change to it', () => {

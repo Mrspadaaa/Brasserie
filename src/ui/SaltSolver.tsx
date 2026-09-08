@@ -8,6 +8,7 @@ import { WaterWorkbench } from "./water/WaterWorkbench";
 import { WaterFeedback } from "./water/WaterFeedback";
 import { WaterSummary } from "./water/WaterSummary";
 import "./water/workshop.css";
+import { formatDecimal } from "./numericInput";
 export type { WaterState, WaterBrewContext } from "./water/types";
 
 /** Water workshop: navigation and composition only; domain and controls live separately. */
@@ -24,7 +25,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
     totalDosesGrams,
   } = model;
   return (
-    <div className="water-workshop space-y-2.5 sm:space-y-6">
+    <div data-water-step={activeStep} className="water-workshop space-y-1 sm:space-y-6">
       <WaterTargetSheet
         open={targetOpen}
         onClose={() => setTargetOpen(false)}
@@ -37,7 +38,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
         }
       />
 
-      <div className="sm:hidden sticky top-0 z-20 bg-cave-950/95 backdrop-blur-md pt-0 pb-0.5 border-b border-cave-800">
+      <div data-water-navigation className="water-mobile-nav sm:hidden sticky top-0 z-20 bg-cave-950/95 backdrop-blur-md pt-0 pb-0.5 border-b border-cave-800">
         <div className="grid grid-cols-2 gap-1 p-0.5 bg-cave-900/90 rounded-control border border-cave-800">
           <button
             type="button"
@@ -50,9 +51,9 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
             }`}
           >
             <Droplets className="w-4 h-4 text-water shrink-0" />
-            <span className="text-2xs font-semibold">1. Eau</span>
+            <span className="text-2xs font-semibold whitespace-nowrap">1. Eau</span>
             <span className="text-2xs text-cave-400 reading truncate">
-              {totalWaterL} L
+              {formatDecimal(totalWaterL)} L
             </span>
           </button>
 
@@ -67,9 +68,9 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
             }`}
           >
             <Scale className="w-4 h-4 text-hop shrink-0" />
-            <span className="text-2xs font-semibold">2. Sels</span>
+            <span className="text-2xs font-semibold whitespace-nowrap">2. Sels</span>
             <span className="text-2xs text-cave-400 reading truncate">
-              {totalDosesGrams.toFixed(1)} g
+              {formatDecimal(totalDosesGrams)} g
             </span>
           </button>
         </div>

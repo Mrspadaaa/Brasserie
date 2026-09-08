@@ -37,12 +37,12 @@ try {
     const salt = await page.$eval(selector, node => ({ text: node.textContent,
       fits: node.scrollWidth <= node.clientWidth + 1,
       summaryHeight: node.querySelector('summary').getBoundingClientRect().height,
-      attached: !!node.closest('li')?.querySelector('input[aria-label="Dose de Gypse en grammes"]') }));
+      afterControls: !!(document.querySelector('[data-water-controls]').compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING) }));
     assert.match(salt.text, /Ca \+3,6/);
     assert.match(salt.text, /SO₄ \+8,6/);
-    assert.equal(salt.attached, true);
+    assert.equal(salt.afterControls, true);
     assert.ok(salt.fits && salt.summaryHeight >= 44);
-    const card = await page.evaluateHandle(selector => document.querySelector(selector).closest('li'), selector);
+    const card = await page.evaluateHandle(selector => document.querySelector(selector), selector);
     await card.asElement().screenshot({ path: resolve(output, `salt-${width}.png`) });
     await card.dispose();
     const acid = 'input[aria-label^="Dose d’acide lactique"][aria-label*="au rinçage"]';
@@ -67,5 +67,5 @@ try {
     await page.close();
   }
   await writeFile(resolve(output, 'report.json'), JSON.stringify(report, null, 2));
-  console.log('✓ Conséquences près du sel/acide, deltas réels, ratio impossible expliqué ; 320/390/768 px, détails tactiles ≥44 px, aucune erreur JavaScript.');
+  console.log('✓ Conséquences sous les commandes, deltas réels, ratio impossible expliqué ; 320/390/768 px, détails tactiles ≥44 px, aucune erreur JavaScript.');
 } finally { await browser.close(); }

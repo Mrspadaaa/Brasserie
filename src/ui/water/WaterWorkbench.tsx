@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { formatDecimal } from "../numericInput";
 import { AcidId, SaltId, WaterIons } from "../../types";
 import { SaltMineralDetails } from "../SaltMineralDetails";
@@ -21,6 +22,7 @@ import { AcidDoseControl } from "./AcidDoseControl";
 import { WaterTargetStatus } from "./WaterTargetStatus";
 import { WaterDoseImpact } from "./WaterDoseImpact";
 import { PRACTICAL_RATIO_TOLERANCE } from "../../domain/water/saltFit";
+import { useWaterControlsLayout } from "./useWaterControlsLayout";
 type Props = Pick<
   WaterWorkshopModel,
   | "state"
@@ -102,12 +104,14 @@ export function WaterWorkbench({
 }: Props) {
   const [detailsSalt, setDetailsSalt] = useState<SaltId | null>(null);
   const [acidProductChanged, setAcidProductChanged] = useState(false);
+  useWaterControlsLayout(workbenchRef);
   return (
     <>
       {" "}
       <div
         ref={workbenchRef}
-        className="space-y-1 pb-[env(safe-area-inset-bottom)] sm:pb-0 sm:space-y-4"
+        data-water-controls
+        className="water-controls space-y-1 sm:space-y-4"
         aria-label="Profil et commandes de dosage"
       >
         <div className="flex items-center gap-2 px-1">
@@ -183,8 +187,9 @@ export function WaterWorkbench({
           </button>
         </div>
 
-        <div className="panel px-1 py-0.5 sm:p-3 space-y-0 sm:space-y-1">
+        <div className="water-radar panel px-1 py-0.5 sm:p-3 space-y-0 sm:space-y-1">
           <WaterRadar
+            fitToControls
             start={treatment.startTotal}
             achieved={achievedTotalApresAcide}
             style={style}
@@ -196,23 +201,10 @@ export function WaterWorkbench({
                   : undefined
             }
           />
-          <div className="px-2 pb-2 sm:px-0 sm:pb-0">
-            <WaterTargetStatus
-              style={style}
-              treatment={treatment}
-              raBand={raBand}
-              beerEbc={beerEbc}
-              phEstimate={phEstimate}
-              targetPh={brew?.targetPh}
-              customTarget={!!state.customTarget}
-              mashWaterL={state.mashWaterL}
-              spargeWaterL={state.spargeWaterL}
-              diagnoses={diagnoses.filter(item => item.code !== 'ratio')}
-            />
-          </div>
         </div>
 
         <RatioSlider
+          className="water-ratio-compact"
           value={wantedRatio}
           onChange={applyRatio}
           achieved={ratio.ratio}
@@ -227,29 +219,15 @@ export function WaterWorkbench({
           }
         />
 
-        {diagnoses.filter(item => item.code === 'ratio').map(item => <p key={item.code}
-          aria-label="Explication du rapport SO₄/Cl" className="px-1 text-xs leading-relaxed text-cave-200">{item.message}</p>)}
-
-        <details className="px-1 text-xs leading-relaxed text-cave-200" aria-label="Critères du dosage automatique">
-          <summary className="min-h-11 flex items-center cursor-pointer text-water underline underline-offset-2">Comment les doses sont choisies</summary>
-          <div className="space-y-2 pb-2">
-            <p>Les six plages passent en premier, après les deux acides. Les doses manuelles d’acide restent conservées.</p>
-            <p>{state.customTarget
-              ? 'Pour une cible chiffrée, le calcul cherche les concentrations demandées avec les produits autorisés.'
-              : `Pour un style, le calcul cherche le rapport SO₄/Cl demandé, puis le moins de sels différents parmi les dosages proches du meilleur rapport trouvé (marge ${formatDecimal(PRACTICAL_RATIO_TOLERANCE)}). Le calcium peut occuper toute sa plage ; le magnésium et le sodium ne sont pas ajoutés pour remplir la grille.`}</p>
-            <p>Les pesées sont vérifiées au dixième de gramme. Un sel autorisé à 0 g n’est pas utilisé dans la proposition. Le pH reste évalué séparément.</p>
-          </div>
-        </details>
-
         <section className="space-y-1">
-          <div className="flex items-center justify-between gap-2 py-2 text-sm text-cave-200">
+          <div className="sr-only sm:not-sr-only sm:flex items-center justify-between gap-2 sm:py-2 text-sm text-cave-200">
             <h3 className="font-semibold">Sels à peser</h3>
             <span className="text-2xs text-cave-400">
               {Object.values(state.doses).filter((g) => g > 0).length} utilisés
               sur {SALT_IDS.length}
             </span>
           </div>
-          <ul className="water-salt-grid grid grid-cols-2 min-[480px]:grid-cols-3 gap-2">
+          <ul aria-label="Sels à peser" className="water-salt-grid grid grid-cols-3 gap-1 sm:gap-2">
             {SALT_IDS.map((id) => {
               const def = SALTS[id];
               const off = state.disabled.includes(id);
@@ -264,7 +242,6 @@ export function WaterWorkbench({
                   off={off}
                   active={active}
                   ions={ionsOf(id)}
-                  impact={manualImpact?.edit.kind === 'salt' && manualImpact.edit.id === id ? manualImpact : null}
                   onEditStart={() => beginEdit({ kind: 'salt', id, from: grams, to: grams })}
                   onEditEnd={endEdit}
                   onDetails={setDetailsSalt}
@@ -276,27 +253,11 @@ export function WaterWorkbench({
             })}
           </ul>
 
-          <Sheet
-            open={detailsSalt != null}
-            onClose={() => setDetailsSalt(null)}
-            title="Minéraux du sel"
-            subtitle="Contribution de la dose à l’eau totale"
-            className="water-workshop"
-          >
-            {detailsSalt && (
-              <SaltMineralDetails
-                saltId={detailsSalt}
-                grams={state.doses[detailsSalt] ?? 0}
-                totalWaterL={totalWaterL}
-                disabled={state.disabled.includes(detailsSalt)}
-              />
-            )}
-          </Sheet>
-
           <div
+            data-water-acids
             onPointerDown={() => setActiveSalt("acide")}
             onFocusCapture={() => setActiveSalt("acide")}
-            className={`rounded-control border p-2.5 transition-colors ${
+            className={`water-acid-controls rounded-control border p-1.5 sm:p-2.5 transition-colors ${
               activeSalt === "acide"
                 ? "bg-cave-850 border-ebc-straw/60"
                 : mashAcid.amount + spargeAcid.amount > 0
@@ -305,12 +266,12 @@ export function WaterWorkbench({
             }`}
           >
             <div
-              className={`grid gap-2 items-end ${
-                hasSparge ? "grid-cols-2" : "grid-cols-1"
+              className={`water-acid-row grid gap-1 sm:gap-2 items-end ${
+                hasSparge ? "grid-cols-[0.85fr_1fr_1fr] sm:grid-cols-2" : "grid-cols-[1fr_2fr] sm:grid-cols-1"
               }`}
             >
               <div
-                className={`min-w-0 flex flex-wrap items-center justify-between gap-2 ${hasSparge ? "col-span-2" : ""}`}
+                className={`min-w-0 flex flex-wrap items-center justify-between gap-2 ${hasSparge ? "sm:col-span-2" : ""}`}
               >
                 <CycleTag<AcidId>
                   name="Acidifiant"
@@ -324,20 +285,6 @@ export function WaterWorkbench({
                   className="max-w-full min-w-0 min-h-11"
                 />
 
-                {acideForce && (
-                  <button
-                    type="button"
-                    onClick={() => set({ acidOverride: undefined })}
-                    aria-label="Revenir aux doses d’acide calculées"
-                    className="block max-w-full min-h-11 text-left text-2xs leading-tight
-                               text-ebc-straw hover:text-ebc-gold underline underline-offset-2"
-                  >
-                    Recalculer : {formatDecimal(mashAcidCalcule.amount)}
-                    {hasSparge &&
-                      ` + ${formatDecimal(spargeAcidCalcule.amount)}`}{" "}
-                    {mashAcidCalcule.unit}
-                  </button>
-                )}
               </div>
 
               <AcidDoseControl
@@ -367,49 +314,71 @@ export function WaterWorkbench({
                 />
               )}
             </div>
-            {manualImpact?.edit.kind === 'acid' && <WaterDoseImpact impact={manualImpact} />}
-            {acideForce && (
-              <p className="pt-2 text-2xs text-ebc-straw">
-                Doses manuelles conservées, y compris avec « Doser ».
-              </p>
-            )}
-            {acidProductChanged && !acideForce && (
-              <p role="status" className="pt-2 text-2xs text-cave-200">
-                Produit changé : doses recalculées selon sa concentration et son
-                unité.
-              </p>
-            )}
-            <div className="flex flex-wrap gap-x-3 gap-y-0.5 pt-1.5 text-2xs text-cave-200">
-              <span>HCO₃ après acide</span>
+            <div className="water-acid-readings flex flex-wrap gap-x-2 gap-y-0.5 pt-1 text-2xs text-cave-200">
+              <span>HCO₃ <span className="hidden sm:inline">après acide</span></span>
               {state.mashWaterL > 0 && <span aria-label="HCO₃ après acide — empâtage">
-                Empâtage{" "}
+                <span className="sm:hidden">Emp.</span><span className="hidden sm:inline">Empâtage</span>{" "}
                 <strong className="reading text-water">
                   {formatDecimal(
                     Math.round(treatment.treated.mash.hco3 * 10) / 10,
                   )}
                 </strong>{" "}
-                ppm
+                <span className="hidden sm:inline">ppm</span>
               </span>}
               {hasSparge && (
                 <span aria-label="HCO₃ après acide — rinçage">
-                  Rinçage{" "}
+                  <span className="sm:hidden">Rinç.</span><span className="hidden sm:inline">Rinçage</span>{" "}
                   <strong className="reading text-water">
                     {formatDecimal(
                       Math.round(treatment.treated.sparge.hco3 * 10) / 10,
                     )}
                   </strong>{" "}
-                  ppm
+                  <span className="hidden sm:inline">ppm</span>
                 </span>
               )}
-            </div>
-            {totalWaterL > 0 && <p className="mt-2 border-t border-cave-700 pt-2 text-sm text-cave-200" aria-label="HCO₃ après acide — moyenne du graphique">
-              Moyenne du graphique ({formatDecimal(totalWaterL)} L) :{" "}
+            {totalWaterL > 0 && <p className="water-acid-mean text-2xs sm:mt-2 sm:w-full sm:border-t sm:border-cave-700 sm:pt-2 sm:text-sm text-cave-200" aria-label="HCO₃ après acide — moyenne du graphique">
+              <span className="sm:hidden">Total</span><span className="hidden sm:inline">Moyenne du graphique ({formatDecimal(totalWaterL)} L) :</span>{" "}
               <strong className="tabular-nums text-water">{formatDecimal(treatment.treatedTotal.hco3)} ppm</strong>
             </p>}
+            </div>
           </div>
         </section>
       </div>
+      {manualImpact && <WaterDoseImpact impact={manualImpact} />}
+      {acideForce && <div className="flex flex-wrap items-center justify-between gap-x-3 text-2xs text-ebc-straw">
+        <p>Doses manuelles conservées, y compris avec « Doser ».</p>
+        <button type="button" onClick={() => set({ acidOverride: undefined })}
+          aria-label="Revenir aux doses d’acide calculées"
+          className="min-h-11 text-left underline underline-offset-2 hover:text-ebc-gold">
+          Recalculer l’acide : {formatDecimal(mashAcidCalcule.amount)}{hasSparge && ` + ${formatDecimal(spargeAcidCalcule.amount)}`} {mashAcidCalcule.unit}
+        </button>
+      </div>}
+      {acidProductChanged && !acideForce && <p role="status" className="text-2xs text-cave-200">
+        Produit changé : doses recalculées selon sa concentration et son unité.
+      </p>}
+      <WaterTargetStatus
+        style={style} treatment={treatment} raBand={raBand} beerEbc={beerEbc}
+        phEstimate={phEstimate} targetPh={brew?.targetPh} customTarget={!!state.customTarget}
+        mashWaterL={state.mashWaterL} spargeWaterL={state.spargeWaterL}
+        diagnoses={diagnoses.filter(item => item.code !== 'ratio')}
+      />
+      {diagnoses.filter(item => item.code === 'ratio').map(item => <p key={item.code}
+        aria-label="Explication du rapport SO₄/Cl" className="px-1 text-xs leading-relaxed text-cave-200">{item.message}</p>)}
+      <details className="px-1 text-xs leading-relaxed text-cave-200" aria-label="Critères du dosage automatique">
+        <summary className="min-h-11 flex items-center cursor-pointer text-water underline underline-offset-2">Comment les doses sont choisies</summary>
+        <div className="space-y-2 pb-2">
+          <p>Les six plages passent en premier, après les deux acides. Les doses manuelles d’acide restent conservées.</p>
+          <p>{state.customTarget
+            ? 'Pour une cible chiffrée, le calcul cherche les concentrations demandées avec les produits autorisés.'
+            : `Pour un style, le calcul cherche le rapport SO₄/Cl demandé, puis le moins de sels différents parmi les dosages proches du meilleur rapport trouvé (marge ${formatDecimal(PRACTICAL_RATIO_TOLERANCE)}). Le calcium peut occuper toute sa plage ; le magnésium et le sodium ne sont pas ajoutés pour remplir la grille.`}</p>
+          <p>Les pesées sont vérifiées au dixième de gramme. Un sel autorisé à 0 g n’est pas utilisé dans la proposition. Appuie sur son nom pour voir ses minéraux. Le pH reste évalué séparément.</p>
+        </div>
+      </details>
+      <Sheet open={detailsSalt != null} onClose={() => setDetailsSalt(null)} title="Minéraux du sel"
+        subtitle="Contribution de la dose à l’eau totale" className="water-workshop">
+        {detailsSalt && <SaltMineralDetails saltId={detailsSalt} grams={state.doses[detailsSalt] ?? 0}
+          totalWaterL={totalWaterL} disabled={state.disabled.includes(detailsSalt)} />}
+      </Sheet>
     </>
   );
 }
-import { useState } from "react";

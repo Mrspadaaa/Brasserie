@@ -19,13 +19,13 @@ export const AcidDoseControl: React.FC<{
     Math.max(0, Math.round((from + delta) * 10) / 10),
   );
   return (
-    <div className="min-w-0"
+    <div className="water-acid-dose min-w-0"
       onFocusCapture={(event) => { if (event.target instanceof HTMLInputElement) onEditStart?.(); }}
       onBlur={(event) => { if (event.target instanceof HTMLInputElement) onEditEnd?.(); }}>
       <span className="block text-2xs leading-tight text-cave-400">
-        {label}
+        {label} <span className="sm:hidden">({unit})</span>
 
-        <span className={force ? "text-ebc-straw" : "text-cave-400"}>
+        <span className={`hidden sm:inline ${force ? "text-ebc-straw" : "text-cave-400"}`}>
           {" "}
           · {force ? "manuel" : "calculé"} ({unit})
         </span>

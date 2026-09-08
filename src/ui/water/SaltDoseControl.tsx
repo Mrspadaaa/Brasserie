@@ -8,8 +8,6 @@ import { SaltDef, ION_SYMBOL_SHORT } from "../../domain/water";
 import { Minus, Plus, Info } from "lucide-react";
 
 import { SALT_SHORT } from "./constants";
-import type { ManualWaterImpact } from "../../domain/water/manualImpact";
-import { WaterDoseImpact } from "./WaterDoseImpact";
 export const SaltDoseControl: React.FC<{
   id: SaltId;
   def: SaltDef;
@@ -17,7 +15,6 @@ export const SaltDoseControl: React.FC<{
   off: boolean;
   active: boolean;
   ions: Array<keyof WaterIons>;
-  impact?: ManualWaterImpact | null;
   onEditStart?: () => void;
   onEditEnd?: () => void;
   onDetails: (id: SaltId) => void;
@@ -31,7 +28,6 @@ export const SaltDoseControl: React.FC<{
   off,
   active,
   ions,
-  impact,
   onEditStart,
   onEditEnd,
   onDetails,
@@ -51,7 +47,7 @@ export const SaltDoseControl: React.FC<{
         if (event.target instanceof HTMLInputElement) onEditStart?.();
       }}
       onBlur={(event) => { if (event.target instanceof HTMLInputElement) onEditEnd?.(); }}
-      className={`p-1 sm:p-2 rounded-control border transition-colors min-w-0 ${
+      className={`water-salt-cell p-1 sm:p-2 rounded-control border transition-colors min-w-0 ${
         off
           ? "bg-cave-950/40 border-cave-800"
           : active
@@ -67,13 +63,13 @@ export const SaltDoseControl: React.FC<{
             type="button"
             onClick={() => onDetails(id)}
             aria-label={`Détail des minéraux de ${def.name}`}
-            className="flex flex-col justify-center items-start gap-0.5 min-h-11 text-sm font-semibold text-cave-50 text-left"
+            className="water-salt-name flex flex-col justify-center items-start gap-0.5 min-h-11 text-sm font-semibold text-cave-50 text-left"
           >
             <span className="flex items-center gap-1">
               {SALT_SHORT[id]}{" "}
-              <Info size={13} className="text-cave-400 shrink-0" />
+              <Info size={13} className="h-2.5 w-2.5 sm:h-[13px] sm:w-[13px] text-cave-400 shrink-0" />
             </span>
-            <span className="block text-2xs font-normal leading-tight text-cave-400">
+            <span className="hidden sm:block text-2xs font-normal leading-tight text-cave-400">
               {ions.map((ion) => ION_SYMBOL_SHORT[ion]).join(" · ")}{" "}
             </span>
           </button>
@@ -84,7 +80,7 @@ export const SaltDoseControl: React.FC<{
           aria-checked={!off}
           aria-label={`${def.name} — ${off ? "écarté" : "autorisé"}`}
           onClick={() => onToggle(id)}
-          className="shrink-0 w-11 h-11 flex items-center justify-center rounded-control"
+          className="water-salt-switch shrink-0 w-11 h-11 flex items-center justify-center rounded-control"
         >
           <span
             className={`block w-7 h-4 rounded-full relative transition-colors ${
@@ -99,7 +95,7 @@ export const SaltDoseControl: React.FC<{
         </button>
       </div>
 
-      <div className="flex items-stretch mt-1">
+      <div className="water-salt-dose flex items-stretch mt-1">
         <button
           type="button"
           disabled={off || grams <= 0}
@@ -133,8 +129,7 @@ export const SaltDoseControl: React.FC<{
           <Plus className="w-3 h-3" />
         </button>
       </div>
-      {impact && <WaterDoseImpact impact={impact} />}
-      <p className="pt-1 text-2xs text-cave-400">
+      <p className="hidden sm:block pt-1 text-2xs text-cave-400">
         {off
           ? "Écarté du calcul"
           : grams > 0

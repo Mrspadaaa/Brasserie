@@ -90,8 +90,8 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
 
   return (
     <div className={`panel px-3 py-3 ${className}`}>
-      <label htmlFor={id} className="block text-sm font-semibold text-cave-200">Rapport sulfate / chlorure</label>
-      <dl className="mt-2 grid grid-cols-2 gap-x-3">
+      <label htmlFor={id} className="ratio-title block text-sm font-semibold text-cave-200"><span className="sm:hidden">SO₄ ⇄ Cl</span><span className="hidden sm:inline">Rapport sulfate / chlorure</span><span className="ratio-orientation block text-2xs font-normal text-cave-400">{label}</span></label>
+      <dl className="ratio-readings mt-2 grid grid-cols-2 gap-x-3">
         <div>
           <dt className="flex items-center gap-1.5 text-2xs text-cave-400"><span aria-hidden className="h-2 w-2 rounded-full bg-ebc-straw" />Réglage</dt>
           <dd aria-label="Rapport réglé" className="reading text-lg text-ebc-straw">{settingText}{safeSetting !== Infinity && <span className="reading-unit"> : 1</span>}</dd>
@@ -101,7 +101,7 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
           <dd aria-label="Rapport obtenu" className={`reading text-lg ${outside ? 'text-ebc-amber' : 'text-water'}`}>{actualText}{finiteActual !== null && <span className="reading-unit"> : 1</span>}</dd>
         </div>
       </dl>
-      <div className="relative mt-1 touch-none cursor-pointer"
+      <div className="ratio-track relative mt-1 touch-none cursor-pointer"
         onPointerDown={pointerStart}
         onPointerMove={event => { if (activePointer.current === event.pointerId) pointerSetting(event); }}
         onPointerUp={pointerEnd} onPointerCancel={pointerEnd} onLostPointerCapture={() => { activePointer.current = null; }}>
@@ -137,22 +137,21 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
           }
         </div>
       </div>
-      <div className="relative mx-3.5 h-4 text-2xs text-cave-400" aria-hidden>
+      <div className="ratio-ticks relative mx-3.5 h-4 text-2xs text-cave-400" aria-hidden>
         <span className="absolute left-0">0:1</span>
         {limit > 1 && <span className="absolute -translate-x-1/2" style={{ left: `${position(1)}%` }}>1:1</span>}
         <span className="absolute right-0">{frenchNumber(limit)}:1</span>
       </div>
-      <div className="mt-1 flex justify-between gap-2 text-2xs text-cave-400"><span>Plus de chlorure</span><span>Plus de sulfate</span></div>
-      <div id={`${id}-help`} className="mt-2 space-y-1 text-2xs">
+      <div className="ratio-directions mt-1 flex justify-between gap-2 text-2xs text-cave-400"><span>Plus de chlorure</span><span>Plus de sulfate</span></div>
+      <div id={`${id}-help`} className="ratio-help mt-2 space-y-1 text-2xs">
         {ions && <p aria-label="Concentrations du rapport" className="text-cave-200">SO₄ {frenchNumber(ions.so4, 1)} ppm · Cl {frenchNumber(ions.cl, 1)} ppm</p>}
-        <div className="flex flex-wrap justify-between gap-x-2 gap-y-1">
-          {label && <span className="text-cave-400">{label}</span>}
-          {target && <span className={outside ? 'text-ebc-amber' : 'text-cave-400'}>{profileText}</span>}
+        <div className="ratio-profile flex flex-wrap justify-between gap-x-2 gap-y-1">
+          {target && <span className={outside ? 'text-ebc-amber' : 'text-cave-400'}><span className="ratio-profile-short hidden" aria-hidden>Profil {frenchNumber(target.min)}–{frenchNumber(target.max)}</span><span className="ratio-profile-full">{profileText}</span></span>}
         </div>
-        {different && <p className="text-cave-400">Les doses actuelles donnent un rapport différent du réglage.</p>}
-        {(withoutChloride || finiteActual !== null && finiteActual > limit) && <p className="text-cave-400">Rapport obtenu au-delà de la piste ({frenchNumber(limit)}:1).</p>}
-        {safeSetting !== Infinity && safeSetting > limit && <p className="text-cave-400">Réglage au-delà de la piste ({frenchNumber(limit)}:1).</p>}
-        <p className="text-cave-400">Déplacer recalcule les sels.{!followingTarget && ' Réglage initialisé depuis les doses actuelles.'}</p>
+        {different && <p className="ratio-explanation text-cave-400">Les doses actuelles donnent un rapport différent du réglage.</p>}
+        {(withoutChloride || finiteActual !== null && finiteActual > limit) && <p className="ratio-explanation text-cave-400">Rapport obtenu au-delà de la piste ({frenchNumber(limit)}:1).</p>}
+        {safeSetting !== Infinity && safeSetting > limit && <p className="ratio-explanation text-cave-400">Réglage au-delà de la piste ({frenchNumber(limit)}:1).</p>}
+        <p className="ratio-explanation text-cave-400">Déplacer recalcule les sels.{!followingTarget && ' Réglage initialisé depuis les doses actuelles.'}</p>
       </div>
     </div>
   );

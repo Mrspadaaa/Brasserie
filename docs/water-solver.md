@@ -137,8 +137,14 @@ faibles en sulfate et chlorure ne décrivent pas la minéralité de toute l’ea
 `ui/SaltSolver.tsx` compose l’atelier. Le moteur de domaine ne dépend pas de
 React. Les vues ne possèdent pas de seconde formule de traitement.
 
-Les conséquences d’un réglage manuel apparaissent à côté du sel ou de l’acide
-modifié : deltas en ppm sur l’eau totale, sorties/retours dans le profil,
+Sur mobile, le radar, le slider, les neuf sels en grille 3 × 3 et les deux
+doses d’acide restent ensemble. La hauteur du radar utilise l’espace laissé
+par les commandes. Le compagnon est placé à côté des onglets, sans recouvrir
+les doses ; le nom de chaque sel ouvre sa composition. Les explications
+détaillées suivent ce bloc, sans interrompre la pesée.
+
+Les conséquences d’un réglage manuel apparaissent sous les commandes :
+deltas en ppm sur l’eau totale, sorties/retours dans le profil,
 rapport, pH estimé et acide automatique ajusté. Le point de comparaison est
 l’état avant ce geste, jamais une autre recette hypothétique. Il est effacé
 après Doser et invalidé si l’analyse, les volumes, les dilutions ou les malts
@@ -209,8 +215,12 @@ et pas uniquement la cohérence des formules ou l’absence d’erreur d’exéc
   320, 390 et 768 px (champs tactiles, détails et fiche de pesée).
   `WATER_PREVIEW_URL` indique le serveur Vite local, `http://127.0.0.1:3008` par défaut.
 - `scripts/check-water-bicarbonate.mjs`, puis `scripts/check-water-consequences.mjs` :
-  reproduction de la photo, profil après Doser et conséquences près du champ
-  modifié, avec une saisie au clavier réel et les mêmes trois largeurs.
+  reproduction de la photo, profil après Doser et conséquences sous les commandes,
+  avec une saisie au clavier réel et les mêmes trois largeurs.
+- `scripts/check-water-mobile-layout.mjs` : atelier et assistant à 320 × 740,
+  390 × 740, 390 × 844 et 414 × 896. Les quatre blocs doivent être visibles
+  ensemble, dans l’ordre, avant/après saisie et changement de ratio ; les
+  boutons flottants ne doivent recouvrir aucune dose.
 
 Le banc historique de 1 044 plans est conservé dans
 [water-solver-comparison.csv](water-solver-comparison.csv) et

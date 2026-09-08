@@ -6,7 +6,7 @@ const decimal = (number: number, digits = 1) => formatDecimal(Number(number.toFi
 const signed = (number: number) => `${number > 0 ? '+' : ''}${decimal(number)}`;
 const sideName = { mash: 'Empâtage', sparge: 'Rinçage' };
 
-/** Compact consequences stay beside the edited control; details expand in place. */
+/** Consequences follow the dosing surface so edits never displace its controls. */
 export function WaterDoseImpact({ impact }: { impact: ManualWaterImpact }) {
   const { edit } = impact;
   const name = edit.kind === 'salt' ? SALTS[edit.id].name : `Acide ${sideName[edit.side].toLowerCase()}`;

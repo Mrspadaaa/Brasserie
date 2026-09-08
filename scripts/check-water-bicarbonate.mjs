@@ -149,7 +149,7 @@ async function checkLayout(page, width) {
 }
 
 async function acidScreenshot(page, filename) {
-  const card = await page.evaluateHandle(selector => document.querySelector(selector).parentElement, acidMeanSelector);
+  const card = await page.evaluateHandle(selector => document.querySelector(selector).closest('[data-water-acids]'), acidMeanSelector);
   await card.asElement().screenshot({ path: resolve(output, filename) });
   await card.dispose();
 }
