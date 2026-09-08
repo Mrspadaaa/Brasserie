@@ -5,6 +5,7 @@ import { StorageService } from '../services/storage';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { useLiveSelection } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
+import { isCurrent } from '../domain/catalogOrganization';
 
 /**
  * Parc de fûts.
@@ -62,7 +63,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const fillable = batches.filter(
-    (b) => b.status === 'conditionne' || b.status === 'garde' || b.status === 'fermentation'
+    (b) => isCurrent(b) && (b.status === 'conditionne' || b.status === 'garde' || b.status === 'fermentation')
   );
 
   const counts = (Object.keys(KEG_STATE) as KegState[]).map((s) => ({

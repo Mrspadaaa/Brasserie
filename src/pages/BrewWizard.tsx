@@ -1111,7 +1111,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     steps: details.steps ?? [],
     notes: details.notes ?? [],
     notesCreation: details.notesCreation,
-    favorite: base?.favorite
+    favorite: base?.favorite,
+    archivedAt: base?.archivedAt
   });
 
   const hasMetrics = fermentables.length > 0 || hops.length > 0;

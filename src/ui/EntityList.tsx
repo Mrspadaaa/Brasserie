@@ -209,7 +209,7 @@ export const FavoriteToggle: React.FC<{
     aria-label={active ? `Retirer ${label} des favoris` : `Épingler ${label}`}
     aria-pressed={active}
     className="touch-target rounded-control shrink-0 transition-colors
-               text-cave-600 hover:text-ebc-straw"
+               text-cave-400 hover:text-ebc-straw"
   >
     <Star
       className={`w-5 h-5 transition-colors ${active ? 'fill-ebc-straw text-ebc-straw' : ''}`}

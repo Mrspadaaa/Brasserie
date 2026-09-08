@@ -17,6 +17,8 @@ import { createRoot } from 'react-dom/client';
 import { ProductionTab } from '/src/components/tabs/ProductionTab.tsx';
 import { fullRecipe } from '/tests/fixtures/fullRecipe.ts';
 import { defaultConfig, StorageService } from '/src/services/storage.ts';
+import { FirestoreRepo } from '/src/services/firestoreRepo.ts';
+import { useStorageValue } from '/src/hooks/useLiveData.ts';
 import { captureSnapshot } from '/src/domain/recipeSnapshot.ts';
 import '/src/index.css';
 const recipes = [
@@ -31,10 +33,16 @@ const batches = [
   { id: 'LOT-004', name: 'Essai sans mesures', style: 'Blonde', volumeL: 300, brewDate: '', status: 'annule' }
 ];
 const action = (text: string) => { document.getElementById('notice')!.textContent = text; };
+// Use the real storage facade and its dev-local repository, with external requests blocked.
+// Session storage only keeps this fixture across reloads; it never accesses production data.
+const saved = JSON.parse(sessionStorage.getItem('catalog-preview-records') || 'null');
+for (const recipe of saved?.recipes || recipes) FirestoreRepo.put('recipes', recipe.id, recipe);
+for (const batch of saved?.batches || batches) FirestoreRepo.put('batches', batch.id, batch);
+FirestoreRepo.subscribe(() => sessionStorage.setItem('catalog-preview-records', JSON.stringify({ recipes: StorageService.getRecipes(), batches: StorageService.getBatches() })));
+const readRecipes = () => StorageService.getRecipes(), readBatches = () => StorageService.getBatches();
 function Preview() {
-  const [rows, setRows] = React.useState(batches);
-  React.useEffect(() => { StorageService.updateBatch = updated => { setRows(previous => previous.map(b => b.id === updated.id ? updated : b)); action('Mesure '+updated.id); }; }, []);
-  return <main className="max-w-5xl mx-auto p-3"><div className="flex items-center justify-between py-2"><span className="text-lg font-semibold">L’Affinée</span><span className="text-sm text-cave-400">Production</span></div><ProductionTab batches={rows} recipes={recipes} brewhouses={defaultConfig.brewhouses} activeBrewhouseId={defaultConfig.activeBrewhouseId} globalTimeFilter="all" targetSubTab={new URLSearchParams(location.search).get('view') === 'recipes' ? 'recipes' : 'batches'} onOpenCreateBatch={() => action('Créer')} onOpenQuickAction={()=>{}} onOpenRecipe={r=>action('Ouvrir '+r.id)} onEditRecipe={r=>action('Modifier '+r.id)} onOpenBrewDay={b=>action('Suivi '+b.id)} onDraftRecipe={()=>{}} /><div role="status" id="notice" /></main>;
+  const rows = useStorageValue(readBatches), recipeRows = useStorageValue(readRecipes);
+  return <main className="max-w-5xl mx-auto p-3"><div className="flex items-center justify-between py-2"><span className="text-lg font-semibold">L’Affinée</span><span className="text-sm text-cave-400">Production</span></div><ProductionTab batches={rows} recipes={recipeRows} brewhouses={defaultConfig.brewhouses} activeBrewhouseId={defaultConfig.activeBrewhouseId} globalTimeFilter="all" targetSubTab={new URLSearchParams(location.search).get('view') === 'recipes' ? 'recipes' : 'batches'} onOpenCreateBatch={() => action('Créer')} onOpenQuickAction={()=>{}} onOpenRecipe={r=>action('Ouvrir '+r.id)} onEditRecipe={r=>action('Modifier '+r.id)} onOpenBrewDay={b=>action('Suivi '+b.id)} onDraftRecipe={()=>{}} /><div role="status" id="notice" /></main>;
 }
 createRoot(document.getElementById('root')!).render(<Preview />);
 `
@@ -73,11 +81,12 @@ try {
       await network.send('Network.enable');
       await network.send('Network.setBlockedURLs', { urls: ['https://*'] });
       await page.goto(
-        `${origin}/.codex-remote-attachments/production-catalog/index.html?view=${view}`,
+        `${origin}/.codex-remote-attachments/production-catalog/index.html?dev-local&view=${view}`,
         { waitUntil: 'networkidle0' }
       );
       await page.evaluate(() => {
         localStorage.removeItem('laffinee_ui_state');
+        sessionStorage.removeItem('catalog-preview-records');
       });
       await page.reload({ waitUntil: 'networkidle0' });
       const noun = view === 'recipes' ? 'recettes' : 'brassins';
@@ -188,6 +197,69 @@ try {
         0
       );
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      // Check persistent filtering and reversible filing through the actual application services.
+      await textButton(page, 'Tout effacer', '[aria-label="Filtres actifs mémorisés"] button');
+      await page.select(`#catalog-folder-${view}`, 'current');
+      const itemLabel = view === 'recipes' ? 'la recette Nocturne, V1' : 'le brassin LOT-002';
+      const articleLabel =
+        view === 'recipes' ? 'Recette Nocturne, version 1' : 'Brassin LOT-002, Nocturne';
+      await click(page, `Épingler ${itemLabel}`);
+      await page.waitForSelector(
+        `button[aria-label="Retirer ${itemLabel} des favoris"][aria-pressed="true"]`
+      );
+      await click(page, 'Favoris uniquement');
+      await page.type('input[type="search"]', 'Nocturne');
+      await page.reload({ waitUntil: 'networkidle0' });
+      await page.waitForSelector('[aria-label="Filtres actifs mémorisés"]');
+      assert.match(
+        await page.$eval('[aria-label="Filtres actifs mémorisés"]', (e) => e.textContent),
+        /Vue filtrée · 2 critères/
+      );
+      assert.equal(await page.$eval('input[type="search"]', (e) => e.value), 'Nocturne');
+      assert.equal(
+        await page.$eval('[aria-label="Favoris uniquement"]', (e) =>
+          e.getAttribute('aria-pressed')
+        ),
+        'true'
+      );
+      assert.equal((await page.$$(`[aria-label="Liste des ${noun}"] article`)).length, 1);
+      await page.screenshot({
+        path: resolve(folder, `${view}-${width}-persistent-filters.png`),
+        fullPage: true
+      });
+      await click(page, `Ranger ${itemLabel}`);
+      await textButton(page, 'Classer dans les archives', '[role="dialog"] button');
+      await page.waitForSelector('[role="dialog"]', { hidden: true });
+      await page.waitForSelector(`article[aria-label="${articleLabel}"]`, { hidden: true });
+      await page.select(`#catalog-folder-${view}`, 'archived');
+      await page.waitForSelector(`article[aria-label="${articleLabel}"]`);
+      await page.reload({ waitUntil: 'networkidle0' });
+      assert.equal(await page.$eval(`#catalog-folder-${view}`, (e) => e.value), 'archived');
+      assert.ok(await page.$(`button[aria-label="Retirer ${itemLabel} des favoris"]`));
+      await textButton(page, 'Tout effacer', '[aria-label="Filtres actifs mémorisés"] button');
+      assert.equal(await page.$eval(`#catalog-folder-${view}`, (e) => e.value), 'archived');
+      assert.equal((await page.$$(`[aria-label="Liste des ${noun}"] article`)).length, 1);
+      await page.screenshot({
+        path: resolve(folder, `${view}-${width}-archives.png`),
+        fullPage: true
+      });
+      await click(page, 'Afficher les analyses');
+      assert.equal(await page.$eval(`#catalog-folder-${view}`, (e) => e.value), 'all');
+      await page.select(`#catalog-folder-${view}`, 'current');
+      await page.waitForSelector(`[aria-label="Analyses des ${noun}"]`);
+      await click(page, 'Afficher la liste');
+      assert.equal(await page.$eval(`#catalog-folder-${view}`, (e) => e.value), 'archived');
+      await click(page, `Ranger ${itemLabel}`);
+      await textButton(page, 'Remettre dans le carnet', '[role="dialog"] button');
+      await page.waitForSelector('[role="dialog"]', { hidden: true });
+      await page.waitForSelector(`article[aria-label="${articleLabel}"]`, { hidden: true });
+      await page.select(`#catalog-folder-${view}`, 'current');
+      await page.waitForSelector(`article[aria-label="${articleLabel}"]`);
+      await click(page, `Retirer ${itemLabel} des favoris`);
+      await page.waitForSelector(
+        `button[aria-label="Épingler ${itemLabel}"][aria-pressed="false"]`
+      );
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       assert.deepEqual(errors, []);
       report.push({
         width,
@@ -200,6 +272,10 @@ try {
         filters: true,
         hopDrilldown: true,
         emptyPeriod: true,
+        persistentFiltersAfterReload: true,
+        favorites: true,
+        reversibleArchives: true,
+        independentAnalysisFolder: true,
         noOverflow: true,
         errors
       });

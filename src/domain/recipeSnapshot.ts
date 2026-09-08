@@ -102,7 +102,7 @@ export function normalizeBatch(batch: Batch): Batch {
  * Le `sourceRecipeId` garde la provenance ; c'est le snapshot qui fait foi.
  */
 export function captureSnapshot(recipe: Recipe): RecipeSnapshot {
-  const { id, favorite, batchRef, ...rest } = normalizeRecipe(recipe);
+  const { id, favorite, batchRef, archivedAt, ...rest } = normalizeRecipe(recipe);
   return {
     ...structuredClone(rest),
     sourceRecipeId: id,

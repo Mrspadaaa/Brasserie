@@ -27,6 +27,7 @@ import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { DateUtils } from '../../services/dateUtils';
 import { BrewingMath } from '../../services/brewingMath';
+import { isCurrent } from '../../domain/catalogOrganization';
 
 interface DashboardTabProps {
   transactions: Transaction[];
@@ -161,11 +162,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
   // Active & In-Progress Batches
   const activeBatches = useMemo(() => batches.filter((b) => 
-    b.status === 'fermentation' || b.status === 'garde'
+    isCurrent(b) && (b.status === 'fermentation' || b.status === 'garde')
   ), [batches]);
 
   // Planned Future Batches
-  const plannedBatches = useMemo(() => batches.filter((b) => b.status === 'planifie'), [batches]);
+  const plannedBatches = useMemo(() => batches.filter((b) => isCurrent(b) && b.status === 'planifie'), [batches]);
 
   // Filter batches for this period & tax
   const periodBatches = batches.filter((b) => DateUtils.isDateInPeriod(b.brewDate, globalTimeFilter));

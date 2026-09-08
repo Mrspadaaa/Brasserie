@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, SlidersHorizontal, X, List, ChartNoAxesCombined } from 'lucide-react';
+import { Search, SlidersHorizontal, X, List, ChartNoAxesCombined, Star } from 'lucide-react';
 import { Sheet } from '../Sheet';
 import { BATCH_STATUSES, statusOf } from '../../domain/batchStatus';
 import {
@@ -11,8 +11,11 @@ import {
   catalogOptions
 } from '../../domain/productionCatalog';
 import { TimeFilterPeriod } from '../../types';
-import { DateUtils } from '../../services/dateUtils';
 import { matchesWorkFilter, type WorkFilter } from '../../domain/productionInsights';
+import { catalogCriteria, type CatalogCriterion } from '../../domain/catalogPreferences';
+import { inCatalogFolder } from '../../domain/catalogOrganization';
+import { CatalogFilterNotice } from './CatalogFilterNotice';
+import { CatalogScopeBar } from './CatalogScopeBar';
 
 export const catalogField =
   'w-full min-h-touch rounded-control border border-cave-700 bg-cave-950 px-3 text-base text-cave-50 focus:border-ebc-straw focus:outline-none';
@@ -63,14 +66,19 @@ export function CatalogToolbar({
 }) {
   const [open, setOpen] = useState(false);
   const set = (patch: Partial<CatalogFilters>) => onChange({ ...filters, ...patch });
-  const active = (Object.keys(filterLabel) as Array<keyof CatalogFilters>).filter(
-    (key) => filters[key]
-  );
-  const periodIsActive =
-    filters.period !== 'all' && (filters.period !== 'global' || globalPeriod !== 'all');
-  const moreCount = active.length + Number(filters.versions !== 'all') + Number(periodIsActive);
+  const criteria = catalogCriteria(filters, work, globalPeriod);
+  const moreCount = criteria.length;
+  const scopedEntries = entries.filter((e) => inCatalogFolder(e, filters.folder));
+  const remove = (criterion: CatalogCriterion) => {
+    if (criterion.clear) set(criterion.clear);
+    if (criterion.clearWork) onWorkChange('all');
+  };
   const reset = () => {
-    onChange({ ...DEFAULT_CATALOG_FILTERS, sort: filters.sort });
+    onChange({
+      ...DEFAULT_CATALOG_FILTERS,
+      sort: filters.sort,
+      folder: filters.folder
+    });
     onWorkChange('all');
   };
   const noun = kind === 'recipes' ? 'recette' : 'brassin';
@@ -84,6 +92,9 @@ export function CatalogToolbar({
         className={catalogField}
       >
         <option value="">Tous</option>
+        {filters[field] && !options.includes(filters[field]) && (
+          <option value={filters[field]}>{filters[field]} · hors de ce dossier</option>
+        )}
         {options.map((option) => (
           <option key={option}>{option}</option>
         ))}
@@ -149,8 +160,7 @@ export function CatalogToolbar({
       : [
           ['all', 'Toutes'],
           ['brewed', 'Avec brassin'],
-          ['unbrewed', 'Sans brassin'],
-          ['favorite', 'Favoris']
+          ['unbrewed', 'Sans brassin']
         ];
   return (
     <section aria-label={`Recherche et filtres des ${noun}s`} className="space-y-3">
@@ -210,156 +220,79 @@ export function CatalogToolbar({
           )}
         </button>
       </div>
-      <div
-        className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none"
-        aria-label={kind === 'batches' ? 'Avancement des brassins' : 'Usage des recettes'}
-      >
-        {quick.map(([value, label]) => {
-          const current =
-            kind === 'batches' ? (work !== 'all' ? `work:${work}` : filters.status) : filters.use;
-          const quantity = facetEntries.filter((e) =>
-            kind === 'recipes'
-              ? value === 'all' ||
-                (value === 'favorite'
-                  ? e.favorite
-                  : value === 'brewed'
-                    ? e.linkedBatches.length > 0
-                    : e.linkedBatches.length === 0)
-              : value.startsWith('work:')
-                ? matchesWorkFilter(e, value.slice(5) as WorkFilter)
-                : !value ||
-                  (value === 'active'
-                    ? ['fermentation', 'garde'].includes(e.batch?.status ?? '')
-                    : e.batch?.status === value)
-          ).length;
-          return (
-            <button
-              key={value}
-              type="button"
-              aria-label={label}
-              aria-pressed={current === value}
-              onClick={() => {
-                if (kind === 'batches') {
-                  onWorkChange(value.startsWith('work:') ? (value.slice(5) as WorkFilter) : 'all');
-                  set({ status: value.startsWith('work:') ? '' : value });
-                } else set({ use: value as CatalogFilters['use'] });
-              }}
-              className={`min-h-touch shrink-0 rounded-full px-3 text-sm border ${current === value ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-800 text-cave-400'}`}
-            >
-              {label}{' '}
-              <span className="ml-1 tabular-nums opacity-75" aria-hidden>
-                {quantity}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-      {(active.length > 0 ||
-        filters.versions !== 'all' ||
-        periodIsActive ||
-        work !== 'all' ||
-        (filters.status && !quick.some(([value]) => value === filters.status))) && (
-        <div className="flex flex-wrap gap-1.5" aria-label="Filtres actifs">
-          {work !== 'all' && (
-            <button
-              type="button"
-              onClick={() => onWorkChange('all')}
-              className="min-h-touch px-2.5 rounded-control bg-cave-850 text-sm text-cave-200"
-            >
-              {work === 'measurements' ? 'Mesures manquantes' : 'Dégustation à noter'} ×
-            </button>
-          )}
-          {filters.status && !quick.some(([value]) => value === filters.status) && (
-            <button
-              type="button"
-              onClick={() => set({ status: '' })}
-              className="min-h-touch px-2.5 rounded-control bg-cave-850 text-sm text-cave-200"
-            >
-              {statusOf(filters.status as Parameters<typeof statusOf>[0]).label} ×
-            </button>
-          )}
-          {active.map((key) => (
-            <button
-              type="button"
-              key={key}
-              onClick={() => set({ [key]: '' })}
-              aria-label={`Retirer le filtre ${filterLabel[key]}`}
-              className="min-h-touch max-w-full inline-flex items-center gap-1.5 rounded-control bg-cave-850 px-2.5 text-sm text-cave-200"
-            >
-              <span className="truncate">
-                {filterLabel[key]} : {filters[key]}
-              </span>
-              <X className="h-3.5 w-3.5 shrink-0" />
-            </button>
-          ))}
-          {filters.versions === 'latest' && (
-            <button
-              type="button"
-              onClick={() => set({ versions: 'all' })}
-              className="min-h-touch rounded-control bg-cave-850 px-2.5 text-sm text-cave-200"
-            >
-              Dernières versions ×
-            </button>
-          )}
-          {periodIsActive && (
-            <button
-              type="button"
-              onClick={() => set({ period: 'all' })}
-              className="min-h-touch rounded-control bg-cave-850 px-2.5 text-sm text-cave-200"
-            >
-              {filters.period === 'custom'
-                ? `${filters.from || 'Début'} → ${filters.to || 'Sans limite'}`
-                : filters.period === 'global'
-                  ? DateUtils.getPeriodLabel(globalPeriod)
-                  : filters.period === 'year'
-                    ? 'Cette année'
-                    : `${filters.period} derniers jours`}{' '}
-              ×
-            </button>
-          )}
+      <div className="flex gap-2">
+        <div
+          className="flex flex-1 min-w-0 gap-1.5 overflow-x-auto pb-1 scrollbar-none"
+          aria-label={kind === 'batches' ? 'Avancement des brassins' : 'Usage des recettes'}
+        >
+          {quick.map(([value, label]) => {
+            const current =
+              kind === 'batches' ? (work !== 'all' ? `work:${work}` : filters.status) : filters.use;
+            const quantity = facetEntries.filter((e) =>
+              kind === 'recipes'
+                ? value === 'all' ||
+                  (value === 'favorite'
+                    ? e.favorite
+                    : value === 'brewed'
+                      ? e.linkedBatches.length > 0
+                      : e.linkedBatches.length === 0)
+                : value.startsWith('work:')
+                  ? matchesWorkFilter(e, value.slice(5) as WorkFilter)
+                  : !value ||
+                    (value === 'active'
+                      ? ['fermentation', 'garde'].includes(e.batch?.status ?? '')
+                      : e.batch?.status === value)
+            ).length;
+            return (
+              <button
+                key={value}
+                type="button"
+                aria-label={label}
+                aria-pressed={current === value}
+                onClick={() => {
+                  if (kind === 'batches') {
+                    onWorkChange(
+                      value.startsWith('work:') ? (value.slice(5) as WorkFilter) : 'all'
+                    );
+                    set({ status: value.startsWith('work:') ? '' : value });
+                  } else set({ use: value as CatalogFilters['use'] });
+                }}
+                className={`min-h-touch shrink-0 rounded-full px-3 text-sm border ${current === value ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-800 text-cave-400'}`}
+              >
+                {label}{' '}
+                <span className="ml-1 tabular-nums opacity-75" aria-hidden>
+                  {quantity}
+                </span>
+              </button>
+            );
+          })}
         </div>
-      )}
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-        <p className="text-sm text-cave-400" role="status">
-          {count} {noun}
-          {count > 1 ? 's' : ''}
-          <span> sur {entries.length}</span>
-        </p>
-        <div className="flex items-center gap-2">
-          <label className="sr-only" htmlFor={`catalog-sort-${kind}`}>
-            Trier les {noun}s
-          </label>
-          <select
-            id={`catalog-sort-${kind}`}
-            className="min-h-touch max-w-[155px] bg-transparent pr-1 text-sm text-cave-200"
-            value={filters.sort}
-            onChange={(e) => set({ sort: e.target.value as CatalogFilters['sort'] })}
-          >
-            {kind === 'batches' && <option value="work">À suivre d’abord</option>}
-            <option value="recent">Date ↓</option>
-            <option value="oldest">Date ↑</option>
-            <option value="name">Nom A–Z</option>
-            <option value="volume">Volume ↓</option>
-            <option value="abv">Alcool ↓</option>
-            <option value="ibu">IBU cible ↓</option>
-            <option value="color">Couleur EBC ↓</option>
-            <option value="activity">
-              {kind === 'batches' ? 'Avancement' : 'Nombre de lots ↓'}
-            </option>
-          </select>
-          {kind === 'recipes' && (
-            <button
-              type="button"
-              aria-label="Choisir des recettes à comparer"
-              aria-pressed={comparing}
-              onClick={onCompare}
-              className={`min-h-touch px-2 text-sm ${comparing ? 'text-ebc-straw' : 'text-cave-200'}`}
-            >
-              Comparer
-            </button>
-          )}
-        </div>
+        <button
+          type="button"
+          aria-label="Favoris uniquement"
+          aria-pressed={filters.favoritesOnly}
+          onClick={() => set({ favoritesOnly: !filters.favoritesOnly })}
+          className={`min-h-touch shrink-0 inline-flex gap-1.5 items-center self-start rounded-full px-3 border text-sm ${filters.favoritesOnly ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-700 text-cave-200'}`}
+        >
+          <Star className={`w-4 h-4 ${filters.favoritesOnly ? 'fill-current' : ''}`} />
+          <span>Favoris</span>
+        </button>
       </div>
+      <CatalogFilterNotice
+        criteria={criteria}
+        onRemove={remove}
+        onReset={reset}
+        onShowAll={() => setOpen(true)}
+      />
+      <CatalogScopeBar
+        kind={kind}
+        entries={entries}
+        count={count}
+        filters={filters}
+        onChange={onChange}
+        comparing={comparing}
+        onCompare={onCompare}
+      />
       <Sheet
         open={open}
         onClose={() => setOpen(false)}
@@ -384,11 +317,35 @@ export function CatalogToolbar({
         }
       >
         <div className="space-y-6">
+          {criteria.length > 0 && (
+            <div className="space-y-2" aria-label="Tous les critères actifs">
+              <p className="text-sm text-ebc-straw font-semibold">
+                Vue filtrée · {criteria.length} critère
+                {criteria.length > 1 ? 's' : ''}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {criteria.map((c) => (
+                  <button
+                    type="button"
+                    key={c.id}
+                    onClick={() => remove(c)}
+                    aria-label={`Retirer le filtre ${c.label}`}
+                    className="min-h-touch max-w-full inline-flex items-center gap-2 px-3 rounded-control bg-cave-850 text-sm text-cave-100"
+                  >
+                    <span className="truncate">
+                      {c.label} : {c.value}
+                    </span>
+                    <X className="w-4 h-4 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {select('style', catalogOptions(entries, 'style'))}
-            {select('hop', catalogOptions(entries, 'hops'))}
-            {select('malt', catalogOptions(entries, 'malts'))}
-            {select('yeast', catalogOptions(entries, 'yeast'))}
+            {select('style', catalogOptions(scopedEntries, 'style'))}
+            {select('hop', catalogOptions(scopedEntries, 'hops'))}
+            {select('malt', catalogOptions(scopedEntries, 'malts'))}
+            {select('yeast', catalogOptions(scopedEntries, 'yeast'))}
           </div>
           {kind === 'batches' ? (
             <label className="block space-y-1.5">
@@ -418,7 +375,11 @@ export function CatalogToolbar({
                 aria-label="Filtrer les versions"
                 className={catalogField}
                 value={filters.versions}
-                onChange={(e) => set({ versions: e.target.value as CatalogFilters['versions'] })}
+                onChange={(e) =>
+                  set({
+                    versions: e.target.value as CatalogFilters['versions']
+                  })
+                }
               >
                 <option value="all">Toutes les versions</option>
                 <option value="latest">Dernière version de chaque recette</option>

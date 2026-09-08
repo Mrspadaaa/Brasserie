@@ -18,6 +18,7 @@ import {
 
 import { initialCompany, initialBrewhouses } from '../data/seedData';
 import { FirestoreRepo, CollectionName } from './firestoreRepo';
+import { writeCatalogOrganization } from './catalogOrganization';
 import { deviceBackup, restoreBackup } from './dataBackup';
 import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
 import { Units } from './units';
@@ -1226,7 +1227,7 @@ export const StorageService = {
    * remontent ensuite automatiquement en tête des listes, des autocomplétions
    * et de la palette de recherche.
    */
-  toggleFavorite(kind: 'stockItem' | 'recipe' | 'client' | 'template', id: string) {
+  toggleFavorite(kind: 'stockItem' | 'recipe' | 'batch' | 'client' | 'template', id: string) {
     switch (kind) {
       case 'stockItem': {
         const stocks = this.getStocks();
@@ -1240,7 +1241,12 @@ export const StorageService = {
       }
       case 'recipe': {
         const r = this.getRecipes().find((x) => x.id === id);
-        if (r) FirestoreRepo.put('recipes', id, { ...r, favorite: !r.favorite });
+        if (r) this.setCatalogFavorite('recipe', id, !r.favorite);
+        break;
+      }
+      case 'batch': {
+        const b = this.getBatches().find((x) => x.id === id);
+        if (b) this.setCatalogFavorite('batch', id, !b.favorite);
         break;
       }
       case 'client': {
@@ -1254,6 +1260,23 @@ export const StorageService = {
         break;
       }
     }
+  },
+
+  // ORGANISATION DU CARNET — ne modifie ni les recettes ni le journal de brassage.
+  setCatalogFavorite(kind: 'recipe' | 'batch', id: string, favorite: boolean): boolean {
+    return !!writeCatalogOrganization(kind, id, { favorite });
+  },
+
+  setCatalogArchived(kind: 'recipe' | 'batch', id: string, archived: boolean): boolean {
+    const changed = writeCatalogOrganization(kind, id, {
+      archivedAt: archived ? new Date().toISOString() : null
+    });
+    if (!changed) return false;
+    this.logAction(
+      'Modification', 'Production', id,
+      `${kind === 'recipe' ? 'Recette' : 'Brassin'} « ${changed.name} » ${archived ? 'classé dans les archives' : 'remis dans le carnet courant'}`
+    );
+    return true;
   },
 
   // SAUVEGARDE & RESTAURATION

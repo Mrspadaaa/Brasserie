@@ -1,5 +1,7 @@
 import React from 'react';
-import { Check, Pencil, ChevronRight, Star } from 'lucide-react';
+import { Check, Pencil, ChevronRight, Archive } from 'lucide-react';
+import { FavoriteToggle } from '../EntityList';
+import { CatalogItemMenu } from './CatalogItemMenu';
 import type { Batch, Recipe } from '../../types';
 import { catalogNumber, type CatalogEntry } from '../../domain/productionCatalog';
 import { statusOf } from '../../domain/batchStatus';
@@ -41,6 +43,8 @@ export function RecipeCard({
   onOpen,
   onEdit,
   onHistory,
+  onFavorite,
+  onArchive,
   comparing,
   selected,
   disabled,
@@ -50,6 +54,8 @@ export function RecipeCard({
   onOpen: (r: Recipe) => void;
   onEdit: (r: Recipe) => void;
   onHistory: (e: CatalogEntry) => void;
+  onFavorite: (e: CatalogEntry) => void;
+  onArchive: (e: CatalogEntry, archived: boolean) => void;
   comparing: boolean;
   selected: boolean;
   disabled: boolean;
@@ -82,14 +88,13 @@ export function RecipeCard({
               <span className="text-lg font-semibold text-cave-50 break-words leading-snug">
                 {entry.name}
               </span>
-              {entry.favorite && (
-                <Star
-                  className="w-4 h-4 shrink-0 text-ebc-straw"
-                  fill="currentColor"
-                  aria-label="Favorite"
-                />
-              )}
             </span>
+            {entry.archivedAt && (
+              <span className="inline-flex items-center gap-1 text-sm text-water mt-1">
+                <Archive className="w-3.5 h-3.5" />
+                Archivée
+              </span>
+            )}
           </span>
         </button>
         {comparing ? (
@@ -109,7 +114,14 @@ export function RecipeCard({
             )}
           </button>
         ) : (
-          <span className="shrink-0 text-sm text-cave-200 pt-0.5">{number(entry.volumeL)} L</span>
+          <div className="shrink-0 flex flex-col items-center">
+            <FavoriteToggle
+              active={entry.favorite}
+              onToggle={() => onFavorite(entry)}
+              label={`la recette ${entry.name}, V${entry.version}`}
+            />
+            <span className="text-sm text-cave-200">{number(entry.volumeL)} L</span>
+          </div>
         )}
       </div>
       <dl className="grid grid-cols-3 gap-3 mx-4 mt-4 pb-3 border-b border-cave-800">
@@ -133,21 +145,25 @@ export function RecipeCard({
             aria-label={`Voir les brassins de ${entry.name}, V${entry.version}`}
             className="min-h-touch text-sm text-water inline-flex items-center gap-1"
           >
-            {entry.linkedBatches.length} brassin{entry.linkedBatches.length > 1 ? 's' : ''}
+            {entry.linkedBatches.length} brassin
+            {entry.linkedBatches.length > 1 ? 's' : ''}
             <ChevronRight className="w-4 h-4" />
           </button>
         ) : (
           <span className="text-sm text-cave-400">Sans brassin associé</span>
         )}
-        <button
-          type="button"
-          className="min-h-touch px-1 rounded-control text-ebc-straw inline-flex items-center gap-2 text-sm"
-          onClick={() => onEdit(recipe)}
-          aria-label={`Modifier la recette ${entry.name}`}
-        >
-          <Pencil className="h-4 w-4" />
-          Modifier
-        </button>
+        <div className="flex items-center shrink-0 gap-1">
+          <button
+            type="button"
+            className="min-h-touch px-1 rounded-control text-ebc-straw inline-flex items-center gap-2 text-sm"
+            onClick={() => onEdit(recipe)}
+            aria-label={`Modifier la recette ${entry.name}`}
+          >
+            <Pencil className="h-4 w-4" />
+            Modifier
+          </button>
+          <CatalogItemMenu entry={entry} onArchive={onArchive} />
+        </div>
       </div>
     </article>
   );
@@ -156,11 +172,15 @@ export function RecipeCard({
 export function BatchCard({
   entry,
   onOpen,
-  onBrew
+  onBrew,
+  onFavorite,
+  onArchive
 }: {
   entry: CatalogEntry;
   onOpen: (b: Batch, section?: BatchDetailSection) => void;
   onBrew: (b: Batch) => void;
+  onFavorite: (e: CatalogEntry) => void;
+  onArchive: (e: CatalogEntry, archived: boolean) => void;
 }) {
   const batch = entry.batch!,
     status = statusOf(batch.status),
@@ -192,29 +212,42 @@ export function BatchCard({
             : 'Pas encore de retour de dégustation');
   return (
     <article className="panel overflow-hidden" aria-label={`Brassin ${entry.id}, ${entry.name}`}>
-      <button
-        type="button"
-        className="w-full min-h-touch p-4 pb-0 flex gap-3 text-left"
-        onClick={() => onOpen(batch)}
-        aria-label={`Ouvrir le brassin ${entry.id}`}
-      >
-        <span
-          className={`w-2 self-stretch shrink-0 rounded-full ${entry.swatch ?? 'bg-cave-700'}`}
-          aria-hidden
-        />
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap justify-between items-center gap-1.5">
-            <span className="text-sm text-cave-400 break-all">{entry.id}</span>
-            <span className={`text-sm border rounded-full px-2 py-0.5 ${status.chip}`}>
-              {status.label}
+      <div className="flex gap-1 px-4 pt-4">
+        <button
+          type="button"
+          className="min-w-0 flex-1 min-h-touch flex gap-3 text-left"
+          onClick={() => onOpen(batch)}
+          aria-label={`Ouvrir le brassin ${entry.id}`}
+        >
+          <span
+            className={`w-2 self-stretch shrink-0 rounded-full ${entry.swatch ?? 'bg-cave-700'}`}
+            aria-hidden
+          />
+          <span className="min-w-0 flex-1">
+            <span className="flex flex-wrap justify-between items-center gap-1.5">
+              <span className="text-sm text-cave-400 break-all">{entry.id}</span>
+              <span className={`text-sm border rounded-full px-2 py-0.5 ${status.chip}`}>
+                {status.label}
+              </span>
             </span>
+            <span className="block font-semibold text-lg text-cave-50 mt-1 break-words leading-snug">
+              {entry.name}
+            </span>
+            <span className="block text-sm text-cave-400 mt-1">{dayLabel}</span>
+            {entry.archivedAt && (
+              <span className="inline-flex items-center gap-1 text-sm text-water mt-1">
+                <Archive className="w-3.5 h-3.5" />
+                Archivé
+              </span>
+            )}
           </span>
-          <span className="block font-semibold text-lg text-cave-50 mt-1 break-words leading-snug">
-            {entry.name}
-          </span>
-          <span className="block text-sm text-cave-400 mt-1">{dayLabel}</span>
-        </span>
-      </button>
+        </button>
+        <FavoriteToggle
+          active={entry.favorite}
+          onToggle={() => onFavorite(entry)}
+          label={`le brassin ${entry.id}`}
+        />
+      </div>
       {batch.status !== 'annule' && (
         <dl className="grid grid-cols-3 gap-2 px-4 py-4">
           {planned ? (
@@ -260,15 +293,18 @@ export function BatchCard({
         >
           {context}
         </p>
-        <button
-          type="button"
-          onClick={() => (action.brew ? onBrew(batch) : onOpen(batch, action.section))}
-          aria-label={`${action.label} · ${entry.id}`}
-          className="min-h-touch w-full inline-flex items-center justify-between gap-2 text-sm font-semibold text-ebc-straw"
-        >
-          {action.label}
-          <ChevronRight className="h-4 w-4 shrink-0" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => (action.brew ? onBrew(batch) : onOpen(batch, action.section))}
+            aria-label={`${action.label} · ${entry.id}`}
+            className="min-h-touch flex-1 inline-flex items-center justify-between gap-2 text-sm font-semibold text-ebc-straw"
+          >
+            {action.label}
+            <ChevronRight className="h-4 w-4 shrink-0" />
+          </button>
+          <CatalogItemMenu entry={entry} onArchive={onArchive} />
+        </div>
       </div>
     </article>
   );

@@ -387,6 +387,8 @@ export interface RecipeStep {
 
 export interface Recipe {
   id: string;
+  /** Organisation du carnet uniquement ; l'historique de production reste conservé. */
+  archivedAt?: string | null;
   version?: number;
   parentRecipeId?: string;
   batchRef?: string;
@@ -455,7 +457,7 @@ export interface Recipe {
  * Volontairement sans `id` ni `favorite` : ce n'est plus une recette qu'on
  * range, c'est le contenu réel d'une cuve à une date donnée.
  */
-export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef'> & {
+export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef' | 'archivedAt'> & {
   /** Recette d'origine, et sa date de copie. */
   sourceRecipeId?: string;
   capturedAt: string; // ISO
@@ -542,6 +544,9 @@ export interface BatchPackaging {
 
 export interface Batch {
   id: string; // LOT-001
+  favorite?: boolean;
+  /** Masqué du carnet courant, disponible dans Archives et les analyses. */
+  archivedAt?: string | null;
   brewDate: string;
   name: string;
   style: string;

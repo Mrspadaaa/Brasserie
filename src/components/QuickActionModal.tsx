@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
+import { isCurrent } from '../domain/catalogOrganization';
 import { 
   X, 
   Camera, 
@@ -66,11 +67,12 @@ interface MatchingRow {
 export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   isOpen,
   onClose,
-  recipes,
+  recipes: allRecipes,
   geminiApiKey,
   onSuccessMessage,
   onOpenCreateBatch
 }) => {
+  const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
   const [screen, setScreen] = useState<ModalScreen>('menu');
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScannedInvoiceResult | null>(null);
@@ -121,7 +123,10 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
 
   // Brew Batch State
-  const [selectedRecipeId, setSelectedRecipeId] = useState<string>(recipes[0]?.id || 'REC-001');
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string>(recipes[0]?.id || '');
+  useEffect(() => {
+    if (!recipes.some(r => r.id === selectedRecipeId)) setSelectedRecipeId(recipes[0]?.id || '');
+  }, [recipes, selectedRecipeId]);
   const [batchVolumeL, setBatchVolumeL] = useState<number>(30);
   const [autoDeductStock, setAutoDeductStock] = useState(true);
 

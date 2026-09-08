@@ -23,6 +23,7 @@ import type { Batch } from '../../types';
 import { batchEntries } from '../../domain/productionCatalog';
 import { type BatchDetailSection, isPackaged, isProduced } from '../../domain/productionInsights';
 import { BatchOutcomeAnalysis } from './BatchOutcomeAnalysis';
+import { isArchived } from '../../domain/catalogOrganization';
 
 const number = (value: number) => value.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
 const chartTooltip = {
@@ -65,7 +66,10 @@ function Distribution({
               >
                 <span
                   className="absolute inset-y-1 left-0 rounded-control opacity-15"
-                  style={{ width: `${(count / max) * 100}%`, background: color }}
+                  style={{
+                    width: `${(count / max) * 100}%`,
+                    background: color
+                  }}
                   aria-hidden
                 />
                 <span className="relative flex justify-between items-center gap-3 text-sm">
@@ -103,31 +107,49 @@ export function CatalogAnalysis({
   kind,
   entries,
   onFilter,
-  onOpenBatch
+  onOpenBatch,
+  includeArchivedBatches = true
 }: {
   kind: CatalogKind;
   entries: CatalogEntry[];
   onFilter: (field: 'style' | 'hop' | 'status', value: string) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
+  includeArchivedBatches?: boolean;
 }) {
   const [exploring, setExploring] = useState(false);
   const production = measuredProduction(entries);
   const points = entries
     .filter((e) => e.abv !== undefined && e.ibu !== undefined)
-    .map((e) => ({ name: e.name, id: e.id, abv: e.abv, ibu: e.ibu, volume: e.volumeL }));
+    .map((e) => ({
+      name: e.name,
+      id: e.id,
+      abv: e.abv,
+      ibu: e.ibu,
+      volume: e.volumeL
+    }));
   const noun = kind === 'recipes' ? 'recette' : 'brassin';
-  const resultEntries =
+  const associatedEntries =
     kind === 'batches'
       ? entries
       : batchEntries([
           ...new Map(entries.flatMap((e) => e.linkedBatches).map((b) => [b.id, b])).values()
         ]);
+  const resultEntries = includeArchivedBatches
+    ? associatedEntries
+    : associatedEntries.filter((e) => !isArchived(e));
   const tastingEntries = resultEntries.filter(
     (e) => e.batch && isPackaged(e.batch) && e.batch.notesTasting?.trim()
   );
   return (
     <div className="space-y-4" aria-label={`Analyses des ${noun}s`}>
       <div className="border-y border-cave-800 py-4">
+        {kind === 'recipes' && associatedEntries.some(isArchived) && (
+          <p className="text-sm text-cave-400 mb-3">
+            Historique des brassins associés · {associatedEntries.filter(isArchived).length}{' '}
+            archive(s)
+            {includeArchivedBatches ? ' incluse(s)' : ' exclue(s)'} dans les résultats.
+          </p>
+        )}
         <div className="flex items-start justify-between gap-3 mb-3">
           <h3 className="text-lg font-semibold text-cave-50">
             {kind === 'recipes' ? 'Les résultats de mes recettes' : 'Le bilan des brassins'}
@@ -184,8 +206,9 @@ export function CatalogAnalysis({
               </div>
             </dl>
             <p className="mt-3 text-sm text-cave-400">
-              Volumes mesurés sur {production.measured} lot{production.measured > 1 ? 's' : ''}. Les
-              volumes prévus et les lots annulés ne sont pas comptés.
+              Volumes mesurés sur {production.measured} lot
+              {production.measured > 1 ? 's' : ''}. Les volumes prévus et les lots annulés ne sont
+              pas comptés.
             </p>
           </>
         )}
@@ -348,7 +371,10 @@ export function CatalogAnalysis({
               })).filter((row) => row.count)}
               total={entries.length}
               onSelect={(label) =>
-                onFilter('status', BATCH_STATUSES.find((s) => statusOf(s).label === label)!)
+                onFilter(
+                  'status',
+                  BATCH_STATUSES.find((s) => statusOf(s).label === label)!
+                )
               }
               color="#5B8AA6"
             />

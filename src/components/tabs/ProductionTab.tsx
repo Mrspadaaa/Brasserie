@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { isCurrent } from '../../domain/catalogOrganization';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
@@ -57,15 +58,16 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
 
   // Peut être indéfini : au tout premier lancement la base est vide, et il n'y
   // a alors aucune recette à mettre à l'échelle.
-  const [selectedRecipeToScale, setSelectedRecipeToScale] = useLiveSelection(recipes, 'id');
+  const currentRecipes = useMemo(() => recipes.filter(isCurrent), [recipes]);
+  const [selectedRecipeToScale, setSelectedRecipeToScale] = useLiveSelection(currentRecipes, 'id');
 
   // Dès qu'une première recette arrive (synchronisation Firestore), on la
   // sélectionne pour que le calculateur cesse d'être vide.
   useEffect(() => {
-    if (!selectedRecipeToScale && recipes.length > 0) {
-      setSelectedRecipeToScale(recipes[0]);
+    if (!selectedRecipeToScale && currentRecipes.length > 0) {
+      setSelectedRecipeToScale(currentRecipes[0]);
     }
-  }, [recipes, selectedRecipeToScale]);
+  }, [currentRecipes, selectedRecipeToScale]);
   const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
   const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
@@ -113,7 +115,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             subTab === 'batches' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          🍺 Brassins ({batches.length})
+          🍺 Brassins ({batches.filter(isCurrent).length})
         </button>
         <button
           type="button"
@@ -123,7 +125,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
             subTab === 'recipes' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          📜 Recettes ({recipes.length})
+          📜 Recettes ({currentRecipes.length})
         </button>
         <button
           type="button"
@@ -202,12 +204,12 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
                 data-form-type="other"
                 value={selectedRecipeToScale.id}
                 onChange={(e) => {
-                  const found = recipes.find((r) => r.id === e.target.value);
+                  const found = currentRecipes.find((r) => r.id === e.target.value);
                   if (found) setSelectedRecipeToScale(found);
                 }}
                 className="w-full bg-cave-850 border border-cave-700 rounded-xl p-2 text-sm text-cave-50 font-bold"
               >
-                {recipes.map((r) => (
+                {currentRecipes.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name} ({r.volumeL}L)
                   </option>

@@ -3,19 +3,14 @@ import { bandForEbc, computeBeerColor } from './beerColor';
 import { statusOf } from './batchStatus';
 import { DateUtils } from '../services/dateUtils';
 import { BrewingMath } from '../services/brewingMath';
+import { inCatalogFolder, type CatalogFolder } from './catalogOrganization';
 
 export type CatalogKind = 'batches' | 'recipes';
 export type CatalogSort =
-  | 'recent'
-  | 'oldest'
-  | 'name'
-  | 'volume'
-  | 'abv'
-  | 'ibu'
-  | 'color'
-  | 'work'
-  | 'activity';
+  'recent' | 'oldest' | 'name' | 'volume' | 'abv' | 'ibu' | 'color' | 'work' | 'activity';
 export interface CatalogFilters {
+  folder: CatalogFolder;
+  favoritesOnly: boolean;
   search: string;
   style: string;
   hop: string;
@@ -38,6 +33,8 @@ export interface CatalogFilters {
   sort: CatalogSort;
 }
 export const DEFAULT_CATALOG_FILTERS: CatalogFilters = {
+  folder: 'current',
+  favoritesOnly: false,
   search: '',
   style: '',
   hop: '',
@@ -110,6 +107,7 @@ export interface CatalogEntry {
   family: string;
   linkedBatches: Batch[];
   favorite: boolean;
+  archivedAt?: string | null;
   recipe?: Recipe;
   batch?: Batch;
 }
@@ -162,6 +160,7 @@ export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry
       family: familyOf(recipe, recipes),
       linkedBatches: relatedRecipeBatches(recipe, batches),
       favorite: !!recipe.favorite,
+      archivedAt: recipe.archivedAt,
       recipe
     };
   });
@@ -197,7 +196,8 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       version: recipe?.version ?? 1,
       family: batch.recipeRef ?? batch.id,
       linkedBatches: [],
-      favorite: false,
+      favorite: !!batch.favorite,
+      archivedAt: batch.archivedAt,
       batch
     };
   });
@@ -237,10 +237,14 @@ export function filterCatalog(
   now = Date.now()
 ): CatalogEntry[] {
   const latest = new Map<string, number>();
-  entries.forEach((e) => latest.set(e.family, Math.max(latest.get(e.family) ?? 0, e.version)));
+  entries
+    .filter((e) => inCatalogFolder(e, filters.folder ?? 'current'))
+    .forEach((e) => latest.set(e.family, Math.max(latest.get(e.family) ?? 0, e.version)));
   const day = new Date(now);
   const today = Date.UTC(day.getFullYear(), day.getMonth(), day.getDate());
   const matches = entries.filter((e) => {
+    if (!inCatalogFolder(e, filters.folder ?? 'current')) return false;
+    if (filters.favoritesOnly && !e.favorite) return false;
     const search = catalogText(filters.search).split(/\s+/).filter(Boolean);
     const haystack = catalogText([e.id, e.name, e.style, e.yeast, ...e.hops, ...e.malts].join(' '));
     if (!search.every((word) => haystack.includes(word))) return false;
@@ -342,7 +346,10 @@ export function countGroups(entries: CatalogEntry[], field: 'style' | 'hops') {
       .forEach((name) => {
         const key = catalogText(name);
         const previous = counts.get(key);
-        counts.set(key, { name: previous?.name ?? name.trim(), count: (previous?.count ?? 0) + 1 });
+        counts.set(key, {
+          name: previous?.name ?? name.trim(),
+          count: (previous?.count ?? 0) + 1
+        });
       })
   );
   return [...counts.values()].sort(

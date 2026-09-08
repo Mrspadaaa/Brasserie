@@ -16,6 +16,7 @@ import { useFullScreenRoute } from './pages/useFullScreenRoute';
 import { CommandPalette, CommandGroup } from './ui/CommandPalette';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
 import { captureSnapshot } from './domain/recipeSnapshot';
+import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef, nextBatchId } from './services/refs';
 import { Suggestions } from './services/suggestions';
 import { Units } from './services/units';
@@ -500,7 +501,7 @@ export const App: React.FC = () => {
   const commandGroups: CommandGroup[] = [
     {
       heading: 'Recettes',
-      items: recipes.map((r) => ({
+      items: recipes.filter(isCurrent).map((r) => ({
         id: `rec-${r.id}`,
         label: r.name,
         detail: [r.style, `${r.volumeL} L`].filter(Boolean).join(' · '),
@@ -511,7 +512,7 @@ export const App: React.FC = () => {
     },
     {
       heading: 'Brassins',
-      items: batches.map((b) => ({
+      items: batches.filter(isCurrent).map((b) => ({
         id: `bat-${b.id}`,
         label: `${b.id} — ${b.name}`,
         detail: [b.style, b.brewDate, b.status].filter(Boolean).join(' · '),
@@ -792,6 +793,7 @@ export const App: React.FC = () => {
             openWizard({
               recipe: {
                 ...routedRecipe,
+                archivedAt: null,
                 id: `REC-${Date.now().toString(36).toUpperCase()}`,
                 name: `${routedRecipe.name} (copie)`
               }
