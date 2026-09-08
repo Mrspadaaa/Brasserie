@@ -166,12 +166,30 @@ faibles en sulfate et chlorure ne décrivent pas la minéralité de toute l’ea
 | `plan.ts`, `treatment.ts` | Répartition, bilan de masse et eau réellement traitée |
 | `dilution.ts`, `domain/recipeWater.ts` | Proposition de dilution et orchestration de la recette |
 | `ui/water/types.ts`, `useWaterWorkshop.ts` | Contrat d’édition et état dérivé de l’atelier |
+| `ui/water/useWaterAnalysis.ts`, `waterAnalysisTransport.ts`, `waterAnalysisProtocol.ts` | Calcul des conseils en arrière-plan, instantanés et rejet des réponses périmées |
+| `ui/water/waterAnalysis.worker.ts`, `computeWaterAnalysis.ts` | Exécution du même moteur dans un Worker, cache limité au dernier résultat de chaque sous-calcul |
 | `ui/water/WaterWorkbench.tsx` et vues associées | Parcours mobile, doses et détails de composition |
 | `ui/water/WaterBicarbonateBalance.tsx` | Lecture des deux eaux et de leur moyenne après acide, sans formule chimique dans la vue |
 | `ui/RatioSlider.tsx` | Consigne et ratio réel issus des ions, avec gestion des limites de piste |
 
 `ui/SaltSolver.tsx` compose l’atelier. Le moteur de domaine ne dépend pas de
 React. Les vues ne possèdent pas de seconde formule de traitement.
+
+Le bilan des doses retenues et le graphique se mettent à jour pendant la
+saisie. Les recherches de sels et d’osmosée tournent dans un Worker : une
+demande en cours et seulement la dernière demande en attente. Une réponse
+ne devient utilisable que si ses entrées correspondent encore à la saisie.
+Pendant ce calcul, le conseil d’osmosée affiche « Calcul… » et son bouton est
+désactivé. Doser reste disponible : il calcule explicitement depuis la saisie
+courante si le conseil n’est pas encore prêt. Le mode automatique de la recette
+conserve son recalcul synchrone pour que les pesées affichées et sauvegardées
+restent cohérentes. Un navigateur sans Worker utilise le moteur synchrone.
+
+La recherche de dilution réutilise le traitement de chaque candidat. Lorsque
+les seules doses lactiques manuelles dépassent déjà le seuil de goût, aucune
+dilution ne peut les supprimer : on vérifie les extrémités 0 et 100 %, sans
+résoudre les 19 candidats intermédiaires. Le résultat et les diagnostics
+restent identiques à la recherche exhaustive.
 
 Sur mobile, le radar, le slider, les neuf sels en grille 3 × 3 et les deux
 doses d’acide restent ensemble. La hauteur du radar utilise l’espace laissé
@@ -256,6 +274,11 @@ et pas uniquement la cohérence des formules ou l’absence d’erreur d’exéc
   invalidation du bilan lorsque le contexte change.
 - `tests/unit/waterSweep.test.ts`, `waterPractice.test.ts`, `stoutAlkalinity.test.ts` :
   balayages d’eaux et styles, continuité, plafonds, doses et dilution.
+- `tests/integration/waterAnalysis.test.tsx`, `waterAnalysisInteraction.test.tsx` :
+  saisie et HCO₃ immédiats pendant un calcul lent, doses manuelles conservées,
+  Doser avant réponse, conseils périmés inutilisables et cycle de vie du Worker.
+- `tests/unit/waterAnalysisComputer.test.ts`, `waterDilutionPerformance.test.ts` :
+  cache borné par sous-calcul et parité complète avec une recherche exhaustive.
 - Tests du traitement et de l’interface : doses manuelles conservées, bilan
   après acide, sauvegarde, ratio réel et composition de chaque sel.
 - `scripts/check-water-ui-review.mjs` : captures et assertions dans Chrome à
@@ -268,6 +291,12 @@ et pas uniquement la cohérence des formules ou l’absence d’erreur d’exéc
   390 × 740, 390 × 844 et 414 × 896. Les quatre blocs doivent être visibles
   ensemble, dans l’ordre, avant/après saisie et changement de ratio ; les
   boutons flottants ne doivent recouvrir aucune dose.
+- `scripts/check-water-input-performance.mjs` : saisie réelle et boutons ±
+  de l’acide de rinçage, atelier et assistant en mode manuel et automatique.
+  Vérifie les deux HCO₃ et leur moyenne à chaque geste, attend une réponse du
+  vrai Worker, puis mesure le délai jusqu’à l’affichage avec Chrome ralenti
+  (`CPU_RATE=4`). `WATER_PERF_LABEL` sépare les rapports avant/après ; les
+  profils CPU et messages rejouables restent dans les pièces jointes ignorées.
 
 Le banc historique de 1 044 plans est conservé dans
 [water-solver-comparison.csv](water-solver-comparison.csv) et

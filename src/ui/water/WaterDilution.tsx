@@ -108,11 +108,11 @@ export function WaterDilution({
         <button
           type="button"
           onClick={() =>
-            set({ diRatioPct: justEnough.pct, spargeDiRatioPct: undefined })
+            justEnough && set({ diRatioPct: justEnough.pct, spargeDiRatioPct: undefined })
           }
           disabled={
             totalWaterL <= 0 ||
-            !justEnough.feasible ||
+            !justEnough?.feasible ||
             (state.roLimitL != null &&
               (totalWaterL * justEnough.pct) / 100 > state.roLimitL)
           }
@@ -123,10 +123,10 @@ export function WaterDilution({
             Juste ce qu’il faut d’osmosée
           </span>
           <span className="shrink-0 reading font-semibold text-water">
-            {justEnough.pct} %
+            {justEnough ? `${justEnough.pct} %` : 'Calcul…'}
           </span>
         </button>
-        {state.roLimitL != null &&
+        {justEnough && state.roLimitL != null &&
           (totalWaterL * justEnough.pct) / 100 > state.roLimitL && (
             <p className="text-xs text-water">
               Ce repère demanderait{" "}
@@ -138,12 +138,12 @@ export function WaterDilution({
               visibles.
             </p>
           )}
-        {totalWaterL > 0 && !justEnough.feasible && (
+        {justEnough && totalWaterL > 0 && !justEnough.feasible && (
           <p className="text-sm text-ebc-straw">
             {justEnough.reasons.join(" ; ")}
           </p>
         )}
-        {totalWaterL > 0 && justEnough.feasible && (
+        {justEnough && totalWaterL > 0 && justEnough.feasible && (
           <p className="text-2xs text-cave-400 leading-snug">
             {justEnough.pct === 0 ? (
               "Le réseau suffit tel quel : aucun ion ne dépasse le style, l’acide reste sous son seuil."

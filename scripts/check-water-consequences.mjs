@@ -24,8 +24,10 @@ try {
     page.on('pageerror', error => errors.push(error.message));
     await page.setViewport({ width, height: 844, isMobile: width < 768, hasTouch: true });
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-    await page.setRequestInterception(true);
-    page.on('request', request => new URL(request.url()).origin === origin ? request.continue() : request.abort());
+    const network = await page.createCDPSession();
+    await network.send('Network.enable');
+    // Fetch interception can pause module-worker imports indefinitely.
+    await network.send('Network.setBlockedURLs', { urls: ['https://*'] });
     await page.goto(`${origin}/.codex-remote-attachments/bicarbonate-fixture/index.html`, { waitUntil: 'networkidle0' });
     if (width < 640) await click(page, '2. Sels');
     await click(page, 'Proposer les doses');
@@ -56,6 +58,7 @@ try {
     await (await page.$(acidImpact)).screenshot({ path: resolve(output, `acid-${width}.png`) });
     await page.focus('input[name="ratio_slider_range"]');
     await page.keyboard.press('End'); await paint(page);
+    await page.waitForSelector('[aria-label="Explication du rapport SO₄/Cl"]', { timeout: 10000 });
     const ratio = await page.$eval('[aria-label="Explication du rapport SO₄/Cl"]', node => node.textContent);
     assert.match(ratio, /SO₄ ≥ 720 ppm/);
     assert.equal(await page.$(acidImpact), null, 'Un nouveau plan efface les conséquences du geste précédent');

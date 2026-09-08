@@ -164,8 +164,10 @@ try {
     page.on("pageerror", error => errors.push(error.message));
     await page.setViewport({ width, height: 844, isMobile: width < 768, hasTouch: true });
     await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
-    await page.setRequestInterception(true);
-    page.on("request", request => new URL(request.url()).origin === origin ? request.continue() : request.abort());
+    const network = await page.createCDPSession();
+    await network.send('Network.enable');
+    // Keep external services blocked without pausing module-worker imports.
+    await network.send('Network.setBlockedURLs', { urls: ['https://*'] });
     await page.goto(`${origin}/.codex-remote-attachments/bicarbonate-fixture/index.html`, { waitUntil: "networkidle0" });
     await page.waitForSelector(balanceSelector);
     await step(page, width, "2. Sels");

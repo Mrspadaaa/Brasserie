@@ -48,7 +48,7 @@ type Props = Pick<
   | "achievedTotal"
   | "ratio"
   | "wantedRatio"
-  | "solution"
+  | "applyDoses"
   | "diagnoses"
   | "planApplied"
   | "rienAProposer"
@@ -87,7 +87,7 @@ export function WaterWorkbench({
   achievedTotal,
   ratio,
   wantedRatio,
-  solution,
+  applyDoses,
   diagnoses,
   planApplied,
   rienAProposer,
@@ -171,13 +171,7 @@ export function WaterWorkbench({
             type="button"
             aria-label="Proposer les doses"
             disabled={totalWaterL <= 0 || state.mashWaterL <= 0}
-            onClick={() =>
-              set({
-                doses: solution.doses,
-                saltSplit: undefined,
-                saltOverrides: undefined,
-              })
-            }
+            onClick={applyDoses}
             className="shrink-0 h-11 px-2.5 rounded-control bg-ebc-straw text-cave-950 font-bold text-sm
                        flex items-center gap-1 hover:bg-ebc-amber active:scale-[0.98] transition-all shadow-sm
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ebc-straw"

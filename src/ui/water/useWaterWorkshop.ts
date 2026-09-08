@@ -22,7 +22,6 @@ import {
   lactateInBeer,
   sulfateChlorideRatio,
   solveSalts,
-  minimalDilution,
   splitDoses,
 } from "../../domain/water";
 import {
@@ -37,6 +36,7 @@ import { waterProfileTarget, waterTreatmentTarget } from "../../domain/water/pro
 import { calculateSpargeTreatment } from "../../domain/water/acid";
 import { manualWaterImpact, type ManualWaterEdit } from "../../domain/water/manualImpact";
 import { diagnoseWaterProfile } from "../../domain/water/profileDiagnosis";
+import { useWaterAnalysis } from "./useWaterAnalysis";
 type Tab = "empatage" | "rincage";
 type MobileStep = "eau" | "sels";
 
@@ -234,9 +234,9 @@ export function useWaterWorkshop({
           : 0
       : (hopHint?.ratio ?? (style.ratio.min + style.ratio.max) / 2));
 
-  const planFor = useCallback(
-    (ratio: number, forceRatio = false) => {
-      return solveSalts({
+  const planInputFor = useCallback(
+    (ratio: number, forceRatio = false): Parameters<typeof solveSalts>[0] => {
+      return {
         ...waterProfileTarget(
           style,
           start,
@@ -264,7 +264,7 @@ export function useWaterWorkshop({
               },
             ).ions.hco3,
         mashAcidHco3Mg: (state.acidOverride?.mash ?? 0) * ACIDS[state.acidId].hco3NeutralizedPerUnit,
-      });
+      };
     },
     [
       style,
@@ -272,7 +272,6 @@ export function useWaterWorkshop({
       startSparge,
       source.ph,
       totalWaterL,
-      wantedRatio,
       state.ratioOverride,
       state.mashWaterL,
       state.spargeWaterL,
@@ -287,35 +286,8 @@ export function useWaterWorkshop({
       allSaltsInMash,
     ],
   );
-
-  const solution = useMemo(() => planFor(wantedRatio), [planFor, wantedRatio]);
-  const diagnoses = useMemo(() => {
-    const input = { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) };
-    const proposal = calculateWaterTreatment(source,
-      { ...input, doses: solution.doses, saltSplit: undefined }, raBand);
-    const automaticAcid = state.acidOverride?.mash != null || state.acidOverride?.sparge != null
-      ? calculateWaterTreatment(source, { ...input, acidOverride: undefined }, raBand) : undefined;
-    return diagnoseWaterProfile({ actual: treatment, proposal, automaticAcid,
-      ranges: { ...style.ions, ...(state.customTarget && treatment.hco3Range ? { hco3: treatment.hco3Range } : {}) },
-      targeted: RADAR_IONS.filter(ion => !style.untargetedIons?.includes(ion)),
-      disabled: state.disabled, totalWaterL, spargeWaterL: state.spargeWaterL,
-      requestedRatio: wantedRatio,
-    });
-  }, [state, style, source, solution.doses, raBand, raCeiling, raPreference, treatment, totalWaterL, wantedRatio]);
-
-  const planApplied = useMemo(
-    () =>
-      SALT_IDS.every(
-        (id) =>
-          Math.abs((state.doses[id] ?? 0) - (solution.doses[id] ?? 0)) < 0.05,
-      ),
-    [state.doses, solution.doses],
-  );
-
-  const rienAProposer = useMemo(
-    () => SALT_IDS.every((id) => !((solution.doses[id] ?? 0) > 0)),
-    [solution.doses],
-  );
+  const planFor = useCallback((ratio: number, forceRatio = false) =>
+    solveSalts(planInputFor(ratio, forceRatio)), [planInputFor]);
 
   const ionsAuPlafond = useMemo(
     () =>
@@ -341,8 +313,8 @@ export function useWaterWorkshop({
         wantedRatio,
         !state.customTarget || state.ratioOverride != null,
       ), [style, dilutionStart, state.customTarget, wantedRatio, state.ratioOverride]);
-  const justEnough = useMemo(() => {
-    return minimalDilution({
+  const dilutionInput = useMemo(() => {
+    return {
       ...dilutionTarget,
       source,
       totalWaterL,
@@ -359,7 +331,7 @@ export function useWaterWorkshop({
       acidOverride: state.acidOverride,
       beerVolumeL,
       sourcePh: source.ph ?? 7.4,
-    });
+    };
   }, [
     style,
     dilutionTarget,
@@ -379,6 +351,37 @@ export function useWaterWorkshop({
     state.acidOverride?.sparge,
     beerVolumeL,
   ]);
+
+  // Actual weighed water above stays synchronous. Searching alternative salt
+  // plans and up to 21 RO dilutions must not block a manual acid keystroke.
+  const solveInput = useMemo(() => planInputFor(wantedRatio), [planInputFor, wantedRatio]);
+  const analysis = useWaterAnalysis({ solve: solveInput, dilution: dilutionInput });
+  const solution = analysis.result?.solution;
+  const justEnough = analysis.result?.justEnough;
+  const diagnoses = useMemo(() => {
+    // Do not describe a stale proposal, or claim a search failed while pending.
+    if (!solution) return [];
+    const input = { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) };
+    const proposal = calculateWaterTreatment(source,
+      { ...input, doses: solution.doses, saltSplit: undefined }, raBand);
+    const automaticAcid = state.acidOverride?.mash != null || state.acidOverride?.sparge != null
+      ? calculateWaterTreatment(source, { ...input, acidOverride: undefined }, raBand) : undefined;
+    return diagnoseWaterProfile({ actual: treatment, proposal, automaticAcid,
+      ranges: { ...style.ions, ...(state.customTarget && treatment.hco3Range ? { hco3: treatment.hco3Range } : {}) },
+      targeted: RADAR_IONS.filter(ion => !style.untargetedIons?.includes(ion)),
+      disabled: state.disabled, totalWaterL, spargeWaterL: state.spargeWaterL,
+      requestedRatio: wantedRatio,
+    });
+  }, [state, style, source, solution, raBand, raCeiling, raPreference, treatment, totalWaterL, wantedRatio]);
+  const planApplied = !!solution && SALT_IDS.every(id =>
+    Math.abs((state.doses[id] ?? 0) - (solution.doses[id] ?? 0)) < 0.05);
+  const rienAProposer = !!solution && SALT_IDS.every(id => !((solution.doses[id] ?? 0) > 0));
+  const applyDoses = () => set({
+    // Explicit Doser always uses this entry, even before its background result.
+    doses: (solution ?? planFor(wantedRatio)).doses,
+    saltSplit: undefined,
+    saltOverrides: undefined,
+  });
 
   const applyRatio = (ratio: number) => {
     setLastEdit(null);
@@ -419,14 +422,14 @@ export function useWaterWorkshop({
     () =>
       planApplied
         ? describeTreatmentIssues(
-            (solution.issues ?? []).filter((issue) => issue.code !== "grist"),
+            (solution?.issues ?? []).filter((issue) => issue.code !== "grist"),
             treatment,
             raBand,
             // The bicarbonate diagnosis is already shown beside the acid controls.
             { includeBicarbonateTarget: !state.customTarget },
           )
         : [],
-    [planApplied, solution.issues, treatment, raBand, state.customTarget],
+    [planApplied, solution?.issues, treatment, raBand, state.customTarget],
   );
 
   const spargeAlkalinity = Math.round(
@@ -459,7 +462,7 @@ export function useWaterWorkshop({
   const caShort =
     totalWaterL > 0 &&
     achievedTotal.ca < style.ions.ca.min &&
-    !(planApplied && solution.unreachable.some((m) => m.startsWith("Calcium")));
+    !(planApplied && solution?.unreachable.some((m) => m.startsWith("Calcium")));
 
   const hasSparge = !noSparge;
   const activeTab: Tab = hasSparge ? tab : "empatage";
@@ -562,6 +565,7 @@ export function useWaterWorkshop({
     hopHint,
     wantedRatio,
     planFor,
+    applyDoses,
     solution,
     diagnoses,
     planApplied,
