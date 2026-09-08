@@ -213,3 +213,50 @@ La [passe complémentaire sur les photographies Lallemand](index-houblon-lactone
 ajoute 13 notes, trois identités analytiques et l’unité absolue µg/L de bière.
 Elle n’ajoute aucun coefficient au moteur. Le journal de suite le plus récent
 est `photos-followup-2026-09-08/full-test.log`.
+
+## Guide pendant la création de recette — 8 septembre 2026
+
+L’étape **Houblons** de l’assistant propose maintenant les familles recherchées
+et une présence faible, moyenne ou forte. La cible est conservée dans la recette,
+y compris après un passage par l’étape Levure et une réouverture. Le même guide
+est disponible sur la fiche recette, via **Choisir le profil et les références**.
+
+Les pistes sont un index de mentions textuelles dans les descriptions sourcées :
+nombre de familles demandées citées, puis nom et identifiant pour départager.
+L’intensité souhaitée, la souche et le timing ne sont pas des poids de ce classement.
+Ce classement n’est donc ni un score sensoriel ni une prédiction du triplet.
+Le lexique français/anglais est un choix éditorial sourcé dans
+`src/data/hopRecipeGuideBootstrap.json` ; il n’interprète pas complètement les
+négations ni le contexte grammatical. La description originale reste consultable.
+
+Les correspondances de noms proposent des références sans les sélectionner
+automatiquement. Les variantes de présentation de SafAle US-05 ne déclarent pas
+d’équivalence avec WLP001, 1056 ou une autre souche. Une mention « 12.7% » dans le
+nom d’Idaho 7 permet de retrouver le nom commercial, mais ne devient pas une
+analyse. Les fiches ajoutées sont celle du fabricant
+[Fermentis](https://fermentis.com/fr/produit/safale-us-05/) et celle du fournisseur
+[Yakima Chief Hops](https://www.yakimachief.com/variety/idaho-7-brand).
+Elles ne fournissent aucun nouveau coefficient de conversion.
+
+Les seules références demandées par une action sont importées, en attendant la
+confirmation de leur écriture et sans remplacer une fiche déjà éditée. Rien
+n’est écrit au montage du guide. Les associations manuelles restent possibles,
+et les lots ou références disparus peuvent être retirés. J+3 n’est pas assimilé
+à une fermentation active : la phase doit être choisie. Une nouvelle piste exige
+un nom de levure et un moment ; elle ajoute une ligne à compléter, avec quantité
+et alpha non renseignés selon la convention actuelle du formulaire (zéro).
+
+L’absence de règles de vigilance est visible et leur ajout fait l’objet d’une
+action explicite. Les politiques existantes, même désactivées, sont préservées.
+Les erreurs d’import ne modifient pas la recette ; un enregistrement anticipé
+pendant une association est bloqué. La fiche affiche le nom de la levure prévue,
+distingue objectif absent et modèle indisponible, et présente les conditions en
+français (`0,58 g/L`, `1 h 35 min`). L’arrondi ne modifie pas les calculs.
+
+Vérifications de cette correction : **1 949 tests / 83 fichiers**, compilation
+application et fonctions, contrôles règles/unités/brassage/eau/prompts et absence
+de code d’authentification locale dans le bundle. Le parcours réel local est
+vérifié à **320, 390 et 1 280 px** par `scripts/check-hop-recipe-guide.mjs`, avec
+création, changement d’étape, sauvegarde, association Cascade/Idaho 7/US-05 et
+ajout d’une piste. Toutes les requêtes externes y sont bloquées. Aucune donnée
+réelle ni aucun appel Gemini payant n’est utilisé pour ces contrôles.

@@ -65,8 +65,8 @@ try {
     await expand(page, 'Bibliothèque scientifique · comprendre les limites');
     await click(page, 'Ajouter les notes sourcées');
     await page.waitForFunction(() => document.body.innerText.includes('34 fiche(s) ajoutée(s)'));
-    await click(page, 'Ajouter les levures étudiées');
-    await page.waitForFunction(() => document.body.innerText.includes('5 fiche(s) ajoutée(s)'));
+    await click(page, 'Ajouter les levures documentées');
+    await page.waitForFunction(() => document.body.innerText.includes('6 fiche(s) ajoutée(s)'));
     await expand(page, 'Analyses de lots publiées · comparer les récoltes');
     await click(page, 'Ajouter les analyses de lots publiées');
     await page.waitForFunction(() => document.body.innerText.includes('16 fiche(s) ajoutée(s)'));
@@ -76,7 +76,7 @@ try {
       const s = (await import('/src/services/storage.ts')).StorageService;
       return { references: s.getHopVarieties().length, referenceLots: s.getHopLots().filter(l => l.referenceOnly).length, models: s.getHopKnowledge().filter(k => k.kind === 'model').length, notes: s.getHopKnowledge().filter(k => k.kind === 'note').length, yeasts: s.getHopKnowledge().filter(k => k.kind === 'yeast').length };
     });
-    assert.deepEqual(publicCounts, { references: 766, referenceLots: 10, models: 1, notes: 34, yeasts: 6 });
+    assert.deepEqual(publicCounts, { references: 766, referenceLots: 10, models: 1, notes: 34, yeasts: 7 });
     await click(page, 'Variétés et lots');
     await page.screenshot({ path: resolve(out, `catalogue-${width}.png`) });
     await fill(page, 'Rechercher une variété ou un arôme documenté', 'Cascade T90 · étude Samia 2026');

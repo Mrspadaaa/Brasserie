@@ -1,6 +1,6 @@
 import React from 'react';
 import { HopAxis, HopPrediction } from '../../../functions/src/hopPredictionSchema';
-import { HOP_CONFIDENCE_LABELS, HOP_TIMING_LABELS, hopIntensityLabel, hopRangeLabel } from './presentation';
+import { HOP_CONFIDENCE_LABELS, HOP_TIMING_LABELS, hopDoseLabel, hopDurationLabel, hopIntensityLabel, hopRangeLabel, hopTemperatureLabel } from './presentation';
 import { BrewTag } from '../BrewTag';
 import { HopRangePlot } from './HopRangePlot';
 import type { HopRange, HopSource } from '../../../functions/src/hopIndexSchema';
@@ -8,11 +8,24 @@ function Source({ source: s }: { source: HopSource }) {
   return <p className="break-words">{s.author}, {s.year ?? 'année inconnue'} — {s.title}. {/^(https?:\/\/)/i.test(s.reference) ? <a className="underline text-water" href={s.reference} target="_blank" rel="noreferrer">Consulter la source</a> : s.reference}{s.locator && <span className="block">{s.locator}</span>}</p>;
 }
 export function HopPredictionView({ prediction, axes, names, target }: { prediction: HopPrediction; axes: HopAxis[]; names?: { variety?: string; yeast?: string }; target?: Record<string, HopRange> }) {
+  const noTarget = target !== undefined && Object.keys(target).length === 0;
+  const noModel = prediction.modelRefs.length === 0;
+  const scoreLabel = prediction.score.range ? hopRangeLabel(prediction.score.range)
+    : noTarget ? 'Aucun objectif aromatique' : noModel ? 'Aucun modèle applicable' : 'Adéquation non quantifiable';
   return <div className="space-y-3">
-    <p className="text-lg font-semibold text-cave-50 break-words">{names?.variety || prediction.triplet.varietyId || 'Houblon inconnu'} <span className="text-cave-400">×</span> {names?.yeast || prediction.triplet.yeastId || 'Levure inconnue'}</p>
-    <div className="flex flex-wrap gap-2"><BrewTag tone="info">{HOP_TIMING_LABELS[prediction.triplet.timing] || 'Timing inconnu'}</BrewTag><BrewTag>{prediction.triplet.lotId ? 'Lot sélectionné' : 'Référence variété'}</BrewTag></div>
-    <p className="text-sm text-cave-200">{prediction.triplet.doseGL ?? '?'} g/L · {prediction.triplet.temperatureC ?? '?'} °C · {prediction.triplet.contactHours ?? '?'} h</p>
-    <div className="rounded-panel border border-cave-700 bg-cave-900 p-4 space-y-2"><p className="text-sm text-cave-400">Adéquation au profil recherché</p><p className="font-mono text-xl text-cave-50">{hopRangeLabel(prediction.score.range)}{prediction.score.range && <span className="text-sm text-cave-400"> / 100</span>}</p><BrewTag tone={prediction.score.confidence === 'high' ? 'done' : prediction.score.confidence === 'medium' ? 'info' : 'pause'}>Confiance {HOP_CONFIDENCE_LABELS[prediction.score.confidence]}</BrewTag><p className="text-sm text-cave-400">{prediction.score.range ? 'Une plage de rapprochement, pas une probabilité de réussite.' : 'Le contexte ou les données ne permettent pas de chiffrer l’adéquation.'}</p></div>
+    <p className="text-lg font-semibold text-cave-50 break-words">{names?.variety || prediction.triplet.varietyId || 'Houblon non renseigné'} <span className="text-cave-400">×</span> {names?.yeast || prediction.triplet.yeastId || 'Levure non renseignée'}</p>
+    <div className="flex flex-wrap gap-2"><BrewTag tone="info">{HOP_TIMING_LABELS[prediction.triplet.timing] || 'Moment d’ajout non précisé'}</BrewTag><BrewTag>{prediction.triplet.lotId ? 'Lot sélectionné' : prediction.triplet.varietyId ? 'Référence variété' : 'Lot non précisé'}</BrewTag>
+      {names?.variety && !prediction.triplet.varietyId && <BrewTag>Variété non associée à l’index</BrewTag>}
+      {names?.yeast && !prediction.triplet.yeastId && <BrewTag>Levure non associée à l’index</BrewTag>}
+    </div>
+    <p aria-label="Conditions de houblonnage" className="text-sm text-cave-200">{hopDoseLabel(prediction.triplet.doseGL)} · {hopTemperatureLabel(prediction.triplet.temperatureC)} · {hopDurationLabel(prediction.triplet.contactHours)}</p>
+    <div aria-label="Adéquation au profil recherché" className="rounded-panel border border-cave-700 bg-cave-900 p-4 space-y-2"><p className="text-sm text-cave-400">Adéquation au profil recherché</p><p className="font-mono text-xl text-cave-50">{scoreLabel}{prediction.score.range && <span className="text-sm text-cave-400"> / 100</span>}</p><BrewTag tone={prediction.score.confidence === 'high' ? 'done' : prediction.score.confidence === 'medium' ? 'info' : 'pause'}>Confiance {HOP_CONFIDENCE_LABELS[prediction.score.confidence]}</BrewTag>
+      {prediction.score.range ? <p className="text-sm text-cave-400">Une plage de rapprochement, pas une probabilité de réussite.</p> : <>
+        {noTarget && <p className="text-sm text-cave-400">Définissez un profil recherché pour calculer son adéquation.</p>}
+        {noModel ? <p className="text-sm text-cave-400">Aucun modèle documenté ne couvre ce houblon, cette levure et ces conditions.</p>
+          : !noTarget && <p className="text-sm text-cave-400">{prediction.score.reasons[0] || 'Les données disponibles ne permettent pas de quantifier les axes recherchés.'}</p>}
+      </>}
+    </div>
     <div className="space-y-4">{axes.map(axis => {
       const estimate = prediction.profile[axis.id];
       return <div key={axis.id} className="space-y-2"><div className="flex flex-wrap justify-between items-center gap-2"><span className="font-semibold text-cave-50">{axis.name}</span><BrewTag tone={estimate?.range ? 'info' : 'neutral'}>{hopIntensityLabel(estimate, axis)}</BrewTag></div>

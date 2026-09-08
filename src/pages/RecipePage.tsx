@@ -349,7 +349,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         title="Houblons"
         hint={
           dryHopTotal > 0
-            ? `dont ${Units.format(dryHopTotal, 'g')} à cru — sans effet sur l’amertume`
+            ? `dont ${Units.format(dryHopTotal, 'g')} à cru — non compté dans les IBU calculés`
             : undefined
         }
       >

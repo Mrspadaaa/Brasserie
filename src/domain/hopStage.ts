@@ -55,7 +55,7 @@ export const HOP_STAGE: Record<HopStage, StageStyle> = {
   },
   dryHop: {
     label: 'Houblonnage à cru',
-    hint: 'En fermenteur. N’apporte aucune amertume, seulement de l’arôme.',
+    hint: 'En fermenteur. Cet ajout n’est pas compté dans les IBU calculés.',
     order: 3,
     bitters: false,
     ask: 'day',

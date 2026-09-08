@@ -30,6 +30,7 @@ import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
+import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -328,6 +329,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
 
   const [step, setStep] = useState<StepId>('identite');
+  const [hopGuideBusy, setHopGuideBusy] = useState(false);
   /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
   const density = useDensity();
   const tight = density === 'tight';
@@ -1120,6 +1122,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const canAdvance = step !== 'identite' || name.trim().length > 1;
 
   const go = (delta: 1 | -1) => {
+    if (hopGuideBusy) return;
     const next = STEPS[stepIndex + delta];
     if (next) setStep(next.id);
   };
@@ -1141,6 +1144,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             key={s.id}
             type="button"
+            disabled={hopGuideBusy}
             onClick={() => setStep(s.id)}
             aria-current={s.id === step ? 'step' : undefined}
             className={`flex-1 h-1.5 rounded-full transition-colors ${
@@ -1176,6 +1180,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <button
               key={s.id}
               type="button"
+              disabled={hopGuideBusy}
               onClick={() => setStep(s.id)}
               aria-current={s.id === step ? 'step' : undefined}
               className={`flex-1 h-1 sm:h-1.5 rounded-full transition-colors ${
@@ -1525,6 +1530,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
+            <HopRecipeGuide recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
+              setHops(next.hops);
+              setYeast(next.yeast);
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
+            }} />
             <SegmentedControl
               label="Moment d’ajout"
               layout="grid"
@@ -2382,7 +2392,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             type="button"
             onClick={() => go(-1)}
-            disabled={stepIndex === 0}
+            disabled={stepIndex === 0 || hopGuideBusy}
             className="min-h-touch-sm px-3 rounded-control border border-cave-800
                        text-cave-400 text-2xs disabled:opacity-30 transition-colors hover:bg-cave-850"
           >
@@ -2391,7 +2401,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             type="button"
             onClick={() => go(1)}
-            disabled={!canAdvance}
+            disabled={!canAdvance || hopGuideBusy}
             className="flex-1 min-h-touch-sm rounded-control bg-ebc-straw text-cave-950
                        text-2xs font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
           >
