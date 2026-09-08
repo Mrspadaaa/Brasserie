@@ -1,0 +1,16 @@
+.water-workshop :is(button, input, summary):focus-visible {
+  outline: 2px solid #f2c14e;
+  outline-offset: 3px;
+}
+
+.water-workshop input[type="text"] {
+  font-size: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-workshop *,
+  .water-workshop *::before,
+  .water-workshop *::after {
+    transition: none !important;
+  }
+}

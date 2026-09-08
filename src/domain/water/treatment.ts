@@ -1,11 +1,11 @@
-import { AcidId, SaltId, WaterIons, WaterSource, WaterPlan } from '../../types';
+import { AcidId, SaltId, WaterIons, WaterSource, WaterPlan, IonBand } from '../../types';
 import { addIons, dilute, residualAlkalinity, sulfateChlorideRatio, ZERO } from './ions';
 import { ACIDS, SALT_IDS, ionsFromSalts } from './substances';
-import { acidNeeded, ionsAfterAcid, spargeAcidNeeded, SPARGE_TARGET_PH } from './acid';
+import { acidNeeded, ionsAfterAcid, calculateSpargeTreatment, retainAcidDose } from './acid';
 import { RaBand, raAcidTarget } from './mashPh';
-import { splitDoses, waterFromPlan } from './plan';
+import { positiveSaltDoses, splitDoses } from './plan';
 
-interface TreatmentInput {
+export interface TreatmentInput {
   diRatioPct: number;
   spargeDiRatioPct?: number;
   doses: Partial<Record<SaltId, number>>;
@@ -15,6 +15,19 @@ interface TreatmentInput {
   allSaltsInMash?: boolean;
   acidId: AcidId;
   acidOverride?: { mash?: number; sparge?: number };
+  /** Explicit custom bicarbonate target on the combined water after acid, in mg/L. */
+  hco3Target?: number;
+  /** Required range on the combined water after both retained acid additions. */
+  hco3Range?: IonBand;
+}
+
+export interface BicarbonateTargetResult {
+  requested: number;
+  achieved: number;
+  delta: number;
+  reached: boolean;
+  reason?: 'manual-acid' | 'mash-alkalinity' | 'mineral-balance';
+  message?: string;
 }
 
 export function averageWater(
@@ -23,6 +36,8 @@ export function averageWater(
   mashL: number,
   spargeL: number
 ): WaterIons {
+  mashL = Number.isFinite(mashL) ? Math.max(0, mashL) : 0;
+  spargeL = Number.isFinite(spargeL) ? Math.max(0, spargeL) : 0;
   const total = mashL + spargeL;
   if (total <= 0) return { ...mash };
   return Object.fromEntries(
@@ -38,52 +53,88 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
   const { mashWaterL, spargeWaterL, acidId } = input;
   const start = dilute(source, input.diRatioPct);
   const startSparge = dilute(source, input.spargeDiRatioPct ?? input.diRatioPct);
-  const exact = input.saltSplit;
-  const matches = exact && [...new Set([...Object.keys(input.doses), ...Object.keys(exact.mash), ...Object.keys(exact.sparge)])]
+  const exact = input.saltSplit && {
+    mash: positiveSaltDoses(input.saltSplit.mash),
+    sparge: positiveSaltDoses(input.saltSplit.sparge)
+  };
+  const matches = exact
+    && (mashWaterL > 0 || Object.keys(exact.mash).length === 0)
+    && (spargeWaterL > 0 || Object.keys(exact.sparge).length === 0)
+    && [...new Set([...Object.keys(input.doses), ...Object.keys(exact.mash), ...Object.keys(exact.sparge)])]
     .every((id: SaltId) => Math.abs((input.doses[id] ?? 0) - (exact.mash[id] ?? 0) - (exact.sparge[id] ?? 0)) < 1e-9);
   const split = matches ? exact : splitDoses(input.doses, mashWaterL, spargeWaterL, input.allSaltsInMash !== false);
-  const raw = matches ? {
+  const raw = {
     mash: addIons(start, ionsFromSalts(split.mash, mashWaterL)),
     sparge: addIons(startSparge, ionsFromSalts(split.sparge, spargeWaterL))
-  } : waterFromPlan(
-    start,
-    input.doses,
-    mashWaterL,
-    spargeWaterL,
-    startSparge,
-    input.allSaltsInMash !== false
-  );
+  };
   const average = (mash: WaterIons, sparge: WaterIons): WaterIons => {
     return averageWater(mash, sparge, mashWaterL, spargeWaterL);
   };
-  const mashAcidCalculated = acidNeeded(raw.mash, mashWaterL, raAcidTarget(band), acidId);
-  const spargeAcidCalculated = spargeAcidNeeded(
-    raw.sparge,
-    spargeWaterL,
-    acidId,
-    SPARGE_TARGET_PH,
-    source.ph ?? 7.4
-  );
-  const retained = <T extends { amount: number }>(
-    calculated: T,
-    amount: number | undefined,
-    litres: number
-  ): T => ({
-    ...calculated,
-    amount:
-      litres <= 0
-        ? 0
-        : amount != null && Number.isFinite(amount)
-          ? Math.max(0, amount)
-          : calculated.amount
+  const spargeTreatment = calculateSpargeTreatment(raw.sparge, spargeWaterL, acidId, {
+    sourcePh: source.ph, override: input.acidOverride?.sparge
   });
-  const mashAcid = retained(mashAcidCalculated, input.acidOverride?.mash, mashWaterL);
-  const spargeAcid = retained(spargeAcidCalculated, input.acidOverride?.sparge, spargeWaterL);
+  const spargeAcidCalculated = spargeTreatment.calculated;
+  const spargeAcid = spargeTreatment.retained;
+  const explicitHco3 = Number.isFinite(input.hco3Target) && input.hco3Target >= 0
+    ? input.hco3Target : undefined;
+  let mashAcidTargetRa = raAcidTarget(band);
+  let hco3LimitedByRa = false;
+  if (explicitHco3 != null && Number.isFinite(mashWaterL) && mashWaterL > 0) {
+    const desiredMashHco3 = (explicitHco3 * (mashWaterL + spargeWaterL)
+      - spargeTreatment.ions.hco3 * spargeWaterL) / mashWaterL;
+    const desiredRa = residualAlkalinity({ ...raw.mash, hco3: desiredMashHco3 });
+    // An explicit profile selects a point within the mash's alkalinity band.
+    // It cannot prescribe excess acid or counteract it with more alkaline salts.
+    mashAcidTargetRa = Math.max(band.min, Math.min(band.max, desiredRa));
+    hco3LimitedByRa = Math.abs(mashAcidTargetRa - desiredRa) > 1e-9;
+  }
+  let mashAcidCalculated = acidNeeded(raw.mash, mashWaterL, mashAcidTargetRa, acidId);
+  const profileRange = input.hco3Range;
+  if (profileRange && Number.isFinite(profileRange.min) && Number.isFinite(profileRange.max)
+    && profileRange.min >= 0 && profileRange.max >= profileRange.min && mashWaterL > 0) {
+    const totalL = mashWaterL + spargeWaterL;
+    const spargeMass = spargeTreatment.ions.hco3 * spargeWaterL;
+    const minimumMash = Math.max(0, (profileRange.min * totalL - spargeMass) / mashWaterL);
+    const maximumMash = Math.max(0, (profileRange.max * totalL - spargeMass) / mashWaterL);
+    const strength = ACIDS[acidId].hco3NeutralizedPerUnit;
+    const minDose = Math.max(0, (raw.mash.hco3 - maximumMash) * mashWaterL / strength);
+    const maxDose = Math.max(0, (raw.mash.hco3 - minimumMash) * mashWaterL / strength);
+    const low = Math.ceil((minDose - 1e-9) * 10) / 10;
+    const high = Math.floor((maxDose + 1e-9) * 10) / 10;
+    // Whole 0.1 mL/g doses must stay inside the profile too. If the interval
+    // is narrower than one step, choose the dose with the smallest real gap.
+    const candidates = [...new Set([low, high, Math.max(high, Math.min(low, mashAcidCalculated.amount)),
+      Math.max(low, Math.min(high, mashAcidCalculated.amount))])].filter(value => value >= 0);
+    const gap = (dose: number) => {
+      const value = (Math.max(0, raw.mash.hco3 - dose * strength / mashWaterL) * mashWaterL + spargeMass) / totalL;
+      return Math.max(0, profileRange.min - value, value - profileRange.max);
+    };
+    candidates.sort((a, b) => gap(a) - gap(b) || Math.abs(a - mashAcidCalculated.amount) - Math.abs(b - mashAcidCalculated.amount));
+    mashAcidCalculated = { ...mashAcidCalculated, amount: candidates[0] ?? 0 };
+    hco3LimitedByRa = false;
+  }
+  const mashAcid = retainAcidDose(mashAcidCalculated, input.acidOverride?.mash, mashWaterL);
   const treated = {
     mash: ionsAfterAcid(raw.mash, mashAcid.amount, acidId, mashWaterL),
-    sparge: ionsAfterAcid(raw.sparge, spargeAcid.amount, acidId, spargeWaterL)
+    sparge: spargeTreatment.ions
   };
   const total = average(raw.mash, raw.sparge);
+  const treatedTotal = average(treated.mash, treated.sparge);
+  let hco3Target: BicarbonateTargetResult | undefined;
+  if (explicitHco3 != null) {
+    const delta = Math.round((treatedTotal.hco3 - explicitHco3) * 10) / 10;
+    const reached = Math.abs(delta) <= 2;
+    const manualAcid = (Number.isFinite(input.acidOverride?.mash)
+      && Math.abs(mashAcid.amount - mashAcidCalculated.amount) >= 0.05)
+      || (Number.isFinite(input.acidOverride?.sparge)
+        && Math.abs(spargeAcid.amount - spargeAcidCalculated.amount) >= 0.05);
+    const reason = manualAcid ? 'manual-acid' : hco3LimitedByRa ? 'mash-alkalinity' : 'mineral-balance';
+    const detail = reason === 'manual-acid' ? 'Les doses d’acide manuelles sont conservées.'
+      : reason === 'mash-alkalinity' ? 'La plage d’alcalinité de l’empâtage limite la correction.'
+      : 'Les sels autorisés et les autres minéraux limitent la correction.';
+    hco3Target = { requested: explicitHco3, achieved: treatedTotal.hco3, delta, reached,
+      ...(!reached ? { reason, message: `HCO₃ après acide : ${treatedTotal.hco3} mg/L pour une cible de ${explicitHco3}. ${detail}` } : {}) };
+  }
   const raBefore = residualAlkalinity(raw.mash);
   // The graph cannot show negative bicarbonate. For the mash buffer model,
   // however, acid beyond the water's alkalinity still consumes grain buffers.
@@ -98,7 +149,9 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     raw,
     treated,
     total,
-    treatedTotal: average(treated.mash, treated.sparge),
+    treatedTotal,
+    hco3Target,
+    hco3Range: profileRange,
     mashAcidCalculated,
     spargeAcidCalculated,
     mashAcid,
@@ -150,7 +203,8 @@ export function savedWaterDisplay(plan: WaterPlan | undefined) {
     start: averageWater(startMash, startSparge, plan.mashWaterL, plan.spargeWaterL),
     achieved: averageWater(
       plan.acid ? ionsAfterAcid(mash, plan.acid.mash, plan.acid.id, plan.mashWaterL) : mash,
-      plan.acid ? ionsAfterAcid(sparge, plan.acid.sparge, plan.acid.id, plan.spargeWaterL) : sparge,
+      plan.acid ? calculateSpargeTreatment(sparge, plan.spargeWaterL, plan.acid.id,
+        { override: plan.acid.sparge }).ions : sparge,
       plan.mashWaterL,
       plan.spargeWaterL
     )

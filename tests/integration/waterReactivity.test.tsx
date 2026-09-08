@@ -4,6 +4,7 @@ import { render, screen, fireEvent, cleanup, within, act } from '@testing-librar
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
 import { WaterSource } from '../../src/types';
+import { changeWaterRatio, readWaterRatio } from '../helpers/waterRatio';
 
 /**
  * L'atelier de l'eau doit être ENTIÈREMENT dérivé.
@@ -37,9 +38,9 @@ it('Doser respecte les cinq ions d’une cible personnalisée (Angles), puis sui
   expect((screen.getByLabelText(/Dose de Sel de table en grammes/) as HTMLInputElement).value).toBe('1');
   expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('0');
   const slider = screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' }) as HTMLInputElement;
-  const before = slider.value;
+  const before = readWaterRatio(slider);
   fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
-  expect(Number(slider.value)).toBeGreaterThan(Number(before));
+  expect(readWaterRatio(slider)).toBeGreaterThan(before);
 });
 
 const ETAT: WaterState = {
@@ -144,13 +145,18 @@ function montants(nom: string | RegExp): string[] {
  * toujours la cible et n'apprend donc rien.
  */
 function arAffichee(): number {
-  const bloc = screen.getByText(/Alcalinité résiduelle — cible/).closest('div')!;
+  const bloc = screen.getByText(/Alcalinité résiduelle — repère/).closest('div')!;
   const apresLibelle = (bloc.textContent ?? '').split(')').slice(1).join(')');
   return Number((apresLibelle.match(/-?\d+/) ?? [NaN])[0]);
 }
 
+function arTraiteeAffichee(): number {
+  const label = screen.queryByText('Après l’acide :');
+  return label ? Number(label.nextElementSibling!.textContent!.match(/-?\d+/)![0]) : arAffichee();
+}
+
 function cibleAffichee(): string {
-  return screen.getByText(/Alcalinité résiduelle — cible/).textContent ?? '';
+  return screen.getByText(/Alcalinité résiduelle — repère/).textContent ?? '';
 }
 
 /** Le bloc d'alertes, en clair. */
@@ -178,11 +184,11 @@ describe('La couleur de la bière pilote l’alcalinité', () => {
    */
   it('⚠️ la dose d’acide d’empâtage suit la couleur', () => {
     monter({}, 80);
-    const noire = montants(/vers l’AR de l’empâtage/)[0];
+    const noire = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
     clic('rendre pâle');
-    const pale = montants(/vers l’AR de l’empâtage/)[0];
+    const pale = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
 
-    expect(noire).toBe('—');
+    expect(noire).toBeUndefined(); // Aucune dose à préparer : pas de ligne d'acide à zéro.
     expect(parseFloat(pale)).toBeGreaterThan(0);
   });
 });
@@ -211,13 +217,13 @@ describe('Les volumes pilotent les concentrations', () => {
      */
     monter({ doses: { gypse: 9 }, allSaltsInMash: false });
     expect(screen.getAllByRole('tab')).toHaveLength(2);
-    expect(montants(/au rinçage/)).not.toEqual([]);
+    expect(montants(/Rinçage · cible/)).not.toEqual([]);
     expect(montants('Gypse')[1]).toBe('3.00 g');
 
     clic('supprimer rinçage');
 
     expect(screen.getAllByRole('tab')).toHaveLength(1);
-    expect(ligne(/au rinçage/)).toBeNull();
+    expect(ligne(/Rinçage · cible/)).toBeNull();
     expect(montants('Gypse')[0]).toBe('9.00 g');
     expect(montants('Gypse')[1]).toBe('0.00 g');
   });
@@ -227,42 +233,36 @@ describe('L’analyse du réseau pilote tout le reste', () => {
   it('⚠️ modifier l’eau de départ recalcule l’AR et l’acide', () => {
     monter({}, 6);
     const dureAr = arAffichee();
-    const dureAcide = montants(/vers l’AR de l’empâtage/)[0];
+    const dureAcide = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
 
     clic('eau douce');
 
     expect(arAffichee()).toBeLessThan(dureAr);
-    expect(montants(/vers l’AR de l’empâtage/)[0]).not.toBe(dureAcide);
+    expect(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]).not.toBe(dureAcide);
   });
 
   it('la part d’osmosée fait tomber l’AR à zéro', () => {
     monter({}, 6);
     expect(arAffichee()).toBeGreaterThan(0);
-    const avant = parseFloat(montants(/vers l’AR de l’empâtage/)[0]);
     clic('osmosée pure');
     expect(arAffichee()).toBe(0);
-    /*
-     * ⚠️ L'acide ne tombe PAS à « — » : une bière pâle vise le MILIEU de sa
-     * fenêtre (−30 ppm), et une eau osmosée (AR 0) reste au-dessus — un malt
-     * pilsner seul empâte à 5.75. Il en reste ~1.2 mL pour 20 L, bien moins
-     * qu'avec le réseau.
-     */
-    const apres = parseFloat(montants(/vers l’AR de l’empâtage/)[0]);
-    expect(apres).toBeGreaterThan(0);
-    expect(apres).toBeLessThan(avant / 3);
+    expect(montants(/(?:Acide|Malt acidulé).*Empâtage/)).toEqual([]);
+    expect(screen.getByText(/Profil non atteint/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Proposer les doses' }));
+    expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
   });
 });
 
 describe('L’acidifiant pilote les deux doses', () => {
   it('passer au phosphorique baisse les deux doses d’environ 20 %', () => {
     monter({}, 6);
-    const lactiqueEmp = parseFloat(montants(/vers l’AR de l’empâtage/)[0]);
-    const lactiqueRin = parseFloat(montants(/au rinçage/)[1]);
+    const lactiqueEmp = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    const lactiqueRin = parseFloat(montants(/Rinçage · cible/)[1]);
 
     clic('phosphorique');
 
-    const phosphoEmp = parseFloat(montants(/vers l’AR de l’empâtage/)[0]);
-    const phosphoRin = parseFloat(montants(/au rinçage/)[1]);
+    const phosphoEmp = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    const phosphoRin = parseFloat(montants(/Rinçage · cible/)[1]);
 
     expect(phosphoEmp).toBeLessThan(lactiqueEmp);
     expect(phosphoRin).toBeLessThan(lactiqueRin);
@@ -273,11 +273,11 @@ describe('L’acidifiant pilote les deux doses', () => {
   /* ⚠️ Il n'y a pas de grain au rinçage : le malt acidulé doit y être refusé. */
   it('⚠️ choisir le malt acidulé annule la dose de rinçage et l’explique', () => {
     monter({}, 6);
-    expect(parseFloat(montants(/au rinçage/)[1])).toBeGreaterThan(0);
+    expect(parseFloat(montants(/Rinçage · cible/)[1])).toBeGreaterThan(0);
 
     clic('malt acidulé');
 
-    expect(montants(/au rinçage/)[1]).toBe('—');
+    expect(ligne(/Rinçage · cible/)).toBeNull();
     expect(alertes()).toMatch(/n’a rien à faire au rinçage/);
   });
 });
@@ -319,11 +319,9 @@ describe('Le style pilote les cibles', () => {
     expect(within(comparaison()).getByText('20–50')).toBeInTheDocument();
   });
 
-  it('le repère HCO₃ reste visible et change uniquement avec le profil', () => {
+  it('la cible HCO₃ reste visible et change uniquement avec le profil', () => {
     monter({}, 6);
-    expect(within(comparaison()).getByText('120–250')).toHaveAttribute(
-      'title', 'Repère HCO₃ du profil ; dosage selon le pH d’empâtage.'
-    );
+    expect(within(comparaison()).getByText('120–250')).toBeInTheDocument();
     clic('style Pils');
     expect(within(comparaison()).queryByText('120–250')).not.toBeInTheDocument();
     expect(within(comparaison()).getByText('0–40')).toBeInTheDocument();
@@ -759,11 +757,12 @@ describe('Alertes du solveur et doses réellement saisies', () => {
    * Le solveur ne connaît que les sels ; c'est donc l'écran qui retire le
    * reproche quand la dose d'acide ramène l'alcalinité dans sa fenêtre.
    */
-  it('⚠️ plus de reproche d’alcalinité quand l’acide la ramène dans la fenêtre', () => {
+  it('signale le conflit avec l’AR des malts sans annuler le profil choisi', () => {
     monter({ doses: { gypse: 2, cacl2: 6 }, diRatioPct: 0 }, 6);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
-    expect(arCitee()).toBeNull();
-    // Et la preuve que c'est bien l'acide : la ligne qui le dit est là.
+    expect(arCitee()).toBe(arTraiteeAffichee());
+    expect(alertes()).toMatch(/Le profil HCO₃ choisi est conservé/);
+    expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
     expect(screen.getByText(/Après l’acide/)).toBeInTheDocument();
   });
 
@@ -773,7 +772,8 @@ describe('Alertes du solveur et doses réellement saisies', () => {
     monter({ doses: { gypse: 2, cacl2: 6 }, diRatioPct: 0 }, 6);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
     const citee = arCitee();
-    if (citee !== null) expect(citee).toBe(arAffichee());
+    expect(citee).not.toBeNull();
+    expect(citee).toBe(arTraiteeAffichee());
   });
 
   /*
@@ -853,10 +853,10 @@ describe('Rien de la PROPOSITION ne se lit comme un fait', () => {
  */
 
 /* ---------------------------------------------------------------------------
- * « Doser » ne doit JAMAIS effacer
+ * « Doser » applique la proposition minérale, même vide, et préserve l’acide manuel.
  * ------------------------------------------------------------------------ */
 
-describe('Le bouton Doser ne doit jamais effacer', () => {
+describe('Le bouton Doser applique les sels proposés et conserve les acides manuels', () => {
   /*
    * ⚠️ Signalé ainsi : « le bouton doser fonctionne très mal ».
    *
@@ -874,15 +874,15 @@ describe('Le bouton Doser ne doit jamais effacer', () => {
   const doser = () => screen.getByRole('button', { name: /Proposer les doses/i });
   const TOUS = ['gypse','cacl2','epsom','mgcl2','nacl','nahco3','caco3','chaux','kcl'] as never;
 
-  it('⚠️ se désactive quand il n’y a rien à proposer, au lieu de tout effacer', () => {
+  it('permet d’appliquer une proposition sans sels', () => {
     monter({ doses: { gypse: 2, cacl2: 6 }, disabled: TOUS }, 6);
-    expect(doser()).toBeDisabled();
+    expect(doser()).toBeEnabled();
   });
 
-  it('⚠️ les doses saisies survivent — c’est tout l’enjeu', () => {
+  it('retire les anciens sels quand ils ont tous été écartés', () => {
     monter({ doses: { gypse: 2, cacl2: 6 }, disabled: TOUS }, 6);
     fireEvent.click(doser());
-    expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('2');
+    expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('0');
   });
 
   it('dit que la cause est l’écartement des sels, pas un ion au plafond', () => {
@@ -890,12 +890,12 @@ describe('Le bouton Doser ne doit jamais effacer', () => {
     expect(screen.getByText(/tous les sels sont écartés/i)).toBeInTheDocument();
   });
 
-  it('recalcule un acide manuel même sans proposition de sels, sans effacer les doses', () => {
+  it('préserve un acide manuel quand la proposition minérale est vide', () => {
     monter({ doses: { gypse: 2 }, disabled: TOUS, acidOverride: { mash: 15 } }, 6);
     expect(doser()).toBeEnabled();
     fireEvent.click(doser());
-    expect((screen.getByLabelText(/Dose d’acide lactique.*à l’empâtage/) as HTMLInputElement).value).not.toBe('15');
-    expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('2');
+    expect((screen.getByLabelText(/Dose d’acide lactique.*à l’empâtage/) as HTMLInputElement).value).toBe('15');
+    expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('0');
   });
 
   /*
@@ -935,12 +935,12 @@ describe('Alcalinité, acide et bouton Doser', () => {
    */
   it('⚠️ dit quand la dose posée à la main descend SOUS la cible', () => {
     monter({ doses: {}, diRatioPct: 0, acidOverride: { mash: 15 } }, 6);
-    expect(screen.getByText(/SOUS la cible/)).toBeInTheDocument();
+    expect(screen.getByText(/sous le repère des malts/)).toBeInTheDocument();
   });
 
   it('ne crie pas au sur-acidifiage sur une dose calculée', () => {
     monter({ doses: {}, diRatioPct: 0 }, 6);
-    expect(screen.queryByText(/SOUS la cible/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/sous le repère des malts/)).not.toBeInTheDocument();
   });
 
   /*
@@ -948,14 +948,15 @@ describe('Alcalinité, acide et bouton Doser', () => {
    * acides aussi. » Il ne le faisait pas : une dose forcée survivait à l'appui,
    * et le plan « proposé » sortait moitié calculé, moitié forcé.
    */
-  it('⚠️ Doser rend AUSSI l’acide au calcul', () => {
+  it('Doser préserve l’acide manuel jusqu’au retour explicite au calcul', () => {
     monter({ doses: {}, diRatioPct: 0, acidOverride: { mash: 15 } }, 6);
     expect(champAcide().value).toBe('15');
 
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
 
+    expect(champAcide().value).toBe('15');
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir aux doses d’acide calculées' }));
     expect(champAcide().value).not.toBe('15');
-    expect(screen.queryByRole('button', { name: 'Revenir aux doses d’acide calculées' })).not.toBeInTheDocument();
   });
 
   /*
@@ -1019,13 +1020,12 @@ describe('Une noire sur osmosée reçoit du bicarbonate, et l’écran dit jusqu
    * parce qu'elle compare au STYLE ; si l'app s'arrête volontairement avant,
    * elle doit le dire, sinon l'écart se lit comme une panne.
    */
-  it('⚠️ et il dit pourquoi il s’arrête sous la fourchette du style', () => {
+  it('respecte le profil et distingue le contrôle du pH', () => {
     monter({ doses: {}, diRatioPct: 100 }, 80, 30, STOUT);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
-    /* Le nombre suit le rapport eau/grain — on vérifie la phrase, pas le chiffre. */
-    // This is a target ceiling, not a claim that the actual water equals it.
-    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('Ajout automatique limité par l’estimation du mash');
-    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('La plage du style reste un repère');
+    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('Le profil d’eau choisi commande les doses');
+    expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('Le respect du profil ne garantit pas le pH d’empâtage');
+    expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
     expect(alertes()).not.toMatch(/la facture limite l’objectif/);
   });
 
@@ -1078,7 +1078,7 @@ describe('Les avertissements de seuil, à l’écran', () => {
 describe('Le curseur suit les sels, et pas seulement la consigne', () => {
   const curseur = () =>
     screen.getByRole('slider', { name: /SO₄ ⇄ Cl/i }) as HTMLInputElement;
-  const pouce = () => parseFloat(curseur().value);
+  const pouce = () => readWaterRatio(curseur());
 
   /*
    * ⚠️ « Je veux que le slider de ratio bouge aussi quand je change
@@ -1117,7 +1117,7 @@ describe('Le curseur suit les sels, et pas seulement la consigne', () => {
   it('tirer le curseur reste fluide — la poignée ne fuit pas', () => {
     monter({ doses: {}, diRatioPct: 100 });
     for (const v of [1, 1.5, 2, 2.5, 3]) {
-      fireEvent.change(curseur(), { target: { value: String(v) } });
+      changeWaterRatio(curseur(), v);
       expect(pouce()).toBeCloseTo(v, 1);
     }
   });
@@ -1125,7 +1125,7 @@ describe('Le curseur suit les sels, et pas seulement la consigne', () => {
   /* Et il redescend sur le réel dès qu'on retouche un sel après l'avoir tiré. */
   it('⚠️ après un glissement, une retouche à la main reprend la poignée', () => {
     monter({ doses: {}, diRatioPct: 100 });
-    fireEvent.change(curseur(), { target: { value: '3' } });
+    changeWaterRatio(curseur(), 3);
     expect(pouce()).toBeCloseTo(3, 1);
 
     for (let i = 0; i < 6; i += 1) {

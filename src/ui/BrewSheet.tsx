@@ -19,6 +19,7 @@ import { ION_LABEL, SALTS } from '../domain/water';
 import { NumberInput } from './NumberInput';
 import { WaterAdditivesTable } from './WaterAdditivesTable';
 import { WaterRadar } from './WaterRadar';
+import { WaterTargetStatus } from './water/WaterTargetStatus';
 import { StyleWater } from '../domain/waterStyles';
 import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
@@ -127,6 +128,7 @@ const Block: React.FC<{
 
 /** Tout ce que la fiche montre de l'eau, calculé par l'assistant. */
 export interface WaterRecap {
+  targetStatus?: React.ComponentProps<typeof WaterTargetStatus>;
   sourceName: string;
   styleName: string;
   mashWaterL: number;
@@ -724,6 +726,8 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 </dl>
               )}
 
+              {water.targetStatus && <WaterTargetStatus {...water.targetStatus} />}
+
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xs sm:text-sm">
                 <span className="text-cave-500">
                   Alcalinité résiduelle après acide{' '}
@@ -737,8 +741,8 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     {water.ra}
                   </span>{' '}
                   {water.raSaltTarget != null
-                    ? `— objectif des sels ≈ ${water.raSaltTarget} ppm (estimation du mash)`
-                    : `— cible ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
+                    ? `— repère pour les malts ≈ ${water.raSaltTarget} ppm (estimation du mash)`
+                    : `— repère des malts ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
                 </span>
                 <span className="text-cave-500">
                   SO₄:Cl{' '}

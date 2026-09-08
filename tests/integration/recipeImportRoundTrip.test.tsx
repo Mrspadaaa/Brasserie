@@ -153,8 +153,22 @@ describe('Recipe import through the real UI', () => {
     click(/^Récapitulatif$/);
     click(/^Enregistrer la recette$/);
     const saved = save.mock.calls[0][0];
-    const { id, favorite, batchRef, ...expected } = fullRecipe;
+    const { id, favorite, batchRef, ...imported } = fullRecipe;
+    // A zero remains meaningful in override metadata, but is not an addition to weigh.
+    // Every nonzero dose must survive with its original mass and water allocation.
+    const expected = {
+      ...imported,
+      waterPlan: {
+        ...imported.waterPlan,
+        mash: Object.fromEntries(Object.entries(imported.waterPlan.mash).filter(([, grams]) => grams !== 0)),
+        sparge: Object.fromEntries(Object.entries(imported.waterPlan.sparge).filter(([, grams]) => grams !== 0))
+      }
+    };
     expect(saved).toMatchObject(expected);
+    for (const side of ['mash', 'sparge'] as const) {
+      expect(saved.waterPlan[side]).toEqual(expected.waterPlan[side]);
+      expect(Object.values(saved.waterPlan[side])).not.toContain(0);
+    }
     expect(saved.id).not.toBe(id);
     expect(saved.batchRef).toBeUndefined();
     cleanup();
@@ -166,7 +180,11 @@ describe('Recipe import through the real UI', () => {
       value: { writeText: clipboard }
     });
     click(/^Copier la recette en texte$/);
-    expect(readRecipeText(clipboard.mock.calls[0][0])).toMatchObject(expected);
+    const copied = readRecipeText(clipboard.mock.calls[0][0]);
+    expect(copied).toMatchObject(expected);
+    expect(copied.waterPlan).toEqual(saved.waterPlan);
+    click(/^Enregistrer la recette$/);
+    expect(save.mock.calls[1][0].waterPlan).toEqual(saved.waterPlan);
   });
   it('keeps zero sparge and a partial target from AI, with source notes and custom mash temperatures', async () => {
     ai.mockResolvedValue({

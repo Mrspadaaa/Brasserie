@@ -34,17 +34,21 @@ function linearSolve(matrix: number[][], rhs: number[]): number[] | null {
 }
 
 export function constrainedLeastSquares(
-  A: number[][], b: number[], C: number[][] = [], upper: number[] = []
+  A: number[][], b: number[], C: number[][] = [], upper: number[] = [], initial?: number[]
 ): LeastSquaresResult {
   const n = A[0]?.length ?? 0;
   if (A.length !== b.length || C.length !== upper.length ||
       [...A, ...C].some(r => r.length !== n || !r.every(Number.isFinite)) ||
-      !b.every(Number.isFinite) || upper.some(v => !Number.isFinite(v) || v < 0)) {
+      !b.every(Number.isFinite) || upper.some(v => !Number.isFinite(v)) ||
+      (initial ? initial.length !== n || initial.some(v => !Number.isFinite(v) || v < -1e-8)
+        || C.some((row, i) => dot(row, initial) > upper[i] + 1e-6) : upper.some(v => v < 0))) {
     throw new Error('Invalid least-squares dimensions, values or infeasible origin');
   }
   if (!n) return { x: [], squaredError: dot(b, b), converged: true };
   // Column scaling keeps grams, milligrams and dependent columns well conditioned.
-  const scale = Array.from({ length: n }, (_, j) => Math.max(1e-8, Math.sqrt(A.reduce((s, r) => s + r[j] ** 2, 0))));
+  const scale = Array.from({ length: n }, (_, j) => Math.max(1e-8,
+    Math.sqrt(A.reduce((s, r) => s + r[j] ** 2, 0)),
+    Math.sqrt(C.reduce((s, r) => s + r[j] ** 2, 0))));
   const a = A.map(r => r.map((v, j) => v / scale[j]));
   const constraints: number[][] = Array.from({ length: n }, (_, j) => Array.from({ length: n }, (_, k) => j === k ? -1 : 0));
   const bounds = Array(n).fill(0);
@@ -56,8 +60,8 @@ export function constrainedLeastSquares(
   const H = Array.from({ length: n }, (_, j) => Array.from({ length: n }, (_, k) =>
     a.reduce((s, r) => s + r[j] * r[k], 0) + (j === k ? 1e-9 : 0)));
   const f = Array.from({ length: n }, (_, j) => a.reduce((s, r, i) => s + r[j] * b[i], 0));
-  let x = Array(n).fill(0);
-  const active = Array.from({ length: n }, (_, i) => i);
+  let x = initial ? initial.map((value, i) => value * scale[i]) : Array(n).fill(0);
+  const active = Array.from({ length: n }, (_, i) => i).filter(i => x[i] <= 1e-9);
   let converged = false;
   for (let iteration = 0; iteration < 200; iteration++) {
     const gradient = H.map((r, j) => dot(r, x) - f[j]);
@@ -88,4 +92,23 @@ export function constrainedLeastSquares(
   }
   x = x.map((v, j) => v / scale[j]);
   return { x, squaredError: A.reduce((s, r, i) => s + (dot(r, x) - b[i]) ** 2, 0), converged };
+}
+
+/** Phase I finds a feasible starting point when lower bounds exclude the origin.
+ * A single slack reduction r starts at 0 and must reach the largest violation.
+ * The second solve keeps every bound, instead of merely penalizing shortfalls.
+ */
+export function leastSquaresWithBounds(A: number[][], b: number[], C: number[][], upper: number[]): LeastSquaresResult {
+  if (upper.every(value => value >= 0)) return constrainedLeastSquares(A, b, C, upper);
+  const n = A[0]?.length ?? 0;
+  const slack = Math.max(0, ...upper.map(value => -value));
+  const phase = constrainedLeastSquares(
+    [Array.from({ length: n + 1 }, (_, i) => i === n ? 100 : 0)], [slack * 100],
+    [...C.map(row => [...row, 1]), Array.from({ length: n + 1 }, (_, i) => i === n ? 1 : 0)],
+    [...upper.map(value => value + slack), slack],
+  );
+  const initial = phase.x.slice(0, n);
+  if (!phase.converged || phase.x[n] < slack - 1e-6 || C.some((row, i) => dot(row, initial) > upper[i] + 1e-6))
+    return { x: initial, squaredError: Infinity, converged: false };
+  return constrainedLeastSquares(A, b, C, upper, initial);
 }

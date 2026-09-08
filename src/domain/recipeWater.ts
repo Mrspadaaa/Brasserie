@@ -1,18 +1,21 @@
-import type { Recipe, WaterPlan, WaterSource, WaterIons, SaltId, IonBand } from '../types';
+import type { Recipe, WaterPlan, WaterSource, SaltId } from '../types';
 import {
   ACIDS,
   SALT_IDS,
   dilute,
   solveSalts,
   calculateWaterTreatment,
+  calculateSpargeTreatment,
   targetRaForGrist,
   raSaltCeilingForGrist,
-  rebalanceRatio,
   estimateMashPh,
   lactateInBeer,
   LACTATE_TASTE_THRESHOLD
 } from './water';
-import { styleByCode, styleWaterForName, styleFromTargetIons, midpoint } from './waterStyles';
+import { styleByCode, styleWaterForName, styleFromTargetIons } from './waterStyles';
+import { waterProfileTarget, waterTreatmentTarget } from './water/profileTarget';
+import { describeTreatmentIssues } from './water/solverMessages';
+import { assessWaterProfile, PROFILE_IONS } from './water/profileAssessment';
 import { computeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { BrewingMath } from '../services/brewingMath';
@@ -79,7 +82,8 @@ export function constrainRo<
 
 export function recipeWaterCalculation(recipe: WaterRecipe) {
   const p = recipe.waterPlan;
-  if (!p || !(p.mashWaterL > 0) || !(p.spargeWaterL >= 0))
+  if (!p || !Number.isFinite(p.mashWaterL) || !Number.isFinite(p.spargeWaterL)
+    || !(p.mashWaterL > 0) || !(p.spargeWaterL >= 0))
     throw Error('Renseigne les volumes d’empâtage et de rinçage.');
   const source = p.sourceSnapshot;
   if (
@@ -89,7 +93,7 @@ export function recipeWaterCalculation(recipe: WaterRecipe) {
     )
   )
     throw Error('Analyse de l’eau source manquante ou incomplète : aucun dosage inventé.');
-  const grains = (recipe.fermentables ?? []).filter((f) => f.kind === 'grain');
+  const grains = (recipe.fermentables ?? []).filter((f) => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage');
   const grainKg = grains.reduce((sum, f) => sum + f.weightKg, 0);
   const ratio = grainKg > 0 ? p.mashWaterL / grainKg : 0;
   const band = targetRaForGrist(
@@ -123,31 +127,27 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
     recipe.boilMin
   );
   // Numeric custom profiles keep their specified SO4/Cl, as the workshop does.
+  const customSo4 = p.targetIons?.so4 ?? start.so4;
+  const customCl = p.targetIons?.cl ?? start.cl;
   const wantedRatio =
     p.ratioOverride ??
-    (p.targetIons?.so4 != null && p.targetIons?.cl != null && p.targetIons.cl > 0
-      ? p.targetIons.so4 / p.targetIons.cl
+    (p.targetIons
+      ? customCl > 0 ? customSo4 / customCl : customSo4 > 0 ? Infinity : 0
       : (hopBalanceHint(recipe.hops, ibu, og, style.ratio)?.ratio ??
         (style.ratio.min + style.ratio.max) / 2));
-  const target = rebalanceRatio(
-    p.targetIons ? { ...start, ...p.targetIons } : midpoint(style),
-    wantedRatio
-  );
-  const ranges = Object.fromEntries(
-    Object.entries(style.ions).map(([ion, range]) => [ion, { ...range }])
-  ) as Record<keyof WaterIons, IonBand>;
-  if (wantedRatio < style.ratio.min || wantedRatio > style.ratio.max)
-    for (const ion of ['so4', 'cl'] as const)
-      ranges[ion] = {
-        min: Math.min(ranges[ion].min, target[ion]),
-        max: Math.max(ranges[ion].max, target[ion])
-      };
+  const profile = waterProfileTarget(style, start, p.targetIons, wantedRatio,
+    !p.targetIons || p.ratioOverride != null);
+  const { ranges } = profile;
+  const acidId = p.acid?.id ?? 'lactique';
+  const acidOverride = p.acid ? p.acidOverride : { mash: 0, sparge: 0 };
+  const spargeHco3AfterAcid = calculateSpargeTreatment(startSparge, p.spargeWaterL, acidId,
+      { sourcePh: source.ph, override: acidOverride?.sparge }).ions.hco3;
   const solved = solveSalts({
     start,
     startSparge,
-    target,
-    ranges,
-    mineralTargetMode: p.targetIons ? 'target' : 'minimum',
+    ...profile,
+    spargeHco3AfterAcid,
+    mashAcidHco3Mg: (acidOverride?.mash ?? 0) * ACIDS[acidId].hco3NeutralizedPerUnit,
     totalWaterL: p.mashWaterL + p.spargeWaterL,
     mashWaterL: p.mashWaterL,
     targetRa: band,
@@ -158,12 +158,12 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
   });
   // calculateWaterTreatment needs an acid ID even when no acid has been selected.
   // The zero override below prevents it from prescribing an unknown product.
-  const acidId = p.acid?.id ?? 'lactique';
   const input = {
     ...p,
     doses: solved.doses,
     acidId,
-    acidOverride: p.acid ? p.acidOverride : { mash: 0, sparge: 0 }
+    acidOverride,
+    ...waterTreatmentTarget(style, p.targetIons)
   };
   let treatment = calculateWaterTreatment(source, input, band);
   const split = structuredClone(treatment.split);
@@ -178,7 +178,7 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
   const plan: WaterPlan = {
     ...p,
     autoTreatment: true,
-    ...split,
+    ...treatment.split,
     startIons: treatment.startTotal,
     wortIons: treatment.treatedTotal,
     treatmentVersion: 2,
@@ -188,13 +188,10 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
         }
       : {})
   };
-  const warnings = [...solved.unreachable];
-  for (const ion of ['ca', 'mg', 'na', 'so4', 'cl'] as const) {
-    if (treatment.treatedTotal[ion] > ranges[ion].max + 2)
-      warnings.push(
-        `${ion.toUpperCase()} : ${treatment.treatedTotal[ion]} mg/L dépasse la cible ${ranges[ion].max}. Les sels ne retirent pas les ions déjà présents.`
-      );
-  }
+  const warnings = describeTreatmentIssues(solved.issues ?? [], treatment, band);
+  const assessment = assessWaterProfile(treatment.treatedTotal, ranges, PROFILE_IONS.filter(ion => !style.untargetedIons?.includes(ion)));
+  for (const item of assessment.deviations)
+    warnings.push(`Profil non atteint : ${item.ion.toUpperCase()} à ${item.value} ppm pour ${item.min}–${item.max}. Vérifier les doses manuelles, les sels autorisés et la dilution.`);
   if (!p.acid)
     warnings.push(
       'Acidifiant non choisi : les sels sont calculés, l’acidification reste à préparer.'
@@ -220,6 +217,8 @@ export function recipeWaterSummary(recipe: WaterRecipe) {
   const warnings: string[] = [];
   try {
     const { source, grains, ratio, band } = recipeWaterCalculation(recipe);
+    const style = p.targetIons ? styleFromTargetIons(p.targetIons)
+      : p.targetProfileId ? styleByCode(p.targetProfileId) : styleWaterForName(recipe.style);
     const doses = Object.fromEntries(
       SALT_IDS.map((id) => [id, (p.mash?.[id] ?? 0) + (p.sparge?.[id] ?? 0)])
     );
@@ -230,22 +229,19 @@ export function recipeWaterSummary(recipe: WaterRecipe) {
         doses,
         saltSplit: { mash: p.mash, sparge: p.sparge },
         acidId: p.acid?.id ?? 'lactique',
-        acidOverride: { mash: p.acid?.mash ?? 0, sparge: p.acid?.sparge ?? 0 }
+        acidOverride: { mash: p.acid?.mash ?? 0, sparge: p.acid?.sparge ?? 0 },
+        ...waterTreatmentTarget(style, p.targetIons)
       },
       band
     );
     ph = estimateMashPh(grains, treatment.mashPhRa, ratio);
-    const style = p.targetIons
-      ? styleFromTargetIons(p.targetIons)
-      : p.targetProfileId
-        ? styleByCode(p.targetProfileId)
-        : styleWaterForName(recipe.style);
-    for (const ion of ['ca', 'mg', 'na', 'so4', 'cl'] as const) {
+    if (treatment.hco3Target?.message) warnings.push(treatment.hco3Target.message);
+    for (const ion of PROFILE_IONS.filter(ion => !style.untargetedIons?.includes(ion))) {
       const value = treatment.treatedTotal[ion],
         range = style.ions[ion];
-      if (value < range.min - 2 || value > range.max + 2)
+      if (value < range.min || value > range.max)
         warnings.push(
-          `${ion.toUpperCase()} : ${value} mg/L, repère ${range.min}–${range.max}. Les ajouts ne retirent pas les ions du réseau.`
+          `Profil non atteint : ${ion.toUpperCase()} à ${value} mg/L, cible ${range.min}–${range.max}.`
         );
     }
   } catch {

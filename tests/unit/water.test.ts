@@ -346,9 +346,10 @@ describe('Rapport sulfate / chlorure', () => {
     expect(amer.ca).toBe(100);
   });
 
-  it('un rapport nul ou négatif laisse l’eau intacte', () => {
+  it('un rapport nul porte toute la somme vers le chlorure ; un rapport négatif est ignoré', () => {
     const base: WaterIons = { ca: 100, mg: 10, na: 10, so4: 150, cl: 150, hco3: 0 };
-    expect(rebalanceRatio(base, 0)).toEqual(base);
+    expect(rebalanceRatio(base, 0)).toEqual({ ...base, so4: 0, cl: 300 });
+    expect(rebalanceRatio(base, -1)).toEqual(base);
   });
 });
 

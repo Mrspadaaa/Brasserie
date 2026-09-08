@@ -7,6 +7,8 @@ import { HOP_STAGE, groupByStage, describeMoment, normalizeHop } from '../domain
 import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS, savedWaterDisplay } from '../domain/water';
 import { styleByCode, styleFromTargetIons } from '../domain/waterStyles';
 import { WaterRadar } from '../ui/WaterRadar';
+import { WaterTargetStatus } from '../ui/water/WaterTargetStatus';
+import { describeSavedRecipeWater } from '../domain/recipeWaterReadings';
 import { PHASE_LABEL } from '../domain/brewPrograms';
 import { PageShell, Section } from './PageShell';
 import { ConfirmSheet } from '../ui/Sheet';
@@ -90,6 +92,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
+  const waterReadings = useMemo(() => describeSavedRecipeWater(recipe), [recipe]);
 
   const brewhouse =
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -547,6 +550,15 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       )
                     : styleByCode(recipe.waterPlan.targetProfileId)
                 }
+              />
+            )}
+
+            {waterReadings && (
+              <WaterTargetStatus
+                {...waterReadings}
+                customTarget={!!recipe.waterPlan.targetIons}
+                mashWaterL={recipe.waterPlan.mashWaterL}
+                spargeWaterL={recipe.waterPlan.spargeWaterL}
               />
             )}
 

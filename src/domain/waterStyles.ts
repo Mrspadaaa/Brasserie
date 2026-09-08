@@ -30,16 +30,10 @@ export const WATER_PROFILE_SOURCES = [
   }
 ];
 
-/** Repère visuel fixe, y compris HCO₃. Il ne se recalcule jamais depuis les
- * doses : le dosage alcalin/acide reste piloté par la maische, pas ce repère.
- */
+/** All six selected ion ranges remain fixed when doses or the ratio change. */
 export function styleIonRange(style: StyleWater, ion: keyof WaterIons): IonRange {
   return style.ions[ion];
 }
-
-/** Hors cible HCO₃ n’est pas une alerte de pH. Une cible personnelle reste explicite. */
-export const isIndicativeIon = (style: StyleWater, ion: keyof WaterIons): boolean =>
-  ion === 'hco3' && style.code !== '~';
 
 const R = (min: number, max: number): IonRange => ({ min, max });
 

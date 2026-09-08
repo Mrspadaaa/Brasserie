@@ -79,7 +79,7 @@ export const RA_BAND_HALF = 30;
  * juste, et elle ne commande rien.
  */
 export function targetRaForColor(ebc: number | null): RaBand {
-  if (ebc === null) {
+  if (ebc === null || !Number.isFinite(ebc)) {
     return {
       /*
        * ⚠️ L'étiquette entre dans des phrases : « pour une ${label} ». Avec
@@ -196,6 +196,8 @@ export interface MashPhEstimate {
   /** Dans la fenêtre 5.2–5.5 ? `-1` en dessous, `1` au-dessus. */
   position: -1 | 0 | 1;
   note: string;
+  /** The bounded approximation has reached its limit; it cannot predict further changes. */
+  limited?: boolean;
 }
 
 /** La fenêtre de pH d'empâtage que vise un brasseur, quelle que soit la bière. */
@@ -218,12 +220,17 @@ export const MASH_PH_BAND = { min: 5.2, max: 5.5, target: 5.4 };
 export const MALT_BUFFER_MEQ_PER_KG_PH = 45;
 
 export const RA_PH_DIVISOR = 50 * MALT_BUFFER_MEQ_PER_KG_PH;
+const MAX_PH_SHIFT = 0.6;
 
-export function phShiftFromRa(ra: number, mashRatioLPerKg: number): number {
+function rawPhShift(ra: number, mashRatioLPerKg: number): number {
   const safeRa = Number.isFinite(ra) ? ra : 0;
   const ratio = Number.isFinite(mashRatioLPerKg) && mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;
   const shift = (safeRa * ratio) / RA_PH_DIVISOR;
-  return Number.isFinite(shift) ? Math.max(-0.6, Math.min(0.6, shift)) : 0;
+  return Number.isFinite(shift) ? shift : 0;
+}
+
+export function phShiftFromRa(ra: number, mashRatioLPerKg: number): number {
+  return Math.max(-MAX_PH_SHIFT, Math.min(MAX_PH_SHIFT, rawPhShift(ra, mashRatioLPerKg)));
 }
 
 /**
@@ -337,11 +344,13 @@ export function estimateMashPh(
    * Les notes disent donc où l'on est, et laissent la ligne de dose dire ce
    * qu'on verse. Une seule voix par question.
    */
-  const note =
-    position === 1
+  const limited = Math.abs(rawPhShift(ra, mashRatioLPerKg)) >= MAX_PH_SHIFT;
+  const note = limited
+    ? 'Limite du modèle atteinte : le pH réel peut continuer à varier. Mesurer avant toute correction.'
+    : position === 1
       ? 'Au-dessus de la fenêtre — l’acide se dose sur l’alcalinité, pas sur cette estimation.'
       : position === -1
-        ? 'Sous la fenêtre : cette maische est déjà acide toute seule.'
+        ? 'Estimation sous la fenêtre : vérifier les doses retenues et mesurer le pH.'
         : 'Dans la fenêtre.';
 
   return {
@@ -351,7 +360,8 @@ export function estimateMashPh(
     uncertainty: MASH_PH_UNCERTAINTY,
     acidulatedPct,
     position,
-    note
+    note,
+    ...(limited ? { limited: true } : {})
   };
 }
 
@@ -419,6 +429,7 @@ export function raSaltCeilingForGrist(
   fermentables: Parameters<typeof estimateMashPh>[0],
   mashRatioLPerKg: number
 ): number | null {
+  if (!Number.isFinite(mashRatioLPerKg) || mashRatioLPerKg <= 0) return null;
   const est = estimateMashPh(fermentables, 0, mashRatioLPerKg);
   if (!est.known) return null;
   const ratio = mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;
@@ -429,6 +440,7 @@ export function raForGrist(
   fermentables: Parameters<typeof estimateMashPh>[0],
   mashRatioLPerKg: number
 ): number | null {
+  if (!Number.isFinite(mashRatioLPerKg) || mashRatioLPerKg <= 0) return null;
   const est = estimateMashPh(fermentables, 0, mashRatioLPerKg);
   if (!est.known) return null;
   const ratio = mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;

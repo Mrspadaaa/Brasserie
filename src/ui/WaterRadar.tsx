@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
 import { WaterIons } from '../types';
 import { ION_LABEL, ION_ROLE, ION_SYMBOL, radarScaleMax } from '../domain/water';
-import { StyleWater, styleIonRange, isIndicativeIon } from '../domain/waterStyles';
+import { StyleWater, styleIonRange } from '../domain/waterStyles';
+import { formatIonReading } from './waterReadings';
 
 /** Profil ionique mesuré face aux repères du style. HCO3 se juge à la maische. */
 
 interface WaterRadarProps {
   /** L'eau du réseau, coupée d'osmosée : ce qu'on a avant d'ouvrir un sachet. */
   start: WaterIons;
-  /** L'eau obtenue une fois les sels pesés. */
+  /** La moyenne des eaux après les sels et les doses d’acide retenues. */
   achieved: WaterIons;
   style: StyleWater;
   /**
@@ -173,9 +174,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
       IONS.map((ion, i) => {
         const band = styleIonRange(style, ion);
         const targeted = !style.untargetedIons?.includes(ion);
-        const indicative = isIndicativeIon(style, ion);
         const r = rayon;
         const value = achieved[ion];
+        const reading = formatIonReading(value, targeted ? band : undefined, ion === 'hco3' ? 1 : 0);
         const d = angle(i);
         const [lx, ly] = xy(d, LABEL_R);
         const [ex, ey] = xy(d, R);
@@ -186,13 +187,13 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           d,
           band,
           targeted,
-          indicative,
           value,
+          reading: ion === 'hco3' ? reading.replace(/\.0$/, '').replace('.', ',') : reading,
           ex,
           ey,
           /** −1 sous la fourchette, 1 au-dessus, 0 dedans. */
-          out: !targeted || indicative ? 0 : value < band.min ? -1 : value > band.max ? 1 : 0,
-          alarm: targeted && !indicative && (value < band.min || value > band.max),
+          out: !targeted ? 0 : value < band.min ? -1 : value > band.max ? 1 : 0,
+          alarm: targeted && (value < band.min || value > band.max),
           rStart: r(start[ion]),
           rNow: r(value),
           rMin: r(band.min),
@@ -218,7 +219,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   const résumé = axes
     .map(
       (a) =>
-        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${Math.round(a.value)} ppm ${a.targeted ? `pour ${a.band.min} à ${a.band.max}` : 'sans cible renseignée'}${a.indicative ? ' (repère indicatif ; dosage selon le pH d’empâtage)' : ''}`
+        `${ION_LABEL[a.ion]} (${ION_ROLE[a.ion]}) ${a.reading} ppm ${a.targeted ? `pour ${a.band.min} à ${a.band.max}` : 'sans cible renseignée'}`
     )
     .join(', ');
 
@@ -232,7 +233,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           ? 'max-h-[var(--water-radar-max-height,24rem)] sm:max-h-none sm:max-w-[30rem]'
           : 'max-w-[30rem]'}`}
         role="img"
-        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}. Échelle fixe 0 à ${scale} ppm ; valeurs supérieures au bord.`}
+        aria-label={`Profil ionique de l’eau corrigée face à la fourchette du style ${style.name} : ${résumé}. Échelle fixe en racine carrée de 0 à ${scale} ppm ; valeurs supérieures au bord.`}
       >
         {/* Les anneaux et les rayons — le repère, jamais la donnée. */}
         {rings.map((ppm) => (
@@ -256,7 +257,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
             fill={GREEN}
             fillOpacity={lit.has(a.ion) ? 0.5 : lit.size ? 0.14 : 0.28}
           >
-            <title>{`${ION_SYMBOL[a.ion]} : ${a.band.min}–${a.band.max} ppm${a.indicative ? ' · repère du profil, à ajuster selon l’empâtage' : ''}`}</title>
+            <title>{`${ION_SYMBOL[a.ion]} : ${a.band.min}–${a.band.max} ppm`}</title>
           </path>
         ))}
 
@@ -301,7 +302,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
               cx={x}
               cy={y}
               r={lit.has(a.ion) ? 6 : 4.5}
-              fill={a.indicative ? STRAW : a.alarm ? AMBER : GREEN}
+              fill={!a.targeted ? '#9A8A7E' : a.alarm ? AMBER : GREEN}
               stroke="#12100E"
               strokeWidth={1.5}
             />
@@ -328,7 +329,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
               y={ty - 2}
               textAnchor="middle"
               fontSize={10}
-              fill="#574A42"
+              fill="#9A8A7E"
             >
               {ppm}
             </text>
@@ -344,7 +345,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           );
           const valeur = (
             <tspan fontSize={17} fontWeight={700} fill={a.alarm ? AMBER : '#D8CEC5'}>
-              {Math.round(a.value)}
+              {a.reading}
               {flèche}
             </tspan>
           );
@@ -381,23 +382,21 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 fontSize={11.5}
                 fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
               >
-                {a.targeted ? `${a.indicative ? '≈ ' : ''}${a.band.min}–${a.band.max}` : 'sans cible'}
+                {a.targeted ? `${a.band.min}–${a.band.max}` : 'sans cible'}
               </text>
             </g>
           );
         })}
       </svg>
-      <p className="text-center text-[0.625rem] sm:text-2xs text-cave-400 leading-tight pb-0.5">
-        Eau totale · avant apports des malts et ébullition
+      <p className="text-center text-2xs text-cave-400 leading-tight pb-0.5">
+        Eau totale après sels et acide
+        <span className="block">Avant apports des malts et ébullition</span>
       </p>
-
-      {/*
-        ⚠️ La légende a disparu. Trois pastilles pour dire ce que le vert, le
-        tireté bleu et le trait paille désignent — vingt pixels dépensés à
-        redire ce que la toile montre déjà, sur une feuille où chaque ligne se
-        dispute la place avec la grille des sels. Le lecteur d'écran, lui,
-        garde tout : le résumé complet est dans la description du graphique.
-      */}
+      <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400" aria-hidden>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-dashed border-water" />Départ</span>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />Corrigée</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-hop/50" />Cible</span>
+      </div>
     </div>
   );
 };

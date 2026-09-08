@@ -83,7 +83,7 @@ export function residualAlkalinity(ions: WaterIons): number {
 export function rebalanceRatio(target: WaterIons, ratio: number): WaterIons {
   const sum = target.so4 + target.cl;
   /* Même garde que `acidNeeded` : un NaN passe au travers de `<= 0`. */
-  if (!Number.isFinite(sum) || !Number.isFinite(ratio) || sum <= 0 || ratio <= 0) return target;
+  if (!Number.isFinite(sum) || !Number.isFinite(ratio) || sum <= 0 || ratio < 0) return target;
   const cl = sum / (1 + ratio);
   return {
     ...target,
@@ -106,10 +106,13 @@ export function sulfateChlorideRatio(ions: WaterIons): {
   label: string;
 } {
   if (ions.cl <= 0) {
-    return { ratio: null, label: ions.so4 > 0 ? 'Sans chlorure' : 'Eau très peu minéralisée' };
+    return { ratio: null, label: ions.so4 > 0 ? 'Sans chlorure' : 'Sulfate et chlorure absents' };
   }
-  const ratio = Math.round((ions.so4 / ions.cl) * 100) / 100;
-  const label = ions.cl < 25 && ions.so4 < 25 ? 'Eau très peu minéralisée' : ratioLabel(ratio);
+  const quotient = ions.so4 / ions.cl;
+  const ratio = Math.round(quotient * 100) / 100;
+  // L'arrondi de lecture ne doit pas faire franchir un seuil d'orientation.
+  // SO₄ et Cl seuls ne décrivent pas la minéralité des autres ions de l'eau.
+  const label = ions.cl < 25 && ions.so4 < 25 ? 'Sulfate et chlorure faibles' : ratioLabel(quotient);
   return { ratio, label };
 }
 

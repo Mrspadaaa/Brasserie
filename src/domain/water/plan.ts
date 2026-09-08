@@ -2,6 +2,13 @@ import { WaterIons, SaltId } from '../../types';
 import { SALT_IDS, isAlkaline, ionsFromSalts } from './substances';
 import { addIons } from './ions';
 
+/** Physical additions only; exclusions and manual zeroes belong in override metadata. */
+export function positiveSaltDoses(doses: Partial<Record<SaltId, number>> = {}) {
+  return Object.fromEntries(SALT_IDS
+    .filter(id => Number.isFinite(doses[id]) && doses[id] > 0)
+    .map(id => [id, doses[id]])) as Partial<Record<SaltId, number>>;
+}
+
 /**
  * Répartition des doses entre l'empâtage et le rinçage.
  *
@@ -21,12 +28,13 @@ export function splitDoses(
   const total = mashWaterL + spargeWaterL;
   const mash: Partial<Record<SaltId, number>> = {};
   const sparge: Partial<Record<SaltId, number>> = {};
-  if (total <= 0) return { mash, sparge };
+  if (!Number.isFinite(total) || mashWaterL < 0 || spargeWaterL < 0 || total <= 0)
+    return { mash, sparge };
 
   if (allSaltsInMash) {
     SALT_IDS.forEach((id) => {
       const g = doses[id];
-      if (g && g > 0) {
+      if (Number.isFinite(g) && g > 0 && mashWaterL > 0) {
         mash[id] = g;
       }
     });
@@ -35,14 +43,15 @@ export function splitDoses(
 
   SALT_IDS.forEach((id) => {
     const g = doses[id];
-    if (!g) return;
+    if (!Number.isFinite(g) || !(g > 0)) return;
     if (isAlkaline(id)) {
-      mash[id] = g;
+      if (mashWaterL > 0) mash[id] = g;
       return;
     }
-    const m = Math.round(g * (mashWaterL / total) * 10) / 10;
-    mash[id] = m;
-    const s = Math.round((g - m) * 10) / 10;
+    const m = Math.min(g, Math.round(g * (mashWaterL / total) * 100) / 100);
+    if (m > 0) mash[id] = m;
+    // The remainder preserves the weighed total, including manual doses < 0.1 g.
+    const s = Math.round((g - m) * 1e9) / 1e9;
     if (s > 0) sparge[id] = s;
   });
   return { mash, sparge };
@@ -70,11 +79,9 @@ export function waterFromPlan(
   /** ⚠️ VRAI par défaut — même convention que `splitDoses`. */
   allSaltsInMash: boolean = true
 ): { mash: WaterIons; sparge: WaterIons } {
-  const total = mashWaterL + spargeWaterL;
   const { mash, sparge } = splitDoses(doses, mashWaterL, spargeWaterL, allSaltsInMash);
   return {
-    mash: addIons(start, ionsFromSalts(mash, mashWaterL > 0 ? mashWaterL : total)),
+    mash: addIons(start, ionsFromSalts(mash, mashWaterL)),
     sparge: addIons(startSparge, ionsFromSalts(sparge, spargeWaterL))
   };
 }
-

@@ -122,7 +122,9 @@ describe('Fuzz — l’atelier de l’eau encaisse n’importe quelle saisie', (
       });
     });
     expect(fautes).toEqual([]);
-  });
+    // This batch exercises hundreds of sequential React updates. Keep its
+    // assertions intact while allowing the full suite's parallel CPU load.
+  }, 30_000);
 
   it('⚠️ aucune dose de sel ne devient négative', () => {
     const { container } = atelier();

@@ -41,6 +41,7 @@ export { ionsAfterAcid } from './acid';
 export { SPARGE_TARGET_PH } from './acid';
 export { alkalinityFractionToRemove } from './acid';
 export { spargeAcidNeeded } from './acid';
+export { calculateSpargeTreatment } from './acid';
 export { lactateInBeer } from './acid';
 export { rebalanceRatio } from './ions';
 export { sulfateChlorideRatio } from './ions';

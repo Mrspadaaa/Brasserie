@@ -6,6 +6,8 @@ import { defaultConfig } from '../../src/services/storage';
 import { writeRecipeText, readRecipeText } from '../../src/domain/recipeTransfer';
 import { Recipe } from '../../src/types';
 import { monSuperStout, monSuperStoutRo } from '../fixtures/monSuperStout';
+import { styleByCode } from '../../src/domain/waterStyles';
+import { PROFILE_IONS } from '../../src/domain/water/profileAssessment';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 afterEach(cleanup);
@@ -33,8 +35,8 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
   it('RO stout: explains the real bicarbonate objective consistently in the workshop and recap', () => {
     const save = mount(monSuperStoutRo);
     click('Eau et sels');
-    expect(screen.getByText(/Alcalinité résiduelle — objectif des sels/)).toHaveTextContent('≈ -18 ppm');
-    expect(screen.queryByText(/Alcalinité résiduelle — cible 110 à 166/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Alcalinité résiduelle — repère pour les malts/)).toHaveTextContent('≈ -18 ppm');
+    expect(screen.queryByText(/Alcalinité résiduelle — repère 110 à 166/)).not.toBeInTheDocument();
     const explanation = screen.getByLabelText('Objectif du bicarbonate');
     expect(explanation).toHaveTextContent('62,1 ppm sur l’eau totale ; 81,9 à l’empâtage');
     expect(explanation).toHaveTextContent('pH estimé 5.50 ±0.15');
@@ -42,7 +44,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     expect(screen.getByText(/Mg : 0 ppm dans l’eau/)).toHaveTextContent('les malts en apportent au moût');
     const graphBefore = radar().getAttribute('aria-label');
     click('Récapitulatif');
-    expect(screen.getByText(/Alcalinité résiduelle après acide/)).toHaveTextContent('objectif des sels ≈ -18 ppm');
+    expect(screen.getByText(/Alcalinité résiduelle après acide/)).toHaveTextContent('repère pour les malts ≈ -18 ppm');
     expect(radar().getAttribute('aria-label')).toBe(graphBefore);
     click('Enregistrer la recette');
     const saved = save.mock.calls[0][0];
@@ -67,7 +69,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     fireEvent.blur(acid());
     expect(ph()).toHaveTextContent('5.45');
     expect(screen.getByLabelText('Objectif du bicarbonate')).toHaveTextContent('pH estimé 5.45');
-    expect(screen.getByText(/Alcalinité résiduelle — objectif des sels/)).toHaveTextContent('≈ -18 ppm');
+    expect(screen.getByText(/Alcalinité résiduelle — repère pour les malts/)).toHaveTextContent('≈ -18 ppm');
     expect(zone()).toBe(zoneBefore);
     click('Revenir aux doses d’acide calculées');
     expect(acid()).toHaveValue('0');
@@ -85,22 +87,26 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     click('Eau et sels');
     expect(waterProfile()).toHaveValue('Équilibré (sans style)');
     expect(acid()).toHaveValue('7,5');
-    expect(screen.getByRole('status')).toHaveTextContent('Acide empâtage manuel : 7,5 mL ; calcul : 0 mL.');
-    expect(screen.getByRole('status')).toHaveTextContent('200 → 101 ppm');
+    expect(screen.getByRole('status', { name: 'Acide manuel à l’empâtage' })).toHaveTextContent('Acide empâtage manuel : 7,5 mL ; calcul : 7,6 mL.');
+    expect(screen.getByRole('status', { name: 'Acide manuel à l’empâtage' })).toHaveTextContent('200 → 101 ppm');
     expect(screen.getByRole('button', { name: 'Utiliser Imperial Stout' })).toBeInTheDocument();
-    expect(radar()).toHaveAccessibleName(/Alcalinité.*101 ppm pour 0 à 100/);
+    expect(radar()).toHaveAccessibleName(/Alcalinité.*101,3 ppm pour 0 à 100/);
   });
 
-  it('adopts the matching profile, resets acid through Doser, then saves and exports the actual result', () => {
+  it('adopts the profile, preserves manual acid through Doser, then explicitly resets and saves', () => {
     const save = mount();
     click('Eau et sels');
     click('Utiliser Imperial Stout');
     expect(waterProfile()).toHaveValue('20C — Imperial Stout');
     expect(acid()).toHaveValue('7,5'); // Profile selection never erases a manual dose.
     click('Proposer les doses');
+    expect(acid()).toHaveValue('7,5');
+    click('Revenir aux doses d’acide calculées');
     expect(acid()).toHaveValue('0');
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    expect(radar()).toHaveAccessibleName(/Alcalinité.*200 ppm pour 120 à 250/);
+    expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
+    // A new plan no longer needs to compensate for the removed manual acid.
+    click('Proposer les doses');
     const first = radar().getAttribute('aria-label');
     click('Proposer les doses');
     expect(radar().getAttribute('aria-label')).toBe(first);
@@ -108,10 +114,13 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     click('Enregistrer la recette');
     const saved = save.mock.calls[0][0];
     expect(saved.waterPlan).toMatchObject({
-      targetProfileId: '20C', wortIons: { hco3: 200 }, acid: { id: 'lactique', mash: 0, sparge: 0 }
+      targetProfileId: '20C', acid: { id: 'lactique', mash: 0, sparge: 0 }
     });
     expect(saved.waterPlan.acidOverride).toBeUndefined();
-    expect(saved.waterPlan.wortIons.so4).toBeLessThanOrEqual(80);
+    for (const ion of PROFILE_IONS) {
+      expect(saved.waterPlan.wortIons[ion], ion).toBeGreaterThanOrEqual(styleByCode('20C').ions[ion].min);
+      expect(saved.waterPlan.wortIons[ion], ion).toBeLessThanOrEqual(styleByCode('20C').ions[ion].max);
+    }
     const copied = readRecipeText(writeRecipeText(saved));
     expect(copied.waterPlan.acid).toEqual(saved.waterPlan.acid);
     expect(copied.waterPlan.wortIons).toEqual(saved.waterPlan.wortIons);
@@ -126,8 +135,8 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     const save = mount();
     click('Eau et sels');
     click('Revenir aux doses d’acide calculées');
-    expect(acid()).toHaveValue('0');
-    expect(radar()).toHaveAccessibleName(/Alcalinité.*200 ppm/);
+    expect(acid()).toHaveValue('7,6');
+    expect(radar()).toHaveAccessibleName(/Alcalinité.*100 ppm pour 0 à 100/);
     click('Récapitulatif');
     click('Enregistrer la recette');
     expect(save.mock.calls[0][0].waterPlan.mash).toEqual(monSuperStout.waterPlan.mash);

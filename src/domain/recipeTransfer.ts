@@ -1,4 +1,5 @@
 import { Recipe } from '../types';
+import { recipeWaterExport } from './recipeWaterExport';
 
 /** A readable, versioned text format. Labels, units and validation share one schema.
  * Only this small indentation format is parsed here; arbitrary recipes go through
@@ -6,6 +7,8 @@ import { Recipe } from '../types';
  */
 type Field = {
   label: string;
+  /** Older labels remain readable when wording is clarified within format v1. */
+  aliases?: readonly string[];
   type: 'text' | 'number' | 'boolean' | 'object' | 'array';
   fields?: Fields;
   item?: Field;
@@ -174,7 +177,7 @@ export const recipeFields = {
       sparge: n('Rinçage (mL ou g)')
     }),
     disabled: a('Sels désactivés', t('', saltIds)),
-    targetPh: ph('pH cible'),
+    targetPh: { ...ph('Consigne de pH à l’empâtage (à mesurer)'), aliases: ['pH cible'] },
     measuredPh: ph('pH empâtage mesuré'),
     measuredSpargePh: ph('pH rinçage mesuré')
   }),
@@ -214,9 +217,21 @@ const estimates = o('Estimations au moment de la copie', {
   abv: pct('ABV estimé (%)'),
   ibu: n('IBU estimée'),
   ebc: n('Couleur estimée (EBC)'),
+  treatedWater: o('Eau traitée recalculée (moyenne pondérée après acide)', ions),
   mashIons: o('Empâtage après acide', ions),
   spargeIons: o('Rinçage après acide', ions),
-  ra: n('Alcalinité résiduelle après acide (ppm CaCO₃)', -1e7)
+  ra: n('Alcalinité résiduelle après acide (ppm CaCO₃)', -1e7),
+  mashPhEstimated: ph('pH empâtage estimé après acide'),
+  mashPhUncertainty: n('Incertitude du pH estimé (±)'),
+  mashPhNote: t('Limite de l’estimation du pH'),
+  requestedRatio: n('Rapport SO₄/Cl visé actuellement'),
+  requestedRatioNote: t('Origine du rapport visé'),
+  achievedRatio: n('Rapport SO₄/Cl obtenu'),
+  mineralRanges: o('Plages du profil (ppm, eau de traitement totale)',
+    Object.fromEntries(Object.entries(ions).map(([ion, field]) =>
+      [ion, o(field.label, { min: n('Minimum'), max: n('Maximum') })]))),
+  bicarbonateReferenceNote: t('Statut du repère HCO₃'),
+  waterDiagnosticNote: t('Limite du diagnostic de l’eau')
 });
 const root = o('', { ...recipeFields, estimates });
 export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId'>;
@@ -225,7 +240,8 @@ export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
 /** Shared boundary for text and AI data: finite values, known keys and enums only.
  * Strict mode rejects damaged exports instead of silently dropping their fields. */
 export function readRecipeFields(value: unknown, strict = false): Partial<RecipeContent> {
-  return readField(root, value, strict, 'Recette') as Partial<RecipeContent>;
+  const { estimates: _, ...recipe } = (readField(root, value, strict, 'Recette') ?? {}) as Record<string, unknown>;
+  return recipe as Partial<RecipeContent>;
 }
 function readField(field: Field, value: unknown, strict: boolean, path: string): unknown {
   if (value == null && !strict) return undefined;
@@ -265,7 +281,9 @@ export function writeRecipeText(
   recipe: RecipeContent,
   calculated?: Record<string, unknown>
 ): string {
-  const clean = readRecipeFields({ ...recipe, estimates: calculated });
+  const clean = readField(root, {
+    ...recipe, estimates: { ...calculated, ...recipeWaterExport(recipe) }
+  }, false, 'Recette');
   const lines = [RECIPE_TEXT_HEADER, ''];
   function emit(field: Field, value: unknown, indent: number, label: string) {
     if (value === undefined) return;
@@ -317,13 +335,16 @@ export function readRecipeText(raw: string): RecipeContent | null {
       const content = line.slice(indent);
       const entry = array
         ? undefined
-        : Object.entries(field.fields!).find(([, f]) => content.startsWith(f.label + ' :'));
+        : Object.entries(field.fields!).find(([, f]) =>
+          [f.label, ...(f.aliases ?? [])].some(label => content.startsWith(label + ' :')));
       if ((!array && !entry) || (array && !/^-(?: |$)/.test(content)))
         throw new Error(`Champ non reconnu à la ligne ${i + 3}.`);
       const child = array ? field.item! : entry![1];
       const key = array ? out.length : entry![0];
       if (!array && hasOwn(out, key)) throw new Error(`Champ répété : ${child.label}.`);
-      const scalar = content.slice(array ? 1 : child.label.length + 2).trimStart();
+      const matchedLabel = array ? '' : [child.label, ...(child.aliases ?? [])]
+        .find(label => content.startsWith(label + ' :'))!;
+      const scalar = content.slice(array ? 1 : matchedLabel.length + 2).trimStart();
       i++;
       if (scalar === '|') {
         const block: string[] = [];

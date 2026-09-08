@@ -183,7 +183,7 @@ describe('Recipe data entry regressions', () => {
     );
   });
   it('does not carry the previous yeast technical data into a different strain', async () => {
-    wizard();
+    wizard({ ...base, yeast: { ...base.yeast, hopIndexId: 'fermentis-us05' } });
     step(/^Levure$/);
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker);
@@ -198,6 +198,20 @@ describe('Recipe data entry regressions', () => {
     expect(yeast.attenuationPct).toBeUndefined();
     expect(yeast.lab).toBeUndefined();
     expect(yeast.fermTempMinC).toBeUndefined();
+    expect(yeast.hopIndexId).toBeUndefined();
+  });
+  it('preserves aroma associations, target and historical predictions through recipe editing', () => {
+    const original = { ...structuredClone(base), hopMatrixId: 'pale-ale',
+      hopAromaTarget: { citrus: { min: 33, max: 66 } }, hopPredictionIds: ['before-brewing'] };
+    original.hops[0] = { ...original.hops[0], hopVarietyId: 'citra', hopLotId: 'lot-2026' };
+    original.yeast.hopIndexId = 'fermentis-us05';
+    const save = vi.fn();
+    wizard(original, save);
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: /^Enregistrer la recette$/ }));
+    expect(save.mock.calls[0][0]).toMatchObject({ hopMatrixId: original.hopMatrixId,
+      hopAromaTarget: original.hopAromaTarget, hopPredictionIds: original.hopPredictionIds,
+      hops: [original.hops[0]], yeast: original.yeast });
   });
   it('adding a malt completes a touch click without advancing to hops', () => {
     wizard();
@@ -263,7 +277,7 @@ describe('Recipe data entry regressions', () => {
     const save = vi.fn();
     const view = wizard(original, save);
     step(/^Eau/);
-    expect(radar()).toMatch(/Alcalinité .*207 ppm/);
+    expect(radar()).toMatch(/Alcalinité .*207,1 ppm/);
     change(screen.getByLabelText(/Dose d’acide lactique .*au rinçage/), '1');
     // 25 L at 250 ppm + 10 L at (100 − 600 / 10) ppm = 190 ppm overall.
     expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('40');

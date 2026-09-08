@@ -1,17 +1,25 @@
 import { WaterIons, SaltId, AcidId } from '../../types';
 import type { IonBand } from '../../types';
 import { solveSalts } from './solve';
-import { RaBand, raAcidTarget } from './mashPh';
+import { RaBand } from './mashPh';
 import { ACIDS, LACTATE_TASTE_THRESHOLD } from './substances';
 import { dilute } from './ions';
 import { ION_LABEL } from './labels';
-import { acidNeeded, spargeAcidNeeded, SPARGE_TARGET_PH, lactateInBeer } from './acid';
+import { calculateSpargeTreatment, lactateInBeer } from './acid';
+import { calculateWaterTreatment } from './treatment';
 import type { MineralTargetMode } from './practice';
+import { assessWaterProfile } from './profileAssessment';
 
 // --- Juste assez d'osmosée ----------------------------------------------------
 
 export interface MinimalDilutionInput {
   mineralTargetMode?: MineralTargetMode;
+  fitBicarbonate?: boolean;
+  profilePriority?: boolean;
+  targetedIons?: Array<keyof WaterIons>;
+  hco3Target?: number;
+  hco3Range?: IonBand;
+  acidOverride?: { mash?: number; sparge?: number };
   source: WaterIons;
   target: WaterIons;
   ranges: Record<keyof WaterIons, IonBand>;
@@ -30,6 +38,8 @@ export interface MinimalDilutionInput {
 }
 
 export interface MinimalDilution {
+  /** False when even pure RO cannot satisfy the retained treatment constraints. */
+  feasible: boolean;
   /** Part d'osmosée, en %, la même pour les deux eaux. */
   pct: number;
   /** Ce qui a imposé cette part. Vide : le réseau suffit tel quel. */
@@ -67,7 +77,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
   const total = input.totalWaterL;
   if (!total || !Number.isFinite(total) || total <= 0) {
     const def = ACIDS[input.acid];
-    return { pct: 0, reasons: [], acid: { mash: 0, sparge: 0, unit: def.unit, name: def.name, hco3Left: 0 } };
+    return { feasible: false, pct: 0, reasons: ['Volumes d’eau nécessaires pour proposer une dilution.'], acid: { mash: 0, sparge: 0, unit: def.unit, name: def.name, hco3Left: 0 } };
   }
 
   const cache = new Map<number, ReturnType<typeof solveSalts>>();
@@ -76,6 +86,9 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
     const start = dilute(input.source, pct);
     const solved = solveSalts({
       mineralTargetMode: input.mineralTargetMode,
+      fitBicarbonate: input.fitBicarbonate,
+      profilePriority: input.profilePriority,
+      targetedIons: input.targetedIons,
       start,
       startSparge: start,
       target: input.target,
@@ -86,15 +99,34 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       targetRa: input.targetRa,
       raCeiling: input.raCeiling,
       ratio: input.ratio,
-      allSaltsInMash: input.allSaltsInMash
+      allSaltsInMash: input.allSaltsInMash,
+      mashAcidHco3Mg: (input.acidOverride?.mash ?? 0) * ACIDS[input.acid].hco3NeutralizedPerUnit,
+      spargeHco3AfterAcid: input.fitBicarbonate ?? input.mineralTargetMode === 'target'
+        ? calculateSpargeTreatment(start, input.spargeWaterL, input.acid, {
+          sourcePh: input.sourcePh, override: input.acidOverride?.sparge
+        }).ions.hco3 : undefined
     });
     cache.set(pct, solved);
     return solved;
   };
+  const treatmentAt = (pct: number) => calculateWaterTreatment(
+    { ...input.source, id: 'dilution', name: 'Eau de départ', ph: input.sourcePh },
+    {
+      diRatioPct: pct, doses: solveAt(pct).doses,
+      mashWaterL: input.mashWaterL, spargeWaterL: input.spargeWaterL,
+      allSaltsInMash: input.allSaltsInMash, acidId: input.acid,
+      acidOverride: input.acidOverride, hco3Target: input.hco3Target, hco3Range: input.hco3Range
+    },
+    input.targetRa
+  );
   const evaluate = (pct: number): string[] => {
     const start = dilute(input.source, pct);
-    const solved = solveAt(pct);
     const reasons: string[] = [];
+    if (input.profilePriority) {
+      const result = assessWaterProfile(treatmentAt(pct).treatedTotal, input.ranges, input.targetedIons);
+      for (const deviation of result.deviations)
+        reasons.push(`${ION_LABEL[deviation.ion]} après traitement : ${deviation.value} ppm pour ${deviation.min}–${deviation.max} visés`);
+    }
 
     (['ca', 'mg', 'na', 'so4', 'cl'] as Array<keyof WaterIons>).forEach((ion) => {
       const max = input.ranges?.[ion]?.max;
@@ -113,14 +145,9 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
     }
 
     if (input.acid === 'lactique' && input.beerVolumeL > 0) {
-      const mash = acidNeeded(solved.achievedMash, input.mashWaterL, raAcidTarget(input.targetRa), 'lactique').amount;
-      const sparge = spargeAcidNeeded(
-        solved.achievedSparge,
-        input.spargeWaterL,
-        'lactique',
-        SPARGE_TARGET_PH,
-        input.sourcePh ?? 7.4
-      ).amount;
+      const treatment = treatmentAt(pct);
+      const mash = treatment.mashAcid.amount;
+      const sparge = treatment.spargeAcid.amount;
       const lactate = lactateInBeer(mash + sparge, input.beerVolumeL);
       if (lactate > LACTATE_TASTE_THRESHOLD) {
         reasons.push(
@@ -134,23 +161,19 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
   /* Les doses d'acide à une part donnée : ce qui reste du bicarbonate y passe. */
   const acidAt = (pct: number): MinimalDilution['acid'] => {
     const start = dilute(input.source, pct);
-    const solved = solveAt(pct);
-    const mash = acidNeeded(solved.achievedMash, input.mashWaterL, raAcidTarget(input.targetRa), input.acid);
-    const sparge = spargeAcidNeeded(
-      solved.achievedSparge,
-      input.spargeWaterL,
-      input.acid,
-      SPARGE_TARGET_PH,
-      input.sourcePh ?? 7.4
-    );
+    const treatment = treatmentAt(pct);
+    const mash = treatment.mashAcid;
+    const sparge = treatment.spargeAcid;
     return { mash: mash.amount, sparge: sparge.amount, unit: mash.unit, name: mash.name, hco3Left: start.hco3 };
   };
 
   const atZero = evaluate(0);
-  if (atZero.length === 0) return { pct: 0, reasons: [], acid: acidAt(0) };
+  if (atZero.length === 0) return { feasible: true, pct: 0, reasons: [], acid: acidAt(0) };
 
   for (let pct = 5; pct <= 100; pct += 5) {
-    if (evaluate(pct).length === 0) return { pct, reasons: atZero, acid: acidAt(pct) };
+    if (evaluate(pct).length === 0) return { feasible: true, pct, reasons: atZero, acid: acidAt(pct) };
   }
-  return { pct: 100, reasons: atZero, acid: acidAt(100) };
+  return { feasible: false, pct: 100, reasons: [
+    'La dilution seule ne suffit pas avec les doses d’acide retenues.', ...evaluate(100)
+  ], acid: acidAt(100) };
 }

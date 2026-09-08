@@ -33,7 +33,7 @@ export function acidNeeded(
     return { amount: 0, unit: ACIDS[acid].unit, name: ACIDS[acid].name };
   }
   const currentRa = residualAlkalinity(ions);
-  if (currentRa <= targetRa || mashWaterL <= 0) {
+  if (!Number.isFinite(currentRa) || currentRa <= targetRa || mashWaterL <= 0) {
     return { amount: 0, unit: ACIDS[acid].unit, name: ACIDS[acid].name };
   }
   // Retour de l'AR vers l'alcalinité, puis vers les mg de HCO₃ à neutraliser.
@@ -67,7 +67,7 @@ export function acidNeeded(
  * pour remonter un pH, et ce n'est pas ce qu'on demande ici.
  *
  * LE MODÈLE, hérité de `phShiftFromRa` : l'alcalinité résiduelle déplace le pH
- * proportionnellement au rapport eau/grain — ΔpH = (ΔAR · ratio) / 1750.
+ * proportionnellement au rapport eau/grain — ΔpH = (ΔAR · ratio) / RA_PH_DIVISOR.
  * Inversée, elle donne l'AR à retirer pour ramener le pH mesuré au milieu de
  * la fenêtre, puis cette AR se convertit en acide exactement comme
  * `acidNeeded` le fait pour l'AR calculée sur les ions — même conversion en
@@ -83,7 +83,8 @@ export function acidCorrectionFromMeasuredPh(
   const def = ACIDS[acid];
   const vide = { known: true, amount: 0, unit: def.unit, name: def.name, deltaPh: 0 };
 
-  if (!Number.isFinite(measuredPh) || !(mashWaterL > 0)) return { ...vide, known: false };
+  if (!Number.isFinite(measuredPh) || !Number.isFinite(mashWaterL) || !(mashWaterL > 0))
+    return { ...vide, known: false };
   if (measuredPh <= MASH_PH_BAND.max) return vide;
 
   /*
@@ -142,7 +143,8 @@ export function ionsAfterAcid(
   acid: AcidId,
   litres: number
 ): WaterIons {
-  if (!(amount > 0) || !(litres > 0)) return ions;
+  if (!Number.isFinite(amount) || !Number.isFinite(litres) || !(amount > 0) || !(litres > 0))
+    return ions;
   const ppmRetires = (amount * ACIDS[acid].hco3NeutralizedPerUnit) / litres;
   return { ...ions, hco3: Math.max(0, ions.hco3 - ppmRetires) };
 }
@@ -169,11 +171,14 @@ export function bicarbonateFraction(ph: number): number {
  *   f = 1 − α₁(cible) / α₁(source),  α₁ = 1 / (1 + 10^(pKa₁ − pH))
  *
  * ⚠️ Le code retirait 100 % de l'alcalinité en annonçant viser pH 5.8. Retirer
- * la TOTALITÉ, c'est atteindre le point d'équivalence d'un titrage
- * d'alcalinité, soit pH 4.3–4.5. Pour 5.8 il n'en faut retirer que 76 %, pour
- * 5.5 que 87 % : l'écart valait un surdosage d'environ 30 %.
+ * la TOTALITÉ rapproche du point d'équivalence d'un titrage
+ * d'alcalinité. Pour 5.8 il n'en faut retirer qu'environ 76 %, pour
+ * 5.5 environ 87 % dans ce modèle : l'écart valait un surdosage d'environ 30 %.
+ * Modèle carbonate simplifié à température ambiante, sans dégazage ni autres
+ * tampons : le pH reste à mesurer, ce calcul ne remplace pas un titrage.
  */
 export function alkalinityFractionToRemove(targetPh: number, sourcePh = 7.4): number {
+  if (!Number.isFinite(targetPh) || !Number.isFinite(sourcePh)) return 0;
   const at = bicarbonateFraction(targetPh);
   const from = bicarbonateFraction(Math.max(sourcePh, targetPh));
   if (from <= 0) return 1;
@@ -185,8 +190,8 @@ export function alkalinityFractionToRemove(targetPh: number, sourcePh = 7.4): nu
  *
  * ⚠️ Ce qui manquait, et c'est un défaut de brassage réel : une eau de rinçage
  * alcaline extrait les tanins des drêches en fin de coulage — la bière ressort
- * astringente. On l'acidifie donc **indépendamment de la maische**, et sans que
- * le grain n'entre en jeu : il n'y a plus de grain à ce stade.
+ * astringente. On l'acidifie donc **indépendamment de la maische**, avant que
+ * cette eau ne traverse les drêches.
  *
  * ⚠️ La cible est 5.5 et non 5.8. La cuve de rinçage est OUVERTE à 76 °C : le
  * CO₂ dégaze et le pH remonte pendant le coulage. Viser 5.5 laisse la marge
@@ -216,12 +221,37 @@ export function spargeAcidNeeded(
   if (!Number.isFinite(spargeWaterL) || spargeWaterL <= 0) return { ...base, amount: 0 };
 
   const alk = alkalinityAsCaCO3(ions.hco3);
-  if (alk <= 0) return { ...base, amount: 0 };
+  if (!Number.isFinite(alk) || alk <= 0) return { ...base, amount: 0 };
 
   const toRemove = alk * alkalinityFractionToRemove(targetPh, sourcePh);
   const hco3ToRemove = (toRemove * 61) / 50;
   const mg = hco3ToRemove * spargeWaterL;
   return { ...base, amount: Math.round((mg / def.hco3NeutralizedPerUnit) * 10) / 10 };
+}
+
+/** A retained dose is an explicit quantity, including zero; invalid volumes cannot carry acid. */
+export function retainAcidDose<T extends { amount: number }>(
+  calculated: T,
+  override: number | undefined,
+  litres: number
+): T {
+  return {
+    ...calculated,
+    amount: !Number.isFinite(litres) || litres <= 0 ? 0
+      : override != null && Number.isFinite(override) ? Math.max(0, override) : calculated.amount
+  };
+}
+
+/** Shared by mineral planning and the final treatment, so manual sparge acid affects both. */
+export function calculateSpargeTreatment(
+  ions: WaterIons,
+  litres: number,
+  acid: AcidId,
+  options: { sourcePh?: number; override?: number } = {}
+) {
+  const calculated = spargeAcidNeeded(ions, litres, acid, SPARGE_TARGET_PH, options.sourcePh ?? 7.4);
+  const retained = retainAcidDose(calculated, acid === 'maltAcidule' ? 0 : options.override, litres);
+  return { calculated, retained, ions: ionsAfterAcid(ions, retained.amount, acid, litres) };
 }
 
 /**
@@ -236,7 +266,6 @@ export function spargeAcidNeeded(
  */
 export function lactateInBeer(totalMl: number, beerVolumeL: number): number {
   /* Même garde que `acidNeeded` : un NaN passe au travers de `<= 0`. */
-  if (!Number.isFinite(totalMl) || !Number.isFinite(beerVolumeL) || beerVolumeL <= 0) return 0;
+  if (!Number.isFinite(totalMl) || totalMl <= 0 || !Number.isFinite(beerVolumeL) || beerVolumeL <= 0) return 0;
   return Math.round(((totalMl * 0.952) / beerVolumeL) * 100) / 100;
 }
-

@@ -48,8 +48,10 @@ import {
   targetRaForGrist,
   raSaltCeilingForGrist,
   alkalineSaltGoal,
+  estimateMashPh,
 } from '../domain/water';
 import { styleWaterForName, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
+import { waterTreatmentTarget } from '../domain/water/profileTarget';
 import { PageShell, Section } from './PageShell';
 import { useDensity, useCoarsePointer } from '../ui/useViewport';
 import { FormNav, Field, InlineNum, TextInput, inputClass } from '../ui/FormNav';
@@ -629,7 +631,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const allSaltsInMash = water.allSaltsInMash !== false;
     const band = targetRaForGrist(color?.ebc ?? null, grains,
       totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
-    const treatment = calculateWaterTreatment(waterSource, water, band);
     const alkaliGoal = alkalineSaltGoal(band, raSaltCeilingForGrist(grains,
       totalGrist > 0 ? water.mashWaterL / totalGrist : 0));
     const r1 = (n: number) => Math.round(n * 10) / 10;
@@ -638,8 +639,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const style = water.customTarget
       ? styleFromTargetIons(water.customTarget.ions, water.customTarget.name)
       : styleByCode(water.styleCode);
+    const treatment = calculateWaterTreatment(waterSource,
+      { ...water, ...waterTreatmentTarget(style, water.customTarget?.ions) }, band);
 
     return {
+      targetStatus: {
+        style, treatment, raBand: band, beerEbc: color?.ebc ?? null,
+        phEstimate: estimateMashPh(grains, treatment.mashPhRa,
+          totalGrist > 0 ? water.mashWaterL / totalGrist : 0),
+        targetPh: details.waterPlan?.targetPh,
+        customTarget: !!water.customTarget,
+        mashWaterL: water.mashWaterL, spargeWaterL: water.spargeWaterL
+      },
       sourceName: waterSource.name,
       styleName: style.name,
       style,
@@ -672,7 +683,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       mashPh: water.mashPh,
       spargePh: water.spargePh
     };
-  }, [waterSource, water, color, grains, totalGrist]);
+  }, [waterSource, water, color, grains, totalGrist, details.waterPlan?.targetPh]);
 
   const waterAcid = useMemo(
     () => ({
@@ -2190,6 +2201,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
              */
             brew={{
               style,
+              targetPh: details.waterPlan?.targetPh,
               grist: grains,
               totalGristKg: totalGrist,
               hops,
