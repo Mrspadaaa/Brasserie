@@ -12,6 +12,7 @@ import { HopField } from './hopIndex/HopFactsEditor';
 import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
 import { Button } from '../components/ui/Button';
+import { FermentationResearchSheet } from './FermentationResearchSheet';
 const confidence={low:'faible',medium:'moyenne',high:'élevée'};
 const phase={preparation:'Avant brassage',growth:'Début de fermentation',active:'Fermentation active',finish:'Fin de fermentation',conditioning:'Maturation'};
 const fmt=(n:number,digits=1)=>n.toLocaleString('fr-CH',{minimumFractionDigits:digits,maximumFractionDigits:digits});
@@ -84,9 +85,11 @@ function PhenolStudyLab({science}:{science:FermentationScience}){
 }
 export function FermentationScienceLibrary({science}:{science?:FermentationScience}){
  const [labOpen,setLabOpen]=useState(false);
+ const [researchOpen,setResearchOpen]=useState(false);
  if(!science)return null;
  return <div className="space-y-2">
-  <a className="inline-flex min-h-touch items-center text-sm text-water underline" href="/research/fermentation-2026.html" target="_blank" rel="noreferrer">Lire la synthèse de recherche sur la fermentation</a>
+  <button type="button" className="inline-flex min-h-touch items-center text-sm text-water underline text-left" onClick={()=>setResearchOpen(true)}>Lire la synthèse de recherche sur la fermentation</button>
+  {researchOpen&&<FermentationResearchSheet onClose={()=>setResearchOpen(false)}/>}
   <details className="border-t border-cave-700 pt-2"><summary className="cursor-pointer min-h-touch flex items-center text-water">Chimie des arômes et sous-produits</summary>
    <div className="divide-y divide-cave-700">{science.compounds.map(c=><details key={c.id} className="py-2"><summary className="cursor-pointer min-h-touch text-cave-50">{c.name} <span className="text-sm text-cave-400">· {c.aromas.join(', ')}</span></summary><div className="space-y-2 text-sm text-cave-200"><p>{c.family}. {c.formation}</p><p className="text-cave-400">{c.caution}</p><HopSourceLink source={c.source}/></div></details>)}</div>
   </details>

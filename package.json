@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/check-private-research.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only hosting,firestore",
     "test": "node scripts/check-test-boundary.mjs && vitest run",

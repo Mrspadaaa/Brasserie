@@ -1,6 +1,6 @@
 # Recherche et intégration de la fermentation
 
-Synthèse publique : [Fermentation — construire les arômes, piloter la fin](../../../public/research/fermentation-2026.html). Recherche arrêtée le 8 septembre 2026 après vérification des principales contradictions et des limites de transfert.
+Synthèse accessible dans l’application après connexion, depuis « Lire la synthèse de recherche sur la fermentation ». Le document est fourni par `getFermentationResearch` après vérification serveur du compte autorisé ; il n’est ni publié dans Hosting ni inclus dans le JavaScript du navigateur. Recherche arrêtée le 8 septembre 2026 après vérification des principales contradictions et des limites de transfert.
 
 Le pack ajoute 9 conduites aux 4 Weissbier existantes, 21 leviers qualitatifs, 12 composés/familles, 7 repères fabricant et un jeu de 29 essais. Les références des autres cultures du catalogue restent disponibles sans leur attribuer une conduite non documentée.
 

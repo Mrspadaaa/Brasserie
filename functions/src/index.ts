@@ -7,6 +7,7 @@ initializeApp();
 setGlobalOptions({ region: 'europe-west6' });
 
 export { aiTask } from './ai.js';
+export { getFermentationResearch } from './researchReport.js';
 export { syncBrewAlarms, deliverBrewAlarm } from './brewAlarms.js';
 export { getBrewSession, saveBrewSession } from './brewSession.js';
 export { getBrewAlertConfig, registerBrewDevice, rescheduleBrewAlarms } from './brewPush.js';
