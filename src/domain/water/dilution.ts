@@ -19,7 +19,7 @@ export interface MinimalDilutionInput {
   targetedIons?: Array<keyof WaterIons>;
   hco3Target?: number;
   hco3Range?: IonBand;
-  hco3Preferred?: number;
+  matchMashAlkalinity?: boolean;
   acidOverride?: { mash?: number; sparge?: number };
   source: WaterIons;
   target: WaterIons;
@@ -29,6 +29,7 @@ export interface MinimalDilutionInput {
   spargeWaterL: number;
   targetRa: RaBand;
   raCeiling?: number | null;
+  raPreference?: number | null;
   ratio?: number;
   disabled?: SaltId[];
   allSaltsInMash?: boolean;
@@ -99,6 +100,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       disabled: input.disabled,
       targetRa: input.targetRa,
       raCeiling: input.raCeiling,
+      raPreference: input.raPreference,
       ratio: input.ratio,
       allSaltsInMash: input.allSaltsInMash,
       mashAcidHco3Mg: (input.acidOverride?.mash ?? 0) * ACIDS[input.acid].hco3NeutralizedPerUnit,
@@ -117,7 +119,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       mashWaterL: input.mashWaterL, spargeWaterL: input.spargeWaterL,
       allSaltsInMash: input.allSaltsInMash, acidId: input.acid,
       acidOverride: input.acidOverride, hco3Target: input.hco3Target, hco3Range: input.hco3Range,
-      hco3Preferred: input.hco3Preferred
+      matchMashAlkalinity: input.matchMashAlkalinity, mashRaCeiling: input.raCeiling, mashRaTarget: input.raPreference
     },
     input.targetRa
   );

@@ -87,7 +87,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     click('Eau et sels');
     expect(waterProfile()).toHaveValue('Équilibré (sans style)');
     expect(acid()).toHaveValue('7,5');
-    expect(screen.getByRole('status', { name: 'Acide manuel à l’empâtage' })).toHaveTextContent('Acide empâtage manuel : 7,5 mL ; calcul : 7,6 mL.');
+    expect(screen.getByRole('status', { name: 'Acide manuel à l’empâtage' })).toHaveTextContent('Acide empâtage manuel : 7,5 mL ; calcul : 13,3 mL.');
     expect(screen.getByRole('status', { name: 'Acide manuel à l’empâtage' })).toHaveTextContent('200 → 101 ppm');
     expect(screen.getByRole('button', { name: 'Utiliser Imperial Stout' })).toBeInTheDocument();
     expect(radar()).toHaveAccessibleName(/Alcalinité.*101,3 ppm pour 0 à 100/);
@@ -109,8 +109,10 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
     // A new plan no longer needs to compensate for the removed manual acid.
     click('Proposer les doses');
-    // Source HCO3 200 -> lower-middle preference 163 1/3 over 45.6 L.
-    expect(acid()).toHaveValue('2,8');
+    // This grist does not support the style's interior HCO3. The weighed dose
+    // stays above its hard floor: 200 - 6 * 600 / 45.6 = 121.05 ppm.
+    expect(acid()).toHaveValue('6');
+    expect(radar()).toHaveAccessibleName(/Alcalinité.*121,1 ppm pour 120 à 250/);
     const first = radar().getAttribute('aria-label');
     click('Proposer les doses');
     expect(radar().getAttribute('aria-label')).toBe(first);
@@ -118,7 +120,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     click('Enregistrer la recette');
     const saved = save.mock.calls[0][0];
     expect(saved.waterPlan).toMatchObject({
-      targetProfileId: '20C', acid: { id: 'lactique', mash: 2.8, sparge: 0 }
+      targetProfileId: '20C', acid: { id: 'lactique', mash: 6, sparge: 0 }
     });
     expect(saved.waterPlan.acidOverride).toBeUndefined();
     for (const ion of PROFILE_IONS) {
@@ -132,15 +134,18 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     mount(saved);
     click('Eau et sels');
     expect(radar().getAttribute('aria-label')).toBe(first);
-    expect(acid()).toHaveValue('2,8');
+    expect(acid()).toHaveValue('6');
   });
 
   it('can reset just the acid while keeping the weighed salts and chosen profile', () => {
     const save = mount();
     click('Eau et sels');
     click('Revenir aux doses d’acide calculées');
-    expect(acid()).toHaveValue('7,6');
-    expect(radar()).toHaveAccessibleName(/Alcalinité.*100 ppm pour 0 à 100/);
+    expect(acid()).toHaveValue('13,3');
+    // No positive profile floor here: actual grist alkalinity guides the acid.
+    // 200 - 13.3 * 600 / 45.6 = 25 ppm, within the unchanged 0–100 range.
+    expect(radar()).toHaveAccessibleName(/Alcalinité.*25 ppm pour 0 à 100/);
+    expect(screen.getByLabelText('Bilan du pH estimé')).toHaveTextContent('5,40');
     click('Récapitulatif');
     click('Enregistrer la recette');
     expect(save.mock.calls[0][0].waterPlan.mash).toEqual(monSuperStout.waterPlan.mash);

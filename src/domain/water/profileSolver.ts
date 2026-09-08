@@ -19,6 +19,8 @@ interface ProfileFitInput {
   preferRanges?: boolean;
   practical?: boolean;
   requestedRatio?: number;
+  /** Raw total-water target, adapted to the calcium/magnesium actually fitted. */
+  bicarbonateTargetForMash?: (mash: WaterIons) => number;
   waters: (doses: Partial<Record<SaltId, number>>) => { mash: WaterIons; sparge: WaterIons };
 }
 
@@ -28,7 +30,8 @@ interface ProfileFitInput {
  * after every refit, since calcium and magnesium are part of that limit.
  */
 export function solveNumericProfile(input: ProfileFitInput) {
-  const { start, target, totalL, mashL, disabled, waters, weights, minima } = input;
+  const { start, totalL, mashL, disabled, waters, weights, minima } = input;
+  const target = { ...input.target };
   const maxima = { ...input.maxima };
   const spargeL = totalL - mashL;
   const alkaline = ALKALINE_SALTS.filter(id => !disabled.has(id) && (id !== 'caco3' || disabled.has('chaux')));
@@ -36,6 +39,7 @@ export function solveNumericProfile(input: ProfileFitInput) {
   let doses: Partial<Record<SaltId, number>> = {};
   let limitedByAlkalinity = false;
   let converged = true;
+  const seenPreferences = new Set<string>();
   for (let pass = 0; pass < 16; pass++) {
     doses = fitSaltDoses({
       start, target, maxima, minima, litres: totalL, ids,
@@ -47,6 +51,17 @@ export function solveNumericProfile(input: ProfileFitInput) {
       maximumGrams: { caco3: CHALK_RA_CAP_PPM * mashL / netRaPerGramPerLitre('caco3') }
     });
     const water = waters(doses);
+    const preferred = input.bicarbonateTargetForMash?.(water.mash);
+    if (Number.isFinite(preferred) && Math.abs(preferred! - target.hco3) > 0.2) {
+      // Refine the preference as fitted calcium changes mash alkalinity.
+      // A repeated weighing plan ends a rounding cycle; bounds stay intact.
+      const signature = JSON.stringify(doses);
+      if (seenPreferences.has(signature)) break;
+      seenPreferences.add(signature);
+      target.hco3 = preferred!;
+      converged = pass < 15;
+      continue;
+    }
     const ceiling = input.raCeiling;
     if (!Number.isFinite(ceiling) || residualAlkalinity(water.mash) <= ceiling + 0.2) break;
     // Source alkalinity can only be removed by acid/dilution, never by

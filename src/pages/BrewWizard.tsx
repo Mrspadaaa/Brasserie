@@ -48,6 +48,7 @@ import {
   splitDoses,
   targetRaForGrist,
   raSaltCeilingForGrist,
+  raForGrist,
   alkalineSaltGoal,
   estimateMashPh,
 } from '../domain/water';
@@ -630,10 +631,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const waterRecap = useMemo(() => {
     const spargeDi = water.spargeDiRatioPct ?? water.diRatioPct;
     const allSaltsInMash = water.allSaltsInMash !== false;
-    const band = targetRaForGrist(color?.ebc ?? null, grains,
-      totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
-    const alkaliGoal = alkalineSaltGoal(band, raSaltCeilingForGrist(grains,
-      totalGrist > 0 ? water.mashWaterL / totalGrist : 0));
+    const mashRatio = totalGrist > 0 ? water.mashWaterL / totalGrist : 0;
+    const band = targetRaForGrist(color?.ebc ?? null, grains, mashRatio);
+    const mashAlkalinity = { ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio) };
+    const alkaliGoal = alkalineSaltGoal(band, mashAlkalinity.ceiling);
     const r1 = (n: number) => Math.round(n * 10) / 10;
 
     /* La cible saisie l'emporte sur le style de la liste — comme dans l'atelier. */
@@ -641,7 +642,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ? styleFromTargetIons(water.customTarget.ions, water.customTarget.name)
       : styleByCode(water.styleCode);
     const treatment = calculateWaterTreatment(waterSource,
-      { ...water, ...waterTreatmentTarget(style, water.customTarget?.ions) }, band);
+      { ...water, ...waterTreatmentTarget(style, water.customTarget?.ions, mashAlkalinity) }, band);
 
     return {
       targetStatus: {

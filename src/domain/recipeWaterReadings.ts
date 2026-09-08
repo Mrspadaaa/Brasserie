@@ -4,7 +4,7 @@ import { computeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { styleByCode, styleFromTargetIons, styleWaterForName } from './waterStyles';
 import { dilute } from './water/ions';
-import { estimateMashPh, targetRaForGrist } from './water/mashPh';
+import { estimateMashPh, targetRaForGrist, raSaltCeilingForGrist, raForGrist } from './water/mashPh';
 import { waterProfileTarget, waterTreatmentTarget } from './water/profileTarget';
 import { SALT_IDS } from './water/substances';
 import { calculateWaterTreatment } from './water/treatment';
@@ -37,7 +37,9 @@ export function describeSavedRecipeWater(recipe: WaterReadingsRecipe) {
     ...plan, doses, saltSplit: { mash, sparge },
     acidId: plan.acid?.id ?? 'lactique',
     acidOverride: { mash: plan.acid?.mash ?? 0, sparge: plan.acid?.sparge ?? 0 },
-    ...waterTreatmentTarget(style, plan.targetIons)
+    ...waterTreatmentTarget(style, plan.targetIons, {
+      ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio)
+    })
   }, raBand);
   const phEstimate = estimateMashPh(grains, treatment.mashPhRa, mashRatio);
   const start = dilute(source, plan.diRatioPct);

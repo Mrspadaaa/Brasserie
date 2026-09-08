@@ -7,6 +7,7 @@ import { waterFromPlan } from './plan';
 import { solveMinerals, TASTE_IONS } from './mineralSolver';
 import { solveNumericProfile } from './profileSolver';
 import type { SolveIssue } from './solverMessages';
+import { bicarbonatePreference } from './bicarbonatePreference';
 export type { IonBand } from '../../types';
 
 export interface SolveInput {
@@ -19,6 +20,8 @@ export interface SolveInput {
   disabled?: SaltId[];
   targetRa?: RaBand;
   raCeiling?: number | null;
+  /** Soft mash RA preference derived from the grist; profile bounds remain fixed. */
+  raPreference?: number | null;
   ratio?: number;
   allSaltsInMash?: boolean;
   /** Existing style policy by default; custom numeric profiles use `target`. */
@@ -194,6 +197,15 @@ export function solveSaltsCore(
       preferRanges: input.profilePriority,
       practical: practicalProfile,
       requestedRatio: input.ratio ?? (target.cl > 0 ? target.so4 / target.cl : undefined),
+      bicarbonateTargetForMash: balancedProfile ? mash => rawTarget(bicarbonatePreference({
+        range: input.ranges.hco3, mash, mashL, spargeL,
+        spargeHco3: Number.isFinite(input.spargeHco3AfterAcid) ? input.spargeHco3AfterAcid! : startSparge.hco3,
+        mashRaCeiling: Number.isFinite(input.raCeiling) ? input.raCeiling : band?.max,
+        mashRaTarget: Number.isFinite(input.raPreference) ? input.raPreference : band ? (band.min + band.max) / 2 : undefined,
+        allowAlkaliPreference: Number.isFinite(input.raPreference) || (band?.min ?? -Infinity) >= 0,
+        sourceAfterManualAcid: (input.mashAcidHco3Mg ?? 0) > 0
+          ? (Math.max(0, start.hco3 * mashL - input.mashAcidHco3Mg!) / total + spargeAfterContribution) : undefined,
+      }).value) : undefined,
       raCeiling: input.profilePriority ? Infinity : Math.min(
         Number.isFinite(band?.max) ? band.max : Infinity,
         Number.isFinite(input.raCeiling) ? input.raCeiling : Infinity

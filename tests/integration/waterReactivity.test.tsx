@@ -178,15 +178,19 @@ describe('La couleur de la bière pilote l’alcalinité', () => {
     expect(cibleAffichee()).toContain('bière pâle');
   });
 
-  it('le repère HCO₃ du profil reste stable lorsque seule la couleur change', () => {
+  it('adapte l’acide aux besoins d’empâtage sans déplacer les bornes du profil', () => {
     monter({}, 80);
     const noire = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
+    const zone = () => screen.getByRole('img', { name: /Profil ionique/ }).querySelector('[data-ion-target="hco3"]')!.getAttribute('d');
+    const avant = zone();
     clic('rendre pâle');
     const pale = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
 
-    expect(noire).toBe('0.7 mL');
-    expect(pale).toBe(noire);
-    expect(screen.getByLabelText('Critères du dosage automatique')).toHaveTextContent('repère 163 ppm');
+    expect(noire).toBeUndefined(); // Suitable alkaline water: no acid just to centre HCO3.
+    expect(pale).toBe('2.9 mL'); // Combined water reaches the compulsory 120 ppm floor.
+    expect(screen.getByRole('img', { name: /Profil ionique/ })).toHaveAccessibleName(/Alcalinité.*120 ppm pour 120 à 250/);
+    expect(zone()).toBe(avant);
+    expect(screen.getByLabelText('Critères du dosage automatique')).toHaveTextContent('repère ajusté à 120 ppm');
   });
 
   it('l’acide suit encore la couleur lorsque le profil ne demande aucun minimum de HCO₃', () => {
@@ -952,11 +956,8 @@ describe('Alcalinité, acide et bouton Doser', () => {
     expect(screen.queryByText(/sous le repère des malts/)).not.toBeInTheDocument();
   });
 
-  /*
-   * ⚠️ « Vérifie que le bouton de génération fonctionne comme il faut avec les
-   * acides aussi. » Il ne le faisait pas : une dose forcée survivait à l'appui,
-   * et le plan « proposé » sortait moitié calculé, moitié forcé.
-   */
+  // A manual dose survives Doser. Resetting acid clears that intent while
+  // preserving weighed salts; a new Doser can remove their compensation.
   it('Doser préserve l’acide manuel jusqu’au retour explicite au calcul', () => {
     monter({ doses: {}, diRatioPct: 0, acidOverride: { mash: 15 } }, 6);
     expect(champAcide().value).toBe('15');
@@ -965,6 +966,9 @@ describe('Alcalinité, acide et bouton Doser', () => {
 
     expect(champAcide().value).toBe('15');
     fireEvent.click(screen.getByRole('button', { name: 'Revenir aux doses d’acide calculées' }));
+    expect(screen.queryByRole('button', { name: 'Revenir aux doses d’acide calculées' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('status', { name: 'Acide manuel à l’empâtage' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
     expect(champAcide().value).not.toBe('15');
   });
 

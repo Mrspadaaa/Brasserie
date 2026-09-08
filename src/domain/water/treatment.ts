@@ -4,6 +4,7 @@ import { ACIDS, SALT_IDS, ionsFromSalts } from './substances';
 import { acidNeeded, ionsAfterAcid, calculateSpargeTreatment, retainAcidDose } from './acid';
 import { RaBand, raAcidTarget } from './mashPh';
 import { positiveSaltDoses, splitDoses } from './plan';
+import { bicarbonatePreference } from './bicarbonatePreference';
 
 export interface TreatmentInput {
   diRatioPct: number;
@@ -19,8 +20,10 @@ export interface TreatmentInput {
   hco3Target?: number;
   /** Required range on the combined water after both retained acid additions. */
   hco3Range?: IonBand;
-  /** Soft style preference after both acids; missing it is not a profile failure. */
-  hco3Preferred?: number;
+  /** Use the mash's alkalinity need as a soft preference within the style. */
+  matchMashAlkalinity?: boolean;
+  mashRaCeiling?: number | null;
+  mashRaTarget?: number | null;
 }
 
 export interface BicarbonateTargetResult {
@@ -92,6 +95,7 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
   }
   let mashAcidCalculated = acidNeeded(raw.mash, mashWaterL, mashAcidTargetRa, acidId);
   const profileRange = input.hco3Range;
+  let preference: ReturnType<typeof bicarbonatePreference> | undefined;
   if (profileRange && Number.isFinite(profileRange.min) && Number.isFinite(profileRange.max)
     && profileRange.min >= 0 && profileRange.max >= profileRange.min && mashWaterL > 0) {
     const totalL = mashWaterL + spargeWaterL;
@@ -103,10 +107,21 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     const maxDose = Math.max(0, (raw.mash.hco3 - minimumMash) * mashWaterL / strength);
     const low = Math.ceil((minDose - 1e-9) * 10) / 10;
     const high = Math.floor((maxDose + 1e-9) * 10) / 10;
-    const preferred = Number.isFinite(input.hco3Preferred)
-      ? Math.max(profileRange.min, Math.min(profileRange.max, input.hco3Preferred)) : undefined;
-    const referenceDose = preferred != null
-      ? Math.max(0, (raw.mash.hco3 * mashWaterL + spargeMass - preferred * totalL) / strength)
+    const mashRaCeiling = Number.isFinite(input.mashRaCeiling) ? input.mashRaCeiling! : band.max;
+    preference = input.matchMashAlkalinity ? bicarbonatePreference({
+      range: profileRange, mash: raw.mash,
+      mashL: mashWaterL, spargeL: spargeWaterL, spargeHco3: spargeTreatment.ions.hco3,
+      mashRaCeiling, mashRaTarget: Number.isFinite(input.mashRaTarget) ? input.mashRaTarget : raAcidTarget(band),
+      allowAlkaliPreference: Number.isFinite(input.mashRaTarget) || band.min >= 0,
+      sourceAfterManualAcid: (input.acidOverride?.mash ?? 0) > 0
+        ? (Math.max(0, start.hco3 * mashWaterL - input.acidOverride!.mash! * strength) + spargeMass) / totalL : undefined,
+    }) : undefined;
+    // Leave a suitable mash alone. Do not consume acid solely to move already
+    // acceptable water toward an interior point on the radar.
+    const referenceDose = preference
+      ? residualAlkalinity(raw.mash) <= mashRaCeiling ? 0
+        : acidNeeded(raw.mash, mashWaterL,
+          Math.min(mashRaCeiling, Number.isFinite(input.mashRaTarget) ? input.mashRaTarget! : raAcidTarget(band)), acidId).amount
       : mashAcidCalculated.amount;
     const boundedDose = Math.max(low, Math.min(high, referenceDose));
     // Whole 0.1 mL/g doses must stay inside the profile too. If the interval
@@ -161,7 +176,8 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     treatedTotal,
     hco3Target,
     hco3Range: profileRange,
-    hco3Preferred: input.hco3Preferred,
+    hco3Preferred: preference?.value,
+    bicarbonatePreference: preference,
     mashAcidCalculated,
     spargeAcidCalculated,
     mashAcid,

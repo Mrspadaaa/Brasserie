@@ -15,6 +15,7 @@ import {
   residualAlkalinity,
   targetRaForGrist,
   raSaltCeilingForGrist,
+  raForGrist,
   alkalineSaltGoal,
   estimateMashPh,
   hopBalanceHint,
@@ -156,6 +157,7 @@ export function useWaterWorkshop({
     () => raSaltCeilingForGrist(brew?.grist, mashRatioLPerKg),
     [brew?.grist, mashRatioLPerKg],
   );
+  const raPreference = useMemo(() => raForGrist(brew?.grist, mashRatioLPerKg), [brew?.grist, mashRatioLPerKg]);
   const alkaliGoal = alkalineSaltGoal(raBand, raCeiling);
 
   const allSaltsInMash = state.allSaltsInMash !== false;
@@ -164,10 +166,10 @@ export function useWaterWorkshop({
     () =>
       calculateWaterTreatment(
         source,
-        { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions) },
+        { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) },
         raBand,
       ),
-    [source, state, raBand, style],
+    [source, state, raBand, style, raCeiling, raPreference],
   );
   const achievedMash = treatment.raw.mash;
   const achievedSparge = treatment.raw.sparge;
@@ -249,6 +251,7 @@ export function useWaterWorkshop({
         disabled: state.disabled,
         targetRa: raBand,
         raCeiling,
+        raPreference,
         ratio,
         allSaltsInMash,
         spargeHco3AfterAcid: calculateSpargeTreatment(
@@ -280,13 +283,14 @@ export function useWaterWorkshop({
       state.customTarget,
       raBand,
       raCeiling,
+      raPreference,
       allSaltsInMash,
     ],
   );
 
   const solution = useMemo(() => planFor(wantedRatio), [planFor, wantedRatio]);
   const diagnoses = useMemo(() => {
-    const input = { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions) };
+    const input = { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) };
     const proposal = calculateWaterTreatment(source,
       { ...input, doses: solution.doses, saltSplit: undefined }, raBand);
     const automaticAcid = state.acidOverride?.mash != null || state.acidOverride?.sparge != null
@@ -297,7 +301,7 @@ export function useWaterWorkshop({
       disabled: state.disabled, totalWaterL, spargeWaterL: state.spargeWaterL,
       requestedRatio: wantedRatio,
     });
-  }, [state, style, source, solution.doses, raBand, treatment, totalWaterL, wantedRatio]);
+  }, [state, style, source, solution.doses, raBand, raCeiling, raPreference, treatment, totalWaterL, wantedRatio]);
 
   const planApplied = useMemo(
     () =>
@@ -346,11 +350,12 @@ export function useWaterWorkshop({
       spargeWaterL: state.spargeWaterL,
       targetRa: raBand,
       raCeiling,
+      raPreference,
       ratio: wantedRatio,
       disabled: state.disabled,
       allSaltsInMash,
       acid: state.acidId,
-      ...waterTreatmentTarget(style, state.customTarget?.ions),
+      ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }),
       acidOverride: state.acidOverride,
       beerVolumeL,
       sourcePh: source.ph ?? 7.4,
@@ -365,6 +370,7 @@ export function useWaterWorkshop({
     state.spargeWaterL,
     raBand,
     raCeiling,
+    raPreference,
     state.disabled,
     state.customTarget,
     allSaltsInMash,

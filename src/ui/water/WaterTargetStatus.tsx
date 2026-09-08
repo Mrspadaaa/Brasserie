@@ -77,6 +77,12 @@ export function WaterTargetStatus({
               {outside.map((ion) => `${ION_LABEL[ion]} : ${decimal(treatment.treatedTotal[ion])} ppm pour ${decimal(style.ions[ion].min)}–${decimal(style.ions[ion].max)}`).join(" ; ")}.
             </p>
           )}
+          {!personal && treatment.bicarbonatePreference?.reason === 'profile-conflict' && <p
+            aria-label="Profil HCO₃ et besoins des malts" className="pl-6 text-ebc-straw">
+            Le minimum HCO₃ du profil ({decimal(bicarbonateRange.min)} ppm) dépasse déjà le repère d’alcalinité de cet empâtage.
+            Le dosage automatique vise ce minimum : aller plus haut augmenterait encore le pH estimé.
+            Vérifie le profil choisi pour ces malts et mesure le pH au brassage.
+          </p>}
           {explanations.length > 0 && <div aria-label="Pourquoi le profil n’est pas atteint" className="pl-6 text-cave-200 space-y-2">
             <p>{explanations[0].message}</p>
             {explanations.length > 1 && <details>

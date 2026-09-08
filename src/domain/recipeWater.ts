@@ -8,6 +8,7 @@ import {
   calculateSpargeTreatment,
   targetRaForGrist,
   raSaltCeilingForGrist,
+  raForGrist,
   estimateMashPh,
   lactateInBeer,
   LACTATE_TASTE_THRESHOLD
@@ -142,6 +143,8 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
   const acidOverride = p.acid ? p.acidOverride : { mash: 0, sparge: 0 };
   const spargeHco3AfterAcid = calculateSpargeTreatment(startSparge, p.spargeWaterL, acidId,
       { sourcePh: source.ph, override: acidOverride?.sparge }).ions.hco3;
+  const raCeiling = raSaltCeilingForGrist(grains, ratio);
+  const raPreference = raForGrist(grains, ratio);
   const solved = solveSalts({
     start,
     startSparge,
@@ -151,7 +154,8 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
     totalWaterL: p.mashWaterL + p.spargeWaterL,
     mashWaterL: p.mashWaterL,
     targetRa: band,
-    raCeiling: raSaltCeilingForGrist(grains, ratio),
+    raCeiling,
+    raPreference,
     disabled: p.disabled,
     allSaltsInMash: p.allSaltsInMash !== false,
     ratio: wantedRatio
@@ -163,7 +167,7 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
     doses: solved.doses,
     acidId,
     acidOverride,
-    ...waterTreatmentTarget(style, p.targetIons)
+    ...waterTreatmentTarget(style, p.targetIons, { ceiling: raCeiling, target: raPreference })
   };
   let treatment = calculateWaterTreatment(source, input, band);
   const split = structuredClone(treatment.split);
@@ -230,7 +234,7 @@ export function recipeWaterSummary(recipe: WaterRecipe) {
         saltSplit: { mash: p.mash, sparge: p.sparge },
         acidId: p.acid?.id ?? 'lactique',
         acidOverride: { mash: p.acid?.mash ?? 0, sparge: p.acid?.sparge ?? 0 },
-        ...waterTreatmentTarget(style, p.targetIons)
+        ...waterTreatmentTarget(style, p.targetIons, { ceiling: raSaltCeilingForGrist(grains, ratio), target: raForGrist(grains, ratio) })
       },
       band
     );

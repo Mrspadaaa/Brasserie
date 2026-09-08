@@ -12,24 +12,35 @@ pas des concentrations prédites dans la bière après extraction et ébullition
   plage. L’AR et le pH estimés restent des diagnostics distincts.
 - Les sels compensent le HCO₃ neutralisé par l’acide de rinçage et par une
   éventuelle dose manuelle à l’empâtage. L’acide automatique d’empâtage reste
-  dans l’intervalle qui respecte le HCO₃ total du profil. Quand le style demande
-  un minimum positif de HCO₃, sels et acide automatique partagent le même
-  repère intérieur. Sinon, l’AR empirique départage les doses permises ; elle
-  ne peut pas annuler le profil.
-- **Le repère de dosage d’un style est au tiers de sa plage**, dans le milieu
-  bas : `minimum + (maximum − minimum) / 3`. Pour 20C, HCO₃ vise ainsi environ
-  163 ppm dans la plage 120–250, plutôt que 120. C’est une préférence de
-  l’application, pas un optimum chimique ni une nouvelle borne. Les apports
-  liés, l’eau de départ, les sels disponibles et les doses manuelles peuvent
-  empêcher de centrer tous les ions ensemble. Un point proche d’une borne
-  reste conforme si le repère intérieur n’est pas accessible.
-- Mg, Na et HCO₃ restent facultatifs lorsque leur minimum est zéro : aucun
-  ajout n’est imposé pour remplir le graphique. Le malt fournit du magnésium ;
-  le HCO₃ augmente l’alcalinité et son besoin dépend de l’acidité des malts.
-  Augmenter systématiquement ces ions jusqu’au milieu ne garantit pas une
-  meilleure bière ([Bru’n Water, sections 2.3–2.5](https://www.brunwater.com/water-knowledge)).
-  Le repère intérieur d’un profil sombre ne garantit donc pas le bon pH d’un
-  empâtage clair : le désaccord avec la recette reste signalé séparément.
+  dans l’intervalle qui respecte le HCO₃ total du profil. Une dose manuelle
+  positive n’entraîne aucune compensation alcaline pour un simple repère
+  intérieur : seul le minimum obligatoire du profil justifie cette compensation.
+- **Le milieu bas est un point de départ pour Ca, SO₄ et Cl** :
+  `minimum + (maximum − minimum) / 3`. C’est une préférence de l’application,
+  pas un optimum chimique ni une nouvelle borne. Le calcium a un poids faible
+  car les sels apportent plusieurs ions ensemble. L’eau de départ, les doses
+  manuelles et les produits disponibles peuvent conduire ailleurs dans la plage.
+- Le magnésium reste facultatif lorsque son minimum est zéro. Le sodium reste
+  modéré : cible au plus à 20 ppm, sans descendre sous le minimum demandé.
+  Un profil demandant au moins 50 ppm de sodium, comme une Gose, conserve le
+  tiers de sa plage : la salinité y est un choix explicite. Ces seuils de
+  préférence sont des choix de l’application, pas des seuils sensoriels universels.
+- **HCO₃ suit le besoin d’alcalinité des malts, sans fraction fixe de sa plage.**
+  L’AR correspondant au pH estimé de 5,4 fournit une préférence ; celle de 5,5
+  indique la limite supérieure estimée pour cette maische. On convertit cette
+  AR en HCO₃ avec Ca et Mg de l’empâtage effectivement dosé, puis on mélange
+  avec le rinçage traité séparément, en pondérant par les volumes. La préférence
+  est bornée par le profil choisi. Elle peut justifier moins **ou plus** que
+  le milieu bas ; un minimum de style trop élevé reste respecté et le conflit
+  avec les malts est expliqué. Sans facture exploitable, la bande par couleur
+  reste un repli : une couleur pâle seule ne justifie aucun ajout alcalin.
+- L’acide automatique laisse une eau déjà sous la limite haute d’AR estimée
+  sans correction, sauf dépassement de la plage HCO₃ du profil. Il ne sert pas
+  à centrer le graphique. Sinon, il vise l’AR préférée de la facture, ou le
+  milieu de la bande par couleur en l’absence de facture, dans les limites
+  des six ions. Ces estimations ne remplacent pas une mesure de pH au brassage.
+  Le malt fournit du magnésium et le besoin de bicarbonate dépend de l’acidité
+  de la maische ([Bru’n Water, sections 2.3–2.5](https://www.brunwater.com/water-knowledge)).
 - Une cible numérique explicite précise les ions souhaités. Pour HCO₃, la
   tolérance est de ±2 ppm. Un résultat inaccessible affiche la valeur réelle
   et l’écart ; aucune plage n’est élargie pour le déclarer atteint.
@@ -111,7 +122,11 @@ HCO₃ déjà présent rendait artificiellement négligeable une perte de préci
 sur du sodium pourtant atteignable, et faisait retirer un sel utile.
 
 Les profils de l’application passent par `waterProfileTarget` et ajustent les
-six ions ensemble. L’ancien contrat d’AR reste disponible pour les appels
+six ions ensemble. Pour les styles, la préférence HCO₃ est réévaluée après
+chaque ajustement de Ca/Mg dans la maische, vers le haut ou le bas, sans
+modifier les bornes du profil. L’itération s’arrête au plus après 16 passages
+ou lorsqu’une pesée se répète sur la grille de 0,1 g.
+L’ancien contrat d’AR reste disponible pour les appels
 techniques qui le demandent sans profil prioritaire ; il ne gouverne plus
 les profils choisis dans l’atelier. Les profils partiels sans HCO₃ conservent
 l’ajustement minéral et alcalin itératif. L’exploration locale de la grille
@@ -142,6 +157,7 @@ faibles en sulfate et chlorure ne décrivent pas la minéralité de toute l’ea
 | `substances.ts` | Composition des produits et contributions par gramme |
 | `mashPh.ts`, `acid.ts`, `practice.ts` | Modèles et règles de brassage, doses d’acide retenues |
 | `profileTarget.ts` | Construction commune des cibles, ions absents et ratio explicite |
+| `bicarbonatePreference.ts` | Préférence HCO₃ selon l’alcalinité de la maische, les deux volumes, le rinçage traité et l’acide manuel |
 | `profileAssessment.ts` | Respect des six plages, écarts et statut partagé du profil |
 | `profileDiagnosis.ts` | Causes vérifiées : source, rinçage, exclusions, apports liés, alternative calculée et ratio incompatible |
 | `manualImpact.ts` | Comparaison des traitements avant/après une saisie, y compris les acides automatiques et le pH estimé |
@@ -198,6 +214,12 @@ est atteinte. Le plan historique reste lisible tel qu’il a été pesé ; « Do
 propose une nouvelle pesée respectant les six plages. Les diagnostics
 pré-acide déjà résolus sont retirés du bilan.
 
+Avec l’acide manuel de la photo (0 mL à l’empâtage, 6,2 mL au rinçage) et
+une consigne de ratio de 0,7, la nouvelle proposition donne environ 120,8 ppm
+de HCO₃. La facture Pilsner ne justifie pas de pousser jusqu’aux 163 ppm du
+tiers de la plage. Le minimum de 120 reste toutefois trop alcalin selon le
+modèle de cette maische : le pH estimé reste vers 5,9 et le conflit est visible.
+
 Sur la capture suivante, l’acide d’empâtage est à 0 mL : les valeurs sont alors
 200 ppm sur 10,8 L et 26,98 ppm sur 21,5 L, soit **84,83 ppm** au total
 (85 sur l’ancien radar, désormais 84,8 comme dans le bilan). Les deux eaux après acide et leur moyenne
@@ -217,10 +239,11 @@ et pas uniquement la cohérence des formules ou l’absence d’erreur d’exéc
   construits depuis des additions connues.
 - `tests/unit/styleWaterContract.test.ts` : chaque profil du catalogue depuis
   l’osmosée, six ions après acide, minimums conjoints et ratio incompatible.
-- `tests/unit/waterPreferredTargets.test.ts` : milieu bas effectivement obtenu,
-  correction conservée malgré un sel supplémentaire, repère inaccessible sans
-  faux échec du profil, ions facultatifs, acide automatique avec deux dilutions
-  et trois produits, doses manuelles et contraintes de pesée.
+- `tests/unit/waterPreferredTargets.test.ts` : minimum obligatoire pour la
+  facture Pilsner, alcalinité utile à une facture plus acide, repère inaccessible
+  sans faux échec du profil, ions facultatifs, deux dilutions et trois acides,
+  absence d’acide pour centrer une eau adaptée et absence de compensation
+  alcaline inutile d’une dose manuelle.
 - `tests/integration/waterProfileContract.test.tsx` : le bouton Doser sur le
   cas de la photo, les acides manuels conservés, le récapitulatif, l’export et
   la réouverture avec les six ions toujours dans les plages.

@@ -6,11 +6,15 @@ import { rebalanceRatio } from './ions';
 export const STYLE_TARGET_FRACTION = 1 / 3;
 
 export function stylePreferredIons(style: StyleWater): WaterIons {
-  return Object.fromEntries(Object.entries(style.ions).map(([ion, band]) => [ion,
-    // A zero floor permits these additions; it does not require them.
-    ['mg', 'na', 'hco3'].includes(ion) && band.min === 0 ? 0
-      : band.min + (band.max - band.min) * STYLE_TARGET_FRACTION
-  ])) as unknown as WaterIons;
+  return Object.fromEntries(Object.entries(style.ions).map(([ion, band]) => {
+    const interior = band.min + (band.max - band.min) * STYLE_TARGET_FRACTION;
+    // Mg and Na need not be added when optional. On ordinary profiles, sodium
+    // stays modest; a high requested floor explicitly calls for a salty beer.
+    const optional = ['mg', 'na'].includes(ion) && band.min === 0;
+    const modestSodium = ion === 'na' && band.min > 0 && band.min < 50;
+    // HCO3 starts at the profile floor; the solve adapts it to the actual mash.
+    return [ion, ion === 'hco3' ? band.min : optional ? 0 : modestSodium ? Math.max(band.min, Math.min(20, interior)) : interior];
+  })) as unknown as WaterIons;
 }
 
 /** One target policy for the workshop, saved recipes and dilution proposals. */
@@ -37,11 +41,12 @@ export function waterProfileTarget(
   };
 }
 
-/** The same post-acid bicarbonate objective for editor, recap and saved recipes. */
-export function waterTreatmentTarget(style: StyleWater, customIons?: Partial<WaterIons>) {
+/** The style point is adapted to the actual mash in treatment and the solver. */
+export function waterTreatmentTarget(style: StyleWater, customIons?: Partial<WaterIons>,
+  mash?: { ceiling?: number | null; target?: number | null }) {
   return customIons ? { hco3Target: customIons.hco3,
     hco3Range: customIons.hco3 == null ? undefined : { min: Math.max(0, customIons.hco3 - 2), max: customIons.hco3 + 2 } }
     : { hco3Range: style.ions.hco3,
-      // When the style permits zero, keep the mash-based acid preference.
-      hco3Preferred: style.ions.hco3.min > 0 ? stylePreferredIons(style).hco3 : undefined };
+      matchMashAlkalinity: true,
+      mashRaCeiling: mash?.ceiling, mashRaTarget: mash?.target };
 }
