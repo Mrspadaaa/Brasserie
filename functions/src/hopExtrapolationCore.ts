@@ -32,10 +32,12 @@ function referencedDose(dose: number, reference: NonNullable<HopExtrapolation['d
 const text = (s: string) => s.normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase('fr').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 export interface HopExtrapolationCache {
   sourceKeys: WeakMap<HopSource, string>;
-  descriptors: WeakMap<HopVariety, Map<string[], ReturnType<typeof hopDescriptorEvidence>>>;
+  descriptors: WeakMap<HopVariety, Map<string[], HopVariety['descriptions']>>;
+  descriptorTexts: WeakMap<HopVariety, {description:HopVariety['descriptions'][number];words:string}[]>;
+  descriptorTerms: WeakMap<string[], {token:string;negated:string[]}[]>;
 }
 /** Scoped to a single immutable search context, never shared across data revisions. */
-export const createHopExtrapolationCache = (): HopExtrapolationCache => ({ sourceKeys:new WeakMap(), descriptors:new WeakMap() });
+export const createHopExtrapolationCache = (): HopExtrapolationCache => ({ sourceKeys:new WeakMap(), descriptors:new WeakMap(), descriptorTexts:new WeakMap(), descriptorTerms:new WeakMap() });
 const unique = (sources: HopSource[], cache?: HopExtrapolationCache) => [...new Map(sources.map(s => {
   let key=cache?.sourceKeys.get(s);
   if(key===undefined){key=JSON.stringify(s);cache?.sourceKeys.set(s,key)}
@@ -44,12 +46,16 @@ const unique = (sources: HopSource[], cache?: HopExtrapolationCache) => [...new 
 const descriptionsOf = (variety: HopVariety) => (Array.isArray(variety.descriptions) ? variety.descriptions : []).filter(d => d && typeof d.text === 'string' && !hopSourceError(d.source));
 
 /** Lexical evidence, not a concentration. Repetition never increases intensity. */
-export function hopDescriptorEvidence(variety: HopVariety, terms: string[]) {
-  return descriptionsOf(variety).filter(d => d.context !== 'beer' && terms.some(term => {
-    const words = ` ${text(d.text)} `, token = ` ${text(term)} `;
-    if (!token.trim() || !words.includes(token)) return false;
-    return !['no', 'not', 'non', 'sans', 'pas de'].some(negation => words.includes(` ${negation}${token}`));
-  }));
+export function hopDescriptorEvidence(variety: HopVariety, terms: string[], cache?: HopExtrapolationCache): HopVariety['descriptions'] {
+  const prior=cache?.descriptors.get(variety)?.get(terms);
+  if(prior)return prior;
+  // Normalization and provenance validation do not depend on the dose, strain or axis.
+  let descriptions=cache?.descriptorTexts.get(variety),tokens=cache?.descriptorTerms.get(terms);
+  if(!descriptions){descriptions=descriptionsOf(variety).filter(d=>d.context!=='beer').map(description=>({description,words:` ${text(description.text)} `}));cache?.descriptorTexts.set(variety,descriptions);}
+  if(!tokens){tokens=terms.map(term=>text(term)).filter(Boolean).map(term=>({token:` ${term} `,negated:['no','not','non','sans','pas de'].map(n=>` ${n} ${term} `)}));cache?.descriptorTerms.set(terms,tokens);}
+  const evidence=descriptions.filter(d=>tokens!.some(t=>d.words.includes(t.token)&&!t.negated.some(n=>d.words.includes(n)))).map(d=>d.description);
+  if(cache){let rows=cache.descriptors.get(variety);if(!rows){rows=new Map();cache.descriptors.set(variety,rows)}rows.set(terms,evidence);}
+  return evidence;
 }
 
 /** All coefficients are supplied by a versioned, editable knowledge document.
@@ -58,13 +64,7 @@ export function hopDescriptorEvidence(variety: HopVariety, terms: string[]) {
  */
 export function extrapolateHopProfile(triplet: HopTriplet, variety: HopVariety, yeast: HopYeast,
   axes: HopAxis[], model: HopExtrapolation, formKnown: boolean, cache?: HopExtrapolationCache): Record<string, HopEstimate> {
-  const descriptorEvidence = (terms:string[]) => {
-    let rows=cache?.descriptors.get(variety);
-    if(!rows){rows=new Map();cache?.descriptors.set(variety,rows)}
-    let found=rows.get(terms);
-    if(!found){found=hopDescriptorEvidence(variety,terms);rows.set(terms,found)}
-    return found;
-  };
+  const descriptorEvidence = (terms:string[]) => hopDescriptorEvidence(variety,terms,cache);
   const timing = model.timings[triplet.timing!];
   const strain = model.yeasts.find(y => y.yeastId === yeast.id);
   const profile: Record<string, HopEstimate> = {};

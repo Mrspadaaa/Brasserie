@@ -1,4 +1,4 @@
-import { hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCore';
+import { createHopExtrapolationCache, hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCore';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import type { HopAnalyte, HopRange, HopSource, HopVariety } from '../../../functions/src/hopIndexSchema';
 import { HOP_TIMINGS, type HopAxis, type HopEstimate, type HopKnowledge, type HopPrediction, type HopTriplet, type HopYeast } from '../../../functions/src/hopPredictionSchema';
@@ -148,10 +148,10 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
   const currentYeast=recipe?.yeast.hopIndexId ?? (yeastMatches.length===1 ? yeastMatches[0].item.id : undefined);
   const eligibleYeasts=intent.keepYeast && recipe?.yeast.name ? allYeasts.filter(y=>y.id===currentYeast) : allYeasts;
   const yeastById=new Map(allYeasts.map(y=>[y.id,y])),varietyById=new Map(data.varieties.map(v=>[v.id,v]));
-  const descriptorCache=new Map<string,Set<string>>();
+  const descriptorCache=new Map<string,Set<string>>(),lexicalCache=createHopExtrapolationCache();
   const descriptorFamilies=(id:string)=>{
     let found=descriptorCache.get(id);
-    if(!found){const v=varietyById.get(id);found=new Set<string>();if(v)for(const m of models)for(const a of m.axes)if(!found.has(a.id)&&hopDescriptorEvidence(v,a.terms).length)found.add(a.id);descriptorCache.set(id,found);}
+    if(!found){const v=varietyById.get(id);found=new Set<string>();if(v)for(const m of models)for(const a of m.axes)if(!found.has(a.id)&&hopDescriptorEvidence(v,a.terms,lexicalCache).length)found.add(a.id);descriptorCache.set(id,found);}
     return found;
   };
   const wanted=Object.keys(target).filter(id=>!intent.avoid.includes(id));

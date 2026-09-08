@@ -34,9 +34,9 @@ try{
     const {FirestoreRepo}=await import('/src/services/firestoreRepo.ts');
     window.__searchWrites=0;
     for(const method of ['put','bulkWrite','remove'])FirestoreRepo[method]=()=>{window.__searchWrites++;throw Error('Unexpected write in performance search');};
-    window.__workerCreated=0;window.__workerStopped=0;
+    window.__workerCreated=0;window.__workerStopped=0;window.__progressPackets=0;window.__detailPackets=0;
     const NativeWorker=window.Worker;
-    window.Worker=class extends NativeWorker{constructor(url,options){const isHopSearch=String(url).includes('hopSolver.worker');super(isHopSearch&&compiledUrl?compiledUrl:url,options);this.isHopSearch=isHopSearch;if(this.isHopSearch)window.__workerCreated++;}terminate(){if(this.isHopSearch)window.__workerStopped++;super.terminate();}};
+    window.Worker=class extends NativeWorker{constructor(url,options){const isHopSearch=String(url).includes('hopSolver.worker');super(isHopSearch&&compiledUrl?compiledUrl:url,options);this.isHopSearch=isHopSearch;if(this.isHopSearch){window.__workerCreated++;this.addEventListener('message',e=>{if(e.data.kind==='progress')window.__progressPackets++;else if(e.data.kind==='update')window.__detailPackets++;});}}terminate(){if(this.isHopSearch)window.__workerStopped++;super.terminate();}};
   },compiled?base+'/dist/assets/'+compiled:null);
   await click(page,'📜 Recettes');await click(page,'+ Recette');
   await page.locator('#wz-title').fill('Vitesse du solver');
@@ -60,6 +60,7 @@ try{
   await click(page,'Trouver mes combinaisons');
   await page.waitForSelector('[aria-label="Programme proposé par le solver"]');
   assert(await page.evaluate(()=>Array.from(document.querySelectorAll('button')).some(b=>b.textContent.trim()==='Essais documentés'&&!b.disabled)),'Navigation stays enabled');
+  await page.waitForFunction(()=>window.__progressPackets>0);
   const stoppedAt=Date.now();await click(page,'Arrêter la recherche');
   await page.waitForFunction(()=>document.body.innerText.includes('Recherche arrêtée'));
   const cancelMs=Date.now()-stoppedAt;
@@ -74,7 +75,7 @@ try{
   await page.waitForFunction(()=>!document.querySelector('[aria-label="Solver de houblonnage"]'));
   assert(await page.evaluate(()=>window.__workerStopped===window.__workerCreated&&window.__searchWrites===0));
   assert.deepEqual(errors,[]);
-  const workers=await page.evaluate(()=>({created:window.__workerCreated,stopped:window.__workerStopped,heartbeats:window.__heartbeats,writes:window.__searchWrites}));
+  const workers=await page.evaluate(()=>({created:window.__workerCreated,stopped:window.__workerStopped,heartbeats:window.__heartbeats,writes:window.__searchWrites,progressPackets:window.__progressPackets,detailPackets:window.__detailPackets}));
   reports.push({width,compiledWorker:!!compiled,firstResultMs,completeMs,cancelMs,coverage,...workers});
   console.log(JSON.stringify(reports.at(-1)));
   await context.close();

@@ -10,6 +10,15 @@ class FakeWorker {
   onmessage:any=null;onerror:any=null;onmessageerror:any=null;postMessage=vi.fn();terminate=vi.fn();
 }
 describe('Transport du solver local',()=>{
+  it('conserve les profils et sources déjà reçus pendant une progression allégée',()=>{
+    const worker=new FakeWorker(),publish=vi.fn();
+    const job=startHopSolverSearch(input,publish,vi.fn(),()=>worker);
+    const results=[{id:'kept',sources:[{reference:'source conservée'}]}];
+    worker.onmessage({data:{kind:'update',update:{done:false,examined:10,results}}});
+    worker.onmessage({data:{kind:'progress',update:{done:false,examined:100}}});
+    expect(publish.mock.lastCall![0].examined).toBe(100);expect(publish.mock.lastCall![0].results).toBe(results);
+    job.cancel();
+  });
   it('arrête le worker et ignore ses réponses tardives',()=>{
     const worker=new FakeWorker(),publish=vi.fn(),error=vi.fn();
     const job=startHopSolverSearch(input,publish,error,()=>worker);
