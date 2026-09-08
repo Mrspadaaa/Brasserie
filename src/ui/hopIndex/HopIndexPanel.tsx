@@ -93,16 +93,17 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     if (!query.trim() || busy || editor) return;
     const epoch = ++requestEpoch.current;
     setBusy(true); setError(''); setAiNote('');
-    const response = await AiClient.run<{ found: boolean; note?: string } & Omit<HopVariety, 'id'>>({ task: 'lookupHopVariety', context: { name: query.trim() } });
+    const response = await AiClient.run<{ found: boolean; source?: string; note?: string } & Omit<HopVariety, 'id'>>({ task: 'lookupHopVariety', context: { name: query.trim() } });
     if (epoch !== requestEpoch.current) return;
     setBusy(false);
     if (!response.ok || !response.data?.found) { setError(response.error || response.data?.note || 'Aucune fiche publiée retrouvée. Tu peux saisir la variété.'); return; }
     try {
-      const { found: _found, note, ...data } = response.data;
+      const { found: _found, source, note, ...data } = response.data;
       const item = { ...data, id: crypto.randomUUID() };
       assertHopDocument('hopVarieties', item);
       setEditor({ kind: 'variety', value: item });
-      setAiNote(note || 'Proposition documentaire. Vérifie les valeurs et leurs sources avant d’enregistrer.');
+      setAiNote([note || 'Proposition documentaire. Vérifie les valeurs et leurs sources avant d’enregistrer.',
+        typeof source === 'string' && source.trim() ? `Source de la recherche : ${source}` : ''].filter(Boolean).join('\n'));
     } catch (e) { setError(`Proposition non utilisable : ${(e as Error).message} La saisie manuelle reste disponible.`); }
   };
   const readCoa = async (file?: File) => {

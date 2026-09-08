@@ -114,13 +114,14 @@ export const TASKS: Record<TaskId, TaskDef> = {
     defaultTier: 'fast', acceptsFile: false, grounded: true,
     system: `${BRASSERIE}\nRecherche la fiche officielle de la variété demandée chez son producteur ou un organisme de recherche.
 ${hopEvidenceInstructions}
-La référence doit être l'URL de la page qui contient la donnée. Si rien n'est trouvé, found=false, analysis=[] et descriptions=[].
+La référence doit être l'URL de la page qui contient la donnée. Le champ source résume les références consultées (titre et URL), sans remplacer la provenance de chaque mesure.
+Si rien n'est trouvé, found=false, source="", analysis=[] et descriptions=[].
 Les descriptions indiquent leur contexte (rawHop, infusion, beer, unspecified) ; une fiche commerciale sans protocole est unspecified.
 Ne fournis pas de contexte de bière ou de forme de produit non documenté ; utilise unknown pour la forme.`,
-    schema: S({ found: { type: 'BOOLEAN' }, name: str, aliases: arr(str), origin: str,
+    schema: S({ found: { type: 'BOOLEAN' }, source: str, name: str, aliases: arr(str), origin: str,
       form: { type: 'STRING', enum: [...HOP_FORMS] }, analysis: arr(hopMeasurementSchema),
       descriptions: arr(S({ text: str, context: { type: 'STRING', enum: ['rawHop', 'infusion', 'beer', 'unspecified'] }, source: hopSourceSchema }, ['text', 'context', 'source'])), note: str
-    }, ['found', 'name', 'aliases', 'form', 'analysis', 'descriptions'])
+    }, ['found', 'source', 'name', 'aliases', 'form', 'analysis', 'descriptions'])
   },
   readHopCoa: {
     defaultTier: 'fast', acceptsFile: true,

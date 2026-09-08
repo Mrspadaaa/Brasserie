@@ -50,6 +50,22 @@ describe('Parcours index houblon sans appel IA réel', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Nouvelle variété' }));
     expect(screen.getByLabelText('Nom de la variété')).toHaveValue('Recherche');
   });
+  it('relit une recherche sourcée sans enregistrer les métadonnées de réponse comme champs métier', async () => {
+    const { id: _id, ...reference } = hopTestVariety();
+    state.ai.mockResolvedValue({ ok: true, data: { ...reference, name: 'Fiche trouvée', found: true,
+      source: 'Fabricant témoin — https://example.test/hops' } });
+    render(<HopIndexPanel />);
+    fireEvent.change(screen.getByLabelText('Rechercher une variété ou un arôme documenté'), { target: { value: 'Fiche trouvée' } });
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Rechercher une fiche publiée' })));
+    expect(screen.getByLabelText('Nom de la variété')).toHaveValue('Fiche trouvée');
+    expect(screen.getByText(/Source de la recherche : Fabricant témoin/)).toBeInTheDocument();
+    expect(state.varieties).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la fiche' }));
+    const saved = state.varieties.find(v => v.name === 'Fiche trouvée');
+    expect(saved).toMatchObject({ analysis: reference.analysis, descriptions: reference.descriptions });
+    expect(saved).not.toHaveProperty('source');
+    expect(saved).not.toHaveProperty('found');
+  });
   it('relit une proposition de COA avant de compléter les champs absents', async () => {
     const extra = hopTestVariety().analysis[1];
     state.ai.mockResolvedValue({ ok: true, data: { found: true, analysis: [...hopTestLot().analysis.map(m => ({ ...m, value: 99, range: { min: 98, max: 100 } })), extra] } });
