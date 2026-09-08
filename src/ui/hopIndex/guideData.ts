@@ -9,6 +9,8 @@ import legacyExtrapolationPack from '../../data/hopExtrapolationLegacyBootstrap.
 import solverPack from '../../data/hopSolverBootstrap.json';
 import doseStudyPack from '../../data/hopDoseStudyBootstrap.json';
 import fermentationPack from '../../data/fermentationGuideBootstrap.json';
+import fermentationSciencePack from '../../data/fermentationScienceBootstrap.json';
+import { activeFermentationScience } from '../../../functions/src/fermentationScienceCore';
 import type { FermentationGuide } from '../../../functions/src/fermentationGuideSchema';
 import type { HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
@@ -50,7 +52,7 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 }
 
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
-  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...validKnowledge(knowledge)];
+  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack), ...validKnowledge(knowledge)];
   const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
   const fermentations = guideFermentations(knowledge), trials = guideTrials(knowledge);
   return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
@@ -58,16 +60,21 @@ export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
     const aliases = names.length ? [...new Set(names)] : undefined;
     const trial = trials.find(t => t.yeastId === yeast.id);
     const builtin = initialYeasts.find(y => y.id === yeast.id);
-    const form = yeast.form ?? trial?.yeastForm ?? builtin?.form;
+    const scienceIdentity = fermentationSciencePack.find(y => y.kind === 'yeast' && y.id === yeast.id);
+    const form = yeast.form ?? trial?.yeastForm ?? builtin?.form ?? (scienceIdentity as HopYeast | undefined)?.form;
     return { ...yeast, ...(form ? { form: form as HopYeast['form'] } : {}), ...(aliases ? { aliases: [...aliases] } : {}) };
   });
 }
 
 /** A saved disabled or invalid guide is never silently replaced by its bootstrap. */
 export function guideFermentations(knowledge: HopKnowledge[]): FermentationGuide[] {
-  return [...new Map([...checkedKnowledge(fermentationPack), ...knowledge].map((k, i) => [k?.id ?? `invalid-${i}`, k])).values()].filter((k): k is FermentationGuide => {
+  return [...new Map([...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack), ...knowledge].map((k, i) => [k?.id ?? `invalid-${i}`, k])).values()].filter((k): k is FermentationGuide => {
     try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; }
   });
+}
+
+export function guideFermentationScience(knowledge: HopKnowledge[]) {
+  return activeFermentationScience([...new Map([...fermentationSciencePack, ...knowledge].map((k, i) => [k?.id ?? `invalid-${i}`, k])).values()]);
 }
 
 /** Reported programmes; never injected into the prediction model collection. */

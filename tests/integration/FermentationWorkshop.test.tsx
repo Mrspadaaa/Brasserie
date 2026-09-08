@@ -35,6 +35,28 @@ const recipe = () => ({ ...structuredClone(fullRecipe), yeast: { name: 'US-05', 
 const apply = () => fireEvent.click(screen.getByRole('button', { name: 'Appliquer cette levure et ces paliers' }));
 
 describe('Atelier de levure dans une recette', () => {
+  it('propose un objectif depuis pêche puis permet de comparer les souches et leur chimie sans écriture', () => {
+    const onChange = vi.fn(); render(<FermentationWorkshop recipe={recipe()} onChange={onChange} />);
+    fireEvent.change(screen.getByLabelText('Arôme ou style recherché'), { target: { value: 'pêche' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Fruits et esters' }));
+    expect(screen.getByLabelText('Objectif de fermentation')).toHaveValue('fruit');
+    fireEvent.click(screen.getByRole('button', { name: /LalBrew Pomona/ }));
+    expect(screen.getByRole('region', { name: 'Programme de levure proposé' })).toHaveTextContent('Pêche');
+    expect(screen.getByText('Chimie des arômes et sous-produits')).toBeInTheDocument();
+    expect(memory.writes).not.toHaveBeenCalled(); expect(onChange).not.toHaveBeenCalled();
+  });
+  it('montre les bornes du laboratoire et refuse une combinaison hors domaine sans toucher la recette', async () => {
+    const onChange = vi.fn(); render(<FermentationWorkshop recipe={recipe()} onChange={onChange} />);
+    const lab = screen.getByText('Calcul expérimental des phénols · étude DM303').closest('details')!;
+    fireEvent(lab, new Event('toggle'));
+    await act(async () => { lab.open = true; lab.dispatchEvent(new Event('toggle')); });
+    fireEvent.click(await screen.findByLabelText('Simuler le protocole complet de l’étude avec DM303'));
+    expect(screen.getByRole('region', { name: 'Laboratoire expérimental DM303' })).toHaveTextContent('2,16–2,51 mg/L');
+    const change = (label: string, value: string) => { const el=screen.getByLabelText(label); fireEvent.change(el,{target:{value}});fireEvent.blur(el); };
+    change('Blé (%)','40');change('Ébullition (min)','70');change('Fermentation (°C)','16');
+    expect(screen.getByRole('region', { name: 'Laboratoire expérimental DM303' })).toHaveTextContent('Hors de l’enveloppe');
+    expect(memory.writes).not.toHaveBeenCalled();expect(onChange).not.toHaveBeenCalled();
+  });
   it('ne modifie rien en consultation ou après une écriture refusée, puis permet de réessayer', async () => {
     const onChange = vi.fn(), r = recipe(); render(<FermentationWorkshop recipe={r} onChange={onChange} />);
     expect(memory.writes).not.toHaveBeenCalled(); expect(onChange).not.toHaveBeenCalled();

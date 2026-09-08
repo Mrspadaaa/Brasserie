@@ -7,7 +7,7 @@ export async function loadBrewerHopContext(): Promise<HopEngineData & { predicti
   const truncated: string[] = [];
   const rows = await Promise.all(names.map(async name => {
     const historical = name === 'hopPredictions' || name === 'hopTastings';
-    const maximum = historical ? 20 : name === 'hopVarieties' ? 1000 : 400;
+    const maximum = historical ? 20 : name === 'hopKnowledge' ? 5000 : name === 'hopVarieties' ? 1000 : 400;
     const collection = getFirestore().collection(name);
     const query = historical ? collection.orderBy(name === 'hopTastings' ? 'date' : 'createdAt', 'desc') : collection;
     const snapshot = await query.limit(maximum + 1).get();

@@ -13,11 +13,14 @@ import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
 import { HopField } from './hopIndex/HopFactsEditor';
 import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
-import { ensureGuideReferences, guideFermentations, guideYeasts, type GuideYeast } from './hopIndex/guideData';
+import { ensureGuideReferences, guideFermentations, guideFermentationScience, guideYeasts, type GuideYeast } from './hopIndex/guideData';
+import type { FermentationScience } from '../../functions/src/fermentationScienceSchema';
+import { suggestFermentationGoals } from '../../functions/src/fermentationScienceCore';
+import { FermentationLeversPanel, FermentationPlanningCalculations, FermentationScienceLibrary, FermentationRecipeAdvice } from './FermentationSciencePanel';
 import { YeastCataloguePanel, YeastCatalogueDetails } from './YeastCataloguePanel';
 import { applyCatalogueYeast } from '../domain/yeastCatalogue';
 
-const rangeLabel = (r: HopRange, unit: string) => `${Units.format(r.min, '')}–${Units.format(r.max, unit)}`;
+const rangeLabel = (r: HopRange, unit: string) => `${Units.format(r.min, '').trim()}–${Units.format(r.max, unit)}`;
 const isPrimary = (s: FermentationStep) => s.kind === 'primaire' || s.kind === 'reposDiacetyle';
 const validStep = (s: FermentationStep) => Number.isFinite(s.tempC) && Number.isFinite(s.days) && s.days >= 0;
 
@@ -62,9 +65,10 @@ export function FermentationTemperatureChart({ steps, bands = [], pitchTempC }: 
   </figure>;
 }
 
-function FermentationPreview({ recipe, guide, yeast, goal, onChange, onBusyChange }: {
+function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, onBusyChange }: {
   recipe: TrialRecipe; guide: FermentationGuide; yeast: GuideYeast; goal: FermentationGoal;
   onChange: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void;
+  science?: FermentationScience;
 }) {
   const plan = fermentationPlan(guide, goal)!;
   const [draft, setDraft] = useState(() => createFermentationDraft(guide, goal)!);
@@ -102,6 +106,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, onChange, onBusyChang
       </div>
     </div>
     <FermentationTemperatureChart steps={proposed} bands={plan.phases.map(s => s.temperatureC.range)} pitchTempC={draft.pitchTempC} />
+    <details className="border-b border-cave-700 pb-2"><summary className="cursor-pointer min-h-touch flex items-center text-water">Conseils pour développer ce profil</summary><FermentationLeversPanel science={science} goal={goal} guide={guide} /></details>
     <HopField label="Ensemencement proposé (°C)" hint={`Réglage proposé : ${rangeLabel(plan.pitchTemperatureC.range, '°C')}. Température du moût à l’ajout de levure.`}>
       <NumberInput className={inputClass} value={draft.pitchTempC} emptyValue={undefined} disabled={busy} onValue={pitchTempC => setDraft({ ...draft, pitchTempC })} />
     </HopField>
@@ -127,7 +132,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, onChange, onBusyChang
     </details>}
     <details className="space-y-3 border-t border-cave-800 pt-2">
       <summary className="cursor-pointer min-h-touch py-2 text-water">Comprendre la conduite · chimie et sources</summary>
-      <p className="text-sm text-cave-200">Banane : acétate d’isoamyle, un ester produit par la levure. Girofle : 4-vinylgaïacol, un phénol. La capacité à libérer des thiols du houblon est une autre propriété ; elle reste inconnue pour ces souches dans ce référentiel.</p>
+      <p className="text-sm text-cave-200">{guide.aroma.summary ?? guide.aroma.banana} {guide.aroma.phenols} Esters, phénols et libération des thiols sont des propriétés distinctes.</p>
       {guide.attenuationPct && <p className="text-sm text-cave-300">Atténuation apparente fabricant : {rangeLabel(guide.attenuationPct.range, '%')}. Ce n’est pas une mesure de ce moût et le guide n’en impose pas une moyenne.</p>}
       <HopSourceLink source={guide.aroma.source} /><HopSourceLink source={guide.temperatureC.source} />
       {guide.dryPitchGHL && <HopSourceLink source={guide.dryPitchGHL.source} />}
@@ -135,6 +140,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, onChange, onBusyChang
       <p className="text-xs text-cave-400">Les consignes et durées sont des propositions éditoriales datées. Les fiches sans date gardent « année inconnue ». Le guide appliqué est enregistré dans l’Index puis modifiable dans ses connaissances, avec une nouvelle version.</p>
       <HopSourceLink source={plan.source} />
     </details>
+    <FermentationPlanningCalculations science={science} guide={guide} ogInitial={recipe.ogTarget} />
     {errors.map((e, i) => <p key={i} className="text-sm text-ebc-straw">{e}</p>)}
     {error && <p role="alert" className="text-sm text-alert">{error}</p>}
     {notice && <p role="status" className="text-sm text-hop">{notice}</p>}
@@ -148,8 +154,11 @@ function FermentationPreview({ recipe, guide, yeast, goal, onChange, onBusyChang
 export function FermentationWorkshop({ recipe, onChange, onBusyChange }: { recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void }) {
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const guides = useMemo(() => guideFermentations(saved), [saved]), yeasts = useMemo(() => guideYeasts(saved), [saved]);
+  const science = useMemo(() => guideFermentationScience(saved)[0], [saved]);
   const initial = readFermentationGuide(recipe);
-  const [goal, setGoal] = useState<FermentationGoal>(initial?.goal ?? 'banana');
+  const [goal, setGoal] = useState<FermentationGoal>(initial?.goal ?? guides.find(g => g.yeastId === recipe.yeast.hopIndexId)?.plans[0]?.goal ?? 'banana');
+  const [aromaQuery, setAromaQuery] = useState('');
+  const suggestions = suggestFermentationGoals(science, aromaQuery);
   const [form, setForm] = useState('all'), [busy, setBusy] = useState(false);
   const [selectedId, setSelectedId] = useState(initial?.guide.id ?? '');
   const [catalogueNotice, setCatalogueNotice] = useState('');
@@ -159,11 +168,19 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange }: { recip
   const yeast = selected && yeasts.find(y => y.id === selected.yeastId);
   return <section aria-label="Atelier des arômes de levure" className="mb-6 p-3 sm:p-5 rounded-panel border border-ebc-straw/30 bg-cave-900 space-y-4">
     <div className="flex items-start gap-3"><FlaskConical className="text-ebc-straw shrink-0 mt-1" size={22} /><div>
-      <p className="text-xs uppercase tracking-wider text-ebc-straw">Construire le goût · fermentation</p>
-      <h3 className="font-serif text-xl sm:text-2xl text-cave-50 mt-1">Quelle place pour la banane ?</h3>
-      <p className="text-sm text-cave-300 mt-2">Quatre souches documentées pour Weissbier et Weizen, avec une conduite à ajuster à ton moût.</p>
+      <h3 className="text-xl sm:text-2xl font-semibold text-cave-50">Quel goût doit apporter la levure ?</h3>
+      <p className="text-sm text-cave-200 mt-2">Choisis un arôme, compare les souches documentées, puis ajuste les paliers à ton moût.</p>
     </div></div>
-    <details className="border border-cave-700 rounded-control p-3" onToggle={e=>setCatalogueOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-cave-100">Chercher dans toutes les levures et consulter leurs caractéristiques</summary>{catalogueOpen&&<div className="pt-3"><YeastCataloguePanel selectedId={recipe.yeast.hopIndexId} initialForm={recipe.yeast.form} disabled={busy} onSelect={(y,form)=>{onChange(applyCatalogueYeast(recipe,y,form));setCatalogueNotice(`${y.name} sélectionnée. Vérifie la quantité et les paliers avant d’enregistrer la recette.`);}}/>{catalogueNotice&&<p role="status" className="mt-3 text-sm text-ebc-straw">{catalogueNotice}</p>}</div>}</details>
+    <HopField label="Arôme ou style recherché" hint="Par exemple : banane, pêche, girofle, lager ou thiols.">
+      <input className={inputClass} value={aromaQuery} disabled={busy} placeholder="Banane, pêche, girofle…" onChange={e => setAromaQuery(e.target.value)} autoComplete="off" />
+    </HopField>
+    {aromaQuery.trim() && <div className="flex flex-wrap gap-2" role="group" aria-label="Suggestions d’objectif">{suggestions.length ? suggestions.map(s => <Button key={s.id} disabled={busy} onClick={() => { setGoal(s.id); setSelectedId(''); setAromaQuery(''); }}>{FERMENTATION_GOAL_LABELS[s.id]}</Button>) : <p className="text-sm text-cave-400">Aucun objectif documenté avec ces mots. Le catalogue complet et la saisie manuelle restent disponibles.</p>}</div>}
+    <details className="border border-cave-700 rounded-control p-3" onToggle={e=>setCatalogueOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-cave-100">Chercher dans toutes les levures et consulter leurs caractéristiques</summary>{catalogueOpen&&<div className="pt-3"><YeastCataloguePanel selectedId={recipe.yeast.hopIndexId} initialForm={recipe.yeast.form} disabled={busy} onSelect={(y,form)=>{
+      onChange(applyCatalogueYeast(recipe,y,form));
+      const documented=guides.find(g=>g.yeastId===y.id);
+      if(documented){setSelectedId(documented.id);setForm(form);if(!fermentationPlan(documented,goal))setGoal(documented.plans[0].goal);}
+      setCatalogueNotice(`${y.name} sélectionnée. Vérifie la quantité et les paliers avant d’enregistrer la recette.`);
+    }}/>{catalogueNotice&&<p role="status" className="mt-3 text-sm text-ebc-straw">{catalogueNotice}</p>}</div>}</details>
     <div className="grid sm:grid-cols-2 gap-3">
       <HopField label="Objectif de fermentation"><select className={inputClass} value={goal} disabled={busy} onChange={e => setGoal(e.target.value as FermentationGoal)}>{Object.entries(FERMENTATION_GOAL_LABELS).map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></HopField>
       <HopField label="Forme recherchée"><select className={inputClass} value={form} disabled={busy} onChange={e => setForm(e.target.value)}><option value="all">Toutes les formes</option><option value="sèche">Levure sèche</option><option value="liquide">Levure liquide</option></select></HopField>
@@ -172,11 +189,12 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange }: { recip
       {choices.map(g => <button key={g.id} type="button" disabled={busy} aria-pressed={g.id === selected?.id} onClick={() => setSelectedId(g.id)} className={`text-left min-h-touch p-3 rounded-control border transition-colors ${g.id === selected?.id ? 'border-ebc-straw bg-ebc-straw/10' : 'border-cave-700 hover:border-cave-400'}`}>
         <span className="block font-semibold text-cave-100">{yeasts.find(y => y.id === g.yeastId)?.name}</span>
         <span className="block text-xs text-ebc-straw mt-1">{yeasts.find(y => y.id === g.yeastId)?.form} · {rangeLabel(g.temperatureC.range, '°C')}</span>
-        <span className="block text-sm text-cave-200 mt-2">{g.aroma.banana}</span>
+        <span className="block text-sm text-cave-200 mt-2">{g.aroma.summary ?? g.aroma.banana}</span>
       </button>)}
     </div>
-    <p className="text-xs text-cave-400">Banane documentée, girofle possible pour ces quatre souches. Intensité finale non quantifiée ; aucun classement comparatif n’est établi.</p>
-    {selected && yeast ? <FermentationPreview key={`${selected.id}/${selected.version}/${goal}`} recipe={recipe} guide={selected} yeast={yeast} goal={goal} onChange={onChange} onBusyChange={value => { setBusy(value); onBusyChange?.(value); }} /> : <p role="status" className="text-cave-300">Aucune conduite active pour ce choix. La saisie manuelle de la recette reste disponible.</p>}
+    <p className="text-sm text-cave-400">{science?.goals.find(g => g.id === goal)?.description} Intensité finale non quantifiée ; l’ordre des souches n’est pas un classement de performance.</p>
+    {selected && yeast ? <FermentationPreview key={`${selected.id}/${selected.version}/${goal}`} recipe={recipe} guide={selected} yeast={yeast} goal={goal} science={science} onChange={onChange} onBusyChange={value => { setBusy(value); onBusyChange?.(value); }} /> : <p role="status" className="text-cave-300">Aucune conduite active pour ce choix. La saisie manuelle de la recette reste disponible.</p>}
+    <FermentationScienceLibrary science={science} />
   </section>;
 }
 
@@ -186,7 +204,7 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
   const catalogued=saved.find((k):k is import('../../functions/src/hopPredictionSchema').HopYeast=>k.kind==='yeast'&&k.id===recipe.yeast.hopIndexId&&!!k.catalogue);
   const s = readFermentationGuide(recipe);
   const catalogueDetails=catalogued&&<details className="space-y-3"><summary className="cursor-pointer min-h-touch text-water">Caractéristiques actuelles de la levure et sources fabricant</summary><YeastCatalogueDetails yeast={catalogued}/></details>;
-  if (!s) return <div className="pt-3 space-y-2">{catalogueDetails}<p className="text-sm text-cave-400">L’atelier de levure propose des souches et des paliers pour une Weissbier orientée banane.</p>{onEdit && <Button onClick={onEdit}>Modifier la recette pour choisir les arômes de levure</Button>}</div>;
+  if (!s) return <div className="pt-3 space-y-2">{catalogueDetails}<p className="text-sm text-cave-400">L’atelier propose des souches et des conduites selon l’arôme recherché.</p><FermentationRecipeAdvice recipe={recipe}/>{onEdit && <Button onClick={onEdit}>Modifier la recette pour choisir les arômes de levure</Button>}</div>;
   const plan = fermentationPlan(s.guide, s.goal)!, changed = fermentationGuideChanged(recipe, s);
   return <section aria-label="Conduite de levure de la recette" className="pt-4 mt-4 border-t border-cave-700 space-y-3">
     <div className="flex items-center gap-2 text-ebc-straw"><Thermometer size={18} /><h3 className="font-semibold">{FERMENTATION_GOAL_LABELS[s.goal]}</h3></div>
@@ -196,11 +214,12 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
     <FermentationTemperatureChart steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />
     {catalogueDetails}
     <details className="space-y-2 text-sm text-cave-300"><summary className="cursor-pointer min-h-touch py-2 text-water">Profil technique et sources conservées</summary>
-      <p>{s.guide.aroma.banana} {s.guide.aroma.phenols}</p><p>Banane : ester (acétate d’isoamyle). Girofle : phénol (4-vinylgaïacol). Thiols : capacité non établie ici.</p>
+      <p>{s.guide.aroma.summary ?? s.guide.aroma.banana} {s.guide.aroma.phenols}</p><p>Esters, phénols et thiols ont des voies distinctes ; aucune intensité universelle calculée ici.</p>
       <p>Fenêtre fabricant : {rangeLabel(s.guide.temperatureC.range, '°C')}.</p><HopSourceLink source={s.guide.temperatureC.source} />
       {plan.phases.map(p => <p key={p.id}>{p.name} : {p.completeWhen}</p>)}
       <HopSourceLink source={plan.source} />
     </details>
+    <FermentationRecipeAdvice recipe={recipe}/>
     {onEdit && <Button onClick={onEdit}>Modifier la conduite de fermentation</Button>}
   </section>;
 }

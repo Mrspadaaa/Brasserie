@@ -31,12 +31,13 @@ try {
     await page.goto(base + '/?dev-local', { waitUntil: 'networkidle0' });
     await page.waitForFunction(async () => (await import('/src/services/storage.ts')).StorageService.isReady());
     await page.waitForFunction(() => !document.body.innerText.includes('Base initialisée avec'));
-    await click(page, '📜 Recettes', true); await click(page, 'Importer / Créer', true);
+    await click(page, '📜 Recettes', true); await click(page, 'Créer', true);
     const name = `Weissbier témoin ${width}`; await page.locator('#wz-title').fill(name);
     const count = await page.evaluate(async () => (await import('/src/services/storage.ts')).StorageService.getHopKnowledge().length);
     await click(page, 'Choisir les arômes de levure', true);
     await page.waitForSelector('[aria-label="Atelier des arômes de levure"]');
-    assert.equal(await page.$$eval('[aria-label="Souches documentées pour cet objectif"] button', b => b.length), 4);
+    await page.select(await field(page, 'Objectif de fermentation'), 'banana');
+    assert.equal(await page.$$eval('[aria-label="Souches documentées pour cet objectif"] button', b => b.length), 5);
     await click(page, 'White Labs WLP300', true);
     await page.select(await field(page, 'Objectif de fermentation'), 'balanced');
     await page.select(await field(page, 'Objectif de fermentation'), 'banana');

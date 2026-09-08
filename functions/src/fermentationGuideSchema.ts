@@ -1,7 +1,8 @@
 import { hopSourceError, validHopRange, type HopSource, type HopRange } from './hopIndexSchema.js';
 import type { HopExperimentalParameter } from './hopExtrapolationSchema.js';
 
-export type FermentationGoal = 'banana' | 'balanced';
+export const FERMENTATION_GOALS = ['banana', 'balanced', 'fruit', 'clean', 'phenolic', 'thiols'] as const;
+export type FermentationGoal = typeof FERMENTATION_GOALS[number];
 export interface FermentationFact { range: HopRange; source: HopSource }
 export interface FermentationGuidePlan {
   goal: FermentationGoal; name: string; rationale: string; source: HopSource;
@@ -16,7 +17,7 @@ export interface FermentationGuidePlan {
 export interface FermentationGuide {
   id: string; kind: 'fermentation'; name: string; version: string; enabled: boolean; source: HopSource;
   yeastId: string; aliases: string[]; styles: string[];
-  aroma: { banana: string; phenols: string; pof: 'positive' | 'negative' | 'unknown'; source: HopSource };
+  aroma: { banana: string; phenols: string; summary?: string; pof: 'positive' | 'negative' | 'unknown'; source: HopSource };
   temperatureC: FermentationFact; attenuationPct?: FermentationFact; dryPitchGHL?: FermentationFact;
   plans: FermentationGuidePlan[];
 }
@@ -37,7 +38,8 @@ export function assertFermentationGuide(v: any): asserts v is FermentationGuide 
   keys(v, ['id', 'kind', 'name', 'version', 'enabled', 'source', 'yeastId', 'aliases', 'styles', 'aroma', 'temperatureC', 'attenuationPct', 'dryPitchGHL', 'plans']);
   check(v.kind === 'fermentation' && text(v.version) && typeof v.enabled === 'boolean' && text(v.yeastId), 'identité invalide'); source(v.source, true);
   check(Array.isArray(v.aliases) && v.aliases.every(text) && Array.isArray(v.styles) && v.styles.length > 0 && v.styles.every(text), 'noms ou styles invalides');
-  keys(v.aroma, ['banana', 'phenols', 'pof', 'source']);
+  keys(v.aroma, ['banana', 'phenols', 'summary', 'pof', 'source']);
+  check(v.aroma.summary === undefined || text(v.aroma.summary), 'description aromatique invalide');
   check(text(v.aroma.banana) && text(v.aroma.phenols) && ['positive', 'negative', 'unknown'].includes(v.aroma.pof), 'profil documentaire incomplet'); source(v.aroma.source);
   fact(v.temperatureC, -273.15);
   if (v.attenuationPct !== undefined) fact(v.attenuationPct, 0, 100);
@@ -45,7 +47,7 @@ export function assertFermentationGuide(v: any): asserts v is FermentationGuide 
   check(Array.isArray(v.plans) && v.plans.length > 0 && new Set(v.plans.map((p: any) => p.goal)).size === v.plans.length, 'objectifs absents ou dupliqués');
   for (const p of v.plans) {
     keys(p, ['goal', 'name', 'rationale', 'source', 'pitchTemperatureC', 'phases', 'notes']);
-    check(['banana', 'balanced'].includes(p.goal) && text(p.name) && text(p.rationale), 'objectif invalide'); source(p.source, true);
+    check(FERMENTATION_GOALS.includes(p.goal) && text(p.name) && text(p.rationale), 'objectif invalide'); source(p.source, true);
     parameter(p.pitchTemperatureC, v.temperatureC.range.min, v.temperatureC.range.max);
     check(Array.isArray(p.phases) && p.phases.length > 0 && new Set(p.phases.map((s: any) => s.id)).size === p.phases.length, 'paliers absents ou dupliqués');
     for (const s of p.phases) {

@@ -9,7 +9,8 @@ import { writeRecipeText, readRecipeText } from '../../src/domain/recipeTransfer
 import pack from '../../src/data/fermentationGuideBootstrap.json';
 import { fullRecipe } from '../fixtures/fullRecipe';
 
-const guides = guideFermentations([]);
+// Regression coverage for the four original Weissbier programmes.
+const guides = guideFermentations([]).filter(g => pack.some(p => p.id === g.id));
 const munich = guides.find(g => g.yeastId === 'lallemand-munich-classic')!;
 const yeastFor = (g: FermentationGuide): HopYeast => { const { aliases: _, ...y } = guideYeasts([]).find(y => y.id === g.yeastId)!; return y; };
 

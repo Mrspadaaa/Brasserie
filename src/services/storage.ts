@@ -548,7 +548,7 @@ export const StorageService = {
         if (previous && !unchanged && name === 'hopPredictions') throw Error('Une prédiction figée différente existe déjà. Aucun import effectué.');
         if (previous && !unchanged && name === 'hopKnowledge') {
           if (previous.kind !== row.data.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
-          if (['model', 'axis', 'extrapolation', 'solver', 'fermentation'].includes(previous.kind) && previous.version === row.data.version) throw Error('La connaissance importée doit porter une nouvelle version.');
+          if (['model', 'axis', 'extrapolation', 'solver', 'fermentation', 'fermentationScience'].includes(previous.kind) && previous.version === row.data.version) throw Error('La connaissance importée doit porter une nouvelle version.');
         }
         if (!unchanged) changes.push({ name: name as CollectionName, ...row });
       }

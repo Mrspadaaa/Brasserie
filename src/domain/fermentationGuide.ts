@@ -15,7 +15,9 @@ export interface FermentationGuideSnapshot {
   applied: { yeast: YeastSpec; volumeL: number; program: FermentationStep[] };
 }
 export const FERMENTATION_GOAL_LABELS: Record<FermentationGoal, string> = {
-  banana: 'Banane en avant', balanced: 'Banane et girofle en équilibre'
+  banana: 'Banane en avant', balanced: 'Banane et girofle en équilibre',
+  fruit: 'Fruits et esters', clean: 'Profil net et discret', phenolic: 'Girofle et épices',
+  thiols: 'Thiols et fruits du houblon'
 };
 const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
 const within = (n: unknown, r: HopRange) => finite(n) && n >= r.min && n <= r.max;
@@ -33,7 +35,7 @@ export function fermentationDose(guide: FermentationGuide, volumeL: number): { r
   if (!guide.dryPitchGHL || !finite(volumeL) || volumeL <= 0) return undefined;
   const range = { min: guide.dryPitchGHL.range.min * volumeL / 100, max: guide.dryPitchGHL.range.max * volumeL / 100 };
   if (!finite(range.min) || !finite(range.max)) return undefined;
-  return { range, confidence: guide.dryPitchGHL.source.year === null ? 'low' : 'medium', source: guide.dryPitchGHL.source };
+  return { range, confidence: 'low', source: guide.dryPitchGHL.source };
 }
 /** An envelope of proposed durations, not a probability of fermentation completion. */
 export function fermentationDuration(plan: FermentationGuidePlan): HopRange {

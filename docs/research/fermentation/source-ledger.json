@@ -1,0 +1,568 @@
+{
+  "accessedAt": "2026-09-08",
+  "sources": [
+    {
+      "id": "editorial",
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    {
+      "id": "wyeast",
+      "title": "3068 Weihenstephan Weizen",
+      "author": "Wyeast",
+      "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "banana-3068"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "flavor",
+      "title": "Precision Flavor Through Fermentation Control",
+      "author": "Lallemand",
+      "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+      "year": 2025,
+      "kind": "manufacturer",
+      "locator": "12 juillet 2025, mise à jour 17 septembre ; exemple Munich Classic.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "banana-munich"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "12 juillet 2025, mise à jour 17 septembre ; exemple Munich Classic."
+    },
+    {
+      "id": "us05",
+      "title": "SafAle US-05",
+      "author": "Fermentis",
+      "reference": "https://fermentis.com/en/product/safale-us-05/",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "lager",
+      "title": "SafLager W-34/70",
+      "author": "Fermentis",
+      "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "lagering",
+      "title": "Lager Brewing Made Easy",
+      "author": "Lallemand",
+      "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2023/08/Lallemand-Brewing_TechPaper-Lagering-Made-Easy-8-23.pdf",
+      "year": 2023,
+      "kind": "manufacturer",
+      "locator": "Copyright 2023. Page 14 : 65–75 % de l’atténuation finale attendue, hausse de 2–4 °C.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "lager-rest"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Copyright 2023. Page 14 : 65–75 % de l’atténuation finale attendue, hausse de 2–4 °C."
+    },
+    {
+      "id": "voss",
+      "title": "LalBrew Voss — fiche technique",
+      "author": "Lallemand",
+      "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "voss-speed"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "abbaye",
+      "title": "LalBrew Abbaye — fiche technique",
+      "author": "Lallemand",
+      "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "abbaye-fruit"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "saison",
+      "title": "LalBrew Belle Saison — fiche technique",
+      "author": "Lallemand",
+      "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "saison-finish"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "verdant",
+      "title": "LalBrew Verdant IPA — fiche technique",
+      "author": "Lallemand",
+      "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+    },
+    {
+      "id": "pomona",
+      "title": "LalBrew Pomona — fiche technique",
+      "author": "Lallemand / Scott Laboratories",
+      "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "nottingham",
+      "title": "LalBrew Nottingham Ale Yeast",
+      "author": "Lallemand",
+      "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+    },
+    {
+      "id": "bananza",
+      "title": "Bananza OYL-400",
+      "author": "Omega Yeast",
+      "reference": "https://omegayeast.com/products/bananza-next",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "banana-no-clove"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+    },
+    {
+      "id": "esters",
+      "title": "Parameters Affecting Ethyl Ester Production by Saccharomyces cerevisiae during Fermentation",
+      "author": "Saerens et al.",
+      "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2223249/",
+      "year": 2008,
+      "kind": "research",
+      "locator": "SS01 ; série 14–26 °C, réponses différentes selon l’ester.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "esters-heat",
+        "esters"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "SS01 ; série 14–26 °C, réponses différentes selon l’ester."
+    },
+    {
+      "id": "atf",
+      "title": "Effects of aeration and unsaturated fatty acids on expression of ATF1",
+      "author": "Fujii et al.",
+      "reference": "https://journals.asm.org/doi/10.1128/aem.63.3.910-915.1997",
+      "year": 1997,
+      "kind": "research",
+      "locator": "Répression d’ATF1 et de l’activité AATase : mécanisme, pas dose universelle.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "oxygen-esters"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Répression d’ATF1 et de l’activité AATase : mécanisme, pas dose universelle."
+    },
+    {
+      "id": "pressure",
+      "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+      "author": "Souffriau et al.",
+      "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9499027/",
+      "year": 2022,
+      "kind": "research",
+      "locator": "Rapport ester/alcool sous surpression, dépendant de la souche. Pas de coefficient universel.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "pressure-banana"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Rapport ester/alcool sous surpression, dépendant de la souche. Pas de coefficient universel."
+    },
+    {
+      "id": "pof",
+      "title": "Reducing phenolic off-flavors through hybridization",
+      "author": "Mertens et al.",
+      "reference": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0209124",
+      "year": 2019,
+      "kind": "research",
+      "locator": "Voie PAD1/FDC1 et sélection POF.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "pof-capacity",
+        "pof"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Voie PAD1/FDC1 et sélection POF."
+    },
+    {
+      "id": "ferulic",
+      "title": "Ferulic acid release and 4-vinylguaiacol formation during brewing and fermentation",
+      "author": "Coghe et al.",
+      "reference": "https://pubmed.ncbi.nlm.nih.gov/14759156/",
+      "year": 2004,
+      "kind": "research",
+      "locator": "DOI 10.1021/jf0346556 ; précurseur, moût et souche.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "ferulic"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "DOI 10.1021/jf0346556 ; précurseur, moût et souche."
+    },
+    {
+      "id": "cui",
+      "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+      "author": "Cui et al.",
+      "reference": "https://onlinelibrary.wiley.com/doi/10.1002/jib.189",
+      "year": 2015,
+      "kind": "research",
+      "locator": "J. Inst. Brew. 121, 129–136 ; 29 essais, 4 facteurs, DM303. Tables, méthodes et validation consultées.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "phenol-local"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "J. Inst. Brew. 121, 129–136 ; 29 essais, 4 facteurs, DM303. Tables, méthodes et validation consultées."
+    },
+    {
+      "id": "nist",
+      "title": "Upper critical values of Student’s t distribution",
+      "author": "NIST/SEMATECH",
+      "reference": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm",
+      "year": null,
+      "kind": "research",
+      "locator": "14 degrés de liberté, colonne 0,975 : 2,145. Date de la table non indiquée.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "14 degrés de liberté, colonne 0,975 : 2,145. Date de la table non indiquée."
+    },
+    {
+      "id": "prediction",
+      "title": "Prediction and uncertainty of a single response",
+      "author": "NIST/SEMATECH",
+      "reference": "https://www.itl.nist.gov/div898/handbook/pmd/section5/pmd512.htm",
+      "year": null,
+      "kind": "research",
+      "locator": "Intervalle d’une nouvelle observation, distinct de celui de la réponse moyenne.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Intervalle d’une nouvelle observation, distinct de celui de la réponse moyenne."
+    },
+    {
+      "id": "sta1",
+      "title": "A deletion in the STA1 promoter determines maltotriose and starch utilization in diastatic strains",
+      "author": "Krogerus et al.",
+      "reference": "https://pubmed.ncbi.nlm.nih.gov/31346683/",
+      "year": 2019,
+      "kind": "research",
+      "locator": "Délétion du promoteur de 1162 pb : gène, activité et phénotype distincts.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "sta1-not-pof",
+        "sta1"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Délétion du promoteur de 1162 pb : gène, activité et phénotype distincts."
+    },
+    {
+      "id": "vdk",
+      "title": "Compound Spotlight: Diacetyl",
+      "author": "White Labs",
+      "reference": "https://blog.whitelabs.com/compound-spotlight-diacetyl",
+      "year": 2021,
+      "kind": "manufacturer",
+      "locator": "5 avril 2021 ; précurseur, diacétyle et réduction par la levure.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "5 avril 2021 ; précurseur, diacétyle et réduction par la levure."
+    },
+    {
+      "id": "forced",
+      "title": "Forced Diacetyl Testing",
+      "author": "Devin Tani / White Labs",
+      "reference": "https://blog.whitelabs.com/forced-diacetyl-testing",
+      "year": 2024,
+      "kind": "manufacturer",
+      "locator": "5 juin 2024 ; négatif sensoriel ≠ zéro analytique.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "vdk-test"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "5 juin 2024 ; négatif sensoriel ≠ zéro analytique."
+    },
+    {
+      "id": "creep",
+      "title": "How to Fix Hop Creep with Jessica Young",
+      "author": "Lallemand",
+      "reference": "https://www.lallemandbrewing.com/en/south-america/resources/how-to-fix-hop-creep-with-jessica-young/",
+      "year": 2026,
+      "kind": "manufacturer",
+      "locator": "12 mai 2026, actualisé 15 juillet. Recontrôler après dry hop ; ALDC ne bloque pas les enzymes du houblon.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "dry-hop-reset"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "12 mai 2026, actualisé 15 juillet. Recontrôler après dry hop ; ALDC ne bloque pas les enzymes du houblon."
+    },
+    {
+      "id": "h2s",
+      "title": "Effects of yeast strains and fermentation temperatures in production of hydrogen sulfide during beer fermentation",
+      "author": "Kim, Moon et Park",
+      "reference": "https://khu.elsevierpure.com/en/publications/effects-of-yeast-strains-and-fermentation-temperatures-in-product-2/",
+      "year": 2008,
+      "kind": "research",
+      "locator": "Résumé institutionnel ; quatre souches, réponses différentes. Texte intégral non vérifié.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "sulfur-context"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Résumé institutionnel ; quatre souches, réponses différentes. Texte intégral non vérifié."
+    },
+    {
+      "id": "aldehydes",
+      "title": "The Effect of Selected Fermentation Parameters on Beer Quality",
+      "author": "Kucharczyk et al.",
+      "reference": "https://mdpi-res.com/d_attachment/foods/foods-09-01043/article_deploy/foods-09-01043.pdf",
+      "year": 2020,
+      "kind": "research",
+      "locator": "54 fermentations industrielles à 15,5 °P ; modèles locaux, ajustements VDK insuffisants.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "54 fermentations industrielles à 15,5 °P ; modèles locaux, ajustements VDK insuffisants."
+    },
+    {
+      "id": "pitchConflict",
+      "title": "The Effect of Selected Fermentation Parameters on the Formation of Esters and Higher Alcohols in Beer",
+      "author": "Kucharczyk et al.",
+      "reference": "https://mdpi-res.com/d_attachment/processes/processes-08-00769/article_deploy/processes-08-00769.pdf",
+      "year": 2020,
+      "kind": "research",
+      "locator": "Unités O₂ contradictoires ; équation et valeurs de validation non concordantes. Calcul non activé.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "pitch-conflict"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Unités O₂ contradictoires ; équation et valeurs de validation non concordantes. Calcul non activé."
+    },
+    {
+      "id": "erten",
+      "title": "The effect of pitching rate on fermentation and flavour compounds in high gravity brewing",
+      "author": "Erten et al.",
+      "reference": "https://onlinelibrary.wiley.com/doi/10.1002/j.2050-0416.2007.tb00259.x",
+      "year": 2007,
+      "kind": "research",
+      "locator": "NCYC 1056 lager, pas Wyeast 1056. Essais à 10 °C ; effet du pitch contextuel.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "pitch-context"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "NCYC 1056 lager, pas Wyeast 1056. Essais à 10 °C ; effet du pitch contextuel."
+    },
+    {
+      "id": "thiolTemp",
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia et al.",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/view/241",
+      "year": 2024,
+      "kind": "research",
+      "locator": "Cinq souches, 15/22/30 °C, Cascade en ébullition et whirlpool. Diamond : plus de thiols mais moins de tropical et davantage de soufre.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "thiol-temp",
+        "thiols-temperature"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Cinq souches, 15/22/30 °C, Cascade en ébullition et whirlpool. Diamond : plus de thiols mais moins de tropical et davantage de soufre."
+    },
+    {
+      "id": "fan",
+      "title": "Wort Nitrogen and Yeast Strain Drive Thiol Release, Flavor Expression, and Fermentation Performance in Beer",
+      "author": "Samia et al.",
+      "reference": "https://doi.org/10.1080/03610470.2025.2530859",
+      "year": 2025,
+      "kind": "research",
+      "locator": "14 août 2025 ; FAN 110/240/360 mg/L, cinq levures. Carence ≠ fruité accru.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "thiol-nutrition",
+        "thiols-nitrogen"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "14 août 2025 ; FAN 110/240/360 mg/L, cinq levures. Carence ≠ fruité accru."
+    },
+    {
+      "id": "thiol2026",
+      "title": "Bound and Free 3-Sulfanylhexan-1-ol in Beer: Transfer and Release Rates from Kettle, Late, and Dry Hopping",
+      "author": "Chenot, Samia et Shellhammer",
+      "reference": "https://pubmed.ncbi.nlm.nih.gov/41790498/",
+      "year": 2026,
+      "kind": "research",
+      "locator": "6 mars 2026 ; DOI 10.1021/acs.jafc.5c14936. Supplément https://ndownloader.figshare.com/files/62482880 consulté : souche/température non retrouvées, aucun rendement transféré.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "thiols-transfer-2026"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "6 mars 2026 ; DOI 10.1021/acs.jafc.5c14936. Supplément https://ndownloader.figshare.com/files/62482880 consulté : souche/température non retrouvées, aucun rendement transféré."
+    },
+    {
+      "id": "timecourse",
+      "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+      "author": "Samia et al.",
+      "reference": "https://www.sciencedirect.com/science/article/pii/S2666566226000936",
+      "year": 2026,
+      "kind": "research",
+      "locator": "30 juillet 2026 ; DOI 10.1016/j.fochms.2026.100445. Résumé éditeur seulement, données brutes non acquises.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "thiol-timing",
+        "thiols-timecourse-2026"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "30 juillet 2026 ; DOI 10.1016/j.fochms.2026.100445. Résumé éditeur seulement, données brutes non acquises."
+    },
+    {
+      "id": "acetate",
+      "title": "Yeast-driven 3-sulfanylhexan-1-ol and acetate formation in model fermentation media",
+      "author": "Chenot et al.",
+      "reference": "https://pubmed.ncbi.nlm.nih.gov/34018730/",
+      "year": 2021,
+      "kind": "research",
+      "locator": "DOI 10.1021/acs.jafc.1c01610 ; plusieurs souches, températures et densités en milieu modèle.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "DOI 10.1021/acs.jafc.1c01610 ; plusieurs souches, températures et densités en milieu modèle."
+    },
+    {
+      "id": "lactone",
+      "title": "Influence of Ethyl Esters, Oxygenated Terpenes, and Aliphatic γ- and δ-Lactones (C9–12) on Beer Fruit Aroma",
+      "author": "Hotchko et Shellhammer",
+      "reference": "https://www.tandfonline.com/doi/abs/10.1094/ASBCJ-2017-1805-01",
+      "year": 2017,
+      "kind": "research",
+      "locator": "Volume 75 (2017), 27–34 ; mise en ligne 2018. Résumé éditeur : effets de mélange, niveaux souvent sous seuil.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "lactones-mixture",
+        "lactones"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Volume 75 (2017), 27–34 ; mise en ligne 2018. Résumé éditeur : effets de mélange, niveaux souvent sous seuil."
+    },
+    {
+      "id": "kinetic",
+      "title": "Parameter Estimation of Dynamic Beer Fermentation Models",
+      "author": "Zamudio Lara et al.",
+      "reference": "https://orbi.umons.ac.be/bitstream/20.500.12907/43726/1/ZamudioLara2022.pdf",
+      "year": 2022,
+      "kind": "research",
+      "locator": "Foods 11, 3602 ; quatre fermentations, trois pour ajuster, une retenue. Identifiabilité et résidus à contrôler.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "kinetic"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Foods 11, 3602 ; quatre fermentations, trois pour ajuster, une retenue. Identifiabilité et résidus à contrôler."
+    },
+    {
+      "id": "mpc",
+      "title": "Cascade predictive control design for a beer fermenter — simulation and experimental assessment",
+      "author": "Denis et al.",
+      "reference": "https://www.sciencedirect.com/science/article/abs/pii/S0960308526000775",
+      "year": 2026,
+      "kind": "research",
+      "locator": "DOI 10.1016/j.fbp.2026.03.020 ; volume 157, 252–264. Résumé éditeur seulement : densité/CO₂ et estimation d’état.",
+      "accessedAt": "2026-09-08",
+      "claims": [
+        "mpc-2026"
+      ],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "DOI 10.1016/j.fbp.2026.03.020 ; volume 157, 252–264. Résumé éditeur seulement : densité/CO₂ et estimation d’état."
+    }
+  ],
+  "gaps": [
+    {
+      "topic": "Esters universels",
+      "decision": "Aucun modèle activé",
+      "reason": "Effets du pitch variables ; incohérences d’unités et de validation dans une publication industrielle."
+    },
+    {
+      "topic": "Dynamique toutes souches",
+      "decision": "Documentation seulement",
+      "reason": "Identification locale requise ; séries limitées et articles récents partiellement accessibles."
+    },
+    {
+      "topic": "Thiols 2026",
+      "decision": "Leviers qualitatifs",
+      "reason": "Chronologie non universelle et contextes incomplets ; pas de rendement transféré."
+    },
+    {
+      "topic": "Phénols DM303",
+      "decision": "Calcul local",
+      "reason": "Données et statistiques reproduites ; domaine convexe et protocole couplé imposés."
+    }
+  ],
+  "stopReason": "Les questions utiles à l’intégration ont des preuves primaires ou une limite explicite. Les recherches de contradiction convergent ; de nouveaux documents sans données comparables ne changeraient pas les calculs activables."
+}

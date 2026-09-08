@@ -4,6 +4,7 @@ import { assertHopExtrapolation, type HopExtrapolation } from './hopExtrapolatio
 import { assertHopSolverPolicy, type HopSolverPolicy } from './hopSolverSchema.js';
 import { assertFermentationGuide, type FermentationGuide } from './fermentationGuideSchema.js';
 import { assertYeastCatalogue, type YeastCatalogue } from './yeastCatalogueSchema.js';
+import { assertFermentationScience, type FermentationScience } from './fermentationScienceSchema.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
 export type HopTiming = typeof HOP_TIMINGS[number];
@@ -58,7 +59,7 @@ export interface HopConfidencePolicy {
 export interface HopResearchNote {
   id: string; kind: 'note'; name: string; topics: string[]; summary: string; limitation: string; source: HopSource;
 }
-export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation | HopSolverPolicy | FermentationGuide;
+export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation | HopSolverPolicy | FermentationGuide | FermentationScience;
 export interface HopEstimate {
   range: HopRange | null; confidence: HopConfidence; reasons: string[]; sources: HopSource[];
   /** Central scenario of explicit expert parameters, always accompanied by range. */
@@ -118,6 +119,7 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
   const base = ['id', 'kind', 'name', 'source'];
   switch (v.kind) {
     case 'fermentation': assertFermentationGuide(v); break;
+    case 'fermentationScience': assertFermentationScience(v); break;
     case 'solver': assertHopSolverPolicy(v); break;
     case 'extrapolation': assertHopExtrapolation(v); break;
     case 'trial': assertHopTrial(v); break;

@@ -32,6 +32,7 @@ import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { FermentationWorkshop } from '../ui/FermentationWorkshop';
+import { FermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import {
@@ -1294,7 +1295,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       </button>}
       {step === 'identite' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('levure')} className="w-full text-left rounded-panel border border-ebc-straw/30 bg-ebc-straw/5 p-3 sm:p-4">
         <span className="block text-base font-semibold text-cave-50">Choisir les arômes de levure</span>
-        <span className="block text-xs sm:text-sm text-cave-200 mt-1">Weissbier banane ou équilibre · souches, dose et paliers de fermentation →</span>
+        <span className="block text-xs sm:text-sm text-cave-200 mt-1">Banane, fruits, girofle ou profil net : souches, dose et paliers de fermentation</span>
       </button>}
       {step === 'identite' && (
         <>
@@ -2123,6 +2124,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             title="Fermentation"
             hint="Phases de fermentation et températures de consigne."
           >
+            <FermentationRecipeAdvice recipe={build()} />
             <div className="space-y-2 sm:space-y-3">
               <PresetChips
                 name="Programme de fermentation"
