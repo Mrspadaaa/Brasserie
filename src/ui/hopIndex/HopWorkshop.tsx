@@ -14,6 +14,7 @@ import { Button } from '../../components/ui/Button';
 import { inputClass } from '../FormNav';
 import { HopField } from './HopFactsEditor';
 import { HopExtrapolationPanel } from './HopExtrapolationPanel';
+import { HopSolverPanel } from './HopSolverPanel';
 
 const number = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
 const rangeLabel = (r: HopRange, unit: string) => `${r.min === r.max ? number(r.min) : `${number(r.min)}–${number(r.max)}`} ${unit}`;
@@ -75,7 +76,7 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
   const trials = useMemo(() => guideTrials(knowledge), [knowledge]);
   const yeasts = useMemo(() => guideYeasts(knowledge), [knowledge]), axes = useMemo(() => guideAxes(knowledge), [knowledge]);
   const [selectedId, setSelectedId] = useState(recipe?.hopTrialId ?? 'trial-split-verdant-2026');
-  const [view, setView] = useState<'trials' | 'adapt' | 'technical'>(recipe?.hopTrialId ? 'adapt' : 'trials');
+  const [view, setView] = useState<'solver' | 'trials' | 'adapt' | 'technical'>('solver');
   const [query, setQuery] = useState(''), [family, setFamily] = useState('');
   const [localTarget, setLocalTarget] = useState<Record<string, HopRange>>({});
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
@@ -123,9 +124,12 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
       <p className="text-sm text-cave-200 mt-2 max-w-2xl">Pars d’un essai documenté ou simule ta propre combinaison, puis compare les variantes avant de composer.</p>
     </header>
     <div className="p-3 sm:p-5 space-y-5">
-      <nav aria-label="Étapes de l’atelier aromatique" className="grid grid-cols-3 gap-1">
-        {([{ id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'adapt', name: 'Mon adaptation', Icon: SlidersHorizontal }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
+      <nav aria-label="Étapes de l’atelier aromatique" className="grid grid-cols-2 sm:grid-cols-4 gap-1">
+        {([{ id: 'solver', name: 'Trouver mon combo', Icon: SlidersHorizontal }, { id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'adapt', name: 'Mon adaptation', Icon: SlidersHorizontal }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
       </nav>
+      {view === 'solver' && <HopSolverPanel recipe={recipe} onChange={onChange} target={target}
+        onTargetChange={next => { if (recipe && onChange) change({ ...latest.current.recipe!, hopAromaTarget: next }); else setLocalTarget(next); }}
+        onBusyChange={next => { setBusy(next); onBusyChange?.(next); }} />}
       {view === 'trials' && <>
         <div className="grid sm:grid-cols-2 gap-3"><HopField label="Rechercher un essai"><input className={inputClass} disabled={busy} placeholder="Cascade, Verdant, goyave…" value={query} onChange={e => { setQuery(e.target.value); setSelectedId(''); setPreview(false); }} /></HopField>
           <HopField label="Ce que tu veux retrouver"><select className={inputClass} disabled={busy} value={family} onChange={e => { setFamily(e.target.value); setSelectedId(''); setPreview(false); }}><option value="">Tous les résultats documentés</option>{axes.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}</select></HopField></div>

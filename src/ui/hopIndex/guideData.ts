@@ -5,6 +5,10 @@ import initialYeasts from '../../data/hopYeastBootstrap.json';
 import trialPack from '../../data/hopTrialBootstrap.json';
 import studyPack from '../../data/hopStudyBootstrap.json';
 import extrapolationPack from '../../data/hopExtrapolationBootstrap.json';
+import legacyExtrapolationPack from '../../data/hopExtrapolationLegacyBootstrap.json';
+import solverPack from '../../data/hopSolverBootstrap.json';
+import doseStudyPack from '../../data/hopDoseStudyBootstrap.json';
+import type { HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
 
@@ -43,7 +47,7 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 }
 
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
-  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...validKnowledge(knowledge)];
+  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...validKnowledge(knowledge)];
   const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
   return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
     const aliases = yeastNameVariants[yeast.id];
@@ -63,9 +67,22 @@ export function guideTrials(knowledge: HopKnowledge[]): HopTrial[] {
 /** Proposed data are immediately usable; a saved revision (including disabled)
  * wins by ID. Invalid saved revisions are left visible to the engine validator,
  * never replaced silently by the initial model. No writes happen at read time. */
+const canonical = (value: any): string => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.keys(item).sort().map(k => [k, item[k]])) : item);
+/** Upgrade only the untouched built-in. A disabled, invalid or edited revision wins. */
+export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
+  if (row?.kind !== 'extrapolation') return row;
+  const old = legacyExtrapolationPack.find(k => k.id === row.id);
+  const next = extrapolationPack.find(k => k.id === row.id);
+  return old && next && canonical(row) === canonical(old) ? next as HopKnowledge : row;
+}
 export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
-  const proposed = [...checkedKnowledge(initialKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack)];
-  return [...new Map([...proposed, ...knowledge.map(storedKnowledge)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
+  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack)];
+  return [...new Map([...proposed, ...knowledge.map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
+}
+export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {
+  return guidePredictionKnowledge(knowledge).find((k): k is HopSolverPolicy => {
+    try { assertHopKnowledge(k); return k.kind === 'solver' && k.enabled; } catch { return false; }
+  });
 }
 
 /** Proposed policies only; an explicit action must persist any missing references. */
@@ -105,9 +122,12 @@ export function ensureGuideReferences({ varieties = [], knowledge = [] }: GuideR
 
     // Re-read inside the queue so earlier imports and user edits remain authoritative.
     const varietyIds = new Set(StorageService.getHopVarieties().map(row => row.id));
-    const knowledgeIds = new Set(StorageService.getHopKnowledge().map(row => row.id));
+    const existing = new Map(StorageService.getHopKnowledge().map(row => [row.id, row]));
     const missingVarieties = varieties.filter(row => !varietyIds.has(row.id));
-    const missingKnowledge = savedKnowledge.filter(row => !knowledgeIds.has(row.id));
+    const missingKnowledge = savedKnowledge.filter(row => {
+      const previous = existing.get(row.id);
+      return !previous || (currentGuideRevision(previous) !== previous && canonical(currentGuideRevision(previous)) === canonical(row));
+    });
     if (!missingVarieties.length && !missingKnowledge.length) return;
 
     await StorageService.importHopIndex(JSON.stringify({

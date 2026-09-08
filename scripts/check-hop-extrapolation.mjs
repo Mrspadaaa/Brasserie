@@ -56,7 +56,7 @@ try {
     await click(page, 'Conserver pour une dégustation');
     await page.waitForFunction(() => document.body.innerText.includes('Prédiction conservée avec ses sources'));
     const snapshot = await page.evaluate(async () => (await import('/src/services/storage.ts')).StorageService.getHopPredictions().at(-1));
-    assert.equal(snapshot.engineVersion, 'hop-experimental-v3'); assert(snapshot.prediction.profile.citrus.range);
+    assert.equal(snapshot.engineVersion, 'hop-experimental-v4'); assert(snapshot.prediction.profile.citrus.range);
     await click(page, 'Récapitulatif'); await click(page, 'Enregistrer la recette');
     await page.waitForFunction(async name => (await import('/src/services/storage.ts')).StorageService.getRecipes().some(r => r.name === name), {}, name);
     const saved = await page.evaluate(async name => (await import('/src/services/storage.ts')).StorageService.getRecipes().find(r => r.name === name), name);

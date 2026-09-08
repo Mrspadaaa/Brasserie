@@ -1,5 +1,5 @@
 import { HopLot, HopVariety } from './hopIndexSchema.js';
-import { predictHopTriplet } from './hopPredictionCore.js';
+import { predictHopTriplet, replayHopTripletV3 } from './hopPredictionCore.js';
 import { HopEstimate, HopPredictionSnapshot, assertHopPredictionSnapshotShape } from './hopPredictionSchema.js';
 
 const stable = (value: unknown): string => JSON.stringify(value, (_key, item) =>
@@ -15,10 +15,10 @@ export function assertHopPredictionSnapshot(value: unknown, id?: string): assert
   assertHopPredictionSnapshotShape(value, id);
   if (value.engineVersion === 'hop-envelope-v1') return;
   const actual = value.prediction;
-  const expected = predictHopTriplet(actual.triplet, value.target, {
+  const expected = (value.engineVersion === 'hop-experimental-v3' ? replayHopTripletV3 : predictHopTriplet)(actual.triplet, value.target, {
     varieties: value.evidence.varieties as HopVariety[], lots: value.evidence.lots as HopLot[], knowledge: value.evidence.knowledge
   });
-  const check = (valid: boolean, detail: string) => { if (!valid) throw Error(`Instantané v2 incohérent avec ses données figées : ${detail}.`); };
+  const check = (valid: boolean, detail: string) => { if (!valid) throw Error(`Instantané ${value.engineVersion.split("-").at(-1)} incohérent avec ses données figées : ${detail}.`); };
   const estimate = (saved: HopEstimate, replayed: HopEstimate, name: string) => {
     check((saved.range === null) === (replayed.range === null), `${name}, quantification incompatible`);
     if (saved.range && replayed.range) check(sameNumber(saved.range.min, replayed.range.min) && sameNumber(saved.range.max, replayed.range.max), `${name}, plage différente du calcul`);

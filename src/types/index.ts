@@ -422,6 +422,7 @@ export interface Recipe {
   /** Documentary brewing trial used as an anchor; never certifies model scope. */
   hopTrialId?: string;
   hopAromaTarget?: Record<string, import('../../functions/src/hopIndexSchema').HopRange>;
+  hopSolverIntent?: import('../../functions/src/hopSolverSchema').HopSolverIntent;
   hopPredictionIds?: string[];
   adjuncts?: AdjunctIngredient[];
   yeast: YeastSpec;

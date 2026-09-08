@@ -891,7 +891,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId'>) => {
+  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent'>) => {
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
@@ -899,7 +899,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
       waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId } : {}) }));
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent } : {}) }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -1046,6 +1046,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     yeast,
     hopMatrixId: details.hopMatrixId,
     hopTrialId: details.hopTrialId,
+    hopSolverIntent: details.hopSolverIntent,
     hopAromaTarget: details.hopAromaTarget,
     hopPredictionIds: details.hopPredictionIds,
     adjuncts: details.adjuncts,
@@ -1551,7 +1552,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <HopWorkshop recipe={build()} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
               setHops(next.hops);
               setYeast(next.yeast);
-              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
             }} contextEditor={<details><summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary><HopRecipeGuide contextOnly recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
               setHops(next.hops); setYeast(next.yeast);
               setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));

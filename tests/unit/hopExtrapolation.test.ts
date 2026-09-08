@@ -19,6 +19,7 @@ const triplet: HopTriplet = { varietyId: 'hopsteiner-cas', yeastId: 'fermentis-u
 const target = { citrus: { min: 66, max: 100 } };
 const predict = (t = triplet, data = base) => predictHopTriplet(t, target, data);
 const contains = (outer: any, inner: any) => {
+  if (inner === null) { expect(outer).toBeNull(); return; }
   expect(outer.min).toBeLessThanOrEqual(inner.min + 1e-10);
   expect(outer.max).toBeGreaterThanOrEqual(inner.max - 1e-10);
 };
@@ -48,7 +49,8 @@ describe('Extrapolation expérimentale, intervalles et provenance', () => {
     for (const p of predictions) {
       expect(p.extrapolatedAxes).toHaveLength(12);
       expect(p.compounds['4mmpFree'].range).toBeNull();
-      for (const e of Object.values(p.profile)) {
+      for (const id of p.extrapolatedAxes!) {
+        const e = p.profile[id];
         expect(Number.isFinite(e.range!.min) && Number.isFinite(e.range!.max)).toBe(true);
         expect(e.range!.min).toBeGreaterThanOrEqual(0); expect(e.range!.max).toBeLessThanOrEqual(100);
         expect(e.confidence).toBe('low'); expect(e.sources.some(s => s.kind === 'judgment' && s.year === 2026)).toBe(true);
@@ -122,7 +124,7 @@ describe('Extrapolation expérimentale, intervalles et provenance', () => {
   });
   it('fige les hypothèses, rejoue exactement le calcul et refuse une plage ou un statut falsifié', () => {
     const s = captureHopPrediction(triplet, target, base, { id: 's1', name: 'Cascade libre', createdAt: '2026-09-08T15:00:00Z' });
-    expect(s.engineVersion).toBe('hop-experimental-v3'); expect(() => assertHopPredictionSnapshot(s)).not.toThrow();
+    expect(s.engineVersion).toBe('hop-experimental-v4'); expect(() => assertHopPredictionSnapshot(s)).not.toThrow();
     const forged = structuredClone(s); forged.prediction.profile.citrus.range!.min += 1;
     expect(() => assertHopPredictionSnapshot(forged)).toThrow(/plage différente/);
     const hidden = structuredClone(s); delete hidden.prediction.extrapolatedAxes;

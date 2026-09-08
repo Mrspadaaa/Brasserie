@@ -6,12 +6,13 @@ import { hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCo
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import { compareHopPredictions, predictHopTriplet, rankHopTriplets, usableHopKnowledge } from '../../domain/hopIndex/engine';
 import { applyHopScenario, recipeHopScenario } from '../../domain/hopIndex/exploration';
+import { prefillHopScenario } from '../../domain/hopIndex/solver';
 import { captureHopPrediction } from '../../domain/hopIndex/snapshots';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
 import { useHopCatalogue } from './useHopCatalogue';
-import { ensureGuideReferences, guideAxes, guidePredictionKnowledge, guideYeasts } from './guideData';
+import { ensureGuideReferences, guideAxes, guidePredictionKnowledge, guideSolverPolicy, guideYeasts } from './guideData';
 import { HopField } from './HopFactsEditor';
 import { HopSourceLink } from './HopTechnicalPanel';
 import { HopPredictionView } from './HopPredictionView';
@@ -22,7 +23,8 @@ import { Combobox } from '../Combobox';
 import { NumberInput } from '../NumberInput';
 import { inputClass } from '../FormNav';
 
-const sample: HopTriplet = { varietyId: 'hopsteiner-cas', yeastId: 'fermentis-us05', timing: 'postFermentation', doseGL: 4, temperatureC: 18, contactHours: 24, matrixId: null, lotId: null };
+const contactFactor=(t:HopTriplet)=>t.timing==='firstWort'||t.timing==='boil'||t.timing==='whirlpool'?60:1;
+const sample: HopTriplet = { varietyId: 'hopsteiner-cas', yeastId: 'fermentis-us05', timing: 'postFermentation', doseGL: null, temperatureC: null, contactHours: null, matrixId: null, lotId: null };
 
 export function HopExplorationChart({ prediction, axes, target, baseline, highlighted }: {
   prediction: HopPrediction; axes: HopAxis[]; target: Record<string, HopRange>; baseline?: HopPrediction; highlighted: string[];
@@ -71,7 +73,9 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const [variantOpen, setVariantOpen] = useState(false);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const recipeScenario = recipe ? recipeHopScenario(recipe, addition, varieties, yeasts) : null;
-  const initial = recipeScenario?.triplet ?? sample;
+  const solverPolicy = useMemo(() => guideSolverPolicy(savedKnowledge), [savedKnowledge]);
+  const proposedConditions = solverPolicy && !readOnly ? prefillHopScenario(recipeScenario?.triplet ?? sample, solverPolicy, recipe) : undefined;
+  const initial = proposedConditions?.triplet ?? recipeScenario?.triplet ?? sample;
   const fingerprint = JSON.stringify(initial);
   const recipeFingerprint = JSON.stringify([recipe?.hops[addition], recipe?.yeast, recipe?.volumeL, addition]);
   const edited = useRef(false), previousRecipe = useRef(recipeFingerprint);
@@ -80,6 +84,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const [ranked, setRanked] = useState<HopPrediction[] | null>(null);
   const [rankedAssociations, setRankedAssociations] = useState(false);
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const [timingDefaults, setTimingDefaults] = useState(false);
   const pending = useRef(false), latest = useRef(recipe); latest.current = recipe;
   const mounted = useRef(true), busyCallback = useRef(onBusyChange); busyCallback.current = onBusyChange;
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; busyCallback.current?.(false); }; }, []);
@@ -143,10 +148,11 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
       setPersonalYeasts(rows => [...rows, y]); update({ yeastId: y.id }); setNewYeast(null);
     }}>Utiliser cette souche</Button><p className="text-xs text-cave-400">Souche non caractérisée : plage large, aucune neutralité ou activité enzymatique supposée.</p></div>}
     {personalVarieties.some(v => v.id === scenario.varietyId) && !catalogue.some(v => v.id === scenario.varietyId) && <HopField label="Descripteurs connus du houblon (facultatif)"><input className={inputClass} disabled={busy} placeholder="Tes observations : agrumes, floral…" value={personalVarieties.find(v => v.id === scenario.varietyId)?.descriptions[1]?.text ?? ''} onChange={e => setPersonalVarieties(rows => rows.map(v => v.id === scenario.varietyId ? { ...v, descriptions: e.target.value.trim() ? [v.descriptions[0], { text: e.target.value, context: 'unspecified', source: personalSource() }] : [v.descriptions[0]] } : v))} /></HopField>}
-    <HopField label="Moment de l’ajout simulé"><select className={inputClass} disabled={busy} value={scenario.timing ?? ''} onChange={e => update({ timing: e.target.value as HopTriplet['timing'], contactHours: null, temperatureC: null })}><option value="" disabled>Choisir un moment</option>{HOP_TIMINGS.map(t => <option key={t} value={t}>{HOP_TIMING_LABELS[t]}</option>)}</select></HopField>
-    <div className="grid grid-cols-3 gap-2">{([{ key: 'doseGL', label: 'Dose (g/L)' }, { key: 'temperatureC', label: 'Contact (°C)' }, { key: 'contactHours', label: 'Durée (h)' }] as const).map(f => <HopField key={f.key} label={f.label}><NumberInput aria-label={f.label} className={inputClass} disabled={busy} value={scenario[f.key] ?? undefined} emptyValue={undefined} onValue={n => update({ [f.key]: n ?? null })} /></HopField>)}</div>
+    <HopField label="Moment de l’ajout simulé"><select className={inputClass} disabled={busy} value={scenario.timing ?? ''} onChange={e => { const next = { ...scenario, timing: e.target.value as HopTriplet['timing'], contactHours: null, temperatureC: null }; update(solverPolicy ? prefillHopScenario(next, solverPolicy, recipe).triplet : next); setTimingDefaults(true); }}><option value="" disabled>Choisir un moment</option>{HOP_TIMINGS.map(t => <option key={t} value={t}>{HOP_TIMING_LABELS[t]}</option>)}</select></HopField>
+    <div className="grid grid-cols-3 gap-2">{([{ key: 'doseGL', label: 'Dose (g/L)' }, { key: 'temperatureC', label: 'Contact (°C)' }, { key: 'contactHours', label: contactFactor(scenario)===60?'Durée (min)':'Durée (h)' }] as const).map(f => <HopField key={f.key} label={f.label}><NumberInput aria-label={f.label} className={inputClass} disabled={busy} value={scenario[f.key]===null?undefined:scenario[f.key]*(f.key==='contactHours'?contactFactor(scenario):1)} emptyValue={undefined} onValue={n => update({ [f.key]: n===undefined?null:n/(f.key==='contactHours'?contactFactor(scenario):1) })} /></HopField>)}</div>
     {!!lots.filter(l => l.varietyId === scenario.varietyId).length && <HopField label="Lot ou analyse de référence"><select className={inputClass} disabled={busy} value={scenario.lotId ?? ''} onChange={e => update({ lotId: e.target.value || null })}><option value="">Référence variétale</option>{lots.filter(l => l.varietyId === scenario.varietyId).map(l => <option key={l.id} value={l.id}>{l.name}</option>)}</select></HopField>}
     <p className="text-xs text-cave-400">Un champ vide élargit la plage. La température est celle du contact avec le houblon. Un COA partiel reste consultable ; il ne resserre que les modèles qui utilisent réellement ses analyses.</p>
+    {(proposedConditions?.conditions.length || timingDefaults) && <p className="text-xs text-water">Les conditions manquantes ont été préremplies pour explorer ce scénario, à partir du guide de formulation ou d’un palier de la recette. Ce sont des valeurs proposées, à confirmer avant application.</p>}
   </div>;
   return <section aria-label="Simulateur aromatique expérimental" className="space-y-5 rounded-panel border border-hop/30 bg-cave-950/40 p-3 sm:p-4">
     <header className="space-y-2"><div className="flex gap-2 items-center"><FlaskConical size={18} className="text-hop" /><h3 className="font-serif text-xl text-cave-50">Tester une combinaison libre</h3></div><p className="text-sm text-cave-200">Change un ingrédient ou un ajout, compare, puis applique.</p><p className="text-xs text-ebc-straw">Modèle expérimental · confiance faible · plages non validées par dégustation.</p></header>

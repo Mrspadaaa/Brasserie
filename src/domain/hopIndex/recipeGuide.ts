@@ -95,6 +95,10 @@ export function findRecipeHopMatches(name: string, varieties: readonly HopVariet
 export function findRecipeYeastMatches<T extends RecipeGuideNamedItem>(name: string, yeasts: readonly T[]): RecipeIngredientMatch<T>[] {
   return findIngredientMatches(name, yeasts, 'yeast');
 }
+/** Explicit presentations of the same manufacturer product, not strain equivalence. */
+export function withDocumentedYeastNames<T extends RecipeGuideNamedItem>(yeasts: T[]): (T & { aliases?: readonly string[] })[] {
+  return yeasts.map(y => y.id === 'fermentis-us05' ? { ...y, aliases: [...new Set([...(y.aliases ?? []), 'SafAle US-05', 'Fermentis SafAle US-05', 'Fermentis Levure SafAle US-05', 'US-05'])] } : y);
+}
 
 function documentaryText(text: string): string {
   return text.normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase('fr')

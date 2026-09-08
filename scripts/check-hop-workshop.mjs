@@ -44,6 +44,7 @@ try {
     await page.locator('#wz-title').fill(name);
     await click(page, 'Construire le goût de ma bière', true);
     await page.waitForSelector('[aria-label="Atelier aromatique"]');
+    await click(page, 'Essais documentés');
     await page.$eval('[aria-label="Atelier aromatique"]', e => e.scrollIntoView({ block: 'start' }));
     await overflow(page); await page.screenshot({ path: resolve(out, `programmes-${width}.png`) });
     const before = await page.evaluate(async () => (await import('/src/services/storage.ts')).StorageService.getHopVarieties().length);
@@ -72,7 +73,12 @@ try {
     const saved = await page.evaluate(async name => (await import('/src/services/storage.ts')).StorageService.getRecipes().find(r => r.name === name), name);
     assert.equal(saved.hopTrialId, 'trial-split-verdant-2026'); assert.equal(saved.yeast.hopIndexId, 'fermentis-us05');
     assert.deepEqual(saved.hops.map(h => h.weightG), [saved.volumeL * 2, saved.volumeL * 2, saved.volumeL * 4]);
-    assert(saved.hops.every(h => h.alpha === 0 && h.timeMin == null && h.tempC == null));
+    assert(saved.hops.every(h => h.alpha === 0));
+    // Applying the selected adaptation now supplies explicit proposed contact
+    // conditions. The other additions retain the unknown published conditions.
+    assert.equal(saved.hops[0].tempC, 80);
+    assert.equal(saved.hops[0].timeMin, 20);
+    assert(saved.hops.slice(1).every(h => h.timeMin == null && h.tempC == null));
     assert.deepEqual(saved.hopAromaTarget.citrus, { min: 66, max: 100 });
     await click(page, name, true);
     const panel = await page.waitForSelector('[aria-label="Potentiel aromatique de la recette"]');

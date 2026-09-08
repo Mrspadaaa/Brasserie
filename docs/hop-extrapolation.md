@@ -1,6 +1,6 @@
 # Modèle exploratoire houblon × levure × timing
 
-Version initiale : 8 septembre 2026. Public : brasseur de L’Affinée et mainteneur du modèle.
+Révision v4 : 8 septembre 2026. Voir [le solver](hop-solver.md) et [la revue mathématique](hop-math-audit.md). Public : brasseur de L’Affinée et mainteneur du modèle.
 
 Le simulateur permet d’explorer une combinaison libre et d’appliquer ce scénario pendant la création de recette. Il donne un **indice expérimental de présence sensorielle avec une plage**, par famille. Ce n’est pas une concentration, un rendement enzymatique, une intensité de panel étalonnée ou une probabilité de réussite. La confiance reste faible tant que les hypothèses n’ont pas été confrontées à une validation indépendante.
 
@@ -10,7 +10,7 @@ Les calculs exacts déjà disponibles conservent leur priorité dans leur domain
 
 | Décision | Preuve consultée | Limite de transposition |
 | --- | --- | --- |
-| Réponse de dose compressive et différente selon la famille | [Lafontaine et Shellhammer, 2018, DOI 10.1002/jib.517](https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517) : Cascade, un lot de cônes, bière clarifiée, cinq doses de 0 à 16 g/L. Entre 8 et 16 g/L, agrumes sans différence significative mais herbacé/thé en hausse. | Ni plateau universel ni constante universelle de saturation. Nos constantes sont des hypothèses, pas une régression de cette étude. |
+| Réponse de dose compressive et différente selon la famille | [Lafontaine et Shellhammer, 2018, DOI 10.1002/jib.517](https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517) : Cascade, un lot de cônes, bière clarifiée, cinq doses de 0 à 16 g/L. Entre 8 et 16 g/L, agrumes sans différence significative mais herbacé/thé en hausse. | Ni plateau universel ni constante universelle de saturation. Les constantes génériques restent des hypothèses. La révision .2 ajoute une forme relative reconstruite de cet essai, avec poids de transfert incertain. |
 | Séparer le profil fermentaire de l’expression du houblon | [Kumar et al., 2023, DOI 10.3390/foods12051064](https://doi.org/10.3390/foods12051064) : Motueka à 5 g/L après ébullition, plusieurs souches, 20 °C. Effets distincts sur alcools terpéniques et acétates ; US-05 et WLP001 ne sont pas dépourvues de transformation. | Un fermenteur par souche, taux d’ensemencement variables ; fréquences sensorielles et abondances analytiques, pas intensités transférables par axe. |
 | Ne pas imposer « plus tard = plus de tous les arômes » | [Takoi et al., 2016, BrewingScience 69, 1–7](https://brewingscience.de/index.php/brewingscience/article/download/284/194/505) : 18 variétés à chaud, trois comparées sur plusieurs timings, pellets T90 à 0,8 g/L avec une levure lager interne. | Effets spécifiques aux composés. L’ajout chaud est un extrait traité à 105 °C puis mélangé ; pas un whirlpool domestique identique. |
 | Ne pas déduire un axe sensoriel depuis un seul facteur de transfert chimique | [Haslbeck, Minkenberg et Coelhan, 2018](https://doi.org/10.1080/03610470.2018.1483701), également exposé dans la [thèse de Haslbeck, 2022](https://mediatum.ub.tum.de/doc/1634154/1634154.pdf), pp. 68, 80–81 et 96–98 : dose et température affectent différemment myrcène et linalool. | Expériences en bouteilles, matrices et alcools contrôlés, pas de calibration sensorielle universelle. |
@@ -26,10 +26,12 @@ Pour une famille `a`, une variété, une souche et un timing explicites :
 
 ```
 D_a = dose_gL / (K_timing_gL × facteur_dose_a + dose_gL)
-H_a = descripteur_a × D_a × contact_timing × expression_timing
+G_a = (1 − poids_transfert) × D_a + poids_transfert × forme_observée_a
+      (G_a = D_a sans courbe applicable)
+H_a = descripteur_a × G_a × contact_timing × expression_timing
       × expression_souche_a × gain × matrice
 I_a = clamp(1 − exp(−(H_a + arôme_propre_souche_a))
-            + marge_structurelle + marge_documentaire, 0, 1)
+            + marge_structurelle ± marge_documentaire × (1 − exp(−H_max)), 0, 1)
 ```
 
 `I_a` est ensuite projeté sur l’échelle locale de l’axe. La marge documentaire est symétrique ; la borne maximale de sa plage donne l’enveloppe utilisée. L’erreur structurelle reste additive sur la sortie pour que la saturation ne fasse pas disparaître l’incertitude.
@@ -64,21 +66,21 @@ Une fiche fabricant n’est pas une mesure de lot. La répétition des mots ou d
 
 ## Propagation des plages et classement
 
-Pour une dose connue `d`, la borne basse du facteur de dose utilise le plus grand `K`, et la borne haute le plus petit. La dose est la même au numérateur et au dénominateur. Une dose inconnue utilise directement `[0,1]` pour ce facteur ; aucune moyenne n’est imputée. Le calcul `1/(1+K/d)` reste stable à très grande dose et donne zéro à dose nulle. Les noyaux de contact sont monotones dans leurs constantes ; un contact inconnu utilise leur domaine `[0,1]`.
+Pour une dose connue `d`, la borne basse du facteur de dose utilise le plus grand `K`, et la borne haute le plus petit. La dose est la même au numérateur et au dénominateur. Une dose inconnue utilise directement `[0,1]` pour ce facteur ; aucune moyenne n’est imputée. Le calcul utilise un rapport logarithmique des facteurs de K et de la dose pour éviter les débordements et sous-flux intermédiaires ; une branche explicite donne zéro à dose nulle. Les noyaux de contact sont monotones dans leurs constantes ; un contact inconnu utilise leur domaine `[0,1]`.
 
 L’arithmétique d’intervalles garantit une inclusion **dans la formule choisie**, à la précision numérique près. Elle ne prouve pas la justesse de la formule physique. Voir [Rump, 2010, *Verification methods*](https://www.tuhh.de/ti3/rump/intlab/ActaNumerica2010.pdf), notamment la discussion des dépendances et de la surestimation. Les tests utilisent une tolérance de calcul explicitement séparée des marges aromatiques.
 
-Le classement existant mesure une distance à l’intervalle cible, pondérée par les paramètres sourcés des axes. Pour les résultats extrapolés : borne basse d’adéquation décroissante, puis largeur croissante. Des plages qui se recouvrent ne démontrent pas un ordre. Seule une borne basse strictement supérieure à la borne haute d’une autre piste fournit un ordre robuste suffisant selon cette convention.
+Le classement existant mesure une distance à l’intervalle cible, pondérée par les paramètres sourcés des axes. Pour tous les résultats chiffrés : borne basse d’adéquation décroissante, puis largeur croissante. Des plages qui se recouvrent ne démontrent pas un ordre. Seule une borne basse strictement supérieure à la borne haute d’une autre piste fournit un ordre robuste suffisant selon cette convention.
 
 Dans l’atelier, une recherche conserve la souche et le timing pour proposer des houblons. « Comparer aussi les levures » explore aussi les souches disponibles ; à cru, elle compare les phases active et après fermentation à dose, température et contact identiques. Les phases chaudes restent distinctes pour ne pas comparer artificiellement un whirlpool de 24 heures à 18 °C à un ajout à cru. Le traitement par petits groupes conserve le même résultat tout en laissant l’interface répondre.
 
 ## Données, édition et historique
 
 - La nouvelle connaissance `kind: extrapolation` vit dans **la collection existante `hopKnowledge`**. Aucun moteur de règles, aucune nouvelle collection, aucune Cloud Function spécialisée.
-- Le JSON initial est proposé à la lecture. Une révision Firestore de même identifiant prime immédiatement, même si elle est désactivée. Une révision invalide n’est pas remplacée silencieusement par le défaut.
+- Le JSON initial est proposé à la lecture. Une révision Firestore personnalisée de même identifiant prime immédiatement, même si elle est désactivée. Seul le défaut .1 intégralement inchangé est normalisé vers .2, sans écriture à la lecture. Une révision invalide n’est pas remplacée silencieusement par le défaut.
 - L’atelier peut enregistrer les hypothèses, puis l’éditeur des connaissances permet de les modifier sans redéploiement. Une modification exige une nouvelle version. Le moteur reçoit uniquement des données validées.
 - `predictHopTriplet` est commun au navigateur, au classement et aux outils du compagnon. Le modèle expérimental ne remplit pas `beer:4mmpFree` et ne modifie pas une alerte sur la seule base d’un indice sensoriel.
-- Une prédiction conservée utilise `hop-experimental-v3` et copie les coefficients, axes, sources et entrées. La validation rejoue le calcul depuis cette copie et refuse les plages ou étiquettes falsifiées. Les versions historiques restent inchangées.
+- Une prédiction conservée utilise `hop-experimental-v4` et copie les coefficients, axes, sources et entrées. La validation rejoue le calcul depuis cette copie et refuse les plages ou étiquettes falsifiées. Les versions historiques restent inchangées.
 - Une simulation ne réécrit pas la recette. L’action « Appliquer ce scénario » est explicite, et la lecture d’une recette enregistrée ne réalise aucune écriture.
 
 Le nom Cascade peut proposer la fiche générique Hopsteiner lorsque l’ingrédient n’est pas associé. US-05 est reconnue par les variantes explicites de son nom. Ces rapprochements et toute hypothèse de phase sont affichés comme propositions de simulation ; ils ne deviennent des associations enregistrées qu’à l’application. Un `J+3` n’est jamais une mesure du stade de fermentation.

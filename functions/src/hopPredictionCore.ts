@@ -1,6 +1,7 @@
 import { HopConfidence, HopLot, HopRange, HopSource, HopVariety, validHopRange } from './hopIndexSchema.js';
 import { ResolvedHopFact, resolveHopFacts } from './hopIndexFacts.js';
-import { extrapolateHopProfile } from './hopExtrapolationCore.js';
+import { extrapolateHopProfile, createHopExtrapolationCache } from './hopExtrapolationCore.js';
+import { extrapolateHopProfile as extrapolateHopProfileV3 } from './hopExtrapolationV3.js';
 import type { HopExtrapolation } from './hopExtrapolationSchema.js';
 import { HopAxis, HopConfidencePolicy, HopEstimate, HopKnowledge, HopModel, HopModelOutput, HopPrediction, HopRisk, HopRiskPolicy, HopTasting, HopTriplet, HopYeast, assertHopKnowledge, assertHopTriplet } from './hopPredictionSchema.js';
 
@@ -28,12 +29,22 @@ function sourceCap(source: HopSource, policies: HopConfidencePolicy[]): HopConfi
   if (!policies.length || source.year === null || source.kind === 'judgment') return 'low';
   return weakestHopConfidence(...policies.map(p => p.caps[source.kind]));
 }
-function evaluateOutput(output: HopModelOutput, model: HopModel, facts: ResolvedHopFact[], policies: HopConfidencePolicy[]): HopEstimate {
+function evaluateOutput(output: HopModelOutput, model: HopModel, facts: ResolvedHopFact[], policies: HopConfidencePolicy[], dose: number | null): HopEstimate {
   const sources = [model.source], reasons: string[] = [];
   let level = weakestHopConfidence(model.confidence, sourceCap(model.source, policies));
   const take = (source: HopSource) => { sources.push(source); level = weakestHopConfidence(level, sourceCap(source, policies)); };
   const c = output.calibration;
   let computed: HopRange | null = null;
+  if (output.doseCurve && dose !== null) {
+    const curve = output.doseCurve;
+    const i = curve.points.findIndex((p, index) => index > 0 && dose <= p.doseGL);
+    if (i < 1 || dose < curve.points[0].doseGL) return empty('Dose hors des observations ; aucune prolongation implicite de la courbe.');
+    const left = curve.points[i-1], right = curve.points[i];
+    const mean = left.value + (right.value-left.value) * (dose-left.doseGL) / (right.doseGL-left.doseGL);
+    computed = { min: mean + curve.residual.range.min, max: mean + curve.residual.range.max };
+    take(curve.source); take(curve.residual.source); level = 'low';
+    reasons.push('Interpolation locale de moyennes publiées, avec marge exploratoire. Ni panel indépendant ni intervalle statistique de prédiction.', curve.method);
+  }
   if (c) {
     const inputs = c.terms.map(t => ({ term: t, fact: facts.find(f => f.analyte === t.analyte) }));
     // A known incompatible unit/form/domain cannot be replaced by a generic envelope.
@@ -149,6 +160,7 @@ function prepareHopData(data: HopEngineData) {
   const { valid, errors } = usableHopKnowledge(data.knowledge);
   return {
     errors,
+    extrapolationCache: createHopExtrapolationCache(),
     varieties: new Map(data.varieties.map(v => [v.id, v])), lots: new Map(data.lots.map(v => [v.id, v])),
     yeasts: new Map(valid.filter((v): v is HopYeast => v.kind === 'yeast').map(v => [v.id, v])),
     axes: valid.filter((v): v is HopAxis => v.kind === 'axis'),
@@ -159,7 +171,7 @@ function prepareHopData(data: HopEngineData) {
   };
 }
 /** Prepared once per ranking; no persistent cache that could hide a database revision. */
-function predictPrepared(triplet: HopTriplet, target: Record<string, HopRange>, data: ReturnType<typeof prepareHopData>): HopPrediction {
+function predictPrepared(triplet: HopTriplet, target: Record<string, HopRange>, data: ReturnType<typeof prepareHopData>, legacyV3 = false): HopPrediction {
   const { axes, policies } = data;
   const result: HopPrediction = { triplet: { ...triplet }, profile: Object.fromEntries(axes.map(a => [a.id, empty('Triplet ou contexte incomplet.')])), compounds: {}, score: empty('Triplet ou contexte incomplet.'), risks: [], modelRefs: [], reasons: [...data.errors] };
   try { assertHopTriplet(triplet); } catch { result.reasons.push('Triplet invalide ; aucune valeur calculée.'); return result; }
@@ -171,14 +183,14 @@ function predictPrepared(triplet: HopTriplet, target: Record<string, HopRange>, 
   const badLot = !!triplet.lotId && (!lot || lot.varietyId !== triplet.varietyId);
   if (badLot) { models.length = 0; result.reasons.push('Lot absent ou relié à une autre variété ; aucune substitution implicite.'); }
   for (const axis of axes) {
-    const estimates = models.flatMap(m => m.outputs.filter(o => o.target === `axis:${axis.id}` && o.axisVersion === axis.version).map(o => evaluateOutput(o, m, facts, policies)));
+    const estimates = models.flatMap(m => m.outputs.filter(o => o.target === `axis:${axis.id}` && o.axisVersion === axis.version).map(o => evaluateOutput(o, m, facts, policies, triplet.doseGL)));
     const combined = combine(estimates);
     if (combined.range) {
       const range = { min: Math.max(axis.scale.min, combined.range.min), max: Math.min(axis.scale.max, combined.range.max) };
       result.profile[axis.id] = range.min <= range.max ? { ...combined, range } : empty('Résultat hors de l’échelle sensorielle ; étalonnage à revoir.');
     } else result.profile[axis.id] = combined;
   }
-  result.compounds['4mmpFree'] = combine(models.flatMap(m => m.outputs.filter(o => o.target === 'beer:4mmpFree').map(o => evaluateOutput(o, m, facts, policies))));
+  result.compounds['4mmpFree'] = combine(models.flatMap(m => m.outputs.filter(o => o.target === 'beer:4mmpFree').map(o => evaluateOutput(o, m, facts, policies, triplet.doseGL))));
   if (result.compounds['4mmpFree'].range && result.compounds['4mmpFree'].range!.min < 0) result.compounds['4mmpFree'] = empty('Étalonnage produisant une concentration négative ; à revoir.');
   result.modelRefs = models.map(m => ({ id: m.id, version: m.version }));
   if (yeast) for (const value of [...Object.values(result.profile), ...Object.values(result.compounds)]) {
@@ -188,7 +200,8 @@ function predictPrepared(triplet: HopTriplet, target: Record<string, HopRange>, 
   // Exact, contextual observations retain priority. The experimental model fills
   // only unsupported axes; its assumptions never become measured concentrations.
   if (variety && yeast && triplet.timing && !badLot && data.extrapolations.length) {
-    const estimates = data.extrapolations.map(model => ({ model, profile: extrapolateHopProfile(triplet, variety, yeast, axes, model, (lot?.form ?? variety.form) !== 'unknown') }));
+    const extrapolate = legacyV3 ? extrapolateHopProfileV3 : extrapolateHopProfile;
+    const estimates = data.extrapolations.map(model => ({ model, profile: extrapolate(triplet, variety, yeast, axes, model, (lot?.form ?? variety.form) !== 'unknown', data.extrapolationCache) }));
     const extrapolatedAxes: string[] = [];
     for (const axis of axes) if (!result.profile[axis.id].range) {
       const outputs = estimates.map(e => e.profile[axis.id]).filter(Boolean);
@@ -210,6 +223,15 @@ function predictPrepared(triplet: HopTriplet, target: Record<string, HopRange>, 
 export function predictHopTriplet(triplet: HopTriplet, target: Record<string, HopRange>, data: HopEngineData): HopPrediction {
   return predictPrepared(triplet, target, prepareHopData(data));
 }
+/** One immutable search context, discarded on the next data revision. */
+export function createHopPredictor(data: HopEngineData) {
+  const prepared = prepareHopData(data);
+  return (triplet: HopTriplet, target: Record<string, HopRange>) => predictPrepared(triplet, target, prepared);
+}
+/** Historical v3 snapshots must replay the algorithm they actually used. */
+export function replayHopTripletV3(triplet: HopTriplet, target: Record<string, HopRange>, data: HopEngineData): HopPrediction {
+  return predictPrepared(triplet, target, prepareHopData(data), true);
+}
 /** Conservative fit first, optimistic bound second, unknowns last. No hidden midpoint. */
 export function rankHopTriplets(triplets: HopTriplet[], target: Record<string, HopRange>, data: HopEngineData): HopPrediction[] {
   const prepared = prepareHopData(data);
@@ -219,9 +241,11 @@ export function rankHopTriplets(triplets: HopTriplet[], target: Record<string, H
 export function compareHopPredictions(a: HopPrediction, b: HopPrediction): number {
   if (!a.score.range) return b.score.range ? 1 : 0;
   if (!b.score.range) return -1;
-  return b.score.range.min - a.score.range.min || (a.extrapolatedAxes?.length || b.extrapolatedAxes?.length
-    ? (a.score.range.max - a.score.range.min) - (b.score.range.max - b.score.range.min)
-    : b.score.range.max - a.score.range.max);
+  // A pair-dependent rule creates cycles when exact and experimental results mix.
+  // One lexicographic ordering for EVERY candidate is transitive and deterministic.
+  return b.score.range.min - a.score.range.min
+    || (a.score.range.max - a.score.range.min) - (b.score.range.max - b.score.range.min)
+    || JSON.stringify(a.triplet).localeCompare(JSON.stringify(b.triplet));
 }
 export function compareHopTasting(tasting: HopTasting, prediction: HopPrediction | undefined, axes: HopAxis[]) {
   return tasting.axes.map(({ axis, perceived, confidence: tastingConfidence }) => {

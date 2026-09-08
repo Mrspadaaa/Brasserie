@@ -45,7 +45,7 @@ afterEach(cleanup);
 function mount(initial = recipe()) {
   let current = initial; const changes = vi.fn();
   function Host() { const [r, setR] = useState(initial); current = r; return <HopWorkshop recipe={r} onChange={next => { changes(next); setR(next as Recipe); }} />; }
-  render(<Host />); return { current: () => current, changes };
+  render(<Host />); fireEvent.click(screen.getByRole('button', { name: 'Essais documentés' })); return { current: () => current, changes };
 }
 describe('Atelier de formulation sur des essais connus', () => {
   it('fournit immédiatement des programmes avec résultat, source et graphique dans une base vide, sans écrire', () => {

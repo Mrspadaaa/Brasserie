@@ -65,7 +65,7 @@ describe('Atelier expérimental utilisé pendant la formulation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Conserver pour une dégustation' }));
     await waitFor(() => expect(StorageService.getHopPredictions()).toHaveLength(1));
     const snapshot = StorageService.getHopPredictions()[0];
-    expect(snapshot.engineVersion).toBe('hop-experimental-v3'); expect(snapshot.prediction.profile.citrus.central).toBeDefined();
+    expect(snapshot.engineVersion).toBe('hop-experimental-v4'); expect(snapshot.prediction.profile.citrus.central).toBeDefined();
     expect(snapshot.evidence.knowledge.some(k => k.kind === 'extrapolation')).toBe(true);
   });
   it('conserve la recette après une erreur et permet de reprendre exactement le scénario', async () => {

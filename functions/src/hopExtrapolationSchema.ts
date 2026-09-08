@@ -25,6 +25,12 @@ export interface HopExtrapolation {
     otherAroma: HopParameter; otherExpression: HopParameter;
     notes: string[];
   }[];
+  doseReferences?: {
+    axisId: string; timings: HopTiming[];
+    points: { doseGL: number; value: number }[];
+    source: HopSource; evidence: HopSource; limitations: string[];
+    transferWeight: HopParameter; relativeError: HopParameter;
+  }[];
 }
 
 export function assertHopExtrapolation(v: any): asserts v is HopExtrapolation {
@@ -39,7 +45,7 @@ export function assertHopExtrapolation(v: any): asserts v is HopExtrapolation {
     check(Number.isFinite(x.central) && x.central >= x.range.min && x.central <= x.range.max, 'hypothèse centrale hors de la plage');
     source(x.source);
   };
-  keys(v, ['id', 'kind', 'name', 'version', 'enabled', 'source', 'evidence', 'limitations', 'axes', 'descriptor', 'gain', 'residual', 'matrix', 'sourceUncertainty', 'undatedUncertainty', 'unknownFormUncertainty', 'timings', 'defaultYeast', 'yeasts']);
+  keys(v, ['id', 'kind', 'name', 'version', 'enabled', 'source', 'evidence', 'limitations', 'axes', 'descriptor', 'gain', 'residual', 'matrix', 'sourceUncertainty', 'undatedUncertainty', 'unknownFormUncertainty', 'timings', 'defaultYeast', 'yeasts', 'doseReferences']);
   check(v.kind === 'extrapolation' && text(v.version) && typeof v.enabled === 'boolean', 'identité invalide');
   source(v.source);
   const evidence = (x: any) => { check(Array.isArray(x) && x.length > 0, 'preuves absentes'); x.forEach((s: any) => source(s, false)); };
@@ -80,5 +86,15 @@ export function assertHopExtrapolation(v: any): asserts v is HopExtrapolation {
     // Losing the strain must widen, never select a reassuring average strain.
     for (const p of [y.otherAroma, ...Object.values(y.aroma)] as HopParameter[]) check(p.range.min >= v.defaultYeast.aroma.range.min && p.range.max <= v.defaultYeast.aroma.range.max, 'arôme de levure hors enveloppe inconnue');
     for (const p of [y.otherExpression, ...Object.values(y.expression)] as HopParameter[]) check(p.range.min >= v.defaultYeast.expression.range.min && p.range.max <= v.defaultYeast.expression.range.max, 'expression hors enveloppe inconnue');
+  }
+  if (v.doseReferences !== undefined) {
+    check(Array.isArray(v.doseReferences) && new Set(v.doseReferences.map((r: any)=>r.axisId)).size === v.doseReferences.length, 'courbes dupliquées');
+    for (const r of v.doseReferences) {
+      keys(r, ['axisId','timings','points','source','evidence','limitations','transferWeight','relativeError']);
+      check(v.axes.some((a: any)=>a.id===r.axisId) && Array.isArray(r.timings) && r.timings.length>0 && r.timings.every((t:any)=>timings.includes(t)), 'domaine de transfert invalide');
+      source(r.source); source(r.evidence,false); notes(r.limitations); parameter(r.transferWeight,0,1); parameter(r.relativeError);
+      check(Array.isArray(r.points) && r.points.length>=2 && r.points[0].doseGL===0 && r.points[0].value===0, 'la courbe doit commencer sans apport à dose zéro');
+      r.points.forEach((p:any,i:number)=>{keys(p,['doseGL','value']);check(Number.isFinite(p.doseGL)&&p.doseGL>=0&&Number.isFinite(p.value)&&p.value>=0&&p.value<=1&&(i===0||p.doseGL>r.points[i-1].doseGL),'point de courbe invalide');});
+    }
   }
 }
