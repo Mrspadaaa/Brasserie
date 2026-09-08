@@ -419,6 +419,8 @@ export interface Recipe {
   totalGristKg: number;
   hops: HopIngredient[];
   hopMatrixId?: string;
+  /** Documentary brewing trial used as an anchor; never certifies model scope. */
+  hopTrialId?: string;
   hopAromaTarget?: Record<string, import('../../functions/src/hopIndexSchema').HopRange>;
   hopPredictionIds?: string[];
   adjuncts?: AdjunctIngredient[];

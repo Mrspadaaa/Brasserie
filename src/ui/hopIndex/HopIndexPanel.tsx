@@ -12,6 +12,9 @@ import { NumberInput } from '../NumberInput';
 import { HopField as Field, HopFactsEditor, HopSourceEditor, blankHopSource } from './HopFactsEditor';
 import { BrewTag } from '../BrewTag';
 import { ChevronRight } from 'lucide-react';
+import { useHopCatalogue } from './useHopCatalogue';
+import { ensureGuideReferences } from './guideData';
+import { HopTechnicalPanel } from './HopTechnicalPanel';
 
 type Editor = { kind: 'variety'; value: HopVariety } | { kind: 'lot'; value: HopLot };
 const newVariety = (name = ''): HopVariety => ({ id: crypto.randomUUID(), name, aliases: [], form: 'unknown', descriptions: [], analysis: [] });
@@ -48,7 +51,7 @@ export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVari
 }
 
 export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { kind: string; at: number } | null; onNotice?: (message: string) => void }) {
-  const varieties = useStorageValue(StorageService.getHopVarieties);
+  const { varieties, error: catalogueError, loading } = useHopCatalogue();
   const lots = useStorageValue(StorageService.getHopLots);
   const [query, setQuery] = useState('');
   const [sourceFilter, setSourceFilter] = useState('');
@@ -78,16 +81,23 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     setEditor({ kind: 'lot', value: { id: crypto.randomUUID(), name: '', varietyId: variety.id, form: 'unknown', analysis: [] } });
     setError(''); setAiNote(''); setCoaProposal(null);
   };
-  const save = () => {
+  const save = async () => {
     if (!editor) return;
+    setBusy(true);
     try {
       const item = { ...editor.value, name: editor.value.name.trim() };
+      assertHopDocument(editor.kind === 'variety' ? 'hopVarieties' : 'hopLots', item);
       if (editor.kind === 'variety') StorageService.saveHopVariety(item as HopVariety);
-      else StorageService.saveHopLot(item as HopLot);
+      else {
+        const parent = varieties.find(v => v.id === (item as HopLot).varietyId);
+        if (parent) await ensureGuideReferences({ varieties: [parent] });
+        StorageService.saveHopLot(item as HopLot);
+      }
       setSelected(editor.kind === 'variety' ? item.id : (item as HopLot).varietyId);
       setLotId(editor.kind === 'lot' ? item.id : undefined);
       closeEditor(); onNotice?.('Fiche enregistrée localement ; synchronisation en cours.');
     } catch (e) { setError((e as Error).message); }
+    finally { setBusy(false); }
   };
   const lookup = async () => {
     if (!query.trim() || busy || editor) return;
@@ -171,7 +181,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
           <span className="flex flex-wrap gap-2"><BrewTag>{HOP_FORM_LABELS[v.form]}</BrewTag>{!!lotCounts.get(v.id) && <BrewTag tone="info">{lotCounts.get(v.id)} lot(s)</BrewTag>}</span>
           {v.descriptions.find(d => d.context === 'rawHop') && <span className="block text-sm text-cave-200 line-clamp-2">{v.descriptions.find(d => d.context === 'rawHop')?.text}</span>}
         </button>)}
-        {!matches.length && <p className="py-5 text-cave-400">Aucune variété correspondante. Ajoute une fiche ou recherche une source publiée.</p>}
+        {!matches.length && <p className="py-5 text-cave-400">{loading ? 'Chargement du catalogue…' : catalogueError || 'Aucune variété correspondante. Ajoute une fiche ou recherche une source publiée.'}</p>}
     </div>
     {matches.length > limit && <Button onClick={() => setLimit(n => n + 20)}>Afficher les fiches suivantes</Button>}
     <Sheet open={!!variety && !editor} onClose={() => { setSelected(undefined); setLotId(undefined); }} title={variety?.name ?? 'Variété'} subtitle="Référence documentaire et analyses des lots">
@@ -189,12 +199,13 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
         {lot && <div className="space-y-1 text-sm text-cave-200"><p>{lot.growingRegion || 'Région inconnue'} · {lot.grower || 'Producteur inconnu'}</p>{lot.storageNotes && <p>Stockage : {lot.storageNotes}</p>}</div>}
         {lot?.notes && <p className="text-sm text-cave-400">{lot.notes}</p>}
         <HopFactsView lot={lot} variety={variety} />
+        <HopTechnicalPanel lot={lot} variety={variety} />
       </article>}
     </Sheet>
-    <Sheet open={!!editor} onClose={closeEditor} title={editor?.kind === 'lot' ? 'Lot de houblon et COA' : 'Fiche variété de houblon'}
+    <Sheet open={!!editor} dismissible={!busy} onClose={() => { if (!busy) closeEditor(); }} title={editor?.kind === 'lot' ? 'Lot de houblon et COA' : 'Fiche variété de houblon'}
       subtitle="Conserve les champs absents. Les plages doivent venir de la source."
       footer={<Button full intent="primary" disabled={busy} onClick={save}>Enregistrer la fiche</Button>}>
-      {editor && <div className="space-y-5 pb-4">
+      {editor && <fieldset disabled={busy} className="space-y-5 pb-4 min-w-0">
         {error && <p role="alert" className="text-alert">{error}</p>}
         {aiNote && <p role="status" className="text-ebc-straw">{aiNote}</p>}
         <Field label={editor.kind === 'lot' ? 'Nom du lot' : 'Nom de la variété'}><TextInput value={editor.value.name} onChange={name => setEditor({ ...editor, value: { ...editor.value, name } } as Editor)} /></Field>
@@ -232,7 +243,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
         </>}
         <HopFactsEditor value={editor.value.analysis} sourceKind={editor.kind === 'lot' ? 'coa' : 'manufacturer'} onChange={analysis => setEditor({ ...editor, value: { ...editor.value, analysis } } as Editor)} />
         <label className="flex gap-3 items-center min-h-touch text-cave-200"><input type="checkbox" checked={editor.value.archived ?? false} onChange={e => setEditor({ ...editor, value: { ...editor.value, archived: e.target.checked } } as Editor)} />Archiver cette fiche (conserver son historique)</label>
-      </div>}
+      </fieldset>}
     </Sheet>
   </section>;
 }

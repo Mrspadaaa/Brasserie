@@ -408,7 +408,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       </Section>
 
       <Section title="Potentiel aromatique">
-        <HopRecipePanel recipe={recipe} onSave={updated => StorageService.updateRecipe(updated)} />
+        <HopRecipePanel recipe={recipe} onEdit={onEdit} />
       </Section>
 
       {/* --- Levure ------------------------------------------------------ */}

@@ -76,7 +76,9 @@ describe('Références proposées dans le guide de recette', () => {
       name: 'Idaho 7', aliases: ['Idaho 7® Brand', 'J-007'], form: 'unknown', analysis: [],
       descriptions: [{ context: 'rawHop', source: { author: 'Yakima Chief Hops', kind: 'manufacturer', year: null } }]
     });
-    expect(varieties.every(row => row.descriptions.every(description => description.source.kind === 'manufacturer'))).toBe(true);
+    expect(varieties.every(row => row.descriptions.every(description => ['manufacturer', 'research'].includes(description.source.kind)))).toBe(true);
+    expect(varieties.some(v => v.id === 'cascade-cones-lafontaine')).toBe(true);
+    expect(varieties.find(v => v.id === 'lallemand-simcoe')?.analysis).toEqual([]);
     expect(memory.importPack).not.toHaveBeenCalled();
   });
 

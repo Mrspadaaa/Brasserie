@@ -31,6 +31,8 @@ import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
+import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
+import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -878,7 +880,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds'>) => {
+  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId'>) => {
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
@@ -886,7 +888,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
       waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds } : {}) }));
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId } : {}) }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -1032,6 +1034,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     hops,
     yeast,
     hopMatrixId: details.hopMatrixId,
+    hopTrialId: details.hopTrialId,
     hopAromaTarget: details.hopAromaTarget,
     hopPredictionIds: details.hopPredictionIds,
     adjuncts: details.adjuncts,
@@ -1267,6 +1270,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
+      {step !== 'houblons' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
+        <span className="block text-base font-semibold text-cave-50">{details.hopTrialId ? 'Affiner mon programme aromatique' : 'Construire le goût de ma bière'}</span>
+        <span className="block text-xs sm:text-sm text-cave-200 mt-1">Essais documentés, houblons, levure et timing · ouvrir l’atelier →</span>
+      </button>}
       {step === 'identite' && (
         <>
           {/*
@@ -1530,11 +1537,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
-            <HopRecipeGuide recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
+            <HopWorkshop recipe={build()} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
               setHops(next.hops);
               setYeast(next.yeast);
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+            }} contextEditor={<details><summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary><HopRecipeGuide contextOnly recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
+              setHops(next.hops); setYeast(next.yeast);
               setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
-            }} />
+            }} /></details>} />
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-lg font-semibold text-cave-100 pt-3">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
               layout="grid"
@@ -1544,11 +1555,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             />
             {!tight && <p className="text-2xs sm:text-sm text-cave-500 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
 
-            <IngredientPicker
-              categories={['Houblon']}
+            <HopIngredientPicker
               items={stockItems}
-              value=""
               onChange={addHop}
+              onBusyChange={setHopGuideBusy}
+              onReference={variety => setHops(current => [...current, { name: variety.name, hopVarietyId: variety.id, alpha: 0, weightG: 0, stage: hopStage }])}
               onCreate={(n) => {
                 const created = onCreateStockItem(n, 'Houblon', 'g');
                 addHop(created.name, created);
@@ -1697,7 +1708,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   unit="min"
                                   min={0}
                                   integer
-                                  value={h.timeMin ?? 20}
+                                  value={h.timeMin}
                                   onValue={(v) => patchHop(i, { timeMin: v })}
                                 />
                               </div>
@@ -1709,7 +1720,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   min={0}
                                   max={100}
                                   integer
-                                  value={h.tempC ?? 80}
+                                  value={h.tempC}
                                   onValue={(v) => patchHop(i, { tempC: v })}
                                 />
                               </div>
@@ -1737,6 +1748,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                       )}
 
                       {/* Sans alpha, l'amertume de cette ligne ne compte pas. */}
+                      {h.stage === 'dryHop' && <div className="space-y-2 border-t border-cave-800 pt-2">
+                        <label className="block text-xs text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
+                          <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
+                        </select></label>
+                        <div className="flex flex-wrap gap-3"><InlineNum label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
+                      </div>}
                       <AiAssist
                         kind="houblon"
                         name={h.name}

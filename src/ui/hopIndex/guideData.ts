@@ -2,6 +2,9 @@ import { assertHopDocument, type HopVariety } from '../../../functions/src/hopIn
 import { assertHopKnowledge, type HopAxis, type HopKnowledge, type HopRiskPolicy, type HopYeast } from '../../../functions/src/hopPredictionSchema';
 import initialKnowledge from '../../data/hopKnowledgeBootstrap.json';
 import initialYeasts from '../../data/hopYeastBootstrap.json';
+import trialPack from '../../data/hopTrialBootstrap.json';
+import studyPack from '../../data/hopStudyBootstrap.json';
+import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
 
 export type GuideYeast = HopYeast & { aliases?: string[] };
@@ -39,12 +42,21 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 }
 
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
-  const rows = [...checkedKnowledge(initialYeasts), ...validKnowledge(knowledge)];
+  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...validKnowledge(knowledge)];
   const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
   return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
     const aliases = yeastNameVariants[yeast.id];
-    return aliases ? { ...yeast, aliases: [...aliases] } : yeast;
+    const trial = guideTrials(knowledge).find(t => t.yeastId === yeast.id);
+    const builtin = initialYeasts.find(y => y.id === yeast.id);
+    const form = yeast.form ?? trial?.yeastForm ?? builtin?.form;
+    return { ...yeast, ...(form ? { form: form as HopYeast['form'] } : {}), ...(aliases ? { aliases: [...aliases] } : {}) };
   });
+}
+
+/** Reported programmes; never injected into the prediction model collection. */
+export function guideTrials(knowledge: HopKnowledge[]): HopTrial[] {
+  const rows = [...checkedKnowledge(trialPack.hopKnowledge), ...validKnowledge(knowledge)];
+  return [...new Map(rows.map(row => [row.id, row])).values()].filter((row): row is HopTrial => row.kind === 'trial');
 }
 
 /** Proposed policies only; an explicit action must persist any missing references. */
@@ -59,7 +71,7 @@ export async function loadGuideVarieties(): Promise<HopVariety[]> {
     import('../../data/hopManufacturerBootstrap.json'),
     import('../../data/hopGuideVarietyBootstrap.json')
   ]);
-  return [...manufacturer.default.hopVarieties, ...guide.default.hopVarieties].map(row => {
+  return [...manufacturer.default.hopVarieties, ...guide.default.hopVarieties, ...studyPack.hopVarieties, ...trialPack.hopVarieties].map(row => {
     assertHopDocument('hopVarieties', row);
     return row as HopVariety;
   });

@@ -13,7 +13,11 @@ import { Button } from '../../components/ui/Button';
 import { HOP_TIMING_LABELS } from './presentation';
 import { BrewTag } from '../BrewTag';
 import { hopReferenceSource } from '../../domain/hopIndex/labels';
+import { HopWorkshop } from './HopWorkshop';
 export function HopSearchPanel() {
+  return <div className="space-y-5"><HopWorkshop /><details><summary className="cursor-pointer min-h-touch text-sm text-cave-400">Calcul expérimental avancé · modèles validés uniquement</summary><HopModelSearchPanel /></details></div>;
+}
+function HopModelSearchPanel() {
   const varieties = useStorageValue(StorageService.getHopVarieties), lots = useStorageValue(StorageService.getHopLots), knowledge = useStorageValue(StorageService.getHopKnowledge);
   const valid = useMemo(() => usableHopKnowledge(knowledge).valid, [knowledge]);
   const axes = valid.filter((k): k is HopAxis => k.kind === 'axis'), yeasts = valid.filter((k): k is HopYeast => k.kind === 'yeast');

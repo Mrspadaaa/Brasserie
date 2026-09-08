@@ -1,4 +1,5 @@
 import { HOP_ANALYTES, HOP_FORMS, HOP_UNITS, HopAnalyte, HopConfidence, HopMeasurement, HopProductForm, HopRange, HopSource, HopSourceKind, HopUnit, assertHopDocument, hopSourceError, validHopRange } from './hopIndexSchema.js';
+import { assertHopTrial, type HopTrial } from './hopTrialSchema.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
 export type HopTiming = typeof HOP_TIMINGS[number];
@@ -9,6 +10,7 @@ export interface HopAxis {
 }
 export interface HopYeast {
   id: string; kind: 'yeast'; name: string; betaLyase: 'positive' | 'negative' | 'unknown'; source: HopSource;
+  form?: 'sèche' | 'liquide' | 'levain';
 }
 export interface HopTriplet {
   varietyId: string | null; lotId?: string | null; yeastId: string | null; timing: HopTiming | null;
@@ -49,7 +51,7 @@ export interface HopConfidencePolicy {
 export interface HopResearchNote {
   id: string; kind: 'note'; name: string; topics: string[]; summary: string; limitation: string; source: HopSource;
 }
-export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote;
+export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial;
 export interface HopEstimate {
   range: HopRange | null; confidence: HopConfidence; reasons: string[]; sources: HopSource[];
 }
@@ -104,6 +106,7 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
   if (provenanceError) throw Error(provenanceError);
   const base = ['id', 'kind', 'name', 'source'];
   switch (v.kind) {
+    case 'trial': assertHopTrial(v); break;
     case 'note':
       keys(v, [...base, 'topics', 'summary', 'limitation']);
       check(Array.isArray(v.topics) && v.topics.length > 0 && v.topics.every(str) && str(v.summary) && str(v.limitation), 'Note documentaire incomplète.'); break;
@@ -113,7 +116,8 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
       check(Number.isFinite(v.lowMax) && Number.isFinite(v.mediumMax) && v.lowMax > v.scale.min && v.lowMax < v.mediumMax && v.mediumMax < v.scale.max, 'Classes de l’axe invalides.');
       parameter(v.weight, true); check(v.weight.range.min > 0, 'Poids strictement positif requis.'); break;
     case 'yeast':
-      keys(v, [...base, 'betaLyase']);
+      keys(v, [...base, 'betaLyase', 'form']);
+      check(v.form === undefined || ['sèche', 'liquide', 'levain'].includes(v.form), 'Forme de levure invalide.');
       check(['positive', 'negative', 'unknown'].includes(v.betaLyase), 'Statut β-lyase invalide.'); break;
     case 'confidence': {
       keys(v, [...base, 'caps']);

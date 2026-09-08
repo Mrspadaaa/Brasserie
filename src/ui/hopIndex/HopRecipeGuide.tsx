@@ -20,9 +20,10 @@ const readKnowledge = () => StorageService.getHopKnowledge();
 const readVarieties = () => StorageService.getHopVarieties();
 const readLots = () => StorageService.getHopLots();
 type GuideRecipe = Recipe | RecipeSnapshot;
-export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange }: {
+export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange, contextOnly = false }: {
   recipe: GuideRecipe; onChange: (recipe: GuideRecipe) => void; onChooseYeast?: () => void;
   onBusyChange?: (busy: boolean) => void;
+  contextOnly?: boolean;
 }) {
   const knowledge = useStorageValue(readKnowledge), storedVarieties = useStorageValue(readVarieties), lots = useStorageValue(readLots);
   const [catalogue, setCatalogue] = useState<HopVariety[]>([]), [loading, setLoading] = useState(true);
@@ -86,10 +87,10 @@ export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange }
   });
   return <section aria-label="Guide aromatique de la recette" className="space-y-5 border border-cave-700 rounded-panel p-3 sm:p-4 bg-cave-900">
     <fieldset disabled={busy} className="space-y-5 min-w-0">
-    <HopAromaTargetPicker axes={axes} target={target} disabled={busy} onChange={(hopAromaTarget, axis) => void run(async () => {
+    {!contextOnly && <HopAromaTargetPicker axes={axes} target={target} disabled={busy} onChange={(hopAromaTarget, axis) => void run(async () => {
       if (hopAromaTarget[axis.id]) await ensureGuideReferences({ knowledge: [axis] });
       apply({ hopAromaTarget });
-    })} />
+    })} />}
     <div className="border-t border-cave-700 pt-3 space-y-2">
       <p className="font-semibold text-cave-100">Avec quelle levure ?</p>
       <p className="text-sm text-cave-200">{recipe.yeast?.name || 'La levure de la recette reste à choisir.'}</p>
@@ -145,7 +146,7 @@ export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange }
         </div>;
       })}</div>
     </details>}
-    <div className="border-t border-cave-700 pt-3 space-y-3">
+    {!contextOnly && <div className="border-t border-cave-700 pt-3 space-y-3">
       <Button type="button" disabled={!Object.keys(target).length || loading} onClick={() => { setShowLeads(v => !v); setLeadLimit(6); }}>{loading ? 'Préparation des pistes…' : showLeads ? 'Masquer les pistes' : 'Trouver des houblons pour ce profil'}</Button>
       {showLeads && <>
         <p className="text-sm text-cave-200">Ces fiches mentionnent les familles choisies. Elles sont classées par nombre de familles citées, sans estimer leur intensité dans ta bière ni l’effet de la levure et du timing. Lis les descriptions avant de choisir.</p>
@@ -165,6 +166,7 @@ export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange }
         {leads.length > leadLimit && <Button type="button" onClick={() => setLeadLimit(v => v + 6)}>Afficher d’autres pistes</Button>}
       </>}
     </div>
+    }
     {!usableHopKnowledge(knowledge).valid.some(k => k.kind === 'risk' && k.enabled) && <div className="border-t border-cave-700 pt-3 space-y-2">
       <p className="text-sm text-cave-400">Aucune règle de vigilance n’est active. L’absence d’alerte ne signifie pas l’absence de risque.</p>
       <Button type="button" onClick={() => void run(async () => { await ensureGuideReferences({ knowledge: guideRiskPolicies(knowledge) }); setNotice('Références de vigilance ajoutées. Les réglages existants sont conservés.'); })}>Ajouter les vigilances documentées manquantes</Button>

@@ -8,6 +8,7 @@ vi.mock('../../src/services/storage', async () => {
   const { assertHopDocument } = await import('../../functions/src/hopIndexSchema');
   return { StorageService: {
     getHopVarieties: () => state.varieties, getHopLots: () => state.lots,
+    getHopKnowledge: () => [], isReady: () => true, importHopIndex: vi.fn(),
     subscribe: (cb: () => void) => { state.listeners.add(cb); return () => state.listeners.delete(cb); },
     saveHopVariety: (v: any) => { assertHopDocument('hopVarieties', v); state.varieties = [...state.varieties.filter(x => x.id !== v.id), v]; state.listeners.forEach(cb => cb()); },
     saveHopLot: (v: any) => { assertHopDocument('hopLots', v); state.lots = [...state.lots.filter(x => x.id !== v.id), v]; state.listeners.forEach(cb => cb()); }
@@ -76,7 +77,7 @@ describe('Parcours index houblon sans appel IA réel', () => {
     await act(async () => fireEvent.change(screen.getByLabelText('COA à lire'), { target: { files: [new File(['fixture'], 'coa.pdf', { type: 'application/pdf' })] } }));
     expect(state.lots[0].analysis).toHaveLength(1);
     fireEvent.click(screen.getByRole('button', { name: 'Compléter les champs absents avec la transcription' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la fiche' }));
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la fiche' })));
     expect(state.lots[0].analysis).toHaveLength(2);
     expect(state.lots[0].analysis[0].value).toBe(7);
   });

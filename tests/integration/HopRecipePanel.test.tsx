@@ -49,51 +49,26 @@ afterEach(async () => {
   cleanup();
 });
 
-describe('Édition aromatique depuis la fiche recette', () => {
-  it('attend la persistance de US-05 avant de fermer ou enregistrer, puis conserve son association', async () => {
-    const initial = recipe(), before = structuredClone(initial), onSave = vi.fn();
-    memory.writeBarrier = new Promise<void>(resolve => { memory.releaseWrite = resolve; });
-    render(<HopRecipePanel recipe={initial} onSave={onSave} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Choisir le profil et les références' }));
-    const dialog = screen.getByRole('dialog', { name: 'Profil aromatique et ajouts' });
-    const save = within(dialog).getByRole('button', { name: 'Enregistrer le profil et les références' });
-    expect(save).toBeEnabled();
-
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Relier SafAle US-05 (Fermentis)' }));
-    await waitFor(() => expect(memory.attempts).toHaveBeenCalledTimes(1));
-    expect(save).toBeDisabled();
-    expect(within(dialog).getByRole('status')).toHaveTextContent('Enregistrement des références…');
-    expect(StorageService.getHopKnowledge()).toEqual([]);
-    expect(memory.writes).not.toHaveBeenCalled();
-
-    fireEvent.click(save);
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Fermer' }));
-    expect(screen.getByRole('dialog', { name: 'Profil aromatique et ajouts' })).toBeInTheDocument();
-    expect(onSave).not.toHaveBeenCalled();
-
-    await act(async () => { memory.releaseWrite!(); await memory.writeBarrier; });
-    await waitFor(() => expect(within(dialog).getByText('Référence associée : SafAle US-05 (Fermentis)')).toBeInTheDocument());
-    expect(save).toBeEnabled();
-    expect(StorageService.getHopKnowledge()).toHaveLength(1);
-    expect(StorageService.getHopKnowledge()[0]).toMatchObject({ id: 'fermentis-us05', kind: 'yeast', betaLyase: 'unknown' });
-    expect(memory.writes).toHaveBeenCalledTimes(1);
-
-    fireEvent.click(save);
-    expect(onSave).toHaveBeenCalledExactlyOnceWith({ ...before, yeast: { ...before.yeast, hopIndexId: 'fermentis-us05' } });
-    expect(initial).toEqual(before);
-  });
-
-  it('affiche la levure nommée de la recette même sans référence associée, sans proposer de figer un résultat vide', () => {
-    const initial = recipe(), onSave = vi.fn();
-    render(<HopRecipePanel recipe={initial} onSave={onSave} />);
-    fireEvent.click(screen.getByText('Ajout 1 · Citra · 75 g'));
-
-    expect(screen.getByText(/Citra US-05/)).toHaveTextContent('Citra × US-05');
-    expect(screen.getByText('Levure non associée à l’index')).toBeInTheDocument();
-    expect(screen.queryByText('Levure non renseignée')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Figer ces prédictions' })).not.toBeInTheDocument();
-    expect(StorageService.getHopKnowledge()).toEqual([]);
+describe('Bilan aromatique en lecture seule', () => {
+  it('affiche la levure et le programme existants sans écrire, et délègue toute modification au parcours de recette', async () => {
+    const initial=recipe(), before=structuredClone(initial), onEdit=vi.fn();
+    render(<HopRecipePanel recipe={initial} onEdit={onEdit} />);
+    expect(screen.getByText('US-05 · lecture seule')).toBeInTheDocument();
+    expect(screen.getByText('À cru · phase à préciser')).toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+    expect(screen.queryByText('Adéquation au profil recherché')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Thiols, phénols et analyses techniques'));
+    fireEvent.click(screen.getByRole('button', {name:'Phénols et polyphénols'}));
+    expect(screen.getByText(/Phénols de levure/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', {name:'Modifier dans l’atelier de recette'}));
+    expect(onEdit).toHaveBeenCalledOnce();
+    expect(initial).toEqual(before); expect(memory.writes).not.toHaveBeenCalled();
     expect(StorageService.getHopPredictions()).toEqual([]);
-    expect(onSave).not.toHaveBeenCalled();
+  });
+  it('un brassin sans route d’édition reste consultable sans contrôle de modification', () => {
+    render(<HopRecipePanel recipe={recipe()} batchId="b" />);
+    expect(screen.queryByRole('button', {name:/Modifier/})).not.toBeInTheDocument();
+    expect(memory.writes).not.toHaveBeenCalled();
   });
 });

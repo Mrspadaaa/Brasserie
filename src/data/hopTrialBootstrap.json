@@ -1,0 +1,686 @@
+{
+  "hopVarieties": [
+    {
+      "id": "lallemand-simcoe",
+      "name": "Simcoe",
+      "aliases": [],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Simcoe est cité dans le mélange expérimental Lallemand avec Cascade et Hallertau Blanc. La description sensorielle concerne le mélange fermenté.",
+          "context": "beer",
+          "source": {
+            "title": "Practical tips for Thiol Boosting Recipes",
+            "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+            "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+          }
+        }
+      ],
+      "analysis": []
+    }
+  ],
+  "hopKnowledge": [
+    {
+      "id": "trial-cascade-lafontaine-2018",
+      "kind": "trial",
+      "name": "Cascade : agrumes mesurés après fermentation",
+      "source": {
+        "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+        "author": "Lafontaine et al.",
+        "year": 2018,
+        "kind": "research",
+        "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
+        "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+      },
+      "yeastId": "wyeast-1728",
+      "yeastName": "Wyeast 1728",
+      "yeastForm": "liquide",
+      "hops": [
+        {
+          "varietyId": "cascade-cones-lafontaine",
+          "name": "Cascade",
+          "form": "cone",
+          "timing": "postFermentation",
+          "doseGL": {
+            "range": {
+              "min": 3.86,
+              "max": 3.86
+            },
+            "source": {
+              "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+              "author": "Lafontaine et al.",
+              "year": 2018,
+              "kind": "research",
+              "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
+              "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+            }
+          },
+          "temperatureC": {
+            "range": {
+              "min": 13.3,
+              "max": 15
+            },
+            "source": {
+              "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+              "author": "Lafontaine et al.",
+              "year": 2018,
+              "kind": "research",
+              "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
+              "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+            }
+          },
+          "contactHours": {
+            "range": {
+              "min": 24,
+              "max": 24
+            },
+            "source": {
+              "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+              "author": "Lafontaine et al.",
+              "year": 2018,
+              "kind": "research",
+              "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
+              "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+            }
+          }
+        }
+      ],
+      "fermentationC": {
+        "range": {
+          "min": 19,
+          "max": 20
+        },
+        "source": {
+          "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+          "author": "Lafontaine et al.",
+          "year": 2018,
+          "kind": "research",
+          "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
+          "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+        }
+      },
+      "families": [
+        "citrus"
+      ],
+      "result": "Le panel rapporte une plage de caractère agrumes sur les lots de Cascade étudiés.",
+      "matrix": "Pale ale clarifiée, levure éliminée avant ajout ; cônes broyés en sacs, puis filtration.",
+      "limitations": [
+        "Pellets, bière trouble et dry-hop en fermentation hors domaine.",
+        "La plage décrit des moyennes de panel, pas la dispersion attendue de ta bière."
+      ],
+      "confidence": "low",
+      "sensory": [
+        {
+          "name": "Agrumes · panel publié",
+          "range": {
+            "min": 4.2,
+            "max": 6.6
+          },
+          "scale": {
+            "min": 0,
+            "max": 15
+          },
+          "source": {
+            "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+            "author": "Lafontaine et al.",
+            "year": 2018,
+            "kind": "research",
+            "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
+            "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+          }
+        }
+      ],
+      "assessmentSource": {
+        "title": "Évaluation documentaire des programmes de brassage",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-workshop.md",
+        "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+      }
+    },
+    {
+      "id": "trial-cascade-verdant-ebc2024",
+      "kind": "trial",
+      "name": "Agrumes et fruité avec Cascade",
+      "yeastId": "lalbrew-verdant-ipa",
+      "yeastName": "LalBrew Verdant IPA",
+      "yeastForm": "sèche",
+      "source": {
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+        "year": 2024,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+        "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+      },
+      "hops": [
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "boil",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 1.2,
+              "max": 1.2
+            },
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 3,
+              "max": 3
+            },
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        }
+      ],
+      "fermentationC": {
+        "range": {
+          "min": 22,
+          "max": 22
+        },
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+          "year": 2024,
+          "kind": "research",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+          "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+        }
+      },
+      "families": [
+        "citrus",
+        "tropical"
+      ],
+      "result": "Caractère agrumes/tropical associé à cette ale ; réponse des thiols à la température moins marquée que Nottingham.",
+      "matrix": "Pale ale tout malt pils ; sans houblonnage à cru.",
+      "limitations": [
+        "Compte rendu : pas de plage sensorielle chiffrée par souche.",
+        "Un nouvel assemblage, lot ou protocole reste à tester.",
+        "La série compare 15, 22 et 30 °C. Le programme reprend la condition étudiée à 22 °C, sans la déclarer optimale ; le résumé sensoriel porte sur la série."
+      ],
+      "confidence": "medium",
+      "sensory": [],
+      "assessmentSource": {
+        "title": "Évaluation documentaire des programmes de brassage",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-workshop.md",
+        "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+      }
+    },
+    {
+      "id": "trial-cascade-nottingham-ebc2024",
+      "kind": "trial",
+      "name": "Cascade : travailler le fruité de fermentation",
+      "yeastId": "lalbrew-nottingham",
+      "yeastName": "LalBrew Nottingham",
+      "yeastForm": "sèche",
+      "source": {
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+        "year": 2024,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+        "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+      },
+      "hops": [
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "boil",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 1.2,
+              "max": 1.2
+            },
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 3,
+              "max": 3
+            },
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        }
+      ],
+      "fermentationC": {
+        "range": {
+          "min": 22,
+          "max": 22
+        },
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+          "year": 2024,
+          "kind": "research",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+          "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+        }
+      },
+      "families": [
+        "citrus",
+        "tropical"
+      ],
+      "result": "Cette ale fait partie des souches dont le caractère fruité et les thiols évoluent avec la température.",
+      "matrix": "Pale ale tout malt pils ; sans houblonnage à cru.",
+      "limitations": [
+        "Compte rendu : pas de plage sensorielle chiffrée par souche.",
+        "Un nouvel assemblage, lot ou protocole reste à tester.",
+        "La série compare 15, 22 et 30 °C. Le programme reprend la condition étudiée à 22 °C, sans la déclarer optimale ; le résumé sensoriel porte sur la série."
+      ],
+      "confidence": "medium",
+      "sensory": [],
+      "assessmentSource": {
+        "title": "Évaluation documentaire des programmes de brassage",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-workshop.md",
+        "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+      }
+    },
+    {
+      "id": "trial-cascade-diamond-ebc2024",
+      "kind": "trial",
+      "name": "Cascade : comprendre pourquoi plus de thiols ne suffit pas",
+      "yeastId": "lalbrew-diamond",
+      "yeastName": "LalBrew Diamond",
+      "yeastForm": "sèche",
+      "source": {
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+        "year": 2024,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+        "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+      },
+      "hops": [
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "boil",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 1.2,
+              "max": 1.2
+            },
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 3,
+              "max": 3
+            },
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        }
+      ],
+      "fermentationC": {
+        "range": {
+          "min": 22,
+          "max": 22
+        },
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+          "year": 2024,
+          "kind": "research",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+          "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+        }
+      },
+      "families": [],
+      "result": "Thiol élevé mais fruité-tropical perçu plus faible ; caractère soufré rapporté, surtout à chaud.",
+      "matrix": "Pale ale tout malt pils ; sans houblonnage à cru.",
+      "limitations": [
+        "Compte rendu : pas de plage sensorielle chiffrée par souche.",
+        "Un nouvel assemblage, lot ou protocole reste à tester.",
+        "La série compare 15, 22 et 30 °C. Le programme reprend la condition étudiée à 22 °C, sans la déclarer optimale ; le résumé sensoriel porte sur la série."
+      ],
+      "confidence": "medium",
+      "sensory": [],
+      "assessmentSource": {
+        "title": "Évaluation documentaire des programmes de brassage",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-workshop.md",
+        "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+      }
+    },
+    {
+      "id": "trial-split-verdant-2026",
+      "kind": "trial",
+      "name": "Pamplemousse, tropical et résine",
+      "yeastId": "lalbrew-verdant-ipa",
+      "yeastName": "LalBrew Verdant IPA",
+      "yeastForm": "sèche",
+      "source": {
+        "title": "Practical tips for Thiol Boosting Recipes",
+        "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+        "year": 2026,
+        "kind": "manufacturer",
+        "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+        "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+      },
+      "hops": [
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "source": {
+              "title": "Practical tips for Thiol Boosting Recipes",
+              "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+              "year": 2026,
+              "kind": "manufacturer",
+              "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+              "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Hallertau Blanc",
+          "varietyId": "hopsteiner-hbc",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "source": {
+              "title": "Practical tips for Thiol Boosting Recipes",
+              "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+              "year": 2026,
+              "kind": "manufacturer",
+              "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+              "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Simcoe",
+          "varietyId": "lallemand-simcoe",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 4,
+              "max": 4
+            },
+            "source": {
+              "title": "Practical tips for Thiol Boosting Recipes",
+              "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+              "year": 2026,
+              "kind": "manufacturer",
+              "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+              "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        }
+      ],
+      "fermentationC": {
+        "range": {
+          "min": 20,
+          "max": 20
+        },
+        "source": {
+          "title": "Practical tips for Thiol Boosting Recipes",
+          "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+          "year": 2026,
+          "kind": "manufacturer",
+          "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+          "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+        }
+      },
+      "families": [
+        "citrus",
+        "tropical",
+        "resin"
+      ],
+      "result": "Pamplemousse, fruits tropicaux et résine décrits dans ce mélange fermenté avec Verdant IPA.",
+      "matrix": "80 % pils, 10 % blé floconné, 10 % avoine floconnée ; sans dry-hop.",
+      "limitations": [
+        "Comparaison fabricant, sans dispersion sensorielle publiée.",
+        "Le résultat appartient au mélange entier ; aucun arôme individuel n’est attribué à chaque houblon.",
+        "Température et durée du whirlpool non disponibles."
+      ],
+      "confidence": "low",
+      "sensory": [],
+      "assessmentSource": {
+        "title": "Évaluation documentaire des programmes de brassage",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-workshop.md",
+        "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+      }
+    },
+    {
+      "id": "trial-split-pomona-2026",
+      "kind": "trial",
+      "name": "Raisin blanc, goyave et thiols marqués",
+      "yeastId": "lalbrew-pomona",
+      "yeastName": "LalBrew Pomona",
+      "yeastForm": "sèche",
+      "source": {
+        "title": "Practical tips for Thiol Boosting Recipes",
+        "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+        "year": 2026,
+        "kind": "manufacturer",
+        "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+        "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+      },
+      "hops": [
+        {
+          "name": "Cascade",
+          "varietyId": "hopsteiner-cas",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "source": {
+              "title": "Practical tips for Thiol Boosting Recipes",
+              "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+              "year": 2026,
+              "kind": "manufacturer",
+              "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+              "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Hallertau Blanc",
+          "varietyId": "hopsteiner-hbc",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "source": {
+              "title": "Practical tips for Thiol Boosting Recipes",
+              "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+              "year": 2026,
+              "kind": "manufacturer",
+              "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+              "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        },
+        {
+          "name": "Simcoe",
+          "varietyId": "lallemand-simcoe",
+          "timing": "whirlpool",
+          "form": "unknown",
+          "doseGL": {
+            "range": {
+              "min": 4,
+              "max": 4
+            },
+            "source": {
+              "title": "Practical tips for Thiol Boosting Recipes",
+              "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+              "year": 2026,
+              "kind": "manufacturer",
+              "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+              "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+            }
+          },
+          "temperatureC": null,
+          "contactHours": null
+        }
+      ],
+      "fermentationC": {
+        "range": {
+          "min": 20,
+          "max": 20
+        },
+        "source": {
+          "title": "Practical tips for Thiol Boosting Recipes",
+          "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+          "year": 2026,
+          "kind": "manufacturer",
+          "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+          "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+        }
+      },
+      "families": [
+        "tropical"
+      ],
+      "result": "Raisin blanc, goyave et caractère félin décrits avec Pomona ; pas une supériorité aromatique générale.",
+      "matrix": "80 % pils, 10 % blé floconné, 10 % avoine floconnée ; sans dry-hop.",
+      "limitations": [
+        "Comparaison fabricant, sans dispersion sensorielle publiée.",
+        "Le résultat appartient au mélange entier ; aucun arôme individuel n’est attribué à chaque houblon.",
+        "Température et durée du whirlpool non disponibles."
+      ],
+      "confidence": "low",
+      "sensory": [],
+      "assessmentSource": {
+        "title": "Évaluation documentaire des programmes de brassage",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-workshop.md",
+        "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+      }
+    },
+    {
+      "id": "lalbrew-pomona",
+      "kind": "yeast",
+      "name": "LalBrew Pomona",
+      "betaLyase": "unknown",
+      "source": {
+        "title": "Practical tips for Thiol Boosting Recipes",
+        "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+        "year": 2026,
+        "kind": "manufacturer",
+        "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+        "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+      }
+    }
+  ]
+}

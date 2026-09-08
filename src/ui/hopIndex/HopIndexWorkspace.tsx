@@ -11,7 +11,7 @@ export function HopIndexWorkspace(props: React.ComponentProps<typeof HopIndexPan
     <nav aria-label="Index houblon" className="grid grid-cols-2 md:grid-cols-4 gap-2">
       {[
         { id: 'index', name: 'Variétés et lots', Icon: BookOpen },
-        { id: 'search', name: 'Profil recherché', Icon: Target },
+        { id: 'search', name: 'Atelier aromatique', Icon: Target },
         { id: 'tastings', name: 'Dégustations', Icon: FlaskConical },
         { id: 'knowledge', name: 'Sources et modèles', Icon: SlidersHorizontal }
       ].map(({ id, name, Icon }) => <button key={id} onClick={() => setView(id)}
