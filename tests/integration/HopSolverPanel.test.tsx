@@ -40,10 +40,10 @@ const initial: Recipe = { id:'solver-ui',name:'Recette existante',style:'Libre',
   yeast:{name:'LalBrew Verdant IPA',form:'sèche',qty:1,unit:'sachet'},
   hopSolverIntent:{styleId:'free',avoid:[],chemistry:{},keepYeast:true,timings:['postFermentation']} };
 beforeEach(()=>{memory.docs.clear();memory.listeners.clear();memory.writes.mockClear();memory.attempts.mockClear();memory.delay=null;memory.failure=null});
-afterEach(cleanup);
-function mount() {
+afterEach(()=>{cleanup();vi.unstubAllGlobals();});
+function mount(onBusyChange?:(busy:boolean)=>void) {
   let current=structuredClone(initial);const changes=vi.fn();
-  function Host(){const[r,setR]=useState(current);current=r;return <HopSolverPanel recipe={r} target={r.hopAromaTarget??{}} onTargetChange={t=>setR({...r,hopAromaTarget:t})} onChange={next=>{changes(next);setR(next as Recipe)}}/>}
+  function Host(){const[r,setR]=useState(current);current=r;return <HopSolverPanel recipe={r} target={r.hopAromaTarget??{}} onBusyChange={onBusyChange} onTargetChange={t=>setR({...r,hopAromaTarget:t})} onChange={next=>{changes(next);setR(next as Recipe)}}/>}
   render(<Host/>);return{current:()=>current,changes};
 }
 const runSearch=async()=>{
@@ -52,6 +52,36 @@ const runSearch=async()=>{
   await screen.findByLabelText('Programme proposé par le solver',{}, {timeout:15000});
 };
 describe('Solver dans une recette existante',()=>{
+  it('garde les critères et la navigation libres, annule et rejette les réponses périmées',async()=>{
+    const workers:any[]=[];
+    class LocalWorker {onmessage:any=null;onerror:any=null;onmessageerror:any=null;postMessage=vi.fn();terminate=vi.fn();constructor(){workers.push(this);}}
+    vi.stubGlobal('Worker',LocalWorker);
+    const busy=vi.fn(),host=mount(busy);
+    await waitFor(()=>expect(screen.getByRole('button',{name:'Trouver mes combinaisons'})).toBeEnabled());
+    fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
+    expect(screen.getByLabelText('Point de départ par style')).toBeEnabled();
+    expect(screen.getByLabelText('Étendue de la recherche')).toBeEnabled();
+    expect(busy).not.toHaveBeenCalledWith(true);
+    act(()=>memory.listeners.forEach(f=>f()));
+    expect(workers[0].terminate).not.toHaveBeenCalled();
+    const old=workers[0].onmessage;
+    fireEvent.click(screen.getByRole('button',{name:'Arrêter la recherche'}));
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
+    act(()=>old({data:{kind:'error',message:'Erreur périmée'}}));
+    expect(screen.queryByText('Erreur périmée')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Étendue de la recherche'),{target:{value:'exhaustive'}});
+    expect(workers[1].terminate).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('button',{name:'Arrêter la recherche'})).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
+    memory.docs.set('hopKnowledge/'+current[0].id,{...structuredClone(current[0]),enabled:false});
+    act(()=>memory.listeners.forEach(f=>f()));
+    expect(workers[2].terminate).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('button',{name:'Arrêter la recherche'})).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
+    cleanup();expect(workers[3].terminate).toHaveBeenCalledOnce();
+    expect(memory.writes).not.toHaveBeenCalled();expect(host.changes).not.toHaveBeenCalled();
+  });
   it('préremplit le contact, ne modifie rien en recherche et attend la persistance avant ajout',async()=>{
     const host=mount();await runSearch();
     expect(screen.getByLabelText('Contact (°C) · ajout 1')).toHaveValue('18');

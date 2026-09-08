@@ -9,6 +9,7 @@ const out=resolve('.codex-remote-attachments/hop-index/solver');
 await mkdir(out,{recursive:true});
 const browser=await puppeteer.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--mute-audio']});
 const reports=[];
+let activePage;
 const click=async(page,label,contains=false)=>{
   const h=await page.waitForFunction((label,contains)=>[...document.querySelectorAll('button')].find(b=>b.getClientRects().length&&!b.disabled&&(contains?b.textContent.includes(label):b.textContent.trim()===label)),{},label,contains);
   await h.asElement().evaluate(b=>b.scrollIntoView({block:'center'}));await h.asElement().click();await h.dispose();
@@ -21,16 +22,18 @@ const overflow=async page=>assert(await page.evaluate(()=>document.documentEleme
 try{
   for(const width of [390,320,1280]){
     const context=await browser.createBrowserContext(),page=await context.newPage(),errors=[];
+    activePage=page;
     page.setDefaultTimeout(60000);
     await page.setViewport({width,height:1000,isMobile:width<600,hasTouch:width<600});
     await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
-    page.on('pageerror',e=>errors.push(e.message));await page.setRequestInterception(true);
-    page.on('request',r=>r.url().startsWith(base+'/')||/^(data|blob):/.test(r.url())?r.continue():r.abort());
+    page.on('pageerror',e=>errors.push(e.message));
+    const cdp=await page.createCDPSession();await cdp.send('Network.enable');
+    await cdp.send('Network.setBlockedURLs',{urlPatterns:[{urlPattern:base+'/*',block:false}],urls:['http://*','https://*']});
     await page.evaluateOnNewDocument(()=>localStorage.setItem('laffinee_ui_state',JSON.stringify({app_active_tab:'production',production_subtab:'recipes'})));
     await page.goto(base+'/?dev-local',{waitUntil:'networkidle0'});
     await page.waitForFunction(async()=>(await import('/src/services/storage.ts')).StorageService.isReady());
     await page.waitForFunction(()=>!document.body.innerText.includes('Base initialisée avec'));
-    await click(page,'📜 Recettes',true);await click(page,'Importer / Créer',true);
+    await click(page,'📜 Recettes',true);await click(page,'+ Recette',true);
     const name=`Solver témoin ${width}`;await page.locator('#wz-title').fill(name);
     await click(page,'Construire le goût de ma bière',true);
     await page.waitForSelector('[aria-label="Solver de houblonnage"]');
@@ -68,6 +71,6 @@ try{
   }
   await writeFile(resolve(out,'report.json'),JSON.stringify(reports,null,2));
 }catch(error){
-  const page=(await browser.pages()).at(-1);if(page){await page.screenshot({path:resolve(out,'failure.png'),fullPage:true});await writeFile(resolve(out,'failure.txt'),await page.evaluate(()=>document.body.innerText));}
+  console.error(error);if(activePage&&!activePage.isClosed()){try{await activePage.screenshot({path:resolve(out,'failure.png'),fullPage:true});await writeFile(resolve(out,'failure.txt'),await activePage.evaluate(()=>document.body.innerText));}catch{ /* Preserve the original error. */ }}
   throw error;
 }finally{await browser.close();}

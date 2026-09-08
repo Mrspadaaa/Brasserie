@@ -9,6 +9,7 @@ import { resolveHopFacts } from '../../../functions/src/hopIndexFacts';
 import { applyHopScenario, recipeHopScenario } from './exploration';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './recipeGuide';
 import type { TrialRecipe } from './trials';
+import { selectHopSearchDomain, type HopSearchMode } from './solverSelection';
 
 export type SolverCheck = { status: 'conflict' | 'unknown' | 'supported'; message: string; source?: HopSource };
 export type SolverCondition = { field: 'doseGL' | 'temperatureC' | 'contactHours'; value: number; range: HopRange; origin: 'trial' | 'recipe' | 'proposal'; source: HopSource };
@@ -132,32 +133,43 @@ export function compareHopSolverCandidates(a: HopSolverCandidate,b: HopSolverCan
     || (a.totalDryHopGL??Infinity)-(b.totalDryHopGL??Infinity) || a.id.localeCompare(b.id);
 }
 
-/** Finite, explicit search domain. Qualitative trials are never fitted as numbers. */
-export function createHopSolverSearch(options: {
+export interface HopSolverSearchOptions {
   data: HopEngineData; policy: HopSolverPolicy; intent: HopSolverIntent; target: Record<string,HopRange>; recipe?:TrialRecipe;
   doseGL?:number; temperatureC?:number; contactHours?:number; replacing?:number;
-}) {
+  mode?: HopSearchMode;
+}
+/** Finite, explicit search domain. Qualitative trials are never fitted as numbers. */
+export function createHopSolverSearch(options: HopSolverSearchOptions) {
   const {data,policy,intent,target,recipe}=options;
   const predict = createHopPredictor(data);
   const valid=usableHopKnowledge(data.knowledge).valid, axes=valid.filter((k):k is HopAxis=>k.kind==='axis'), allYeasts=withDocumentedYeastNames(valid.filter((k):k is HopYeast=>k.kind==='yeast'));
   const models=valid.filter((k):k is HopExtrapolation=>k.kind==='extrapolation' && k.enabled), trials=valid.filter((k):k is HopTrial=>k.kind==='trial');
   const yeastMatches=recipe?.yeast.name ? findRecipeYeastMatches(recipe.yeast.name,allYeasts) : [];
   const currentYeast=recipe?.yeast.hopIndexId ?? (yeastMatches.length===1 ? yeastMatches[0].item.id : undefined);
-  const yeasts=intent.keepYeast && recipe?.yeast.name ? allYeasts.filter(y=>y.id===currentYeast) : allYeasts;
+  const eligibleYeasts=intent.keepYeast && recipe?.yeast.name ? allYeasts.filter(y=>y.id===currentYeast) : allYeasts;
+  const yeastById=new Map(allYeasts.map(y=>[y.id,y])),varietyById=new Map(data.varieties.map(v=>[v.id,v]));
+  const descriptorCache=new Map<string,Set<string>>();
+  const descriptorFamilies=(id:string)=>{
+    let found=descriptorCache.get(id);
+    if(!found){const v=varietyById.get(id);found=new Set<string>();if(v)for(const m of models)for(const a of m.axes)if(!found.has(a.id)&&hopDescriptorEvidence(v,a.terms).length)found.add(a.id);descriptorCache.set(id,found);}
+    return found;
+  };
   const wanted=Object.keys(target).filter(id=>!intent.avoid.includes(id));
   const scoreTarget=Object.fromEntries(Object.entries(target).filter(([id])=>!intent.avoid.includes(id)));
   const queue:{triplets:HopTriplet[];conditions:SolverCondition[][];trial?:HopTrial}[]=[];
   const make=(v:HopVariety,y:HopYeast,t:HopTriplet['timing'],dose:number|null,trial?:HopTrial)=>prefillHopScenario({varietyId:v.id,yeastId:y.id,timing:t,doseGL:options.doseGL??dose,temperatureC:options.temperatureC??null,contactHours:options.contactHours??null,matrixId:null,lotId:null},policy,recipe,trial);
   for (const trial of trials) {
-    const y=yeasts.find(y=>y.id===trial.yeastId);
+    const y=eligibleYeasts.find(y=>y.id===trial.yeastId);
     if (!y || trial.hops.some(h=>!intent.timings.includes(h.timing))) continue;
     const filled=trial.hops.map(h=>{const v=data.varieties.find(v=>v.id===h.varietyId && !v.archived);return v?make(v,y,h.timing,null,trial):null;});
     if (filled.every(x=>x!==null)) queue.push({trial,triplets:filled.map(x=>x!.triplet),conditions:filled.map(x=>x!.conditions)});
   }
   // Index the full Cartesian domain without allocating every scenario upfront.
-  const varieties=data.varieties.filter(v=>!v.archived);
   const conditions=intent.timings.flatMap(timing=>(options.doseGL!==undefined?[options.doseGL]:policy.defaults[timing].searchDosesGL.map(p=>p.central)).map(dose=>({timing,dose})));
-  const total=queue.length+varieties.length*yeasts.length*conditions.length;
+  const domain=selectHopSearchDomain({mode:options.mode??'quick',varieties:data.varieties.filter(v=>!v.archived),yeasts:eligibleYeasts,valid,policy,intent,wanted,
+    conditions:conditions.length,trials:queue.length,currentYeast,recipeVarieties:new Set(recipe?.hops.map(h=>h.hopVarietyId).filter((id):id is string=>!!id)??[]),
+    primaryTemperature:recipe?.fermentation?.[0]?.tempC,descriptorFamilies});
+  const {varieties,yeasts,coverage}=domain,total=coverage.total;
   const itemAt=(index:number):typeof queue[number]=>{
     if(index<queue.length)return queue[index];
     const offset=index-queue.length, variant=conditions[offset%conditions.length];
@@ -168,7 +180,7 @@ export function createHopSolverSearch(options: {
   const recipeCache=new Map<string,ReturnType<typeof inspectHopSolverRecipe>>();
   const evaluate=(item:typeof queue[number]):HopSolverCandidate=>{
     const predictions=item.triplets.map(t=>predict(t,scoreTarget));
-    const yeast=allYeasts.find(y=>y.id===item.triplets[0].yeastId)!;
+    const yeast=yeastById.get(item.triplets[0].yeastId!)!;
     const checks=predictions.flatMap(p=>checkHopExclusions(p,intent.avoid,axes));
     for (const t of item.triplets) {
       if (!finite(t.doseGL)) checks.push({status:'unknown',message:'Dose manquante : quantité totale et application indisponibles.'});
@@ -178,7 +190,7 @@ export function createHopSolverSearch(options: {
     for(const id of intent.avoid){
       const axis=axes.find(a=>a.id===id);
       if(item.trial?.families.includes(id)) checks.push({status:'conflict',message:`${axis?.name??id} figure dans le résultat de cet essai et dans tes exclusions.`,source:item.trial.source});
-      else if(item.triplets.some(t=>{const v=data.varieties.find(v=>v.id===t.varietyId);return v&&models.some(m=>hopDescriptorEvidence(v,m.axes.find(a=>a.id===id)?.terms??[]).length)})) checks.push({status:'conflict',message:`${axis?.name??id} est cité dans une fiche du houblon. Cette piste n’est pas retenue pour l’exclure.`,source:policy.source});
+      else if(item.triplets.some(t=>descriptorFamilies(t.varietyId??'').has(id))) checks.push({status:'conflict',message:`${axis?.name??id} est cité dans une fiche du houblon. Cette piste n’est pas retenue pour l’exclure.`,source:policy.source});
     }
     checks.push(...chemistryChecks(item.triplets,yeast,intent,policy,data,item.trial));
     // Re-evaluate existing additions once per yeast. Proposed dry-hop totals are
@@ -191,10 +203,10 @@ export function createHopSolverSearch(options: {
     const recipeChecks=[...common.checks];
     if(total!==null && total>policy.dryHopReviewGL.central && !(common.totalDryHopGL!==null && common.totalDryHopGL>policy.dryHopReviewGL.central)) recipeChecks.push({status:'unknown',message:`Dry-hop cumulé proposé : ${total.toLocaleString('fr',{maximumFractionDigits:2})} g/L. Revoir le rendement aromatique et le risque de caractère herbacé, sans seuil universel.`,source:policy.dryHopReviewGL.source});
     for(const risk of predictions.flatMap(p=>p.risks).filter(r=>r.status!=='unknown')) recipeChecks.push({status:'unknown',message: risk.message,source:risk.source});
-    const evidenceFamilies=item.trial?wanted.filter(id=>item.trial!.families.includes(id)):wanted.filter(id=>item.triplets.some(t=>{const v=data.varieties.find(v=>v.id===t.varietyId);return v&&models.some(m=>hopDescriptorEvidence(v,m.axes.find(a=>a.id===id)?.terms??[]).length)}));
+    const evidenceFamilies=item.trial?wanted.filter(id=>item.trial!.families.includes(id)):wanted.filter(id=>item.triplets.some(t=>descriptorFamilies(t.varietyId??'').has(id)));
     return {id: item.trial?.id ?? JSON.stringify(item.triplets),...item,predictions,checks,recipeChecks,score:predictions.length===1?predictions[0].score:unknownScore(),evidenceFamilies,totalDryHopGL:total};
   };
-  return {total,emptyReason:!yeasts.length?'La levure de la recette n’est pas identifiée. Associe sa référence ou autorise une autre souche.':null,
+  return {total,coverage,emptyReason:!yeasts.length?'La levure de la recette n’est pas identifiée. Associe sa référence ou autorise une autre souche.':null,
     evaluateProgram:evaluate, evaluateBatch:(from:number,count:number)=>{
       const start=Math.max(0,Math.floor(from)),end=Math.min(total,start+Math.max(0,Math.floor(count)));
       return Array.from({length:Math.max(0,end-start)},(_,i)=>evaluate(itemAt(start+i)));

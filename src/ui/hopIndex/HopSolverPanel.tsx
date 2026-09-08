@@ -3,7 +3,10 @@ import { Search, FlaskConical, Wheat, AlertTriangle } from 'lucide-react';
 import type { HopRange } from '../../../functions/src/hopIndexSchema';
 import { HOP_TIMINGS, type HopAxis, type HopTriplet } from '../../../functions/src/hopPredictionSchema';
 import { HOP_CHEMISTRY_GOALS, type HopSolverIntent } from '../../../functions/src/hopSolverSchema';
-import { applyHopSolverCandidate, compareHopSolverCandidates, createHopSolverSearch, initialHopSolverIntent, retainHopSolverCandidate, type HopSolverCandidate, type SolverCheck } from '../../domain/hopIndex/solver';
+import { applyHopSolverCandidate, createHopSolverSearch, initialHopSolverIntent, type HopSolverCandidate, type HopSolverSearchOptions, type SolverCheck } from '../../domain/hopIndex/solver';
+import type { HopSearchMode } from '../../domain/hopIndex/solverSelection';
+import type { HopSearchUpdate } from '../../domain/hopIndex/solverSearch';
+import { startHopSolverSearch } from './hopSolverTransport';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import { usableHopKnowledge } from '../../domain/hopIndex/engine';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -38,20 +41,34 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
   const {varieties,loading}=useHopCatalogue();
   const knowledge=useMemo(()=>guidePredictionKnowledge(saved),[saved]),policy=useMemo(()=>guideSolverPolicy(saved),[saved]);
   const axes=useMemo(()=>guideAxes(saved),[saved]),yeasts=useMemo(()=>guideYeasts(saved),[saved]);
-  const data=useMemo(()=>({varieties,lots,knowledge}),[varieties,lots,knowledge]);
+  // Unrelated Firestore notifications return fresh arrays; only changed content
+  // invalidates a running search and its immutable prediction context.
+  const dataRevision=useMemo(()=>JSON.stringify([varieties,lots,knowledge]),[varieties,lots,knowledge]);
+  const data=useMemo(()=>({varieties,lots,knowledge}),[dataRevision]);
   const [intent,setIntent]=useState<HopSolverIntent>(()=>policy?initialHopSolverIntent(recipe,policy):{styleId:'free',avoid:[],chemistry:{},keepYeast:true,timings:['postFermentation']});
   const [replacing,setReplacing]=useState<number>();
   const [fixed,setFixed]=useState<{doseGL?:number;temperatureC?:number;contactHours?:number}>({});
   const [results,setResults]=useState<HopSolverCandidate[]>(),[selected,setSelected]=useState<HopSolverCandidate>();
-  const [busy,setBusy]=useState(false),[progress,setProgress]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+  const [mode,setMode]=useState<HopSearchMode>('quick'),[searching,setSearching]=useState(false),[stopped,setStopped]=useState(false);
+  const [searchUpdate,setSearchUpdate]=useState<HopSearchUpdate>();
+  const searchJob=useRef<ReturnType<typeof startHopSolverSearch>|undefined>(undefined),searchInput=useRef<HopSolverSearchOptions|undefined>(undefined),selectionPinned=useRef(false);
   const [showRejected,setShowRejected]=useState(false),[chartAddition,setChartAddition]=useState(0);
   const [targetEdited,setTargetEdited]=useState(false);
   const evaluator=useRef<ReturnType<typeof createHopSolverSearch> | undefined>(undefined);
-  const signature=JSON.stringify([intent,target,recipe,replacing,fixed]);
-  const latest=useRef({signature,data,recipe});latest.current={signature,data,recipe};
+  const signature=JSON.stringify([intent,target,recipe,replacing,fixed,mode,targetEdited]);
+  const searchContext=useRef<{signature:string;dataRevision:string}|undefined>(undefined);
+  const latest=useRef({signature,dataRevision,recipe});latest.current={signature,dataRevision,recipe};
   const mounted=useRef(true),pending=useRef(false),busyCallback=useRef(onBusyChange);busyCallback.current=onBusyChange;
-  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;busyCallback.current?.(false)}},[]);
-  useEffect(()=>{setResults(undefined);setSelected(undefined);setError('');},[signature,data]);
+  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;searchJob.current?.cancel();busyCallback.current?.(false)}},[]);
+  useEffect(()=>{
+    // A click can start a search before this render's passive effect runs.
+    // Only invalidate a job/result created from an older context.
+    const context=searchContext.current;
+    if(!context||(context.signature===signature&&context.dataRevision===dataRevision))return;
+    searchJob.current?.cancel();searchJob.current=undefined;searchContext.current=undefined;searchInput.current=undefined;evaluator.current=undefined;
+    setSearching(false);setStopped(false);setSearchUpdate(undefined);setResults(undefined);setSelected(undefined);setError('');
+  },[signature,dataRevision]);
   const style=policy?.styles.find(s=>s.id===intent.styleId);
   const effectiveTarget=targetEdited||Object.keys(target).length||!style?target:targetsOfStyle(style,axes);
   const updateIntent=(patch:Partial<HopSolverIntent>)=>{setIntent(p=>({...p,...patch}));setNotice('')};
@@ -60,39 +77,39 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     try{await fn()}catch(e){if(mounted.current)setError(e instanceof Error?e.message:'Recherche indisponible.')}
     finally{pending.current=false;if(mounted.current){setBusy(false);busyCallback.current?.(false)}}
   };
-  const search=()=>run(async()=>{
-    if(!policy)return;
-    const engine=createHopSolverSearch({data,policy,intent,target:effectiveTarget,recipe,replacing,...fixed});evaluator.current=engine;
-    if(engine.emptyReason)throw Error(engine.emptyReason);
-    if(!engine.total)throw Error('Choisis au moins un moment d’ajout.');
-    const buckets:HopSolverCandidate[][]=[[],[],[],[]];
-    const key=(c:HopSolverCandidate)=>c.trial?.id??JSON.stringify(c.triplets.map(t=>[varieties.find(v=>v.id===t.varietyId)?.name,t.yeastId,t.timing]));
-    for(let i=0;i<engine.total;i+=32){
-      if(!mounted.current)return;
-      if(latest.current.signature!==signature||latest.current.data!==data)return;
-      for(const c of engine.evaluateBatch(i,32))retainHopSolverCandidate(buckets[(c.trial?0:2)+(hasConflict(c)?1:0)],c,key,10);
-      setProgress(`${Math.min(i+32,engine.total).toLocaleString('fr')} / ${engine.total.toLocaleString('fr')} scénarios examinés`);
-      await new Promise<void>(resolve=>setTimeout(resolve,0));
-    }
-    if(!mounted.current||latest.current.signature!==signature||latest.current.data!==data)return;
-    const shortlist=buckets.flat().sort(compareHopSolverCandidates);
-    setResults(shortlist);setSelected(shortlist.find(c=>!hasConflict(c))??shortlist[0]);setChartAddition(0);
-  });
-  const preview=(c:HopSolverCandidate)=>{setSelected(c);setChartAddition(0);setNotice('')};
+  const stopSearch=()=>{searchJob.current?.cancel();searchJob.current=undefined;setSearching(false);setStopped(true);};
+  const search=()=>{
+    if(!policy||busy||loading)return;
+    searchJob.current?.cancel();evaluator.current=undefined;selectionPinned.current=false;
+    const input:HopSolverSearchOptions={data,policy,intent,target:effectiveTarget,recipe,replacing,mode,...fixed};searchInput.current=input;
+    searchContext.current={signature,dataRevision};
+    setResults(undefined);setSelected(undefined);setChartAddition(0);setSearchUpdate(undefined);setStopped(false);setSearching(true);setError('');setNotice('');
+    const current=()=>mounted.current&&latest.current.signature===signature&&latest.current.dataRevision===dataRevision;
+    searchJob.current=startHopSolverSearch(input,update=>{
+      if(!current())return;
+      setSearchUpdate(update);
+      if(update.results.length){setResults(update.results);if(!selectionPinned.current)setSelected(update.results.find(c=>!hasConflict(c))??update.results[0]);}
+      if(update.done){setSearching(false);searchJob.current=undefined;}
+    },cause=>{if(current()){setError(cause.message);setSearching(false);searchJob.current=undefined;}});
+  };
+  const preview=(c:HopSolverCandidate)=>{selectionPinned.current=true;setSelected(c);setChartAddition(0);setNotice('')};
   const editCondition=(index:number,field:'doseGL'|'temperatureC'|'contactHours',value:number|null)=>{
-    if(!selected||!evaluator.current)return;
+    if(!selected||!searchInput.current)return;
+    if(searching)stopSearch();selectionPinned.current=true;
+    evaluator.current??=createHopSolverSearch(searchInput.current);
     const triplets=selected.triplets.map((t,i)=>i===index?{...t,[field]:value}:t);
     setSelected(evaluator.current.evaluateProgram({triplets,trial:selected.trial,conditions:selected.conditions.map((c,i)=>i===index?c.filter(c=>c.field!==field):c)}));setNotice('');
   };
-  const apply=()=>run(async()=>{
+  const apply=()=>{if(searching)stopSearch();return run(async()=>{
     if(!selected||!recipe||!onChange||hasConflict(selected))return;
     const before=JSON.stringify(recipe);
     const next=applyHopSolverCandidate(recipe,selected,data,intent,replacing);
-    await ensureGuideReferences({varieties:varieties.filter(v=>selected.triplets.some(t=>t.varietyId===v.id)),knowledge:usableHopKnowledge(knowledge).valid});
+    const selectedYeasts=new Set(selected.triplets.map(t=>t.yeastId));
+    await ensureGuideReferences({varieties:varieties.filter(v=>selected.triplets.some(t=>t.varietyId===v.id)),knowledge:usableHopKnowledge(knowledge).valid.filter(k=>k.kind!=='yeast'||selectedYeasts.has(k.id))});
     if(!mounted.current)return;
     if(JSON.stringify(latest.current.recipe)!==before)throw Error('La recette a changé. Relance la recherche avant de l’appliquer.');
     onChange({...next,hopAromaTarget:effectiveTarget});setNotice('Programme appliqué. Contrôle les alpha des lots, la quantité de levure et les paliers de fermentation.');
-  });
+  });};
   if(!policy)return <p className="text-sm text-ebc-straw">Le guide de formulation est désactivé ou invalide. Les simulations libres restent disponibles dans Mon adaptation.</p>;
   const compatible=results?.filter(c=>!hasConflict(c))??[],rejected=results?.filter(hasConflict)??[];
   const documented=(showRejected?results??[]:compatible).filter(c=>c.trial).slice(0,4);
@@ -117,12 +134,19 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
       {recipe?.yeast.name&&<label className="flex gap-2 min-h-touch items-center text-sm text-cave-200"><input type="checkbox" aria-label={`Conserver ${recipe.yeast.name}`} checked={intent.keepYeast} onChange={e=>updateIntent({keepYeast:e.target.checked})}/>Conserver {recipe.yeast.name}</label>}
       <details><summary className="cursor-pointer min-h-touch text-sm text-cave-200">Moments d’ajout et contraintes de procédé</summary><div className="space-y-3"><div className="flex flex-wrap gap-2">{HOP_TIMINGS.map(t=><label key={t} className="flex items-center min-h-touch gap-2 text-sm text-cave-200"><input type="checkbox" aria-label={HOP_TIMING_LABELS[t]} checked={intent.timings.includes(t)} onChange={e=>updateIntent({timings:e.target.checked?[...intent.timings,t]:intent.timings.filter(p=>p!==t)})}/>{HOP_TIMING_LABELS[t]}</label>)}</div><div className="grid sm:grid-cols-3 gap-3">{([{key:'doseGL',label:'Dose imposée (g/L)'},{key:'temperatureC',label:'Contact imposé (°C)'},{key:'contactHours',label:'Durée imposée (h)'}]as const).map(f=><HopField key={f.key} label={f.label}><NumberInput className={inputClass} value={fixed[f.key]} emptyValue={undefined} placeholder="Automatique" onValue={n=>setFixed(p=>({...p,[f.key]:n}))}/></HopField>)}</div><p className="text-xs text-cave-400">Automatique : conditions de l’essai lorsqu’elles sont publiées, puis valeurs de départ proposées et sourcées. Les champs du programme choisi seront préremplis.</p></div></details>
     </fieldset>
-    <div className="flex flex-wrap items-center gap-3"><Button intent="primary" disabled={busy||loading||!intent.timings.length} onClick={()=>void search()}><Search size={17}/>Trouver mes combinaisons</Button>{busy&&<p role="status" className="text-sm text-cave-200">{progress||'Préparation…'}</p>}</div>
+    <div className="space-y-3 border-t border-cave-700 pt-4">
+      <HopField label="Étendue de la recherche"><select className={inputClass} disabled={busy} value={mode} onChange={e=>setMode(e.target.value as HopSearchMode)}><option value="quick">Ciblée · rapide</option><option value="exhaustive">Exhaustive · tous les scénarios du domaine</option></select></HopField>
+      <p className="text-sm text-cave-400">{mode==='quick'?'Tri préalable selon les arômes documentés, les contraintes et les souches de référence. Tous les essais publiés compatibles restent examinés. Une piste hors sélection peut être meilleure.':'Toutes les associations aux doses et timings définis sont examinées. Cela peut prendre plusieurs minutes et ne garantit pas un goût parfait.'}</p>
+      <p className="text-xs text-cave-400">Calcul sur cet appareil, sans appel IA ni écriture en base pendant la recherche. Tu peux continuer à naviguer ; quitter cet écran arrête le calcul.</p>
+      <div className="flex flex-wrap items-center gap-3"><Button intent="primary" disabled={busy||loading||searching||!intent.timings.length} onClick={search}><Search size={17}/>Trouver mes combinaisons</Button>{searching&&<Button onClick={stopSearch}>Arrêter la recherche</Button>}</div>
+      {searching&&<div role="status" className="space-y-2 text-sm text-cave-200"><p>{searchUpdate?`${searchUpdate.examined.toLocaleString('fr')} / ${searchUpdate.coverage.total.toLocaleString('fr')} scénarios évalués · résultats provisoires`:'Préparation de la sélection…'}</p>{searchUpdate&&<progress aria-label="Avancement de la recherche" className="w-full h-2 accent-hop" value={searchUpdate.examined} max={searchUpdate.coverage.total}/>}</div>}
+      {searchUpdate&&<p className="text-sm text-cave-400">{searchUpdate.coverage.limited?`${searchUpdate.coverage.varieties.selected} houblons et ${searchUpdate.coverage.yeasts.selected} levures présélectionnés parmi ${searchUpdate.coverage.fullTotal.toLocaleString('fr')} scénarios possibles.`:'Domaine complet retenu.'} {stopped&&!searchUpdate.done?'Recherche arrêtée ; les résultats partiels restent consultables.':searchUpdate.done?`${searchUpdate.examined.toLocaleString('fr')} scénarios évalués.`:''}</p>}
+    </div>
     {results&&<div className="grid lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] gap-5 items-start">
-      <div className="space-y-4"><p className="text-sm text-cave-400">Sélection des meilleures pistes : {compatible.length} sans conflit établi · {rejected.length} écartées. Tous les scénarios du domaine ont été examinés ; les incertitudes restent visibles.</p>
+      <div className="space-y-4"><p className="text-sm text-cave-400">Meilleures pistes parmi les scénarios évalués : {compatible.length} sans conflit établi · {rejected.length} écartées. {searching?'Le classement évolue pendant le calcul.':searchUpdate?.done&&!searchUpdate.coverage.limited?'Tous les scénarios du domaine ont été examinés.':'La recherche ne certifie pas le meilleur résultat du domaine complet.'} Les incertitudes restent visibles.</p>
         {documented.length>0&&<div className="space-y-2"><h4 className="font-semibold text-water">Partir d’un essai publié</h4>{documented.map(candidateCard)}</div>}
         <div className="space-y-2"><h4 className="font-semibold text-cave-50">Explorer d’autres combinaisons</h4>{explorations.map(candidateCard)}</div>
-        {!compatible.length&&<p className="text-sm text-ebc-straw">Aucune piste ne respecte les exclusions connues. Examine les conflits, ajuste une exclusion ou remplace l’ajout concerné.</p>}
+        {!compatible.length&&!searching&&<p className="text-sm text-ebc-straw">Aucune piste évaluée ne respecte les exclusions connues. Examine les conflits, élargis la recherche ou ajuste tes contraintes.</p>}
         {!!rejected.length&&<Button onClick={()=>setShowRejected(v=>!v)}>{showRejected?'Masquer les pistes en conflit':'Comprendre les pistes écartées'}</Button>}
       </div>
       {selected&&<article aria-label="Programme proposé par le solver" className="min-w-0 space-y-4 lg:border-l lg:border-cave-700 lg:pl-5">
