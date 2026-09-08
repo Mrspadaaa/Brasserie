@@ -5,6 +5,7 @@ import { hopTripletsOfRecipe, predictHopTriplet, usableHopKnowledge } from '../.
 import { captureHopPrediction } from '../../domain/hopIndex/snapshots';
 import { useStorageValue, useSyncedDraft } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
+import { Units } from '../../services/units';
 import { HopPredictionView } from './HopPredictionView';
 import { HopField } from './HopFactsEditor';
 import { Button } from '../../components/ui/Button';
@@ -41,7 +42,7 @@ export function HopRecipePanel({ recipe, batchId, onSave }: { recipe: Recipe | R
     {notice && <p role="status" className="text-cave-200">{notice}</p>}
     {triplets.map((t, i) => {
       const prediction = predictHopTriplet(t, target, data);
-      return <details className="border-b border-cave-700 py-2" key={i}><summary className="cursor-pointer text-cave-100 min-h-touch">Ajout {i + 1} · {recipe.hops[i].name} · {recipe.hops[i].weightG} g</summary><HopPredictionView prediction={prediction} target={target} axes={axes.filter(a => !!target[a.id] || !!prediction.profile[a.id]?.range)} names={{ variety: varieties.find(v => v.id === t.varietyId)?.name || recipe.hops[i].name, yeast: yeasts.find(y => y.id === t.yeastId)?.name }} /></details>;
+      return <details className="border-b border-cave-700 py-2" key={i}><summary className="cursor-pointer text-cave-100 min-h-touch">Ajout {i + 1} · {recipe.hops[i].name} · {Units.format(recipe.hops[i].weightG, 'g')}</summary><HopPredictionView prediction={prediction} target={target} axes={axes.filter(a => !!target[a.id] || !!prediction.profile[a.id]?.range)} names={{ variety: varieties.find(v => v.id === t.varietyId)?.name || recipe.hops[i].name, yeast: yeasts.find(y => y.id === t.yeastId)?.name }} /></details>;
     })}
     <Sheet open={editing} onClose={() => setEditing(false)} title="Contexte aromatique de la recette" footer={<Button full intent="primary" onClick={save}>Enregistrer les associations</Button>}>
       <div className="space-y-4 pb-4">
@@ -50,7 +51,7 @@ export function HopRecipePanel({ recipe, batchId, onSave }: { recipe: Recipe | R
         <p className="text-sm text-cave-400">Ces associations doivent désigner les ingrédients réellement prévus. La dose est calculée depuis la masse de la recette et son volume.</p>
         {draft.hops.map((hop, i) => {
           const patch = (change: Partial<typeof hop>) => setDraft({ ...draft, hops: draft.hops.map((v, j) => j === i ? { ...v, ...change } : v) });
-          return <fieldset className="border border-cave-700 rounded-control p-3 space-y-3" key={i}><legend className="text-cave-100">{hop.name} · {hop.weightG} g</legend>
+          return <fieldset className="border border-cave-700 rounded-control p-3 space-y-3" key={i}><legend className="text-cave-100">{hop.name} · {Units.format(hop.weightG, 'g')}</legend>
             <HopField label={`Variété de l’ajout ${i + 1}`}><select className={inputClass} value={hop.hopVarietyId ?? ''} onChange={e => patch({ hopVarietyId: e.target.value || undefined, hopLotId: undefined })}><option value="">Non identifiée</option>{varieties.map(v => <option key={v.id} value={v.id}>{hopReferenceLabel(v)} · {HOP_FORM_LABELS[v.form]}</option>)}</select></HopField>
             <HopField label={`Lot de l’ajout ${i + 1}`}><select className={inputClass} value={hop.hopLotId ?? ''} onChange={e => patch({ hopLotId: e.target.value || undefined })}><option value="">Référence variété</option>{lots.filter(l => l.varietyId === hop.hopVarietyId && (!l.referenceOnly || l.id === hop.hopLotId)).map(l => <option key={l.id} value={l.id}>{l.name}{l.referenceOnly ? ' · référence documentaire' : ''}</option>)}</select></HopField>
             {hop.stage === 'dryHop' && <HopField label={`Phase du dry-hop ${i + 1}`}><select className={inputClass} value={hop.aromaTiming ?? ''} onChange={e => patch({ aromaTiming: e.target.value as any || undefined })}><option value="">Non précisée</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option></select></HopField>}
