@@ -24,7 +24,7 @@ const guides=rows.flatMap(r=>{
  return [{...identity,form:r.form},{
   id:'fermentation-science-'+r.id,kind:'fermentation',name:r.name+' · conduite documentée',version:'2026.09.08.1',enabled:true,source:s.editorial,
   yeastId:r.id,aliases:[r.name,...(existing.catalogue?.aliases??[]).slice(0,10)],styles:r.styles,
-  aroma:{summary:r.aroma,banana:r.key==='bananza'?r.aroma:'La banane n’est pas un objectif quantifié pour cette conduite.',phenols:r.pof==='positive'?'POF+ : phénols levuriens possibles, intensité non calculée.':'POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.',pof:r.pof,source},
+  aroma:{summary:r.aroma,banana:r.key==='bananza'?r.aroma:'La banane n’est pas un objectif quantifié pour cette conduite.',phenols:r.pof==='positive'?'POF+ : phénols levuriens possibles, intensité non calculée.':'POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.',pof:r.pof,source:s[r.key+'Pof']??source},
   temperatureC:fact(...r.temp,source),...(r.aa?{attenuationPct:fact(...r.aa,source)}:{}),...(r.dose?{dryPitchGHL:fact(...r.dose,source)}:{}),
   plans:r.goals.map(goal=>({
    goal,name:labels[goal],rationale:goal==='thiols'?'Souche étudiée avec Cascade. Point de départ dans la fenêtre fabricant ; le triplet et ses données décident de ce qui est quantifiable.':r.aroma+' Les sous-plages sont des propositions à comparer sur ton moût.',source:s.editorial,

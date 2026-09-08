@@ -58,6 +58,19 @@
       "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
     },
     {
+      "id": "us05Pof",
+      "title": "SafBrew DA-16 — comparaison avec US-05",
+      "author": "Philippe Janssens / Fermentis",
+      "reference": "https://fermentis.com/fr/knowledge-center/expert-insights/beer/safbrew-da16-qa/",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; question sur US-05 et S-04 : US-05 neutre et POF−. Date de publication non indiquée.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; question sur US-05 et S-04 : US-05 neutre et POF−. Date de publication non indiquée."
+    },
+    {
       "id": "lager",
       "title": "SafLager W-34/70",
       "author": "Fermentis",
@@ -69,6 +82,19 @@
       "claims": [],
       "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
       "accessNotes": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+    },
+    {
+      "id": "lagerPof",
+      "title": "Beer Yeast Chart — W-34/70",
+      "author": "Fermentis",
+      "reference": "https://fermentis.com/wp-content/uploads/2021/06/Beer-Yeast-Chart.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; ligne W-34/70, colonne Phenolic Off-Flavor : signe moins. Profil net, floral et fruité selon les conditions. Date de publication non confirmée.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; ligne W-34/70, colonne Phenolic Off-Flavor : signe moins. Profil net, floral et fruité selon les conditions. Date de publication non confirmée."
     },
     {
       "id": "lagering",
@@ -163,11 +189,24 @@
       "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
       "year": null,
       "kind": "manufacturer",
-      "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne.",
+      "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne.",
       "accessedAt": "2026-09-08",
       "claims": [],
       "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
-      "accessNotes": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+      "accessNotes": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
+    },
+    {
+      "id": "nottinghamPof",
+      "title": "LalBrew Nottingham — fiche technique, profil et POF",
+      "author": "Lallemand",
+      "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2017/03/TDS_LPS_BREWINGYEAST_NOTTINGHAM_ENG_8.5x11.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Consulté le 8 septembre 2026 ; page 1, Brewing Properties : neutre à légèrement fruitée/estérifiée et POF−. Date de publication non confirmée ; le millésime du nom de fichier ne suffit pas.",
+      "accessedAt": "2026-09-08",
+      "claims": [],
+      "confidenceNotes": "La confiance porte sur la preuve et son applicabilité ; aucune pondération numérique arbitraire.",
+      "accessNotes": "Consulté le 8 septembre 2026 ; page 1, Brewing Properties : neutre à légèrement fruitée/estérifiée et POF−. Date de publication non confirmée ; le millésime du nom de fichier ne suffit pas."
     },
     {
       "id": "bananza",

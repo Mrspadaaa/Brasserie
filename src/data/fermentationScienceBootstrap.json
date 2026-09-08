@@ -1574,12 +1574,12 @@
       "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
       "pof": "negative",
       "source": {
-        "title": "SafAle US-05",
-        "author": "Fermentis",
-        "reference": "https://fermentis.com/en/product/safale-us-05/",
+        "title": "SafBrew DA-16 — comparaison avec US-05",
+        "author": "Philippe Janssens / Fermentis",
+        "reference": "https://fermentis.com/fr/knowledge-center/expert-insights/beer/safbrew-da16-qa/",
         "year": null,
         "kind": "manufacturer",
-        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        "locator": "Consulté le 8 septembre 2026 ; question sur US-05 et S-04 : US-05 neutre et POF−. Date de publication non indiquée."
       }
     },
     "temperatureC": {
@@ -1782,12 +1782,12 @@
       "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
       "pof": "negative",
       "source": {
-        "title": "SafLager W-34/70",
+        "title": "Beer Yeast Chart — W-34/70",
         "author": "Fermentis",
-        "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+        "reference": "https://fermentis.com/wp-content/uploads/2021/06/Beer-Yeast-Chart.pdf",
         "year": null,
         "kind": "manufacturer",
-        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        "locator": "Consulté le 8 septembre 2026 ; ligne W-34/70, colonne Phenolic Off-Flavor : signe moins. Profil net, floral et fruité selon les conditions. Date de publication non confirmée."
       }
     },
     "temperatureC": {
@@ -3677,12 +3677,12 @@
       "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
       "pof": "negative",
       "source": {
-        "title": "LalBrew Nottingham Ale Yeast",
+        "title": "LalBrew Nottingham — fiche technique, profil et POF",
         "author": "Lallemand",
-        "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+        "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2017/03/TDS_LPS_BREWINGYEAST_NOTTINGHAM_ENG_8.5x11.pdf",
         "year": null,
         "kind": "manufacturer",
-        "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+        "locator": "Consulté le 8 septembre 2026 ; page 1, Brewing Properties : neutre à légèrement fruitée/estérifiée et POF−. Date de publication non confirmée ; le millésime du nom de fichier ne suffit pas."
       }
     },
     "temperatureC": {
@@ -3696,7 +3696,7 @@
         "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
         "year": null,
         "kind": "manufacturer",
-        "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+        "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
       }
     },
     "attenuationPct": {
@@ -3710,7 +3710,7 @@
         "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
         "year": null,
         "kind": "manufacturer",
-        "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+        "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
       }
     },
     "dryPitchGHL": {
@@ -3724,7 +3724,7 @@
         "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
         "year": null,
         "kind": "manufacturer",
-        "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+        "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
       }
     },
     "plans": [
@@ -3849,7 +3849,7 @@
               "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
               "year": null,
               "kind": "manufacturer",
-              "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+              "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
             }
           }
         ]
@@ -3975,7 +3975,7 @@
               "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
               "year": null,
               "kind": "manufacturer",
-              "locator": "Atténuation 78–83 % chez le producteur ; 78–84 % chez White Labs distributeur. Aucune moyenne."
+              "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
             }
           },
           {
