@@ -85,6 +85,7 @@ export function solveSaltsCore(
   );
   const numericProfile = input.mineralTargetMode === 'target';
   const practicalProfile = input.profilePriority && !numericProfile;
+  const balancedProfile = input.mineralTargetMode === 'balanced';
   const numericBicarbonate = input.fitBicarbonate ?? numericProfile;
   const maxima = Object.fromEntries(
     Object.keys(ZERO).map((ion) => [
@@ -96,11 +97,11 @@ export function solveSaltsCore(
   // An explicit Mg/Na floor is a recipe choice, even below the Gose range.
   // Zero minima stay optional: the grist supplies magnesium.
   const weights = [
-    // A style supplies a calcium range, not an instruction to stay at its
-    // lower bound by buying magnesium/potassium salts instead of calcium salts.
-    practicalProfile ? 0 : 1,
-    (input.ranges?.mg?.min ?? 0) > 0 ? 8 : 0.5,
-    (input.ranges?.na?.min ?? 0) > 0 ? 8 : 0.5,
+    // Calcium has a soft interior preference; its coupled taste ions matter
+    // more. Joint lower bounds, not large Mg/Na weights, enforce style floors.
+    balancedProfile ? 0.1 : practicalProfile ? 0 : 1,
+    !balancedProfile && (input.ranges?.mg?.min ?? 0) > 0 ? 8 : 0.5,
+    !balancedProfile && (input.ranges?.na?.min ?? 0) > 0 ? 8 : 0.5,
     2,
     2
   ].map((weight, index) => input.targetedIons && !input.targetedIons.includes(TASTE_IONS[index]) ? 0 : weight);

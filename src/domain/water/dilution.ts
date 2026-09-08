@@ -19,6 +19,7 @@ export interface MinimalDilutionInput {
   targetedIons?: Array<keyof WaterIons>;
   hco3Target?: number;
   hco3Range?: IonBand;
+  hco3Preferred?: number;
   acidOverride?: { mash?: number; sparge?: number };
   source: WaterIons;
   target: WaterIons;
@@ -115,7 +116,8 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
       diRatioPct: pct, doses: solveAt(pct).doses,
       mashWaterL: input.mashWaterL, spargeWaterL: input.spargeWaterL,
       allSaltsInMash: input.allSaltsInMash, acidId: input.acid,
-      acidOverride: input.acidOverride, hco3Target: input.hco3Target, hco3Range: input.hco3Range
+      acidOverride: input.acidOverride, hco3Target: input.hco3Target, hco3Range: input.hco3Range,
+      hco3Preferred: input.hco3Preferred
     },
     input.targetRa
   );

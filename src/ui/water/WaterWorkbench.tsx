@@ -370,7 +370,14 @@ export function WaterWorkbench({
           <p>Les six plages passent en premier, après les deux acides. Les doses manuelles d’acide restent conservées.</p>
           <p>{state.customTarget
             ? 'Pour une cible chiffrée, le calcul cherche les concentrations demandées avec les produits autorisés.'
-            : `Pour un style, le calcul cherche le rapport SO₄/Cl demandé, puis le moins de sels différents parmi les dosages proches du meilleur rapport trouvé (marge ${formatDecimal(PRACTICAL_RATIO_TOLERANCE)}). Le calcium peut occuper toute sa plage ; le magnésium et le sodium ne sont pas ajoutés pour remplir la grille.`}</p>
+            : `Pour un style, le repère de dosage est au tiers de la plage, dans le milieu bas. SO₄ et Cl suivent ensuite le rapport demandé. Les apports des sels sont liés : tous les ions ne peuvent pas forcément atteindre leur repère ensemble.`}</p>
+          {!state.customTarget && <>
+            <p>{treatment.hco3Preferred != null
+              ? `HCO₃ : repère ${formatDecimal(Math.round(treatment.hco3Preferred))} ppm après les deux acides, dans la plage ${formatDecimal(style.ions.hco3.min)}–${formatDecimal(style.ions.hco3.max)} ppm. L’acide automatique suit ce même repère. Plus de bicarbonate augmente aussi l’alcalinité : le pH reste à vérifier.`
+              : 'Le profil accepte un HCO₃ nul : aucun bicarbonate n’est ajouté pour centrer le graphique. L’acide suit les besoins estimés de l’empâtage, dans la plage du profil.'}</p>
+            <p>Lorsque le profil accepte zéro magnésium ou sodium, ils restent facultatifs. Le malt fournit déjà du magnésium. Le calcium a un repère souple pour éviter des ajouts inutiles de magnésium ou de potassium.</p>
+            <p>Le calcul rapproche les concentrations de ces repères, parmi les dosages proches du meilleur rapport SO₄/Cl trouvé (marge {formatDecimal(PRACTICAL_RATIO_TOLERANCE)}). À résultats proches, il préfère moins de sels différents. Un écart au repère ne signifie pas que la plage du profil est manquée.</p>
+          </>}
           <p>Les pesées sont vérifiées au dixième de gramme. Un sel autorisé à 0 g n’est pas utilisé dans la proposition. Appuie sur son nom pour voir ses minéraux. Le pH reste évalué séparément.</p>
         </div>
       </details>

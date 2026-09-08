@@ -5,10 +5,13 @@ import { SaltSolver, type WaterState } from '../../src/ui/SaltSolver';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
 
 afterEach(cleanup);
-function mount() {
+// Frozen weighed plan: its calcium is just below 130 ppm and 6 mL of mash
+// acid exhausts its HCO3. These edge cases must not depend on Doser's policy.
+const boundaryDoses = { gypse: 2.5, cacl2: 5.2, nahco3: 1.6 };
+function mount(doses?: WaterState['doses']) {
   function Host() {
     const [state, setState] = useState<WaterState>({ styleCode: '20C', diRatioPct: 20,
-      mashWaterL: 10.8, spargeWaterL: 21.5, doses: {}, disabled: [], acidId: 'lactique',
+      mashWaterL: 10.8, spargeWaterL: 21.5, doses: doses ?? {}, disabled: [], acidId: 'lactique',
       ratioOverride: 0.7, acidOverride: { mash: 0, sparge: 6.2 } });
     return <><button onClick={() => setState({ ...state, mashWaterL: 15 })}>Autre volume</button>
       <SaltSolver source={DEFAULT_WATER_SOURCE} onSourceChange={() => {}} state={state} onChange={setState}
@@ -16,7 +19,7 @@ function mount() {
         brew={{ totalGristKg: 2.2, grist: [{ kind: 'grain', use: 'empatage', weightKg: 2.2, colorEbc: 3.5 }] }} /></>;
   }
   render(<Host />);
-  fireEvent.click(screen.getByRole('button', { name: 'Proposer les doses' }));
+  if (!doses) fireEvent.click(screen.getByRole('button', { name: 'Proposer les doses' }));
 }
 function acid(side: string, value: string) {
   const field = screen.getByRole('textbox', { name: new RegExp(`Dose d’acide lactique.*${side}`) });
@@ -26,7 +29,7 @@ function acid(side: string, value: string) {
 
 describe('Manual water edits explain their actual consequences below the complete dosing surface', () => {
   it('shows gypsum ion increments, the newly exceeded calcium bound and the balance shift', () => {
-    mount();
+    mount(boundaryDoses);
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
     const impact = screen.getByLabelText('Conséquences du réglage de Gypse');
     // 0.5 g * coefficients / 32.3 L, with the treatment's 0.1 ppm rounding.
@@ -62,7 +65,7 @@ describe('Manual water edits explain their actual consequences below the complet
   });
 
   it('continues to explain an acid-induced pH decrease after bicarbonate has reached zero', () => {
-    mount();
+    mount(boundaryDoses);
     acid('à l’empâtage', '6');
     acid('à l’empâtage', '7');
     const impact = screen.getByLabelText('Conséquences du réglage de Acide empâtage');

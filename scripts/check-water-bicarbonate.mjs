@@ -80,6 +80,9 @@ async function checkDosedProfile(page, width, manual) {
     const number = value => Number(value.replace(',', '.'));
     assert.ok(number(value) >= number(min) && number(value) <= number(max), `Hors profil après Doser : ${reading}`);
   }
+  const bicarbonate = Number(result.radar.match(/Alcalinité \([^)]+\) ([\d,]+) ppm/)[1].replace(',', '.'));
+  assert.ok(bicarbonate >= 153 && bicarbonate <= 174,
+    `Doser doit viser le milieu bas autour de 163 ppm, pas seulement dépasser 120 : ${bicarbonate}`);
   if (manual) {
     assert.equal(result.mashAcid, '0');
     assert.equal(result.spargeAcid, '6,2');

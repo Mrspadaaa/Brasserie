@@ -102,11 +102,15 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     click('Proposer les doses');
     expect(acid()).toHaveValue('7,5');
     click('Revenir aux doses d’acide calculées');
-    expect(acid()).toHaveValue('0');
+    // Resetting acid preserves weighed salts, including the alkali that
+    // compensated the manual dose. Doser below then removes that compensation.
+    expect(acid()).toHaveValue('7,5');
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
     // A new plan no longer needs to compensate for the removed manual acid.
     click('Proposer les doses');
+    // Source HCO3 200 -> lower-middle preference 163 1/3 over 45.6 L.
+    expect(acid()).toHaveValue('2,8');
     const first = radar().getAttribute('aria-label');
     click('Proposer les doses');
     expect(radar().getAttribute('aria-label')).toBe(first);
@@ -114,7 +118,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     click('Enregistrer la recette');
     const saved = save.mock.calls[0][0];
     expect(saved.waterPlan).toMatchObject({
-      targetProfileId: '20C', acid: { id: 'lactique', mash: 0, sparge: 0 }
+      targetProfileId: '20C', acid: { id: 'lactique', mash: 2.8, sparge: 0 }
     });
     expect(saved.waterPlan.acidOverride).toBeUndefined();
     for (const ion of PROFILE_IONS) {
@@ -128,7 +132,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     mount(saved);
     click('Eau et sels');
     expect(radar().getAttribute('aria-label')).toBe(first);
-    expect(acid()).toHaveValue('0');
+    expect(acid()).toHaveValue('2,8');
   });
 
   it('can reset just the acid while keeping the weighed salts and chosen profile', () => {

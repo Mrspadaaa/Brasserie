@@ -23,6 +23,8 @@ export interface SaltFitInput {
 
 /** House tolerance for equivalent style balances, not a sensory threshold. */
 export const PRACTICAL_RATIO_TOLERANCE = 0.05;
+/** Weighted ppm: a small preference improvement need not buy another product. */
+export const PRACTICAL_ION_TOLERANCE_PPM = 5;
 
 export function weightedIonError(actual: WaterIons, target: WaterIons, ions: ReadonlyArray<keyof WaterIons>, weights: number[]): number {
   return Math.sqrt(ions.reduce((sum, ion, i) => sum + weights[i] * (actual[ion] - target[ion]) ** 2, 0) / weights.reduce((sum, value) => sum + value, 0));
@@ -152,14 +154,21 @@ export function fitSaltDoses(input: SaltFitInput): Partial<Record<SaltId, number
   const pool = candidates;
   const best = Math.min(...pool.map((c) => c.error));
   const bestRatio = Math.min(...pool.map(candidate => candidate.ratioGap));
+  const bestBalancedError = Math.min(...pool
+    .filter(candidate => candidate.ratioGap <= bestRatio + PRACTICAL_RATIO_TOLERANCE)
+    .map(candidate => candidate.error));
   pool.sort((a, b) => {
     if (input.practical && rangeFit) {
       const balancedA = a.ratioGap <= bestRatio + PRACTICAL_RATIO_TOLERANCE;
       const balancedB = b.ratioGap <= bestRatio + PRACTICAL_RATIO_TOLERANCE;
-      // Once all ranges are respected, a style midpoint is not a mandate to
-      // buy more products. Keep a close balance, then minimize distinct salts.
+      const nearA = a.error <= bestBalancedError + PRACTICAL_ION_TOLERANCE_PPM;
+      const nearB = b.error <= bestBalancedError + PRACTICAL_ION_TOLERANCE_PPM;
+      // A simpler recipe must not erase the interior preference altogether.
+      // Among comparable balances and concentration fits, use fewer products.
       return Number(balancedB) - Number(balancedA)
-        || (balancedA && balancedB ? a.count - b.count : a.ratioGap - b.ratioGap)
+        || (balancedA && balancedB
+          ? Number(nearB) - Number(nearA) || (nearA && nearB ? a.count - b.count : 0)
+          : a.ratioGap - b.ratioGap)
         || a.error - b.error || a.grams - b.grams;
     }
     const nearA = a.error <= best + 0.75,

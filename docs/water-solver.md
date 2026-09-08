@@ -12,8 +12,24 @@ pas des concentrations prédites dans la bière après extraction et ébullition
   plage. L’AR et le pH estimés restent des diagnostics distincts.
 - Les sels compensent le HCO₃ neutralisé par l’acide de rinçage et par une
   éventuelle dose manuelle à l’empâtage. L’acide automatique d’empâtage reste
-  dans l’intervalle qui respecte le HCO₃ total du profil. La recommandation
-  empirique d’AR peut départager ces doses ; elle ne peut pas annuler le profil.
+  dans l’intervalle qui respecte le HCO₃ total du profil. Quand le style demande
+  un minimum positif de HCO₃, sels et acide automatique partagent le même
+  repère intérieur. Sinon, l’AR empirique départage les doses permises ; elle
+  ne peut pas annuler le profil.
+- **Le repère de dosage d’un style est au tiers de sa plage**, dans le milieu
+  bas : `minimum + (maximum − minimum) / 3`. Pour 20C, HCO₃ vise ainsi environ
+  163 ppm dans la plage 120–250, plutôt que 120. C’est une préférence de
+  l’application, pas un optimum chimique ni une nouvelle borne. Les apports
+  liés, l’eau de départ, les sels disponibles et les doses manuelles peuvent
+  empêcher de centrer tous les ions ensemble. Un point proche d’une borne
+  reste conforme si le repère intérieur n’est pas accessible.
+- Mg, Na et HCO₃ restent facultatifs lorsque leur minimum est zéro : aucun
+  ajout n’est imposé pour remplir le graphique. Le malt fournit du magnésium ;
+  le HCO₃ augmente l’alcalinité et son besoin dépend de l’acidité des malts.
+  Augmenter systématiquement ces ions jusqu’au milieu ne garantit pas une
+  meilleure bière ([Bru’n Water, sections 2.3–2.5](https://www.brunwater.com/water-knowledge)).
+  Le repère intérieur d’un profil sombre ne garantit donc pas le bon pH d’un
+  empâtage clair : le désaccord avec la recette reste signalé séparément.
 - Une cible numérique explicite précise les ions souhaités. Pour HCO₃, la
   tolérance est de ±2 ppm. Un résultat inaccessible affiche la valeur réelle
   et l’écart ; aucune plage n’est élargie pour le déclarer atteint.
@@ -78,12 +94,16 @@ second passage cherche un compromis et le bilan expose les ions hors plage.
 Pour les cibles chiffrées, à précision comparable (0,75 ppm pondéré), moins de
 sels sont privilégiés. Pour un profil de style, on cherche d’abord le meilleur
 rapport SO₄/Cl parmi les candidats conformes ; dans une marge maison de 0,05
-autour de ce meilleur rapport, on privilégie le moins de produits différents,
-puis l’erreur aux concentrations de référence. Cette marge n’est pas un seuil
-sensoriel. Le calcium est une contrainte de plage, sans pénalité pour s’écarter
-de son minimum : on évite ainsi d’acheter du magnésium ou du potassium pour
-remplacer du calcium pourtant autorisé. Mg et Na gardent leurs limites et leur
-préférence pour de faibles ajouts lorsque le profil ne demande pas davantage.
+autour de ce meilleur rapport, on cherche les concentrations les plus proches
+des repères intérieurs. À erreur pondérée comparable (marge de 5 ppm), on
+privilégie moins de produits différents, puis l’erreur et la masse totale.
+Le nombre de sels ne peut donc plus supprimer à lui seul une correction
+utile vers le milieu bas. Ces marges sont des choix d’application, pas des
+seuils sensoriels. Les poids des styles sont Ca 0,1 ; Mg et Na 0,5 ; SO₄, Cl
+et HCO₃ 2. Le calcium a une préférence souple : on évite de substituer du
+magnésium ou du potassium uniquement pour centrer Ca alors qu’il est autorisé.
+Les six bornes sont imposées indépendamment de ces poids. Les profils chiffrés
+personnels gardent leurs points et leur classement distincts.
 
 L’erreur minimale irréductible de la source est retirée **du seuil de
 comparaison**, pas de l’objectif du problème numérique. Sans cela, beaucoup de
@@ -197,6 +217,10 @@ et pas uniquement la cohérence des formules ou l’absence d’erreur d’exéc
   construits depuis des additions connues.
 - `tests/unit/styleWaterContract.test.ts` : chaque profil du catalogue depuis
   l’osmosée, six ions après acide, minimums conjoints et ratio incompatible.
+- `tests/unit/waterPreferredTargets.test.ts` : milieu bas effectivement obtenu,
+  correction conservée malgré un sel supplémentaire, repère inaccessible sans
+  faux échec du profil, ions facultatifs, acide automatique avec deux dilutions
+  et trois produits, doses manuelles et contraintes de pesée.
 - `tests/integration/waterProfileContract.test.tsx` : le bouton Doser sur le
   cas de la photo, les acides manuels conservés, le récapitulatif, l’export et
   la réouverture avec les six ions toujours dans les plages.

@@ -42,7 +42,11 @@ describe('Product contract: Doser respects the complete chosen water profile', (
       expect(output.treatedTotal[ion], `${ion} after retained acid`).toBeLessThanOrEqual(bands[ion].max);
     }
     if (manual) expect(actual!.acidOverride).toEqual({ mash: 0, sparge: 6.2 });
+    expect(output.treatedTotal.hco3).toBeGreaterThanOrEqual(153);
+    expect(output.treatedTotal.hco3).toBeLessThanOrEqual(174);
     expect(screen.getByLabelText('Bilan des objectifs de l’eau')).toHaveTextContent('Profil atteint');
+    expect(screen.getByLabelText('Critères du dosage automatique')).toHaveTextContent('HCO₃ : repère 163 ppm');
+    expect(screen.getByLabelText('Bilan du pH estimé')).toHaveTextContent('au-dessus de la plage');
   });
 
   it.each([true, false])('keeps all six ranges through recap, export and reopening (autoTreatment=%s)', autoTreatment => {

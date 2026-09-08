@@ -447,7 +447,7 @@ export const STYLE_WATERS: StyleWater[] = [
   }
 ];
 
-/** Le milieu de fourchette — ce que vise le solveur. */
+/** Centre géométrique des plages ; la politique de dosage vit dans water/profileTarget. */
 export function midpoint(style: StyleWater): WaterIons {
   const mid = (r: IonRange) => Math.round((r.min + r.max) / 2);
   return {

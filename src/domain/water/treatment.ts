@@ -19,6 +19,8 @@ export interface TreatmentInput {
   hco3Target?: number;
   /** Required range on the combined water after both retained acid additions. */
   hco3Range?: IonBand;
+  /** Soft style preference after both acids; missing it is not a profile failure. */
+  hco3Preferred?: number;
 }
 
 export interface BicarbonateTargetResult {
@@ -101,15 +103,22 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     const maxDose = Math.max(0, (raw.mash.hco3 - minimumMash) * mashWaterL / strength);
     const low = Math.ceil((minDose - 1e-9) * 10) / 10;
     const high = Math.floor((maxDose + 1e-9) * 10) / 10;
+    const preferred = Number.isFinite(input.hco3Preferred)
+      ? Math.max(profileRange.min, Math.min(profileRange.max, input.hco3Preferred)) : undefined;
+    const referenceDose = preferred != null
+      ? Math.max(0, (raw.mash.hco3 * mashWaterL + spargeMass - preferred * totalL) / strength)
+      : mashAcidCalculated.amount;
+    const boundedDose = Math.max(low, Math.min(high, referenceDose));
     // Whole 0.1 mL/g doses must stay inside the profile too. If the interval
     // is narrower than one step, choose the dose with the smallest real gap.
-    const candidates = [...new Set([low, high, Math.max(high, Math.min(low, mashAcidCalculated.amount)),
-      Math.max(low, Math.min(high, mashAcidCalculated.amount))])].filter(value => value >= 0);
+    const candidates = [...new Set([low, high,
+      Math.floor((boundedDose + 1e-9) * 10) / 10,
+      Math.ceil((boundedDose - 1e-9) * 10) / 10])].filter(value => value >= 0);
     const gap = (dose: number) => {
       const value = (Math.max(0, raw.mash.hco3 - dose * strength / mashWaterL) * mashWaterL + spargeMass) / totalL;
       return Math.max(0, profileRange.min - value, value - profileRange.max);
     };
-    candidates.sort((a, b) => gap(a) - gap(b) || Math.abs(a - mashAcidCalculated.amount) - Math.abs(b - mashAcidCalculated.amount));
+    candidates.sort((a, b) => gap(a) - gap(b) || Math.abs(a - referenceDose) - Math.abs(b - referenceDose));
     mashAcidCalculated = { ...mashAcidCalculated, amount: candidates[0] ?? 0 };
     hco3LimitedByRa = false;
   }
@@ -152,6 +161,7 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     treatedTotal,
     hco3Target,
     hco3Range: profileRange,
+    hco3Preferred: input.hco3Preferred,
     mashAcidCalculated,
     spargeAcidCalculated,
     mashAcid,

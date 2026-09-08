@@ -178,18 +178,23 @@ describe('La couleur de la bière pilote l’alcalinité', () => {
     expect(cibleAffichee()).toContain('bière pâle');
   });
 
-  /*
-   * La cible d'acide, c'est le HAUT de la fenêtre. Passer d'une noire à une
-   * pâle abaisse cette cible de 180 ppm : la dose doit augmenter d'autant.
-   */
-  it('⚠️ la dose d’acide d’empâtage suit la couleur', () => {
+  it('le repère HCO₃ du profil reste stable lorsque seule la couleur change', () => {
     monter({}, 80);
     const noire = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
     clic('rendre pâle');
     const pale = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
 
-    expect(noire).toBeUndefined(); // Aucune dose à préparer : pas de ligne d'acide à zéro.
-    expect(parseFloat(pale)).toBeGreaterThan(0);
+    expect(noire).toBe('0.7 mL');
+    expect(pale).toBe(noire);
+    expect(screen.getByLabelText('Critères du dosage automatique')).toHaveTextContent('repère 163 ppm');
+  });
+
+  it('l’acide suit encore la couleur lorsque le profil ne demande aucun minimum de HCO₃', () => {
+    monter({ styleCode: '—' }, 80);
+    const noire = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    clic('rendre pâle');
+    const pale = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    expect(pale).toBeGreaterThan(noire);
   });
 });
 
@@ -266,8 +271,11 @@ describe('L’acidifiant pilote les deux doses', () => {
 
     expect(phosphoEmp).toBeLessThan(lactiqueEmp);
     expect(phosphoRin).toBeLessThan(lactiqueRin);
-    // 750 contre 600 mg de HCO₃ par mL : un rapport de 1.25.
-    expect(lactiqueEmp / phosphoEmp).toBeCloseTo(1.25, 1);
+    // Compare neutralized mass across BOTH waters. A 0.1 mL grid cannot
+    // preserve an exact 1.25 dose ratio on amounts as small as 0.6–0.7 mL.
+    const lactiqueMass = (lactiqueEmp + lactiqueRin) * 600;
+    const phosphoMass = (phosphoEmp + phosphoRin) * 750;
+    expect(Math.abs(lactiqueMass - phosphoMass)).toBeLessThanOrEqual(2 * 0.05 * (600 + 750));
   });
 
   /* ⚠️ Il n'y a pas de grain au rinçage : le malt acidulé doit y être refusé. */
@@ -707,9 +715,10 @@ describe('Dose d’acide sur l’onglet Empâtage', () => {
    * contredisaient à l'écran. Les notes décrivent désormais, la ligne de dose
    * seule prescrit.
    */
-  it('⚠️ ne promet aucun acide quand l’alcalinité est déjà dans sa cible', () => {
-    // Bière noire : la fenêtre d'AR monte à 120–180, l'eau du réseau y tombe.
-    monter({}, 80);
+  it('⚠️ ne promet aucun acide quand la cible explicite est déjà atteinte', () => {
+    // Exact source-water target, no sparge: no neutralization is required.
+    monter({ spargeWaterL: 0, customTarget: { name: 'Eau conservée',
+      ions: { ca: 85, mg: 14, na: 8, so4: 28, cl: 22, hco3: 250 } } }, 80);
     expect(ligneAcide()).toMatch(/rien à corriger/);
     // Et aucune phrase de l'écran ne doit réclamer d'acide en même temps.
     expect(screen.queryByText(/c’est là que l’acide sert/)).not.toBeInTheDocument();
