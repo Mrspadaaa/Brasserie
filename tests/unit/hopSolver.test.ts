@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyHopSolverCandidate, checkHopExclusions, createHopSolverSearch, initialHopSolverIntent, inspectHopSolverRecipe, prefillHopScenario } from '../../src/domain/hopIndex/solver';
+import { applyHopSolverCandidate, checkHopExclusions, compareHopSolverCandidates, createHopSolverSearch, initialHopSolverIntent, inspectHopSolverRecipe, prefillHopScenario, retainHopSolverCandidate, type HopSolverCandidate } from '../../src/domain/hopIndex/solver';
 import { currentGuideRevision, guideAxes, guidePredictionKnowledge, guideSolverPolicy } from '../../src/ui/hopIndex/guideData';
 import type { HopTriplet, HopKnowledge } from '../../functions/src/hopPredictionSchema';
 import type { HopVariety } from '../../functions/src/hopIndexSchema';
@@ -16,6 +16,17 @@ const triplet:HopTriplet={varietyId:data.varieties[0].id,yeastId:'fermentis-us05
 const search=(patch:any={})=>createHopSolverSearch({data,policy,intent,target:{},recipe,...patch});
 
 describe('Solver de formulation',()=>{
+  it('parcourt le même domaine par lots et conserve les meilleures combinaisons distinctes',()=>{
+    const s=search({intent:{...intent,keepYeast:false,timings:['fermentation','postFermentation']}});
+    const all=s.evaluateBatch(0,s.total),batches=[];
+    for(let i=0;i<s.total;i+=17)batches.push(...s.evaluateBatch(i,17));
+    expect(batches).toEqual(all);expect(s.evaluateBatch(s.total,17)).toEqual([]);
+    const key=(c:HopSolverCandidate)=>c.trial?.id??JSON.stringify(c.triplets.map(t=>[t.varietyId,t.yeastId,t.timing]));
+    const expected=[...new Map([...all].sort(compareHopSolverCandidates).reverse().map(c=>[key(c),c])).values()].sort(compareHopSolverCandidates).slice(0,7);
+    const retained:HopSolverCandidate[]=[];
+    for(const c of [...all].reverse())retainHopSolverCandidate(retained,c,key,7);
+    expect(retained).toEqual(expected);
+  });
   it('reconnaît la souche de la recette et propose des conditions sourcées sans modifier son entrée',()=>{
     const before=structuredClone(recipe),s=search(),rows=s.evaluateBatch(0,s.total);
     expect(rows.length).toBeGreaterThan(0);

@@ -1,7 +1,7 @@
 import { hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCore';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import type { HopAnalyte, HopRange, HopSource, HopVariety } from '../../../functions/src/hopIndexSchema';
-import { HOP_TIMINGS, type HopAxis, type HopEstimate, type HopPrediction, type HopTriplet, type HopYeast } from '../../../functions/src/hopPredictionSchema';
+import { HOP_TIMINGS, type HopAxis, type HopEstimate, type HopKnowledge, type HopPrediction, type HopTriplet, type HopYeast } from '../../../functions/src/hopPredictionSchema';
 import type { HopSolverIntent, HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { compareHopPredictions, createHopPredictor, usableHopKnowledge, type HopEngineData } from './engine';
@@ -95,9 +95,9 @@ function chemistryChecks(ts: HopTriplet[], yeast: HopYeast, intent: HopSolverInt
   return checks;
 }
 
-export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets: HopTriplet[], intent: HopSolverIntent, data: HopEngineData, policy: HopSolverPolicy, replacing?: number, predict = createHopPredictor(data)) {
+export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets: HopTriplet[], intent: HopSolverIntent, data: HopEngineData, policy: HopSolverPolicy, replacing?: number, predict = createHopPredictor(data), prepared?: {valid:HopKnowledge[];axes:HopAxis[];yeasts:HopYeast[]}) {
   const checks: SolverCheck[] = [];
-  const valid = usableHopKnowledge(data.knowledge).valid, axes = valid.filter((k):k is HopAxis=>k.kind==='axis'), yeasts=withDocumentedYeastNames(valid.filter((k):k is HopYeast=>k.kind==='yeast'));
+  const valid = prepared?.valid ?? usableHopKnowledge(data.knowledge).valid, axes = prepared?.axes ?? valid.filter((k):k is HopAxis=>k.kind==='axis'), yeasts=prepared?.yeasts ?? withDocumentedYeastNames(valid.filter((k):k is HopYeast=>k.kind==='yeast'));
   const existing = recipe?.hops.flatMap((_,i)=>i===replacing ? [] : [{index:i,...recipeHopScenario(recipe,i,data.varieties,yeasts)!}]) ?? [];
   const yeast = yeasts.find(y=>y.id===triplets[0]?.yeastId);
   for (const old of existing) {
@@ -154,10 +154,17 @@ export function createHopSolverSearch(options: {
     const filled=trial.hops.map(h=>{const v=data.varieties.find(v=>v.id===h.varietyId && !v.archived);return v?make(v,y,h.timing,null,trial):null;});
     if (filled.every(x=>x!==null)) queue.push({trial,triplets:filled.map(x=>x!.triplet),conditions:filled.map(x=>x!.conditions)});
   }
-  for (const v of data.varieties.filter(v=>!v.archived)) for(const y of yeasts) for(const timing of intent.timings) {
-    const doses=options.doseGL!==undefined?[options.doseGL]:policy.defaults[timing].searchDosesGL.map(p=>p.central);
-    for(const dose of doses){const f=make(v,y,timing,dose);queue.push({triplets:[f.triplet],conditions:f.conditions.length?[f.conditions]:[[]]});}
-  }
+  // Index the full Cartesian domain without allocating every scenario upfront.
+  const varieties=data.varieties.filter(v=>!v.archived);
+  const conditions=intent.timings.flatMap(timing=>(options.doseGL!==undefined?[options.doseGL]:policy.defaults[timing].searchDosesGL.map(p=>p.central)).map(dose=>({timing,dose})));
+  const total=queue.length+varieties.length*yeasts.length*conditions.length;
+  const itemAt=(index:number):typeof queue[number]=>{
+    if(index<queue.length)return queue[index];
+    const offset=index-queue.length, variant=conditions[offset%conditions.length];
+    const pair=Math.floor(offset/conditions.length);
+    const f=make(varieties[Math.floor(pair/yeasts.length)],yeasts[pair%yeasts.length],variant.timing,variant.dose);
+    return {triplets:[f.triplet],conditions:[f.conditions]};
+  };
   const recipeCache=new Map<string,ReturnType<typeof inspectHopSolverRecipe>>();
   const evaluate=(item:typeof queue[number]):HopSolverCandidate=>{
     const predictions=item.triplets.map(t=>predict(t,scoreTarget));
@@ -178,7 +185,7 @@ export function createHopSolverSearch(options: {
     // separate, so no candidate inherits another one's dose or warnings.
     const cacheKey=yeast.id;
     let common=recipeCache.get(cacheKey);
-    if(!common){common=inspectHopSolverRecipe(recipe,[{...item.triplets[0],doseGL:0,timing:'boil'}],intent,data,policy,options.replacing,predict);recipeCache.set(cacheKey,common);}
+    if(!common){common=inspectHopSolverRecipe(recipe,[{...item.triplets[0],doseGL:0,timing:'boil'}],intent,data,policy,options.replacing,predict,{valid,axes,yeasts:allYeasts});recipeCache.set(cacheKey,common);}
     const proposedDry = item.triplets.filter(t=>dry(t.timing));
     const total=common.totalDryHopGL===null || proposedDry.some(t=>!finite(t.doseGL)) ? null : common.totalDryHopGL+proposedDry.reduce((s,t)=>s+t.doseGL!,0);
     const recipeChecks=[...common.checks];
@@ -187,8 +194,18 @@ export function createHopSolverSearch(options: {
     const evidenceFamilies=item.trial?wanted.filter(id=>item.trial!.families.includes(id)):wanted.filter(id=>item.triplets.some(t=>{const v=data.varieties.find(v=>v.id===t.varietyId);return v&&models.some(m=>hopDescriptorEvidence(v,m.axes.find(a=>a.id===id)?.terms??[]).length)}));
     return {id: item.trial?.id ?? JSON.stringify(item.triplets),...item,predictions,checks,recipeChecks,score:predictions.length===1?predictions[0].score:unknownScore(),evidenceFamilies,totalDryHopGL:total};
   };
-  return {total:queue.length,emptyReason:!yeasts.length?'La levure de la recette n’est pas identifiée. Associe sa référence ou autorise une autre souche.':null,
-    evaluateProgram:evaluate, evaluateBatch:(from:number,count:number)=>queue.slice(from,from+count).map(evaluate)};
+  return {total,emptyReason:!yeasts.length?'La levure de la recette n’est pas identifiée. Associe sa référence ou autorise une autre souche.':null,
+    evaluateProgram:evaluate, evaluateBatch:(from:number,count:number)=>{
+      const start=Math.max(0,Math.floor(from)),end=Math.min(total,start+Math.max(0,Math.floor(count)));
+      return Array.from({length:Math.max(0,end-start)},(_,i)=>evaluate(itemAt(start+i)));
+    }};
+}
+
+/** Preserve the best distinct combinations while examining every candidate. */
+export function retainHopSolverCandidate(rows:HopSolverCandidate[],candidate:HopSolverCandidate,key:(c:HopSolverCandidate)=>string,limit:number) {
+  const index=rows.findIndex(c=>key(c)===key(candidate));
+  if(index>=0){if(compareHopSolverCandidates(candidate,rows[index])>=0)return;rows.splice(index,1);}
+  rows.push(candidate);rows.sort(compareHopSolverCandidates);rows.splice(limit);
 }
 
 export function applyHopSolverCandidate<T extends TrialRecipe>(recipe:T,candidate:HopSolverCandidate,data:HopEngineData,intent:HopSolverIntent,replacing?:number):T {

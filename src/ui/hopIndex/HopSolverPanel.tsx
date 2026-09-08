@@ -3,7 +3,7 @@ import { Search, FlaskConical, Wheat, AlertTriangle } from 'lucide-react';
 import type { HopRange } from '../../../functions/src/hopIndexSchema';
 import { HOP_TIMINGS, type HopAxis, type HopTriplet } from '../../../functions/src/hopPredictionSchema';
 import { HOP_CHEMISTRY_GOALS, type HopSolverIntent } from '../../../functions/src/hopSolverSchema';
-import { applyHopSolverCandidate, compareHopSolverCandidates, createHopSolverSearch, initialHopSolverIntent, type HopSolverCandidate, type SolverCheck } from '../../domain/hopIndex/solver';
+import { applyHopSolverCandidate, compareHopSolverCandidates, createHopSolverSearch, initialHopSolverIntent, retainHopSolverCandidate, type HopSolverCandidate, type SolverCheck } from '../../domain/hopIndex/solver';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import { usableHopKnowledge } from '../../domain/hopIndex/engine';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -65,18 +65,17 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     const engine=createHopSolverSearch({data,policy,intent,target:effectiveTarget,recipe,replacing,...fixed});evaluator.current=engine;
     if(engine.emptyReason)throw Error(engine.emptyReason);
     if(!engine.total)throw Error('Choisis au moins un moment d’ajout.');
-    const rows:HopSolverCandidate[]=[];
+    const buckets:HopSolverCandidate[][]=[[],[],[],[]];
+    const key=(c:HopSolverCandidate)=>c.trial?.id??JSON.stringify(c.triplets.map(t=>[varieties.find(v=>v.id===t.varietyId)?.name,t.yeastId,t.timing]));
     for(let i=0;i<engine.total;i+=32){
       if(!mounted.current)return;
       if(latest.current.signature!==signature||latest.current.data!==data)return;
-      rows.push(...engine.evaluateBatch(i,32));setProgress(`${Math.min(i+32,engine.total).toLocaleString('fr')} / ${engine.total.toLocaleString('fr')} scénarios examinés`);
+      for(const c of engine.evaluateBatch(i,32))retainHopSolverCandidate(buckets[(c.trial?0:2)+(hasConflict(c)?1:0)],c,key,10);
+      setProgress(`${Math.min(i+32,engine.total).toLocaleString('fr')} / ${engine.total.toLocaleString('fr')} scénarios examinés`);
       await new Promise<void>(resolve=>setTimeout(resolve,0));
     }
     if(!mounted.current||latest.current.signature!==signature||latest.current.data!==data)return;
-    const sorted=rows.sort(compareHopSolverCandidates);
-    // Keep distinct combinations, not five doses of the same ingredient.
-    const seen=new Set<string>(),shortlist:HopSolverCandidate[]=[];
-    for(const c of sorted){const key=c.trial?.id??JSON.stringify(c.triplets.map(t=>[varieties.find(v=>v.id===t.varietyId)?.name,t.yeastId,t.timing]));if(!seen.has(key)){seen.add(key);shortlist.push(c)}}
+    const shortlist=buckets.flat().sort(compareHopSolverCandidates);
     setResults(shortlist);setSelected(shortlist.find(c=>!hasConflict(c))??shortlist[0]);setChartAddition(0);
   });
   const preview=(c:HopSolverCandidate)=>{setSelected(c);setChartAddition(0);setNotice('')};
@@ -120,7 +119,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     </fieldset>
     <div className="flex flex-wrap items-center gap-3"><Button intent="primary" disabled={busy||loading||!intent.timings.length} onClick={()=>void search()}><Search size={17}/>Trouver mes combinaisons</Button>{busy&&<p role="status" className="text-sm text-cave-200">{progress||'Préparation…'}</p>}</div>
     {results&&<div className="grid lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] gap-5 items-start">
-      <div className="space-y-4"><p className="text-sm text-cave-400">{compatible.length} pistes sans conflit établi · {rejected.length} écartées. Les incertitudes restent visibles. Domaine de recherche fini, sans optimum universel annoncé.</p>
+      <div className="space-y-4"><p className="text-sm text-cave-400">Sélection des meilleures pistes : {compatible.length} sans conflit établi · {rejected.length} écartées. Tous les scénarios du domaine ont été examinés ; les incertitudes restent visibles.</p>
         {documented.length>0&&<div className="space-y-2"><h4 className="font-semibold text-water">Partir d’un essai publié</h4>{documented.map(candidateCard)}</div>}
         <div className="space-y-2"><h4 className="font-semibold text-cave-50">Explorer d’autres combinaisons</h4>{explorations.map(candidateCard)}</div>
         {!compatible.length&&<p className="text-sm text-ebc-straw">Aucune piste ne respecte les exclusions connues. Examine les conflits, ajuste une exclusion ou remplace l’ajout concerné.</p>}

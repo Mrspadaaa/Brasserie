@@ -3,6 +3,7 @@ import { assertHopTrial, type HopTrial } from './hopTrialSchema.js';
 import { assertHopExtrapolation, type HopExtrapolation } from './hopExtrapolationSchema.js';
 import { assertHopSolverPolicy, type HopSolverPolicy } from './hopSolverSchema.js';
 import { assertFermentationGuide, type FermentationGuide } from './fermentationGuideSchema.js';
+import { assertYeastCatalogue, type YeastCatalogue } from './yeastCatalogueSchema.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
 export type HopTiming = typeof HOP_TIMINGS[number];
@@ -14,6 +15,7 @@ export interface HopAxis {
 export interface HopYeast {
   id: string; kind: 'yeast'; name: string; betaLyase: 'positive' | 'negative' | 'unknown'; source: HopSource;
   form?: 'sèche' | 'liquide' | 'levain';
+  catalogue?: YeastCatalogue;
 }
 export interface HopTriplet {
   varietyId: string | null; lotId?: string | null; yeastId: string | null; timing: HopTiming | null;
@@ -128,7 +130,8 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
       check(Number.isFinite(v.lowMax) && Number.isFinite(v.mediumMax) && v.lowMax > v.scale.min && v.lowMax < v.mediumMax && v.mediumMax < v.scale.max, 'Classes de l’axe invalides.');
       parameter(v.weight, true); check(v.weight.range.min > 0, 'Poids strictement positif requis.'); break;
     case 'yeast':
-      keys(v, [...base, 'betaLyase', 'form']);
+      keys(v, [...base, 'betaLyase', 'form', 'catalogue']);
+      if (v.catalogue !== undefined) assertYeastCatalogue(v.catalogue);
       check(v.form === undefined || ['sèche', 'liquide', 'levain'].includes(v.form), 'Forme de levure invalide.');
       check(['positive', 'negative', 'unknown'].includes(v.betaLyase), 'Statut β-lyase invalide.'); break;
     case 'confidence': {

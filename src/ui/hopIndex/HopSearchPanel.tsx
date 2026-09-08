@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { HopAxis, HopModel, HopPrediction, HopTriplet, HopYeast, HOP_TIMINGS } from '../../../functions/src/hopPredictionSchema';
+import { HopAxis, HopModel, HopPrediction, HopTriplet, HopYeast } from '../../../functions/src/hopPredictionSchema';
 import { HopRange } from '../../../functions/src/hopIndexSchema';
 import { rankHopTriplets, usableHopKnowledge } from '../../domain/hopIndex/engine';
 import { captureHopPrediction } from '../../domain/hopIndex/snapshots';
@@ -38,8 +38,13 @@ function HopModelSearchPanel() {
   const results = useMemo(() => {
     if (!query) return [];
     const c = query.conditions;
-    const candidates = varieties.filter(v => !v.archived && (!c.varietyId || v.id === c.varietyId)).flatMap(v => yeasts.filter(y => !c.yeastId || y.id === c.yeastId).flatMap(y => (c.timing ? [c.timing] : [...HOP_TIMINGS]).map(timing => ({ ...c, varietyId: v.id, yeastId: y.id, timing }))));
-    return rankHopTriplets(candidates, query.target, data);
+    // This advanced view only searches the domains of documented models. The
+    // free simulator above remains available for every catalogue combination.
+    const candidates=models.filter(m=>(!c.varietyId||m.scope.varietyId===c.varietyId)&&(!c.yeastId||m.scope.yeastId===c.yeastId)&&(!c.timing||m.scope.timing===c.timing))
+      .filter(m=>varieties.some(v=>v.id===m.scope.varietyId&&!v.archived)&&yeasts.some(y=>y.id===m.scope.yeastId))
+      .map(m=>({...c,varietyId:m.scope.varietyId,yeastId:m.scope.yeastId,timing:m.scope.timing}));
+    const distinct=[...new Map(candidates.map(t=>[JSON.stringify(t),t])).values()];
+    return rankHopTriplets(distinct, query.target, {...data,knowledge:valid.filter(k=>k.kind!=='extrapolation')});
   }, [query, data]);
   const savePrediction = (r: HopPrediction) => {
     try {
@@ -49,7 +54,7 @@ function HopModelSearchPanel() {
   };
   return <section className="space-y-4" aria-label="Recherche de triplets aromatiques">
     <h2 className="text-xl font-semibold text-cave-50">Chercher un profil aromatique</h2>
-    <p className="text-cave-200">Choisis tes intensités, puis les conditions de brassage. Un filtre laissé vide explore toutes les références de l’index.</p>
+    <p className="text-cave-200">Choisis tes intensités, puis les conditions de brassage. Un filtre laissé vide explore les triplets couverts par les modèles documentés. Utilise le simulateur ci-dessus pour les autres associations.</p>
     <div className="flex flex-wrap gap-2"><BrewTag tone="info">{Object.keys(target).length} axe(s) choisi(s)</BrewTag><BrewTag>{models.length} modèle(s) documenté(s)</BrewTag></div>
     <div className="grid gap-3 sm:grid-cols-2">{visibleAxes.map(a => <HopField key={a.id} label={a.name}><select className={inputClass} value={!target[a.id] ? '' : target[a.id].min === a.scale.min ? 'low' : target[a.id].min === a.lowMax ? 'medium' : 'high'} onChange={e => {
       const next = { ...target }; if (!e.target.value) delete next[a.id]; else next[a.id] = e.target.value === 'low' ? { min: a.scale.min, max: a.lowMax } : e.target.value === 'medium' ? { min: a.lowMax, max: a.mediumMax } : { min: a.mediumMax, max: a.scale.max }; setTarget(next);

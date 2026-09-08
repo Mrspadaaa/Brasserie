@@ -4,7 +4,7 @@ import type { HopRange, HopSource, HopVariety } from '../../../functions/src/hop
 import { HOP_TIMINGS, type HopAxis, type HopPrediction, type HopTriplet, type HopYeast } from '../../../functions/src/hopPredictionSchema';
 import { hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCore';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
-import { compareHopPredictions, predictHopTriplet, rankHopTriplets, usableHopKnowledge } from '../../domain/hopIndex/engine';
+import { compareHopPredictions, createHopPredictor, predictHopTriplet, usableHopKnowledge } from '../../domain/hopIndex/engine';
 import { applyHopScenario, recipeHopScenario } from '../../domain/hopIndex/exploration';
 import { prefillHopScenario } from '../../domain/hopIndex/solver';
 import { captureHopPrediction } from '../../domain/hopIndex/snapshots';
@@ -114,14 +114,19 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
     setRanked(null); setRankedAssociations(associations);
     const timings = associations && ['fermentation', 'postFermentation'].includes(scenario.timing ?? '') ? ['fermentation', 'postFermentation'] as const : [scenario.timing];
     const yeastIds = associations ? yeasts.map(y => y.id) : [scenario.yeastId];
-    const candidates = varieties.filter(v => !v.archived).flatMap(v => yeastIds.flatMap(yeastId => timings.map(timing => ({ ...scenario, varietyId: v.id, yeastId, timing, lotId: null, matrixId: null }))));
+    const hops=varieties.filter(v=>!v.archived),total=hops.length*yeastIds.length*timings.length;
+    const predict=createHopPredictor(data);
     const results: HopPrediction[] = [];
     // Cooperative batches keep the controls responsive; the comparator is the
     // same shared function, and batching cannot alter the numerical result.
-    for (let i = 0; i < candidates.length; i += 40) {
+    for (let i = 0; i < total; i += 40) {
       if (!mounted.current) return;
       if (latestQuery.current.querySignature !== querySignature || latestQuery.current.data !== data) { setNotice('Les critères ou références ont changé. Relance la comparaison pour les prendre en compte.'); return; }
-      results.push(...rankHopTriplets(candidates.slice(i, i + 40), target, data));
+      for(let j=i;j<Math.min(i+40,total);j++){
+        const pair=Math.floor(j/timings.length);
+        const candidate=predict({...scenario,varietyId:hops[Math.floor(pair/yeastIds.length)].id,yeastId:yeastIds[pair%yeastIds.length],timing:timings[j%timings.length],lotId:null,matrixId:null},target);
+        if(candidate.score.range){results.push(candidate);results.sort(compareHopPredictions);results.splice(5);}
+      }
       await new Promise<void>(resolve => setTimeout(resolve, 0));
     }
     if (mounted.current && latestQuery.current.querySignature === querySignature && latestQuery.current.data === data) setRanked(results.filter(p => p.score.range).sort(compareHopPredictions).slice(0, 5));

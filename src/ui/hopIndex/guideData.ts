@@ -13,6 +13,7 @@ import type { FermentationGuide } from '../../../functions/src/fermentationGuide
 import type { HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
+import { catalogueSolverFacts } from '../../domain/yeastCatalogue';
 
 export type GuideYeast = HopYeast & { aliases?: string[] };
 
@@ -51,9 +52,11 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
   const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...validKnowledge(knowledge)];
   const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
+  const fermentations = guideFermentations(knowledge), trials = guideTrials(knowledge);
   return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
-    const aliases = yeastNameVariants[yeast.id] ?? guideFermentations(knowledge).find(g => g.yeastId === yeast.id)?.aliases;
-    const trial = guideTrials(knowledge).find(t => t.yeastId === yeast.id);
+    const names = [...(yeastNameVariants[yeast.id] ?? []), ...(fermentations.find(g => g.yeastId === yeast.id)?.aliases ?? []), ...(yeast.catalogue?.aliases ?? [])];
+    const aliases = names.length ? [...new Set(names)] : undefined;
+    const trial = trials.find(t => t.yeastId === yeast.id);
     const builtin = initialYeasts.find(y => y.id === yeast.id);
     const form = yeast.form ?? trial?.yeastForm ?? builtin?.form;
     return { ...yeast, ...(form ? { form: form as HopYeast['form'] } : {}), ...(aliases ? { aliases: [...aliases] } : {}) };
@@ -94,9 +97,10 @@ export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | 
   });
   if (!policy) return undefined;
   const fermentation = guideFermentations(knowledge);
+  const catalogue = catalogueSolverFacts(knowledge);
   return { ...policy,
-    yeastPhenols: [...new Map([...fermentation.filter(g => g.aroma.pof !== 'unknown').map(g => ({ yeastId: g.yeastId, status: g.aroma.pof as 'positive' | 'negative', source: g.aroma.source })), ...policy.yeastPhenols].map(p => [p.yeastId, p])).values()],
-    yeastConditions: [...new Map([...fermentation.map(g => ({ yeastId: g.yeastId, temperatureC: g.temperatureC.range, source: g.temperatureC.source })), ...(policy.yeastConditions ?? [])].map(p => [p.yeastId, p])).values()]
+    yeastPhenols: [...new Map([...catalogue.yeastPhenols, ...fermentation.filter(g => g.aroma.pof !== 'unknown').map(g => ({ yeastId: g.yeastId, status: g.aroma.pof as 'positive' | 'negative', source: g.aroma.source })), ...policy.yeastPhenols].map(p => [p.yeastId, p])).values()],
+    yeastConditions: [...new Map([...catalogue.yeastConditions, ...fermentation.map(g => ({ yeastId: g.yeastId, temperatureC: g.temperatureC.range, source: g.temperatureC.source })), ...(policy.yeastConditions ?? [])].map(p => [p.yeastId, p])).values()]
   };
 }
 
