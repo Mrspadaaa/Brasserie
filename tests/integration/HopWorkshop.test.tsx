@@ -64,7 +64,7 @@ describe('Atelier de formulation sur des essais connus', () => {
     fireEvent.change(screen.getByLabelText('Rechercher un essai'), { target: { value: 'Cascade' } });
     expect(within(screen.getByRole('group', { name: 'Programmes documentés' })).getAllByRole('button')).toHaveLength(6);
   });
-  it('ne remplace rien avant l’aperçu explicite et la persistance des références ; permet ensuite une adaptation US-05 sans chiffre aromatique', async () => {
+  it('ne remplace rien avant l’aperçu et la persistance ; applique ensuite une variante US-05 explicitement', async () => {
     const host = mount(); const before = structuredClone(host.current());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Préparer ce programme pour 20 L' })).toBeEnabled());
     fireEvent.click(screen.getByRole('button', { name: 'Préparer ce programme pour 20 L' }));
@@ -80,7 +80,9 @@ describe('Atelier de formulation sur des essais connus', () => {
     expect(host.current().hops.map(h => h.weightG)).toEqual([40, 40, 80]);
     expect(host.current().hops.every(h => h.alpha === 0 && h.timeMin === undefined && h.tempC === undefined)).toBe(true);
     expect(StorageService.getHopVarieties()).toHaveLength(3);
-    fireEvent.change(screen.getByLabelText('Levure pour mon adaptation'), { target: { value: 'fermentis-us05' } });
+    fireEvent.change(screen.getByLabelText('Levure à simuler'), { target: { value: 'fermentis-us05' } });
+    expect(host.current().yeast.hopIndexId).toBe('lalbrew-verdant-ipa');
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer ce scénario à la recette' }));
     await waitFor(() => expect(host.current().yeast.hopIndexId).toBe('fermentis-us05'));
     expect(host.current().hopTrialId).toBe('trial-split-verdant-2026');
     expect(screen.getByLabelText('Écarts au programme documenté')).toHaveTextContent('Diffère');

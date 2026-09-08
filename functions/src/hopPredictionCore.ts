@@ -1,5 +1,7 @@
 import { HopConfidence, HopLot, HopRange, HopSource, HopVariety, validHopRange } from './hopIndexSchema.js';
 import { ResolvedHopFact, resolveHopFacts } from './hopIndexFacts.js';
+import { extrapolateHopProfile } from './hopExtrapolationCore.js';
+import type { HopExtrapolation } from './hopExtrapolationSchema.js';
 import { HopAxis, HopConfidencePolicy, HopEstimate, HopKnowledge, HopModel, HopModelOutput, HopPrediction, HopRisk, HopRiskPolicy, HopTasting, HopTriplet, HopYeast, assertHopKnowledge, assertHopTriplet } from './hopPredictionSchema.js';
 
 const rank: Record<HopConfidence, number> = { low: 0, medium: 1, high: 2 };
@@ -75,6 +77,7 @@ function combine(estimates: HopEstimate[]): HopEstimate {
   const range = { min: Math.min(...known.map(e => e.range!.min)), max: Math.max(...known.map(e => e.range!.max)) };
   const conflict = Math.max(...known.map(e => e.range!.min)) > Math.min(...known.map(e => e.range!.max));
   return { range, confidence: conflict || known.length < estimates.length ? 'low' : weakestHopConfidence(...known.map(e => e.confidence)),
+    ...(known.length === 1 && known[0].central !== undefined ? { central: known[0].central } : {}),
     sources: known.flatMap(e => e.sources), reasons: [...new Set(estimates.flatMap(e => e.reasons)), ...(known.length > 1 ? ['Plusieurs modèles : union des plages, sans moyenne ni addition.'] : []), ...(conflict ? ['Résultats contradictoires ; confiance réduite.'] : [])] };
 }
 
@@ -151,6 +154,7 @@ function prepareHopData(data: HopEngineData) {
     axes: valid.filter((v): v is HopAxis => v.kind === 'axis'),
     policies: valid.filter((v): v is HopConfidencePolicy => v.kind === 'confidence'),
     models: valid.filter((v): v is HopModel => v.kind === 'model' && v.enabled),
+    extrapolations: valid.filter((v): v is HopExtrapolation => v.kind === 'extrapolation' && v.enabled),
     risks: valid.filter((v): v is HopRiskPolicy => v.kind === 'risk')
   };
 }
@@ -181,9 +185,24 @@ function predictPrepared(triplet: HopTriplet, target: Record<string, HopRange>, 
     value.confidence = weakestHopConfidence(value.confidence, sourceCap(yeast.source, policies));
     if (yeast.source.year === null) value.reasons.push('Année de la source de levure inconnue.');
   }
+  // Exact, contextual observations retain priority. The experimental model fills
+  // only unsupported axes; its assumptions never become measured concentrations.
+  if (variety && yeast && triplet.timing && !badLot && data.extrapolations.length) {
+    const estimates = data.extrapolations.map(model => ({ model, profile: extrapolateHopProfile(triplet, variety, yeast, axes, model, (lot?.form ?? variety.form) !== 'unknown') }));
+    const extrapolatedAxes: string[] = [];
+    for (const axis of axes) if (!result.profile[axis.id].range) {
+      const outputs = estimates.map(e => e.profile[axis.id]).filter(Boolean);
+      if (outputs.length) { result.profile[axis.id] = combine(outputs); extrapolatedAxes.push(axis.id); }
+    }
+    if (extrapolatedAxes.length) {
+      result.extrapolatedAxes = extrapolatedAxes;
+      result.modelRefs.push(...estimates.filter(e => extrapolatedAxes.some(id => e.profile[id])).map(e => ({ id: e.model.id, version: e.model.version })));
+      result.reasons.push('Extrapolation expérimentale : intervalles d’hypothèses, confiance faible jusqu’à validation indépendante.');
+    }
+  }
   result.score = scoreHopProfile(result.profile, target, axes, policies);
   result.risks = risksFor(triplet, badLot ? [] : facts, result.compounds, yeast, data.risks, policies);
-  if (!models.length) result.reasons.push('Aucun modèle applicable à ce houblon × levure × timing, cette dose et cette matrice.');
+  if (!models.length) result.reasons.push(result.extrapolatedAxes?.length ? 'Aucun étalonnage exact pour ces conditions : le profil repose sur le modèle expérimental.' : 'Aucun modèle applicable à ce houblon × levure × timing, cette dose et cette matrice.');
   if (!policies.length) result.reasons.push('Politique de fiabilité absente : confiance faible.');
   return result;
 }
@@ -194,11 +213,15 @@ export function predictHopTriplet(triplet: HopTriplet, target: Record<string, Ho
 /** Conservative fit first, optimistic bound second, unknowns last. No hidden midpoint. */
 export function rankHopTriplets(triplets: HopTriplet[], target: Record<string, HopRange>, data: HopEngineData): HopPrediction[] {
   const prepared = prepareHopData(data);
-  return triplets.map(t => predictPrepared(t, target, prepared)).sort((a, b) => {
-    if (!a.score.range) return b.score.range ? 1 : 0;
-    if (!b.score.range) return -1;
-    return b.score.range.min - a.score.range.min || b.score.range.max - a.score.range.max;
-  });
+  return triplets.map(t => predictPrepared(t, target, prepared)).sort(compareHopPredictions);
+}
+/** Shared by synchronous ranking and the UI's cooperative batches. */
+export function compareHopPredictions(a: HopPrediction, b: HopPrediction): number {
+  if (!a.score.range) return b.score.range ? 1 : 0;
+  if (!b.score.range) return -1;
+  return b.score.range.min - a.score.range.min || (a.extrapolatedAxes?.length || b.extrapolatedAxes?.length
+    ? (a.score.range.max - a.score.range.min) - (b.score.range.max - b.score.range.min)
+    : b.score.range.max - a.score.range.max);
 }
 export function compareHopTasting(tasting: HopTasting, prediction: HopPrediction | undefined, axes: HopAxis[]) {
   return tasting.axes.map(({ axis, perceived, confidence: tastingConfidence }) => {

@@ -12,6 +12,7 @@ import { useHopCatalogue } from './useHopCatalogue';
 import { HopTrialChart, HopTrialComparison, HopTrialResult } from './HopWorkshop';
 import { HopTechnicalPanel, HopSourceLink } from './HopTechnicalPanel';
 import { HOP_TIMING_LABELS, hopDoseLabel, hopDurationLabel, hopTemperatureLabel } from './presentation';
+import { HopExtrapolationPanel } from './HopExtrapolationPanel';
 
 /** Finished recipe report: no draft, no writes. Editing is the parent's explicit route. */
 export function HopRecipePanel({ recipe, onEdit }: {
@@ -29,6 +30,7 @@ export function HopRecipePanel({ recipe, onEdit }: {
   const hasRisks = predictions.some(p => p.risks.some(r => r.status !== 'unknown'));
   return <section className="space-y-5" aria-label="Potentiel aromatique de la recette">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-xl font-serif text-cave-50">Le programme aromatique</h3><p className="text-sm text-cave-400">{recipe.yeast?.name || 'Levure à choisir'} · lecture seule</p></div>{onEdit && <Button type="button" onClick={onEdit}>Modifier dans l’atelier de recette</Button>}</div>
+    {recipe.hops.length > 0 && <HopExtrapolationPanel recipe={recipe} target={target} readOnly />}
     {!!Object.keys(target).length && <figure className="space-y-2" aria-label="Objectif aromatique de la recette"><figcaption className="text-sm font-semibold text-ebc-straw">Profil recherché · intention du brasseur</figcaption>{axes.filter(a => target[a.id]).map(a => {
       const r = target[a.id], level = r.max <= a.lowMax ? 'faible' : r.min >= a.mediumMax ? 'forte' : 'intermédiaire';
       return <div key={a.id} className="space-y-1"><p className="text-xs text-cave-200">{a.name} · présence {level}</p><div className="relative h-3 bg-cave-800 rounded overflow-hidden" aria-hidden="true"><span className="absolute inset-y-0 rounded bg-ebc-straw/70" style={{ left: `${100 * (r.min - a.scale.min) / (a.scale.max - a.scale.min)}%`, width: `${100 * (r.max - r.min) / (a.scale.max - a.scale.min)}%` }} /></div></div>;

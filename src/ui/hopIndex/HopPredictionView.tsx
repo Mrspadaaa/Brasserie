@@ -13,6 +13,7 @@ export function HopPredictionView({ prediction, axes, names, target }: { predict
   const scoreLabel = prediction.score.range ? hopRangeLabel(prediction.score.range)
     : noTarget ? 'Aucun objectif aromatique' : noModel ? 'Aucun modèle applicable' : 'Adéquation non quantifiable';
   return <div className="space-y-3">
+    {!!prediction.extrapolatedAxes?.length && <p className="text-xs text-ebc-straw">Modèle expérimental · plages d’hypothèses non calibrées, confiance faible. Les axes issus d’un essai exact conservent leurs sources propres.</p>}
     <p className="text-lg font-semibold text-cave-50 break-words">{names?.variety || prediction.triplet.varietyId || 'Houblon non renseigné'} <span className="text-cave-400">×</span> {names?.yeast || prediction.triplet.yeastId || 'Levure non renseignée'}</p>
     <div className="flex flex-wrap gap-2"><BrewTag tone="info">{HOP_TIMING_LABELS[prediction.triplet.timing] || 'Moment d’ajout non précisé'}</BrewTag><BrewTag>{prediction.triplet.lotId ? 'Lot sélectionné' : prediction.triplet.varietyId ? 'Référence variété' : 'Lot non précisé'}</BrewTag>
       {names?.variety && !prediction.triplet.varietyId && <BrewTag>Variété non associée à l’index</BrewTag>}

@@ -10,7 +10,7 @@ const sameMembers = (left: unknown[], right: unknown[]) => stable(left.map(stabl
 const sameNumber = (left: number, right: number) => Math.abs(left - right) <=
   Math.max(64 * Number.MIN_VALUE, 64 * Number.EPSILON * Math.max(Math.abs(left), Math.abs(right)));
 
-/** Replay v2 exclusively from its frozen evidence; never rewrite or recalculate v1. */
+/** Replay from frozen evidence; legacy v1 stays immutable and is never recalculated. */
 export function assertHopPredictionSnapshot(value: unknown, id?: string): asserts value is HopPredictionSnapshot {
   assertHopPredictionSnapshotShape(value, id);
   if (value.engineVersion === 'hop-envelope-v1') return;
@@ -23,6 +23,8 @@ export function assertHopPredictionSnapshot(value: unknown, id?: string): assert
     check((saved.range === null) === (replayed.range === null), `${name}, quantification incompatible`);
     if (saved.range && replayed.range) check(sameNumber(saved.range.min, replayed.range.min) && sameNumber(saved.range.max, replayed.range.max), `${name}, plage différente du calcul`);
     check(saved.confidence === replayed.confidence, `${name}, confiance différente du calcul`);
+    check((saved.central === undefined) === (replayed.central === undefined), `${name}, repère central incompatible`);
+    if (saved.central !== undefined && replayed.central !== undefined) check(sameNumber(saved.central, replayed.central), `${name}, repère central différent du calcul`);
     check(sameMembers(saved.sources, replayed.sources), `${name}, provenance différente du calcul`);
   };
   for (const field of ['profile', 'compounds'] as const) {
@@ -31,5 +33,6 @@ export function assertHopPredictionSnapshot(value: unknown, id?: string): assert
   }
   estimate(actual.score, expected.score, 'score');
   check(sameMembers(actual.modelRefs, expected.modelRefs), 'références de modèles différentes');
+  check(sameMembers(actual.extrapolatedAxes ?? [], expected.extrapolatedAxes ?? []), 'axes extrapolés différents');
   check(sameMembers(actual.risks, expected.risks), 'alertes différentes du calcul');
 }

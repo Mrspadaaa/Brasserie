@@ -503,7 +503,7 @@ export const StorageService = {
     const previous = this.getHopKnowledge().find(row => row.id === item.id);
     if (previous && sameDoc(previous, item)) return;
     if (previous && previous.kind !== item.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
-    if (previous && previous.kind === 'model' && item.kind === 'model' && previous.version === item.version) throw Error('Changer la version du modèle pour conserver une révision identifiable.');
+    if (previous && (previous.kind === 'model' || previous.kind === 'extrapolation') && (item.kind === 'model' || item.kind === 'extrapolation') && previous.version === item.version) throw Error('Changer la version du modèle pour conserver une révision identifiable.');
     if (previous && previous.kind === 'axis' && item.kind === 'axis' && previous.version === item.version) throw Error('Changer la version de l’axe pour conserver son échelle historique.');
     FirestoreRepo.put('hopKnowledge', item.id, item);
   },
@@ -548,7 +548,7 @@ export const StorageService = {
         if (previous && !unchanged && name === 'hopPredictions') throw Error('Une prédiction figée différente existe déjà. Aucun import effectué.');
         if (previous && !unchanged && name === 'hopKnowledge') {
           if (previous.kind !== row.data.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
-          if (['model', 'axis'].includes(previous.kind) && previous.version === row.data.version) throw Error('La connaissance importée doit porter une nouvelle version.');
+          if (['model', 'axis', 'extrapolation'].includes(previous.kind) && previous.version === row.data.version) throw Error('La connaissance importée doit porter une nouvelle version.');
         }
         if (!unchanged) changes.push({ name: name as CollectionName, ...row });
       }

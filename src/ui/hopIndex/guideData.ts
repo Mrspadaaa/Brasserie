@@ -4,6 +4,7 @@ import initialKnowledge from '../../data/hopKnowledgeBootstrap.json';
 import initialYeasts from '../../data/hopYeastBootstrap.json';
 import trialPack from '../../data/hopTrialBootstrap.json';
 import studyPack from '../../data/hopStudyBootstrap.json';
+import extrapolationPack from '../../data/hopExtrapolationBootstrap.json';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
 
@@ -57,6 +58,14 @@ export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
 export function guideTrials(knowledge: HopKnowledge[]): HopTrial[] {
   const rows = [...checkedKnowledge(trialPack.hopKnowledge), ...validKnowledge(knowledge)];
   return [...new Map(rows.map(row => [row.id, row])).values()].filter((row): row is HopTrial => row.kind === 'trial');
+}
+
+/** Proposed data are immediately usable; a saved revision (including disabled)
+ * wins by ID. Invalid saved revisions are left visible to the engine validator,
+ * never replaced silently by the initial model. No writes happen at read time. */
+export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
+  const proposed = [...checkedKnowledge(initialKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack)];
+  return [...new Map([...proposed, ...knowledge.map(storedKnowledge)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
 }
 
 /** Proposed policies only; an explicit action must persist any missing references. */

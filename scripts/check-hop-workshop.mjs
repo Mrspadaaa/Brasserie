@@ -56,8 +56,11 @@ try {
     await page.waitForFunction(() => !document.body.innerText.includes('Enregistrement des références…'));
     await click(page, 'Forte');
     await page.waitForFunction(() => !document.body.innerText.includes('Enregistrement des références…'));
-    await select(page, 'Levure pour mon adaptation', 'fermentis-us05');
+    await select(page, 'Levure à simuler', 'fermentis-us05');
+    await click(page, 'Appliquer ce scénario à la recette');
     await page.waitForFunction(() => document.querySelector('[aria-label="Écarts au programme documenté"]')?.textContent.includes('SafAle US-05'));
+    const comparisonSummary = await page.waitForFunction(() => [...document.querySelectorAll('summary')].find(e => e.textContent.startsWith('Comparer au protocole choisi')));
+    await comparisonSummary.asElement().evaluate(e => e.scrollIntoView({ block: 'center' })); await comparisonSummary.asElement().click(); await comparisonSummary.dispose();
     await overflow(page);
     await page.$eval('[aria-label="Écarts au programme documenté"]', e => e.scrollIntoView({ block: 'center' }));
     await page.screenshot({ path: resolve(out, `adaptation-${width}.png`) });

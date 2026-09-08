@@ -11,7 +11,11 @@ export function hopIndexOverview(index: Index | undefined) {
     catalogue: { references: index.varieties.length, sources: [...new Set(index.varieties.map(v => v.analysis?.[0]?.source?.author ?? v.descriptions?.[0]?.source?.author).filter(Boolean))], omittedFromOverview: index.varieties.length - varieties.length },
     varieties: varieties.map(v => ({ id: v.id, name: v.name, aliases: v.aliases, origin: v.origin, form: v.form, source: v.analysis?.[0]?.source?.author ?? v.descriptions?.[0]?.source?.author, archived: v.archived })),
     lots: index.lots.map(l => ({ id: l.id, varietyId: l.varietyId, name: l.name, lotNumber: l.lotNumber, harvestYear: l.harvestYear, growingRegion: l.growingRegion, grower: l.grower, storageNotes: l.storageNotes, referenceOnly: l.referenceOnly, form: l.form, archived: l.archived })),
-    knowledge: index.knowledge,
+    knowledge: index.knowledge.map(k => k.kind === 'extrapolation' ? {
+      id: k.id, kind: k.kind, name: k.name, version: k.version, enabled: k.enabled, source: k.source,
+      limitations: k.limitations, axes: k.axes.map(a => ({ id: a.id, version: a.version })),
+      instruction: 'Les coefficients restent dans les données complètes de predict_hop_aroma. Extrapolation experte non calibrée ; ne pas calculer soi-même un point ni une concentration depuis les descripteurs.'
+    } : k),
     predictions: index.predictions.map(p => ({ id: p.id, name: p.name, createdAt: p.createdAt, recipeId: p.recipeId, batchId: p.batchId })),
     tastings: index.tastings.map(t => ({ id: t.id, name: t.name, date: t.date, origin: t.origin, predictionId: t.predictionId })),
     truncated: index.truncated

@@ -13,6 +13,7 @@ import { HOP_TIMING_LABELS, HOP_CONFIDENCE_LABELS } from './presentation';
 import { Button } from '../../components/ui/Button';
 import { inputClass } from '../FormNav';
 import { HopField } from './HopFactsEditor';
+import { HopExtrapolationPanel } from './HopExtrapolationPanel';
 
 const number = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
 const rangeLabel = (r: HopRange, unit: string) => `${r.min === r.max ? number(r.min) : `${number(r.min)}–${number(r.max)}`} ${unit}`;
@@ -119,11 +120,11 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
     <header className="p-4 sm:p-5 bg-gradient-to-br from-hop/10 to-cave-900 border-b border-cave-700">
       <p className="text-xs uppercase tracking-widest text-hop mb-2">Houblon × levure × timing</p>
       <h2 className="font-serif text-2xl sm:text-3xl text-cave-50">Construire le goût de ta bière</h2>
-      <p className="text-sm text-cave-200 mt-2 max-w-2xl">Pars d’un essai documenté, regarde ce qu’il a donné, puis adapte-le à tes ingrédients.</p>
+      <p className="text-sm text-cave-200 mt-2 max-w-2xl">Pars d’un essai documenté ou simule ta propre combinaison, puis compare les variantes avant de composer.</p>
     </header>
     <div className="p-3 sm:p-5 space-y-5">
       <nav aria-label="Étapes de l’atelier aromatique" className="grid grid-cols-3 gap-1">
-        {([{ id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'adapt', name: 'Mon adaptation', Icon: SlidersHorizontal }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
+        {([{ id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'adapt', name: 'Mon adaptation', Icon: SlidersHorizontal }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
       </nav>
       {view === 'trials' && <>
         <div className="grid sm:grid-cols-2 gap-3"><HopField label="Rechercher un essai"><input className={inputClass} disabled={busy} placeholder="Cascade, Verdant, goyave…" value={query} onChange={e => { setQuery(e.target.value); setSelectedId(''); setPreview(false); }} /></HopField>
@@ -157,19 +158,13 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
           void run(async () => { if (next[axis.id]) await ensureGuideReferences({ knowledge: [axis] }); change({ ...latest.current.recipe!, hopAromaTarget: next }); });
         }} />
         <p className="text-xs text-cave-400">Le graphe ci-dessus représente ton intention. Les familles et leur échelle sont des choix de formulation de L’Affinée, pas des mesures de bière.</p>
-        {recipe && onChange && <HopField label="Levure pour mon adaptation"><select className={inputClass} value={recipe.yeast?.hopIndexId ?? ''} disabled={busy} onChange={e => {
-          const y = yeasts.find(y => y.id === e.target.value); if (!y) return;
-          void run(async () => { await ensureGuideReferences({ knowledge: [y] }); const r = latest.current.recipe!, form = y.form ?? r.yeast.form;
-            change({ ...r, hopMatrixId: undefined, hopPredictionIds: undefined, yeast: { name: y.name, hopIndexId: y.id, form, qty: 0, unit: form === 'liquide' ? 'flacon' : form === 'levain' ? 'L' : 'sachet' } });
-            setNotice(y.form ? 'Souche modifiée. Renseigne sa quantité et vérifie les paliers de fermentation.' : 'Forme non documentée pour cette souche : vérifie la forme conservée et la quantité dans l’étape Levure.');
-          });
-        }}><option value="">{recipe.yeast?.name || 'Choisir une souche'}</option>{yeasts.map(y => <option key={y.id} value={y.id}>{y.name}</option>)}</select></HopField>}
-        {recipe && anchor ? <><HopTrialChart trial={anchor} recipe={recipe} /><HopTrialComparison trial={anchor} recipe={recipe} /></> : <p className="text-sm text-cave-200">Choisis un essai comme repère pour voir les différences de doses, souche et timing. Tu peux aussi composer librement avec le catalogue.</p>}
+        <HopExtrapolationPanel recipe={recipe} onChange={onChange} onBusyChange={next => { setBusy(next); onBusyChange?.(next); }} target={target} />
+        {recipe && anchor && <details><summary className="cursor-pointer min-h-touch text-water">Comparer au protocole choisi : {anchor.name}</summary><div className="space-y-4"><HopTrialChart trial={anchor} recipe={recipe} /><HopTrialComparison trial={anchor} recipe={recipe} /></div></details>}
         {contextEditor}
         {recipe && <p className="text-sm text-cave-400">Ajuste les quantités et les moments sur les lignes de houblons de la recette. Change une condition à la fois si tu veux comprendre son effet à la dégustation.</p>}
       </div>}
       {view === 'technical' && <HopTechnicalPanel variety={varieties.find(v => v.id === (recipe?.hops[0]?.hopVarietyId ?? selected?.hops[0]?.varietyId))} />}
-      {busy && <p role="status" className="text-sm text-cave-400">Enregistrement des références…</p>}
+      {busy && <p role="status" className="text-sm text-cave-400">Traitement en cours…</p>}
       {notice && <p role="status" className="text-sm text-hop">{notice}</p>}
       {(error || catalogueError) && <p role="alert" className="text-sm text-alert">{error || catalogueError}</p>}
     </div>

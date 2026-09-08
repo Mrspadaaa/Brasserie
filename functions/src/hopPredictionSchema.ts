@@ -1,5 +1,6 @@
 import { HOP_ANALYTES, HOP_FORMS, HOP_UNITS, HopAnalyte, HopConfidence, HopMeasurement, HopProductForm, HopRange, HopSource, HopSourceKind, HopUnit, assertHopDocument, hopSourceError, validHopRange } from './hopIndexSchema.js';
 import { assertHopTrial, type HopTrial } from './hopTrialSchema.js';
+import { assertHopExtrapolation, type HopExtrapolation } from './hopExtrapolationSchema.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
 export type HopTiming = typeof HOP_TIMINGS[number];
@@ -51,9 +52,11 @@ export interface HopConfidencePolicy {
 export interface HopResearchNote {
   id: string; kind: 'note'; name: string; topics: string[]; summary: string; limitation: string; source: HopSource;
 }
-export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial;
+export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation;
 export interface HopEstimate {
   range: HopRange | null; confidence: HopConfidence; reasons: string[]; sources: HopSource[];
+  /** Central scenario of explicit expert parameters, always accompanied by range. */
+  central?: number;
 }
 export interface HopRisk {
   code: HopRiskPolicy['risk']; status: 'possible' | 'flagged' | 'unknown'; title: string; message: string; source: HopSource; confidence: HopConfidence;
@@ -61,9 +64,11 @@ export interface HopRisk {
 export interface HopPrediction {
   triplet: HopTriplet; profile: Record<string, HopEstimate>; compounds: Record<string, HopEstimate>;
   score: HopEstimate; risks: HopRisk[]; modelRefs: { id: string; version: string }[]; reasons: string[];
+  /** These axes use expert assumptions, not calibrated confidence intervals. */
+  extrapolatedAxes?: string[];
 }
 export interface HopPredictionSnapshot {
-  id: string; createdAt: string; name: string; recipeId?: string; batchId?: string; engineVersion: 'hop-envelope-v1' | 'hop-envelope-v2';
+  id: string; createdAt: string; name: string; recipeId?: string; batchId?: string; engineVersion: 'hop-envelope-v1' | 'hop-envelope-v2' | 'hop-experimental-v3';
   target: Record<string, HopRange>; prediction: HopPrediction;
   /** Inputs and definitions are copied: changing a COA/model never rewrites the past. */
   evidence: { varieties: unknown[]; lots: unknown[]; knowledge: HopKnowledge[] };
@@ -106,6 +111,7 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
   if (provenanceError) throw Error(provenanceError);
   const base = ['id', 'kind', 'name', 'source'];
   switch (v.kind) {
+    case 'extrapolation': assertHopExtrapolation(v); break;
     case 'trial': assertHopTrial(v); break;
     case 'note':
       keys(v, [...base, 'topics', 'summary', 'limitation']);
@@ -190,7 +196,7 @@ export function assertHopTasting(v: any, id?: string): asserts v is HopTasting {
 
 /** Structural and relational checks; use hopPredictionValidation for persistence. */
 export function assertHopPredictionSnapshotShape(v: any, id?: string): asserts v is HopPredictionSnapshot {
-  check(obj(v) && idValid(v.id) && (!id || v.id === id) && str(v.name) && typeof v.createdAt === 'string' && Number.isFinite(Date.parse(v.createdAt)) && ['hop-envelope-v1', 'hop-envelope-v2'].includes(v.engineVersion), 'Instantané de prédiction invalide.');
+  check(obj(v) && idValid(v.id) && (!id || v.id === id) && str(v.name) && typeof v.createdAt === 'string' && Number.isFinite(Date.parse(v.createdAt)) && ['hop-envelope-v1', 'hop-envelope-v2', 'hop-experimental-v3'].includes(v.engineVersion), 'Instantané de prédiction invalide.');
   keys(v, ['id', 'createdAt', 'name', 'recipeId', 'batchId', 'engineVersion', 'target', 'prediction', 'evidence']);
   for (const key of ['recipeId', 'batchId']) check(v[key] == null || idValid(v[key]), 'Référence de prédiction invalide.');
   check(obj(v.evidence) && Array.isArray(v.evidence.varieties) && Array.isArray(v.evidence.lots) && Array.isArray(v.evidence.knowledge), 'Données figées absentes.');
@@ -201,11 +207,14 @@ export function assertHopPredictionSnapshotShape(v: any, id?: string): asserts v
   for (const rows of [v.evidence.varieties, v.evidence.lots, v.evidence.knowledge]) check(new Set(rows.map((row: { id: string }) => row.id)).size === rows.length, 'Identité figée en double.');
   const p = v.prediction;
   check(obj(p) && obj(p.profile) && obj(p.compounds) && obj(v.target), 'Profil figé invalide.');
-  keys(p, ['triplet', 'profile', 'compounds', 'score', 'risks', 'modelRefs', 'reasons']);
+  keys(p, ['triplet', 'profile', 'compounds', 'score', 'risks', 'modelRefs', 'reasons', 'extrapolatedAxes']);
+  if (p.extrapolatedAxes !== undefined) check(v.engineVersion === 'hop-experimental-v3' && Array.isArray(p.extrapolatedAxes) && p.extrapolatedAxes.length > 0 && p.extrapolatedAxes.every((id: any) => idValid(id) && p.profile[id]?.range) && new Set(p.extrapolatedAxes).size === p.extrapolatedAxes.length, 'Axes extrapolés invalides.');
+  if (v.engineVersion !== 'hop-experimental-v3') check(!v.evidence.knowledge.some((k: HopKnowledge) => k.kind === 'extrapolation'), 'Les anciennes versions ne calculent pas d’extrapolation.');
   assertHopTriplet(p.triplet);
   const estimate = (e: any) => {
     check(obj(e) && (e.range === null || validHopRange(e.range)) && confidence(e.confidence) && Array.isArray(e.reasons) && e.reasons.every((r: unknown) => typeof r === 'string') && Array.isArray(e.sources), 'Incertitude de prédiction invalide.');
-    keys(e, ['range', 'confidence', 'reasons', 'sources']); e.sources.forEach(documentarySource);
+    keys(e, ['range', 'confidence', 'reasons', 'sources', 'central']); e.sources.forEach(documentarySource);
+    if (e.central !== undefined) check(v.engineVersion === 'hop-experimental-v3' && e.range && Number.isFinite(e.central) && e.central >= e.range.min && e.central <= e.range.max && e.confidence === 'low', 'Repère central expérimental invalide.');
     if (e.range !== null) check(e.sources.length > 0 && p.triplet.varietyId && p.triplet.yeastId && p.triplet.timing, 'Valeur prédite sans triplet ou provenance.');
     if (e.range !== null && e.sources.some((s: HopSource) => s.year === null || s.kind === 'judgment')) check(e.confidence === 'low', 'Une source non datée ou un jugement limite la confiance.');
   };
@@ -223,15 +232,17 @@ export function assertHopPredictionSnapshotShape(v: any, id?: string): asserts v
   if (p.score.range) check(p.score.range.min >= 0 && p.score.range.max <= 100, 'Score hors échelle.');
   check(Array.isArray(p.modelRefs) && p.modelRefs.every((r: any) => obj(r) && idValid(r.id) && str(r.version)), 'Versions de modèles absentes.');
   check(new Set(p.modelRefs.map((r: any) => r.id)).size === p.modelRefs.length, 'Modèle figé en double.');
-  for (const ref of p.modelRefs) check(v.evidence.knowledge.some((k: HopKnowledge) => k.kind === 'model' && k.id === ref.id && k.version === ref.version), 'Version de modèle absente des données figées.');
+  for (const ref of p.modelRefs) check(v.evidence.knowledge.some((k: HopKnowledge) => (k.kind === 'model' || k.kind === 'extrapolation') && k.id === ref.id && k.version === ref.version), 'Version de modèle absente des données figées.');
   const knownOutputs = [...Object.values(p.profile), ...Object.values(p.compounds)].some(e => (e as HopEstimate).range !== null);
   if (knownOutputs || p.score.range !== null) check(p.modelRefs.length > 0, 'Valeur calculée sans modèle figé.');
   if (p.score.range !== null) check(Object.keys(v.target).some(axisId => p.profile[axisId]?.range != null), 'Score sans axe cible quantifié.');
   const variety = v.evidence.varieties.find((row: { id: string }) => row.id === p.triplet.varietyId);
   const lot = p.triplet.lotId ? v.evidence.lots.find((row: { id: string }) => row.id === p.triplet.lotId) : undefined;
   const yeast = v.evidence.knowledge.find((row: HopKnowledge) => row.kind === 'yeast' && row.id === p.triplet.yeastId);
-  const selectedModels = p.modelRefs.map((ref: { id: string; version: string }) => v.evidence.knowledge.find((row: HopKnowledge) => row.kind === 'model' && row.id === ref.id && row.version === ref.version) as HopModel);
-  if (selectedModels.length) {
+  const selectedModels = p.modelRefs.flatMap((ref: { id: string; version: string }) => v.evidence.knowledge.filter((row: HopKnowledge) => row.kind === 'model' && row.id === ref.id && row.version === ref.version)) as HopModel[];
+  const selectedExtrapolations = p.modelRefs.flatMap((ref: { id: string; version: string }) => v.evidence.knowledge.filter((row: HopKnowledge) => row.kind === 'extrapolation' && row.id === ref.id && row.version === ref.version)) as HopExtrapolation[];
+  check(selectedExtrapolations.every(model => model.enabled), 'Modèle expérimental désactivé.');
+  if (p.modelRefs.length) {
     check(variety && yeast && (!p.triplet.lotId || (lot && lot.varietyId === variety.id)), 'Entrées du triplet absentes ou incohérentes dans les données figées.');
     const inside = (range: HopRange | null, value: number | null) => range !== null && value !== null && range.min <= value && value <= range.max;
     for (const model of selectedModels) {
@@ -241,7 +252,8 @@ export function assertHopPredictionSnapshotShape(v: any, id?: string): asserts v
   }
   for (const [axisId, value] of Object.entries(p.profile)) if ((value as HopEstimate).range !== null) {
     const axis = v.evidence.knowledge.find((row: HopKnowledge) => row.kind === 'axis' && row.id === axisId) as HopAxis;
-    check(selectedModels.some((model: HopModel) => model.outputs.some(output => output.target === `axis:${axisId}` && output.axisVersion === axis.version)), 'Sortie ou version d’axe absente des modèles figés.');
+    check(selectedModels.some((model: HopModel) => model.outputs.some(output => output.target === `axis:${axisId}` && output.axisVersion === axis.version)) ||
+      (p.extrapolatedAxes?.includes(axisId) && selectedExtrapolations.some(model => model.axes.some(a => a.id === axisId && a.version === axis.version))), 'Sortie ou version d’axe absente des modèles figés.');
   }
   if (p.compounds['4mmpFree']?.range) check(selectedModels.some((model: HopModel) => model.outputs.some(output => output.target === 'beer:4mmpFree')), 'Sortie chimique absente des modèles figés.');
   if (p.compounds['4mmpFree']?.range) check(p.compounds['4mmpFree'].range.min >= 0, 'Concentration figée négative.');
