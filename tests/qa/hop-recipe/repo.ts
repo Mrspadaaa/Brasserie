@@ -1,6 +1,11 @@
 // Compiled only by scripts/check-hop-recipe-ui.mjs. Never imported from src/.
 import { BUSINESS_COLLECTIONS } from '../../../functions/src/dataSchema';
 export const ALL_COLLECTIONS = [...BUSINESS_COLLECTIONS];
+// Compatibility with the installed finance screens in a combined release.
+export class DocumentWriteError extends Error {
+  constructor(readonly status:'pending'|'rejected'|'conflict',readonly path:string,readonly operationId:string|undefined,message:string){super(message);this.name='DocumentWriteError';}
+}
+export const isConfirmedWriteRejection=(error:unknown):error is DocumentWriteError=>error instanceof DocumentWriteError&&error.status==='rejected';
 const key = '__HOP_RECIPE_QA_ONLY__';
 let rows: Record<string, Record<string, any>> = JSON.parse(localStorage.getItem(key) || '{}');
 let ready = false, failure: string | null = null;
@@ -15,6 +20,8 @@ export function seedQa(data: Record<string, any[]>) {
 export const FirestoreRepo = {
   startSync() { ready = true; notify(); }, stopSync() { ready = false; },
   isReady: () => ready, isSyncing: () => ready, syncSession: () => 1,
+  financialLedgerStatus: () => ({complete:ready,loading:false,fromCache:false,loadedRows:0}),
+  documentWriteState: () => ({status:'confirmed'}),
   readyCount: () => ({ loaded: ALL_COLLECTIONS.length, total: ALL_COLLECTIONS.length }),
   all: <T,>(name: string): T[] => Object.entries(rows[name] ?? {}).map(([id, row]) => ({ ...row, __docId: id })) as T[],
   find: <T,>(name: string, id: string): T | undefined => rows[name]?.[id],

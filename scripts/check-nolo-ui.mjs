@@ -37,7 +37,7 @@ try{
   const cdp=await page.createCDPSession();await cdp.send('Network.enable');await cdp.send('Network.setBlockedURLs',{urlPatterns:[{urlPattern:base+'/*',block:false}],urls:['http://*','https://*']});
   await page.evaluateOnNewDocument(()=>{if(!localStorage.getItem('laffinee_ui_state'))localStorage.setItem('laffinee_ui_state',JSON.stringify({app_active_tab:'production',production_subtab:'recipes'}));});
   await page.goto(base,{waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());
-  await button(page,'📜 Recettes',true);await button(page,'+ Recette',true);await page.locator('#wz-title').fill('QA NOLO création '+width);
+  await button(page,'Recettes',true);await button(page,'+ Recette',true);await page.locator('#wz-title').fill('QA NOLO création '+width);
   const toggle=await page.$('[aria-label="Objectif NOLO"] input[type=checkbox]');await toggle.click();
   await page.waitForSelector('[data-nolo-status="indeterminate"]');
   assert.equal(await page.$$eval('[aria-label="Objectif NOLO"] details[open]',es=>es.length),0);
@@ -57,7 +57,7 @@ try{
   await page.waitForFunction(name=>window.__hopQa.storage.getRecipes().some(r=>r.name===name),{},'QA NOLO création '+width);
   const stored=await page.evaluate(name=>window.__hopQa.storage.getRecipes().find(r=>r.name===name), 'QA NOLO création '+width);
   assert.equal(stored.nolo.enabled,true);assert.equal(stored.fgTarget,null);assert(stored.nolo.scienceSnapshot);
-  await page.reload({waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());await button(page,'📜 Recettes',true);await button(page,'QA NOLO création '+width,true);
+  await page.reload({waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());await button(page,'Recettes',true);await button(page,'QA NOLO création '+width,true);
   await capture(page,'sections-fermees-'+width,'[aria-label="Eaux à préparer"]');await details(page,'Objectif NOLO');
   await page.waitForSelector('[aria-label="Objectif NOLO"]');
   assert.equal(await page.$$eval('[aria-label="Objectif NOLO"] input, [aria-label="Objectif NOLO"] select',e=>e.length),0);

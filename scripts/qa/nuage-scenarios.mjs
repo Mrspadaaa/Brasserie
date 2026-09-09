@@ -10,7 +10,7 @@ export async function checkNuageScenarios({page,base,width,out,button,details,fi
  for(const [i,pilot] of pilots.entries()) {
   await page.evaluate(r=>window.__hopQa.seedRecipe(r),pilot);
   await page.goto(base,{waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());
-  await button(page,'📜 Recettes',true);await button(page,pilot.name,true);
+  await button(page,'Recettes',true);await button(page,pilot.name,true);
   assert.equal(await page.$$eval('[data-recipe-section][open]',es=>es.length),0);
   const expectedRo=pilot.waterPlan.mashWaterL*pilot.waterPlan.diRatioPct/100+pilot.waterPlan.spargeWaterL*(pilot.waterPlan.spargeDiRatioPct??pilot.waterPlan.diRatioPct)/100;
   const expectedLabel=expectedRo.toLocaleString('fr-FR',{maximumFractionDigits:1})+' L';

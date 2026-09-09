@@ -26,6 +26,17 @@ Le dépôt Git distant étant public, le dossier personnel est également exclu 
 - Après chargement des références : **zéro requête distante, zéro écriture** pour les simulations. Vingt ajouts : mise à jour aromatique du banc principal **11,1–15,1 ms** ; bilan NOLO **1,1 ms maximum**, changement de procédé environ **8 ms** sur cette machine. Ces mesures locales ne sont pas une garantie sur tout appareil.
 - Builds TypeScript/Vite et Functions réussis ; 22 collections couvertes par les règles ; rapports absents des assets publics ; accès anonyme et comptes non autorisés refusés par les tests serveur.
 
+## Compatibilité avec la version actuellement installée
+
+La livraison a été recomposée avec les fonctions financières et de suivi des stocks déjà présentes, dans un checkout de validation isolé. Les modifications plus récentes du compagnon restent séparées de cette publication.
+
+- **3 046 tests réussis** sur cette version combinée, sans suite en échec. Une régression supplémentaire vérifie que les drêches ne provoquent ni une nouvelle pesée ni un nouvel achat du malt déjà utilisé ; les ajouts neufs restent comptés.
+- Parcours NOLO complet et parcours houblons rejoués sur l’application combinée à **320, 390 et 1280 px**. Captures de la consultation compacte, des eaux et des projections inspectées ; aucun débordement ni erreur de console.
+- Vingt ajouts : **10,7–14,5 ms** sur le dernier parcours, toujours sans requête distante ni écriture pendant la simulation.
+- Build client final et build serveur réussis ; les **29 collections** de cette version sont couvertes par les règles.
+
+Le code métier NOLO reste versionné sur sa branche. La copie de travail commune reçoit les fichiers fusionnés avec préconditions et sauvegarde, sans inclure les travaux financiers ou les nouvelles modifications du compagnon dans ce commit.
+
 ## Limites conservées
 
 Les courbes d’arôme restent largement incertaines hors des protocoles documentés. Une fraction sensorielle saisie après traitement est un jugement de pilote, pas un rendement chimique. Une plage entière ne compte pas comme précision utile. La banane de restitution doit être réglée par dégustation de fractions.

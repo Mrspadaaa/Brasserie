@@ -86,7 +86,7 @@ try {
     assert((await page.title()).includes('banc QA')); assert(!(await page.$('vite-error-overlay')));
     if (process.env.HOP_QA_PROBE) {
       await page.evaluate(() => window.__hopQa.seedRecipe(window.__hopQa.recipe()));
-      await click(page, '📜 Recettes', true);
+      await click(page, 'Recettes', true);
       await click(page, 'Test houb', true);
       if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
       await capture(page, 'probe');
@@ -95,7 +95,7 @@ try {
       continue;
     }
     // Extended assertions are kept in this single compiled-browser flow below.
-    await click(page, '📜 Recettes', true);
+    await click(page, 'Recettes', true);
     await click(page, '+ Recette', true);
     await page.locator('#wz-title').fill(`QA recette ${width}`);
     await capture(page, `creation-${width}`, '#wz-title');
@@ -176,7 +176,7 @@ try {
     assert.equal(saved.hops[0].name, 'Cascade'); assert.equal(saved.hops[0].weightG, 48); assert.equal(saved.hops[0].timeMin, 10); assert.equal(saved.yeast.name, 'SafAle US-05');
     assert.equal(saved.hops[0].hopLotId, 'qa-partial-coa');
     await page.reload({ waitUntil: 'networkidle0' }); await page.waitForFunction(() => window.__hopQa?.ready());
-    await click(page, '📜 Recettes', true); await click(page, `QA recette ${width}`, true);
+    await click(page, 'Recettes', true); await click(page, `QA recette ${width}`, true);
     if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     assert.equal(await page.$$eval('[aria-label="Potentiel aromatique de la recette"] input:not([type="checkbox"]),[aria-label="Potentiel aromatique de la recette"] textarea', e => e.length), 0);
     await capture(page, `lecture-${width}`);

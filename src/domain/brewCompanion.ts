@@ -153,6 +153,7 @@ export function brewIngredients(recipe: RecipeSnapshot): BrewIngredient[] {
     }
   (recipe.fermentables ?? []).forEach((f, i) => {
     if (f.use === 'fermentation') return;
+    if (recipe.nolo?.enabled && recipe.nolo.process === 'secondRunnings' && f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage') return;
     items.push({
       id: `grain-${i}`,
       name: f.name,
