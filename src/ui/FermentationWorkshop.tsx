@@ -72,7 +72,13 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
       </div>
     </div>
     <FermentationTemperatureChart steps={proposed} bands={plan.phases.map(s => s.temperatureC.range)} pitchTempC={draft.pitchTempC} />
-    <details className="border-b border-cave-700 pb-2"><summary className="cursor-pointer min-h-touch flex items-center text-water">Conseils pour développer ce profil</summary><p className="text-sm text-cave-200 my-3">{plan.rationale}</p><FermentationLeversPanel science={science} goal={goal} guide={guide} /></details>
+    {errors.map((e, i) => <p key={i} className="text-sm text-ebc-straw">{e}</p>)}
+    {error && <p role="alert" className="text-sm text-alert">{error}</p>}
+    {notice && <p role="status" className="text-sm text-hop">{simulationOnly ? 'Variante locale mise à jour. La recette enregistrée reste inchangée.' : notice}</p>}
+    <div className="flex flex-col sm:flex-row gap-2">
+      <Button intent="primary" disabled={busy || errors.length > 0} onClick={() => apply(true)}>Appliquer cette levure et ces paliers</Button>
+      <Button disabled={busy || fermentationDraftErrors(guide, draft, false).length > 0} onClick={() => apply(false)}>Choisir la levure seulement</Button>
+    </div>
     <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Ajuster l’ensemencement et les paliers</summary><div className="space-y-4 pt-3">
     <HopField label="Ensemencement proposé (°C)" hint={`Réglage proposé : ${rangeLabel(plan.pitchTemperatureC.range, '°C')}. Température du moût à l’ajout de levure.`}>
       <NumberInput className={inputClass} value={draft.pitchTempC} emptyValue={undefined} disabled={busy} onValue={pitchTempC => setDraft({ ...draft, pitchTempC })} />
@@ -99,7 +105,8 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
       <ol className="mt-2 space-y-1">{fullProgram.map((s, i) => <li key={i}>{i + 1}. {s.name} · {Units.format(s.tempC, '°C')} · {Units.format(s.days, 'j')}{!isPrimary(s) ? ' · conservé' : ''}</li>)}</ol>
     </details>}
     <details className="space-y-3 border-t border-cave-800 pt-2">
-      <summary className="cursor-pointer min-h-touch py-2 text-water">Comprendre la conduite · chimie et sources</summary>
+      <summary className="cursor-pointer min-h-touch py-2 text-water">Conseils pour développer ce profil · chimie et sources</summary>
+      <p className="text-sm text-cave-200">{plan.rationale}</p><FermentationLeversPanel science={science} goal={goal} guide={guide} />
       <p className="text-sm text-cave-200">{guide.aroma.summary ?? guide.aroma.banana} {guide.aroma.phenols} Esters, phénols et libération des thiols sont des propriétés distinctes.</p>
       {guide.attenuationPct && <p className="text-sm text-cave-300">Atténuation apparente fabricant : {rangeLabel(guide.attenuationPct.range, '%')}. Ce n’est pas une mesure de ce moût et le guide n’en impose pas une moyenne.</p>}
       <HopSourceLink source={guide.aroma.source} /><HopSourceLink source={guide.temperatureC.source} />
@@ -107,15 +114,8 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
       {plan.notes.map((n, i) => <div className="text-sm space-y-1 text-cave-300" key={i}><p>{n.text}</p><HopSourceLink source={n.source} /></div>)}
       <p className="text-xs text-cave-400">Les consignes et durées sont des propositions éditoriales datées. Les fiches sans date gardent « année inconnue ». Le guide appliqué est enregistré dans l’Index puis modifiable dans ses connaissances, avec une nouvelle version.</p>
       <HopSourceLink source={plan.source} />
+      <FermentationPlanningCalculations science={science} guide={guide} ogInitial={recipe.ogTarget} />
     </details>
-    <FermentationPlanningCalculations science={science} guide={guide} ogInitial={recipe.ogTarget} />
-    {errors.map((e, i) => <p key={i} className="text-sm text-ebc-straw">{e}</p>)}
-    {error && <p role="alert" className="text-sm text-alert">{error}</p>}
-    {notice && <p role="status" className="text-sm text-hop">{simulationOnly ? 'Variante locale mise à jour. La recette enregistrée reste inchangée.' : notice}</p>}
-    <div className="flex flex-col sm:flex-row gap-2">
-      <Button intent="primary" disabled={busy || errors.length > 0} onClick={() => apply(true)}>Appliquer cette levure et ces paliers</Button>
-      <Button disabled={busy || fermentationDraftErrors(guide, draft, false).length > 0} onClick={() => apply(false)}>Choisir la levure seulement</Button>
-    </div>
   </section>;
 }
 
@@ -171,7 +171,7 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
     </div></details>
     {selected && yeast ? <FermentationPreview key={`${selected.id}/${selected.version}/${goal}`} recipe={recipe} guide={selected} yeast={yeast} goal={goal} science={science} onChange={onChange} simulationOnly={simulationOnly} onBusyChange={value => { setBusy(value); onBusyChange?.(value); }} /> : <p role="status" className="text-cave-300">Aucune conduite active pour ce choix. La saisie manuelle de la recette reste disponible.</p>}
     </>}
-    <FermentationScienceLibrary science={science} />
+    <details className="border-t border-cave-700 pt-2"><summary className="cursor-pointer min-h-touch flex items-center text-water">Bibliothèque scientifique</summary><FermentationScienceLibrary science={science} /></details>
   </section>;
 }
 

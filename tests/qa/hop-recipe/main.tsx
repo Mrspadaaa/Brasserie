@@ -82,6 +82,7 @@ async function start() {
       StorageService.addRecipe(r); return r;
     },
     failNext() { qaMetrics.failNext = true; },
+    forgetKnowledge(id: string) { FirestoreRepo.remove('hopKnowledge', id); },
     ready: () => FirestoreRepo.isReady()
   };
   createRoot(document.getElementById('root')!).render(<App />);

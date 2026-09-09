@@ -1,3 +1,4 @@
+import { agreedFermentationFact, fermentationProgramIssues } from './fermentationContext.js';
 import { HOP_ANALYTES, validHopRange, type HopAnalyte, type HopConfidence, type HopRange, type HopSource, type HopVariety } from './hopIndexSchema.js';
 import { resolveHopFacts } from './hopIndexFacts.js';
 import { createHopPredictor, scoreHopProfile, usableHopKnowledge, weakestHopConfidence, type HopEngineData } from './hopPredictionCore.js';
@@ -7,14 +8,14 @@ import type { HopExtrapolation } from './hopExtrapolationSchema.js';
 import { fermentationProgramWarnings } from './fermentationScienceCore.js';
 import type { FermentationGuide } from './fermentationGuideSchema.js';
 
-export const HOP_RECIPE_ENGINE_VERSION = 'hop-recipe-experimental-v2' as const;
-export type HopRecipeEngineVersion = 'hop-recipe-experimental-v1' | typeof HOP_RECIPE_ENGINE_VERSION;
-// Same editable physical convention; v2 tightens interval arithmetic only.
+export const HOP_RECIPE_ENGINE_VERSION = 'hop-recipe-experimental-v3' as const;
+export type HopRecipeEngineVersion = 'hop-recipe-experimental-v1' | 'hop-recipe-experimental-v2' | typeof HOP_RECIPE_ENGINE_VERSION;
+// Same editable physical convention: v2 tightens arithmetic; v3 harmonises process diagnostics.
 const AGGREGATION_VERSION = 'hop-recipe-experimental-v1';
 export interface HopRecipeInput {
-  volumeL: number; yeastId: string | null;
+  volumeL: number; yeastId: string | null; pitchTempC?: number;
   additions: { id: string; name: string; triplet: HopTriplet; dayOffset?: number }[];
-  fermentation: { kind?: string; name?: string; tempC?: number; days?: number }[];
+  fermentation: { kind?: string; name?: string; note?: string; tempC?: number; days?: number }[];
 }
 /** Strict persistence boundary. Unknown process fields stay absent/null, never NaN or invented defaults. */
 export function assertHopRecipeInput(value: unknown): asserts value is HopRecipeInput {
@@ -23,7 +24,8 @@ export function assertHopRecipeInput(value: unknown): asserts value is HopRecipe
   const keys = (v: Record<string, any>, allowed: string[]) => check(Object.keys(v).every(k => allowed.includes(k)), 'champ inconnu');
   check(object(value), 'entrée invalide');
   const v = value as Record<string, any>;
-  keys(v, ['volumeL', 'yeastId', 'additions', 'fermentation']);
+  keys(v, ['volumeL', 'yeastId', 'additions', 'fermentation', 'pitchTempC']);
+  check(v.pitchTempC === undefined || finite(v.pitchTempC), 'température d’ensemencement invalide');
   check(nonnegative(v.volumeL), 'volume positif ou zéro si inconnu requis');
   assertHopTriplet({ varietyId: null, yeastId: v.yeastId, timing: null, doseGL: null, temperatureC: null, contactHours: null, matrixId: null });
   check(Array.isArray(v.additions) && Array.isArray(v.fermentation), 'ajouts et paliers requis');
@@ -37,7 +39,8 @@ export function assertHopRecipeInput(value: unknown): asserts value is HopRecipe
     check(a.dayOffset === undefined || nonnegative(a.dayOffset), 'jour d’ajout invalide');
   }
   for (const s of v.fermentation) {
-    check(object(s), 'palier invalide'); keys(s, ['kind', 'name', 'tempC', 'days']);
+    check(object(s), 'palier invalide'); keys(s, ['kind', 'name', 'note', 'tempC', 'days']);
+    check(s.note === undefined || typeof s.note === 'string', 'note de palier invalide');
     check((s.kind === undefined || typeof s.kind === 'string') && (s.name === undefined || typeof s.name === 'string'), 'libellé de palier invalide');
     check(s.tempC === undefined || finite(s.tempC), 'température de palier invalide');
     check(s.days === undefined || nonnegative(s.days), 'durée de palier invalide');
@@ -291,16 +294,23 @@ function introducedChemistry(input: HopRecipeInput, data: HopEngineData, policie
 
 /** Local O(additions × axes × models), with no search, network, persistence, or recipe mutation. */
 export function predictHopRecipe(input: HopRecipeInput, target: Record<string, HopRange>, data: HopEngineData, version: HopRecipeEngineVersion = HOP_RECIPE_ENGINE_VERSION): HopRecipePrediction {
-  if (version !== 'hop-recipe-experimental-v1' && version !== HOP_RECIPE_ENGINE_VERSION) throw Error('Version du calcul de recette inconnue.');
+  if (!['hop-recipe-experimental-v1', 'hop-recipe-experimental-v2', HOP_RECIPE_ENGINE_VERSION].includes(version)) throw Error('Version du calcul de recette inconnue.');
   const warnings: string[] = [];
   const normalized: HopRecipeInput = { ...input, additions: (input.additions ?? []).map(a => ({ ...a, triplet: { ...a.triplet, yeastId: input.yeastId } })), fermentation: (input.fermentation ?? []).map(s => ({ ...s })) };
   if ((input.additions ?? []).some(a => a.triplet.yeastId !== input.yeastId)) warnings.push('La souche de la recette est utilisée pour tous les ajouts ; une référence de souche différente a été écartée.');
   const { valid, errors } = usableHopKnowledge(data.knowledge), axes = valid.filter((v): v is HopAxis => v.kind === 'axis');
   warnings.push(...errors);
   const yeast = new Map(valid.filter((v): v is HopYeast => v.kind === 'yeast').map(v => [v.id, v])).get(input.yeastId ?? '');
-  const guide = valid.find(v => v.kind === 'fermentation' && v.yeastId === input.yeastId);
-  warnings.push(...recipeFermentationWarnings(normalized, yeast, guide?.kind === 'fermentation' ? guide : undefined));
-  if (normalized.fermentation.some(s => s.kind === 'ajout') && !normalized.additions.some(a => a.triplet.doseGL !== 0 && (a.triplet.timing === 'fermentation' || a.triplet.timing === 'postFermentation'))) warnings.push('Le programme annonce un ajout en fermentation, mais aucun houblon à cru n’est saisi.');
+  const guide = valid.find(v => v.kind === 'fermentation' && v.yeastId === input.yeastId && (version !== HOP_RECIPE_ENGINE_VERSION || v.enabled));
+  const hasDryHop = normalized.additions.some(a => a.triplet.doseGL !== 0 && (a.triplet.timing === 'fermentation' || a.triplet.timing === 'postFermentation'));
+  if (version === HOP_RECIPE_ENGINE_VERSION) {
+    const temperature = (guide?.kind === 'fermentation' ? guide.temperatureC : undefined) ?? agreedFermentationFact(yeast, 'temperature', '°C');
+    warnings.push(...fermentationProgramIssues(normalized.fermentation, temperature, { hasDryHop, pitchTempC: input.pitchTempC }).map(i => i.message));
+  } else {
+    // Frozen v1/v2 predictions replay their original diagnostics as well as numbers.
+    warnings.push(...recipeFermentationWarnings(normalized, yeast, guide?.kind === 'fermentation' ? guide : undefined));
+    if (normalized.fermentation.some(s => s.kind === 'ajout') && !hasDryHop) warnings.push('Le programme annonce un ajout en fermentation, mais aucun houblon à cru n’est saisi.');
+  }
   const predict = createHopPredictor(data), additions = normalized.additions.map(a => predict(a.triplet, target));
   const models = valid.filter((v): v is HopExtrapolation => v.kind === 'extrapolation' && v.enabled && v.aggregation?.version === AGGREGATION_VERSION);
   const profiles = yeast ? models.map(m => aggregateModel(normalized, data, axes, yeast, m, version)) : [];

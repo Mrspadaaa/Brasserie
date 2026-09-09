@@ -74,7 +74,7 @@ import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import { RecipeImportSheet, ImportedRecipe } from '../ui/RecipeImportSheet';
 import { BrewSheet } from '../ui/BrewSheet';
 import { RecipeAutoComplete } from '../ui/RecipeAutoComplete';
-import { Trash2, Plus, Check, AlertTriangle, Beaker, ClipboardPaste, ClipboardList, Droplets, ChevronLeft } from 'lucide-react';
+import { Trash2, Plus, Check, AlertTriangle, ClipboardPaste, ClipboardList, Droplets, ChevronLeft } from 'lucide-react';
 
 /** Un ancien malt, ramené à la forme typée : du grain, à l'empâtage. */
 function asGrain(m: MaltIngredient): Fermentable {
@@ -557,14 +557,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     [attenuation, og, points]
   );
 
-  const pitch = useMemo(
-    () =>
-      og > 1
-        ? BrewingMath.pitchRate(og, volumeL, /lager|pils|helles|bock/i.test(style) ? 'lager' : 'ale')
-        : null,
-    [og, volumeL, style]
-  );
-
   const gravityWarning = useMemo(
     () => (og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og) : null),
     [og, efficiency]
@@ -810,10 +802,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
     fermentables.forEach((f) => add(f.name, f.weightKg, 'kg'));
     hops.forEach((h) => add(h.name, h.weightG, 'g'));
-    // La levure se compte en sachets : c'est le BESOIN calculé qu'on confronte
-    // au stock, pas la quantité saisie — sous-ensemencer est un vrai risque.
+    // Stock follows the actual planned dose, without assuming cells per packet.
     if (yeast.name) {
-      add(yeast.name, pitch && yeast.unit === 'sachet' ? pitch.sachetsDry : yeast.qty, yeast.unit);
+      add(yeast.name, yeast.qty, yeast.unit);
     }
 
     const need: Array<{ name: string; needed: number; unit: string; have: number }> = [];
@@ -823,7 +814,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       if (have < b.needed) need.push({ ...b, have });
     });
     return need;
-  }, [fermentables, hops, yeast, pitch, stockItems]);
+  }, [fermentables, hops, yeast, stockItems]);
 
   /*
    * Quel programme est en place ?
@@ -1292,7 +1283,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-      {step !== 'houblons' && step !== 'eau' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
+      {step !== 'houblons' && step !== 'eau' && step !== 'levure' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
         <span className="block text-base font-semibold text-cave-50">{details.hopTrialId ? 'Affiner mon programme aromatique' : 'Construire le goût de ma bière'}</span>
         <span className="block text-xs sm:text-sm text-cave-200 mt-1">Essais documentés, houblons, levure et timing · ouvrir l’atelier →</span>
       </button>}
@@ -1809,182 +1800,41 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
       {/* ---------------------------------------------------- ÉTAPE 4 */}
       {step === 'levure' && (
-        <Section title="Levure" hint="Souche, quantité, et la fenêtre de température à tenir.">
+        <Section title="Levure" hint="Saisis ta souche ou choisis une conduite pour l’arôme recherché.">
+          <FormNav className="space-y-3">
+            <Field label="Souche">
+              <IngredientPicker categories={['Levure']} items={stockItems} value={yeast.name} onChange={selectYeast}
+                onCreate={n => { const item = onCreateStockItem(n, 'Levure', 'sachet'); selectYeast(item.name, item); }}
+                placeholder="US-05, Verdant IPA, WLP095…" ariaLabel="Souche de levure" />
+            </Field>
+            <InlineNum label="Quantité" name={'Quantité de levure, en ' + yeast.unit} unit={yeast.unit} min={0} value={yeast.qty} onValue={qty => setYeast({ ...yeast, qty })} />
+            <InlineNum label="Ensemencement" name="Température d’ensemencement" unit="°C" value={yeast.pitchTempC} emptyValue={undefined}
+              onValue={pitchTempC => setYeast({ ...yeast, pitchTempC })} missing={yeast.pitchTempC == null} />
+          </FormNav>
           <FermentationWorkshop recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
             setYeast(next.yeast); setFerment(next.fermentation ?? []);
             setDetails(previous => ({ ...previous, yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
           }} />
-
-          <FormNav className="space-y-2.5 sm:space-y-3">
-            <Field label="Souche">
-              <IngredientPicker
-                categories={['Levure']}
-                items={stockItems}
-                value={yeast.name}
-                onChange={selectYeast}
-                onCreate={(n) => {
-                  const created = onCreateStockItem(n, 'Levure', 'sachet');
-                  selectYeast(created.name, created);
-                }}
-                placeholder="US-05, Verdant IPA, WLP095…"
-                /* Le placeholder énumère des exemples : il ne peut pas servir
-                   de nom accessible, on le pose donc explicitement. */
-                ariaLabel="Souche de levure"
-              />
-            </Field>
-
-            <Field label="Forme de la levure">
-              <SegmentedControl
-                label="Forme de la levure"
-                value={yeast.form}
-                onChange={(f) =>
-                  setYeast({
-                    ...yeast,
-                    form: f,
-                    unit: f === 'liquide' ? 'flacon' : f === 'levain' ? 'L' : 'sachet'
-                  })
-                }
-                options={[
-                  { value: 'sèche', label: 'Sèche' },
-                  { value: 'liquide', label: 'Liquide' },
-                  { value: 'levain', label: 'Levain / Récup' }
-                ]}
-              />
-            </Field>
-
-            {/*
-              ⚠️ Trois `Field` empilés deviennent trois lignes couchées.
-
-              Chacun occupait un intitulé pleine largeur PUIS son champ en
-              dessous — deux étages pour un nombre à deux chiffres. `InlineNum`
-              pose le nom, le champ et l'unité sur la même ligne, comme sur les
-              cartes de houblon.
-
-              Le nom accessible vient d'`InlineNum` et non plus d'un `<label>`
-              orphelin : `Field` posait bien « Quantité (sachet) », mais sans
-              `htmlFor`, et le champ n'avait pas d'identifiant — les deux ne se
-              connaissaient pas. Taper sur l'intitulé ne donnait donc pas le
-              focus, ce qui au doigt se ressent comme un champ mort.
-            */}
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-              <InlineNum
-                label="Quantité"
-                name={`Quantité de levure, en ${yeast.unit}`}
-                unit={yeast.unit}
-                min={0}
-                value={yeast.qty}
-                onValue={(v) => setYeast({ ...yeast, qty: v })}
-              />
-              <InlineNum
-                label="Atténuation"
-                name="Atténuation de la levure, en pourcent"
-                unit="%"
-                min={0}
-                max={100}
-                value={yeast.attenuationPct}
-                onValue={(v) => setYeast({ ...yeast, attenuationPct: v })}
-                missing={yeast.attenuationPct == null}
-              />
-            </div>
-
-            <SliderField
-              label="Température d’ensemencement"
-              value={yeast.pitchTempC ?? 19}
-              onChange={(v) => setYeast({ ...yeast, pitchTempC: v })}
-              min={8}
-              max={28}
-              step={0.5}
-              unit="°C"
-              hint="Règle la température du moût selon la souche et le profil recherché ; une hausse n’a pas le même effet pour toutes les levures."
-            />
-
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              <SliderField
-                label="Fermentation — mini"
-                value={yeast.fermTempMinC ?? 18}
-                onChange={(v) => setYeast({ ...yeast, fermTempMinC: v })}
-                min={8}
-                max={30}
-                step={0.5}
-                unit="°C"
-              />
-              <SliderField
-                label="Fermentation — maxi"
-                value={yeast.fermTempMaxC ?? 22}
-                onChange={(v) => setYeast({ ...yeast, fermTempMaxC: v })}
-                min={8}
-                max={30}
-                step={0.5}
-                unit="°C"
-              />
-            </div>
-
-            <InlineNum
-              label="Durée de fermentation"
-              name="Durée de fermentation, en jours"
-              unit="j"
-              min={0}
-              integer
-              value={yeast.fermentDays}
-              onValue={(v) => setYeast({ ...yeast, fermentDays: v })}
-            />
-          </FormNav>
-
-          <AiAssist
-            className="mt-2 sm:mt-3"
-            kind="levure"
-            name={yeast.name}
-            missing={[
-              yeast.attenuationPct == null ? 'atténuation' : null,
-              yeast.fermTempMinC == null ? 'température minimale' : null,
-              yeast.fermTempMaxC == null ? 'température maximale' : null,
-              !yeast.lab ? 'laboratoire' : null
-            ].filter(Boolean) as string[]}
-            onApply={(f) => {
-              setYeast(current => applyYeastFacts(current, f));
-              onLearnIngredient(yeast.name, factsForStock('levure', f));
-            }}
-          />
-
-          {pitch && !(details.yeastGuide?.applied?.yeast?.hopIndexId === yeast.hopIndexId && yeast.hopIndexId) && (
-            <div className="panel p-2.5 sm:p-3 mt-3 space-y-1.5">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="min-w-0">
-                  <span className="block text-xs sm:text-sm font-semibold text-cave-100">
-                    Ensemencement
-                  </span>
-                  <span className="block text-2xs text-cave-400">
-                    {pitch.degreesPlato} °P · {pitch.rate} M cell/mL/°P
-                  </span>
-                </span>
-                <span className="reading text-base sm:text-xl text-ebc-straw shrink-0">
-                  {pitch.cellsNeededB} Md
-                </span>
-              </div>
-
-              <p
-                className={`text-2xs sm:text-sm ${
-                  yeast.unit === 'sachet' && yeast.qty < pitch.sachetsDry
-                    ? 'text-ebc-amber'
-                    : 'text-hop'
-                }`}
-              >
-                {pitch.verdict}
-              </p>
-
-              {yeast.unit === 'sachet' && yeast.qty < pitch.sachetsDry && (
-                <button
-                  type="button"
-                  onClick={() => setYeast({ ...yeast, qty: pitch.sachetsDry })}
-                  className="w-full min-h-[34px] sm:min-h-touch rounded-control border border-ebc-straw/50
-                             text-ebc-straw text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 py-1"
-                >
-                  <Beaker className="w-4 h-4" />
-                  Passer à {pitch.sachetsDry} sachets
-                </button>
-              )}
-            </div>
-          )}
+          <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
+            <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
+            <FormNav className="space-y-3 py-3">
+              <p className="text-xs text-cave-400">Repères de la fiche ou de ton expérience. Le calendrier des paliers fait foi pour les températures et durées du brassin. L’atténuation saisie alimente l’estimation générale de la recette ; la DF documentaire conserve la plage fabricant.</p>
+              <Field label="Forme de la levure"><SegmentedControl label="Forme de la levure" value={yeast.form}
+                onChange={form => setYeast({ ...yeast, form, unit: form === 'liquide' ? 'flacon' : form === 'levain' ? 'L' : 'sachet' })}
+                options={[{value:'sèche',label:'Sèche'},{value:'liquide',label:'Liquide'},{value:'levain',label:'Levain / Récup'}]} /></Field>
+              <InlineNum label="Atténuation saisie" name="Atténuation de la levure, en pourcent" unit="%" min={0} max={100} value={yeast.attenuationPct} emptyValue={undefined}
+                onValue={attenuationPct => setYeast({ ...yeast, attenuationPct })} missing={yeast.attenuationPct == null} />
+              <InlineNum label="Repère mini" name="Température minimale de la fiche saisie" unit="°C" value={yeast.fermTempMinC} emptyValue={undefined}
+                onValue={fermTempMinC => setYeast({ ...yeast, fermTempMinC })} missing={yeast.fermTempMinC == null} />
+              <InlineNum label="Repère maxi" name="Température maximale de la fiche saisie" unit="°C" value={yeast.fermTempMaxC} emptyValue={undefined}
+                onValue={fermTempMaxC => setYeast({ ...yeast, fermTempMaxC })} missing={yeast.fermTempMaxC == null} />
+              <InlineNum label="Durée indicative" name="Durée indicative de la fiche, en jours" unit="j" min={0} value={yeast.fermentDays} emptyValue={undefined}
+                onValue={fermentDays => setYeast({ ...yeast, fermentDays })} missing={yeast.fermentDays == null} />
+            </FormNav>
+            <AiAssist kind="levure" name={yeast.name}
+              missing={[yeast.attenuationPct == null ? 'atténuation' : null, yeast.fermTempMinC == null ? 'température minimale' : null, yeast.fermTempMaxC == null ? 'température maximale' : null, !yeast.lab ? 'laboratoire' : null].filter(Boolean) as string[]}
+              onApply={f => { setYeast(current => applyYeastFacts(current, f)); onLearnIngredient(yeast.name, factsForStock('levure', f)); }} />
+          </details>
         </Section>
       )}
 

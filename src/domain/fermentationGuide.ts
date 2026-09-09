@@ -83,9 +83,9 @@ export function applyFermentationGuide<T extends TrialRecipe>(recipe: T, guide: 
   if (draft.quantityG !== undefined && yeast.form === 'sèche') { nextYeast.qty = draft.quantityG; nextYeast.unit = 'g'; }
   if (withProgram) {
     nextYeast.pitchTempC = draft.pitchTempC;
-    nextYeast.fermTempMinC = Math.min(...draft.phases.map(s => s.tempC!));
-    nextYeast.fermTempMaxC = Math.max(...draft.phases.map(s => s.tempC!));
-    nextYeast.fermentDays = draft.phases.reduce((sum, s) => sum + s.days!, 0);
+    // Documentary window, never a second editable copy of actual setpoints.
+    nextYeast.fermTempMinC = guide.temperatureC.range.min;
+    nextYeast.fermTempMaxC = guide.temperatureC.range.max;
   }
   const fermentation = withProgram ? replacePrimaryFermentation(recipe.fermentation ?? [], proposedFermentationSteps(guide, draft)) : recipe.fermentation;
   return { ...recipe, yeast: nextYeast, fermentation,

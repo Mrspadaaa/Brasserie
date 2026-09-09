@@ -12,6 +12,7 @@ import { YeastCatalogueDetails } from './YeastCataloguePanel';
 import { HopField } from './hopIndex/HopFactsEditor';
 import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
+import { fermentationDose } from '../domain/fermentationGuide';
 
 /** Real recipe inputs, local calculations only; manufacturer prose is never
  * converted to an invented radar or an ester concentration. */
@@ -20,6 +21,7 @@ export function FermentationScenarioPanel({ recipe, yeasts, guides, science, goa
   goal: FermentationGoal; onChange?: (recipe: TrialRecipe) => void;
 }) {
   const result = useMemo(() => evaluateFermentationScenario(recipe, yeasts, guides), [recipe, yeasts, guides]);
+  const dose = result.guide && fermentationDose(result.guide, recipe.volumeL);
   return <section aria-label="Résultat de ma fermentation" className="space-y-3" data-engine={result.version}>
     <div><h4 className="font-serif text-xl text-ebc-straw">{result.yeast?.name || recipe.yeast.name || 'Levure à choisir'}</h4>
       <p className="text-xs text-cave-400">{result.yeast && !recipe.yeast.hopIndexId ? 'Souche reconnue par son nom · ' : ''}Lecture du programme saisi</p></div>
@@ -29,7 +31,7 @@ export function FermentationScenarioPanel({ recipe, yeasts, guides, science, goa
     </dl>
     {result.guide && <p className="text-sm text-cave-200">{result.guide.aroma.summary ?? result.guide.aroma.banana}</p>}
     <FermentationTemperatureChart steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />
-    {result.warnings.length > 0 && <details className="rounded-control border border-ebc-straw/30 p-2"><summary className="cursor-pointer min-h-touch flex items-center text-sm text-ebc-straw">{result.warnings.length} point{result.warnings.length > 1 ? 's' : ''} à vérifier · {result.warnings[0]}</summary><ul className="text-sm text-cave-200 space-y-2 pt-2">{result.warnings.slice(1).map(w => <li key={w}>{w}</li>)}</ul></details>}
+    {result.warnings.length > 0 && <details className="rounded-control border border-ebc-straw/30 p-2"><summary className="cursor-pointer min-h-touch flex items-center text-sm text-ebc-straw">{result.issues.some(i => i.code === 'outside' || i.code === 'pitch') ? 'Température hors fenêtre · ' : ''}{result.warnings.length} point{result.warnings.length > 1 ? 's' : ''} à vérifier</summary><ul className="text-sm text-cave-200 space-y-2 pt-2">{result.warnings.map(w => <li key={w}>{w}</li>)}</ul></details>}
     {onChange && <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Tester mes températures et durées</summary><div className="space-y-3 py-2">
       <p className="text-xs text-cave-400">Modifie les consignes pour vérifier leur domaine. Aucun multiplicateur universel d’arôme n’est appliqué.</p>
       {(recipe.fermentation ?? []).map((s, i) => <div key={i}><p className="text-sm text-cave-200">{s.name || `Palier ${i+1}`}</p><div className="grid grid-cols-2 gap-2">
@@ -40,6 +42,8 @@ export function FermentationScenarioPanel({ recipe, yeasts, guides, science, goa
     <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Arômes, chimie et portée de l’estimation</summary><div className="space-y-3 py-2">
       <FermentationLeversPanel science={science} goal={goal} guide={result.guide} yeastId={result.yeast?.id}/>
       <p className="text-sm text-cave-400">{result.fg.reasons[0]}</p>
+      {recipe.yeast.attenuationPct != null && <p className="text-sm text-cave-400">Atténuation saisie pour la recette : {recipe.yeast.attenuationPct} %. Elle n’est pas substituée à la plage fabricant de cette DF documentaire.</p>}
+      {dose && <p className="text-sm text-cave-200">Dose fabricant au volume : {fermentationRangeLabel(dose.range, 'g', 1)} · confiance faible pour ce brassin. Masse de sachet et viabilité non supposées.<HopSourceLink source={dose.source}/></p>}
       <p className="text-sm text-cave-400">Les descriptions documentent un potentiel. Température, durée, pression et dose ne permettent pas ici de calculer les concentrations finales d’esters, phénols ou thiols.</p>
       {result.temperature && <HopSourceLink source={result.temperature.source}/>}
       {result.fg.sources.map((s,i) => <HopSourceLink key={i} source={s}/>)}

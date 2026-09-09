@@ -28,7 +28,7 @@ describe('Recette réelle : contexte commun sans conditions inventées', () => {
     expect(input.fermentation[0]).toMatchObject({ tempC: 19, days: 4, kind: 'primaire' });
     expect(JSON.stringify(recipe)).toBe(before);
     const warnings = checkHopFermentation(recipe, input.yeastId!, guideSolverPolicy(documentedYeasts)!);
-    expect(warnings.some(w => w.message.includes('hors plage fabricant'))).toBe(true);
+    expect(warnings.some(w => w.message.includes('hors de la fenêtre fabricant'))).toBe(true);
     expect(warnings.some(w => w.message.includes('aucun ajout'))).toBe(true);
   });
   it('J+3 ne prouve ni la phase active ni la durée de contact, le nom AA ne devient pas un COA', () => {
@@ -51,7 +51,8 @@ describe('Recette réelle : contexte commun sans conditions inventées', () => {
   it('les paliers froids ne sont pas des fermentations primaires hors plage', () => {
     const recipe = structuredClone(fixture) as Recipe;
     recipe.fermentation = [{ kind: 'garde', name: 'Garde', tempC: 4, days: 3 }];
-    expect(checkHopFermentation(recipe, 'lalbrew-diamond', guideSolverPolicy(documentedYeasts)!)).toEqual([]);
+    const checks = checkHopFermentation(recipe, 'lalbrew-diamond', guideSolverPolicy(documentedYeasts)!);
+    expect(checks.map(c => c.message)).toEqual(['Aucun palier de fermentation principale renseigné.']);
   });
   it('actualise seulement le pack v4 intact, sans toucher aux coefficients édités ou désactivés', () => {
     const row = previous[0] as HopKnowledge;

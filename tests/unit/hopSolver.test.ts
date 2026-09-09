@@ -82,9 +82,9 @@ describe('Solver de formulation',()=>{
     expect(avoidance.checks.some(c=>c.status==='unknown'&&c.message.includes('absence non établie'))).toBe(true);
   });
   it('signale la souche diastaticus et un palier hors plage sans inventer une cinétique',()=>{
-    const result=inspectHopSolverRecipe(recipe,[{...triplet,yeastId:'wyeast-3724'}],intent,data,policy);
+    const result=inspectHopSolverRecipe({...recipe,fermentation:[{kind:'primaire',name:'Primaire',tempC:18,days:10}]},[{...triplet,yeastId:'wyeast-3724'}],intent,data,policy);
     expect(result.checks.some(c=>c.message.includes('STA1'))).toBe(true);
-    expect(result.checks.some(c=>c.message.includes('hors plage fabricant'))).toBe(true);
+    expect(result.checks.some(c=>c.message.includes('hors de la fenêtre fabricant'))).toBe(true);
   });
   it('reste explicite pour une levure non résolue au lieu de choisir une autre souche',()=>{
     const r={...recipe,yeast:{...recipe.yeast,name:'Levure inconnue maison'}};

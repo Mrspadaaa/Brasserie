@@ -18,7 +18,7 @@ describe('Conseils de fermentation du compagnon, appels simulés seulement',()=>
   const c=context();c.recipe!.yeast={name:'LalBrew Diamond',form:'sèche',qty:0,unit:'g'};c.recipe!.ogTarget=1.046;
   c.recipe!.fermentation=[{kind:'primaire',name:'Principale',tempC:19,days:4}];
   const before=JSON.stringify(c),data=runBrewerTool('fermentation_advice',{goal:'clean'},c).data as any;
-  expect(data.yeastId).toBe('lalbrew-diamond');expect(data.scenarioVersion).toBe('yeast-scenario-1');
+  expect(data.yeastId).toBe('lalbrew-diamond');expect(data.scenarioVersion).toBe('yeast-scenario-2');
   expect(data.finalGravity.range.min).toBeCloseTo(1.00782,10);expect(data.finalGravity.range.max).toBeCloseTo(1.01058,10);
   expect(data.programWarnings.join(' ')).toContain('19 °C');expect(JSON.stringify(c)).toBe(before);
  });

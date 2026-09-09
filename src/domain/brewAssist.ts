@@ -3,6 +3,7 @@ import { BrewingMath } from '../services/brewingMath';
 import { boilMinutes, brewBitterness, effectiveFermentables } from './brewCompanion';
 import { ionsFromSalts, addIons, ionsAfterAcid, waterSourceFromPlan } from './water';
 import { equipmentErrors } from './brewEquipment';
+import { readFermentationGuide } from './fermentationGuide';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const median = (values: number[]) =>
@@ -506,14 +507,20 @@ export function readingPrompt(step: BrewDayStep, state: BrewDayState, now: numbe
 export function pitchFeedback(recipe: RecipeSnapshot, temp: number) {
   const y = recipe.yeast,
     target = y?.pitchTempC ?? recipe.fermentation?.[0]?.tempC;
+  const conserved = readFermentationGuide(recipe);
+  // Old saved guides copied setpoint extrema into these fields. Use their
+  // conserved manufacturer window unless the brewer explicitly edited it.
+  const window = conserved?.yeast.id === y?.hopIndexId && y?.fermTempMinC === conserved?.applied.yeast.fermTempMinC && y?.fermTempMaxC === conserved?.applied.yeast.fermTempMaxC
+    ? conserved?.guide.temperatureC.range : undefined;
+  const min = window?.min ?? y?.fermTempMinC, max = window?.max ?? y?.fermTempMaxC;
   if (!finite(target)) return 'Consigne de levure absente : consulte sa fiche avant d’ensemencer.';
-  if (y?.fermTempMaxC != null && temp > y.fermTempMaxC)
+  if (max != null && temp > max)
     return 'Au-dessus de la plage renseignée de la levure : continue le refroidissement avant d’ensemencer. Un départ trop chaud peut favoriser des arômes indésirables.';
   if (temp > target + 1)
     return 'Encore au-dessus de la consigne. Ce n’est pas une preuve de brassin perdu : termine le refroidissement, garde le matériel désinfecté et confirme la température avant la levure.';
-  if (y?.fermTempMinC != null && temp < y.fermTempMinC)
+  if (min != null && temp < min)
     return 'En dessous de la plage renseignée : le démarrage peut être ralenti. Ramène progressivement le moût à la consigne.';
-  if (y?.fermTempMinC == null && temp < target - 2)
+  if (min == null && temp < target - 2)
     return 'Sous la consigne du brassin : vérifie la fiche levure avant d’ensemencer. Sa plage de travail n’est pas renseignée ici.';
   return 'Température proche de la consigne ou dans la plage renseignée. Vérifie homogénéité et conditions de la fiche levure.';
 }

@@ -97,7 +97,7 @@ export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
   return old && next && canonical(row) === canonical(old) ? next as HopKnowledge : row;
 }
 export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
-  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack).filter(k => k.kind === 'fermentation')];
+  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([])];
   return [...new Map([...proposed, ...knowledge.map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
 }
 export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {
@@ -107,9 +107,19 @@ export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | 
   if (!policy) return undefined;
   const fermentation = guideFermentations(knowledge);
   const catalogue = catalogueSolverFacts(knowledge);
+  // A current active guide is the explicit operating reference, then concordant
+  // catalogue facts. Legacy solver defaults must not override either, or hide a
+  // disabled guide / contradictory catalogue behind an older default.
+  const referenceIds = new Set(knowledge.filter(k => k.kind === 'yeast' && k.catalogue?.facts.some(f => f.key === 'temperature')).map(k => k.id));
+  for (const k of [...fermentationPack, ...fermentationSciencePack, ...knowledge]) if (k.kind === 'fermentation') referenceIds.add(k.yeastId);
   return { ...policy,
-    yeastPhenols: [...new Map([...catalogue.yeastPhenols, ...fermentation.filter(g => g.aroma.pof !== 'unknown').map(g => ({ yeastId: g.yeastId, status: g.aroma.pof as 'positive' | 'negative', source: g.aroma.source })), ...policy.yeastPhenols].map(p => [p.yeastId, p])).values()],
-    yeastConditions: [...new Map([...catalogue.yeastConditions, ...fermentation.map(g => ({ yeastId: g.yeastId, temperatureC: g.temperatureC.range, source: g.temperatureC.source })), ...(policy.yeastConditions ?? [])].map(p => [p.yeastId, p])).values()]
+    // Keep opposing POF evidence: chemistryChecks reports it as unknown.
+    yeastPhenols: [...catalogue.yeastPhenols, ...fermentation.filter(g => g.aroma.pof !== 'unknown').map(g => ({ yeastId: g.yeastId, status: g.aroma.pof as 'positive' | 'negative', source: g.aroma.source })), ...policy.yeastPhenols],
+    yeastConditions: [...(policy.yeastConditions ?? []).filter(p => !referenceIds.has(p.yeastId)),
+      ...catalogue.yeastConditions.filter(p => !fermentation.some(g => g.yeastId === p.yeastId)).map(p => ({ ...p,
+        warning: policy.yeastConditions?.find(old => old.yeastId === p.yeastId)?.warning })),
+      ...fermentation.map(g => ({ yeastId: g.yeastId, temperatureC: g.temperatureC.range, source: g.temperatureC.source,
+        warning: policy.yeastConditions?.find(p => p.yeastId === g.yeastId)?.warning }))]
   };
 }
 

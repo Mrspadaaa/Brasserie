@@ -111,7 +111,7 @@ export function compareRecipeArithmetic() {
       if (a.confidence !== b.confidence || a.central !== b.central) failures.push(id + ': invented confidence/central ' + axis.id);
     }
     const missingDose = input.additions.some(a => a.triplet.doseGL === null);
-    if (!missingDose && JSON.stringify({ ...next, engineVersion: old.engineVersion }) !== JSON.stringify(old)) failures.push(id + ': known scenario changed');
+    if (!missingDose && JSON.stringify({ ...next, engineVersion: old.engineVersion, warnings: old.warnings }) !== JSON.stringify(old)) failures.push(id + ': known scenario changed');
     if (missingDose) for (const dose of [0, .01, 1, 4, 8, 16, 100, 1e6]) {
       const completed = structuredClone(input);
       completed.additions.forEach(a => { if (a.triplet.doseGL === null) a.triplet.doseGL = dose; });
@@ -131,9 +131,10 @@ export function compareRecipeArithmetic() {
 
 export function runHopSecondPass() {
   const arithmetic = compareRecipeArithmetic(), objectives = compareBrewerObjectives();
-  return { version: '2026-09-09.2', recipeEngine: 'hop-recipe-experimental-v2',
+  return { version: '2026-09-09.2', recipeEngine: 'hop-recipe-experimental-v3',
     scientificAlternatives: compareLotEnvelopeMethods(), objectives, arithmetic: arithmetic.summaries,
     failures: [...arithmetic.failures, ...objectives.filter(o => !o.profilesUnchangedByTarget).map(o => o.id + ': target altered aroma')],
-    limitations: ['Aucune nouvelle validation externe.', 'Les intervalles expérimentaux ne sont pas des intervalles de confiance statistiques calibrés.',
+    limitations: ['Aucune nouvelle validation externe.',
+      'La v3 harmonise les diagnostics de fermentation ; les bornes numériques de la v2 sont inchangées.', 'Les intervalles expérimentaux ne sont pas des intervalles de confiance statistiques calibrés.',
       'Le gain v2 concerne uniquement les doses incomplètes et les contraintes déjà connues ; coefficients chimiques inchangés.'] };
 }

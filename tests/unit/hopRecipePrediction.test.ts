@@ -34,7 +34,7 @@ describe('Recette entière : contextes, cumul conditionnel et provenance', () =>
     expect(p.overall.profile.citrus.range!.max).toBeLessThan(legacy.overall.profile.citrus.range!.max);
     expect(p.overall.profile.citrus.central).toBeUndefined();
     expect(p.overall.profile.citrus.confidence).toBe('low');
-    expect(p.engineVersion).toBe('hop-recipe-experimental-v2');
+    expect(p.engineVersion).toBe('hop-recipe-experimental-v3');
     expect(legacy.engineVersion).toBe('hop-recipe-experimental-v1');
   });
   it('les doses inconnues couvrent les répartitions concrètes, y compris zéro et une très forte dose', () => {
@@ -56,7 +56,7 @@ describe('Recette entière : contextes, cumul conditionnel et provenance', () =>
   it('ne change aucune plage connue et rejette une version de calcul non reconnue', () => {
     const r = input([triplet(), triplet({ doseGL: 1, timing: 'whirlpool', contactHours: .3, temperatureC: 80 })]);
     const current = predictHopRecipe(r, {}, data()), legacy = predictHopRecipe(r, {}, data(), 'hop-recipe-experimental-v1');
-    expect({ ...current, engineVersion: legacy.engineVersion }).toEqual(legacy);
+    expect({ ...current, engineVersion: legacy.engineVersion, warnings: legacy.warnings }).toEqual(legacy);
     expect(() => predictHopRecipe(r, {}, data(), 'imaginary' as any)).toThrow('Version');
   });
   it('valide la convention modifiable et exige sa provenance datée', () => {
@@ -159,18 +159,18 @@ describe('Recette entière : contextes, cumul conditionnel et provenance', () =>
   it('tient compte du programme réel et normalise explicitement une référence de souche contradictoire', () => {
     const r = input([triplet({ timing: 'whirlpool' })]); r.additions[0].triplet.yeastId = 'autre'; r.fermentation.push({ kind: 'ajout', name: 'Dry hop', tempC: 19, days: 3 });
     const p = predictHopRecipe(r, {}, data()); expect(p.input.additions[0].triplet.yeastId).toBe(yeast.id);
-    expect(p.warnings.join(' ')).toContain('référence de souche différente'); expect(p.warnings.join(' ')).toContain('aucun houblon à cru');
+    expect(p.warnings.join(' ')).toContain('référence de souche différente'); expect(p.warnings.join(' ')).toContain('aucun ajout à cru');
   });
   it('contrôle Diamond avec le catalogue réellement disponible même sans guide de fermentation', () => {
     const diamond = yeastCatalogue.find(y => y.id === 'lalbrew-diamond') as HopYeast;
     const d = data(); d.knowledge.push(diamond);
     const r = { ...input(), yeastId: diamond.id, fermentation: [{ name: 'Primaire', kind: 'primaire', tempC: 19, days: 4 }, { name: 'Froid', kind: 'garde', tempC: 4, days: 2 }] };
     const p = predictHopRecipe(r, {}, d);
-    expect(p.warnings.join(' ')).toContain('19 °C hors de la fenêtre fabricant 10–15 °C');
+    expect(p.warnings.join(' ')).toContain('19 °C, hors de la fenêtre fabricant (10–15 °C)');
     expect(p.warnings.join(' ')).not.toContain('Froid :');
     const legacy = predictHopRecipe({ ...r, fermentation: [{ name: 'Ancien palier', tempC: 19 }] }, {}, d);
-    expect(legacy.warnings.join(' ')).toContain('phase non précisée');
-    expect(legacy.warnings.join(' ')).toContain('10–15 °C');
+    expect(legacy.warnings.join(' ')).toContain('phase inconnue');
+    expect(legacy.warnings.join(' ')).not.toContain('hors de la fenêtre');
   });
   it('ne crée aucune moyenne ou union de températures fabricant contradictoires ou qualifiées', () => {
     const diamond = structuredClone(yeastCatalogue.find(y => y.id === 'lalbrew-diamond')) as HopYeast;
@@ -178,7 +178,7 @@ describe('Recette entière : contextes, cumul conditionnel et provenance', () =>
     diamond.catalogue!.facts.push({ ...temperature, reported: 'Autre condition', range: { min: 18, max: 22 } });
     const d = data(); d.knowledge.push(diamond);
     const r = { ...input(), yeastId: diamond.id, fermentation: [{ kind: 'primaire', tempC: 19 }] };
-    expect(predictHopRecipe(r, {}, d).warnings.join(' ')).toContain('divergentes ou qualifiées');
+    expect(predictHopRecipe(r, {}, d).warnings.join(' ')).toContain('sources non concordantes');
     expect(predictHopRecipe(r, {}, d).warnings.join(' ')).not.toContain('10–22');
   });
   it('reste un calcul direct borné à vingt ajouts sans exploration combinatoire', () => {

@@ -433,7 +433,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 <span className="text-cave-400"> · {recipe.yeast.strain}</span>
               )}
             </p>
-            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
                 <dt className="text-sm text-cave-500">Quantité</dt>
                 <dd className="reading text-base">
@@ -448,14 +448,6 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 <dt className="text-sm text-cave-500">Ensemencement</dt>
                 <dd className="reading text-base">
                   {recipe.yeast.pitchTempC != null ? `${recipe.yeast.pitchTempC} °C` : '—'}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm text-cave-500">Fermentation</dt>
-                <dd className="reading text-base">
-                  {recipe.yeast.fermTempMinC != null && recipe.yeast.fermTempMaxC != null
-                    ? `${recipe.yeast.fermTempMinC}–${recipe.yeast.fermTempMaxC} °C`
-                    : '—'}
                 </dd>
               </div>
             </dl>

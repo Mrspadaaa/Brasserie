@@ -10,6 +10,8 @@ import { applyHopScenario, recipeHopScenario } from './exploration';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './recipeGuide';
 import type { TrialRecipe } from './trials';
 import { selectHopSearchDomain, type HopSearchMode } from './solverSelection';
+import { fermentationProgramIssues } from '../../../functions/src/fermentationContext';
+import { normalizeHop } from '../hopStage';
 
 export type SolverCheck = { status: 'conflict' | 'unknown' | 'supported'; message: string; source?: HopSource };
 export type SolverCondition = { field: 'doseGL' | 'temperatureC' | 'contactHours'; value: number; range: HopRange; origin: 'trial' | 'recipe' | 'proposal'; source: HopSource };
@@ -110,15 +112,14 @@ function checkHopAdditionProgram(recipe: TrialRecipe | undefined, hasDryHop: boo
   return !hasDryHop && recipe?.fermentation?.some(s => s.kind === 'ajout' && /houblonnage a cru|dry[ -]?hop/.test(fold(`${s.name} ${s.note ?? ''}`)))
     ? [{ status: 'unknown', message: 'Des paliers annoncent un houblonnage à cru, mais aucun ajout de houblon à cru n’est prévu. Revois le programme de fermentation ; ces notes ne créent pas un ajout ni un effet de biotransformation.' }] : [];
 }
-export function checkHopFermentation(recipe: TrialRecipe | undefined, yeastId: string | undefined, policy: HopSolverPolicy, hasDryHop = recipe?.hops.some(h => h.stage === 'dryHop' && h.weightG > 0), includeAdditionProgram = true) {
+export function checkHopFermentation(recipe: TrialRecipe | undefined, yeastId: string | undefined, policy: HopSolverPolicy, hasDryHop = recipe?.hops.some(h => normalizeHop(h).stage === 'dryHop' && (h.weightG > 0 || !finite(h.weightG))), includeAdditionProgram = true) {
   const checks: SolverCheck[] = [];
   if (!recipe) return checks;
-  for (const operating of policy.yeastConditions ?? []) if (operating.yeastId === yeastId) {
-    for (const step of recipe.fermentation ?? []) if ((!step.kind || step.kind === 'primaire') && finite(step.tempC) && (step.tempC < operating.temperatureC.min || step.tempC > operating.temperatureC.max))
-      checks.push({ status: 'unknown', message: `${step.kind === 'primaire' ? 'Fermentation primaire' : 'Palier de fermentation de phase non renseignée'} à ${step.tempC} °C : hors plage fabricant ${operating.temperatureC.min}–${operating.temperatureC.max} °C pour cette souche. Revois ce palier selon le profil recherché ; une température d’essai n’est pas une recommandation de fermentation.`, source: operating.source });
-    if (operating.warning) checks.push({ status: 'unknown', message: operating.warning, source: operating.source });
-  }
-  if (includeAdditionProgram) checks.push(...checkHopAdditionProgram(recipe, hasDryHop));
+  const rows = (policy.yeastConditions ?? []).filter(p => p.yeastId === yeastId), first = rows[0];
+  const agreed = first && rows.every(r => r.temperatureC.min === first.temperatureC.min && r.temperatureC.max === first.temperatureC.max);
+  checks.push(...fermentationProgramIssues(recipe.fermentation ?? [], agreed ? { range: first.temperatureC, source: first.source } : undefined,
+    { pitchTempC: recipe.yeast.pitchTempC, hasDryHop, checkAdditions: includeAdditionProgram }).map(i => ({ status: 'unknown' as const, message: i.message, ...(i.source ? { source: i.source } : {}) })));
+  for (const operating of rows) if (operating.warning && !checks.some(c => c.message === operating.warning)) checks.push({ status: 'unknown', message: operating.warning, source: operating.source });
   return checks;
 }
 

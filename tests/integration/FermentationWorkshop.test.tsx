@@ -60,6 +60,7 @@ describe('Atelier de levure dans une recette', () => {
   });
   it('montre les bornes du laboratoire et refuse une combinaison hors domaine sans toucher la recette', async () => {
     const onChange = vi.fn(); render(<FermentationWorkshop recipe={recipe()} onChange={onChange} />);
+    screen.getByText('Bibliothèque scientifique').closest('details')!.open = true;
     const lab = screen.getByText('Calcul expérimental des phénols · étude DM303').closest('details')!;
     fireEvent(lab, new Event('toggle'));
     await act(async () => { lab.open = true; lab.dispatchEvent(new Event('toggle')); });

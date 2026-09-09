@@ -68,7 +68,7 @@ describe('Conduites de levure documentées', () => {
     expect(original).toEqual(before);
     expect(r.hops).toEqual(original.hops); expect(r.fermentables).toEqual(original.fermentables); expect(r.waterPlan).toEqual(original.waterPlan);
     expect(r.fermentation?.slice(2)).toEqual(original.fermentation.slice(1));
-    expect(r.yeast).toMatchObject({ qty: 12, unit: 'g', pitchTempC: 20, fermentDays: 9, fermTempMinC: 20, fermTempMaxC: 21 });
+    expect(r.yeast).toMatchObject({ qty: 12, unit: 'g', pitchTempC: 20, fermTempMinC: 17, fermTempMaxC: 25 });
     expect(r.hopMatrixId).toBeUndefined(); expect(r.hopPredictionIds).toBeUndefined(); expect(r.hopTrialId).toBeUndefined();
     expect(r.yeast.attenuationPct).toBeUndefined();
     expect(r.yeastGuide?.guide).toEqual(munich); expect(r.yeastGuide?.guide).not.toBe(munich);

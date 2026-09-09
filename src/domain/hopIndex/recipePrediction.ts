@@ -28,8 +28,10 @@ export function prepareHopRecipeInput(recipe: TrialRecipe, varieties: HopVariety
       ...(Number.isFinite(hop.dayOffset) ? { dayOffset: hop.dayOffset } : {}) };
   });
   return { input: { volumeL: Number.isFinite(recipe.volumeL) && recipe.volumeL > 0 ? recipe.volumeL : 0, yeastId, additions,
+    ...(Number.isFinite(recipe.yeast?.pitchTempC) ? { pitchTempC: recipe.yeast.pitchTempC } : {}),
     fermentation: (recipe.fermentation ?? []).map(step => ({
       ...(step.kind ? { kind: step.kind } : {}), ...(step.name ? { name: step.name } : {}),
+      ...(step.note ? { note: step.note } : {}),
       ...(Number.isFinite(step.tempC) ? { tempC: step.tempC } : {}),
       ...(Number.isFinite(step.days) ? { days: step.days } : {})
     })) }, proposed };

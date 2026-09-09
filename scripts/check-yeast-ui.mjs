@@ -52,6 +52,22 @@ try{
   await page.goto(base,{waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());
   await button(page,'📜 Recettes',true);await button(page,'+ Recette',true);await page.locator('#wz-title').fill('QA levure '+width);await button(page,'Levure');
   await page.waitForSelector('[aria-label="Atelier des arômes de levure"]');
+  // Essential manual inputs precede the helper; no fabricated temperature or old packet verdict.
+  const manual = await page.$('[aria-label="Température d’ensemencement"]');
+  assert.equal(await manual.evaluate(e=>e.value),'');
+  const hiddenTechnical = await page.$eval('[aria-label="Fiche technique saisie de la levure"]',e=>!e.open);
+  assert(hiddenTechnical);assert(!await page.evaluate(()=>document.body.innerText.includes('Un sachet suffit')));
+  await manual.click({clickCount:3});await manual.type('40');await page.keyboard.press('Tab');
+  assert.equal(await manual.evaluate(e=>e.value),'40');
+  await manual.click({clickCount:3});await page.keyboard.press('Backspace');await page.keyboard.press('Tab');
+  assert.equal(await manual.evaluate(e=>e.value),'');
+  await details(page,'Fiche saisie');
+  assert.equal(await page.$eval('[aria-label="Température minimale de la fiche saisie"]',e=>e.value),'');
+  assert.equal(await page.$eval('[aria-label="Température maximale de la fiche saisie"]',e=>e.value),'');
+  await capture(page,`fiche-technique-${width}`,'[aria-label="Fiche technique saisie de la levure"]');
+  await details(page,'Fiche saisie',false);
+  await page.$eval('[aria-label="Souche de levure"]',e=>e.scrollIntoView({block:'start'}));
+  await page.screenshot({path:resolve(out,`levure-entier-${width}.png`),fullPage:true});
   // Creation opens the chooser for an empty recipe. Changing six objectives is local.
   await button(page,'Choisir pour un arôme');
   const start={requests:requests.length,...await page.evaluate(()=>({writes:window.__hopQa.metrics.writes,calls:window.__hopQa.calls.length}))};
@@ -70,6 +86,7 @@ try{
   await details(page,'Ajuster l’ensemencement',false);await details(page,'Conseils pour développer');
   assert.match(await page.$eval('[aria-label="Leviers de fermentation pour cet objectif"]',e=>e.innerText),/confiance (moyenne|élevée)/);
   await capture(page,`leviers-${width}`,'[aria-label="Leviers de fermentation pour cet objectif"]');await details(page,'Conseils pour développer',false);
+  await details(page,'Bibliothèque scientifique');
   await details(page,'Chimie des arômes et sous-produits');await capture(page,`chimie-${width}`,'[aria-label="Atelier des arômes de levure"] details[open]');await details(page,'Chimie des arômes et sous-produits',false);
   await details(page,'Calcul expérimental des phénols');await button(page,'Reproduire le point de validation publié');
   const lab=await page.evaluate(()=>{
@@ -83,7 +100,7 @@ try{
   for(const p of lab){assert(Math.abs(p.left-p.expectedLeft)<1e-4);assert(Math.abs(p.width-p.expectedWidth)<1e-4);assert.match(p.label,/mg\/L.*confiance faible/);}
   await capture(page,`phenols-${width}`,'[aria-label="Laboratoire expérimental DM303"]');await details(page,'Calcul expérimental des phénols',false);
   // A missing reference import can fail, then be retried without applying stale values.
-  await select(page,'Objectif de fermentation','phenolic');await page.evaluate(()=>window.__hopQa.failNext());await button(page,'Appliquer cette levure et ces paliers');
+  await select(page,'Objectif de fermentation','phenolic');await page.evaluate(()=>{ const field=[...document.querySelectorAll('label')].find(e=>e.textContent.trim()==='Souche documentée').control; window.__hopQa.forgetKnowledge(field.value); window.__hopQa.failNext(); });await button(page,'Appliquer cette levure et ces paliers');
   await page.waitForFunction(()=>[...document.querySelectorAll('[role="alert"]')].some(e=>e.textContent.includes('persistance refusée')));await capture(page,`persistance-refusee-${width}`);
   await button(page,'Appliquer cette levure et ces paliers');await page.waitForFunction(()=>document.body.innerText.includes('Levure et paliers appliqués'));
   await select(page,'Objectif de fermentation','banana');await button(page,'Appliquer cette levure et ces paliers');
@@ -102,7 +119,10 @@ try{
   await page.evaluate(()=>window.__hopQa.seedRecipe(window.__hopQa.recipe()));await page.reload({waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());
   await button(page,'📜 Recettes',true);await button(page,'Test houb',true);await page.waitForSelector('[aria-label="Résultat de ma fermentation"]');
   const actual=await page.$eval('[aria-label="Résultat de ma fermentation"]',e=>e.innerText);
-  assert.match(actual,/Diamond/);assert.match(actual,/10–15 °C/);assert.match(actual,/1,007–1,011 SG/);assert.match(actual,/19 °C, hors de la fenêtre/);
+  assert.match(actual,/Diamond/);assert.match(actual,/10–15 °C/);assert.match(actual,/1,007–1,011 SG/);assert.match(actual,/Température hors fenêtre/);
+  await details(page,'points à vérifier');
+  assert.match(await page.$eval('[aria-label="Résultat de ma fermentation"]',e=>e.innerText),/19 °C, hors de la fenêtre/);
+  await details(page,'points à vérifier',false);
   await capture(page,`diamond-${width}`,'[aria-label="Résultat de ma fermentation"]');
   await button(page,'Simuler une variante de levure');await details(page,'Tester mes températures');
   const updateStart=performance.now();await fill(page,'Température du scénario 1 (°C)','12');await graph(page);const updateMs=performance.now()-updateStart;assert(updateMs<500);

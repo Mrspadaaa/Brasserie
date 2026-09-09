@@ -24,6 +24,16 @@ const make = () => {
 const backupJson = (saved: HopPredictionSnapshot) => JSON.stringify({ schemaVersion: 3, source: 'device',
   exportedAt: saved.createdAt, collections: { hopPredictions: [{ id: saved.id, data: saved }] } });
 describe('Programme figé autonome et rejouable', () => {
+  it('importe et rejoue la v2 avec ses anciens diagnostics, sans la réétiqueter v3', () => {
+    const { data, input, saved } = make();
+    input.fermentation.push({ kind: 'ajout', name: 'Sucre', tempC: 19, days: 0 });
+    const { additions, ...legacy } = predictHopRecipe(input, {}, saved.evidence, 'hop-recipe-experimental-v2');
+    saved.prediction = additions[0]; saved.recipePrediction = legacy;
+    expect(parseBackup(backupJson(saved)).collections.hopPredictions![0].data).toEqual(JSON.parse(JSON.stringify(saved)));
+    expect(predictHopRecipe(input, {}, data).overall).toEqual(legacy.overall);
+    saved.recipePrediction.engineVersion = 'hop-recipe-experimental-v3';
+    expect(() => assertHopPredictionSnapshot(saved)).toThrow();
+  });
   it('rejoue la v1 conservée avec ses anciennes bornes et refuse de la réétiqueter v2', () => {
     const { data, input } = make();
     input.additions = input.additions.slice(0, 1);
@@ -96,9 +106,9 @@ describe('Programme figé autonome et rejouable', () => {
     }
     const saved = captureHopRecipePrediction(input, {}, data, { id: 'temperature-' + mode, name: 'Conduite figée — contrôle logiciel', createdAt: '2026-09-09T10:00:00Z' });
     const warnings = saved.recipePrediction!.warnings.join(' ');
-    if (mode === 'identical') expect(warnings).toContain('19 °C hors de la fenêtre fabricant 10–15 °C');
+    if (mode === 'identical') expect(warnings).toContain('19 °C, hors de la fenêtre fabricant (10–15 °C)');
     else {
-      expect(warnings).toContain('divergentes ou qualifiées');
+      expect(warnings).toContain('sources non concordantes');
       expect(warnings).not.toContain('fenêtre fabricant 10–22');
       expect(warnings).not.toContain('fenêtre fabricant 15–15');
     }
