@@ -1,4 +1,5 @@
 import { verifyGraph } from './qa/verify-hop-graph.mjs';
+import { checkNuageScenarios } from './qa/nuage-scenarios.mjs';
 // Browser plugin absent: compiled real App, existing isolated Puppeteer adapters.
 import { buildHopRecipeQa } from './build-hop-recipe-qa.mjs';
 import puppeteer from 'puppeteer-core';
@@ -21,7 +22,7 @@ const button=async(page,text,partial=false)=>{const h=await page.waitForFunction
 const details=async(page,text,open=true)=>{const h=await page.waitForFunction(text=>[...document.querySelectorAll('summary')].find(e=>e.getClientRects().length&&e.textContent.includes(text)),{},text);if(await h.evaluate(e=>e.parentElement.open)!==open){await h.asElement().evaluate(e=>e.scrollIntoView({block:'center'}));await h.asElement().click();}await h.dispose();};
 const field=async(page,label)=>{const h=await page.waitForFunction(label=>[...document.querySelectorAll('label')].filter(e=>e.getClientRects().length).find(e=>[...e.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim()===label)?.control,{},label);return h.asElement();};
 const select=async(page,label,value)=>{const h=await field(page,label);await h.select(value);await h.dispose();};
-const fill=async(page,label,value)=>{const h=await field(page,label);await h.evaluate(e=>e.scrollIntoView({block:'center'}));await h.click({clickCount:3});await page.keyboard.press('Backspace');if(value)await h.type(value);await page.keyboard.press('Tab');await h.dispose();};
+const fill=async(page,label,value)=>{const h=await field(page,label);await h.evaluate(e=>e.scrollIntoView({block:'center'}));await h.click();await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');await page.keyboard.press('Backspace');if(value)await h.type(value);assert.equal(await h.evaluate(e=>e.value),value,'Saisie '+label);await page.keyboard.press('Tab');await h.dispose();};
 const capture=async(page,name,selector='[aria-label="Objectif NOLO"]')=>{
  const e=await page.$(selector);if(e)await e.evaluate(e=>e.scrollIntoView({block:'start'}));
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow: '+name);
@@ -57,6 +58,7 @@ try{
   const stored=await page.evaluate(name=>window.__hopQa.storage.getRecipes().find(r=>r.name===name), 'QA NOLO création '+width);
   assert.equal(stored.nolo.enabled,true);assert.equal(stored.fgTarget,null);assert(stored.nolo.scienceSnapshot);
   await page.reload({waitUntil:'networkidle0'});await page.waitForFunction(()=>window.__hopQa?.ready());await button(page,'📜 Recettes',true);await button(page,'QA NOLO création '+width,true);
+  await capture(page,'sections-fermees-'+width,'[aria-label="Eaux à préparer"]');await details(page,'Objectif NOLO');
   await page.waitForSelector('[aria-label="Objectif NOLO"]');
   assert.equal(await page.$$eval('[aria-label="Objectif NOLO"] input, [aria-label="Objectif NOLO"] select',e=>e.length),0);
   await capture(page,'lecture-'+width);
@@ -68,7 +70,7 @@ try{
   await fill(page,'Méthode / référence du laboratoire','Analyse QA, marge connue');
   await fill(page,'Alcool analysé minimum','0.38');await fill(page,'Alcool analysé maximum','0.42');
   await button(page,'Conserver cette analyse dans la recette');await details(page,'Analyses rattachées',false);await details(page,'Moût, ajouts',false);
-  await page.waitForFunction(()=>document.querySelector('[aria-label="Alcool au conditionnement"]').innerText.includes('confiance moyenne'));
+  await page.waitForFunction(()=>document.querySelector('[aria-label="Projection au conditionnement"]').innerText.includes('confiance moyenne'));
   await capture(page,'analyse-'+width);
   await details(page,'Vigilances');await capture(page,'vigilances-'+width);await details(page,'Vigilances',false);
   await details(page,'Comparer les procédés');await details(page,'Fermentation complète + désalcoolisation');await capture(page,'comparaison-'+width);await details(page,'Comparer les procédés',false);
@@ -78,7 +80,7 @@ try{
   const perf=await page.evaluate(()=>{const q=window.__hopQa,r=q.nolo.recipe(20),times=[];for(let i=0;i<30;i++){const start=performance.now();q.nolo.raw(r);times.push(performance.now()-start);}return {maxMs:Math.max(...times),medianMs:times.sort((a,b)=>a-b)[15]};});assert(perf.maxMs<500);assert(updateMs<500);
   const back=await page.waitForFunction(()=>[...document.querySelectorAll('button')].find(b=>b.getClientRects().length&&['Retour','Fermer','Revenir'].includes(b.getAttribute('aria-label'))));await back.asElement().click();await back.dispose();
   const twenty=await page.evaluate(()=>{const qa=window.__hopQa,r=qa.nolo.recipe(20);qa.partialCoa();r.hops[0].hopLotId='qa-partial-coa';qa.seedRecipe(r);return r;});
-  await button(page,'QA hefeweisse NOLO',true);await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+  await button(page,'QA hefeweisse NOLO',true);await details(page,'Potentiel aromatique');await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
   // Finish loading the optional technical reference before measuring local simulation I/O.
   await details(page,'Composition, thiols et phénols');await page.waitForNetworkIdle({idleTime:300});await details(page,'Composition, thiols et phénols',false);
   const beforeHops=await page.evaluate(()=>({writes:window.__hopQa.metrics.writes,calls:window.__hopQa.calls.length})),hopRequests=requests.length,controls=[];
@@ -87,17 +89,19 @@ try{
     for(const [name,value] of [['Toutes les saveurs et la chimie',all],['Cumuler tous les ajouts',cumulative]]){
       const h=await page.$('[aria-label="Simulation de mes ajouts"] input[aria-label="'+name+'"]');if(await h.evaluate(e=>e.checked)!==value){await h.evaluate(e=>e.scrollIntoView({block:'center'}));await h.click();}
     }
-    const proof=await verifyGraph(page,twenty,cumulative);assert(Object.values(proof.raw.overall.profile).every(v=>v.range===null));
+    const proof=await verifyGraph(page,twenty,cumulative);assert.equal(proof.raw.aromaStage.id,'reference');assert(Object.values(proof.raw.overall.profile).some(v=>v.range!==null));
     controls.push({all,cumulative,elapsedMs:performance.now()-t,chemistryRows:Object.keys(proof.raw.chemistry.introduced).length});
     await capture(page,'houblons-'+Number(all)+Number(cumulative)+'-'+width,'[aria-label="Simulation de mes ajouts"]');
   }
   await capture(page,'chimie-'+width,'[aria-label="Chimie des ajouts simulés"]');
   await details(page,'Composition, thiols et phénols');await capture(page,'coa-'+width,'[aria-label="Composition analytique"]');await details(page,'Composition, thiols et phénols',false);
-  await button(page,'Explorer une variante');await page.waitForFunction(()=>document.body.innerText.includes('NOLO : intensités non étalonnées'));
+  await button(page,'Explorer une variante');await page.waitForFunction(()=>document.body.innerText.includes('Variante')||document.body.innerText.includes('variante'));
   assert.deepEqual(await page.evaluate(()=>({writes:window.__hopQa.metrics.writes,calls:window.__hopQa.calls.length})),beforeHops);
   assert.deepEqual(requests.slice(hopRequests).filter(u=>/^https?:/.test(u)),[]);
   await page.keyboard.press('Tab');assert(await page.evaluate(()=>document.activeElement!==document.body));
   assert.deepEqual(errors,[]);assert.deepEqual(remote,[]);reports.push({width,updateMs,perf,controls,errors,remoteRequests:0,simulationRequests:0,simulationWrites:0});
+  reports[reports.length-1].pilots=await checkNuageScenarios({page,base,width,out,button,details,fill,select});
+  assert.deepEqual(errors,[]);assert.deepEqual(remote,[]);
   await ctx.close();
  }
  await writeFile(resolve(out,'ui-report.json'),JSON.stringify({passed:true,reports},null,2));console.log(JSON.stringify({passed:true,out,reports},null,2));

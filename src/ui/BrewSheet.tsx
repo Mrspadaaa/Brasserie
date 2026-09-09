@@ -1,3 +1,4 @@
+import { RecipeDisclosure, RecipeWaterVolumes } from './RecipeDisclosure';
 import { MaltDetails } from './MaltDetails';
 import { LearnIngredient } from '../domain/ingredientFacts';
 import React, { useState } from 'react';
@@ -38,8 +39,8 @@ import { RecipeReview } from './RecipeReview';
  * Deux règles de composition :
  *
  *   - Une ligne par ingrédient, hauteur fixe : le nom se lit, les nombres se
- *     tapent. Rien ne se déplie, rien ne se replie — on doit pouvoir parcourir
- *     la fiche du pouce sans que la mise en page bouge sous le doigt.
+ *     tapent. Les sections restent indépendantes : on doit pouvoir parcourir
+ *     les volumes et pesées essentiels, puis ouvrir les détails utiles.
  *
  *   - Les champs n'ouvrent PAS le clavier du système (`pad`) : sur une fiche de
  *     vingt valeurs, le clavier passerait son temps à masquer celle d'après.
@@ -114,16 +115,7 @@ const Block: React.FC<{
   aside?: React.ReactNode;
   children: React.ReactNode;
 }> = ({ title, aside, children }) => {
-  const tight = useDensity() === 'tight';
-  return (
-    <section className={`panel ${tight ? 'p-2' : 'p-2.5 sm:p-3'}`}>
-      <div className="flex items-baseline justify-between gap-2 pb-1 border-b border-cave-850">
-        <h3 className="text-xs sm:text-sm font-semibold text-cave-50">{title}</h3>
-        {aside && <span className="reading text-2xs sm:text-sm text-cave-400 shrink-0">{aside}</span>}
-      </div>
-      <div className="divide-y divide-cave-850">{children}</div>
-    </section>
-  );
+  return <RecipeDisclosure title={title} summary={aside}><div className="divide-y divide-cave-850">{children}</div></RecipeDisclosure>;
 };
 
 /** Tout ce que la fiche montre de l'eau, calculé par l'assistant. */
@@ -291,6 +283,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   return (
     <div className={tight ? 'space-y-2' : 'space-y-3'}>
       {/* --- Identité ------------------------------------------------------ */}
+      {water&&<RecipeWaterVolumes totalL={mashWaterL+spargeWaterL} roL={water.mashOsmoseeL+water.spargeOsmoseeL}/>}
       <Block title="Identité">
         <Row label="Nom">
           <input
@@ -687,7 +680,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             </Row>
 
             {/* --- Profil atteint ----------------------------------------- */}
-            <div className="pt-2 space-y-2">
+            <details className="pt-2 space-y-2"><summary className="cursor-pointer min-h-touch text-sm text-water">Profil et chimie détaillée</summary>
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-2xs sm:text-sm text-cave-500">
                   Profil visé — {water.styleName}
@@ -761,7 +754,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                   {water.spargePh ? `rinçage ${water.spargePh}` : ''}.
                 </p>
               )}
-            </div>
+            </details>
 
             {/* --- Sels et acides à peser ---------------------------------- */}
             <div className="pt-2 space-y-1.5">

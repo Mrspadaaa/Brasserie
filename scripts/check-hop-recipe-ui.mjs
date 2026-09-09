@@ -88,7 +88,7 @@ try {
       await page.evaluate(() => window.__hopQa.seedRecipe(window.__hopQa.recipe()));
       await click(page, '📜 Recettes', true);
       await click(page, 'Test houb', true);
-      await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+      if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
       await capture(page, 'probe');
       await writeFile(resolve(out, 'probe.txt'), await page.evaluate(() => document.body.innerText));
       console.log(JSON.stringify({ errors, remoteRequests: remote }));
@@ -102,7 +102,7 @@ try {
     await click(page, 'Houblons', true);
     await page.locator('input[aria-label^="Ajouter un houblon"]').fill('Cascade');
     await chooseOption(page, 'Cascade');
-    await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     await page.locator('[aria-label="Alpha de Cascade en pourcent"]').fill('6.2');
     await page.locator('[aria-label="Quantité en g"]').fill('48');
     await page.locator('[aria-label="Minutes avant la fin pour Cascade"]').fill('10');
@@ -160,7 +160,7 @@ try {
     assert(navigationMs < 1000, 'Navigation stays responsive during exhaustive search');
     assert((await page.evaluate(() => window.__qaWorkers.terminated)) > stoppedWorkers, 'Navigation cancels Worker');
     assert.deepEqual(await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length })), beforeSearch, 'Search never persists or calls a backend');
-    await click(page, 'Houblons', true); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Houblons', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     await checkbox(page, 'Cumuler tous les ajouts', true);
     await page.evaluate(() => window.__hopQa.failNext());
     await click(page, 'Conserver le programme pour une dégustation');
@@ -177,7 +177,7 @@ try {
     assert.equal(saved.hops[0].hopLotId, 'qa-partial-coa');
     await page.reload({ waitUntil: 'networkidle0' }); await page.waitForFunction(() => window.__hopQa?.ready());
     await click(page, '📜 Recettes', true); await click(page, `QA recette ${width}`, true);
-    await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     assert.equal(await page.$$eval('[aria-label="Potentiel aromatique de la recette"] input:not([type="checkbox"]),[aria-label="Potentiel aromatique de la recette"] textarea', e => e.length), 0);
     await capture(page, `lecture-${width}`);
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
@@ -191,7 +191,7 @@ try {
     assert.deepEqual(await page.evaluate(id => window.__hopQa.storage.getRecipes().find(r => r.id === id), saved.id), saved, 'Readonly variant mutated recipe');
     await back(page);
     const scientific = await page.evaluate(() => { const r = window.__hopQa.documented(); window.__hopQa.seedRecipe(r); return r; });
-    await click(page, 'Cascade documenté', true); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Cascade documenté', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
     const documented = await verifyGraph(page, scientific, false);
     assert(documented.checked.some(c => c.range && c.range.max - c.range.min < 20), 'Documented bounded output actually displayed');
@@ -243,7 +243,7 @@ try {
     assert.deepEqual(await page.evaluate(id => window.__hopQa.storage.getRecipes().find(r => r.id === id), scientific.id), scientific, 'Comparison changed the saved recipe');
     await back(page);
     const twenty = await page.evaluate(() => { const r = { ...window.__hopQa.recipe(20), id: 'qa-twenty', name: 'Vingt ajouts' }; window.__hopQa.seedRecipe(r); return r; });
-    await click(page, 'Vingt ajouts', true); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Vingt ajouts', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     const beforeTwenty = await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length }));
     const twentyRequests = requests.length;
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
@@ -261,7 +261,7 @@ try {
     await back(page);
     for (const confidence of ['medium', 'high']) {
     const synthetic = await page.evaluate(confidence => window.__hopQa.syntheticConfidence(confidence), confidence);
-    await click(page, 'Contrôle synthétique de confiance', true); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Contrôle synthétique de confiance', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
     const confidenceProof = await verifyGraph(page, synthetic, false);
     assert(confidenceProof.checked.some(c => c.axis === 'qa-citrus' && c.confidence === (confidence === 'medium' ? 'moyenne' : 'élevée')), 'Actual model confidence rendered');

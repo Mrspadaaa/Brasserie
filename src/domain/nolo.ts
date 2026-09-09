@@ -1,14 +1,29 @@
 import pack from '../data/noloBootstrap.json';
+import scenarioPack from '../data/noloScenarioBootstrap.json';
 import { assertNoloScience, type NoloConfig, type NoloScience, type NoloStrain } from '../../functions/src/noloSchema';
-import { evaluateNolo, type NoloInput } from '../../functions/src/noloCore';
+import { noloInputBasis, type NoloInput } from '../../functions/src/noloCore';
+import { evaluateNoloScenario, changeNoloProcess, noloScenarioBasis, type NoloScenarioInput } from '../../functions/src/noloScenario';
+import { agreedFermentationFact } from '../../functions/src/fermentationContext';
+import { BrewingMath } from '../services/brewingMath';
+import { resolveFermentationYeast } from './fermentationScenario';
+import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 import type { TrialRecipe } from './hopIndex/trials';
 import { normalizeHop } from './hopStage';
 import type { Batch, RecipeSnapshot } from '../types';
 export function noloScience(saved: HopKnowledge[] = []): NoloScience | undefined {
-  const rows = [...new Map([...pack,...saved].map(r=>[r.id,r])).values()];
+  const canonical=(r:unknown)=>JSON.stringify(r,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.keys(item).filter(k=>k!=='__docId').sort().map(k=>[k,item[k]])):item);
+  const rows = [...new Map([...pack,...scenarioPack,...saved.map(r=>{
+    const old=pack.find(p=>p.id===r.id);
+    return old&&canonical(old)===canonical(r)?scenarioPack.find(p=>p.id===r.id)??r:r;
+  })].map(r=>[r.id,r])).values()];
   return rows.find((r): r is NoloScience => { if(r.kind!=='noloScience')return false;try{assertNoloScience(r);return r.enabled;}catch{return false;} });
 }
+export const noloPlanningSource = {
+  title:'Hypothèses du pilote',author:'L’Affinée',year:2026,kind:'judgment' as const,
+  reference:'functions/reports/nolo-scenarios-2026.md',
+  locator:'Valeurs de préparation éditables. Ni mesure ni intervalle statistique.'
+};
 export function noloWaterModelIssue(config:NoloConfig|undefined,ratio:number):string|undefined {
   if(!config?.enabled)return;
   if(config.process==='secondRunnings')return 'Drêches : mesurer le moût récupéré. Aucun nouveau rendement, absorption de grain sec ou pouvoir tampon de malt neuf n’est appliqué.';
@@ -32,7 +47,21 @@ export function noloInput(recipe: TrialRecipe): NoloInput {
 }
 export function evaluateNoloRecipe(recipe: TrialRecipe,saved: HopKnowledge[] = []) {
   const science=recipe.nolo?.scienceSnapshot??noloScience(saved);
-  return recipe.nolo?.enabled&&science?evaluateNolo(noloInput(recipe),science):null;
+  return recipe.nolo?.enabled&&science?evaluateNoloScenario(noloScenarioInput(recipe,saved),science):null;
+}
+export function noloScenarioInput(recipe:TrialRecipe,saved:HopKnowledge[]=[]):NoloScenarioInput {
+  const input=noloInput(recipe);
+  input.config=changeNoloProcess(input.config,input.config.process);
+  const measured=input.config.measurements.filter(m=>m.stage==='wort'&&m.sg!=null&&m.method.trim()&&/^\d{4}-\d{2}-\d{2}/.test(m.date)&&
+    (m.basis===noloScenarioBasis(input)||!input.config.planning?.stopSg&&!input.config.planning?.stopAttenuationPct&&m.basis===noloInputBasis(input))
+  ).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
+  const points=BrewingMath.extractPoints(recipe.fermentables.filter(f=>f.use!=='fermentation'),recipe.volumeL,recipe.efficiencyPct??recipe.brewhouse?.efficiencyPct??75);
+  const sg=measured?.sg??(recipe.nolo?.process==='secondRunnings'?recipe.nolo.secondRunnings?.sg:points?1+points.total/1000:undefined);
+  const yeast=resolveFermentationYeast(recipe,saved.filter((k):k is HopYeast=>k.kind==='yeast'));
+  const attenuation=agreedFermentationFact(yeast,'attenuation','%');
+  const temperature=agreedFermentationFact(yeast,'temperature','°C');
+  return {...input,...(sg!=null&&sg>=1?{og:{range:{min:sg,max:sg},origin:measured||recipe.nolo?.process==='secondRunnings'?'measurement' as const:'calculated' as const,source:noloPlanningSource}}:{}),
+    ...(attenuation?{fullFermentation:{...attenuation,temperatureC:temperature?.range}}:{})};
 }
 export function noloRecipeForBatch(batch:Batch):RecipeSnapshot|undefined{
   const recipe=batch.recipeSnapshot;
@@ -65,11 +94,11 @@ export function applyNoloStrain(recipe: TrialRecipe,strain:NoloStrain,science:No
 export function rankNoloStrains(recipe:TrialRecipe,science:NoloScience){
   return science.strains.map(strain=>{
     const proposed=applyNoloStrain(recipe,strain,science);
-    const result=evaluateNolo(noloInput(proposed),science);
+    const result=evaluateNoloScenario(noloScenarioInput(proposed),science);
     const phenolic=recipe.nolo?.orientation==='clove'||recipe.nolo?.orientation==='balanced';
     const aromaFit=phenolic&&strain.pof==='positive'?'documented' as const:'explore' as const;
     return {strain,result,aromaFit,needsThermalControl:!(recipe.nolo?.equipment??[]).includes('Maîtrise thermique')};
-  }).sort((a,b)=>Number(b.result.status==='within')-Number(a.result.status==='within')||
-    Number(a.result.status==='exceeds')-Number(b.result.status==='exceeds')||
+  }).sort((a,b)=>Number(b.result.projectionStatus==='within')-Number(a.result.projectionStatus==='within')||
+    Number(a.result.projectionStatus==='exceeds')-Number(b.result.projectionStatus==='exceeds')||
     Number(b.aromaFit==='documented')-Number(a.aromaFit==='documented')||a.strain.name.localeCompare(b.strain.name));
 }

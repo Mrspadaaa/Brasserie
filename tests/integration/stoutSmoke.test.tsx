@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render as testingRender, screen } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { ALKALINE_SALTS, SALT_IDS } from '../../src/domain/water';
 import { monSuperStoutRo } from '../fixtures/monSuperStout';
@@ -122,3 +122,9 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     expect(document.body.textContent).not.toMatch(/NaN|Infinity|undefined/);
   });
 });
+
+// Open advanced salts for the existing numeric/chemistry regressions.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);return view;
+}

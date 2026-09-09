@@ -37,6 +37,7 @@ import { calculateSpargeTreatment } from "../../domain/water/acid";
 import { manualWaterImpact, type ManualWaterEdit } from "../../domain/water/manualImpact";
 import { diagnoseWaterProfile } from "../../domain/water/profileDiagnosis";
 import { useWaterAnalysis } from "./useWaterAnalysis";
+import { completeWaterProposal } from "../../domain/water/proposal";
 type Tab = "empatage" | "rincage";
 type MobileStep = "eau" | "sels";
 
@@ -329,6 +330,7 @@ export function useWaterWorkshop({
       acid: state.acidId,
       ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }),
       acidOverride: state.acidOverride,
+      saltOverrides: state.saltOverrides,
       beerVolumeL,
       sourcePh: source.ph ?? 7.4,
     };
@@ -349,6 +351,7 @@ export function useWaterWorkshop({
     state.acidId,
     state.acidOverride?.mash,
     state.acidOverride?.sparge,
+    state.saltOverrides,
     beerVolumeL,
   ]);
 
@@ -356,14 +359,17 @@ export function useWaterWorkshop({
   // plans and up to 21 RO dilutions must not block a manual acid keystroke.
   const solveInput = useMemo(() => planInputFor(wantedRatio), [planInputFor, wantedRatio]);
   const analysis = useWaterAnalysis({ solve: solveInput, dilution: dilutionInput });
-  const solution = analysis.result?.solution;
+  const proposalFor=(doses:WaterState['doses'])=>completeWaterProposal(source,
+    {...state,doses,...waterTreatmentTarget(style,state.customTarget?.ions,{ceiling:raCeiling,target:raPreference})},
+    raBand,state.disabled,state.saltOverrides?{mash:state.saltOverrides.mash??{},sparge:state.saltOverrides.sparge??{}}:undefined);
+  const completed=analysis.result?.solution?proposalFor(analysis.result.solution.doses):undefined;
+  const solution = analysis.result?.solution&&completed?{...analysis.result.solution,doses:completed.doses}:undefined;
   const justEnough = analysis.result?.justEnough;
   const diagnoses = useMemo(() => {
     // Do not describe a stale proposal, or claim a search failed while pending.
     if (!solution) return [];
     const input = { ...state, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) };
-    const proposal = calculateWaterTreatment(source,
-      { ...input, doses: solution.doses, saltSplit: undefined }, raBand);
+    const proposal = completed!.treatment;
     const automaticAcid = state.acidOverride?.mash != null || state.acidOverride?.sparge != null
       ? calculateWaterTreatment(source, { ...input, acidOverride: undefined }, raBand) : undefined;
     return diagnoseWaterProfile({ actual: treatment, proposal, automaticAcid,
@@ -376,21 +382,24 @@ export function useWaterWorkshop({
   const planApplied = !!solution && SALT_IDS.every(id =>
     Math.abs((state.doses[id] ?? 0) - (solution.doses[id] ?? 0)) < 0.05);
   const rienAProposer = !!solution && SALT_IDS.every(id => !((solution.doses[id] ?? 0) > 0));
-  const applyDoses = () => set({
-    // Explicit Doser always uses this entry, even before its background result.
-    doses: (solution ?? planFor(wantedRatio)).doses,
-    saltSplit: undefined,
-    saltOverrides: undefined,
-  });
+  const applyDoses = () => {
+    const proposal=completed??proposalFor(planFor(wantedRatio).doses);
+    set({doses:proposal.doses,saltSplit:proposal.split});
+  };
+  const applyMinimum = () => {
+    const proposal=justEnough?.feasible?justEnough.proposal:undefined;
+    if(!proposal||(state.roLimitL!=null&&proposal.volumes.totalRoL>state.roLimitL))return;
+    set({diRatioPct:proposal.diRatioPct,spargeDiRatioPct:undefined,doses:proposal.doses,saltSplit:proposal.split});
+  };
 
   const applyRatio = (ratio: number) => {
     setLastEdit(null);
+    const proposal=proposalFor(planFor(ratio,true).doses);
     onChange({
       ...state,
       ratioOverride: ratio,
-      doses: planFor(ratio, true).doses,
-      saltSplit: undefined,
-      saltOverrides: undefined,
+      doses: proposal.doses,
+      saltSplit: proposal.split,
     });
   };
 
@@ -515,6 +524,7 @@ export function useWaterWorkshop({
   );
 
   return {
+    applyMinimum,
     source,
     onSourceChange,
     beerEbc,

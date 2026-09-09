@@ -115,7 +115,9 @@ describe('Dilution search preserves its full result while skipping a proven impo
   ];
   it.each(cases)('%s', (_name, patch) => {
     const input = fixture(patch);
-    expect(minimalDilution(input)).toEqual(exhaustiveDilution(input));
+    const {proposal,stepPct,...legacy}=minimalDilution(input);
+    expect(legacy).toEqual(exhaustiveDilution(input));
+    if(proposal)expect(proposal.diRatioPct).toBe(legacy.pct);
   });
 
   it('uses two endpoint fits instead of 21 without losing the diagnosis or retained dose', () => {

@@ -1,3 +1,5 @@
+import { completeWaterProposal } from './water/proposal';
+import { mashPhDiagnostic } from './water/readiness';
 import type { Recipe, WaterPlan, WaterSource, SaltId } from '../types';
 import {
   ACIDS,
@@ -174,16 +176,8 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
     acidOverride,
     ...waterTreatmentTarget(style, p.targetIons, { ceiling: raCeiling, target: raPreference })
   };
-  let treatment = calculateWaterTreatment(source, input, band);
-  const split = structuredClone(treatment.split);
-  for (const side of ['mash', 'sparge'] as const) {
-    for (const [id, grams] of Object.entries(p.saltOverrides?.[side] ?? {}))
-      if (!p.disabled?.includes(id as SaltId)) split[side][id] = grams;
-  }
-  const doses = Object.fromEntries(
-    SALT_IDS.map((id) => [id, (split.mash[id] ?? 0) + (split.sparge[id] ?? 0)])
-  );
-  treatment = calculateWaterTreatment(source, { ...input, doses, saltSplit: split }, band);
+  const proposal=completeWaterProposal(source,input,band,p.disabled,p.saltOverrides?{mash:p.saltOverrides.mash??{},sparge:p.saltOverrides.sparge??{}}:undefined);
+  const treatment=proposal.treatment;
   const plan: WaterPlan = {
     ...p,
     autoTreatment: true,
@@ -214,6 +208,8 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
     );
   if (p.saltOverrides || p.acidOverride)
     warnings.push('Doses manuelles conservées ; vérifier le profil obtenu après ces exceptions.');
+  const ph=mashPhDiagnostic(estimateMashPh(grains,treatment.mashPhRa,ratio),p.targetPh??5.4);
+  if(ph.status!=='unverified')warnings.push(ph.message);
   return { plan, warnings };
 }
 
@@ -244,6 +240,8 @@ export function recipeWaterSummary(recipe: WaterRecipe) {
       band
     );
     ph = estimateMashPh(grains, treatment.mashPhRa, ratio);
+    const diagnostic=mashPhDiagnostic(ph,p.targetPh??5.4);
+    if(diagnostic.status!=='unverified')warnings.push(diagnostic.message);
     if (treatment.hco3Target?.message) warnings.push(treatment.hco3Target.message);
     for (const ion of PROFILE_IONS.filter(ion => !style.untargetedIons?.includes(ion))) {
       const value = treatment.treatedTotal[ion],

@@ -70,7 +70,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
             <Scale className="w-4 h-4 text-hop shrink-0" />
             <span className="text-2xs font-semibold whitespace-nowrap">2. Sels</span>
             <span className="text-2xs text-cave-400 reading truncate">
-              {formatDecimal(totalDosesGrams)} g
+              {formatDecimal(Math.round(totalDosesGrams*10)/10)} g
             </span>
           </button>
         </div>

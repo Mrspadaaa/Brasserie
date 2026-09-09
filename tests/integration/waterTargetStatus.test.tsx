@@ -1,6 +1,6 @@
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render as testingRender, screen, within } from "@testing-library/react";
 import { WaterTargetStatus } from "../../src/ui/water/WaterTargetStatus";
 import { calculateWaterTreatment, DEFAULT_WATER_SOURCE, estimateMashPh, targetRaForGrist } from "../../src/domain/water";
 import type { TreatmentInput } from "../../src/domain/water/treatment";
@@ -60,12 +60,12 @@ describe("Water target status", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     const details = explanation.querySelector("details");
     expect(details).not.toHaveAttribute("open");
-    expect(screen.getByText("Moyenne sur 32,3 L").closest("details")).toBeNull();
+    expect(screen.getByText("Moyenne sur 32,3 L").closest("details")).toHaveAttribute("open");
     const ph = screen.getByLabelText("Bilan du pH estimé");
     expect(ph).toHaveTextContent("pH estimé : 5,70 ±0,15. Consigne : 5,4");
     expect(ph).toHaveTextContent("Estimation au-dessus de la plage 5,2–5,5");
     expect(ph).toHaveTextContent("la correction du pH se décide après mesure");
-    expect(ph.closest("details")).toBeNull();
+    expect(ph.closest("details")).toHaveAttribute("open");
   });
 
   it("does not invent a bicarbonate discrepancy when it is already in the style's range", () => {
@@ -74,10 +74,10 @@ describe("Water target status", () => {
     expect(screen.queryByLabelText("Comprendre le bicarbonate")).not.toBeInTheDocument();
     expect(screen.getByLabelText("Bilan du pH estimé")).toHaveTextContent("Estimation au-dessus");
     expect(screen.getByText("Moyenne sur 32,3 L").parentElement).toHaveTextContent("200 ppm");
-    expect(screen.getByText("Moyenne sur 32,3 L").closest("details")).toBeNull();
+    expect(screen.getByText("Moyenne sur 32,3 L").closest("details")).toHaveAttribute("open");
   });
 
-  it("keeps the photo's two waters and weighted result visible without opening details", () => {
+  it("keeps the photo's two waters and weighted result available on request", () => {
     render(<WaterTargetStatus {...props({
       doses: { gypse: 2.6, cacl2: 2.1, nacl: 0.5, kcl: 3 },
       acidOverride: { mash: 0, sparge: 6.2 },
@@ -87,7 +87,7 @@ describe("Water target status", () => {
     expect(within(balance).getByText("Rinçage (21,5 L)").parentElement).toHaveTextContent("27 ppm");
     const average = within(balance).getByText("Moyenne sur 32,3 L");
     expect(average.parentElement).toHaveTextContent("84,8 ppm");
-    expect(average.closest("details")).toBeNull();
+    expect(average.closest("details")).toHaveAttribute("open");
     expect(screen.getByRole("heading", { name: "HCO₃ sous la cible" })).toBeVisible();
     expect(screen.getByLabelText("Écart HCO₃ à la cible")).toHaveTextContent("84,8 ppm : 35,2 ppm sous le minimum de 120 ppm");
     expect(screen.getByLabelText("Comprendre le bicarbonate")).toHaveTextContent("Le dosage automatique cherche cette plage après les deux doses d’acide");
@@ -182,3 +182,5 @@ describe("Water target status", () => {
     expect(screen.queryByLabelText("Bilan des objectifs de l’eau")).not.toBeInTheDocument();
   });
 });
+
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);const summary=screen.queryByText('Détail des diagnostics et hypothèses');if(summary)fireEvent.click(summary);return view;}

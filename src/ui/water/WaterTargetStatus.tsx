@@ -6,6 +6,7 @@ import { formatDecimal } from "../numericInput";
 import { WaterBicarbonateBalance } from "./WaterBicarbonateBalance";
 import { assessWaterProfile, PROFILE_IONS } from "../../domain/water/profileAssessment";
 import { diagnoseWaterProfile, type ProfileDiagnosis } from "../../domain/water/profileDiagnosis";
+import { mashPhDiagnostic } from "../../domain/water/readiness";
 
 type Props = {
   style: StyleWater;
@@ -59,9 +60,16 @@ export function WaterTargetStatus({
   const raInRange = treatment.raAfter >= raBand.min && treatment.raAfter <= raBand.max;
   const paleWithDarkProfile = beerEbc != null && Number.isFinite(beerEbc) &&
     beerEbc <= 12 && bicarbonateRange.min >= 100;
+  const mashDiagnostic=mashPhDiagnostic(phEstimate,targetPh);
 
   return (
     <section aria-label="Bilan des objectifs de l’eau" className="space-y-3 text-sm leading-snug">
+      <div className="space-y-2" aria-label="Trois diagnostics de préparation">
+        <p className={outside.length?'text-ebc-straw':'text-hop'}>Ions · {outside.length?'plages à ajuster':'plages atteintes'}{personal?' · centres non garantis':''}</p>
+        {hasMash&&<p data-mash-diagnostic={mashDiagnostic.status} className={mashDiagnostic.status==='outside'?'text-ebc-straw':'text-cave-300'}>{mashDiagnostic.message}</p>}
+        {hasSparge&&<p className="text-cave-300">Rinçage · {formatDecimal(treatment.spargeAcid.amount)} {treatment.spargeAcid.unit} d’acide calculé ; pH à contrôler séparément.</p>}
+      </div>
+      <details><summary className="min-h-touch cursor-pointer text-xs text-water">Détail des diagnostics et hypothèses</summary><div className="space-y-3">
       {minerals.length > 0 && (
         <div className="space-y-1">
           <p className="flex items-start gap-2 font-semibold text-cave-50">
@@ -160,6 +168,7 @@ export function WaterTargetStatus({
           </details>}
         </div>
       )}
+      </div></details>
     </section>
   );
 }

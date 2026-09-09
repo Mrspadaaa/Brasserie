@@ -5,7 +5,7 @@ import { HOP_TIMINGS, type HopAxis, type HopPrediction, type HopTriplet, type Ho
 import { hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCore';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import { compareHopPredictions, createHopPredictor, predictHopTriplet, usableHopKnowledge } from '../../domain/hopIndex/engine';
-import { noloScopedPrediction } from '../../../functions/src/hopRecipePrediction';
+import { noloReferencePrediction } from '../../../functions/src/hopRecipePrediction';
 import { applyHopScenario, recipeHopScenario } from '../../domain/hopIndex/exploration';
 import { prefillHopScenario } from '../../domain/hopIndex/solver';
 import { captureHopPrediction } from '../../domain/hopIndex/snapshots';
@@ -73,7 +73,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const data = useMemo(() => ({ varieties, lots, knowledge }), [varieties, lots, knowledge]);
   const querySignature = JSON.stringify([scenario, target, recipe?.nolo?.enabled]);
   const latestQuery = useRef({ querySignature, data }); latestQuery.current = { querySignature, data };
-  const prediction = useMemo(() => recipe?.nolo?.enabled?noloScopedPrediction(predictHopTriplet(scenario,target,data)):predictHopTriplet(scenario, target, data), [scenario, target, data, recipe?.nolo?.enabled]);
+  const prediction = useMemo(() => recipe?.nolo?.enabled?noloReferencePrediction(predictHopTriplet(scenario,target,data)):predictHopTriplet(scenario, target, data), [scenario, target, data, recipe?.nolo?.enabled]);
   const variety = varieties.find(v => v.id === scenario.varietyId), yeast = yeasts.find(y => y.id === scenario.yeastId);
   const strainFacts = models.flatMap(m => m.yeasts.filter(y => y.yeastId === scenario.yeastId));
   const highlighted = axes.filter(a => (!prediction.extrapolatedAxes?.includes(a.id) && !!prediction.profile[a.id]?.range) || models.some(m =>
@@ -92,7 +92,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
     const timings = associations && ['fermentation', 'postFermentation'].includes(scenario.timing ?? '') ? ['fermentation', 'postFermentation'] as const : [scenario.timing];
     const yeastIds = associations ? yeasts.map(y => y.id) : [scenario.yeastId];
     const hops=varieties.filter(v=>!v.archived),total=hops.length*yeastIds.length*timings.length;
-    const rawPredict=createHopPredictor(data), predict:typeof rawPredict=(...args)=>recipe?.nolo?.enabled?noloScopedPrediction(rawPredict(...args)):rawPredict(...args);
+    const rawPredict=createHopPredictor(data), predict:typeof rawPredict=(...args)=>recipe?.nolo?.enabled?noloReferencePrediction(rawPredict(...args)):rawPredict(...args);
     const results: HopPrediction[] = [];
     // Cooperative batches keep the controls responsive; the comparator is the
     // same shared function, and batching cannot alter the numerical result.

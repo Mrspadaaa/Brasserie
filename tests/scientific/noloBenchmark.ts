@@ -1,3 +1,6 @@
+import currentPack from '../../src/data/noloScenarioBootstrap.json';
+import currentFixture from '../fixtures/nolo-scenarios.json';
+import { evaluateNoloScenario } from '../../functions/src/noloScenario';
 import fixture from '../fixtures/nolo-scientific.json';
 import pack from '../../src/data/noloBootstrap.json';
 import { assertNoloScience,type NoloConfig } from '../../functions/src/noloSchema';
@@ -22,7 +25,10 @@ export function runNoloBenchmark(){
     return {strain:t.strain,hours:t.hours,observedAbv:t.abv,predicted:null};});
   for(const ph of fixture.stability2026.ph)for(const co2Vol of fixture.stability2026.co2Vol){const i=input();i.config.measurements=[{id:'p',stage:'packaged',date:'2026-09-09',method:'fixture',ph,co2Vol}];
     if(evaluateNolo(i,science).stability.status!=='unverified')failures.push('Certification de conservation fabriquée.');}
-  return {engine:'nolo-mass-balance-v1',failures,
+  const current=currentPack[0];assertNoloScience(current);
+  const currentRows=currentFixture.la01_2025.points.map(p=>{const i=input();i.mash=currentFixture.la01_2025.mash;i.config.wort.ogPlato=r(p.plato);const result=evaluateNoloScenario(i,current);return {...p,predicted:result.projection.min,error:result.projection.min-p.abv,kind:result.projection.kind,measured:result.measuredPackaged};});
+  if(currentRows.some(r=>Math.abs(r.error)>1e-12||r.measured||r.kind!=='experimental'))failures.push('LA-01 édition 2025 : reproduction ou portée incorrecte.');
+  return {reproduction2025:{study:currentFixture.la01_2025.source,unit:'% vol.',n:currentRows.length,rmse:Math.sqrt(currentRows.reduce((s,r)=>s+r.error*r.error,0)/currentRows.length),residualInterval:null,validationExternal:false,rows:currentRows},engine:'nolo-mass-balance-v1',failures,
     reproduction:{study:'LA-01 / Fermentis 2022',unit:'% vol.',n:rows.length,meanError:rows.reduce((s,r)=>s+r.error,0)/rows.length,rmse,intervalWidth:null,coverage:null,indeterminatePackaging:rows.length,rows},
     external:{spent:{unit:'% vol.',n:spent.length,meanError:null,rmse:null,intervalWidth:null,coverage:null,indeterminate:spent.length,rows:spent},
       cold:{unit:'% vol.',n:cold.length,meanError:null,rmse:null,intervalWidth:null,coverage:null,indeterminate:cold.length,rows:cold}},

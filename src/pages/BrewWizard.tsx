@@ -1,3 +1,4 @@
+import { RecipeDisclosure, revealRecipeErrors } from '../ui/RecipeDisclosure';
 import { MaltDetails } from '../ui/MaltDetails';
 import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -1285,20 +1286,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         </div>
       )}
 
-      <BrewerChat scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
+      <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
         onDraftApply={value => {
           applyImport({...value, mashSteps:value.mash?.steps ?? [], present:Object.keys(value), complete:true} as ImportedRecipe, value);
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-      {step !== 'houblons' && step !== 'eau' && step !== 'levure' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('houblons')} className="w-full text-left rounded-panel border border-hop/40 bg-hop/5 p-3 sm:p-4">
-        <span className="block text-base font-semibold text-cave-50">{details.hopTrialId ? 'Affiner mon programme aromatique' : 'Construire le goût de ma bière'}</span>
-        <span className="block text-xs sm:text-sm text-cave-200 mt-1">Essais documentés, houblons, levure et timing · ouvrir l’atelier →</span>
-      </button>}
-      {step === 'identite' && <button type="button" disabled={hopGuideBusy} onClick={() => setStep('levure')} className="w-full text-left rounded-panel border border-ebc-straw/30 bg-ebc-straw/5 p-3 sm:p-4">
-        <span className="block text-base font-semibold text-cave-50">Choisir les arômes de levure</span>
-        <span className="block text-xs sm:text-sm text-cave-200 mt-1">Banane, fruits, girofle ou profil net : souches, dose et paliers de fermentation</span>
-      </button>}
       {step === 'identite' && (
         <>
           {/*
@@ -2181,6 +2174,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           yeast={yeast}
           onYeast={setYeast}
         />
+        {details.nolo?.enabled&&<RecipeDisclosure title="Objectif NOLO" summary="Projection, traitement et analyses"><NoloPanel recipe={build()} onChange={next=>{setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide}));setYeast(next.yeast);setFerment(next.fermentation??[]);}}/></RecipeDisclosure>}
         <BrewSheet
           onLearnIngredient={onLearnIngredient}
           reviewData={{

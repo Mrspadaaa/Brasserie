@@ -28,7 +28,10 @@ export function prepareHopRecipeInput(recipe: TrialRecipe, varieties: HopVariety
       ...(Number.isFinite(hop.dayOffset) ? { dayOffset: hop.dayOffset } : {}) };
   });
   return { input: { volumeL: Number.isFinite(recipe.volumeL) && recipe.volumeL > 0 ? recipe.volumeL : 0, yeastId, additions,
-    ...(recipe.nolo?.enabled?{aromaDomain:'nolo' as const}:{}),
+    ...(recipe.nolo?.enabled?{aromaDomain:'nolo' as const,aromaContext:{
+      stage:recipe.nolo.process==='dealcoholized'?'mother' as const:'reference' as const,
+      ...(recipe.nolo.planning?.aromaTransfer?{transfer:recipe.nolo.planning.aromaTransfer}:{})
+    }}:{}),
     ...(Number.isFinite(recipe.yeast?.pitchTempC) ? { pitchTempC: recipe.yeast.pitchTempC } : {}),
     fermentation: (recipe.fermentation ?? []).map(step => ({
       ...(step.kind ? { kind: step.kind } : {}), ...(step.name ? { name: step.name } : {}),

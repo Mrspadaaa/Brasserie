@@ -17,6 +17,7 @@ type Props = Pick<
   | "spargeDi"
   | "spargeLinked"
   | "justEnough"
+  | "applyMinimum"
   | "hasSparge"
   | "totalOsmoseeL"
   | "totalReseauL"
@@ -29,6 +30,7 @@ export function WaterDilution({
   spargeDi,
   spargeLinked,
   justEnough,
+  applyMinimum,
   hasSparge,
   totalOsmoseeL,
   totalReseauL,
@@ -107,9 +109,7 @@ export function WaterDilution({
 
         <button
           type="button"
-          onClick={() =>
-            justEnough && set({ diRatioPct: justEnough.pct, spargeDiRatioPct: undefined })
-          }
+          onClick={applyMinimum}
           disabled={
             totalWaterL <= 0 ||
             !justEnough?.feasible ||
@@ -120,7 +120,7 @@ export function WaterDilution({
         >
           <Droplets className="w-3.5 h-3.5 text-water shrink-0" />
           <span className="min-w-0 flex-1 text-left truncate text-cave-200">
-            Juste ce qu’il faut d’osmosée
+            Minimum trouvé d’osmosée
           </span>
           <span className="shrink-0 reading font-semibold text-water">
             {justEnough ? `${justEnough.pct} %` : 'Calcul…'}
@@ -146,7 +146,7 @@ export function WaterDilution({
         {justEnough && totalWaterL > 0 && justEnough.feasible && (
           <p className="text-2xs text-cave-400 leading-snug">
             {justEnough.pct === 0 ? (
-              "Le réseau suffit tel quel : aucun ion ne dépasse le style, l’acide reste sous son seuil."
+              "Le réseau avec les sels et acides proposés suffit pour les plages ioniques."
             ) : state.diRatioPct > justEnough.pct ? (
               <>
                 Coupe en place {Number(state.diRatioPct.toFixed(2))} %, minimum{" "}
@@ -155,7 +155,7 @@ export function WaterDilution({
               </>
             ) : state.diRatioPct === justEnough.pct ? (
               <>
-                C’est le minimum : en dessous, {justEnough.reasons.join(" ; ")}.
+                Minimum trouvé au pas de {justEnough.stepPct??5} %. Les plages sont visées, pas leurs centres.
               </>
             ) : (
               <>
@@ -165,6 +165,7 @@ export function WaterDilution({
             )}
           </p>
         )}
+        {justEnough?.proposal&&<details className="text-xs text-cave-400"><summary className="min-h-touch cursor-pointer">Compromis de la proposition</summary><p>{formatDecimal(justEnough.proposal.volumes.totalRoL)} L osmosée · {formatDecimal(justEnough.proposal.volumes.tapL)} L réseau. Mg {formatDecimal(justEnough.proposal.treatment.treatedTotal.mg)} ppm · Na {formatDecimal(justEnough.proposal.treatment.treatedTotal.na)} ppm. Les sels autorisés peuvent apporter magnésium ou sodium pour économiser l’osmosée. Le pH d’empâtage est vérifié séparément.</p></details>}
 
         <DilutionField
           label={hasSparge ? "Osmosée — empâtage" : "Part d’eau osmosée"}

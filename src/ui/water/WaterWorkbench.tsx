@@ -104,7 +104,7 @@ export function WaterWorkbench({
 }: Props) {
   const [detailsSalt, setDetailsSalt] = useState<SaltId | null>(null);
   const [acidProductChanged, setAcidProductChanged] = useState(false);
-  useWaterControlsLayout(workbenchRef);
+  const [showUnused,setShowUnused]=useState(false);
   return (
     <>
       {" "}
@@ -181,9 +181,9 @@ export function WaterWorkbench({
           </button>
         </div>
 
-        <div className="water-radar panel px-1 py-0.5 sm:p-3 space-y-0 sm:space-y-1">
+        <details><summary className="min-h-touch cursor-pointer text-sm text-water">Radar et équilibre sulfate / chlorure</summary><div className="panel p-3">
           <WaterRadar
-            fitToControls
+
             start={treatment.startTotal}
             achieved={achievedTotalApresAcide}
             style={style}
@@ -213,6 +213,7 @@ export function WaterWorkbench({
           }
         />
 
+        </details>
         <section className="space-y-1">
           <div className="sr-only sm:not-sr-only sm:flex items-center justify-between gap-2 sm:py-2 text-sm text-cave-200">
             <h3 className="font-semibold">Sels à peser</h3>
@@ -222,7 +223,7 @@ export function WaterWorkbench({
             </span>
           </div>
           <ul aria-label="Sels à peser" className="water-salt-grid grid grid-cols-3 gap-1 sm:gap-2">
-            {SALT_IDS.map((id) => {
+            {SALT_IDS.filter(id=>showUnused||(state.doses[id]??0)>0).map((id) => {
               const def = SALTS[id];
               const off = state.disabled.includes(id);
               const grams = state.doses[id] ?? 0;
@@ -246,6 +247,7 @@ export function WaterWorkbench({
               );
             })}
           </ul>
+          <button type="button" className="min-h-touch text-xs text-water" aria-expanded={showUnused} onClick={()=>setShowUnused(v=>!v)}>{showUnused?"Masquer les sels inutilisés":"Sels autorisés et inutilisés"}</button>
 
           <div
             data-water-acids

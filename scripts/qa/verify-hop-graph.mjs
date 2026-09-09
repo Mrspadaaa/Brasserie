@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-export const verifyGraph = async (page, recipe, cumulative) => {
-  const proof = await page.evaluate((recipe, cumulative) => {
-    const qa = window.__hopQa, raw = qa.raw(recipe, cumulative), p = cumulative ? raw.overall : raw.additions[0], axes = qa.axes();
+export const verifyGraph = async (page, recipe, cumulative, context) => {
+  const proof = await page.evaluate((recipe, cumulative, context) => {
+    const qa = window.__hopQa, raw = qa.raw(recipe, cumulative, 0, context), p = cumulative ? raw.overall : raw.additions[0], axes = qa.axes();
     const issues = [], checked = [];
     for (const axis of axes) {
       const e = p.profile[axis.id], range = e?.range, full = range && range.min <= axis.scale.min && range.max >= axis.scale.max;
@@ -51,6 +51,6 @@ export const verifyGraph = async (page, recipe, cumulative) => {
       if (!row.textContent.includes('Confiance ' + confidence)) issues.push(`${amount.analyte}: wrong chemical confidence`);
     });
     return { issues, checked, raw };
-  }, recipe, cumulative);
+  }, recipe, cumulative, context);
   assert.deepEqual(proof.issues, []); return proof;
 };

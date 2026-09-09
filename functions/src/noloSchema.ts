@@ -27,6 +27,12 @@ export interface NoloScience {
   la01: { yeastId: string; slope: NoloParameter; intercept: NoloParameter; plato: HopRange;
     mash: { tempC: number; minutes: number }[]; temperatureC: HopRange; source: HopSource; limitation: string };
   strains: NoloStrain[]; processes: NoloProcessNote[];
+  /** Optional in legacy editions. Planning relations never certify packaged beer. */
+  planningModels?: {
+    sgAbvFactor: NoloParameter;
+    sgPlatoCoefficients: [NoloParameter, NoloParameter, NoloParameter, NoloParameter];
+    mothers: { yeastId: string; attenuationPct: HopRange; temperatureC: HopRange; source: HopSource }[];
+  };
 }
 export interface NoloMeasurement {
   id: string; stage: NoloStage; date: string; method: string;
@@ -39,7 +45,9 @@ export interface NoloMeasurement {
 }
 export type NoloOperation =
   | { id: string; kind: 'sugar'; name: string; sugarsG: SugarProfile; complete: boolean; volumeL: number | null; unclassifiedSugarG?: HopRange | null; recipeAddition?: {index:number;basis:string} }
-  | { id: string; kind: 'aroma'; name: string; volumeML: number | null; carrierAbvPct: HopRange | null; sugarG: HopRange | null; composition: string; moment: string }
+  | { id: string; kind: 'aroma'; name: string; volumeML: number | null; carrierAbvPct: HopRange | null; sugarG: HopRange | null; composition: string; moment: string;
+      /** Joint mass available for ethanol OR fermentable sugar, after known inert material. */
+      compositionBound?: { massG: number; inertMassPct: HopRange; source: HopSource } }
   | { id: string; kind: 'blend'; name: string; volumeL: number | null; abvPct: HopRange | null; remainingSugarG: HopRange | null }
   | { id: string; kind: 'dilution'; name: string; volumeL: number | null }
   | { id: string; kind: 'removal'; name: string; ethanolRemovedPct: HopRange | null; finalVolumeL: number | null; source: string };
@@ -55,6 +63,13 @@ export interface NoloConfig {
     carrierAbvPct: HopRange | null; moment: string; tasting: string; comparator: string }[];
   /** Captured at save/apply, allows replay independently of later database edits. */
   scienceSnapshot?: NoloScience;
+  planning?: {
+    version: 1; source: HopSource;
+    stopSg?: HopRange | null; stopAttenuationPct?: HopRange | null;
+    /** Explicit conditional sensory equivalence, not a measured retention factor. */
+    aromaTransfer?: { axes: Record<string, HopRange>; source: HopSource };
+  };
+  inactiveOperations?: { process: NoloProcess; index: number; operation: NoloOperation }[];
 }
 const check = (v: unknown, m: string) => { if (!v) throw Error(m); };
 const range = (v: unknown, max = Infinity) => validHopRange(v) && (v as HopRange).min >= 0 && (v as HopRange).max <= max;
@@ -69,6 +84,14 @@ export function assertNoloScience(v: any): asserts v is NoloScience {
   const parameter = (p: any) => check(p && Number.isFinite(p.value) && p.unit && !hopSourceError(p.source, true), 'Coefficient NOLO sans provenance datée.');
   parameter(v.ethanolDensityGL); check(v.ethanolDensityGL.value > 0, 'Masse volumique invalide.');
   parameter(v.waterMashMaxLKg); check(v.waterMashMaxLKg.value > 0, 'Domaine du modèle d’eau invalide.');
+  if (v.planningModels) {
+    const p = v.planningModels;
+    parameter(p.sgAbvFactor); check(p.sgAbvFactor.value > 0, 'Relation de densité invalide.');
+    check(Array.isArray(p.sgPlatoCoefficients) && p.sgPlatoCoefficients.length === 4, 'Conversion Plato incomplète.');
+    p.sgPlatoCoefficients.forEach(parameter);
+    check(Array.isArray(p.mothers), 'Références de fermentation complète absentes.');
+    for (const m of p.mothers) check(m.yeastId && range(m.attenuationPct,100) && range(m.temperatureC) && !hopSourceError(m.source,true), 'Référence de bière mère invalide.');
+  }
   for (const s of NOLO_SUGARS) { parameter(v.ethanolMaxGPerG?.[s]); check(v.ethanolMaxGPerG[s].value > 0 && v.ethanolMaxGPerG[s].value < 1, 'Rendement physique invalide.'); }
   parameter(v.la01?.slope); parameter(v.la01?.intercept);
   check(v.la01.yeastId && range(v.la01.plato) && range(v.la01.temperatureC) && !hopSourceError(v.la01.source, true) && v.la01.limitation &&
@@ -94,6 +117,22 @@ export function assertNoloConfig(v: any): asserts v is NoloConfig {
   check(Array.isArray(v.operations) && Array.isArray(v.measurements) && Array.isArray(v.equipment) &&
     v.stabilization && typeof v.stabilization.method === 'string' && typeof v.stabilization.validationReference === 'string' && typeof v.stabilization.storage === 'string', 'Suivi NOLO incomplet.');
   const ids = new Set();
+  if (v.planning) {
+    check(v.planning.version === 1 && !hopSourceError(v.planning.source,true), 'Hypothèse de préparation sans provenance datée.');
+    for (const [k,max] of [['stopSg',3],['stopAttenuationPct',100]] as const)
+      if (v.planning[k] !== undefined) check(nullable(v.planning[k],max), 'Arrêt de fermentation invalide.');
+    if (v.planning.aromaTransfer) {
+      check(!hopSourceError(v.planning.aromaTransfer.source,true) && v.planning.aromaTransfer.axes && typeof v.planning.aromaTransfer.axes === 'object', 'Transfert aromatique sans source.');
+      for (const r of Object.values(v.planning.aromaTransfer.axes)) check(range(r,1), 'Hypothèse aromatique hors 0–1.');
+    }
+  }
+  if (v.inactiveOperations) {
+    check(Array.isArray(v.inactiveOperations), 'Opérations écartées invalides.');
+    for (const parked of v.inactiveOperations) {
+      check(Number.isInteger(parked.index) && parked.index >= 0, 'Position d’opération invalide.');
+      assertNoloConfig({...v, planning:undefined, inactiveOperations:undefined, operations:[parked.operation], measurements:[]});
+    }
+  }
   for (const o of v.operations) {
     check(o.id && !ids.has(o.id) && typeof o.name === 'string', 'Identité d’opération NOLO invalide.'); ids.add(o.id);
     if (o.kind === 'sugar') { assertSugarProfile(o.sugarsG); check(typeof o.complete === 'boolean' && (o.volumeL===null||finite(o.volumeL)) && (o.unclassifiedSugarG===undefined||nullable(o.unclassifiedSugarG)), 'Ajout de sucre invalide.'); }
@@ -103,6 +142,7 @@ export function assertNoloConfig(v: any): asserts v is NoloConfig {
     else if (o.kind === 'removal') check(nullable(o.ethanolRemovedPct, 100) && (o.finalVolumeL === null || finite(o.finalVolumeL) && o.finalVolumeL > 0) && typeof o.source === 'string', 'Désalcoolisation invalide.');
     else check(false, 'Opération NOLO inconnue.');
     if(o.recipeAddition)check(o.kind==='sugar'&&Number.isInteger(o.recipeAddition.index)&&o.recipeAddition.index>=0&&typeof o.recipeAddition.basis==='string','Lien d’ingrédient NOLO invalide.');
+    if(o.compositionBound) check(o.kind === 'aroma' && finite(o.compositionBound.massG) && range(o.compositionBound.inertMassPct,100) && !hopSourceError(o.compositionBound.source,true), 'Borne de composition sans masse ou provenance.');
   }
   const measurementIds = new Set();
   for (const m of v.measurements) {

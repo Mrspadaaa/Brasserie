@@ -15,7 +15,7 @@ import noloPack from '../../src/data/noloBootstrap.json';
 import stylePack from '../../src/data/brewingStylesBootstrap.json';
 import scientific from '../fixtures/nolo-scientific.json';
 
-const science=noloScience()!;
+const science=noloPack.find(p=>p.kind==='noloScience') as ReturnType<typeof noloScience> & {};
 const r=(min:number,max=min)=>({min,max});
 function scenario():NoloInput{return {config:newNoloConfig(),volumeL:24,yeastId:'yeast-fermentis-safbrew-la-01',yeastName:'LA-01',fermentation:[{kind:'primaire',tempC:20,days:2}],mash:scientific.la01.mash,dryHop:false};}
 function assay(input:NoloInput,abv=r(.35,.4),stage:'primary'|'packaged'='primary',afterOperationId?:string){
@@ -101,7 +101,7 @@ describe('Bilan NOLO et incertitude',()=>{
   it('écarte le transfert sensoriel alcoolisé sans perdre les quantités introduites, et rejoue v3',()=>{
     const input={volumeL:24,yeastId:testHopTriplet.yeastId,fermentation:[],additions:[{id:'a',name:'Ajout',triplet:testHopTriplet}]};
     const ordinary=predictHopRecipe(input,{},testHopData(),'hop-recipe-experimental-v3');
-    const nolo=predictHopRecipe({...input,aromaDomain:'nolo'}, {},testHopData());
+    const nolo=predictHopRecipe({...input,aromaDomain:'nolo'}, {},testHopData(),'hop-recipe-experimental-v4');
     expect(Object.values(nolo.overall.profile).every(v=>v.range===null)).toBe(true);
     expect(nolo.overall.modelRefs).toEqual([]);
     expect(nolo.chemistry.introduced).toEqual(ordinary.chemistry.introduced);

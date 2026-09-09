@@ -16,6 +16,9 @@ import { HopTrialResult, HopTrialComparison } from './HopTrialEvidence';
 import { HOP_TIMING_LABELS, hopDoseLabel, hopDurationLabel, hopTemperatureLabel } from './presentation';
 import { Button } from '../../components/ui/Button';
 import { inputClass } from '../FormNav';
+import { noloPlanningSource } from '../../domain/nolo';
+import type { HopRange } from '../../../functions/src/hopIndexSchema';
+import { RangeInput } from '../NoloPanel';
 
 const EMPTY_TARGET = Object.freeze({});
 
@@ -32,9 +35,15 @@ export function HopRecipeSimulationPanel({ recipe, onChange, onBusyChange, readO
   const prepared = useMemo(() => prepareHopRecipeInput(recipe, varieties, yeasts), [recipe, varieties, yeasts]);
   const [showAll, setShowAll] = useState(false), [cumulative, setCumulative] = useState(false), [addition, setAddition] = useState(0), [variantOpen, setVariantOpen] = useState(false), [technicalOpen, setTechnicalOpen] = useState(false);
   const [saving, setSaving] = useState(false), [saveNotice, setSaveNotice] = useState(''), [saveError, setSaveError] = useState('');
+  const [afterTreatment,setAfterTreatment]=useState(false);
+  const [transfer,setTransfer]=useState<Record<string,HopRange|null>>({});
+  const effectiveTransfer=useMemo(()=>Object.fromEntries(Object.entries({...recipe.nolo?.planning?.aromaTransfer?.axes,...transfer}).filter((e):e is [string,HopRange]=>e[1]!==null)),[recipe.nolo?.planning?.aromaTransfer?.axes,transfer]);
   const savingRef = useRef(false), lastCapture = useRef<{ signature: string; snapshot: ReturnType<typeof captureHopRecipePrediction> }>(undefined);
   const selected = Math.min(addition, Math.max(0, prepared.input.additions.length - 1));
-  const input = useMemo(() => cumulative ? prepared.input : { ...prepared.input, additions: prepared.input.additions.slice(selected, selected + 1) }, [prepared.input, cumulative, selected]);
+  const input = useMemo(() => {
+    const input=cumulative?prepared.input:{...prepared.input,additions:prepared.input.additions.slice(selected,selected+1)};
+    return input.aromaDomain&&afterTreatment?{...input,aromaContext:{stage:'packaged' as const,transfer:{axes:effectiveTransfer,source:noloPlanningSource}}}:input;
+  }, [prepared.input,cumulative,selected,afterTreatment,effectiveTransfer]);
   const target = recipe.hopAromaTarget ?? EMPTY_TARGET;
   const result = useMemo(() => predictHopRecipe(input, target, data), [input, target, data]);
   const prediction = cumulative ? result.overall : result.additions[0] ?? result.overall;
@@ -67,11 +76,19 @@ export function HopRecipeSimulationPanel({ recipe, onChange, onBusyChange, readO
       <label htmlFor={`${controlId}-complete`} className="min-h-touch inline-flex items-center gap-2 text-sm text-cave-200"><input id={`${controlId}-complete`} name="hop-profile-complete" aria-label="Toutes les saveurs et la chimie" type="checkbox" className="accent-hop" checked={showAll} onChange={e => setShowAll(e.target.checked)} />Toutes les saveurs et la chimie</label>
       <label htmlFor={`${controlId}-cumulative`} className="min-h-touch inline-flex items-center gap-2 text-sm text-cave-200"><input id={`${controlId}-cumulative`} name="hop-program-cumulative" aria-label="Cumuler tous les ajouts" type="checkbox" className="accent-hop" checked={cumulative} onChange={e => setCumulative(e.target.checked)} />Cumuler tous les ajouts</label>
     </div>
+    {result.aromaStage&&<div className="space-y-2">
+      <label className="block text-sm text-cave-300">Étape aromatique<select aria-label="Étape aromatique" className={inputClass} value={afterTreatment?'after':'before'} onChange={e=>setAfterTreatment(e.target.value==='after')}><option value="before">Avant traitement · bière de référence</option><option value="after">Après traitement · hypothèses du pilote</option></select></label>
+      <p className="text-sm text-water">{result.aromaStage.label}</p>
+      {afterTreatment&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Hypothèses sensorielles par famille</summary><p className="text-xs text-cave-400">Fraction d’intensité supposée conservée. Jugement de préparation ; aucune assimilation à un rendement chimique. Vide = inconnu. La restitution se vérifie sur les fractions dégustées.</p><div className="grid sm:grid-cols-2 gap-2">{axes.map(axis=>{
+        const r=effectiveTransfer[axis.id];
+        return <RangeInput key={axis.id} label={axis.name+' conservé'} unit="%" max={100} value={r?{min:r.min*100,max:r.max*100}:null} onChange={next=>setTransfer(old=>({...old,[axis.id]:next?{min:next.min/100,max:next.max/100}:null}))}/>;
+      })}</div>{onChange&&!readOnly&&<Button onClick={()=>onChange({...recipe,nolo:{...recipe.nolo!,planning:{version:1,source:noloPlanningSource,...recipe.nolo?.planning,aromaTransfer:{axes:effectiveTransfer,source:noloPlanningSource}}}})}>Retenir ces hypothèses dans la recette</Button>}</details>}
+    </div>}
     {!cumulative && recipe.hops.length > 1 && <label className="block text-sm text-cave-300">Ajout simulé<select name="hop-simulated-addition" aria-label="Ajout simulé" className={`${inputClass} mt-1`} value={selected} onChange={e => setAddition(Number(e.target.value))}>{recipe.hops.map((h, i) => <option key={i} value={i}>Ajout {i + 1} · {h.name}</option>)}</select></label>}
     <p className="text-xs text-cave-400">{cumulative ? `${input.additions.length} ajout${input.additions.length > 1 ? 's' : ''} · enveloppe expérimentale du programme` : triplet ? `${triplet.timing ? HOP_TIMING_LABELS[triplet.timing] : recipe.hops[selected]?.stage === 'dryHop' ? 'À cru · phase à préciser' : 'Moment à préciser'} · ${hopDoseLabel(triplet.doseGL)} · ${hopTemperatureLabel(triplet.temperatureC)} · ${hopDurationLabel(triplet.contactHours)}` : 'Ajoute un houblon pour simuler son effet.'}</p>
     {loading ? <p role="status" className="text-sm text-cave-400">Chargement des références…</p> : <HopExplorationChart prediction={prediction} axes={axes} target={target} variety={cumulative ? undefined : variety} models={models} showAll={showAll} />}
     {risks.some(r => r.status === 'flagged') && <p role="status" className="text-sm text-ebc-straw">{risks.find(r => r.status === 'flagged')!.title} · {risks.find(r => r.status === 'flagged')!.message}</p>}
-    {showAll && <HopRecipeChemistry chemistry={result.chemistry} />}
+    {showAll && <HopRecipeChemistry chemistry={result.chemistry} finalLabel={result.aromaStage?.id==='packaged'?'Concentrations après traitement':result.aromaStage?'Concentrations dans la bière de référence':undefined} />}
     <div className="divide-y divide-cave-800 border-t border-cave-800">
       {(notices.length > 0 || risks.length > 0) && <details><summary className="cursor-pointer min-h-touch text-sm text-ebc-straw">Conditions et vigilances · {notices.length + risks.length} point(s)</summary><div className="space-y-2 pb-3 text-sm text-cave-300">{notices.map((notice, i) => <p key={i}>{notice}</p>)}{risks.map(r => <div key={r.code}><p>{r.title} · {r.message}</p><HopSourceLink source={r.source} /></div>)}</div></details>}
       <details onToggle={e => setTechnicalOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-sm text-cave-300">Composition, thiols et phénols</summary>{technicalOpen && <div className="py-3 space-y-3">{recipe.hops.length > 1 && <label className="block text-sm text-cave-300">Composition de l’ajout<select name="hop-composition-addition" aria-label="Composition de l’ajout" className={`${inputClass} mt-1`} value={selected} onChange={e => setAddition(Number(e.target.value))}>{recipe.hops.map((h, i) => <option key={i} value={i}>Ajout {i + 1} · {h.name}</option>)}</select></label>}<HopTechnicalPanel variety={technicalVariety} lot={technicalLot} /></div>}</details>

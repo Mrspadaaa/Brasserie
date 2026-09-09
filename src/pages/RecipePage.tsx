@@ -1,3 +1,4 @@
+import { mashPhDiagnostic } from '../domain/water/readiness';
 import React, { useMemo, useState } from 'react';
 import { Recipe, Batch, HopIngredient, AppConfig } from '../types';
 import { Units } from '../services/units';
@@ -10,7 +11,9 @@ import { WaterRadar } from '../ui/WaterRadar';
 import { WaterTargetStatus } from '../ui/water/WaterTargetStatus';
 import { describeSavedRecipeWater } from '../domain/recipeWaterReadings';
 import { PHASE_LABEL } from '../domain/brewPrograms';
-import { PageShell, Section } from './PageShell';
+import { PageShell } from './PageShell';
+import { RecipeDisclosure, RecipeWaterVolumes } from '../ui/RecipeDisclosure';
+const Section=({hint,...props}:React.ComponentProps<typeof RecipeDisclosure>&{hint?:string})=><RecipeDisclosure {...props} summary={hint??props.summary}/>;
 import { ConfirmSheet } from '../ui/Sheet';
 import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react';
 
@@ -206,7 +209,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         </div>
       }
     >
-      <BrewerChat scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
+      <BrewerChat hideLauncher scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
       {/* --- Les cinq mesures ------------------------------------------- */}
       <section className="panel p-4">
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
@@ -280,10 +283,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </section>
 
+      {recipe.waterPlan&&<RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={(recipe.waterPlan.mashWaterL*recipe.waterPlan.diRatioPct+recipe.waterPlan.spargeWaterL*(recipe.waterPlan.spargeDiRatioPct??recipe.waterPlan.diRatioPct))/100}/>}
       {/* --- Facture de grain -------------------------------------------- */}
       <Section
         title="Grain"
-        hint={`${Units.formatDual(totalGrist, 'kg')} au total · ${
+        hint={`${Units.format(totalGrist, 'kg')} au total · ${
           (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${recipe.efficiencyPct ?? brewhouse?.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
         }`}
       >
@@ -360,7 +364,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         hint={
           dryHopTotal > 0
             ? `dont ${Units.format(dryHopTotal, 'g')} à cru — non compté dans les IBU calculés`
-            : undefined
+            : `${hops.length} ajout(s) · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
         }
       >
         {grouped.length === 0 ? (
@@ -418,12 +422,13 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       </Section>
 
       <Section title="Potentiel aromatique">
-        <BrewingStyleDetails recipe={recipe}/>{recipe.nolo?.enabled&&<div className="mb-4"><NoloPanel recipe={recipe}/></div>}
+        <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
         <HopRecipePanel recipe={recipe} onEdit={onEdit} />
       </Section>
 
       {/* --- Levure ------------------------------------------------------ */}
-      <Section title="Levure">
+      {recipe.nolo?.enabled&&<Section title="Objectif NOLO" hint="Projection, traitement et analyses"><NoloPanel recipe={recipe}/></Section>}
+      <Section title="Levure" hint={recipe.yeast.name}>
         {!recipe.yeast?.name ? (
           <p className="text-sm text-cave-500">Aucune levure renseignée.</p>
         ) : (
@@ -460,7 +465,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </Section>
 
-      <FermentationRecipeSummary recipe={recipe} onEdit={onEdit} />
+      {!recipe.nolo?.enabled&&<Section title="Conduite de levure"><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></Section>}
 
       {/* --- Additifs ---------------------------------------------------- */}
       {recipe.adjuncts && recipe.adjuncts.length > 0 && (
@@ -499,7 +504,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           }`}
         >
           <div className="space-y-3">
-            <BrewEquipmentSummary recipe={recipe} profile={brewhouse}/>
+            {waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
+            {recipe.waterPlan.sourceSnapshot?.note&&<p className="text-xs text-cave-400">{recipe.waterPlan.sourceSnapshot.note}</p>}
+            <details><summary className="min-h-touch cursor-pointer text-sm text-cave-300">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-500">Empâtage</div>
@@ -539,30 +546,6 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               Un plan enregistré avant cette version ne porte pas les deux
               eaux : on n'affiche alors rien plutôt qu'une toile fausse.
             */}
-            {waterDisplay && (
-              <WaterRadar
-                start={waterDisplay.start}
-                achieved={waterDisplay.achieved}
-                style={
-                  recipe.waterPlan.targetIons
-                    ? styleFromTargetIons(
-                        recipe.waterPlan.targetIons,
-                        recipe.waterPlan.targetName ?? 'Cible de la recette'
-                      )
-                    : styleByCode(recipe.waterPlan.targetProfileId)
-                }
-              />
-            )}
-
-            {waterReadings && (
-              <WaterTargetStatus
-                {...waterReadings}
-                customTarget={!!recipe.waterPlan.targetIons}
-                mashWaterL={recipe.waterPlan.mashWaterL}
-                spargeWaterL={recipe.waterPlan.spargeWaterL}
-              />
-            )}
-
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -625,6 +608,31 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               </div>
             )}
 
+            <details><summary className="min-h-touch cursor-pointer text-sm text-water">Profil, pH et chimie détaillée</summary>            {waterDisplay && (
+              <WaterRadar
+                start={waterDisplay.start}
+                achieved={waterDisplay.achieved}
+                style={
+                  recipe.waterPlan.targetIons
+                    ? styleFromTargetIons(
+                        recipe.waterPlan.targetIons,
+                        recipe.waterPlan.targetName ?? 'Cible de la recette'
+                      )
+                    : styleByCode(recipe.waterPlan.targetProfileId)
+                }
+              />
+            )}
+
+            {waterReadings && (
+              <WaterTargetStatus
+                {...waterReadings}
+                customTarget={!!recipe.waterPlan.targetIons}
+                mashWaterL={recipe.waterPlan.mashWaterL}
+                spargeWaterL={recipe.waterPlan.spargeWaterL}
+              />
+            )}
+
+</details>
             {(recipe.waterPlan.measuredPh || recipe.waterPlan.measuredSpargePh) && (
               <p className="text-sm text-cave-400">
                 pH mesuré à la cuve :{' '}
@@ -638,9 +646,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             {recipe.waterPlan.disabled && recipe.waterPlan.disabled.length > 0 && (
-              <p className="text-sm text-cave-500">
+              <details><summary className="min-h-touch cursor-pointer text-sm text-cave-400">Sels non utilisés</summary><p className="text-sm text-cave-500">
                 Écartés : {recipe.waterPlan.disabled.map((d) => SALTS[d].name).join(', ')}.
-              </p>
+              </p></details>
             )}
           </div>
         </Section>
@@ -679,10 +687,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
       {/* --- Empâtage et fermentation ------------------------------------ */}
       {(recipe.mash?.steps?.length || recipe.fermentation?.length) && (
-        <Section title="Paliers">
-          <div className="space-y-4">
+        <>
             {recipe.mash?.steps?.length > 0 && (
-              <div>
+              <Section title="Empâtage" hint={`${recipe.mash.steps.length} paliers`}>
                 <h3 className="text-sm text-cave-500 mb-1.5">
                   Empâtage
                   {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}
@@ -705,11 +712,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 </ul>
                 <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
                 {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {recipe.mash.heatingRateCPerMin.toFixed(2)} °C/min. La montée est suivie séparément dans le journal.</p>}
-              </div>
+              </Section>
             )}
 
             {recipe.fermentation && recipe.fermentation.length > 0 && (
-              <div>
+              <Section title="Fermentation" hint={`${recipe.fermentation.length} étapes`}>
                 <h3 className="text-sm text-cave-500 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {recipe.fermentation.map((s, i) => {
@@ -739,10 +746,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     );
                   })}
                 </ul>
-              </div>
+              </Section>
             )}
-          </div>
-        </Section>
+        </>
       )}
 
       {/* --- Déroulé ----------------------------------------------------- */}

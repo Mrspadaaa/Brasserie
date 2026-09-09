@@ -6,7 +6,7 @@ import { FirestoreRepo, qaMetrics, seedQa } from './repo';
 import { guidePredictionKnowledge, guideYeasts, guideAxes, loadGuideVarieties, guideFermentations, guideFermentationScience } from '../../../src/ui/hopIndex/guideData';
 import { evaluateFermentationScenario } from '../../../src/domain/fermentationScenario';
 import { evaluateNoloRecipe,newNoloConfig,noloScience } from '../../../src/domain/nolo';
-import { noloInputBasis } from '../../../functions/src/noloCore';
+import { noloScenarioBasis } from '../../../functions/src/noloScenario';
 import { noloInput } from '../../../src/domain/nolo';
 import { predictStudyPhenols } from '../../../functions/src/fermentationScienceCore';
 import { qaCalls } from './functions';
@@ -17,6 +17,7 @@ import { predictHopTriplet } from '../../../functions/src/hopPredictionCore';
 import fixture from '../../fixtures/hopScientific/test-houb.json';
 import yeastCatalogue from '../../../src/data/yeastCatalogueBootstrap.json';
 import dosePack from '../../../src/data/hopDoseStudyBootstrap.json';
+import {nuagePilots} from '../../fixtures/nuagePilots';
 import type { Recipe } from '../../../src/types';
 import type { HopKnowledge, HopModel, HopTriplet } from '../../../functions/src/hopPredictionSchema';
 import '../../../src/index.css';
@@ -39,11 +40,12 @@ async function start() {
   (window as any).__hopQa = {
     marker: '__HOP_RECIPE_QA_ONLY__', metrics: qaMetrics, calls: qaCalls, storage: StorageService, recipe, documented,
     nolo: {
+      pilots:nuagePilots,
       raw:(r:Recipe)=>evaluateNoloRecipe(r,StorageService.getHopKnowledge()),
       recipe:(count=20)=>({...recipe(count),id:'qa-nolo',name:'QA hefeweisse NOLO',style:'Hefeweisse',
         nolo:newNoloConfig(),yeast:{name:'Fermentis SafBrew LA-01',hopIndexId:'yeast-fermentis-safbrew-la-01',form:'sèche',qty:12,unit:'g'},
         fermentation:[{kind:'primaire',name:'Primaire NOLO',tempC:20,days:2}]}),
-      basis:(r:Recipe,after?:string)=>noloInputBasis(noloInput(r),after),
+      basis:(r:Recipe,after?:string)=>noloScenarioBasis(noloInput(r),after),
       science:()=>noloScience(StorageService.getHopKnowledge())
     },
     yeast: {
@@ -56,9 +58,10 @@ async function start() {
     rawTriplet(triplet: HopTriplet, target: Recipe['hopAromaTarget'] = {}) {
       return predictHopTriplet(triplet, target ?? {}, { varieties: StorageService.getHopVarieties(), lots: StorageService.getHopLots(), knowledge: guidePredictionKnowledge(StorageService.getHopKnowledge()) });
     },
-    raw(selected: Recipe, cumulative = true, index = 0) {
+    raw(selected: Recipe, cumulative = true, index = 0, context?: import('../../../functions/src/hopRecipePrediction').HopRecipeInput['aromaContext']) {
       const data = { varieties: StorageService.getHopVarieties(), lots: StorageService.getHopLots(), knowledge: guidePredictionKnowledge(StorageService.getHopKnowledge()) };
       const { input } = prepareHopRecipeInput(selected, data.varieties, guideYeasts(data.knowledge));
+      if(context)input.aromaContext=context;
       return predictHopRecipe(cumulative ? input : { ...input, additions: input.additions.slice(index, index + 1) }, selected.hopAromaTarget ?? {}, data);
     },
     seedRecipe(r: Recipe) { StorageService.addRecipe(r); },

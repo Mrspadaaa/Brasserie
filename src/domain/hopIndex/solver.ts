@@ -12,7 +12,7 @@ import type { TrialRecipe } from './trials';
 import { selectHopSearchDomain, type HopSearchMode } from './solverSelection';
 import { fermentationProgramIssues } from '../../../functions/src/fermentationContext';
 import { normalizeHop } from '../hopStage';
-import { noloScopedPrediction } from '../../../functions/src/hopRecipePrediction';
+import { noloReferencePrediction } from '../../../functions/src/hopRecipePrediction';
 
 export type SolverCheck = { status: 'conflict' | 'unknown' | 'supported'; message: string; source?: HopSource };
 export type SolverCondition = { field: 'doseGL' | 'temperatureC' | 'contactHours'; value: number; range: HopRange; origin: 'trial' | 'recipe' | 'proposal'; source: HopSource };
@@ -133,7 +133,7 @@ export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets
   const yeast = yeasts.find(y=>y.id===triplets[0]?.yeastId);
   for (const old of existing) {
     const t = {...old.triplet, yeastId:triplets[0]?.yeastId ?? old.triplet.yeastId};
-    const prediction = recipe?.nolo?.enabled?noloScopedPrediction(predict(t,{})):predict(t,{});
+    const prediction = recipe?.nolo?.enabled?noloReferencePrediction(predict(t,{})):predict(t,{});
     checks.push(...checkHopExclusions(prediction,intent.avoid,axes).filter(c=>c.status!=='supported').map(c=>({...c,message:`Déjà dans la recette, ajout ${old.index+1} : ${c.message}`})));
     if (old.proposed.length || !t.varietyId || !t.timing) checks.push({status:'unknown',message:`Ajout ${old.index+1} existant : référence ou phase à confirmer ; son effet ne peut pas être soustrait du nouvel ajout.`});
     if (yeast) checks.push(...chemistryChecks([t],yeast,{...intent,chemistry:Object.fromEntries(Object.entries(intent.chemistry).filter(([,p])=>p==='avoid'))},policy,data).filter(c=>c.status!=='supported').map(c=>({...c,message:`Déjà dans la recette : ${c.message}`})));
@@ -207,7 +207,7 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
   };
   const recipeCache=new Map<string,ReturnType<typeof inspectHopSolverRecipe>>();
   const evaluate=(item:typeof queue[number]):HopSolverCandidate=>{
-    const predictions=item.triplets.map(t=>recipe?.nolo?.enabled?noloScopedPrediction(predict(t,scoreTarget)):predict(t,scoreTarget));
+    const predictions=item.triplets.map(t=>recipe?.nolo?.enabled?noloReferencePrediction(predict(t,scoreTarget)):predict(t,scoreTarget));
     const yeast=yeastById.get(item.triplets[0].yeastId!)!;
     const checks=predictions.flatMap(p=>checkHopExclusions(p,intent.avoid,axes));
     for (const t of item.triplets) {
