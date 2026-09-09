@@ -40,6 +40,8 @@ import { StorageService } from '../services/storage';
 import { FermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
+import { HopBitternessPanel } from '../ui/HopBitternessPanel';
+import { hotBitterness } from '../domain/hopBitterness';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -542,10 +544,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   );
   const og = ogPredicted ?? 0;
 
-  const ibu = useMemo(
-    () => (og > 1 ? BrewingMath.calculateTinsethIBU(hops, volumeL, og, boilMin) : null),
-    [hops, volumeL, og, boilMin]
-  );
+  const bitterness = useMemo(() => hotBitterness(hops, volumeL, og || null, boilMin), [hops, volumeL, og, boilMin]);
+  const ibu = bitterness.total == null ? null : Math.round(bitterness.total);
 
   /** L'atténuation réelle dépend du palier de saccharification, pas seulement de la levure. */
   const mashTemp = useMemo(() => saccharificationTemp(mashSteps), [mashSteps]);
@@ -983,16 +983,17 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setStep('fermentescibles');
   };
 
-  const addHop = (ingName: string, item?: StockItem) => {
+  const addHop = (ingName: string, item?: StockItem, variety?: import('../../functions/src/hopIndexSchema').HopVariety) => {
     if (!ingName) return;
     // Même règle que les fermentescibles : au clavier, le poids prend le focus.
     if (!coarse) setFocusHop(hops.length);
-    setHops([
-      ...hops,
+    setHops(current => [
+      ...current,
       {
         name: ingName,
         // L'alpha vient de l'article de stock — c'est celui du lot acheté.
         alpha: item?.alphaPct ?? 0,
+        ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
         stage: hopStage,
         ...(hopStage === 'boil' ? { timeMin: boilMin } : {}),
@@ -1275,7 +1276,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-2xs text-cave-400">IBU</span>
+            <span className="text-2xs text-cave-400">{hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
             <span className="reading text-2xs sm:text-base">{ibu ?? '—'}</span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
@@ -1592,7 +1593,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               items={stockItems}
               onChange={addHop}
               onBusyChange={setHopGuideBusy}
-              onReference={variety => setHops(current => [...current, { name: variety.name, hopVarietyId: variety.id, alpha: 0, weightG: 0, stage: hopStage }])}
+              onReference={variety => addHop(variety.name, undefined, variety)}
               onCreate={(n) => {
                 const created = onCreateStockItem(n, 'Houblon', 'g');
                 addHop(created.name, created);
@@ -1601,6 +1602,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
             />
 
+            <HopBitternessPanel hops={hops} volumeL={volumeL} og={og || null} boilMin={boilMin} hot={bitterness}/>
             {hops.length === 0 ? (
               <p className="text-xs sm:text-sm text-cave-500 py-1">Aucun houblon.</p>
             ) : (
@@ -1642,9 +1644,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 {describeMoment(h)}
                               </span>
                             )}
-                            {style.bitters && h.alpha > 0 && og > 1 && (
+                            {style.bitters && bitterness.additions[i].ibu != null && (
                               <span className="text-2xs text-cave-300 font-mono">
-                                {BrewingMath.hopIbu(h, volumeL, og, boilMin).toFixed(1)} IBU
+                                {bitterness.additions[i].ibu!.toFixed(1)} IBU
                               </span>
                             )}
                           </span>
@@ -1703,7 +1705,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             fréquent que d'en saisir un manquant — et l'ambre
                             ne signale que l'absence.
                           */}
-                          {style.bitters && (
+                          {(
                             <div>
                               <InlineNum
                                 label="α"
@@ -1726,7 +1728,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 unit="min"
                                 min={0}
                                 integer
-                                value={h.timeMin ?? 0}
+                                value={h.timeMin}
                                 onValue={(v) => patchHop(i, { timeMin: v })}
                               />
                             </div>
@@ -1768,7 +1770,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   name={`Jour en cuve pour ${h.name}`}
                                   min={0}
                                   integer
-                                  value={h.dayOffset ?? 0}
+                                  value={h.dayOffset}
                                   onValue={(v) => patchHop(i, { dayOffset: v })}
                                 />
                               </div>
@@ -1780,7 +1782,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         </div>
                       )}
 
-                      {/* Sans alpha, l'amertume de cette ligne ne compte pas. */}
+                      <p className="text-xs text-ebc-amber">{bitterness.additions[i].missing.length > 0 && `À préciser : ${bitterness.additions[i].missing.join(' · ')}.`}</p>
                       {h.stage === 'dryHop' && <div className="space-y-2 border-t border-cave-800 pt-2">
                         <label className="block text-xs text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
                           <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
@@ -1790,21 +1792,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                       <AiAssist
                         kind="houblon"
                         name={h.name}
-                        missing={h.stage !== 'dryHop' && !h.alpha ? ['acides alpha'] : []}
+                        missing={!h.alpha ? ['acides alpha'] : []}
                         onApply={(facts) => {
                           patchHop(i, applyHopFacts(h, facts));
                           onLearnIngredient(h.name, factsForStock('houblon', facts));
                         }}
                       />
 
-                      {/*
-                        ⚠️ « Aucune amertume — arôme seul » a disparu des cartes.
-                        Elle s'écrivait sur CHACUN des houblons à cru : sur cette
-                        NEIPA, trois fois la même phrase, à trois lignes
-                        d'intervalle. C'est un fait général du houblonnage à cru,
-                        pas une propriété de ce sachet-là — il est dit une fois,
-                        dans le choix du moment.
-                      */}
+
                     </li>
                   );
                 })}
@@ -2209,7 +2204,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hops={hops}
           onHops={setHops}
           hopIbu={(h) =>
-            og > 1 ? BrewingMath.hopIbu(h, volumeL, og, boilMin) : null
+            hotBitterness([h], volumeL, og || null, boilMin).additions[0].ibu
           }
           yeast={yeast}
           onYeast={setYeast}
@@ -2262,7 +2257,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               fermentables,
               totalGristKg: totalGrist,
               hops,
-              hopIbu: (h) => BrewingMath.hopIbu(h, volumeL, og, boilMin),
+              hopIbu: (h) => hotBitterness([h], volumeL, og || null, boilMin).additions[0].ibu,
               yeast,
               mashSteps,
               fermentation: ferment,

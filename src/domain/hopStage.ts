@@ -20,7 +20,7 @@ export interface StageStyle {
   hint: string;
   /** Ordre chronologique dans la journée de brassage. */
   order: number;
-  /** L'étape produit-elle de l'amertume ? */
+  /** Contribution à l'isomérisation à chaud calculée par Tinseth. */
   bitters: boolean;
   /** Le champ à demander en plus du poids. */
   ask: 'time' | 'timeAndTemp' | 'day' | 'none';
@@ -55,7 +55,7 @@ export const HOP_STAGE: Record<HopStage, StageStyle> = {
   },
   dryHop: {
     label: 'Houblonnage à cru',
-    hint: 'En fermenteur. Cet ajout n’est pas compté dans les IBU calculés.',
+    hint: 'En fermenteur. L’effet sur l’amertume se simule séparément des IBU à chaud.',
     order: 3,
     bitters: false,
     ask: 'day',

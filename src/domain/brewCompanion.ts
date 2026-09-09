@@ -1,3 +1,4 @@
+import { recipeIbu } from './hopBitterness';
 import {
   AcidId,
   BrewDayState,
@@ -50,15 +51,9 @@ export function brewBitterness(recipe: RecipeSnapshot, state: BrewDayState) {
     state.boilFinishedAt != null && state.boilStartedAt != null
       ? (state.boilFinishedAt - state.boilStartedAt) / 60000
       : duration;
-  return {
-    planned: BrewingMath.calculateTinsethIBU(
-      recipe.hops ?? [],
-      recipe.volumeL,
-      recipe.ogTarget,
-      recipe.boilMin
-    ),
-    projected: BrewingMath.calculateTinsethIBU(hops, recipe.volumeL, recipe.ogTarget, actualMinutes)
-  };
+  const planned = recipeIbu(recipe.hops ?? [], recipe.volumeL, recipe.ogTarget, recipe.boilMin);
+  const projected = recipeIbu(hops, recipe.volumeL, recipe.ogTarget, actualMinutes);
+  return planned == null || projected == null ? null : { planned, projected };
 }
 
 export type BrewArea = 'preparation' | 'mash' | 'boil' | 'finish';

@@ -7,6 +7,7 @@ import { assertYeastCatalogue, type YeastCatalogue } from './yeastCatalogueSchem
 import { assertFermentationScience, type FermentationScience } from './fermentationScienceSchema.js';
 import { assertBrewingStyleGuide, type BrewingStyleGuide } from './brewingStyleSchema.js';
 import { assertNoloScience, type NoloScience } from './noloSchema.js';
+import { assertHopBitternessScience, type HopBitternessScience } from './hopBitternessSchema.js';
 import type { HopRecipePrediction } from './hopRecipePrediction.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
@@ -62,7 +63,7 @@ export interface HopConfidencePolicy {
 export interface HopResearchNote {
   id: string; kind: 'note'; name: string; topics: string[]; summary: string; limitation: string; source: HopSource;
 }
-export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation | HopSolverPolicy | FermentationGuide | FermentationScience | BrewingStyleGuide | NoloScience;
+export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation | HopSolverPolicy | FermentationGuide | FermentationScience | BrewingStyleGuide | NoloScience | HopBitternessScience;
 export interface HopEstimate {
   range: HopRange | null; confidence: HopConfidence; reasons: string[]; sources: HopSource[];
   /** Central scenario of explicit expert parameters, always accompanied by range. */
@@ -126,6 +127,7 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
   switch (v.kind) {
     case 'styleGuide': assertBrewingStyleGuide(v); break;
     case 'noloScience': assertNoloScience(v); break;
+    case 'bitternessScience': assertHopBitternessScience(v); break;
     case 'fermentation': assertFermentationGuide(v); break;
     case 'fermentationScience': assertFermentationScience(v); break;
     case 'solver': assertHopSolverPolicy(v); break;

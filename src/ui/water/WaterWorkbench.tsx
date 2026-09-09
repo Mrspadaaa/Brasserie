@@ -104,7 +104,7 @@ export function WaterWorkbench({
 }: Props) {
   const [detailsSalt, setDetailsSalt] = useState<SaltId | null>(null);
   const [acidProductChanged, setAcidProductChanged] = useState(false);
-  const [showUnused,setShowUnused]=useState(false);
+  useWaterControlsLayout(workbenchRef);
   return (
     <>
       {" "}
@@ -181,9 +181,9 @@ export function WaterWorkbench({
           </button>
         </div>
 
-        <details><summary className="min-h-touch cursor-pointer text-sm text-water">Radar et équilibre sulfate / chlorure</summary><div className="panel p-3">
+        <div className="water-radar-panel panel p-1 sm:p-3">
           <WaterRadar
-
+            fitToControls
             start={treatment.startTotal}
             achieved={achievedTotalApresAcide}
             style={style}
@@ -213,7 +213,6 @@ export function WaterWorkbench({
           }
         />
 
-        </details>
         <section className="space-y-1">
           <div className="sr-only sm:not-sr-only sm:flex items-center justify-between gap-2 sm:py-2 text-sm text-cave-200">
             <h3 className="font-semibold">Sels à peser</h3>
@@ -223,7 +222,7 @@ export function WaterWorkbench({
             </span>
           </div>
           <ul aria-label="Sels à peser" className="water-salt-grid grid grid-cols-3 gap-1 sm:gap-2">
-            {SALT_IDS.filter(id=>showUnused||(state.doses[id]??0)>0).map((id) => {
+            {SALT_IDS.map((id) => {
               const def = SALTS[id];
               const off = state.disabled.includes(id);
               const grams = state.doses[id] ?? 0;
@@ -247,7 +246,6 @@ export function WaterWorkbench({
               );
             })}
           </ul>
-          <button type="button" className="min-h-touch text-xs text-water" aria-expanded={showUnused} onClick={()=>setShowUnused(v=>!v)}>{showUnused?"Masquer les sels inutilisés":"Sels autorisés et inutilisés"}</button>
 
           <div
             data-water-acids
@@ -310,7 +308,12 @@ export function WaterWorkbench({
                 />
               )}
             </div>
-            <div className="water-acid-readings flex flex-wrap gap-x-2 gap-y-0.5 pt-1 text-2xs text-cave-200">
+          </div>
+        </section>
+      </div>
+      <details className="text-xs text-cave-200">
+        <summary className="min-h-11 cursor-pointer flex items-center text-water">Bicarbonates après acidification</summary>
+            <div className="water-acid-readings flex flex-wrap gap-x-2 gap-y-0.5 text-2xs text-cave-200">
               <span>HCO₃ <span className="hidden sm:inline">après acide</span></span>
               {state.mashWaterL > 0 && <span aria-label="HCO₃ après acide — empâtage">
                 <span className="sm:hidden">Emp.</span><span className="hidden sm:inline">Empâtage</span>{" "}
@@ -337,9 +340,7 @@ export function WaterWorkbench({
               <strong className="tabular-nums text-water">{formatDecimal(treatment.treatedTotal.hco3)} ppm</strong>
             </p>}
             </div>
-          </div>
-        </section>
-      </div>
+      </details>
       {manualImpact && <WaterDoseImpact impact={manualImpact} />}
       {acideForce && <div className="flex flex-wrap items-center justify-between gap-x-3 text-2xs text-ebc-straw">
         <p>Doses manuelles conservées, y compris avec « Doser ».</p>

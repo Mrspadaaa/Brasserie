@@ -1,3 +1,5 @@
+import { hotBitterness, bitternessScience } from '../../../src/domain/hopBitterness';
+import { dryHopBitterness } from '../../../functions/src/hopBitternessCore';
 import { fruty } from '../../fixtures/fruty';
 import { fermentationProposals, fermentationReadiness } from '../../../src/domain/fermentationPlanning';
 import { qaInputs, qaLookup } from './functions';
@@ -43,12 +45,14 @@ async function start() {
         aromaTiming: 'postFermentation', aromaTemperatureC: 14, aromaContactHours: 24 }], fermentation: [], hopAromaTarget: { floral: { min: 0, max: 33 } } };
   };
   (window as any).__hopQa = {
+    bitterness: {hot:hotBitterness, cold:dryHopBitterness, science:bitternessScience},
     marker: '__HOP_RECIPE_QA_ONLY__', metrics: qaMetrics, calls: qaCalls, storage: StorageService, recipe, documented,
     nolo: {
       pilots:nuagePilots,
       fruty, proposals:(r:Recipe)=>fermentationProposals(r,StorageService.getHopKnowledge()),
       readiness:(r:Recipe)=>fermentationReadiness(r,StorageService.getHopKnowledge()),
       inputs:qaInputs,
+      mockHop:()=>qaLookup.set('Ariana',{found:true,name:'Ariana',source:'Fixture QA synthétique · aucune analyse commerciale',alphaPct:12}),
       mockOats:()=>qaLookup.set("Flocons d'Avoine",{found:true,name:"Flocons d'Avoine",source:'Fixture QA synthétique · aucune analyse commerciale',colorEbc:2,potentialPpg:33}) ,
       raw:(r:Recipe)=>evaluateNoloRecipe(r,StorageService.getHopKnowledge()),
       recipe:(count=20)=>({...recipe(count),id:'qa-nolo',name:'QA hefeweisse NOLO',style:'Hefeweisse',

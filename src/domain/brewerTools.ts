@@ -1,3 +1,4 @@
+import { recipeIbu } from './hopBitterness';
 import { fermentationProposals, fermentationReadiness } from './fermentationPlanning';
 import { BrewingMath } from '../services/brewingMath';
 import {
@@ -432,10 +433,7 @@ export function runBrewerTool(
       og != null && predictedAttenuation != null
         ? BrewingMath.calculateFg(og, predictedAttenuation, extract?.unfermentable)
         : null;
-    const ibu =
-      og && recipe.hops.every((h) => h.alpha > 0 || h.stage === 'dryHop')
-        ? BrewingMath.calculateTinsethIBU(recipe.hops, volumeL, og, recipe.boilMin)
-        : null;
+    const ibu = recipeIbu(recipe.hops, volumeL, og, recipe.boilMin);
     const color = computeBeerColor(recipe.fermentables, volumeL);
     const water = recipe.waterPlan;
     const recommendedWater = rig

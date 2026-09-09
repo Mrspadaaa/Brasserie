@@ -404,7 +404,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                           ? ibu !== null
                             ? `${ibu.toFixed(1)} IBU`
                             : 'IBU incalculable'
-                          : 'arôme seul'}
+                          : 'effet à cru séparé'}
                       </span>
                     </span>
                   </span>
@@ -680,7 +680,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             </Row>
 
             {/* --- Profil atteint ----------------------------------------- */}
-            <details className="pt-2 space-y-2"><summary className="cursor-pointer min-h-touch text-sm text-water">Profil et chimie détaillée</summary>
+            <div className="pt-2 space-y-2">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="text-2xs sm:text-sm text-cave-500">
                   Profil visé — {water.styleName}
@@ -719,6 +719,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 </dl>
               )}
 
+              <details><summary className="cursor-pointer min-h-touch text-sm text-water">pH et chimie détaillée</summary>
               {water.targetStatus && <WaterTargetStatus {...water.targetStatus} />}
 
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xs sm:text-sm">
@@ -754,7 +755,8 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                   {water.spargePh ? `rinçage ${water.spargePh}` : ''}.
                 </p>
               )}
-            </details>
+              </details>
+            </div>
 
             {/* --- Sels et acides à peser ---------------------------------- */}
             <div className="pt-2 space-y-1.5">

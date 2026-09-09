@@ -209,9 +209,13 @@ describe('Compléter les données manquantes avec l’IA', () => {
     expect(screen.getByText(/Maris Otter \(couleur EBC, potentiel PPG\)/)).toBeInTheDocument();
   });
 
-  it('⚠️ un houblon à cru n’amérise pas : on ne lui réclame pas son alpha', () => {
-    monter({ hops: [{ name: 'Citra', weightG: 85, stage: 'dryHop' }] });
-    expect(screen.queryByText(/Compléter les données manquantes avec l’IA/)).toBeNull();
+  it('complète aussi la fiche à cru et conserve son contexte sans fabriquer une utilisation Tinseth', async () => {
+    run.mockResolvedValue(FICHE({alphaPct:12}));
+    const vu = monter({ hops: [{ name: 'Citra', alpha:0, weightG:85, stage:'dryHop', dayOffset:3, aromaContactHours:48, aromaTiming:'fermentation' }] });
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
+    fireEvent.click(await screen.findByText(/Reprendre ces valeurs/));
+    expect(run).toHaveBeenCalledTimes(1);
+    expect(vu.h[0]).toMatchObject({alpha:12,weightG:85,stage:'dryHop',dayOffset:3,aromaContactHours:48,aromaTiming:'fermentation'});
   });
 
   it('⚠️ montre la source et n’écrit rien avant validation', async () => {

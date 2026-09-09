@@ -1,3 +1,4 @@
+import { recipeIbu } from './hopBitterness';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 import type { HopSource } from '../../functions/src/hopIndexSchema';
 import type { NoloScience, NoloStrain } from '../../functions/src/noloSchema';
@@ -122,7 +123,7 @@ export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain,
   const exactPoints = BrewingMath.extractPoints(next.fermentables.filter(f=>f.use!=='fermentation'), next.volumeL, next.efficiencyPct ?? next.brewhouse?.efficiencyPct ?? 75, 'full');
   next.ogTarget = exactPoints ? 1 + exactPoints.total / 1000 : null;
   next.fgTarget = null;
-  next.ibuTarget = BrewingMath.calculateTinsethIBU(next.hops, next.volumeL, next.ogTarget, next.boilMin) ?? undefined;
+  next.ibuTarget = recipeIbu(next.hops, next.volumeL, next.ogTarget, next.boilMin) ?? undefined;
   const changes: FermentationProposal['changes'] = [];
   const change = (name: string, a: unknown, b: unknown, format = (x: any) => typeof x === 'string' ? x : JSON.stringify(x)) => {
     if (JSON.stringify(a) !== JSON.stringify(b)) changes.push({ label: name, before: format(a), after: format(b) });

@@ -1,3 +1,4 @@
+import { recipeIbu } from './hopBitterness';
 import { completeWaterProposal } from './water/proposal';
 import { mashPhDiagnostic } from './water/readiness';
 import type { Recipe, WaterPlan, WaterSource, SaltId } from '../types';
@@ -128,7 +129,7 @@ export function replanRecipeWater(recipe: WaterRecipe): { plan: WaterPlan; warni
     recipe.volumeL,
     recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? 75
   );
-  const ibu = BrewingMath.calculateTinsethIBU(
+  const ibu = recipeIbu(
     recipe.hops ?? [],
     recipe.volumeL,
     og,

@@ -171,9 +171,9 @@ export function ingredientGaps(
         ) as string[]
       )
     );
-  hops
-    .filter((h) => h.stage !== 'dryHop')
-    .forEach((h) => add('houblon', h.name, h.alpha ? [] : ['acides alpha']));
+  // The technical sheet remains useful at every stage. Alpha is never used as
+  // a dry-hop utilization, but must survive moving the same lot to the kettle.
+  hops.forEach((h) => add('houblon', h.name, h.alpha ? [] : ['acides alpha']));
   add(
     'levure',
     yeast.name,

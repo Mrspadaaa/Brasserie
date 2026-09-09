@@ -61,7 +61,8 @@ export const BrewingMath = {
    *   Whirlpool    — Tinseth sur la durée de contact, atténué par la
    *                  température : l'isomérisation ralentit de moitié environ
    *                  tous les 10 °C sous l'ébullition.
-   *   À cru        — ZÉRO. Le houblonnage à froid n'isomérise rien.
+   *   À cru        — aucune contribution Tinseth. L’extraction des humulinones
+   *                  et les pertes d’iso-alpha relèvent du modèle séparé à cru.
    */
   hopIbu(
     hop: { weightG: number; alpha: number; stage: HopStage; timeMin?: number; tempC?: number },

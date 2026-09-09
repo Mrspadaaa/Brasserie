@@ -1,3 +1,5 @@
+import { hotBitterness } from '../domain/hopBitterness';
+import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { mashPhDiagnostic } from '../domain/water/readiness';
 import React, { useMemo, useState } from 'react';
 import { Recipe, Batch, HopIngredient, AppConfig } from '../types';
@@ -131,17 +133,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const og = recipe.ogTarget || ogPredicted || 0;
 
-  /** IBU par houblon — c'est la répartition qui informe, pas seulement le total. */
-  const ibuOf = (hop: HopIngredient) =>
-    og > 1 ? BrewingMath.hopIbu(hop, recipe.volumeL, og, recipe.boilMin ?? 60) : 0;
-
-  const ibuTotal = useMemo(
-    () =>
-      og > 1
-        ? BrewingMath.calculateTinsethIBU(hops, recipe.volumeL, og, recipe.boilMin ?? 60)
-        : null,
-    [hops, recipe.volumeL, og, recipe.boilMin]
-  );
+  const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, og || null, recipe.boilMin ?? 60), [hops, recipe.volumeL, og, recipe.boilMin]);
+  const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, og || null, recipe.boilMin ?? 60).additions[0].ibu;
+  const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
 
@@ -228,9 +222,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             l'écart laisserait croire à une erreur.
           */}
           <Metric
-            label="IBU"
+            label={dryHopTotal > 0 ? "IBU à chaud" : "IBU"}
             value={ibuTotal !== null ? String(ibuTotal) : null}
-            hint="renseigne l’alpha des houblons"
+            hint="vérifie les ajouts de houblons"
             note={
               ibuTotal !== null &&
               recipe.ibuTarget &&
@@ -363,10 +357,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         title="Houblons"
         hint={
           dryHopTotal > 0
-            ? `dont ${Units.format(dryHopTotal, 'g')} à cru — non compté dans les IBU calculés`
+            ? `dont ${Units.format(dryHopTotal, 'g')} à cru · effet simulé séparément`
             : `${hops.length} ajout(s) · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
         }
       >
+        <HopBitternessPanel hops={hops} volumeL={recipe.volumeL} og={og || null} boilMin={recipe.boilMin ?? 60} hot={bitterness}/>
         {grouped.length === 0 ? (
           <p className="text-sm text-cave-500">Aucun houblon renseigné.</p>
         ) : (
@@ -406,7 +401,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             </span>
                             {style.bitters && (
                               <span className="block reading text-sm text-cave-500">
-                                {h.alpha ? `${ibu.toFixed(1)} IBU` : '— IBU'}
+                                {ibu != null ? `${ibu.toFixed(1)} IBU` : '— IBU'}
                               </span>
                             )}
                           </span>
@@ -608,7 +603,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               </div>
             )}
 
-            <details><summary className="min-h-touch cursor-pointer text-sm text-water">Profil, pH et chimie détaillée</summary>            {waterDisplay && (
+            {waterDisplay && (
               <WaterRadar
                 start={waterDisplay.start}
                 achieved={waterDisplay.achieved}
@@ -623,6 +618,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               />
             )}
 
+            <details><summary className="min-h-touch cursor-pointer text-sm text-water">pH et chimie détaillée</summary>
             {waterReadings && (
               <WaterTargetStatus
                 {...waterReadings}
