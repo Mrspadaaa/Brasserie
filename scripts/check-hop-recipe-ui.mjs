@@ -211,22 +211,22 @@ try {
       const current = qa.rawTriplet({ ...old.triplet, doseGL: 2, matrixId: null }, scientific.hopAromaTarget);
       const root = document.querySelector('[aria-label="Simulateur aromatique expérimental"]');
       const issues = [], axes = qa.axes();
-      if (!root.textContent.includes('Gris : comparaison conservée')) issues.push('Missing retained legend');
+      if (!root.textContent.includes('Trait inférieur : comparaison conservée')) issues.push('Missing retained legend');
       for (const axis of axes) {
         const group = root.querySelector(`[data-axis="${axis.id}"]`);
-        for (const [kind, prediction, selector] of [['retained', old, 'line[data-aroma-baseline]'], ['current', current, 'line.text-hop']]) {
-          const range = prediction.profile[axis.id]?.range, band = group?.querySelector(selector);
-          const known = range && !(range.min <= axis.scale.min && range.max >= axis.scale.max);
-          if (!known && band) issues.push(axis.id + ': unknown ' + kind + ' drawn');
-          if (known && !band) issues.push(axis.id + ': missing ' + kind + ' band');
-          if (known && band) for (const edge of ['1', '2']) {
-            const radius = Math.hypot(Number(band.getAttribute('x' + edge)) - 220, Number(band.getAttribute('y' + edge)) - 190);
-            const expected = 110 * ((edge === '1' ? range.min : range.max) - axis.scale.min) / (axis.scale.max - axis.scale.min);
-            if (Math.abs(radius - expected) > 1e-5) issues.push(axis.id + ': wrong ' + kind + ' geometry');
+        for (const [kind,prediction,selector] of [['retained',old,'circle[data-aroma-baseline]'],['current',current,'[data-aroma-point]']]) {
+          const estimate=prediction.profile[axis.id],range=estimate?.range,marker=group?.querySelector(selector);
+          const known=range&&!(range.min<=axis.lowMax&&range.max>axis.mediumMax)&&Number.isFinite(estimate.central);
+          if(!known&&marker)issues.push(axis.id+': unresolved '+kind+' drawn');
+          if(known&&!marker)issues.push(axis.id+': missing '+kind+' marker');
+          if(known&&marker){
+            const radius=Math.hypot(Number(marker.getAttribute('cx'))-220,Number(marker.getAttribute('cy'))-190);
+            const expected=92*(estimate.central-axis.scale.min)/(axis.scale.max-axis.scale.min);
+            if(Math.abs(radius-expected)>1e-5)issues.push(axis.id+': wrong '+kind+' geometry');
           }
         }
       }
-      return { issues, retainedBands: root.querySelectorAll('line[data-aroma-baseline]').length };
+      return { issues, retainedBands: root.querySelectorAll('.aroma-interval-baseline').length };
     }, scientific);
     assert.deepEqual(comparisonProof.issues, []);
     assert(comparisonProof.retainedBands > 0, 'Actual published baseline retained across a condition change');

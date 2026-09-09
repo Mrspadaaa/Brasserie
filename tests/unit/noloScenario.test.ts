@@ -22,6 +22,19 @@ const removal:NoloOperation={id:'remove',kind:'removal',name:'Traitement',ethano
 const aroma:Extract<NoloOperation,{kind:'aroma'}>={id:'banana',kind:'aroma',name:'Restitution',volumeML:12/1.032,carrierAbvPct:null,sugarG:null,composition:'99 % propylène glycol',moment:'après traitement',
   compositionBound:{massG:fixture.aroma.massG,inertMassPct:fixture.aroma.inertMassPct,source:noloPlanningSource}};
 describe('Scénarios NOLO : preuves, hypothèses, mesures et bilan commun',()=>{
+  it('explique les données de seconde extraction avant de demander une analyse finale',()=>{
+    const s=input();s.config.process='secondRunnings';s.yeastId=science.la01.yeastId;s.yeastName='SafBrew LA-01';delete s.og;s.volumeL=0;
+    const missing=evaluateNoloScenario(s,science);
+    expect(missing.projection.max).toBeNull();
+    expect(missing.nextAction).toContain('densité du moût récupéré');
+    expect(missing.missing.join(' ')).toContain('volume de moût récupéré');
+    s.volumeL=24;s.og={range:r(1.01),origin:'measurement',source:noloPlanningSource};
+    const recovered=evaluateNoloScenario(s,science);
+    expect(recovered.packagedAbv.max).not.toBeNull();
+    expect(recovered.projection.max).toBeNull();
+    expect(recovered.nextAction).toContain('sucres accessibles');
+    expect(recovered.manufacturerEstimate?.applicable).not.toBe(true);
+  });
   it('conserve les deux éditions LA-01 et leur domaine expérimental exact',()=>{
     assertNoloScience(science);assertNoloScience(old);
     for(const [ref,steps] of [[old,oldFixture.la01.mash],[science,fixture.la01_2025.mash]] as const){

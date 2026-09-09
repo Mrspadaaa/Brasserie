@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { HopExplorationChart } from '../../../src/ui/hopIndex/HopAromaChart';
 import { App } from '../../../src/App';
 import { StorageService } from '../../../src/services/storage';
 import { FirestoreRepo, qaMetrics, seedQa } from './repo';
@@ -23,6 +24,7 @@ import type { HopKnowledge, HopModel, HopTriplet } from '../../../functions/src/
 import '../../../src/index.css';
 
 async function start() {
+  const appRoot=createRoot(document.getElementById('root')!);
   const varieties = await loadGuideVarieties();
   const knowledge = guidePredictionKnowledge(yeastCatalogue.filter(y => ['lalbrew-diamond', 'fermentis-us05', 'lalbrew-verdant-ipa'].includes(y.id)) as HopKnowledge[]);
   if (!localStorage.getItem('__HOP_RECIPE_QA_ONLY__')) seedQa({ hopVarieties: varieties, hopKnowledge: knowledge,
@@ -98,7 +100,8 @@ async function start() {
     failNext() { qaMetrics.failNext = true; },
     forgetKnowledge(id: string) { FirestoreRepo.remove('hopKnowledge', id); },
     ready: () => FirestoreRepo.isReady()
+    ,showAromaChart(props:React.ComponentProps<typeof HopExplorationChart>) { appRoot.render(<main className="max-w-2xl mx-auto p-5"><p className="text-sm text-cave-400 mb-4">Banc visuel · données synthétiques</p><HopExplorationChart {...props}/></main>); }
   };
-  createRoot(document.getElementById('root')!).render(<App />);
+  appRoot.render(<App />);
 }
 start().catch(e => { document.body.textContent = String(e); throw e; });

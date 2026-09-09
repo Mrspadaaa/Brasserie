@@ -32,6 +32,19 @@ export async function checkNuageScenarios({page,base,width,out,button,details,fi
   const baseline=await page.evaluate(()=>({writes:window.__hopQa.metrics.writes,calls:window.__hopQa.calls.length}));
   const network=[];const listener=req=>{if(/^https?:/.test(req.url()))network.push(req.url());};page.on('request',listener);
   await button(page,'Simuler une variante NOLO');
+  if(i===1){
+   await select(page,'Procédé','secondRunnings');
+   assert(await page.$eval('[aria-label="Objectif NOLO"]',e=>e.innerText.includes('densité du moût récupéré')));
+   assert.equal(await page.$('[data-nolo-band]'),null);
+   await page.$eval('[aria-label="Moût de seconde extraction"]',e=>e.scrollIntoView({block:'start'}));
+   await page.screenshot({path:resolve(out,'seconde-extraction-manquante-'+width+'.png')});
+   await fill(page,'Volume récupéré · L','24');await fill(page,'Densité récupérée · SG','1.010');
+   assert(await page.$('[aria-label="Plafond physique · pas une prédiction"]'));
+   assert(await page.$eval('[aria-label="Objectif NOLO"]',e=>e.innerText.includes('sucres accessibles')));
+   await page.screenshot({path:resolve(out,'seconde-extraction-renseignee-'+width+'.png')});
+   await select(page,'Procédé',pilot.nolo.process);
+   assert(await page.$('[aria-label="Projection au conditionnement"]'));
+  }
   if(i===0) {
    for(const process of ['restricted','restored','lowExtract','coldExtraction','coldContact','arrested','secondRunnings','dealcoholized']) {
     await select(page,'Procédé',process);

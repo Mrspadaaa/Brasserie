@@ -79,6 +79,10 @@ export function evaluateNoloScenario(original:NoloScenarioInput,currentScience:N
   const verification=evaluateNolo({...input,config:{...config,measurements:config.measurements.map(m=>compatible(m)?{...m,basis:noloInputBasis(input,m.afterOperationId)}:{...m,basis:'stale-scenario'})}},science);
   const sources:HopSource[]=[], assumptions:string[]=[], missing:string[]=[];
   const models=science.planningModels, og=validHopRange(input.og?.range)&&input.og!.range.min>=1?input.og!.range:undefined;
+  if(config.process==='secondRunnings') {
+    if(!og)missing.push('Renseigner la densité du moût récupéré : le malt du brassin précédent ne permet pas de la recalculer.');
+    if(!(input.volumeL>0))missing.push('Renseigner le volume de moût récupéré après la seconde extraction.');
+  }
   if(input.og&&!og)missing.push('Densité initiale invalide : renseigner une SG finie supérieure ou égale à 1.');
   const motherRef=input.fullFermentation??models?.mothers.find(m=>m.yeastId===input.yeastId);
   const attenuation=motherRef&&('range'in motherRef?motherRef.range:motherRef.attenuationPct);
@@ -116,7 +120,8 @@ export function evaluateNoloScenario(original:NoloScenarioInput,currentScience:N
     assumptions.push(relation.limitation);
   } else if(['lowExtract','coldExtraction','secondRunnings'].includes(config.process)&&attenuation) {
     base=mother;
-  } else missing.push(relation?'Le moût ou les paliers diffèrent du protocole LA-01 de cette édition.':'Relation de fermentation limitée absente pour cette souche et ce procédé.');
+  } else if(config.process!=='secondRunnings')missing.push(relation?'Le moût ou les paliers diffèrent du protocole LA-01 de cette édition.':'Relation de fermentation limitée absente pour cette souche et ce procédé.');
+  if(config.process==='secondRunnings'&&og&&input.volumeL>0&&base.max===null)missing.push('Volume et densité connus : le plafond physique est calculable. Une projection de fermentation demande les sucres accessibles à la souche ou une relation validée sur ce moût récupéré.');
   if(input.og)assumptions.push(input.og.origin==='measurement'?'OG mesurée dans ce contexte.':'OG calculée depuis les ingrédients ; aucune analyse de sucres n’est déduite.');
   if(!temperaturesValid)missing.push('Température primaire hors plage de la souche ou non renseignée.');
   let volume=Number.isFinite(input.volumeL)&&input.volumeL>0?input.volumeL:null;

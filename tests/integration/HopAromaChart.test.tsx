@@ -1,7 +1,7 @@
 import React from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { HopExplorationChart } from '../../src/ui/hopIndex/HopAromaChart';
+import { HopExplorationChart, HopAromaRadar } from '../../src/ui/hopIndex/HopAromaChart';
 import type { HopExtrapolation } from '../../functions/src/hopExtrapolationSchema';
 import { testHopAxis } from '../fixtures/hopPrediction';
 import { hopTestSource, hopTestVariety } from '../fixtures/hopIndex';
@@ -26,7 +26,7 @@ describe('Radar et plages aromatiques fidèles au calcul', () => {
     expect(screen.getByText('Intensité indéterminée')).toBeInTheDocument();
     expect(screen.queryByTestId('aroma-central-marker')).not.toBeInTheDocument();
     expect(screen.queryByText(/Tendance moyenne|présence non établie/)).not.toBeInTheDocument();
-    expect(screen.getByRole('img', { name: /Radar des saveurs/ }).querySelectorAll('circle')).toHaveLength(0);
+    expect(screen.queryByRole('img', { name: /Radar des saveurs/ })).not.toBeInTheDocument();
   });
   it('garde un descripteur sourcé hors objectif distinct de la prédiction inconnue', () => {
     const models = [{ axes: [{ id: testHopAxis.id, version: testHopAxis.version, terms: ['agrumes'] }] }] as HopExtrapolation[];
@@ -56,14 +56,15 @@ describe('Radar et plages aromatiques fidèles au calcul', () => {
     expect(row.getByText('Non quantifiable')).toBeVisible();
     expect(row.getByText('Conservé : 4,2–6,2 · confiance moyenne')).toBeVisible();
     expect(row.getByText('Échelle 0–15')).toBeVisible();
-    expect(screen.getByText('Gris : comparaison conservée')).toBeVisible();
+    expect(screen.getByLabelText('Légende du radar')).toHaveTextContent('Trait inférieur : comparaison conservée');
     const group = screen.getByRole('img', { name: /Radar des saveurs/ }).querySelector('[data-axis="panel"]')!;
-    const band = group.querySelector('line[data-aroma-baseline]')!;
-    for (const [edge, value] of [['1', 4.25], ['2', 6.15]] as const) {
-      expect(Math.hypot(Number(band.getAttribute('x' + edge)) - 220, Number(band.getAttribute('y' + edge)) - 190)).toBeCloseTo(110 * value / 15, 10);
-    }
+    const marker = group.querySelector('circle[data-aroma-baseline]')!;
+    expect(Math.hypot(Number(marker.getAttribute('cx')) - 220, Number(marker.getAttribute('cy')) - 190)).toBeCloseTo(92 * 5.2 / 15, 10);
+    const band = screen.getByRole('group', { name: 'Estimation · Agrumes du panel' }).querySelector('[data-aroma-baseline]') as HTMLElement;
+    expect(parseFloat(band.style.left)).toBeCloseTo(100 * 4.25 / 15, 10);
+    expect(parseFloat(band.style.width)).toBeCloseTo(100 * (6.15 - 4.25) / 15, 10);
     expect(group.querySelector('line.text-hop')).toBeNull();
-    expect(group.querySelector('circle')).toBeNull();
+    expect(group.querySelector('[data-aroma-point]')).toBeNull();
     expect(group).toHaveTextContent('simulation indéterminée · conservé : 4,2–6,2');
   });
   it('ne représente pas une comparaison inconnue par une intensité grise ou un zéro', () => {
@@ -72,13 +73,35 @@ describe('Radar et plages aromatiques fidèles au calcul', () => {
     expect(document.querySelector('[data-aroma-baseline]')).toBeNull();
     expect(document.querySelector('circle')).toBeNull();
   });
-  it('la vue compacte ne réserve pas un grand radar vide ; la vue complète reste disponible', () => {
+  it('aucune vue ne dessine de faux radar lorsque toutes les intensités sont indéterminées', () => {
     const props = { prediction: { profile: { citrus: estimate(0, 10, 'low') } }, axes: [testHopAxis], target: {} };
     const { rerender } = render(<HopExplorationChart {...props} />);
     expect(screen.queryByRole('img', { name: /Radar des saveurs/ })).not.toBeInTheDocument();
     expect(screen.getByText(/Les données ne permettent pas encore/)).toBeVisible();
     rerender(<HopExplorationChart {...props} showAll />);
-    expect(screen.getByRole('img', { name: /Radar des saveurs/ })).toBeVisible();
+    expect(screen.queryByRole('img', { name: /Radar des saveurs/ })).not.toBeInTheDocument();
+    expect(screen.getByText('Plage 0–10')).toBeVisible();
     expect(screen.queryByTestId('aroma-central-marker')).not.toBeInTheDocument();
+  });
+  it('les douze plages presque entières de la capture ne deviennent ni étoile verte ni profil central', () => {
+    const axes=Array.from({length:12},(_,i)=>({...testHopAxis,id:'axis-'+i,name:'Famille '+i,scale:{min:0,max:100},lowMax:33,mediumMax:66}));
+    const profile=Object.fromEntries(axes.map(a=>[a.id,estimate(0,99.6,'low')]));
+    render(<HopExplorationChart prediction={{profile}} axes={axes} target={{}} showAll/>);
+    expect(screen.queryByRole('img',{name:/Radar des saveurs/})).not.toBeInTheDocument();
+    expect(screen.queryAllByTestId('aroma-central-marker')).toHaveLength(0);
+    expect(document.querySelectorAll('[data-aroma-unresolved="true"]')).toHaveLength(12);
+    expect(screen.getAllByText('Plage 0–99,6')).toHaveLength(12);
+  });
+  it('connecte les valeurs centrales connues ; un trou ne devient pas un sommet zéro', () => {
+    const axes=Array.from({length:4},(_,i)=>({...testHopAxis,id:'a'+i}));
+    const profile=Object.fromEntries(axes.map(a=>[a.id,estimate(4,6,'high')]));
+    const {rerender}=render(<HopAromaRadar prediction={{profile}} axes={axes} target={{}}/>);
+    expect(document.querySelectorAll('[data-aroma-point]')).toHaveLength(4);
+    expect(document.querySelector('[data-aroma-contour="prediction"] polygon')).not.toBeNull();
+    delete profile.a1;
+    rerender(<HopAromaRadar prediction={{profile}} axes={axes} target={{}}/>);
+    expect(document.querySelector('[data-aroma-contour="prediction"] polygon')).toBeNull();
+    expect(document.querySelector('[data-axis="a1"] [data-aroma-point]')).toBeNull();
+    expect(document.querySelectorAll('[data-aroma-contour="prediction"] line')).toHaveLength(2);
   });
 });
