@@ -19,6 +19,8 @@ export interface HopExtrapolation {
     temperatureC: HopParameter; outsideTemperatureUncertainty: HopParameter;
   }>;
   defaultYeast: { aroma: HopParameter; expression: HopParameter };
+  /** Opt-in convention for a whole recipe; does not change historical triplet calculations. */
+  aggregation?: { version: string; source: HopSource; limitations: string[] };
   yeasts: {
     yeastId: string; source: HopSource; evidence: HopSource[];
     aroma: Record<string, HopParameter>; expression: Record<string, HopParameter>;
@@ -45,12 +47,17 @@ export function assertHopExtrapolation(v: any): asserts v is HopExtrapolation {
     check(Number.isFinite(x.central) && x.central >= x.range.min && x.central <= x.range.max, 'hypothèse centrale hors de la plage');
     source(x.source);
   };
-  keys(v, ['id', 'kind', 'name', 'version', 'enabled', 'source', 'evidence', 'limitations', 'axes', 'descriptor', 'gain', 'residual', 'matrix', 'sourceUncertainty', 'undatedUncertainty', 'unknownFormUncertainty', 'timings', 'defaultYeast', 'yeasts', 'doseReferences']);
+  keys(v, ['id', 'kind', 'name', 'version', 'enabled', 'source', 'evidence', 'limitations', 'axes', 'descriptor', 'gain', 'residual', 'matrix', 'sourceUncertainty', 'undatedUncertainty', 'unknownFormUncertainty', 'timings', 'defaultYeast', 'yeasts', 'doseReferences', 'aggregation']);
   check(v.kind === 'extrapolation' && text(v.version) && typeof v.enabled === 'boolean', 'identité invalide');
   source(v.source);
   const evidence = (x: any) => { check(Array.isArray(x) && x.length > 0, 'preuves absentes'); x.forEach((s: any) => source(s, false)); };
   const notes = (x: any) => check(Array.isArray(x) && x.length > 0 && x.every(text), 'limites absentes');
   evidence(v.evidence); notes(v.limitations);
+  if (v.aggregation !== undefined) {
+    keys(v.aggregation, ['version', 'source', 'limitations']);
+    check(text(v.aggregation.version), 'version du cumul absente');
+    source(v.aggregation.source); notes(v.aggregation.limitations);
+  }
   check(Array.isArray(v.axes) && v.axes.length > 0 && new Set(v.axes.map((a: any) => a.id)).size === v.axes.length, 'axes absents ou dupliqués');
   for (const a of v.axes) {
     keys(a, ['id', 'version', 'terms', 'doseScale', 'source']); parameter(a.doseScale, 0, Infinity, true);

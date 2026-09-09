@@ -37,6 +37,15 @@ export function prefillHopScenario(triplet: HopTriplet, policy: HopSolverPolicy,
   const ref = trial?.hops.find(h => h.varietyId === triplet.varietyId && h.timing === triplet.timing);
   for (const field of ['doseGL','temperatureC','contactHours'] as const) {
     if (result[field] !== null) continue;
+    if (field === 'contactHours' && ref?.boilStart) {
+      // The event is documented; the duration comes from this recipe, not a generic 10 min default.
+      if (finite(recipe?.boilMin) && recipe.boilMin > 0) {
+        result[field] = recipe.boilMin / 60;
+        conditions.push({ field, value: result[field]!, range: { min: result[field]!, max: result[field]! }, origin: 'recipe',
+          source: { ...ref.boilStart.source, locator: `${ref.boilStart.source.locator} Application à la durée totale d’ébullition renseignée dans la recette : ${recipe.boilMin} min ; la durée de l’essai reste inconnue.` } });
+      }
+      continue;
+    }
     const observed = ref?.[field];
     if (observed) {
       result[field] = observed.range.min + (observed.range.max-observed.range.min)/2;
@@ -96,7 +105,24 @@ function chemistryChecks(ts: HopTriplet[], yeast: HopYeast, intent: HopSolverInt
   return checks;
 }
 
-export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets: HopTriplet[], intent: HopSolverIntent, data: HopEngineData, policy: HopSolverPolicy, replacing?: number, predict = createHopPredictor(data), prepared?: {valid:HopKnowledge[];axes:HopAxis[];yeasts:HopYeast[]}) {
+/** Process observations, separate from aroma intensity and documentary confidence. */
+function checkHopAdditionProgram(recipe: TrialRecipe | undefined, hasDryHop: boolean | undefined): SolverCheck[] {
+  return !hasDryHop && recipe?.fermentation?.some(s => s.kind === 'ajout' && /houblonnage a cru|dry[ -]?hop/.test(fold(`${s.name} ${s.note ?? ''}`)))
+    ? [{ status: 'unknown', message: 'Des paliers annoncent un houblonnage à cru, mais aucun ajout de houblon à cru n’est prévu. Revois le programme de fermentation ; ces notes ne créent pas un ajout ni un effet de biotransformation.' }] : [];
+}
+export function checkHopFermentation(recipe: TrialRecipe | undefined, yeastId: string | undefined, policy: HopSolverPolicy, hasDryHop = recipe?.hops.some(h => h.stage === 'dryHop' && h.weightG > 0), includeAdditionProgram = true) {
+  const checks: SolverCheck[] = [];
+  if (!recipe) return checks;
+  for (const operating of policy.yeastConditions ?? []) if (operating.yeastId === yeastId) {
+    for (const step of recipe.fermentation ?? []) if ((!step.kind || step.kind === 'primaire') && finite(step.tempC) && (step.tempC < operating.temperatureC.min || step.tempC > operating.temperatureC.max))
+      checks.push({ status: 'unknown', message: `${step.kind === 'primaire' ? 'Fermentation primaire' : 'Palier de fermentation de phase non renseignée'} à ${step.tempC} °C : hors plage fabricant ${operating.temperatureC.min}–${operating.temperatureC.max} °C pour cette souche. Revois ce palier selon le profil recherché ; une température d’essai n’est pas une recommandation de fermentation.`, source: operating.source });
+    if (operating.warning) checks.push({ status: 'unknown', message: operating.warning, source: operating.source });
+  }
+  if (includeAdditionProgram) checks.push(...checkHopAdditionProgram(recipe, hasDryHop));
+  return checks;
+}
+
+export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets: HopTriplet[], intent: HopSolverIntent, data: HopEngineData, policy: HopSolverPolicy, replacing?: number, predict = createHopPredictor(data), prepared?: {valid:HopKnowledge[];axes:HopAxis[];yeasts:HopYeast[];deferAdditionProgram?:boolean}) {
   const checks: SolverCheck[] = [];
   const valid = prepared?.valid ?? usableHopKnowledge(data.knowledge).valid, axes = prepared?.axes ?? valid.filter((k):k is HopAxis=>k.kind==='axis'), yeasts=prepared?.yeasts ?? withDocumentedYeastNames(valid.filter((k):k is HopYeast=>k.kind==='yeast'));
   const existing = recipe?.hops.flatMap((_,i)=>i===replacing ? [] : [{index:i,...recipeHopScenario(recipe,i,data.varieties,yeasts)!}]) ?? [];
@@ -116,12 +142,10 @@ export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets
     if (risk?.kind==='risk') checks.push({status:'unknown',message:`Hop creep possible avec ce houblonnage à cru. ${risk.advice}`,source:risk.source});
   }
   if (recipe?.yeast?.name && yeast && !(recipe.yeast.hopIndexId ? recipe.yeast.hopIndexId===yeast.id : findRecipeYeastMatches(recipe.yeast.name,[yeast]).length)) checks.push({status:'unknown',message:`La souche proposée remplace ${recipe.yeast.name} pour toute la bière. Quantité de levure et programme de fermentation à revoir ; les autres houblons restent présents.`});
-  for (const operating of policy.yeastConditions ?? []) if (operating.yeastId === yeast?.id) {
-    for (const [index, step] of (recipe?.fermentation ?? []).entries()) if (finite(step.tempC) && (step.tempC < operating.temperatureC.min || step.tempC > operating.temperatureC.max)) checks.push({status:'unknown',message:`Palier ${index+1} à ${step.tempC} °C : hors plage fabricant ${operating.temperatureC.min}–${operating.temperatureC.max} °C de ${yeast.name}. Un refroidissement de garde peut être volontaire ; vérifier la phase de fermentation.`,source:operating.source});
-    if (operating.warning) checks.push({status:'unknown',message:operating.warning,source:operating.source});
-  }
+  const hasDryHop = doses.some(t => t.doseGL !== 0);
+  checks.push(...checkHopFermentation(recipe, yeast?.id, policy, hasDryHop, !prepared?.deferAdditionProgram));
   if (existing.length) checks.push({status:'unknown',message:'Les ajouts existants sont conservés et leurs conflits sont vérifiés. Aucun profil total n’est obtenu en additionnant leurs graphes.'});
-  return {checks,totalDryHopGL};
+  return {checks,totalDryHopGL,hasDryHop};
 }
 
 export function compareHopSolverCandidates(a: HopSolverCandidate,b: HopSolverCandidate): number {
@@ -197,10 +221,12 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
     // separate, so no candidate inherits another one's dose or warnings.
     const cacheKey=yeast.id;
     let common=recipeCache.get(cacheKey);
-    if(!common){common=inspectHopSolverRecipe(recipe,[{...item.triplets[0],doseGL:0,timing:'boil'}],intent,data,policy,options.replacing,predict,{valid,axes,yeasts:allYeasts});recipeCache.set(cacheKey,common);}
+    if(!common){common=inspectHopSolverRecipe(recipe,[{...item.triplets[0],doseGL:0,timing:'boil'}],intent,data,policy,options.replacing,predict,{valid,axes,yeasts:allYeasts,deferAdditionProgram:true});recipeCache.set(cacheKey,common);}
     const proposedDry = item.triplets.filter(t=>dry(t.timing));
     const total=common.totalDryHopGL===null || proposedDry.some(t=>!finite(t.doseGL)) ? null : common.totalDryHopGL+proposedDry.reduce((s,t)=>s+t.doseGL!,0);
     const recipeChecks=[...common.checks];
+    // Event-dependent observations cannot be cached under the strain alone.
+    recipeChecks.push(...checkHopAdditionProgram(recipe, common.hasDryHop || proposedDry.some(t=>t.doseGL!==0)));
     if(total!==null && total>policy.dryHopReviewGL.central && !(common.totalDryHopGL!==null && common.totalDryHopGL>policy.dryHopReviewGL.central)) recipeChecks.push({status:'unknown',message:`Dry-hop cumulé proposé : ${total.toLocaleString('fr',{maximumFractionDigits:2})} g/L. Revoir le rendement aromatique et le risque de caractère herbacé, sans seuil universel.`,source:policy.dryHopReviewGL.source});
     for(const risk of predictions.flatMap(p=>p.risks).filter(r=>r.status!=='unknown')) recipeChecks.push({status:'unknown',message: risk.message,source:risk.source});
     const evidenceFamilies=item.trial?wanted.filter(id=>item.trial!.families.includes(id)):wanted.filter(id=>item.triplets.some(t=>descriptorFamilies(t.varietyId??'').has(id)));

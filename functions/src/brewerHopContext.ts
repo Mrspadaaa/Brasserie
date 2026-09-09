@@ -16,7 +16,7 @@ export async function loadBrewerHopContext(): Promise<HopEngineData & { predicti
       const value = doc.data();
       if (name === 'hopPredictions') return { id: doc.id, name: value.name, createdAt: value.createdAt,
         ...(value.recipeId ? { recipeId: value.recipeId } : {}), ...(value.batchId ? { batchId: value.batchId } : {}),
-        prediction: value.prediction, evidence: { knowledge: (value.evidence?.knowledge ?? []).filter((k: any) => k.kind === 'axis') } };
+        prediction: value.prediction, ...(value.recipePrediction ? { recipePrediction: value.recipePrediction } : {}), evidence: { knowledge: (value.evidence?.knowledge ?? []).filter((k: any) => k.kind === 'axis') } };
       return { ...value, id: doc.id };
     });
   }));

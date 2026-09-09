@@ -1,0 +1,99 @@
+{
+  "id": "lafontaine-dose-2018",
+  "source": {
+    "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+    "author": "Lafontaine et Shellhammer",
+    "year": 2018,
+    "kind": "research",
+    "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+    "locator": "Tableau 3 (moyennes ajustées et lettres Tukey) ; méthodes, houblonnage et panel."
+  },
+  "verifiedAt": "2026-09-09",
+  "transcription": "Transcription du tableau publié, indépendante des coefficients et du script de génération.",
+  "sensoryScale": {
+    "min": 0,
+    "max": 15
+  },
+  "publishedDoseUnit": "g/hL",
+  "columns": [
+    "doseGHL",
+    "citrus",
+    "herbal",
+    "overall",
+    "citrusTukey",
+    "herbalTukey"
+  ],
+  "rows": [
+    [
+      0,
+      1.9,
+      2.5,
+      3,
+      "c",
+      "d"
+    ],
+    [
+      200,
+      4.4,
+      4.3,
+      6.3,
+      "b",
+      "c"
+    ],
+    [
+      386,
+      5.8,
+      5.7,
+      8.1,
+      "ab",
+      "c"
+    ],
+    [
+      800,
+      7.1,
+      7.4,
+      10.4,
+      "a",
+      "b"
+    ],
+    [
+      1600,
+      7,
+      10.4,
+      12.3,
+      "a",
+      "a"
+    ]
+  ],
+  "protocol": {
+    "varietyId": "cascade-cones-lafontaine",
+    "yeastId": "wyeast-1728",
+    "timing": "postFermentation",
+    "form": "cone",
+    "temperatureC": {
+      "min": 13.3,
+      "max": 15
+    },
+    "contactHours": 24,
+    "matrixId": "cascade-static-dose-2015",
+    "wortPlato": 11.3,
+    "fermentationC": {
+      "min": 19.4,
+      "max": 20
+    },
+    "clarified": true
+  },
+  "sampling": {
+    "harvestLots": 1,
+    "treatments": 5,
+    "retainedPanelists": 10,
+    "panelReplications": 4,
+    "pairedKegsBlended": true,
+    "independentValidationBrews": 0
+  },
+  "limitations": [
+    "Les évaluations répétées du panel ne sont pas de nouvelles recettes indépendantes.",
+    "La conversion affine 0–15 vers 0–100 est une convention locale, pas une calibration entre panels.",
+    "Les doses 800 et 1600 g/hL partagent le groupe Tukey a pour Citrus ; la petite baisse de moyenne n'établit pas une diminution significative."
+  ]
+}

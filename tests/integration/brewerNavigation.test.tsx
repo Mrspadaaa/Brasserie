@@ -2,6 +2,7 @@ import React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BrewerActivity } from '../../src/ui/BrewerActivity';
+import { BrewerPageShortcut } from '../../src/ui/BrewerPageShortcut';
 import { BrewerChat } from '../../src/ui/BrewerChat';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import { brewerJobs } from '../../src/services/brewerJobs';
@@ -48,6 +49,13 @@ async function ask() {
   await waitFor(() => expect(api.submit).toHaveBeenCalled());
 }
 describe('Raccourci contextuel et gestion des conversations', () => {
+  it('ouvre le même brouillon depuis la place réservée dans la page mobile', async () => {
+    render(<><BrewerPageShortcut /><BrewerChat scope={{ kind: 'draft', id: 'REC-INLINE' }} label="Brouillon mobile" draft={{ name: 'Brouillon mobile', volumeL: 24 }} /></>);
+    await plus();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(api.history).toHaveBeenLastCalledWith({ kind: 'draft', id: 'REC-INLINE' });
+    expect(api.submit).not.toHaveBeenCalled();
+  });
   it('conserve toutes les actions du bouton + et sépare clairement le compagnon', async () => {
     const create = vi.fn(), quick = vi.fn();
     render(<><BrewerActivity context={brewerAppScreen('stocks', 'materiel')} />

@@ -15,7 +15,9 @@ import { Units } from '../../services/units';
 import { ensureGuideReferences, guideAxes, guidePredictionKnowledge, guideSolverPolicy, guideYeasts } from './guideData';
 import { useHopCatalogue } from './useHopCatalogue';
 import { HopAromaTargetPicker } from './HopAromaTargetPicker';
-import { HopExplorationChart } from './HopExtrapolationPanel';
+import { HopExplorationChart } from './HopAromaChart';
+import { HopTrialResult, HopTrialComparison } from './HopTrialEvidence';
+import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import { HopSourceLink } from './HopTechnicalPanel';
 import { HOP_TIMING_LABELS, hopDoseLabel, hopDurationLabel, hopRangeLabel, hopTemperatureLabel } from './presentation';
 import { HopField } from './HopFactsEditor';
@@ -41,6 +43,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
   const {varieties,loading}=useHopCatalogue();
   const knowledge=useMemo(()=>guidePredictionKnowledge(saved),[saved]),policy=useMemo(()=>guideSolverPolicy(saved),[saved]);
   const axes=useMemo(()=>guideAxes(saved),[saved]),yeasts=useMemo(()=>guideYeasts(saved),[saved]);
+  const models=useMemo(()=>knowledge.filter((k):k is HopExtrapolation=>k.kind==='extrapolation'&&k.enabled),[knowledge]);
   // Unrelated Firestore notifications return fresh arrays; only changed content
   // invalidates a running search and its immutable prediction context.
   const dataRevision=useMemo(()=>JSON.stringify([varieties,lots,knowledge]),[varieties,lots,knowledge]);
@@ -110,7 +113,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     if(JSON.stringify(latest.current.recipe)!==before)throw Error('La recette a changé. Relance la recherche avant de l’appliquer.');
     onChange({...next,hopAromaTarget:effectiveTarget});setNotice('Programme appliqué. Contrôle les alpha des lots, la quantité de levure et les paliers de fermentation.');
   });};
-  if(!policy)return <p className="text-sm text-ebc-straw">Le guide de formulation est désactivé ou invalide. Les simulations libres restent disponibles dans Mon adaptation.</p>;
+  if(!policy)return <p className="text-sm text-ebc-straw">Le guide de formulation est désactivé ou invalide. Les simulations libres restent disponibles dans Simuler mes ajouts.</p>;
   const compatible=results?.filter(c=>!hasConflict(c))??[],rejected=results?.filter(hasConflict)??[];
   const documented=(showRejected?results??[]:compatible).filter(c=>c.trial).slice(0,4);
   const explorations=(showRejected?results??[]:compatible).filter(c=>!c.trial).slice(0,6);
@@ -119,7 +122,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     <span className="block text-sm text-cave-200">{yeasts.find(y=>y.id===c.triplets[0].yeastId)?.name}</span>
     <span className="block text-xs text-cave-400">{[...new Set(c.triplets.map(t=>HOP_TIMING_LABELS[t.timing!]))].join(' / ')} · {c.triplets.map(t=>hopDoseLabel(t.doseGL)).join(' + ')}</span>
     <span className={`block text-xs ${hasConflict(c)?'text-alert':'text-water'}`}>{hasConflict(c)?'Conflit avec tes contraintes':c.trial?'Essai publié · adaptation à vérifier':'Extrapolation · confiance faible'}</span>
-    {!c.trial&&c.score.range&&<span className="block text-xs text-cave-400">Adéquation {hopRangeLabel(c.score.range)} / 100</span>}
+    {!c.trial&&c.score.range&&<span className="block text-xs text-cave-400">{recipe?.hops.length ? 'Adéquation de cet ajout seul' : 'Adéquation'} {hopRangeLabel(c.score.range)} / 100</span>}
   </button>;
   const shownPrediction=selected?.predictions[chartAddition];
   return <section aria-label="Solver de houblonnage" className="space-y-5">
@@ -150,12 +153,12 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
         {!!rejected.length&&<Button onClick={()=>setShowRejected(v=>!v)}>{showRejected?'Masquer les pistes en conflit':'Comprendre les pistes écartées'}</Button>}
       </div>
       {selected&&<article aria-label="Programme proposé par le solver" className="min-w-0 space-y-4 lg:border-l lg:border-cave-700 lg:pl-5">
-        <div><h4 className="font-serif text-xl text-cave-50">Ton programme proposé</h4><p className="text-hop">{yeasts.find(y=>y.id===selected.triplets[0].yeastId)?.name}</p><p className="text-xs text-cave-400">Confiance faible. Prévisualisation : ta recette n’a pas encore changé.</p></div>
+        <div><h4 className="font-serif text-xl text-cave-50">Ton programme proposé</h4><p className="text-hop">{yeasts.find(y=>y.id===selected.triplets[0].yeastId)?.name}</p><p className="text-xs text-cave-400">Prévisualisation du programme.</p></div>
         <div className="space-y-4">{selected.triplets.map((t,i)=><div key={i} className="border-l-2 border-water pl-3 space-y-2"><p className="font-semibold text-cave-50">{varieties.find(v=>v.id===t.varietyId)?.name} · {HOP_TIMING_LABELS[t.timing!]}</p><p className="text-sm text-cave-200">{recipe&&t.doseGL!==null?`${Units.format(t.doseGL*recipe.volumeL, 'g')} pour ${recipe.volumeL} L` : hopDoseLabel(t.doseGL)}</p><div className="grid grid-cols-3 gap-2">{([{key:'doseGL',label:'Dose (g/L)'},{key:'temperatureC',label:'Contact (°C)'},{key:'contactHours',label:contactFactor(t)===60?'Durée (min)':'Durée (h)'}]as const).map(f=><HopField label={`${f.label} · ajout ${i+1}`} key={f.key}><NumberInput className={inputClass} value={t[f.key]===null?undefined:t[f.key]*(f.key==='contactHours'?contactFactor(t):1)} emptyValue={undefined} disabled={busy} onValue={n=>editCondition(i,f.key,n===undefined?null:n/(f.key==='contactHours'?contactFactor(t):1))}/></HopField>)}</div>
           <details className="text-xs text-cave-400"><summary className="cursor-pointer min-h-touch">Origine des conditions préremplies</summary>{selected.conditions[i].length?selected.conditions[i].map((c,j)=><div className="space-y-1 mb-2" key={j}><p>{c.field==='doseGL'?hopDoseLabel(c.value):c.field==='temperatureC'?hopTemperatureLabel(c.value):hopDurationLabel(c.value)} : {c.origin==='trial'?`choix dans la plage publiée ${hopRangeLabel(c.range)}`:c.origin==='recipe'?'valeur planifiée dans la recette':'point de départ proposé, pas optimum mesuré'}.</p><HopSourceLink source={c.source}/></div>):<p>Conditions choisies pour cette simulation.</p>}</details></div>)}</div>
-        {selected.trial&&<div className="border-l-2 border-hop pl-3 space-y-2 text-sm"><p className="font-semibold text-cave-50">Ce que l’essai a montré</p><p className="text-cave-200">{selected.trial.result}</p>{selected.trial.sensory.map((s,i)=><p key={i} className="text-hop">{s.name} : {hopRangeLabel(s.range)} sur {s.scale.max}, dans cet essai.</p>)}<p className="text-xs text-cave-400">{selected.trial.matrix} Le résultat publié porte sur le programme complet ; les variantes et les autres ajouts de ta recette ne sont pas assimilés à cet essai.</p><HopSourceLink source={selected.trial.source}/></div>}
-        <Checks checks={[...selected.checks,...selected.recipeChecks]}/>
-        {shownPrediction&&<details open={!selected.trial}><summary className="cursor-pointer min-h-touch text-sm text-cave-200">Graphe de la simulation</summary><div className="space-y-3 pt-2">{selected.triplets.length>1&&<HopField label="Ajout représenté"><select className={inputClass} value={chartAddition} onChange={e=>setChartAddition(Number(e.target.value))}>{selected.triplets.map((t,i)=><option key={i} value={i}>Ajout {i+1} · {varieties.find(v=>v.id===t.varietyId)?.name}</option>)}</select></HopField>}<HopExplorationChart prediction={shownPrediction} axes={axes} target={effectiveTarget} highlighted={selected.evidenceFamilies}/><p className="text-xs text-cave-400">Chaque graphe inclut la levure et un ajout. Les graphes ne s’additionnent pas.</p></div></details>}
+        {selected.trial&&<details><summary className="cursor-pointer min-h-touch text-sm text-water">Ce que l’essai a montré</summary><div className="space-y-4 py-3"><HopTrialResult trial={selected.trial}/>{recipe&&<HopTrialComparison recipe={recipe} trial={selected.trial}/>}</div></details>}
+        <details><summary className="cursor-pointer min-h-touch text-sm text-cave-300">Compatibilité et conditions</summary><Checks checks={[...selected.checks,...selected.recipeChecks]}/></details>
+        {shownPrediction&&<div className="space-y-3 pt-2">{selected.triplets.length>1&&<HopField label="Ajout représenté"><select className={inputClass} value={chartAddition} onChange={e=>setChartAddition(Number(e.target.value))}>{selected.triplets.map((t,i)=><option key={i} value={i}>Ajout {i+1} · {varieties.find(v=>v.id===t.varietyId)?.name}</option>)}</select></HopField>}<HopExplorationChart prediction={shownPrediction} axes={axes} target={effectiveTarget} highlighted={selected.evidenceFamilies} variety={varieties.find(v=>v.id===shownPrediction.triplet.varietyId)} models={models}/><p className="text-xs text-cave-400">Aperçu d’un ajout avec la levure. Simule l’ensemble après ajout à ta recette.</p></div>}
         {recipe&&onChange&&<div className="border-t border-cave-700 pt-4 space-y-2"><p className="text-sm text-cave-200">{replacing===undefined?'Les ajouts actuels sont conservés.':`L’ajout ${replacing+1} sera remplacé ; les autres seront conservés.`} La souche est celle de toute la recette.</p><Button intent="primary" full disabled={busy||hasConflict(selected)||selected.triplets.some(t=>t.doseGL===null)} onClick={()=>void apply()}>{replacing===undefined?'Ajouter ce programme à ma recette':'Appliquer ce remplacement'}</Button>{hasConflict(selected)&&<p className="text-sm text-alert flex gap-2"><AlertTriangle size={17} className="shrink-0"/>Résous les exclusions en conflit avant d’appliquer ce programme.</p>}</div>}
       </article>}
     </div>}

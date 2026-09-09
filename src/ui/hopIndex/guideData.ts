@@ -3,9 +3,11 @@ import { assertHopKnowledge, type HopAxis, type HopKnowledge, type HopRiskPolicy
 import initialKnowledge from '../../data/hopKnowledgeBootstrap.json';
 import initialYeasts from '../../data/hopYeastBootstrap.json';
 import trialPack from '../../data/hopTrialBootstrap.json';
+import legacyTrialPack from '../../data/hopTrialLegacyBootstrap.json';
 import studyPack from '../../data/hopStudyBootstrap.json';
 import extrapolationPack from '../../data/hopExtrapolationBootstrap.json';
 import legacyExtrapolationPack from '../../data/hopExtrapolationLegacyBootstrap.json';
+import previousExtrapolationPack from '../../data/hopExtrapolationV4Bootstrap.json';
 import solverPack from '../../data/hopSolverBootstrap.json';
 import doseStudyPack from '../../data/hopDoseStudyBootstrap.json';
 import fermentationPack from '../../data/fermentationGuideBootstrap.json';
@@ -79,7 +81,7 @@ export function guideFermentationScience(knowledge: HopKnowledge[]) {
 
 /** Reported programmes; never injected into the prediction model collection. */
 export function guideTrials(knowledge: HopKnowledge[]): HopTrial[] {
-  const rows = [...checkedKnowledge(trialPack.hopKnowledge), ...validKnowledge(knowledge)];
+  const rows = [...checkedKnowledge(trialPack.hopKnowledge), ...validKnowledge(knowledge).map(currentGuideRevision)];
   return [...new Map(rows.map(row => [row.id, row])).values()].filter((row): row is HopTrial => row.kind === 'trial');
 }
 
@@ -89,13 +91,13 @@ export function guideTrials(knowledge: HopKnowledge[]): HopTrial[] {
 const canonical = (value: any): string => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.keys(item).sort().map(k => [k, item[k]])) : item);
 /** Upgrade only the untouched built-in. A disabled, invalid or edited revision wins. */
 export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
-  if (row?.kind !== 'extrapolation') return row;
-  const old = legacyExtrapolationPack.find(k => k.id === row.id);
-  const next = extrapolationPack.find(k => k.id === row.id);
+  if (row?.kind !== 'extrapolation' && row?.kind !== 'trial') return row;
+  const old = (row.kind === 'trial' ? legacyTrialPack : [...legacyExtrapolationPack, ...previousExtrapolationPack]).find(k => k.id === row.id && canonical(row) === canonical(k));
+  const next = (row.kind === 'trial' ? trialPack.hopKnowledge : extrapolationPack).find(k => k.id === row.id);
   return old && next && canonical(row) === canonical(old) ? next as HopKnowledge : row;
 }
 export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
-  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack)];
+  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack).filter(k => k.kind === 'fermentation')];
   return [...new Map([...proposed, ...knowledge.map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
 }
 export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {

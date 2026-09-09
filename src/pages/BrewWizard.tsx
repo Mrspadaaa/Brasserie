@@ -69,6 +69,7 @@ import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
 import { AiAssist } from '../ui/AiAssist';
 import { BrewerChat } from '../ui/BrewerChat';
+import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import { RecipeImportSheet, ImportedRecipe } from '../ui/RecipeImportSheet';
 import { BrewSheet } from '../ui/BrewSheet';
@@ -1187,6 +1188,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       >
         <ClipboardPaste className="w-3.5 h-3.5" />
       </button>
+      <BrewerPageShortcut />
     </div>
   );
 
@@ -1561,14 +1563,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
-            <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
-              setHops(next.hops);
-              setYeast(next.yeast);
-              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
-            }} contextEditor={<details><summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary><HopRecipeGuide contextOnly recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
-              setHops(next.hops); setYeast(next.yeast);
-              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
-            }} /></details>} />
             <h3 id="recipe-hop-additions" className="scroll-mt-20 text-lg font-semibold text-cave-100 pt-3">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
@@ -1801,6 +1795,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 })}
               </ul>
             )}
+            <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
+              setHops(next.hops);
+              setYeast(next.yeast);
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
+            }} contextEditor={<details><summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary><HopRecipeGuide contextOnly recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
+              setHops(next.hops); setYeast(next.yeast);
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
+            }} /></details>} />
           </div>
         </Section>
       )}

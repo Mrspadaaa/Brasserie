@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
-const normalScripts = ['test', 'test:smoke:stout', 'test:watch', 'test:coverage'];
+const normalScripts = ['test', 'test:smoke:stout', 'test:smoke:hop', 'test:science', 'test:watch', 'test:coverage'];
 const forbiddenCommands = [
   'eval-brewer',
   'check-brewer-persistence',

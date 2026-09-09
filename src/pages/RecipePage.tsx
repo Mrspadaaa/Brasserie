@@ -30,6 +30,7 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  */
 
 import { BrewerChat } from '../ui/BrewerChat';
+import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { StorageService } from '../services/storage';
@@ -189,15 +190,18 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         </>
       }
       footer={
+        <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={onBrew}
-          className="w-full min-h-touch rounded-control bg-ebc-straw text-cave-950
+          className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950
                      font-semibold flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
         >
           <FlaskConical className="w-5 h-5" />
           Lancer un brassin
         </button>
+        <BrewerPageShortcut />
+        </div>
       }
     >
       <BrewerChat scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
@@ -686,7 +690,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <h3 className="text-sm text-cave-500 mb-1.5">
                   Empâtage
-                  {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg} L/kg` : ''}
+                  {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}
                   {recipe.mash.spargeType === 'fly'
                     ? ' · rinçage continu'
                     : recipe.mash.spargeType === 'batch'

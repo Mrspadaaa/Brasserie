@@ -16,7 +16,8 @@ import { ensureGuideReferences, guideAxes, guidePredictionKnowledge, guideSolver
 import { HopField } from './HopFactsEditor';
 import { HopSourceLink } from './HopTechnicalPanel';
 import { HopPredictionView } from './HopPredictionView';
-import { HOP_TIMING_LABELS, hopDoseLabel, hopDurationLabel, hopIntensityLabel, hopRangeLabel } from './presentation';
+import { HopExplorationChart } from './HopAromaChart';
+import { HOP_TIMING_LABELS, hopDoseLabel, hopDurationLabel, hopRangeLabel } from './presentation';
 import { hopReferenceSource } from '../../domain/hopIndex/labels';
 import { Button } from '../../components/ui/Button';
 import { Combobox } from '../Combobox';
@@ -26,39 +27,12 @@ import { inputClass } from '../FormNav';
 const contactFactor=(t:HopTriplet)=>t.timing==='firstWort'||t.timing==='boil'||t.timing==='whirlpool'?60:1;
 const sample: HopTriplet = { varietyId: 'hopsteiner-cas', yeastId: 'fermentis-us05', timing: 'postFermentation', doseGL: null, temperatureC: null, contactHours: null, matrixId: null, lotId: null };
 
-export function HopExplorationChart({ prediction, axes, target, baseline, highlighted }: {
-  prediction: HopPrediction; axes: HopAxis[]; target: Record<string, HopRange>; baseline?: HopPrediction; highlighted: string[];
-}) {
-  const rows = axes.filter(a => highlighted.includes(a.id) || target[a.id]);
-  const other = axes.filter(a => !rows.includes(a));
-  const plot = (axis: HopAxis, uncertain = false) => {
-    const estimate = prediction.profile[axis.id], r = estimate?.range;
-    const start = (n: number) => 100 * (n - axis.scale.min) / (axis.scale.max - axis.scale.min);
-    const before = baseline?.profile[axis.id]?.range;
-    return <div key={axis.id} className="space-y-1">
-      <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm"><span className={uncertain ? 'text-cave-400' : 'font-semibold text-cave-50'}>{axis.name}</span><span className="text-cave-200">{!uncertain && estimate?.central !== undefined ? `Tendance ${hopIntensityLabel({ ...estimate, range: { min: estimate.central, max: estimate.central } }, axis)}` : uncertain ? 'Peu documenté' : hopIntensityLabel(estimate, axis)}</span></div>
-      <div className="relative h-6 rounded bg-cave-800 overflow-hidden" aria-hidden="true">
-        {[axis.lowMax, axis.mediumMax].map(n => <span key={n} className="absolute h-full border-l border-cave-600" style={{ left: `${start(n)}%` }} />)}
-        {target[axis.id] && <span className="absolute inset-y-0 border-x-2 border-ebc-straw/70 bg-ebc-straw/10" style={{ left: `${start(target[axis.id].min)}%`, width: `${start(target[axis.id].max) - start(target[axis.id].min)}%` }} />}
-        {before && <span className="absolute h-1 bottom-0 bg-cave-400" style={{ left: `${start(before.min)}%`, width: `${start(before.max) - start(before.min)}%` }} />}
-        {r && <span className={`absolute top-1 h-3 rounded ${uncertain ? 'bg-cave-500/40' : 'bg-hop/40'}`} style={{ left: `${start(r.min)}%`, width: `${start(r.max) - start(r.min)}%` }} />}
-        {!uncertain && estimate?.central !== undefined && <span className="absolute top-0 bottom-0 w-1 -translate-x-1/2 rounded bg-hop" style={{ left: `${start(estimate.central)}%` }} />}
-      </div>
-      <p className="text-xs text-cave-400">{r ? `Plage ${hopRangeLabel(r)} · confiance faible` : 'Données à préciser'}{uncertain ? ' · présence non établie' : ''}</p>
-    </div>;
-  };
-  return <figure className="space-y-3" aria-label="Graphe de la prédiction expérimentale">
-    <figcaption className="space-y-1"><p className="text-lg font-serif text-cave-50">Ce que ce scénario pourrait exprimer</p><p className="text-xs text-cave-400">Faible → moyenne → forte · indice local 0–100. Trait vert : hypothèse centrale. Bande : incertitude du modèle. {baseline && 'Trait gris : scénario précédent. '}{Object.keys(target).length > 0 && 'Doré : ton objectif.'}</p></figcaption>
-    {rows.map(a => plot(a))}
-    {!rows.length && <p className="text-sm text-cave-200">Aucune famille caractérisée dans les sources de cette combinaison. Le modèle conserve des plages larges ; ajoute une description sourcée pour les préciser.</p>}
-    {other.length > 0 && <details><summary className="min-h-touch cursor-pointer text-sm text-cave-400">Autres familles · {other.length} incertitudes à explorer</summary><div className="space-y-4 pt-2">{other.map(a => plot(a, true))}</div></details>}
-  </figure>;
-}
+export { HopExplorationChart } from './HopAromaChart';
 
 /** One shared engine for a free scenario, the recipe assistant and the saved report. */
-export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target = {}, readOnly = false }: {
+export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target = {}, readOnly = false, initiallyExpanded = false }: {
   recipe?: TrialRecipe; onChange?: (recipe: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void;
-  target?: Record<string, HopRange>; readOnly?: boolean;
+  target?: Record<string, HopRange>; readOnly?: boolean; initiallyExpanded?: boolean;
 }) {
   const savedKnowledge = useStorageValue(StorageService.getHopKnowledge), lots = useStorageValue(StorageService.getHopLots);
   const { varieties: catalogue, loading } = useHopCatalogue();
@@ -70,7 +44,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const axes = useMemo(() => guideAxes(savedKnowledge), [savedKnowledge]), yeasts = useMemo(() => guideYeasts([...personalYeasts, ...savedKnowledge]), [savedKnowledge, personalYeasts]);
   const models = valid.valid.filter((k): k is HopExtrapolation => k.kind === 'extrapolation' && k.enabled);
   const [addition, setAddition] = useState(0);
-  const [variantOpen, setVariantOpen] = useState(false);
+  const [variantOpen, setVariantOpen] = useState(initiallyExpanded);
   const [explanationOpen, setExplanationOpen] = useState(false);
   const recipeScenario = recipe ? recipeHopScenario(recipe, addition, varieties, yeasts) : null;
   const solverPolicy = useMemo(() => guideSolverPolicy(savedKnowledge), [savedKnowledge]);
@@ -160,16 +134,16 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
     {(proposedConditions?.conditions.length || timingDefaults) && <p className="text-xs text-water">Les conditions manquantes ont été préremplies pour explorer ce scénario, à partir du guide de formulation ou d’un palier de la recette. Ce sont des valeurs proposées, à confirmer avant application.</p>}
   </div>;
   return <section aria-label="Simulateur aromatique expérimental" className="space-y-5 rounded-panel border border-hop/30 bg-cave-950/40 p-3 sm:p-4">
-    <header className="space-y-2"><div className="flex gap-2 items-center"><FlaskConical size={18} className="text-hop" /><h3 className="font-serif text-xl text-cave-50">Tester une combinaison libre</h3></div><p className="text-sm text-cave-200">Change un ingrédient ou un ajout, compare, puis applique.</p><p className="text-xs text-ebc-straw">Modèle expérimental · confiance faible · plages non validées par dégustation.</p></header>
+    <header className="space-y-2"><div className="flex gap-2 items-center"><FlaskConical size={18} className="text-hop" /><h3 className="font-serif text-xl text-cave-50">Tester une combinaison libre</h3></div><p className="text-xs text-ebc-straw">Simulation expérimentale · consulter les plages et leurs sources.</p></header>
     {recipe && recipe.hops.length > 1 && <HopField label="Ajout à explorer"><select className={inputClass} value={addition} disabled={busy} onChange={e => setAddition(Number(e.target.value))}>{recipe.hops.map((h, i) => <option key={i} value={i}>Ajout {i + 1} · {h.name}</option>)}</select></HopField>}
     {!recipeScenario && <p className="text-xs text-cave-400">Simulation libre, initialisée avec un exemple à adapter. Elle ne modifie pas la recette avant application.</p>}
     {!!recipeScenario?.proposed.length && <div className="border-l-2 border-ebc-straw pl-3 text-xs text-ebc-straw space-y-1">{recipeScenario.proposed.map(p => <p key={p}>{p}</p>)}<p>Ces propositions ne modifient pas la recette.</p></div>}
     <div className={readOnly ? 'space-y-4' : 'grid lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)] gap-5'}><div className="space-y-4">
-    {readOnly ? <div className="space-y-3"><Button onClick={() => setVariantOpen(v => !v)} aria-expanded={variantOpen}>Explorer une variante sans modifier la recette</Button>{variantOpen && controls}</div> : controls}
+    {readOnly ? <div className="space-y-3">{!initiallyExpanded && <Button onClick={() => setVariantOpen(v => !v)} aria-expanded={variantOpen}>Explorer une variante sans modifier la recette</Button>}{variantOpen && controls}</div> : controls}
     <div><p className="font-semibold text-cave-50">{variety?.name ?? recipe?.hops[addition]?.name ?? 'Houblon à choisir'} × {yeast?.name ?? recipe?.yeast?.name ?? 'Levure à choisir'}</p><p className="text-sm text-hop">{scenario.timing ? HOP_TIMING_LABELS[scenario.timing] : 'Moment à choisir'} · {hopDoseLabel(scenario.doseGL)} · {hopDurationLabel(scenario.contactHours)}</p></div>
     <details><summary className="cursor-pointer min-h-touch text-sm text-water">Profil de levure, phénols et thiols</summary><div className="text-sm text-cave-200 space-y-2">{strainFacts.length ? strainFacts.map((y, i) => <div key={i} className="space-y-2"><p>{y.notes[0]}</p>{y.evidence.map((s, j) => <HopSourceLink key={j} source={s} />)}</div>) : <p>Profil de cette souche non caractérisé dans le modèle. Ni neutralité, ni statut phénolique, ni rendement de libération des thiols ne sont déduits de son nom.</p>}<p>3SH/3MH et 4MSP/4MMP : libération de précurseurs selon les voies enzymatiques. 3SHA/3MHA : transformation distincte du 3SH. POF décrit les phénols de levure ; il ne mesure pas la β-lyase. Les quantités finales restent non calculées ici.</p></div></details>
     </div><div className="space-y-4 min-w-0">
-    <HopExplorationChart prediction={prediction} axes={axes} target={target} baseline={comparison} highlighted={highlighted} />
+    <HopExplorationChart prediction={prediction} axes={axes} target={target} baseline={comparison} highlighted={highlighted} variety={variety} models={models} />
     {prediction.score.range && <p className="text-sm text-ebc-straw">Adéquation à ton objectif : {hopRangeLabel(prediction.score.range)} / 100 · convention de classement, pas probabilité de réussite.</p>}
     {prediction.risks.filter(r => r.status !== 'unknown').map(r => <p key={r.code} className="border-l-2 border-ebc-straw pl-3 text-sm text-ebc-straw">{r.title} · {r.message}</p>)}
     </div></div>

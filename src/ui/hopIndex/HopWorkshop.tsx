@@ -2,19 +2,21 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, FlaskConical, SlidersHorizontal } from 'lucide-react';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import type { HopRange } from '../../../functions/src/hopIndexSchema';
-import { adoptHopTrial, compareHopTrial, recipeHopTiming, type TrialRecipe } from '../../domain/hopIndex/trials';
+import { adoptHopTrial, recipeHopTiming, type TrialRecipe } from '../../domain/hopIndex/trials';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
 import { ensureGuideReferences, guideAxes, guideTrials, guideYeasts } from './guideData';
 import { useHopCatalogue } from './useHopCatalogue';
 import { HopAromaTargetPicker } from './HopAromaTargetPicker';
-import { HopTechnicalPanel, HopSourceLink } from './HopTechnicalPanel';
-import { HOP_TIMING_LABELS, HOP_CONFIDENCE_LABELS } from './presentation';
+import { HopTechnicalPanel } from './HopTechnicalPanel';
+import { HOP_TIMING_LABELS } from './presentation';
 import { Button } from '../../components/ui/Button';
 import { inputClass } from '../FormNav';
 import { HopField } from './HopFactsEditor';
 import { HopExtrapolationPanel } from './HopExtrapolationPanel';
 import { HopSolverPanel } from './HopSolverPanel';
+import { HopRecipeSimulationPanel } from './HopRecipeSimulationPanel';
+import { HopTrialResult } from './HopTrialEvidence';
 
 const number = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 2 });
 const rangeLabel = (r: HopRange, unit: string) => `${r.min === r.max ? number(r.min) : `${number(r.min)}–${number(r.max)}`} ${unit}`;
@@ -39,34 +41,7 @@ export function HopTrialChart({ trial, recipe }: { trial: HopTrial; recipe?: Tri
   </figure>;
 }
 
-export function HopTrialResult({ trial }: { trial: HopTrial }) {
-  return <div className="space-y-3 border-l-2 border-hop pl-4 py-1">
-    <p className="text-xs uppercase tracking-wider text-hop">Résultat observé dans la source</p>
-    <p className="text-cave-50">{trial.result}</p>
-    {trial.sensory.map((s, i) => <figure key={i} aria-label={`Plage publiée : ${s.name}`} className="space-y-2">
-      <figcaption className="text-sm text-cave-200">{s.name} · {rangeLabel(s.range, '')} sur {number(s.scale.max)}</figcaption>
-      <div className="relative h-5 bg-cave-800 rounded" aria-hidden="true"><span className="absolute inset-y-0 rounded bg-hop/70" style={{ left: `${100 * (s.range.min - s.scale.min) / (s.scale.max - s.scale.min)}%`, width: `${100 * (s.range.max - s.range.min) / (s.scale.max - s.scale.min)}%` }} /></div>
-      <p className="text-xs text-cave-400">{number(s.scale.min)} — échelle du panel — {number(s.scale.max)}. Plage observée, sans garantie pour un autre brassin.</p>
-      <HopSourceLink source={s.source} />
-    </figure>)}
-    {!trial.sensory.length && <p className="text-xs text-cave-400">Résultat qualitatif ; intensité et dispersion non publiées.</p>}
-    <p className="text-xs text-cave-400">Confiance de transposition : {HOP_CONFIDENCE_LABELS[trial.confidence]}.</p>
-    <HopSourceLink source={trial.source} />
-    <details className="text-xs text-cave-400"><summary className="cursor-pointer py-2">Comment cette confiance est-elle appréciée ?</summary><p>{trial.assessmentSource.locator}</p><HopSourceLink source={trial.assessmentSource} /></details>
-  </div>;
-}
-
-export function HopTrialComparison({ recipe, trial }: { recipe: TrialRecipe; trial: HopTrial }) {
-  const differences = compareHopTrial(recipe, trial);
-  return <section aria-label="Écarts au programme documenté" className="space-y-3">
-    <div><h4 className="font-semibold text-cave-100">Ton adaptation · à valider en brassant</h4><p className="text-sm text-cave-400">Le résultat de l’essai reste un repère. Il n’est pas recopié comme prédiction de ta recette.</p></div>
-    <div className="divide-y divide-cave-800">{differences.map((d, i) => <div key={i} className="py-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-sm">
-      <span className="text-cave-200">{d.label}</span><span className={d.status === 'same' ? 'text-hop' : d.status === 'changed' ? 'text-ebc-straw' : 'text-cave-400'}>{d.status === 'same' ? 'Concorde' : d.status === 'changed' ? 'Diffère' : 'À vérifier'}</span>
-      {d.status !== 'same' && <p className="col-span-2 text-xs text-cave-400">{d.detail}</p>}
-    </div>)}</div>
-    <p className="text-xs text-cave-400">{trial.matrix}</p>
-  </section>;
-}
+export { HopTrialResult, HopTrialComparison } from './HopTrialEvidence';
 
 export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onEditAdditions, onChooseYeast }: {
   recipe?: TrialRecipe; onChange?: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void; contextEditor?: React.ReactNode; onEditAdditions?: () => void; onChooseYeast?: () => void;
@@ -76,7 +51,7 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
   const trials = useMemo(() => guideTrials(knowledge), [knowledge]);
   const yeasts = useMemo(() => guideYeasts(knowledge), [knowledge]), axes = useMemo(() => guideAxes(knowledge), [knowledge]);
   const [selectedId, setSelectedId] = useState(recipe?.hopTrialId ?? 'trial-split-verdant-2026');
-  const [view, setView] = useState<'solver' | 'trials' | 'adapt' | 'technical'>('solver');
+  const [view, setView] = useState<'solver' | 'trials' | 'adapt' | 'technical'>(() => recipe?.hops.length ? 'adapt' : 'solver');
   const [query, setQuery] = useState(''), [family, setFamily] = useState('');
   const [localTarget, setLocalTarget] = useState<Record<string, HopRange>>({});
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
@@ -84,7 +59,12 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
   const pending = useRef(false), latest = useRef({ recipe, onChange }); latest.current = { recipe, onChange };
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
-  const anchor = trials.find(t => t.id === recipe?.hopTrialId);
+  const previousAdditionCount = useRef(recipe?.hops.length ?? 0);
+  useEffect(() => {
+    const count = recipe?.hops.length ?? 0;
+    if (count > 0 && previousAdditionCount.current === 0) setView('adapt');
+    previousAdditionCount.current = count;
+  }, [recipe?.hops.length]);
   const target = recipe?.hopAromaTarget ?? localTarget;
   const initialSelection = useRef(selectedId);
   const namedText = (t: HopTrial) => fold([t.name, t.yeastName, ...t.hops.map(h => `${h.name} ${HOP_TIMING_LABELS[h.timing]}`)].join(' '));
@@ -118,15 +98,13 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
     setPreview(false); setView('adapt'); setNotice('Programme repris. Complète les alpha du lot, les contacts, la quantité de levure et le programme de fermentation.');
   });
   return <section aria-label="Atelier aromatique" className="min-w-0 border border-cave-700 rounded-panel bg-cave-900 overflow-hidden">
-    <header className="p-4 sm:p-5 bg-gradient-to-br from-hop/10 to-cave-900 border-b border-cave-700">
-      <p className="text-xs uppercase tracking-widest text-hop mb-2">Houblon × levure × timing</p>
-      <h2 className="font-serif text-2xl sm:text-3xl text-cave-50">Construire le goût de ta bière</h2>
-      <p className="text-sm text-cave-200 mt-2 max-w-2xl">Pars d’un essai documenté ou simule ta propre combinaison, puis compare les variantes avant de composer.</p>
-      {onChooseYeast && <div className="mt-3"><Button disabled={busy} onClick={onChooseYeast}>Banane, girofle : choisir la levure et les paliers →</Button></div>}
+    <header className="p-3 sm:p-4 border-b border-cave-700">
+      <h2 className="font-serif text-xl text-cave-50">Construire le goût de ta bière</h2>
+      {onChooseYeast && <div className="mt-3"><Button disabled={busy} onClick={onChooseYeast}>Levure et fermentation</Button></div>}
     </header>
     <div className="p-3 sm:p-5 space-y-5">
       <nav aria-label="Étapes de l’atelier aromatique" className="grid grid-cols-2 sm:grid-cols-4 gap-1">
-        {([{ id: 'solver', name: 'Trouver mon combo', Icon: SlidersHorizontal }, { id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'adapt', name: 'Mon adaptation', Icon: SlidersHorizontal }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
+        {([{ id: 'adapt', name: 'Simuler mes ajouts', Icon: SlidersHorizontal }, { id: 'solver', name: 'Trouver mon combo', Icon: SlidersHorizontal }, { id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
       </nav>
       {view === 'solver' && <HopSolverPanel recipe={recipe} onChange={onChange} target={target}
         onTargetChange={next => { if (recipe && onChange) change({ ...latest.current.recipe!, hopAromaTarget: next }); else setLocalTarget(next); }}
@@ -142,7 +120,7 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
           {selected && <article aria-label="Protocole sélectionné" className="space-y-5 min-w-0 lg:border-l lg:border-cave-700 lg:pl-5">
             <h3 className="text-lg font-semibold text-cave-50">{selected.name}</h3>
             <HopTrialChart trial={selected} recipe={recipe} />
-            <HopTrialResult trial={selected} />
+            <details><summary className="cursor-pointer min-h-touch text-sm text-water">Résultat observé dans la source</summary><HopTrialResult trial={selected} /></details>
             <details className="text-sm text-cave-400"><summary className="cursor-pointer min-h-touch">Grist, limites et conditions à reproduire</summary><p className="mb-2">{selected.matrix}</p><ul className="list-disc pl-5 space-y-1">{selected.limitations.map(l => <li key={l}>{l}</li>)}</ul></details>
             {recipe && onChange ? <div className="space-y-3 border-t border-cave-700 pt-4">
               {!preview ? <div className="flex flex-wrap gap-2"><Button intent="primary" disabled={busy || loading} onClick={() => setPreview(true)}>Préparer ce programme pour {number(recipe.volumeL)} L</Button><Button disabled={busy || loading} onClick={() => void run(async () => { await persistTrial(selected); change({ ...latest.current.recipe!, hopTrialId: selected.id }); setView('adapt'); setNotice('Essai choisi comme repère. Tes ingrédients sont conservés.'); })}>Comparer à ma recette</Button></div>
@@ -156,17 +134,14 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
           </article>}
         </div>
       </>}
-      {view === 'adapt' && <div className="space-y-5">
-        {onEditAdditions && <Button onClick={onEditAdditions} disabled={busy}>Ajuster les quantités et les moments d’ajout ↓</Button>}
-        <HopAromaTargetPicker axes={axes} target={target} disabled={busy} onChange={(next, axis) => {
+      {view === 'adapt' && <div className="space-y-4">
+        {recipe?.hops.length ? <HopRecipeSimulationPanel recipe={recipe} onChange={onChange} onBusyChange={next => { setBusy(next); onBusyChange?.(next); }} /> : <HopExtrapolationPanel recipe={recipe} onChange={onChange} onBusyChange={next => { setBusy(next); onBusyChange?.(next); }} target={target} />}
+        {onEditAdditions && <Button onClick={onEditAdditions} disabled={busy}>Modifier mes ajouts</Button>}
+        <details><summary className="cursor-pointer min-h-touch text-sm text-cave-400">Profil recherché</summary><HopAromaTargetPicker axes={axes} target={target} disabled={busy} onChange={(next, axis) => {
           if (!recipe || !onChange) { setLocalTarget(next); return; }
           void run(async () => { if (next[axis.id]) await ensureGuideReferences({ knowledge: [axis] }); change({ ...latest.current.recipe!, hopAromaTarget: next }); });
-        }} />
-        <p className="text-xs text-cave-400">Le graphe ci-dessus représente ton intention. Les familles et leur échelle sont des choix de formulation de L’Affinée, pas des mesures de bière.</p>
-        <HopExtrapolationPanel recipe={recipe} onChange={onChange} onBusyChange={next => { setBusy(next); onBusyChange?.(next); }} target={target} />
-        {recipe && anchor && <details><summary className="cursor-pointer min-h-touch text-water">Comparer au protocole choisi : {anchor.name}</summary><div className="space-y-4"><HopTrialChart trial={anchor} recipe={recipe} /><HopTrialComparison trial={anchor} recipe={recipe} /></div></details>}
+        }} /></details>
         {contextEditor}
-        {recipe && <p className="text-sm text-cave-400">Ajuste les quantités et les moments sur les lignes de houblons de la recette. Change une condition à la fois si tu veux comprendre son effet à la dégustation.</p>}
       </div>}
       {view === 'technical' && <HopTechnicalPanel variety={varieties.find(v => v.id === (recipe?.hops[0]?.hopVarietyId ?? selected?.hops[0]?.varietyId))} />}
       {busy && <p role="status" className="text-sm text-cave-400">Traitement en cours…</p>}

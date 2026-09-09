@@ -11,7 +11,8 @@ const model={id:'cascade-dose-lafontaine2018',kind:'model',name:'Cascade × Wyea
 await writeFile(new URL('../src/data/hopDoseStudyBootstrap.json',import.meta.url),JSON.stringify([model],null,2)+'\n');
 console.log('Deux courbes publiées et leurs marges de reconstruction écrites.');
 const experimental=JSON.parse(await readFile(new URL('../src/data/hopExtrapolationLegacyBootstrap.json',import.meta.url)));
-experimental[0].version='2026-09-08.2';
+experimental[0].version='2026-09-09.1';
+experimental[0].aggregation=JSON.parse(await readFile(new URL('../src/data/hopRecipeAggregationBootstrap.json',import.meta.url)));
 const transferSource={...assessment,title:'Transfert exploratoire de formes de réponse à la dose',locator:'Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices.'};
 experimental[0].doseReferences=[['citrus',[1.9,4.4,5.8,7.1,7]],['herbal',[2.5,4.3,5.7,7.4,10.4]]].map(([axisId,means])=>{
   const increment=Math.max(...means)-means[0];

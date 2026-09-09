@@ -16,6 +16,11 @@
 }
 .brewer-global-companion:active { transform: scale(.95); }
 .brewer-global-companion:focus-visible { outline: 2px solid #e5d9bb; outline-offset: 4px; }
+@media (max-width: 639px) {
+  /* The recipe and wizard have a reserved button; floating over their data
+     would hide ranges, confidence labels and disclosure controls. */
+  body:has([data-inline-companion]) .brewer-global-companion { display: none; }
+}
 .brewer-conversation { border: 1px solid #53604d; border-radius: 14px; overflow: hidden; }
 .brewer-conversation-row { display: flex; align-items: center; }
 .brewer-activity-list .brewer-conversation-open { flex: 1; min-width: 0; border: 0; border-radius: 0; }

@@ -25,7 +25,10 @@ import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
 import type { Recipe, RecipeSnapshot, BrewDayState, AcidId } from '../types';
-import { compareHopTasting, hopTripletsOfRecipe, rankHopTriplets, recipeForHopAnalysis } from '../../functions/src/hopPredictionCore';
+import { compareHopTasting, rankHopTriplets, recipeForHopAnalysis, usableHopKnowledge } from '../../functions/src/hopPredictionCore';
+import { predictHopRecipe } from '../../functions/src/hopRecipePrediction';
+import { prepareHopRecipeInput } from './hopIndex/recipePrediction';
+import { compactHopRecipeEvidence } from './hopIndex/companionPrediction';
 import { assertHopTriplet, HopAxis, HopTriplet } from '../../functions/src/hopPredictionSchema';
 import { HopRange } from '../../functions/src/hopIndexSchema';
 import { searchHopVarieties } from '../../functions/src/hopIndexFacts';
@@ -71,7 +74,7 @@ export const brewerToolDeclarations = [
     og: num('DI SG du scénario, facultative ; prévue ou mesurée à distinguer dans la réponse'), sg: num('Densité actuelle corrigée SG, facultative')
   }, ['goal']),
   tool('lookup_hop_reference', 'Rechercher les fiches et COA complets par nom, alias, région ou ID exact. Renvoie chaque source séparément ; aucune fusion de plages.', { query: str('Nom, alias ou ID de variété/lot') }, ['query']),
-  tool('predict_hop_aroma', 'Évaluer et classer des triplets avec les modèles sourcés de l’index. Sans argument, évalue les ajouts et la cible de la recette. Aucun chiffre inventé.', {
+  tool('predict_hop_aroma', 'Sans triplets explicites, simuler la recette du contexte : ajouts réels, souche unique, paliers, profil global expérimental et chimie disponible. Les plages du cumul sont conditionnelles au modèle, sans couverture statistique des interactions. Avec triplets explicites, classer des alternatives indépendantes ; ne pas les assembler. Aucun chiffre inventé.', {
     triplets: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
       varietyId: str('ID exact de variété'), lotId: str('ID exact de lot, facultatif'), yeastId: str('ID exact de levure'), timing: str('Moment biologique', ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation']),
       doseGL: num('Dose g/L'), temperatureC: num('Température °C'), contactHours: num('Contact heures'), matrixId: str('ID de la matrice documentée')
@@ -265,7 +268,7 @@ export function runBrewerTool(
   }
   if (name === 'predict_hop_aroma') {
     const data = c.hopIndex ?? { varieties: [], lots: [], knowledge: [], truncated: [] };
-    let triplets: HopTriplet[] = hopTripletsOfRecipe(r ? recipeForHopAnalysis(r, c.journal) : undefined);
+    let triplets: HopTriplet[] = [];
     if (a.triplets != null) {
       if (!Array.isArray(a.triplets) || a.triplets.length > 100) throw Error('Au maximum 100 triplets par calcul.');
       a.triplets.forEach(t => assertHopTriplet(t)); triplets = a.triplets as HopTriplet[];
@@ -278,8 +281,18 @@ export function runBrewerTool(
         return [t.axisId, { min: t.min, max: t.max }];
       }));
     }
+    if (a.triplets == null && r) {
+      const yeasts = usableHopKnowledge(data.knowledge).valid.filter((k): k is HopYeast => k.kind === 'yeast');
+      const prepared = prepareHopRecipeInput(recipeForHopAnalysis(r, c.journal), data.varieties, yeasts);
+      return result('Simulation de la recette complète', compactHopRecipeEvidence(predictHopRecipe(prepared.input, target, data)), prepared.proposed, [
+        'Plages et confiance obligatoires. Valeur inconnue ≠ zéro. Enveloppe conditionnelle au modèle ; interactions du mélange non quantifiées, aucun taux de couverture statistique.',
+        'Références dédupliquées : sourceRef → sourceDictionary ; sourceSetRef → sourceSets → sourceDictionary ; reasonSetRef → reasonSets. Aucune source, raison, année ou valeur numérique n’est supprimée.',
+        'Quantités introduites distinctes des concentrations finales en bière ; aucun rendement de conversion inventé.',
+        ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
+      ]);
+    }
     return result('Houblon × levure × timing', rankHopTriplets(triplets, target, data), [], [
-      'Plages et confiance obligatoires. Valeur inconnue ≠ zéro. Aucun profil total d’assemblage calculé.',
+      'Alternatives indépendantes : leurs graphes et scores ne constituent pas un profil de recette. Plages et confiance obligatoires. Valeur inconnue ≠ zéro.',
       ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
     ]);
   }
@@ -287,7 +300,7 @@ export function runBrewerTool(
     const tasting = c.hopIndex?.tastings.find(t => t.id === a.tastingId);
     if (!tasting) return result('Dégustation introuvable', null, [], ['Observation non disponible dans le contexte chargé.']);
     const snapshot = c.hopIndex?.predictions.find(p => p.id === tasting.predictionId);
-    return result('Écart aromatique historique', compareHopTasting(tasting, snapshot?.prediction, snapshot?.evidence.knowledge.filter((k): k is HopAxis => k.kind === 'axis') ?? []), [], ['Écart perçu moins prévu, avec les deux marges ; aucune attribution causale automatique.']);
+    return result('Écart aromatique historique', compareHopTasting(tasting, snapshot?.recipePrediction?.overall ?? snapshot?.prediction, snapshot?.evidence.knowledge.filter((k): k is HopAxis => k.kind === 'axis') ?? []), [], [snapshot?.recipePrediction ? 'Programme complet expérimental figé ; bande conditionnelle, interactions non quantifiées.' : 'Prédiction de l’ajout figé.', 'Écart perçu moins prévu, avec les deux marges ; aucune attribution causale automatique.']);
   }
   if (name === 'heating_power') {
     const volume = number(a, 'volumeL', 0.1, 500),

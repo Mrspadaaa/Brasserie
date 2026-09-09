@@ -9,6 +9,8 @@
     "preview": "vite preview",
     "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only hosting,firestore",
     "test": "node scripts/check-test-boundary.mjs && vitest run",
+    "test:science": "node scripts/check-hop-science.mjs",
+    "test:smoke:hop": "node scripts/check-test-boundary.mjs && node scripts/check-hop-recipe-ui.mjs",
     "test:smoke:stout": "node scripts/check-test-boundary.mjs && vitest run tests/unit/stoutAlkalinity.test.ts tests/unit/stoutEdgeCases.test.ts tests/integration/stoutWaterProfile.test.tsx tests/integration/stoutSmoke.test.tsx",
     "test:watch": "node scripts/check-test-boundary.mjs && vitest",
     "test:coverage": "node scripts/check-test-boundary.mjs && vitest run --coverage",
