@@ -26,7 +26,7 @@ import {
 } from "../../domain/water";
 import {
   styleByCode,
-  styleWaterForName,
+  styleWaterForReference,
   styleFromTargetIons,
 } from "../../domain/waterStyles";
 
@@ -124,7 +124,7 @@ export function useWaterWorkshop({
         : styleByCode(state.styleCode),
     [state.customTarget, state.styleCode],
   );
-  const recipeStyle = styleWaterForName(brew?.style ?? "");
+  const recipeStyle = styleWaterForReference(brew?.style ?? "",brew?.styleRef);
   const differentProfile =
     !state.customTarget &&
     recipeStyle.code !== "—" &&
@@ -179,8 +179,8 @@ export function useWaterWorkshop({
   const ratio = sulfateChlorideRatio(achievedTotal);
 
   const phEstimate = useMemo(
-    () => estimateMashPh(brew?.grist, treatment.mashPhRa, mashRatioLPerKg),
-    [brew?.grist, treatment.mashPhRa, mashRatioLPerKg],
+    () => noloWaterModelIssue(brew?.nolo,mashRatioLPerKg)?null:estimateMashPh(brew?.grist, treatment.mashPhRa, mashRatioLPerKg),
+    [brew?.grist, brew?.nolo, treatment.mashPhRa, mashRatioLPerKg],
   );
 
   // Do not keep a before/after claim across a different source, recipe,
@@ -606,3 +606,5 @@ export function useWaterWorkshop({
   };
 }
 export type WaterWorkshopModel = ReturnType<typeof useWaterWorkshop>;
+
+import { noloWaterModelIssue } from '../../domain/nolo';

@@ -138,6 +138,7 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
   const choices = guides.filter(g => fermentationPlan(g, goal) && yeasts.some(y => y.id === g.yeastId && (form === 'all' || y.form === form)));
   const selected = choices.find(g => g.id === selectedId) ?? choices.find(g => g.yeastId === currentYeast?.id) ?? choices.find(g => yeasts.find(y => y.id === g.yeastId)?.form === recipe.yeast.form) ?? choices[0];
   const yeast = selected && yeasts.find(y => y.id === selected.yeastId);
+  if(recipe.nolo?.enabled)return <NoloPanel recipe={recipe} onChange={onChange}/>;
   return <section aria-label="Atelier des arômes de levure" className="mb-6 p-3 sm:p-5 rounded-panel border border-ebc-straw/30 bg-cave-900 space-y-4">
     <div className="flex items-start gap-3"><FlaskConical className="text-ebc-straw shrink-0 mt-1" size={22} /><div>
       <h3 className="text-xl sm:text-2xl font-semibold text-cave-50">Levure & fermentation</h3>
@@ -184,6 +185,7 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
   const snapshot = readFermentationGuide(recipe);
   const current = resolveFermentationYeast(recipe, yeasts);
   const goal = (snapshot?.yeast.id === current?.id ? snapshot?.goal : undefined) ?? fermentationDefaultGoal(guides.find(g => g.yeastId === current?.id));
+  if (recipe.nolo?.enabled) return null; // The shared NOLO panel already owns this result and its variant.
   return <section aria-label="Conduite de levure de la recette" className="pt-4 mt-4 border-t border-cave-700 space-y-3">
     {variant ? <>
       <Button onClick={() => setVariant(undefined)}>Fermer la variante de levure</Button>
@@ -206,3 +208,4 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
     </>}
   </section>;
 }
+import { NoloPanel } from './NoloPanel';

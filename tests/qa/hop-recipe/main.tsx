@@ -5,6 +5,9 @@ import { StorageService } from '../../../src/services/storage';
 import { FirestoreRepo, qaMetrics, seedQa } from './repo';
 import { guidePredictionKnowledge, guideYeasts, guideAxes, loadGuideVarieties, guideFermentations, guideFermentationScience } from '../../../src/ui/hopIndex/guideData';
 import { evaluateFermentationScenario } from '../../../src/domain/fermentationScenario';
+import { evaluateNoloRecipe,newNoloConfig,noloScience } from '../../../src/domain/nolo';
+import { noloInputBasis } from '../../../functions/src/noloCore';
+import { noloInput } from '../../../src/domain/nolo';
 import { predictStudyPhenols } from '../../../functions/src/fermentationScienceCore';
 import { qaCalls } from './functions';
 import { testHopData, testHopTriplet } from '../../fixtures/hopPrediction';
@@ -35,6 +38,14 @@ async function start() {
   };
   (window as any).__hopQa = {
     marker: '__HOP_RECIPE_QA_ONLY__', metrics: qaMetrics, calls: qaCalls, storage: StorageService, recipe, documented,
+    nolo: {
+      raw:(r:Recipe)=>evaluateNoloRecipe(r,StorageService.getHopKnowledge()),
+      recipe:(count=20)=>({...recipe(count),id:'qa-nolo',name:'QA hefeweisse NOLO',style:'Hefeweisse',
+        nolo:newNoloConfig(),yeast:{name:'Fermentis SafBrew LA-01',hopIndexId:'yeast-fermentis-safbrew-la-01',form:'sèche',qty:12,unit:'g'},
+        fermentation:[{kind:'primaire',name:'Primaire NOLO',tempC:20,days:2}]}),
+      basis:(r:Recipe,after?:string)=>noloInputBasis(noloInput(r),after),
+      science:()=>noloScience(StorageService.getHopKnowledge())
+    },
     yeast: {
       raw: (r: Recipe) => evaluateFermentationScenario(r, guideYeasts(StorageService.getHopKnowledge()), guideFermentations(StorageService.getHopKnowledge())),
       guides: () => guideFermentations(StorageService.getHopKnowledge()),

@@ -8,7 +8,9 @@ export const getFermentationResearch = onCall(
   async request => {
     requireBrewer(request);
     // Fixed path: request data cannot select any other server file.
-    const markdown = await readFile(new URL('../reports/fermentation-2026.md', import.meta.url), 'utf8');
+    const reports = await Promise.all(['nolo-2026.md','fermentation-2026.md'].map(file =>
+      readFile(new URL('../reports/'+file, import.meta.url), 'utf8')));
+    const markdown = reports.join('\n\n');
     return { markdown };
   }
 );

@@ -20,6 +20,7 @@ import { assessWaterProfile, PROFILE_IONS } from './water/profileAssessment';
 import { computeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { BrewingMath } from '../services/brewingMath';
+import { noloScience } from './nolo';
 type WaterRecipe = Pick<
   Recipe,
   | 'style'
@@ -30,6 +31,7 @@ type WaterRecipe = Pick<
   | 'boilMin'
   | 'efficiencyPct'
   | 'brewhouse'
+  | 'nolo'
 >;
 
 export const waterInputPaths = [
@@ -82,6 +84,7 @@ export function constrainRo<
 }
 
 export function recipeWaterCalculation(recipe: WaterRecipe) {
+  if((recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings'))throw Error('Drêches : mesurer le moût récupéré ; le modèle de tampon du malt neuf ne s’applique pas.');
   const p = recipe.waterPlan;
   if (!p || !Number.isFinite(p.mashWaterL) || !Number.isFinite(p.spargeWaterL)
     || !(p.mashWaterL > 0) || !(p.spargeWaterL >= 0))
@@ -97,6 +100,8 @@ export function recipeWaterCalculation(recipe: WaterRecipe) {
   const grains = (recipe.fermentables ?? []).filter((f) => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage');
   const grainKg = grains.reduce((sum, f) => sum + f.weightKg, 0);
   const ratio = grainKg > 0 ? p.mashWaterL / grainKg : 0;
+  if(recipe.nolo?.enabled && ratio>(recipe.nolo.scienceSnapshot??noloScience())!.waterMashMaxLKg.value)
+    throw Error('Empâtage NOLO très dilué : mesurer ou titrer le moût. Le modèle de pH et sa marge standard ne sont pas validés ici.');
   const band = targetRaForGrist(
     computeBeerColor(grains, recipe.volumeL)?.ebc ?? null,
     grains,

@@ -1,5 +1,6 @@
 import { FinanceCategory, StockItem, Transaction, Batch } from '../types';
 import { StorageService } from './storage';
+import { brewingStyles } from '../domain/brewingStyles';
 
 /**
  * Préremplissage des formulaires, DÉRIVÉ DES DONNÉES RÉELLES.
@@ -221,6 +222,10 @@ export const Suggestions = {
   },
 
   /** Unités déjà employées dans le stock, pour proposer les bonnes. */
+  recipeStyles(): string[] {
+    return [...new Set([...this.knownStyles(), ...brewingStyles(StorageService.getHopKnowledge()).flatMap(s => [s.name, ...s.aliases])])].sort((a,b)=>a.localeCompare(b,'fr'));
+  },
+
   knownUnits(): string[] {
     const stocks = StorageService.getStocks();
     const set = new Set<string>(['kg', 'g', 'L', 'sachet', 'pièce']);

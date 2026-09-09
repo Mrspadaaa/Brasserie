@@ -5,6 +5,8 @@ import { assertHopSolverPolicy, type HopSolverPolicy } from './hopSolverSchema.j
 import { assertFermentationGuide, type FermentationGuide } from './fermentationGuideSchema.js';
 import { assertYeastCatalogue, type YeastCatalogue } from './yeastCatalogueSchema.js';
 import { assertFermentationScience, type FermentationScience } from './fermentationScienceSchema.js';
+import { assertBrewingStyleGuide, type BrewingStyleGuide } from './brewingStyleSchema.js';
+import { assertNoloScience, type NoloScience } from './noloSchema.js';
 import type { HopRecipePrediction } from './hopRecipePrediction.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
@@ -60,7 +62,7 @@ export interface HopConfidencePolicy {
 export interface HopResearchNote {
   id: string; kind: 'note'; name: string; topics: string[]; summary: string; limitation: string; source: HopSource;
 }
-export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation | HopSolverPolicy | FermentationGuide | FermentationScience;
+export type HopKnowledge = HopAxis | HopYeast | HopModel | HopRiskPolicy | HopConfidencePolicy | HopResearchNote | HopTrial | HopExtrapolation | HopSolverPolicy | FermentationGuide | FermentationScience | BrewingStyleGuide | NoloScience;
 export interface HopEstimate {
   range: HopRange | null; confidence: HopConfidence; reasons: string[]; sources: HopSource[];
   /** Central scenario of explicit expert parameters, always accompanied by range. */
@@ -122,6 +124,8 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
   if (provenanceError) throw Error(provenanceError);
   const base = ['id', 'kind', 'name', 'source'];
   switch (v.kind) {
+    case 'styleGuide': assertBrewingStyleGuide(v); break;
+    case 'noloScience': assertNoloScience(v); break;
     case 'fermentation': assertFermentationGuide(v); break;
     case 'fermentationScience': assertFermentationScience(v); break;
     case 'solver': assertHopSolverPolicy(v); break;
@@ -220,7 +224,7 @@ export function assertHopTasting(v: any, id?: string): asserts v is HopTasting {
 export function assertHopPredictionSnapshotShape(v: any, id?: string): asserts v is HopPredictionSnapshot {
   check(obj(v) && idValid(v.id) && (!id || v.id === id) && str(v.name) && typeof v.createdAt === 'string' && Number.isFinite(Date.parse(v.createdAt)) && ['hop-envelope-v1', 'hop-envelope-v2', 'hop-experimental-v3', 'hop-experimental-v4'].includes(v.engineVersion), 'Instantané de prédiction invalide.');
   keys(v, ['id', 'createdAt', 'name', 'recipeId', 'batchId', 'engineVersion', 'target', 'prediction', 'recipePrediction', 'evidence']);
-  if (v.recipePrediction !== undefined) check(v.engineVersion === 'hop-experimental-v4' && obj(v.recipePrediction) && ['hop-recipe-experimental-v1', 'hop-recipe-experimental-v2', 'hop-recipe-experimental-v3'].includes(v.recipePrediction.engineVersion), 'Version du programme figé invalide.');
+  if (v.recipePrediction !== undefined) check(v.engineVersion === 'hop-experimental-v4' && obj(v.recipePrediction) && ['hop-recipe-experimental-v1', 'hop-recipe-experimental-v2', 'hop-recipe-experimental-v3', 'hop-recipe-experimental-v4'].includes(v.recipePrediction.engineVersion), 'Version du programme figé invalide.');
   for (const key of ['recipeId', 'batchId']) check(v[key] == null || idValid(v[key]), 'Référence de prédiction invalide.');
   check(obj(v.evidence) && Array.isArray(v.evidence.varieties) && Array.isArray(v.evidence.lots) && Array.isArray(v.evidence.knowledge), 'Données figées absentes.');
   keys(v.evidence, ['varieties', 'lots', 'knowledge']);

@@ -26,7 +26,8 @@ describe('private fermentation research', () => {
   it('serves the complete fixed report to the authorized account only', async () => {
     const result = await run({ ...request(), data: { path: '../../.env' } });
     const canonical = await readFile(new URL('../../docs/research/fermentation/report-source.md', import.meta.url), 'utf8');
-    expect(result).toEqual({ markdown: canonical });
+    const nolo = await readFile(new URL('../../functions/reports/nolo-2026.md', import.meta.url), 'utf8');
+    expect(result).toEqual({ markdown: nolo + '\n\n' + canonical });
     expect(result.markdown.match(/\]\(https:\/\//g)?.length).toBeGreaterThan(20);
   });
   it('keeps the report out of the public directory', async () => {

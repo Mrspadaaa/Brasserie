@@ -6,12 +6,13 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]);
 const source = readFileSync(join(root, 'docs/research/fermentation/report-source.md'), 'utf8');
 const marker = source.trim().split(/\r?\n\r?\n/)[1];
+const noloMarker = readFileSync(join(root,'functions/reports/nolo-2026.md'),'utf8').trim().split(/\r?\n\r?\n/)[1];
 const failures = [];
 if (!existsSync(join(root, 'dist/index.html'))) throw Error('Build required before privacy check.');
 for (const base of ['public', 'dist']) {
   for (const file of walk(join(root, base))) {
     if (relative(join(root, base), file).replaceAll('\\', '/').startsWith('research/')) failures.push(relative(root, file));
-    else if (/\.(html|js|json|md|map)$/.test(file) && readFileSync(file, 'utf8').includes(marker)) failures.push(relative(root, file));
+    else if (/\.(html|js|json|md|map)$/.test(file) && [marker,noloMarker].some(m=>readFileSync(file, 'utf8').includes(m))) failures.push(relative(root, file));
   }
 }
 if (failures.length) throw Error('Private report in public output: ' + failures.join(', '));

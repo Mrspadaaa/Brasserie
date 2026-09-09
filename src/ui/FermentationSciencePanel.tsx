@@ -114,6 +114,7 @@ export function FermentationRecipeAdvice({recipe}:{recipe:TrialRecipe}){
  const snapshot=readFermentationGuide(recipe);
  const goal=(snapshot?.yeast.id===scenario.yeast?.id?snapshot?.goal:undefined)??fermentationDefaultGoal(guide);
  const warnings=scenario.warnings;
+ if(recipe.nolo?.enabled)return <p className="mt-3 text-xs text-cave-400">Les conduites et vigilances NOLO sont réunies dans « Objectif NOLO ». Les relations d’arômes de bière alcoolisée restent hors domaine.</p>;
  return <details className="mt-4 border border-cave-700 rounded-control p-3" onToggle={e=>setOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-water">Aide pour cette levure et ces paliers</summary>
   {open&&<div className="space-y-4 pt-3">
    <p className="text-sm text-cave-400">Lecture de la conduite actuelle ; aucun changement automatique.</p>

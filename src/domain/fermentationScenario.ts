@@ -31,6 +31,7 @@ export function evaluateFermentationScenario(recipe: TrialRecipe, yeasts: (HopYe
     hasDryHop: recipe.hops.some(h => normalizeHop(h).stage === 'dryHop' && (h.weightG > 0 || !Number.isFinite(h.weightG)))
   });
   warnings.push(...issues.map(i => i.message));
-  const fg = fermentationGravityFromAttenuation(attenuation, recipe.ogTarget);
+  const fg = fermentationGravityFromAttenuation(recipe.nolo?.enabled?undefined:attenuation, recipe.ogTarget);
+  if(recipe.nolo?.enabled)warnings.push('NOLO : l’atténuation documentaire ne prédit pas l’alcool au conditionnement. Utiliser le bilan des sucres et les analyses du panneau NOLO.');
   return { version: 'yeast-scenario-2', yeast, guide, temperature, attenuation, fg, warnings, issues };
 }

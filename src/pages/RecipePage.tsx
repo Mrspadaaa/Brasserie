@@ -33,6 +33,7 @@ import { BrewerChat } from '../ui/BrewerChat';
 import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
+import { NoloPanel } from '../ui/NoloPanel';
 import { StorageService } from '../services/storage';
 
 interface RecipePageProps {
@@ -141,10 +142,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
 
-  const fgPredicted = recipe.yeast?.attenuationPct
+  const fgPredicted = !recipe.nolo?.enabled && recipe.yeast?.attenuationPct != null
     ? BrewingMath.calculateFg(og, recipe.yeast.attenuationPct, points?.unfermentable ?? 0)
     : null;
-  const fg = recipe.fgTarget || fgPredicted;
+  const fg = recipe.nolo?.enabled ? null : recipe.fgTarget || fgPredicted;
 
   const abv = og > 1 && fg ? BrewingMath.calculateABV(og, fg) : null;
 
@@ -215,7 +216,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             hint="renseigne le potentiel des malts"
             tone="text-ebc-straw"
           />
-          <Metric label="FG" value={fg ? fg.toFixed(3) : null} hint="renseigne l’atténuation" />
+          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint="renseigne l’atténuation" />}
           {/*
             L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un
             houblon. Quand la recette d'origine en annonce un autre, on montre
@@ -241,12 +242,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             hint="renseigne la couleur des malts"
             swatch={color?.swatch}
           />
-          <Metric
+          {!recipe.nolo?.enabled&&<Metric
             label="ABV"
             value={abv ? `${abv.toFixed(1)} %` : null}
             hint="dépend de l’OG et de la FG"
             tone="text-ebc-amber"
-          />
+          />}
         </div>
 
         {(colorMissing.length > 0 || hopsMissingAlpha.length > 0) && (
@@ -417,6 +418,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       </Section>
 
       <Section title="Potentiel aromatique">
+        <BrewingStyleDetails recipe={recipe}/>{recipe.nolo?.enabled&&<div className="mb-4"><NoloPanel recipe={recipe}/></div>}
         <HopRecipePanel recipe={recipe} onEdit={onEdit} />
       </Section>
 
@@ -480,7 +482,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       )}
 
       {/* --- Eau : le plan complet, empâtage et rinçage séparés ----------- */}
-      {recipe.waterPlan && (
+      {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && recipe.waterPlan && (
         <Section
           title="Eau et sels"
           /*
@@ -645,7 +647,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       )}
 
       {/* --- Eau (ancien format, lu tel quel) ----------------------------- */}
-      {!recipe.waterPlan && recipe.water?.salts && (
+      {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && !recipe.waterPlan && recipe.water?.salts && (
         <Section
           title="Eau"
           hint={`${recipe.water.sourceName} · ${recipe.water.diRatioPct} % d’osmosée`}
@@ -821,3 +823,5 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     </PageShell>
   );
 };
+
+import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';

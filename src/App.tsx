@@ -826,7 +826,7 @@ export const App: React.FC = () => {
           seed={wizardSeed}
           stockItems={allStockItems}
           config={config}
-          knownStyles={Suggestions.knownStyles()}
+          knownStyles={Suggestions.recipeStyles()}
           onClose={route.close}
           onCreateStockItem={createStockItem}
           onLearnIngredient={learnIngredient}

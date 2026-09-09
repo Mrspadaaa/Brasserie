@@ -1,0 +1,11 @@
+import { build } from 'esbuild';
+import { mkdir,writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+const result=await build({entryPoints:['tests/scientific/noloBenchmark.ts'],bundle:true,platform:'node',format:'esm',write:false,metafile:true,logLevel:'silent'});
+const forbidden=Object.keys(result.metafile.inputs).filter(p=>/(?:node_modules\/(?:firebase|@firebase)|src\/services\/|functions\/src\/(?:ai|firebase)\.)/.test(p.replaceAll('\\','/')));
+if(forbidden.length)throw Error('Remote dependency in NOLO benchmark: '+forbidden.join(', '));
+const {runNoloBenchmark}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'));
+const report=runNoloBenchmark(),out=resolve(tmpdir(),'laffinee-nolo-qa-evidence');
+await mkdir(out,{recursive:true});await writeFile(resolve(out,'science.json'),JSON.stringify(report,null,2));
+console.log(JSON.stringify(report,null,2));if(report.failures.length)process.exitCode=1;

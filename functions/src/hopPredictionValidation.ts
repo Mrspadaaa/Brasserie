@@ -31,6 +31,9 @@ export function assertHopPredictionSnapshot(value: unknown, id?: string): assert
     const { additions, ...programme } = replayed;
     if (!equal(value.recipePrediction, programme) || !equal(value.prediction, additions[0]))
       throw Error('Programme figé incohérent avec ses données figées.');
+    // Already fully replayed in the versioned recipe domain above; a naked
+    // triplet deliberately carries no NOLO matrix information.
+    if (value.recipePrediction.input.aromaDomain === 'nolo') return;
   }
   if (value.engineVersion === 'hop-envelope-v1') return;
   const actual = value.prediction;

@@ -225,12 +225,12 @@ export const BrewingMath = {
     attenuationPct: number,
     unfermentablePoints = 0
   ): number | null {
-    if (!og || !Number.isFinite(og) || og <= 1 || !attenuationPct || !Number.isFinite(attenuationPct) || attenuationPct <= 0) return null;
+    if (!Number.isFinite(og) || og <= 1 || !Number.isFinite(attenuationPct) || attenuationPct < 0 || attenuationPct > 100) return null;
     const safeUnfermentable = Number.isFinite(unfermentablePoints) ? Math.max(0, unfermentablePoints) : 0;
     const totalPoints = (og - 1) * 1000;
     const fermentable = Math.max(0, totalPoints - safeUnfermentable);
     const remaining = safeUnfermentable + fermentable * (1 - Math.min(100, attenuationPct) / 100);
-    return Math.round((1 + remaining / 1000) * 1000) / 1000;
+    return 1 + remaining / 1000;
   },
 
   /**
@@ -248,6 +248,9 @@ export const BrewingMath = {
   attenuationForMashTemp(baseAttenuationPct: number, mashTempC: number): number {
     if (!baseAttenuationPct || !Number.isFinite(baseAttenuationPct) || baseAttenuationPct <= 0) return 0;
     if (!Number.isFinite(mashTempC)) return baseAttenuationPct;
+    // The legacy correction was calibrated only for ordinary brewing attenuation.
+    // A maltose-negative strain must never be lifted to its old 45% floor.
+    if (baseAttenuationPct < 45) return baseAttenuationPct;
     const shift = Math.max(-8, Math.min(8, (66.5 - mashTempC) * 1.5));
     return Math.round(Math.max(45, Math.min(95, baseAttenuationPct + shift)) * 10) / 10;
   },

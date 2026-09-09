@@ -32,6 +32,10 @@ import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { FermentationWorkshop } from '../ui/FermentationWorkshop';
+import { NoloPanel } from '../ui/NoloPanel';
+import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
+import { noloScience } from '../domain/nolo';
+import { StorageService } from '../services/storage';
 import { FermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
@@ -53,7 +57,7 @@ import {
   alkalineSaltGoal,
   estimateMashPh,
 } from '../domain/water';
-import { styleWaterForName, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
+import { styleWaterForReference, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
 import { waterTreatmentTarget } from '../domain/water/profileTarget';
 import { PageShell, Section } from './PageShell';
 import { useDensity, useCoarsePointer } from '../ui/useViewport';
@@ -400,13 +404,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
   const [mashSteps, setMashSteps] = useState<TempStep[]>(
-    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '').steps
+    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,brewingStyles(StorageService.getHopKnowledge())).steps
   );
   const [spargeType, setSpargeType] = useState<'fly' | 'batch' | 'none'>(
     base?.mash?.spargeType ?? 'batch'
   );
   const [ferment, setFerment] = useState<FermentationStep[]>(
-    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '').steps
+    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,brewingStyles(StorageService.getHopKnowledge())).steps
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
@@ -429,7 +433,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     spargeDiRatioPct: base?.waterPlan?.spargeDiRatioPct,
     // Le style d'eau se devine du style de bière saisi — c'est le point de
     // départ le plus juste, et il reste modifiable.
-    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForName(base?.style ?? '').code,
+    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(base?.style ?? '').code,
     // Une cible chiffrée enregistrée reprend la main sur le style deviné du nom.
     customTarget: base?.waterPlan?.targetIons
       ? {
@@ -458,7 +462,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     if (!state.autoTreatment || state.mashWaterL <= 0) return { water: state, error: '' };
     try {
       const { plan } = replanRecipeWater({
-        style, volumeL, fermentables, hops, boilMin,
+        style, volumeL, fermentables, hops, boilMin, nolo:details.nolo,
         efficiencyPct: details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75,
         waterPlan: { ...state, sourceId: waterSource.id, sourceSnapshot: waterSource,
           targetProfileId: state.styleCode, targetIons: state.customTarget?.ions,
@@ -471,7 +475,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     } catch (e) {
       return { water: state, error: (e as Error).message };
     }
-  }, [waterDraft, waterSource, name, style, volumeL, fermentables, hops, boilMin, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
+  }, [waterDraft, waterSource, name, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
   const water = automaticWater.water;
 
   // Follow the beer style until an explicit water profile is chosen. Saved
@@ -479,8 +483,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const waterProfileAuto = useRef(!base?.waterPlan?.targetProfileId && !base?.waterPlan?.targetIons);
   const changeStyle = (next: string) => {
     setStyle(next);
-    if (waterProfileAuto.current) {
-      setWater(w => ({ ...w, styleCode: styleWaterForName(next).code, ratioOverride: undefined }));
+    const resolved=resolveBrewingStyle(next,undefined,brewingStyles(StorageService.getHopKnowledge()));
+    setDetails(d=>({...d,styleRef:resolved?.ref}));
+    if (waterProfileAuto.current && resolved) {
+      setWater(w => ({ ...w, styleCode: styleWaterForReference(next,resolved.ref,brewingStyles(StorageService.getHopKnowledge())).code, ratioOverride: undefined }));
     }
   };
 
@@ -530,8 +536,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     [fermentables, volumeL, efficiency]
   );
   const ogPredicted = useMemo(
-    () => BrewingMath.calculateOg(fermentables, volumeL, efficiency),
-    [fermentables, volumeL, efficiency]
+    () => (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.nolo.secondRunnings?.sg??null:BrewingMath.calculateOg(fermentables, volumeL, efficiency),
+    [fermentables, volumeL, efficiency,details.nolo?.process,details.nolo?.secondRunnings?.sg]
   );
   const og = ogPredicted ?? 0;
 
@@ -543,15 +549,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   /** L'atténuation réelle dépend du palier de saccharification, pas seulement de la levure. */
   const mashTemp = useMemo(() => saccharificationTemp(mashSteps), [mashSteps]);
   const attenuation = useMemo(() => {
-    if (!yeast.attenuationPct) return null;
+    if (yeast.attenuationPct == null || details.nolo?.enabled) return null;
     return mashTemp
       ? BrewingMath.attenuationForMashTemp(yeast.attenuationPct, mashTemp)
       : yeast.attenuationPct;
-  }, [yeast.attenuationPct, mashTemp]);
+  }, [yeast.attenuationPct, mashTemp, details.nolo?.enabled]);
 
   const fgPredicted = useMemo(
     () =>
-      attenuation && og > 1
+      attenuation != null && og > 1
         ? BrewingMath.calculateFg(og, attenuation, points?.unfermentable ?? 0)
         : null,
     [attenuation, og, points]
@@ -591,7 +597,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const kettleHopG = useMemo(() => kettleHopGrams(hops), [hops]);
 
   useEffect(() => {
-    if (volumesEdited || totalGrist <= 0) return;
+    if (volumesEdited || totalGrist <= 0 || (details.nolo?.enabled&&details.nolo.process==='secondRunnings')) return;
     const v = BrewingMath.waterVolumes(
       totalGrist,
       volumeL,
@@ -605,7 +611,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         ? w
         : { ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }
     );
-  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited]);
+  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited,details.nolo?.process]);
 
   /**
    * Les deux doses d'acide, calculées ici pour être ENREGISTRÉES.
@@ -641,7 +647,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     return {
       targetStatus: {
         style, treatment, raBand: band, beerEbc: color?.ebc ?? null,
-        phEstimate: estimateMashPh(grains, treatment.mashPhRa,
+        phEstimate: noloWaterModelIssue(details.nolo,mashRatio)?null:estimateMashPh(grains, treatment.mashPhRa,
           totalGrist > 0 ? water.mashWaterL / totalGrist : 0),
         targetPh: details.waterPlan?.targetPh,
         customTarget: !!water.customTarget,
@@ -679,7 +685,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       mashPh: water.mashPh,
       spargePh: water.spargePh
     };
-  }, [waterSource, water, color, grains, totalGrist, details.waterPlan?.targetPh]);
+  }, [waterSource, water, color, grains, totalGrist, details.waterPlan?.targetPh, details.nolo]);
 
   const waterAcid = useMemo(
     () => ({
@@ -929,11 +935,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       .filter(f => f.kind === 'grain').reduce((sum, f) => sum + f.weightKg, 0);
     setWater(w => {
       const next = r.complete ? {
-        diRatioPct: 0, styleCode: styleWaterForName(r.style ?? '').code,
+        diRatioPct: 0, styleCode: styleWaterForReference(r.style ?? '').code,
         doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 0, spargeWaterL: 0,
         allSaltsInMash: true
       } as WaterState : { ...w };
-      if (r.style != null && waterProfileAuto.current && !next.customTarget) next.styleCode = styleWaterForName(r.style).code;
+      if (r.style != null && waterProfileAuto.current && !next.customTarget) next.styleCode = styleWaterForReference(r.style).code;
       if (mashL != null) next.mashWaterL = mashL;
       if (spargeL != null) next.spargeWaterL = spargeL;
       else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
@@ -1021,21 +1027,23 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     parentRecipeId: base?.parentRecipeId,
     name: name.trim(),
     style: style.trim(),
+    styleRef: details.styleRef,
+    nolo: details.nolo,
     volumeL,
     brewDate,
     boilMin,
-    ogTarget: (keepTargets ? details.ogTarget : undefined) ?? ogPredicted ?? 0,
+    ogTarget: (keepTargets ? details.ogTarget : undefined) ?? ogPredicted ?? null,
     // La densité finale tient compte de ce que la levure ne peut PAS manger.
-    fgTarget: (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? 0,
-    abvTarget: keepTargets && details.abvTarget != null ? details.abvTarget :
+    fgTarget: details.nolo?.enabled ? null : (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? null,
+    abvTarget: details.nolo?.enabled ? details.nolo.targetAbvPct : keepTargets && details.abvTarget != null ? details.abvTarget :
       ogPredicted && fgPredicted
         ? BrewingMath.calculateABV(ogPredicted, fgPredicted)
-        : 0,
+        : null,
     ibuTarget: (keepTargets ? details.ibuTarget : undefined) ?? ibu ?? undefined,
     colorEbc: details.colorEbc,
     efficiencyPct: details.efficiencyPct,
-    preBoilL: rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)*10)/10 : details.preBoilL,
-    preBoilHotL: rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
+    preBoilL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)*10)/10 : details.preBoilL,
+    preBoilHotL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
     brewhouse: rig?.equipment ? structuredClone(rig) : details.brewhouse,
     carboTarget: carboTarget.trim() || undefined,
     fermentables,
@@ -1059,7 +1067,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       spargeTempC: details.mash?.spargeTempC ?? 76,
       spargeType
     },
-    waterPlan: {
+    waterPlan: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.waterPlan:{
       roLimitL: water.roLimitL,
       autoTreatment: water.autoTreatment,
       saltOverrides: water.saltOverrides,
@@ -1333,6 +1341,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               />
             </Field>
 
+            {matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
+            <BrewingStyleDetails recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}/>
+            <NoloPanel recipe={build()} allowEnable onChange={next=>{
+              setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide,hopPredictionIds:next.hopPredictionIds,hopMatrixId:next.hopMatrixId,hopTrialId:next.hopTrialId}));
+              setYeast(next.yeast);setFerment(next.fermentation??[]);
+            }}/>
             <SliderField
               label="Volume en fermenteur"
               value={volumeL}
@@ -1813,7 +1827,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           </FormNav>
           <FermentationWorkshop recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
             setYeast(next.yeast); setFerment(next.fermentation ?? []);
-            setDetails(previous => ({ ...previous, yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+            setDetails(previous => ({ ...previous, nolo:next.nolo, yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
           }} />
           <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
             <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
@@ -2056,7 +2070,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step === 'eau' && (
         <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
           {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
-          <SaltSolver
+          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?<NoloPanel recipe={build()} onChange={next=>setDetails(d=>({...d,nolo:next.nolo}))}/>:<SaltSolver
             source={waterSource}
             onSourceChange={(source) => {
               setRecipeWaterSource(source);
@@ -2073,6 +2087,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             brew={{
               style,
               targetPh: details.waterPlan?.targetPh,
+              nolo: details.nolo, styleRef: details.styleRef,
               grist: grains,
               totalGristKg: totalGrist,
               hops,
@@ -2091,9 +2106,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             onChange={onWaterChange}
             noSparge={spargeType === 'none'}
             onNoSpargeChange={setNoSparge}
-          />
+          />}
 
-          {volumesStale && (
+          {(!details.nolo?.enabled||details.nolo.process!=='secondRunnings') && volumesStale && (
             <button
               type="button"
               onClick={() =>
@@ -2172,7 +2187,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
               efficiencyPct: efficiency, volumes: suggestedVolumes },
-            waterTreatment: waterRecap,
+            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecap,
             conventions: { ions: 'mg/L dans les eaux de traitement, avant extraction et ébullition',
               salts: 'grammes réellement retenus, répartis entre empâtage et rinçage',
               acid: 'doses retenues, concentration indiquée dans le nom du produit',
@@ -2252,7 +2267,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               yeast,
               mashSteps,
               fermentation: ferment,
-              water: waterRecap && {
+              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecap ? {
                 ...waterRecap,
                 sourceName: waterRecap.sourceName,
                 styleName: waterRecap.styleName,
@@ -2267,7 +2282,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 spargeAcid: waterRecap.spargeAcid,
                 ra: waterRecap.ra,
                 mashPh: waterRecap.mashPh
-              },
+              }:undefined,
               notes
             })
           }
@@ -2324,3 +2339,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     </PageShell>
   );
 };
+
+import { noloWaterModelIssue } from '../domain/nolo';
+
+import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';

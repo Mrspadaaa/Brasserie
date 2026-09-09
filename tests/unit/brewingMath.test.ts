@@ -179,8 +179,9 @@ describe('Extrait et densités', () => {
     expect(BrewingMath.calculateFg(1.05, 100)).toBeCloseTo(1.0, 3);
   });
 
-  it('rend null sans atténuation ou sans densité initiale', () => {
-    expect(BrewingMath.calculateFg(1.05, 0)).toBeNull();
+  it('préserve une atténuation nulle et distingue une atténuation inconnue', () => {
+    expect(BrewingMath.calculateFg(1.05, 0)).toBe(1.05);
+    expect(BrewingMath.calculateFg(1.05, NaN)).toBeNull();
     expect(BrewingMath.calculateFg(1, 75)).toBeNull();
   });
 });

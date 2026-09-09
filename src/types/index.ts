@@ -386,6 +386,8 @@ export interface RecipeStep {
 }
 
 export interface Recipe {
+  styleRef?: import('../../functions/src/brewingStyleSchema').BrewingStyleRef;
+  nolo?: import('../../functions/src/noloSchema').NoloConfig;
   id: string;
   /** Organisation du carnet uniquement ; l'historique de production reste conservé. */
   archivedAt?: string | null;
@@ -396,9 +398,9 @@ export interface Recipe {
   style: string;
   volumeL: number;
   brewDate?: string;
-  ogTarget: number;
-  fgTarget: number;
-  abvTarget: number;
+  ogTarget: number | null;
+  fgTarget: number | null;
+  abvTarget: number | null;
   ibuTarget?: number;
   carboTarget?: string;
   /** Values supplied by the recipe author, distinct from calculated estimates. */
@@ -543,6 +545,7 @@ export interface BatchPackaging {
 }
 
 export interface Batch {
+  nolo?: import('../../functions/src/noloSchema').NoloConfig;
   id: string; // LOT-001
   favorite?: boolean;
   /** Masqué du carnet courant, disponible dans Archives et les analyses. */

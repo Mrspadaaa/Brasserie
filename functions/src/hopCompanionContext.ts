@@ -17,6 +17,14 @@ export function hopIndexOverview(index: Index | undefined) {
     knowledge: index.knowledge.filter(k => k.kind !== 'yeast' || yeastPreview.has(k.id)).map(k => k.kind === 'yeast' ? {
       id: k.id, kind: k.kind, name: k.name, form: k.form, source: k.source,
       instruction: 'Identité seulement ; consulter lookup_yeast_reference pour caractéristiques, contradictions et provenance.'
+    } : k.kind === 'styleGuide' ? {
+      id: k.id, kind: k.kind, name: k.name, version: k.version, edition: k.edition, enabled: k.enabled,
+      source: k.source, styleCount: k.styles.length,
+      instruction: 'Référentiel de styles partagé avec le formulaire. Une ambiguïté exige un choix explicite ; ne pas imposer les statistiques à une variante personnelle.'
+    } : k.kind === 'noloScience' ? {
+      id: k.id, kind: k.kind, name: k.name, version: k.version, enabled: k.enabled, source: k.source,
+      strains: k.strains.map(s => ({ yeastId: s.yeastId, name: s.name })),
+      instruction: 'Calculer avec calculate_recipe ou fermentation_advice. Sucres partiels, analyses datées, supports et resucrage restent distincts. Aucun coefficient sensoriel alcoolisé transféré au NOLO.'
     } : k.kind === 'fermentationScience' ? {
       id: k.id, kind: k.kind, name: k.name, version: k.version, enabled: k.enabled,
       goals: k.goals, compounds: k.compounds.map(c => ({ id: c.id, name: c.name, family: c.family })),
@@ -56,7 +64,7 @@ export function brewerContextForStorage(context: BrewerContext, proposal?: Brewe
   return { ...context, hopIndex: {
     varieties: index.varieties.filter(v => varieties.has(v.id)).map(v => ({ id: v.id, name: v.name, aliases: [], form: v.form, analysis: [], descriptions: [] })),
     lots: index.lots.filter(l => lots.has(l.id)).map(l => ({ id: l.id, name: l.name, varietyId: l.varietyId, form: l.form, referenceOnly: l.referenceOnly, analysis: [] })),
-    knowledge: index.knowledge.filter(k => k.kind !== 'yeast' || yeasts.has(k.id)).map(k => {
+    knowledge: index.knowledge.filter(k => k.kind !== 'styleGuide' && (k.kind !== 'yeast' || yeasts.has(k.id))).map(k => {
       if (k.kind !== 'yeast') return k;
       const { catalogue: _catalogue, ...identity } = k; return identity;
     }), predictions: [], tastings: [],

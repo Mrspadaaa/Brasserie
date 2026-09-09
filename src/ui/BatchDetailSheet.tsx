@@ -13,6 +13,8 @@ import { FermentationCurveChart } from '../components/charts/FermentationCurveCh
 import type { BatchDetailSection } from '../domain/productionInsights';
 import { BatchGravityEntry } from './production/BatchGravityEntry';
 import { parseDecimal } from './numericInput';
+import { NoloPanel } from './NoloPanel';
+import { noloRecipeForBatch } from '../domain/nolo';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -42,6 +44,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const [draft, setDraft] = useSyncedDraft(batch, batch?.id);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [section, setSection] = useState<BatchDetailSection>(initialSection);
+  const [noloNotice,setNoloNotice]=useState('');
   useEffect(() => {
     setSection(initialSection);
     setConfirmDelete(false);
@@ -55,7 +58,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   const og = parseDecimal(draft.og || '');
   const fg = parseDecimal(draft.fg || '');
   const abv =
-    og !== null && fg !== null && og > 1 && fg > 0 && og >= fg
+    !noloRecipeForBatch(draft) && og !== null && fg !== null && og > 1 && fg > 0 && og >= fg
       ? BrewingMath.calculateABV(og, fg)
       : null;
 
@@ -84,6 +87,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         }
       >
         <div className="space-y-5">
+          {noloRecipeForBatch(draft)&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
             className="grid grid-cols-3 border-b border-cave-700"
             aria-label="Rubriques du brassin"

@@ -797,6 +797,8 @@ export const StorageService = {
   },
 
   updateBatch(batch: Batch) {
+    if(batch.nolo) assertNoloConfig(batch.nolo);
+    if(batch.recipeSnapshot?.nolo) assertNoloConfig(batch.recipeSnapshot.nolo);
     const old = this.getBatches().find((b) => b.id === batch.id);
     FirestoreRepo.put('batches', batch.id, batch);
     this.logAction(
@@ -833,7 +835,7 @@ export const StorageService = {
     };
 
     const deduct = (item: StockItem | undefined, qty: number, fromUnit: string) => {
-      if (!item) return;
+      if (!item || !Number.isFinite(qty) || qty<=0) return;
       const converted = Units.convert(qty, fromUnit, item.unit);
       if (converted === null) {
         console.warn(
@@ -857,7 +859,9 @@ export const StorageService = {
      * titre que le grain, seule leur catégorie d'article change.
      */
     const fermentables = normalizeRecipe(recipe).fermentables;
-    fermentables.forEach((f) =>
+    // In a second extraction the mash grain describes the spent bed from the
+    // original brew. Fresh sugar/extract/hops/yeast are still consumed normally.
+    fermentables.filter(f=>!(recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings'&&f.kind==='grain'&&(f.use??'empatage')==='empatage')).forEach((f) =>
       deduct(
         findIn(stocks.rawMaterials, f.name, f.kind === 'grain' ? 'Malt' : undefined),
         f.weightKg,
@@ -874,7 +878,7 @@ export const StorageService = {
     if (yeast?.name) {
       deduct(
         findIn(stocks.rawMaterials, yeast.name, 'Levure'),
-        yeast.qty || 1,
+        yeast.qty,
         yeast.unit || 'sachet'
       );
     }
@@ -943,6 +947,7 @@ export const StorageService = {
    * onglets ouverts pouvaient s'écraser mutuellement.
    */
   updateRecipe(recipe: Recipe) {
+    if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     const old = this.getRecipes().find((r) => r.id === recipe.id);
     FirestoreRepo.put('recipes', recipe.id, recipe);
     this.logAction(
@@ -961,10 +966,12 @@ export const StorageService = {
   },
 
   saveRecipes(recipes: Recipe[]) {
+    recipes=recipes.map(recipe=>{if(!recipe.nolo)return recipe;assertNoloConfig(recipe.nolo);return {...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};});
     syncCollection('recipes', recipes, (r) => r.id);
   },
 
   addRecipe(recipe: Recipe) {
+    if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     FirestoreRepo.put('recipes', recipe.id, recipe);
     this.logAction(
       'Création',
@@ -1309,3 +1316,5 @@ function slugify(s: string): string {
     .replace(/^-|-$/g, '')
     .slice(0, 80);
 }
+import { assertNoloConfig } from '../../functions/src/noloSchema';
+import { noloScience } from '../domain/nolo';

@@ -19,6 +19,8 @@
     "rules": "node scripts/build-rules.mjs",
     "deploy:rules": "node scripts/build-rules.mjs && firebase deploy --only firestore",
     "deploy:functions": "firebase deploy --only functions",
+    "test:science:nolo": "node scripts/check-test-boundary.mjs && node scripts/check-nolo-science.mjs",
+    "test:smoke:nolo": "node scripts/check-test-boundary.mjs && node scripts/check-nolo-ui.mjs",
     "test:science:yeast": "node scripts/check-yeast-science.mjs",
     "test:smoke:yeast": "node scripts/check-test-boundary.mjs && node scripts/check-yeast-ui.mjs"
   },

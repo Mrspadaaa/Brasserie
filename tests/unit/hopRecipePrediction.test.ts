@@ -34,7 +34,7 @@ describe('Recette entière : contextes, cumul conditionnel et provenance', () =>
     expect(p.overall.profile.citrus.range!.max).toBeLessThan(legacy.overall.profile.citrus.range!.max);
     expect(p.overall.profile.citrus.central).toBeUndefined();
     expect(p.overall.profile.citrus.confidence).toBe('low');
-    expect(p.engineVersion).toBe('hop-recipe-experimental-v3');
+    expect(p.engineVersion).toBe('hop-recipe-experimental-v4');
     expect(legacy.engineVersion).toBe('hop-recipe-experimental-v1');
   });
   it('les doses inconnues couvrent les répartitions concrètes, y compris zéro et une très forte dose', () => {

@@ -95,6 +95,17 @@ beforeEach(() => {
 });
 
 describe('Lancer un brassin déduit le stock', () => {
+  it('ne débite pas le malt neuf une deuxième fois pour la seconde extraction',async()=>{
+    const {newNoloConfig}=await import('../../src/domain/nolo');
+    const nolo=newNoloConfig();nolo.process='secondRunnings';
+    StorageService.brewRecipeAndDeductStocks(recipe({nolo}),'NOLO-runnings');
+    expect(StorageService.getStocks().rawMaterials.find(s=>s.ref==='MP-001')!.currentStock).toBe(25);
+    expect(StorageService.getStocks().rawMaterials.find(s=>s.ref==='MP-002')!.currentStock).toBe(300);
+  });
+  it('ne remplace pas une quantité de levure inconnue ou nulle par un sachet inventé',()=>{
+    StorageService.brewRecipeAndDeductStocks(recipe({yeast:{name:'SafAle US-05',form:'sèche',qty:0,unit:'sachet'}}),'NOLO-0');
+    expect(StorageService.getStocks().rawMaterials.find(s=>s.ref==='MP-004')!.currentStock).toBe(6);
+  });
   it('ne jette pas sur une recette du modèle actuel', () => {
     expect(() => StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1')).not.toThrow();
   });

@@ -12,6 +12,7 @@ import type { TrialRecipe } from './trials';
 import { selectHopSearchDomain, type HopSearchMode } from './solverSelection';
 import { fermentationProgramIssues } from '../../../functions/src/fermentationContext';
 import { normalizeHop } from '../hopStage';
+import { noloScopedPrediction } from '../../../functions/src/hopRecipePrediction';
 
 export type SolverCheck = { status: 'conflict' | 'unknown' | 'supported'; message: string; source?: HopSource };
 export type SolverCondition = { field: 'doseGL' | 'temperatureC' | 'contactHours'; value: number; range: HopRange; origin: 'trial' | 'recipe' | 'proposal'; source: HopSource };
@@ -26,7 +27,9 @@ const fold = (s: string) => s.normalize('NFKD').replace(/\p{M}/gu, '').toLocaleL
 const unknownScore = (): HopEstimate => ({ range: null, confidence: 'low', reasons: ['Le profil sensoriel d’un assemblage n’est pas additionné.'], sources: [] });
 
 export function initialHopSolverIntent(recipe: TrialRecipe | undefined, policy: HopSolverPolicy): HopSolverIntent {
-  const style = policy.styles.find(s => s.aliases.some(a => fold(a) === fold(recipe?.style ?? ''))) ?? policy.styles[0];
+  const matches=policy.styles.filter(s=>s.aliases.some(a=>fold(a)===fold(recipe?.style??'')));
+  const style=recipe?.styleRef ? policy.styles.find(s=>s.id===recipe.styleRef!.guideId+':'+recipe.styleRef!.styleId)??policy.styles[0]
+    : matches.length===1?matches[0]:policy.styles[0];
   const saved = recipe?.hopSolverIntent;
   return { styleId: saved?.styleId ?? style?.id ?? 'free', avoid: saved?.avoid ?? style?.avoid ?? [], chemistry: saved?.chemistry ?? style?.chemistry ?? {},
     keepYeast: saved?.keepYeast ?? !!recipe?.yeast?.name?.trim(), timings: saved?.timings?.filter(t => HOP_TIMINGS.includes(t)).length ? saved.timings : style?.timings ?? ['postFermentation'] };
@@ -130,7 +133,7 @@ export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets
   const yeast = yeasts.find(y=>y.id===triplets[0]?.yeastId);
   for (const old of existing) {
     const t = {...old.triplet, yeastId:triplets[0]?.yeastId ?? old.triplet.yeastId};
-    const prediction = predict(t,{});
+    const prediction = recipe?.nolo?.enabled?noloScopedPrediction(predict(t,{})):predict(t,{});
     checks.push(...checkHopExclusions(prediction,intent.avoid,axes).filter(c=>c.status!=='supported').map(c=>({...c,message:`Déjà dans la recette, ajout ${old.index+1} : ${c.message}`})));
     if (old.proposed.length || !t.varietyId || !t.timing) checks.push({status:'unknown',message:`Ajout ${old.index+1} existant : référence ou phase à confirmer ; son effet ne peut pas être soustrait du nouvel ajout.`});
     if (yeast) checks.push(...chemistryChecks([t],yeast,{...intent,chemistry:Object.fromEntries(Object.entries(intent.chemistry).filter(([,p])=>p==='avoid'))},policy,data).filter(c=>c.status!=='supported').map(c=>({...c,message:`Déjà dans la recette : ${c.message}`})));
@@ -204,7 +207,7 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
   };
   const recipeCache=new Map<string,ReturnType<typeof inspectHopSolverRecipe>>();
   const evaluate=(item:typeof queue[number]):HopSolverCandidate=>{
-    const predictions=item.triplets.map(t=>predict(t,scoreTarget));
+    const predictions=item.triplets.map(t=>recipe?.nolo?.enabled?noloScopedPrediction(predict(t,scoreTarget)):predict(t,scoreTarget));
     const yeast=yeastById.get(item.triplets[0].yeastId!)!;
     const checks=predictions.flatMap(p=>checkHopExclusions(p,intent.avoid,axes));
     for (const t of item.triplets) {
@@ -226,6 +229,7 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
     const proposedDry = item.triplets.filter(t=>dry(t.timing));
     const total=common.totalDryHopGL===null || proposedDry.some(t=>!finite(t.doseGL)) ? null : common.totalDryHopGL+proposedDry.reduce((s,t)=>s+t.doseGL!,0);
     const recipeChecks=[...common.checks];
+    if(recipe?.nolo?.enabled)recipeChecks.push({status:'unknown',message:'NOLO : ces essais de houblonnage ne valident pas les intensités dans cette matrice. Le bilan d’alcool et les candidates NOLO utilisent le calcul de la recette.'});
     // Event-dependent observations cannot be cached under the strain alone.
     recipeChecks.push(...checkHopAdditionProgram(recipe, common.hasDryHop || proposedDry.some(t=>t.doseGL!==0)));
     if(total!==null && total>policy.dryHopReviewGL.central && !(common.totalDryHopGL!==null && common.totalDryHopGL>policy.dryHopReviewGL.central)) recipeChecks.push({status:'unknown',message:`Dry-hop cumulé proposé : ${total.toLocaleString('fr',{maximumFractionDigits:2})} g/L. Revoir le rendement aromatique et le risque de caractère herbacé, sans seuil universel.`,source:policy.dryHopReviewGL.source});

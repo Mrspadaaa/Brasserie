@@ -8,12 +8,13 @@ import type { HopExtrapolation } from './hopExtrapolationSchema.js';
 import { fermentationProgramWarnings } from './fermentationScienceCore.js';
 import type { FermentationGuide } from './fermentationGuideSchema.js';
 
-export const HOP_RECIPE_ENGINE_VERSION = 'hop-recipe-experimental-v3' as const;
-export type HopRecipeEngineVersion = 'hop-recipe-experimental-v1' | 'hop-recipe-experimental-v2' | typeof HOP_RECIPE_ENGINE_VERSION;
+export const HOP_RECIPE_ENGINE_VERSION = 'hop-recipe-experimental-v4' as const;
+export type HopRecipeEngineVersion = 'hop-recipe-experimental-v1' | 'hop-recipe-experimental-v2' | 'hop-recipe-experimental-v3' | typeof HOP_RECIPE_ENGINE_VERSION;
 // Same editable physical convention: v2 tightens arithmetic; v3 harmonises process diagnostics.
 const AGGREGATION_VERSION = 'hop-recipe-experimental-v1';
 export interface HopRecipeInput {
   volumeL: number; yeastId: string | null; pitchTempC?: number;
+  aromaDomain?: 'nolo';
   additions: { id: string; name: string; triplet: HopTriplet; dayOffset?: number }[];
   fermentation: { kind?: string; name?: string; note?: string; tempC?: number; days?: number }[];
 }
@@ -24,7 +25,8 @@ export function assertHopRecipeInput(value: unknown): asserts value is HopRecipe
   const keys = (v: Record<string, any>, allowed: string[]) => check(Object.keys(v).every(k => allowed.includes(k)), 'champ inconnu');
   check(object(value), 'entrée invalide');
   const v = value as Record<string, any>;
-  keys(v, ['volumeL', 'yeastId', 'additions', 'fermentation', 'pitchTempC']);
+  keys(v, ['volumeL', 'yeastId', 'additions', 'fermentation', 'pitchTempC', 'aromaDomain']);
+  check(v.aromaDomain === undefined || v.aromaDomain === 'nolo', 'domaine aromatique invalide');
   check(v.pitchTempC === undefined || finite(v.pitchTempC), 'température d’ensemencement invalide');
   check(nonnegative(v.volumeL), 'volume positif ou zéro si inconnu requis');
   assertHopTriplet({ varietyId: null, yeastId: v.yeastId, timing: null, doseGL: null, temperatureC: null, contactHours: null, matrixId: null });
@@ -67,6 +69,13 @@ const finite = (x: unknown): x is number => typeof x === 'number' && Number.isFi
 const nonnegative = (x: unknown): x is number => finite(x) && x >= 0;
 const clamp = (x: number) => Math.max(0, Math.min(1, x));
 const unknown = (reason: string): HopEstimate => ({ range: null, confidence: 'low', sources: [], reasons: [reason] });
+export function noloScopedPrediction(p: HopPrediction): HopPrediction {
+  const reason='Matrice NOLO : coefficients sensoriels et concentrations finales de bière alcoolisée hors domaine ; composition introduite conservée séparément.';
+  return {...p,profile:Object.fromEntries(Object.keys(p.profile).map(k=>[k,unknown(reason)])),
+    compounds:Object.fromEntries(Object.keys(p.compounds).map(k=>[k,unknown(reason)])),
+    score:unknown(reason),modelRefs:[],extrapolatedAxes:[],reasons:[reason],
+    risks:p.risks.map(r=>r.code==='fourMmp'?{...r,status:'unknown',confidence:'low',message:'NOLO : concentration finale et seuil sensoriel non étalonnés dans cette matrice. Contrôler par analyse et dégustation.'}:r)};
+}
 const sources = (rows: HopSource[]) => [...new Map(rows.map(s => [JSON.stringify(s), s])).values()];
 const add = (a: HopRange, b: HopRange): HopRange => ({ min: a.min + b.min, max: a.max + b.max });
 // Log products preserve compensation of small/large positive factors. No statistical independence is assumed.
@@ -294,16 +303,18 @@ function introducedChemistry(input: HopRecipeInput, data: HopEngineData, policie
 
 /** Local O(additions × axes × models), with no search, network, persistence, or recipe mutation. */
 export function predictHopRecipe(input: HopRecipeInput, target: Record<string, HopRange>, data: HopEngineData, version: HopRecipeEngineVersion = HOP_RECIPE_ENGINE_VERSION): HopRecipePrediction {
-  if (!['hop-recipe-experimental-v1', 'hop-recipe-experimental-v2', HOP_RECIPE_ENGINE_VERSION].includes(version)) throw Error('Version du calcul de recette inconnue.');
+  if (!['hop-recipe-experimental-v1', 'hop-recipe-experimental-v2', 'hop-recipe-experimental-v3', HOP_RECIPE_ENGINE_VERSION].includes(version)) throw Error('Version du calcul de recette inconnue.');
+  if (input.aromaDomain && version !== HOP_RECIPE_ENGINE_VERSION) throw Error('Le domaine NOLO nécessite la version 4 du moteur de recette.');
   const warnings: string[] = [];
   const normalized: HopRecipeInput = { ...input, additions: (input.additions ?? []).map(a => ({ ...a, triplet: { ...a.triplet, yeastId: input.yeastId } })), fermentation: (input.fermentation ?? []).map(s => ({ ...s })) };
   if ((input.additions ?? []).some(a => a.triplet.yeastId !== input.yeastId)) warnings.push('La souche de la recette est utilisée pour tous les ajouts ; une référence de souche différente a été écartée.');
   const { valid, errors } = usableHopKnowledge(data.knowledge), axes = valid.filter((v): v is HopAxis => v.kind === 'axis');
   warnings.push(...errors);
   const yeast = new Map(valid.filter((v): v is HopYeast => v.kind === 'yeast').map(v => [v.id, v])).get(input.yeastId ?? '');
-  const guide = valid.find(v => v.kind === 'fermentation' && v.yeastId === input.yeastId && (version !== HOP_RECIPE_ENGINE_VERSION || v.enabled));
+  const modern = version === HOP_RECIPE_ENGINE_VERSION || version === 'hop-recipe-experimental-v3';
+  const guide = valid.find(v => v.kind === 'fermentation' && v.yeastId === input.yeastId && (!modern || v.enabled));
   const hasDryHop = normalized.additions.some(a => a.triplet.doseGL !== 0 && (a.triplet.timing === 'fermentation' || a.triplet.timing === 'postFermentation'));
-  if (version === HOP_RECIPE_ENGINE_VERSION) {
+  if (modern) {
     const temperature = (guide?.kind === 'fermentation' ? guide.temperatureC : undefined) ?? agreedFermentationFact(yeast, 'temperature', '°C');
     warnings.push(...fermentationProgramIssues(normalized.fermentation, temperature, { hasDryHop, pitchTempC: input.pitchTempC }).map(i => i.message));
   } else {
@@ -311,10 +322,15 @@ export function predictHopRecipe(input: HopRecipeInput, target: Record<string, H
     warnings.push(...recipeFermentationWarnings(normalized, yeast, guide?.kind === 'fermentation' ? guide : undefined));
     if (normalized.fermentation.some(s => s.kind === 'ajout') && !hasDryHop) warnings.push('Le programme annonce un ajout en fermentation, mais aucun houblon à cru n’est saisi.');
   }
-  const predict = createHopPredictor(data), additions = normalized.additions.map(a => predict(a.triplet, target));
+  const predict = createHopPredictor(data), additions = normalized.additions.map(a => input.aromaDomain==='nolo'?noloScopedPrediction(predict(a.triplet,target)):predict(a.triplet, target));
   const models = valid.filter((v): v is HopExtrapolation => v.kind === 'extrapolation' && v.enabled && v.aggregation?.version === AGGREGATION_VERSION);
-  const profiles = yeast ? models.map(m => aggregateModel(normalized, data, axes, yeast, m, version)) : [];
+  const profiles = yeast && !input.aromaDomain ? models.map(m => aggregateModel(normalized, data, axes, yeast, m, version)) : [];
   const profile = Object.fromEntries(axes.map(a => [a.id, yeast ? widen(profiles.map(p => p[a.id])) : unknown('Levure de recette inconnue : aucune prédiction sensorielle sans contexte de souche.') ]));
+  if (input.aromaDomain === 'nolo') {
+    const reason='NOLO : transfert sensoriel non étalonné dans cette matrice. Les inconnues ne sont pas des intensités nulles.';
+    for(const axis of axes)profile[axis.id]=unknown(reason);
+    warnings.push(reason);
+  }
   const policies = valid.filter((v): v is HopConfidencePolicy => v.kind === 'confidence');
   const activePredictions = additions.filter((_, i) => normalized.additions[i].triplet.doseGL !== 0);
   // Only a whole, single-addition contextual result may be reused. Never sum beer endpoints.
@@ -326,7 +342,7 @@ export function predictHopRecipe(input: HopRecipeInput, target: Record<string, H
   const final = Object.fromEntries(finalKeys.map(key => [key, { ...(activePredictions.length === 1 && activePredictions[0].compounds[key]?.range ? activePredictions[0].compounds[key] : unknown('Concentration finale non calculable pour cette recette : aucun bilan de transformation du mélange étalonné.')), unit: key === '4mmpFree' ? 'ngL' as const : null } ]));
   const risks = [...new Map(activePredictions.flatMap(p => p.risks).map(r => [JSON.stringify(r), r])).values()];
   const overall: HopRecipePrediction['overall'] = { profile, compounds: final, score: scoreHopProfile(profile, target, axes, policies), risks,
-    modelRefs: [...new Map([...models.map(m => ({ id: m.id, version: m.version })), ...(activePredictions.length === 1 ? activePredictions[0].modelRefs : [])].map(m => [JSON.stringify(m), m])).values()],
+    modelRefs: input.aromaDomain==='nolo'?[]:[...new Map([...models.map(m => ({ id: m.id, version: m.version })), ...(activePredictions.length === 1 ? activePredictions[0].modelRefs : [])].map(m => [JSON.stringify(m), m])).values()],
     reasons: profiles.length ? ['Cumul expérimental conditionnel aux paramètres ; aucune garantie sur les interactions sensorielles du mélange.'] : ['Convention de cumul ou levure disponible manquante.'],
     extrapolatedAxes: axes.filter(a => profile[a.id]?.range && !(activePredictions.length === 1 && !activePredictions[0].extrapolatedAxes?.includes(a.id) && activePredictions[0].profile[a.id]?.range)).map(a => a.id),
     conditionalEnvelope: true, interactionsNonQuantifiees: normalized.additions.filter(a => a.triplet.doseGL !== 0).length > 1 };

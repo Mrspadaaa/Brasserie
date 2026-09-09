@@ -5,6 +5,7 @@ import { HOP_TIMINGS, type HopAxis, type HopPrediction, type HopTriplet, type Ho
 import { hopDescriptorEvidence } from '../../../functions/src/hopExtrapolationCore';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import { compareHopPredictions, createHopPredictor, predictHopTriplet, usableHopKnowledge } from '../../domain/hopIndex/engine';
+import { noloScopedPrediction } from '../../../functions/src/hopRecipePrediction';
 import { applyHopScenario, recipeHopScenario } from '../../domain/hopIndex/exploration';
 import { prefillHopScenario } from '../../domain/hopIndex/solver';
 import { captureHopPrediction } from '../../domain/hopIndex/snapshots';
@@ -51,10 +52,10 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const proposedConditions = solverPolicy && !readOnly ? prefillHopScenario(recipeScenario?.triplet ?? sample, solverPolicy, recipe) : undefined;
   const initial = proposedConditions?.triplet ?? recipeScenario?.triplet ?? sample;
   const fingerprint = JSON.stringify(initial);
-  const recipeFingerprint = JSON.stringify([recipe?.hops[addition], recipe?.yeast, recipe?.volumeL, addition]);
+  const recipeFingerprint = JSON.stringify([recipe?.hops[addition], recipe?.yeast, recipe?.volumeL, recipe?.nolo?.enabled, addition]);
   const edited = useRef(false), previousRecipe = useRef(recipeFingerprint);
   const [scenario, setScenario] = useState<HopTriplet>(initial);
-  const axisSignature = JSON.stringify(axes.map(a => [a.id, a.version, a.scale]));
+  const axisSignature = JSON.stringify([recipe?.nolo?.enabled,axes.map(a => [a.id, a.version, a.scale])]);
   const [comparison, setComparison] = useState<{ prediction: HopPrediction; axisSignature: string }>();
   const comparable = comparison?.axisSignature === axisSignature ? comparison.prediction : undefined;
   const [ranked, setRanked] = useState<HopPrediction[] | null>(null);
@@ -70,9 +71,9 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   }, [fingerprint, recipeFingerprint, addition]);
   useEffect(() => { setRanked(null); }, [JSON.stringify(target), knowledge, varieties]);
   const data = useMemo(() => ({ varieties, lots, knowledge }), [varieties, lots, knowledge]);
-  const querySignature = JSON.stringify([scenario, target]);
+  const querySignature = JSON.stringify([scenario, target, recipe?.nolo?.enabled]);
   const latestQuery = useRef({ querySignature, data }); latestQuery.current = { querySignature, data };
-  const prediction = useMemo(() => predictHopTriplet(scenario, target, data), [scenario, target, data]);
+  const prediction = useMemo(() => recipe?.nolo?.enabled?noloScopedPrediction(predictHopTriplet(scenario,target,data)):predictHopTriplet(scenario, target, data), [scenario, target, data, recipe?.nolo?.enabled]);
   const variety = varieties.find(v => v.id === scenario.varietyId), yeast = yeasts.find(y => y.id === scenario.yeastId);
   const strainFacts = models.flatMap(m => m.yeasts.filter(y => y.yeastId === scenario.yeastId));
   const highlighted = axes.filter(a => (!prediction.extrapolatedAxes?.includes(a.id) && !!prediction.profile[a.id]?.range) || models.some(m =>
@@ -91,7 +92,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
     const timings = associations && ['fermentation', 'postFermentation'].includes(scenario.timing ?? '') ? ['fermentation', 'postFermentation'] as const : [scenario.timing];
     const yeastIds = associations ? yeasts.map(y => y.id) : [scenario.yeastId];
     const hops=varieties.filter(v=>!v.archived),total=hops.length*yeastIds.length*timings.length;
-    const predict=createHopPredictor(data);
+    const rawPredict=createHopPredictor(data), predict:typeof rawPredict=(...args)=>recipe?.nolo?.enabled?noloScopedPrediction(rawPredict(...args)):rawPredict(...args);
     const results: HopPrediction[] = [];
     // Cooperative batches keep the controls responsive; the comparator is the
     // same shared function, and batching cannot alter the numerical result.
@@ -149,7 +150,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
     {prediction.score.range && <p className="text-sm text-ebc-straw">Adéquation à ton objectif : {hopRangeLabel(prediction.score.range)} / 100 · convention de classement, pas probabilité de réussite.</p>}
     {prediction.risks.filter(r => r.status !== 'unknown').map(r => <p key={r.code} className="border-l-2 border-ebc-straw pl-3 text-sm text-ebc-straw">{r.title} · {r.message}</p>)}
     </div></div>
-    {!prediction.modelRefs.length && <p role="status" className="text-sm text-ebc-straw">{!variety || !yeast || !scenario.timing ? 'Précise les trois membres du scénario dans les champs ci-dessus.' : 'Le modèle expérimental est absent ou désactivé dans les connaissances.'}</p>}
+    {!prediction.modelRefs.length && <p role="status" className="text-sm text-ebc-straw">{recipe?.nolo?.enabled?'NOLO : intensités non étalonnées dans cette matrice. Tester les conditions et conserver les analyses du pilote.':!variety || !yeast || !scenario.timing ? 'Précise les trois membres du scénario dans les champs ci-dessus.' : 'Le modèle expérimental est absent ou désactivé dans les connaissances.'}</p>}
     {prediction.modelRefs.length > 0 && <div className="flex flex-wrap gap-2"><Button disabled={busy} onClick={() => setComparison({ prediction, axisSignature })}>{comparable ? 'Remplacer la comparaison' : 'Garder ce graphe pour comparer'}</Button>
       {comparison && <Button disabled={busy} onClick={() => setComparison(undefined)}>Effacer la comparaison</Button>}
       {!readOnly && <Button disabled={busy} onClick={() => void run(async () => {

@@ -25,8 +25,8 @@ import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
 import type { Recipe, RecipeSnapshot, BrewDayState, AcidId } from '../types';
-import { compareHopTasting, rankHopTriplets, recipeForHopAnalysis, usableHopKnowledge } from '../../functions/src/hopPredictionCore';
-import { predictHopRecipe } from '../../functions/src/hopRecipePrediction';
+import { compareHopTasting, compareHopPredictions, rankHopTriplets, recipeForHopAnalysis, usableHopKnowledge } from '../../functions/src/hopPredictionCore';
+import { predictHopRecipe, noloScopedPrediction } from '../../functions/src/hopRecipePrediction';
 import { prepareHopRecipeInput } from './hopIndex/recipePrediction';
 import { compactHopRecipeEvidence } from './hopIndex/companionPrediction';
 import { assertHopTriplet, HopAxis, HopTriplet } from '../../functions/src/hopPredictionSchema';
@@ -39,6 +39,7 @@ import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredic
 import { catalogueMatches } from './yeastCatalogue';
 import { fermentationDose } from './fermentationGuide';
 import { evaluateFermentationScenario } from './fermentationScenario';
+import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, noloWaterModelIssue, noloInput } from './nolo';
 
 const number = (
   a: Record<string, unknown>,
@@ -191,7 +192,10 @@ export function runBrewerTool(
 ): Omit<BrewerEvidence, 'id'> {
   if (!brewerToolDeclarations.some((t) => t.name === name)) throw new Error('Outil inconnu.');
   const state: BrewDayState = c.journal ?? { steps: [], currentIndex: 0 };
-  const r = c.recipe as RecipeSnapshot | undefined;
+  const base = c.recipe as RecipeSnapshot | undefined;
+  const effective = base && c.batch?.nolo ? { ...base, nolo: c.batch.nolo } : base;
+  const r = effective?.nolo?.enabled && c.batch
+    ? noloRecipeForBatch({ ...c.batch, recipeSnapshot: effective }) ?? effective : effective;
   const result = (label: string, data: unknown, facts: string[] = [], limits: string[] = []) => ({
     name,
     label,
@@ -213,6 +217,16 @@ export function runBrewerTool(
   if (name === 'fermentation_advice') {
     if (!FERMENTATION_GOALS.includes(a.goal as FermentationGoal)) throw Error('Objectif de fermentation requis.');
     if (a.yeastId != null && (typeof a.yeastId !== 'string' || !a.yeastId.trim())) throw Error('Identifiant de levure invalide.');
+    if (r?.nolo?.enabled) {
+      const knowledge = c.hopIndex?.knowledge ?? [];
+      const science = r.nolo.scienceSnapshot ?? noloScience(knowledge);
+      const proposed = a.yeastId ? { ...r, yeast: { ...r.yeast, hopIndexId: a.yeastId as string } } : r;
+      return result('Conduite NOLO · bilan commun', {
+        nolo: evaluateNoloRecipe(proposed, knowledge),
+        alternatives: science ? rankNoloStrains(proposed, science) : [],
+        finalGravity: null, lagerRest: null
+      }, [], ['Les données des souches et le bilan NOLO remplacent les conseils de bière alcoolisée. Une température ne devient pas un bonus banane ; aucune durée ne valide la fin ou la conservation.']);
+    }
     const knowledge = c.hopIndex?.knowledge ?? [], science = activeFermentationScience(knowledge)[0];
     const goal = a.goal as FermentationGoal;
     const guides = knowledge.filter(k => { try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; } }).filter(k => k.kind === 'fermentation');
@@ -298,7 +312,8 @@ export function runBrewerTool(
         ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
       ]);
     }
-    return result('Houblon × levure × timing', rankHopTriplets(triplets, target, data), [], [
+    const ranked = rankHopTriplets(triplets, target, data);
+    return result('Houblon × levure × timing', r?.nolo?.enabled ? ranked.map(noloScopedPrediction).sort(compareHopPredictions) : ranked, [], [
       'Alternatives indépendantes : leurs graphes et scores ne constituent pas un profil de recette. Plages et confiance obligatoires. Valeur inconnue ≠ zéro.',
       ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
     ]);
@@ -363,9 +378,27 @@ export function runBrewerTool(
   if (name === 'calculate_recipe') {
     const rig = r.brewhouse ?? c.equipment;
     const volumeL = number(a, 'volumeL', 0.1, 500, r.volumeL);
-    if (volumeL !== r.volumeL && !rig)
+    if (volumeL !== r.volumeL && !rig && !r.nolo?.enabled)
       throw new Error('Profil matériel nécessaire au redimensionnement.');
     const scaled = volumeL !== r.volumeL;
+    if (r.nolo?.enabled) {
+      // A physical blend/dilution is an ordered NOLO operation. Scaling an already
+      // measured beer as if it were a fresh grist would silently reuse its assay.
+      const secondRunnings = r.nolo.process === 'secondRunnings';
+      const scenario = { ...r, volumeL,
+        nolo: scaled && secondRunnings && r.nolo.secondRunnings
+          ? { ...r.nolo, secondRunnings: { ...r.nolo.secondRunnings, recoveredL: volumeL } } : r.nolo };
+      return result('Recette NOLO · bilan commun', {
+        volumeL, nolo: evaluateNoloRecipe(scenario, c.hopIndex?.knowledge ?? []),
+        og: secondRunnings ? r.nolo.secondRunnings?.sg ?? null : r.ogTarget ?? null,
+        fg: null, abv: null, recommendedWater: null,
+        waterSummary: secondRunnings ? null : recipeWaterSummary(scenario),
+        ingredients: { fermentables: r.fermentables, hops: r.hops, yeast: r.yeast }
+      }, [], [
+        'OG prévue ou mesurée sur le moût récupéré ; alcool et sucres évalués par le même bilan que l’écran NOLO.',
+        ...(scaled ? ['Volume hypothétique seulement, ingrédients non redimensionnés. Décrire une dilution ou un assemblage dans les opérations NOLO ; les anciennes analyses ne valident pas ce nouveau scénario.'] : [])
+      ]);
+    }
     let scenario: Recipe = { ...structuredClone(r), id: 'simulation' };
     if (scaled) {
       const sizing = BrewingMath.scaleRecipe({ ...r, id: 'simulation' }, volumeL, rig, rig);
@@ -579,6 +612,8 @@ export function runBrewerTool(
   }
   if (name === 'check_ph') {
     const ph = number(a, 'ph', 0, 14);
+    const noloWaterIssue = noloWaterModelIssue(r.nolo, noloInput(r).mashRatioLKg ?? 0);
+    if (noloWaterIssue) return result('pH · mesure hors domaine du modèle', { ph, correction: null }, [], [noloWaterIssue]);
     if (!/mash|empât|sacchar|mais[c]?he/i.test(c.phase))
       return result(
         'pH · stade à préciser',
@@ -644,7 +679,8 @@ export function runBrewerTool(
       og,
       sg,
       apparentAttenuationPct: og && sg ? (100 * (og - sg)) / (og - 1) : null,
-      abv: og && sg ? BrewingMath.calculateABV(og, sg) : null,
+      abv: !r.nolo?.enabled && og && sg ? BrewingMath.calculateABV(og, sg) : null,
+      ...(r.nolo?.enabled ? { nolo: evaluateNoloRecipe(r, c.hopIndex?.knowledge ?? []) } : {}),
       pitch: temp != null ? pitchFeedback(r, temp) : null,
       log: c.batch?.gravityLog ?? []
     },
@@ -656,6 +692,7 @@ export function runBrewerTool(
         : [])
     ],
     [
+      ...(r.nolo?.enabled ? ['NOLO : une différence de densités ne remplace pas une analyse d’alcool adaptée aux faibles teneurs.'] : []),
       'Les bulles ne prouvent ni anomalie ni fin de fermentation. Confirmer la stabilité par plusieurs densités espacées, surtout après houblonnage à cru ; respecter la plage de la souche.'
     ]
   );

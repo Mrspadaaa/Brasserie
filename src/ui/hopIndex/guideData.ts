@@ -12,6 +12,10 @@ import solverPack from '../../data/hopSolverBootstrap.json';
 import doseStudyPack from '../../data/hopDoseStudyBootstrap.json';
 import fermentationPack from '../../data/fermentationGuideBootstrap.json';
 import fermentationSciencePack from '../../data/fermentationScienceBootstrap.json';
+import noloPack from '../../data/noloBootstrap.json';
+import stylePack from '../../data/brewingStylesBootstrap.json';
+import { noloScience } from '../../domain/nolo';
+import { brewingStyles } from '../../domain/brewingStyles';
 import { activeFermentationScience } from '../../../functions/src/fermentationScienceCore';
 import type { FermentationGuide } from '../../../functions/src/fermentationGuideSchema';
 import type { HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
@@ -54,11 +58,11 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 }
 
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
-  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack), ...validKnowledge(knowledge)];
+  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack), ...checkedKnowledge(noloPack), ...validKnowledge(knowledge)];
   const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
-  const fermentations = guideFermentations(knowledge), trials = guideTrials(knowledge);
+  const fermentations = guideFermentations(knowledge), trials = guideTrials(knowledge), nolo = noloScience(knowledge);
   return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
-    const names = [...(yeastNameVariants[yeast.id] ?? []), ...(fermentations.find(g => g.yeastId === yeast.id)?.aliases ?? []), ...(yeast.catalogue?.aliases ?? [])];
+    const names = [...(yeastNameVariants[yeast.id] ?? []), ...(nolo?.strains.find(s=>s.yeastId===yeast.id)?.aliases??[]), ...(fermentations.find(g => g.yeastId === yeast.id)?.aliases ?? []), ...(yeast.catalogue?.aliases ?? [])];
     const aliases = names.length ? [...new Set(names)] : undefined;
     const trial = trials.find(t => t.yeastId === yeast.id);
     const builtin = initialYeasts.find(y => y.id === yeast.id);
@@ -97,8 +101,8 @@ export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
   return old && next && canonical(row) === canonical(old) ? next as HopKnowledge : row;
 }
 export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
-  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([])];
-  return [...new Map([...proposed, ...knowledge.map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
+  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([]), ...checkedKnowledge(noloPack)];
+  return [...new Map([...proposed, ...knowledge.filter(k=>k.kind!=='styleGuide').map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
 }
 export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {
   const policy = guidePredictionKnowledge(knowledge).find((k): k is HopSolverPolicy => {
@@ -113,6 +117,11 @@ export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | 
   const referenceIds = new Set(knowledge.filter(k => k.kind === 'yeast' && k.catalogue?.facts.some(f => f.key === 'temperature')).map(k => k.id));
   for (const k of [...fermentationPack, ...fermentationSciencePack, ...knowledge]) if (k.kind === 'fermentation') referenceIds.add(k.yeastId);
   return { ...policy,
+    styles: [policy.styles[0], ...brewingStyles(knowledge).map(s => {
+      const start=policy.styles.find(p=>p.id===s.suggestions?.hop)??policy.styles[0];
+      return {...start,id:s.ref.guideId+':'+s.id,name:s.name+' · '+s.edition,aliases:[s.name,...s.aliases],
+        source:s.suggestions?.source??policy.source};
+    })],
     // Keep opposing POF evidence: chemistryChecks reports it as unknown.
     yeastPhenols: [...catalogue.yeastPhenols, ...fermentation.filter(g => g.aroma.pof !== 'unknown').map(g => ({ yeastId: g.yeastId, status: g.aroma.pof as 'positive' | 'negative', source: g.aroma.source })), ...policy.yeastPhenols],
     yeastConditions: [...(policy.yeastConditions ?? []).filter(p => !referenceIds.has(p.yeastId)),
