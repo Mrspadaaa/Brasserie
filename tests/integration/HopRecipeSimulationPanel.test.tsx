@@ -29,7 +29,8 @@ function fixture(): Recipe {
       { name: 'Variété témoin', hopVarietyId: 'test-variety', weightG: 40, alpha: 6, stage: 'dryHop', aromaTiming: 'fermentation', aromaTemperatureC: 20, aromaContactHours: 48 }],
     yeast: { name: 'Levure témoin', hopIndexId: 'yeast-test', form: 'sèche', qty: 1, unit: 'sachet' } };
 }
-const ready = () => screen.findByRole('img', { name: /Radar des saveurs/ });
+// An indeterminate compact result deliberately has no empty radar.
+const ready = () => screen.findByLabelText('Graphe de la prédiction expérimentale');
 
 describe('Simulation directe du programme réel', () => {
   it('affiche aussi les traces chimiques sans les arrondir à zéro ni resserrer les bornes', () => {

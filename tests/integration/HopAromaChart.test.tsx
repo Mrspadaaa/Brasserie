@@ -16,6 +16,7 @@ describe('Radar et plages aromatiques fidèles au calcul', () => {
     render(<HopExplorationChart prediction={prediction} axes={[testHopAxis]} target={{}} showAll />);
     const row = within(screen.getByRole('group', { name: 'Estimation · Agrumes' }));
     expect(row.getByText('Plage 4,2–6,2')).toBeInTheDocument();
+    expect(row.getByText('Échelle 0–10')).toBeInTheDocument();
     expect(row.getByText(`Confiance ${confidence === 'high' ? 'élevée' : 'moyenne'}`)).toBeInTheDocument();
     expect(row.getByTestId('aroma-central-marker')).toBeInTheDocument();
     expect(prediction).toEqual(before);
@@ -45,5 +46,39 @@ describe('Radar et plages aromatiques fidèles au calcul', () => {
     const radar = screen.getByRole('img', { name: /Radar des saveurs/ });
     expect(radar.querySelector('[data-axis="study-citrus"]')).not.toBeNull();
     expect(radar.querySelector('[data-axis="other-study"]')).toBeNull();
+  });
+  it('garde la comparaison et son échelle publiée quand la nouvelle condition est indéterminée', () => {
+    const study = { ...testHopAxis, id: 'panel', name: 'Agrumes du panel', scale: { min: 0, max: 15 } };
+    const baseline = { profile: { panel: estimate(4.25, 6.15, 'medium') } };
+    const prediction = { profile: { panel: { range: null, confidence: 'low' as const, sources: [], reasons: [] } } };
+    render(<HopExplorationChart prediction={prediction} baseline={baseline} axes={[study]} target={{}} />);
+    const row = within(screen.getByRole('group', { name: 'Estimation · Agrumes du panel' }));
+    expect(row.getByText('Non quantifiable')).toBeVisible();
+    expect(row.getByText('Conservé : 4,2–6,2 · confiance moyenne')).toBeVisible();
+    expect(row.getByText('Échelle 0–15')).toBeVisible();
+    expect(screen.getByText('Gris : comparaison conservée')).toBeVisible();
+    const group = screen.getByRole('img', { name: /Radar des saveurs/ }).querySelector('[data-axis="panel"]')!;
+    const band = group.querySelector('line[data-aroma-baseline]')!;
+    for (const [edge, value] of [['1', 4.25], ['2', 6.15]] as const) {
+      expect(Math.hypot(Number(band.getAttribute('x' + edge)) - 220, Number(band.getAttribute('y' + edge)) - 190)).toBeCloseTo(110 * value / 15, 10);
+    }
+    expect(group.querySelector('line.text-hop')).toBeNull();
+    expect(group.querySelector('circle')).toBeNull();
+    expect(group).toHaveTextContent('simulation indéterminée · conservé : 4,2–6,2');
+  });
+  it('ne représente pas une comparaison inconnue par une intensité grise ou un zéro', () => {
+    render(<HopExplorationChart prediction={{ profile: {} }} baseline={{ profile: { citrus: estimate(0, 10, 'low') } }} axes={[testHopAxis]} target={{}} showAll />);
+    expect(screen.getByText('Conservé : intensité indéterminée')).toBeInTheDocument();
+    expect(document.querySelector('[data-aroma-baseline]')).toBeNull();
+    expect(document.querySelector('circle')).toBeNull();
+  });
+  it('la vue compacte ne réserve pas un grand radar vide ; la vue complète reste disponible', () => {
+    const props = { prediction: { profile: { citrus: estimate(0, 10, 'low') } }, axes: [testHopAxis], target: {} };
+    const { rerender } = render(<HopExplorationChart {...props} />);
+    expect(screen.queryByRole('img', { name: /Radar des saveurs/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/Les données ne permettent pas encore/)).toBeVisible();
+    rerender(<HopExplorationChart {...props} showAll />);
+    expect(screen.getByRole('img', { name: /Radar des saveurs/ })).toBeVisible();
+    expect(screen.queryByTestId('aroma-central-marker')).not.toBeInTheDocument();
   });
 });

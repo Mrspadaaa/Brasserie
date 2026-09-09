@@ -66,6 +66,7 @@ const verifyGraph = async (page, recipe, cumulative) => {
     for (const axis of axes) {
       const e = p.profile[axis.id], range = e?.range, full = range && range.min <= axis.scale.min && range.max >= axis.scale.max;
       const group = document.querySelector(`[aria-label="Simulation de mes ajouts"] [data-axis="${axis.id}"]`);
+      if (group && (Number(group.dataset.scaleMin) !== axis.scale.min || Number(group.dataset.scaleMax) !== axis.scale.max)) issues.push(`${axis.id}: incorrect axis scale`);
       const band = group?.querySelector('line.text-hop'), point = group?.querySelector('circle');
       if ((!range || full) && (band || point)) issues.push(`${axis.id}: unknown drawn as an intensity`);
       if (range && !full && group) {
@@ -251,6 +252,48 @@ try {
     await details(page, 'Calcul et portée du résultat');
     await page.$$eval('summary', els => els.find(e => e.textContent.includes('Calcul et portée du résultat')).parentElement.setAttribute('data-qa-open-calculation', 'true'));
     await capture(page, `details-${width}`, '[data-qa-open-calculation]');
+    await click(page, 'Explorer une variante');
+    const comparisonBefore = await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length }));
+    const comparisonRequests = requests.length;
+    await click(page, 'Garder ce graphe pour comparer');
+    await page.locator('[aria-label="Simulateur aromatique expérimental"] input[aria-label="Dose (g/L)"]').fill('2');
+    if (width < 640) assert.equal(await page.$eval('.brewer-global-companion', e => e.getClientRects().length), 0, 'Typing must not restore a floating control over the graph');
+    await page.keyboard.press('Tab');
+    const comparisonProof = await page.evaluate(scientific => {
+      const qa = window.__hopQa, old = qa.raw(scientific, false).additions[0];
+      const current = qa.rawTriplet({ ...old.triplet, doseGL: 2, matrixId: null }, scientific.hopAromaTarget);
+      const root = document.querySelector('[aria-label="Simulateur aromatique expérimental"]');
+      const issues = [], axes = qa.axes();
+      if (!root.textContent.includes('Gris : comparaison conservée')) issues.push('Missing retained legend');
+      for (const axis of axes) {
+        const group = root.querySelector(`[data-axis="${axis.id}"]`);
+        for (const [kind, prediction, selector] of [['retained', old, 'line[data-aroma-baseline]'], ['current', current, 'line.text-hop']]) {
+          const range = prediction.profile[axis.id]?.range, band = group?.querySelector(selector);
+          const known = range && !(range.min <= axis.scale.min && range.max >= axis.scale.max);
+          if (!known && band) issues.push(axis.id + ': unknown ' + kind + ' drawn');
+          if (known && !band) issues.push(axis.id + ': missing ' + kind + ' band');
+          if (known && band) for (const edge of ['1', '2']) {
+            const radius = Math.hypot(Number(band.getAttribute('x' + edge)) - 220, Number(band.getAttribute('y' + edge)) - 190);
+            const expected = 110 * ((edge === '1' ? range.min : range.max) - axis.scale.min) / (axis.scale.max - axis.scale.min);
+            if (Math.abs(radius - expected) > 1e-5) issues.push(axis.id + ': wrong ' + kind + ' geometry');
+          }
+        }
+      }
+      return { issues, retainedBands: root.querySelectorAll('line[data-aroma-baseline]').length };
+    }, scientific);
+    assert.deepEqual(comparisonProof.issues, []);
+    assert(comparisonProof.retainedBands > 0, 'Actual published baseline retained across a condition change');
+    await capture(page, `comparaison-${width}`, '[aria-label="Simulateur aromatique expérimental"]');
+    await capture(page, `comparaison-radar-${width}`, '[aria-label="Simulateur aromatique expérimental"] [aria-label="Graphe de la prédiction expérimentale"]');
+    await click(page, 'Effacer la comparaison');
+    if (width < 640) {
+      await page.waitForFunction(() => !!document.querySelector('[data-inline-companion]')?.getClientRects().length);
+      assert.equal(await page.$eval('.brewer-global-companion', e => e.getClientRects().length), 0, 'Reserved companion restored after typing');
+    }
+    assert.equal(await page.$$eval('[aria-label="Simulateur aromatique expérimental"] [data-aroma-baseline]', e => e.length), 0);
+    assert.deepEqual(await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length })), comparisonBefore);
+    assert.equal(requests.length, comparisonRequests, 'Comparison stays local');
+    assert.deepEqual(await page.evaluate(id => window.__hopQa.storage.getRecipes().find(r => r.id === id), scientific.id), scientific, 'Comparison changed the saved recipe');
     await back(page);
     const twenty = await page.evaluate(() => { const r = { ...window.__hopQa.recipe(20), id: 'qa-twenty', name: 'Vingt ajouts' }; window.__hopQa.seedRecipe(r); return r; });
     await click(page, 'Vingt ajouts', true); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
@@ -278,7 +321,7 @@ try {
     await capture(page, `confiance-${confidence}-${width}`); await back(page);
     }
     reports.push({ width, errors, remoteRequests: remote.length, simulationWrites: 0, simulationRequests: 0, updateTwentyMs: updateMs, quickSearchMs: quickMs, navigationMs, partialCoaPreserved: true, searchCancellation: true, staleResultDiscarded: true,
-      documented: documented.checked, twenty: twentyProof.checked, savedHops: saved.hops.length, persistenceRetryIdempotent: true });
+      documented: documented.checked, comparison: comparisonProof, twenty: twentyProof.checked, savedHops: saved.hops.length, persistenceRetryIdempotent: true });
     console.log(`QA ${width}px: creation, toggles, persistence, reload, documented graph, twenty additions ${updateMs.toFixed(1)}ms.`);
     assert.deepEqual(errors, []); assert.equal(remote.length, 0);
     await context.close();

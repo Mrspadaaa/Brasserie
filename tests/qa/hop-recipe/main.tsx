@@ -8,11 +8,12 @@ import { qaCalls } from './functions';
 import { testHopData, testHopTriplet } from '../../fixtures/hopPrediction';
 import { prepareHopRecipeInput } from '../../../src/domain/hopIndex/recipePrediction';
 import { predictHopRecipe } from '../../../functions/src/hopRecipePrediction';
+import { predictHopTriplet } from '../../../functions/src/hopPredictionCore';
 import fixture from '../../fixtures/hopScientific/test-houb.json';
 import yeastCatalogue from '../../../src/data/yeastCatalogueBootstrap.json';
 import dosePack from '../../../src/data/hopDoseStudyBootstrap.json';
 import type { Recipe } from '../../../src/types';
-import type { HopKnowledge, HopModel } from '../../../functions/src/hopPredictionSchema';
+import type { HopKnowledge, HopModel, HopTriplet } from '../../../functions/src/hopPredictionSchema';
 import '../../../src/index.css';
 
 async function start() {
@@ -33,6 +34,9 @@ async function start() {
   (window as any).__hopQa = {
     marker: '__HOP_RECIPE_QA_ONLY__', metrics: qaMetrics, calls: qaCalls, storage: StorageService, recipe, documented,
     axes: () => guideAxes(StorageService.getHopKnowledge()),
+    rawTriplet(triplet: HopTriplet, target: Recipe['hopAromaTarget'] = {}) {
+      return predictHopTriplet(triplet, target ?? {}, { varieties: StorageService.getHopVarieties(), lots: StorageService.getHopLots(), knowledge: guidePredictionKnowledge(StorageService.getHopKnowledge()) });
+    },
     raw(selected: Recipe, cumulative = true, index = 0) {
       const data = { varieties: StorageService.getHopVarieties(), lots: StorageService.getHopLots(), knowledge: guidePredictionKnowledge(StorageService.getHopKnowledge()) };
       const { input } = prepareHopRecipeInput(selected, data.varieties, guideYeasts(data.knowledge));

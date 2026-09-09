@@ -158,6 +158,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   return (
     <PageShell
+      className="recipe-reference"
       title={recipe.name}
       subtitle={[recipe.style, `${recipe.volumeL} L`, recipe.brewDate].filter(Boolean).join(' · ')}
       onClose={onClose}

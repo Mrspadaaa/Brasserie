@@ -37,3 +37,19 @@ La mesure séparée du moteur avec le catalogue complet (768 variétés, 1 734 l
 Les adaptateurs ne démontrent pas une écriture réelle dans Firestore : les tests d’intégration contrôlent le contrat et le rejeu, le navigateur contrôle confirmation, erreur et reprise. La validation du build déployé vérifie séparément les assets et les accès anonymes. Les captures couvrent Chrome ; Safari et Firefox ne sont pas certifiés par cette série. Une enveloppe expérimentale cohérente et correctement affichée ne remplace pas une validation sensorielle externe.
 
 Les preuves locales reproductibles sont dans `%TEMP%/laffinee-hop-qa-evidence` : `report.json`, captures PNG et diagnostic d’échec éventuel. Elles ne sont pas publiées dans l’hébergement de l’application.
+
+## Seconde passe du 9 septembre 2026
+
+La comparaison conservée est maintenant visible dans le radar et les barres, avec ses bornes et sa confiance. Les axes conservent leur échelle explicite ; un changement d’échelle ou de version d’axe invalide la superposition. Une plage complète conservée ne devient pas une barre d’intensité grise. Le mode compact retire le radar lorsqu’il ne contient ni plage informative, ni comparaison exploitable, ni objectif ; la case du profil complet permet toujours de l’ouvrir.
+
+Le nouveau parcours conserve le graphe du cas Lafontaine, modifie la dose à 2 g/L et quitte explicitement sa matrice documentée, puis compare les deux plages grises et toutes les sorties courantes au moteur brut. Il efface ensuite la comparaison et vérifie que la recette sauvegardée est inchangée. Les coordonnées des bandes conservées et courantes, les échelles et les inconnues sont contrôlées séparément. Une simple modification de dose ne prétend donc pas préserver un protocole complet.
+
+La saisie mobile masque temporairement le pied de page. Ce cas faisait réapparaître la bulle flottante devant le graphe : la page conserve maintenant son marqueur de contexte pendant la saisie. Le test vérifie l’absence de bulle à cet instant, puis le retour du raccourci réservé après la sortie du champ.
+
+| Largeur | Vingt ajouts | Recherche ciblée | Navigation pendant recherche |
+| --- | ---: | ---: | ---: |
+| 320 px | 34,9 ms | 419,1 ms | 129,6 ms |
+| 390 px | 16,5 ms | 134,6 ms | 31,9 ms |
+| 1280 px | 10,6 ms | 120,4 ms | 31,7 ms |
+
+Cette série a commencé pendant le build et les tests exécutés sur la même machine ; elle ne sert pas à affirmer une accélération ou un ralentissement par rapport à la première livraison. Tous les budgets sont respectés. Simulation, cases et comparaison : **zéro écriture, zéro requête** après chargement ; aucune erreur de console ou requête distante dans le parcours. Les captures de la seconde passe sont examinées dans la revue visuelle associée.

@@ -44,3 +44,21 @@ Une inspection complémentaire a ensuite ouvert **neuf captures** : `chimie`, `d
 | `cumul-20-{320,390,1280}.png` | La mention des vingt ajouts, la levure et les deux cases cochées restent visibles. Le radar est placé en haut à 1280 px ; ses libellés ne se chevauchent pas sur les trois vues. Les tableaux distinguent l’intensité indéterminée, sa plage 0–100 et sa confiance. Les contrôles du compagnon ne recouvrent plus ces éléments. |
 
 La dernière série a corrigé la fixture Wyeast 1728 en « liquide ». La capture finale `details-390.png` a été ouverte après régénération : elle affiche bien cette forme et `3,90 L/kg`. Aucun défaut de mise en page supplémentaire nécessitant une correction de code n’a été relevé. La série navigateur finale passe aux trois largeurs ; ses mesures figurent dans `hop-recipe-browser-qa.md`.
+
+## Seconde passe : comparaison et densité
+
+Direction retenue : conserver le fond cave, le vert houblon pour la simulation et le doré pour l’objectif ; gris chaud pour le résultat conservé. Les titres serif et le corps Source Sans restent ceux de l’application. Les détails restent repliés ; aucune carte décorative ou palette SAP n’est ajoutée.
+
+Une première inspection de `cases-00-320`, `comparaison-radar-320`, `comparaison-radar-1280` et `documente-390` a confirmé la réduction de l’état vide et révélé le retour de la bulle du compagnon pendant la saisie mobile. Le pied contenant le marqueur CSS disparaissait au focus d’un champ. La correction maintient la suppression de cette bulle pendant toute la consultation de recette sur mobile.
+
+Après correction, **dix captures finales ont été ouvertes et inspectées** :
+
+| Captures | Résultat |
+| --- | --- |
+| `comparaison-radar-{320,390,1280}` | Les plages conservées grises restent visibles quand la nouvelle condition est indéterminée. Les bornes et la confiance conservées sont lisibles dans la table ; légende distincte de l’objectif doré. Aucun chevauchement de libellés observé. La bulle a disparu sur mobile pendant la saisie ; elle reste hors contenu sur bureau. |
+| `cases-00-390`, `lecture-1280` | Le grand radar vide est retiré par défaut. Une phrase courte, les cases indépendantes, les repères documentaires et les détails repliés suffisent. |
+| `documente-1280`, `cumul-20-320` | Le mode complet conserve le radar, ses plages ou axes indéterminés, et la table avec ses échelles explicites. Le cumul identifie les vingt ajouts et leur souche. |
+| `chimie-390`, `details-320` | Quantités, unités et détails restent lisibles ; aucune barre n’est dessinée pour une quantité inconnue. Pas de recouvrement par le compagnon. |
+| `variante-390` | Les champs et le COA sont visibles dans la variante ; l’état initial sans plage précise reste compact. Le raccourci du compagnon occupe son emplacement réservé. |
+
+Les libellés radiaux restent petits sur le téléphone le plus étroit ; la table fournit la lecture détaillée avec bornes, échelles et confiance. Cette revue n’étend pas la certification à Safari/Firefox. Les contrôles automatiques complémentaires vérifient géométrie, focus, absence de débordement horizontal et activité réseau, comme indiqué dans le rapport navigateur.

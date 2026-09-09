@@ -19,7 +19,9 @@
 @media (max-width: 639px) {
   /* The recipe and wizard have a reserved button; floating over their data
      would hide ranges, confidence labels and disclosure controls. */
-  body:has([data-inline-companion]) .brewer-global-companion { display: none; }
+  /* Recipe footer unmounts while typing; keep the floating control suppressed
+     until the reserved shortcut returns, including inside aroma variants. */
+  body:has([data-inline-companion], .recipe-reference) .brewer-global-companion { display: none; }
 }
 .brewer-conversation { border: 1px solid #53604d; border-radius: 14px; overflow: hidden; }
 .brewer-conversation-row { display: flex; align-items: center; }
