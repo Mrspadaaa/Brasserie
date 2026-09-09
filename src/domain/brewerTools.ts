@@ -38,6 +38,7 @@ import { FERMENTATION_GOALS, type FermentationGoal } from '../../functions/src/f
 import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
 import { catalogueMatches } from './yeastCatalogue';
 import { fermentationDose } from './fermentationGuide';
+import { evaluateFermentationScenario } from './fermentationScenario';
 
 const number = (
   a: Record<string, unknown>,
@@ -213,10 +214,16 @@ export function runBrewerTool(
     if (!FERMENTATION_GOALS.includes(a.goal as FermentationGoal)) throw Error('Objectif de fermentation requis.');
     if (a.yeastId != null && (typeof a.yeastId !== 'string' || !a.yeastId.trim())) throw Error('Identifiant de levure invalide.');
     const knowledge = c.hopIndex?.knowledge ?? [], science = activeFermentationScience(knowledge)[0];
-    const goal = a.goal as FermentationGoal, yeastId = (a.yeastId as string | undefined) ?? r?.yeast?.hopIndexId;
+    const goal = a.goal as FermentationGoal;
     const guides = knowledge.filter(k => { try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; } }).filter(k => k.kind === 'fermentation');
+    const yeasts = knowledge.filter((k): k is HopYeast => { try { assertHopKnowledge(k); return k.kind === 'yeast'; } catch { return false; } })
+      .map(y => ({ ...y, aliases: [...(guides.find(g => g.yeastId === y.id)?.aliases ?? []), ...(y.catalogue?.aliases ?? [])] }));
+    const og = a.og == null ? r?.ogTarget : number(a, 'og', 1.001, 1.3);
+    const scenario = r ? evaluateFermentationScenario({ ...r, ogTarget: og,
+      yeast: a.yeastId ? { ...r.yeast, hopIndexId: a.yeastId as string } : r.yeast }, yeasts, guides) : undefined;
+    const yeastId = (a.yeastId as string | undefined) ?? scenario?.yeast?.id ?? r?.yeast?.hopIndexId;
     const choices = guides.filter(g => (!yeastId || g.yeastId === yeastId) && g.plans.some(p => p.goal === goal));
-    const current = guides.find(g => g.yeastId === yeastId), og = a.og == null ? r?.ogTarget : number(a, 'og', 1.001, 1.3);
+    const current = guides.find(g => g.yeastId === yeastId);
     const sg = a.sg == null ? undefined : number(a, 'sg', .95, 1.3);
     return result('Conduite fermentaire documentée', {
       goal, yeastId: yeastId ?? null, scienceVersion: science?.version ?? null,
@@ -225,9 +232,9 @@ export function runBrewerTool(
       alternatives: guides.filter(g => g.plans.some(p => p.goal === goal)).map(g => ({ id:g.id, yeastId:g.yeastId, name:g.name, aroma:g.aroma })),
       levers: fermentationLevers(science, goal, yeastId), compounds: science?.compounds ?? [],
       benchmarks: science?.benchmarks.filter(b => b.yeastId === yeastId) ?? [],
-      finalGravity: fermentationFinalGravity(current, og), lagerRest: fermentationLagerRest(science,current,og,sg),
+      finalGravity: scenario?.fg ?? fermentationFinalGravity(current, og), lagerRest: fermentationLagerRest(science,current,og,sg),
       gravityContext: { og: og ?? null, origin: a.og == null ? 'cible prévue de recette, pas mesure' : 'DI fournie pour ce scénario, statut mesuré à confirmer' },
-      programWarnings: fermentationProgramWarnings(current, a.yeastId && a.yeastId !== r?.yeast?.hopIndexId ? [] : r?.fermentation ?? [])
+      programWarnings: scenario?.warnings ?? fermentationProgramWarnings(current, []), scenarioVersion: scenario?.version ?? null
     }, [], [
       'Plages de conduite et durées proposées : confiance faible, pas de couverture statistique ni de garantie de fin. Respecter la fenêtre fabricant et contrôler densité/VDK après le dernier ajout.',
       'Pas de concentration universelle d’ester, phénol, thiol, lactone ou défaut. Le modèle DM303 ne se transfère pas à cette recette.',

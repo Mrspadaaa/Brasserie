@@ -3,7 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { App } from '../../../src/App';
 import { StorageService } from '../../../src/services/storage';
 import { FirestoreRepo, qaMetrics, seedQa } from './repo';
-import { guidePredictionKnowledge, guideYeasts, guideAxes, loadGuideVarieties } from '../../../src/ui/hopIndex/guideData';
+import { guidePredictionKnowledge, guideYeasts, guideAxes, loadGuideVarieties, guideFermentations, guideFermentationScience } from '../../../src/ui/hopIndex/guideData';
+import { evaluateFermentationScenario } from '../../../src/domain/fermentationScenario';
+import { predictStudyPhenols } from '../../../functions/src/fermentationScienceCore';
 import { qaCalls } from './functions';
 import { testHopData, testHopTriplet } from '../../fixtures/hopPrediction';
 import { prepareHopRecipeInput } from '../../../src/domain/hopIndex/recipePrediction';
@@ -33,6 +35,12 @@ async function start() {
   };
   (window as any).__hopQa = {
     marker: '__HOP_RECIPE_QA_ONLY__', metrics: qaMetrics, calls: qaCalls, storage: StorageService, recipe, documented,
+    yeast: {
+      raw: (r: Recipe) => evaluateFermentationScenario(r, guideYeasts(StorageService.getHopKnowledge()), guideFermentations(StorageService.getHopKnowledge())),
+      guides: () => guideFermentations(StorageService.getHopKnowledge()),
+      science: () => guideFermentationScience(StorageService.getHopKnowledge())[0],
+      phenols: predictStudyPhenols,
+    },
     axes: () => guideAxes(StorageService.getHopKnowledge()),
     rawTriplet(triplet: HopTriplet, target: Recipe['hopAromaTarget'] = {}) {
       return predictHopTriplet(triplet, target ?? {}, { varieties: StorageService.getHopVarieties(), lots: StorageService.getHopLots(), knowledge: guidePredictionKnowledge(StorageService.getHopKnowledge()) });

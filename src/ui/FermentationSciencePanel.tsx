@@ -4,7 +4,9 @@ import type { FermentationScience } from '../../functions/src/fermentationScienc
 import { fermentationFinalGravity, fermentationLagerRest, fermentationLevers, fermentationProgramWarnings, predictStudyPhenols, type PhenolScenario } from '../../functions/src/fermentationScienceCore';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
 import { readFermentationGuide } from '../domain/fermentationGuide';
-import { guideFermentations, guideFermentationScience } from './hopIndex/guideData';
+import { guideFermentations, guideFermentationScience, guideYeasts } from './hopIndex/guideData';
+import { evaluateFermentationScenario, fermentationDefaultGoal } from '../domain/fermentationScenario';
+import { fermentationRangeLabel } from './fermentationPresentation';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
@@ -17,8 +19,8 @@ const confidence={low:'faible',medium:'moyenne',high:'élevée'};
 const phase={preparation:'Avant brassage',growth:'Début de fermentation',active:'Fermentation active',finish:'Fin de fermentation',conditioning:'Maturation'};
 const fmt=(n:number,digits=1)=>n.toLocaleString('fr-CH',{minimumFractionDigits:digits,maximumFractionDigits:digits});
 
-export function FermentationLeversPanel({science,goal,guide}:{science?:FermentationScience;goal:FermentationGoal;guide?:FermentationGuide}){
- const levers=fermentationLevers(science,goal,guide?.yeastId);
+export function FermentationLeversPanel({science,goal,guide,yeastId}:{science?:FermentationScience;goal:FermentationGoal;guide?:FermentationGuide;yeastId?:string}){
+ const levers=fermentationLevers(science,goal,guide?.yeastId??yeastId);
  if(!science)return <p className="text-sm text-cave-400">Aide scientifique indisponible ou désactivée. Les paliers restent saisissables.</p>;
  const row=(l:typeof levers[number])=><article key={l.id} className="py-3 space-y-2">
   <p className="text-sm text-water">{phase[l.phase]} · confiance {confidence[l.confidence]}{l.yeastIds.length?' · propre à cette souche':' · mécanisme général, à vérifier pour la souche'}</p>
@@ -33,19 +35,21 @@ export function FermentationLeversPanel({science,goal,guide}:{science?:Fermentat
  </section>;
 }
 export function FermentationPlanningCalculations({science,guide,ogInitial}:{science?:FermentationScience;guide?:FermentationGuide;ogInitial?:number}){
- const [og,setOg]=useState<number|undefined>(ogInitial&&ogInitial>1?ogInitial:undefined),[sg,setSg]=useState<number|undefined>();
+ const [override,setOverride]=useState<{value:number|undefined}>(),[sg,setSg]=useState<number|undefined>();
+ const og=override?override.value:ogInitial&&ogInitial>1?ogInitial:undefined;
  const fg=fermentationFinalGravity(guide,og),rest=fermentationLagerRest(science,guide,og,sg);
  const lager=!!guide&&science?.lagerRest.yeastIds.includes(guide.yeastId);
  return <details className="border-t border-cave-700 pt-2"><summary className="cursor-pointer min-h-touch flex items-center text-water">{lager?'Calculer les repères de densité et de repos':'Estimer la plage de densité finale'}</summary>
   <div className="space-y-3 pt-2">
    <p className="text-sm text-cave-400">Calcul de scénario. Ces champs ne modifient ni la recette ni les relevés du brassin.</p>
-   <HopField label="DI utilisée pour ce calcul (SG)" hint="DI prévue ou mesurée au densimètre, corrigée en température."><NumberInput className={inputClass} value={og} emptyValue={undefined} onValue={setOg}/></HopField>
-   <p className="text-sm text-cave-200">{fg.range?<>DF documentaire : <strong>{fmt(fg.range.min,3)}–{fmt(fg.range.max,3)} SG</strong> · confiance faible.</>:fg.reasons[0]}</p>
+   <HopField label="DI utilisée pour ce calcul (SG)" hint="DI prévue ou mesurée au densimètre, corrigée en température."><NumberInput className={inputClass} value={og} emptyValue={undefined} onValue={value=>setOverride({value})}/></HopField>
+   {override&&<Button onClick={()=>{setOverride(undefined);setSg(undefined);}}>Reprendre la DI de la recette</Button>}
+   <p className="text-sm text-cave-200">{fg.range?<>DF documentaire : <strong>{fermentationRangeLabel(fg.range,'SG',3)}</strong> · confiance faible.</>:fg.reasons[0]}</p>
    {fg.range&&<p className="text-sm text-cave-400">{fg.reasons[0]}</p>}
    {lager&&<>
-    <p className="text-sm text-cave-200">{rest.trigger.range?<>Préparer le repos vers <strong>{fmt(rest.trigger.range.min,3)}–{fmt(rest.trigger.range.max,3)} SG</strong> · confiance faible. Hausse documentée de {fmt(science!.lagerRest.riseC.min,0)}–{fmt(science!.lagerRest.riseC.max,0)} °C, dans la fenêtre fabricant.</>:rest.trigger.reasons[0]}</p>
+    <p className="text-sm text-cave-200">{rest.trigger.range?<>Préparer le repos vers <strong>{fermentationRangeLabel(rest.trigger.range,'SG',3)}</strong> · confiance faible. Hausse documentée de {fermentationRangeLabel(science!.lagerRest.riseC,'°C',0)}, dans la fenêtre fabricant.</>:rest.trigger.reasons[0]}</p>
     <HopField label="Densité actuelle pour situer la progression (SG)" hint="Facultative ; densimètre corrigé ou valeur déjà corrigée du réfractomètre."><NumberInput className={inputClass} value={sg} emptyValue={undefined} onValue={setSg}/></HopField>
-    {sg!==undefined&&<p role="status" className="text-sm text-cave-200">{rest.progress.range?<>Progression vers la DF estimée : {fmt(rest.progress.range.min)}–{fmt(rest.progress.range.max)} % · confiance faible.</>:rest.progress.reasons[0]}</p>}
+    {sg!==undefined&&<p role="status" className="text-sm text-cave-200">{rest.progress.range?<>Progression vers la DF estimée : {fermentationRangeLabel(rest.progress.range,'%',1)} · confiance faible.</>:rest.progress.reasons[0]}</p>}
     <p className="text-sm text-cave-400">Le repère {science!.lagerRest.progressPct.min}–{science!.lagerRest.progressPct.max} % concerne le chemin DI → DF attendue. Vérifier le ralentissement réel, puis la stabilité et les VDK. Aucune action automatique.</p>
     <HopSourceLink source={science!.lagerRest.source}/>
    </>}
@@ -61,7 +65,8 @@ function PhenolStudyLab({science}:{science:FermentationScience}){
  }));
  const prediction=useMemo(()=>predictStudyPhenols(study,scenario),[study,scenario]);
  if(!study)return null;
- const bars=[{label:'4VG',estimate:prediction.vg},{label:'4VP',estimate:prediction.vp}],max=Math.max(1,...bars.map(b=>b.estimate.range?.max??0))*1.1;
+ const bars=[{label:'4VG',estimate:prediction.vg},{label:'4VP',estimate:prediction.vp}];
+ const min=Math.min(0,...bars.map(b=>b.estimate.range?.min??0)),max=Math.max(1,...bars.map(b=>b.estimate.range?.max??0))*1.1;
  return <section aria-label="Laboratoire expérimental DM303" className="space-y-4 py-3">
   <h4 className="font-semibold text-cave-50">Reproduire une étude, explorer ses limites</h4>
   <p className="text-sm text-cave-200">{study.scope}</p>
@@ -72,8 +77,8 @@ function PhenolStudyLab({science}:{science:FermentationScience}){
    <HopField label="Protocole de mash-in"><select className={inputClass} value={scenario.mashInC??''} onChange={e=>setScenario({...scenario,mashInC:Number(e.target.value)})}>{study.levels.mashInC.map((t,i)=><option key={t} value={t}>{t} °C pendant {study.mashHoldMin[i]} min</option>)}</select></HopField>
   </div>
   <div aria-live="polite" className="space-y-3">
-   {bars.map(b=><div key={b.label} className="space-y-2"><p className="text-sm text-cave-50">{b.label} : {b.estimate.range?<strong>{fmt(b.estimate.range.min,2)}–{fmt(b.estimate.range.max,2)} mg/L</strong>:'non quantifiable'}</p>
-    {b.estimate.range&&<div aria-hidden="true" className="relative h-4 bg-cave-800"><span className="absolute h-full bg-water" style={{left:100*Math.max(0,b.estimate.range.min)/max+'%',width:100*(b.estimate.range.max-Math.max(0,b.estimate.range.min))/max+'%'}}/></div>}
+   {bars.map(b=><div key={b.label} className="space-y-2" data-compound={b.label}><p className="text-sm text-cave-50">{b.label} : {b.estimate.range?<strong>{fermentationRangeLabel(b.estimate.range,'mg/L',2)}</strong>:'non quantifiable'} · confiance {confidence[b.estimate.confidence]}</p>
+    {b.estimate.range&&<div aria-hidden="true" className="relative h-4 bg-cave-800" data-scale-min={min} data-scale-max={max}><span className="absolute h-full bg-water" style={{left:100*(b.estimate.range.min-min)/(max-min)+'%',width:100*(b.estimate.range.max-b.estimate.range.min)/(max-min)+'%'}}/></div>}
    </div>)}
    <p className="text-sm text-cave-400">{prediction.vg.reasons[0]}</p>
   </div>
@@ -103,9 +108,12 @@ export function FermentationRecipeAdvice({recipe}:{recipe:TrialRecipe}){
  const [open,setOpen]=useState(false);
  const saved=useStorageValue(StorageService.getHopKnowledge),science=useMemo(()=>guideFermentationScience(saved)[0],[saved]);
  const guides=useMemo(()=>guideFermentations(saved),[saved]);
- const guide=guides.find(g=>g.yeastId===recipe.yeast.hopIndexId);
- const goal=readFermentationGuide(recipe)?.goal??guide?.plans[0]?.goal??'clean';
- const warnings=fermentationProgramWarnings(guide,recipe.fermentation??[]);
+ const yeasts=useMemo(()=>guideYeasts(saved),[saved]);
+ const scenario=useMemo(()=>evaluateFermentationScenario(recipe,yeasts,guides),[recipe,yeasts,guides]);
+ const guide=scenario.guide;
+ const snapshot=readFermentationGuide(recipe);
+ const goal=(snapshot?.yeast.id===scenario.yeast?.id?snapshot?.goal:undefined)??fermentationDefaultGoal(guide);
+ const warnings=scenario.warnings;
  return <details className="mt-4 border border-cave-700 rounded-control p-3" onToggle={e=>setOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-water">Aide pour cette levure et ces paliers</summary>
   {open&&<div className="space-y-4 pt-3">
    <p className="text-sm text-cave-400">Lecture de la conduite actuelle ; aucun changement automatique.</p>

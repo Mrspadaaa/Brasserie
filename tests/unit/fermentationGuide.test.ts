@@ -82,6 +82,13 @@ describe('Conduites de levure documentées', () => {
       expect(findRecipeYeastMatches(label, guideYeasts([])).some(m => m.item.id === id)).toBe(true);
     }
   });
+  it('ne remet pas la quantité à zéro lors du rattachement explicite d’un nom reconnu', () => {
+    const guide=guideFermentations([]).find(g=>g.yeastId==='fermentis-us05')!;
+    const r={...fullRecipe,yeast:{name:'Fermentis Levure SafAle US-05',form:'sèche' as const,qty:1,unit:'sachet'}};
+    const next=applyFermentationGuide(r,guide,yeastFor(guide),createFermentationDraft(guide,'clean')!);
+    expect(next.yeast).toMatchObject({hopIndexId:'fermentis-us05',qty:1,unit:'sachet'});
+    expect(applyFermentationGuide({...r,yeast:{...r.yeast,hopIndexId:'different'}},guide,yeastFor(guide),createFermentationDraft(guide,'clean')!).yeast.qty).toBe(0);
+  });
   it('ne remplace pas une révision désactivée ou invalide par le guide initial', () => {
     for (const patch of [{ enabled: false }, { plans: [] }]) expect(guideFermentations([{ ...munich, ...patch } as FermentationGuide]).some(g => g.id === munich.id)).toBe(false);
     const edited = structuredClone(munich); edited.version = 'personal'; edited.plans[0].phases[0].temperatureC.central = 19;
