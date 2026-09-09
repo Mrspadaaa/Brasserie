@@ -27,7 +27,7 @@ describe('Compagnon avec tous les catalogues publics, sans appel IA', () => {
     c.journal = { additions: { 'hop-0': { amount: 80 } } };
     const before = structuredClone(c), result = runBrewerTool('predict_hop_aroma', { target: [{ axisId: 'citrus', min: 40, max: 70 }] }, c);
     const output = result.data as HopRecipeCompanionEvidence;
-    expect(output.engineVersion).toBe('hop-recipe-experimental-v1'); expect(output.overall).not.toHaveProperty('triplet');
+    expect(output.engineVersion).toBe('hop-recipe-experimental-v2'); expect(output.overall).not.toHaveProperty('triplet');
     expect(output.input.yeastId).toBe('fermentis-us05'); expect(output.input.additions.map(a => a.triplet.varietyId)).toEqual(['hopsteiner-cas', 'hopsteiner-cas']);
     expect(output.input.additions.map(a => a.triplet.doseGL)).toEqual([4, 1.5]); expect(output.input.additions.map(a => a.dayOffset)).toEqual([7, 12]);
     expect(output.input.fermentation).toEqual(c.recipe.fermentation);

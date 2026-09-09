@@ -7,7 +7,10 @@ import type { HopExtrapolation } from './hopExtrapolationSchema.js';
 import { fermentationProgramWarnings } from './fermentationScienceCore.js';
 import type { FermentationGuide } from './fermentationGuideSchema.js';
 
-export const HOP_RECIPE_ENGINE_VERSION = 'hop-recipe-experimental-v1' as const;
+export const HOP_RECIPE_ENGINE_VERSION = 'hop-recipe-experimental-v2' as const;
+export type HopRecipeEngineVersion = 'hop-recipe-experimental-v1' | typeof HOP_RECIPE_ENGINE_VERSION;
+// Same editable physical convention; v2 tightens interval arithmetic only.
+const AGGREGATION_VERSION = 'hop-recipe-experimental-v1';
 export interface HopRecipeInput {
   volumeL: number; yeastId: string | null;
   additions: { id: string; name: string; triplet: HopTriplet; dayOffset?: number }[];
@@ -51,7 +54,7 @@ export interface HopRecipeChemicalAmount {
   partialRange?: HopRange; partialReported?: number;
 }
 export interface HopRecipePrediction {
-  engineVersion: typeof HOP_RECIPE_ENGINE_VERSION; input: HopRecipeInput;
+  engineVersion: HopRecipeEngineVersion; input: HopRecipeInput;
   additions: HopPrediction[];
   overall: Omit<HopPrediction, 'triplet'> & { conditionalEnvelope: true; interactionsNonQuantifiees: boolean };
   chemistry: { introduced: Record<string, HopRecipeChemicalAmount>; final: Record<string, HopEstimate & { unit: 'ngL' | null }> };
@@ -93,9 +96,16 @@ function recipeFermentationWarnings(input: HopRecipeInput, yeast: HopYeast | und
   return [...ambiguousWarnings, ...warnings];
 }
 
-function pooledDose(dose: number | null, axisId: string, timing: HopTriplet['timing'], model: HopExtrapolation) {
+function pooledDose(dose: number | null, axisId: string, timing: HopTriplet['timing'], model: HopExtrapolation, knownMinimum = 0) {
   const t = model.timings[timing!], a = model.axes.find(a => a.id === axisId)!;
-  if (dose === null) return { range: { min: 0, max: 1 }, central: undefined };
+  if (dose === null) {
+    const lower = hopDoseResponse(knownMinimum, t.halfSaturationGL.range.max, a.doseScale.range.max);
+    const generic = { min: lower, max: 1 };
+    const reference = model.doseReferences?.find(r => r.axisId === axisId && r.timings.includes(timing!));
+    // An unknown dose can exceed the observed curve: its transferred shape still
+    // spans 0–1. The positive saturating component retains the known dose floor.
+    return { range: reference ? mixHopDoseShapes(generic, { min: 0, max: 1 }, reference.transferWeight.range) : generic, central: undefined };
+  }
   let range = { min: hopDoseResponse(dose, t.halfSaturationGL.range.max, a.doseScale.range.max), max: hopDoseResponse(dose, t.halfSaturationGL.range.min, a.doseScale.range.min) };
   let central: number | undefined = hopDoseResponse(dose, t.halfSaturationGL.central, a.doseScale.central);
   const ref = model.doseReferences?.find(r => r.axisId === axisId && r.timings.includes(timing!));
@@ -116,7 +126,7 @@ function pooledDose(dose: number | null, axisId: string, timing: HopTriplet['tim
 
 /** Conditional model envelope. Events are retained; only their phase's dose pressure is pooled.
  * Unknown mixture interactions are NOT claimed to lie inside this interval. */
-function aggregateModel(input: HopRecipeInput, data: HopEngineData, axes: HopAxis[], yeast: HopYeast, model: HopExtrapolation): Record<string, HopEstimate> {
+function aggregateModel(input: HopRecipeInput, data: HopEngineData, axes: HopAxis[], yeast: HopYeast, model: HopExtrapolation, version: HopRecipeEngineVersion): Record<string, HopEstimate> {
   const cache = createHopExtrapolationCache(), varieties = new Map(data.varieties.map(v => [v.id, v])), lots = new Map(data.lots.map(l => [l.id, l]));
   const strain = model.yeasts.find(y => y.yeastId === yeast.id);
   const active = input.additions.filter(a => a.triplet.doseGL !== 0);
@@ -144,13 +154,16 @@ function aggregateModel(input: HopRecipeInput, data: HopEngineData, axes: HopAxi
       const t = model.timings[phase];
       const doseKnown = rows.every(a => nonnegative(a.triplet.doseGL));
       const total = doseKnown ? rows.reduce((sum, a) => sum + a.triplet.doseGL!, 0) : null;
-      const dose = pooledDose(total !== null && finite(total) ? total : null, axis.id, phase, model);
+      const knownDose = rows.reduce((sum, a) => sum + (nonnegative(a.triplet.doseGL) ? a.triplet.doseGL : 0), 0);
+      const dose = pooledDose(total !== null && finite(total) ? total : null, axis.id, phase, model,
+        version === 'hop-recipe-experimental-v1' || !finite(knownDose) ? 0 : knownDose);
       let weighted: HopRange = { min: 0, max: 0 }, centralWeighted = 0;
+      const contributions: HopRange[] = [];
       let groupUnknown = total === null || !finite(total);
       evidence.push(t.expression.source, t.halfSaturationGL.source, (t.decayHours ?? t.extractionHours).source, t.temperatureC.source);
       const ref = model.doseReferences?.find(r => r.axisId === axis.id && r.timings.includes(phase));
       if (ref) evidence.push(ref.source, ref.evidence, ref.transferWeight.source, ref.relativeError.source);
-      if (groupUnknown) reasons.push('Dose manquante : tout le domaine de la phase reste possible, sans moyenne imputée.');
+      if (groupUnknown && version === 'hop-recipe-experimental-v1') reasons.push('Dose manquante : tout le domaine de la phase reste possible, sans moyenne imputée.');
       for (const row of rows) {
         const triplet = row.triplet, variety = varieties.get(triplet.varietyId ?? ''), lot = triplet.lotId ? lots.get(triplet.lotId) : undefined;
         const badLot = !!triplet.lotId && (!lot || lot.varietyId !== triplet.varietyId);
@@ -163,6 +176,7 @@ function aggregateModel(input: HopRecipeInput, data: HopEngineData, axes: HopAxi
         const contact: HopRange = !nonnegative(time) ? { min: 0, max: 1 } : t.decayHours ? { min: Math.exp(-time / t.decayHours.range.min), max: Math.exp(-time / t.decayHours.range.max) }
           : { min: -Math.expm1(-time / t.extractionHours.range.max), max: -Math.expm1(-time / t.extractionHours.range.min) };
         const contactCentral = !nonnegative(time) ? undefined : t.decayHours ? Math.exp(-time / t.decayHours.central) : -Math.expm1(-time / t.extractionHours.central);
+        contributions.push(mul(descriptor.range, contact));
         const temperatureUncertain = !finite(triplet.temperatureC) || triplet.temperatureC < t.temperatureC.range.min || triplet.temperatureC > t.temperatureC.range.max;
         const formKnown = !!knownVariety && (lot?.form ?? knownVariety.form) !== 'unknown';
         const documentary = matches.length ? Math.min(...matches.map(m => model.sourceUncertainty[m.source.kind].range.max + (m.source.year === null ? model.undatedUncertainty.range.max : 0)))
@@ -183,7 +197,15 @@ function aggregateModel(input: HopRecipeInput, data: HopEngineData, axes: HopAxi
         }
       }
       // Ratios with an unknown dose cannot be evaluated by separately imputing numerator/denominator.
-      if (groupUnknown) { weighted = { min: 0, max: 1 }; hasCentral = false; }
+      if (groupUnknown) {
+        // Every possible dose allocation is a convex combination of the same
+        // descriptor/contact contributions. No weights or missing doses are imputed.
+        // Keep the historical rectangle exactly for frozen v1 predictions.
+        weighted = version === 'hop-recipe-experimental-v1' ? { min: 0, max: 1 }
+          : { min: Math.min(...contributions.map(c => c.min)), max: Math.max(...contributions.map(c => c.max)) };
+        hasCentral = false;
+        if (version !== 'hop-recipe-experimental-v1') reasons.push('Dose manquante : les contacts et descripteurs connus bornent toutes les répartitions possibles ; aucune quantité n’est imputée.');
+      }
       latent = add(latent, mul(dose.range, weighted, t.expression.range));
       if (dose.central === undefined) hasCentral = false;
       else centralLatent += dose.central * centralWeighted * t.expression.central;
@@ -268,7 +290,8 @@ function introducedChemistry(input: HopRecipeInput, data: HopEngineData, policie
 }
 
 /** Local O(additions × axes × models), with no search, network, persistence, or recipe mutation. */
-export function predictHopRecipe(input: HopRecipeInput, target: Record<string, HopRange>, data: HopEngineData): HopRecipePrediction {
+export function predictHopRecipe(input: HopRecipeInput, target: Record<string, HopRange>, data: HopEngineData, version: HopRecipeEngineVersion = HOP_RECIPE_ENGINE_VERSION): HopRecipePrediction {
+  if (version !== 'hop-recipe-experimental-v1' && version !== HOP_RECIPE_ENGINE_VERSION) throw Error('Version du calcul de recette inconnue.');
   const warnings: string[] = [];
   const normalized: HopRecipeInput = { ...input, additions: (input.additions ?? []).map(a => ({ ...a, triplet: { ...a.triplet, yeastId: input.yeastId } })), fermentation: (input.fermentation ?? []).map(s => ({ ...s })) };
   if ((input.additions ?? []).some(a => a.triplet.yeastId !== input.yeastId)) warnings.push('La souche de la recette est utilisée pour tous les ajouts ; une référence de souche différente a été écartée.');
@@ -279,8 +302,8 @@ export function predictHopRecipe(input: HopRecipeInput, target: Record<string, H
   warnings.push(...recipeFermentationWarnings(normalized, yeast, guide?.kind === 'fermentation' ? guide : undefined));
   if (normalized.fermentation.some(s => s.kind === 'ajout') && !normalized.additions.some(a => a.triplet.doseGL !== 0 && (a.triplet.timing === 'fermentation' || a.triplet.timing === 'postFermentation'))) warnings.push('Le programme annonce un ajout en fermentation, mais aucun houblon à cru n’est saisi.');
   const predict = createHopPredictor(data), additions = normalized.additions.map(a => predict(a.triplet, target));
-  const models = valid.filter((v): v is HopExtrapolation => v.kind === 'extrapolation' && v.enabled && v.aggregation?.version === HOP_RECIPE_ENGINE_VERSION);
-  const profiles = yeast ? models.map(m => aggregateModel(normalized, data, axes, yeast, m)) : [];
+  const models = valid.filter((v): v is HopExtrapolation => v.kind === 'extrapolation' && v.enabled && v.aggregation?.version === AGGREGATION_VERSION);
+  const profiles = yeast ? models.map(m => aggregateModel(normalized, data, axes, yeast, m, version)) : [];
   const profile = Object.fromEntries(axes.map(a => [a.id, yeast ? widen(profiles.map(p => p[a.id])) : unknown('Levure de recette inconnue : aucune prédiction sensorielle sans contexte de souche.') ]));
   const policies = valid.filter((v): v is HopConfidencePolicy => v.kind === 'confidence');
   const activePredictions = additions.filter((_, i) => normalized.additions[i].triplet.doseGL !== 0);
@@ -297,5 +320,5 @@ export function predictHopRecipe(input: HopRecipeInput, target: Record<string, H
     reasons: profiles.length ? ['Cumul expérimental conditionnel aux paramètres ; aucune garantie sur les interactions sensorielles du mélange.'] : ['Convention de cumul ou levure disponible manquante.'],
     extrapolatedAxes: axes.filter(a => profile[a.id]?.range && !(activePredictions.length === 1 && !activePredictions[0].extrapolatedAxes?.includes(a.id) && activePredictions[0].profile[a.id]?.range)).map(a => a.id),
     conditionalEnvelope: true, interactionsNonQuantifiees: normalized.additions.filter(a => a.triplet.doseGL !== 0).length > 1 };
-  return { engineVersion: HOP_RECIPE_ENGINE_VERSION, input: normalized, additions, overall, chemistry: { introduced: introducedChemistry(normalized, data, policies), final }, warnings: [...new Set(warnings)] };
+  return { engineVersion: version, input: normalized, additions, overall, chemistry: { introduced: introducedChemistry(normalized, data, policies), final }, warnings: [...new Set(warnings)] };
 }

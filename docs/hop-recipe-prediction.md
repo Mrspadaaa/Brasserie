@@ -1,6 +1,6 @@
 # Simulation de la recette complète
 
-Version `hop-recipe-experimental-v1`, convention du 9 septembre 2026. Le calcul est pur, local et linéaire dans le nombre d’ajouts et d’axes : aucune recherche de combinaisons, requête Firestore, écriture ou tâche IA. La version des coefficients reste indépendante de celle de l’algorithme.
+Version courante `hop-recipe-experimental-v2`, seconde passe du 9 septembre 2026. La convention de coefficients reste `aggregation.version = hop-recipe-experimental-v1` : v2 corrige les bornes mathématiques sans modifier les hypothèses physiques. Le calcul est pur, local et linéaire dans le nombre d’ajouts et d’axes : aucune recherche de combinaisons, requête Firestore, écriture ou tâche IA. La version des coefficients reste indépendante de celle de l’algorithme.
 
 Le contrat `HopRecipeInput` conserve volume, souche unique, tous les triplets d’ajout, leurs identifiants et jours éventuels, ainsi que les paliers réels. La sortie contient les prédictions par ajout, un résultat global sans faux triplet synthétique, les quantités analytiques introduites et les limites de conduite. Une référence de souche contradictoire est remplacée explicitement par la souche de recette, avec avertissement ; la validation stricte de persistance exige leur cohérence.
 
@@ -26,7 +26,29 @@ Les contributions sont combinées avant la transformation sensorielle. Le fond d
 
 Le pool par phase est une convention de dose, pas une fusion des événements physiques. J7 et J12 restent distincts ; chacun conserve son contact, sa température et son contexte dans les sorties individuelles. Leur espacement n’accorde aucun bonus numérique sans loi étalonnée. Identifiants et libellés ne modifient pas le calcul. Une ligne 4 g/L divisée en deux lignes identiques de 2 g/L donne les mêmes bornes à l’arrondi machine près. Ajouter un houblon modifie la pondération et ne garantit pas une hausse de chaque arôme.
 
-Si une dose manque, le groupe utilise le domaine complet des doses et des pondérations, sans moyenne imputée. Une phase inconnue rend le domaine sensoriel complet. Une souche de recette non identifiée ne donne aucune prédiction chiffrée. Le repère central n’est affiché que si les conditions nécessaires sont connues, qu’un support aromatique existe et que la bande discrimine une partie de l’échelle. Le domaine 0–100 n’est jamais une « tendance moyenne ».
+Si une dose manque, v2 conserve les contraintes documentaires et de contact sur toutes les pondérations possibles, sans moyenne imputée. Une phase inconnue rend le domaine sensoriel complet. Une souche de recette non identifiée ne donne aucune prédiction chiffrée. Le repère central n’est affiché que si les conditions nécessaires sont connues, qu’un support aromatique existe et que la bande discrimine une partie de l’échelle. Le domaine 0–100 n’est jamais une « tendance moyenne ».
+
+### Correction v2 : dose inconnue, contact connu
+
+v1 remplaçait toute la moyenne pondérée des descripteurs et contacts par `[0,1]` lorsqu’une dose manquait. Cela oubliait des contraintes pourtant connues, même pour un ajout unique, et pouvait élargir son résultat au simple cochage du cumul.
+
+Pour une phase non vide, soit `ai = pia × ci`. Dès que `D > 0`, les poids `wi = di/D` sont positifs ou nuls et leur somme vaut 1. Pour toute répartition admissible :
+
+~~~
+min_i(ai.min) ≤ somme_i(wi × ai) ≤ max_i(ai.max)
+D ≥ D0 = somme des seules doses connues
+f_générique(D) ≥ D0 / (D0 + Kmax)
+~~~
+
+Ces inégalités restent vraies si les paramètres sont corrélés. La multiplication de facteurs positifs, la somme et la transformation sensorielle monotone donnent une enveloppe extérieure ; elles n’exigent aucun tirage indépendant. Le plancher de dose est calculé avec la fonction stable existante, sans imputer zéro à une dose inconnue. Si une courbe publiée est transférée, sa composante reste `[0,1]` car la dose pourrait sortir de son support : la borne est combinée avec le poids de transfert déjà présent en base.
+
+Le cas `D=0` donne une contribution de houblon nulle ; on ne calcule jamais `0/0`. Une phase vide est ignorée. Une somme non finie conserve le repli prudent. Sans contact ou descripteur exploitable, la borne peut rester aussi large qu’avant. Les doses connues gardent exactement le calcul v1.
+
+La preuve de ces bornes a reçu une vérification mathématique indépendante, distincte des tests numériques de complétion. Elle démontre l’inclusion des possibilités du modèle, **pas** une couverture statistique des bières réelles. Aucun coefficient, année de source, marge empirique ni niveau de confiance n’a été retouché.
+
+### Archives
+
+Les captures nouvelles inscrivent `hop-recipe-experimental-v2`. Le validateur et l’import rejouent les captures v1 avec la branche arithmétique historique, ses explications et ses preuves figées ; ils rejettent une version inconnue. Réétiqueter une capture v1 modifiée par la correction comme v2 est détecté. Aucune migration ni réécriture des prédictions existantes n’est effectuée.
 
 ## Ce que la bande garantit
 

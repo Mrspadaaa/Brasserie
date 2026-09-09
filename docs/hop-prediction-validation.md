@@ -83,7 +83,45 @@ Le test d’intégration hopRecipeSnapshot vérifie un aller-retour complet par 
 
 Les altérations de dose, température ayant un effet sur les avertissements, résultat central, unité, couverture, contexte, provenance ou structure sont rejetées avant import. Trois cas isolent le repli vers les températures fabricant : plages identiques, plages divergentes et borne qualifiée. Seule une plage cohérente non qualifiée produit une comparaison numérique ; les autres restent explicitement ambiguës.
 
-Contrôle final du 9 septembre 2026 : **2 400 tests réussis dans 134 fichiers**, build de l’application et compilation Cloud Functions réussis. Cette suite logicielle complète le benchmark ; elle ne remplace pas une validation scientifique externe ni le contrôle visuel dans le navigateur.
+Première livraison du 9 septembre 2026 : **2 400 tests réussis dans 134 fichiers**, build de l’application et compilation Cloud Functions réussis. Cette suite logicielle complète le benchmark ; elle ne remplace pas une validation scientifique externe ni le contrôle visuel dans le navigateur.
+
+## Seconde passe : comparer avant de resserrer
+
+`node scripts/check-hop-science.mjs` produit également `secondPass`, depuis `tests/scientific/hopSecondPass.ts`. Le benchmark demeure hors réseau et hors Gemini. Les fixtures scientifiques précédentes ne changent pas.
+
+Trois méthodes de bornage de la régression des 29 lots ont été comparées avec exactement les mêmes plis externes, supports et résidus internes :
+
+| Méthode | MAE sur 27 lots | Largeur /15 | Couverts | Inconnus /29 | Décision |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Rectangles actuels de coefficients | 0,4441 | 2,7631 | 26/27 | 2 | Maintenue |
+| Couples pente/interception conservés | 0,4441 | 2,3785 | 25/27 | 2 | Non retenue |
+| Ajustement central et même marge résiduelle | 0,4441 | 2,2535 | 25/27 | 2 | Non retenue |
+
+Les variantes resserrent les bandes de 14 % et 18 %, mais perdent CAS_20_15, en plus de CAS_24_15 déjà non couvert. Elles n’améliorent pas l’erreur centrale. Ce compromis n’est donc pas présenté comme une amélioration générale et aucun de ces changements n’entre dans les coefficients de production.
+
+Une autre piste liait la marge documentaire au signal latent effectivement réalisé plutôt qu’à son maximum possible. Sa formule d’extrêmes était mathématiquement correcte, mais modifiait la signification de la marge existante sans validation. Elle n’a pas été retenue non plus.
+
+### Amélioration conservée
+
+La correction v2 de dose inconnue est détaillée dans `hop-recipe-prediction.md`. Elle utilise les contacts et descripteurs déjà bornés. Sur douze scénarios logiciels, tous les cas entièrement renseignés restent identiques ; aucune inconnue n’est supprimée artificiellement et aucun centre ou niveau de confiance n’est créé. Les quarante complétions testées de doses manquantes, de zéro à un million de g/L pour éprouver la borne limite, restent incluses. Le million n’est évidemment pas une suggestion de brassage.
+
+Exemple **Cascade × US-05 × ébullition de 60 minutes, à 100 °C, dose inconnue** : agrumes `0–100 → 0–59,288` ; largeur moyenne sur les douze axes `100 → 65,451 %` de l’échelle. La confiance reste faible et aucun centre n’est affiché. Un contact à cru de 1 h gagne très peu ; à 72 h, ou avec dose et contact inconnus, les bandes peuvent rester complètes. Ces résultats mesurent une meilleure utilisation des contraintes du modèle, pas une amélioration d’erreur gustative observée.
+
+La recette « Test houb » garde ses résultats et ses alertes : Diamond à 19 °C hors de sa fenêtre fabricant chargée, et palier d’ajout sans houblon à cru. Le modèle ne transforme pas le résultat qualitatif Samia en intensités.
+
+### Trois consignes de brasseur
+
+Les mêmes quatre doses documentées (2, 3,86, 8 et 16 g/L) sont classées sans modifier les profils en fonction de la cible. Les consignes sont des entrées de test, pas des coefficients scientifiques :
+
+| Consigne, indice local 0–100 | Première dose classée | Interprétation |
+| --- | ---: | --- |
+| Agrumes 60–100 | 8 g/L | Plages d’adéquation recouvrant celles de 16 et 3,86 g/L : aucun gagnant certain. |
+| Agrumes 40–60, herbacé 0–40 | 3,86 g/L | Compromis entre expression agrumes et limite herbacée ; plusieurs scores se recouvrent. |
+| Herbacé 60–80 | 16 g/L | Cette forte dose convient à cet objectif particulier, pas à toutes les recettes. |
+
+Ce classement reste une convention de distance à l’objectif dans le protocole publié. Le score n’est ni une probabilité de réussite ni une mesure d’intensité. Les tests garantissent qu’un changement d’objectif ne change jamais les arômes calculés.
+
+Contrôle de cette seconde passe : **2 410 tests réussis dans 135 fichiers**, benchmark sans échec, build de production et compilation Functions réussis. Une comparaison supplémentaire a compilé le moteur de recette du commit `05a9f0c458ad7afaa5f9eca79b355a90c0913440` : ses douze résultats complets sont identiques à la branche de rejeu v1 actuelle, explications et unités comprises. Le contrat d’import vérifie séparément l’archive v1 et refuse son réétiquetage v2.
 
 ## Discipline de correction
 

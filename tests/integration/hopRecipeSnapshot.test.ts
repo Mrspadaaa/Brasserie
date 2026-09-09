@@ -24,6 +24,20 @@ const make = () => {
 const backupJson = (saved: HopPredictionSnapshot) => JSON.stringify({ schemaVersion: 3, source: 'device',
   exportedAt: saved.createdAt, collections: { hopPredictions: [{ id: saved.id, data: saved }] } });
 describe('Programme figé autonome et rejouable', () => {
+  it('rejoue la v1 conservée avec ses anciennes bornes et refuse de la réétiqueter v2', () => {
+    const { data, input } = make();
+    input.additions = input.additions.slice(0, 1);
+    input.additions[0].triplet.doseGL = null;
+    input.additions[0].triplet.contactHours = 1;
+    input.additions[0].triplet.temperatureC = 100;
+    const saved = captureHopRecipePrediction(input, {}, data, { id: 'legacy-v1', name: 'Archive de calcul v1', createdAt: '2026-09-09T10:00:00Z' });
+    const { additions, ...legacy } = predictHopRecipe(input, {}, saved.evidence, 'hop-recipe-experimental-v1');
+    expect(legacy.overall.profile.citrus.range!.max).toBeGreaterThan(saved.recipePrediction!.overall.profile.citrus.range!.max);
+    saved.prediction = additions[0]; saved.recipePrediction = legacy;
+    expect(parseBackup(backupJson(saved)).collections.hopPredictions![0].data).toEqual(JSON.parse(JSON.stringify(saved)));
+    saved.recipePrediction.engineVersion = 'hop-recipe-experimental-v2';
+    expect(() => assertHopPredictionSnapshot(saved)).toThrow();
+  });
   it('garde un véritable contexte global et une ancre du premier ajout explicitement distincte', () => {
     const { data, input, saved } = make();
     const { additions, ...programme } = predictHopRecipe(input, {}, data);

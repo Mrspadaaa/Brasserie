@@ -23,6 +23,42 @@ const contains = (a: HopRange, b: HopRange) => { expect(a.min).toBeLessThanOrEqu
 const fact = (analyte: HopMeasurement['analyte'], unit: HopMeasurement['unit'], values: Partial<HopMeasurement>): HopMeasurement => ({ analyte, unit, basis: 'asIs', kind: 'range', range: { min: 5, max: 7 }, source, confidence: 'medium', ...values });
 
 describe('Recette entière : contextes, cumul conditionnel et provenance', () => {
+  it('retrouve le calcul individuel quand la seule dose manque, au lieu d’oublier aussi son contact', () => {
+    const d = data(), t = triplet({ doseGL: null, timing: 'boil', contactHours: 1, temperatureC: 100 });
+    const one = predictHopTriplet(t, {}, d), p = predictHopRecipe(input([t]), {}, d);
+    const legacy = predictHopRecipe(input([t]), {}, d, 'hop-recipe-experimental-v1');
+    for (const axis of axes) {
+      close(p.overall.profile[axis.id].range, one.profile[axis.id].range);
+      contains(legacy.overall.profile[axis.id].range!, p.overall.profile[axis.id].range!);
+    }
+    expect(p.overall.profile.citrus.range!.max).toBeLessThan(legacy.overall.profile.citrus.range!.max);
+    expect(p.overall.profile.citrus.central).toBeUndefined();
+    expect(p.overall.profile.citrus.confidence).toBe('low');
+    expect(p.engineVersion).toBe('hop-recipe-experimental-v2');
+    expect(legacy.engineVersion).toBe('hop-recipe-experimental-v1');
+  });
+  it('les doses inconnues couvrent les répartitions concrètes, y compris zéro et une très forte dose', () => {
+    const d = data();
+    const partial = input([triplet({ doseGL: 2, contactHours: 1 }), triplet({ doseGL: null, contactHours: 2 }), triplet({ doseGL: null, contactHours: 3 })]);
+    const bounded = predictHopRecipe(partial, {}, d), legacy = predictHopRecipe(partial, {}, d, 'hop-recipe-experimental-v1');
+    for (const axis of axes) contains(legacy.overall.profile[axis.id].range!, bounded.overall.profile[axis.id].range!);
+    for (const first of [0, .01, 1, 8, 16, 1e6]) for (const second of [0, .1, 4, 100]) {
+      const concrete = structuredClone(partial);
+      concrete.additions[1].triplet.doseGL = first; concrete.additions[2].triplet.doseGL = second;
+      const p = predictHopRecipe(concrete, {}, d);
+      for (const axis of axes) contains(bounded.overall.profile[axis.id].range!, p.overall.profile[axis.id].range!);
+    }
+    const allMissing = input([triplet({ doseGL: null }), triplet({ doseGL: null })]);
+    const zero = predictHopRecipe(input([]), {}, d);
+    const unknown = predictHopRecipe(allMissing, {}, d);
+    for (const axis of axes) contains(unknown.overall.profile[axis.id].range!, zero.overall.profile[axis.id].range!);
+  });
+  it('ne change aucune plage connue et rejette une version de calcul non reconnue', () => {
+    const r = input([triplet(), triplet({ doseGL: 1, timing: 'whirlpool', contactHours: .3, temperatureC: 80 })]);
+    const current = predictHopRecipe(r, {}, data()), legacy = predictHopRecipe(r, {}, data(), 'hop-recipe-experimental-v1');
+    expect({ ...current, engineVersion: legacy.engineVersion }).toEqual(legacy);
+    expect(() => predictHopRecipe(r, {}, data(), 'imaginary' as any)).toThrow('Version');
+  });
   it('valide la convention modifiable et exige sa provenance datée', () => {
     expect(model.aggregation).toEqual(aggregation);
     expect(() => assertHopKnowledge(model)).not.toThrow();

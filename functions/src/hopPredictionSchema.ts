@@ -220,7 +220,7 @@ export function assertHopTasting(v: any, id?: string): asserts v is HopTasting {
 export function assertHopPredictionSnapshotShape(v: any, id?: string): asserts v is HopPredictionSnapshot {
   check(obj(v) && idValid(v.id) && (!id || v.id === id) && str(v.name) && typeof v.createdAt === 'string' && Number.isFinite(Date.parse(v.createdAt)) && ['hop-envelope-v1', 'hop-envelope-v2', 'hop-experimental-v3', 'hop-experimental-v4'].includes(v.engineVersion), 'Instantané de prédiction invalide.');
   keys(v, ['id', 'createdAt', 'name', 'recipeId', 'batchId', 'engineVersion', 'target', 'prediction', 'recipePrediction', 'evidence']);
-  if (v.recipePrediction !== undefined) check(v.engineVersion === 'hop-experimental-v4' && obj(v.recipePrediction) && v.recipePrediction.engineVersion === 'hop-recipe-experimental-v1', 'Version du programme figé invalide.');
+  if (v.recipePrediction !== undefined) check(v.engineVersion === 'hop-experimental-v4' && obj(v.recipePrediction) && ['hop-recipe-experimental-v1', 'hop-recipe-experimental-v2'].includes(v.recipePrediction.engineVersion), 'Version du programme figé invalide.');
   for (const key of ['recipeId', 'batchId']) check(v[key] == null || idValid(v[key]), 'Référence de prédiction invalide.');
   check(obj(v.evidence) && Array.isArray(v.evidence.varieties) && Array.isArray(v.evidence.lots) && Array.isArray(v.evidence.knowledge), 'Données figées absentes.');
   keys(v.evidence, ['varieties', 'lots', 'knowledge']);

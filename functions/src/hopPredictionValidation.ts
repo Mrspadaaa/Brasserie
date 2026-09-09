@@ -18,7 +18,7 @@ export function assertHopPredictionSnapshot(value: unknown, id?: string): assert
     assertHopRecipeInput(value.recipePrediction.input);
     const replayed = predictHopRecipe(value.recipePrediction.input, value.target, {
       varieties: value.evidence.varieties as HopVariety[], lots: value.evidence.lots as HopLot[], knowledge: value.evidence.knowledge
-    });
+    }, value.recipePrediction.engineVersion);
     const equal = (a: any, b: any): boolean => {
       if (typeof a === 'number' && typeof b === 'number') return Number.isFinite(a) && Number.isFinite(b) && sameNumber(a, b);
       if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return a === b;

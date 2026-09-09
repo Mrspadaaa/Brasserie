@@ -59,7 +59,7 @@ function pointErrors(rows: { observed: number; central: number }[]) {
     mae: rows.length ? mean(rows.map(r => Math.abs(r.central - r.observed))) : null,
     rmse: rows.length ? Math.sqrt(mean(rows.map(r => (r.central - r.observed) ** 2))) : null };
 }
-function fitLine(rows: LotRow[]) {
+export function fitLine(rows: LotRow[]) {
   if (rows.length < 3) throw Error('At least three distinct source rows are required.');
   const x = mean(rows.map(row => row[1])), y = mean(rows.map(row => row[2]));
   const ssx = rows.reduce((sum, row) => sum + (row[1] - x) ** 2, 0);
