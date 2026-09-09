@@ -65,6 +65,8 @@ export interface NoloConfig {
   scienceSnapshot?: NoloScience;
   planning?: {
     version: 1; source: HopSource;
+    /** New planning calculations retain full extract precision; absent replays legacy rounding. */
+    exactExtract?: boolean;
     stopSg?: HopRange | null; stopAttenuationPct?: HopRange | null;
     /** Explicit conditional sensory equivalence, not a measured retention factor. */
     aromaTransfer?: { axes: Record<string, HopRange>; source: HopSource };
@@ -119,6 +121,7 @@ export function assertNoloConfig(v: any): asserts v is NoloConfig {
   const ids = new Set();
   if (v.planning) {
     check(v.planning.version === 1 && !hopSourceError(v.planning.source,true), 'Hypothèse de préparation sans provenance datée.');
+    if (v.planning.exactExtract !== undefined) check(typeof v.planning.exactExtract === 'boolean', 'Précision du calcul invalide.');
     for (const [k,max] of [['stopSg',3],['stopAttenuationPct',100]] as const)
       if (v.planning[k] !== undefined) check(nullable(v.planning[k],max), 'Arrêt de fermentation invalide.');
     if (v.planning.aromaTransfer) {

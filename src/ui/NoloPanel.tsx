@@ -1,3 +1,5 @@
+import { fermentationReadiness } from '../domain/fermentationPlanning';
+import { NoloFermentationWorkshop } from './NoloFermentationWorkshop';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
 import type { NoloConfig, NoloMeasurement, NoloOperation, NoloProcess, NoloStage } from '../../functions/src/noloSchema';
@@ -44,12 +46,14 @@ const sugarLabel={glucose:'Glucose',fructose:'Fructose',sucrose:'Saccharose',mal
 const emptyRunnings={sourceBatchId:'',previousExtraction:'',waterAddedL:null,alkalinityPpm:null,temperatureC:null,minutes:null,recoveredL:null,sg:null,ph:null};
 const stageLabels:Record<NoloStage,string>={sourceWater:'Eau source',mash:'Empâtage',sparge:'Rinçage',lastRunnings:'Dernières eaux de coulage',wort:'Moût avant fermentation',primary:'Après fermentation, avant conditionnement',packaged:'Bière conditionnée'};
 
-export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean}) {
+export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false,hideStrainPicker=false,onChooseYeast}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean;hideStrainPicker?:boolean;onChooseYeast?:()=>void}) {
   const saved=useStorageValue(StorageService.getHopKnowledge);
   const science=useMemo(()=>noloScience(saved),[saved]);
   const c=recipe.nolo, editable=!!onChange;
   const outcome=useMemo(()=>{try{return {result:evaluateNoloRecipe(recipe,saved),error:''};}catch(e){return {result:null,error:e instanceof Error?e.message:'Configuration NOLO invalide.'};}},[recipe,saved]);
   const result=outcome.result;
+  const diagnoses=useMemo(()=>{try{return fermentationReadiness(recipe,saved);}catch{return [];}},[recipe,saved]);
+  const [workshop,setWorkshop]=useState(false);
   const documentedPof=useMemo(()=>{
     const values=[result?.strain?.pof,...guideFermentations(saved).filter(g=>g.yeastId===recipe.yeast.hopIndexId).map(g=>g.aroma.pof)].filter(v=>v&&v!=='unknown');
     return new Set(values).size===1?values[0]:'unknown';
@@ -58,7 +62,6 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
   const [measure,setMeasure]=useState<Partial<NoloMeasurement>>({stage:'packaged',date:new Date().toISOString().slice(0,10),method:''});
   const [variant,setVariant]=useState<TrialRecipe>();
   const [researchOpen,setResearchOpen]=useState(false);
-  const ranked=useMemo(()=>{try{return science&&c?rankNoloStrains(recipe,science):[];}catch{return [];}},[science,recipe,c]);
   const update=(patch:Partial<NoloConfig>)=>{const next={...(c??newNoloConfig()),...patch};onChange?.({...recipe,nolo:changeNoloProcess(next,next.process)});};
   const plan=(patch:Partial<NonNullable<NoloConfig['planning']>>)=>update({planning:{version:1,source:noloPlanningSource,...c?.planning,...patch}});
   const op=(index:number,next:NoloOperation)=>update({operations:c!.operations.map((o,i)=>i===index?next:o)});
@@ -74,6 +77,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
     update({operations:[...c.operations,next]});
   };
   if(!c?.enabled&&!allowEnable)return null;
+  if(workshop&&onChange)return <section className="space-y-3"><Button onClick={()=>setWorkshop(false)}>Revenir au bilan NOLO</Button><NoloFermentationWorkshop recipe={recipe} onChange={onChange}/></section>;
   if(variant)return <section className="space-y-3"><Button onClick={()=>setVariant(undefined)}>Fermer la variante NOLO</Button><p className="text-xs text-cave-400">Variante locale · aucune écriture</p><NoloPanel recipe={variant} onChange={setVariant}/></section>;
   return <section aria-label="Objectif NOLO" className="min-w-0 rounded-panel border border-hop/30 bg-cave-900 p-3 sm:p-4 space-y-3">
     {researchOpen&&<FermentationResearchSheet onClose={()=>setResearchOpen(false)}/>}
@@ -83,6 +87,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
     </div>
     {c?.enabled&&<>
       {editable?<label className="block text-sm text-cave-300">Procédé<select className={inputClass+' mt-1'} value={c.process} onChange={e=>onChange?.({...recipe,nolo:changeNoloProcess(c,e.target.value as NoloProcess)})}>{science?.processes.map(p=><option key={p.id} value={p.id}>{({restricted:'Fermentation limitée',restored:'Limité + restitution',lowExtract:'Faible extrait',coldExtraction:'Extraction à froid',coldContact:'Contact à froid',arrested:'Fermentation interrompue',dealcoholized:'Désalcoolisation',secondRunnings:'Seconde extraction'})[p.id]}</option>)}</select></label>:<p className="text-sm text-cave-300">{science?.processes.find(p=>p.id===c.process)?.name??c.process}</p>}
+      {editable&&!measurementOnly&&!hideStrainPicker&&<Button onClick={()=>onChooseYeast?onChooseYeast():setWorkshop(true)}>Choisir une levure et préparer la conduite</Button>}
       {c.process==='secondRunnings'&&<div className="space-y-3" aria-label="Moût de seconde extraction">
         <p className="text-sm text-cave-400">Ce procédé utilise les drêches d’un brassin précédent. Pour un brassin neuf, choisir « Fermentation limitée ».</p>
         {editable&&!measurementOnly?<div className="grid grid-cols-2 gap-3">
@@ -107,23 +112,16 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
           {result.sources.map((source,i)=><HopSourceLink key={i} source={source}/>)}
         </div></details>
         <p data-nolo-status={result.status} className={result.status==='indeterminate'?'sr-only':'text-sm text-cave-200'}>{result.status==='within'?'Cible estimée respectée':result.status==='exceeds'?'Dépassement':'Résultat alcoolique indéterminé'}</p>
-        <p role="status" className="text-sm text-water">{result.nextAction}</p>
-        <figure aria-label="Profil aromatique NOLO" className="grid grid-cols-2 gap-3 border-t border-cave-800 pt-3">
+        <p role="status" className="text-sm text-water">{result.projection.max===null&&diagnoses.find(d=>d.severity==='action')?.message||result.nextAction}</p>
+        {c.orientation!=='free'&&<figure aria-label="Profil aromatique NOLO" className="grid grid-cols-2 gap-3 border-t border-cave-800 pt-3">
           <figcaption className="sr-only">Objectif et caractères documentés, intensités non prédites</figcaption>
-          <div><p className="text-xs text-cave-400">Banane · objectif</p><p className="text-sm text-ebc-straw">{c.orientation==='free'?'Non ciblée':c.orientation==='banana'?'Dominante':c.orientation==='balanced'?'Équilibrée':'Secondaire'}</p><div className="mt-2 border-b border-dashed border-cave-600"/><p className="text-xs text-cave-400 mt-1">Intensité non quantifiée</p></div>
+          <div><p className="text-xs text-cave-400">Banane · objectif</p><p className="text-sm text-ebc-straw">{c.orientation==='banana'?'Dominante':c.orientation==='balanced'?'Équilibrée':'Secondaire'}</p><div className="mt-2 border-b border-dashed border-cave-600"/><p className="text-xs text-cave-400 mt-1">Intensité non quantifiée</p></div>
           <div><p className="text-xs text-cave-400">Girofle · caractère</p><p className={"text-sm "+(documentedPof==='positive'?'text-hop':'text-cave-300')}>{documentedPof==='positive'?'Potentiel POF+ documenté':documentedPof==='negative'?'Souche POF−':'POF inconnu'}</p><div className="mt-2 border-b border-dashed border-cave-600"/><p className="text-xs text-cave-400 mt-1">Intensité non quantifiée</p></div>
-        </figure>
+        </figure>}
       </>}
       <details><summary className="cursor-pointer py-3 text-sm text-water">Affiner le pilote · mesures, procédés et sources</summary><div className="space-y-2">
-      {editable&&!measurementOnly&&science&&<details><summary className="cursor-pointer min-h-touch flex items-center text-water">Préparer le pilote et choisir la souche</summary><div className="pt-2 space-y-3">
-        <label className="block text-sm text-cave-300">Orientation hefeweisse<select className={inputClass} value={c.orientation} onChange={e=>update({orientation:e.target.value as NoloConfig['orientation']})}><option value="free">Profil personnel · sans cible hefeweisse</option><option value="banana">Banane dominante</option><option value="balanced">Équilibrée</option><option value="clove">Girofle dominant</option></select></label>
-        <label className="block text-sm text-cave-300">Candidate NOLO<select className={inputClass} value={selected?.yeastId??''} onChange={e=>setStrain(e.target.value)}>{science.strains.map(s=><option key={s.yeastId} value={s.yeastId}>{s.name}{s.pof==='positive'?' · phénolique':s.pof==='negative'?' · propre':''}</option>)}</select></label>
-        {selected&&<><p className="text-sm text-cave-300">{selected.aroma.join(' · ')}</p><p className="text-xs text-cave-400">{selected.temperatureC?decimal(selected.temperatureC.min)+'–'+decimal(selected.temperatureC.max)+' °C':'Température à documenter'} · {selected.durationDays?decimal(selected.durationDays.min)+'–'+decimal(selected.durationDays.max)+' jours indicatifs':'Durée à documenter'}</p>
-          <p className="text-xs text-cave-400">{selected.pitchGL?'Repère d’ensemencement : '+decimal(selected.pitchGL.min)+'–'+decimal(selected.pitchGL.max)+' g/L'+(recipe.volumeL>0?' · '+decimal(selected.pitchGL.min*recipe.volumeL)+'–'+decimal(selected.pitchGL.max*recipe.volumeL)+' g pour ce volume':'')+' · plage fabricant, à peser.':'Dose d’ensemencement à documenter.'}</p>
-          <Button onClick={()=>onChange?.(applyNoloStrain(recipe,selected,science))}>Choisir {selected.name} et sa conduite</Button>
-          <details><summary className="cursor-pointer min-h-touch text-sm text-cave-300">Assimilation et limites de la souche</summary><div className="overflow-x-auto"><table className="w-full text-xs"><tbody>{NOLO_SUGARS.map(s=><tr key={s}><th className="text-left p-1">{sugarLabel[s]}</th><td>{selected.sugars[s]==='yes'?'Assimilé':selected.sugars[s]==='no'?'Non assimilé':'Inconnu'}</td></tr>)}</tbody></table></div><p className="text-xs text-cave-400 my-2">{selected.limitation} {selected.availability}</p><HopSourceLink source={selected.source}/></details></>}
-        <p className="text-xs text-cave-400">La souche reste libre dans la recette. Chauffer davantage ne donne pas automatiquement plus de banane.</p>
-        <details><summary className="min-h-touch cursor-pointer text-sm text-cave-300">Comparer les candidates sur mon moût</summary><div className="space-y-2">{ranked.map(row=><button type="button" key={row.strain.yeastId} className="block w-full min-h-touch text-left border-b border-cave-700 py-2" onClick={()=>setStrain(row.strain.yeastId)}><span className="block text-sm text-cave-100">{row.strain.name}</span><span className="block text-xs text-cave-400">{row.result.projectionStatus==='within'?'Projection compatible · alcool à vérifier':row.result.projectionStatus==='exceeds'?'Projection au-dessus de la cible':'Projection à compléter'} · {row.aromaFit==='documented'?'caractère phénolique documenté':'objectif aromatique à explorer'}{row.needsThermalControl?' · maîtrise thermique à prévoir':''}</span></button>)}</div><p className="text-xs text-cave-400 mt-2">Classement local par cible alcoolique puis caractère documenté. Aucune exclusion par style, ni note de banane inventée.</p></details>
+      {editable&&!measurementOnly&&science&&<details><summary className="cursor-pointer min-h-touch text-water">Objectif aromatique et matériel</summary><div className="space-y-3">
+        <label className="block text-sm text-cave-300">Orientation aromatique<select className={inputClass} value={c.orientation} onChange={e=>update({orientation:e.target.value as NoloConfig['orientation']})}><option value="free">Profil personnel libre</option><option value="banana">Banane dominante</option><option value="balanced">Banane / girofle équilibrés</option><option value="clove">Girofle dominant</option></select></label>
         <fieldset className="space-y-1"><legend className="text-sm text-cave-200">Matériel disponible</legend>{['pH-mètre','Maîtrise thermique','Carbonatation forcée','Conditionnement maîtrisé','Analyse faible teneur','Stabilisation validée','Désalcoolisation spécialisée'].map(e=><label key={e} className="min-h-touch flex items-center gap-2 text-sm text-cave-300"><input type="checkbox" checked={c.equipment.includes(e)} onChange={v=>update({equipment:v.target.checked?[...c.equipment,e]:c.equipment.filter(x=>x!==e)})}/>{e}</label>)}</fieldset>
       </div></details>}
       <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Moût, ajouts et mesures</summary><div className="space-y-4 pt-2">

@@ -55,7 +55,13 @@ export const ModalShell: React.FC<ModalShellProps> = ({
   useEffect(() => {
     if (!open || !dismissible) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      // A conversation/lookup sheet can be above this recipe. Escape belongs
+      // to the top dialog, otherwise closing chat also destroys the draft.
+      const dialogs = [...document.querySelectorAll<HTMLElement>('[role="dialog"]')]
+        .filter(el => el.dataset.state !== 'closed' && el.getAttribute('aria-hidden') !== 'true');
+      if (dialogs.at(-1) !== panelRef.current) return;
+      e.preventDefault(); onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);

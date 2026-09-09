@@ -811,7 +811,21 @@ RÈGLE ABSOLUE. Le champ "source" est obligatoire et doit nommer d'où vient la
 donnée (« Fermentis — fiche technique SafAle US-05 »). Un champ dont tu n'as
 pas trouvé la valeur publiée doit rester ABSENT : mieux vaut une case vide que
 Gaëtan qui brasse sur un chiffre que tu as supposé. Si tu ne trouves rien du
-tout, renvoie "found": false et explique dans "note".`,
+tout, renvoie "found": false et explique dans "note".
+
+IDENTITÉ. Un nom générique (par exemple flocons d'avoine sans malteur) ne permet
+pas d'attribuer la fiche d'un produit précis : demander le fabricant dans note,
+laisser les chiffres absents. N'écrase jamais un fait connu en contexte.
+
+NOLO. Si demandé, rechercher fermentation pour la SOUCHE exacte : assimilation
+glucose/fructose/saccharose/maltose/maltotriose, POF, hydrolyse, dose en g/L,
+températures et durée. Inconnu reste unknown ; une propriété d'espèce ne devient
+pas celle du produit. Ne pas convertir atténuation en rendement d'éthanol.
+fermentation.source contient titre, auteur, URL directe, année de publication
+(null si absente), kind manufacturer ou research, et localisation. retrievedAt
+est la date de consultation YYYY-MM-DD ; conditions décrit moût, protocole et
+limites. Omettre fermentation sans source de cette souche. Aucun chiffre sans
+unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inventé.`,
     schema: S(
       {
         found: { type: 'BOOLEAN' },
@@ -819,6 +833,14 @@ tout, renvoie "found": false et explique dans "note".`,
         source: str,
         note: str,
 
+        // Strain-specific, optional, documentary NOLO facts. No new callable.
+        fermentation: S({
+          version: { type:'NUMBER', description:'Version du document, toujours 1.' }, strainName:str, retrievedAt:str, conditions:str,
+          source:S({title:str, author:str, reference:str, year:{type:'NUMBER',nullable:true}, kind:{type:'STRING',enum:['manufacturer','research']}, locator:str}, ['title','author','reference','year','kind','locator']),
+          sugars:S(Object.fromEntries(['glucose','fructose','sucrose','maltose','maltotriose'].map(k=>[k,{type:'STRING',enum:['yes','no','unknown']}])), []),
+          pof:{type:'STRING',enum:['positive','negative','unknown']}, hydrolysis:{type:'STRING',enum:['positive','negative','unknown']},
+          pitchGL:S({min:num,max:num},['min','max']), temperatureC:S({min:num,max:num},['min','max']), durationDays:S({min:num,max:num},['min','max'])
+        }, ['version','strainName','source','retrievedAt','conditions','sugars','pof','hydrolysis']),
         // Levure
         lab: str,
         strain: str,

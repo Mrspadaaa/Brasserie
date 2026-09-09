@@ -1,3 +1,6 @@
+import { completeFromLocalReferences } from '../domain/localIngredientFacts';
+import { useStorageValue } from '../hooks/useLiveData';
+import { StorageService } from '../services/storage';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Sparkles, Loader2, AlertTriangle, Check } from 'lucide-react';
 import { Fermentable, HopIngredient, YeastSpec, StockItem } from '../types';
@@ -40,10 +43,14 @@ import {
  * variété.
  */
 
+const EMPTY_STOCK: StockItem[] = [];
+
 interface Found extends IngredientGap {
   facts: IngredientFacts;
 }
 interface RecipeAutoCompleteProps {
+  active?: boolean;
+  nolo?: boolean;
   fermentables: Fermentable[];
   onFermentables: (v: Fermentable[]) => void;
   hops: HopIngredient[];
@@ -62,7 +69,9 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   yeast,
   onYeast,
   onLearnIngredient,
-  stockItems = []
+  stockItems = EMPTY_STOCK,
+  active = true,
+  nolo = false
 }) => {
   const [busy, setBusy] = useState(false);
   const [found, setFound] = useState<Found[] | null>(null);
@@ -70,20 +79,27 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const gaps = useMemo(
-    () => ingredientGaps(fermentables, hops, yeast),
-    [fermentables, hops, yeast]
+    () => ingredientGaps(fermentables, hops, yeast, nolo),
+    [fermentables, hops, yeast, nolo]
   );
 
   const request = useRef(0);
-  useEffect(
-    () => () => {
-      request.current += 1;
-    },
-    []
-  );
+  const saved = useStorageValue(StorageService.getHopKnowledge);
+  const basis = JSON.stringify([fermentables, hops, yeast, nolo]);
+  const latest = useRef(basis); latest.current = basis;
+  const cache = useRef(new Map<string, IngredientFacts>());
+  useEffect(() => {
+    request.current += 1; setBusy(false); setFound(null);
+    const local = completeFromLocalReferences(fermentables, hops, yeast, stockItems, saved);
+    if (JSON.stringify(local.fermentables) !== JSON.stringify(fermentables)) onFermentables(local.fermentables);
+    if (JSON.stringify(local.hops) !== JSON.stringify(hops)) onHops(local.hops);
+    if (JSON.stringify(local.yeast) !== JSON.stringify(yeast)) onYeast(local.yeast);
+  }, [basis, stockItems, saved]);
+  useEffect(() => () => { request.current += 1; }, []);
 
   const search = async () => {
     const id = ++request.current;
+    const started = basis;
     setBusy(true);
     setError(null);
     setFound(null);
@@ -104,7 +120,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                   ingredientKey(gap.kind, s.name) === gap.key &&
                   s.category.toLocaleLowerCase('fr') === gap.kind
               );
-              const cached = item && factsFromStock(item);
+              const cached = cache.current.get(gap.key) ?? (item && factsFromStock(item));
               const remaining =
                 cached &&
                 ingredientGaps(
@@ -120,7 +136,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                     : [],
                   gap.kind === 'levure'
                     ? applyYeastFacts(yeast, cached)
-                    : ({ name: '' } as YeastSpec)
+                    : ({ name: '' } as YeastSpec),
+                  nolo
                 );
               if (cached && remaining?.length === 0) {
                 ok.push({ ...gap, facts: cached });
@@ -130,10 +147,14 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 task: 'lookupIngredient',
                 tier: 'fast',
                 instruction: gap.kind + ' : ' + gap.name.trim(),
-                context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing }
+                context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing, nolo, known: gap.kind === 'levure' ? yeast : undefined }
               });
               if (res.ok && res.data?.found && fillsGap(gap, res.data)) {
-                ok.push({ ...gap, facts: sanitizeFacts(res.data) });
+                const facts = sanitizeFacts(res.data);
+                // Identity belongs to the local catalogue, never to model output.
+                delete facts.hopIndexId;
+                cache.current.set(gap.key, facts);
+                ok.push({ ...gap, facts });
               } else {
                 ko.push(gap.name);
                 failure ||= res.error;
@@ -145,7 +166,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
           }
         })
       );
-      if (request.current !== id) return;
+      if (request.current !== id || latest.current !== started) return;
       setMissed(ko);
       if (ok.length) setFound(ok);
       else setError(failure ?? 'Rien de publié retrouvé pour ces ingrédients.');
@@ -184,7 +205,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
 
   // Rien à compléter : le bouton n'a pas lieu d'être. C'est aussi le signal que
   // la fiche est prête.
-  if (gaps.length === 0 && !found && !error) return null;
+  if (!active || gaps.length === 0 && !found && !error) return null;
 
   return (
     <section className="panel p-2.5 sm:p-3 space-y-2 border-ebc-straw/30">
@@ -217,13 +238,14 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Tout compléter avec l’IA
+                Compléter les données manquantes avec l’IA
               </>
             )}
           </button>
         </>
       )}
 
+      {busy && <button type="button" className="min-h-touch text-sm text-water" onClick={() => { request.current += 1; setBusy(false); }}>Annuler la recherche</button>}
       {error && (
         <p className="flex items-start gap-2 text-xs sm:text-sm text-ebc-amber leading-snug">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -278,6 +300,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 </div>
                 {/* La source est le cœur du dispositif : sans elle, on ne
                     distinguerait pas une donnée retrouvée d'une inventée. */}
+                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-xs text-cave-300 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-xs text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
                 <p className="text-2xs sm:text-sm text-cave-500 leading-snug truncate">
                   {f.facts.source}
                 </p>

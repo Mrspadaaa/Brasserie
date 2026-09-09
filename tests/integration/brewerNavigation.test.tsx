@@ -50,7 +50,7 @@ async function ask() {
 }
 describe('Raccourci contextuel et gestion des conversations', () => {
   it('ouvre le même brouillon depuis la place réservée dans la page mobile', async () => {
-    render(<><BrewerPageShortcut /><BrewerChat scope={{ kind: 'draft', id: 'REC-INLINE' }} label="Brouillon mobile" draft={{ name: 'Brouillon mobile', volumeL: 24 }} /></>);
+    render(<><BrewerPageShortcut /><BrewerChat hideLauncher scope={{ kind: 'draft', id: 'REC-INLINE' }} label="Brouillon mobile" draft={{ name: 'Brouillon mobile', volumeL: 24 }} /></>);
     await plus();
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(api.history).toHaveBeenLastCalledWith({ kind: 'draft', id: 'REC-INLINE' });

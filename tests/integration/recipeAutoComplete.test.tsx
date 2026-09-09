@@ -78,7 +78,7 @@ const GRAIN_SANS_COULEUR: Fermentable = {
   use: 'empatage'
 };
 
-describe('Tout compléter avec l’IA', () => {
+describe('Compléter les données manquantes avec l’IA', () => {
   it('réutilise les données déjà enregistrées sans nouvel appel IA', async () => {
     const vu = monter({
       fermentables: [GRAIN_SANS_COULEUR],
@@ -92,8 +92,7 @@ describe('Tout compléter avec l’IA', () => {
         }
       ]
     });
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
-    fireEvent.click(await screen.findByText(/Reprendre ces valeurs/));
+    await waitFor(() => expect(vu.f[0].potentialPpg).toBe(38));
     expect(run).not.toHaveBeenCalled();
     expect(vu.f[0]).toMatchObject({ colorEbc: 6, potentialPpg: 38 });
   });
@@ -102,7 +101,7 @@ describe('Tout compléter avec l’IA', () => {
     run.mockResolvedValue(FICHE({ tempMaxC: 24, lab: 'Fermentis' }));
     const vu = monter({
       yeast: {
-        name: 'US-05',
+        name: 'Souche de contrôle non référencée',
         form: 'sèche',
         qty: 1,
         unit: 'sachet',
@@ -112,12 +111,12 @@ describe('Tout compléter avec l’IA', () => {
       },
       onLearnIngredient: learn
     });
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     fireEvent.click(await screen.findByText(/Reprendre ces valeurs/));
     expect(vu.y.fermTempMaxC).toBe(24);
     expect(vu.y.lab).toBe('Fermentis');
     expect(learn).toHaveBeenCalledWith(
-      'US-05',
+      'Souche de contrôle non référencée',
       expect.objectContaining({ yeastTempMaxC: 24, yeastLab: 'Fermentis' })
     );
   });
@@ -129,7 +128,7 @@ describe('Tout compléter avec l’IA', () => {
         { name: 'Citra', weightG: 40, alpha: 0, stage: 'whirlpool' }
       ]
     });
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     fireEvent.click(await screen.findByText(/Reprendre ces valeurs/));
     expect(run).toHaveBeenCalledTimes(1);
     expect(vu.h.map((h) => h.alpha)).toEqual([12, 12]);
@@ -137,13 +136,13 @@ describe('Tout compléter avec l’IA', () => {
   it('ne propose pas des champs étrangers à la fiche demandée et libère le bouton après échec', async () => {
     run.mockResolvedValue(FICHE({ alphaPct: 12 }));
     monter({ fermentables: [GRAIN_SANS_COULEUR] });
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     await screen.findByText(/Rien de publié retrouvé/);
     expect(screen.queryByText(/Reprendre ces valeurs/)).toBeNull();
     run.mockRejectedValueOnce(new Error('offline'));
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     await screen.findByText(/Recherche interrompue/);
-    expect(screen.getByRole('button', { name: /Tout compléter/ })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /Compléter les données/ })).toBeEnabled();
   });
   it('ne remplit pas une autre ligne après suppression ou réorganisation pendant la recherche', async () => {
     let resolve: (v: any) => void;
@@ -165,13 +164,26 @@ describe('Tout compléter avec l’IA', () => {
     const { rerender } = render(
       <RecipeAutoComplete {...props} fermentables={[GRAIN_SANS_COULEUR]} />
     );
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     const other = { ...GRAIN_SANS_COULEUR, name: 'Autre malt' };
     rerender(<RecipeAutoComplete {...props} fermentables={[other]} />);
     resolve!(FICHE({ colorEbc: 6, potentialPpg: 38 }));
-    fireEvent.click(await screen.findByText(/Reprendre ces valeurs/));
-    expect(onF).toHaveBeenLastCalledWith([other]);
+    await waitFor(() => expect(screen.queryByText(/Reprendre ces valeurs/)).not.toBeInTheDocument());
+    expect(onF).not.toHaveBeenCalled();
     expect(learn).not.toHaveBeenCalled();
+  });
+  it('annule les recherches en attente et ignore leur réponse sans écrire', async () => {
+    const pending: Array<(v:any)=>void> = [];
+    run.mockImplementation(()=>new Promise(resolve=>pending.push(resolve)));
+    const learn=vi.fn(),vu=monter({fermentables:Array.from({length:5},(_,i)=>({...GRAIN_SANS_COULEUR,name:'Malt QA '+i})),onLearnIngredient:learn});
+    fireEvent.click(screen.getByRole('button',{name:/Compléter les données/}));
+    expect(run).toHaveBeenCalledTimes(3);
+    fireEvent.click(screen.getByRole('button',{name:'Annuler la recherche'}));
+    pending.forEach(resolve=>resolve(FICHE({colorEbc:6,potentialPpg:38})));
+    await waitFor(()=>expect(screen.getByRole('button',{name:/Compléter les données/})).toBeEnabled());
+    expect(run).toHaveBeenCalledTimes(3);
+    expect(screen.queryByText(/Reprendre ces valeurs/)).not.toBeInTheDocument();
+    expect(vu.f.every(f=>f.potentialPpg==null)).toBe(true);expect(learn).not.toHaveBeenCalled();
   });
   it('ne s’affiche pas quand la fiche est déjà complète', () => {
     monter({
@@ -188,7 +200,7 @@ describe('Tout compléter avec l’IA', () => {
         fermTempMaxC: 22
       }
     });
-    expect(screen.queryByText(/Tout compléter avec l’IA/)).toBeNull();
+    expect(screen.queryByText(/Compléter les données manquantes avec l’IA/)).toBeNull();
   });
 
   it('annonce ce qui manque, ingrédient par ingrédient', () => {
@@ -199,14 +211,14 @@ describe('Tout compléter avec l’IA', () => {
 
   it('⚠️ un houblon à cru n’amérise pas : on ne lui réclame pas son alpha', () => {
     monter({ hops: [{ name: 'Citra', weightG: 85, stage: 'dryHop' }] });
-    expect(screen.queryByText(/Tout compléter avec l’IA/)).toBeNull();
+    expect(screen.queryByText(/Compléter les données manquantes avec l’IA/)).toBeNull();
   });
 
   it('⚠️ montre la source et n’écrit rien avant validation', async () => {
     run.mockResolvedValue(FICHE({ name: 'Maris Otter', colorEbc: 7, potentialPpg: 38 }));
     const vu = monter({ fermentables: [GRAIN_SANS_COULEUR] });
 
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     await waitFor(() => expect(screen.getByText('Fiche fabricant')).toBeInTheDocument());
 
     // Vu, pas encore écrit.
@@ -227,7 +239,7 @@ describe('Tout compléter avec l’IA', () => {
       hops: [{ name: 'Citra', weightG: 30, stage: 'boil', alpha: 11.2 }]
     });
 
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     await waitFor(() => expect(screen.getByText(/Reprendre ces valeurs/)).toBeInTheDocument());
     fireEvent.click(screen.getByText(/Reprendre ces valeurs/));
 
@@ -239,7 +251,7 @@ describe('Tout compléter avec l’IA', () => {
     run.mockResolvedValue({ ok: true, data: { found: false, name: '', source: '' } });
     monter({ fermentables: [GRAIN_SANS_COULEUR] });
 
-    fireEvent.click(screen.getByText(/Tout compléter avec l’IA/));
+    fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     await waitFor(() => expect(screen.getByText(/Rien de publié retrouvé/)).toBeInTheDocument());
     expect(screen.getByText(/à saisir à la main/)).toBeInTheDocument();
   });

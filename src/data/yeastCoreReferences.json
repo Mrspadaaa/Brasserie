@@ -1,0 +1,865 @@
+[
+  {
+    "id": "fermentis-us05",
+    "kind": "yeast",
+    "name": "SafAle US-05 (Fermentis)",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "SafAle US-05 — fiche produit",
+      "author": "Fermentis",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://fermentis.com/fr/produit/safale-us-05/",
+      "locator": "Identité SafAle US-05, Saccharomyces cerevisiae, et description du profil neutre. Aucune date de publication ou de mise à jour de la fiche n’est affichée. Cette source ne fournit pas de mesure de β-lyase ni de rendement de biotransformation."
+    },
+    "form": "sèche",
+    "catalogue": {
+      "manufacturer": "Fermentis",
+      "productId": "https://fermentis.com/en/product/safale-us-05/",
+      "productCode": null,
+      "aliases": [
+        "SafAle US‑05™"
+      ],
+      "categories": [
+        "Home",
+        "Products",
+        "Beer &amp; brewing solutions",
+        "Active dry yeast beer",
+        "SafAle US‑05™"
+      ],
+      "status": "listed",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Temperature",
+          "reported": "50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).",
+          "source": {
+            "title": "SafAle US‑05™",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/"
+          },
+          "range": {
+            "min": 18,
+            "max": 26
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage",
+          "reported": "50 to 80 g/hl at ideally 18-26°C (64.4-78.8°F).",
+          "source": {
+            "title": "SafAle US‑05™",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/"
+          },
+          "range": {
+            "min": 50,
+            "max": 80
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "esters",
+          "label": "Total esters",
+          "reported": "Low",
+          "source": {
+            "title": "SafAle US‑05™",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/"
+          }
+        },
+        {
+          "key": "attenuation",
+          "label": "Apparent attenuation",
+          "reported": "78-82%",
+          "source": {
+            "title": "SafAle US‑05™",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/"
+          },
+          "range": {
+            "min": 78,
+            "max": 82
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Alcohol tolerance",
+          "reported": "9-11%",
+          "source": {
+            "title": "SafAle US‑05™",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/"
+          },
+          "range": {
+            "min": 9,
+            "max": 11
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "species",
+          "label": "Species",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "SafAle US‑05™",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/"
+          }
+        }
+      ],
+      "documents": [
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/38n9np39rf7xfhs5ccmf845/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/hf27wksx5rgmcpshs4nmrc/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/hb3zk6wmpg7t49wjrqjh2p/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/vpkch4h8vnsm9b93w5hfhwz/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/bv4kqxs34z662z48nv8rszvn/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/kgc84hvm5qkchf9kvrx5nqj6/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/as/v4svwpx8jnmwjqrv4r5635j/SafAle_US-05_TDS_-_Technical_Data_Sheet"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://fermentis.com/product-sitemap.xml",
+          "retrievedAt": "2026-09-08T10:38:05.875Z",
+          "sha256": "1f39314421af3fce4b77126595947f3286d5e487ffc4030d66d0393213dca843",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://fermentis.com/en/product/safale-us-05/",
+          "retrievedAt": "2026-09-08T10:39:48.975Z",
+          "sha256": "04e09ee8a6c726bcb8acf90a313712552ee12b06c2a7ef7c99f59929dcc81972",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "publishedAt": null,
+      "pageUpdatedAt": null,
+      "parserVersion": "yeast-catalogue-2026-09-08.1",
+      "contentSha256": "fb3395f434f28514530a765a9cb68c7a1d9465ccb949899d8919fa694def8ce7",
+      "gaps": [
+        "Rendement de libération des thiols et intensités sensorielles non calibrés.",
+        "Statut POF non documenté dans les champs extraits."
+      ]
+    }
+  },
+  {
+    "id": "lalbrew-lona",
+    "kind": "yeast",
+    "name": "Lallemand Brewing · LalBrew LoNa™ Yeast (500 g)",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "LalBrew LoNa™ Yeast (500 g)",
+      "author": "Lallemand Brewing",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-500-g-18624--06--11"
+    },
+    "catalogue": {
+      "manufacturer": "Lallemand Brewing",
+      "productId": "18624-06-11",
+      "productCode": null,
+      "aliases": [
+        "LalBrew LoNa™",
+        "LAL-LONA-500",
+        "LalBrew LoNa™ Yeast (10 kg)",
+        "LalBrew LoNa™ Yeast (500 g)"
+      ],
+      "categories": [
+        "clean",
+        "dryyeast",
+        "pro",
+        "Premium Dry Strains",
+        "Yeast: Specialty/Belgian"
+      ],
+      "status": "listed",
+      "facts": [
+        {
+          "key": "attenuation",
+          "label": "Attenuation",
+          "reported": "16-20%",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (10 kg)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-10-kg-18624--01--11"
+          },
+          "range": {
+            "min": 16,
+            "max": 20
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "temperature",
+          "label": "Fermentation Temp Range",
+          "reported": "20-25°C (68 - 77°F)",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (10 kg)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-10-kg-18624--01--11"
+          },
+          "range": {
+            "min": 20,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Medium",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (10 kg)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-10-kg-18624--01--11"
+          }
+        },
+        {
+          "key": "pitchRate",
+          "label": "Pitch Rate",
+          "reported": "50-100 g/hL",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (10 kg)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-10-kg-18624--01--11"
+          },
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "species",
+          "label": "Species",
+          "reported": "S. cerevisae",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (10 kg)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-10-kg-18624--01--11"
+          }
+        },
+        {
+          "key": "attenuation",
+          "label": "Attenuation",
+          "reported": "16-20%",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (500 g)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-500-g-18624--06--11"
+          },
+          "range": {
+            "min": 16,
+            "max": 20
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Medium",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (500 g)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-500-g-18624--06--11"
+          }
+        },
+        {
+          "key": "pitchRate",
+          "label": "Pitch Rate",
+          "reported": "50-100 g/hL",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (500 g)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-500-g-18624--06--11"
+          },
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "species",
+          "label": "Species",
+          "reported": "S. cerevisae",
+          "source": {
+            "title": "LalBrew LoNa™ Yeast (500 g)",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-500-g-18624--06--11"
+          }
+        },
+        {
+          "key": "attenuation",
+          "label": "ATTENUATION",
+          "reported": "16% - 20%",
+          "source": {
+            "title": "LalBrew LoNa™",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=352&type=YEAST"
+          },
+          "range": {
+            "min": 16,
+            "max": 20
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "FLOCCULATION",
+          "reported": "Low",
+          "source": {
+            "title": "LalBrew LoNa™",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=352&type=YEAST"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "FERMENTATION TEMPERATURE",
+          "reported": "68° - 78° F 20° - 25° C",
+          "source": {
+            "title": "LalBrew LoNa™",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=352&type=YEAST"
+          },
+          "range": {
+            "min": 20,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "sta1",
+          "label": "STA1",
+          "reported": "Negative",
+          "source": {
+            "title": "LalBrew LoNa™",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=352&type=YEAST"
+          }
+        }
+      ],
+      "documents": [
+        {
+          "title": "LONA - Technical Data Sheet",
+          "url": "https://files.scottlab.com/uploads/LoNa%20TDS.pdf"
+        },
+        {
+          "title": "LONA - Safety Data Sheet",
+          "url": "https://files.scottlab.com/uploads/BREWING%20YEAST%20SDS.pdf"
+        },
+        {
+          "title": "LONA - Product Declaration",
+          "url": "https://files.scottlab.com/uploads/Declaration%20ADY%20Lallemand%20Brewing.pdf"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://escarpmentlabs.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:09.921Z",
+          "sha256": "71c5f6c44502e7d8aa8016d8403b0ed7a36778bf2a9457d85cdef5c630dd6162",
+          "etag": "\"page_cache:32388251780:ProductListController:39b8be64fb737397dcff28301c1eb325\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/?page=4",
+          "retrievedAt": "2026-09-08T10:36:23.693Z",
+          "sha256": "b0c742274a21748777914fcbd1d8c97a25ad4dfb84c8cf3a70d1b5686263095e",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-10-kg-18624--01--11",
+          "retrievedAt": "2026-09-08T10:37:33.485Z",
+          "sha256": "447a48c199321ea3706067269b6dc6605477f8e2673cf637c618c83654cf7372",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/species=saccharomyces-cerevisaie-var-diastaticus,saccharomyces-cerevisiae,saccharomyces-pastorianus/lalbrew-lona-yeast-500-g-18624--06--11",
+          "retrievedAt": "2026-09-08T10:37:36.002Z",
+          "sha256": "acc21735de20523dc3068afcffce434e4afaa1072376ece25e63b7f82b0b38ee",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/sitemap-1.xml",
+          "retrievedAt": "2026-09-08T10:36:54.985Z",
+          "sha256": "375c1e9beb1b248b98ffbb107f7f3f0db84e4bf8bbf4414785a5d3a4208bc63f",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=352&type=YEAST",
+          "retrievedAt": "2026-09-08T10:44:28.949Z",
+          "sha256": "d65c5acd1d0cb78a517aa4c0f4e8757292675c8e45c72e80b61ad3b6581bcd82",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "publishedAt": null,
+      "pageUpdatedAt": null,
+      "parserVersion": "yeast-catalogue-2026-09-08.1",
+      "contentSha256": "361e6b9f0b08ebb2a52425622ecedb64e4b8603a79df23800fca9d87bb334a57",
+      "gaps": [
+        "Rendement de libération des thiols et intensités sensorielles non calibrés.",
+        "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
+        "Statut POF non documenté dans les champs extraits."
+      ]
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "white-labs-wlp618",
+    "kind": "yeast",
+    "name": "White Labs · WLP618 NA All Day®",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "WLP618 NA All Day®",
+      "author": "White Labs",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+    },
+    "catalogue": {
+      "manufacturer": "White Labs",
+      "productId": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+      "productCode": "WLP618",
+      "aliases": [
+        "WLP618 NA All Day®",
+        "WLP618"
+      ],
+      "categories": [
+        "Non Alcoholic Strains"
+      ],
+      "status": "listed",
+      "facts": [
+        {
+          "key": "attenuation",
+          "label": "ATTENUATION",
+          "reported": "-- - 20%",
+          "source": {
+            "title": "WLP618 NA All Day®",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+          }
+        },
+        {
+          "key": "flocculation",
+          "label": "FLOCCULATION",
+          "reported": "Medium",
+          "source": {
+            "title": "WLP618 NA All Day®",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+          }
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "ALCOHOL TOLERANCE",
+          "reported": "Low (2-5%)",
+          "source": {
+            "title": "WLP618 NA All Day®",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+          },
+          "range": {
+            "min": 2,
+            "max": 5
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "temperature",
+          "label": "FERMENTATION TEMPERATURE",
+          "reported": "68° - 75° F 20° - 24° C",
+          "source": {
+            "title": "WLP618 NA All Day®",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+          },
+          "range": {
+            "min": 20,
+            "max": 24
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "sta1",
+          "label": "STA1",
+          "reported": "Negative",
+          "source": {
+            "title": "WLP618 NA All Day®",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+          }
+        }
+      ],
+      "documents": [
+        {
+          "title": "Non-Alcoholic/Low Alcohol Tech Sheet",
+          "url": "https://www.whitelabs.com/public/uploads/ckeditor/6238c51a7077d1647887642.pdf"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whitelabs.com/sitemap-1.xml",
+          "retrievedAt": "2026-09-08T10:36:54.985Z",
+          "sha256": "375c1e9beb1b248b98ffbb107f7f3f0db84e4bf8bbf4414785a5d3a4208bc63f",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+          "retrievedAt": "2026-09-08T10:39:58.220Z",
+          "sha256": "a4b873b928ac19574d317ae70bf994645e9d4bae53bd9bb79dc34bd4ce184b7b",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "publishedAt": null,
+      "pageUpdatedAt": null,
+      "parserVersion": "yeast-catalogue-2026-09-08.1",
+      "contentSha256": "348b373646a8c75b7a5346e5adf60237a1a72e419284446757bd5ea114287ef9",
+      "gaps": [
+        "Rendement de libération des thiols et intensités sensorielles non calibrés.",
+        "Statut POF non documenté dans les champs extraits."
+      ]
+    }
+  },
+  {
+    "id": "yeast-fermentis-safbrew-la-01",
+    "kind": "yeast",
+    "name": "Fermentis · SafBrew™ LA‑01",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "SafBrew™ LA‑01",
+      "author": "Fermentis",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+    },
+    "catalogue": {
+      "manufacturer": "Fermentis",
+      "productId": "https://fermentis.com/en/product/safbrew-la-01/",
+      "productCode": null,
+      "aliases": [
+        "SafBrew™ LA‑01"
+      ],
+      "categories": [
+        "Home",
+        "Products",
+        "Beer &amp; brewing solutions",
+        "Active dry yeast beer",
+        "SafBrew™ LA‑01"
+      ],
+      "status": "listed",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Temperature",
+          "reported": "50 to 80 g/hl at ideally 15-25°C (59-77°F).",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          },
+          "range": {
+            "min": 15,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage",
+          "reported": "50 to 80 g/hl at ideally 15-25°C (59-77°F).",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          },
+          "range": {
+            "min": 50,
+            "max": 80
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "esters",
+          "label": "Total esters",
+          "reported": "Very low",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          }
+        },
+        {
+          "key": "higherAlcohols",
+          "label": "Total sup.alcohols",
+          "reported": "Very low",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          }
+        },
+        {
+          "key": "attenuation",
+          "label": "Apparent attenuation",
+          "reported": "15%",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          },
+          "range": {
+            "min": 15,
+            "max": 15
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pof",
+          "label": "Phenolic Off-Flavor",
+          "reported": "+",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Species",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "SafBrew™ LA‑01",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safbrew-la-01/"
+          }
+        }
+      ],
+      "documents": [
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf"
+        },
+        {
+          "title": "Document technique",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://fermentis.com/product-sitemap.xml",
+          "retrievedAt": "2026-09-08T10:38:05.875Z",
+          "sha256": "1f39314421af3fce4b77126595947f3286d5e487ffc4030d66d0393213dca843",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://fermentis.com/en/product/safbrew-la-01/",
+          "retrievedAt": "2026-09-08T10:40:04.952Z",
+          "sha256": "0e2f7d97d69327eb08deb548ecea1f094f6b24af03af54627c2101767fe8d190",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "publishedAt": null,
+      "pageUpdatedAt": null,
+      "parserVersion": "yeast-catalogue-2026-09-08.1",
+      "contentSha256": "6119069eb312683a5fb858d67a2a53e541b80c257f6cb87f24109065e3f27165",
+      "gaps": [
+        "Rendement de libération des thiols et intensités sensorielles non calibrés."
+      ]
+    }
+  },
+  {
+    "id": "yeast-whc-10418626003283",
+    "kind": "yeast",
+    "name": "WHC Lab · Zero Hero: Low / Non Alcoholic Dry Yeast",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Zero Hero: Low / Non Alcoholic Dry Yeast",
+      "author": "WHC Lab",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://www.whclab.com/products/zero-hero-low-non-alcoholic-dry-yeast"
+    },
+    "form": "sèche",
+    "catalogue": {
+      "manufacturer": "WHC Lab",
+      "productId": "10418626003283",
+      "productCode": "DRI-ZERO-H",
+      "aliases": [
+        "Zero Hero: Low / Non Alcoholic Dry Yeast",
+        "DRI-ZERO-H"
+      ],
+      "categories": [
+        "Brewing",
+        "Brewing Yeast",
+        "Dehydrated Brewing Yeast",
+        "Imperial Stout",
+        "NEIPA",
+        "Stouts"
+      ],
+      "status": "listed",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Temperature",
+          "reported": "18°C to 22°C",
+          "source": {
+            "title": "WHC Lab — catalogue des cultures",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://cdn.shopify.com/s/files/1/0891/5124/2579/files/brewing-distilling-product-catalogue-2026-v1.0.pdf?v=1772640074",
+            "locator": "Page 12"
+          },
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        }
+      ],
+      "documents": [
+        {
+          "title": "WHC Lab — catalogue des cultures",
+          "url": "https://cdn.shopify.com/s/files/1/0891/5124/2579/files/brewing-distilling-product-catalogue-2026-v1.0.pdf?v=1772640074"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whclab.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:10.177Z",
+          "sha256": "4622187d4a5394fdbc1723dc0a62bf46abe5bc067651f229743ce148b82d3cea",
+          "etag": "\"page_cache:89151242579:ProductListController:df7472e2d9a8ff6b0ca24496e133f340\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://cdn.shopify.com/s/files/1/0891/5124/2579/files/brewing-distilling-product-catalogue-2026-v1.0.pdf?v=1772640074",
+          "retrievedAt": "2026-09-08T10:38:26.499Z",
+          "sha256": "efacb27b2268c72551b12e8b736fdb8bee4fb86c0d096a3f39b0a0f6e5505189",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 10:38:26 GMT"
+        }
+      ],
+      "publishedAt": "2026-02-12T11:39:27+00:00",
+      "pageUpdatedAt": "2026-09-08T11:31:10+01:00",
+      "parserVersion": "yeast-catalogue-2026-09-08.1",
+      "contentSha256": "4b8a7e212700ec20ecdae78302742beedad5fa5c435ac17f16dc3310ba5422df",
+      "gaps": [
+        "Rendement de libération des thiols et intensités sensorielles non calibrés.",
+        "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
+        "Statut POF non documenté dans les champs extraits."
+      ]
+    }
+  }
+]

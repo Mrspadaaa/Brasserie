@@ -1,9 +1,13 @@
 import { Fermentable, HopIngredient, StockItem, YeastSpec } from '../types';
 
+import { readIngredientFermentationFacts, type IngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
+
 export type IngredientKind = 'levure' | 'malt' | 'houblon';
 
 export interface IngredientFacts {
   found: boolean;
+  hopIndexId?: string;
+  fermentation?: IngredientFermentationFacts;
   name: string;
   source: string;
   note?: string;
@@ -36,12 +40,14 @@ export const ingredientKey = (kind: IngredientKind, name: string) =>
 /** Only usable published values may reach calculations or the ingredient catalogue. */
 export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
   const out = { ...facts };
+  const fermentation = readIngredientFermentationFacts(facts.fermentation);
+  if (fermentation) out.fermentation = fermentation; else delete out.fermentation;
   const limits: Partial<Record<keyof IngredientFacts, [number, number]>> = {
     colorEbc: [0, 5000],
     potentialPpg: [1, 50],
     alphaPct: [0.01, 100],
     betaPct: [0, 100],
-    attenuationPct: [1, 100],
+    attenuationPct: [0, 100],
     tempMinC: [-5, 60],
     tempMaxC: [-5, 60],
     alcoholTolerancePct: [0, 40],
@@ -78,10 +84,12 @@ export function applyYeastFacts(y: YeastSpec, facts: IngredientFacts): YeastSpec
   const v = sanitizeFacts(facts);
   return {
     ...y,
+    hopIndexId: y.hopIndexId || v.hopIndexId,
+    fermentationFacts: y.fermentationFacts ?? v.fermentation,
     lab: y.lab || v.lab,
     strain: y.strain || v.strain,
     form: y.form || v.form,
-    attenuationPct: y.attenuationPct || v.attenuationPct,
+    attenuationPct: y.attenuationPct ?? v.attenuationPct,
     fermTempMinC: y.fermTempMinC ?? v.tempMinC,
     fermTempMaxC: y.fermTempMaxC ?? v.tempMaxC
   };
@@ -95,6 +103,7 @@ export function factsForStock(kind: IngredientKind, facts: IngredientFacts): Par
       : kind === 'houblon'
         ? { alphaPct: v.alphaPct }
         : {
+            yeastFermentationFacts: v.fermentation,
             yeastLab: v.lab,
             yeastStrain: v.strain,
             yeastForm: v.form,
@@ -113,6 +122,7 @@ export function factsFromStock(item: StockItem): IngredientFacts {
   return sanitizeFacts({
     found: true,
     name: item.name,
+    fermentation: item.yeastFermentationFacts,
     source: item.technicalSource || 'Catalogue ingrédients',
     colorEbc: item.colorEbc,
     potentialPpg: item.potentialPpg,
@@ -135,7 +145,8 @@ export interface IngredientGap {
 export function ingredientGaps(
   fermentables: Fermentable[],
   hops: HopIngredient[],
-  yeast: YeastSpec
+  yeast: YeastSpec,
+  nolo = false
 ): IngredientGap[] {
   const gaps = new Map<string, IngredientGap>();
   const add = (kind: IngredientKind, name: string, missing: string[]) => {
@@ -167,7 +178,8 @@ export function ingredientGaps(
     'levure',
     yeast.name,
     [
-      !yeast.attenuationPct && 'atténuation',
+      yeast.attenuationPct == null && 'atténuation',
+      nolo && !yeast.fermentationFacts && 'assimilation NOLO et ensemencement',
       yeast.fermTempMinC == null && 'température minimale',
       yeast.fermTempMaxC == null && 'température maximale',
       !yeast.lab?.trim() && 'laboratoire'
@@ -183,6 +195,7 @@ export function fillsGap(gap: IngredientGap, facts: IngredientFacts): boolean {
     'potentiel PPG': ['potentialPpg'],
     'acides alpha': ['alphaPct'],
     atténuation: ['attenuationPct'],
+    'assimilation NOLO et ensemencement': ['fermentation'],
     'plage de température': ['tempMinC', 'tempMaxC'],
     'température minimale': ['tempMinC'],
     'température maximale': ['tempMaxC'],

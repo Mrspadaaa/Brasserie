@@ -15,7 +15,8 @@ const times = (a:NoloBound,k:number):NoloBound => ({...a,min:a.min*k,max:a.max==
 const status = (b:NoloBound,target:number) => b.min>target?'exceeds' as const:b.max!==null&&b.max<=target?'within' as const:'indeterminate' as const;
 export function noloScenarioBasis(input:NoloInput,afterOperationId?:string) {
   return JSON.stringify([NOLO_SCENARIO_VERSION,noloInputBasis(input,afterOperationId),
-    input.config.planning?.stopSg??null,input.config.planning?.stopAttenuationPct??null]);
+    input.config.planning?.stopSg??null,input.config.planning?.stopAttenuationPct??null,
+    ...(input.config.planning?.exactExtract ? [true] : [])]);
 }
 
 /** Process changes are reversible and retain the original operation order. */

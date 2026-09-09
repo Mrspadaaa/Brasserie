@@ -1,3 +1,4 @@
+import { fermentationProposals, fermentationReadiness } from './fermentationPlanning';
 import { BrewingMath } from '../services/brewingMath';
 import {
   actualWater,
@@ -223,7 +224,8 @@ export function runBrewerTool(
       const proposed = a.yeastId ? { ...r, yeast: { ...r.yeast, hopIndexId: a.yeastId as string } } : r;
       return result('Conduite NOLO · bilan commun', {
         nolo: evaluateNoloRecipe(proposed, knowledge),
-        alternatives: science ? rankNoloStrains(proposed, science) : [],
+        diagnostics: fermentationReadiness(proposed, knowledge),
+        alternatives: science ? fermentationProposals(proposed, knowledge).map(p=>({version:p.version, yeastId:p.id, changes:p.changes, diagnostics:p.diagnostics, processFit:p.processFit, aromaFit:p.aromaFit, targetPlato:p.targetPlato, projection:p.result?.projection, projectionStatus:p.result?.projectionStatus, sources:p.sources, assumptions:p.assumptions, proposedFields:{yeast:p.recipe.yeast,fermentables:p.recipe.fermentables,mash:p.recipe.mash,fermentation:p.recipe.fermentation,waterPlan:p.recipe.waterPlan,carboTarget:p.recipe.carboTarget}})) : [],
         finalGravity: null, lagerRest: null
       }, [], ['Les données des souches et le bilan NOLO remplacent les conseils de bière alcoolisée. Une température ne devient pas un bonus banane ; aucune durée ne valide la fin ou la conservation.']);
     }

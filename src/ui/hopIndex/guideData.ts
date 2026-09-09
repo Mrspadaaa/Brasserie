@@ -1,3 +1,4 @@
+import { yeastReferences } from '../../domain/yeastReferences';
 import { assertHopDocument, type HopVariety } from '../../../functions/src/hopIndexSchema';
 import { assertHopKnowledge, type HopAxis, type HopKnowledge, type HopRiskPolicy, type HopYeast } from '../../../functions/src/hopPredictionSchema';
 import initialKnowledge from '../../data/hopKnowledgeBootstrap.json';
@@ -60,18 +61,7 @@ export function guideAxes(knowledge: HopKnowledge[]): HopAxis[] {
 }
 
 export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
-  const rows = [...checkedKnowledge(initialYeasts), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(trialPack.hopKnowledge), ...checkedKnowledge(solverPack), ...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack), ...checkedKnowledge(noloPack), ...validKnowledge(knowledge)];
-  const yeasts = rows.filter((row): row is HopYeast => row.kind === 'yeast');
-  const fermentations = guideFermentations(knowledge), trials = guideTrials(knowledge), nolo = noloScience(knowledge);
-  return [...new Map(yeasts.map(yeast => [yeast.id, yeast])).values()].map(yeast => {
-    const names = [...(yeastNameVariants[yeast.id] ?? []), ...(nolo?.strains.find(s=>s.yeastId===yeast.id)?.aliases??[]), ...(fermentations.find(g => g.yeastId === yeast.id)?.aliases ?? []), ...(yeast.catalogue?.aliases ?? [])];
-    const aliases = names.length ? [...new Set(names)] : undefined;
-    const trial = trials.find(t => t.yeastId === yeast.id);
-    const builtin = initialYeasts.find(y => y.id === yeast.id);
-    const scienceIdentity = fermentationSciencePack.find(y => y.kind === 'yeast' && y.id === yeast.id);
-    const form = yeast.form ?? trial?.yeastForm ?? builtin?.form ?? (scienceIdentity as HopYeast | undefined)?.form;
-    return { ...yeast, ...(form ? { form: form as HopYeast['form'] } : {}), ...(aliases ? { aliases: [...aliases] } : {}) };
-  });
+  return yeastReferences(knowledge);
 }
 
 /** A saved disabled or invalid guide is never silently replaced by its bootstrap. */

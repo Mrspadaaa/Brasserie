@@ -146,8 +146,8 @@ function ScopedChat({
     lock = useRef(false),
     end = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!hideLauncher) return brewerLauncher.register(scope, () => setOpen(true));
-  }, [scope.kind, scope.id, hideLauncher]);
+    return brewerLauncher.register(scope, () => setOpen(true));
+  }, [scope.kind, scope.id]);
   useEffect(() => {
     if (open) return brewerLauncher.dialog();
   }, [open]);

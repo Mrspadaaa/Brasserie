@@ -22,7 +22,8 @@
     "test:science:nolo": "node scripts/check-test-boundary.mjs && node scripts/check-nolo-science.mjs",
     "test:smoke:nolo": "node scripts/check-test-boundary.mjs && node scripts/check-nolo-ui.mjs",
     "test:science:yeast": "node scripts/check-yeast-science.mjs",
-    "test:smoke:yeast": "node scripts/check-test-boundary.mjs && node scripts/check-yeast-ui.mjs"
+    "test:smoke:yeast": "node scripts/check-test-boundary.mjs && node scripts/check-yeast-ui.mjs",
+    "test:smoke:fruty": "node scripts/check-test-boundary.mjs && node scripts/check-fruty-ui.mjs"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

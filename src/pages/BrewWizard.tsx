@@ -1030,6 +1030,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     style: style.trim(),
     styleRef: details.styleRef,
     nolo: details.nolo,
+    fermentationIntent: details.fermentationIntent,
     volumeL,
     brewDate,
     boilMin,
@@ -1116,6 +1117,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     archivedAt: base?.archivedAt
   });
 
+  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step) => {
+    applyImport(normalizeRecipeImport(next, 'local', true), next);
+    setYeast(next.yeast); setStep(destination);
+  };
+
   const hasMetrics = fermentables.length > 0 || hops.length > 0;
 
   /**
@@ -1198,6 +1204,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
+      actions={<BrewerPageShortcut />}
       /* Le fil d'étapes vit dans l'en-tête : il ne coûte plus une rangée. */
       progress={
         <nav aria-label="Étapes" className="flex gap-1">
@@ -1292,6 +1299,16 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
+        <RecipeAutoComplete active={['fermentescibles', 'houblons', 'levure', 'recap'].includes(step)} nolo={details.nolo?.enabled}
+          onLearnIngredient={onLearnIngredient}
+          stockItems={stockItems}
+          fermentables={fermentables}
+          onFermentables={setFermentables}
+          hops={hops}
+          onHops={setHops}
+          yeast={yeast}
+          onYeast={setYeast}
+        />
       {step === 'identite' && (
         <>
           {/*
@@ -1336,7 +1353,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
             {matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
             <BrewingStyleDetails recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}/>
-            <NoloPanel recipe={build()} allowEnable onChange={next=>{
+            <NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>{
               setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide,hopPredictionIds:next.hopPredictionIds,hopMatrixId:next.hopMatrixId,hopTrialId:next.hopTrialId}));
               setYeast(next.yeast);setFerment(next.fermentation??[]);
             }}/>
@@ -1819,8 +1836,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               onValue={pitchTempC => setYeast({ ...yeast, pitchTempC })} missing={yeast.pitchTempC == null} />
           </FormNav>
           <FermentationWorkshop recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
-            setYeast(next.yeast); setFerment(next.fermentation ?? []);
-            setDetails(previous => ({ ...previous, nolo:next.nolo, yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+            applyFermentationRecipe(next, 'levure');
           }} />
           <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
             <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
@@ -1838,9 +1854,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               <InlineNum label="Durée indicative" name="Durée indicative de la fiche, en jours" unit="j" min={0} value={yeast.fermentDays} emptyValue={undefined}
                 onValue={fermentDays => setYeast({ ...yeast, fermentDays })} missing={yeast.fermentDays == null} />
             </FormNav>
-            <AiAssist kind="levure" name={yeast.name}
-              missing={[yeast.attenuationPct == null ? 'atténuation' : null, yeast.fermTempMinC == null ? 'température minimale' : null, yeast.fermTempMaxC == null ? 'température maximale' : null, !yeast.lab ? 'laboratoire' : null].filter(Boolean) as string[]}
-              onApply={f => { setYeast(current => applyYeastFacts(current, f)); onLearnIngredient(yeast.name, factsForStock('levure', f)); }} />
+
           </details>
         </Section>
       )}
@@ -2063,7 +2077,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step === 'eau' && (
         <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
           {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
-          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?<NoloPanel recipe={build()} onChange={next=>setDetails(d=>({...d,nolo:next.nolo}))}/>:<SaltSolver
+          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?<NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/>:<SaltSolver
             source={waterSource}
             onSourceChange={(source) => {
               setRecipeWaterSource(source);
@@ -2164,17 +2178,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           potentiels, alphas, atténuation. Le bouton disparaît de lui-même quand
           la fiche est complète.
         */}
-        <RecipeAutoComplete
-          onLearnIngredient={onLearnIngredient}
-          stockItems={stockItems}
-          fermentables={fermentables}
-          onFermentables={setFermentables}
-          hops={hops}
-          onHops={setHops}
-          yeast={yeast}
-          onYeast={setYeast}
-        />
-        {details.nolo?.enabled&&<RecipeDisclosure title="Objectif NOLO" summary="Projection, traitement et analyses"><NoloPanel recipe={build()} onChange={next=>{setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide}));setYeast(next.yeast);setFerment(next.fermentation??[]);}}/></RecipeDisclosure>}
+
+        {details.nolo?.enabled&&<RecipeDisclosure title="Objectif NOLO" summary="Projection, traitement et analyses"><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></RecipeDisclosure>}
         <BrewSheet
           onLearnIngredient={onLearnIngredient}
           reviewData={{

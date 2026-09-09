@@ -34,7 +34,7 @@ import { FermentationPlanningCalculations } from '../../src/ui/FermentationScien
 beforeEach(() => { memory.docs.clear(); memory.listeners.clear(); memory.writes.mockClear(); memory.attempts.mockClear(); memory.delay = null; memory.failure = null; });
 afterEach(cleanup);
 const recipe = () => ({ ...structuredClone(fullRecipe), yeast: { name: 'US-05', form: 'sèche' as const, qty: 1, unit: 'sachet' } });
-const choose = () => fireEvent.click(screen.getByRole('button', { name: 'Choisir pour un arôme' }));
+const choose = () => fireEvent.click(screen.getByRole('button', { name: 'Trouver une conduite' }));
 const apply = () => { choose(); fireEvent.click(screen.getByRole('button', { name: 'Appliquer cette levure et ces paliers' })); };
 
 describe('Atelier de levure dans une recette', () => {
@@ -127,7 +127,7 @@ describe('Atelier de levure dans une recette', () => {
     fireEvent.click(screen.getByRole('button',{name:'Simuler une variante de levure'}));
     choose();fireEvent.change(screen.getByLabelText('Objectif de fermentation'),{target:{value:'banana'}});
     apply();await waitFor(()=>expect(screen.getByRole('status')).toHaveTextContent('Variante locale'));
-    fireEvent.click(screen.getByRole('button',{name:'Analyser ma levure'}));
+    fireEvent.click(screen.getByRole('button',{name:'Évaluer ma recette'}));
     expect(screen.getByRole('region',{name:'Résultat de ma fermentation'})).toHaveTextContent('Munich');
     fireEvent.click(screen.getByRole('button',{name:'Fermer la variante de levure'}));
     expect(screen.getByRole('region',{name:'Résultat de ma fermentation'})).toHaveTextContent('US-05');

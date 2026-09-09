@@ -1,3 +1,6 @@
+import { fruty } from '../../fixtures/fruty';
+import { fermentationProposals, fermentationReadiness } from '../../../src/domain/fermentationPlanning';
+import { qaInputs, qaLookup } from './functions';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { HopExplorationChart } from '../../../src/ui/hopIndex/HopAromaChart';
@@ -43,6 +46,10 @@ async function start() {
     marker: '__HOP_RECIPE_QA_ONLY__', metrics: qaMetrics, calls: qaCalls, storage: StorageService, recipe, documented,
     nolo: {
       pilots:nuagePilots,
+      fruty, proposals:(r:Recipe)=>fermentationProposals(r,StorageService.getHopKnowledge()),
+      readiness:(r:Recipe)=>fermentationReadiness(r,StorageService.getHopKnowledge()),
+      inputs:qaInputs,
+      mockOats:()=>qaLookup.set("Flocons d'Avoine",{found:true,name:"Flocons d'Avoine",source:'Fixture QA synthétique · aucune analyse commerciale',colorEbc:2,potentialPpg:33}) ,
       raw:(r:Recipe)=>evaluateNoloRecipe(r,StorageService.getHopKnowledge()),
       recipe:(count=20)=>({...recipe(count),id:'qa-nolo',name:'QA hefeweisse NOLO',style:'Hefeweisse',
         nolo:newNoloConfig(),yeast:{name:'Fermentis SafBrew LA-01',hopIndexId:'yeast-fermentis-safbrew-la-01',form:'sèche',qty:12,unit:'g'},

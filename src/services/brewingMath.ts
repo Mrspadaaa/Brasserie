@@ -151,11 +151,12 @@ export const BrewingMath = {
       fermentabilityPct?: number;
     }>,
     volumeL: number,
-    efficiencyPct: number
+    efficiencyPct: number,
+    precision: 'rounded' | 'full' = 'rounded'
   ): { total: number; unfermentable: number } | null {
     if (!volumeL || !Number.isFinite(volumeL) || volumeL <= 0 || !fermentables.length) return null;
     if (!Number.isFinite(efficiencyPct) || efficiencyPct <= 0) return null;
-    if (fermentables.some((f) => f.potentialPpg == null || !Number.isFinite(f.potentialPpg))) {
+    if (fermentables.some((f) => (precision !== 'full' || f.weightKg !== 0) && (f.potentialPpg == null || !Number.isFinite(f.potentialPpg)))) {
       return null;
     }
 
@@ -164,6 +165,7 @@ export const BrewingMath = {
     let unfermentable = 0;
 
     fermentables.forEach((f) => {
+      if (precision === 'full' && f.weightKg === 0) return;
       const weightKg = Number.isFinite(f.weightKg) ? Math.max(0, f.weightKg) : 0;
       const isGrain = (f.kind ?? 'grain') === 'grain';
       // Le rendement d'empâtage ne concerne que ce qui passe par la maische.
@@ -183,8 +185,8 @@ export const BrewingMath = {
     });
 
     return {
-      total: Math.round(total * 10) / 10,
-      unfermentable: Math.round(unfermentable * 10) / 10
+      total: precision === 'full' ? total : Math.round(total * 10) / 10,
+      unfermentable: precision === 'full' ? unfermentable : Math.round(unfermentable * 10) / 10
     };
   },
 

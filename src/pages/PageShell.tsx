@@ -104,7 +104,9 @@ export const PageShell: React.FC<PageShellProps> = ({
   // Échap ferme, comme partout ailleurs dans l'application.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      if ((e.target as HTMLElement)?.closest?.('[role="dialog"]') || document.querySelector('[role="dialog"][data-state="open"]')) return;
+      e.preventDefault(); onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);

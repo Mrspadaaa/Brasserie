@@ -63,6 +63,7 @@ export interface StockItem {
   potentialPpg?: number;
 
   technicalSource?: string;
+  yeastFermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
 
   /** Levure : laboratoire, souche, forme, atténuation, fourchette de fermentation. */
   yeastLab?: string;
@@ -183,6 +184,7 @@ export interface HopIngredient {
  * pour la FG.
  */
 export interface YeastSpec {
+  fermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
   name: string;
   hopIndexId?: string;
   /** Lallemand, White Labs, Fermentis, GigaYeast, Omega… */
@@ -386,6 +388,7 @@ export interface RecipeStep {
 }
 
 export interface Recipe {
+  fermentationIntent?: import('../../functions/src/fermentationIntent').FermentationIntent;
   styleRef?: import('../../functions/src/brewingStyleSchema').BrewingStyleRef;
   nolo?: import('../../functions/src/noloSchema').NoloConfig;
   id: string;

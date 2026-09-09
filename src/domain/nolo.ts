@@ -8,6 +8,7 @@ import { BrewingMath } from '../services/brewingMath';
 import { resolveFermentationYeast } from './fermentationScenario';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
+import { yeastReferences } from './yeastReferences';
 import type { TrialRecipe } from './hopIndex/trials';
 import { normalizeHop } from './hopStage';
 import type { Batch, RecipeSnapshot } from '../types';
@@ -55,9 +56,9 @@ export function noloScenarioInput(recipe:TrialRecipe,saved:HopKnowledge[]=[]):No
   const measured=input.config.measurements.filter(m=>m.stage==='wort'&&m.sg!=null&&m.method.trim()&&/^\d{4}-\d{2}-\d{2}/.test(m.date)&&
     (m.basis===noloScenarioBasis(input)||!input.config.planning?.stopSg&&!input.config.planning?.stopAttenuationPct&&m.basis===noloInputBasis(input))
   ).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
-  const points=BrewingMath.extractPoints(recipe.fermentables.filter(f=>f.use!=='fermentation'),recipe.volumeL,recipe.efficiencyPct??recipe.brewhouse?.efficiencyPct??75);
+  const points=BrewingMath.extractPoints(recipe.fermentables.filter(f=>f.use!=='fermentation'),recipe.volumeL,recipe.efficiencyPct??recipe.brewhouse?.efficiencyPct??75,input.config.planning?.exactExtract?'full':'rounded');
   const sg=measured?.sg??(recipe.nolo?.process==='secondRunnings'?recipe.nolo.secondRunnings?.sg:points?1+points.total/1000:undefined);
-  const yeast=resolveFermentationYeast(recipe,saved.filter((k):k is HopYeast=>k.kind==='yeast'));
+  const yeast=resolveFermentationYeast(recipe,yeastReferences(saved));
   const attenuation=agreedFermentationFact(yeast,'attenuation','%');
   const temperature=agreedFermentationFact(yeast,'temperature','°C');
   return {...input,...(sg!=null&&sg>=1?{og:{range:{min:sg,max:sg},origin:measured||recipe.nolo?.process==='secondRunnings'?'measurement' as const:'calculated' as const,source:noloPlanningSource}}:{}),
@@ -85,7 +86,7 @@ export function applyNoloStrain(recipe: TrialRecipe,strain:NoloStrain,science:No
     ? [{kind:'primaire' as const,name:'Fermentation NOLO · '+strain.name,tempC:temp,days,
         note:'Repère de planification : contrôler densité, pH et alcool ; durée non libératoire.'},...old.filter(p=>p.kind!=='primaire'&&p.kind!=='reposDiacetyle')] : old;
   return {...recipe,nolo:{...(recipe.nolo??newNoloConfig()),scienceSnapshot:structuredClone(science)},
-    yeast:{name:strain.name,hopIndexId:strain.yeastId,form:strain.yeastId.includes('wlp618')?'liquide':'sèche',qty:0,unit:'g',
+    yeast:{name:strain.name,hopIndexId:strain.yeastId,form:strain.yeastId.includes('wlp618')?'liquide':'sèche',qty:strain.pitchGL&&recipe.volumeL>0?recipe.volumeL*(strain.pitchGL.min+strain.pitchGL.max)/2:0,unit:'g',
       ...(temp!=null?{pitchTempC:temp}:{}),...(strain.temperatureC?{fermTempMinC:strain.temperatureC.min,fermTempMaxC:strain.temperatureC.max}:{})},
     yeastGuide:undefined,hopPredictionIds:undefined,hopTrialId:undefined,hopMatrixId:undefined,fermentation:phases};
 }

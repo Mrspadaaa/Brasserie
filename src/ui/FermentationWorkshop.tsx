@@ -138,15 +138,15 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
   const choices = guides.filter(g => fermentationPlan(g, goal) && yeasts.some(y => y.id === g.yeastId && (form === 'all' || y.form === form)));
   const selected = choices.find(g => g.id === selectedId) ?? choices.find(g => g.yeastId === currentYeast?.id) ?? choices.find(g => yeasts.find(y => y.id === g.yeastId)?.form === recipe.yeast.form) ?? choices[0];
   const yeast = selected && yeasts.find(y => y.id === selected.yeastId);
-  if(recipe.nolo?.enabled)return <NoloPanel recipe={recipe} onChange={onChange}/>;
+  if(recipe.nolo?.enabled)return <NoloFermentationWorkshop recipe={recipe} onChange={onChange}/>;
   return <section aria-label="Atelier des arômes de levure" className="mb-6 p-3 sm:p-5 rounded-panel border border-ebc-straw/30 bg-cave-900 space-y-4">
     <div className="flex items-start gap-3"><FlaskConical className="text-ebc-straw shrink-0 mt-1" size={22} /><div>
       <h3 className="text-xl sm:text-2xl font-semibold text-cave-50">Levure & fermentation</h3>
       {simulationOnly && <p className="text-xs text-cave-400 mt-1">Variante locale · recette enregistrée inchangée</p>}
     </div></div>
     <div className="grid grid-cols-2 gap-2" role="group" aria-label="Parcours de fermentation">
-      <Button disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Analyser ma levure</Button>
-      <Button disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Choisir pour un arôme</Button>
+      <Button disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Évaluer ma recette</Button>
+      <Button disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Trouver une conduite</Button>
     </div>
     {mode === 'current' ? <FermentationScenarioPanel recipe={recipe} yeasts={yeasts} guides={guides} science={science} goal={goal} onChange={onChange}/> : <>
     <HopField label="Objectif de fermentation"><select className={inputClass} value={goal} disabled={busy} onChange={e => setGoal(e.target.value as FermentationGoal)}>{Object.entries(FERMENTATION_GOAL_LABELS).map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></HopField>
@@ -208,4 +208,4 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
     </>}
   </section>;
 }
-import { NoloPanel } from './NoloPanel';
+import { NoloFermentationWorkshop } from './NoloFermentationWorkshop';
