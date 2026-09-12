@@ -60,11 +60,13 @@ export interface WaterBrewContext {
 
   volumes?: {
     preBoilVolumeL: number;
+    preBoilHotL?: number;
     grainAbsorptionL: number;
     boilOffL: number;
     hopLossL: number;
     mashRatioLPerKg: number;
   };
+  equipment?: import('../../types').BrewingEquipment;
   boilMin?: number;
 }
 

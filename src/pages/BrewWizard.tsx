@@ -348,8 +348,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const base = seed?.recipe;
   const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
   const [details, setDetails] = useState<Partial<Recipe>>(base ?? {});
-  const brewhouse =
+  const configuredBrewhouse =
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
+  // A saved/imported plan keeps its calibration until an explicit adaptation.
+  const brewhouse = details.brewhouse ?? configuredBrewhouse;
+  const equipmentDiffers = details.brewhouse && configuredBrewhouse &&
+    (['id', 'volumeL', 'efficiencyPct', 'boilOffRatePct', 'deadSpaceL', 'equipment'] as const)
+      .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
 
   const [step, setStep] = useState<StepId>('identite');
   const [hopGuideBusy, setHopGuideBusy] = useState(false);
@@ -1149,10 +1154,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     return `${perdu} L évaporés — autant d’eau à prévoir en plus dans la cuve.`;
   }, [volumeL, boilMin, brewhouse]);
   const stepIndex = STEPS.findIndex((s) => s.id === step);
-  const resizeForEquipment=()=>{
+  const resizeForEquipment=(profile=brewhouse)=>{
     try {
-      if(!brewhouse)return;
-      const resized=adaptRecipeEquipment(build(),brewhouse,defaultBrewVolume(brewhouse));
+      if(!profile)return;
+      const resized=adaptRecipeEquipment(build(),profile,defaultBrewVolume(profile));
       applyImport(normalizeRecipeImport(resized,'local',true), resized);
       setStep('identite');
       setEquipmentNotice(`Recette adaptée à ${resized.volumeL} L : ingrédients, eaux, sels et acide recalculés.`);
@@ -1379,7 +1384,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
             {brewhouse?.equipment&&<div className="space-y-2">
               <p className="text-sm text-water">Fermenteur {brewhouse.equipment.fermenterCapacityL} L · cible utile {fermenterLimit(brewhouse.equipment)} L, mousse réservée.</p>
-              {volumeL!==defaultBrewVolume(brewhouse)&&<button type="button" className="equipment-button" onClick={resizeForEquipment}>Adapter la recette à {defaultBrewVolume(brewhouse)} L</button>}
+              <p className="text-sm text-cave-200">Matériel du plan : {brewhouse.name}</p>
+              {volumeL!==defaultBrewVolume(brewhouse)&&<button type="button" className="equipment-button" onClick={()=>resizeForEquipment()}>Adapter la recette à {defaultBrewVolume(brewhouse)} L</button>}
+              {equipmentDiffers && <button type="button" className="equipment-button" onClick={()=>resizeForEquipment(configuredBrewhouse)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
               {equipmentNotice&&<p role="status" className="text-sm text-ebc-straw">{equipmentNotice}</p>}
               <BrewEquipmentSummary recipe={build()} profile={brewhouse}/>
             </div>}
@@ -2094,6 +2101,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               ibu,
               og: ogPredicted,
               volumes: suggestedVolumes,
+              equipment: brewhouse?.equipment,
               boilMin
             }}
             onMashRatioChange={(lPerKg) => {

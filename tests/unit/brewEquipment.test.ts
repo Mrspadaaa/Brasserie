@@ -24,6 +24,24 @@ export const rig: BrewhouseProfile = {
   equipment: { ...practicalEquipment }
 };
 describe('Matériel réel : capacités, conservation et paquets', () => {
+  it('conserve le bilan du brassin 3 kg / 24 L / 115 min même avec plus de rinçage que d’empâtage', () => {
+    const profile = { ...rig, mashRatioLPerKg: 3.5 };
+    const w = BrewingMath.waterVolumes(3, 24, profile, 'batch', 115, 14);
+    expect(w).toMatchObject({ mashWaterL: 10.5, spargeWaterL: 23.5,
+      preBoilVolumeL: 31.1, preBoilHotL: 32.4, grainAbsorptionL: 2.9, boilOffL: 5.5 });
+    // Independent balance: cold water less grain, hot evaporation converted to cold, and transfer losses.
+    expect(w.mashWaterL + w.spargeWaterL - 3 * 0.96 - 3 * (115 / 60) * 0.96 - 1.5 - w.hopLossL)
+      .toBeCloseTo(24, 1);
+    const check = equipmentCheck(profile.equipment, { volumeL: 24, grainKg: 3,
+      mashL: w.mashWaterL, spargeL: w.spargeWaterL, preBoilHotL: w.preBoilHotL })!;
+    expect(check.loads).toEqual([17.4, 6.1]);
+    expect(check.mashTooFull).toBe(false);
+    expect(check.boilTooFull).toBe(false);
+    const thinner = BrewingMath.waterVolumes(3, 24, { ...profile, mashRatioLPerKg: 6 }, 'batch', 115, 14);
+    expect(thinner.mashWaterL).toBe(18);
+    expect(thinner.spargeWaterL).toBe(16);
+    expect(thinner.preBoilVolumeL).toBe(w.preBoilVolumeL);
+  });
   it('30 L totaux donnent 24 L utiles avec 20 % du récipient réservés', () => {
     expect(fermenterLimit(rig.equipment)).toBe(24);
     expect(fermenterLimit({ ...practicalEquipment, fermenterHeadspacePct: 25 })).toBe(22.5);
