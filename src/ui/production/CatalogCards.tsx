@@ -15,8 +15,8 @@ import {
   type BatchDetailSection
 } from '../../domain/productionInsights';
 
-const number = (value: number | undefined, digits = 1) =>
-  value === undefined
+const number = (value: number | null | undefined, digits = 1) =>
+  value == null || !Number.isFinite(value)
     ? '—'
     : value.toLocaleString('fr-CH', {
         minimumFractionDigits: digits === 3 ? 3 : 0,
