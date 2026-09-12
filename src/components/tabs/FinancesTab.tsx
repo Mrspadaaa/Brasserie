@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { NumberInput } from '../../ui/NumberInput';
 import { compte } from '../../services/plural';
 import { Plus, ChevronRight, Settings2, CalendarDays, Wheat, Wrench, Check } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
@@ -167,7 +168,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
       </>}
       {view==='forecast'&&forecastPart==='projects'&&<><UpgradeWorkspace onOpenProject={setUpgrade}/>{financeAssistant}</>}
       {view==='annual'&&<>
-        <div className="finance-period-toolbar"><Field label="Exercice"><input type="number" min="1900" max="2200" value={year} onChange={e=>{setYear(Number(e.target.value)||new Date().getFullYear());setClosingId('');}}/></Field></div>
+        <div className="finance-period-toolbar"><Field label="Exercice"><NumberInput integer min={1900} max={2200} value={year} className="finance-year-input" onValue={value=>{setYear(value);setClosingId('');}}/></Field></div>
         {!!yearClosings.length&&<Field label="Version de l’année"><select value={latestClosing?.id??''} onChange={e=>setClosingId(e.target.value)}>{yearClosings.map(c=><option key={c.id} value={c.id}>{c.report?'Version figée':'Brouillon'} · {new Date(c.createdAt).toLocaleString('fr-CH')}</option>)}</select></Field>}
         <TaxWorkspace key={year} report={annual} closing={latestClosing} transactions={transactions} assets={data.assets} profile={data.profile} companyName={config.company.name} onProfile={()=>setProfileOpen(true)} onInventories={()=>setClosingOpen(true)} onAsset={setAsset} onVersion={setClosingId} onOperations={()=>openJournal({scope:'all',year:String(year),allDates:true,filter:'review'})}/>
         <button className="finance-link" onClick={()=>setArchiveOpen(true)}>Gérer les archives par année<ChevronRight size={16}/></button>

@@ -1,3 +1,4 @@
+import { Textarea, Input } from './Input';
 import React, { useState } from 'react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from './NumberInput';
@@ -118,7 +119,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
           </Field>
 
           <Field label="Description">
-            <textarea
+            <Textarea
               name="creative_sheet_description"
               autoComplete="off"
               autoCorrect="off"
@@ -176,7 +177,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
                 />
               </Field>
               <Field label="Téléphone" htmlFor="cr-tel">
-                <input
+                <Input
                   id="cr-tel"
                   name="creative_sheet_contact_tel"
                   autoComplete="off"
@@ -197,7 +198,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
           )}
 
           <Field label="Notes">
-            <textarea
+            <Textarea
               name="creative_sheet_general_notes"
               autoComplete="off"
               autoCorrect="off"

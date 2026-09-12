@@ -1,3 +1,4 @@
+import { Textarea } from '../ui/Input';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Pause,
@@ -1327,7 +1328,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                 <label htmlFor="brew-note" className="sr-only">
                   Observation
                 </label>
-                <textarea
+                <Textarea
                   id="brew-note"
                   aria-label="Carnet de cuve"
                   value={note}

@@ -146,7 +146,7 @@ export function BrewerBudget() {
               {status.monthly && status.monthly.limitMicroChf != null && status.monthly.limitMicroChf > 0 && <progress aria-label="Budget mensuel consommé ou réservé" max={status.monthly.limitMicroChf} value={Math.min(status.monthly.limitMicroChf, status.monthly.usedMicroChf + status.monthly.reservedMicroChf)} className="w-full accent-amber-400" />}
               {Boolean(status.monthly?.reservedMicroChf) && <small>Dont {(status.monthly!.reservedMicroChf / 1_000_000).toLocaleString('fr-CH', { maximumFractionDigits: 3 })} CHF réservés pour les appels en cours ou dont le coût n’a pas été confirmé.</small>}
               {status.monthly?.pricing === 'expired' && <p role="status">Révision des tarifs conseillée. Le budget continue avec les derniers tarifs de provision connus, sans garantie du montant exact facturé par Google.</p>}
-              <form onSubmit={event => { event.preventDefault(); if (monthlyChf != null && Number.isFinite(monthlyChf)) void save(undefined, undefined, Math.round(Math.max(0, Math.min(100, monthlyChf)) * 1_000_000)); }}>
+              <form autoComplete="off" onSubmit={event => { event.preventDefault(); if (monthlyChf != null && Number.isFinite(monthlyChf)) void save(undefined, undefined, Math.round(Math.max(0, Math.min(100, monthlyChf)) * 1_000_000)); }}>
                 <div className="flex gap-2" role="group" aria-label="Budgets mensuels proposés">
                   {[5, 10, 20].map(amount => <button key={amount} type="button" aria-pressed={monthlyChf === amount} disabled={busy} onClick={() => setMonthlyChf(amount)} className="min-h-11 flex-1">{amount} CHF</button>)}
                 </div>
@@ -164,7 +164,7 @@ export function BrewerBudget() {
               {status.paused ? <Play size={16} /> : <Pause size={16} />}
               {status.paused ? 'Réactiver l’IA' : 'Suspendre l’IA'}
             </button>
-            <details className="brewer-budget-advanced"><summary>Limites quotidiennes et par question <ChevronDown size={16} /></summary><form
+            <details className="brewer-budget-advanced"><summary>Limites quotidiennes et par question <ChevronDown size={16} /></summary><form autoComplete="off"
               onSubmit={(e) => {
                 e.preventDefault();
                 const next = clamped(limits);

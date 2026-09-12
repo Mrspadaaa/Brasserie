@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import { brewNow } from '../services/brewClock';
 import React, { useEffect, useId, useState } from 'react';
 import { Check, Minus, Plus } from 'lucide-react';
@@ -371,7 +372,7 @@ export function BrewDayMeasurements({
           </button>
         ))}
       </div>
-      <form onSubmit={save} className="space-y-1">
+      <form autoComplete="off" onSubmit={save} className="space-y-1">
         <label htmlFor="brew-reading" className="text-2xs text-cave-200">
           {READING[kind].label}
           {READING[kind].unit
@@ -381,7 +382,7 @@ export function BrewDayMeasurements({
               : ''}
         </label>
         <div className="flex gap-2">
-          <input
+          <Input
             id="brew-reading"
             aria-describedby="brew-reading-feedback"
             aria-invalid={!!raw.trim() && !incomplete && value == null}

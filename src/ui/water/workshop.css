@@ -1,9 +1,9 @@
-.water-workshop :is(button, input, summary):focus-visible {
+.water-workshop :is(button,:is(input, textarea:where([data-single-line])), summary):focus-visible {
   outline: 2px solid #f2c14e;
   outline-offset: 3px;
 }
 
-.water-workshop input[type="text"] {
+.water-workshop :is(input[type="text"], textarea[data-single-line][data-input-type="text"]) {
   font-size: 1rem;
 }
 
@@ -214,9 +214,9 @@
   }
 
   .water-salt-dose > button,
-  .water-salt-dose > input,
+  .water-salt-dose > :is(input, textarea:where([data-single-line])),
   .water-acid-dose button,
-  .water-acid-dose input,
+  .water-acid-dose :is(input, textarea:where([data-single-line])),
   .water-acid-row button,
   .water-ratio-compact input[type="range"] {
     height: 40px;
@@ -244,9 +244,9 @@
   .water-ratio-compact .ratio-orientation,
   .water-ratio-compact .ratio-help { display: none; }
   .water-salt-dose > button,
-  .water-salt-dose > input,
+  .water-salt-dose > :is(input, textarea:where([data-single-line])),
   .water-acid-dose button,
-  .water-acid-dose input,
+  .water-acid-dose :is(input, textarea:where([data-single-line])),
   .water-acid-row button { height: 36px; min-height: 36px; }
 }
 

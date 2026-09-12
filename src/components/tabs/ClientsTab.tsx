@@ -1,3 +1,4 @@
+import { Input } from '../../ui/Input';
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Users, 
@@ -179,7 +180,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
       {subTab === 'crm' && (
         <div className="space-y-3">
           {mobile ? <div className="flex items-center gap-2">
-            <input type="search" aria-label="Rechercher un client" placeholder={`${clients.length} clients · Rechercher…`} value={clientQuery} onChange={e=>setClientQuery(e.target.value)} className="min-w-0 flex-1 min-h-touch rounded-control border border-cave-800 bg-cave-950 px-3 text-base"/>
+            <Input type="search" aria-label="Rechercher un client" placeholder={`${clients.length} clients · Rechercher…`} value={clientQuery} onChange={e=>setClientQuery(e.target.value)} className="min-w-0 flex-1 min-h-touch rounded-control border border-cave-800 bg-cave-950 px-3 text-base"/>
           </div> : <div className="flex justify-between items-center px-1">
             <div>
               <h3 className="font-bold text-sm text-cave-50">Carnet Clients & Facturation</h3>
@@ -187,7 +188,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
             </div>
             <span className="text-sm text-ebc-straw font-bold">{clients.length} comptes</span>
           </div>}
-          {!mobile&&clientQuery&&<input type="search" aria-label="Rechercher un client" value={clientQuery} onChange={e=>setClientQuery(e.target.value)} className="min-h-touch w-full rounded-control bg-cave-900 border border-cave-800 px-3"/>}
+          {!mobile&&clientQuery&&<Input type="search" aria-label="Rechercher un client" value={clientQuery} onChange={e=>setClientQuery(e.target.value)} className="min-h-touch w-full rounded-control bg-cave-900 border border-cave-800 px-3"/>}
           {!visibleClients.length&&<div className="py-6 text-center text-cave-400"><p>{clientQuery?'Aucun client ne correspond à ta recherche.':'Ajoute ton premier client pour préparer ses factures.'}</p>{clientQuery&&<button type="button" onClick={()=>setClientQuery('')} className="min-h-touch text-ebc-straw">Effacer la recherche</button>}</div>}
 
           <div className="space-y-2.5">

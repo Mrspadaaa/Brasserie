@@ -1681,7 +1681,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         quelque chose : elle passe en suffixe.
                       */}
                       {(style.bitters || style.ask) && (
-                        <div className="flex items-center gap-2 pt-1 border-t border-cave-850">
+                        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-cave-850">
                           {/*
                             ⚠️ LE CHAMP DISPARAISSAIT SOUS LE DOIGT.
                             Il était rendu sous condition `!h.alpha` : à la

@@ -1,3 +1,4 @@
+import { Input, type InputElement } from './Input';
 import React, { useState, useMemo, useRef, useEffect, useId, useCallback } from 'react';
 import { createSearch, runSearch } from '../services/search';
 import { ChevronDown, Check, Plus, Star } from 'lucide-react';
@@ -103,7 +104,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
   const [flipUp, setFlipUp] = useState(false);
 
   const wrapRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const openedByTouchRef = useRef(false);
 
@@ -260,7 +261,8 @@ export const Combobox: React.FC<ComboboxProps> = ({
     inputRef.current?.blur();
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<InputElement>) => {
+    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -350,7 +352,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
   return (
     <div ref={wrapRef} className="relative">
       <div className="relative">
-        <input
+        <Input
           ref={inputRef}
           id={inputId}
           name={`filter_${inputId}`}

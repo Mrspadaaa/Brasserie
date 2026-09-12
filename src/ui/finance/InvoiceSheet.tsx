@@ -1,3 +1,4 @@
+import { Input } from '../Input';
 import React, { useRef, useState } from 'react';
 import type { AppConfig, Client, PricingItem, Transaction } from '../../types';
 import { Sheet } from '../Sheet';
@@ -48,7 +49,7 @@ export function InvoiceSheet({ client, config, tarifs, onClose, onSaved }: { cli
     <div className="finance-form-grid"><label className="finance-field">Date<input type="date" value={date} onChange={e => setDate(e.target.value)} /></label><label className="finance-field">Échéance<input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></label></div>
     {items.map((item, index) => <fieldset className="finance-item-editor" key={index}><legend>Article {index + 1}</legend>
       <label className="finance-field">Produit<select value="" onChange={e => { const found = tarifs.find(t => t.product === e.target.value); if (found) update(index, { description: found.product, unitPriceHT: found.priceHT }); }}><option value="">Choisir un tarif ou saisir ci-dessous</option>{tarifs.map(t => <option value={t.product} key={t.product}>{t.product}</option>)}</select></label>
-      <label className="finance-field">Désignation<input value={item.description} onChange={e => update(index, { description: e.target.value })} placeholder="Bouteille, carton ou fût livré" /></label>
+      <label className="finance-field">Désignation<Input value={item.description} onChange={e => update(index, { description: e.target.value })} placeholder="Bouteille, carton ou fût livré" /></label>
       <div className="finance-form-grid"><label className="finance-field">Quantité<NumberInput value={item.quantity} onValue={v => update(index, { quantity: v ?? 0 })} min={0} /></label><label className="finance-field">Prix unitaire {config.fiscal.isTvaRegistered ? 'HT' : '(CHF)'}<NumberInput value={item.unitPriceHT} onValue={v => update(index, { unitPriceHT: v ?? 0 })} min={0} /></label></div>
       {items.length > 1 && <button type="button" className="finance-action secondary" onClick={() => setItems(rows => rows.filter((_, i) => i !== index))}>Retirer cet article</button>}
     </fieldset>)}

@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import React, { useMemo, useState } from 'react';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
 import { fermentationProposals, fermentationReadiness, applyFermentationProposal, fermentationPlanningKey, type FermentationProposal } from '../domain/fermentationPlanning';
@@ -38,7 +39,7 @@ export function NoloFermentationWorkshop({ recipe, onChange }: { recipe: TrialRe
       {diagnostics.length > 1 && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Autres points à préparer · {diagnostics.length - 1}</summary><ul className="space-y-2 text-sm text-cave-200">{diagnostics.slice(1).map(d => <li key={d.id}>{d.message}{d.source && <HopSourceLink source={d.source}/>}</li>)}</ul></details>}
     </>}
     {mode === 'choose' && <label className="block text-sm text-cave-200">Profil recherché, libre
-      <input className={inputClass + ' mt-1'} value={intent.aroma} placeholder="Fruité, acidulé, banane, rond…" maxLength={1000} onChange={e => onChange({ ...recipe, fermentationIntent: { ...intent, aroma: e.target.value } })}/>
+      <Input className={inputClass + ' mt-1'} value={intent.aroma} placeholder="Fruité, acidulé, banane, rond…" maxLength={1000} onChange={e => onChange({ ...recipe, fermentationIntent: { ...intent, aroma: e.target.value } })}/>
     </label>}
     <div className="space-y-2" aria-label="Propositions NOLO">
       <p className="text-xs text-cave-400">{['restricted', 'restored'].includes(recipe.nolo!.process) ? 'Souches de fermentation limitée · conduites à comparer' : 'Souches NOLO à explorer · le procédé choisi reste à vérifier'}</p>
@@ -60,7 +61,7 @@ export function NoloFermentationWorkshop({ recipe, onChange }: { recipe: TrialRe
     </section>}
     {notice && <p role="status" className="text-sm text-hop">{notice}</p>}
     <details onToggle={e => setCatalogue(e.currentTarget.open)}><summary className="min-h-touch cursor-pointer text-sm text-water">Toutes les levures · aucune exclusion par style</summary>{catalogue && <div className="space-y-3">{rows.slice(3).map(p => <Button key={p.id} onClick={() => { setPreview(p); setMode('choose'); }}>Préparer {p.strain.name}</Button>)}<YeastCataloguePanel selectedId={recipe.yeast.hopIndexId} initialForm={recipe.yeast.form} onSelect={(y, form) => onChange(applyCatalogueYeast(recipe, y, form))}/></div>}</details>
-    <details><summary className="min-h-touch cursor-pointer text-sm text-water">Fruits et acidité recherchés</summary><div className="space-y-3 py-2">{(['fruit', 'acidity'] as const).map(k => <label key={k} className="block text-sm">{k === 'fruit' ? 'Fruit et apport envisagé' : 'Acidité et méthode envisagée'}<input className={inputClass} value={intent[k]} maxLength={1000} placeholder={k === 'fruit' ? 'Framboise, purée, quantité à tester…' : 'Culture acidifiante, assemblage, titration…'} onChange={e => onChange({ ...recipe, fermentationIntent: { ...intent, [k]: e.target.value } })}/></label>)}<p className="text-xs text-cave-400">Intentions conservées ; saisir les apports réels dans les ingrédients et le bilan NOLO pour les compter.</p></div></details>
+    <details><summary className="min-h-touch cursor-pointer text-sm text-water">Fruits et acidité recherchés</summary><div className="space-y-3 py-2">{(['fruit', 'acidity'] as const).map(k => <label key={k} className="block text-sm">{k === 'fruit' ? 'Fruit et apport envisagé' : 'Acidité et méthode envisagée'}<Input className={inputClass} value={intent[k]} maxLength={1000} placeholder={k === 'fruit' ? 'Framboise, purée, quantité à tester…' : 'Culture acidifiante, assemblage, titration…'} onChange={e => onChange({ ...recipe, fermentationIntent: { ...intent, [k]: e.target.value } })}/></label>)}<p className="text-xs text-cave-400">Intentions conservées ; saisir les apports réels dans les ingrédients et le bilan NOLO pour les compter.</p></div></details>
     <details><summary className="min-h-touch cursor-pointer text-sm text-water">Procédé, mesures et bilan détaillé</summary><NoloPanel recipe={recipe} onChange={onChange} hideStrainPicker/></details>
   </section>;
 }

@@ -1,3 +1,4 @@
+import { Input, Textarea } from '../ui/Input';
 import React, { useState, useEffect } from 'react';
 import { parseDecimal } from '../ui/numericInput';
 import { NumberInput } from '../ui/NumberInput';
@@ -200,7 +201,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
           <div className="grid grid-cols-3 gap-2">
             <div>
               <label className="text-cave-200 font-semibold block mb-1">Date brassage</label>
-              <input
+              <Input
                 name="batch_brew_date"
                 type="text"
                 autoComplete="off"
@@ -218,7 +219,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
             </div>
             <div>
               <label className="text-cave-200 font-semibold block mb-1">OG (Densité Init.)</label>
-              <input
+              <Input
                 name="batch_og_density"
                 type="text"
                 autoComplete="off"
@@ -236,7 +237,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
             </div>
             <div>
               <label className="text-cave-200 font-semibold block mb-1">FG (Actuelle/Fin)</label>
-              <input
+              <Input
                 name="batch_fg_density"
                 type="text"
                 autoComplete="off"
@@ -295,7 +296,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
             {/* Add new reading row */}
             <div className="p-2.5 bg-cave-950/60 rounded-2xl border border-cave-800 space-y-2">
               <div className="grid grid-cols-3 gap-2">
-                <input
+                <Input
                   name="batch_log_date"
                   type="text"
                   autoComplete="off"
@@ -310,7 +311,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
                   onChange={(e) => setNewLogDate(e.target.value)}
                   className="bg-cave-850 border border-cave-700 rounded-lg p-1.5 text-cave-50 text-center font-mono text-sm"
                 />
-                <input
+                <Input
                   name="batch_log_sg"
                   type="text"
                   autoComplete="off"
@@ -325,7 +326,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
                   onChange={(e) => setNewLogSg(e.target.value)}
                   className="bg-cave-850 border border-cave-700 rounded-lg p-1.5 text-ebc-gold text-center font-mono text-sm font-bold"
                 />
-                <input
+                <Input
                   name="batch_log_temp"
                   type="text"
                   inputMode="decimal"
@@ -344,7 +345,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
                 />
               </div>
               <div className="flex space-x-2">
-                <input
+                <Input
                   name="batch_log_notes"
                   type="text"
                   autoComplete="off"
@@ -376,7 +377,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
             
             <div>
               <label className="text-footnote text-ebc-straw font-bold block mb-0.5">💡 1. Avant / Création :</label>
-              <textarea
+              <Textarea
                 rows={2}
                 name="batch_notes_creation"
                 autoComplete="off"
@@ -395,7 +396,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
 
             <div>
               <label className="text-footnote text-alert font-bold block mb-0.5">🔥 2. Pendant / Jour J :</label>
-              <textarea
+              <Textarea
                 rows={2}
                 name="batch_notes_brewday"
                 autoComplete="off"
@@ -414,7 +415,7 @@ export const EditBatchModal: React.FC<EditBatchModalProps> = ({
 
             <div>
               <label className="text-footnote text-hop font-bold block mb-0.5">🍺 3. Après / Fermentation & Dégustation :</label>
-              <textarea
+              <Textarea
                 rows={2}
                 name="batch_notes_tasting"
                 autoComplete="off"

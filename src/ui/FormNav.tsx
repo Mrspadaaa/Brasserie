@@ -34,17 +34,7 @@ const FOCUSABLE = [
 
 export { TextInput, type TextInputProps } from './TextInput';
 
-/** Attributs anti-autocomplétion / anti-Gboard strip universels */
-export const noAutofillProps = {
-  autoComplete: 'off',
-  autoCorrect: 'off',
-  autoCapitalize: 'none',
-  spellCheck: false,
-  'data-form-type': 'other',
-  'data-lpignore': 'true',
-  'data-1p-ignore': 'true',
-  'data-bwignore': 'true'
-} as const;
+export { noAutofillProps } from './Input';
 
 interface FormNavProps {
   children: React.ReactNode;
@@ -78,6 +68,8 @@ export const FormNav: React.FC<FormNavProps> = ({ children, onSubmit, className 
       // ce qui est le geste courant sur une valeur déjà renseignée.
       if (next instanceof HTMLInputElement && /text|number|search|tel|email/.test(next.type)) {
         next.select();
+      } else if (next instanceof HTMLTextAreaElement && next.dataset.singleLine) {
+        next.select();
       }
       return true;
     },
@@ -85,10 +77,11 @@ export const FormNav: React.FC<FormNavProps> = ({ children, onSubmit, className 
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
     const target = e.target as HTMLElement;
 
     if (e.key === 'Enter') {
-      const isTextarea = target.tagName === 'TEXTAREA';
+      const isTextarea = target.tagName === 'TEXTAREA' && !target.dataset.singleLine;
       const isButton = target.tagName === 'BUTTON' || target.getAttribute('role') === 'button';
 
       // Ctrl/⌘ + Entrée valide depuis n'importe où, zone de texte comprise.
@@ -110,7 +103,7 @@ export const FormNav: React.FC<FormNavProps> = ({ children, onSubmit, className 
   };
 
   return (
-    <div ref={ref} onKeyDown={handleKeyDown} className={className}>
+    <div ref={ref} data-form-nav onKeyDown={handleKeyDown} className={className}>
       {children}
     </div>
   );

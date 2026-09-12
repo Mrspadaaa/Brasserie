@@ -56,12 +56,6 @@
   }
 
   /* Placeholder pour les champs contenteditable sur mobile (évite la barre d'accessoire Gboard/Chrome) */
-  .empty-text-input:empty::before {
-    content: attr(data-placeholder);
-    color: theme('colors.cave.400');
-    pointer-events: none;
-    display: inline-block;
-  }
 }
 
 @layer components {

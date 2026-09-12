@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Command } from 'cmdk';
+import { Input } from './Input';
 import { X } from 'lucide-react';
 import { searchCommandGroups } from '../services/search';
 import { useCoarsePointer } from './useViewport';
@@ -101,6 +102,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       >
         <div className="flex items-center border-b border-cave-800">
           <Command.Input
+            asChild
             value={query}
             onValueChange={setQuery}
             name="universal_command_search_query"
@@ -115,7 +117,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             placeholder="Article, recette, brassin, client, écriture…"
             className="min-w-0 flex-1 min-h-touch px-4 bg-transparent text-cave-50 text-base
                        placeholder-cave-400 focus:outline-none"
-          />
+          ><Input type="search" /></Command.Input>
           <button type="button" aria-label="Fermer la recherche" onClick={() => onOpenChange(false)} className="min-h-touch min-w-touch flex items-center justify-center text-cave-400 hover:text-cave-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
             <X className="h-5 w-5" />
           </button>

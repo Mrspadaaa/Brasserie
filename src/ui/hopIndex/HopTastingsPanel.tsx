@@ -1,3 +1,4 @@
+import { Textarea } from '../Input';
 import React, { useState } from 'react';
 import { HopAxis, HopTasting, HopYeast } from '../../../functions/src/hopPredictionSchema';
 import { compareHopTasting, usableHopKnowledge } from '../../domain/hopIndex/engine';
@@ -61,7 +62,7 @@ export function HopTastingsPanel({ batch }: { batch?: Batch }) {
         }}><option value="">Non évalué</option><option value="low">Faible</option><option value="medium">Moyen</option><option value="high">Fort</option></select></HopField>)}</div>
         {!draft.axes.length && <p className="text-ebc-straw">Axe sensoriel absent : le texte peut être conservé, puis enrichi après installation du lexique.</p>}
         {axes.some(a => !draft.axes.some(v => v.axis.id === a.id)) && <Button onClick={() => setDraft({ ...draft, axes: [...draft.axes, ...structuredClone(axes.filter(a => !draft.axes.some(v => v.axis.id === a.id)).map(axis => ({ axis, perceived: null, confidence: 'low' as const })))] })}>Ajouter les axes actuels absents</Button>}
-        <HopField label="Conditions et notes de dégustation"><textarea className={`${inputClass} py-2 min-h-24`} value={draft.notes} onChange={e => setDraft({ ...draft, notes: e.target.value })} /></HopField>
+        <HopField label="Conditions et notes de dégustation"><Textarea className={`${inputClass} py-2 min-h-24`} value={draft.notes} onChange={e => setDraft({ ...draft, notes: e.target.value })} /></HopField>
         <label className="flex items-center gap-2 min-h-touch text-cave-200"><input type="checkbox" checked={!!draft.triplet} onChange={e => setDraft({ ...draft, triplet: e.target.checked ? emptyHopTriplet() : null, tripletSource: e.target.checked ? { title: '', author: '', reference: '', year: null, kind: 'manufacturer' } : null })} />Renseigner une composition documentée</label>
         {draft.triplet && <><HopTripletFields value={draft.triplet} onChange={triplet => setDraft({ ...draft, triplet })} varieties={varieties} lots={lots} yeasts={yeasts} /><HopSourceEditor value={draft.tripletSource} onChange={tripletSource => setDraft({ ...draft, tripletSource })} /></>}
       </div>}

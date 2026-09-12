@@ -110,22 +110,22 @@ describe('Focus partagé et libellés tactiles', () => {
     expect(screen.getByRole('button', { name: 'Ouvrir' })).toHaveFocus();
   });
 
-  it('nomme le champ tactile avec son libellé visible, garde les ARIA et permet le clic sur le libellé', () => {
+  it('nomme le champ tactile avec son libellé visible, garde les ARIA et permet le clic sur le libellé', async () => {
     viewport.coarse = true;
     render(<><label htmlFor="purpose">Pour quoi ?</label><TextInput id="purpose" value="" onChange={() => {}} placeholder="Malt pour la Pale Ale" required aria-describedby="purpose-hint"/><p id="purpose-hint">Motif de l’achat</p></>);
     const field = screen.getByRole('textbox', { name: 'Pour quoi ?' });
-    expect(field).toHaveAttribute('contenteditable', 'plaintext-only');
+    expect(field).toHaveAttribute('data-single-line', 'true');
     expect(field).toHaveAccessibleDescription('Motif de l’achat');
     expect(field).toHaveAttribute('aria-required', 'true');
     expect(screen.queryByRole('textbox', { name: 'Malt pour la Pale Ale' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText('Pour quoi ?'));
+    await userEvent.click(screen.getByText('Pour quoi ?'));
     expect(field).toHaveFocus();
   });
 
   it('préserve le libellé des Field sans identifiant et ne le mélange pas avec la valeur saisie', () => {
     viewport.coarse = true;
     render(<><div><label>Fournisseur</label><TextInput value="Malt test" onChange={() => {}} placeholder="Nom"/></div><label>Motif<TextInput value="Entretien" onChange={() => {}} placeholder="Exemple"/></label></>);
-    expect(screen.getByRole('textbox', { name: 'Fournisseur', exact: true })).toHaveTextContent('Malt test');
-    expect(screen.getByRole('textbox', { name: 'Motif', exact: true })).toHaveTextContent('Entretien');
+    expect(screen.getByRole('textbox', { name: 'Fournisseur', exact: true })).toHaveValue('Malt test');
+    expect(screen.getByRole('textbox', { name: 'Motif', exact: true })).toHaveValue('Entretien');
   });
 });

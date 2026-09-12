@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useState } from 'react';
 import { X, Plus, Package } from 'lucide-react';
 import { StockItem } from '../types';
@@ -145,7 +146,7 @@ export const AddStockItemModal: React.FC<AddStockItemModalProps> = ({
           <div className="grid grid-cols-3 gap-2 bg-cave-950/70 p-3 rounded-2xl border border-cave-800">
             <div>
               <label className="text-footnote text-cave-400 font-semibold uppercase block mb-1">Stock Actuel</label>
-              <input
+              <Input
                 type="text"
                 inputMode="decimal"
                 name="stock_current_qty"
@@ -164,7 +165,7 @@ export const AddStockItemModal: React.FC<AddStockItemModalProps> = ({
             </div>
             <div>
               <label className="text-footnote text-alert font-semibold uppercase block mb-1">Seuil Mini</label>
-              <input
+              <Input
                 type="text"
                 inputMode="decimal"
                 name="stock_min_threshold"
@@ -183,7 +184,7 @@ export const AddStockItemModal: React.FC<AddStockItemModalProps> = ({
             </div>
             <div>
               <label className="text-footnote text-hop font-semibold uppercase block mb-1">Stock Max</label>
-              <input
+              <Input
                 type="text"
                 inputMode="decimal"
                 name="stock_max_capacity"
@@ -217,7 +218,7 @@ export const AddStockItemModal: React.FC<AddStockItemModalProps> = ({
             {category === 'Houblon' ? (
               <div>
                 <label className="text-cave-200 font-semibold block mb-1">% Acides Alpha</label>
-                <input
+                <Input
                   type="text"
                   inputMode="decimal"
                   name="stock_alpha_acid"

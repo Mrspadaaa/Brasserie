@@ -1,3 +1,4 @@
+import { Input } from '../../ui/Input';
 import React, { useRef, useCallback } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { Units } from '../../services/units';
@@ -97,7 +98,7 @@ export const Stepper: React.FC<StepperProps> = ({
         </button>
 
         <div className="flex-1 flex items-baseline justify-center gap-1.5 min-w-0">
-          <input
+          <Input
             type="text"
             inputMode="decimal"
             name="stepper_qty_input"

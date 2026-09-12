@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import React, { useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { WaterSource, WaterIons } from '../types';
@@ -102,7 +103,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
       </div>
 
       {editing && (
-        <input
+        <Input
           type="text"
           name="water_analysis_source_label"
           autoComplete="off"
@@ -259,7 +260,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
               dureté calcique = 4.0 ppm de Ca ; 1 °fH de dureté magnésienne = 2.4 ppm de Mg.
             </span>
           </p>
-          <input
+          <Input
             type="text"
             name="water_analysis_provenance_note"
             autoComplete="off"

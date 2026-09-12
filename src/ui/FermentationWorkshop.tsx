@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FlaskConical } from 'lucide-react';
 import type { FermentationGoal, FermentationGuide } from '../../functions/src/fermentationGuideSchema';
@@ -162,7 +163,7 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
     <HopField label="Souche documentée"><select className={inputClass} value={selected?.id ?? ''} disabled={busy || !choices.length} onChange={e => setSelectedId(e.target.value)}>{!choices.length && <option value="">Aucune conduite active</option>}{choices.map(g => <option key={g.id} value={g.id}>{yeasts.find(y => y.id === g.yeastId)?.name}</option>)}</select></HopField>
     <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Comparer les souches et affiner la recherche</summary><div className="space-y-3 pt-2">
     <HopField label="Arôme ou style recherché" hint="Par exemple : banane, pêche, girofle, lager ou thiols.">
-      <input className={inputClass} value={aromaQuery} disabled={busy} placeholder="Banane, pêche, girofle…" onChange={e => setAromaQuery(e.target.value)} autoComplete="off" />
+      <Input className={inputClass} value={aromaQuery} disabled={busy} placeholder="Banane, pêche, girofle…" onChange={e => setAromaQuery(e.target.value)} autoComplete="off" />
     </HopField>
     {aromaQuery.trim() && <div className="flex flex-wrap gap-2" role="group" aria-label="Suggestions d’objectif">{suggestions.length ? suggestions.map(s => <Button key={s.id} disabled={busy} onClick={() => { setGoal(s.id); setSelectedId(''); setAromaQuery(''); }}>{FERMENTATION_GOAL_LABELS[s.id]}</Button>) : <p className="text-sm text-cave-400">Aucun objectif documenté avec ces mots. Le catalogue complet et la saisie manuelle restent disponibles.</p>}</div>}
       <HopField label="Forme recherchée"><select className={inputClass} value={form} disabled={busy} onChange={e => setForm(e.target.value)}><option value="all">Toutes les formes</option><option value="sèche">Levure sèche</option><option value="liquide">Levure liquide</option></select></HopField>

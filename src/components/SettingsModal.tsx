@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useEffect, useState } from 'react';
 import { COMPANY_FALLBACK } from '../domain/companyDefaults';
 import { NumberInput } from '../ui/NumberInput';
@@ -221,7 +222,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <div className="p-3 bg-cave-850/40 rounded-xl border border-cave-800 space-y-1">
               <span className="font-bold text-cave-200 text-xs sm:text-sm">IBAN Brasserie (factures par virement) :</span>
-              <input
+              <Input
                 type="text"
                 name="settings_company_qr_ref"
                 autoComplete="off"

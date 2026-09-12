@@ -1,3 +1,4 @@
+import { Input } from '../Input';
 import React, { useState } from 'react';
 import { Search, SlidersHorizontal, X, List, ChartNoAxesCombined, Star, Plus } from 'lucide-react';
 import { useMobileLayout } from '../useViewport';
@@ -120,7 +121,7 @@ export function CatalogToolbar({
       <fieldset className="space-y-1.5">
         <legend className="text-sm text-cave-200">{label}</legend>
         <div className="grid grid-cols-2 gap-2">
-          <input
+          <Input
             aria-label={`${label} minimum`}
             aria-invalid={!!invalid}
             inputMode="decimal"
@@ -130,7 +131,7 @@ export function CatalogToolbar({
             value={filters[min]}
             onChange={(e) => set({ [min]: e.target.value })}
           />
-          <input
+          <Input
             aria-label={`${label} maximum`}
             aria-invalid={!!invalid}
             inputMode="decimal"
@@ -183,7 +184,7 @@ export function CatalogToolbar({
             {view === 'list' ? <ChartNoAxesCombined size={20}/> : <List size={20}/>}</button>
         </div>
         {(searchOpen || !!filters.search) && <div className="flex gap-1">
-          <input type="search" aria-label={`Rechercher des ${noun}s`} placeholder="Nom, lot, houblon, malt…" className={catalogField}
+          <Input type="search" aria-label={`Rechercher des ${noun}s`} placeholder="Nom, lot, houblon, malt…" className={catalogField}
             value={filters.search} onChange={event => set({search:event.target.value})}/>
           <button type="button" aria-label="Fermer la recherche" className="touch-target text-cave-200" onClick={() => { set({search:''}); setSearchOpen(false); }}><X size={19}/></button>
         </div>}
@@ -229,7 +230,7 @@ export function CatalogToolbar({
       <div className="flex gap-2">
         <label className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-3.5 h-4 w-4 text-cave-400" aria-hidden />
-          <input
+          <Input
             className={`${catalogField} pl-9 pr-8`}
             type="search"
             aria-label={`Rechercher des ${noun}s`}

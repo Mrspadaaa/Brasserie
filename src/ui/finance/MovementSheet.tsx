@@ -1,3 +1,4 @@
+import { Input } from '../Input';
 import React, { useEffect, useRef, useState } from 'react';
 import type { Transaction } from '../../types';
 import type { FinancialPayment } from '../../domain/finance/types';
@@ -37,7 +38,7 @@ export function MovementSheet({original,onClose,onSaved}:{original?:Transaction;
     await FirestoreRepo.waitForDocument<Transaction>('transactions',id,15000,tx=>tx.finance?.amountCents===amount&&tx.finance.kind===(original?'refund':kind)&&tx.date===date);
     if(mounted.current){onSaved();onClose();}
   }catch(e){if(isConfirmedWriteRejection(e)){submitted.current=false;retry.current=true;if(mounted.current)setPending(false);}if(mounted.current)setError((e as Error).message);}finally{lock.current=false;if(mounted.current)setBusy(false);}};
-  return <Sheet open title={original?'Avoir ou remboursement':'Apport ou prélèvement privé'} onClose={onClose} dismissible={!busy} className="finance-sheet" footer={<button type="submit" form="finance-movement" disabled={busy} className="finance-action w-full">{busy?'Confirmation…':pending?'Vérifier la synchronisation':'Enregistrer ce mouvement'}</button>}><form id="finance-movement" className="finance-form" onSubmit={save}>
+  return <Sheet open title={original?'Avoir ou remboursement':'Apport ou prélèvement privé'} onClose={onClose} dismissible={!busy} className="finance-sheet" footer={<button type="submit" form="finance-movement" disabled={busy} className="finance-action w-full">{busy?'Confirmation…':pending?'Vérifier la synchronisation':'Enregistrer ce mouvement'}</button>}><form autoComplete="off" id="finance-movement" className="finance-form" onSubmit={save}>
     {error&&<p role="alert" className="finance-error">{error}</p>}
     <fieldset disabled={busy||pending} className="finance-form min-w-0 border-0 p-0 m-0">
     {original?<p className="finance-muted">Pièce liée : {original.description} · {formatCHF(transactionAmount(original))}. Aucun stock n’est modifié par l’avoir ; consigne un retour physique dans l’inventaire.</p>:<><Field label="Mouvement"><select value={kind} onChange={e=>setKind(e.target.value as typeof kind)}><option value="contribution">J’apporte de l’argent à la brasserie</option><option value="withdrawal">Je reprends de l’argent à titre privé</option></select></Field><p className="finance-muted">Ce mouvement change la trésorerie sans modifier le résultat de la brasserie.</p></>}
@@ -45,7 +46,7 @@ export function MovementSheet({original,onClose,onSaved}:{original?:Transaction;
     {original&&application==='offset'&&<p className="finance-notice">L’avoir réduit le montant restant de la facture. Il ne crée aucun encaissement ni paiement.</p>}
     <MoneyInput label="Montant (CHF)" value={amount} onChange={setAmount} required/>
     <Field label="Date"><input type="date" value={date} max={todayISO()} onChange={e=>setDate(e.target.value)} required/></Field>
-    <Field label="Motif"><input value={note} onChange={e=>setNote(e.target.value)} required placeholder={original?'Retour, remise du fournisseur…':'Apport de départ, prélèvement personnel…'}/></Field>
+    <Field label="Motif"><Input value={note} onChange={e=>setNote(e.target.value)} required placeholder={original?'Retour, remise du fournisseur…':'Apport de départ, prélèvement personnel…'}/></Field>
     {original&&application==='cash'&&<label className="finance-check"><input type="checkbox" checked={paid} onChange={e=>setPaid(e.target.checked)}/>L’argent a réellement été remboursé à cette date.</label>}
     {paid&&(!original||application==='cash')&&<Field label="Moyen de paiement"><select value={method} onChange={e=>setMethod(e.target.value as typeof method)}><option value="bank">Banque</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field>}
     </fieldset>

@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useState, useRef, useMemo, useEffect, useLayoutEffect, useId } from 'react';
 import { isCurrent } from '../domain/catalogOrganization';
 import { 
@@ -870,7 +871,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
               <div>
                 <label className="text-cave-200 font-semibold block mb-1">Description / Motif</label>
-                <input
+                <Input
                   type="text"
                   name="qa_expense_reason"
                   autoComplete="off"
@@ -893,7 +894,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   <label className="text-cave-200 font-semibold">Fournisseur</label>
                   <span className="text-footnote text-cave-400">Suggestions rapides :</span>
                 </div>
-                <input
+                <Input
                   type="text"
                   name="qa_expense_vendor_label"
                   autoComplete="off"
@@ -953,7 +954,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 </div>
                 <div>
                   <label className="text-cave-200 font-semibold block mb-1">Sous-catégorie</label>
-                  <input
+                  <Input
                     type="text"
                     name="qa_expense_subcategory"
                     autoComplete="off"

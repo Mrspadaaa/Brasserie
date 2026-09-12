@@ -12,14 +12,14 @@
 .journal-period-reading strong { font-size:13px; color:#F5F0EA; font-weight:600; }
 .journal-search-category { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); align-items:start; gap:6px; }
 .finance-journal .finance-field { gap:2px; font-size:12px; line-height:16px; }
-.finance-journal .finance-field input:not([type=checkbox]), .finance-journal .finance-field select { min-height:32px; padding:3px 6px; font-size:16px; line-height:24px; }
+.finance-journal .finance-field :is(input, textarea:where([data-single-line])):not([type=checkbox]), .finance-journal .finance-field select { min-height:32px; padding:3px 6px; font-size:16px; line-height:24px; }
 .finance-journal .finance-field input[type=month] { padding-block:2px; }
-.finance-journal .finance-field input:disabled { color:#B3A397; opacity:.6; }
+.finance-journal .finance-field :is(input, textarea:where([data-single-line])):disabled { color:#B3A397; opacity:.6; }
 .journal-search-control { display:flex; align-items:center; min-width:0; min-height:32px; background:#221D19; border:1px solid #574A42; border-radius:10px; padding-left:6px; }
 .journal-search-control > svg { flex-shrink:0; color:#B3A397; }
-.finance-journal .finance-field .journal-search-control input { flex:1; width:0; min-width:0; min-height:30px; border:0; padding:2px 4px; background:transparent; outline:none; }
+.finance-journal .finance-field .journal-search-control :is(input, textarea:where([data-single-line])) { flex:1; width:0; min-width:0; min-height:30px; border:0; padding:2px 4px; background:transparent; outline:none; }
 .journal-search-control:focus-within { outline:2px solid #F2C14E; outline-offset:1px; }
-.journal-search-control input::placeholder { color:#B3A397; opacity:1; }
+.journal-search-control :is(input, textarea:where([data-single-line]))::placeholder { color:#B3A397; opacity:1; }
 .journal-search-control button { display:grid; place-items:center; min-width:28px; min-height:28px; margin-right:1px; color:#D8CEC5; border-radius:8px; flex-shrink:0; }
 .journal-search-control button:focus-visible { outline-offset:0; }
 .journal-filters, .journal-active-filter { display:flex; flex-wrap:wrap; gap:4px; }

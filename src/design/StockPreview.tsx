@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useState } from 'react';
 import { Batch, StockItem } from '../types';
 import { StockRow } from '../ui/StockRow';
@@ -183,7 +184,7 @@ export const StockPreview: React.FC = () => {
             }
           >
             <Field label="Nom de l'article" htmlFor="kb-nom">
-              <input
+              <Input
                 id="kb-title"
                 name="preview_stock_item_label"
                 type="text"

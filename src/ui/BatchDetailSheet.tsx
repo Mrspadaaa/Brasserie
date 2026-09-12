@@ -1,3 +1,4 @@
+import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
 import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
 import { Batch } from '../types';
@@ -212,7 +213,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                         </span>
                       )}
                     </span>
-                    <input
+                    <Input
                       name="batch_sheet_og"
                       type="text"
                       autoComplete="off"
@@ -242,7 +243,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                         </span>
                       )}
                     </span>
-                    <input
+                    <Input
                       name="batch_sheet_fg"
                       type="text"
                       autoComplete="off"
@@ -272,7 +273,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
 
                 <label className="block space-y-1.5">
                   <span className="text-sm text-cave-400">Date de brassage</span>
-                  <input
+                  <Input
                     name="batch_sheet_brewdate"
                     type="text"
                     autoComplete="off"
@@ -328,7 +329,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 ).map(([key, label]) => (
                   <label key={key} className="block space-y-1.5">
                     <span className="text-sm text-cave-400">{label}</span>
-                    <textarea
+                    <Textarea
                       name={`batch_sheet_${key}`}
                       autoComplete="off"
                       autoCorrect="off"

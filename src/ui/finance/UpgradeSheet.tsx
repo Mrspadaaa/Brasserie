@@ -1,3 +1,4 @@
+import { Input, Textarea } from '../Input';
 import React, { useRef, useState } from 'react';
 import { Archive, ChevronRight, RotateCcw } from 'lucide-react';
 import type { Transaction } from '../../types';
@@ -40,8 +41,8 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
     footer={<div className="finance-actions"><button className="finance-action secondary" disabled={busy} onClick={onClose}>Annuler</button><button className="finance-action" disabled={busy} onClick={() => void save()}>{busy ? 'Enregistrement…' : 'Enregistrer le projet'}</button></div>}>
     <div className="finance-form">
       {error && <p role="alert" className="finance-error">{error}</p>}
-      <Field label="Matériel ou aménagement"><input value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} placeholder="Hotte, fermenteur, nouvelle cuverie…" autoComplete="off" /></Field>
-      <Field label="À quoi va-t-il servir ?"><textarea rows={2} value={detail.purpose ?? ''} onChange={e => patch({ purpose: e.target.value })} placeholder="Évacuer la vapeur, libérer un fermenteur, augmenter le volume…" /></Field>
+      <Field label="Matériel ou aménagement"><Input value={draft.title} onChange={e => setDraft({ ...draft, title: e.target.value })} placeholder="Hotte, fermenteur, nouvelle cuverie…" autoComplete="off" /></Field>
+      <Field label="À quoi va-t-il servir ?"><Textarea rows={2} value={detail.purpose ?? ''} onChange={e => patch({ purpose: e.target.value })} placeholder="Évacuer la vapeur, libérer un fermenteur, augmenter le volume…" /></Field>
       <div role="group" aria-label="Quand ce projet devient-il utile ?" className="finance-filter upgrade-timings">
         {Object.entries(UPGRADE_TIMINGS).map(([value, label]) => <button key={value} aria-pressed={detail.timing === value} onClick={() => patch({ timing: value as EquipmentUpgrade['timing'] })}>{label}</button>)}
       </div>
@@ -53,8 +54,8 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
         <MoneyInput label="Livraison TTC (CHF)" value={detail.deliveryCents} onChange={value => patch({ deliveryCents: value })} />
         <MoneyInput label="Installation TTC (CHF)" value={detail.installationCents} onChange={value => patch({ installationCents: value })} />
         <Field label="D’où vient le prix ?"><select value={detail.estimateSource} onChange={e => patch({ estimateSource: e.target.value as EquipmentUpgrade['estimateSource'] })}><option value="estimate">Mon estimation</option><option value="quote">Devis fournisseur</option></select></Field>
-        <Field label="Fournisseur"><input value={draft.vendor ?? ''} onChange={e => setDraft({ ...draft, vendor: e.target.value })} /></Field>
-        <Field label="Référence ou détails du devis"><textarea rows={2} value={detail.quoteReference ?? ''} onChange={e => patch({ quoteReference: e.target.value })} placeholder="Référence, date, durée de validité, ce qui est compris…" /></Field>
+        <Field label="Fournisseur"><Input value={draft.vendor ?? ''} onChange={e => setDraft({ ...draft, vendor: e.target.value })} /></Field>
+        <Field label="Référence ou détails du devis"><Textarea rows={2} value={detail.quoteReference ?? ''} onChange={e => patch({ quoteReference: e.target.value })} placeholder="Référence, date, durée de validité, ce qui est compris…" /></Field>
         <p className="finance-muted">Pour une hotte, pense à la pose et au raccordement. Pour un fermenteur, au refroidissement et aux accessoires nécessaires.</p>
       </div></details>
       <div className="upgrade-budget"><span>Budget total TTC</span><strong className="finance-money">{detail.budgetKnown ? formatCHF(draft.amountCents) : 'À estimer'}</strong></div>
@@ -76,7 +77,7 @@ export function UpgradeSheet({ plan, onClose, onSaved, onOpenTransaction }: { pl
       </div></details>}
       <details className="finance-disclosure"><summary>Avancement et notes</summary><div className="finance-form">
         <Field label="Avancement du projet"><select value={detail.stage} onChange={e => patch({ stage: e.target.value as EquipmentUpgrade['stage'] })}>{Object.entries(UPGRADE_STAGES).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
-        <Field label="Notes du projet"><textarea rows={3} value={draft.notes ?? ''} onChange={e => setDraft({ ...draft, notes: e.target.value })} /></Field>
+        <Field label="Notes du projet"><Textarea rows={3} value={draft.notes ?? ''} onChange={e => setDraft({ ...draft, notes: e.target.value })} /></Field>
       </div></details>
       {plan && <div className="finance-divider">
         {['cancelled', 'completed'].includes(plan.status) ? <button className="finance-link" disabled={busy} onClick={() => void save('draft')}><RotateCcw size={18} />Reprendre ce projet</button> : <>

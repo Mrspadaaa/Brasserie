@@ -20,8 +20,8 @@
 .tax-copy-heading { display:flex; align-items:start; gap:8px; justify-content:space-between; margin-bottom:4px; }
 .tax-code { display:block; flex-shrink:0; font-size:12px; padding:2px 4px; border:1px solid #574A42; border-radius:4px; color:#86B9E6; }
 .tax-copy-value { display:flex; gap:6px; align-items:center; margin:8px 0 6px; }
-.tax-copy-value input { min-width:0; width:100%; flex:1; min-height:32px; font-size:16px; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; background:#221D19; border:1px solid #574A42; padding:3px 6px; border-radius:8px; }
-.tax-copy-value input:focus-visible { outline:2px solid #86B9E6; }
+.tax-copy-value :is(input, textarea:where([data-single-line])) { min-width:0; width:100%; flex:1; min-height:32px; font-size:16px; font-family:'IBM Plex Mono',monospace; font-variant-numeric:tabular-nums; background:#221D19; border:1px solid #574A42; padding:3px 6px; border-radius:8px; }
+.tax-copy-value :is(input, textarea:where([data-single-line])):focus-visible { outline:2px solid #86B9E6; }
 .tax-copy-value > span { font-size:12px; color:#D8CEC5; }
 .tax-copy-value button { flex-shrink:0; }
 .tax-copy-pending { font-size:12px; color:#E3B55D; margin-top:4px; }
@@ -31,7 +31,7 @@
 .tax-review-list > div { padding-bottom:8px; border-bottom:1px solid #3D342E; }
 .tax-review-list p { margin:2px 0 0 24px; }
 .tax-review-list .finance-check { align-items:start; }
-.tax-review-list input { margin-top:2px; }
+.tax-review-list :is(input, textarea:where([data-single-line])) { margin-top:2px; }
 .tax-reconciliation { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:8px; border:1px solid #574A42; border-radius:8px; }
 .tax-reconciliation span { font-size:12px; color:#D8CEC5; min-width:0; }
 .tax-reconciliation strong { display:block; font-size:16px; margin-top:4px; color:#F5F0EA; overflow-wrap:anywhere; }

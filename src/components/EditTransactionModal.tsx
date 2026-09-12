@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useState } from 'react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from '../ui/NumberInput';
@@ -106,7 +107,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         {/* Description */}
         <div>
           <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Description / Intitulé</label>
-          <input
+          <Input
             type="text"
             name="tx_edit_label"
             autoComplete="off"
@@ -148,7 +149,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
           <div>
             <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Sous-catégorie</label>
-            <input
+            <Input
               type="text"
               name="tx_edit_subcategory"
               autoComplete="off"
@@ -171,7 +172,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-1 gap-2 sm:gap-0">
             <div>
               <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Date</label>
-              <input
+              <Input
                 type="text"
                 name="tx_edit_entry_date"
                 autoComplete="off"
@@ -249,7 +250,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         {/* Vendor / Notes */}
         <div>
           <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Fournisseur / N° Pièce / Justificatif</label>
-          <input
+          <Input
             type="text"
             name="tx_edit_proof_notes"
             autoComplete="off"

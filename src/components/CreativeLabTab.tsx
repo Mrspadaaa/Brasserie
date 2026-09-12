@@ -1,3 +1,4 @@
+import { Input, Textarea } from '../ui/Input';
 import React, { useState } from 'react';
 import { parseDecimal } from '../ui/numericInput';
 import { nextClientId } from '../services/refs';
@@ -406,7 +407,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
           <form onSubmit={handleCreate} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-sm overscroll-contain">
             <div>
               <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Titre de la note / piste</label>
-              <input
+              <Input
                 type="text"
                 name="creative_item_title"
                 autoComplete="off"
@@ -426,7 +427,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
             <div>
               <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Description & Détails</label>
-              <textarea
+              <Textarea
                 name="creative_item_notes"
                 autoComplete="off"
                 autoCorrect="off"
@@ -447,7 +448,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
               {activeSection === 'equipment' && (
                 <div>
                   <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Budget estimé (CHF)</label>
-                  <input
+                  <Input
                     type="text"
                     name="creative_item_budget"
                     autoComplete="off"
@@ -468,7 +469,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
               {activeSection === 'event' && (
                 <div>
                   <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Date (JJ.MM.AAAA)</label>
-                  <input
+                  <Input
                     type="text"
                     name="creative_item_date"
                     autoComplete="off"
@@ -488,7 +489,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
               {activeSection === 'prospect' && (
                 <div>
                   <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Téléphone du contact</label>
-                  <input
+                  <Input
                     type="text"
                     name="creative_contact_tel"
                     autoComplete="off"

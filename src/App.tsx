@@ -299,51 +299,6 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [currentUser]);
 
-  // Protection globale contre la barre d'autocomplétion / mot de passe Android Gboard (clé / carte / localisation)
-  useEffect(() => {
-    const applyAntiAutofill = (el: Element) => {
-      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
-        if (!el.getAttribute('autocomplete')) el.setAttribute('autocomplete', 'off');
-        if (!el.getAttribute('autocorrect')) el.setAttribute('autocorrect', 'off');
-        if (!el.getAttribute('spellcheck')) el.setAttribute('spellcheck', 'false');
-        if (!el.getAttribute('data-form-type')) el.setAttribute('data-form-type', 'other');
-        if (!el.getAttribute('data-lpignore')) el.setAttribute('data-lpignore', 'true');
-        if (!el.getAttribute('data-1p-ignore')) el.setAttribute('data-1p-ignore', 'true');
-        if (!el.getAttribute('data-bwignore')) el.setAttribute('data-bwignore', 'true');
-      }
-      if (el instanceof HTMLFormElement) {
-        if (!el.getAttribute('autocomplete')) el.setAttribute('autocomplete', 'off');
-      }
-    };
-
-    const handleFocusIn = (e: FocusEvent) => {
-      if (e.target && e.target instanceof HTMLElement) {
-        applyAntiAutofill(e.target);
-      }
-    };
-
-    document.addEventListener('focusin', handleFocusIn, true);
-
-    // Initial scan and MutationObserver
-    document.querySelectorAll('input, textarea, select, form').forEach(applyAntiAutofill);
-    const observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        for (const node of m.addedNodes) {
-          if (node instanceof HTMLElement) {
-            applyAntiAutofill(node);
-            node.querySelectorAll('input, textarea, select, form').forEach(applyAntiAutofill);
-          }
-        }
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      document.removeEventListener('focusin', handleFocusIn, true);
-      observer.disconnect();
-    };
-  }, []);
-
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);

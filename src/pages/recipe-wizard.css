@@ -47,7 +47,7 @@
 .recipe-wizard button.recipe-primary-action {
   min-height: 32px;
 }
-.recipe-wizard :is(input:not([type='checkbox']):not([type='radio']):not([type='range']), select, [contenteditable]:not([contenteditable='false'])) {
+.recipe-wizard :is(input:not([type='checkbox']):not([type='radio']):not([type='range']), textarea:where([data-single-line]), select) {
   min-height: 32px;
   height: auto;
   padding-block: 2px;

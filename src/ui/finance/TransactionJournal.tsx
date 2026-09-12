@@ -1,3 +1,4 @@
+import { Input, type InputElement } from '../Input';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Archive, ArrowUpRight, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import type { Transaction } from '../../types';
@@ -61,7 +62,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   const [internalState, setInternalState] = useState(createJournalState);
   const journal = controlledState ?? internalState;
   const { scope, query, category, filter, month, allDates, archiveYear, year } = journal;
-  const searchRef = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<InputElement>(null);
   const searchId = useId();
   const replaceState = (next: JournalState) => { setInternalState(next); onStateChange?.(next); };
   const change = (patch: Partial<JournalState>) => replaceState({ ...journal, ...patch, page: 1 });
@@ -150,7 +151,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       </div>
       <div className="journal-search-category">
         <div className="finance-field journal-search"><label htmlFor={searchId}>Rechercher une opération</label><span className="journal-search-control"><Search size={15} aria-hidden="true"/>
-          <input id={searchId} ref={searchRef} aria-label="Rechercher une opération" placeholder="Libellé, tiers, montant…" value={query} onChange={e => change({ query: e.target.value })}/>
+          <Input id={searchId} ref={searchRef} aria-label="Rechercher une opération" placeholder="Libellé, tiers, montant…" value={query} onChange={e => change({ query: e.target.value })}/>
           {query && <button type="button" aria-label="Effacer la recherche" onClick={() => { change({ query: '' }); searchRef.current?.focus(); }}><X size={14} aria-hidden="true"/></button>}
         </span></div>
         <Field label="Catégorie"><select aria-label="Catégorie" value={category} onChange={e => change({ category: e.target.value })}><option value="all">Toutes</option>

@@ -1,3 +1,4 @@
+import { Textarea, Input } from './Input';
 import { brewNow } from '../services/brewClock';
 import React, { useState } from 'react';
 import {
@@ -369,7 +370,7 @@ export function BrewJournal({
                   </p>
                   {event.detail && <p className="brew-journal-detail">{event.detail}</p>}
                   {e && editing === e.key && (
-                    <form
+                    <form autoComplete="off"
                       className="brew-journal-edit"
                       onSubmit={(formEvent) => {
                         formEvent.preventDefault();
@@ -377,7 +378,7 @@ export function BrewJournal({
                       }}
                     >
                       {e.kind === 'note' ? (
-                        <textarea
+                        <Textarea
                           aria-label={`Corriger ${e.label}`}
                           value={text}
                           maxLength={2000}
@@ -385,7 +386,7 @@ export function BrewJournal({
                           className={`${brewInput} !h-20`}
                         />
                       ) : (
-                        <input
+                        <Input
                           aria-label={`Corriger ${e.label}`}
                           value={text}
                           onChange={(v) => setText(v.target.value)}

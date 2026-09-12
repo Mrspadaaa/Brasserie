@@ -167,7 +167,7 @@
   border-radius: 8px;
   flex-shrink: 0;
 }
-.brew-choice-search input {
+.brew-choice-search :is(input, textarea:where([data-single-line])) {
   min-height: 48px;
   width: 100%;
   min-width: 0;
@@ -265,11 +265,11 @@
   cursor: pointer;
   font-size: 16px;
 }
-.brew-acid-choice > label:has(input:checked) {
+.brew-acid-choice > label:has(:is(input, textarea:where([data-single-line])):checked) {
   border-color: #f2c14e;
   background: #f2c14e12;
 }
-.brew-acid-choice input {
+.brew-acid-choice :is(input, textarea:where([data-single-line])) {
   accent-color: #f2c14e;
   width: 18px;
   height: 18px;
@@ -372,7 +372,7 @@
     max-height: calc(100dvh - 12px);
   }
 }
-.brew-page :is(button, input, select, textarea) {
+.brew-page :is(button,:is(input, textarea:where([data-single-line])), select, textarea) {
   touch-action: manipulation;
 }
 .brew-page :where(button) {
@@ -460,8 +460,8 @@
   flex-shrink: 0;
   cursor: pointer;
 }
-.brew-complete-toggle input,
-.brew-preparations input {
+.brew-complete-toggle :is(input, textarea:where([data-single-line])),
+.brew-preparations :is(input, textarea:where([data-single-line])) {
   accent-color: var(--brew-gold);
   width: 18px;
   height: 18px;
@@ -561,7 +561,7 @@
   min-height: 48px;
   margin-bottom: 0;
 }
-.brew-page [aria-label='Mesures de cette étape'] input:not([type='checkbox']) {
+.brew-page [aria-label='Mesures de cette étape'] :is(input, textarea:where([data-single-line])):not([type='checkbox']) {
   min-height: 48px;
 }
 .brew-page [aria-label='Mesures de cette étape'] button[type='submit'] {
@@ -588,7 +588,7 @@
   cursor: pointer;
   border-bottom: 1px solid #3d342e70;
 }
-.brew-preparations input {
+.brew-preparations :is(input, textarea:where([data-single-line])) {
   margin-top: 2px;
 }
 .brew-preparations > label.is-complete {
@@ -942,7 +942,7 @@
   gap: 8px;
   margin-top: 12px;
 }
-.brew-journal-edit > input,
+.brew-journal-edit > :is(input, textarea:where([data-single-line])),
 .brew-journal-edit > textarea {
   width: 100%;
 }
@@ -1160,7 +1160,7 @@
   min-height: 44px;
   cursor: pointer;
 }
-.brew-complete-toggle input {
+.brew-complete-toggle :is(input, textarea:where([data-single-line])) {
   width: 18px;
   height: 18px;
   accent-color: var(--brew-gold);
@@ -1501,7 +1501,7 @@
   border-radius: 8px;
   cursor: pointer;
 }
-.brew-add-check input {
+.brew-add-check :is(input, textarea:where([data-single-line])) {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1606,7 +1606,7 @@
   gap: 6px;
   padding-inline: 8px;
 }
-.brew-dose-value input {
+.brew-dose-value :is(input, textarea:where([data-single-line])) {
   width: 80px;
   height: 44px;
   border: 0;

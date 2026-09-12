@@ -1,3 +1,4 @@
+import { Textarea } from './Input';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   MessageCircle,
@@ -384,7 +385,7 @@ function ScopedChat({
         subtitle={label}
         className="brewer-chat-sheet"
         footer={
-          <form
+          <form autoComplete="off"
             className="brewer-chat-compose"
             onSubmit={(e) => {
               e.preventDefault();
@@ -431,7 +432,7 @@ function ScopedChat({
             <label className="sr-only" htmlFor={`brewer-question-${scope.id}`}>
               Question au compagnon brasseur
             </label>
-            <textarea
+            <Textarea
               id={`brewer-question-${scope.id}`}
               value={question}
               maxLength={3000}

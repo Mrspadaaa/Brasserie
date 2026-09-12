@@ -56,7 +56,7 @@ describe('TextInput — comportement desktop et mobile', () => {
   describe('sur mobile (coarse)', () => {
     beforeEach(() => pretendTouchDevice(true));
 
-    it('rend un div contenteditable pour éliminer la barre d’accessoire Chrome (Clé, Carte, Pin)', () => {
+    it('rend un éditeur natif sur une ligne, exclu des accessoires de remplissage Chrome', () => {
       render(
         <TextInput
           id="beer-name"
@@ -68,9 +68,9 @@ describe('TextInput — comportement desktop et mobile', () => {
       );
 
       const el = screen.getByRole('textbox');
-      expect(el.tagName).toBe('DIV');
-      expect(el).toHaveAttribute('contenteditable', 'plaintext-only');
-      expect(el.textContent).toBe('NEIPA');
+      expect(el.tagName).toBe('TEXTAREA');
+      expect(el).toHaveAttribute('data-single-line', 'true');
+      expect(el).toHaveValue('NEIPA');
     });
 
     it('n’ouvre JAMAIS de clavier automatiquement (pas d’autoFocus)', () => {
@@ -94,8 +94,7 @@ describe('TextInput — comportement desktop et mobile', () => {
       render(<TextInput value="" onChange={onChange} placeholder="Nom" />);
 
       const el = screen.getByRole('textbox');
-      el.textContent = 'Blonde';
-      fireEvent.input(el);
+      fireEvent.change(el, { target: { value: 'Blonde' } });
       expect(onChange).toHaveBeenCalledWith('Blonde');
     });
   });

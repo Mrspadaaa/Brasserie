@@ -1,3 +1,4 @@
+import { Textarea } from './Input';
 import React, { useEffect, useRef, useState } from 'react';
 import { AiClient } from '../services/aiClient';
 import { ImportedRecipe, normalizeRecipeImport, parseLocalRecipe } from '../domain/recipeImport';
@@ -190,7 +191,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             onces et gallons sont convertis ; le moment de chaque houblon est conservé.
           </p>
 
-          <textarea
+          <Textarea
             aria-label="Texte de la recette"
             name="recipe_import_text_input"
             autoComplete="off"

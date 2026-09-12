@@ -1,3 +1,4 @@
+import { Input, Textarea } from './Input';
 import { RecipeDisclosure, RecipeWaterVolumes } from './RecipeDisclosure';
 import { MaltDetails } from './MaltDetails';
 import { LearnIngredient } from '../domain/ingredientFacts';
@@ -286,7 +287,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       {water&&<RecipeWaterVolumes totalL={mashWaterL+spargeWaterL} roL={water.mashOsmoseeL+water.spargeOsmoseeL}/>}
       <Block title="Identité" aside={[name || 'Nom à renseigner', style, Units.format(volumeL, 'L')].filter(Boolean).join(' · ')}>
         <Row label="Nom">
-          <input
+          <Input
             type="text"
             name="brewsheet_beer_label"
             autoComplete="off"
@@ -303,7 +304,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           />
         </Row>
         <Row label="Style">
-          <input
+          <Input
             type="text"
             name="brewsheet_beer_style"
             autoComplete="off"
@@ -326,7 +327,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           <Cell label="Ébullition" value={boilMin} onValue={onBoilMin} unit="min" integer min={0} />
         </Row>
         <Row label="Carbonatation" hint="Ce que la recette annonce — « 2.5 vol ».">
-          <input
+          <Input
             type="text"
             name="brewsheet_carbo_target"
             autoComplete="off"
@@ -826,7 +827,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           et calendrier de houblonnage à cru compris. C'est ce qu'on suit en
           cuverie quand un chiffre n'a pas trouvé sa case.
         */}
-        <textarea
+        <Textarea
           name="brewsheet_notes_timeline"
           autoComplete="off"
           autoCorrect="off"

@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useState, useEffect } from 'react';
 import { X, Save, Trash2, Package } from 'lucide-react';
 import { StockItem } from '../types';
@@ -92,7 +93,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
         <form onSubmit={handleSubmit} autoComplete="off" className="p-5 overflow-y-auto space-y-3.5 text-sm">
           <div>
             <label className="text-cave-200 font-semibold block mb-1">Désignation de l'article</label>
-            <input
+            <Input
               type="text"
               name="edit_stock_item_label"
               autoComplete="off"
@@ -112,7 +113,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-cave-200 font-semibold block mb-1">Catégorie</label>
-              <input
+              <Input
                 type="text"
                 name="edit_stock_category"
                 autoComplete="off"
@@ -129,7 +130,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
             </div>
             <div>
               <label className="text-cave-200 font-semibold block mb-1">Unité</label>
-              <input
+              <Input
                 type="text"
                 name="edit_stock_unit"
                 autoComplete="off"
@@ -150,7 +151,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
           <div className="grid grid-cols-3 gap-2 bg-cave-950/70 p-3 rounded-2xl border border-cave-800">
             <div>
               <label className="text-footnote text-cave-400 font-semibold uppercase block mb-1">Stock Actuel</label>
-              <input
+              <Input
                 type="text"
                 inputMode="decimal"
                 name="edit_stock_current_qty"
@@ -169,7 +170,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
             </div>
             <div>
               <label className="text-footnote text-alert font-semibold uppercase block mb-1">Seuil Mini</label>
-              <input
+              <Input
                 type="text"
                 inputMode="decimal"
                 name="edit_stock_min_threshold"
@@ -188,7 +189,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
             </div>
             <div>
               <label className="text-footnote text-hop font-semibold uppercase block mb-1">Stock Max</label>
-              <input
+              <Input
                 type="text"
                 inputMode="decimal"
                 name="edit_stock_max_capacity"
@@ -209,7 +210,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-cave-200 font-semibold block mb-1">Fournisseur</label>
-              <input
+              <Input
                 type="text"
                 name="edit_stock_vendor_ref"
                 autoComplete="off"
@@ -228,7 +229,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
             {category === 'Houblon' ? (
               <div>
                 <label className="text-cave-200 font-semibold block mb-1">% Alpha</label>
-                <input
+                <Input
                   type="text"
                   inputMode="decimal"
                   name="edit_stock_alpha"

@@ -1,3 +1,4 @@
+import { Input } from '../Input';
 import React, { useState } from 'react';
 import type { Batch } from '../../types';
 import { catalogDate } from '../../domain/productionCatalog';
@@ -75,7 +76,7 @@ export function BatchGravityEntry({
           )}
         </>
       ) : (
-        <form onSubmit={submit} noValidate className="panel p-3 space-y-3">
+        <form autoComplete="off" onSubmit={submit} noValidate className="panel p-3 space-y-3">
           <h4 className="font-semibold text-cave-50">Relevé de suivi</h4>
           <label className="block space-y-1.5 text-sm text-cave-400">
             Date du relevé
@@ -91,7 +92,7 @@ export function BatchGravityEntry({
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-1.5 text-sm text-cave-400">
               Densité (SG)
-              <input
+              <Input
                 aria-label="Densité du relevé"
                 inputMode="decimal"
                 className={field}
@@ -102,7 +103,7 @@ export function BatchGravityEntry({
             </label>
             <label className="block space-y-1.5 text-sm text-cave-400">
               Température (°C)
-              <input
+              <Input
                 aria-label="Température du relevé"
                 inputMode="decimal"
                 className={field}

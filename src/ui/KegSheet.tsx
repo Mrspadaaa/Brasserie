@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import React, { useEffect, useState } from 'react';
 import { KegItem, KegState, Batch } from '../types';
 import { Sheet, ConfirmSheet } from './Sheet';
@@ -161,7 +162,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
 
           {draft.state === 'livre' && (
             <Field label="Client" htmlFor="kg-client">
-              <input
+              <Input
                 id="kg-partner"
                 name="keg_sheet_customer_label"
                 type="text"
@@ -180,7 +181,7 @@ export const KegSheet: React.FC<KegSheetProps> = ({
           )}
 
           <Field label="Notes">
-            <input
+            <Input
               name="keg_sheet_general_notes"
               type="text"
               autoComplete="off"

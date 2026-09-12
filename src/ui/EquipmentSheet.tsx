@@ -1,3 +1,4 @@
+import { Input, Textarea } from './Input';
 import React, { useEffect, useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { EquipmentItem } from '../types';
@@ -129,7 +130,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
           </div>
 
           <Field label="Entretien" hint="Ce qu’il faut faire, et à quelle fréquence.">
-            <input
+            <Input
               name="equipment_maintenance_notes"
               type="text"
               autoComplete="off"
@@ -147,7 +148,7 @@ export const EquipmentSheet: React.FC<EquipmentSheetProps> = ({
           </Field>
 
           <Field label="Notes">
-            <textarea
+            <Textarea
               name="equipment_general_notes"
               autoComplete="off"
               autoCorrect="off"

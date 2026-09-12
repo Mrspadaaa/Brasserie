@@ -1,3 +1,4 @@
+import { Input } from '../Input';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, BookOpen, FlaskConical, SlidersHorizontal } from 'lucide-react';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
@@ -110,7 +111,7 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
         onTargetChange={next => { if (recipe && onChange) change({ ...latest.current.recipe!, hopAromaTarget: next }); else setLocalTarget(next); }}
         onBusyChange={next => { setBusy(next); onBusyChange?.(next); }} />}
       {view === 'trials' && <>
-        <div className="grid sm:grid-cols-2 gap-3"><HopField label="Rechercher un essai"><input className={inputClass} disabled={busy} placeholder="Cascade, Verdant, goyave…" value={query} onChange={e => { setQuery(e.target.value); setSelectedId(''); setPreview(false); }} /></HopField>
+        <div className="grid sm:grid-cols-2 gap-3"><HopField label="Rechercher un essai"><Input className={inputClass} disabled={busy} placeholder="Cascade, Verdant, goyave…" value={query} onChange={e => { setQuery(e.target.value); setSelectedId(''); setPreview(false); }} /></HopField>
           <HopField label="Ce que tu veux retrouver"><select className={inputClass} disabled={busy} value={family} onChange={e => { setFamily(e.target.value); setSelectedId(''); setPreview(false); }}><option value="">Tous les résultats documentés</option>{axes.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}</select></HopField></div>
         {!filtered.length && <div className="text-sm text-cave-200 space-y-2"><p>Aucun essai de ce catalogue ne documente ce choix. Tu peux choisir un repère proche et conserver ton objectif dans « Mon adaptation ».</p><Button onClick={() => { setQuery(''); setFamily(''); }}>Voir les essais disponibles</Button></div>}
         <div className="grid lg:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.2fr)] gap-5">

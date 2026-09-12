@@ -266,7 +266,7 @@
   font-size: 13px;
   color: #e6e4d9;
 }
-.brewer-proposal-change input {
+.brewer-proposal-change :is(input, textarea:where([data-single-line])) {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
@@ -576,7 +576,7 @@
   font-weight: 600;
   border-radius: 8px;
 }
-.brewer-chat-mode input {
+.brewer-chat-mode :is(input, textarea:where([data-single-line])) {
   position: absolute;
   inset: 0;
   opacity: 0;
@@ -584,11 +584,11 @@
   height: 100%;
   cursor: pointer;
 }
-.brewer-chat-mode input:checked + span {
+.brewer-chat-mode :is(input, textarea:where([data-single-line])):checked + span {
   background: #c7d4aa;
   color: #212820;
 }
-.brewer-chat-mode input:focus-visible + span {
+.brewer-chat-mode :is(input, textarea:where([data-single-line])):focus-visible + span {
   outline: 2px solid #c7d4aa;
   outline-offset: 2px;
 }
@@ -690,7 +690,7 @@
 .brewer-budget-advanced[open] > summary svg {
   transform: rotate(180deg);
 }
-.brewer-budget-body input {
+.brewer-budget-body :is(input, textarea:where([data-single-line])) {
   min-height: 44px;
   width: 100%;
   min-width: 0;
@@ -701,7 +701,7 @@
   color: #eee9df;
   font-size: 16px;
 }
-.brewer-budget :is(button, input, summary):focus-visible {
+.brewer-budget :is(button,:is(input, textarea:where([data-single-line])), summary):focus-visible {
   outline: 2px solid #c7d4aa;
   outline-offset: 2px;
 }

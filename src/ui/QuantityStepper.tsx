@@ -1,3 +1,4 @@
+import { Input, type InputElement } from './Input';
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { Units } from '../services/units';
@@ -67,7 +68,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
   const coarse = useCoarsePointer();
   const holdTimer = useRef<number | null>(null);
   const repeatTimer = useRef<number | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputElement>(null);
   const ladder = customLadder ?? Units.stepLadder(unit, category);
   const fineStep = customStep ?? ladder[0];
 
@@ -206,7 +207,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
         </button>
 
         <div className="flex-1 flex items-baseline justify-center gap-0.5 sm:gap-1 min-w-0">
-          <input
+          <Input
             ref={inputRef}
             type="text"
             name="qty_stepper_input"

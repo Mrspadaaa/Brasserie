@@ -1,3 +1,4 @@
+import { Input, type InputElement } from './Input';
 import React, { useRef } from 'react';
 import { useNumericDraft } from './numericInput';
 import { useCoarsePointer } from './useViewport';
@@ -67,12 +68,12 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
     'aria-describedby': ariaDescribedBy
   } = props;
   const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputElement>(null);
   const coarse = useCoarsePointer();
   const { draft, push, settle } = useNumericDraft(value, onValue, { emptyValue });
 
   return (
-    <input
+    <Input
       ref={inputRef}
       id={id}
       name={id ? `num_${id}` : undefined}

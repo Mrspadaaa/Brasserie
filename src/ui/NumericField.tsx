@@ -1,3 +1,4 @@
+import { Input, type InputElement } from './Input';
 import React, { useId, useRef } from 'react';
 import { useNumericDraft } from './numericInput';
 
@@ -80,7 +81,7 @@ export const NumericField: React.FC<NumericFieldProps> = ({
 }) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputElement>(null);
 
   const { draft, push, settle } = useNumericDraft(value, onChange, { emptyValue });
   const clampOnBlur = () => settle({ min, max, integer });
@@ -106,7 +107,7 @@ export const NumericField: React.FC<NumericFieldProps> = ({
         </span>
       )}
 
-      <input
+      <Input
         ref={inputRef}
         id={inputId}
         name={`field_${inputId}`}

@@ -1,3 +1,4 @@
+import { Input, Textarea } from '../ui/Input';
 import React from 'react';
 import { useSyncedDraft } from '../hooks/useLiveData';
 import { X, Save, User, FileText } from 'lucide-react';
@@ -113,7 +114,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
           </div>
           <div>
             <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Téléphone / Mobile</label>
-            <input
+            <Input
               name="cl_contact_tel_digits"
               type="text"
               inputMode="tel"
@@ -134,7 +135,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
 
         <div>
           <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Email pour facturation QR</label>
-          <input
+          <Input
             name="cl_billing_mail"
             type="text"
             inputMode="email"
@@ -156,7 +157,7 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
           <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm flex items-center">
             <FileText className="w-3.5 h-3.5 text-ebc-straw mr-1" /> Notes & Accès logistiques
           </label>
-          <textarea
+          <Textarea
             rows={2}
             name="cl_logistics_memo"
             autoComplete="off"

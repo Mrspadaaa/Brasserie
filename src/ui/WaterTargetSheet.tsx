@@ -1,3 +1,4 @@
+import { Textarea, Input } from './Input';
 import React, { useEffect, useState } from 'react';
 import { WaterIons } from '../types';
 import { ION_LABEL, ION_SYMBOL, parseWaterTarget } from '../domain/water';
@@ -122,7 +123,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
           <label htmlFor="wt-colle" className="text-2xs text-cave-400">
             Colle le profil d’eau de la recette
           </label>
-          <textarea
+          <Textarea
             id="wt-colle"
             name="wt_recipe_water_text"
             autoComplete="off"
@@ -176,7 +177,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
         </div>
 
         <Field label="Nom de la cible" htmlFor="wt-target-title">
-          <input
+          <Input
             id="wt-target-title"
             name="wt_target_label"
             type="text"

@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import { brewNow } from '../services/brewClock';
 import React, { useState } from 'react';
 import {
@@ -287,7 +288,7 @@ function IngredientRow({
             </button>
           )}
           {alternatives && (
-            <form
+            <form autoComplete="off"
               className="flex flex-wrap gap-1 pt-1"
               onSubmit={(e) => {
                 e.preventDefault();
@@ -307,7 +308,7 @@ function IngredientRow({
                 setAlternatives(false);
               }}
             >
-              <input
+              <Input
                 aria-label="Autre malt utilisé"
                 placeholder="Autre malt utilisé"
                 value={replacementName}

@@ -1,3 +1,4 @@
+import { Input, type InputElement } from './Input';
 import React, { useId, useRef } from 'react';
 import { Field } from './FormNav';
 import { useNumericDraft } from './numericInput';
@@ -62,7 +63,7 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({
   const { ht, tva } = splitTva(valueTTC, tvaRate);
   const showSplit = isTvaRegistered && tvaRate > 0 && valueTTC > 0;
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<InputElement>(null);
   const { draft, push, settle } = useNumericDraft(valueTTC, onChange);
 
   return (
@@ -75,7 +76,7 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({
           >
             CHF
           </span>
-          <input
+          <Input
             ref={inputRef}
             id={id}
             name={`val_${id}`}

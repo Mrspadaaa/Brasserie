@@ -1,3 +1,4 @@
+import { Input } from '../ui/Input';
 import React, { useState } from 'react';
 import { compte } from '../services/plural';
 import { X, Search, Shield, Clock, Download } from 'lucide-react';
@@ -101,7 +102,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
         {/* Search Input */}
         <div className="relative">
           <Search className="w-3.5 h-3.5 text-cave-400 absolute left-3 top-2.5" />
-          <input
+          <Input
             type="search"
             name="audit_filter_query"
             autoComplete="off"

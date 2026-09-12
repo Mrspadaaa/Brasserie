@@ -1,3 +1,4 @@
+import { Input } from './Input';
 import React, { useId, useLayoutEffect, useRef, useState } from 'react';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { BrewTag, BrewTagTone } from './BrewTag';
@@ -117,7 +118,7 @@ export function BrewChoice({
         {searchable && (
           <label className="brew-choice-search">
             <Search size={18} />
-            <input
+            <Input
               type="search"
               aria-label="Rechercher un ingrédient"
               placeholder="Rechercher un ingrédient"
