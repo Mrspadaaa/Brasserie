@@ -1277,4 +1277,4 @@ function slugify(s: string): string {
     .slice(0, 80);
 }
 import { assertNoloConfig } from '../../functions/src/noloSchema';
-import { noloScience } from '../domain/nolo';
+import { noloScience } from '../domain/noloScience';

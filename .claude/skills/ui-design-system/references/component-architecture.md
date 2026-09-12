@@ -389,7 +389,7 @@ const Button = styled.button`
 - [ ] Color contrast meets AA
 - [ ] Works with keyboard only
 - [ ] Screen reader announces correctly
-- [ ] Touch target ≥ 44×44px
+- [ ] Web target meets project dimensions and WCAG 2.2 AA 2.5.8 (24×24 CSS px or a verified exception); 44×44 px is the enhanced AAA criterion, not a universal minimum.
 
 ---
 

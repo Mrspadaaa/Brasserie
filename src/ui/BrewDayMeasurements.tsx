@@ -19,7 +19,7 @@ import { useHoldRepeat } from './numericInput';
 export const brewControl =
   'min-h-10 whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-3 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
 export const brewInput =
-  'w-full min-w-0 h-11 rounded-control border border-cave-600 bg-cave-950 px-3 text-base text-cave-50 reading outline-none focus:border-ebc-straw';
+  'w-full min-w-0 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-2 text-base text-cave-50 reading outline-none focus:border-ebc-straw';
 export type BrewUpdate = (update: (state: BrewDayState) => BrewDayState) => void;
 export interface BrewReadingDraft {
   kind: ReadingKind;

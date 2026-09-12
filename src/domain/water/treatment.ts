@@ -1,7 +1,7 @@
 import { AcidId, SaltId, WaterIons, WaterSource, WaterPlan, IonBand } from '../../types';
 import { addIons, dilute, residualAlkalinity, sulfateChlorideRatio, ZERO } from './ions';
 import { ACIDS, SALT_IDS, ionsFromSalts } from './substances';
-import { acidNeeded, ionsAfterAcid, calculateSpargeTreatment, retainAcidDose } from './acid';
+import { acidNeeded, ionsAfterAcid, calculateSpargeTreatment, retainAcidDose, waterAcidBalance } from './acid';
 import { RaBand, raAcidTarget } from './mashPh';
 import { positiveSaltDoses, splitDoses } from './plan';
 import { bicarbonatePreference } from './bicarbonatePreference';
@@ -172,6 +172,10 @@ export function calculateWaterTreatment(source: WaterSource, input: TreatmentInp
     startTotal: average(start, startSparge),
     raw,
     treated,
+    acidBalance: {
+      mash: waterAcidBalance(raw.mash, mashAcid.amount, acidId, mashWaterL),
+      sparge: waterAcidBalance(raw.sparge, spargeAcid.amount, acidId, spargeWaterL),
+    },
     total,
     treatedTotal,
     hco3Target,

@@ -43,14 +43,17 @@ button, a, input, select, textarea {
   min-width: 24px;
 }
 
-/* Recommended: 44x44px for touch targets */
-@media (pointer: coarse) {
-  button, a, input[type="checkbox"], input[type="radio"] {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
+/* No automatic 44px override on coarse pointers in L'Affinée.
+   Use the compact dimensions in the project DESIGN.md. */
 ```
+
+44×44 CSS pixels belongs to the enhanced criterion 2.5.5 (AAA), not this AA
+minimum. The example above illustrates a size only: account for target shape,
+spacing exceptions and labels, and do not apply a global reset to inline links
+or native checkboxes/radios. Preserve their compact appearance and verify their
+actual clickable area with the associated label. See
+[W3C 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
+and [W3C 2.5.5](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html).
 
 ## 3.3.7 Redundant Entry (Level A)
 

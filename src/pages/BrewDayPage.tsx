@@ -434,7 +434,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     current.id === 'eau' && noloProcess === 'secondRunnings'
       ? current.detail
       : current.id === 'eau' && noloProcess === 'coldExtraction'
-        ? 'Précise le protocole d’extraction et mesure le volume d’eau ajouté. Le plan d’empâtage chaud n’est pas repris.'
+        ? current.detail
       : current.id === 'eau'
       ? 'Prépare et traite les eaux d’empâtage et de rinçage séparément.'
       : current.id === 'concassage'
@@ -712,7 +712,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
       <div ref={contentRef} className="brew-workspace">
-        <details className="my-3 rounded-control border border-cave-700 p-3"><summary className="cursor-pointer min-h-touch text-cave-200">Vigilances et potentiel des houblons</summary><p className="text-sm text-cave-400">Quantités du journal si renseignées, au volume prévu de la recette. Les temps de contact à l’ébullition suivent les ajouts terminés.</p><HopRecipePanel recipe={recipeForHopAnalysis(actualRecipe, state)} batchId={batch.id} /></details>
+        <details className="brew-context-details rounded-control border border-cave-700"><summary className="cursor-pointer min-h-touch text-cave-200">Vigilances et potentiel des houblons</summary><p className="text-sm text-cave-400">Quantités du journal si renseignées, au volume prévu de la recette. Les temps de contact à l’ébullition suivent les ajouts terminés.</p><HopRecipePanel recipe={recipeForHopAnalysis(actualRecipe, state)} batchId={batch.id} /></details>
         {notice && !capture && (
           <div className="brew-toast" role="status">
             {notice}
@@ -816,7 +816,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <div>
                         <span>Densité initiale</span>
                         <strong>
-                          {recipe.ogTarget?.toFixed(3) ?? '—'} <small>SG</small>
+                          {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? '—'} <small>SG</small>
                         </strong>
                       </div>
                       <div>
@@ -1221,9 +1221,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <div>
                         <span>Densité initiale relevée</span>
                         <strong>
-                          {finishedReadings.gravity?.value.toFixed(3) ?? '—'} <small>SG</small>
+                          {finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? '—'} <small>SG</small>
                         </strong>
-                        <span>Cible {recipe.ogTarget?.toFixed(3) ?? 'non renseignée'}</span>
+                        <span>Cible {recipe.ogTarget?.toFixed(3).replace('.', ',') ?? 'non renseignée'}</span>
                       </div>
                       <div>
                         <span>Volume en fermenteur</span>
@@ -1285,7 +1285,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         {efficiency.pct} %
                       </p>
                       <p>
-                        {efficiency.volumeL} L × densité {efficiency.sg.toFixed(3)} / potentiel des
+                        {efficiency.volumeL} L × densité {efficiency.sg.toFixed(3).replace('.', ',')} / potentiel des
                         ingrédients.
                         {efficiency.direct && ' Sucres et extraits pris en compte.'}
                       </p>
@@ -1484,7 +1484,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         className="brew-confirm"
         onClose={() => setConfirmFinish(false)}
         title="Clôturer le brassage ?"
-        what={`OG ${finishedReadings.gravity?.value.toFixed(3) ?? 'non relevée'} · ${finishedReadings.volume?.value ?? '—'} L en fermenteur.`}
+        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'non relevée'} · ${finishedReadings.volume?.value ?? '—'} L en fermenteur.`}
         consequence={`${confirmed}/${ingredients.filter((i) => i.planned > 0).length} ajouts cochés. Le journal et les écarts resteront consultables. Le brassin passera en fermentation.`}
         confirmLabel="Clôturer"
         onConfirm={async () => {

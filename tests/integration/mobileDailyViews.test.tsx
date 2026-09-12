@@ -97,7 +97,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.getByRole('meter')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Ouvrir Pilsner'}));expect(open).toHaveBeenCalledWith(item);
     view.unmount();render(<StockDetailSheet item={item} batches={batches} onClose={()=>{}} onSave={()=>{}} onDelete={()=>{}} onCorrectInventory={()=>{}} onToggleFavorite={()=>{}}/>);
-    fireEvent.click(screen.getByText('Besoins des brassins · 1 brassin(s)'));
+    fireEvent.click(screen.getByText('Besoins de 1 brassin'));
     expect(screen.getByText('Brassin du samedi')).toBeVisible();
     expect(screen.getByRole('button',{name:'Corriger l’inventaire'})).toBeVisible();
   });

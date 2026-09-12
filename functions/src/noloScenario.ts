@@ -1,11 +1,14 @@
 import {validHopRange, type HopRange, type HopSource} from './hopIndexSchema.js';
 import { NOLO_SUGARS, type NoloConfig, type NoloOperation, type NoloProcess, type NoloScience } from './noloSchema.js';
 import { evaluateNolo, noloInputBasis, type NoloInput, type NoloBound } from './noloCore.js';
+import { matchingNoloSimulation, simulationAttenuationAbv } from './noloSimulation.js';
 
 export const NOLO_SCENARIO_VERSION = 'nolo-scenario-v2';
 export interface NoloScenarioInput extends NoloInput {
   og?: { range: HopRange; origin: 'calculated' | 'measurement'; source: HopSource };
   fullFermentation?: { range: HopRange; temperatureC?: HopRange; source: HopSource };
+  /** Recipe-level extraction/equipment inputs not represented by NoloInput. */
+  recipeContext?: string;
 }
 const empty = (): HopRange => ({min:0,max:0});
 const unknown = (): NoloBound => ({min:0,max:null,kind:'unknown',confidence:'low'});
@@ -16,7 +19,8 @@ const status = (b:NoloBound,target:number) => b.min>target?'exceeds' as const:b.
 export function noloScenarioBasis(input:NoloInput,afterOperationId?:string) {
   return JSON.stringify([NOLO_SCENARIO_VERSION,noloInputBasis(input,afterOperationId),
     input.config.planning?.stopSg??null,input.config.planning?.stopAttenuationPct??null,
-    ...(input.config.planning?.exactExtract ? [true] : [])]);
+    ...(input.config.planning?.exactExtract ? [true] : []),
+    ...(input.config.planning?.simulation ? [input.config.planning.simulation] : [])]);
 }
 
 /** Process changes are reversible and retain the original operation order. */
@@ -30,7 +34,9 @@ export function changeNoloProcess(config:NoloConfig,process:NoloProcess):NoloCon
   const restored=inactive.filter(p=>p.process===process);
   for(const p of restored.sort((a,b)=>a.index-b.index))
     if(!operations.some(o=>o.id===p.operation.id))operations.splice(Math.min(p.index,operations.length),0,p.operation);
-  return {...config,process,operations,inactiveOperations:inactive.filter(p=>p.process!==process)};
+  const planning=config.planning?.simulation && config.planning.simulation.settings.process!==process
+    ? {...config.planning,simulation:undefined} : config.planning;
+  return {...config,process,operations,inactiveOperations:inactive.filter(p=>p.process!==process),...(planning?{planning}:{})};
 }
 export function scenarioPlato(sg:number,science:NoloScience):number|null {
   const coefficients=science.planningModels?.sgPlatoCoefficients;
@@ -71,14 +77,22 @@ export function aromaAlcoholContribution(o:Extract<NoloOperation,{kind:'aroma'}>
  * overwrites measured fields and does not equate attenuation with a sugar assay. */
 export function evaluateNoloScenario(original:NoloScenarioInput,currentScience:NoloScience) {
   const config=changeNoloProcess(original.config,original.config.process);
-  const input={...original,config};
+  const raw={...original,config};
+  const simulation=matchingNoloSimulation(raw);
+  const input:NoloScenarioInput={...raw,...(simulation?{
+    volumeL:original.volumeL>0?original.volumeL:simulation.volumeL,
+    og:original.og?.origin==='measurement'?original.og:{range:simulation.wortSg,origin:'calculated',source:simulation.source},
+    fullFermentation:{range:simulation.settings.attenuationPct,source:simulation.attenuationReference}
+  }: {})};
   const science=config.scienceSnapshot??currentScience;
   const compatible=(m:NoloConfig['measurements'][number])=>
     (!m.afterOperationId||config.operations.some(o=>o.id===m.afterOperationId))&&
-    (m.basis===noloScenarioBasis(input,m.afterOperationId)||
-      !config.planning?.stopSg&&!config.planning?.stopAttenuationPct&&m.basis===noloInputBasis(input,m.afterOperationId));
+    (m.basis===noloScenarioBasis(raw,m.afterOperationId)||
+      !config.planning?.simulation&&!config.planning?.stopSg&&!config.planning?.stopAttenuationPct&&m.basis===noloInputBasis(raw,m.afterOperationId));
   const verification=evaluateNolo({...input,config:{...config,measurements:config.measurements.map(m=>compatible(m)?{...m,basis:noloInputBasis(input,m.afterOperationId)}:{...m,basis:'stale-scenario'})}},science);
   const sources:HopSource[]=[], assumptions:string[]=[], missing:string[]=[];
+  if(config.planning?.simulation&&!simulation)missing.push('La recette a changé depuis la simulation : relancer la préparation pour actualiser ses hypothèses.');
+  if(simulation){sources.push(simulation.source,simulation.attenuationReference);assumptions.push(...simulation.assumptions);}
   const models=science.planningModels, og=validHopRange(input.og?.range)&&input.og!.range.min>=1?input.og!.range:undefined;
   if(config.process==='secondRunnings') {
     if(!og)missing.push('Renseigner la densité du moût récupéré : le malt du brassin précédent ne permet pas de la recalculer.');
@@ -101,7 +115,17 @@ export function evaluateNoloScenario(original:NoloScenarioInput,currentScience:N
     if(min!==null&&max!==null)plato={min,max};
   }
   const relation=evaluateNolo({...input,config:{...config,wort:{...config.wort,ogPlato:plato}}},science).manufacturerEstimate;
-  if(config.process==='dealcoholized')base=mother;
+  if(simulation&&og&&models) {
+    if(config.process==='arrested'&&simulation.stopDropSg) {
+      base=bound({min:simulation.stopDropSg.min*models.sgAbvFactor.value,max:simulation.stopDropSg.max*models.sgAbvFactor.value});
+      finalGravity={min:Math.max(1,og.min-simulation.stopDropSg.max),max:Math.max(1,og.max-simulation.stopDropSg.min)};
+      assumptions.push('Arrêter à la chute OG–SG prévue à partir de l’OG réellement mesurée. La SG absolue affichée est un repère calculé ; le refroidissement et le calendrier ne prouvent pas l’arrêt.');
+    } else {
+      base=bound(simulationAttenuationAbv(og,simulation.settings.attenuationPct,models.sgAbvFactor.value));
+      finalGravity={min:1+(og.min-1)*(1-simulation.settings.attenuationPct.max/100),max:1+(og.max-1)*(1-simulation.settings.attenuationPct.min/100)};
+    }
+    assumptions.push('Plage de simulation conditionnelle à l’atténuation et à la tolérance d’extrait saisies ; ce n’est pas un intervalle de confiance statistique.');
+  } else if(config.process==='dealcoholized')base=mother;
   else if(config.process==='arrested') {
     const stop=config.planning?.stopSg, at=config.planning?.stopAttenuationPct;
     if(og&&models&&(stop||at)) {
@@ -221,6 +245,6 @@ export function evaluateNoloScenario(original:NoloScenarioInput,currentScience:N
   }
   return {...verification,scenarioVersion:NOLO_SCENARIO_VERSION,projection,motherBeer:mother,finalGravity,stages,requiredRemovalPct,
     projectionStatus:status(projection,config.targetAbvPct),activeOperations:config.operations,inactiveOperations:config.inactiveOperations??[],
-    ogOrigin:input.og?.origin??null,plato,manufacturerEstimate:relation,sources,assumptions,missing,
+    ogOrigin:input.og?.origin??null,plato,manufacturerEstimate:relation,sources,assumptions,missing,simulationActive:!!simulation,
     nextAction:missing[0]??(verification.measuredPackaged?verification.nextAction:'Analyser l’alcool après conditionnement pour vérifier la projection.')};
 }

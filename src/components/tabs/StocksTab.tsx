@@ -23,7 +23,9 @@ import { EquipmentSheet } from '../../ui/EquipmentSheet';
 import { KegSheet } from '../../ui/KegSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
+import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
+import '../../ui/stocks.css';
 
 interface StocksTabProps {
   stocks: {
@@ -93,6 +95,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [selected, setSelected] = useLiveSelection(allItems, 'ref');
   const [creating, setCreating] = useState(false);
   const [copiedSupplier, setCopiedSupplier] = useState<string | null>(null);
+  const [stockFilter, setStockFilter] = useState<'all' | 'order' | 'favorite'>('all');
 
   /*
    * Matériel et fûts : ils n'étaient consultables qu'en lecture. Une fiche
@@ -231,6 +234,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   }, [allItems, batches]);
 
   const totalToOrder = shoppingBySupplier.reduce((n, [, list]) => n + list.length, 0);
+  const orderRefs = useMemo(() => new Set(shoppingBySupplier.flatMap(([, list]) => list.map(({ item }) => item.ref))), [shoppingBySupplier]);
+  const favoriteCount = allItems.filter(item => item.favorite).length;
+  const visibleItems = useMemo(() => allItems.filter(item => stockFilter === 'order' ? orderRefs.has(item.ref) : stockFilter === 'favorite' ? item.favorite : true), [allItems, stockFilter, orderRefs]);
 
   const copyList = (supplier: string, list: Array<{ item: StockItem; missing: number }>) => {
     const text = [
@@ -276,10 +282,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
   const mobile = useMobileLayout();
   return (
-    <div className="flex flex-col h-[calc(100dvh-8.5rem)] pt-2 gap-2">
+    <div className="stocks-screen flex flex-col h-[calc(100dvh-8.5rem)] pt-1 gap-1">
       <div className="min-w-0 shrink-0">
       <ViewNavigation<typeof subTab> label="Vue des stocks" value={subTab} onChange={setSubTab} options={tabs.map(tab => ({value:tab.id,label:tab.label+(tab.badge ? ` (${tab.badge})` : ''),shortLabel:tab.label}))}>
-      <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 mb-3 overflow-x-auto">
+      <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 overflow-x-auto">
         {tabs.map(({ id, label, Icon, badge }) => (
           <button
             key={id}
@@ -314,25 +320,34 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'stock' && (
         <EntityList
           className="flex-1"
-          items={allItems}
+          items={visibleItems}
           keyOf={(i) => i.ref}
           groupOf={(i) => i.category}
           groupOrder={GROUP_ORDER}
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}
-          searchPlaceholder="Chercher un malt, un houblon, une levure…"
+          searchPlaceholder="Rechercher un article…"
+          header={allItems.length > 0 && <SegmentedControl className="stock-filters" label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
+            { value: 'all', label: `Tous · ${allItems.length}` },
+            { value: 'order', label: `À commander · ${totalToOrder}` },
+            { value: 'favorite', label: `Épinglés · ${favoriteCount}` }
+          ]} />}
           toolbarAction={!mobile &&
             <Button
               intent="secondary"
               aria-label="Ajouter un article"
               onClick={() => setCreating(true)}
-              icon={<Plus className="w-5 h-5" />}
+              icon={<Plus className="w-4 h-4" />}
             >
               <span className="hidden sm:inline">Ajouter un article</span>
             </Button>
           }
           emptyState={
-            <div className="py-12 text-center space-y-3">
+            allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
+              <p className="text-sm text-cave-200">{stockFilter === 'order' ? 'Rien à commander' : 'Aucun article épinglé'}</p>
+              <p className="text-xs text-cave-400">{stockFilter === 'order' ? 'Les besoins planifiés et les seuils sont couverts.' : 'Touchez l’étoile d’un article pour le retrouver ici.'}</p>
+              <Button size="sm" onClick={() => setStockFilter('all')}>Voir tous les articles</Button>
+            </div> : <div className="py-6 text-center space-y-3">
               <p className="text-base text-cave-200">Aucun article en stock</p>
               <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
                 Les articles se créent ici, ou automatiquement en enregistrant un achat.
@@ -347,7 +362,6 @@ export const StocksTab: React.FC<StocksTabProps> = ({
               item={item}
               batches={batches}
               onOpen={setSelected}
-              onQuickAdjust={() => {}}
               onToggleFavorite={(i) => StorageService.toggleFavorite('stockItem', i.ref)}
             />
           )}
@@ -355,7 +369,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       )}
 
       {subTab === 'courses' && (
-        <div className="flex-1 overflow-y-auto space-y-4 pb-4">
+        <div className="flex-1 overflow-y-auto space-y-2 pb-4">
           {totalToOrder === 0 ? (
             <div className="py-12 text-center space-y-2">
               <p className="text-base text-cave-200">Rien à commander</p>
@@ -365,9 +379,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </div>
           ) : (
             shoppingBySupplier.map(([supplier, list]) => (
-              <section key={supplier} className="panel p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-base font-semibold text-cave-50 truncate">{supplier}</h3>
+              <section key={supplier} className="panel p-2 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="min-w-0 text-sm font-semibold text-cave-50 break-words">{supplier}</h3>
                   <Button intent="secondary" onClick={() => copyList(supplier, list)}>
                     {copiedSupplier === supplier ? (
                       <>
@@ -385,11 +399,11 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                   {list.map(({ item, missing }) => (
                     <li
                       key={item.ref}
-                      className="flex items-baseline justify-between gap-3 py-2.5
+                      className="flex items-baseline justify-between gap-2 py-1.5
                                  border-b border-cave-800 last:border-0"
                     >
-                      <span className="text-base text-cave-200 min-w-0 truncate">{item.name}</span>
-                      <span className="font-mono text-base text-ebc-straw shrink-0">
+                      <span className="text-sm text-cave-200 min-w-0 break-words">{item.name}</span>
+                      <span className="font-mono text-sm text-ebc-straw shrink-0">
                         {Units.format(missing, item.unit)}
                       </span>
                     </li>
@@ -404,7 +418,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1" />}
 
       {subTab === 'materiel' && (
-        <><MobileDetails title="Actions du matériel">{onOpenEquipmentProjects&&<button className="finance-link mb-3" onClick={onOpenEquipmentProjects}><Wrench size={18}/>Préparer mes futurs équipements</button>}<div className="flex flex-wrap gap-2 mb-3"><Button intent="primary" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button></div></MobileDetails><EquipmentList
+        <><MobileDetails title="Actions du matériel"><div className="flex flex-wrap gap-1"><Button intent="primary" size="sm" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" size="sm" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button>{onOpenEquipmentProjects&&<Button intent="ghost" size="sm" onClick={onOpenEquipmentProjects} icon={<Wrench size={14}/>}>Projets d’équipement</Button>}</div></MobileDetails><EquipmentList
           equipment={stocks.equipment}
           onOpen={setEquipmentSheet}
           className="flex-1"
@@ -505,9 +519,10 @@ const NewStockItemSheet: React.FC<{
       open={open}
       onClose={onClose}
       title="Nouvel article"
+      className="sm:max-w-2xl sm:mx-auto"
       subtitle="La référence est attribuée automatiquement"
       footer={
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Button intent="secondary" full onClick={onClose}>
             Annuler
           </Button>
@@ -523,10 +538,10 @@ const NewStockItemSheet: React.FC<{
       }
     >
       <FormNav
-        className="space-y-4"
+        className="stock-form space-y-2"
         onSubmit={() => draft.name?.trim() && onCreate(draft)}
       >
-        <Field label="Nom" htmlFor="new-name">
+        <Field label="Nom" htmlFor="new-stock-item">
           <TextInput
             id="new-stock-item"
             name="stock_creation_item_title"
@@ -536,9 +551,11 @@ const NewStockItemSheet: React.FC<{
           />
         </Field>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Field label="Catégorie">
+        <div className="grid grid-cols-2 gap-2">
+          <Field label="Catégorie" htmlFor="new-stock-category">
             <Combobox
+              id="new-stock-category"
+              ariaLabel="Catégorie"
               value={draft.category || ''}
               onChange={(category) => setDraft({ ...draft, category })}
               options={categoryOptions}
@@ -549,8 +566,10 @@ const NewStockItemSheet: React.FC<{
             />
           </Field>
 
-          <Field label="Unité">
+          <Field label="Unité" htmlFor="new-stock-unit">
             <Combobox
+              id="new-stock-unit"
+              ariaLabel="Unité"
               value={draft.unit || ''}
               onChange={(unit) => setDraft({ ...draft, unit })}
               options={unitOptions}
@@ -563,8 +582,7 @@ const NewStockItemSheet: React.FC<{
         </div>
 
         <p className="text-sm text-cave-400 leading-relaxed">
-          Le stock démarre à zéro. Il se remplit en enregistrant un achat, ou directement depuis
-          la fiche de l'article.
+          Le stock démarre à zéro. Enregistrez un achat pour le remplir, ou un comptage depuis la fiche article.
         </p>
       </FormNav>
     </Sheet>

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { WaterPlan, WaterSource } from '../../src/types';
 import { calculateWaterTreatment, savedWaterDisplay } from '../../src/domain/water/treatment';
 import type { TreatmentInput } from '../../src/domain/water/treatment';
+import { waterAcidBalance } from '../../src/domain/water/acid';
 
 const source: WaterSource = {
   id: 'reseau', name: 'Réseau — Villars-sur-Glâne',
@@ -17,6 +18,62 @@ const photo: TreatmentInput = {
 };
 
 describe('Bicarbonate balance across separately prepared brewing waters', () => {
+  it('explains 13 ppm with 107.7 mL at mash without losing the acid beyond the water buffer', () => {
+    const input: TreatmentInput = {
+      diRatioPct: 45, spargeDiRatioPct: 45,
+      mashWaterL: 7.7, spargeWaterL: 22,
+      doses: { gypse: 3.4, nacl: 1.4 }, acidId: 'lactique',
+      acidOverride: { mash: 107.7, sparge: 4.4 },
+    };
+    const result = calculateWaterTreatment(source, input, band);
+    // Each water starts at 137.5 mg/L. Sparge retains 3025 - 2640 = 385 mg.
+    expect(result.treated.mash.hco3).toBe(0);
+    expect(result.treated.sparge.hco3).toBeCloseTo(17.5, 10);
+    expect(result.treatedTotal.hco3).toBe(13);
+    expect(result.acidBalance.mash?.neutralizationAmount).toBeCloseTo(1058.75 / 600, 10);
+    expect(result.acidBalance.mash?.beyondWaterAmount).toBeCloseTo((64620 - 1058.75) / 600, 10);
+    expect(result.acidBalance.sparge?.beyondWaterAmount).toBe(0);
+    // Increasing acid after HCO3 reaches zero must still lower the mash model's input.
+    const lessAcid = calculateWaterTreatment(source, {
+      ...input, acidOverride: { mash: 2, sparge: 4.4 },
+    }, band);
+    expect(lessAcid.treatedTotal.hco3).toBe(result.treatedTotal.hco3);
+    expect(result.mashPhRa).toBeLessThan(lessAcid.mashPhRa);
+    expect(result.mashAcid.amount).toBe(107.7);
+  });
+
+  it.each([
+    { acid: 'lactique' as const, strength: 600 },
+    { acid: 'phosphorique' as const, strength: 750 },
+    { acid: 'maltAcidule' as const, strength: 20 },
+  ])('accounts for the actual product strength and units for $acid', ({ acid, strength }) => {
+    const capacity = 100 * 10 / strength;
+    const before = waterAcidBalance({ ...source, hco3: 100 }, capacity / 2, acid, 10)!;
+    const at = waterAcidBalance({ ...source, hco3: 100 }, capacity, acid, 10)!;
+    const beyond = waterAcidBalance({ ...source, hco3: 100 }, capacity + 1, acid, 10)!;
+    expect(before.hco3After).toBeCloseTo(50, 10);
+    expect(before.beyondWaterAmount).toBe(0);
+    expect(at.hco3After).toBeCloseTo(0, 10);
+    expect(at.beyondWaterAmount).toBe(0);
+    expect(beyond.hco3After).toBe(0);
+    expect(beyond.beyondWaterAmount).toBeCloseTo(1, 10);
+  });
+
+  it('keeps unknown or absent water distinct from exhausted bicarbonate', () => {
+    for (const litres of [0, -1, NaN, Infinity])
+      expect(waterAcidBalance(source, 107.7, 'lactique', litres)).toBeNull();
+    expect(waterAcidBalance({ ...source, hco3: NaN }, 1, 'lactique', 10)).toBeNull();
+    expect(waterAcidBalance(source, NaN, 'lactique', 10)).toBeNull();
+    expect(waterAcidBalance({ ...source, hco3: 0 }, 1, 'lactique', 10))
+      .toEqual({ hco3After: 0, neutralizationAmount: 0, beyondWaterAmount: 1 });
+    const noSparge = calculateWaterTreatment(source, {
+      ...photo, spargeWaterL: 0, acidOverride: { mash: 107.7, sparge: 200 },
+    }, band);
+    expect(noSparge.acidBalance.sparge).toBeNull();
+    expect(noSparge.spargeAcid.amount).toBe(0);
+    expect(noSparge.treatedTotal.hco3).toBe(0);
+  });
+
   it('explains the photo: 200 ppm at mash and 27 ppm at sparge give 85 ppm on the total-water graph', () => {
     const result = calculateWaterTreatment(source, photo, band);
 

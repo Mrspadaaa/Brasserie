@@ -1,6 +1,6 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { QuickActionModal } from '../../src/components/QuickActionModal';
 import { ProductionTab } from '../../src/components/tabs/ProductionTab';
 import { StorageService } from '../../src/services/storage';
@@ -82,13 +82,13 @@ describe('brew budget to doubled-volume batch creation', () => {
   it('shows doubled adjuncts in the calculator and preserves the scientific results for a different target cuverie', () => {
     const target = { ...rig, id: 'large', name: 'Grande cuverie', volumeL: 300, efficiencyPct: 85, deadSpaceL: 5 };
     render(<ProductionTab batches={[]} recipes={[recipe]} brewhouses={[rig, target]} activeBrewhouseId={rig.id} globalTimeFilter="all" targetSubTab="scaler" onOpenCreateBatch={vi.fn()} onOpenQuickAction={vi.fn()} onOpenRecipe={vi.fn()} onOpenBrewDay={vi.fn()} onDraftRecipe={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: '50L' }));
-    expect(screen.getByText('Vanille · Fermenteur').parentElement).toHaveTextContent('4 gousse');
-    expect(screen.getByText('Eau Rinçage (Sparge)').parentElement).toHaveTextContent('31.6');
-    fireEvent.click(screen.getByRole('button', { name: '300L' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '50' } });
+    expect(screen.getByRole('row', { name: /^Vanille\s*Fermenteur 4 gousse$/ })).toBeInTheDocument();
+    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent('31,6 L');
+    fireEvent.change(screen.getByRole('textbox', { name: 'Volume cible', exact: true }), { target: { value: '300' } });
     const scientific = BrewingMath.scaleRecipe(recipe, 300, rig, target);
     const scenario = scaleBrewRecipeScenario(recipe, 300, rig, target);
-    expect(screen.getByText('Eau Rinçage (Sparge)').parentElement).toHaveTextContent(String(scientific.spargeWaterL));
+    expect(within(screen.getByLabelText('Eaux adaptées')).getByText('Rinçage').parentElement).toHaveTextContent(`${scientific.spargeWaterL.toLocaleString('fr-CH', { maximumFractionDigits: 3 })} L`);
     expect(scenario).toEqual(expect.objectContaining({ mashWaterL: scientific.mashWaterL, spargeWaterL: scientific.spargeWaterL, preBoilVolumeL: scientific.preBoilVolumeL, grainAbsorptionL: scientific.grainAbsorptionL }));
     expect(scenario.scaledRecipe.id).toBe('R');
     expect(scenario.scaledRecipe.brewhouse).toEqual(target);

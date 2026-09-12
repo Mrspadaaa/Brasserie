@@ -36,7 +36,7 @@ export function WaterSummary({
     <>
       {" "}
       {hasSparge && (
-        <div className="p-3 rounded-control bg-cave-900/80 border border-cave-700 flex items-start gap-3">
+        <div className="p-3 rounded-control bg-cave-900/80 border border-cave-700 flex flex-wrap items-start gap-3">
           <button
             type="button"
             role="switch"
@@ -56,8 +56,8 @@ export function WaterSummary({
               />
             </span>
           </button>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
+          <div className="min-w-min flex-1">
+            <div className="flex flex-wrap items-center gap-1.5">
               <span className="text-sm font-semibold text-cave-50">
                 Tous les sels à l’empâtage
               </span>

@@ -10,6 +10,9 @@ import { describeMoment } from '../../domain/hopStage';
 import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
 import type { BatchDetailSection } from '../../domain/productionInsights';
+import { QuantityStepper } from '../../ui/QuantityStepper';
+import { parseDecimal } from '../../ui/numericInput';
+import '../../ui/production/compact.css';
 import { ViewNavigation } from '../../ui/ViewNavigation';
 
 interface ProductionTabProps {
@@ -81,6 +84,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     }
   }, [currentRecipes, selectedRecipeToScale]);
   const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
+  const [invalidTargetVolume, setInvalidTargetVolume] = useState<string>();
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
   const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
   const handledOpenBatchRequest = React.useRef<{ id: string; at: number } | null>(null);
@@ -125,14 +129,17 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
 
   const sourceBh = selectedRecipeToScale?.brewhouse ?? brewhouses.find((b) => b.id === activeBrewhouseId) ?? brewhouses[0];
   const targetBh = targetVolumeL >= 250 ? (brewhouses.find((b) => b.volumeL >= 250) || sourceBh) : sourceBh;
+  const targetVolumeError = invalidTargetVolume
+    ? `Volume « ${invalidTargetVolume} » non reconnu. Indique un volume cible de 0,5 L ou plus.`
+    : !Number.isFinite(targetVolumeL) || targetVolumeL < 0.5 ? 'Indique un volume cible de 0,5 L ou plus.' : undefined;
   // Sans recette ni cuverie configurée, on ne calcule rien plutôt que de planter.
   const scaleResult =
-    subTab === 'scaler' && selectedRecipeToScale?.volumeL > 0 && Number.isFinite(selectedRecipeToScale.volumeL) && sourceBh
+    subTab === 'scaler' && selectedRecipeToScale?.volumeL > 0 && Number.isFinite(selectedRecipeToScale.volumeL) && sourceBh && !targetVolumeError
       ? scaleBrewRecipeScenario(selectedRecipeToScale, targetVolumeL, sourceBh, targetBh)
       : null;
 
   return (
-    <div className="space-y-2 sm:space-y-4 pb-24 pt-2">
+    <div className="production-screen space-y-2 pb-12 pt-1">
       <ViewNavigation<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
         {value:'batches',label:`Brassins (${batches.filter(isCurrent).length})`,shortLabel:'Brassins'},
         {value:'recipes',label:`Recettes (${currentRecipes.length})`,shortLabel:'Recettes'},
@@ -204,127 +211,52 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
         />
       )}
 
-      {/* 5. SUBTAB: SCALER (30L / 300L) */}
-      {subTab === 'scaler' && !scaleResult && (
-        <div className="p-6 rounded-3xl bg-cave-900 border border-cave-800 text-center space-y-3 shadow-sm">
-          <div className="text-3xl">⚖️</div>
-          <h3 className="font-bold text-sm text-cave-50">Aucune recette à mettre à l'échelle</h3>
-          <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
-            Crée d'abord une recette : le calculateur adaptera ensuite ses malts, ses houblons et
-            ses volumes d'eau au litrage de ton choix.
-          </p>
-          <button
-            onClick={onOpenCreateBatch}
-            className="px-4 py-2.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition min-h-[44px]"
-          >
-            + Créer une recette
-          </button>
+      {subTab === 'scaler' && !selectedRecipeToScale && (
+        <div className="panel p-2 space-y-2">
+          <h3 className="font-semibold text-sm text-cave-50">Aucune recette à adapter</h3>
+          <p className="text-sm text-cave-400">Crée une recette pour adapter ses ingrédients et son eau au volume voulu.</p>
+          <button type="button" onClick={onOpenCreateBatch} className="min-h-touch-lg px-2 rounded-control bg-ebc-straw text-cave-950 text-sm">Créer une recette</button>
         </div>
       )}
-
-      {subTab === 'scaler' && scaleResult && selectedRecipeToScale && (
-        <div className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-4 shadow-sm">
-          <div>
-            <span className="text-footnote text-ebc-straw uppercase font-bold tracking-wider">
-              Mise à l'échelle automatique
-            </span>
-            <h3 className="font-bold text-base text-cave-50">Calculateur Proportionnel de Brassage</h3>
-            <p className="text-sm text-cave-400 mt-0.5">
-              Ajuste instantanément le volume d'eau d'empattage, de rinçage, les malts et les houblons.
-            </p>
+      {subTab === 'scaler' && selectedRecipeToScale && (
+        <section className="panel p-2 space-y-2" aria-label="Adapter une recette au volume">
+          <label className="block space-y-1 text-xs text-cave-400">Recette source
+            <select name="production_scale_recipe_select" value={selectedRecipeToScale.id}
+              onChange={event=>{const found=currentRecipes.find(recipe=>recipe.id===event.target.value); if(found)setSelectedRecipeToScale(found);}}
+              className="w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50">
+              {currentRecipes.map(recipe=><option key={recipe.id} value={recipe.id}>{recipe.name} · {recipe.volumeL} L</option>)}
+            </select>
+          </label>
+          <div className="volume-controls" onChangeCapture={event => {
+            if (!(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)) return;
+            const entered = event.target.value;
+            // Le compteur garde son dernier nombre pendant une frappe illisible.
+            // Ce nombre ne doit pas produire un scénario, même après le blur.
+            setInvalidTargetVolume(entered.trim() && parseDecimal(entered) === null ? entered : undefined);
+          }}>
+            <QuantityStepper compact label="Volume cible" unit="L" value={targetVolumeL} emptyValue={Number.NaN}
+              onChange={value => { setTargetVolumeL(value); setInvalidTargetVolume(undefined); }}
+              aria-invalid={Boolean(targetVolumeError)} aria-describedby={targetVolumeError ? 'production-target-volume-error' : undefined}
+              min={0.5} customStep={0.5} customLadder={[0.5,5,10]} initialValue={selectedRecipeToScale.volumeL}/>
+            {scaleResult && <output className="text-xs text-cave-400" aria-live="polite">× {(targetVolumeL/selectedRecipeToScale.volumeL).toLocaleString('fr-CH',{maximumFractionDigits:2})} de la recette</output>}
           </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-cave-200 text-sm font-semibold block mb-1">Recette source :</label>
-              <select
-                name="production_scale_recipe_select"
-                autoComplete="off"
-                data-form-type="other"
-                value={selectedRecipeToScale.id}
-                onChange={(e) => {
-                  const found = currentRecipes.find((r) => r.id === e.target.value);
-                  if (found) setSelectedRecipeToScale(found);
-                }}
-                className="w-full bg-cave-850 border border-cave-700 rounded-xl p-2 text-sm text-cave-50 font-bold"
-              >
-                {currentRecipes.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name} ({r.volumeL}L)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="text-cave-200 text-sm font-semibold block mb-1">Volume cible :</label>
-              <div className="flex space-x-1">
-                {[30, 50, 100, 300].map((v) => (
-                  <button
-                    key={v}
-                    onClick={() => setTargetVolumeL(v)}
-                    className={`flex-1 py-2 text-sm font-bold rounded-xl border transition ${
-                      targetVolumeL === v
-                        ? 'bg-ebc-straw text-cave-950 border-ebc-gold shadow'
-                        : 'bg-cave-850 text-cave-400 border-cave-700 hover:text-cave-200'
-                    }`}
-                  >
-                    {v}L
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Scaled Water Results */}
-          <div className="grid grid-cols-2 gap-2 bg-cave-950/70 p-3 rounded-2xl text-center text-sm">
-            <div className="bg-cave-900/60 p-2.5 rounded-xl border border-cave-800">
-              <span className="text-footnote text-cave-400 uppercase">Eau Empattage (Mash)</span>
-              <div className="text-lg font-black text-ebc-straw font-mono mt-0.5">
-                {scaleResult.mashWaterL} <span className="text-sm text-cave-400">L</span>
-              </div>
-            </div>
-            <div className="bg-cave-900/60 p-2.5 rounded-xl border border-cave-800">
-              <span className="text-footnote text-cave-400 uppercase">Eau Rinçage (Sparge)</span>
-              <div className="text-lg font-black text-water font-mono mt-0.5">
-                {scaleResult.spargeWaterL} <span className="text-sm text-cave-400">L</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Scaled Ingredients */}
-          <div className="space-y-2">
-            <h4 className="font-bold text-sm text-cave-200">
-              Ingrédients dosés pour {targetVolumeL} Litres :
-            </h4>
-            <div className="space-y-1.5 text-sm">
-              {scaleResult.scaledRecipe.fermentables.map((m, idx) => (
-                <div key={idx} className="p-2 bg-cave-950/50 rounded-xl border border-cave-800/80 flex justify-between">
-                  <span className="text-cave-200">{m.name}</span>
-                  <span className="font-mono font-bold text-ebc-straw">
-                    {Units.format(m.weightKg, 'kg')}
-                  </span>
-                </div>
-              ))}
-              {scaleResult.scaledRecipe.hops.map((h, idx) => (
-                <div key={idx} className="p-2 bg-cave-950/50 rounded-xl border border-cave-800/80 flex justify-between">
-                  <span className="text-cave-200">
-                    {h.name} · {describeMoment(h)}
-                  </span>
-                  <span className="font-mono font-bold text-hop">
-                    {Units.format(h.weightG, 'g')}
-                  </span>
-                </div>
-              ))}
-              {scaleResult.scaledRecipe.adjuncts?.map((item, idx) => (
-                <div key={`adjunct-${idx}`} className="p-2 bg-cave-950/50 rounded-xl border border-cave-800/80 flex justify-between">
-                  <span className="text-cave-200">{item.name} · {item.step}</span>
-                  <span className="font-mono font-bold text-cave-50">{Units.format(item.amount, item.unit)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+          {!scaleResult && <p id={targetVolumeError ? 'production-target-volume-error' : undefined} role="alert" className="text-sm text-alert-strong">{targetVolumeError ?? (!sourceBh ? 'Configure une cuverie dans les réglages pour adapter cette recette.' : 'Le volume de la recette source doit être renseigné et positif.')}</p>}
+          {scaleResult && <>
+          <dl aria-label="Eaux adaptées" className="grid grid-cols-2 gap-2 border-y border-cave-800 py-1.5">
+            <div><dt className="text-xs text-cave-400">Empâtage</dt><dd className="text-sm font-mono text-cave-50">{Units.format(scaleResult.mashWaterL,'L')}</dd></div>
+            <div><dt className="text-xs text-cave-400">Rinçage</dt><dd className="text-sm font-mono text-cave-50">{Units.format(scaleResult.spargeWaterL,'L')}</dd></div>
+          </dl>
+          <table className="volume-ingredients">
+            <caption className="text-left text-sm font-semibold text-cave-50 pb-1">Ingrédients pour {Units.format(targetVolumeL,'L')}</caption>
+            <thead><tr><th scope="col">Ingrédient</th><th scope="col">Quantité</th></tr></thead>
+            <tbody>
+              {scaleResult.scaledRecipe.fermentables.map((m,index)=><tr key={'m'+index}><th scope="row">{m.name}</th><td>{Units.format(m.weightKg,'kg')}</td></tr>)}
+              {scaleResult.scaledRecipe.hops.map((hop,index)=><tr key={'h'+index}><th scope="row">{hop.name}<span className="block text-xs text-cave-400">{describeMoment(hop)}</span></th><td>{Units.format(hop.weightG,'g')}</td></tr>)}
+              {scaleResult.scaledRecipe.adjuncts?.map((item,index)=><tr key={'a'+index}><th scope="row">{item.name}<span className="block text-xs text-cave-400">{item.step}</span></th><td>{Units.format(item.amount,item.unit)}</td></tr>)}
+            </tbody>
+          </table>
+          </>}
+        </section>
       )}
 
       <BatchDetailSheet batch={detailBatch} initialSection={detailSection} onClose={() => setDetailBatch(null)} />

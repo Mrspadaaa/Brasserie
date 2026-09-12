@@ -1,0 +1,16 @@
+.settings-workspace section[aria-labelledby="drive-storage-title"] { padding: .5rem; border-radius: .5rem; }
+.settings-workspace [aria-labelledby="drive-storage-title"] button { min-height: 2rem; padding: .25rem .5rem; }
+.settings-workspace [aria-labelledby="drive-storage-title"] summary { min-height: 1.75rem; padding: .25rem 0; }
+.settings-workspace [aria-labelledby="drive-storage-title"] > * + * { margin-top: .5rem; }
+.settings-workspace [aria-labelledby="drive-storage-title"] p { font-size: .8125rem; line-height: 1.35; }
+.settings-workspace [aria-labelledby="backup-export-title"],
+.settings-workspace [aria-labelledby="backup-restore-title"] { padding-top: .5rem; }
+.settings-workspace [aria-labelledby="backup-export-title"] > * + *,
+.settings-workspace [aria-labelledby="backup-restore-title"] > * + * { margin-top: .5rem; }
+.settings-workspace [aria-labelledby="backup-export-title"] button,
+.settings-workspace [aria-labelledby="backup-export-title"] a,
+.settings-workspace [aria-labelledby="backup-restore-title"] button { min-height: 2rem; padding: .25rem .5rem; }
+.settings-workspace [aria-labelledby="backup-export-title"] p,
+.settings-workspace [aria-labelledby="backup-restore-title"] p { font-size: .8125rem; line-height: 1.35; }
+.settings-workspace [aria-labelledby="backup-export-title"] h4,
+.settings-workspace [aria-labelledby="backup-restore-title"] h4 { font-size: .875rem; }

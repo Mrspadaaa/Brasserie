@@ -40,7 +40,7 @@ export function WaterBicarbonateBalance({ treatment, mashWaterL, spargeWaterL }:
           : "Le graphique utilise cette eau après traitement."}
       </p>
       <details>
-        <summary className="min-h-touch cursor-pointer py-3 underline decoration-cave-600 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water focus-visible:outline-offset-2">
+        <summary className="min-h-touch cursor-pointer py-1 underline decoration-cave-600 underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water focus-visible:outline-offset-2">
           Départ, sels et acide
         </summary>
         <table className="w-full table-fixed text-xs leading-snug">
@@ -68,10 +68,25 @@ export function WaterBicarbonateBalance({ treatment, mashWaterL, spargeWaterL }:
               <th scope="row" className="py-2 text-left font-semibold">Après acide</th>
               {waters.map((water) => <td key={water.key} className="py-2 pl-1 text-right font-semibold tabular-nums">{decimal(treatment.treated[water.key].hco3)}</td>)}
             </tr>
+            <tr>
+              <th scope="row" className="py-1 text-left font-normal">Acide pour HCO₃ = 0</th>
+              {waters.map((water) => <td key={water.key} className="py-1 pl-1 text-right tabular-nums">
+                {treatment.acidBalance[water.key]
+                  ? `≈ ${decimal(treatment.acidBalance[water.key]!.neutralizationAmount)} ${water.acid.unit}` : '—'}
+              </td>)}
+            </tr>
+            <tr>
+              <th scope="row" className="py-1 text-left font-normal">Acide au-delà</th>
+              {waters.map((water) => <td key={water.key} className="py-1 pl-1 text-right tabular-nums">
+                {treatment.acidBalance[water.key]
+                  ? `${decimal(treatment.acidBalance[water.key]!.beyondWaterAmount)} ${water.acid.unit}` : '—'}
+              </td>)}
+            </tr>
           </tbody>
         </table>
         <p className="pt-2 text-xs leading-snug">
-          Chaque eau conserve sa dilution et sa dose d’acide. La moyenne décrit l’eau totale avant les apports des malts et l’ébullition.
+          Chaque eau conserve sa dilution et sa dose d’acide. Cette moyenne ne calcule pas l’équilibre du moût après mélange avec les malts.
+          L’acide au-delà du HCO₃ peut encore agir sur leurs tampons et abaisser le pH. Neutraliser tout le HCO₃ n’est pas une consigne de dosage.
         </p>
       </details>
     </section>

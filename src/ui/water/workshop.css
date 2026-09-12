@@ -50,8 +50,24 @@
   }
 
   .water-acid-dose > span {
-    white-space: nowrap;
-    font-size: 11px;
+    font-size: 0.75rem;
+  }
+
+  /* Keep both water doses beside the product at normal text size. Let each
+     dose take its own line when enlarged text needs room for the full value. */
+  .water-workshop .water-acid-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .water-acid-row > div:first-child {
+    flex: 0 1 auto;
+    max-width: 100%;
+  }
+
+  .water-acid-row > .water-acid-dose {
+    flex: 1 1 6rem;
+    min-width: 6rem;
   }
 
   .water-acid-readings {
@@ -215,9 +231,6 @@
 
   .water-salt-dose > button,
   .water-salt-dose > :is(input, textarea:where([data-single-line])),
-  .water-acid-dose button,
-  .water-acid-dose :is(input, textarea:where([data-single-line])),
-  .water-acid-row button,
   .water-ratio-compact input[type="range"] {
     height: 40px;
     min-height: 40px;
@@ -244,10 +257,7 @@
   .water-ratio-compact .ratio-orientation,
   .water-ratio-compact .ratio-help { display: none; }
   .water-salt-dose > button,
-  .water-salt-dose > :is(input, textarea:where([data-single-line])),
-  .water-acid-dose button,
-  .water-acid-dose :is(input, textarea:where([data-single-line])),
-  .water-acid-row button { height: 36px; min-height: 36px; }
+  .water-salt-dose > :is(input, textarea:where([data-single-line])) { height: 36px; min-height: 36px; }
 }
 
 body:has([data-inline-companion]) [data-water-step="sels"] .water-mobile-nav {

@@ -13,27 +13,29 @@ import {localYeastFacts} from '../../src/domain/localIngredientFacts';
 const run=vi.fn();vi.mock('../../src/services/aiClient',()=>({AiClient:{run:(...a:unknown[])=>run(...a)}}));
 afterEach(()=>{cleanup();vi.restoreAllMocks();run.mockReset();});
 describe('NOLO pendant la création',()=>{
-  it('rend immédiatement trois candidates, montre les changements puis applique le programme complet sans persistance',async()=>{
+  it('préremplit une simulation avec les candidates du procédé puis applique le programme sans persistance externe',async()=>{
     const write=vi.spyOn(StorageService,'saveHopKnowledge'), learn=vi.fn();let latest=fruty(true);
     function Host(){const [r,setR]=useState(latest);latest=r;return <><RecipeAutoComplete nolo active={false} fermentables={r.fermentables} onFermentables={f=>setR(p=>({...p,fermentables:f}))} hops={r.hops} onHops={h=>setR(p=>({...p,hops:h}))} yeast={r.yeast} onYeast={y=>setR(p=>({...p,yeast:y}))} onLearnIngredient={learn}/><NoloFermentationWorkshop recipe={r} onChange={setR}/></>}
     render(<Host/>);
-    const cards=screen.getByLabelText('Propositions NOLO');expect(within(cards).getAllByRole('button')).toHaveLength(3);
+    const candidates=screen.getByLabelText('Levure de la simulation');expect(within(candidates).getAllByRole('option').length).toBeGreaterThan(3);
     expect(screen.queryByText('Banane · objectif')).not.toBeInTheDocument();
-    fireEvent.click(within(cards).getByRole('button',{name:/LA-01/}));
+    fireEvent.change(candidates,{target:{value:'yeast-fermentis-safbrew-la-01'}});
     expect(latest.yeast.name).toContain('US-05');
-    expect(screen.getByLabelText('Proposition complète de fermentation')).toHaveTextContent('Empâtage');
-    fireEvent.click(screen.getByRole('button',{name:'Appliquer cette proposition'}));
+    expect(screen.getByLabelText('Changements proposés dans la recette NOLO')).toHaveTextContent('Empâtage');
+    const projected=Number(screen.getByLabelText('Résultat de la simulation NOLO').getAttribute('data-nolo-max'));
+    fireEvent.click(screen.getByRole('button',{name:'Appliquer à la recette'}));
     await waitFor(()=>expect(latest.yeast.hopIndexId).toBe('yeast-fermentis-safbrew-la-01'));
     expect(latest.yeast.qty).toBeCloseTo(15.6,8);
     expect(latest.mash?.steps.map(s=>s.tempC)).toEqual([65,73]);
-    expect(evaluateNoloRecipe(latest)?.projection.max).toBeCloseTo(.3964,9);
+    expect(evaluateNoloRecipe(latest)?.projection.max).toBeCloseTo(projected,9);
     expect(write).not.toHaveBeenCalled();expect(run).not.toHaveBeenCalled();expect(learn).not.toHaveBeenCalled();
   });
   it('rejette une proposition périmée et conserve les intentions libres',()=>{
     const r=fruty(true),change=vi.fn(),view=render(<NoloFermentationWorkshop recipe={r} onChange={change}/>);
-    fireEvent.click(within(screen.getByLabelText('Propositions NOLO')).getByRole('button',{name:/LA-01/}));
+    fireEvent.change(screen.getByLabelText('Variation de l’extrait'),{target:{value:'10'}});
     view.rerender(<NoloFermentationWorkshop recipe={{...r,volumeL:25}} onChange={change}/>);
-    expect(screen.getByText(/La recette a changé/)).toBeInTheDocument();expect(screen.queryByRole('button',{name:'Appliquer cette proposition'})).not.toBeInTheDocument();
+    expect(screen.getByText(/La recette a changé/)).toBeInTheDocument();expect(screen.getByRole('button',{name:'Appliquer à la recette'})).toBeDisabled();
+    fireEvent.click(screen.getByText('Profil aromatique, fruit et acidité'));
     fireEvent.change(screen.getByRole('textbox',{name:/Profil recherché/}),{target:{value:'framboise ronde'}});
     expect(change.mock.lastCall?.[0].fermentationIntent.aroma).toBe('framboise ronde');
   });

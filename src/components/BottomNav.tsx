@@ -138,7 +138,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       className="fixed bottom-0 inset-x-0 z-40 bg-cave-900 select-none pb-safe"
     >
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-cave-800" />
-      <div className="max-w-md mx-auto grid grid-cols-5">
+      <div className="max-w-md mx-auto flex overflow-x-auto overscroll-x-contain scrollbar-none">
         {TABS.map(({ id, label, Icon, accent, selected, badge }) => {
           const active = activeTab === id;
           const stockLabel = badge && criticalStockCount > 0
@@ -151,7 +151,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               onClick={() => onChangeTab(id)}
               aria-current={active ? 'page' : undefined}
               aria-label={stockLabel}
-              className={`relative min-h-10 min-w-0 px-0.5 py-0.5 flex flex-col items-center justify-center gap-0.5
+              className={`relative min-h-10 min-w-max flex-1 px-1 py-0.5 flex flex-col items-center justify-center gap-0.5
                           transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50
                           ${accent} ${active ? selected : 'hover:bg-cave-850'}`}
             >
@@ -173,7 +173,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 )}
               </span>
 
-              <span className={`w-full break-words text-xs leading-4 ${active ? 'font-semibold text-cave-50' : 'font-medium text-cave-200'}`}>{label}</span>
+              <span className={`w-full whitespace-nowrap text-xs leading-4 ${active ? 'font-semibold text-cave-50' : 'font-medium text-cave-200'}`}>{label}</span>
             </button>
           );
         })}

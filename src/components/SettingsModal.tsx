@@ -22,6 +22,7 @@ import { equipmentErrors } from '../domain/brewEquipment';
 import { BackupPanel } from '../ui/BackupPanel';
 import { DriveStoragePanel } from '../ui/DriveStoragePanel';
 import { useSyncedDraft } from '../hooks/useLiveData';
+import '../ui/settings-compact.css';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -74,85 +75,87 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <ModalShell open={isOpen} onClose={onClose} size="lg" dismissible={!busy && !backupBusy} labelledBy="settings-modal-title">
+      <div className="settings-workspace flex min-h-0 flex-1 flex-col overflow-hidden">
       {/* Top Header */}
-      <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">
+      <div className="flex items-center justify-between px-2 py-1 border-b border-cave-800 bg-cave-900/90 shrink-0">
         <div className="flex items-center space-x-2">
           <Settings className="w-5 h-5 text-ebc-straw shrink-0" />
-          <h3 id="settings-modal-title" className="font-bold text-base text-cave-50">Paramètres & Évolutions</h3>
+          <h3 id="settings-modal-title" className="font-semibold text-sm text-cave-50">Paramètres & Évolutions</h3>
         </div>
         <button
           type="button"
           onClick={onClose}
           disabled={busy || backupBusy}
           aria-label="Fermer"
-          className="p-2 text-cave-400 hover:text-cave-200 bg-cave-850 rounded-full transition"
+          className="min-h-touch min-w-touch flex items-center justify-center text-cave-400 hover:text-cave-200 rounded-control transition"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
       {/* Sub-tabs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 bg-cave-950/60 p-1.5 border-b border-cave-800/80 text-sm shrink-0 gap-1">
+      <div className="flex overflow-x-auto overscroll-x-contain bg-cave-950/60 p-1 border-b border-cave-800/80 text-sm shrink-0 gap-1">
         <button
           type="button"
           onClick={() => setActiveTab('fiscal')}
           disabled={backupBusy}
           aria-pressed={activeTab === 'fiscal'}
-          className={`min-h-11 py-2 px-2 rounded-xl font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
+          className={`min-h-touch flex-1 py-0.5 px-1.5 rounded-control font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
             activeTab === 'fiscal' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          🇨🇭 Fiscalité
+          Fiscalité
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('brewhouse')}
           disabled={backupBusy}
           aria-pressed={activeTab === 'brewhouse'}
-          className={`min-h-11 py-2 px-2 rounded-xl font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
+          className={`min-h-touch flex-1 py-0.5 px-1.5 rounded-control font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
             activeTab === 'brewhouse' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          ⚙️ Brasserie
+          Brasserie
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('security')}
           disabled={backupBusy}
           aria-pressed={activeTab === 'security'}
-          className={`min-h-11 py-2 px-2 rounded-xl font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
+          className={`min-h-touch flex-1 py-0.5 px-1.5 rounded-control font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
             activeTab === 'security' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          🔒 Accès
+          Accès
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('backup')}
           disabled={busy || backupBusy}
           aria-pressed={activeTab === 'backup'}
-          className={`min-h-11 py-2 px-2 rounded-xl font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
+          className={`min-h-touch flex-1 py-0.5 px-1.5 rounded-control font-semibold transition whitespace-nowrap text-center disabled:opacity-50 ${
             activeTab === 'backup' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          💾 Sauvegardes
+          Sauvegardes
         </button>
       </div>
 
       {/* Modal Body */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-sm overscroll-contain">
+      <div className="flex-1 overflow-y-auto p-2 space-y-2 text-sm overscroll-contain">
         {/* TAB 1: FISCALITÉ */}
         {activeTab === 'fiscal' && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <p className="text-cave-400 text-xs sm:text-sm">
               Ajustez ces valeurs si la législation suisse évolue (ex: TVA ou droit brassicole).
             </p>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">TVA réduite (denrées admissibles)</label>
+                <label htmlFor="settings-vat-reduced" className="text-cave-200 font-semibold block mb-1 text-xs">TVA réduite (denrées admissibles)</label>
                 <div className="flex items-center space-x-1">
                   <NumberInput
+                    id="settings-vat-reduced"
                     value={Math.round(formData.fiscal.tvaReducedRate * 1000) / 10}
                     onValue={(v) =>
                       setFormData({
@@ -168,9 +171,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
 
               <div>
-                <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">TVA normale (bière alcoolisée, matériel)</label>
+                <label htmlFor="settings-vat-normal" className="text-cave-200 font-semibold block mb-1 text-xs">TVA normale (bière alcoolisée, matériel)</label>
                 <div className="flex items-center space-x-1">
                   <NumberInput
+                    id="settings-vat-normal"
                     value={Math.round(formData.fiscal.tvaNormalRate * 1000) / 10}
                     onValue={(v) =>
                       setFormData({
@@ -187,13 +191,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             {/* Assujettissement TVA */}
-            <div className="p-3 bg-cave-850/40 rounded-xl border border-cave-800 space-y-2">
-              <label className="flex items-center justify-between cursor-pointer min-h-[44px]">
+            <div className="p-2 bg-cave-850/40 rounded-control border border-cave-800 space-y-1">
+              <label className="flex items-center justify-between cursor-pointer min-h-touch-lg">
                 <span className="flex-1 pr-3">
                   <span className="font-bold text-cave-200 block text-xs sm:text-sm">Brasserie assujettie à la TVA</span>
-                  <span className="text-xs text-cave-400">
-                    Reproduis le statut confirmé auprès de l’AFC. Le seuil de chiffre d’affaires ne remplace pas une décision d’assujettissement, notamment volontaire.
-                  </span>
                 </span>
                 <input
                   type="checkbox"
@@ -210,19 +211,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   className="w-5 h-5 accent-ebc-straw rounded cursor-pointer shrink-0"
                 />
               </label>
+              <details><summary className="min-h-touch flex items-center cursor-pointer text-xs text-cave-400">Quel statut indiquer ?</summary><p className="text-xs text-cave-400">Reproduis le statut confirmé auprès de l’AFC. Le seuil de chiffre d’affaires ne remplace pas une décision d’assujettissement, notamment volontaire.</p></details>
             </div>
 
-            <div className="space-y-3 rounded-2xl border border-cave-800 bg-cave-950/50 p-3">
+            <div className="space-y-2 rounded-control border border-cave-800 bg-cave-950/50 p-2">
               <h3 className="font-bold text-cave-50">Réserve impôt sur la bière</h3>
-              <p className="text-sm text-cave-400">Taux pleins selon le degré Plato : 16,88 / 25,32 / 33,76 CHF par hl. Le conditionnement fournit une réserve indicative ; l’impôt naît à la sortie ou à la consommation sur place.</p>
               <div className="grid grid-cols-2 gap-3"><label className="text-sm text-cave-200">Réduction annuelle OFDF (%)<NumberInput value={formData.fiscal.beerTaxAnnualReductionPct} onValue={value => setFormData({...formData,fiscal:{...formData.fiscal,beerTaxAnnualReductionPct:value}})} min={0} max={40} className={inputClass}/></label><label className="text-sm text-cave-200">Année confirmée<NumberInput value={formData.fiscal.beerTaxReductionYear} onValue={value => setFormData({...formData,fiscal:{...formData.fiscal,beerTaxReductionYear:value}})} min={2000} max={2200} integer className={inputClass}/></label></div>
               <label className="block text-sm text-cave-200">Périodicité attribuée<select className={inputClass} value={formData.fiscal.beerTaxPeriod??''} onChange={event=>setFormData({...formData,fiscal:{...formData.fiscal,beerTaxPeriod:(event.target.value||undefined) as 'annual'|'quarterly'|undefined}})}><option value="">À confirmer auprès de l’OFDF</option><option value="annual">Annuelle</option><option value="quarterly">Trimestrielle</option></select></label>
-              <p className="text-sm text-cave-400">Sans taux annuel confirmé, aucune réduction n’est supposée. Les paiements et décomptes s’effectuent selon les décisions de l’OFDF, via Taxas.</p>
-              <a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="text-sm text-ebc-straw underline">Consulter les informations OFDF</a>
+              <details className="text-xs text-cave-400"><summary className="min-h-touch flex items-center cursor-pointer">Calcul et déclaration</summary><div className="space-y-2"><p>Taux pleins selon le degré Plato : 16,88 / 25,32 / 33,76 CHF par hl. Le conditionnement fournit une réserve indicative ; l’impôt naît à la sortie ou à la consommation sur place.</p><p>Sans taux annuel confirmé, aucune réduction n’est supposée. Les paiements et décomptes s’effectuent selon les décisions de l’OFDF, via Taxas.</p><a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="inline-flex min-h-touch items-center text-ebc-straw underline">Consulter les informations OFDF</a></div></details>
             </div>
-            <div className="p-3 bg-cave-850/40 rounded-xl border border-cave-800 space-y-1">
-              <span className="font-bold text-cave-200 text-xs sm:text-sm">IBAN Brasserie (factures par virement) :</span>
+            <div className="p-2 bg-cave-850/40 rounded-control border border-cave-800 space-y-1">
+              <label htmlFor="settings-company-iban" className="font-bold text-cave-200 text-xs">IBAN Brasserie (factures par virement)</label>
               <Input
+                id="settings-company-iban"
                 type="text"
                 name="settings_company_qr_ref"
                 autoComplete="off"
@@ -239,7 +240,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     company: { ...formData.company, iban: e.target.value }
                   })
                 }
-                className={`${inputClass} font-mono text-xs sm:text-sm`}
+                className={`${inputClass} font-mono`}
               />
             </div>
           </div>
@@ -253,7 +254,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </p>
 
             {formData.brewhouses.map((bh) => (
-              <div key={bh.id} className="p-3 rounded-2xl bg-cave-850/50 border border-cave-700 space-y-2">
+              <div key={bh.id} className="p-2 rounded-control bg-cave-850/50 border border-cave-700 space-y-1">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-cave-50">{bh.name}</span>
                   <span className="text-footnote bg-ebc-straw/20 text-ebc-gold font-semibold px-2 py-0.5 rounded-full font-mono">
@@ -261,20 +262,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-xs sm:text-sm text-center">
-                  <div className="bg-cave-900/60 p-2 rounded-xl">
-                    <span className="text-cave-400">Rendement</span>
-                    <div className="font-bold text-cave-200">{bh.efficiencyPct}%</div>
+                <dl className="grid grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <dt className="text-cave-400">Rendement</dt>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.efficiencyPct}%</dd>
                   </div>
-                  <div className="bg-cave-900/60 p-2 rounded-xl">
-                    <span className="text-cave-400">Évaporation</span>
-                    <div className="font-bold text-cave-200">{bh.equipment ? `${bh.equipment.boilOffLPerHour} L/h` : `${bh.boilOffRatePct}%/h`}</div>
+                  <div>
+                    <dt className="text-cave-400">Évaporation</dt>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.equipment ? `${bh.equipment.boilOffLPerHour} L/h` : `${bh.boilOffRatePct}%/h`}</dd>
                   </div>
-                  <div className="bg-cave-900/60 p-2 rounded-xl">
-                    <span className="text-cave-400">Pertes cuve</span>
-                    <div className="font-bold text-cave-200">{bh.deadSpaceL} L</div>
+                  <div>
+                    <dt className="text-cave-400">Pertes cuve</dt>
+                    <dd className="font-semibold text-sm tabular-nums text-cave-200">{bh.deadSpaceL} L</dd>
                   </div>
-                </div>
+                </dl>
 
                 {bh.id===formData.activeBrewhouseId&&<BrewhouseSettings profile={bh} onChange={next=>setFormData(f=>({...f,brewhouses:f.brewhouses.map(b=>b.id===next.id?next:b)}))}/>}
               </div>
@@ -343,7 +344,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               type="button"
               onClick={handleResetData}
               disabled={busy || backupBusy}
-              className="mt-2 w-full min-h-11 px-3 py-2 text-alert text-sm font-semibold rounded-xl border border-alert/30 hover:bg-alert/10 disabled:opacity-50 transition flex items-center justify-center gap-2"
+              className="mt-2 w-full min-h-touch-lg px-3 py-2 text-alert text-sm font-semibold rounded-xl border border-alert/30 hover:bg-alert/10 disabled:opacity-50 transition flex items-center justify-center gap-2"
             >
               <RotateCcw className="w-4 h-4 shrink-0" aria-hidden="true"/>
               Réinitialiser l’affichage de cet appareil
@@ -354,7 +355,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
       {/* Sticky Actions */}
       {activeTab !== 'backup' && dataMessage && <p role={dataError ? 'alert' : 'status'} className={`px-4 py-2 text-xs ${dataError ? 'text-alert' : 'text-hop'}`}>{dataMessage}</p>}
-      {activeTab !== 'backup' && <div className="p-3 border-t border-cave-800 bg-cave-900 flex items-center justify-between shrink-0">
+      {(activeTab === 'fiscal' || activeTab === 'brewhouse') && <div className="px-2 py-0.5 border-t border-cave-800 bg-cave-900 flex items-center justify-between shrink-0">
         <span className="text-xs sm:text-sm text-hop font-semibold">
           {savedSuccess ? 'Modifications enregistrées !' : ''}
         </span>
@@ -362,12 +363,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           type="button"
           onClick={handleSave}
           disabled={busy || formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)}
-          className="px-5 py-2.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-bold text-sm rounded-xl shadow-lg transition flex items-center ml-auto"
+          className="min-h-touch-lg px-3 py-1 bg-ebc-straw text-cave-950 font-bold text-sm rounded-xl shadow-lg transition flex items-center ml-auto"
         >
           {savedSuccess ? <Check className="w-4 h-4 mr-1.5" /> : <Save className="w-4 h-4 mr-1.5" />}
           <span>Sauvegarder</span>
         </button>
       </div>}
+      </div>
     </ModalShell>
   );
 };

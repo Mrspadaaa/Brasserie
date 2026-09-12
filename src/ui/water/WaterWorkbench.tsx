@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { formatDecimal } from "../numericInput";
 import { AcidId, SaltId, WaterIons } from "../../types";
 import { SaltMineralDetails } from "../SaltMineralDetails";
@@ -104,6 +104,11 @@ export function WaterWorkbench({
 }: Props) {
   const [detailsSalt, setDetailsSalt] = useState<SaltId | null>(null);
   const [acidProductChanged, setAcidProductChanged] = useState(false);
+  const acidWarningId = useId();
+  // Ignore at most half a dosing step from rounding at neutralization. Crossing
+  // this water-only reference is not in itself proof of an over-acidified mash.
+  const beyondWater = (['mash', 'sparge'] as const).filter(side =>
+    (treatment.acidBalance[side]?.beyondWaterAmount ?? 0) > 0.05);
   useWaterControlsLayout(workbenchRef);
   return (
     <>
@@ -276,7 +281,7 @@ export function WaterWorkbench({
                     set({ acidId: id, acidOverride: undefined });
                   }}
                   label={(id) => ACID_SHORT[id]}
-                  className="max-w-full min-w-0 min-h-11"
+                  className="max-w-full min-w-0 min-h-touch mb-4 sm:mb-0 before:hidden"
                 />
 
               </div>
@@ -287,6 +292,8 @@ export function WaterWorkbench({
                 unit={mashAcid.unit}
                 amount={mashAcid.amount}
                 force={state.acidOverride?.mash != null}
+                hco3={state.mashWaterL > 0 ? treatment.treated.mash.hco3 : undefined}
+                descriptionId={beyondWater.includes('mash') ? acidWarningId : undefined}
                 disabled={state.mashWaterL <= 0}
                 onDose={(v) => setAcidDose('mash', v)}
                 onEditStart={() => beginEdit({ kind: 'acid', side: 'mash', from: mashAcid.amount, to: mashAcid.amount })}
@@ -299,6 +306,8 @@ export function WaterWorkbench({
                   unit={spargeAcid.unit}
                   amount={spargeAcid.amount}
                   force={state.acidOverride?.sparge != null}
+                  hco3={treatment.treated.sparge.hco3}
+                  descriptionId={beyondWater.includes('sparge') ? acidWarningId : undefined}
                   disabled={
                     state.spargeWaterL <= 0 || state.acidId === "maltAcidule"
                   }
@@ -308,45 +317,44 @@ export function WaterWorkbench({
                 />
               )}
             </div>
+            {beyondWater.length > 0 && <p id={acidWarningId} role="status" aria-label="Acide au-delà du bicarbonate"
+              className="mt-1 border-t border-cave-700 pt-1 text-xs leading-snug text-attention">
+              <strong>{beyondWater.map(side => side === 'mash' ? 'Empâtage' : 'Rinçage').join(' et ')} : HCO₃ épuisé.</strong>{' '}
+              L’acide ajouté au-delà peut encore abaisser le pH. Vérifie la dose et mesure le pH.
+            </p>}
           </div>
         </section>
       </div>
       <details className="text-xs text-cave-200">
-        <summary className="min-h-11 cursor-pointer flex items-center text-water">Bicarbonates après acidification</summary>
-            <div className="water-acid-readings flex flex-wrap gap-x-2 gap-y-0.5 text-2xs text-cave-200">
-              <span>HCO₃ <span className="hidden sm:inline">après acide</span></span>
-              {state.mashWaterL > 0 && <span aria-label="HCO₃ après acide — empâtage">
-                <span className="sm:hidden">Emp.</span><span className="hidden sm:inline">Empâtage</span>{" "}
-                <strong className="reading text-water">
-                  {formatDecimal(
-                    Math.round(treatment.treated.mash.hco3 * 10) / 10,
-                  )}
-                </strong>{" "}
-                <span className="hidden sm:inline">ppm</span>
-              </span>}
-              {hasSparge && (
-                <span aria-label="HCO₃ après acide — rinçage">
-                  <span className="sm:hidden">Rinç.</span><span className="hidden sm:inline">Rinçage</span>{" "}
-                  <strong className="reading text-water">
-                    {formatDecimal(
-                      Math.round(treatment.treated.sparge.hco3 * 10) / 10,
-                    )}
-                  </strong>{" "}
-                  <span className="hidden sm:inline">ppm</span>
-                </span>
-              )}
-            {totalWaterL > 0 && <p className="water-acid-mean text-2xs sm:mt-2 sm:w-full sm:border-t sm:border-cave-700 sm:pt-2 sm:text-sm text-cave-200" aria-label="HCO₃ après acide — moyenne du graphique">
-              <span className="sm:hidden">Total</span><span className="hidden sm:inline">Moyenne du graphique ({formatDecimal(totalWaterL)} L) :</span>{" "}
-              <strong className="tabular-nums text-water">{formatDecimal(treatment.treatedTotal.hco3)} ppm</strong>
-            </p>}
-            </div>
+        <summary className="min-h-touch cursor-pointer py-1">
+          <span aria-label="HCO₃ après acide — moyenne du graphique">HCO₃ · moyenne du graphique :{' '}
+            <strong className="tabular-nums text-cave-50">{formatDecimal(treatment.treatedTotal.hco3)} ppm</strong>
+          </span>
+        </summary>
+        <div className="space-y-1 pb-1">
+          <p>La moyenne pondérée sur {formatDecimal(totalWaterL)} L décrit les eaux préparées séparément.
+            {hasSparge && treatment.treated.mash.hco3 === 0 && treatment.treated.sparge.hco3 > 0 &&
+              ' Le HCO₃ encore affiché vient du rinçage : ajouter de l’acide à l’empâtage ne le fait plus baisser.'}
+            {' '}Ce n’est pas le HCO₃ du moût après mélange avec les malts.</p>
+          {beyondWater.map(side => {
+            const balance = treatment.acidBalance[side]!;
+            const acid = side === 'mash' ? mashAcid : spargeAcid;
+            const decimal = (value: number) => formatDecimal(Math.round(value * 10) / 10);
+            return <p key={side}>
+              {side === 'mash' ? 'Empâtage' : 'Rinçage'} : ≈ {decimal(balance.neutralizationAmount)} {acid.unit} suffisent
+              à neutraliser le HCO₃ de cette eau. Dose retenue : {formatDecimal(acid.amount)} {acid.unit},
+              soit {decimal(balance.beyondWaterAmount)} {acid.unit} au-delà.
+              Ce repère n’est pas une dose conseillée : les tampons du malt et le pH restent à prendre en compte.
+            </p>;
+          })}
+        </div>
       </details>
       {manualImpact && <WaterDoseImpact impact={manualImpact} />}
       {acideForce && <div className="flex flex-wrap items-center justify-between gap-x-3 text-2xs text-ebc-straw">
         <p>Doses manuelles conservées, y compris avec « Doser ».</p>
         <button type="button" onClick={() => set({ acidOverride: undefined })}
           aria-label="Revenir aux doses d’acide calculées"
-          className="min-h-11 text-left underline underline-offset-2 hover:text-ebc-gold">
+          className="min-h-touch text-left underline underline-offset-2 hover:text-ebc-gold">
           Recalculer l’acide : {formatDecimal(mashAcidCalcule.amount)}{hasSparge && ` + ${formatDecimal(spargeAcidCalcule.amount)}`} {mashAcidCalcule.unit}
         </button>
       </div>}

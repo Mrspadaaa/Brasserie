@@ -47,6 +47,8 @@ import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, n
 import { wortTool, fruitSugarOperation, primingSugarOperation, aromaOperation, additionImpact, dilutionTool, noloVolumeAfterOperations, scaleBenchTrial, analyzeGravityTrial, type ToolResult } from './noloBrewTools';
 import { noloToolContext } from './noloToolContext';
 import type { NoloOperation } from '../../functions/src/noloSchema';
+import { noloYeastCandidates } from './noloYeastSelection';
+import { prepareNoloRecipe, type NoloRecipeSettings } from './noloRecipeSolver';
 
 const number = (
   a: Record<string, unknown>,
@@ -103,6 +105,15 @@ export const brewerToolDeclarations = [
     'calculate_recipe',
     'Calculer la recette actuelle. En NOLO : bilan ordonné, analyses contextualisées et projection distincts ; volumeL seul explore un volume hypothétique sans redimensionner les ingrédients. calculate_nolo_tools calcule les hypothèses du panneau NOLO. Hors NOLO, volumeL simule une mise à l’échelle COMPLÈTE : ingrédients ET eau recalculés, à proposer ensemble. recommendedWater est un besoin, distinct des volumes saisis.',
     { volumeL: num('Volume froid souhaité en fermenteur, L ; facultatif') }
+  ),
+  tool(
+    'simulate_nolo_recipe',
+    'Préparer une recette NOLO complète depuis la consigne et le procédé, avec le même simulateur que l’écran : quantités de grain, paliers, ensemencement, conduite, plage d’alcool et hypothèses. Lecture seule. Les champs proposés ne sont jamais des mesures et les résultats ne prouvent pas la stabilité. Le plan enregistré se trouve dans nolo.planning.simulation. Consulter les changements puis utiliser le simulateur pour appliquer tout le programme ensemble.',
+    { process: str('Procédé à comparer ; défaut celui de la recette', ['restricted','restored','lowExtract','coldExtraction','coldContact','arrested','dealcoholized','secondRunnings']),
+      targetAbvPct: num('Consigne maximale en % vol., de 0 à 0,5'), yeastId: str('ID de souche parmi les candidates du procédé ; facultatif'),
+      ogSg: num('Densité initiale envisagée SG ; facultative pour ajuster le scénario'),
+      attenuationMinPct: num('Atténuation minimale envisagée, %'), attenuationMaxPct: num('Atténuation maximale envisagée, %'),
+      extractTolerancePct: num('Variation relative de l’extrait en ± %, hypothèse pilote') }
   ),
   tool(
     'calculate_nolo_tools',
@@ -363,6 +374,34 @@ export function runBrewerTool(
     throw new Error(
       'Recette manquante pour ce lot : demander les données utiles sans les inventer.'
     );
+  if (name === 'simulate_nolo_recipe') {
+    if (!r.nolo?.enabled) throw Error('Activer le contexte NOLO de la recette avant de préparer le programme.');
+    const allowed = ['process','targetAbvPct','yeastId','ogSg','attenuationMinPct','attenuationMaxPct','extractTolerancePct'];
+    if (Object.keys(a).some(key => !allowed.includes(key))) throw Error('Réglage de simulation NOLO inconnu.');
+    const science = r.nolo.scienceSnapshot ?? noloScience(c.hopIndex?.knowledge ?? []);
+    if (!science) throw Error('Références NOLO indisponibles.');
+    const process = a.process ?? r.nolo.process;
+    if (!['restricted','restored','lowExtract','coldExtraction','coldContact','arrested','dealcoholized','secondRunnings'].includes(process as string)) throw Error('Procédé NOLO inconnu.');
+    const settings: Partial<NoloRecipeSettings> = { process: process as NoloRecipeSettings['process'] };
+    if (a.targetAbvPct != null) settings.targetAbvPct = number(a, 'targetAbvPct', 0, .5);
+    if (a.ogSg != null) settings.ogSg = number(a, 'ogSg', 1, 1.3);
+    if (a.extractTolerancePct != null) settings.extractTolerancePct = number(a, 'extractTolerancePct', 0, 100);
+    if (a.attenuationMinPct != null || a.attenuationMaxPct != null) {
+      const min = number(a, 'attenuationMinPct', 0, 100), max = number(a, 'attenuationMaxPct', 0, 100);
+      if (min > max) throw Error('Atténuation minimum supérieure au maximum.');
+      settings.attenuationPct = { min, max };
+    }
+    const candidates = noloYeastCandidates({ ...r, nolo: { ...r.nolo, process: settings.process! } }, science, c.hopIndex?.knowledge ?? []);
+    const candidate = a.yeastId != null ? candidates.find(row => row.strain.yeastId === a.yeastId) : candidates.find(row => row.strain.yeastId === r.yeast.hopIndexId) ?? candidates[0];
+    if (!candidate) throw Error('Souche absente des candidates de ce procédé.');
+    const proposal = prepareNoloRecipe(r, science, candidate.strain, settings);
+    return result('Simulation complète NOLO', {
+      proposedRecipe: proposal.recipe, settings: proposal.settings, projection: proposal.result?.projection,
+      confidence: proposal.confidence, changes: proposal.changes, blocking: proposal.blocking,
+      candidates: candidates.map(({ strain, reason }) => ({ yeastId: strain.yeastId, name: strain.name, reason })),
+      sources: proposal.sources
+    }, proposal.assumptions, [...proposal.warnings, 'Proposition non appliquée : les mesures et la recette du contexte restent intactes.']);
+  }
   if (name === 'calculate_nolo_tools') {
     if (!r.nolo?.enabled) throw Error('Activer et renseigner le contexte NOLO de la recette.');
     const section = a.section ?? 'all';

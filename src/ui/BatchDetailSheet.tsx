@@ -17,6 +17,7 @@ import { parseDecimal } from './numericInput';
 import { NoloPanel } from './NoloPanel';
 import { noloRecipeForBatch } from '../domain/nolo';
 import { BrewBudgetButton } from './finance/BrewBudgetDialog';
+import { DateField } from './DateField';
 import { Units } from '../services/units';
 
 /**
@@ -70,7 +71,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
       : null;
 
   const field =
-    'w-full min-h-touch px-3 rounded-control bg-cave-950 border border-cave-700 ' +
+    'w-full min-h-touch-lg px-2 rounded-control bg-cave-950 border border-cave-700 ' +
     'text-cave-50 text-base focus:outline-none focus:border-ebc-straw transition-colors';
 
   const save = (patch: Partial<Batch>) => {
@@ -108,7 +109,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         open={!!batch}
         onClose={onClose}
         title={draft.name}
-        subtitle={`${draft.id} · ${draft.style} · ${draft.volumeL} L`}
+        subtitle={`${draft.id} · ${draft.style} · ${draft.volumeL} L visés`}
         className="md:max-w-2xl md:mx-auto"
         footer={
           <Button intent="primary" full onClick={onClose}>
@@ -116,7 +117,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           </Button>
         }
       >
-        <div className="space-y-5">
+        <div className="space-y-2">
           {noloRecipeForBatch(draft)&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
             className="grid grid-cols-3 border-b border-cave-700"
@@ -141,8 +142,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
             ))}
           </nav>
           {(historicalStock || needsBrewStock || stockIssues.length > 0 || pending.length > 0) && (
-            <section aria-label="Suivi du stock du brassin" className="rounded-xl border border-ebc-amber/30 bg-cave-950 p-4 space-y-3">
-              <div className="flex items-start gap-2"><AlertTriangle className="w-5 h-5 shrink-0 text-ebc-amber mt-0.5" /><div><h3 className="font-semibold text-cave-50">{historicalStock ? 'Stock de ce brassin à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés pour la fermentation'}</h3><p className="text-sm text-cave-400 leading-relaxed mt-1">{historicalStock ? 'Ce brassin vient de l’ancien suivi. Indiquez ce qui a déjà été retiré pour éviter une double déduction.' : needsBrewStock ? 'Les relevés sont conservés. Vérifiez les ingrédients puis confirmez leur sortie de stock.' : 'Les réservations protègent ces ingrédients pour ce brassin jusqu’à leur ajout réel.'}</p></div></div>
+            <section aria-label="Suivi du stock du brassin" className="rounded-xl border border-ebc-amber/30 bg-cave-950 p-2 space-y-2">
+              <div className="flex items-start gap-2"><AlertTriangle className="w-4 h-4 shrink-0 text-ebc-amber mt-0.5" /><div><h3 className="text-sm font-semibold text-cave-50">{historicalStock ? 'Stock de ce brassin à confirmer' : stockIssues.length || needsBrewStock ? 'Stock à vérifier' : 'Ajouts réservés pour la fermentation'}</h3><p className="text-2xs text-cave-400 leading-snug mt-1">{historicalStock ? 'Ce brassin vient de l’ancien suivi. Indiquez ce qui a déjà été retiré pour éviter une double déduction.' : needsBrewStock ? 'Les relevés sont conservés. Vérifiez les ingrédients puis confirmez leur sortie de stock.' : 'Les réservations protègent ces ingrédients pour ce brassin jusqu’à leur ajout réel.'}</p></div></div>
               {stockIssues.length > 0 && <ul className="list-disc pl-5 text-sm text-ebc-amber space-y-1">{stockIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
               {pending.length > 0 && <ul className="text-sm text-cave-200 space-y-1">{pending.map((item, i) => <li key={`${item.stockItemRef}-${i}`}>{stockNames.get(item.stockItemRef) ?? item.stockItemRef} · {Units.format(item.quantity, item.unit)}</li>)}</ul>}
               {historicalStock ? <div className="grid gap-2 sm:grid-cols-2"><Button intent="secondary" full onClick={() => setConfirmStock('already')}>Tout est déjà déstocké</Button>{stockNotDue ? <Button intent="primary" full onClick={() => synchronizeStock(draft, 'historical-unconsumed', true)}>Le stock n’a pas été déduit</Button> : <Button intent="primary" full onClick={() => setConfirmStock('consume')}>Déstocker le brassage maintenant</Button>}</div> : <>
@@ -156,7 +157,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           {section === 'overview' && (
             <>
               <BrewBudgetButton batch={draft} />
-              <section className="space-y-3">
+              <section className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-1 rounded-control border text-sm ${style.chip}`}>
                     {style.label}
@@ -176,34 +177,19 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 )}
               </section>
 
-              <section className="space-y-3">
-                <h3 className="text-base font-semibold text-cave-50">Étape</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {BATCH_STATUSES.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => changeStatus(s)}
-                      aria-pressed={draft.status === s}
-                      className={`min-h-touch px-3 rounded-control border text-sm transition-colors ${
-                        draft.status === s
-                          ? BATCH_STATUS[s].chip
-                          : 'bg-cave-950 border-cave-700 text-cave-400 hover:text-cave-50'
-                      }`}
-                    >
-                      {BATCH_STATUS[s].label}
-                    </button>
-                  ))}
-                </div>
-              </section>
+              <label className="block space-y-1 text-xs text-cave-400">Étape du brassin
+                <select className={field} value={draft.status} onChange={event => changeStatus(event.target.value as Batch['status'])}>
+                  {BATCH_STATUSES.map(status => <option key={status} value={status}>{BATCH_STATUS[status].label}</option>)}
+                </select>
+              </label>
             </>
           )}
           {section === 'measurements' && (
             <>
-              <section className="space-y-4">
+              <section className="space-y-2">
                 <h3 className="text-base font-semibold text-cave-50">Mesures</h3>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   <label className="block space-y-1.5">
                     <span className="text-sm text-cave-400">
                       Densité initiale
@@ -271,24 +257,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   </p>
                 )}
 
-                <label className="block space-y-1.5">
-                  <span className="text-sm text-cave-400">Date de brassage</span>
-                  <Input
-                    name="batch_sheet_brewdate"
-                    type="text"
-                    autoComplete="off"
-                    autoCorrect="off"
-                    spellCheck={false}
-                    data-form-type="other"
-                    data-lpignore="true"
-                    data-1p-ignore="true"
-                    data-bwignore="true"
-                    className={field}
-                    value={draft.brewDate}
-                    onChange={(e) => setDraft({ ...draft, brewDate: e.target.value })}
-                    onBlur={() => save({ brewDate: draft.brewDate })}
-                  />
-                </label>
+                <DateField label="Date de brassage" value={draft.brewDate ?? ''} onChange={brewDate => save({brewDate})} shortcuts={[]} />
               </section>
 
               {(draft.status === 'fermentation' || draft.status === 'garde') && (
@@ -298,7 +267,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   onAdd={(reading) => save({ gravityLog: [...(draft.gravityLog ?? []), reading] })}
                 />
               )}
-              <div className="grid grid-cols-2 gap-3 text-sm text-cave-400 border-y border-cave-800 py-3">
+              <div className="grid grid-cols-2 gap-2 text-sm text-cave-400 border-y border-cave-800 py-1.5">
                 <p>
                   Volume brassé
                   <span className="block text-base text-cave-50 tabular-nums">
@@ -317,7 +286,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
           )}
           {section === 'tasting' && (
             <>
-              <section className="space-y-4">
+              <section className="space-y-2">
                 <h3 className="text-base font-semibold text-cave-50">Carnet</h3>
 
                 {(

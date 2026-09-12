@@ -109,9 +109,9 @@ export function EntityList<T>({
   return (
     <div className={`flex flex-col min-h-0 ${className}`}>
       {showSearch && (
-        <div className="shrink-0 px-1 pb-2 sm:pb-3 flex gap-2 items-center">
+        <div className="shrink-0 pb-1 flex gap-1 items-center">
           <div className="relative min-w-0 flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-cave-400 pointer-events-none" />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-cave-400 pointer-events-none" />
             <Input
               type="text"
               name="entity_filter_search"
@@ -123,21 +123,23 @@ export function EntityList<T>({
               data-1p-ignore="true"
               data-bwignore="true"
               value={query}
+              aria-label={searchPlaceholder}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={searchPlaceholder}
-              className="w-full min-h-touch pl-11 pr-11 rounded-control
+              className="w-full min-h-touch-lg pl-8 pr-8 rounded-control
                          bg-cave-900 border border-cave-800 text-cave-50 text-base
                          placeholder-cave-400 focus:outline-none focus:border-ebc-straw
                          transition-colors"
             />
             {query && (
               <button
+                type="button"
                 onClick={() => setQuery('')}
                 aria-label="Effacer la recherche"
                 className="absolute right-1 top-1/2 -translate-y-1/2 touch-target
                            text-cave-400 hover:text-cave-50 rounded-control"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -146,7 +148,7 @@ export function EntityList<T>({
       )}
       {!showSearch && toolbarAction && <div className="shrink-0 flex justify-end pb-2">{toolbarAction}</div>}
 
-      {header && <div className="shrink-0 px-1 pb-3">{header}</div>}
+      {header && <div className="shrink-0 pb-1">{header}</div>}
 
       {isEmpty && emptyState}
 
@@ -165,19 +167,19 @@ export function EntityList<T>({
           groupCounts={grouped.counts}
           groupContent={(index) => (
             <div
-              className="px-1 py-2 bg-cave-950/95 backdrop-blur-sm
+              className="px-1 py-1 bg-cave-950/95 backdrop-blur-sm
                          flex items-baseline justify-between gap-2 border-b border-cave-800"
             >
-              <span className="text-base font-semibold text-cave-50">
+              <span className="text-xs font-semibold text-cave-50">
                 {grouped.names[index]}
               </span>
-              <span className="text-sm text-cave-400 font-mono shrink-0">
+              <span className="text-xs text-cave-400 font-mono shrink-0">
                 {grouped.counts[index]}
               </span>
             </div>
           )}
           itemContent={(index) => (
-            <div key={keyOf(grouped.flat[index])} className="py-1.5">
+            <div key={keyOf(grouped.flat[index])} className="py-0.5">
               {renderItem(grouped.flat[index], index)}
             </div>
           )}
@@ -189,7 +191,7 @@ export function EntityList<T>({
           className="flex-1 min-h-0"
           data={filtered}
           itemContent={(index, item) => (
-            <div key={keyOf(item)} className="py-1.5">
+            <div key={keyOf(item)} className="py-0.5">
               {renderItem(item, index)}
             </div>
           )}
@@ -217,7 +219,7 @@ export const FavoriteToggle: React.FC<{
                text-cave-400 hover:text-ebc-straw"
   >
     <Star
-      className={`w-5 h-5 transition-colors ${active ? 'fill-ebc-straw text-ebc-straw' : ''}`}
+      className={`w-4 h-4 transition-colors ${active ? 'fill-ebc-straw text-ebc-straw' : ''}`}
     />
   </button>
 );

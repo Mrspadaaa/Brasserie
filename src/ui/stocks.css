@@ -1,0 +1,22 @@
+/* Le catalogue et ses formulaires suivent les dimensions compactes de DESIGN. */
+.stock-form :is(input, textarea:where([data-single-line])),
+.stock-form [contenteditable] {
+  min-height: 2rem;
+  padding: .125rem .5rem;
+  font-size: 1rem;
+}
+.stock-form [role="combobox"] { padding-right: 2rem; }
+.stock-form label, .stock-form p { font-size: .75rem; line-height: 1.35; }
+.stock-form > div { min-width: 0; }
+.stock-form summary { cursor: pointer; min-height: 1.75rem; font-size: .8125rem; }
+.stocks-screen { min-height: 15rem; container-type: inline-size; }
+.stocks-screen .stock-filters { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.35fr) minmax(0, 1fr); }
+/* Au texte agrandi, laisser défiler les choix plutôt que couper leurs mots. */
+@container (max-width: 18rem) {
+  .stocks-screen .stock-filters { display: flex; overflow-x: auto; }
+  .stock-filters [role="radio"] { flex: 0 0 auto; min-width: max-content; }
+  .stock-filters [role="radio"] > span { white-space: nowrap; }
+}
+@media (max-height: 480px) {
+  .stocks-screen { height: max(15rem, calc(100dvh - 6rem)); }
+}

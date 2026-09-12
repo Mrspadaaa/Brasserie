@@ -48,23 +48,35 @@ interface LevelGaugeProps {
   compact?: boolean;
 }
 
+/** Un seuil minimum ne constitue pas une consommation mesurée de brassin. */
+export function stockLevelLabel(level: StockLevel): string {
+  if (level.source !== 'minStock' || level.band === 'rupture') return level.label;
+  if (level.band === 'juste') return 'Sous le seuil';
+  return `${level.coverage?.toLocaleString('fr-CH', { maximumFractionDigits: 1 })} × le seuil`;
+}
+
 export const LevelGauge: React.FC<LevelGaugeProps> = ({
   level,
   minMarkerPercent,
   compact = false
-}) => (
-  <div className="w-full space-y-1">
+}) => {
+  const label = stockLevelLabel(level);
+  const known = level.source !== 'aucune';
+  return (
+  <div className={compact ? 'flex min-w-0 items-center gap-1.5' : 'w-full space-y-1'}>
     <div
-      className="relative w-full h-2 rounded-full bg-cave-850 overflow-hidden border border-cave-800"
-      role="meter"
-      aria-valuenow={Math.round(level.fillPercent)}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-label={level.label}
+      className={`relative h-1.5 rounded-full bg-cave-850 overflow-hidden border border-cave-700 ${compact ? 'w-12 shrink-0' : 'w-full'} ${known ? '' : 'border-dashed'}`}
+      role={known ? 'meter' : undefined}
+      aria-valuenow={known ? Math.round(level.fillPercent) : undefined}
+      aria-valuemin={known ? 0 : undefined}
+      aria-valuemax={known ? 100 : undefined}
+      aria-valuetext={known ? label : undefined}
+      aria-label={known ? (level.source === 'minStock' ? 'Niveau face au seuil minimum' : 'Couverture des brassins') : undefined}
+      aria-hidden={known ? undefined : true}
     >
       <div
         className={`h-full rounded-full transition-[width] duration-300 ${TONE_BAR[level.tone]}`}
-        style={{ width: `${level.fillPercent}%` }}
+        style={{ width: `${known ? level.fillPercent : 0}%` }}
       />
 
       {/* Repère du stock minimum : indicatif, il ne pilote pas la jauge. */}
@@ -77,10 +89,9 @@ export const LevelGauge: React.FC<LevelGaugeProps> = ({
       )}
     </div>
 
-    {!compact && (
-      <div className="flex items-baseline gap-2 min-w-0">
-        <span className={`text-sm truncate ${TONE_TEXT[level.tone]}`}>{level.label}</span>
-        {level.source !== 'aucune' && level.perBatch !== null && (
+      <div className="flex items-baseline gap-2 min-w-0 flex-wrap">
+        <span className={`text-xs leading-snug ${TONE_TEXT[level.tone]}`}>{label}</span>
+        {!compact && level.source !== 'aucune' && level.perBatch !== null && (
           <span
             className="hidden sm:inline text-footnote text-cave-400 shrink-0 ml-auto"
             title={sourceLabel(level.source)}
@@ -89,15 +100,15 @@ export const LevelGauge: React.FC<LevelGaugeProps> = ({
           </span>
         )}
       </div>
-    )}
   </div>
-);
+  );
+};
 
 /** Pastille de niveau, pour les endroits où la jauge complète ne tient pas. */
 export const LevelDot: React.FC<{ level: StockLevel }> = ({ level }) => (
   <span
     className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${TONE_BAR[level.tone]}`}
-    title={level.label}
-    aria-label={level.label}
+    title={stockLevelLabel(level)}
+    aria-label={stockLevelLabel(level)}
   />
 );

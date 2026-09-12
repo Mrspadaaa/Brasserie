@@ -78,27 +78,6 @@ export function WaterFeedback({
   return (
     <>
       {" "}
-      {((mashAcid.amount > 0 && treatment.treated.mash.hco3 === 0) ||
-        (hasSparge &&
-          spargeAcid.amount > 0 &&
-          treatment.treated.sparge.hco3 === 0)) && (
-        <p className="px-1 text-2xs text-cave-200 leading-snug">
-          {[
-            mashAcid.amount > 0 && treatment.treated.mash.hco3 === 0
-              ? "Empâtage"
-              : "",
-            hasSparge &&
-            spargeAcid.amount > 0 &&
-            treatment.treated.sparge.hco3 === 0
-              ? "Rinçage"
-              : "",
-          ]
-            .filter(Boolean)
-            .join(" · ")}{" "}
-          : HCO₃ estimé à 0. Ajouter de l’acide ne diminue plus le HCO₃ affiché
-          ; le pH peut encore baisser. Vérifie-le avant tout ajout.
-        </p>
-      )}
       {treatment.hco3Target && (
         <p
           className={`px-1 text-sm leading-snug ${treatment.hco3Target.reached ? "text-hop" : "text-ebc-straw"}`}

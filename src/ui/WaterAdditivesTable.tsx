@@ -39,6 +39,8 @@ export const WaterAdditivesTable: React.FC<WaterAdditivesTableProps> = ({
 
   return (
     <div className="panel overflow-hidden">
+      <div role="region" aria-label="Doses à préparer, tableau défilant horizontalement" tabIndex={0}
+        className="overflow-x-auto focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-water">
       <table className="w-full text-2xs sm:text-sm">
         <caption className="sr-only">Doses à préparer pour l’empâtage et le rinçage</caption>
         <thead>
@@ -105,6 +107,7 @@ export const WaterAdditivesTable: React.FC<WaterAdditivesTableProps> = ({
           )}
         </tbody>
       </table>
+      </div>
       {isAllInMash && dosed.length > 0 && hasSparge && (
         <p className="px-3 py-2 text-2xs text-cave-200 bg-hop/10 border-t border-cave-800">
           Tous les sels à l’empâtage{spargeAmount > 0 ? ' · Acide de rinçage à part' : ' · Aucun sel au rinçage'}

@@ -31,6 +31,8 @@ export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeas
       <h3 id={id} className="text-sm font-semibold text-area-production">NOLO · {plan.name}</h3>
       <span className="text-xs text-cave-200">Cible ≤ <span className="font-mono tabular-nums">{plan.target}</span></span>
     </div>
+    {plan.simulationStale && <p role="status" className="text-xs text-attention">La recette diffère de la simulation enregistrée. Recalculer le plan avant de suivre ses anciennes consignes.</p>}
+    {plan.executionHint && (finish || step.id.startsWith('nolo-')) && <p className="text-xs text-cave-200">{plan.executionHint}</p>}
     {!overview && <>
       {readings.length > 0 && <div aria-label="Relevés NOLO de cette étape" className={readings.length > 3 ? 'grid grid-cols-2 gap-1 sm:grid-cols-4' : 'flex flex-wrap gap-1'}>
         {readings.map(({ kind, reading }) => <button key={kind} type="button"
@@ -52,7 +54,7 @@ export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeas
       </dl>
       {plan.wortIssue && <p className="text-xs text-cave-400">{plan.wortIssue}</p>}
       {plan.missingProgramme && <p className="text-xs text-attention">{plan.missingProgramme}</p>}
-      {plan.process === 'coldExtraction' && <p className="text-xs text-cave-400">Les paliers d’empâtage à chaud de la recette ne deviennent pas un protocole d’extraction à froid. Note les conditions réellement appliquées.</p>}
+      {plan.process === 'coldExtraction' && !plan.simulation && <p className="text-xs text-cave-400">Les paliers d’empâtage à chaud de la recette ne deviennent pas un protocole d’extraction à froid. Note les conditions réellement appliquées.</p>}
       {plan.operations.length > 0 ? <>
         <h4 className="text-sm font-semibold text-cave-50">Opérations prévues · ordre du bilan</h4>
         <p className="text-xs text-cave-400">Confirmer le moment, la quantité et le lot dans une note après réalisation.</p>

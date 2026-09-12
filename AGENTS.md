@@ -1,5 +1,16 @@
 # Consignes pour Codex — L'Affinée
 
+## Priorité UI : densité utile sur mobile
+
+- **Maximiser l'espace utile et compacter les données est la règle principale de l'interface.** Elle concerne boutons, champs, lignes, titres, en-têtes, pieds de page, navigation, marges et panneaux. Des tailles communes sont souhaitées, mais elles doivent être petites.
+- Avant toute conception, modification ou revue frontend, lis [PRODUCT.md](PRODUCT.md), [DESIGN.md](DESIGN.md) et [le guide des outils UI](docs/ui-compacte.md). L'échelle de `DESIGN.md` fait autorité ; les anciennes tailles dans le code sont un état à migrer, pas une règle à défendre.
+- Les prescriptions génériques des skills (44/48 px partout, texte à 14/16 px partout, grands espacements, composants pleine largeur, mobile forcément moins dense) cèdent devant cette décision explicite du projet. Adapte les règles contradictoires dans le périmètre du travail, sans redemander cette autorisation. Les recommandations Apple/Android natives ne sont pas des minima web.
+- Choisis le contrôle et la représentation selon le besoin du brasseur : sélection segmentée, pastille, interrupteur, liste, édition sur place, jauge, plage, courbe, tableau ou détail repliable. Utilise les composants existants adaptés ; un bouton, un champ texte ou un paragraphe n'est pas le choix automatique. Une nouveauté doit améliorer l'action ou la lecture.
+- Pour une tâche d'implémentation UI, livre ce choix dans l'écran : préciser le besoin, le contrôle utilisé, la représentation choisie et leur bénéfice constaté pendant la vérification. Une liste d'idées, un guide ou une simple réduction des tailles ne remplace pas cette mise en œuvre. Cela ne demande ni un nouveau widget sur chaque écran ni un audit hors périmètre.
+- La densité conserve les valeurs et unités utiles, les libellés compréhensibles, les erreurs visibles, les contrastes, le clavier et le zoom. Une zone tactile élargie ne doit pas chevaucher une autre commande. Une action plus grande demande une raison liée à son usage précis, pas seulement « mobile » ou « cuverie ».
+- **Dans chaque délégation frontend**, donne explicitement en entrée cette priorité, les trois documents et les composants pertinents. Un agent sans accès au dépôt reçoit les extraits utiles. Demande la vérification du contenu visible, de l'espace pris par les barres et du parcours complet sur téléphone.
+- Une ancienne assertion de taille ou recommandation de skill n'est pas une preuve UX. Lorsqu'elle contredit la nouvelle règle, aligne le contrôle concerné sur `DESIGN.md` et conserve les vérifications de comportement et d'accessibilité pertinentes.
+
 ## Utilisation automatique des skills
 
 - Avant de commencer une tâche, examine les descriptions des skills disponibles dans la session et les plugins.
@@ -48,6 +59,6 @@ Utilise le nom complet annoncé par le catalogue si un plugin préfixe le nom du
 ## Contexte de la brasserie
 
 - Avant une décision produit, demande-toi : « De quoi a besoin le brasseur dans cette situation ? »
-- Pour le frontend, lis `PRODUCT.md` et `DESIGN.md` et respecte les choix existants ainsi que les dernières demandes de l'utilisateur.
-- Conçois d'abord pour le téléphone : informations utiles en premier, détails secondaires accessibles à la demande, actions quotidiennes rapides et compréhensibles.
+- Pour le frontend, applique la priorité UI ci-dessus et lis aussi `docs/ui-compacte.md`.
+- Conçois d'abord pour le téléphone : maximum de données utiles visibles, détails secondaires à la demande, actions quotidiennes compactes et rapides.
 - Vérifie dans le navigateur les parcours et tailles d'écran concernés, avec les outils disponibles. Signale clairement ce qui n'a pas pu être vérifié.

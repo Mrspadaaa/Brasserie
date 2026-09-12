@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy } from 'react';
 import { createPortal } from 'react-dom';
 import { useMobileLayout } from './useViewport';
 import { MessageCircle, LoaderCircle, Trash2 } from 'lucide-react';
 import { brewerJobs, useBrewerJobs, isBrewerWorking, brewerJobStatus, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
 import { BrewerChat as api } from '../services/brewerChat';
 import { brewerLauncher, useBrewerDialogOpen } from '../services/brewerLauncher';
-import { BrewerChat } from './BrewerChat';
+import { LazySurface } from './LazySurface';
+const BrewerChat = lazy(() => import('./BrewerChat').then(module => ({ default: module.BrewerChat })));
 import { Sheet } from './Sheet';
 import { brewerAppScreen } from '../../functions/src/brewerAppScreens';
 import type { BrewerScope } from '../../functions/src/companionTypes';
@@ -129,11 +130,11 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideLau
         })}
       </div>
     </Sheet>
-    {focus && <BrewerChat key={`${focus.scope.kind}:${focus.scope.id}`} {...focus} initialOpen hideLauncher onClose={() => {
+    {focus && <LazySurface fallback={<Sheet open title="Compagnon brasseur" onClose={() => setFocus(null)}><p role="status">Ouverture de la conversation…</p></Sheet>}><BrewerChat key={`${focus.scope.kind}:${focus.scope.id}`} {...focus} initialOpen hideLauncher onClose={() => {
       setFocus(null);
       const url = new URL(location.href);
       url.searchParams.delete('companion');
       window.history.replaceState(window.history.state, '', url);
-    }} />}
+    }} /></LazySurface>}
   </>;
 }

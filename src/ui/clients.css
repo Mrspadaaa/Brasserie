@@ -1,0 +1,122 @@
+.clients-workspace { min-width: 0; padding-block: .25rem .5rem; }
+.clients-workspace > * + * { margin-top: .5rem; }
+.clients-section { display: grid; gap: .375rem; min-width: 0; }
+.clients-navigation { display: flex; gap: .25rem; padding: .125rem; border: 1px solid theme('colors.cave.800'); border-radius: .625rem; background: theme('colors.cave.900'); }
+.clients-nav-item { display: inline-flex; flex: 1; align-items: center; justify-content: center; gap: .375rem; min-height: 1.75rem; padding: .125rem .5rem; font-size: .8125rem; line-height: 1rem; border-radius: .5rem; color: theme('colors.cave.200'); }
+.clients-nav-item[aria-pressed='true'] { background: theme('colors.cave.850'); color: theme('colors.cave.50'); font-weight: 600; box-shadow: inset 0 -2px theme('colors.ebc.straw'); }
+.clients-toolbar { display: flex; align-items: center; gap: .375rem; min-width: 0; }
+.clients-search { display: flex; align-items: center; position: relative; flex: 1; min-width: 0; }
+.clients-search > svg { position: absolute; left: .5rem; color: theme('colors.cave.400'); pointer-events: none; }
+.clients-search > :is(input, textarea:where([data-single-line])) { padding-left: 1.75rem; }
+.clients-result-count { color: theme('colors.cave.400'); font-size: .75rem; line-height: 1rem; text-align: right; }
+.clients-filters { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; min-width: 0; }
+.clients-segments { flex: 1; min-width: 0; }
+.clients-segments [role='radio'][aria-checked='true'] { background: theme('colors.cave.850'); color: theme('colors.cave.50'); box-shadow: inset 0 -2px theme('colors.ebc.straw'); }
+.clients-status-filter { flex: 0 1 auto; min-width: 0; }
+.clients-status-filter select { max-width: 100%; }
+.tarif-segments { justify-self: start; min-width: min(100%, 14rem); }
+.clients-list { border-block: 1px solid theme('colors.cave.800'); container: client-list / inline-size; }
+.client-row + .client-row { border-top: 1px solid theme('colors.cave.800'); }
+.client-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto .9375rem; align-items: center; gap: .5rem; min-height: 3rem; padding: .25rem .375rem; list-style: none; cursor: pointer; }
+.client-summary::-webkit-details-marker, .clients-help > summary::-webkit-details-marker { display: none; }
+.client-identity { display: grid; gap: .125rem; min-width: 0; }
+.client-identity > strong { font-size: .875rem; font-weight: 600; line-height: 1.0625rem; overflow-wrap: anywhere; color: theme('colors.cave.50'); }
+.client-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: .375rem; font-size: .75rem; line-height: .9375rem; color: theme('colors.cave.400'); }
+.client-status { padding-inline: .25rem; border-radius: .25rem; background: theme('colors.cave.850'); color: theme('colors.cave.200'); }
+.client-status[data-status='Actif'] { box-shadow: inset 0 -1px theme('colors.water'); }
+.client-status[data-status='Fidèle'] { color: theme('colors.cave.50'); box-shadow: inset 0 -1px theme('colors.hop'); }
+.client-sales { display: grid; gap: .125rem; justify-items: end; font-size: .8125rem; line-height: 1.0625rem; color: theme('colors.cave.50'); }
+.client-chevron { color: theme('colors.cave.400'); }
+.client-row[open] > .client-summary .client-chevron { transform: rotate(180deg); }
+.client-row[open] { background: theme('colors.cave.900'); }
+.client-detail { display: grid; gap: .375rem; padding: .375rem; border-top: 1px solid theme('colors.cave.800'); }
+.client-coordinates { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: .625rem; row-gap: .25rem; font-size: .8125rem; line-height: 1.0625rem; }
+.client-coordinates dt { color: theme('colors.cave.400'); }
+.client-coordinates dd { min-width: 0; overflow-wrap: anywhere; }
+.client-coordinates a { display: inline-flex; align-items: center; min-height: 1.5rem; text-decoration: underline; text-underline-offset: .125rem; }
+.client-notes { white-space: pre-wrap; }
+.client-actions, .client-form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: .25rem; }
+.clients-action { display: inline-flex; align-items: center; justify-content: center; gap: .25rem; min-height: 1.75rem; min-width: 1.75rem; padding: .125rem .5rem; border: 1px solid theme('colors.cave.700'); border-radius: .625rem; color: theme('colors.cave.200'); background: theme('colors.cave.850'); font-size: .8125rem; line-height: 1rem; }
+.clients-action-emphasis { font-weight: 600; color: theme('colors.cave.50'); }
+.clients-action-primary { min-height: 2rem; background: theme('colors.ebc.straw'); color: theme('colors.cave.950'); border-color: transparent; font-weight: 600; }
+.clients-action-danger { color: theme('colors.alert-strong'); background: transparent; }
+.clients-action:disabled { opacity: .5; cursor: not-allowed; }
+.clients-empty { display: grid; justify-items: start; gap: .375rem; padding: .5rem; color: theme('colors.cave.400'); font-size: .875rem; line-height: 1.125rem; }
+.tarif-table-scroll { min-width: 0; overflow-x: auto; }
+.tarif-table-scroll:focus-visible { outline-offset: -2px; }
+.tarif-table { width: 100%; border-collapse: collapse; font-size: .8125rem; line-height: 1.0625rem; }
+.tarif-table caption { text-align: left; color: theme('colors.cave.400'); font-size: .75rem; line-height: 1rem; padding: 0 0 .25rem; }
+.tarif-table th, .tarif-table td { padding: .25rem .375rem; text-align: right; border-bottom: 1px solid theme('colors.cave.800'); }
+.tarif-table thead th { font-size: .75rem; color: theme('colors.cave.400'); font-weight: 500; }
+.tarif-table th:first-child { text-align: left; padding-left: .125rem; }
+.tarif-table tbody th { font-weight: 600; width: 100%; min-width: 5rem; }
+.tarif-table td { white-space: nowrap; }
+.tarif-product { display: flex; align-items: center; gap: .375rem; min-height: 1.75rem; width: 100%; text-align: left; color: theme('colors.cave.50'); overflow-wrap: anywhere; }
+.tarif-product svg { flex-shrink: 0; color: theme('colors.cave.400'); }
+.tarif-margin > span { display: block; }
+.tarif-percent { display: block; color: theme('colors.cave.400'); font-size: .75rem; line-height: .9375rem; }
+.clients-help { min-width: 0; font-size: .75rem; line-height: 1rem; color: theme('colors.cave.400'); }
+.clients-help > summary { display: flex; align-items: center; gap: .375rem; min-height: 1.75rem; cursor: pointer; list-style: none; }
+.clients-help > summary > svg { flex-shrink: 0; margin-left: auto; }
+.clients-help[open] > summary > svg { transform: rotate(180deg); }
+.clients-help > p { padding: .125rem 0 .375rem; }
+.client-form-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 2.25rem; padding: .125rem .5rem; border-bottom: 1px solid theme('colors.cave.800'); }
+.client-form-header h3 { min-width: 0; font-size: 1.125rem; font-weight: 600; line-height: 1.375rem; overflow-wrap: anywhere; }
+.client-form-header .clients-action { flex-shrink: 0; width: 1.75rem; padding: .125rem; }
+.client-form { display: flex; min-height: 0; flex-direction: column; overflow: hidden; }
+.client-form-body { display: grid; gap: .5rem; overflow-y: auto; min-height: 0; padding: .5rem; overscroll-behavior: contain; container: client-form / inline-size; }
+.client-form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; }
+.client-form-field { min-width: 0; }
+.client-form-field > label, .client-form-field > span { display: block; margin-bottom: .25rem; color: theme('colors.cave.400'); font-size: .75rem; line-height: 1rem; }
+.client-form-actions { flex-shrink: 0; border-top: 1px solid theme('colors.cave.800'); padding: .125rem .5rem calc(.125rem + env(safe-area-inset-bottom, 0px)); background: theme('colors.cave.900'); }
+.tarif-form { display: grid; gap: .5rem; max-width: 44rem; margin-inline: auto; }
+.tarif-money-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; }
+.tarif-money-input { display: flex; align-items: center; gap: .375rem; }
+.tarif-money-input > :is(input, textarea:where([data-single-line])) { min-width: 0; }
+.tarif-money-input > span { font-size: .75rem; color: theme('colors.cave.400'); }
+.tarif-results { display: grid; gap: .375rem; padding-top: .375rem; border-top: 1px solid theme('colors.cave.800'); }
+.tarif-result-row { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: baseline; gap: .125rem .5rem; font-size: .8125rem; line-height: 1.125rem; }
+.tarif-result-row > dt { color: theme('colors.cave.400'); }
+.tarif-result-row > dd { margin-left: auto; text-align: right; }
+.tarif-result-row output { color: theme('colors.cave.50'); font-size: .875rem; }
+.tarif-result-row .tarif-result-margin { font-size: 1rem; }
+.tarif-result-row .tarif-result-loss { color: theme('colors.alert-strong'); }
+.tarif-alert { display: flex; align-items: flex-start; gap: .375rem; color: theme('colors.alert-strong'); font-size: .8125rem; line-height: 1.0625rem; }
+.tarif-alert svg { flex-shrink: 0; }
+.tarif-footer { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: .25rem; max-width: 44rem; margin-inline: auto; }
+.tarif-footer .clients-action-danger { margin-right: auto; }
+/* Le seuil suit la taille de texte : à 200 %, les noms et contacts gardent
+   une largeur lisible ; à 320–430 px avec texte normal, la ligne reste dense. */
+@container client-list (max-width: 16rem) {
+  .client-summary { grid-template-columns: minmax(0, 1fr) .9375rem; row-gap: .25rem; }
+  .client-identity { grid-column: 1; grid-row: 1; }
+  .client-sales { grid-column: 1; grid-row: 2; display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .5rem; justify-self: start; }
+  .client-chevron { grid-column: 2; grid-row: 1; align-self: start; margin-top: .125rem; }
+}
+@container client-form (max-width: 16rem) {
+  .client-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .client-form-field > .clients-segments { flex-direction: column; }
+}
+.clients-tax { display: grid; gap: .375rem; padding: .5rem; border: 1px solid theme('colors.cave.800'); border-radius: .625rem; background: theme('colors.cave.900'); font-size: .8125rem; line-height: 1.0625rem; }
+.clients-tax-header { display: flex; align-items: center; flex-wrap: wrap; gap: .25rem .5rem; }
+.clients-tax-header h3 { flex: 1; min-width: 8rem; color: theme('colors.cave.50'); font-size: .875rem; line-height: 1.0625rem; font-weight: 600; }
+.clients-tax-year { display: inline-flex; align-items: center; gap: .25rem; color: theme('colors.cave.400'); font-size: .75rem; }
+.clients-tax-year select { width: auto; min-width: 4.5rem; }
+.clients-tax-reading { padding-block: .25rem; border-block: 1px solid theme('colors.cave.800'); }
+.clients-tax-reading > div { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .25rem .5rem; }
+.clients-tax-reading dt { color: theme('colors.cave.400'); }
+.clients-tax-reading dd { margin-left: auto; text-align: right; font-size: 1rem; line-height: 1.25rem; color: theme('colors.cave.50'); }
+.clients-tax .clients-help { font-size: .8125rem; line-height: 1.0625rem; }
+.clients-tax-help-body { display: grid; gap: .375rem; padding-bottom: .25rem; }
+.clients-tax-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; }
+.clients-tax-copy { background: theme('colors.ebc.straw'); color: theme('colors.cave.950'); font-weight: 600; border-color: transparent; }
+.clients-tax-link { display: inline-flex; align-items: center; min-height: 1.5rem; padding-inline: .25rem; color: theme('colors.cave.200'); text-decoration: underline; text-underline-offset: .125rem; }
+@media (hover: hover) {
+  .client-summary:hover, .tarif-product:hover { background: theme('colors.cave.850'); }
+  .clients-action:hover { border-color: theme('colors.cave.600'); }
+}
+@media (max-width: 359px) {
+  .client-summary { column-gap: .375rem; }
+  .tarif-table th, .tarif-table td { padding-inline: .25rem; }
+  .client-form-grid { grid-template-columns: minmax(0, 1fr); }
+}

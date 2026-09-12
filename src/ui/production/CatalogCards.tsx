@@ -66,11 +66,11 @@ export function RecipeCard({
 }) {
   const recipe = entry.recipe!,
     signature = recipeSignature(recipe);
-  if (compact) return <article className={`panel overflow-hidden ${selected ? 'ring-1 ring-ebc-straw' : ''}`} aria-label={`Recette ${entry.name}, version ${entry.version}`}>
-    <div className="flex gap-1 px-3 pt-3">
+  if (compact) return <article className={`catalog-card panel overflow-hidden ${selected ? 'ring-1 ring-ebc-straw' : ''}`} aria-label={`Recette ${entry.name}, version ${entry.version}`}>
+    <div className="flex gap-1 px-2 pt-1.5">
       <button type="button" onClick={() => onOpen(recipe)} aria-label={`Ouvrir la recette ${entry.name}`} className="flex min-w-0 flex-1 gap-2.5 text-left min-h-touch">
         <span className={`w-1 self-stretch rounded-full shrink-0 ${entry.swatch ?? 'bg-cave-700'}`} aria-hidden="true"/>
-        <span className="min-w-0"><strong className="block text-base font-semibold text-cave-50 leading-snug">{entry.name}</strong>
+        <span className="min-w-0"><strong className="block text-sm font-semibold text-cave-50 leading-snug">{entry.name}</strong>
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-cave-400 mt-1"><BeerStyleTag style={entry.style}/><span>V{entry.version}{entry.archivedAt ? ' · Archivée' : ''}</span></span>
           <span className="block text-sm text-cave-200 mt-1 tabular-nums">{number(entry.volumeL)} L · {recipe.nolo?.enabled ? `NOLO ≤ ${number(recipe.nolo.targetAbvPct)} %` : `${number(entry.abv)} %`} · {number(entry.ibu)} IBU</span>
         </span>
@@ -79,9 +79,9 @@ export function RecipeCard({
         className={`touch-target self-start rounded-control border ${selected ? 'border-ebc-straw text-ebc-straw' : 'border-cave-700 text-cave-400 disabled:opacity-30'}`}>{selected ? <Check size={19}/> : <span className="h-4 w-4 rounded border border-current"/>}</button>
         : <FavoriteToggle active={entry.favorite} onToggle={() => onFavorite(entry)} label={`la recette ${entry.name}, V${entry.version}`}/>}
     </div>
-    <details className="group/card px-3">
+    <details className="group/card px-2">
       <summary className="list-none cursor-pointer min-h-touch flex items-center justify-between text-sm text-cave-400">Détails et actions<ChevronRight size={16} className="group-open/card:rotate-90"/></summary>
-      <div className="pb-3 space-y-2">
+      <div className="pb-2 space-y-1">
         <p className="text-sm text-hop">{entry.hops.length ? entry.hops.join(', ') : 'Sans houblon renseigné'}</p>
         <p className="text-sm text-cave-200">{signature.yeast || 'Levure à préciser'} · {number(signature.grainKg)} kg de grain · {number(signature.dryHopPerL,2)} g/L à cru</p>
         <div className="flex flex-wrap items-center gap-2">
@@ -94,10 +94,10 @@ export function RecipeCard({
   </article>;
   return (
     <article
-      className={`panel overflow-hidden ${selected ? 'ring-1 ring-ebc-straw' : ''}`}
+      className={`catalog-card panel overflow-hidden ${selected ? 'ring-1 ring-ebc-straw' : ''}`}
       aria-label={`Recette ${entry.name}, version ${entry.version}`}
     >
-      <div className="flex gap-2 px-4 pt-4">
+      <div className="flex gap-2 px-2 pt-2">
         <button
           type="button"
           className="flex gap-3 text-left min-w-0 flex-1 min-h-touch"
@@ -153,12 +153,12 @@ export function RecipeCard({
           </div>
         )}
       </div>
-      <dl className="grid grid-cols-3 gap-3 mx-4 mt-4 pb-3 border-b border-cave-800">
+      <dl className="grid grid-cols-3 gap-3 mx-2 mt-2 pb-2 border-b border-cave-800">
         <Measure label={recipe.nolo?.enabled ? 'Cible NOLO' : 'Alcool cible'} value={recipe.nolo?.enabled ? `≤ ${number(recipe.nolo.targetAbvPct)} %` : `${number(entry.abv)} %`} />
         <Measure label="Amertume" value={`${number(entry.ibu)} IBU`} />
         <Measure label="À cru" value={`${number(signature.dryHopPerL, 2)} g/L`} />
       </dl>
-      <div className="px-4 pt-3 pb-2 space-y-1 text-sm">
+      <div className="px-2 pt-2 pb-1 space-y-1 text-sm">
         <p className="text-hop break-words">
           {entry.hops.length ? entry.hops.join(', ') : 'Sans houblon renseigné'}
         </p>
@@ -166,7 +166,7 @@ export function RecipeCard({
           {signature.yeast || 'Levure à préciser'} · {number(signature.grainKg)} kg de grain
         </p>
       </div>
-      <div className="flex justify-between items-center gap-2 px-4 pb-1">
+      <div className="flex justify-between items-center gap-2 px-2 pb-1">
         {entry.linkedBatches.length ? (
           <button
             type="button"
@@ -223,6 +223,7 @@ export function BatchCard({
     planned = batch.status === 'planifie',
     active = batch.status === 'fermentation' || batch.status === 'garde';
   const target = batch.recipeSnapshot;
+  const volumeReadout = planned || batch.status === 'annule' ? `${number(entry.volumeL)} L visés` : active ? `${number(batch.volumeBrewedL)} L en cuve` : `${number(batch.volumePackagedL)} L conditionnés`;
   const dayLabel =
     days !== undefined && days >= 0 && active
       ? `J+${days} depuis brassage`
@@ -241,25 +242,25 @@ export function BatchCard({
           (batch.status === 'annule'
             ? 'Historique conservé'
             : 'Pas encore de retour de dégustation');
-  if (compact) return <article className="panel overflow-hidden" aria-label={`Brassin ${entry.id}, ${entry.name}`}>
-    <div className="flex gap-1 px-3 pt-3">
+  if (compact) return <article className="catalog-card panel overflow-hidden" aria-label={`Brassin ${entry.id}, ${entry.name}`}>
+    <div className="flex gap-1 px-2 pt-1.5">
       <button type="button" className="min-w-0 flex-1 text-left min-h-touch" aria-label={`Ouvrir le brassin ${entry.id}`} onClick={() => onOpen(batch)}>
         <span className="flex flex-wrap items-center justify-between gap-1"><span className="text-xs text-cave-400">{entry.id}{entry.archivedAt ? ' · Archivé' : ''}</span><span className={`text-xs rounded-full px-2 py-0.5 border ${status.chip}`}>{status.label}</span></span>
-        <span className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1"><strong className="text-base font-semibold text-cave-50 leading-snug">{entry.name}</strong>{entry.style && <BeerStyleTag style={entry.style}/>}</span>
-        <span className="block text-sm text-cave-200 mt-1">{dayLabel} · {active && readings.latest !== undefined ? `SG ${number(readings.latest,3)}` : `${number(entry.volumeL)} L prévus`}</span>
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1"><strong className="text-sm font-semibold text-cave-50 leading-snug">{entry.name}</strong>{entry.style && <BeerStyleTag style={entry.style}/>}</span>
+        <span className="block text-sm text-cave-200 mt-1">{volumeReadout} · {active && readings.latest !== undefined ? `SG ${number(readings.latest,3)} · ` : ''}{dayLabel}</span>
       </button>
       <FavoriteToggle active={entry.favorite} onToggle={() => onFavorite(entry)} label={`le brassin ${entry.id}`}/>
     </div>
     {missing.length > 0 && <p className="text-xs text-ebc-straw px-3 pt-2">{context}</p>}
-    <div className="flex items-center gap-1 px-3">
+    <div className="flex items-center gap-1 px-2">
       <button type="button" onClick={() => action.brew ? onBrew(batch) : onOpen(batch,action.section)} aria-label={`${action.label} · ${entry.id}`}
         className="min-h-touch min-w-0 flex-1 text-left text-sm font-medium text-ebc-straw">{action.label}</button>
       <CatalogItemMenu entry={entry} onArchive={onArchive}/>
     </div>
   </article>;
   return (
-    <article className="panel overflow-hidden" aria-label={`Brassin ${entry.id}, ${entry.name}`}>
-      <div className="flex gap-1 px-4 pt-4">
+    <article className="catalog-card panel overflow-hidden" aria-label={`Brassin ${entry.id}, ${entry.name}`}>
+      <div className="flex gap-1 px-2 pt-2">
         <button
           type="button"
           className="min-w-0 flex-1 min-h-touch flex gap-3 text-left"
@@ -278,7 +279,7 @@ export function BatchCard({
               </span>
             </span>
             <span className="flex flex-wrap items-center gap-2 mt-1">
-              <span className="font-semibold text-lg text-cave-50 break-words leading-snug">{entry.name}</span>
+              <span className="font-semibold text-sm text-cave-50 break-words leading-snug">{entry.name}</span>
               {entry.style && <BeerStyleTag style={entry.style}/>}
             </span>
             <span className="block text-sm text-cave-400 mt-1">{dayLabel}</span>
@@ -297,7 +298,7 @@ export function BatchCard({
         />
       </div>
       {batch.status !== 'annule' && (
-        <dl className="grid grid-cols-3 gap-2 px-4 py-4">
+        <dl className="grid grid-cols-3 gap-2 px-2 py-2">
           {planned ? (
             <>
               <Measure label="Volume visé" value={`${number(entry.volumeL)} L`} />
@@ -335,7 +336,7 @@ export function BatchCard({
           )}
         </dl>
       )}
-      <div className="border-t border-cave-800 mx-4 py-2">
+      <div className="border-t border-cave-800 mx-2 py-1">
         <p
           className={`text-sm line-clamp-2 ${missing.length ? 'text-ebc-straw' : 'text-cave-400'}`}
         >

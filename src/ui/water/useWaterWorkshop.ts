@@ -485,8 +485,10 @@ export function useWaterWorkshop({
   const spargeReseauL = hasSparge
     ? round1(state.spargeWaterL - spargeOsmoseeL)
     : 0;
-  const totalOsmoseeL = round1(mashOsmoseeL + spargeOsmoseeL);
-  const totalReseauL = round1(mashReseauL + spargeReseauL);
+  // Round totals once, like the saved recipe, rather than adding rounded jugs.
+  const exactOsmoseeL = (state.mashWaterL * state.diRatioPct + (hasSparge ? state.spargeWaterL * spargeDi : 0)) / 100;
+  const totalOsmoseeL = round1(exactOsmoseeL);
+  const totalReseauL = round1(state.mashWaterL + (hasSparge ? state.spargeWaterL : 0) - exactOsmoseeL);
 
   const ionsOf = (id: SaltId) =>
     RADAR_IONS.filter((ion) => (SALTS[id].ions[ion] ?? 0) > 0);

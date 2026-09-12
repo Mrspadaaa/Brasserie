@@ -118,7 +118,7 @@ export function readingFeedback(
     const delta = value - step.tempC;
     return {
       tone: Math.abs(delta) <= 1 ? 'ok' : 'watch',
-      title: `${delta > 0 ? '+' : ''}${Math.round(delta * 10) / 10} °C / cible ${step.tempC} °C`,
+      title: `Écart ${delta > 0 ? '+' : ''}${Math.round(delta * 10) / 10} °C · cible ${step.tempC} °C`,
       detail:
         Math.abs(delta) <= 1
           ? 'Température proche de la consigne.'

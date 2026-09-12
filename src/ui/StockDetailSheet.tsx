@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NumberInput } from './NumberInput';
 import { Trash2, Star } from 'lucide-react';
 import { Batch, StockItem } from '../types';
@@ -6,20 +6,12 @@ import { Units } from '../services/units';
 import { computeStockLevel, pendingStockQuantity, allocatedBatches } from '../domain/stockLevel';
 import { Suggestions } from '../services/suggestions';
 import { Sheet, ConfirmSheet } from './Sheet';
-import { QuantityStepper } from './QuantityStepper';
 import { LevelGauge } from './LevelGauge';
 import { Button } from '../components/ui/Button';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
-import { Combobox, ComboOption } from './Combobox';
+import { Combobox } from './Combobox';
 import { useSyncedDraft } from '../hooks/useLiveData';
-
-/**
- * Fiche d'un article de stock : ajuster, modifier, épingler, supprimer.
- *
- * Une seule feuille pour toutes les catégories. Les propositions (unité,
- * catégorie, fournisseur) viennent de ce qui existe DÉJÀ dans la base — jamais
- * d'une liste inventée.
- */
+import './stocks.css';
 
 interface StockDetailSheetProps {
   item: StockItem | null;
@@ -28,349 +20,142 @@ interface StockDetailSheetProps {
   onClose: () => void;
   onSave: (item: StockItem) => void;
   onDelete: (item: StockItem) => void;
-  /** Ouvre la correction d'inventaire : stock compté + motif, journalisé. */
   onCorrectInventory: (item: StockItem) => void;
   onToggleFavorite: (item: StockItem) => void;
 }
 
+/** Quantité et couverture d'abord ; propriétés techniques accessibles à la demande. */
 export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
-  item,
-  batches,
-  stockItems,
-  onClose,
-  onSave,
-  onDelete,
-  onCorrectInventory,
-  onToggleFavorite
+  item, batches, stockItems, onClose, onSave, onDelete, onCorrectInventory, onToggleFavorite
 }) => {
   const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-
   if (!item || !draft) return null;
 
   const level = computeStockLevel(draft, batches, stockItems);
   const allocated = allocatedBatches(item, batches, stockItems);
-  const pending = batches.reduce((sum, batch) => sum + pendingStockQuantity(draft, batch), 0);
-  const changed = draft.currentStock !== item.currentStock;
-  // Toutes les propositions viennent de la base — aucune liste inventée.
-  const unitOptions: ComboOption[] = Suggestions.knownUnits().map((u) => ({
-    value: u,
-    label: u
-  }));
-  const categoryOptions: ComboOption[] = Suggestions.knownCategories().map((c) => ({
-    value: c,
-    label: c
-  }));
-  const vendorOptions: ComboOption[] = Suggestions.vendors().map((v) => ({
-    value: v.name,
-    label: v.name,
-    detail: `${v.count} achat${v.count > 1 ? 's' : ''} enregistré${v.count > 1 ? 's' : ''}`
-  }));
+  const pending = batches.reduce((sum, batch) => sum + pendingStockQuantity(item, batch), 0);
+  const canSave = !!draft.name.trim() && Number.isFinite(draft.minStock) && draft.minStock >= 0;
+  const save = () => {
+    if (!canSave) return;
+    onSave({ ...draft, name: draft.name.trim(), favorite: item.favorite, reorder: draft.currentStock <= draft.minStock });
+    onClose();
+  };
+  const unitOptions = Suggestions.knownUnits().map(value => ({ value, label: value }));
+  const categoryOptions = Suggestions.knownCategories().map(value => ({ value, label: value }));
+  const vendorOptions = Suggestions.vendors().map(v => ({ value: v.name, label: v.name }));
+  const malt = draft.category === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(draft.category);
+  const technical = malt || draft.category === 'Houblon' || draft.category === 'Levure';
 
-  return (
-    <>
-      <Sheet
-        open={!!item}
-        onClose={onClose}
-        title={item.name}
-        subtitle={`${item.category} · ${item.ref}`}
-        footer={
-          <div className="flex gap-3">
-            <Button intent="secondary" onClick={onClose} full>
-              Annuler
-            </Button>
-            <Button
-              intent="primary"
-              full
-              onClick={() => {
-                onSave({ ...draft, reorder: draft.currentStock <= draft.minStock });
-                onClose();
-              }}
-            >
-              Enregistrer
-            </Button>
+  return <>
+    <Sheet open onClose={onClose} title={item.name} subtitle={`${item.category} · ${item.ref}`} className="sm:max-w-2xl sm:mx-auto"
+      footer={<div className="flex gap-2">
+        <Button onClick={onClose} full>Annuler</Button>
+        <Button intent="primary" full disabled={!canSave} onClick={save}>Enregistrer</Button>
+      </div>}>
+      <div className="space-y-3">
+        <section className="rounded-control border border-cave-800 p-2 space-y-2" aria-label="Disponibilité de l’article">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <dl>
+              <dt className="text-xs text-cave-400">Stock actuel</dt>
+              <dd className="reading text-base">{Units.format(item.currentStock, item.unit)}</dd>
+            </dl>
+            <Button onClick={() => onCorrectInventory(item)}>Corriger l’inventaire</Button>
           </div>
-        }
-      >
-        <div className="space-y-7">
-          <section className="space-y-3">
-            <LevelGauge level={level} />
-            {pending > 0 && <p className="text-sm text-water leading-relaxed">{Units.format(pending, draft.unit)} sont réservés pour les ajouts de fermentation. La couverture ci-dessus utilise le stock encore disponible après cette réserve.</p>}
-            {level.perBatch !== null && (
-              <p className="text-sm text-cave-400 leading-relaxed">
-                Un brassin consomme environ{' '}
-                <span className="font-mono text-cave-50">
-                  {Units.format(level.perBatch, draft.unit)}
-                </span>{' '}
-                de cet article
-                {level.source === 'planifie'
-                  ? ', d’après les brassins planifiés.'
-                  : level.source === 'historique'
-                    ? ', d’après les brassins passés.'
-                    : ', d’après le stock minimum défini.'}
-              </p>
-            )}
-          </section>
-          {allocated.length>0&&<details className="border-y border-cave-800"><summary className="min-h-touch py-3 cursor-pointer text-sm text-cave-200">Besoins des brassins · {allocated.length} brassin(s)</summary><ul className="space-y-2 pb-3">{allocated.map(batch=><li key={batch.id} className="flex justify-between gap-3 text-sm"><span className="min-w-0 break-words">{batch.name}<span className="block text-cave-400">{batch.id}</span></span><span className="shrink-0 tabular-nums">{Units.format(batch.qty,item.unit)}</span></li>)}</ul></details>}
+          <LevelGauge level={level}/>
+          {pending > 0 && <dl className="grid grid-cols-2 gap-2 text-xs">
+            <div><dt className="text-cave-400">Réservé en fermentation</dt><dd className="font-mono text-water">{Units.format(pending, item.unit)}</dd></div>
+            <div><dt className="text-cave-400">Disponible hors réserve</dt><dd className="font-mono text-cave-50">{Units.format(Math.max(0, item.currentStock - pending), item.unit)}</dd></div>
+          </dl>}
+          {level.perBatch !== null && level.source !== 'minStock' && <p className="text-xs text-cave-400">
+            Besoin moyen : <span className="font-mono text-cave-200">{Units.format(level.perBatch, item.unit)}</span> par brassin
+            {level.source === 'planifie' ? ' planifié.' : ', selon l’historique.'}
+          </p>}
+          {allocated.length > 0 && <details>
+            <summary className="cursor-pointer min-h-touch flex items-center text-2xs text-water">Besoins de {allocated.length} {allocated.length === 1 ? 'brassin' : 'brassins'}</summary>
+            <table className="w-full text-xs">
+              <caption className="sr-only">Quantités prévues par brassin</caption>
+              <thead className="sr-only"><tr><th>Brassin</th><th>Quantité</th></tr></thead>
+              <tbody>{allocated.map(batch => <tr key={batch.id} className="border-t border-cave-800">
+                <th scope="row" className="text-left font-normal py-1 pr-2 break-words">{batch.name}</th>
+                <td className="text-right font-mono whitespace-nowrap py-1">{Units.format(batch.qty, item.unit)}</td>
+              </tr>)}</tbody>
+            </table>
+          </details>}
+        </section>
 
-          {/*
-            Le stock ne se règle plus librement ici.
-
-            ⚠️ Il bouge par deux événements métier : l'ACHAT le fait monter, le
-            BRASSAGE le fait descendre. Le corriger à la main est une exception
-            — un comptage, une casse, une erreur de saisie — et cette exception
-            mérite d'être nommée et journalisée. D'où un bouton dédié plutôt
-            qu'un compteur libre.
-          */}
-          <section className="panel p-3 flex items-center justify-between gap-3">
-            <span className="min-w-0">
-              <span className="block text-sm text-cave-400">Stock actuel</span>
-              <span className="reading text-xl">
-                {Units.format(item.currentStock, item.unit)}
-              </span>
-            </span>
-            <button
-              type="button"
-              onClick={() => onCorrectInventory(item)}
-              className="min-h-touch px-4 rounded-control border border-cave-700
-                         text-sm text-cave-50 hover:border-ebc-straw hover:text-ebc-straw
-                         transition-colors shrink-0"
-            >
-              Corriger l’inventaire
-            </button>
-          </section>
-
-          {/* FormNav : Entrée passe au champ suivant, Ctrl/⌘+Entrée enregistre.
-              Sur ordinateur, une réception se remplit sans toucher la souris. */}
-          <FormNav
-            className="space-y-4"
-            onSubmit={() => {
-              onSave({ ...draft, reorder: draft.currentStock <= draft.minStock });
-              onClose();
-            }}
-          >
-            <h3 className="text-base font-semibold text-cave-50">Fiche article</h3>
-
-            <Field label="Nom" htmlFor="stock-name">
-              <TextInput
-                id="stock-label"
-                name="stock_sheet_item_label"
-                value={draft.name}
-                onChange={(name) => setDraft({ ...draft, name })}
-              />
+        <FormNav className="stock-form space-y-2" onSubmit={save}>
+          <Field label="Nom" htmlFor="stock-label" error={draft.name.trim() ? undefined : 'Indiquez le nom de l’article.'}>
+            <TextInput id="stock-label" name="stock_sheet_item_label" required aria-invalid={!draft.name.trim()} value={draft.name} onChange={name => setDraft({ ...draft, name })}/>
+          </Field>
+          <div className="grid grid-cols-2 gap-2">
+            <Field label="Catégorie" htmlFor="stock-category">
+              <Combobox id="stock-category" ariaLabel="Catégorie" value={draft.category} onChange={category => setDraft({ ...draft, category })}
+                options={categoryOptions} placeholder="Malt, Houblon…" allowCreate onCreate={category => setDraft({ ...draft, category })}/>
             </Field>
+            <Field label="Unité" htmlFor="stock-unit">
+              <Combobox id="stock-unit" ariaLabel="Unité" value={draft.unit} onChange={unit => setDraft({ ...draft, unit })}
+                options={unitOptions} placeholder="kg, g…" allowCreate onCreate={unit => setDraft({ ...draft, unit })}/>
+            </Field>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Field label={`Seuil minimum (${draft.unit})`} htmlFor="stock-min">
+              <NumberInput id="stock-min" value={draft.minStock} min={0} onValue={minStock => setDraft({ ...draft, minStock })} className={inputClass}/>
+            </Field>
+            <Field label="Fournisseur" htmlFor="stock-vendor">
+              <Combobox id="stock-vendor" ariaLabel="Fournisseur" value={draft.supplier || ''} onChange={supplier => setDraft({ ...draft, supplier })}
+                options={vendorOptions} placeholder="Choisir…" allowCreate onCreate={supplier => setDraft({ ...draft, supplier })}/>
+            </Field>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Catégorie">
-                <Combobox
-                  value={draft.category}
-                  onChange={(category) => setDraft({ ...draft, category })}
-                  options={categoryOptions}
-                  placeholder="Malt, Houblon…"
-                  allowCreate
-                  onCreate={(category) => setDraft({ ...draft, category })}
-                  createLabel={(v) => `Nouvelle catégorie « ${v} »`}
-                />
-              </Field>
-
-              <Field label="Unité">
-                <Combobox
-                  value={draft.unit}
-                  onChange={(unit) => setDraft({ ...draft, unit })}
-                  options={unitOptions}
-                  placeholder="kg, g…"
-                  allowCreate
-                  onCreate={(unit) => setDraft({ ...draft, unit })}
-                  createLabel={(v) => `Nouvelle unité « ${v} »`}
-                />
-              </Field>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Field
-                label="Stock minimum"
-                htmlFor="stock-min"
-                hint={`en ${draft.unit}`}
-              >
-                <NumberInput
-                  value={draft.minStock}
-                  onValue={(v) =>
-                    setDraft({ ...draft, minStock: v })}
-                  pad
-                  className={`${inputClass} font-mono`}
-                />
-              </Field>
-
-              <Field label="Fournisseur">
-                <Combobox
-                  value={draft.supplier || ''}
-                  onChange={(supplier) => setDraft({ ...draft, supplier })}
-                  options={vendorOptions}
-                  placeholder="Brau-Rauchshop…"
-                  allowCreate
-                  onCreate={(supplier) => setDraft({ ...draft, supplier })}
-                  createLabel={(v) => `Nouveau fournisseur « ${v} »`}
-                />
-              </Field>
-            </div>
-
-            {draft.category === 'Houblon' && (
-              <Field label="Acide alpha" htmlFor="stock-alpha" hint="en %, tel qu'indiqué sur le sachet">
-                <NumberInput
-                  value={draft.alphaPct}
-                  onValue={(v) =>
-                    setDraft({ ...draft, alphaPct: v })}
-                  emptyValue={undefined}
-                  pad
-                  className={`${inputClass} font-mono`}
-                />
-              </Field>
-            )}
-
-            {/*
-              Caractéristiques techniques, recopiées UNE FOIS depuis la fiche du
-              fournisseur. Elles sont ce qui rend la couleur et la densité
-              calculables : sans elles, la fiche recette affiche « incalculable »
-              plutôt qu'un chiffre inventé.
-            */}
-            {(draft.category === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(draft.category)) && (
-              <div className="grid grid-cols-2 gap-3">
-                <Field
-                  label="Couleur"
-                  htmlFor="stock-ebc"
-                  hint="en EBC — donne la couleur de la bière"
-                >
-                  <NumberInput
-                    value={draft.colorEbc}
-                    onValue={(v) =>
-                      setDraft({ ...draft, colorEbc: v })}
-                    emptyValue={undefined}
-                    pad
-                    className={`${inputClass} font-mono`}
-                  />
+          {technical && <details className="border-y border-cave-800 py-1">
+            <summary className="text-cave-200">Caractéristiques techniques
+              {draft.category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {draft.alphaPct} %</span>}
+              {malt && draft.colorEbc != null && <span className="text-cave-400"> · {draft.colorEbc} EBC</span>}
+            </summary>
+            <div className="space-y-2 pt-1 pb-2">
+              {draft.category === 'Houblon' && <Field label="Acide alpha (%)" htmlFor="stock-alpha">
+                <NumberInput id="stock-alpha" value={draft.alphaPct} min={0} max={100} emptyValue={undefined}
+                  onValue={alphaPct => setDraft({ ...draft, alphaPct })} className={inputClass}/>
+              </Field>}
+              {malt && <div className="grid grid-cols-2 gap-2">
+                <Field label="Couleur (EBC)" htmlFor="stock-ebc">
+                  <NumberInput id="stock-ebc" value={draft.colorEbc} min={0} emptyValue={undefined}
+                    onValue={colorEbc => setDraft({ ...draft, colorEbc })} className={inputClass}/>
                 </Field>
-
-                <Field
-                  label="Potentiel"
-                  htmlFor="stock-ppg"
-                  hint="en PPG — donne la densité prédite"
-                >
-                  <NumberInput
-                    value={draft.potentialPpg}
-                    onValue={(v) =>
-                      setDraft({ ...draft, potentialPpg: v })}
-                    emptyValue={undefined}
-                    pad
-                    className={`${inputClass} font-mono`}
-                  />
+                <Field label="Potentiel (PPG)" htmlFor="stock-ppg">
+                  <NumberInput id="stock-ppg" value={draft.potentialPpg} min={0} emptyValue={undefined}
+                    onValue={potentialPpg => setDraft({ ...draft, potentialPpg })} className={inputClass}/>
                 </Field>
-              </div>
-            )}
-
-            {draft.category === 'Levure' && (
-              <>
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="Laboratoire" htmlFor="stock-lab">
-                    <TextInput
-                      id="stock-lab"
-                      name="stock_sheet_yeast_lab"
-                      placeholder="Lallemand, Fermentis…"
-                      value={draft.yeastLab ?? ''}
-                      onChange={(yeastLab) => setDraft({ ...draft, yeastLab })}
-                    />
-                  </Field>
-                  <Field label="Souche" htmlFor="stock-strain">
-                    <TextInput
-                      id="stock-strain"
-                      name="stock_sheet_yeast_strain"
-                      placeholder="US-05, WLP095…"
-                      value={draft.yeastStrain ?? ''}
-                      onChange={(yeastStrain) => setDraft({ ...draft, yeastStrain })}
-                    />
-                  </Field>
+              </div>}
+              {draft.category === 'Levure' && <>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Laboratoire" htmlFor="stock-lab"><TextInput id="stock-lab" name="stock_sheet_yeast_lab" value={draft.yeastLab ?? ''} onChange={yeastLab => setDraft({ ...draft, yeastLab })}/></Field>
+                  <Field label="Souche" htmlFor="stock-strain"><TextInput id="stock-strain" name="stock_sheet_yeast_strain" value={draft.yeastStrain ?? ''} onChange={yeastStrain => setDraft({ ...draft, yeastStrain })}/></Field>
                 </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <Field label="Atténuation" htmlFor="stock-att" hint="%">
-                    <NumberInput
-                      value={draft.yeastAttenuationPct}
-                      onValue={(v) =>
-                        setDraft({
-                          ...draft,
-                          yeastAttenuationPct: v
-                        })}
-                      emptyValue={undefined}
-                      pad
-                      className={`${inputClass} font-mono`}
-                    />
-                  </Field>
-                  <Field label="Temp. mini" htmlFor="stock-tmin" hint="°C">
-                    <NumberInput
-                      value={draft.yeastTempMinC}
-                      onValue={(v) =>
-                        setDraft({ ...draft, yeastTempMinC: v })}
-                      emptyValue={undefined}
-                      pad
-                      className={`${inputClass} font-mono`}
-                    />
-                  </Field>
-                  <Field label="Temp. maxi" htmlFor="stock-tmax" hint="°C">
-                    <NumberInput
-                      value={draft.yeastTempMaxC}
-                      onValue={(v) =>
-                        setDraft({ ...draft, yeastTempMaxC: v })}
-                      emptyValue={undefined}
-                      pad
-                      className={`${inputClass} font-mono`}
-                    />
-                  </Field>
+                <div className="grid grid-cols-2 gap-2">
+                  <Field label="Atténuation (%)" htmlFor="stock-att"><NumberInput id="stock-att" value={draft.yeastAttenuationPct} min={0} max={100} emptyValue={undefined} onValue={yeastAttenuationPct => setDraft({ ...draft, yeastAttenuationPct })} className={inputClass}/></Field>
+                  <Field label="Temp. mini (°C)" htmlFor="stock-tmin"><NumberInput id="stock-tmin" value={draft.yeastTempMinC} emptyValue={undefined} onValue={yeastTempMinC => setDraft({ ...draft, yeastTempMinC })} className={inputClass}/></Field>
+                  <Field label="Temp. maxi (°C)" htmlFor="stock-tmax"><NumberInput id="stock-tmax" value={draft.yeastTempMaxC} emptyValue={undefined} onValue={yeastTempMaxC => setDraft({ ...draft, yeastTempMaxC })} className={inputClass}/></Field>
                 </div>
-              </>
-            )}
+              </>}
+            </div>
+          </details>}
+        </FormNav>
 
-            <p className="text-sm text-cave-400">
-              Entrée passe au champ suivant · Ctrl+Entrée enregistre
-            </p>
-          </FormNav>
-
-          <section className="flex gap-3 pt-2 border-t border-cave-800">
-            <Button
-              intent="secondary"
-              full
-              onClick={() => onToggleFavorite(draft)}
-              icon={
-                <Star
-                  className={`w-5 h-5 ${draft.favorite ? 'fill-ebc-straw text-ebc-straw' : ''}`}
-                />
-              }
-            >
-              {draft.favorite ? 'Épinglé' : 'Épingler'}
-            </Button>
-
-            <Button
-              intent="danger"
-              onClick={() => setConfirmDelete(true)}
-              icon={<Trash2 className="w-5 h-5" />}
-            >
-              Supprimer
-            </Button>
-          </section>
+        <div className="flex items-center justify-between gap-2">
+          <Button size="sm" aria-pressed={!!item.favorite} onClick={() => onToggleFavorite(item)}
+            icon={<Star className={`w-3.5 h-3.5 ${item.favorite ? 'fill-ebc-straw text-ebc-straw' : ''}`}/>}>
+            {item.favorite ? 'Épinglé' : 'Épingler'}
+          </Button>
+          <Button size="sm" intent="danger" onClick={() => setConfirmDelete(true)} icon={<Trash2 className="w-3.5 h-3.5"/>}>Supprimer</Button>
         </div>
-      </Sheet>
-
-      <ConfirmSheet
-        open={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        onConfirm={() => {
-          onDelete(item);
-          onClose();
-        }}
-        title="Supprimer cet article ?"
-        what={`${item.name} — ${Units.format(item.currentStock, item.unit)} en stock`}
-        consequence="L'article disparaît du catalogue. Les écritures d'achat qui le mentionnent sont conservées, mais elles ne pourront plus être annulées avec restauration du stock."
-        confirmLabel="Supprimer l'article"
-      />
-    </>
-  );
+      </div>
+    </Sheet>
+    <ConfirmSheet open={confirmDelete} onClose={() => setConfirmDelete(false)}
+      onConfirm={() => { onDelete(item); setConfirmDelete(false); onClose(); }} title="Supprimer cet article ?"
+      what={`${item.name} — ${Units.format(item.currentStock, item.unit)} en stock`}
+      consequence="L’article disparaît du catalogue. Les écritures d’achat qui le mentionnent sont conservées, mais elles ne pourront plus être annulées avec restauration du stock."
+      confirmLabel="Supprimer l’article"/>
+  </>;
 };

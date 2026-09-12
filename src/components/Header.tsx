@@ -19,7 +19,7 @@ import { IconButton } from './ui/Button';
 import { useDensity, useMobileLayout } from '../ui/useViewport';
 
 interface HeaderProps {
-  /** Barre compacte du dashboard, extensible avec le texte. */
+  /** Barre compacte de l'application, extensible avec le texte. */
   compactLayout?: boolean;
   hidePeriod?: boolean;
   config: AppConfig;
@@ -76,7 +76,7 @@ function useDismiss(onDismiss: () => void) {
  *
  * Il ne reste que ce qui sert en permanence : l'identité (retour à l'accueil),
  * la période affichée — qui est un vrai réglage de lecture, pas une décoration —
- * et un menu unique pour le reste. Trois cibles, toutes à 48 px.
+ * et un menu unique pour le reste. Les dimensions suivent les jetons compacts.
  */
 export const Header: React.FC<HeaderProps> = ({
   compactLayout = false,
@@ -97,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const [periodOpen, setPeriodOpen] = useState(false);
   const currentUser = StorageService.getCurrentUser();
-  /* Au doigt, l'en-tête se resserre : les cibles restent à 48 px, la marge part. */
+  /* Les anciens aperçus peuvent encore demander une disposition confortable. */
   const compact = useDensity() !== 'comfortable';
   const mobile = useMobileLayout();
 
@@ -107,21 +107,14 @@ export const Header: React.FC<HeaderProps> = ({
   const activePeriod = PERIODS.find((p) => p.key === globalTimeFilter) ?? PERIODS[0];
 
   const menuItem =
-    'w-full min-h-touch px-4 flex items-center gap-3 text-base text-cave-200 ' +
+    'w-full min-h-touch px-2 py-0.5 flex items-center gap-2 text-sm text-cave-200 ' +
     'hover:bg-cave-850 active:bg-cave-800 transition-colors text-left';
 
   return (
     <header className="sticky top-0 z-40 bg-cave-950/95 backdrop-blur-md border-b border-cave-800 pt-safe">
-      {/*
-        ⚠️ `h-16` était FIXE, alors que `PageShell` et `Sheet` se plient déjà à la
-        densité. Sur un téléphone, cet en-tête plus les pastilles de
-        sous-navigation plus la rangée de titre mangeaient près du tiers de
-        l'écran avant la première carte. `h-12` vaut exactement 48 px : la
-        hauteur des cibles tactiles qu'il contient, plancher du système de
-        design. On rend la marge morte, pas la surface utile.
-      */}
+      {/* La disposition compacte démarre à 36 px et grandit avec le texte. */}
       <div
-        className={`max-w-4xl mx-auto px-3 flex items-center ${
+        className={`app-titlebar max-w-4xl mx-auto px-2 flex items-center ${
           compactLayout ? 'min-h-9 flex-wrap gap-1 py-0.5' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
         }`}
       >
@@ -146,7 +139,7 @@ export const Header: React.FC<HeaderProps> = ({
           >
             🍺
           </span>
-          <span className="min-w-0 hidden xs:block">
+          <span className="app-brand-name min-w-0 hidden xs:block">
             <span className={`block font-semibold text-cave-50 leading-tight truncate group-hover:text-ebc-straw transition-colors ${compactLayout ? 'text-sm' : 'text-base'}`}>
               L'Affinée
             </span>
@@ -214,7 +207,7 @@ export const Header: React.FC<HeaderProps> = ({
           </IconButton>
 
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-64 panel shadow-lift max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain py-1">
+            <div className="absolute right-0 mt-1 w-64 max-w-[calc(100vw-1rem)] panel shadow-lift max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain py-1">
               {mobile && !hidePeriod && <label className="block px-4 py-2 text-sm text-cave-200">Période de l’application
                 <select aria-label="Période de l’application" className="mt-2 w-full min-h-touch rounded-control bg-cave-950 text-cave-50 px-2" value={globalTimeFilter}
                   onChange={event => onChangeGlobalTimeFilter(event.target.value as TimeFilterPeriod)}>{PERIODS.map(period => <option key={period.key} value={period.key}>{period.label}</option>)}</select>

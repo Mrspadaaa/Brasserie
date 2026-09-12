@@ -102,7 +102,7 @@ describe('Dashboard agenda navigation', () => {
 
     const agenda = await screen.findByRole('region', { name: 'Agenda', exact: true });
     fireEvent.click(within(agenda).getByRole('button', { name: 'Gérer', exact: true }));
-    expect(screen.getByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('button', { name: 'À faire', exact: true })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('heading', { name: 'Préparer le marché' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Rincer les fûts' })).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -199,10 +199,10 @@ describe('Direct batch navigation from the dashboard', () => {
     const open = await screen.findByRole('button', { name: new RegExp(oldBatch.name) });
     expect(screen.queryByRole('button', { name: 'Saisir un achat, une vente ou un brassin' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Saisie rapide', exact: true }));
-    expect(screen.getByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);
-    let dialog = screen.getByRole('dialog', { name: oldBatch.name });
+    let dialog = await screen.findByRole('dialog', { name: oldBatch.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
     fireEvent.click(within(dialog).getAllByRole('button', { name: 'Fermer', exact: true })[0]);
     expect(screen.getByRole('button', { name: 'Nouveau brassin', exact: true })).toBeVisible();

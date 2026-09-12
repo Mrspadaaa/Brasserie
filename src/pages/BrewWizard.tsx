@@ -111,7 +111,10 @@ function mergeDoses(
   const out: Partial<Record<SaltId, number>> = {};
   new Set([...Object.keys(mash), ...Object.keys(sparge)]).forEach((k) => {
     const id = k as SaltId;
-    out[id] = (mash[id] ?? 0) + (sparge[id] ?? 0);
+    const total = (mash[id] ?? 0) + (sparge[id] ?? 0);
+    const decimal = Math.round(total * 1e9) / 1e9;
+    // Suppress binary addition noise (1.12 + .58), retaining finer manual doses.
+    out[id] = Math.abs(total - decimal) <= Number.EPSILON * Math.abs(total) * 2 ? decimal : total;
   });
   return out;
 }
@@ -539,7 +542,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     } catch (e) {
       return { water: state, error: (e as Error).message };
     }
-  }, [waterDraft, waterSource, name, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
+  }, [waterDraft, waterSource, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
   const water = automaticWater.water;
 
   // Follow the beer style until an explicit water profile is chosen. Saved
@@ -708,7 +711,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const band = targetRaForGrist(color?.ebc ?? null, grains, mashRatio);
     const mashAlkalinity = { ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio) };
     const alkaliGoal = alkalineSaltGoal(band, mashAlkalinity.ceiling);
-    const r1 = (n: number) => Math.round(n * 10) / 10;
 
     /* La cible saisie l'emporte sur le style de la liste — comme dans l'atelier. */
     const style = water.customTarget
@@ -740,8 +742,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       allSaltsInMash,
       /* Les litres d'osmosée à préparer, eau par eau. C'est la donnée qu'on
          emporte au bidon — le pourcentage ne se verse pas. */
-      mashOsmoseeL: r1((water.mashWaterL * water.diRatioPct) / 100),
-      spargeOsmoseeL: r1((water.spargeWaterL * spargeDi) / 100),
+      mashOsmoseeL: (water.mashWaterL * water.diRatioPct) / 100,
+      spargeOsmoseeL: (water.spargeWaterL * spargeDi) / 100,
       mashIons: treatment.treated.mash,
       spargeIons: treatment.treated.sparge,
       ra: Math.round(treatment.raAfter),
@@ -1138,10 +1140,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       steps: mashSteps,
       ratioLPerKg:
         totalGrist > 0 ? water.mashWaterL / totalGrist : mashRatioOverride ?? undefined,
-      mashoutTempC: details.mash?.mashoutTempC ?? 76,
+      mashoutTempC: details.nolo?.enabled && details.nolo.process === 'coldExtraction' ? undefined : details.mash?.mashoutTempC ?? 76,
       mashoutDurationMin: details.mash?.mashoutDurationMin,
       heatingRateCPerMin: details.mash?.heatingRateCPerMin ?? rig?.equipment?.heatingRateCPerMin,
-      spargeTempC: details.mash?.spargeTempC ?? 76,
+      spargeTempC: details.mash?.spargeTempC ?? (details.nolo?.enabled && details.nolo.process === 'coldExtraction' ? undefined : 76),
       spargeType
     },
     waterPlan: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.waterPlan:{
@@ -1176,7 +1178,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        * Le brasseur arrivait à la cuve avec ses sels pesés et sans sa dose
        * d'acide, que la minuterie du jour ne pouvait pas lui rappeler.
        */
-      acid: waterAcid,
+      acid: details.nolo?.enabled && details.nolo.process === 'coldExtraction' ? details.waterPlan?.acid : waterAcid,
       disabled: water.disabled,
       targetPh: details.waterPlan?.targetPh ?? 5.4,
       // Les pH relevés à la cuve : la seule boucle de retour du modèle.
@@ -2038,12 +2040,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             </div>
           </FormNav>
           </details>
-          <details className="border-t border-cave-700 mt-2 pt-2">
+          {!details.nolo?.enabled&&<details className="border-t border-cave-700 mt-2 pt-2">
             <summary className="cursor-pointer min-h-touch flex items-center text-cave-200 text-[13px]">Programme détaillé et guides enregistrés</summary>
           <FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
             applyFermentationRecipe(next, 'levure');
           }} />
-          </details>
+          </details>}
           <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
             <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
             <FormNav className="space-y-3 py-3">

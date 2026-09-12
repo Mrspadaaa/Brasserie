@@ -4,6 +4,8 @@ import { HOP_STAGE, groupByStage, describeMoment } from '../domain/hopStage';
 import { Units } from '../services/units';
 import { BREW_ALARM_VIBRATION, scheduleBrewAlarm } from './brewSound';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
+import { noloScenarioInput } from '../domain/nolo';
+import { matchingNoloSimulation } from '../../functions/src/noloSimulation';
 
 /**
  * Le déroulé minuté du jour de brassage.
@@ -36,6 +38,8 @@ import { noloExecutionRecipe } from '../domain/noloBrewDay';
  * cru n'apparaît PAS ici — il a lieu en fermenteur, plusieurs jours plus tard.
  */
 export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
+  const simulation = recipe.nolo?.enabled ? matchingNoloSimulation(noloScenarioInput(recipe)) : null;
+  const simulatedWater = simulation?.settings.process === 'coldExtraction' ? recipe.waterPlan : undefined;
   recipe = noloExecutionRecipe(recipe);
   const steps: BrewDayStep[] = [];
   const nolo = recipe.nolo?.enabled ? recipe.nolo : undefined;
@@ -76,7 +80,9 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
         ? `${Units.format(nolo.secondRunnings.waterAddedL, 'L')} d’eau prévue. Consigner l’eau réellement ajoutée et le brassin d’origine.`
         : 'Volume d’eau à renseigner pour la seconde extraction. Consigner l’eau réellement ajoutée et le brassin d’origine.'
       : coldExtraction
-      ? 'Préciser le protocole d’extraction et mesurer le volume d’eau ajouté. Le plan d’eau de l’empâtage chaud n’est pas repris.'
+      ? simulation
+        ? `${simulatedWater ? `Eau estimée pour le pilote : ${Units.format(simulatedWater.mashWaterL, 'L')} pour l’extraction et ${Units.format(simulatedWater.spargeWaterL, 'L')} complémentaires. ` : ''}Prévoir ${Units.format(simulation.settings.extractionTempC, '°C')} pendant ${Units.format(simulation.settings.extractionHours, 'h')}. Mesurer l’eau réellement ajoutée, les volumes récupérés et le pH.`
+        : 'Préciser le protocole d’extraction et mesurer le volume d’eau ajouté. Le plan d’eau de l’empâtage chaud n’est pas repris.'
       : plan
       ? (() => {
           const mashL = plan.mashWaterL ?? 0;
@@ -143,11 +149,13 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: secondRunnings ? 'nolo-second-runnings' : 'nolo-extraction',
       label: secondRunnings ? 'Seconde extraction des drêches' : 'Extraction à froid et filtration',
-      detail: secondRunnings
+      detail: simulation
+        ? `Consigne : ${simulation.settings.extractionTempC} °C · ${simulation.settings.extractionHours} h. Viser ${simulation.volumeL} L ; relever volume, densité et pH réellement obtenus.`
+        : secondRunnings
         ? 'Identifier le brassin d’origine, puis relever volume, densité et pH du moût récupéré.'
         : 'Consigner le temps et la température du protocole choisi. Mesurer le volume et la densité après filtration ; aucun palier à chaud repris automatiquement.',
-      durationMin: recovery?.minutes ?? 0,
-      ...(recovery?.temperatureC != null ? { tempC: recovery.temperatureC } : {})
+      durationMin: simulation ? simulation.settings.extractionHours * 60 : recovery?.minutes ?? 0,
+      ...(simulation ? { tempC: simulation.settings.extractionTempC } : recovery?.temperatureC != null ? { tempC: recovery.temperatureC } : {})
     });
   } else (mash?.steps ?? (nolo ? [{ name: 'Empâtage à préciser', durationMin: 0 }] : [{ name: 'Empâtage', tempC: 67, durationMin: 60 }])).forEach((s, i) => {
     steps.push({

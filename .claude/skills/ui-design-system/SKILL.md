@@ -5,6 +5,17 @@ description: UI design system toolkit for Senior UI Designer including design to
 
 # UI Design System
 
+## Contexte local : L'Affinée
+
+Pour ce dépôt, [DESIGN.md](../../../DESIGN.md) fixe les dimensions compactes et
+[le guide UI](../../../docs/ui-compacte.md) guide le choix des composants.
+Lire aussi [PRODUCT.md](../../../PRODUCT.md). Ces consignes priment sur les
+échelles illustratives et valeurs par défaut des générateurs ci-dessous : ne
+pas importer une grille de grands espacements ou un minimum universel de 44/48 px.
+La cohérence se construit avec de petites tailles communes, y compris pour les
+champs, en-têtes, pieds, listes et typographies. Préparer aussi le choix des
+outils d'affichage et d'interaction dans toute transmission à un développeur.
+
 Generate design tokens, create color palettes, calculate typography scales, build component systems, and prepare developer handoff documentation.
 
 ---
@@ -369,7 +380,7 @@ Detailed reference guides in `references/`:
 ### Accessibility
 - [ ] Color contrast meets WCAG AA
 - [ ] Focus indicators visible
-- [ ] Touch targets ≥ 44×44px
+- [ ] Cibles web selon DESIGN.md et WCAG 2.2 AA 2.5.8 (24×24 px CSS ou exception vérifiée), sans chevauchement ; 44 px relève du critère renforcé AAA, pas d'un défaut universel.
 - [ ] Semantic HTML elements used
 
 ### Developer Handoff

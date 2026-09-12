@@ -39,21 +39,21 @@ Create context-appropriate strategy:
 **Layout Strategy**:
 - Single column instead of multi-column
 - Vertical stacking instead of side-by-side
-- Full-width components instead of fixed widths
+- Fit controls to their label or data; use full width when the task benefits from it, not as a mobile default.
 - Bottom navigation instead of top/side navigation
 
 **Interaction Strategy**:
-- Touch targets 44x44px minimum (not hover-dependent)
+- Use project target dimensions and verify WCAG 2.2 AA 2.5.8 (24x24 CSS px or an applicable exception); do not impose 44x44px universally. No hover-only interaction.
 - Swipe gestures where appropriate (lists, carousels)
-- Bottom sheets instead of dropdowns
+- Choose compact native selects, comboboxes, popovers or sheets according to the task; a short selection does not require a sheet.
 - Thumbs-first design (controls within thumb reach)
-- Larger tap areas with more spacing
+- Verify precise activation and non-overlapping targets at the project's chosen density; enlarge only where the interaction needs it.
 
 **Content Strategy**:
 - Progressive disclosure (don't show everything at once)
 - Prioritize primary content (secondary content in tabs/accordions)
 - Shorter text (more concise)
-- Larger text (16px minimum)
+- Use the project's compact typography roles; retain legibility, contrast, text resizing and the mobile input font protection.
 
 **Navigation Strategy**:
 - Hamburger menu or bottom navigation
@@ -71,7 +71,7 @@ Create context-appropriate strategy:
 
 **Interaction Strategy**:
 - Support both touch and pointer
-- Touch targets 44x44px but allow denser layouts than phone
+- Follow the same project target policy for touch and pointer; density depends on the task, not a blanket 44x44px minimum.
 - Side navigation drawers
 - Multi-column forms where appropriate
 
@@ -145,8 +145,8 @@ Choose appropriate breakpoints:
 
 ### Touch Adaptation
 
-- Increase touch target sizes (44x44px minimum)
-- Add more spacing between interactive elements
+- Verify actual target size and spacing against the project's compact scale and web AA target criterion.
+- Add spacing only when targets interfere or are difficult to distinguish; do not enlarge the entire page by default.
 - Remove hover-dependent interactions
 - Add touch feedback (ripples, highlights)
 - Consider thumb zones (easier to reach bottom than top)

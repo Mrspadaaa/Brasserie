@@ -145,8 +145,26 @@ export function ionsAfterAcid(
 ): WaterIons {
   if (!Number.isFinite(amount) || !Number.isFinite(litres) || !(amount > 0) || !(litres > 0))
     return ions;
-  const ppmRetires = (amount * ACIDS[acid].hco3NeutralizedPerUnit) / litres;
-  return { ...ions, hco3: Math.max(0, ions.hco3 - ppmRetires) };
+  const balance = waterAcidBalance(ions, amount, acid, litres);
+  return balance ? { ...ions, hco3: balance.hco3After } : ions;
+}
+
+/**
+ * Bilan de l'eau seule : le HCO3 ne devient jamais négatif, mais l'acide
+ * au-delà de sa neutralisation ne disparaît pas. Il peut encore agir sur
+ * les tampons du malt ; ce bilan n'est ni une dose conseillée ni un pH du moût.
+ * Repère métier : https://www.brunwater.com/articles/i-added-acid-to-my-water-and-my-ph-cratered
+ */
+export function waterAcidBalance(ions: WaterIons, amount: number, acid: AcidId, litres: number) {
+  if (![ions.hco3, amount, litres].every(Number.isFinite) || ions.hco3 < 0 || amount < 0 || litres <= 0)
+    return null;
+  const strength = ACIDS[acid].hco3NeutralizedPerUnit;
+  const neutralizationAmount = ions.hco3 * litres / strength;
+  return {
+    hco3After: Math.max(0, ions.hco3 - amount * strength / litres),
+    neutralizationAmount,
+    beyondWaterAmount: Math.max(0, amount - neutralizationAmount),
+  };
 }
 
 /**

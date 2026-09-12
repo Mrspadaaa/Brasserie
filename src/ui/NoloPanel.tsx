@@ -23,6 +23,7 @@ import { NoloBrewTools } from './NoloBrewTools';
 import { noloProcessLabels } from '../domain/noloPresentation';
 import { NoloRecipeOverview } from './NoloRecipeOverview';
 import { NoloOperationList } from './NoloOperationList';
+import { NoloRecipeSimulator } from './NoloRecipeSimulator';
 
 const decimal = (n: number) => n.toLocaleString('fr-FR',{maximumFractionDigits:3});
 /** Outward rounding: a narrow interval across 0.5 must never display as 0.5–0.5. */
@@ -52,7 +53,7 @@ const sugarLabel={glucose:'Glucose',fructose:'Fructose',sucrose:'Saccharose',mal
 const emptyRunnings={sourceBatchId:'',previousExtraction:'',waterAddedL:null,alkalinityPpm:null,temperatureC:null,minutes:null,recoveredL:null,sg:null,ph:null};
 const stageLabels:Record<NoloStage,string>={sourceWater:'Eau source',mash:'Empâtage',sparge:'Rinçage',lastRunnings:'Dernières eaux de coulage',wort:'Moût avant fermentation',primary:'Après fermentation, avant conditionnement',packaged:'Bière conditionnée'};
 
-export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false,hideStrainPicker=false,onChooseYeast,showOverview=true}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean;hideStrainPicker?:boolean;onChooseYeast?:()=>void;showOverview?:boolean}) {
+export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false,hideStrainPicker=false,onChooseYeast,showOverview=true,variantMode=false,onVariantChange}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean;hideStrainPicker?:boolean;onChooseYeast?:()=>void;showOverview?:boolean;variantMode?:boolean;onVariantChange?:(open:boolean)=>void}) {
   const saved=useStorageValue(StorageService.getHopKnowledge);
   const c=recipe.nolo, editable=!!onChange;
   const science=useMemo(()=>c?.enabled?noloScience(saved):undefined,[saved,c?.enabled]);
@@ -68,6 +69,14 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
   const [selectedStrain,setStrain]=useState(''),[operationKind,setOperationKind]=useState<NoloOperation['kind']>('sugar');
   const [measure,setMeasure]=useState<Partial<NoloMeasurement>>({stage:'packaged',date:new Date().toISOString().slice(0,10),method:''});
   const [variant,setVariant]=useState<TrialRecipe>();
+  const variantStart=useRef<HTMLElement>(null),variantTrigger=useRef<HTMLSpanElement>(null),wasVariant=useRef(false);
+  const variantOpen=!!variant;
+  useEffect(()=>{
+    onVariantChange?.(variantOpen);
+    if(variantOpen){variantStart.current?.querySelector('button')?.focus();variantStart.current?.scrollIntoView({block:'start'});}
+    else if(wasVariant.current)variantTrigger.current?.querySelector('button')?.focus();
+    wasVariant.current=variantOpen;
+  },[variantOpen,onVariantChange]);
   const [researchOpen,setResearchOpen]=useState(false);
   const update=(patch:Partial<NoloConfig>)=>{const next={...(c??newNoloConfig()),...patch};onChange?.({...recipe,nolo:changeNoloProcess(next,next.process)});};
   const plan=(patch:Partial<NonNullable<NoloConfig['planning']>>)=>update({planning:{version:1,source:noloPlanningSource,...c?.planning,...patch}});
@@ -84,23 +93,28 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
     update({operations:[...c.operations,next]});
   };
   if(!c?.enabled&&!allowEnable)return null;
-  if(workshop&&onChange)return <section className="space-y-3"><Button onClick={()=>setWorkshop(false)}>Revenir au bilan NOLO</Button><NoloFermentationWorkshop recipe={recipe} onChange={onChange}/></section>;
-  if(variant)return <section className="space-y-3"><Button onClick={()=>setVariant(undefined)}>Fermer la variante NOLO</Button><p className="text-xs text-cave-400">Variante locale · aucune écriture</p><NoloPanel recipe={variant} onChange={setVariant}/></section>;
-  const preparation=editable&&!measurementOnly&&c?.enabled&&<>
-    {!hideStrainPicker&&<Button onClick={()=>onChooseYeast?onChooseYeast():setWorkshop(true)}>Choisir une levure et préparer la conduite</Button>}
-    {science&&<NoloBrewTools recipe={recipe} onChange={onChange!} science={c.scienceSnapshot??science} result={result} saved={saved}/>}
+  if(workshop&&onChange)return <section className="space-y-3"><Button onClick={()=>setWorkshop(false)}>Revenir au bilan NOLO</Button><NoloFermentationWorkshop recipe={recipe} onChange={onChange} variant={variantMode}/></section>;
+  if(variant)return <section ref={variantStart} className="space-y-3"><Button onClick={()=>setVariant(undefined)}>Fermer la variante NOLO</Button><p className="text-xs text-cave-400">Variante locale · aucune écriture</p><NoloPanel recipe={variant} onChange={setVariant} variantMode/></section>;
+  const preparation=editable&&!measurementOnly&&c?.enabled&&science&&<>
+    <NoloRecipeSimulator recipe={recipe} onChange={onChange!} science={c.scienceSnapshot??science} saved={saved} variant={variantMode}/>
+    <details><summary className="cursor-pointer">Outils complémentaires · ajouts, dilution et essais</summary>
+      <NoloBrewTools recipe={recipe} onChange={onChange!} science={c.scienceSnapshot??science} result={result} saved={saved}/>
+    </details>
+    {!hideStrainPicker&&<details><summary className="cursor-pointer">Catalogue et profil aromatique des levures</summary>
+      <Button onClick={()=>onChooseYeast?onChooseYeast():setWorkshop(true)}>Ouvrir l’atelier de fermentation</Button>
+    </details>}
   </>;
   return <section aria-label="Objectif NOLO" className={`nolo-panel min-w-0 ${showOverview?'rounded-panel border border-cave-700 bg-cave-900':'nolo-panel-embedded'}`}>
     {researchOpen&&<FermentationResearchSheet onClose={()=>setResearchOpen(false)}/>}
     <div className="flex flex-wrap items-center justify-between gap-2">
       {allowEnable&&editable?<label className="flex min-h-touch items-center gap-2 font-semibold text-cave-50"><input name="nolo-enabled" aria-label="Objectif NOLO · ≤ 0,5 %" type="checkbox" className="accent-hop" checked={!!c?.enabled} onChange={e=>onChange?.({...recipe,nolo:{...(c??newNoloConfig()),enabled:e.target.checked}})}/>Objectif NOLO · ≤ 0,5 %</label>:(editable||measurementOnly)&&<h3 className="font-semibold text-sm text-cave-50">Objectif NOLO</h3>}
-      {c&&!editable&&<Button onClick={()=>setVariant(structuredClone(recipe))}>Simuler une variante NOLO</Button>}
+      {c&&!editable&&<span ref={variantTrigger}><Button onClick={()=>setVariant(structuredClone(recipe))}>Simuler une variante NOLO</Button></span>}
     </div>
     {c?.enabled&&<>
       {!editable&&showOverview&&<NoloRecipeOverview recipe={recipe} saved={saved}/>}
-      {(editable||measurementOnly)&&<div className="nolo-summary"><span>{noloProcessLabels[c.process]}</span>{editable?<label className="inline-flex items-center gap-1">Cible<select aria-label="Cible d’alcool NOLO" className="rounded-control border border-cave-700 bg-cave-850 min-h-touch px-1 text-base" value={c.targetAbvPct} onChange={e=>update({targetAbvPct:Number(e.target.value)})}>{[...new Set([.5,.3,.1,0,c.targetAbvPct])].sort((a,b)=>b-a).map(n=><option key={n} value={n}>{decimal(n)} % vol.</option>)}</select></label>:<span>Cible ≤ {decimal(c.targetAbvPct)} % vol.</span>}</div>}
+      {measurementOnly&&<div className="nolo-summary"><span>{noloProcessLabels[c.process]}</span><span>Cible ≤ {decimal(c.targetAbvPct)} % vol.</span></div>}
       {result?.projectionStatus==='exceeds'&&<p className="nolo-error">La projection actuelle dépasse la cible. Compare les réglages avant de préparer le pilote.</p>}
-      {preparation&&(allowEnable?<details><summary className="cursor-pointer">Comparer et préparer le procédé</summary><div className="space-y-2 pt-1">{preparation}</div></details>:preparation)}
+      {preparation}
       <details open={measurementOnly?true:undefined}><summary className="cursor-pointer">Bilan détaillé · mesures et suivi</summary><div className="nolo-legacy">
       {editable&&measurementOnly&&<label className="block text-xs text-cave-200">Procédé<select className={inputClass} value={c.process} onChange={e=>onChange?.({...recipe,nolo:changeNoloProcess(c,e.target.value as NoloProcess)})}>{science?.processes.map(p=><option key={p.id} value={p.id}>{noloProcessLabels[p.id]}</option>)}</select></label>}
       {c.process==='secondRunnings'&&<div className="space-y-3" aria-label="Moût de seconde extraction">

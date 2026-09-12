@@ -1,11 +1,14 @@
-import { Input, Textarea } from '../ui/Input';
-import React from 'react';
+import { Input, Textarea, type InputElement } from '../ui/Input';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { useSyncedDraft } from '../hooks/useLiveData';
-import { X, Save, User, FileText } from 'lucide-react';
+import { X, Save, ChevronDown } from 'lucide-react';
 import { Client } from '../types';
 import { StorageService } from '../services/storage';
-import { ModalShell, StickyActions } from '../ui/ModalShell';
-import { TextInput, inputClass } from '../ui/FormNav';
+import { ModalShell } from '../ui/ModalShell';
+import { TextInput, inputClass, noAutofillProps } from '../ui/FormNav';
+import type { TextInputHandle } from '../ui/TextInput';
+import { SegmentedControl } from '../ui/SegmentedControl';
+import '../ui/clients.css';
 
 interface EditClientModalProps {
   isOpen: boolean;
@@ -14,24 +17,33 @@ interface EditClientModalProps {
   onSave: (updated: Client) => void;
 }
 
-export const EditClientModal: React.FC<EditClientModalProps> = ({
-  isOpen,
-  client,
-  onClose,
-  onSave
-}) => {
+export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, client, onClose, onSave }) => {
   const [draft, setDraft] = useSyncedDraft(isOpen ? client : null, client?.id);
+  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+  const id = useId();
+  const nameInput = useRef<TextInputHandle>(null);
+  const emailInput = useRef<InputElement>(null);
+  useEffect(() => { setErrors({}); }, [isOpen, client?.id]);
   if (!isOpen || !client || !draft) return null;
-  const { name, type, contact, phone, email, notes = '' } = draft;
-  const field = <K extends keyof Client>(key: K, value: Client[K]) =>
-    setDraft(current => ({ ...current, [key]: value }));
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
+  const { name, type, contact, phone, email, notes = '' } = draft;
+  const field = <K extends keyof Client>(key: K, value: Client[K]) => {
+    setDraft(current => ({ ...current, [key]: value }));
+    if (key === 'name' || key === 'email') setErrors(current => ({ ...current, [key]: undefined }));
+  };
+
+  const handleSave = (event: React.FormEvent) => {
+    event.preventDefault();
+    const nextErrors = {
+      name: name.trim() ? undefined : 'Indique le nom du client.',
+      email: email.trim() && emailInput.current && !emailInput.current.validity.valid ? 'Vérifie l’adresse email, par exemple contact@restaurant.ch.' : undefined
+    };
+    setErrors(nextErrors);
+    if (nextErrors.name) { nameInput.current?.focus(); return; }
+    if (nextErrors.email) { emailInput.current?.focus(); return; }
     const updated: Client = {
       ...draft,
       name: name.trim(),
-      type,
       contact: contact.trim(),
       phone: phone.trim(),
       email: email.trim(),
@@ -43,154 +55,58 @@ export const EditClientModal: React.FC<EditClientModalProps> = ({
   };
 
   return (
-    <ModalShell open={isOpen} onClose={onClose} size="lg">
-      {/* Top Header */}
-      <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">
-        <div className="flex items-center space-x-2">
-          <User className="w-5 h-5 text-ebc-straw shrink-0" />
-          <div>
-            <h3 className="font-bold text-base text-cave-50">
-              {client.id ? `Modifier : ${client.name || 'Nouveau client'}` : 'Nouveau client'}
-            </h3>
-            <span className="text-footnote font-mono text-cave-400">{client.id}</span>
+    <ModalShell open={isOpen} onClose={onClose} size="lg" labelledBy={`${id}-title`}>
+      <header className="client-form-header">
+        <h3 id={`${id}-title`}>{client.name.trim() ? 'Modifier le client' : 'Nouveau client'}</h3>
+        <button type="button" onClick={onClose} aria-label="Fermer" className="clients-action"><X size={15} aria-hidden="true" /></button>
+      </header>
+      <form onSubmit={handleSave} noValidate autoComplete="off" className="client-form">
+        <div className="client-form-body">
+          <div className="client-form-field">
+            <label htmlFor={`${id}-name`}>Nom / raison sociale <span aria-hidden="true">*</span></label>
+            <TextInput ref={nameInput} id={`${id}-name`} name="cl_company_label" required value={name}
+              onChange={value => field('name', value)} className={`${inputClass} font-semibold`} enterKeyHint="next"
+              aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? `${id}-name-error` : undefined} />
+            {errors.name && <p id={`${id}-name-error`} role="alert" className="mt-1 text-xs text-alert-strong">{errors.name}</p>}
           </div>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Fermer"
-          className="p-2 text-cave-400 hover:text-cave-200 bg-cave-850 rounded-full transition"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Form Body */}
-      <form onSubmit={handleSave} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-sm overscroll-contain">
-        <div>
-          <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Nom / Raison Sociale</label>
-          <TextInput
-            name="cl_company_label"
-            required
-            value={name}
-            onChange={value => field('name', value)}
-            className={`${inputClass} font-bold`}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Type de client</label>
-            <select
-              name="cl_category_sel"
-              autoComplete="off"
-              data-form-type="other"
-              value={type}
-              onChange={(e) => field('type', e.target.value as 'Pro' | 'Privé')}
-              className={inputClass}
-            >
-              <option value="Pro">Professionnel (Restaurant/Bar/Cave)</option>
-              <option value="Privé">Particulier / Vente directe</option>
-            </select>
+          <div className="client-form-field">
+            <span>Type de client</span>
+            <SegmentedControl label="Type de client" value={type} onChange={value => field('type', value)} className="clients-segments"
+              options={[{ value: 'Pro', label: 'Professionnel' }, { value: 'Privé', label: 'Particulier' }]} />
           </div>
-
-          <div>
-            <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Statut</label>
-            <div className="w-full bg-cave-950/60 border border-cave-800 rounded-control p-2 text-xs text-cave-400 leading-relaxed">
-              Calculé d'après les ventes (Prospect ➔ Actif ➔ Fidèle).
+          <div className="client-form-grid">
+            <div className="client-form-field">
+              <label htmlFor={`${id}-contact`}>Nom du contact</label>
+              <TextInput id={`${id}-contact`} name="cl_contact_person_label" value={contact}
+                onChange={value => field('contact', value)} placeholder="Marie Dupont" enterKeyHint="next" />
+            </div>
+            <div className="client-form-field">
+              <label htmlFor={`${id}-phone`}>Téléphone / mobile</label>
+              <Input {...noAutofillProps} id={`${id}-phone`} name="cl_contact_tel_digits" type="tel" inputMode="tel"
+                value={phone} onChange={event => field('phone', event.target.value)} placeholder="026 408 33 33" className={inputClass} enterKeyHint="next" />
             </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Nom du contact</label>
-            <TextInput
-              name="cl_contact_person_label"
-              value={contact}
-              onChange={value => field('contact', value)}
-              placeholder="ex: M. Martin, Mme Dupont..."
-            />
+          <div className="client-form-field">
+            <label htmlFor={`${id}-email`}>Email de facturation</label>
+            <Input {...noAutofillProps} ref={emailInput} id={`${id}-email`} name="cl_billing_mail" type="email" inputMode="email"
+              value={email} onChange={event => field('email', event.target.value)} placeholder="contact@restaurant.ch" className={inputClass}
+              aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? `${id}-email-error` : undefined} />
+            {errors.email && <p id={`${id}-email-error`} role="alert" className="mt-1 text-xs text-alert-strong">{errors.email}</p>}
           </div>
-          <div>
-            <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Téléphone / Mobile</label>
-            <Input
-              name="cl_contact_tel_digits"
-              type="text"
-              inputMode="tel"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              data-form-type="other"
-              data-lpignore="true"
-              data-1p-ignore="true"
-              data-bwignore="true"
-              value={phone}
-              onChange={(e) => field('phone', e.target.value)}
-              placeholder="026 408 33 33"
-              className={`${inputClass} font-mono`}
-            />
-          </div>
+          <details key={client.id} className="clients-help">
+            <summary>Notes et accès logistiques{notes.trim() ? ' · renseignés' : ''}<ChevronDown size={14} aria-hidden="true" /></summary>
+            <div className="client-form-field">
+              <label htmlFor={`${id}-notes`}>Consignes de livraison</label>
+              <Textarea {...noAutofillProps} id={`${id}-notes`} rows={2} name="cl_logistics_memo" value={notes}
+                onChange={event => field('notes', event.target.value)} placeholder="Lieu de dépôt, horaires, accès…" className={inputClass} />
+            </div>
+          </details>
+          <p className="text-xs leading-tight text-cave-400">Réf. {client.id} · statut calculé depuis les ventes.</p>
         </div>
-
-        <div>
-          <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Email pour facturation QR</label>
-          <Input
-            name="cl_billing_mail"
-            type="text"
-            inputMode="email"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            data-form-type="other"
-            data-lpignore="true"
-            data-1p-ignore="true"
-            data-bwignore="true"
-            value={email}
-            onChange={(e) => field('email', e.target.value)}
-            placeholder="contact@restaurant.ch"
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm flex items-center">
-            <FileText className="w-3.5 h-3.5 text-ebc-straw mr-1" /> Notes & Accès logistiques
-          </label>
-          <Textarea
-            rows={2}
-            name="cl_logistics_memo"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            data-form-type="other"
-            data-lpignore="true"
-            data-1p-ignore="true"
-            data-bwignore="true"
-            value={notes}
-            onChange={(e) => field('notes', e.target.value)}
-            placeholder="ex: Consignes de dépôt, créneaux horaires, jours de fermeture..."
-            className={inputClass}
-          />
-        </div>
-
-        {/* Sticky Actions */}
-        <StickyActions>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2.5 bg-cave-850 hover:bg-cave-800 text-cave-200 font-bold rounded-xl transition text-sm"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            className="flex-1 py-2.5 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-bold rounded-xl shadow-lg transition flex items-center justify-center space-x-1 text-sm"
-          >
-            <Save className="w-4 h-4 mr-1" />
-            <span>Enregistrer</span>
-          </button>
-        </StickyActions>
+        <footer className="client-form-actions">
+          <button type="button" onClick={onClose} className="clients-action">Annuler</button>
+          <button type="submit" className="clients-action clients-action-primary"><Save size={14} aria-hidden="true" />Enregistrer</button>
+        </footer>
       </form>
     </ModalShell>
   );

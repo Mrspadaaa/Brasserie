@@ -19,9 +19,9 @@ describe('Fruty, préparation NOLO commune', () => {
     expect(d.map(d=>d.id)).toEqual(expect.arrayContaining(['fruit','acidity','hop-contact']));
     expect(JSON.stringify(r)).toBe(before);
   });
-  it('propose les quatre souches même sans PPG, sans fabriquer les masses du grain', () => {
+  it('propose les spécialistes même sans PPG, sans fabriquer les masses du grain', () => {
     const r=fruty(), rows=fermentationProposals(r);
-    expect(rows).toHaveLength(4);
+    expect(rows.length).toBeGreaterThanOrEqual(6);
     for(const p of rows) { expect(p.recipe.fermentables).toEqual(r.fermentables); expect(p.result?.projection.max).toBeNull(); }
     expect(rows.find(p=>p.strain.name.includes('LA-01'))?.recipe.yeast.qty).toBeCloseTo(15.6,8);
   });

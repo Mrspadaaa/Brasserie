@@ -41,6 +41,7 @@ beforeEach(() => {
 afterEach(() => { cleanup(); brewerJobs.stop(); });
 async function plus() {
   fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le compagnon brasseur' }));
+  await screen.findByRole('textbox');
   await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
 }
 async function ask() {

@@ -84,6 +84,25 @@ export interface NoloBrewToolsConfig {
   trialFgSg?: number | null;
   readingToleranceSg?: number | null;
 }
+/** Adopted recipe-planning assumptions. These are not analytical observations.
+ * The context binding makes the saved range expire when its recipe changes. */
+export interface NoloSimulationSettings {
+  process: NoloProcess; targetAbvPct: number; reserveAbvPct: number;
+  ogSg: number; grainScale: number; efficiencyPct: number; extractTolerancePct: number;
+  attenuationPct: HopRange; fermentationTempC: number; fermentationDays: number;
+  pitchGL: number | null; yeastQty: number; yeastUnit: string; yeastForm: 'sèche' | 'liquide' | 'levain';
+  mashTempC: number; mashMinutes: number; mashRatioLKg: number;
+  stopSg: HopRange | null; removedPct: HopRange | null; finalVolumeL: number;
+  recoveredVolumeL: number; extractionTempC: number; extractionHours: number; contactHours: number;
+}
+export interface NoloSimulation {
+  version: 1; model: 'apparent-attenuation-v1'; basis: string; source: HopSource;
+  settings: NoloSimulationSettings; wortSg: HopRange; volumeL: number;
+  attenuationSource: 'manufacturer' | 'pilot'; attenuationReference: HopSource;
+  /** A stop is a gravity DROP from the actual OG; displayed absolute SG is a planning guide. */
+  stopDropSg: HopRange | null;
+  assumptions: string[];
+}
 export interface NoloConfig {
   version: 1; enabled: boolean; targetAbvPct: number; process: NoloProcess;
   orientation: 'free' | 'banana' | 'balanced' | 'clove';
@@ -100,6 +119,7 @@ export interface NoloConfig {
     version: 1; source: HopSource;
     /** New planning calculations retain full extract precision; absent replays legacy rounding. */
     exactExtract?: boolean;
+    simulation?: NoloSimulation;
     stopSg?: HopRange | null; stopAttenuationPct?: HopRange | null;
     /** Explicit conditional sensory equivalence, not a measured retention factor. */
     aromaTransfer?: { axes: Record<string, HopRange>; source: HopSource };
@@ -111,6 +131,30 @@ const check = (v: unknown, m: string) => { if (!v) throw Error(m); };
 const range = (v: unknown, max = Infinity) => validHopRange(v) && (v as HopRange).min >= 0 && (v as HopRange).max <= max;
 const nullable = (v: unknown, max = Infinity) => v === null || range(v, max);
 const finite = (v: unknown, max = Infinity) => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= max;
+export function assertNoloSimulation(v: any): asserts v is NoloSimulation {
+  check(v && v.version === 1 && v.model === 'apparent-attenuation-v1' && typeof v.basis === 'string' && v.basis.length > 0 &&
+    !hopSourceError(v.source,true) && !hopSourceError(v.attenuationReference), 'Simulation NOLO sans modèle ou provenance.');
+  check(range(v.wortSg,3) && v.wortSg.min >= 1 && finite(v.volumeL) && v.volumeL > 0 &&
+    ['manufacturer','pilot'].includes(v.attenuationSource) && nullable(v.stopDropSg,2) &&
+    Array.isArray(v.assumptions) && v.assumptions.every((x: unknown) => typeof x === 'string'), 'Hypothèses de simulation NOLO invalides.');
+  const s=v.settings;
+  check(s && ['restricted','restored','lowExtract','coldExtraction','coldContact','arrested','dealcoholized','secondRunnings'].includes(s.process) &&
+    finite(s.targetAbvPct,.5) && finite(s.reserveAbvPct,s.targetAbvPct) && finite(s.ogSg,3) && s.ogSg>=1 &&
+    finite(s.grainScale) && finite(s.efficiencyPct,100) && s.efficiencyPct>0 && finite(s.extractTolerancePct,100) &&
+    range(s.attenuationPct,100) && s.attenuationPct.max>0, 'Consigne de simulation NOLO invalide.');
+  for(const key of ['fermentationTempC','mashTempC','extractionTempC'] as const)
+    check(typeof s[key]==='number' && Number.isFinite(s[key]) && s[key]>=0 && s[key]<=100, 'Température de simulation NOLO invalide.');
+  for(const key of ['fermentationDays','yeastQty','mashMinutes','mashRatioLKg','finalVolumeL','recoveredVolumeL','extractionHours','contactHours'] as const)
+    check(finite(s[key]) && s[key]>0, 'Quantité ou durée de simulation NOLO invalide.');
+  check((s.pitchGL===null || finite(s.pitchGL) && s.pitchGL>0) && typeof s.yeastUnit==='string' && s.yeastUnit.trim() &&
+    ['sèche','liquide','levain'].includes(s.yeastForm) && nullable(s.stopSg,3) && (!s.stopSg||s.stopSg.min>=1) && nullable(s.removedPct,100), 'Programme de simulation NOLO invalide.');
+  const close=(a:number,b:number)=>Math.abs(a-b)<=1e-10*Math.max(1,Math.abs(a),Math.abs(b));
+  check(close(v.wortSg.min,1+(s.ogSg-1)*(1-s.extractTolerancePct/100)) &&
+    close(v.wortSg.max,1+(s.ogSg-1)*(1+s.extractTolerancePct/100)), 'OG de simulation incohérente avec sa tolérance.');
+  if(s.process==='arrested')check(s.stopSg && v.stopDropSg && s.stopSg.max<=s.ogSg &&
+    close(v.stopDropSg.min,s.ogSg-s.stopSg.max) && close(v.stopDropSg.max,s.ogSg-s.stopSg.min), 'Chute de densité d’arrêt incohérente.');
+  if(s.process==='dealcoholized')check(s.removedPct, 'Retrait d’alcool de simulation manquant.');
+}
 export function assertSugarProfile(v: any) {
   check(v && typeof v === 'object' && !Array.isArray(v), 'Profil de sucres invalide.');
   for (const [k, r] of Object.entries(v)) check(NOLO_SUGARS.includes(k as NoloSugar) && nullable(r), 'Sucre ou unité invalide (g/L ou g selon le champ).');
@@ -173,6 +217,7 @@ export function assertNoloConfig(v: any): asserts v is NoloConfig {
   if (v.planning) {
     check(v.planning.version === 1 && !hopSourceError(v.planning.source,true), 'Hypothèse de préparation sans provenance datée.');
     if (v.planning.exactExtract !== undefined) check(typeof v.planning.exactExtract === 'boolean', 'Précision du calcul invalide.');
+    if (v.planning.simulation !== undefined) { assertNoloSimulation(v.planning.simulation); check(v.planning.simulation.settings.process === v.process, 'Procédé de simulation NOLO incohérent.'); }
     for (const [k,max] of [['stopSg',3],['stopAttenuationPct',100]] as const)
       if (v.planning[k] !== undefined) check(nullable(v.planning[k],max), 'Arrêt de fermentation invalide.');
     if (v.planning.aromaTransfer) {

@@ -5,6 +5,7 @@ import type { BrewDayState, BrewDayStep, Recipe, RecipeSnapshot } from '../types
 import type { ReadingKind } from './brewDay';
 import { noloScenarioInput, noloScience } from './nolo';
 import { wortTool } from './noloBrewTools';
+import { matchingNoloSimulation } from '../../functions/src/noloSimulation';
 
 const number = (value: number, decimals = 2) =>
   value.toLocaleString('fr-CH', { maximumFractionDigits: decimals });
@@ -125,13 +126,31 @@ export function noloBrewDayPlan(recipe: Recipe | RecipeSnapshot) {
   const config = changeNoloProcess(recipe.nolo, recipe.nolo.process);
   const process = NOLO_BREW_PROCESSES[config.process];
   const science = config.scienceSnapshot ?? noloScience();
-  const currentOg = noloScenarioInput(recipe).og;
+  const input = noloScenarioInput(recipe);
+  const simulation = matchingNoloSimulation(input);
+  const currentOg = input.og;
   const settings = config.brewTools;
   const wort = settings && science ? wortTool(recipe, {
     targetAbvPct: config.targetAbvPct, reserveAbvPct: settings.reserveAbvPct,
     attenuationPct: settings.attenuationPct
   }, science) : null;
   const facts: { label: string; value: string }[] = [];
+  if (simulation) {
+    const s = simulation.settings;
+    facts.push(
+      { label: 'OG visée · simulation', value: range(simulation.wortSg, 'SG', 4) },
+      { label: 'Atténuation envisagée', value: range(s.attenuationPct, '%') },
+      { label: 'Variation de l’extrait', value: `±${quantity(s.extractTolerancePct, '%')}` },
+      { label: 'Ensemencement prévu', value: `${quantity(s.yeastQty, s.yeastUnit)} · ${quantity(s.fermentationTempC, '°C')}` },
+      { label: 'Fermentation prévue', value: quantity(s.fermentationDays, 'j') }
+    );
+    if (['coldExtraction','secondRunnings'].includes(config.process)) facts.push(
+      { label: 'Consigne d’extraction', value: `${quantity(s.extractionTempC, '°C')} · ${quantity(s.extractionHours, 'h')}` },
+      { label: 'Récupération visée', value: quantity(simulation.volumeL, 'L') }
+    );
+    if (config.process === 'coldContact') facts.push({ label: 'Consigne de contact froid', value: `${quantity(s.fermentationTempC, '°C')} · ${quantity(s.contactHours, 'h')}` });
+    if (simulation.stopDropSg) facts.push({ label: 'Chute à suivre depuis l’OG mesurée', value: range(simulation.stopDropSg, 'SG', 4) });
+  }
   if (config.process === 'secondRunnings') {
     const extraction = config.secondRunnings;
     facts.push(
@@ -158,6 +177,15 @@ export function noloBrewDayPlan(recipe: Recipe | RecipeSnapshot) {
   if (config.planning?.stopAttenuationPct) facts.push({ label: 'Atténuation à l’arrêt', value: range(config.planning.stopAttenuationPct, '%') });
   return {
     ...process, process: config.process, target: quantity(config.targetAbvPct, '% vol.'), facts,
+    simulation,
+    simulationStale: !!config.planning?.simulation && !simulation,
+    executionHint: simulation ? ['coldExtraction','secondRunnings'].includes(config.process)
+      ? `Extraction prévue : ${quantity(simulation.settings.extractionTempC, '°C')} pendant ${quantity(simulation.settings.extractionHours, 'h')} · viser ${quantity(simulation.volumeL, 'L')}.`
+      : config.process === 'arrested' && simulation.stopDropSg
+      ? `Depuis l’OG mesurée, suivre une chute de ${range(simulation.stopDropSg, 'SG', 4)} avant le traitement d’arrêt prévu.`
+      : config.process === 'coldContact'
+      ? `Contact prévu : ${quantity(simulation.settings.fermentationTempC, '°C')} pendant ${quantity(simulation.settings.contactHours, 'h')}.`
+      : `${recipe.yeast.name} : ${quantity(simulation.settings.yeastQty, simulation.settings.yeastUnit)} à ${quantity(simulation.settings.fermentationTempC, '°C')}.` : null,
     wortIssue: wort?.issue ?? null,
     operations: config.operations.map(operationRow),
     inactiveCount: config.inactiveOperations?.length ?? 0,

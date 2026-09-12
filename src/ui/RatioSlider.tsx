@@ -26,6 +26,7 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const activePointer = useRef<number | null>(null);
+  const lastPointerRatio = useRef<number | null>(null);
   const limit = Number.isFinite(max) && max > 0 ? max : 9;
   const shareMax = ratioToShare(limit);
   // Un quotient préarrondi masquerait les écarts aux limites du profil.
@@ -61,13 +62,19 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
   const pointerSetting = (event: React.PointerEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     const fraction = Math.max(0, Math.min(1, (event.clientX - bounds.left - 14) / Math.max(1, bounds.width - 28)));
-    changeSetting(shareToRatio(fraction * shareMax));
+    const ratio = Math.min(limit, Math.max(0, Math.round(shareToRatio(fraction * shareMax) * 20) / 20));
+    // One solve per graduation, including the first press in manual mode.
+    if (ratio !== lastPointerRatio.current) {
+      lastPointerRatio.current = ratio;
+      onChange(ratio);
+    }
   };
   const pointerStart: React.PointerEventHandler<HTMLDivElement> = event => {
     if (event.button !== 0 || activePointer.current !== null) return;
     event.preventDefault();
     inputRef.current?.focus();
     activePointer.current = event.pointerId;
+    lastPointerRatio.current = null;
     event.currentTarget.setPointerCapture(event.pointerId);
     pointerSetting(event);
   };
@@ -142,7 +149,7 @@ export const RatioSlider: React.FC<RatioSliderProps> = ({
         {limit > 1 && <span className="absolute -translate-x-1/2" style={{ left: `${position(1)}%` }}>1:1</span>}
         <span className="absolute right-0">{frenchNumber(limit)}:1</span>
       </div>
-      <div className="ratio-directions mt-1 flex justify-between gap-2 text-2xs text-cave-400"><span>Plus de chlorure</span><span>Plus de sulfate</span></div>
+      <div className="ratio-directions mt-1 flex justify-between gap-2 text-2xs text-cave-400"><span className="min-w-0 flex-1">Plus de chlorure</span><span className="min-w-0 flex-1 text-right">Plus de sulfate</span></div>
       <div id={`${id}-help`} className="ratio-help mt-2 space-y-1 text-2xs">
         {ions && <p aria-label="Concentrations du rapport" className="text-cave-200">SO₄ {frenchNumber(ions.so4, 1)} ppm · Cl {frenchNumber(ions.cl, 1)} ppm</p>}
         <div className="ratio-profile flex flex-wrap justify-between gap-x-2 gap-y-1">

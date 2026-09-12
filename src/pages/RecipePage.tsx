@@ -43,6 +43,7 @@ import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { NoloPanel } from '../ui/NoloPanel';
 import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
 import { noloScenarioInput } from '../domain/nolo';
+import { matchingNoloSimulation } from '../../functions/src/noloSimulation';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
@@ -71,22 +72,22 @@ const Metric: React.FC<{
   tone?: string;
 }> = ({ label, value, hint, note, swatch, tone = 'text-cave-50' }) => (
   <div className="min-w-0">
-    <div className="text-sm text-cave-400">{label}</div>
+    <dt className="text-xs text-cave-400">{label}</dt>
     {value ? (
       <>
-        <div className="flex items-center gap-2">
+        <dd className="flex items-center gap-1">
           {swatch && (
             <span
               className={`w-4 h-4 rounded-full border border-cave-700 shrink-0 ${swatch}`}
               aria-hidden
             />
           )}
-          <span className={`reading text-xl ${tone}`}>{value}</span>
-        </div>
-        {note && <div className="text-sm text-cave-400 leading-tight">{note}</div>}
+          <span className={`reading text-sm ${tone}`}>{value}</span>
+        </dd>
+        {note && <dd className="text-xs text-cave-400 leading-tight">{note}</dd>}
       </>
     ) : (
-      <div className="text-sm text-cave-400 leading-tight pt-1">{hint ?? 'incalculable'}</div>
+      <dd className="text-xs text-cave-400 leading-tight">{hint ?? 'incalculable'}</dd>
     )}
   </div>
 );
@@ -105,10 +106,15 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onOpenBatch
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [simulatingNolo, setSimulatingNolo] = useState(false);
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const noloWort = useMemo(() => {
     if (!recipe.nolo?.enabled) return undefined;
     try { return noloScenarioInput(recipe, knowledge).og; } catch { return undefined; }
+  }, [recipe, knowledge]);
+  const coldPilot = useMemo(() => {
+    if (!recipe.nolo?.enabled || recipe.nolo.process !== 'coldExtraction') return null;
+    try { return matchingNoloSimulation(noloScenarioInput(recipe, knowledge)); } catch { return null; }
   }, [recipe, knowledge]);
   const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
   const waterReadings = useMemo(() => describeSavedRecipeWater(recipe), [recipe]);
@@ -200,7 +206,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           </button>
         </>
       }
-      footer={
+      footer={!simulatingNolo &&
         <div className="flex items-center gap-2">
         <button
           type="button"
@@ -216,11 +222,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       }
     >
       <BrewerChat hideLauncher scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
-      <BrewBudgetButton recipe={recipe} />
       {/* --- Les cinq mesures ------------------------------------------- */}
-      <section className="panel p-4">
+      <section className="panel p-2">
         {recipe.nolo?.enabled && <div className="mb-2 border-b border-cave-800 pb-2"><NoloRecipeOverview recipe={recipe} saved={knowledge}/></div>}
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+        <dl aria-label="Repères de la recette" className="grid gap-x-2 gap-y-1" style={{gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,3.5rem),1fr))'}}>
           <Metric
             label={recipe.nolo?.enabled ? og > 1 ? noloWort?.origin === 'measurement' ? 'OG mesurée' : 'OG calculée' : 'OG à mesurer' : 'OG'}
             value={og > 1 ? recipe.nolo?.enabled ? og.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3}) : og.toFixed(3) : null}
@@ -259,7 +264,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             hint="dépend de l’OG et de la FG"
             tone="text-ebc-amber"
           />}
-        </div>
+        </dl>
 
         {(colorMissing.length > 0 || hopsMissingAlpha.length > 0) && (
           <div className="mt-4 pt-3 border-t border-cave-800 space-y-1.5">
@@ -285,11 +290,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
 
         {color && (
-          <p className="mt-3 text-sm text-cave-400">
+          <p className="mt-1 text-xs text-cave-400">
             Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {color.srm}.
           </p>
         )}
       </section>
+      <BrewBudgetButton recipe={recipe} />
 
       {recipe.waterPlan&&!measuredExtraction&&<RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={(recipe.waterPlan.mashWaterL*recipe.waterPlan.diRatioPct+recipe.waterPlan.spargeWaterL*(recipe.waterPlan.spargeDiRatioPct??recipe.waterPlan.diRatioPct))/100}/>}
       {/* --- Facture de grain -------------------------------------------- */}
@@ -306,17 +312,17 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             {grains.map((m, i) => {
               const pct = totalGrist > 0 ? (m.weightKg / totalGrist) * 100 : 0;
               return (
-                <li key={`${m.name}-${i}`} className="py-2.5 flex items-baseline gap-3">
+                <li key={`${m.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
                   <span className="reading text-sm text-cave-400 w-12 shrink-0 text-right">
                     {pct.toFixed(0)} %
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base text-cave-50 truncate">{m.name}</span>
+                    <span className="block text-sm text-cave-50 break-words">{m.name}</span>
                     {m.colorEbc != null && (
                       <span className="block text-sm text-cave-400">{m.colorEbc} EBC</span>
                     )}
                   </span>
-                  <span className="reading text-base text-cave-50 shrink-0">
+                  <span className="reading text-sm text-cave-50 shrink-0">
                     {Units.format(m.weightKg, 'kg')}
                   </span>
                 </li>
@@ -342,9 +348,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         >
           <ul className="divide-y divide-cave-850">
             {others.map((f, i) => (
-              <li key={`${f.name}-${i}`} className="py-2.5 flex items-baseline gap-3">
+              <li key={`${f.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base text-cave-50 truncate">{f.name}</span>
+                  <span className="block text-sm text-cave-50 break-words">{f.name}</span>
                   <span className="block text-sm text-cave-400">
                     {f.use === 'fermentation'
                       ? `en fermentation, J+${f.dayOffset ?? 0}`
@@ -357,7 +363,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       : `${f.fermentabilityPct ?? 100} % fermentescible`}
                   </span>
                 </span>
-                <span className="reading text-base shrink-0">
+                <span className="reading text-sm shrink-0">
                   {Units.format(f.weightKg, 'kg')}
                 </span>
               </li>
@@ -379,7 +385,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         {grouped.length === 0 ? (
           <p className="text-sm text-cave-400">Aucun houblon renseigné.</p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {grouped.map(({ stage, hops: list }) => {
               const style = HOP_STAGE[stage];
               const subtotal = list.reduce((s, h) => s + h.weightG, 0);
@@ -401,16 +407,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     {list.map((h, i) => {
                       const ibu = style.bitters ? ibuOf(h) : 0;
                       return (
-                        <li key={`${h.name}-${i}`} className="py-2 flex items-baseline gap-3">
+                        <li key={`${h.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
                           <span className="min-w-0 flex-1">
-                            <span className="block text-base text-cave-50 truncate">{h.name}</span>
+                            <span className="block text-sm text-cave-50 break-words">{h.name}</span>
                             <span className="block text-sm text-cave-400">
                               {describeMoment(h)}
                               {h.alpha ? ` · ${h.alpha} % AA` : ' · alpha inconnu'}
                             </span>
                           </span>
                           <span className="text-right shrink-0">
-                            <span className="block reading text-base text-cave-50">
+                            <span className="block reading text-sm text-cave-50">
                               {Units.format(h.weightG, 'g')}
                             </span>
                             {style.bitters && (
@@ -436,7 +442,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       </Section>
 
       {/* --- Levure ------------------------------------------------------ */}
-      {recipe.nolo?.enabled&&<Section title="Suivi NOLO" hint="Simuler, analyses et conservation"><NoloPanel recipe={recipe} showOverview={false}/></Section>}
+      {recipe.nolo?.enabled&&<Section title="Suivi NOLO" hint="Simuler, analyses et conservation"><NoloPanel recipe={recipe} showOverview={false} onVariantChange={setSimulatingNolo}/></Section>}
       <Section title="Levure" summary={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}>
         {!recipe.nolo?.enabled && readYeastRecipeDesign(recipe) ? <FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /> : !recipe.yeast?.name ? (
           <p className="text-sm text-cave-400">Aucune levure renseignée.</p>
@@ -452,7 +458,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
                 <dt className="text-sm text-cave-400">Quantité</dt>
-                <dd className="reading text-base">
+                <dd className="reading text-sm">
                   {recipe.yeast.qty > 0 ? Units.format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner'}
                 </dd>
               </div>
@@ -462,7 +468,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               </div>
               <div>
                 <dt className="text-sm text-cave-400">Ensemencement</dt>
-                <dd className="reading text-base">
+                <dd className="reading text-sm">
                   {recipe.yeast.pitchTempC != null ? `${recipe.yeast.pitchTempC} °C` : '—'}
                 </dd>
               </div>
@@ -481,12 +487,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         <Section title="Additifs">
           <ul className="divide-y divide-cave-850">
             {recipe.adjuncts.map((a, i) => (
-              <li key={`${a.name}-${i}`} className="py-2 flex items-baseline gap-3">
+              <li key={`${a.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base text-cave-50 truncate">{a.name}</span>
+                  <span className="block text-sm text-cave-50 break-words">{a.name}</span>
                   <span className="block text-sm text-cave-400">{a.step}</span>
                 </span>
-                <span className="reading text-base shrink-0">
+                <span className="reading text-sm shrink-0">
                   {Units.format(a.amount, a.unit)}
                 </span>
               </li>
@@ -498,7 +504,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {/* --- Eau : le plan complet, empâtage et rinçage séparés ----------- */}
       {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && recipe.waterPlan && (
         <Section
-          title={measuredExtraction ? 'Eau de référence' : 'Eau et sels'}
+          title={coldPilot ? 'Eau prévue pour le pilote' : measuredExtraction ? 'Eau de référence' : 'Eau et sels'}
           /*
            * ⚠️ `targetProfileId` porte un CODE BJCP (« 21C »), et il était
            * cherché dans `TARGET_PROFILES`, dont les identifiants sont des noms
@@ -513,14 +519,14 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           }`}
         >
           <div className="space-y-3">
-            {measuredExtraction && <p className="text-sm text-cave-200">Plan d’empâtage chaud conservé comme référence. Les volumes, acides et paliers d’extraction à froid restent à établir et à mesurer.</p>}
+            {coldPilot ? <p className="text-xs text-cave-200">Volumes estimés pour l’extraction froide et la préparation du pilote. Confirmer l’eau ajoutée, le volume récupéré et le pH ; aucune dose d’acide chaude n’est reprise.</p> : measuredExtraction && <p className="text-sm text-cave-200">Plan d’empâtage chaud conservé comme référence. Les volumes, acides et paliers d’extraction à froid restent à établir et à mesurer.</p>}
             {!measuredExtraction&&waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
             {recipe.waterPlan.sourceSnapshot?.note&&<p className="text-xs text-cave-400">{recipe.waterPlan.sourceSnapshot.note}</p>}
             <details><summary className="min-h-touch cursor-pointer text-sm text-cave-200">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div className="text-cave-400">Empâtage</div>
-                <div className="reading text-base">{recipe.waterPlan.mashWaterL} L</div>
+                <div className="text-cave-400">{coldPilot ? 'Extraction' : 'Empâtage'}</div>
+                <div className="reading text-sm">{recipe.waterPlan.mashWaterL} L</div>
                 {((recipe.waterPlan.diRatioPct ?? 0) > 0) && (
                   <div className="text-2xs text-cave-400 font-mono mt-0.5">
                     {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({Number(recipe.waterPlan.diRatioPct.toFixed(2))} %)
@@ -528,8 +534,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 )}
               </div>
               <div>
-                <div className="text-cave-400">Rinçage</div>
-                <div className="reading text-base">{recipe.waterPlan.spargeWaterL} L</div>
+                <div className="text-cave-400">{coldPilot ? 'Eau complémentaire' : 'Rinçage'}</div>
+                <div className="reading text-sm">{recipe.waterPlan.spargeWaterL} L</div>
                 {recipe.waterPlan.spargeWaterL > 0 && (
                   (() => {
                     const spargeDi = recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct ?? 0;
@@ -674,23 +680,23 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <dl className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
               <dt className="text-sm text-cave-400">Gypse</dt>
-              <dd className="reading text-base">{recipe.water.salts.gypseG} g</dd>
+              <dd className="reading text-sm">{recipe.water.salts.gypseG} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">CaCl₂</dt>
-              <dd className="reading text-base">{recipe.water.salts.cacl2G} g</dd>
+              <dd className="reading text-sm">{recipe.water.salts.cacl2G} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">MgSO₄</dt>
-              <dd className="reading text-base">{recipe.water.salts.mgso4G} g</dd>
+              <dd className="reading text-sm">{recipe.water.salts.mgso4G} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">Acide lactique</dt>
-              <dd className="reading text-base">{recipe.water.salts.acidLacticMl} mL</dd>
+              <dd className="reading text-sm">{recipe.water.salts.acidLacticMl} mL</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">pH visé</dt>
-              <dd className="reading text-base text-water">{recipe.water.targetPh}</dd>
+              <dd className="reading text-sm text-water">{recipe.water.targetPh}</dd>
             </div>
           </dl>
         </Section>
@@ -699,7 +705,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {/* --- Empâtage et fermentation ------------------------------------ */}
       {(recipe.mash?.steps?.length || recipe.fermentation?.length) && (
         <>
-            {recipe.mash?.steps?.length > 0 && (
+            {recipe.mash?.steps?.length > 0 && (coldPilot ? <Section title="Extraction à froid prévue" hint={`${coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C · ${coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h`}>
+              <p className="text-sm text-cave-50">Maintenir {coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C pendant {coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h, puis filtrer.</p>
+              <p className="text-xs text-cave-200">Consignes du pilote ; relever la température, le volume, la densité et le pH réellement obtenus.</p>
+            </Section> :
               <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={`${recipe.mash.steps.length} paliers`}>
                 {measuredExtraction && <p className="text-xs text-cave-200">Ce programme enregistré ne définit pas le protocole de {recipe.nolo?.process === 'coldExtraction' ? 'l’extraction à froid' : 'la seconde extraction'}.</p>}
                 <h3 className="text-sm text-cave-400 mb-1.5">
@@ -713,10 +722,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 </h3>
                 <ul className="divide-y divide-cave-850">
                   {[...recipe.mash.steps, ...(recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
-                    <li key={i} className="py-2 flex items-baseline gap-3">
+                    <li key={i} className="py-1.5 flex items-baseline gap-2">
                       <span className="flex-1 text-base text-cave-50">{s.name}</span>
-                      <span className="reading text-base text-water">{s.tempC} °C</span>
-                      <span className="reading text-base text-cave-400 w-16 text-right">
+                      <span className="reading text-sm text-water">{s.tempC} °C</span>
+                      <span className="reading text-sm text-cave-400 w-16 text-right">
                         {s.durationMin} min
                       </span>
                     </li>
@@ -736,9 +745,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     // garde ne sont pas de la fermentation primaire.
                     const phase = PHASE_LABEL[s.kind ?? 'primaire'];
                     return (
-                      <li key={i} className="py-2 flex items-baseline gap-3">
+                      <li key={i} className="py-1.5 flex items-baseline gap-2">
                         <span className="min-w-0 flex-1">
-                          <span className="block text-base text-cave-50 truncate">{s.name}</span>
+                          <span className="block text-sm text-cave-50 break-words">{s.name}</span>
                           <span className="flex items-center gap-2 mt-0.5">
                             <span
                               className={`text-sm px-2 py-0.5 rounded-full border ${phase.tone}`}
@@ -750,8 +759,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             )}
                           </span>
                         </span>
-                        <span className="reading text-base text-water shrink-0">{s.tempC} °C</span>
-                        <span className="reading text-base text-cave-400 w-16 text-right shrink-0">
+                        <span className="reading text-sm text-water shrink-0">{s.tempC} °C</span>
+                        <span className="reading text-sm text-cave-400 w-16 text-right shrink-0">
                           {s.days ? `${s.days} j` : '—'}
                         </span>
                       </li>
@@ -790,10 +799,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenBatch(b)}
-                    className="w-full min-h-touch py-2.5 flex items-baseline gap-3 text-left"
+                    className="w-full min-h-touch py-1.5 flex items-baseline gap-2 text-left"
                   >
                     <span className="min-w-0 flex-1">
-                      <span className="block text-base text-cave-50 truncate">
+                      <span className="block text-sm text-cave-50 break-words">
                         {b.id} — {b.name}
                       </span>
                       <span className="block text-sm text-cave-400">
@@ -802,7 +811,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       </span>
                     </span>
                     <span className="text-right shrink-0">
-                      <span className="block reading text-base">{b.og ?? '—'}</span>
+                      <span className="block reading text-sm">{b.og ?? '—'}</span>
                       {gap && (
                         <span
                           className={`block reading text-sm ${

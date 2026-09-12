@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
-import { QuickActionModal } from './components/QuickActionModal';
-import { SettingsModal } from './components/SettingsModal';
-import { AuditLogModal } from './components/AuditLogModal';
-import { CloudConfigModal } from './components/CloudConfigModal';
-import { RecipePage } from './pages/RecipePage';
-import { BrewWizard, WizardSeed } from './pages/BrewWizard';
-import { BrewDayPage } from './pages/BrewDayPage';
+
+import type { WizardSeed } from './pages/BrewWizard';
+
 import { useFullScreenRoute } from './pages/useFullScreenRoute';
-import { CommandPalette, CommandGroup } from './ui/CommandPalette';
+import { CommandPalette, type CommandGroup } from './ui/CommandPalette';
 import { useStorageValue } from './hooks/useLiveData';
 import { FinancialArchiveService } from './services/financialArchiveService';
 import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
@@ -23,17 +19,14 @@ import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
 import { captureSnapshot } from './domain/recipeSnapshot';
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef, nextBatchId } from './services/refs';
-import { Suggestions } from './services/suggestions';
+
 import { Units } from './services/units';
 import { saveRecipeConfirmed } from './services/recipeSave';
 import { Beaker, FlaskConical, Package, Users, Receipt } from 'lucide-react';
 import { LoginPage } from './components/LoginPage';
-import { DashboardTab } from './components/tabs/DashboardTab';
-import { FinancesTab } from './components/tabs/FinancesTab';
-import { ProductionTab } from './components/tabs/ProductionTab';
+
 import type { CreativeLabSectionRequest } from './components/CreativeLabTab';
-import { StocksTab } from './components/tabs/StocksTab';
-import { ClientsTab } from './components/tabs/ClientsTab';
+
 import { 
   AppConfig, 
   TimeFilterPeriod, 
@@ -55,6 +48,23 @@ import {
 import { FirebaseAuthService } from './services/firebaseAuth';
 import { runMigrationIfNeeded } from './services/migration';
 import { User } from 'firebase/auth';
+
+import { DeferredSurface, LazySurface } from './ui/LazySurface';
+import { Sheet } from './ui/Sheet';
+import { PageShell } from './pages/PageShell';
+
+const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
+const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
+const AuditLogModal = lazy(() => import('./components/AuditLogModal').then(module => ({ default: module.AuditLogModal })));
+const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then(module => ({ default: module.CloudConfigModal })));
+const RecipePage = lazy(() => import('./pages/RecipePage').then(module => ({ default: module.RecipePage })));
+const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ default: module.BrewDayPage })));
+const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
+const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
+const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
+const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
+const ClientsTab = lazy(() => import('./components/tabs/ClientsTab').then(module => ({ default: module.ClientsTab })));
+const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
 
 /**
  * Compte factice pour le DÉVELOPPEMENT LOCAL, et rien d'autre.
@@ -628,7 +638,7 @@ export const App: React.FC = () => {
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
       <PersistenceStatus />
       <Header
-        compactLayout={activeTab === 'dashboard' || activeTab === 'finances'}
+        compactLayout
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
@@ -645,7 +655,8 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className={`flex-1 max-w-4xl w-full mx-auto ${activeTab === 'finances' ? 'px-2 xs:px-3' : 'px-3 xs:px-4'}`}>
+      <main className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
+        <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
             transactions={transactions}
@@ -732,6 +743,7 @@ export const App: React.FC = () => {
             onSuccessMessage={showToast}
           />
         )}
+        </LazySurface>
       </main>
 
       {/* Bottom Navigation Bar */}
@@ -751,37 +763,37 @@ export const App: React.FC = () => {
       />
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
-      <QuickActionModal
+      <DeferredSurface active={isQuickActionOpen} fallback={<Sheet open={isQuickActionOpen} title="Chargement…" onClose={() => setIsQuickActionOpen(false)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={isQuickActionOpen}
         onClose={() => setIsQuickActionOpen(false)}
         recipes={recipes}
         geminiApiKey={config.geminiApiKey}
         onSuccessMessage={showToast}
         onOpenCreateBatch={() => openWizard()}
-      />
+      /></DeferredSurface>
 
       {/* Settings Modal */}
-      <SettingsModal
+      <DeferredSurface active={isSettingsOpen} fallback={<Sheet open={isSettingsOpen} title="Chargement…" onClose={() => setIsSettingsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         config={config}
         onConfigUpdated={(newCfg) => setConfig(newCfg)}
         onOpenAuditLogs={() => setIsAuditLogsOpen(true)}
-      />
+      /></DeferredSurface>
 
       {/* Audit Logbook Modal */}
-      <AuditLogModal
+      <DeferredSurface active={isAuditLogsOpen} fallback={<Sheet open={isAuditLogsOpen} title="Chargement…" onClose={() => setIsAuditLogsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><AuditLogModal
         isOpen={isAuditLogsOpen}
         onClose={() => setIsAuditLogsOpen(false)}
         logs={auditLogs}
-      />
+      /></DeferredSurface>
 
       {/* Cloud & AI Config Modal (Google Drive & Gemini API) */}
-      <CloudConfigModal
+      <DeferredSurface active={isCloudConfigOpen} fallback={<Sheet open={isCloudConfigOpen} title="Chargement…" onClose={() => setIsCloudConfigOpen(false)}><p role="status">Ouverture…</p></Sheet>}><CloudConfigModal
         isOpen={isCloudConfigOpen}
         onClose={() => setIsCloudConfigOpen(false)}
         onSaved={() => showToast('Configuration Cloud & IA mise à jour !')}
-      />
+      /></DeferredSurface>
 
       {/* Recherche universelle — ⌘K / Ctrl+K depuis n'importe où. */}
       <CommandPalette
@@ -794,6 +806,7 @@ export const App: React.FC = () => {
           Elles se ferment au geste retour du téléphone, contrairement aux
           modales qu'elles remplacent. */}
 
+      <LazySurface resetKey={view.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
       {routedRecipe && (
         <RecipePage
           recipe={routedRecipe}
@@ -840,7 +853,6 @@ export const App: React.FC = () => {
           seed={wizardSeed}
           stockItems={allStockItems}
           config={config}
-          knownStyles={Suggestions.recipeStyles()}
           onClose={route.close}
           onCreateStockItem={createStockItem}
           onLearnIngredient={learnIngredient}
@@ -850,6 +862,7 @@ export const App: React.FC = () => {
           onDismissWriteError={() => setWriteError(null)}
         />
       )}
+      </LazySurface>
     </div>
   );
 };

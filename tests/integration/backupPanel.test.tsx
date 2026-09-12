@@ -57,7 +57,9 @@ describe('Sauvegardes : préparation et restauration explicites', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la restauration' }));
     await screen.findByRole('alert');
     expect(reconnect).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Reconnecter Google Drive' }));
+    const reconnectButton = screen.getByRole('button', { name: 'Reconnecter Google Drive' });
+    await waitFor(() => expect(reconnectButton).toBeEnabled());
+    fireEvent.click(reconnectButton);
     await screen.findByText(/Google Drive est reconnecté/);
     expect(reconnect).toHaveBeenCalledTimes(1);
     expect(api.restoreInspectedBackup).toHaveBeenCalledTimes(1);

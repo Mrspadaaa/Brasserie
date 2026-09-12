@@ -20,7 +20,7 @@ import { CatalogFilterNotice } from './CatalogFilterNotice';
 import { CatalogScopeBar } from './CatalogScopeBar';
 
 export const catalogField =
-  'w-full min-h-touch rounded-control border border-cave-700 bg-cave-950 px-3 text-base text-cave-50 focus:border-ebc-straw focus:outline-none';
+  'w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50 focus:border-ebc-straw focus:outline-none';
 const filterLabel: Partial<Record<keyof CatalogFilters, string>> = {
   style: 'Style',
   hop: 'Houblon',
@@ -229,7 +229,7 @@ export function CatalogToolbar({
       </div>
       <div className="flex gap-2">
         <label className="relative min-w-0 flex-1">
-          <Search className="absolute left-3 top-3.5 h-4 w-4 text-cave-400" aria-hidden />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cave-400" aria-hidden />
           <Input
             className={`${catalogField} pl-9 pr-8`}
             type="search"
@@ -349,7 +349,7 @@ export function CatalogToolbar({
           </div>
         }
       >
-        <div className="space-y-6">
+        <div className="space-y-2">
           {mobile && <>
             <CatalogScopeBar kind={kind} entries={entries} count={count} filters={filters} onChange={onChange} comparing={comparing}
               onCompare={() => { onCompare(); setOpen(false); }}/>
@@ -386,7 +386,7 @@ export function CatalogToolbar({
               </div>
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {select('style', catalogOptions(scopedEntries, 'style'))}
             {select('hop', catalogOptions(scopedEntries, 'hops'))}
             {select('malt', catalogOptions(scopedEntries, 'malts'))}

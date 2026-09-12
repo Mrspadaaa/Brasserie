@@ -5,6 +5,19 @@ description: "Accessibility audit skill for scanning, fixing, and verifying WCAG
 
 # Accessibility Audit
 
+## Contexte local : L'Affinée
+
+Lire [DESIGN.md](../../../DESIGN.md) et [le guide UI](../../../docs/ui-compacte.md).
+La densité compacte demandée par l'utilisateur est la norme du projet. Auditer
+la cible réellement activable, les chevauchements, le clavier, les libellés,
+le focus, le zoom et le contraste ; ne pas agrandir tous les éléments par défaut.
+WCAG 2.2 AA 2.5.8 prévoit 24×24 px CSS ou ses exceptions ; 44×44 px correspond
+au critère renforcé 2.5.5 AAA. Les recommandations natives iOS/Android et les
+exemples généreux de ce skill ne sont pas des minima de cette application web.
+Un texte à 12/13 px n'est pas en soi une violation WCAG : évaluer son rôle,
+sa lisibilité, le contraste et l'agrandissement. Conserver la protection de
+saisie mobile et les critères d'accessibilité réellement applicables.
+
 WCAG 2.2 Accessibility Audit and Remediation Skill
 
 ## Description

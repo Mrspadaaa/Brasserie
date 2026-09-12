@@ -395,7 +395,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
         })}
       </svg>
       <p className="water-radar-caption text-center text-2xs text-cave-400 leading-tight pb-0.5">
-        Eau totale après sels et acide
+        Moyenne des eaux après sels et acides
         <span className="block">Avant apports des malts et ébullition</span>
       </p>
       <div className="water-radar-legend flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400" aria-hidden>

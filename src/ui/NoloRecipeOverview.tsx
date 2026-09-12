@@ -15,7 +15,8 @@ export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe:
   }, [recipe, saved]);
   if (!recipe.nolo?.enabled) return null;
   const { result, error } = evaluated, config = recipe.nolo;
-  const baseVolume = noloInput(recipe).volumeL;
+  const simulation = result?.simulationActive ? config.planning?.simulation : undefined;
+  const baseVolume = simulation?.volumeL ?? noloInput(recipe).volumeL;
   const status = !result || result.projection.max === null ? 'Projection à compléter'
     : result.projectionStatus === 'exceeds' ? 'Au-dessus de la cible'
     : result.projection.max > config.targetAbvPct ? 'La plage traverse la cible'
@@ -30,8 +31,11 @@ export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe:
       label={result.projection.kind === 'measurement' ? result.measuredPackaged ? 'Alcool analysé · bière conditionnée' : 'Alcool analysé · avant conditionnement' : 'Projection au conditionnement'}/>
       : <p role="alert" className="nolo-error">{error || 'Références NOLO à compléter pour calculer la projection.'}</p>}
     <p className={`text-xs ${needsAttention ? 'text-alert-strong' : 'text-cave-200'}`}>{status}</p>
+    {simulation && <p className="text-xs text-cave-200">OG visée : <span className="font-mono text-cave-50">{simulation.wortSg.min.toLocaleString('fr-FR', {minimumFractionDigits:4,maximumFractionDigits:4})}–{simulation.wortSg.max.toLocaleString('fr-FR', {minimumFractionDigits:4,maximumFractionDigits:4})} SG</span></p>}
+    {simulation && <p className="text-xs text-cave-200">Atténuation {noloDecimal(simulation.settings.attenuationPct.min)}–{noloDecimal(simulation.settings.attenuationPct.max)} % · extrait ±{noloDecimal(simulation.settings.extractTolerancePct)} % · hypothèses de pilote.</p>}
+    {config.planning?.simulation && !simulation && <p className="text-xs text-attention">Simulation à recalculer : la recette ou le procédé ont changé.</p>}
     <dl className="grid grid-cols-2 gap-2 border-t border-cave-800 pt-1 text-xs">
-      <div><dt className="text-cave-400">{config.process === 'secondRunnings' ? 'Moût récupéré' : 'Volume de base'}</dt><dd className="reading text-sm">{baseVolume > 0 ? noloDecimal(baseVolume) + ' L' : 'À mesurer'}</dd></div>
+      <div><dt className="text-cave-400">{config.process === 'secondRunnings' ? simulation ? 'Récupération visée' : 'Moût récupéré' : 'Volume de base'}</dt><dd className="reading text-sm">{baseVolume > 0 ? noloDecimal(baseVolume) + ' L' : 'À mesurer'}</dd></div>
       <div><dt className="text-cave-400">Après opérations</dt><dd className="reading text-sm">{result?.volumeL != null ? noloDecimal(result.volumeL) + ' L' : 'À compléter'}</dd></div>
     </dl>
     {result && <p className="text-xs text-cave-200 leading-snug">{result.nextAction}</p>}

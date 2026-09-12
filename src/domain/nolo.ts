@@ -1,6 +1,4 @@
-import pack from '../data/noloBootstrap.json';
-import scenarioPack from '../data/noloScenarioBootstrap.json';
-import { assertNoloScience, type NoloConfig, type NoloScience, type NoloStrain } from '../../functions/src/noloSchema';
+import { type NoloConfig, type NoloScience, type NoloStrain } from '../../functions/src/noloSchema';
 import { noloInputBasis, type NoloInput } from '../../functions/src/noloCore';
 import { evaluateNoloScenario, changeNoloProcess, noloScenarioBasis, type NoloScenarioInput } from '../../functions/src/noloScenario';
 import { agreedFermentationFact } from '../../functions/src/fermentationContext';
@@ -12,14 +10,9 @@ import { yeastReferences } from './yeastReferences';
 import type { TrialRecipe } from './hopIndex/trials';
 import { normalizeHop } from './hopStage';
 import type { Batch, RecipeSnapshot } from '../types';
-export function noloScience(saved: HopKnowledge[] = []): NoloScience | undefined {
-  const canonical=(r:unknown)=>JSON.stringify(r,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.keys(item).filter(k=>k!=='__docId').sort().map(k=>[k,item[k]])):item);
-  const rows = [...new Map([...pack,...scenarioPack,...saved.map(r=>{
-    const old=pack.find(p=>p.id===r.id);
-    return old&&canonical(old)===canonical(r)?scenarioPack.find(p=>p.id===r.id)??r:r;
-  })].map(r=>[r.id,r])).values()];
-  return rows.find((r): r is NoloScience => { if(r.kind!=='noloScience')return false;try{assertNoloScience(r);return r.enabled;}catch{return false;} });
-}
+export { noloScience } from './noloScience';
+import { noloScience } from './noloScience';
+import { noloYeastCandidates } from './noloYeastSelection';
 export const noloPlanningSource = {
   title:'Hypothèses du pilote',author:'L’Affinée',year:2026,kind:'judgment' as const,
   reference:'functions/reports/nolo-scenarios-2026.md',
@@ -28,6 +21,7 @@ export const noloPlanningSource = {
 export function noloWaterModelIssue(config:NoloConfig|undefined,ratio:number):string|undefined {
   if(!config?.enabled)return;
   if(config.process==='secondRunnings')return 'Drêches : mesurer le moût récupéré. Aucun nouveau rendement, absorption de grain sec ou pouvoir tampon de malt neuf n’est appliqué.';
+  if(config.process==='coldExtraction')return 'Extraction à froid : mesurer ou titrer le moût filtré. Le modèle de pH et les doses d’acide d’un empâtage à chaud ne sont pas validés dans ce contexte.';
   const science=config.scienceSnapshot??noloScience();
   if(science&&ratio>science.waterMashMaxLKg.value)return 'Empâtage très dilué : pH à mesurer ou à titrer, sans estimation ni marge standard du modèle.';
 }
@@ -65,9 +59,10 @@ export function noloScenarioInput(recipe:TrialRecipe,saved:HopKnowledge[]=[]):No
   // stand in for an observation of this wort.
   const sg=measured?.sg??(recipe.nolo?.process==='secondRunnings'?recipe.nolo.secondRunnings?.sg:recipe.nolo?.process==='coldExtraction'?undefined:points?1+points.total/1000:undefined);
   const yeast=resolveFermentationYeast(recipe,yeastReferences(saved));
-  const attenuation=agreedFermentationFact(yeast,'attenuation','%');
-  const temperature=agreedFermentationFact(yeast,'temperature','°C');
-  return {...input,...(sg!=null&&sg>=1?{og:{range:{min:sg,max:sg},origin:measured||recipe.nolo?.process==='secondRunnings'?'measurement' as const:'calculated' as const,source:noloPlanningSource}}:{}),
+  const frozen=input.config.scienceSnapshot?.strains.find(s=>s.yeastId===input.yeastId);
+  const attenuation=agreedFermentationFact(yeast,'attenuation','%')??(frozen?.attenuationPct?{range:frozen.attenuationPct,source:frozen.source}:undefined);
+  const temperature=agreedFermentationFact(yeast,'temperature','°C')??(frozen?.temperatureC?{range:frozen.temperatureC,source:frozen.source}:undefined);
+  return {...input,recipeContext:JSON.stringify([recipe.volumeL,recipe.efficiencyPct??recipe.brewhouse?.efficiencyPct??null,recipe.brewhouse??null,recipe.mash??null]),...(sg!=null&&sg>=1?{og:{range:{min:sg,max:sg},origin:measured||recipe.nolo?.process==='secondRunnings'?'measurement' as const:'calculated' as const,source:noloPlanningSource}}:{}),
     ...(attenuation?{fullFermentation:{...attenuation,temperatureC:temperature?.range}}:{})};
 }
 export function noloRecipeForBatch(batch:Batch):RecipeSnapshot|undefined{
@@ -90,16 +85,20 @@ export function applyNoloStrain(recipe: TrialRecipe,strain:NoloStrain,science:No
   const old=recipe.fermentation??[];
   const phases=temp!=null&&days!=null
     ? [{kind:'primaire' as const,name:'Fermentation NOLO · '+strain.name,tempC:temp,days,
-        note:'Repère de planification : contrôler densité, pH et alcool ; durée non libératoire.'},...old.filter(p=>p.kind!=='primaire'&&p.kind!=='reposDiacetyle')] : old;
-  return {...recipe,nolo:{...(recipe.nolo??newNoloConfig()),scienceSnapshot:structuredClone(science)},
-    yeast:{name:strain.name,hopIndexId:strain.yeastId,form:strain.yeastId.includes('wlp618')?'liquide':'sèche',qty:strain.pitchGL&&recipe.volumeL>0?recipe.volumeL*(strain.pitchGL.min+strain.pitchGL.max)/2:0,unit:'g',
+        note:'Repère de planification : contrôler densité, pH et alcool ; durée non libératoire.'},...old.filter(p=>p.kind!=='primaire'&&p.kind!=='reposDiacetyle')]
+    : temp!=null ? old.map(p=>p.kind==='primaire'?{...p,tempC:temp,note:'Température issue de la souche ; durée conservée comme hypothèse à vérifier.'}:p) : old;
+  const frozen=structuredClone(science);
+  if(!frozen.strains.some(s=>s.yeastId===strain.yeastId))frozen.strains.push(structuredClone(strain));
+  const liquid=/wlp\d+|white-labs|wyeast|omega|imperial|escarpment/i.test(strain.yeastId);
+  return {...recipe,nolo:{...(recipe.nolo??newNoloConfig()),scienceSnapshot:frozen},
+    yeast:{name:strain.name,hopIndexId:strain.yeastId,form:liquid?'liquide':'sèche',qty:strain.pitchGL&&recipe.volumeL>0?recipe.volumeL*(strain.pitchGL.min+strain.pitchGL.max)/2:0,unit:strain.pitchGL?'g':liquid?'sachet':'g',
       ...(temp!=null?{pitchTempC:temp}:{}),...(strain.temperatureC?{fermTempMinC:strain.temperatureC.min,fermTempMaxC:strain.temperatureC.max}:{})},
     yeastGuide:undefined,hopPredictionIds:undefined,hopTrialId:undefined,hopMatrixId:undefined,fermentation:phases};
 }
 /** Small local shortlist evaluated by the same direct mass balance. No grid
  * search or weighted pseudo-precision; exact ties keep a stable name order. */
 export function rankNoloStrains(recipe:TrialRecipe,science:NoloScience){
-  return science.strains.map(strain=>{
+  return noloYeastCandidates(recipe,science).map(({strain})=>{
     const proposed=applyNoloStrain(recipe,strain,science);
     const result=evaluateNoloScenario(noloScenarioInput(proposed),science);
     const phenolic=recipe.nolo?.orientation==='clove'||recipe.nolo?.orientation==='balanced';

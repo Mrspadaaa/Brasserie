@@ -181,12 +181,14 @@ export function computeStockLevel(item: StockItem, batches: Batch[], stockItems?
   else if (coverage < 2) band = 'correct';
   else band = 'fourni';
 
+  // 0.3 kg / 0.1 kg doit couvrir trois brassins malgré l'arrondi binaire.
+  const wholeBatches = Math.floor(coverage + Number.EPSILON * Math.max(1, coverage) * 2);
   const label =
     band === 'rupture'
       ? BAND_LABEL.rupture
       : coverage < 1
         ? `Moins d’un brassin`
-        : `${Math.floor(coverage)} brassin${Math.floor(coverage) > 1 ? 's' : ''} d’avance`;
+        : `${wholeBatches} brassin${wholeBatches > 1 ? 's' : ''} d’avance`;
 
   return {
     band,

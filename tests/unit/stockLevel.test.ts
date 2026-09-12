@@ -93,6 +93,12 @@ describe('Couverture depuis un brassin moderne', () => {
 });
 
 describe('Bandes et libellés', () => {
+  it('ne perd pas un brassin exact à cause des fractions de kilogramme', () => {
+    const batch = modern();
+    batch.recipeSnapshot!.hops[0].weightG = 100;
+    expect(computeStockLevel(item({ name: 'Citra', unit: 'kg', currentStock: .3 }), [batch]).label).toBe('3 brassins d’avance');
+    expect(computeStockLevel(item({ name: 'Citra', unit: 'kg', currentStock: .299 }), [batch]).label).toBe('2 brassins d’avance');
+  });
   it('annonce la rupture quand il ne reste rien', () => {
     const level = computeStockLevel(item({ currentStock: 0 }), [modern()]);
     expect(level.band).toBe('rupture');

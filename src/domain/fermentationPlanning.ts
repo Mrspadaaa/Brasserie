@@ -13,6 +13,7 @@ import { BrewingMath } from '../services/brewingMath';
 import { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { replanRecipeWater } from './recipeWater';
 import { resolveBrewingStyle } from './brewingStyles';
+import { noloYeastCandidates, noloYeastProcessSources } from './noloYeastSelection';
 
 export const FERMENTATION_PLANNER_VERSION = 'fermentation-planner-v1';
 export interface FermentationDiagnostic {
@@ -40,7 +41,7 @@ export function fermentationReadiness(recipe: TrialRecipe, saved: HopKnowledge[]
   if (temperature && (recipe.yeast.fermTempMinC != null && recipe.yeast.fermTempMinC !== temperature.range.min || recipe.yeast.fermTempMaxC != null && recipe.yeast.fermTempMaxC !== temperature.range.max))
     add('temperature-reference', 'yeast', `Fiche saisie : ${recipe.yeast.fermTempMinC ?? '?'}–${recipe.yeast.fermTempMaxC ?? '?'} °C ; référence actuelle : ${temperature.range.min}–${temperature.range.max} °C. Valeurs personnelles conservées.`, temperature.source, 'notice');
   const range = strain?.temperatureC ?? temperature?.range;
-  if (range && recipe.fermentation?.some(p => p.kind === 'primaire' && (p.tempC == null || p.tempC < range.min || p.tempC > range.max)))
+  if (range && recipe.nolo?.process !== 'coldContact' && recipe.fermentation?.some(p => p.kind === 'primaire' && (p.tempC == null || p.tempC < range.min || p.tempC > range.max)))
     add('primary-temperature', 'fermentation', `Prévoir la fermentation primaire dans la plage ${range.min}–${range.max} °C, ou documenter l’écart.`, strain?.source ?? temperature?.source);
   const fruitStyle = resolveBrewingStyle(recipe.style, recipe.styleRef)?.id === 'fruit-lambic';
   if (fruitStyle && !recipe.fermentables.some(f => f.kind === 'fruit') && !recipe.nolo?.operations.some(o => o.kind === 'sugar'))
@@ -81,7 +82,24 @@ function aromaMatches(recipe: TrialRecipe, strain: NoloStrain): string[] {
 /** Local planning only. A target never becomes a sugar assay. All finite mass
  * changes are previewed; source measurements retain their old identity/basis. */
 export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain, science: NoloScience, saved: HopKnowledge[] = []): FermentationProposal {
-  let next = applyNoloStrain(recipe, strain, science);
+  // Catalogue candidates beyond the original NOLO pack need the same frozen
+  // source values when this legacy proposal is applied or later replayed.
+  const edition = { ...science, strains: [...science.strains.filter(s => s.yeastId !== strain.yeastId), strain] };
+  let next = applyNoloStrain(recipe, strain, edition);
+  const references = yeastReferences(saved);
+  const form = references.find(y => y.id === strain.yeastId)?.form
+    ?? (strain.yeastId.startsWith('white-labs-wlp') ? 'liquide' : undefined);
+  if (form) next.yeast.form = form;
+  if (!strain.pitchGL && form === 'liquide') {
+    const same = recipe.yeast.hopIndexId === strain.yeastId || resolveFermentationYeast(recipe, references)?.id === strain.yeastId;
+    next.yeast = { ...next.yeast, qty: same ? recipe.yeast.qty : 0, unit: same ? recipe.yeast.unit : 'flacon' };
+  }
+  if (!strain.durationDays && strain.temperatureC && recipe.nolo?.process !== 'coldContact') {
+    const temperature = (strain.temperatureC.min + strain.temperatureC.max) / 2;
+    next.fermentation = (next.fermentation ?? []).map(p => p.kind === 'primaire'
+      ? { ...p, tempC: temperature, note: [p.note, 'Température centrale de la référence ; durée existante conservée comme hypothèse à vérifier.'].filter(Boolean).join(' ') }
+      : p);
+  }
   next.nolo = {...next.nolo!, planning:{...next.nolo?.planning, version:1, source:next.nolo?.planning?.source ?? noloPlanningSource, exactExtract:true}};
   const assumptions = ['Réglages centraux des plages fabricant : choix de préparation éditable, pas optimum sensoriel.',
     'Carbonatation forcée proposée ; vérifier le matériel, stabiliser et analyser le produit conditionné.'];
@@ -89,6 +107,16 @@ export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain,
   const restricted = ['restricted', 'restored'].includes(recipe.nolo?.process ?? '');
   const targetPlato = restricted ? science.la01.plato.min : null;
   const diagnostics: FermentationDiagnostic[] = [];
+  if (recipe.nolo?.process === 'coldContact') {
+    // This is a process hypothesis, not the yeast's published fermentation
+    // window or an extrapolation of the A15/Tdel8 alcohol measurements.
+    next.yeast = { ...next.yeast, pitchTempC: 1 };
+    next.fermentation = [{ kind: 'primaire', name: 'Contact à froid · essai pilote', tempC: 1, days: 2,
+      note: 'Consigne pilote à ajuster : suivre alcool et aldéhydes. Aucun résultat de la souche A15 transféré à cette levure.' },
+      ...(next.fermentation ?? []).filter(p => p.kind !== 'primaire' && p.kind !== 'reposDiacetyle')];
+    assumptions.push('Contact proposé à 1 °C pendant 48 h : hypothèse de conduite éditable, hors de la plage fabricant de fermentation complète. Ni durée ni froid ne garantissent l’ABV ou la stabilité.');
+    sources.push(noloYeastProcessSources.coldContact);
+  }
   // Restricted candidates share a low-extract starting point. Only LA-01 owns
   // the experimental mash/ABV relation; it is never transferred to another yeast.
   if (targetPlato !== null) {
@@ -110,7 +138,7 @@ export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain,
   }
   if (strain.pitchGL && recipe.volumeL > 0) next.yeast.qty = recipe.volumeL * (strain.pitchGL.min + strain.pitchGL.max) / 2;
   if (!strain.pitchGL) diagnostics.push({ id: 'pitch', field: 'yeast', severity: 'action', message: 'Quantité à établir pour ce conditionnement : aucune masse de levure liquide supposée.' });
-  if (!strain.durationDays) diagnostics.push({ id: 'duration', field: 'fermentation', severity: 'action', message: 'Durée non publiée pour cette souche : calendrier conservé à vérifier par les mesures.' });
+  if (!strain.durationDays && recipe.nolo?.process !== 'coldContact') diagnostics.push({ id: 'duration', field: 'fermentation', severity: 'action', message: 'Durée non publiée pour cette souche : calendrier conservé à vérifier par les mesures.' });
   next.carboTarget = 'Carbonatation forcée · CO₂ à choisir';
   next.totalGristKg = next.fermentables.filter(f => f.kind === 'grain').reduce((s, f) => s + f.weightKg, 0);
   if (JSON.stringify(next.fermentables) !== JSON.stringify(recipe.fermentables) && next.waterPlan) {
@@ -137,19 +165,26 @@ export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain,
   change('Eau et traitement', recipe.waterPlan, next.waterPlan, p => p ? `${label(p.mashWaterL, 'L empâtage')} + ${label(p.spargeWaterL, 'L rinçage')} · sels ${Object.entries(p.mash ?? {}).map(([k, v]) => `${k} ${label(v as number, 'g')}`).join(', ')} · acides ${label(p.acid?.mash)} / ${label(p.acid?.sparge)}` : 'À préparer');
   const goalMatches = aromaMatches(recipe, strain);
   return { version: FERMENTATION_PLANNER_VERSION, id: strain.yeastId, basis: fermentationPlanningKey(recipe), strain, recipe: next, changes,
-    result: evaluateNoloRecipe(next, saved), targetPlato, processFit: restricted ? 'documented' : 'explore',
+    result: evaluateNoloRecipe(next, saved), targetPlato, processFit: recipe.nolo?.process === 'coldContact' ? 'explore' : 'documented',
     aromaFit: goalMatches.length ? 'documented' : 'explore', goalMatches,
     sources, assumptions, diagnostics: [...diagnostics, ...fermentationReadiness(next, saved)] };
 }
 export function fermentationProposals(recipe: TrialRecipe, saved: HopKnowledge[] = []): FermentationProposal[] {
   const science = recipe.nolo?.scienceSnapshot ?? noloScience(saved);
   if (!science || !recipe.nolo?.enabled) return [];
-  return science.strains.map(s => proposeNoloFermentation(recipe, s, science, saved)).sort((a, b) =>
+  const candidates = noloYeastCandidates(recipe, science, saved);
+  const order = new Map(candidates.map((c, index) => [c.strain.yeastId, index]));
+  return candidates.map(candidate => {
+    const p = proposeNoloFermentation(recipe, candidate.strain, science, saved);
+    p.assumptions.push(candidate.reason);
+    if (candidate.form) p.recipe.yeast.form = candidate.form;
+    return p;
+  }).sort((a, b) =>
     Number(b.processFit === 'documented') - Number(a.processFit === 'documented') ||
     Number(a.result?.projectionStatus === 'exceeds') - Number(b.result?.projectionStatus === 'exceeds') ||
     Number(b.aromaFit === 'documented') - Number(a.aromaFit === 'documented') ||
     Number(b.result?.projectionStatus === 'within') - Number(a.result?.projectionStatus === 'within') ||
-    a.diagnostics.filter(d => d.severity === 'action').length - b.diagnostics.filter(d => d.severity === 'action').length || a.strain.name.localeCompare(b.strain.name));
+    a.diagnostics.filter(d => d.severity === 'action').length - b.diagnostics.filter(d => d.severity === 'action').length || order.get(a.strain.yeastId)! - order.get(b.strain.yeastId)!);
 }
 export function applyFermentationProposal(recipe: TrialRecipe, p: FermentationProposal): TrialRecipe {
   if (fermentationPlanningKey(recipe) !== p.basis) throw Error('La recette a changé. Recalculer la proposition avant de l’appliquer.');

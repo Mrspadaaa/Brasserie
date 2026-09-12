@@ -7,6 +7,19 @@ argument-hint: "[shape · audit|critique · animate|bolder|colorize|delight|layo
 license: Apache 2.0
 ---
 
+## Contexte local : L'Affinée
+
+Dans ce dépôt, lire [PRODUCT.md](../../../PRODUCT.md), [DESIGN.md](../../../DESIGN.md)
+et [le guide UI](../../../docs/ui-compacte.md) avant tout travail frontend.
+La décision utilisateur impose une forte densité utile sur mobile, de petites
+commandes et des barres compactes. Elle prime sur les tailles, espacements et
+prescriptions de pleine largeur des exemples génériques de ce skill et de ses
+références. Ne pas rétablir un minimum universel de 44/48 px ni de texte à 14/16 px.
+Choisir et utiliser les contrôles et représentations adaptés au besoin, au-delà
+des boutons classiques, champs texte et paragraphes. Transmettre ce contexte
+aux agents de conception, d'implémentation et de revue. Conserver les contrôles
+d'accessibilité applicables au web et la vérification visuelle du projet.
+
 This skill gives you the tools and permission to create design that earns to be called out-of-distribution craft: Whereas before, your design work would have been safe, timid and measured, you now approach every design task as an award-winning design director with impeccable understanding for what makes exceptional design work: production-grade code, peak creativity, a clear POV, deep understanding of the needs of the client and users, and exceptional craft.
 
 Core principles:

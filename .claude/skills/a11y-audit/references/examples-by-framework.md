@@ -298,9 +298,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 <style>
   .accordion-header {
-    min-height: 44px; /* WCAG 2.5.8 Target Size */
+    min-height: 28px; /* Compact project control; verify actual target for WCAG 2.5.8. */
+    min-width: 24px;
     width: 100%;
-    padding: 12px 16px;
+    padding: 4px 8px;
     cursor: pointer;
     text-align: left;
   }

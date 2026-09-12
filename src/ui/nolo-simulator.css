@@ -1,0 +1,46 @@
+.nolo-simulator { min-width: 0; display: grid; gap: 8px; font-size: 12px; line-height: 1.35; }
+.nolo-simulator p { margin: 0; }
+.nolo-simulator select, .nolo-simulator .nolo-number { width: 100%; min-width: 0; height: 28px; min-height: 28px; padding: 2px 6px; border: 1px solid var(--border-color, #4d4138); border-radius: 6px; background: #231e19; color: #ede9e1; font-size: 16px; line-height: 20px; }
+.nolo-simulator :is(select, input, button, summary):focus-visible { outline: 2px solid #8fbfd5; outline-offset: 2px; }
+.nolo-solver-goal { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(92px, 1fr); gap: 8px; align-items: end; }
+.nolo-solver-goal label, .nolo-solver-yeast { display: grid; gap: 3px; min-width: 0; color: #cbbcaf; }
+.nolo-setting { display: grid; gap: 3px; min-width: 0; color: #cbbcaf; }
+.nolo-setting-value { display: flex; gap: 4px; align-items: center; min-width: 0; }
+.nolo-setting-value > span { flex-shrink: 0; color: #b4a294; }
+.nolo-solver-knobs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: start; }
+.nolo-knob-slider { width: 100%; min-width: 0; height: 24px; margin: 0; accent-color: #f2c14e; cursor: pointer; }
+.nolo-range-setting { min-width: 0; grid-column: 1 / -1; }
+.nolo-range-setting legend { color: #cbbcaf; padding: 0; margin-bottom: 3px; }
+.nolo-range-setting > div { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 6px; }
+.nolo-range-setting .nolo-setting > label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.nolo-solver-reason { color: #cbbcaf; }
+.nolo-simulation-range { margin: 0; padding: 8px 0; border-block: 1px solid #3d342e; display: grid; gap: 5px; }
+.nolo-simulation-range figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: #cbbcaf; }
+.nolo-simulation-range strong { font-size: 16px; font-variant-numeric: tabular-nums; color: #ede9e1; }
+.nolo-simulation-track { height: 18px; position: relative; background: #302820; border-radius: 4px; margin-top: 3px; }
+.nolo-simulation-safe { position: absolute; height: 100%; left: 0; background: #395233; border-radius: 4px 0 0 4px; }
+.nolo-simulation-band { position: absolute; top: 5px; height: 8px; background: #9cc4db; border-inline: 2px solid #e3f2fa; }
+.nolo-simulation-target { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #f2c14e; }
+.nolo-simulation-axis { display: flex; justify-content: space-between; color: #b4a294; font-variant-numeric: tabular-nums; }
+.nolo-target-legend { color: #f2c14e; }
+.nolo-simulator .nolo-number[aria-invalid="true"] { border-color: #ffd18a; }
+.nolo-solver-confidence { color: #cbbcaf; }
+.nolo-solver-confidence strong { font-weight: 600; color: #ede9e1; }
+.nolo-solver-errors { color: #ffd18a; padding-left: 16px; display: grid; gap: 4px; }
+.nolo-solver-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.nolo-solver-actions button { min-height: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; border-radius: 6px; padding: 3px 7px; font-size: 12px; }
+.nolo-solver-apply { background: #f2c14e; color: #211b15; font-weight: 650; }
+.nolo-solver-apply:hover { background: #e0af3c; }
+.nolo-solver-apply:disabled { opacity: .45; cursor: not-allowed; }
+.nolo-solver-reset { border: 1px solid #665548; color: #d1c2b5; }
+.nolo-solver-reset:hover { background: #302820; }
+.nolo-solver-details { border-top: 1px solid #3d342e; padding-top: 2px; }
+.nolo-solver-details summary { min-height: 28px; padding: 5px 0; color: #cbbcaf; cursor: pointer; }
+.nolo-solver-details[open] > :not(summary) { margin-top: 6px; }
+.nolo-solver-details ul { padding-left: 16px; display: grid; gap: 5px; }
+.nolo-solver-details table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 12px; }
+.nolo-solver-details th, .nolo-solver-details td { text-align: left; vertical-align: top; overflow-wrap: anywhere; padding: 5px 4px; border-bottom: 1px solid #3d342e; }
+.nolo-solver-details th { font-weight: 500; color: #cbbcaf; }
+.nolo-solver-details p, .nolo-solver-details li { color: #b4a294; }
+.nolo-solver-notice { color: #b9d0a7; }
+@media (min-width: 640px) { .nolo-solver-knobs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .nolo-range-setting { grid-column: span 2; } }

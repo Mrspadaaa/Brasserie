@@ -106,7 +106,9 @@ describe('Le rinçage affiche son alcalinité après la dose retenue', () => {
     monter({ acidOverride: { mash: 0, sparge: 5 } });
     fireEvent.click(screen.getByRole('tab', { name: 'Rinçage' }));
     expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('0');
-    expect(screen.getByText(/ne diminue plus le HCO₃/)).toHaveTextContent(/pH/);
+    const warning = screen.getByLabelText('Acide au-delà du bicarbonate');
+    expect(warning).toHaveTextContent('HCO₃ épuisé');
+    expect(warning).toHaveTextContent('peut encore abaisser le pH');
     expect(screen.getByRole('img', { name: /Profil ionique/ })).toHaveAccessibleName(/Alcalinité .*166,7 ppm/);
   });
 });
