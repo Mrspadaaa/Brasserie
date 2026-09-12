@@ -23,11 +23,11 @@ export function FermentationScenarioPanel({ recipe, yeasts, guides, science, goa
   const result = useMemo(() => evaluateFermentationScenario(recipe, yeasts, guides), [recipe, yeasts, guides]);
   const dose = result.guide && fermentationDose(result.guide, recipe.volumeL);
   return <section aria-label="Résultat de ma fermentation" className="space-y-3" data-engine={result.version}>
-    <div><h4 className="font-serif text-xl text-ebc-straw">{result.yeast?.name || recipe.yeast.name || 'Levure à choisir'}</h4>
+    <div><h4 className="font-sans text-base font-semibold text-ebc-straw">{result.yeast?.name || recipe.yeast.name || 'Levure à choisir'}</h4>
       <p className="text-xs text-cave-400">{result.yeast && !recipe.yeast.hopIndexId ? 'Souche reconnue par son nom · ' : ''}Lecture du programme saisi</p></div>
     <dl className="grid grid-cols-2 gap-3 text-sm">
-      <div><dt className="text-cave-400">Fenêtre fabricant</dt><dd className="text-cave-100">{result.temperature ? fermentationRangeLabel(result.temperature.range, '°C', 0) : 'Non documentée'}</dd></div>
-      <div data-value="final-gravity"><dt className="text-cave-400">DF documentaire</dt><dd className="text-cave-100">{result.fg.range ? fermentationRangeLabel(result.fg.range, 'SG', 3) : 'Non quantifiable'}</dd><dd className="text-xs text-cave-400">Confiance faible</dd></div>
+      <div><dt className="text-cave-400">Fenêtre fabricant</dt><dd className="text-cave-50">{result.temperature ? fermentationRangeLabel(result.temperature.range, '°C', 0) : 'Non documentée'}</dd></div>
+      <div data-value="final-gravity"><dt className="text-cave-400">DF documentaire</dt><dd className="text-cave-50">{result.fg.range ? fermentationRangeLabel(result.fg.range, 'SG', 3) : 'Non quantifiable'}</dd><dd className="text-xs text-cave-400">Confiance faible</dd></div>
     </dl>
     {result.guide && <p className="text-sm text-cave-200">{result.guide.aroma.summary ?? result.guide.aroma.banana}</p>}
     <FermentationTemperatureChart steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />

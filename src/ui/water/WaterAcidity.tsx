@@ -66,7 +66,7 @@ export function WaterAcidity({
                 aria-selected={activeTab === t}
                 tabIndex={activeTab === t ? 0 : -1}
                 onClick={() => setTab(t)}
-                className={`flex-1 py-2 text-xs sm:text-sm font-semibold transition-colors border-b-2 -mb-px ${
+                className={`flex-1 py-2 text-sm sm:text-base font-semibold transition-colors border-b-2 -mb-px ${
                   activeTab === t
                     ? "text-cave-50 border-ebc-straw"
                     : "text-cave-400 border-transparent hover:text-cave-200"

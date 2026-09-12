@@ -66,8 +66,8 @@ export function WaterTargetStatus({
     <section aria-label="Bilan des objectifs de l’eau" className="space-y-3 text-sm leading-snug">
       <div className="space-y-2" aria-label="Trois diagnostics de préparation">
         <p className={outside.length?'text-ebc-straw':'text-hop'}>Ions · {outside.length?'plages à ajuster':'plages atteintes'}{personal?' · centres non garantis':''}</p>
-        {hasMash&&<p data-mash-diagnostic={mashDiagnostic.status} className={mashDiagnostic.status==='outside'?'text-ebc-straw':'text-cave-300'}>{mashDiagnostic.message}</p>}
-        {hasSparge&&<p className="text-cave-300">Rinçage · {formatDecimal(treatment.spargeAcid.amount)} {treatment.spargeAcid.unit} d’acide calculé ; pH à contrôler séparément.</p>}
+        {hasMash&&<p data-mash-diagnostic={mashDiagnostic.status} className={mashDiagnostic.status==='outside'?'text-ebc-straw':'text-cave-200'}>{mashDiagnostic.message}</p>}
+        {hasSparge&&<p className="text-cave-200">Rinçage · {formatDecimal(treatment.spargeAcid.amount)} {treatment.spargeAcid.unit} d’acide calculé ; pH à contrôler séparément.</p>}
       </div>
       <details><summary className="min-h-touch cursor-pointer text-xs text-water">Détail des diagnostics et hypothèses</summary><div className="space-y-3">
       {minerals.length > 0 && (

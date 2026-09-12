@@ -102,7 +102,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       {/* Form Body */}
       <form onSubmit={handleSave} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-sm overscroll-contain">
         {saveError&&<p role="alert" className="finance-error">{saveError}</p>}
-        {moneyLocked&&<p className="text-sm text-cave-300">Les montants validés sont conservés. Pour une correction financière, utilise un avoir ou l’annulation de l’écriture.</p>}
+        {moneyLocked&&<p className="text-sm text-cave-200">Les montants validés sont conservés. Pour une correction financière, utilise un avoir ou l’annulation de l’écriture.</p>}
         {/* Description */}
         <div>
           <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Description / Intitulé</label>

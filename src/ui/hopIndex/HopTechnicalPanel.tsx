@@ -37,7 +37,7 @@ export function HopChemistryChart({ variety, lot }: { variety?: HopVariety; lot?
   const facts = resolveHopFacts(lot, variety).filter(f => f.measurement);
   const groups = [...new Set(facts.map(f => `${f.measurement!.unit}:${f.measurement!.basis}`))];
   return <section aria-label="Composition analytique" className="space-y-4">
-    <h4 className="font-semibold text-cave-100">Composition · {lot?.name ?? variety?.name ?? 'référence à choisir'}</h4>
+    <h4 className="font-semibold text-cave-50">Composition · {lot?.name ?? variety?.name ?? 'référence à choisir'}</h4>
     {!facts.length && <p className="text-sm text-cave-400">Pas d’analyse exploitable sur cette fiche. Les composés absents ne sont pas considérés comme nuls.</p>}
     {groups.map(group => {
       const rows = facts.filter(f => `${f.measurement!.unit}:${f.measurement!.basis}` === group);
@@ -80,8 +80,8 @@ export function HopTechnicalPanel({ variety, lot }: { variety?: HopVariety; lot?
     <h3 className="text-lg font-semibold text-cave-50">Comprendre les transformations</h3>
     <div className="flex flex-wrap gap-1" role="group" aria-label="Familles chimiques">{topics.map(t => <button key={t.name} type="button" aria-pressed={topic === t.name} onClick={() => setTopic(t.name)} className={`min-h-touch px-3 rounded-control text-sm ${topic === t.name ? 'bg-cave-700 text-ebc-straw' : 'text-cave-200 bg-cave-850'}`}>{t.name}</button>)}</div>
     {topic === 'Thiols' && <details><summary className="min-h-touch cursor-pointer text-sm text-cave-200">Voies des thiols</summary><div className="grid gap-1 sm:grid-cols-3 text-sm" aria-label="Voies des thiols">
-      {['Précurseurs GSH / Cys · réservoir', 'Libération → 3SH (3MH) / 4MSP (4MMP)', 'Acétylation du 3SH → 3SHA (3MHA)'].map(label => <div key={label} className="border-l-2 border-hop pl-3 py-3 text-cave-100 bg-hop/5">{label}</div>)}
+      {['Précurseurs GSH / Cys · réservoir', 'Libération → 3SH (3MH) / 4MSP (4MMP)', 'Acétylation du 3SH → 3SHA (3MHA)'].map(label => <div key={label} className="border-l-2 border-hop pl-3 py-3 text-cave-50 bg-hop/5">{label}</div>)}
     </div></details>}
-    {notes.map(n => <details key={n.id} className="border-b border-cave-800"><summary className="cursor-pointer min-h-touch py-2 text-sm font-semibold text-cave-100">{n.name}</summary><div className="space-y-2 pb-3"><p className="text-sm text-cave-200">{n.summary}</p><p className="text-xs text-cave-400">{n.limitation}</p><HopSourceLink source={n.source as HopSource} /></div></details>)}
+    {notes.map(n => <details key={n.id} className="border-b border-cave-800"><summary className="cursor-pointer min-h-touch py-2 text-sm font-semibold text-cave-50">{n.name}</summary><div className="space-y-2 pb-3"><p className="text-sm text-cave-200">{n.summary}</p><p className="text-xs text-cave-400">{n.limitation}</p><HopSourceLink source={n.source as HopSource} /></div></details>)}
   </section>;
 }

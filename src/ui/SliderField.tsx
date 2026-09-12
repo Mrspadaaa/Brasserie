@@ -80,13 +80,13 @@ export const SliderField: React.FC<SliderFieldProps> = ({
             emptyValue={min}
             disabled={disabled}
             pad={false}
-            className="w-16 sm:w-24 shrink-0 min-h-[38px] sm:min-h-touch px-1 sm:px-3 rounded-control
+            className="w-16 sm:w-24 shrink-0 min-h-touch px-1 sm:px-3 rounded-control
                        bg-cave-950 border border-cave-700
                        reading text-base sm:text-lg text-ebc-straw text-center
                        focus:outline-none focus:border-ebc-straw"
           />
 
-          {unit && <span className="reading-unit shrink-0 text-xs sm:text-sm">{unit}</span>}
+          {unit && <span className="reading-unit shrink-0 text-sm">{unit}</span>}
           {after}
           {readout && (
             <span className="text-2xs sm:text-sm text-cave-400 min-w-0 truncate ml-auto text-right">
@@ -155,23 +155,56 @@ export const SliderField: React.FC<SliderFieldProps> = ({
         </div>
 
         {marks && marks.length > 0 && (
-          <div className="flex justify-between gap-1">
-            {marks.map((m) => (
-              <button
-                key={m.value}
-                type="button"
-                tabIndex={-1}
-                disabled={disabled}
-                onClick={() => onChange(m.value)}
-                className={`text-2xs sm:text-sm transition-colors min-h-[28px] px-1 ${
-                  Math.abs(value - m.value) < step / 2
-                    ? 'text-ebc-straw font-medium'
-                    : 'text-cave-500 hover:text-cave-200'
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
+          /*
+           * ⚠️ UN REPÈRE SE POSE À SA VALEUR, PAS À INTERVALLE ÉGAL.
+           *
+           * Ils étaient rangés en `flex justify-between` : trois repères
+           * s'étalaient sur toute la largeur QUELLE QUE SOIT leur valeur.
+           * Mesuré sur l'étape « Identité » :
+           *
+           *   Volume — piste 10→60, repères 20 · 30 · 50
+           *            affichés à 0 % · 50 % · 100 %
+           *            le 30 tombait au MILIEU alors que sa place est à 40 %,
+           *            et la piste paraissait aller de 20 à 50.
+           *   Ébullition — piste 30→120, repères 60 · 75 · 90
+            *            le 60 s'affichait tout à GAUCHE, comme s'il était le
+           *            minimum : le vrai minimum est 30, le vrai maximum 120.
+           *            La moitié de la course était invisible à l'œil.
+           *
+           * Un brasseur qui lit la position du curseur lisait un volume faux.
+           * Dans une application qui refuse d'inventer un chiffre plausible,
+           * un instrument ne peut pas mentir sur sa propre graduation.
+           *
+           * Chaque repère est donc posé à son pourcentage réel. La correction
+           * de 12 px suit le centre du pouce : sur un `input[type=range]`, le
+           * centre du curseur ne va pas de 0 à 100 % mais de `pouce/2` à
+           * `largeur − pouce/2` — le pouce fait 24 px.
+           *
+           * Le libellé reste fin à l'œil ; sa zone d'attrape fait 44 px de
+           * haut, comme la piste au-dessus.
+           */
+          <div className="relative h-11 -mt-2">
+            {marks.map((m) => {
+              const at = ((m.value - min) / (max - min)) * 100;
+              const active = Math.abs(value - m.value) < step / 2;
+              return (
+                <button
+                  key={m.value}
+                  type="button"
+                  tabIndex={-1}
+                  disabled={disabled}
+                  onClick={() => onChange(m.value)}
+                  style={{ left: `calc(${at}% + ${(12 - at * 0.24).toFixed(2)}px)` }}
+                  className={`absolute top-0 h-11 px-2 -translate-x-1/2 flex items-start pt-1
+                              before:absolute before:-inset-x-2 before:inset-y-0 before:content-['']
+                              whitespace-nowrap text-2xs sm:text-sm transition-colors ${
+                    active ? 'text-ebc-straw font-medium' : 'text-cave-400 hover:text-cave-200'
+                  }`}
+                >
+                  {m.label}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

@@ -174,7 +174,7 @@ export const StockPreview: React.FC = () => {
         {/* Banc d'essai clavier : Entrée enchaîne les champs, l'autocomplétion
             se pilote aux flèches, le curseur reste saisissable au chiffre. */}
         <section className="shrink-0 panel p-4 mb-4 space-y-4">
-          <h2 className="text-base font-semibold text-cave-100">Saisie au clavier</h2>
+          <h2 className="text-base font-semibold text-cave-50">Saisie au clavier</h2>
 
           <FormNav
             className="space-y-4"

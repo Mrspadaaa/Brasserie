@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { allerEtape } from '../helpers/wizard';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
 import { Combobox, ComboOption } from '../../src/ui/Combobox';
@@ -547,7 +548,7 @@ describe('Manques en stock', () => {
         onSave={() => {}}
       />
     );
-    fireEvent.click(screen.getAllByRole('button', { name: /Récapitulatif/ })[0]);
+    allerEtape(/Récapitulatif/);
   };
 
   /*
@@ -623,8 +624,7 @@ describe('Nommage des champs de l’assistant', () => {
           onSave={() => {}}
         />
       );
-      // Le fil d'étapes est rendu deux fois (mobile et bureau) : le premier suffit.
-      fireEvent.click(screen.getAllByRole('button', { name: new RegExp(etape) })[0]);
+      allerEtape(etape);
 
       const anonymes = [...container.querySelectorAll('input')]
         .filter((i) => i.type !== 'hidden' && i.type !== 'range')
@@ -750,7 +750,7 @@ describe('Ajout d’un fermentescible — où va le curseur', () => {
     );
 
   const ajouterUnMalt = () => {
-    fireEvent.click(screen.getAllByRole('button', { name: /Fermentescibles/ })[0]);
+    allerEtape(/Fermentescibles/);
     const combo = screen.getByLabelText(/Ajouter un fermentescible/i) as HTMLInputElement;
     fireEvent.click(combo);
     fireEvent.click(combo);

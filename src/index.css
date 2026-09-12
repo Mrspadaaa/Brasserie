@@ -58,7 +58,7 @@
   /* Placeholder pour les champs contenteditable sur mobile (évite la barre d'accessoire Gboard/Chrome) */
   .empty-text-input:empty::before {
     content: attr(data-placeholder);
-    color: theme('colors.cave.600');
+    color: theme('colors.cave.400');
     pointer-events: none;
     display: inline-block;
   }
@@ -134,4 +134,49 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/**
+ * UN SEUL SIGNIFIANT PAR GESTE — le chevron des blocs dépliables.
+ *
+ * ⚠️ Mesuré sur le jour de brassage : 17 `<summary>` visibles y rendaient
+ * `display: list-item` avec `list-style-type: disclosure-closed`, c'est-à-dire
+ * le petit triangle ▸ du navigateur. Sur l'ensemble des sources, 158 des 178
+ * blocs dépliables n'avaient AUCUN signifiant dessiné et s'en remettaient à ce
+ * triangle ; les 20 autres dessinaient un chevron lucide. Le même geste —
+ * déplier — se présentait donc sous deux dessins différents sur un même écran,
+ * dont un qui n'appartient à aucun système de design et change de forme selon
+ * le navigateur.
+ *
+ * La règle pose le chevron de lucide (trait 2, bouts ronds) en image de fond,
+ * et ne touche PAS au mode de disposition : `flex`, `grid` et `block` gardent
+ * le leur. C'est le seul moyen sûr sur 158 blocs dont on ne relit pas la mise
+ * en page un par un.
+ *
+ * `:not(:has([class*="chevron"]))` laisse tranquilles les blocs qui dessinent
+ * déjà le leur — sans quoi ils en porteraient deux.
+ *
+ * Voir `DESIGN.md`, « Les surfaces du navigateur ».
+ */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Le marqueur natif saute pour TOUS les blocs, y compris ceux qui dessinent
+   déjà leur chevron : sans ça ils en portaient deux, le ▸ du navigateur et le
+   leur. */
+summary {
+  list-style: none;
+}
+
+summary:not(:has([class*='chevron'])) {
+  padding-right: 1.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239A8A7E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.25rem center;
+  background-size: 1.25rem 1.25rem;
+}
+
+details[open] > summary:not(:has([class*='chevron'])) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239A8A7E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E");
 }

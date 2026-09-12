@@ -1,4 +1,5 @@
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialProfile } from './types';
+import { compte } from '../../services/plural';
 
 export const toCents = (value: number): number => Number.isFinite(value) ? Math.round((value + Number.EPSILON) * 100) : 0;
 export const fromCents = (value: number): number => value / 100;
@@ -128,7 +129,7 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
     }
     if (state.overpaidCents > 0) warnings.push(`Paiement supérieur à la pièce ${tx.id} : ${formatCHF(state.overpaidCents)}.`);
   });
-  if (result.unknownPaymentCount) warnings.push(`${result.unknownPaymentCount} paiement(s) historique(s) à confirmer ; exclus des échéances.`);
+  if (result.unknownPaymentCount) warnings.push(`${compte(result.unknownPaymentCount, 'paiement historique', 'paiements historiques')} à confirmer ; exclus des échéances.`);
   if (payments.some(p => !validPayment(p))) { warnings.push('Des paiements ont une date ou un montant invalide.'); result.cashComplete = false; }
   result.outstanding.sort((a, b) => (a.dueDate ?? a.date ?? '').localeCompare(b.dueDate ?? b.date ?? ''));
   return result;

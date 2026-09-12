@@ -61,7 +61,7 @@ export const Reading: React.FC<ReadingProps> = ({
       <span className="text-sm text-cave-400">{label}</span>
 
       {isEmpty ? (
-        <span className="text-base text-cave-600 italic">{emptyHint}</span>
+        <span className="text-base text-cave-400 italic">{emptyHint}</span>
       ) : (
         <div className="flex items-baseline gap-1.5">
           <span className={`reading ${SIZES[size]} ${TONES[tone]}`}>{value}</span>

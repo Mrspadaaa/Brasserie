@@ -146,7 +146,7 @@ export const NumericField: React.FC<NumericFieldProps> = ({
     <p
       id={`${inputId}-desc`}
       role={error ? 'alert' : undefined}
-      className={`text-sm leading-snug ${error ? 'text-alert' : 'text-cave-600'}`}
+      className={`text-sm leading-snug ${error ? 'text-alert' : 'text-cave-400'}`}
     >
       {error || hint}
     </p>
@@ -156,7 +156,7 @@ export const NumericField: React.FC<NumericFieldProps> = ({
     <div className={compact ? 'space-y-1' : 'space-y-1.5'}>
       {compact ? (
         <div className="flex items-center gap-3">
-          <label htmlFor={inputId} className="flex-1 min-w-0 text-sm text-cave-300 leading-tight">
+          <label htmlFor={inputId} className="flex-1 min-w-0 text-sm text-cave-200 leading-tight">
             {label}
           </label>
           <div className="w-32 shrink-0">{field}</div>

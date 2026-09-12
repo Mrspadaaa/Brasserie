@@ -212,7 +212,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <div className="space-y-3 rounded-2xl border border-cave-800 bg-cave-950/50 p-3">
-              <h3 className="font-bold text-cave-100">Réserve impôt sur la bière</h3>
+              <h3 className="font-bold text-cave-50">Réserve impôt sur la bière</h3>
               <p className="text-sm text-cave-400">Taux pleins selon le degré Plato : 16,88 / 25,32 / 33,76 CHF par hl. Le conditionnement fournit une réserve indicative ; l’impôt naît à la sortie ou à la consommation sur place.</p>
               <div className="grid grid-cols-2 gap-3"><label className="text-sm text-cave-200">Réduction annuelle OFDF (%)<NumberInput value={formData.fiscal.beerTaxAnnualReductionPct} onValue={value => setFormData({...formData,fiscal:{...formData.fiscal,beerTaxAnnualReductionPct:value}})} min={0} max={40} className={inputClass}/></label><label className="text-sm text-cave-200">Année confirmée<NumberInput value={formData.fiscal.beerTaxReductionYear} onValue={value => setFormData({...formData,fiscal:{...formData.fiscal,beerTaxReductionYear:value}})} min={2000} max={2200} integer className={inputClass}/></label></div>
               <label className="block text-sm text-cave-200">Périodicité attribuée<select className={inputClass} value={formData.fiscal.beerTaxPeriod??''} onChange={event=>setFormData({...formData,fiscal:{...formData.fiscal,beerTaxPeriod:(event.target.value||undefined) as 'annual'|'quarterly'|undefined}})}><option value="">À confirmer auprès de l’OFDF</option><option value="annual">Annuelle</option><option value="quarterly">Trimestrielle</option></select></label>

@@ -66,10 +66,11 @@ export function PresetChips<T>({
               aria-pressed={on}
               aria-label={`${name} : ${label(p)}${on ? ' — en place' : ''}`}
               onClick={() => onApply(p)}
-              className={`px-2 py-1 rounded-full border text-2xs transition-colors active:scale-[0.97] ${
+              className={`relative before:absolute before:-inset-y-2 before:-inset-x-1 before:content-['']
+                          px-2 py-1 rounded-full border text-2xs transition-colors active:scale-[0.97] ${
                 on
                   ? 'border-ebc-straw text-ebc-straw bg-ebc-straw/10 font-semibold'
-                  : 'border-cave-700 text-cave-300 hover:border-cave-600'
+                  : 'border-cave-700 text-cave-200 hover:border-cave-600'
               }`}
             >
               {label(p)}
@@ -83,7 +84,7 @@ export function PresetChips<T>({
         répond à la question qu'on se pose après avoir appuyé : qu'est-ce que je
         viens de charger ?
       */}
-      <p className="text-2xs text-cave-500 leading-snug">
+      <p className="text-2xs text-cave-400 leading-snug">
         {actif ? purpose(actif) : 'Paliers sur mesure. Un programme les remplace.'}
       </p>
     </div>

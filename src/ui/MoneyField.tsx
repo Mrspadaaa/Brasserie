@@ -109,20 +109,20 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({
         {showSplit && (
           <dl className="flex items-baseline justify-between gap-4 px-1 text-sm">
             <div className="flex items-baseline gap-2">
-              <dt className="text-cave-500">Hors taxe</dt>
-              <dd className="reading text-cave-100">{chf(ht)}</dd>
+              <dt className="text-cave-400">Hors taxe</dt>
+              <dd className="reading text-cave-50">{chf(ht)}</dd>
             </div>
             <div className="flex items-baseline gap-2">
-              <dt className="text-cave-500">
+              <dt className="text-cave-400">
                 TVA {(tvaRate * 100).toLocaleString('fr-CH', { maximumFractionDigits: 1 })} %
               </dt>
-              <dd className="reading text-cave-300">{chf(tva)}</dd>
+              <dd className="reading text-cave-200">{chf(tva)}</dd>
             </div>
           </dl>
         )}
 
         {!isTvaRegistered && valueTTC > 0 && (
-          <p className="px-1 text-sm text-cave-600 leading-snug">
+          <p className="px-1 text-sm text-cave-400 leading-snug">
             Brasserie non assujettie : aucune TVA à ventiler ni à récupérer.
           </p>
         )}

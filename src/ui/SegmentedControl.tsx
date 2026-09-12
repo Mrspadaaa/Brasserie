@@ -112,7 +112,7 @@ export function SegmentedControl<T extends string>({
             // l'option cochée, les flèches font le reste.
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(opt.value)}
-            className={`min-h-[38px] sm:min-h-touch px-2.5 sm:px-3 py-1 rounded-control text-xs sm:text-sm transition-colors
+            className={`min-h-touch px-2.5 sm:px-3 py-1 rounded-control text-sm transition-colors
                         flex items-center justify-center gap-1.5 sm:gap-2
                         ${scrolls ? 'shrink-0 whitespace-nowrap' : 'flex-1 min-w-0'}
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
@@ -120,7 +120,7 @@ export function SegmentedControl<T extends string>({
                         ${
                           active
                             ? 'bg-ebc-straw text-cave-950 font-semibold'
-                            : 'text-cave-300 hover:text-cave-50 hover:bg-cave-900'
+                            : 'text-cave-200 hover:text-cave-50 hover:bg-cave-900'
                         }`}
           >
             {opt.icon}
@@ -131,7 +131,7 @@ export function SegmentedControl<T extends string>({
               {opt.hint && layout === 'grid' && !tight && (
                 <span
                   className={`block text-xs truncate ${
-                    active ? 'text-cave-950/70' : 'text-cave-500'
+                    active ? 'text-cave-950/70' : 'text-cave-400'
                   }`}
                 >
                   {opt.hint}

@@ -84,7 +84,9 @@ describe('Comptabilité quotidienne intégrée',()=>{
   });
   it('conserve une pièce sans date dans l’historique et signale son exclusion du mois',()=>{
     StorageService.addTransaction(tx({date:'inconnue',finance:undefined}));render(<Workspace/>);
-    expect(screen.getByText(/pièce\(s\) avec une date à corriger/)).toBeInTheDocument();
+    // Une seule pièce : le français met le singulier jusqu'à 2 exclu, donc
+    // « 1 pièce », jamais « 1 pièce(s) ». Voir `src/services/plural.ts`.
+    expect(screen.getByText(/1 pièce avec une date à corriger/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button',{name:'Retrouver ces pièces dans l’historique'}));
     expect(screen.getByRole('button',{name:/Achat mixte/})).toBeInTheDocument();
   });

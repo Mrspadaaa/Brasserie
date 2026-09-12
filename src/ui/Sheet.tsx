@@ -124,7 +124,7 @@ export const Sheet: React.FC<SheetProps> = ({
             onClick={onClose}
             aria-label="Fermer"
             className="min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
-                       hover:text-cave-100 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"
+                       hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
@@ -186,7 +186,7 @@ export const ConfirmSheet: React.FC<{
         <button
           onClick={onClose}
           className="flex-1 min-h-touch rounded-control bg-cave-850 border border-cave-700
-                     text-cave-100 text-base transition-colors hover:border-cave-600"
+                     text-cave-50 text-base transition-colors hover:border-cave-600"
         >
           Annuler
         </button>
@@ -204,7 +204,7 @@ export const ConfirmSheet: React.FC<{
     }
   >
     <div className="space-y-3">
-      <p className="text-base text-cave-100">{what}</p>
+      <p className="text-base text-cave-50">{what}</p>
       {consequence && <p className="text-sm text-cave-400 leading-relaxed">{consequence}</p>}
     </div>
   </Sheet>

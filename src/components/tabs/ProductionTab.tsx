@@ -293,7 +293,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
               {scaleResult.scaledRecipe.adjuncts?.map((item, idx) => (
                 <div key={`adjunct-${idx}`} className="p-2 bg-cave-950/50 rounded-xl border border-cave-800/80 flex justify-between">
                   <span className="text-cave-200">{item.name} · {item.step}</span>
-                  <span className="font-mono font-bold text-cave-100">{Units.format(item.amount, item.unit)}</span>
+                  <span className="font-mono font-bold text-cave-50">{Units.format(item.amount, item.unit)}</span>
                 </div>
               ))}
             </div>

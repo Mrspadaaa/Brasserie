@@ -66,7 +66,7 @@ const Metric: React.FC<{
   tone?: string;
 }> = ({ label, value, hint, note, swatch, tone = 'text-cave-50' }) => (
   <div className="min-w-0">
-    <div className="text-sm text-cave-500">{label}</div>
+    <div className="text-sm text-cave-400">{label}</div>
     {value ? (
       <>
         <div className="flex items-center gap-2">
@@ -78,10 +78,10 @@ const Metric: React.FC<{
           )}
           <span className={`reading text-xl ${tone}`}>{value}</span>
         </div>
-        {note && <div className="text-sm text-cave-500 leading-tight">{note}</div>}
+        {note && <div className="text-sm text-cave-400 leading-tight">{note}</div>}
       </>
     ) : (
-      <div className="text-sm text-cave-600 leading-tight pt-1">{hint ?? 'incalculable'}</div>
+      <div className="text-sm text-cave-400 leading-tight pt-1">{hint ?? 'incalculable'}</div>
     )}
   </div>
 );
@@ -167,7 +167,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             type="button"
             onClick={onEdit}
             aria-label="Modifier la recette"
-            className="touch-target rounded-control text-cave-300 hover:text-cave-50"
+            className="touch-target rounded-control text-cave-200 hover:text-cave-50"
           >
             <Pencil className="w-5 h-5" />
           </button>
@@ -175,7 +175,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             type="button"
             onClick={onDuplicate}
             aria-label="Dupliquer la recette"
-            className="touch-target rounded-control text-cave-300 hover:text-cave-50"
+            className="touch-target rounded-control text-cave-200 hover:text-cave-50"
           >
             <Copy className="w-5 h-5" />
           </button>
@@ -273,7 +273,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
 
         {color && (
-          <p className="mt-3 text-sm text-cave-500">
+          <p className="mt-3 text-sm text-cave-400">
             Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {color.srm}.
           </p>
         )}
@@ -288,20 +288,20 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         }`}
       >
         {grains.length === 0 ? (
-          <p className="text-sm text-cave-500">Aucun malt renseigné.</p>
+          <p className="text-sm text-cave-400">Aucun malt renseigné.</p>
         ) : (
           <ul className="divide-y divide-cave-850">
             {grains.map((m, i) => {
               const pct = totalGrist > 0 ? (m.weightKg / totalGrist) * 100 : 0;
               return (
                 <li key={`${m.name}-${i}`} className="py-2.5 flex items-baseline gap-3">
-                  <span className="reading text-sm text-cave-500 w-12 shrink-0 text-right">
+                  <span className="reading text-sm text-cave-400 w-12 shrink-0 text-right">
                     {pct.toFixed(0)} %
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base text-cave-100 truncate">{m.name}</span>
+                    <span className="block text-base text-cave-50 truncate">{m.name}</span>
                     {m.colorEbc != null && (
-                      <span className="block text-sm text-cave-500">{m.colorEbc} EBC</span>
+                      <span className="block text-sm text-cave-400">{m.colorEbc} EBC</span>
                     )}
                   </span>
                   <span className="reading text-base text-cave-50 shrink-0">
@@ -332,8 +332,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             {others.map((f, i) => (
               <li key={`${f.name}-${i}`} className="py-2.5 flex items-baseline gap-3">
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base text-cave-100 truncate">{f.name}</span>
-                  <span className="block text-sm text-cave-500">
+                  <span className="block text-base text-cave-50 truncate">{f.name}</span>
+                  <span className="block text-sm text-cave-400">
                     {f.use === 'fermentation'
                       ? `en fermentation, J+${f.dayOffset ?? 0}`
                       : f.use === 'ebullition'
@@ -365,7 +365,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       >
         <HopBitternessPanel hops={hops} volumeL={recipe.volumeL} og={og || null} boilMin={recipe.boilMin ?? 60} hot={bitterness}/>
         {grouped.length === 0 ? (
-          <p className="text-sm text-cave-500">Aucun houblon renseigné.</p>
+          <p className="text-sm text-cave-400">Aucun houblon renseigné.</p>
         ) : (
           <div className="space-y-4">
             {grouped.map(({ stage, hops: list }) => {
@@ -379,11 +379,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     >
                       {style.label}
                     </span>
-                    <span className="reading text-sm text-cave-500">
+                    <span className="reading text-sm text-cave-400">
                       {Units.format(subtotal, 'g')}
                     </span>
                   </div>
-                  <p className="text-sm text-cave-600 leading-snug">{style.hint}</p>
+                  <p className="text-sm text-cave-400 leading-snug">{style.hint}</p>
 
                   <ul className="divide-y divide-cave-850">
                     {list.map((h, i) => {
@@ -391,8 +391,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       return (
                         <li key={`${h.name}-${i}`} className="py-2 flex items-baseline gap-3">
                           <span className="min-w-0 flex-1">
-                            <span className="block text-base text-cave-100 truncate">{h.name}</span>
-                            <span className="block text-sm text-cave-500">
+                            <span className="block text-base text-cave-50 truncate">{h.name}</span>
+                            <span className="block text-sm text-cave-400">
                               {describeMoment(h)}
                               {h.alpha ? ` · ${h.alpha} % AA` : ' · alpha inconnu'}
                             </span>
@@ -402,7 +402,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                               {Units.format(h.weightG, 'g')}
                             </span>
                             {style.bitters && (
-                              <span className="block reading text-sm text-cave-500">
+                              <span className="block reading text-sm text-cave-400">
                                 {ibu != null ? `${ibu.toFixed(1)} IBU` : '— IBU'}
                               </span>
                             )}
@@ -427,10 +427,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {recipe.nolo?.enabled&&<Section title="Objectif NOLO" hint="Projection, traitement et analyses"><NoloPanel recipe={recipe}/></Section>}
       <Section title="Levure" hint={recipe.yeast.name}>
         {!recipe.yeast?.name ? (
-          <p className="text-sm text-cave-500">Aucune levure renseignée.</p>
+          <p className="text-sm text-cave-400">Aucune levure renseignée.</p>
         ) : (
           <div className="space-y-2">
-            <p className="text-base text-cave-100">
+            <p className="text-base text-cave-50">
               {recipe.yeast.lab && <span className="text-cave-400">{recipe.yeast.lab} </span>}
               {recipe.yeast.name}
               {recipe.yeast.strain && (
@@ -439,17 +439,17 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             </p>
             <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
-                <dt className="text-sm text-cave-500">Quantité</dt>
+                <dt className="text-sm text-cave-400">Quantité</dt>
                 <dd className="reading text-base">
                   {recipe.yeast.qty > 0 ? Units.format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner'}
                 </dd>
               </div>
               <div>
-                <dt className="text-sm text-cave-500">Forme</dt>
-                <dd className="text-base text-cave-100">{recipe.yeast.form}</dd>
+                <dt className="text-sm text-cave-400">Forme</dt>
+                <dd className="text-base text-cave-50">{recipe.yeast.form}</dd>
               </div>
               <div>
-                <dt className="text-sm text-cave-500">Ensemencement</dt>
+                <dt className="text-sm text-cave-400">Ensemencement</dt>
                 <dd className="reading text-base">
                   {recipe.yeast.pitchTempC != null ? `${recipe.yeast.pitchTempC} °C` : '—'}
                 </dd>
@@ -471,8 +471,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             {recipe.adjuncts.map((a, i) => (
               <li key={`${a.name}-${i}`} className="py-2 flex items-baseline gap-3">
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base text-cave-100 truncate">{a.name}</span>
-                  <span className="block text-sm text-cave-500">{a.step}</span>
+                  <span className="block text-base text-cave-50 truncate">{a.name}</span>
+                  <span className="block text-sm text-cave-400">{a.step}</span>
                 </span>
                 <span className="reading text-base shrink-0">
                   {Units.format(a.amount, a.unit)}
@@ -503,10 +503,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <div className="space-y-3">
             {waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
             {recipe.waterPlan.sourceSnapshot?.note&&<p className="text-xs text-cave-400">{recipe.waterPlan.sourceSnapshot.note}</p>}
-            <details><summary className="min-h-touch cursor-pointer text-sm text-cave-300">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
+            <details><summary className="min-h-touch cursor-pointer text-sm text-cave-200">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div className="text-cave-500">Empâtage</div>
+                <div className="text-cave-400">Empâtage</div>
                 <div className="reading text-base">{recipe.waterPlan.mashWaterL} L</div>
                 {((recipe.waterPlan.diRatioPct ?? 0) > 0) && (
                   <div className="text-2xs text-cave-400 font-mono mt-0.5">
@@ -515,7 +515,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 )}
               </div>
               <div>
-                <div className="text-cave-500">Rinçage</div>
+                <div className="text-cave-400">Rinçage</div>
                 <div className="reading text-base">{recipe.waterPlan.spargeWaterL} L</div>
                 {recipe.waterPlan.spargeWaterL > 0 && (
                   (() => {
@@ -546,7 +546,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-cave-500 text-left">
+                  <tr className="text-cave-400 text-left">
                     <th scope="col" className="font-normal py-1 pr-3">Sel</th>
                     <th scope="col" className="font-normal py-1 px-2 text-right">Empâtage</th>
                     <th scope="col" className="font-normal py-1 pl-2 text-right">Rinçage</th>
@@ -560,7 +560,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       <th scope="row" className="font-normal py-1.5 pr-3 text-cave-200 text-left">
                         {SALTS[id].name}
                         {ALKALINE_SALTS.includes(id) && (
-                          <span className="block text-xs text-cave-500">
+                          <span className="block text-xs text-cave-400">
                             alcalin — empâtage seul
                           </span>
                         )}
@@ -584,7 +584,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             {recipe.waterPlan.acid && (
-              <div className="space-y-1 text-base text-cave-100">
+              <div className="space-y-1 text-base text-cave-50">
                 {recipe.waterPlan.acid.mash > 0 && (
                   <p>
                     <span className="reading text-water">
@@ -644,7 +644,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             {recipe.waterPlan.disabled && recipe.waterPlan.disabled.length > 0 && (
-              <details><summary className="min-h-touch cursor-pointer text-sm text-cave-400">Sels non utilisés</summary><p className="text-sm text-cave-500">
+              <details><summary className="min-h-touch cursor-pointer text-sm text-cave-400">Sels non utilisés</summary><p className="text-sm text-cave-400">
                 Écartés : {recipe.waterPlan.disabled.map((d) => SALTS[d].name).join(', ')}.
               </p></details>
             )}
@@ -660,23 +660,23 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         >
           <dl className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
-              <dt className="text-sm text-cave-500">Gypse</dt>
+              <dt className="text-sm text-cave-400">Gypse</dt>
               <dd className="reading text-base">{recipe.water.salts.gypseG} g</dd>
             </div>
             <div>
-              <dt className="text-sm text-cave-500">CaCl₂</dt>
+              <dt className="text-sm text-cave-400">CaCl₂</dt>
               <dd className="reading text-base">{recipe.water.salts.cacl2G} g</dd>
             </div>
             <div>
-              <dt className="text-sm text-cave-500">MgSO₄</dt>
+              <dt className="text-sm text-cave-400">MgSO₄</dt>
               <dd className="reading text-base">{recipe.water.salts.mgso4G} g</dd>
             </div>
             <div>
-              <dt className="text-sm text-cave-500">Acide lactique</dt>
+              <dt className="text-sm text-cave-400">Acide lactique</dt>
               <dd className="reading text-base">{recipe.water.salts.acidLacticMl} mL</dd>
             </div>
             <div>
-              <dt className="text-sm text-cave-500">pH visé</dt>
+              <dt className="text-sm text-cave-400">pH visé</dt>
               <dd className="reading text-base text-water">{recipe.water.targetPh}</dd>
             </div>
           </dl>
@@ -688,7 +688,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         <>
             {recipe.mash?.steps?.length > 0 && (
               <Section title="Empâtage" hint={`${recipe.mash.steps.length} paliers`}>
-                <h3 className="text-sm text-cave-500 mb-1.5">
+                <h3 className="text-sm text-cave-400 mb-1.5">
                   Empâtage
                   {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}
                   {recipe.mash.spargeType === 'fly'
@@ -700,7 +700,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 <ul className="divide-y divide-cave-850">
                   {[...recipe.mash.steps, ...(recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
                     <li key={i} className="py-2 flex items-baseline gap-3">
-                      <span className="flex-1 text-base text-cave-100">{s.name}</span>
+                      <span className="flex-1 text-base text-cave-50">{s.name}</span>
                       <span className="reading text-base text-water">{s.tempC} °C</span>
                       <span className="reading text-base text-cave-400 w-16 text-right">
                         {s.durationMin} min
@@ -715,7 +715,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
             {recipe.fermentation && recipe.fermentation.length > 0 && (
               <Section title="Fermentation" hint={`${recipe.fermentation.length} étapes`}>
-                <h3 className="text-sm text-cave-500 mb-1.5">Fermentation</h3>
+                <h3 className="text-sm text-cave-400 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {recipe.fermentation.map((s, i) => {
                     // Le type de phase se lit d'un coup : repos diacétyle et
@@ -724,7 +724,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     return (
                       <li key={i} className="py-2 flex items-baseline gap-3">
                         <span className="min-w-0 flex-1">
-                          <span className="block text-base text-cave-100 truncate">{s.name}</span>
+                          <span className="block text-base text-cave-50 truncate">{s.name}</span>
                           <span className="flex items-center gap-2 mt-0.5">
                             <span
                               className={`text-sm px-2 py-0.5 rounded-full border ${phase.tone}`}
@@ -732,7 +732,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                               {phase.label}
                             </span>
                             {s.note && (
-                              <span className="text-sm text-cave-500 truncate">{s.note}</span>
+                              <span className="text-sm text-cave-400 truncate">{s.note}</span>
                             )}
                           </span>
                         </span>
@@ -779,10 +779,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     className="w-full min-h-touch py-2.5 flex items-baseline gap-3 text-left"
                   >
                     <span className="min-w-0 flex-1">
-                      <span className="block text-base text-cave-100 truncate">
+                      <span className="block text-base text-cave-50 truncate">
                         {b.id} — {b.name}
                       </span>
-                      <span className="block text-sm text-cave-500">
+                      <span className="block text-sm text-cave-400">
                         {b.brewDate}
                         {gap ? ` · ${gap.realEfficiencyPct} % d’efficacité réelle` : ''}
                       </span>

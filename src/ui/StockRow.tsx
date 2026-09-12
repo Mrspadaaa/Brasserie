@@ -88,7 +88,7 @@ export const StockRow: React.FC<StockRowProps> = ({
             <div className="text-xs sm:text-sm text-cave-400 leading-none mt-1">{item.unit}</div>
           </div>
 
-          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-cave-600 shrink-0 mt-0.5" />
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-cave-400 shrink-0 mt-0.5" />
         </div>
 
         <div className="mt-2 sm:mt-3">
@@ -122,7 +122,7 @@ export const StockRow: React.FC<StockRowProps> = ({
         <button
           type="button"
           onClick={() => onOpen(item)}
-          className="flex-1 min-h-[36px] sm:min-h-touch px-2.5 sm:px-3 text-left text-xs sm:text-sm text-cave-500
+          className="flex-1 min-h-touch px-2.5 sm:px-3 text-left text-xs sm:text-sm text-cave-400
                      hover:text-cave-200 transition-colors truncate"
         >
           {item.currentStock <= 0

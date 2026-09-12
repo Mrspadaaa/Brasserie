@@ -470,10 +470,18 @@ export function BrewIngredients({
               ? 'Programme des ajouts'
               : 'Ingrédients'}
         </h2>
-        <span className="brew-count">
-          {shown.filter((i) => state.additions?.[i.id]?.doneAt != null).length}/{shown.length}{' '}
-          ajoutés
-        </span>
+        {/*
+          « 0/0 ajoutés » ne dit rien. Un compteur de zéro sur zéro occupe une
+          pastille pour annoncer l'absence de sujet, alors que le message
+          « Pas d'ingrédient prévu à cette phase » le dit déjà, en français.
+          Le compteur n'apparaît que s'il y a quelque chose à compter.
+        */}
+        {shown.length > 0 && (
+          <span className="brew-count">
+            {shown.filter((i) => state.additions?.[i.id]?.doneAt != null).length}/{shown.length}{' '}
+            ajoutés
+          </span>
+        )}
       </div>
       {shown.length > 0 && <p className="brew-ingredient-help">Cocher après ajout en cuve.</p>}
       {(area === 'preparation' || overview) && !inlineImpact && (

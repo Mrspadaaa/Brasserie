@@ -662,7 +662,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                     <p className="text-footnote text-cave-400">Saisie en 10 secondes</p>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-cave-500" />
+                <ChevronRight className="w-4 h-4 text-cave-400" />
               </div>
 
               {/* Option 3: Lancer Brassin */}
@@ -686,7 +686,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                     <p className="text-footnote text-cave-400">Préparer le brassin et réserver ses ingrédients</p>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-cave-500" />
+                <ChevronRight className="w-4 h-4 text-cave-400" />
               </div>
 
               {/* Option 4: Vente Rapide */}
@@ -703,7 +703,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                     <p className="text-footnote text-cave-400">Carton, fût ou vente directe</p>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-cave-500" />
+                <ChevronRight className="w-4 h-4 text-cave-400" />
               </div>
             </div>
           )}
@@ -738,7 +738,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   <div key={idx} className="p-3.5 bg-cave-950/70 border border-cave-800 rounded-2xl space-y-2.5 shadow-sm">
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-footnote text-cave-500 uppercase font-bold">Sur le document :</span>
+                        <span className="text-footnote text-cave-400 uppercase font-bold">Sur le document :</span>
                         <div className="font-bold text-cave-50 text-sm mt-0.5">{row.extractedName}</div>
                       </div>
                       <div className="flex items-center space-x-1.5 font-mono">
@@ -958,7 +958,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               <div>
                 <div className="flex justify-between items-center mb-1">
                   <label className="text-cave-200 font-semibold">Fournisseur</label>
-                  <span className="text-footnote text-cave-500">Suggestions rapides :</span>
+                  <span className="text-footnote text-cave-400">Suggestions rapides :</span>
                 </div>
                 <input
                   type="text"
@@ -1099,7 +1099,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 </div>
 
                 {manualStockImpacts.length === 0 ? (
-                  <p className="text-sm text-cave-500 italic py-1">
+                  <p className="text-sm text-cave-400 italic py-1">
                     Aucun article de stock ajouté (facture de charges fixes ou service). Cliquez sur "+ Ajouter article" si vous avez reçu des ingrédients ou produits !
                   </p>
                 ) : (
@@ -1153,7 +1153,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                                 setManualStockImpacts(manualStockImpacts.filter((_, i) => i !== idx))
                               }
                               aria-label={`Retirer ${imp.name}`}
-                              className="touch-target rounded-control text-cave-500 hover:text-alert shrink-0"
+                              className="touch-target rounded-control text-cave-400 hover:text-alert shrink-0"
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -1179,7 +1179,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                                 <span className="font-mono text-cave-400">
                                   {Units.format(currentQty, imp.unit)}
                                 </span>
-                                <span className="text-cave-600"> ➔ </span>
+                                <span className="text-cave-400"> ➔ </span>
                                 <span className="font-mono text-hop">
                                   {Units.format(nextQty, imp.unit)}
                                 </span>
@@ -1401,7 +1401,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               <div className="p-3 bg-ebc-straw/10 border border-ebc-straw/20 rounded-2xl">
                 <div>
                   <span className="font-bold text-ebc-gold block">Ingrédients réservés pour ce brassin</span>
-                  <p className="text-sm text-cave-300 mt-1">Le stock sera retiré à la validation des étapes de production, selon les quantités confirmées.</p>
+                  <p className="text-sm text-cave-200 mt-1">Le stock sera retiré à la validation des étapes de production, selon les quantités confirmées.</p>
                 </div>
               </div>
 

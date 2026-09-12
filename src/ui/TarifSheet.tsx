@@ -129,11 +129,11 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({
           {/* Le résultat, calculé — jamais saisi. */}
           <div className="panel p-4 space-y-2">
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-sm text-cave-500">Coût de revient</span>
+              <span className="text-sm text-cave-400">Coût de revient</span>
               <span className="reading text-base">{chf(costTotal)} CHF</span>
             </div>
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-sm text-cave-500">Marge</span>
+              <span className="text-sm text-cave-400">Marge</span>
               <span
                 className={`reading text-xl ${
                   marginCHF <= 0 ? 'text-alert' : marginPercent < 30 ? 'text-ebc-amber' : 'text-hop'
@@ -143,7 +143,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({
               </span>
             </div>
             <div className="flex items-baseline justify-between gap-3 pt-2 border-t border-cave-800">
-              <span className="text-sm text-cave-500">
+              <span className="text-sm text-cave-400">
                 Prix TTC{' '}
                 {config.fiscal.isTvaRegistered
                   ? `(TVA ${(tvaRate * 100).toFixed(1)} %)`

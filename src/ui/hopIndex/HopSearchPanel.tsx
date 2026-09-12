@@ -53,7 +53,7 @@ function HopModelSearchPanel() {
     } catch (e) { setSaved({ key: JSON.stringify(r.triplet), message: (e as Error).message, error: true }); }
   };
   return <section className="space-y-4" aria-label="Recherche de triplets aromatiques">
-    <h2 className="text-xl font-semibold text-cave-50">Chercher un profil aromatique</h2>
+    <h2 className="text-lg font-semibold text-cave-50">Chercher un profil aromatique</h2>
     <p className="text-cave-200">Choisis tes intensités, puis les conditions de brassage. Un filtre laissé vide explore les triplets couverts par les modèles documentés. Utilise le simulateur ci-dessus pour les autres associations.</p>
     <div className="flex flex-wrap gap-2"><BrewTag tone="info">{Object.keys(target).length} axe(s) choisi(s)</BrewTag><BrewTag>{models.length} modèle(s) documenté(s)</BrewTag></div>
     <div className="grid gap-3 sm:grid-cols-2">{visibleAxes.map(a => <HopField key={a.id} label={a.name}><select className={inputClass} value={!target[a.id] ? '' : target[a.id].min === a.scale.min ? 'low' : target[a.id].min === a.lowMax ? 'medium' : 'high'} onChange={e => {

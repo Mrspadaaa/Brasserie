@@ -110,7 +110,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           <p className="text-sm text-cave-400">Google demandera deux autorisations :</p>
 
           <div className="flex items-start gap-3">
-            <Lock className="w-5 h-5 text-cave-600 shrink-0 mt-0.5" />
+            <Lock className="w-5 h-5 text-cave-400 shrink-0 mt-0.5" />
             <p className="text-sm text-cave-400 leading-relaxed">
               <span className="text-cave-200">Votre identité</span> — pour vérifier que le compte
               fait partie des comptes autorisés.
@@ -118,7 +118,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
           </div>
 
           <div className="flex items-start gap-3">
-            <HardDrive className="w-5 h-5 text-cave-600 shrink-0 mt-0.5" />
+            <HardDrive className="w-5 h-5 text-cave-400 shrink-0 mt-0.5" />
             <p className="text-sm text-cave-400 leading-relaxed">
               <span className="text-cave-200">Google Drive, accès restreint</span> — pour y
               déposer factures et quittances. L'application ne voit que les fichiers qu'elle a

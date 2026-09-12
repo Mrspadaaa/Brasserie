@@ -47,7 +47,7 @@ const GRAVITE: Record<
   detail: {
     rang: 2,
     label: 'Détail',
-    tone: 'text-cave-300 border-cave-700',
+    tone: 'text-cave-200 border-cave-700',
     Icone: Info
   }
 };
@@ -143,7 +143,7 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
 
       {review && (
         <div className="panel p-2.5 space-y-2.5">
-          <p className="text-sm text-cave-100 leading-snug">{review.verdict}</p>
+          <p className="text-sm text-cave-50 leading-snug">{review.verdict}</p>
           {review.styleFit && (
             <p className="text-2xs sm:text-sm text-cave-400 leading-snug">{review.styleFit}</p>
           )}
@@ -169,7 +169,7 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
                         <g.Icone className="w-3 h-3 shrink-0" />
                         {g.label}
                       </span>
-                      <span className="text-2xs text-cave-500">{f.topic}</span>
+                      <span className="text-2xs text-cave-400">{f.topic}</span>
                     </span>
                     <p className="text-2xs sm:text-sm text-cave-200 leading-snug mt-0.5">
                       {f.observation}
@@ -191,13 +191,13 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
             pour un feu vert, alors qu'elle n'a simplement pas pu regarder.
           */}
           {review.missing && review.missing.length > 0 && (
-            <p className="flex items-start gap-2 text-2xs text-cave-500 leading-snug pt-1.5 border-t border-cave-850">
+            <p className="flex items-start gap-2 text-2xs text-cave-400 leading-snug pt-1.5 border-t border-cave-850">
               <HelpCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span>Non jugé, faute de données : {review.missing.join(' · ')}</span>
             </p>
           )}
 
-          <p className="text-2xs text-cave-600 leading-snug">
+          <p className="text-2xs text-cave-400 leading-snug">
             Avis consultatif — rien n’a été modifié dans la recette.
           </p>
         </div>

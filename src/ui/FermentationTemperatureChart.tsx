@@ -35,12 +35,12 @@ export function FermentationTemperatureChart({ steps, bands = [], pitchTempC }: 
       {[...new Set([0, 1, 2, 3].map(i => Math.round(min + (max - min) * i / 3)))].map(t => <g key={t}><line x1={left} x2={right} y1={y(t)} y2={y(t)} stroke="currentColor" className="text-cave-700" /><text x={left - 6} y={y(t) + 4} textAnchor="end" fill="currentColor" className="text-cave-400" fontSize="12">{number(t)}</text></g>)}
       {known.map(s => <g key={s.index} data-step={s.index} data-start={s.start} data-end={s.end} data-temp={s.tempC}>
         {s.band && (s.band.max === s.band.min ? <line x1={x(s.start!)} x2={x(s.end!)} y1={y(s.band.min)} y2={y(s.band.max)} className="text-ebc-straw/40" stroke="currentColor" /> : <rect data-band="temperature" x={x(s.start!)} width={x(s.end!) - x(s.start!)} y={y(s.band.max)} height={y(s.band.min) - y(s.band.max)} fill="currentColor" className="text-ebc-straw/20" />)}
-        <line x1={x(s.end!)} x2={x(s.end!)} y1={top} y2={bottom} stroke="currentColor" className="text-cave-600" strokeDasharray="3 4" />
+        <line x1={x(s.end!)} x2={x(s.end!)} y1={top} y2={bottom} stroke="currentColor" className="text-cave-400" strokeDasharray="3 4" />
         {s.index > 0 && Number.isFinite(segments[s.index-1].tempC) && <line x1={x(s.start!)} x2={x(s.start!)} y1={y(segments[s.index-1].tempC)} y2={y(s.tempC)} stroke="currentColor" className="text-ebc-straw" strokeWidth="2" />}
         <line data-setpoint="true" x1={x(s.start!)} x2={x(s.end!)} y1={y(s.tempC)} y2={y(s.tempC)} stroke="currentColor" className="text-ebc-straw" strokeWidth="3" />
       </g>)}
       {Number.isFinite(pitchTempC) && <circle cx={x(0)} cy={y(pitchTempC!)} r="4" fill="currentColor" className="text-water" />}
-      {[0, total / 2, total].map((day, i) => <text key={i} x={x(day)} y="190" textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fill="currentColor" className="text-cave-300" fontSize="12">J{number(day)}</text>)}
+      {[0, total / 2, total].map((day, i) => <text key={i} x={x(day)} y="190" textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fill="currentColor" className="text-cave-200" fontSize="12">J{number(day)}</text>)}
       <text x="3" y="12" fill="currentColor" className="text-cave-400" fontSize="12">°C</text>
     </svg></div>
     <p className="text-xs text-cave-400">Trait : consigne · bleu : ensemencement{bands.length > 0 ? ' · bande : plage proposée, confiance faible (non statistique).' : '.'}</p>

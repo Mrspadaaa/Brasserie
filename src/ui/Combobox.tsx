@@ -388,7 +388,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
               inputRef.current?.focus();
             }}
             className="absolute right-10 top-0 bottom-0 w-8 flex items-center justify-center
-                       text-cave-400 hover:text-cave-100 text-xs transition-colors"
+                       text-cave-400 hover:text-cave-50 text-xs transition-colors"
           >
             ✕
           </button>
@@ -414,7 +414,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
             }
           }}
           className="absolute right-0 top-0 bottom-0 w-11 flex items-center justify-center
-                     text-cave-400 hover:text-cave-100 transition-colors"
+                     text-cave-400 hover:text-cave-50 transition-colors"
         >
           <ChevronDown
             className={`w-5 h-5 transition-transform ${open ? 'rotate-180' : ''}`}
@@ -465,7 +465,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
                 {opt.favorite && <Star className="w-4 h-4 fill-ebc-straw text-ebc-straw shrink-0" />}
 
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base text-cave-100 truncate">{opt.label}</span>
+                  <span className="block text-base text-cave-50 truncate">{opt.label}</span>
                   {opt.detail && (
                     <span className="block text-sm text-cave-400 truncate">{opt.detail}</span>
                   )}

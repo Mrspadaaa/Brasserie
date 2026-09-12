@@ -202,7 +202,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             data-bwignore="true"
             rows={12}
             className="w-full px-3 py-2 rounded-control bg-cave-950 border border-cave-700
-                       text-cave-100 text-base leading-relaxed placeholder-cave-600
+                       text-cave-50 text-base leading-relaxed placeholder-cave-400
                        focus:outline-none focus:border-ebc-straw resize-y"
             placeholder={
               'New England IPA\n(5 gallons/19 L, all-grain)\n\nOG = 1.061 FG = 1.012 IBU = 56…'
@@ -243,8 +243,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                 ['ABV', result.abvTarget != null ? `${result.abvTarget} %` : undefined]
               ].map(([k, v]) => (
                 <div key={k as string}>
-                  <dt className="text-sm text-cave-500">{k}</dt>
-                  <dd className="reading text-base text-cave-100">{v ?? '—'}</dd>
+                  <dt className="text-sm text-cave-400">{k}</dt>
+                  <dd className="reading text-base text-cave-50">{v ?? '—'}</dd>
                 </div>
               ))}
             </dl>
@@ -252,7 +252,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {grains.length > 0 && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">
+              <h3 className="text-base font-semibold text-cave-50 mb-1">
                 Grain — {grains.length}
               </h3>
               <ul className="divide-y divide-cave-850">
@@ -262,7 +262,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                       {f.name}
                     </span>
                     {f.colorEbc != null && (
-                      <span className="reading text-sm text-cave-500 shrink-0">
+                      <span className="reading text-sm text-cave-400 shrink-0">
                         {f.colorEbc} EBC
                       </span>
                     )}
@@ -277,13 +277,13 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {others.length > 0 && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Sucres et ajouts</h3>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Sucres et ajouts</h3>
               <ul className="divide-y divide-cave-850">
                 {others.map((f, i) => (
                   <li key={i} className="py-1.5 flex items-baseline gap-3">
                     <span className="min-w-0 flex-1">
                       <span className="block text-base text-cave-200 truncate">{f.name}</span>
-                      <span className="block text-sm text-cave-500">
+                      <span className="block text-sm text-cave-400">
                         {f.kind} · {f.fermentabilityPct ?? 100} % fermentescible
                       </span>
                     </span>
@@ -298,7 +298,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {result.hops.length > 0 && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">
+              <h3 className="text-base font-semibold text-cave-50 mb-1">
                 Houblons — {result.hops.length} ajouts
               </h3>
               <ul className="divide-y divide-cave-850">
@@ -312,7 +312,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                         >
                           {HOP_STAGE[h.stage].label}
                         </span>
-                        <span className="text-sm text-cave-500 truncate">
+                        <span className="text-sm text-cave-400 truncate">
                           {describeMoment(h)}
                           {h.alpha ? ` · ${h.alpha} %` : ' · alpha inconnu'}
                         </span>
@@ -329,7 +329,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {result.yeast && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Levure</h3>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Levure</h3>
               <p className="text-base text-cave-200">
                 {result.yeast.lab && <span className="text-cave-400">{result.yeast.lab} </span>}
                 {result.yeast.name}
@@ -337,7 +337,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                   <span className="text-cave-400"> · {result.yeast.strain}</span>
                 )}
               </p>
-              <p className="text-sm text-cave-500">
+              <p className="text-sm text-cave-400">
                 {[
                   `${result.yeast.qty} ${result.yeast.unit}`,
                   result.yeast.form,
@@ -354,7 +354,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {result.mashSteps.length > 0 && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Empâtage</h3>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Empâtage</h3>
               <ul className="divide-y divide-cave-850">
                 {result.mashSteps.map((s, i) => (
                   <li key={i} className="py-1.5 flex items-baseline gap-3 text-base">
@@ -371,7 +371,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {result.fermentation.length > 0 && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Fermentation</h3>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Fermentation</h3>
               <ul className="divide-y divide-cave-850">
                 {result.fermentation.map((s, i) => (
                   <li key={i} className="py-1.5 flex items-baseline gap-3 text-base">
@@ -388,16 +388,16 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {result.waterNote && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Eau</h3>
-              <p className="text-base text-cave-300 leading-relaxed">{result.waterNote}</p>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Eau</h3>
+              <p className="text-base text-cave-200 leading-relaxed">{result.waterNote}</p>
             </section>
           )}
 
           {result.adjuncts?.length > 0 && (
             <section aria-label="Autres ajouts importés">
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Autres ajouts</h3>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Autres ajouts</h3>
               {result.adjuncts.map((a, i) => (
-                <p key={i} className="text-sm text-cave-300 py-1">
+                <p key={i} className="text-sm text-cave-200 py-1">
                   {a.name} · {a.amount} {a.unit} · {a.step}
                   {a.notes && ` — ${a.notes}`}
                 </p>
@@ -407,13 +407,13 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
           {result.waterPlan && (
             <section
               aria-label="Traitement d’eau importé"
-              className="panel p-3 space-y-1 text-sm text-cave-300"
+              className="panel p-3 space-y-1 text-sm text-cave-200"
             >
-              <h3 className="font-semibold text-cave-100">Eau, sels et acides</h3>
+              <h3 className="font-semibold text-cave-50">Eau, sels et acides</h3>
               {result.waterPlan.sourceSnapshot && <p>{result.waterPlan.sourceSnapshot.name}</p>}
               {(['mash', 'sparge'] as const).map((side) => (
                 <div key={side}>
-                  <p className="text-cave-100">
+                  <p className="text-cave-50">
                     {side === 'mash' ? 'Empâtage' : 'Rinçage'}
                     {result.waterPlan[`${side}WaterL`] != null &&
                       ` · ${result.waterPlan[`${side}WaterL`]} L`}
@@ -434,7 +434,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             </section>
           )}
           {result.waterTarget && (
-            <p className="text-sm text-cave-300">
+            <p className="text-sm text-cave-200">
               Cible d’eau :{' '}
               {Object.entries(result.waterTarget)
                 .map(([k, v]) => `${k} ${v}`)
@@ -446,8 +446,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             result.notesCreation ||
             result.mash?.mashoutTempC != null ||
             result.carboTarget) && (
-            <details className="text-sm text-cave-300">
-              <summary className="cursor-pointer py-2 text-cave-100">
+            <details className="text-sm text-cave-200">
+              <summary className="cursor-pointer py-2 text-cave-50">
                 Consignes et notes importées
               </summary>
               {result.carboTarget && <p>Carbonatation : {result.carboTarget}</p>}
@@ -466,7 +466,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
           {result.instructions && (
             <section>
-              <h3 className="text-base font-semibold text-cave-100 mb-1">Déroulé</h3>
+              <h3 className="text-base font-semibold text-cave-50 mb-1">Déroulé</h3>
               <p className="text-sm text-cave-400 leading-relaxed whitespace-pre-line line-clamp-6">
                 {result.instructions}
               </p>

@@ -134,13 +134,13 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
               }}
               disabled={disabled || !hasVolume}
               pad
-              className="w-14 shrink-0 min-h-[38px] px-1 rounded-control
+              className="w-14 shrink-0 min-h-touch px-1 rounded-control
                          bg-cave-950 border border-cave-700
                          reading text-base font-semibold text-water text-center
                          focus:outline-none focus:border-ebc-straw disabled:opacity-40"
             />
             <span className="reading-unit shrink-0 text-2xs">L</span>
-            <span className="text-2xs text-cave-500 shrink-0">
+            <span className="text-2xs text-cave-400 shrink-0">
               {hasVolume ? (
                 <>
                   + <span className="reading text-cave-400">{reseauL}</span> réseau

@@ -83,7 +83,7 @@ export function RecipeCard({
       <summary className="list-none cursor-pointer min-h-touch flex items-center justify-between text-sm text-cave-400">Détails et actions<ChevronRight size={16} className="group-open/card:rotate-90"/></summary>
       <div className="pb-3 space-y-2">
         <p className="text-sm text-hop">{entry.hops.length ? entry.hops.join(', ') : 'Sans houblon renseigné'}</p>
-        <p className="text-sm text-cave-300">{signature.yeast || 'Levure à préciser'} · {number(signature.grainKg)} kg de grain · {number(signature.dryHopPerL,2)} g/L à cru</p>
+        <p className="text-sm text-cave-200">{signature.yeast || 'Levure à préciser'} · {number(signature.grainKg)} kg de grain · {number(signature.dryHopPerL,2)} g/L à cru</p>
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" className="min-h-touch text-sm text-ebc-straw px-1" aria-label={`Modifier la recette ${entry.name}`} onClick={() => onEdit(recipe)}>Modifier</button>
           {entry.linkedBatches.length > 0 ? <button type="button" className="min-h-touch text-sm text-water px-1" aria-label={`Voir les brassins de ${entry.name}, V${entry.version}`} onClick={() => onHistory(entry)}>{entry.linkedBatches.length} brassin{entry.linkedBatches.length > 1 ? 's' : ''}</button> : <span className="text-sm text-cave-400">Sans brassin associé</span>}
@@ -246,7 +246,7 @@ export function BatchCard({
       <button type="button" className="min-w-0 flex-1 text-left min-h-touch" aria-label={`Ouvrir le brassin ${entry.id}`} onClick={() => onOpen(batch)}>
         <span className="flex flex-wrap items-center justify-between gap-1"><span className="text-xs text-cave-400">{entry.id}{entry.archivedAt ? ' · Archivé' : ''}</span><span className={`text-xs rounded-full px-2 py-0.5 border ${status.chip}`}>{status.label}</span></span>
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1"><strong className="text-base font-semibold text-cave-50 leading-snug">{entry.name}</strong>{entry.style && <BeerStyleTag style={entry.style}/>}</span>
-        <span className="block text-sm text-cave-300 mt-1">{dayLabel} · {active && readings.latest !== undefined ? `SG ${number(readings.latest,3)}` : `${number(entry.volumeL)} L prévus`}</span>
+        <span className="block text-sm text-cave-200 mt-1">{dayLabel} · {active && readings.latest !== undefined ? `SG ${number(readings.latest,3)}` : `${number(entry.volumeL)} L prévus`}</span>
       </button>
       <FavoriteToggle active={entry.favorite} onToggle={() => onFavorite(entry)} label={`le brassin ${entry.id}`}/>
     </div>

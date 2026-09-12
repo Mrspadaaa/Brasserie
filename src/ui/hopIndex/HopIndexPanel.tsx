@@ -33,7 +33,7 @@ export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVari
   return <div className="divide-y divide-cave-800">
     {facts.filter(f => f.measurement || f.documentary || ['alpha', 'totalOil', '3mhCys', '3mhGsh', '4mmpFree'].includes(f.analyte)).map(f => <details key={f.analyte} className="py-3">
       <summary className="cursor-pointer grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
-        <span className="text-cave-100">{HOP_ANALYTE_LABELS[f.analyte]}</span>
+        <span className="text-cave-50">{HOP_ANALYTE_LABELS[f.analyte]}</span>
         <span className="font-mono text-right text-cave-50">{formatHopMeasurement(f.measurement)}</span>
         <span className="col-span-2 flex flex-wrap gap-2"><BrewTag tone={f.origin === 'lot' ? 'done' : f.origin === 'variety' ? 'info' : 'neutral'}>{f.origin === 'lot' ? 'COA du lot' : f.origin === 'variety' ? 'Référence variété' : 'Inconnu'}</BrewTag><BrewTag tone={f.confidence === 'high' ? 'done' : 'neutral'}>Confiance {({ low: 'faible', medium: 'moyenne', high: 'élevée' })[f.confidence]}</BrewTag></span>
       </summary>
@@ -157,7 +157,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
   };
 
   return <section aria-label="Index houblon" className="px-1 space-y-2 sm:space-y-5">
-    {!mobile&&<div className="space-y-2"><h2 className="text-xl font-semibold text-cave-50">Index houblon</h2>
+    {!mobile&&<div className="space-y-2"><h2 className="text-lg font-semibold text-cave-50">Index houblon</h2>
       <p className="text-cave-200 max-w-2xl">Compare les sources, puis précise ton lot et son analyse.</p>
       <div className="flex flex-wrap gap-2"><BrewTag tone="info">{varieties.filter(v => !v.archived).length} références</BrewTag><BrewTag>{lots.filter(l => !l.archived).length} lots</BrewTag><BrewTag>{lots.filter(l => !l.archived && l.analysis.some(m => m.kind !== 'unknown')).length} lots analysés</BrewTag></div>
     </div>}
@@ -171,7 +171,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     </div>
     <details className="text-sm text-cave-400"><summary className="cursor-pointer min-h-touch flex items-center">Import, export et archives</summary><div className="flex flex-wrap gap-2 py-2">
       <Button onClick={exportIndex}>Exporter l’index</Button>
-      <label className="inline-flex items-center min-h-touch px-4 border border-cave-700 rounded-control cursor-pointer text-cave-100">Importer un index
+      <label className="inline-flex items-center min-h-touch px-4 border border-cave-700 rounded-control cursor-pointer text-cave-50">Importer un index
         <input aria-label="Importer un index" type="file" accept=".json,application/json" className="sr-only" onChange={e => { importIndex(e.target.files?.[0]); e.target.value = ''; }} />
       </label>
       <label className="flex gap-2 items-center text-sm text-cave-400 min-h-touch"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)} />Inclure les variétés archivées</label>
@@ -242,7 +242,7 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
           </div>
           <Field label="Stockage et conditionnement" hint="Informations connues sur ce lot. Aucune correction d’arôme automatique selon l’âge ou la région."><TextInput value={editor.value.storageNotes ?? ''} onChange={storageNotes => setEditor({ kind: 'lot', value: { ...editor.value, storageNotes } })} /></Field>
           {editor.value.referenceOnly && <p className="text-sm text-water">Cette fiche conserve un échantillon publié. Pour un lot acheté, crée une nouvelle fiche avec son propre COA.</p>}
-          <label className="block border border-cave-700 rounded-control p-3 text-cave-100">{busy ? 'Lecture du COA…' : 'Lire un COA avec le compagnon'}
+          <label className="block border border-cave-700 rounded-control p-3 text-cave-50">{busy ? 'Lecture du COA…' : 'Lire un COA avec le compagnon'}
             <input type="file" aria-label="COA à lire" accept="image/*,application/pdf" disabled={busy} className="block mt-2 max-w-full" onChange={e => { readCoa(e.target.files?.[0]); e.target.value = ''; }} />
           </label>
           {coaProposal && <div className="border border-cave-700 p-3 space-y-2"><p>Mesures proposées : {coaProposal.analysis?.map(m => HOP_ANALYTE_LABELS[m.analyte]).join(', ') || 'aucune'}.</p><Button onClick={applyCoa}>Compléter les champs absents avec la transcription</Button></div>}

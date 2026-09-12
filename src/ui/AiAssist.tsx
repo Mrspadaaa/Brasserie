@@ -162,7 +162,7 @@ export const AiAssist: React.FC<AiAssistProps> = ({
       )}
 
       {missing.length > 0 && !facts && !busy && (
-        <p className="text-sm text-cave-500 leading-snug">
+        <p className="text-sm text-cave-400 leading-snug">
           Manque : {missing.join(', ')}. Ces valeurs sont publiées par le fabricant.
         </p>
       )}
@@ -179,18 +179,18 @@ export const AiAssist: React.FC<AiAssistProps> = ({
           <div className="flex items-start gap-2">
             <Sparkles className="w-4 h-4 text-ebc-straw shrink-0 mt-1" />
             <div className="min-w-0">
-              <p className="text-base text-cave-100">{facts.name}</p>
+              <p className="text-base text-cave-50">{facts.name}</p>
               {/* La source est le cœur du dispositif : sans elle, on ne saurait
                   pas distinguer une donnée retrouvée d'une donnée inventée. */}
-              <p className="text-sm text-cave-500 leading-snug">{facts.source}</p>
+              <p className="text-sm text-cave-400 leading-snug">{facts.source}</p>
             </div>
           </div>
 
           <dl className="grid grid-cols-2 gap-3">
             {rows.map((f) => (
               <div key={String(f.key)}>
-                <dt className="text-sm text-cave-500">{f.label}</dt>
-                <dd className="reading text-base text-cave-100">
+                <dt className="text-sm text-cave-400">{f.label}</dt>
+                <dd className="reading text-base text-cave-50">
                   {String(facts[f.key])}
                   {f.unit ? ` ${f.unit}` : ''}
                 </dd>

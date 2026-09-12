@@ -1,4 +1,5 @@
 import { RecipeDisclosure, revealRecipeErrors } from '../ui/RecipeDisclosure';
+import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import { MaltDetails } from '../ui/MaltDetails';
 import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -171,11 +172,11 @@ const USE_TONE: Record<Fermentable['use'], string> = {
  * parce que les colorier toutes reviendrait à n'en signaler aucune.
  */
 const KIND_TONE: Record<FermentableKind, string> = {
-  grain: 'border-cave-700 text-cave-300',
-  sucre: 'border-cave-700 text-cave-300',
+  grain: 'border-cave-700 text-cave-200',
+  sucre: 'border-cave-700 text-cave-200',
   lactose: 'text-ebc-amber border-ebc-amber/40 bg-ebc-amber/10',
-  fruit: 'border-cave-700 text-cave-300',
-  extrait: 'border-cave-700 text-cave-300'
+  fruit: 'border-cave-700 text-cave-200',
+  extrait: 'border-cave-700 text-cave-200'
 };
 
 /**
@@ -199,7 +200,14 @@ const KIND_DEF: Record<
     use: Fermentable['use'];
     fermentability: number;
     ppg?: number;
-    hint: string;
+    /**
+     * Ce qu'il faut savoir sur cette famille, quand il y a quelque chose à dire.
+     *
+     * Optionnel : « Grain — passe par la maische » n'apprend rien à un brasseur
+     * et coûtait une ligne sur chaque écran. Une famille dont le comportement va
+     * de soi n'a pas de note.
+     */
+    hint?: string;
     /** Rayons du stock proposés pour cette famille. */
     stock: string[];
     /** Catégorie donnée à un ingrédient créé depuis cette famille. */
@@ -210,7 +218,6 @@ const KIND_DEF: Record<
     label: 'Grain',
     use: 'empatage',
     fermentability: 100,
-    hint: 'Passe par la maische.',
     stock: ['Malt', 'Céréale'],
     newCat: 'Malt'
   },
@@ -1160,43 +1167,38 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   };
 
   const mobileHeader = (
-    <div className="px-2.5 py-1.5 flex items-center gap-2 bg-cave-950">
-      {/* Bouton retour compact + Barre de progression des 6 étapes + Bouton Import */}
+    <div className="px-2 py-0.5 bg-cave-950">
+      <div className="flex items-center gap-2">
+      {/* Les actions du titre gardent leur propre zone tactile. */}
       <button
         type="button"
         onClick={onClose}
         aria-label="Fermer"
-        className="w-7 h-7 -ml-1 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+        className="w-11 h-11 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
 
-      <nav aria-label="Étapes" className="flex-1 flex gap-1 items-center">
-        {STEPS.map((s, i) => (
-          <button
-            key={s.id}
-            type="button"
-            disabled={hopGuideBusy}
-            onClick={() => setStep(s.id)}
-            aria-current={s.id === step ? 'step' : undefined}
-            className={`flex-1 h-1.5 rounded-full transition-colors ${
-              i <= stepIndex ? 'bg-ebc-straw' : 'bg-cave-800'
-            }`}
-          >
-            <span className="sr-only">{s.label}</span>
-          </button>
-        ))}
-      </nav>
+      <WizardStepName steps={STEPS} currentIndex={stepIndex} />
 
       <button
         type="button"
         onClick={() => setImporting(true)}
         aria-label="Coller une recette"
-        className="w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"
+        className="w-11 h-11 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"
       >
         <ClipboardPaste className="w-3.5 h-3.5" />
       </button>
       <BrewerPageShortcut />
+      </div>
+
+      {/* Le fil seul sur son rang : chaque segment passe de 30 px de large à ~50. */}
+      <WizardStepRail
+        steps={STEPS}
+        currentIndex={stepIndex}
+        onSelect={(id) => setStep(id as StepId)}
+        disabled={hopGuideBusy}
+      />
     </div>
   );
 
@@ -1207,24 +1209,19 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       onClose={onClose}
       mobileHeader={mobileHeader}
       actions={<BrewerPageShortcut />}
-      /* Le fil d'étapes vit dans l'en-tête : il ne coûte plus une rangée. */
+      /*
+       * Le fil d'étapes vit dans l'en-tête. Sur ordinateur, `PageShell` affiche
+       * déjà le nom de l'étape en sous-titre : la piste seule suffit ici, et
+       * elle reste un indicateur — on saute d'une étape à l'autre par le nom,
+       * pas en visant une barre de 6 px.
+       */
       progress={
-        <nav aria-label="Étapes" className="flex gap-1">
-          {STEPS.map((s, i) => (
-            <button
-              key={s.id}
-              type="button"
-              disabled={hopGuideBusy}
-              onClick={() => setStep(s.id)}
-              aria-current={s.id === step ? 'step' : undefined}
-              className={`flex-1 h-1 sm:h-1.5 rounded-full transition-colors ${
-                i <= stepIndex ? 'bg-ebc-straw' : 'bg-cave-800'
-              }`}
-            >
-              <span className="sr-only">{s.label}</span>
-            </button>
-          ))}
-        </nav>
+        <div aria-hidden className="h-1 w-full overflow-hidden rounded-full bg-cave-800">
+          <div
+            className="h-full rounded-full bg-cave-50 transition-[width] duration-300 ease-out"
+            style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }}
+          />
+        </div>
       }
       footer={
         step === 'recap' ? (
@@ -1232,15 +1229,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <button
               type="button"
               onClick={() => onSave(build(), false)}
-              className="flex-1 min-h-[40px] sm:min-h-touch rounded-control border border-cave-700
-                         text-cave-100 text-xs sm:text-sm font-semibold transition-colors hover:bg-cave-850"
+              className="flex-1 min-h-touch rounded-control border border-cave-700
+                         text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
             >
               Enregistrer la recette
             </button>
             <button
               type="button"
               onClick={() => onSave(build(), true)}
-              className="flex-1 min-h-[40px] sm:min-h-touch rounded-control bg-ebc-straw text-cave-950 text-xs sm:text-sm font-semibold transition-colors hover:brightness-105"
+              className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950 text-sm font-semibold transition-colors hover:brightness-105"
             >
               Lancer le brassin
             </button>
@@ -1322,8 +1319,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             type="button"
             onClick={() => setImporting(true)}
-            className="w-full min-h-[36px] sm:min-h-touch rounded-control border border-ebc-straw/50
-                       text-ebc-straw text-xs sm:text-sm font-medium flex items-center justify-center gap-2 py-1.5"
+            className="min-h-touch rounded-control border border-ebc-straw/50 px-3
+                       text-ebc-straw text-sm font-medium flex items-center justify-center gap-2 py-1.5"
           >
             <ClipboardPaste className="w-4 h-4 sm:w-5 sm:h-5" />
             Coller une recette trouvée
@@ -1413,7 +1410,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step === 'fermentescibles' && (
         <Section
           title="Fermentescibles"
-          hint="La famille décide de ce que la levure pourra en faire — le lactose ne fermente pas, le sucre à 100 %."
+          hint="Le lactose ne fermente pas ; le sucre fermente à 100 %."
         >
           <div className="space-y-2 sm:space-y-3">
             {/*
@@ -1434,7 +1431,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 tone={(k) => KIND_TONE[k]}
               />
               {!tight && (
-                <span className="text-2xs text-cave-500 leading-snug min-w-0">
+                <span className="text-2xs text-cave-400 leading-snug min-w-0">
                   {KIND_DEF[addKind].hint}
                 </span>
               )}
@@ -1454,9 +1451,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             />
 
             {fermentables.length === 0 ? (
-              <p className="text-xs sm:text-sm text-cave-500 py-1">
-                Rien encore. Le grain se pose ici, puis les sucres et le lactose si la recette
-                en demande.
+              <p className="text-sm text-cave-400 py-1">
+                Rien encore.
               </p>
             ) : (
               <ul className="space-y-1 sm:space-y-2">
@@ -1468,7 +1464,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0 flex-1">
-                          <span className="block text-sm sm:text-base font-semibold text-cave-100 truncate">{f.name}</span>
+                          <span className="block text-sm font-semibold text-cave-50 truncate">{f.name}</span>
                           {/*
                             ⚠️ La famille NE TOURNE PAS. Elle l'a fait un temps,
                             et c'était une faute : rien n'empêchait de classer un
@@ -1488,7 +1484,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             Le MOMENT, lui, tourne — comme l'étape d'un houblon.
                           */}
                           <span className="flex items-center gap-1 flex-wrap mt-0.5">
-                            {f.kind !== 'grain' && <span className="text-2xs text-cave-300">{KIND_DEF[f.kind].label}</span>}
+                            {f.kind !== 'grain' && <span className="text-2xs text-cave-200">{KIND_DEF[f.kind].label}</span>}
                             <CycleTag
                               name={`Moment de ${f.name}`}
                               value={f.use}
@@ -1497,7 +1493,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               label={(u) => USE_LABEL[u]}
                               tone={(u) => USE_TONE[u]}
                             />
-                            <span className="text-2xs text-cave-500 truncate">
+                            <span className="text-2xs text-cave-400 truncate">
                               {f.kind === 'grain'
                                 ? totalGrist > 0
                                   ? `${((f.weightKg / totalGrist) * 100).toFixed(0)} % du grain`
@@ -1523,7 +1519,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             type="button"
                             onClick={() => setFermentables(fermentables.filter((_, j) => j !== i))}
                             aria-label={`Retirer ${f.name}`}
-                            className="w-8 h-8 rounded-control text-cave-500 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
+                            className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1581,7 +1577,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
-            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-lg font-semibold text-cave-100 pt-3">Mes ajouts de houblons</h3>
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-lg font-semibold text-cave-50 pt-3">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
               layout="grid"
@@ -1589,7 +1585,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               onChange={setHopStage}
               options={HOP_STAGES.map((s) => ({ value: s, label: HOP_STAGE[s].label }))}
             />
-            {!tight && <p className="text-2xs sm:text-sm text-cave-500 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
+            {!tight && <p className="text-2xs sm:text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
 
             <HopIngredientPicker
               items={stockItems}
@@ -1606,7 +1602,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
             <HopBitternessPanel hops={hops} volumeL={volumeL} og={og || null} boilMin={boilMin} hot={bitterness}/>
             {hops.length === 0 ? (
-              <p className="text-xs sm:text-sm text-cave-500 py-1">Aucun houblon.</p>
+              <p className="text-sm text-cave-400 py-1">Aucun houblon.</p>
             ) : (
               <ul className="space-y-1.5 sm:space-y-2">
                 {hops.map((h, i) => {
@@ -1615,7 +1611,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                     <li key={`${h.name}-${h.stage}-${i}`} className="panel p-2 sm:p-2.5 flex flex-col gap-1.5">
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0 flex-1">
-                          <span className="block text-sm sm:text-base font-semibold text-cave-100 truncate">{h.name}</span>
+                          <span className="block text-sm font-semibold text-cave-50 truncate">{h.name}</span>
                           {/*
                             ⚠️ Le moment ne s'écrit plus DEUX FOIS. Quand la
                             carte porte ses champs — durée, température, jour —
@@ -1647,7 +1643,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               </span>
                             )}
                             {style.bitters && bitterness.additions[i].ibu != null && (
-                              <span className="text-2xs text-cave-300 font-mono">
+                              <span className="text-2xs text-cave-200 font-mono">
                                 {bitterness.additions[i].ibu!.toFixed(1)} IBU
                               </span>
                             )}
@@ -1670,7 +1666,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             type="button"
                             onClick={() => setHops(hops.filter((_, j) => j !== i))}
                             aria-label={`Retirer ${h.name}`}
-                            className="w-8 h-8 rounded-control text-cave-500 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
+                            className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -1776,7 +1772,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   onValue={(v) => patchHop(i, { dayOffset: v })}
                                 />
                               </div>
-                              <span className="text-2xs text-cave-500 shrink-0">
+                              <span className="text-2xs text-cave-400 shrink-0">
                                 0 = à l’ensemencement
                               </span>
                             </div>
@@ -1896,7 +1892,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         type="button"
                         onClick={() => setMashSteps(mashSteps.filter((_, j) => j !== i))}
                         aria-label={`Retirer le palier ${s.name}`}
-                        className="w-8 h-8 rounded-control text-cave-500 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
+                        className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1961,8 +1957,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 onClick={() =>
                   setMashSteps([...mashSteps, { name: 'Palier', tempC: 67, durationMin: 30 }])
                 }
-                className="w-full min-h-[36px] sm:min-h-touch rounded-control border border-cave-700
-                           text-cave-200 text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 py-1.5 hover:bg-cave-850 transition-colors"
+                className="w-full min-h-touch rounded-control border border-cave-700
+                           text-cave-200 text-sm font-medium flex items-center justify-center gap-1.5 py-1.5 hover:bg-cave-850 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Ajouter un palier
@@ -2019,7 +2015,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                           >
                             {phase.label}
                           </span>
-                          <span className="block text-sm sm:text-base text-cave-100 font-medium truncate mt-0.5">
+                          <span className="block text-sm sm:text-base text-cave-50 font-medium truncate mt-0.5">
                             {s.name}
                           </span>
                         </span>
@@ -2027,7 +2023,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                           type="button"
                           onClick={() => setFerment(ferment.filter((_, j) => j !== i))}
                           aria-label={`Retirer ${s.name}`}
-                          className="w-8 h-8 rounded-control text-cave-500 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
+                          className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -2148,8 +2144,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             type="button"
             onClick={() => setStep('recap')}
-            className="w-full mt-4 min-h-[40px] sm:min-h-touch rounded-control border border-cave-700
-                       text-cave-200 text-xs sm:text-sm flex items-center justify-center gap-2
+            className="w-full mt-4 min-h-touch rounded-control border border-cave-700
+                       text-cave-200 text-sm flex items-center justify-center gap-2
                        transition-colors hover:bg-cave-850"
           >
             <ClipboardList className="w-4 h-4" />
@@ -2305,7 +2301,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             onClick={() => go(-1)}
             disabled={stepIndex === 0 || hopGuideBusy}
             className="min-h-touch-sm px-3 rounded-control border border-cave-800
-                       text-cave-400 text-2xs disabled:opacity-30 transition-colors hover:bg-cave-850"
+                       text-cave-400 text-sm disabled:opacity-30 transition-colors hover:bg-cave-850"
           >
             Retour
           </button>
@@ -2313,8 +2309,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             type="button"
             onClick={() => go(1)}
             disabled={!canAdvance || hopGuideBusy}
-            className="flex-1 min-h-touch-sm rounded-control bg-ebc-straw text-cave-950
-                       text-2xs font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
+            className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950
+                       text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
           >
             {canAdvance ? `Suivant — ${STEPS[stepIndex + 1]?.label ?? ''}` : 'Donne un nom à la recette'}
           </button>

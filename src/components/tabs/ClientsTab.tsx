@@ -206,9 +206,9 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
                 <div className="px-3 pb-3 space-y-3 border-t border-cave-800 pt-3 text-sm">
                   <div className="flex items-center justify-between gap-2"><span className="text-cave-400">{c.id} · {stats.status}</span><button type="button" aria-label={`Modifier ${c.name}`} onClick={()=>setEditingClient(c)} className="min-h-touch px-3 rounded-control bg-cave-850 text-ebc-straw">Modifier</button></div>
                   {c.email&&<a className="block min-h-touch py-3 break-all text-cave-200" href={`mailto:${c.email}`}>{c.email}</a>}
-                  {c.phone&&<p className="text-cave-300">{c.phone}</p>}
+                  {c.phone&&<p className="text-cave-200">{c.phone}</p>}
                   {c.notes&&<p className="text-cave-400 break-words">{c.notes}</p>}
-                  <p className="text-cave-300">{stats.totalSales.toLocaleString('fr-CH')} CHF de ventes depuis le début · {stats.orderCount} vente(s){stats.lastOrder?` · dernière le ${stats.lastOrder}`:''}</p>
+                  <p className="text-cave-200">{stats.totalSales.toLocaleString('fr-CH')} CHF de ventes depuis le début · {stats.orderCount} vente(s){stats.lastOrder?` · dernière le ${stats.lastOrder}`:''}</p>
                   <div className="flex flex-wrap gap-2">
                     {c.phone&&<><a href={`tel:${c.phone}`} className="min-h-touch flex-1 px-3 rounded-control bg-cave-850 flex items-center justify-center gap-1"><Phone size={16}/>Appeler</a><a href={`https://wa.me/${c.phone.replace(/[^0-9]/g,'')}`} target="_blank" rel="noreferrer" className="min-h-touch flex-1 px-3 rounded-control bg-cave-850 flex items-center justify-center">WhatsApp</a></>}
                     <button type="button" onClick={()=>handleGenerateInvoicePdf(c)} className="min-h-touch flex-1 px-3 rounded-control bg-ebc-straw/10 text-ebc-straw font-semibold">Facturer</button>
@@ -223,7 +223,7 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono text-sm text-cave-500 font-bold">{c.id}</span>
+                      <span className="font-mono text-sm text-cave-400 font-bold">{c.id}</span>
                       <h4 className="font-bold text-sm text-cave-50">{c.name}</h4>
                       <span className={`text-footnote font-semibold px-2 py-0.5 rounded-full border ${
                         c.type === 'Pro'
@@ -258,8 +258,8 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
                       <div className="text-sm font-black text-ebc-straw mt-1 font-mono">
                         {stats.totalSales.toLocaleString('fr-CH')} CHF
                       </div>
-                      <div className="text-footnote text-cave-500">Ventes depuis le début</div>
-                      <div className="text-footnote text-cave-500 mt-0.5">
+                      <div className="text-footnote text-cave-400">Ventes depuis le début</div>
+                      <div className="text-footnote text-cave-400 mt-0.5">
                         {stats.orderCount > 0
                           ? `${stats.orderCount} vente${stats.orderCount > 1 ? 's' : ''} · ${stats.lastOrder}`
                           : 'Aucune vente'}
@@ -314,10 +314,10 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
       {subTab === 'ofdf' && (
         <div className="space-y-4 rounded-3xl border border-cave-800 bg-cave-900 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-lg font-bold">Réserve pour l’impôt sur la bière</h3><label className="text-sm">Année <select aria-label="Année de réserve OFDF" value={taxYear} onChange={e => setTaxYear(Number(e.target.value))} className="rounded-xl bg-cave-950 p-2">{Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i).map(year => <option key={year}>{year}</option>)}</select></label></div>
-          <p className="text-sm text-cave-300 leading-relaxed">{taxReport.warning}</p>
+          <p className="text-sm text-cave-200 leading-relaxed">{taxReport.warning}</p>
           <div className="rounded-2xl bg-cave-950 p-4"><div className="text-sm text-cave-400">Pour {taxReport.totalVolumeL} litres conditionnés</div><div className="mt-2 text-2xl font-black text-ebc-straw">{taxReport.estimateLowCHF === taxReport.estimateHighCHF ? taxReport.estimateHighCHF.toFixed(2) : `${taxReport.estimateLowCHF.toFixed(2)} – ${taxReport.estimateHighCHF.toFixed(2)}`} CHF</div><p className="mt-2 text-sm text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${taxReport.reductionPct} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>{taxReport.missingPlatoCount > 0 && <p className="mt-2 text-sm text-ebc-gold">Densité initiale manquante pour {taxReport.missingPlatoCount} brassin(s) : fourchette entre les catégories légère et forte.</p>}</div>
-          <MobileDetails title="Comprendre le calcul et les démarches"><div className="space-y-2 text-sm text-cave-300"><p>Barème par hectolitre : 16,88 CHF jusqu’à 10 °P ; 25,32 CHF de 10,1 à 14 °P ; 33,76 CHF dès 14,1 °P.</p><p>Le taux annuel de réduction est communiqué par l’OFDF. Il ne se déduit pas du seul volume de cette période.</p><p>Selon le régime attribué : déclaration sous 20 jours et paiement sous 30 jours après la fin du trimestre ou de l’année, via Taxas.</p><p>TVA de la bière alcoolisée : {config.fiscal.isTvaRegistered ? 'taux normal de 8,1 %.' : 'brasserie non assujettie, aucune TVA facturée.'}</p></div></MobileDetails>
-          <div className="flex flex-wrap gap-3"><button onClick={handleCopyOfdfValues} className="min-h-[44px] rounded-xl bg-ebc-straw px-4 py-2 font-bold text-cave-950">{copiedTax ? 'Estimation copiée' : 'Copier cette estimation'}</button><a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="min-h-[44px] px-3 py-2 text-ebc-straw underline">Ouvrir Taxas</a><a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer" className="min-h-[44px] px-3 py-2 text-cave-300 underline">Directives OFDF</a></div>
+          <MobileDetails title="Comprendre le calcul et les démarches"><div className="space-y-2 text-sm text-cave-200"><p>Barème par hectolitre : 16,88 CHF jusqu’à 10 °P ; 25,32 CHF de 10,1 à 14 °P ; 33,76 CHF dès 14,1 °P.</p><p>Le taux annuel de réduction est communiqué par l’OFDF. Il ne se déduit pas du seul volume de cette période.</p><p>Selon le régime attribué : déclaration sous 20 jours et paiement sous 30 jours après la fin du trimestre ou de l’année, via Taxas.</p><p>TVA de la bière alcoolisée : {config.fiscal.isTvaRegistered ? 'taux normal de 8,1 %.' : 'brasserie non assujettie, aucune TVA facturée.'}</p></div></MobileDetails>
+          <div className="flex flex-wrap gap-3"><button onClick={handleCopyOfdfValues} className="min-h-[44px] rounded-xl bg-ebc-straw px-4 py-2 font-bold text-cave-950">{copiedTax ? 'Estimation copiée' : 'Copier cette estimation'}</button><a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="min-h-[44px] px-3 py-2 text-ebc-straw underline">Ouvrir Taxas</a><a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer" className="min-h-[44px] px-3 py-2 text-cave-200 underline">Directives OFDF</a></div>
         </div>
       )}
       {/* 4. SUBTAB: PRICING & MARGINS */}
@@ -360,15 +360,15 @@ Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirm
 
               {!mobile&&<div className="grid grid-cols-3 gap-1.5 bg-cave-950/70 p-2.5 rounded-xl text-center text-sm">
                 <div>
-                  <div className="text-footnote text-cave-500">Matières</div>
+                  <div className="text-footnote text-cave-400">Matières</div>
                   <div className="font-semibold text-cave-200 font-mono">{t.costIngredients} CHF</div>
                 </div>
                 <div>
-                  <div className="text-footnote text-cave-500">Fixes</div>
+                  <div className="text-footnote text-cave-400">Fixes</div>
                   <div className="font-semibold text-cave-200 font-mono">{t.costFixed} CHF</div>
                 </div>
                 <div>
-                  <div className="text-footnote text-cave-500">Coût total</div>
+                  <div className="text-footnote text-cave-400">Coût total</div>
                   <div className="font-bold text-alert font-mono">{t.costTotal} CHF</div>
                 </div>
               </div>}

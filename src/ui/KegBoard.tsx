@@ -166,7 +166,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
               )}
 
               <section className="space-y-3">
-                <h3 className="text-base font-semibold text-cave-100">Étape suivante</h3>
+                <h3 className="text-base font-semibold text-cave-50">Étape suivante</h3>
 
                 {selected.state === 'propre' ? (
                   fillable.length === 0 ? (
@@ -185,7 +185,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
                             setSelected(null);
                           }}
                           className="w-full min-h-touch px-4 rounded-control bg-cave-850
-                                     border border-cave-700 text-left text-base text-cave-100
+                                     border border-cave-700 text-left text-base text-cave-50
                                      hover:border-ebc-straw transition-colors"
                         >
                           {b.name}

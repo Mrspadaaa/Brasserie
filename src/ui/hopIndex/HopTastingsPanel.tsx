@@ -30,7 +30,7 @@ export function HopTastingsPanel({ batch }: { batch?: Batch }) {
   };
   const entries = tastings.filter(t => !batch || t.batchId === batch.id).sort((a, b) => b.date.localeCompare(a.date));
   return <section className="space-y-4" aria-label="Dégustations aromatiques">
-    <h2 className="text-xl font-semibold text-cave-50">Prédit et dégusté</h2>
+    <h2 className="text-lg font-semibold text-cave-50">Prédit et dégusté</h2>
     <p className="text-cave-200">Conserve une observation même si la recette, la levure ou le timing d’une bière commerciale sont inconnus. L’écart compare la dégustation à une prédiction déjà figée.</p>
     <Button onClick={start}>Noter une dégustation{batch ? ' du brassin' : ' commerciale'}</Button>
     {entries.map(t => {

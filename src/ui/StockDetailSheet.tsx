@@ -100,7 +100,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             {level.perBatch !== null && (
               <p className="text-sm text-cave-400 leading-relaxed">
                 Un brassin consomme environ{' '}
-                <span className="font-mono text-cave-100">
+                <span className="font-mono text-cave-50">
                   {Units.format(level.perBatch, draft.unit)}
                 </span>{' '}
                 de cet article
@@ -125,7 +125,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
           */}
           <section className="panel p-3 flex items-center justify-between gap-3">
             <span className="min-w-0">
-              <span className="block text-sm text-cave-500">Stock actuel</span>
+              <span className="block text-sm text-cave-400">Stock actuel</span>
               <span className="reading text-xl">
                 {Units.format(item.currentStock, item.unit)}
               </span>
@@ -134,7 +134,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
               type="button"
               onClick={() => onCorrectInventory(item)}
               className="min-h-touch px-4 rounded-control border border-cave-700
-                         text-sm text-cave-100 hover:border-ebc-straw hover:text-ebc-straw
+                         text-sm text-cave-50 hover:border-ebc-straw hover:text-ebc-straw
                          transition-colors shrink-0"
             >
               Corriger l’inventaire
@@ -150,7 +150,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
               onClose();
             }}
           >
-            <h3 className="text-base font-semibold text-cave-100">Fiche article</h3>
+            <h3 className="text-base font-semibold text-cave-50">Fiche article</h3>
 
             <Field label="Nom" htmlFor="stock-name">
               <TextInput
@@ -329,7 +329,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
               </>
             )}
 
-            <p className="text-sm text-cave-600">
+            <p className="text-sm text-cave-400">
               Entrée passe au champ suivant · Ctrl+Entrée enregistre
             </p>
           </FormNav>

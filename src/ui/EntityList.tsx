@@ -110,7 +110,7 @@ export function EntityList<T>({
       {showSearch && (
         <div className="shrink-0 px-1 pb-2 sm:pb-3 flex gap-2 items-center">
           <div className="relative min-w-0 flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-cave-600 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-cave-400 pointer-events-none" />
             <input
               type="text"
               name="entity_filter_search"
@@ -125,8 +125,8 @@ export function EntityList<T>({
               onChange={(e) => setQuery(e.target.value)}
               placeholder={searchPlaceholder}
               className="w-full min-h-touch pl-11 pr-11 rounded-control
-                         bg-cave-900 border border-cave-800 text-cave-100 text-base
-                         placeholder-cave-600 focus:outline-none focus:border-ebc-straw
+                         bg-cave-900 border border-cave-800 text-cave-50 text-base
+                         placeholder-cave-400 focus:outline-none focus:border-ebc-straw
                          transition-colors"
             />
             {query && (
@@ -134,7 +134,7 @@ export function EntityList<T>({
                 onClick={() => setQuery('')}
                 aria-label="Effacer la recherche"
                 className="absolute right-1 top-1/2 -translate-y-1/2 touch-target
-                           text-cave-400 hover:text-cave-100 rounded-control"
+                           text-cave-400 hover:text-cave-50 rounded-control"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -167,10 +167,10 @@ export function EntityList<T>({
               className="px-1 py-2 bg-cave-950/95 backdrop-blur-sm
                          flex items-baseline justify-between gap-2 border-b border-cave-800"
             >
-              <span className="text-base font-semibold text-cave-100">
+              <span className="text-base font-semibold text-cave-50">
                 {grouped.names[index]}
               </span>
-              <span className="text-sm text-cave-600 font-mono shrink-0">
+              <span className="text-sm text-cave-400 font-mono shrink-0">
                 {grouped.counts[index]}
               </span>
             </div>

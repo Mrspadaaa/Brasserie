@@ -23,7 +23,7 @@ export function hopChemicalRangeLabel(range: HopRange) {
 export function HopRecipeChemistry({ chemistry, finalLabel = 'Dans la bière après fermentation' }: { chemistry: HopRecipePrediction['chemistry']; finalLabel?: string }) {
   const maxima = Object.fromEntries(['mg', 'ug', 'mL'].map(unit => [unit, Math.max(0, ...Object.values(chemistry.introduced).filter(a => a.unit === unit).map(a => a.range?.max ?? a.reported ?? 0))]));
   return <section aria-label="Chimie des ajouts simulés" className="space-y-4">
-    <div><h4 className="font-semibold text-cave-100">Quantités introduites par le houblon</h4><p className="text-xs text-cave-400">Avant extraction et fermentation. Les valeurs inconnues ne valent pas zéro.</p></div>
+    <div><h4 className="font-semibold text-cave-50">Quantités introduites par le houblon</h4><p className="text-xs text-cave-400">Avant extraction et fermentation. Les valeurs inconnues ne valent pas zéro.</p></div>
     <div className="divide-y divide-cave-800">{Object.entries(chemistry.introduced).map(([id, amount]) => {
       const unit = amount.unit === 'ug' ? 'µg' : amount.unit;
       const value = amount.range ? `${hopChemicalRangeLabel(amount.range)} ${unit}` : amount.reported !== undefined ? `${number(amount.reported)} ${unit}` : 'Non quantifiable';
@@ -37,6 +37,6 @@ export function HopRecipeChemistry({ chemistry, finalLabel = 'Dans la bière apr
         </div>
       </details>;
     })}</div>
-    <div><h4 className="font-semibold text-cave-100">{finalLabel}</h4><div className="divide-y divide-cave-800">{Object.entries(chemistry.final).map(([id, estimate]) => <details key={id} className="text-sm"><summary className="min-h-touch cursor-pointer py-2 flex flex-wrap justify-between gap-2"><span className="text-cave-200">{HOP_ANALYTE_LABELS[id.replace(/^beer:/, '') as keyof typeof HOP_ANALYTE_LABELS] ?? id}</span><span className="text-cave-400">{estimate.range && estimate.unit ? `Plage ${hopChemicalRangeLabel(estimate.range)} ${estimate.unit === 'ngL' ? 'ng/L' : estimate.unit}` : 'Concentration non quantifiable'}</span></summary><div className="text-xs text-cave-400 pb-3 space-y-1"><p>Confiance {HOP_CONFIDENCE_LABELS[estimate.confidence]}</p>{estimate.reasons.map((reason, i) => <p key={i}>{reason}</p>)}{estimate.sources.map((source, i) => <div key={i}><HopSourceLink source={source} /></div>)}</div></details>)}</div></div>
+    <div><h4 className="font-semibold text-cave-50">{finalLabel}</h4><div className="divide-y divide-cave-800">{Object.entries(chemistry.final).map(([id, estimate]) => <details key={id} className="text-sm"><summary className="min-h-touch cursor-pointer py-2 flex flex-wrap justify-between gap-2"><span className="text-cave-200">{HOP_ANALYTE_LABELS[id.replace(/^beer:/, '') as keyof typeof HOP_ANALYTE_LABELS] ?? id}</span><span className="text-cave-400">{estimate.range && estimate.unit ? `Plage ${hopChemicalRangeLabel(estimate.range)} ${estimate.unit === 'ngL' ? 'ng/L' : estimate.unit}` : 'Concentration non quantifiable'}</span></summary><div className="text-xs text-cave-400 pb-3 space-y-1"><p>Confiance {HOP_CONFIDENCE_LABELS[estimate.confidence]}</p>{estimate.reasons.map((reason, i) => <p key={i}>{reason}</p>)}{estimate.sources.map((source, i) => <div key={i}><HopSourceLink source={source} /></div>)}</div></details>)}</div></div>
   </section>;
 }

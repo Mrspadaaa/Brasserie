@@ -213,7 +213,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
         <>
           <div className="flex items-start gap-2">
             <Sparkles className="w-4 h-4 text-ebc-straw shrink-0 mt-0.5" />
-            <p className="text-xs sm:text-sm text-cave-300 leading-snug">
+            <p className="text-xs sm:text-sm text-cave-200 leading-snug">
               {gaps.length} ingrédient{gaps.length > 1 ? 's' : ''} incomplet
               {gaps.length > 1 ? 's' : ''} :{' '}
               <span className="text-cave-400">
@@ -226,8 +226,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             type="button"
             onClick={search}
             disabled={busy || gaps.length === 0}
-            className="w-full min-h-[36px] sm:min-h-touch rounded-control bg-ebc-straw text-cave-950
-                       text-xs sm:text-sm font-semibold flex items-center justify-center gap-2
+            className="w-full min-h-touch rounded-control bg-ebc-straw text-cave-950
+                       text-sm sm:text-base font-semibold flex items-center justify-center gap-2
                        disabled:opacity-50"
           >
             {busy ? (
@@ -255,7 +255,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
 
       {found && (
         <div className="space-y-2">
-          <p className="text-xs sm:text-sm text-cave-300">
+          <p className="text-xs sm:text-sm text-cave-200">
             {found.length} fiche{found.length > 1 ? 's' : ''} retrouvée
             {found.length > 1 ? 's' : ''}. Rien n’est écrit avant validation ; les valeurs déjà
             saisies ne bougent pas.
@@ -265,7 +265,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             {found.map((f) => (
               <li key={f.key} className="py-1.5">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-sm sm:text-base text-cave-100 truncate">
+                  <span className="text-sm sm:text-base text-cave-50 truncate">
                     {f.facts.name}
                   </span>
                   <span className="reading text-xs sm:text-sm text-ebc-straw shrink-0">
@@ -300,8 +300,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 </div>
                 {/* La source est le cœur du dispositif : sans elle, on ne
                     distinguerait pas une donnée retrouvée d'une inventée. */}
-                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-xs text-cave-300 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-xs text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
-                <p className="text-2xs sm:text-sm text-cave-500 leading-snug truncate">
+                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-xs text-cave-200 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-xs text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
+                <p className="text-2xs sm:text-sm text-cave-400 leading-snug truncate">
                   {f.facts.source}
                 </p>
               </li>
@@ -318,7 +318,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             <button
               type="button"
               onClick={() => setFound(null)}
-              className="flex-1 min-h-[36px] sm:min-h-touch rounded-control border border-cave-700
+              className="flex-1 min-h-touch rounded-control border border-cave-700
                          text-cave-200 text-xs sm:text-sm"
             >
               Ignorer
@@ -326,8 +326,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             <button
               type="button"
               onClick={apply}
-              className="flex-1 min-h-[36px] sm:min-h-touch rounded-control bg-ebc-straw text-cave-950
-                         text-xs sm:text-sm font-semibold flex items-center justify-center gap-2"
+              className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950
+                         text-sm sm:text-base font-semibold flex items-center justify-center gap-2"
             >
               <Check className="w-4 h-4" />
               Reprendre ces valeurs

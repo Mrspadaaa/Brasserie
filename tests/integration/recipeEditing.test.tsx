@@ -1,4 +1,5 @@
 import React from 'react';
+import { allerEtape } from '../helpers/wizard';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
@@ -101,7 +102,8 @@ function wizard(recipe = base, save = vi.fn()) {
     />
   );
 }
-const step = (name: RegExp) => fireEvent.click(screen.getAllByRole('button', { name })[0]);
+/* Les étapes se rejoignent par la liste de l’assistant : voir tests/helpers/wizard.ts. */
+const step = (name: RegExp) => allerEtape(name);
 const change = (el: HTMLElement, value: string) => {
   fireEvent.change(el, { target: { value } });
   fireEvent.blur(el);

@@ -77,9 +77,12 @@ describe('Guide aromatique dans la recette', () => {
   it('propose un objectif sur une base vide et conserve distinctement présence moyenne et forte', async () => {
     const host = mount(recipe());
     expect(screen.getByRole('region', { name: 'Guide aromatique de la recette' })).toBeInTheDocument();
-    const citrus = screen.getByRole('button', { name: 'Agrumes', exact: true });
-    expect(citrus).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: 'Fruits tropicaux', exact: true })).toBeEnabled();
+    const citrus = screen.getByRole('button', { name: /^Agrumes/ });
+    // La pastille porte trois états, pas deux : `aria-pressed` est booléen et ne
+    // peut pas les dire. L'état vit donc dans le nom accessible, avec l'action
+    // suivante — voir `HopAromaTargetPicker`.
+    expect(citrus).toHaveAccessibleName(/indifférent/);
+    expect(screen.getByRole('button', { name: /^Fruits tropicaux/ })).toBeEnabled();
     expect(memory.writes).not.toHaveBeenCalled();
     expect(host.changes).not.toHaveBeenCalled();
 
@@ -98,7 +101,10 @@ describe('Guide aromatique dans la recette', () => {
     expect(StorageService.getHopPredictions()).toEqual([]);
     fireEvent.click(citrus);
     await waitFor(() => expect(host.read().hopAromaTarget).toEqual({}));
-    expect(citrus).toHaveAttribute('aria-pressed', 'false');
+    // La pastille porte trois états, pas deux : `aria-pressed` est booléen et ne
+    // peut pas les dire. L'état vit donc dans le nom accessible, avec l'action
+    // suivante — voir `HopAromaTargetPicker`.
+    expect(citrus).toHaveAccessibleName(/indifférent/);
   });
 
   it('associe Cascade et Idaho 7 sans changer les noms, doses ou alpha inconnus', async () => {
@@ -263,19 +269,19 @@ describe('Guide aromatique dans la recette', () => {
     let release!: () => void;
     memory.delay = new Promise<void>(resolve => { release = resolve; });
     if (fails) memory.failure = new Error('Import différé refusé.');
-    fireEvent.click(screen.getByRole('button', { name: 'Agrumes', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /^Agrumes/ }));
     try {
       await waitFor(() => expect(memory.attempts).toHaveBeenCalledTimes(1));
       expect(onBusyChange).toHaveBeenLastCalledWith(true);
       expect(screen.getByRole('status')).toHaveTextContent('Enregistrement des références');
-      expect(screen.getByRole('button', { name: 'Agrumes', exact: true })).toBeDisabled();
+      expect(screen.getByRole('button', { name: /^Agrumes/ })).toBeDisabled();
       expect(host.changes).not.toHaveBeenCalled(); expect(memory.writes).not.toHaveBeenCalled();
     } finally {
       await act(async () => { release(); });
     }
     await waitFor(() => expect(onBusyChange).toHaveBeenLastCalledWith(false));
     expect(onBusyChange.mock.calls.map(([busy]) => busy)).toEqual([true, false]);
-    expect(screen.getByRole('button', { name: 'Agrumes', exact: true })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Agrumes/ })).toBeEnabled();
     if (fails) {
       expect(screen.getByRole('alert')).toHaveTextContent('Import différé refusé.');
       expect(host.read()).toEqual(initial); expect(memory.writes).not.toHaveBeenCalled();
@@ -306,7 +312,7 @@ describe('Guide aromatique dans la recette', () => {
     const before = structuredClone(initial);
     const host = mount(initial);
     memory.failure = new Error('Import indisponible pour ce test.');
-    if (action === 'objectif') fireEvent.click(screen.getByRole('button', { name: 'Agrumes', exact: true }));
+    if (action === 'objectif') fireEvent.click(screen.getByRole('button', { name: /^Agrumes/ }));
     else if (action === 'association') fireEvent.change(await loadedReference(1), { target: { value: 'ych-idaho7' } });
     else {
       const lead = await showLeads();

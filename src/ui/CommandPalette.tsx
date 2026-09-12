@@ -114,27 +114,27 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             autoFocus={!coarse}
             placeholder="Article, recette, brassin, client, écriture…"
             className="min-w-0 flex-1 min-h-touch px-4 bg-transparent text-cave-50 text-base
-                       placeholder-cave-600 focus:outline-none"
+                       placeholder-cave-400 focus:outline-none"
           />
-          <button type="button" aria-label="Fermer la recherche" onClick={() => onOpenChange(false)} className="min-h-touch min-w-touch flex items-center justify-center text-cave-400 hover:text-cave-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
+          <button type="button" aria-label="Fermer la recherche" onClick={() => onOpenChange(false)} className="min-h-touch min-w-touch flex items-center justify-center text-cave-400 hover:text-cave-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <label className="min-h-touch px-4 flex items-center gap-3 border-b border-cave-800 text-sm text-cave-300 cursor-pointer">
+        <label className="min-h-touch px-4 flex items-center gap-3 border-b border-cave-800 text-sm text-cave-200 cursor-pointer">
           <input
             type="checkbox"
             checked={includeArchives}
             onChange={event => setIncludeArchives(event.target.checked)}
             className="h-4 w-4 accent-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
           />
-          <span>Inclure les archives <span className="text-cave-500">· écritures comptables</span></span>
+          <span>Inclure les archives <span className="text-cave-400">· écritures comptables</span></span>
         </label>
 
         <Command.List className="max-h-[55dvh] overflow-y-auto overscroll-contain py-2">
           <Command.Empty className="px-4 py-8 text-center space-y-1">
             <p className="text-base text-cave-200">Rien ne correspond</p>
-            <p className="text-sm text-cave-500">
+            <p className="text-sm text-cave-400">
               Cherche un nom, une référence ou un fournisseur, avec ou sans accents.
             </p>
           </Command.Empty>
@@ -144,7 +144,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               key={group.heading}
               heading={group.heading}
               className="px-2 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5
-                         [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:text-cave-500"
+                         [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:text-cave-400"
             >
               {group.items.map((item) => (
                 <Command.Item
@@ -155,7 +155,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     onOpenChange(false);
                   }}
                   className="min-h-touch px-2 rounded-control flex items-center gap-3
-                             cursor-pointer text-cave-100
+                             cursor-pointer text-cave-50
                              data-[selected=true]:bg-cave-850"
                 >
                   {item.icon && <span className="shrink-0 text-cave-400">{item.icon}</span>}
@@ -165,7 +165,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       {item.archived && <span className="shrink-0 rounded bg-cave-800 px-1.5 py-0.5 text-xs text-cave-400">Archivée</span>}
                     </span>
                     {item.detail && (
-                      <span className="block text-sm text-cave-500 truncate">{item.detail}</span>
+                      <span className="block text-sm text-cave-400 truncate">{item.detail}</span>
                     )}
                   </span>
                 </Command.Item>
@@ -175,12 +175,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </Command.List>
 
         <div className="border-t border-cave-800 px-4 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-          <span className="text-sm text-cave-500" role="status">
+          <span className="text-sm text-cave-400" role="status">
             {results.visible < results.total
               ? `${results.visible} sur ${results.total.toLocaleString('fr-CH')} résultats · précise la recherche`
               : `${results.total.toLocaleString('fr-CH')} résultat${results.total > 1 ? 's' : ''}`}
           </span>
-          <span className="hidden sm:inline text-sm text-cave-600">↑↓ parcourir · ↵ ouvrir · Échap fermer</span>
+          <span className="hidden sm:inline text-sm text-cave-400">↑↓ parcourir · ↵ ouvrir · Échap fermer</span>
         </div>
       </Command>
     </div>

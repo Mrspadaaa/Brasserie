@@ -352,13 +352,22 @@ function ScopedChat({
                 : 'Une question, un imprévu ?'}
             </small>
           </span>
-          <span className="brewer-chat-badge">
-            {jobs.some(isBrewerWorking)
+          {/*
+            La pastille dit l'ÉTAT du compagnon, et rien d'autre.
+            Au repos elle affichait « Gemini » : le nom du fournisseur du
+            modèle, qui n'apprend rien au brasseur et que le système de design
+            interdit d'afficher (`DESIGN.md`, « Rédaction »). Au repos il n'y a
+            pas d'état à annoncer — le bouton dit déjà « Compagnon brasseur » —
+            donc la pastille disparaît.
+          */}
+          {(() => {
+            const etat = jobs.some(isBrewerWorking)
               ? 'En cours'
               : jobs.some((j) => !j.readAt && j.status === 'done')
                 ? 'Réponse prête'
-                : 'Gemini'}
-          </span>
+                : null;
+            return etat && <span className="brewer-chat-badge">{etat}</span>;
+          })()}
           <ChevronRight size={17} />
         </button>
       )}
