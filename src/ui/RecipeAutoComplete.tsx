@@ -1,4 +1,9 @@
 import { completeFromLocalReferences } from '../domain/localIngredientFacts';
+import { resolveFermentationYeast } from '../domain/fermentationScenario';
+import { yeastReferences } from '../domain/yeastReferences';
+import { agreedFermentationFact } from '../../functions/src/fermentationContext';
+import { guideFermentations } from './hopIndex/guideData';
+import type { TrialRecipe } from '../domain/hopIndex/trials';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -8,6 +13,7 @@ import { AiClient } from '../services/aiClient';
 import {
   IngredientFacts,
   IngredientGap,
+  IngredientKind,
   LearnIngredient,
   ingredientGaps,
   ingredientKey,
@@ -50,6 +56,8 @@ interface Found extends IngredientGap {
 }
 interface RecipeAutoCompleteProps {
   active?: boolean;
+  /** Une recherche dédiée dans une étape ; tous les ingrédients au récapitulatif. */
+  scope?: IngredientKind;
   nolo?: boolean;
   fermentables: Fermentable[];
   onFermentables: (v: Fermentable[]) => void;
@@ -71,6 +79,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   onLearnIngredient,
   stockItems = EMPTY_STOCK,
   active = true,
+  scope,
   nolo = false
 }) => {
   const [busy, setBusy] = useState(false);
@@ -78,18 +87,32 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   const [missed, setMissed] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const saved = useStorageValue(StorageService.getHopKnowledge);
+  const documentedAttenuation = useMemo(() => {
+    const reference = resolveFermentationYeast({ yeast } as TrialRecipe, yeastReferences(saved));
+    if (!reference) return undefined;
+    return guideFermentations(saved).find(g => g.yeastId === reference.id)?.attenuationPct
+      ?? agreedFermentationFact(reference, 'attenuation', '%');
+  }, [yeast.name, yeast.hopIndexId, saved]);
   const gaps = useMemo(
-    () => ingredientGaps(fermentables, hops, yeast, nolo),
-    [fermentables, hops, yeast, nolo]
+    () => ingredientGaps(fermentables, hops, yeast, nolo).filter(gap => !scope || gap.kind === scope).map(gap => ({ ...gap,
+      // A published interval is already documented. Do not ask AI for a
+      // pseudo-exact percentage to fill the deliberately empty manual field.
+      missing: gap.missing.filter(field => !(gap.kind === 'levure' && field === 'atténuation' && documentedAttenuation))
+    })).filter(gap => gap.missing.length),
+    [fermentables, hops, yeast, nolo, scope, documentedAttenuation]
   );
 
   const request = useRef(0);
-  const saved = useStorageValue(StorageService.getHopKnowledge);
-  const basis = JSON.stringify([fermentables, hops, yeast, nolo]);
+  const basis = JSON.stringify([fermentables, hops, yeast, nolo, scope, !!documentedAttenuation]);
   const latest = useRef(basis); latest.current = basis;
   const cache = useRef(new Map<string, IngredientFacts>());
   useEffect(() => {
-    request.current += 1; setBusy(false); setFound(null);
+    request.current += 1; setBusy(false); setFound(null); setError(null); setMissed([]);
+  }, [basis]);
+  // Une notification Firestore renouvelle les tableaux même sans changement.
+  // Seule une modification effective de la recette invalide sa proposition IA.
+  useEffect(() => {
     const local = completeFromLocalReferences(fermentables, hops, yeast, stockItems, saved);
     if (JSON.stringify(local.fermentables) !== JSON.stringify(fermentables)) onFermentables(local.fermentables);
     if (JSON.stringify(local.hops) !== JSON.stringify(hops)) onHops(local.hops);
@@ -139,7 +162,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                     : ({ name: '' } as YeastSpec),
                   nolo
                 );
-              if (cached && remaining?.length === 0) {
+              if (cached && !remaining?.some(g => g.missing.some(field => gap.missing.includes(field)))) {
                 ok.push({ ...gap, facts: cached });
                 continue;
               }
@@ -149,10 +172,13 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 instruction: gap.kind + ' : ' + gap.name.trim(),
                 context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing, nolo, known: gap.kind === 'levure' ? yeast : undefined }
               });
-              if (res.ok && res.data?.found && fillsGap(gap, res.data)) {
+              // Une réponse annulée ou périmée ne doit pas non plus peupler le cache.
+              if (request.current !== id || latest.current !== started) return;
+              if (res.ok && res.data?.found && res.data.source?.trim() && fillsGap(gap, res.data)) {
                 const facts = sanitizeFacts(res.data);
                 // Identity belongs to the local catalogue, never to model output.
                 delete facts.hopIndexId;
+                if (gap.kind === 'levure' && !gap.missing.includes('atténuation')) delete facts.attenuationPct;
                 cache.current.set(gap.key, facts);
                 ok.push({ ...gap, facts });
               } else {
@@ -208,12 +234,12 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   if (!active || gaps.length === 0 && !found && !error) return null;
 
   return (
-    <section className="panel p-2.5 sm:p-3 space-y-2 border-ebc-straw/30">
+    <section aria-label="Autocomplétion des ingrédients" aria-busy={busy} className="panel p-2 space-y-2">
       {!found && (
         <>
           <div className="flex items-start gap-2">
             <Sparkles className="w-4 h-4 text-ebc-straw shrink-0 mt-0.5" />
-            <p className="text-xs sm:text-sm text-cave-200 leading-snug">
+            <p className="text-sm text-cave-200 leading-snug">
               {gaps.length} ingrédient{gaps.length > 1 ? 's' : ''} incomplet
               {gaps.length > 1 ? 's' : ''} :{' '}
               <span className="text-cave-400">
@@ -226,9 +252,9 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             type="button"
             onClick={search}
             disabled={busy || gaps.length === 0}
-            className="w-full min-h-touch rounded-control bg-ebc-straw text-cave-950
-                       text-sm sm:text-base font-semibold flex items-center justify-center gap-2
-                       disabled:opacity-50"
+            className="max-w-full min-h-7 rounded-control border border-cave-700 bg-cave-850 text-cave-50
+                       text-2xs font-semibold flex items-center justify-center gap-2
+                       px-2 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw disabled:opacity-50"
           >
             {busy ? (
               <>
@@ -238,16 +264,16 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Compléter les données manquantes avec l’IA
+                {scope === 'levure' ? 'Compléter la levure avec l’IA' : 'Compléter les données manquantes avec l’IA'}
               </>
             )}
           </button>
         </>
       )}
 
-      {busy && <button type="button" className="min-h-touch text-sm text-water" onClick={() => { request.current += 1; setBusy(false); }}>Annuler la recherche</button>}
+      {busy && <button type="button" className="min-h-7 px-2 text-2xs text-cave-200 rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw" onClick={() => { request.current += 1; setBusy(false); }}>Annuler la recherche</button>}
       {error && (
-        <p className="flex items-start gap-2 text-xs sm:text-sm text-ebc-amber leading-snug">
+        <p role="alert" className="flex items-start gap-2 text-sm text-cave-200 leading-snug">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{error} — à saisir à la main.</span>
         </p>
@@ -255,7 +281,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
 
       {found && (
         <div className="space-y-2">
-          <p className="text-xs sm:text-sm text-cave-200">
+          <p role="status" className="text-sm text-cave-200">
             {found.length} fiche{found.length > 1 ? 's' : ''} retrouvée
             {found.length > 1 ? 's' : ''}. Rien n’est écrit avant validation ; les valeurs déjà
             saisies ne bougent pas.
@@ -264,11 +290,11 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
           <ul className="divide-y divide-cave-850">
             {found.map((f) => (
               <li key={f.key} className="py-1.5">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-sm sm:text-base text-cave-50 truncate">
+                <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                  <span className="min-w-0 text-sm text-cave-50 break-words [overflow-wrap:anywhere]">
                     {f.facts.name}
                   </span>
-                  <span className="reading text-xs sm:text-sm text-ebc-straw shrink-0">
+                  <span className="max-w-full reading text-sm text-ebc-straw break-words">
                     {f.kind === 'malt' &&
                       [
                         f.missing.includes('couleur EBC') && f.facts.colorEbc != null
@@ -300,8 +326,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 </div>
                 {/* La source est le cœur du dispositif : sans elle, on ne
                     distinguerait pas une donnée retrouvée d'une inventée. */}
-                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-xs text-cave-200 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-xs text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
-                <p className="text-2xs sm:text-sm text-cave-400 leading-snug truncate">
+                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-sm text-cave-200 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-sm text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
+                <p className="text-2xs text-cave-400 leading-snug break-words [overflow-wrap:anywhere]">
                   {f.facts.source}
                 </p>
               </li>
@@ -309,25 +335,25 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
           </ul>
 
           {missed.length > 0 && (
-            <p className="text-2xs sm:text-sm text-ebc-amber leading-snug">
+            <p className="text-sm text-cave-200 leading-snug">
               Rien trouvé pour : {missed.join(', ')}. À saisir à la main.
             </p>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             <button
               type="button"
               onClick={() => setFound(null)}
-              className="flex-1 min-h-touch rounded-control border border-cave-700
-                         text-cave-200 text-xs sm:text-sm"
+              className="min-h-7 px-2 py-1 rounded-control border border-cave-700
+                         text-cave-200 text-2xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw"
             >
               Ignorer
             </button>
             <button
               type="button"
               onClick={apply}
-              className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950
-                         text-sm sm:text-base font-semibold flex items-center justify-center gap-2"
+              className="min-h-7 px-2 py-1 rounded-control border border-cave-700 bg-cave-850 text-cave-50
+                         text-2xs font-semibold flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw"
             >
               <Check className="w-4 h-4" />
               Reprendre ces valeurs

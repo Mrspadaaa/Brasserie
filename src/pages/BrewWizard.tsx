@@ -1305,6 +1305,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
         <RecipeAutoComplete active={['fermentescibles', 'houblons', 'levure', 'recap'].includes(step)} nolo={details.nolo?.enabled}
+          scope={step === 'levure' ? 'levure' : undefined}
           onLearnIngredient={onLearnIngredient}
           stockItems={stockItems}
           fermentables={fermentables}

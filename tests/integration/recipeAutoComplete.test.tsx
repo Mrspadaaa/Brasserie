@@ -79,6 +79,13 @@ const GRAIN_SANS_COULEUR: Fermentable = {
 };
 
 describe('Compléter les données manquantes avec l’IA', () => {
+  it('conserve une atténuation fabricant en plage sans demander une valeur exacte à l’IA', async () => {
+    const vu = monter({ yeast: { name: 'SafAle US-05', hopIndexId: 'fermentis-us05', form: 'sèche', qty: 11.5, unit: 'g', lab: 'Fermentis', fermTempMinC: 18, fermTempMaxC: 26 } });
+    await waitFor(() => expect(screen.queryByRole('button', { name: /Compléter les données/ })).not.toBeInTheDocument());
+    expect(vu.y.attenuationPct).toBeUndefined();
+    expect(screen.queryByRole('button', { name: /Compléter les données/ })).not.toBeInTheDocument();
+    expect(run).not.toHaveBeenCalled();
+  });
   it('réutilise les données déjà enregistrées sans nouvel appel IA', async () => {
     const vu = monter({
       fermentables: [GRAIN_SANS_COULEUR],
@@ -95,6 +102,17 @@ describe('Compléter les données manquantes avec l’IA', () => {
     await waitFor(() => expect(vu.f[0].potentialPpg).toBe(38));
     expect(run).not.toHaveBeenCalled();
     expect(vu.f[0]).toMatchObject({ colorEbc: 6, potentialPpg: 38 });
+  });
+  it('retire l’ancien échec de recherche après correction manuelle des données', async () => {
+    run.mockRejectedValue(new Error('offline'));
+    const props = { hops: [], yeast: { name: '' } as YeastSpec, onFermentables: vi.fn(), onHops: vi.fn(), onYeast: vi.fn() };
+    const { rerender } = render(<RecipeAutoComplete {...props} fermentables={[GRAIN_SANS_COULEUR]} />);
+    fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+    await screen.findByText(/Recherche interrompue/);
+    rerender(<RecipeAutoComplete {...props} fermentables={[{ ...GRAIN_SANS_COULEUR, colorEbc: 6, potentialPpg: 38 }]} />);
+    expect(screen.queryByText(/Recherche interrompue/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Compléter les données/ })).not.toBeInTheDocument();
+    expect(run).toHaveBeenCalledTimes(1);
   });
   it('persiste les fiches acceptées et complète une température maxi manquante', async () => {
     const learn = vi.fn();
