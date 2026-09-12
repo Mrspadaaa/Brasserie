@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render as testingRender, screen, fireEvent, cleanup } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { QuantityStepper } from '../../src/ui/QuantityStepper';
 import { NumberInput } from '../../src/ui/NumberInput';
@@ -383,3 +383,9 @@ const RECETTE_FUZZ = {
   steps: [],
   notes: []
 } as unknown as Recipe;
+
+// Open advanced salts for the existing numeric/chemistry regressions.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);return view;
+}

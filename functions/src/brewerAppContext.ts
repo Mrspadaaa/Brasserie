@@ -1,6 +1,7 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { BREWER_APP_SCREENS } from './brewerAppScreens.js';
 import { pick } from './brewerContext.js';
+import { loadBrewerFinanceContext } from './brewerFinanceContext.js';
 
 const fields: Record<string, string[]> = {
   recipes: 'name style volumeL malts hops yeast efficiencyPct'.split(' '),
@@ -15,7 +16,7 @@ const fields: Record<string, string[]> = {
 };
 const datasets: Record<string, string[]> = {
   dashboard: ['batches', 'recipes', 'planning'],
-  finances: ['transactions', 'budgetLines'],
+  finances: [],
   'production-batches': ['batches'],
   'production-recipes': ['recipes'],
   'production-lab': ['creativeItems', 'recipes'],
@@ -32,10 +33,12 @@ const datasets: Record<string, string[]> = {
 /** Only selected business fields for the current screen, never the entire config. */
 export async function loadBrewerAppContext(id: string) {
   const db = getFirestore(), truncated: string[] = [];
-  const entries = await Promise.all((datasets[id] ?? []).map(async (collection) => {
+  const financialScreen = ['finances', 'dashboard', 'production-lab', 'stocks-materiel', 'stocks-courses', 'clients-tarifs'].includes(id);
+  const [entries, finance] = await Promise.all([Promise.all((datasets[id] ?? []).map(async (collection) => {
     const rows = await db.collection(collection).select(...fields[collection]).limit(81).get();
     if (rows.size > 80) truncated.push(collection);
     return [collection, rows.docs.slice(0, 80).map((doc) => ({ id: doc.id, ...pick(doc.data(), fields[collection]) }))] as const;
-  }));
-  return { screen: BREWER_APP_SCREENS[id], records: Object.fromEntries(entries), truncated };
+  })), financialScreen ? loadBrewerFinanceContext() : Promise.resolve(undefined)]);
+  return { screen: BREWER_APP_SCREENS[id], records: Object.fromEntries(entries), truncated,
+    ...(finance ? { finance, coverage: finance.coverage } : {}) };
 }

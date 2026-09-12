@@ -4,12 +4,13 @@ import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
-import { BrewingMath } from '../../services/brewingMath';
+import { scaleBrewRecipeScenario } from '../../domain/finance/brewBudgetScaling';
 import { CreativeLabTab } from '../CreativeLabTab';
 import { describeMoment } from '../../domain/hopStage';
 import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
 import type { BatchDetailSection } from '../../domain/productionInsights';
+import { ViewNavigation } from '../../ui/ViewNavigation';
 
 interface ProductionTabProps {
   batches: Batch[];
@@ -24,6 +25,7 @@ interface ProductionTabProps {
   onSubTabChange?: (sub: string) => void;
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
+  onCreateRequestHandled?: () => void;
   /** Ouvre la fiche recette en plein écran. */
   onOpenRecipe: (recipe: Recipe) => void;
   onEditRecipe?: (recipe: Recipe) => void;
@@ -45,6 +47,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onOpenQuickAction,
   onSubTabChange,
   createRequest,
+  onCreateRequestHandled,
   onOpenRecipe,
   onEditRecipe,
   onOpenBrewDay,
@@ -88,6 +91,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     if (!createRequest) return;
     if (createRequest.kind === 'newBatch' || createRequest.kind === 'newRecipe') {
       onOpenCreateBatch();
+      onCreateRequestHandled?.();
     }
   }, [createRequest?.at]);
 
@@ -95,59 +99,67 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
     StorageService.setUiState('production_subtab', subTab);
   }, [subTab]);
 
-  const sourceBh = brewhouses.find((b) => b.id === activeBrewhouseId) || brewhouses[0];
+  const sourceBh = selectedRecipeToScale?.brewhouse ?? brewhouses.find((b) => b.id === activeBrewhouseId) ?? brewhouses[0];
   const targetBh = targetVolumeL >= 250 ? (brewhouses.find((b) => b.volumeL >= 250) || sourceBh) : sourceBh;
   // Sans recette ni cuverie configurée, on ne calcule rien plutôt que de planter.
   const scaleResult =
-    subTab === 'scaler' && selectedRecipeToScale && sourceBh
-      ? BrewingMath.scaleRecipe(selectedRecipeToScale, targetVolumeL, sourceBh, targetBh)
+    subTab === 'scaler' && selectedRecipeToScale?.volumeL > 0 && Number.isFinite(selectedRecipeToScale.volumeL) && sourceBh
+      ? scaleBrewRecipeScenario(selectedRecipeToScale, targetVolumeL, sourceBh, targetBh)
       : null;
 
   return (
-    <div className="space-y-4 pb-28 pt-2">
-      {/* 1. Sub-navigation Pills */}
-      <div className="flex bg-cave-900 p-1 rounded-2xl border border-cave-800 shadow-md overflow-x-auto scrollbar-none space-x-1">
+    <div className="space-y-2 sm:space-y-4 pb-24 pt-2">
+      <ViewNavigation<typeof subTab> label="Vue de production" value={subTab} onChange={setSubTab} options={[
+        {value:'batches',label:`Brassins (${batches.filter(isCurrent).length})`,shortLabel:'Brassins'},
+        {value:'recipes',label:`Recettes (${currentRecipes.length})`,shortLabel:'Recettes'},
+        {value:'lab',label:'Atelier R&D',shortLabel:'Atelier'}, {value:'scaler',label:'Adapter les volumes',shortLabel:'Volumes'}
+      ]}>
+      <div role="group" aria-label="Atelier de brassage" className="grid grid-cols-4 gap-1 bg-cave-900 p-1 rounded-2xl border border-cave-800">
         <button
           type="button"
           aria-pressed={subTab === 'batches'}
+          aria-label={`Brassins (${batches.filter(isCurrent).length})`}
           onClick={() => setSubTab('batches')}
-          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
             subTab === 'batches' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          🍺 Brassins ({batches.filter(isCurrent).length})
+          Brassins<span className="hidden sm:inline"> ({batches.filter(isCurrent).length})</span>
         </button>
         <button
           type="button"
           aria-pressed={subTab === 'recipes'}
+          aria-label={`Recettes (${currentRecipes.length})`}
           onClick={() => setSubTab('recipes')}
-          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
             subTab === 'recipes' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          📜 Recettes ({currentRecipes.length})
+          Recettes<span className="hidden sm:inline"> ({currentRecipes.length})</span>
         </button>
         <button
           type="button"
           aria-pressed={subTab === 'lab'}
           onClick={() => setSubTab('lab')}
-          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
             subTab === 'lab' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          🧪 Atelier R&D
+          Atelier R&D
         </button>
         <button
           type="button"
           aria-pressed={subTab === 'scaler'}
           onClick={() => setSubTab('scaler')}
-          className={`min-h-touch px-3.5 py-2 text-sm font-semibold rounded-xl whitespace-nowrap transition ${
+          className={`min-h-touch min-w-0 px-1 py-2 text-sm font-semibold rounded-xl transition ${
             subTab === 'scaler' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
           }`}
         >
-          ⚖️ Volumes
+          Volumes
         </button>
       </div>
+
+      </ViewNavigation>
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
         <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>
@@ -162,6 +174,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
           onSuccessMessage={onSuccessMessage}
           onDraftRecipe={onDraftRecipe}
           createRequest={createRequest}
+          onCreateRequestHandled={onCreateRequestHandled}
         />
       )}
 
@@ -275,6 +288,12 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
                   <span className="font-mono font-bold text-hop">
                     {Units.format(h.weightG, 'g')}
                   </span>
+                </div>
+              ))}
+              {scaleResult.scaledRecipe.adjuncts?.map((item, idx) => (
+                <div key={`adjunct-${idx}`} className="p-2 bg-cave-950/50 rounded-xl border border-cave-800/80 flex justify-between">
+                  <span className="text-cave-200">{item.name} · {item.step}</span>
+                  <span className="font-mono font-bold text-cave-100">{Units.format(item.amount, item.unit)}</span>
                 </div>
               ))}
             </div>

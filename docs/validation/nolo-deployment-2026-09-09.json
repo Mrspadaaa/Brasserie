@@ -1,0 +1,21 @@
+{
+  "sourceCommit": "4ed5de9",
+  "date": "2026-09-09T15:41:14.987Z",
+  "hostingMatchesBuild": true,
+  "assetsVerified": 2,
+  "anonymousReport": 401,
+  "anonymousKnowledge": 403,
+  "privateStaticReportAbsent": true,
+  "developmentQueryStillRequiresLogin": true,
+  "loginPageErrors": [],
+  "paidAiCalls": 0,
+  "functionsUpdated": [
+    "getFermentationResearch",
+    "restoreBreweryData",
+    "askBrewer",
+    "getBrewerConversation",
+    "applyBrewerProposal",
+    "dispatchBrewerQuestion",
+    "processBrewerQuestion"
+  ]
+}

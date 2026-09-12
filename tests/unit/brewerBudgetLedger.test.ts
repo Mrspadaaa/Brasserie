@@ -46,6 +46,9 @@ vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
   })
 }));
 vi.mock('../../functions/src/brewSession', () => ({ requireBrewer: () => 'test-brewer' }));
+// This suite isolates daily/question reconciliation; the shared monthly gate is
+// exercised with concurrent transactions in monthlyAiBudget.test.ts.
+vi.mock('../../functions/src/monthlyAiBudget', () => ({ runWithMonthlyAiBudget: (_model: string, body: any, generate: any) => generate(body) }));
 import { budgetedBrewerTransport, brewerBudgetDay } from '../../functions/src/brewerBudget';
 import { GeminiApiError } from '../../functions/src/geminiErrors';
 

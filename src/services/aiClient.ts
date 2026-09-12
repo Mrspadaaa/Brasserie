@@ -64,6 +64,8 @@ export interface AiResponse<T = any> {
   tier?: AiTier;
   elapsedMs?: number;
   error?: string;
+  cached?: boolean;
+  documentHash?: string;
 }
 
 /** Convertit un fichier en base64 sans le préfixe `data:`. */
@@ -99,9 +101,9 @@ export const AiClient = {
     try {
       const payload: Record<string, unknown> = {
         task: req.task,
-        tier: req.tier,
-        context: req.context,
-        instruction: req.instruction
+        tier: req.task === 'scanInvoice' ? 'fast' : req.tier,
+        context: req.task === 'scanInvoice' ? undefined : req.context,
+        instruction: req.task === 'scanInvoice' ? undefined : req.instruction
       };
 
       if (req.file) {

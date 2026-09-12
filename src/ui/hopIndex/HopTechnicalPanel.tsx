@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { HopVariety, HopLot, HopSource } from '../../../functions/src/hopIndexSchema';
 import { resolveHopFacts } from '../../domain/hopIndex/facts';
 import { HOP_ANALYTE_LABELS, HOP_UNIT_LABELS, formatHopMeasurement } from '../../domain/hopIndex/labels';
@@ -11,6 +11,25 @@ import { usableHopKnowledge } from '../../domain/hopIndex/engine';
 export function HopSourceLink({ source }: { source: HopSource }) {
   return <span className="text-xs text-cave-400 break-words">{source.author} · {source.year ?? 'année inconnue'} · {source.kind === 'manufacturer' ? 'fabricant' : source.kind === 'research' ? 'recherche' : source.kind === 'judgment' ? 'choix éditorial' : source.kind}
     {/^https?:\/\//i.test(source.reference) && <> · <a className="text-water underline" href={source.reference} target="_blank" rel="noreferrer">Lire la source</a></>}</span>;
+}
+
+function BeerMaverickLink({ variety }: { variety: HopVariety }) {
+  const [reference, setReference] = useState<string>();
+  useEffect(() => {
+    let active = true;
+    setReference(undefined);
+    const normalize = (s: string) => s.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().trim();
+    const names = new Set([variety.name, ...variety.aliases].map(normalize));
+    import('../../data/hopBeerMaverickBootstrap.json').then(pack => {
+      const matches = pack.default.hopVarieties.filter(v => names.has(normalize(v.name)));
+      if (!active || matches.length !== 1) return;
+      const source = [...matches[0].descriptions.map(d => d.source), ...matches[0].analysis.map(a => a.source)]
+        .find(s => /^https:\/\/beermaverick\.com\/hop\/[^/]+\/$/.test(s.reference));
+      setReference(source?.reference);
+    }).catch(() => { /* Optional external reading never prevents local analysis. */ });
+    return () => { active = false; };
+  }, [variety.id, variety.name, variety.aliases]);
+  return reference ? <a href={reference} target="_blank" rel="noreferrer" className="inline-flex min-h-touch items-center text-sm text-water underline">Fiche complète de {variety.name} sur Beer Maverick</a> : null;
 }
 
 /** Each small plot has one unit AND one matrix basis. Points are observations, not CIs. */
@@ -56,12 +75,13 @@ export function HopTechnicalPanel({ variety, lot }: { variety?: HopVariety; lot?
   const saved = usableHopKnowledge(knowledge).valid.filter(k => k.kind === 'note');
   const notes = [...new Map([...technical, ...research, ...saved].map(n => [n.id, n])).values()].filter(n => selected.ids.includes(n.id));
   return <section aria-label="Chimie et biotransformation" className="space-y-4">
-    <div><h3 className="text-lg font-semibold text-cave-50">Ce qui se passe dans la cuve</h3><p className="text-sm text-cave-400">Molécules, levure et perception : les données utiles pour décider.</p></div>
-    <div className="flex flex-wrap gap-1" role="group" aria-label="Familles chimiques">{topics.map(t => <button key={t.name} type="button" aria-pressed={topic === t.name} onClick={() => setTopic(t.name)} className={`min-h-touch px-3 rounded-control text-sm ${topic === t.name ? 'bg-cave-700 text-ebc-straw' : 'text-cave-200 bg-cave-850'}`}>{t.name}</button>)}</div>
-    {topic === 'Thiols' && <div className="grid gap-1 sm:grid-cols-3 text-sm" aria-label="Voies des thiols">
-      {['Précurseurs GSH / Cys · réservoir', 'Libération → 3SH (3MH) / 4MSP (4MMP)', 'Acétylation du 3SH → 3SHA (3MHA)'].map(label => <div key={label} className="border-l-2 border-hop pl-3 py-3 text-cave-100 bg-hop/5">{label}</div>)}
-    </div>}
-    {notes.map(n => <article key={n.id} className="border-b border-cave-800 pb-3 space-y-2"><h4 className="text-sm font-semibold text-cave-100">{n.name}</h4><p className="text-sm text-cave-200">{n.summary}</p><p className="text-xs text-cave-400">{n.limitation}</p><HopSourceLink source={n.source as HopSource} /></article>)}
     {(variety || lot) && <HopChemistryChart variety={variety} lot={lot} />}
+    {variety && <BeerMaverickLink variety={variety} />}
+    <h3 className="text-lg font-semibold text-cave-50">Comprendre les transformations</h3>
+    <div className="flex flex-wrap gap-1" role="group" aria-label="Familles chimiques">{topics.map(t => <button key={t.name} type="button" aria-pressed={topic === t.name} onClick={() => setTopic(t.name)} className={`min-h-touch px-3 rounded-control text-sm ${topic === t.name ? 'bg-cave-700 text-ebc-straw' : 'text-cave-200 bg-cave-850'}`}>{t.name}</button>)}</div>
+    {topic === 'Thiols' && <details><summary className="min-h-touch cursor-pointer text-sm text-cave-200">Voies des thiols</summary><div className="grid gap-1 sm:grid-cols-3 text-sm" aria-label="Voies des thiols">
+      {['Précurseurs GSH / Cys · réservoir', 'Libération → 3SH (3MH) / 4MSP (4MMP)', 'Acétylation du 3SH → 3SHA (3MHA)'].map(label => <div key={label} className="border-l-2 border-hop pl-3 py-3 text-cave-100 bg-hop/5">{label}</div>)}
+    </div></details>}
+    {notes.map(n => <details key={n.id} className="border-b border-cave-800"><summary className="cursor-pointer min-h-touch py-2 text-sm font-semibold text-cave-100">{n.name}</summary><div className="space-y-2 pb-3"><p className="text-sm text-cave-200">{n.summary}</p><p className="text-xs text-cave-400">{n.limitation}</p><HopSourceLink source={n.source as HopSource} /></div></details>)}
   </section>;
 }

@@ -247,7 +247,7 @@ export function compareHopPredictions(a: HopPrediction, b: HopPrediction): numbe
     || (a.score.range.max - a.score.range.min) - (b.score.range.max - b.score.range.min)
     || JSON.stringify(a.triplet).localeCompare(JSON.stringify(b.triplet));
 }
-export function compareHopTasting(tasting: HopTasting, prediction: HopPrediction | undefined, axes: HopAxis[]) {
+export function compareHopTasting(tasting: HopTasting, prediction: Pick<HopPrediction, 'profile'> | undefined, axes: HopAxis[]) {
   return tasting.axes.map(({ axis, perceived, confidence: tastingConfidence }) => {
     const definition = axes.find(a => a.id === axis.id && a.version === axis.version && a.scale.min === axis.scale.min && a.scale.max === axis.scale.max);
     const expected = definition ? prediction?.profile[axis.id] : undefined;

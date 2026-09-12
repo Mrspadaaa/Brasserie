@@ -40,6 +40,8 @@ export interface WaterState {
 
 export interface WaterBrewContext {
   style?: string;
+  styleRef?: import('../../../functions/src/brewingStyleSchema').BrewingStyleRef;
+  nolo?: import('../../../functions/src/noloSchema').NoloConfig;
   /** Mash pH setpoint for measurement; the automatic dose targets alkalinity. */
   targetPh?: number;
 

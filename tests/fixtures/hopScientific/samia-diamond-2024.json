@@ -1,0 +1,46 @@
+{
+  "id": "samia-diamond-2024",
+  "source": {
+    "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+    "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+    "year": 2024,
+    "kind": "research",
+    "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+    "locator": "Compte rendu EBC, p.1 protocole et Fig.1 ; p.2 comparaison Diamond."
+  },
+  "verifiedAt": "2026-09-09",
+  "trialId": "trial-cascade-diamond-ebc2024",
+  "yeastId": "lalbrew-diamond",
+  "variety": "Cascade",
+  "grist": "All-pilsner",
+  "fermentationTemperaturesC": [
+    15,
+    22,
+    30
+  ],
+  "hops": [
+    {
+      "timing": "boil",
+      "doseGL": 1.2,
+      "atBoilStart": true
+    },
+    {
+      "timing": "whirlpool",
+      "doseGL": 3
+    }
+  ],
+  "dryHop": false,
+  "sensoryMethod": "CATA",
+  "panelists": 22,
+  "sensoryIntensities": null,
+  "qualitative": {
+    "diamondThiolsComparedWithAles": "higher",
+    "diamondFruityTropicalComparedWithAles": "lower",
+    "warmDiamondSulfurEgg": "reported"
+  },
+  "limitations": [
+    "Compte rendu comparatif ; pas de tableau d'intensités sensorielles par souche.",
+    "Les conditions 15, 22 et 30 °C sont expérimentales, sans recommandation fabricant implicite.",
+    "La relation plus de thiols → plus de tropical est contredite par Diamond dans cet essai."
+  ]
+}

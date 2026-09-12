@@ -1,5 +1,7 @@
 import { Recipe } from '../types';
 import { recipeWaterExport } from './recipeWaterExport';
+import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
+import { assertNoloConfig } from '../../functions/src/noloSchema';
 
 /** A readable, versioned text format. Labels, units and validation share one schema.
  * Only this small indentation format is parsed here; arbitrary recipes go through
@@ -9,13 +11,14 @@ type Field = {
   label: string;
   /** Older labels remain readable when wording is clarified within format v1. */
   aliases?: readonly string[];
-  type: 'text' | 'number' | 'boolean' | 'object' | 'array';
+  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts';
   fields?: Fields;
   item?: Field;
   values?: readonly string[];
   labels?: Record<string, string>;
   min?: number;
   max?: number;
+  nullable?: boolean;
 };
 type Fields = Record<string, Field>;
 const hasOwn = (value: object, key: PropertyKey) =>
@@ -58,11 +61,14 @@ const ph = (label: string) => n(label, 0, 14);
 export const recipeFields = {
   name: t('Nom'),
   style: t('Style'),
+  fermentationIntent: o('Intention de fermentation', {version:n('Version',1,1),aroma:t('Arômes'),fruit:t('Fruits'),acidity:t('Acidité')}),
+  styleRef: o('Référence du style', {guideId:t('Référentiel'),version:t('Édition des données'),styleId:t('Identifiant du style')}),
+  nolo: {label:'Configuration NOLO versionnée',type:'nolo'} as Field,
   volumeL: n('Volume fermenteur (L)'),
   brewDate: t('Date de brassage'),
-  ogTarget: n('OG cible'),
-  fgTarget: n('FG cible'),
-  abvTarget: pct('ABV cible (%)'),
+  ogTarget: {...n('OG cible'),nullable:true},
+  fgTarget: {...n('FG cible'),nullable:true},
+  abvTarget: {...pct('ABV cible (%)'),nullable:true},
   ibuTarget: n('IBU cible'),
   colorEbc: n('Couleur annoncée (EBC)'),
   efficiencyPct: pct('Rendement (%)'),
@@ -118,6 +124,7 @@ export const recipeFields = {
     name: t('Nom'),
     lab: t('Laboratoire'),
     strain: t('Souche'),
+    fermentationFacts: {label:'Données fermentaires sourcées',type:'fermentationFacts'} as Field,
     form: t('Forme', ['sèche', 'liquide', 'levain']),
     qty: n('Quantité'),
     unit: t('Unité'),
@@ -244,6 +251,7 @@ export function readRecipeFields(value: unknown, strict = false): Partial<Recipe
   return recipe as Partial<RecipeContent>;
 }
 function readField(field: Field, value: unknown, strict: boolean, path: string): unknown {
+  if(value===null&&field.nullable)return null;
   if (value == null && !strict) return undefined;
   const fail = () => {
     if (strict) throw new Error(`Champ invalide : ${path}.`);
@@ -272,6 +280,8 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
       ? value
       : fail();
   if (field.type === 'boolean') return typeof value === 'boolean' ? value : fail();
+  if (field.type === 'fermentationFacts') return readIngredientFermentationFacts(value) ?? fail();
+  if (field.type === 'nolo') { try { assertNoloConfig(value); return structuredClone(value); } catch { return fail(); } }
   return typeof value === 'string' && (!field.values || field.values.includes(value))
     ? value
     : fail();

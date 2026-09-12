@@ -281,6 +281,12 @@ export function editableFields(
     for (const [key, spec] of Object.entries(acid)) fields[`waterPlan.acid.${key}`] = spec;
     for (const [key, spec] of Object.entries(yeast))
       fields[`yeast.${key}`] = { ...spec, label: `Levure · ${spec.label}` };
+    if (c.recipe.nolo?.enabled) {
+      // The NOLO target and measured ranges belong to the dedicated panel.
+      // Legacy scalar targets must not contradict that persisted configuration.
+      delete fields.abvTarget;
+      delete fields.fgTarget;
+    }
   }
   if (target === 'journal' && c.journal && !c.journal.finishedAt) {
     Object.assign(fields, {
@@ -621,6 +627,7 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
       Object.values(p.sparge ?? {}).some((v) => Number(v) > 0)
     )
       throw Error('Des sels sont prévus au rinçage : adapte aussi leur répartition.');
+    if (next.style !== c.recipe.style) delete next.styleRef;
     return refreshCompanionRecipe(next);
   }
   if (proposal.target === 'journal') {

@@ -178,7 +178,17 @@
             }
           },
           "temperatureC": null,
-          "contactHours": null
+          "contactHours": null,
+          "boilStart": {
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          }
         },
         {
           "name": "Cascade",
@@ -275,7 +285,17 @@
             }
           },
           "temperatureC": null,
-          "contactHours": null
+          "contactHours": null,
+          "boilStart": {
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          }
         },
         {
           "name": "Cascade",
@@ -372,7 +392,17 @@
             }
           },
           "temperatureC": null,
-          "contactHours": null
+          "contactHours": null,
+          "boilStart": {
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+              "year": 2024,
+              "kind": "research",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+              "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+            }
+          }
         },
         {
           "name": "Cascade",

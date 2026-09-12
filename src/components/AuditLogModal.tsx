@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Search, Shield, Clock, Download } from 'lucide-react';
 import { AuditLog } from '../types';
 import { ModalShell } from '../ui/ModalShell';
+import { FirestoreRepo } from '../services/firestoreRepo';
 
 interface AuditLogModalProps {
   isOpen: boolean;
@@ -14,11 +15,13 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
   onClose,
   logs
 }) => {
-  if (!isOpen) return null;
-
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCat, setFilterCat] = useState<string>('all');
   const [filterUser, setFilterUser] = useState<string>('all');
+  const [, updateHistory] = useState(0);
+  React.useEffect(() => FirestoreRepo.subscribe(() => updateHistory(value => value + 1)), []);
+  if (!isOpen) return null;
+  const history = FirestoreRepo.auditHistoryStatus();
 
   const filteredLogs = logs.filter((l) => {
     const matchesCat = filterCat === 'all' || l.category === filterCat;
@@ -37,7 +40,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Journal_Audit_L_Affinee_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `Journal_Audit_${history.complete ? 'Complet' : 'Extrait'}_L_Affinee_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -75,7 +78,8 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
           <button
             type="button"
             onClick={handleExportLogs}
-            title="Exporter les logs en JSON"
+            title={history.complete ? 'Exporter le journal complet en JSON' : 'Exporter uniquement les événements chargés en JSON'}
+            aria-label={history.complete ? 'Exporter le journal complet' : 'Exporter les événements chargés'}
             className="p-2 text-cave-400 hover:text-cave-200 bg-cave-850 rounded-full transition"
           >
             <Download className="w-4 h-4" />
@@ -162,6 +166,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
 
       {/* Logs List */}
       <div className="p-3 sm:p-4 overflow-y-auto space-y-2 flex-1 text-xs sm:text-sm overscroll-contain">
+        {!history.complete && <p className="text-cave-400 leading-relaxed">Les événements récents sont chargés en premier. La recherche et l’export portent sur les {logs.length} événements chargés.</p>}
         {filteredLogs.length === 0 ? (
           <div className="py-12 text-center text-cave-500">
             Aucun événement ne correspond à vos filtres.
@@ -212,6 +217,11 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             );
           })
         )}
+        {history.error && <p role="alert" className="text-alert leading-relaxed">{history.error}</p>}
+        {!history.complete && <button type="button" disabled={history.loading} onClick={() => void FirestoreRepo.loadOlderAuditLogs().catch(() => {})}
+          className="w-full min-h-11 rounded-xl border border-cave-700 text-ebc-straw px-4 py-3 disabled:opacity-50">
+          {history.loading ? 'Chargement des événements précédents…' : 'Charger les 100 événements précédents'}
+        </button>}
       </div>
 
       {/* Footer */}
@@ -228,4 +238,3 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
     </ModalShell>
   );
 };
-

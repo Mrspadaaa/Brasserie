@@ -1,6 +1,7 @@
 import { HopLot, HopVariety } from './hopIndexSchema.js';
 import { predictHopTriplet, replayHopTripletV3 } from './hopPredictionCore.js';
 import { HopEstimate, HopPredictionSnapshot, assertHopPredictionSnapshotShape } from './hopPredictionSchema.js';
+import { assertHopRecipeInput, predictHopRecipe } from './hopRecipePrediction.js';
 
 const stable = (value: unknown): string => JSON.stringify(value, (_key, item) =>
   item && typeof item === 'object' && !Array.isArray(item)
@@ -13,6 +14,27 @@ const sameNumber = (left: number, right: number) => Math.abs(left - right) <=
 /** Replay from frozen evidence; legacy v1 stays immutable and is never recalculated. */
 export function assertHopPredictionSnapshot(value: unknown, id?: string): asserts value is HopPredictionSnapshot {
   assertHopPredictionSnapshotShape(value, id);
+  if (value.recipePrediction) {
+    assertHopRecipeInput(value.recipePrediction.input);
+    const replayed = predictHopRecipe(value.recipePrediction.input, value.target, {
+      varieties: value.evidence.varieties as HopVariety[], lots: value.evidence.lots as HopLot[], knowledge: value.evidence.knowledge
+    }, value.recipePrediction.engineVersion);
+    const equal = (a: any, b: any): boolean => {
+      if (typeof a === 'number' && typeof b === 'number') return Number.isFinite(a) && Number.isFinite(b) && sameNumber(a, b);
+      if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') return a === b;
+      if (Array.isArray(a) !== Array.isArray(b)) return false;
+      const ak = Object.keys(a).filter(k => a[k] !== undefined), bk = Object.keys(b).filter(k => b[k] !== undefined);
+      return sameMembers(ak, bk) && ak.every(k => equal(a[k], b[k]));
+    };
+    // Includes chemistry units, partial coverage, shared context, reasons and sources.
+    // Unknown keys cannot smuggle an invented estimate into an otherwise valid backup.
+    const { additions, ...programme } = replayed;
+    if (!equal(value.recipePrediction, programme) || !equal(value.prediction, additions[0]))
+      throw Error('Programme figé incohérent avec ses données figées.');
+    // Already fully replayed in the versioned recipe domain above; a naked
+    // triplet deliberately carries no NOLO matrix information.
+    if (value.recipePrediction.input.aromaDomain === 'nolo') return;
+  }
   if (value.engineVersion === 'hop-envelope-v1') return;
   const actual = value.prediction;
   const expected = (value.engineVersion === 'hop-experimental-v3' ? replayHopTripletV3 : predictHopTriplet)(actual.triplet, value.target, {

@@ -1,0 +1,813 @@
+{
+  "date": "2026-09-09",
+  "scenarioEngine": "yeast-scenario-2",
+  "recipeEngine": "hop-recipe-experimental-v3",
+  "mathChanges": false,
+  "unitIntegration": {
+    "suite": 2434,
+    "files": 137,
+    "additionalV2ReplayTestPassed": true
+  },
+  "yeastBrowser": {
+    "passed": true,
+    "reports": [
+      {
+        "width": 320,
+        "objectives": 6,
+        "lab": [
+          {
+            "id": "4VG",
+            "range": {
+              "min": 2.238563495272798,
+              "max": 2.62097217139387
+            },
+            "label": "4VG : 2,23–2,63 mg/L · confiance faible",
+            "left": 77.6451,
+            "width": 13.2639,
+            "expectedLeft": 77.64514805561627,
+            "expectedWidth": 13.263942853474637
+          },
+          {
+            "id": "4VP",
+            "range": {
+              "min": 1.2467011442149782,
+              "max": 1.6252840641183577
+            },
+            "label": "4VP : 1,24–1,63 mg/L · confiance faible",
+            "left": 43.2421,
+            "width": 13.1312,
+            "expectedLeft": 43.242148426029715,
+            "expectedWidth": 13.131245519414332
+          }
+        ],
+        "performance": {
+          "maxMs": 5.699999999254942,
+          "medianMs": 4.400000000372529,
+          "renderedUpdateMs": 69.8878999999979
+        },
+        "errors": [],
+        "remoteRequests": 0,
+        "simulationWrites": 0,
+        "simulationRequests": 0,
+        "readonlyVariantWrites": 0
+      },
+      {
+        "width": 390,
+        "objectives": 6,
+        "lab": [
+          {
+            "id": "4VG",
+            "range": {
+              "min": 2.238563495272798,
+              "max": 2.62097217139387
+            },
+            "label": "4VG : 2,23–2,63 mg/L · confiance faible",
+            "left": 77.6451,
+            "width": 13.2639,
+            "expectedLeft": 77.64514805561627,
+            "expectedWidth": 13.263942853474637
+          },
+          {
+            "id": "4VP",
+            "range": {
+              "min": 1.2467011442149782,
+              "max": 1.6252840641183577
+            },
+            "label": "4VP : 1,24–1,63 mg/L · confiance faible",
+            "left": 43.2421,
+            "width": 13.1312,
+            "expectedLeft": 43.242148426029715,
+            "expectedWidth": 13.131245519414332
+          }
+        ],
+        "performance": {
+          "maxMs": 3.800000000745058,
+          "medianMs": 2,
+          "renderedUpdateMs": 40.00050000000192
+        },
+        "errors": [],
+        "remoteRequests": 0,
+        "simulationWrites": 0,
+        "simulationRequests": 0,
+        "readonlyVariantWrites": 0
+      },
+      {
+        "width": 1280,
+        "objectives": 6,
+        "lab": [
+          {
+            "id": "4VG",
+            "range": {
+              "min": 2.238563495272798,
+              "max": 2.62097217139387
+            },
+            "label": "4VG : 2,23–2,63 mg/L · confiance faible",
+            "left": 77.6451,
+            "width": 13.2639,
+            "expectedLeft": 77.64514805561627,
+            "expectedWidth": 13.263942853474637
+          },
+          {
+            "id": "4VP",
+            "range": {
+              "min": 1.2467011442149782,
+              "max": 1.6252840641183577
+            },
+            "label": "4VP : 1,24–1,63 mg/L · confiance faible",
+            "left": 43.2421,
+            "width": 13.1312,
+            "expectedLeft": 43.242148426029715,
+            "expectedWidth": 13.131245519414332
+          }
+        ],
+        "performance": {
+          "maxMs": 2.900000000372529,
+          "medianMs": 2,
+          "renderedUpdateMs": 26.062200000000303
+        },
+        "errors": [],
+        "remoteRequests": 0,
+        "simulationWrites": 0,
+        "simulationRequests": 0,
+        "readonlyVariantWrites": 0
+      }
+    ]
+  },
+  "hopBrowser": [
+    {
+      "width": 320,
+      "errors": [],
+      "remoteRequests": 0,
+      "simulationWrites": 0,
+      "simulationRequests": 0,
+      "updateTwentyMs": 16.90000000037253,
+      "quickSearchMs": 127.14460000000145,
+      "navigationMs": 33.52469999999994,
+      "partialCoaPreserved": true,
+      "searchCancellation": true,
+      "staleResultDiscarded": true,
+      "documented": [
+        {
+          "axis": "citrus",
+          "confidence": "faible",
+          "range": {
+            "min": 32.728171334431636,
+            "max": 44.60516199890169
+          }
+        },
+        {
+          "axis": "tropical",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "stoneFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "pomeFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "berries",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "melon",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "floral",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "herbal",
+          "confidence": "faible",
+          "range": {
+            "min": 35.07333333333333,
+            "max": 40.92666666666667
+          }
+        },
+        {
+          "axis": "resin",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "spice",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "green",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "earthy",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "citrus-lafontaine",
+          "confidence": "faible",
+          "range": null
+        }
+      ],
+      "comparison": {
+        "issues": [],
+        "retainedBands": 2
+      },
+      "twenty": [
+        {
+          "axis": "citrus",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "tropical",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "stoneFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "pomeFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "berries",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "melon",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "floral",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "herbal",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "resin",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "spice",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "green",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "earthy",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "citrus-lafontaine",
+          "confidence": "faible",
+          "range": null
+        }
+      ],
+      "savedHops": 1,
+      "persistenceRetryIdempotent": true
+    },
+    {
+      "width": 390,
+      "errors": [],
+      "remoteRequests": 0,
+      "simulationWrites": 0,
+      "simulationRequests": 0,
+      "updateTwentyMs": 14.900000000372529,
+      "quickSearchMs": 123.20010000000002,
+      "navigationMs": 23.762399999999616,
+      "partialCoaPreserved": true,
+      "searchCancellation": true,
+      "staleResultDiscarded": true,
+      "documented": [
+        {
+          "axis": "citrus",
+          "confidence": "faible",
+          "range": {
+            "min": 32.728171334431636,
+            "max": 44.60516199890169
+          }
+        },
+        {
+          "axis": "tropical",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "stoneFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "pomeFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "berries",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "melon",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "floral",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "herbal",
+          "confidence": "faible",
+          "range": {
+            "min": 35.07333333333333,
+            "max": 40.92666666666667
+          }
+        },
+        {
+          "axis": "resin",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "spice",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "green",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "earthy",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "citrus-lafontaine",
+          "confidence": "faible",
+          "range": null
+        }
+      ],
+      "comparison": {
+        "issues": [],
+        "retainedBands": 2
+      },
+      "twenty": [
+        {
+          "axis": "citrus",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "tropical",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "stoneFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "pomeFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "berries",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "melon",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "floral",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "herbal",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "resin",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "spice",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "green",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "earthy",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "citrus-lafontaine",
+          "confidence": "faible",
+          "range": null
+        }
+      ],
+      "savedHops": 1,
+      "persistenceRetryIdempotent": true
+    },
+    {
+      "width": 1280,
+      "errors": [],
+      "remoteRequests": 0,
+      "simulationWrites": 0,
+      "simulationRequests": 0,
+      "updateTwentyMs": 12.200000001117587,
+      "quickSearchMs": 125.94250000000102,
+      "navigationMs": 27.671400000002905,
+      "partialCoaPreserved": true,
+      "searchCancellation": true,
+      "staleResultDiscarded": true,
+      "documented": [
+        {
+          "axis": "citrus",
+          "confidence": "faible",
+          "range": {
+            "min": 32.728171334431636,
+            "max": 44.60516199890169
+          }
+        },
+        {
+          "axis": "tropical",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "stoneFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "pomeFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "berries",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "melon",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "floral",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "herbal",
+          "confidence": "faible",
+          "range": {
+            "min": 35.07333333333333,
+            "max": 40.92666666666667
+          }
+        },
+        {
+          "axis": "resin",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "spice",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "green",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "earthy",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "citrus-lafontaine",
+          "confidence": "faible",
+          "range": null
+        }
+      ],
+      "comparison": {
+        "issues": [],
+        "retainedBands": 2
+      },
+      "twenty": [
+        {
+          "axis": "citrus",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "tropical",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "stoneFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "pomeFruit",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "berries",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "melon",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "floral",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "herbal",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "resin",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "spice",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "green",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "earthy",
+          "confidence": "faible",
+          "range": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "axis": "citrus-lafontaine",
+          "confidence": "faible",
+          "range": null
+        }
+      ],
+      "savedHops": 1,
+      "persistenceRetryIdempotent": true
+    }
+  ]
+}

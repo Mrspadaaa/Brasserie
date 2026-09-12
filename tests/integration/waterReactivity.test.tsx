@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { describe, it, expect, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, within, act } from '@testing-library/react';
+import { render as testingRender, screen, fireEvent, cleanup, within, act } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
 import { WaterSource } from '../../src/types';
@@ -1147,3 +1147,10 @@ describe('Le curseur suit les sels, et pas seulement la consigne', () => {
     expect(pouce()).toBeLessThan(3);
   });
 });
+
+// These chemistry regressions exercise the advanced controls explicitly. Compact defaults have their own interaction tests.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);
+  return view;
+}

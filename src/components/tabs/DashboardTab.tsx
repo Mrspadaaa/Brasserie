@@ -28,6 +28,12 @@ import { useStorageValue } from '../../hooks/useLiveData';
 import { DateUtils } from '../../services/dateUtils';
 import { BrewingMath } from '../../services/brewingMath';
 import { isCurrent } from '../../domain/catalogOrganization';
+import { FinanceService } from '../../services/financeService';
+import { summarizeLedger } from '../../domain/finance/ledger';
+import { MobileDetails } from '../../ui/ViewNavigation';
+import { useMobileLayout } from '../../ui/useViewport';
+import { statusOf } from '../../domain/batchStatus';
+import { fermentationReadings } from '../../domain/fermentationReadings';
 
 interface DashboardTabProps {
   transactions: Transaction[];
@@ -54,6 +60,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   onOpenCreateBatch,
   onOpenQuickAction
 }) => {
+  const mobile = useMobileLayout();
   // Read creative tasks/events from storage
   const creativeItems = useStorageValue(StorageService.getCreativeItems);
 
@@ -73,40 +80,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     return transactions.filter((tx) => DateUtils.isDateInPeriod(tx.date, globalTimeFilter));
   }, [transactions, globalTimeFilter]);
 
-  const { periodRevenue, periodExpenses, periodNet, totalApports, cashAvailable } = useMemo(() => {
-    let rev = 0;
-    let exp = 0;
-
-    periodTxs.forEach((tx) => {
-      if (tx.category === 'recettes') {
-        rev += tx.amountHT;
-      } else if (tx.category !== 'apports') {
-        exp += (tx.amountTTC || tx.amountHT);
-      }
-    });
-
-    const apports = transactions
-      .filter((t) => t.category === 'apports')
-      .reduce((sum, t) => sum + t.amountHT, 0);
-
-    const chargesAll = transactions
-      .filter((t) => t.category !== 'apports' && t.category !== 'recettes')
-      .reduce((sum, t) => sum + (t.amountTTC || t.amountHT), 0);
-
-    const recettesAll = transactions
-      .filter((t) => t.category === 'recettes')
-      .reduce((sum, t) => sum + (t.amountTTC || t.amountHT), 0);
-
-    const available = apports + recettesAll - chargesAll;
-
-    return {
-      periodRevenue: rev,
-      periodExpenses: exp,
-      periodNet: rev - exp,
-      totalApports: apports,
-      cashAvailable: available
-    };
-  }, [periodTxs, transactions]);
+  const financeProfile = useStorageValue(FinanceService.getProfile);
+  const financePayments = useStorageValue(FinanceService.getPayments);
+  const ledger = useMemo(() => summarizeLedger(transactions, financePayments, financeProfile), [transactions, financePayments, financeProfile]);
+  const periodLedger = useMemo(() => summarizeLedger(periodTxs, financePayments, financeProfile), [periodTxs, financePayments, financeProfile]);
+  const periodRevenue = periodLedger.incomeCents / 100;
+  const periodExpenses = periodLedger.expenseCents / 100;
+  const periodNet = periodRevenue - periodExpenses;
+  const totalApports = ledger.contributionCents / 100;
+  const cashAvailable = ledger.cashCents == null ? null : ledger.cashCents / 100;
 
   // Stocks alerts & Shopping List Items
   const [quickCopied, setQuickCopied] = useState(false);
@@ -197,16 +179,16 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   const swissDeadlines = [
     {
       id: 'ofdf',
-      title: 'Impôt Fédéral sur la Bière (OFDF 45.60)',
-      description: 'Déclaration mensuelle obligatoire avant le 15 du mois (17.64 CHF/hl pour micro-brasserie)',
-      deadline: '15 du mois',
+      title: 'Impôt fédéral sur la bière — Taxas',
+      description: 'Selon le régime OFDF confirmé : déclaration dans les 20 jours et paiement dans les 30 jours après la fin du trimestre ou de l’année. La réserve de l’app ne remplace pas les relevés de sorties.',
+      deadline: 'Régime OFDF à confirmer',
       category: 'Fédéral 🇨🇭'
     },
     {
       id: 'tva',
       title: 'Décompte TVA Trimestriel AFC',
-      description: 'TVA 2.6% (bière) & 8.1% (matériel/services). Échéances : 31 mai (T1), 31 août (T2), 30 nov (T3), 28 fév (T4)',
-      deadline: 'Fin de trimestre',
+      description: config.fiscal.isTvaRegistered ? 'Bière alcoolisée : taux normal de 8,1 %. Décompte selon la méthode et la périodicité confirmées auprès de l’AFC.' : 'Brasserie non assujettie : aucune TVA facturée ni récupérée. Surveiller l’évolution de la situation.',
+      deadline: config.fiscal.isTvaRegistered ? 'Selon le régime AFC' : 'Non assujettie',
       category: 'Fédéral 🇨🇭'
     },
     {
@@ -219,8 +201,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     {
       id: 'patente_b',
       title: 'Patente Cantonale B (Police du Commerce)',
-      description: 'Taxe fribourgeoise de 2% sur le chiffre d’affaires des ventes de boissons alcoolisées',
-      deadline: 'Annuel (30 avril)',
+      description: 'Si une patente de commerce au détail s’applique : 2 % du chiffre d’affaires concerné de l’année précédente, minimum 100 CHF. Vérifier la décision cantonale.',
+      deadline: 'Selon la décision cantonale',
       category: 'Fribourg 📜'
     },
     {
@@ -238,6 +220,30 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       category: 'Fribourg 📑'
     }
   ];
+
+  if (mobile) return <div className="space-y-3 pb-24 pt-2 text-sm">
+    <h2 className="text-lg font-semibold">À la brasserie</h2>
+    <section aria-label="Brassins en cours" className="space-y-2">
+      <div className="flex items-center justify-between gap-2"><h3 className="font-semibold text-cave-200">En cuve · {activeBatches.length}</h3><button type="button" onClick={onOpenCreateBatch} className="min-h-touch px-3 rounded-control bg-ebc-straw text-cave-950 font-semibold flex items-center gap-1"><Plus size={18}/>Brassin</button></div>
+      {activeBatches.slice(0,3).map(batch=>{const reading=fermentationReadings(batch);return <button type="button" key={batch.id} onClick={()=>onNavigateTab('production')} className="w-full rounded-panel border border-cave-800 bg-cave-900 p-3 flex items-center gap-3 text-left"><span className="min-w-0 flex-1"><strong className="block text-base break-words">{batch.name}</strong><span className="block mt-1 text-cave-400">{statusOf(batch.status).label} · {batch.brewDate?`J+${getFermentationDays(batch.brewDate)}`:'Date à renseigner'}{reading.latest!==undefined?` · SG ${reading.latest.toLocaleString('fr-CH',{minimumFractionDigits:3,maximumFractionDigits:3})}`:''}</span></span><ChevronRight size={18} className="shrink-0 text-cave-400"/></button>;})}
+      {!activeBatches.length&&<p className="py-3 text-cave-400">Aucun brassin en cuve.</p>}
+      {activeBatches.length>3&&<button type="button" className="min-h-touch text-ebc-straw" onClick={()=>onNavigateTab('production')}>Voir les {activeBatches.length} brassins en cuve →</button>}
+    </section>
+    {plannedBatches.length>0&&<section aria-label="Prochains brassins" className="space-y-2"><h3 className="font-semibold text-cave-200">À brasser · {plannedBatches.length}</h3>{[...plannedBatches].sort((a,b)=>(DateUtils.parseDate(a.brewDate)?.getTime()??Infinity)-(DateUtils.parseDate(b.brewDate)?.getTime()??Infinity)).slice(0,2).map(batch=><button key={batch.id} type="button" onClick={()=>onNavigateTab('production')} className="w-full min-h-touch rounded-panel border border-cave-800 bg-cave-900 p-3 flex items-center gap-2 text-left"><span className="min-w-0 flex-1"><strong className="block break-words">{batch.name}</strong><span className="text-cave-400">{batch.volumeL} L · {batch.brewDate||'Date à choisir'}</span></span><ChevronRight size={18} className="shrink-0 text-cave-400"/></button>)}{plannedBatches.length>2&&<button type="button" onClick={()=>onNavigateTab('production')} className="min-h-touch text-ebc-straw">Voir les {plannedBatches.length} brassins prévus →</button>}</section>}
+    <MobileDetails title="Stocks à réapprovisionner" summary={itemsToOrder.length?`${itemsToOrder.length} article(s) sous le seuil`:'Stocks suffisants'}>
+      {itemsToOrder.map(item=><button type="button" key={item.name} onClick={()=>onNavigateTab('stocks')} className="flex w-full min-h-touch items-center justify-between gap-3 text-left border-b border-cave-800 py-2"><span className="min-w-0"><strong className="block break-words">{item.name}</strong><span className="text-cave-400">{item.supplier}{item.neededFor.length?` · ${item.neededFor.join(', ')}`:''}</span></span><span className="shrink-0 text-ebc-straw">{item.missing} {item.unit}</span></button>)}
+      <div className="flex flex-wrap gap-2">{itemsToOrder.length>0&&<button type="button" onClick={handleCopyQuickShopping} className="min-h-touch px-3 rounded-control bg-cave-850 text-ebc-straw">{quickCopied?'Liste copiée':'Copier la liste'}</button>}<button type="button" onClick={()=>onNavigateTab('stocks')} className="min-h-touch px-3 text-ebc-straw">Voir les stocks →</button></div>
+    </MobileDetails>
+    <MobileDetails title="Repères financiers" summary={`${periodLabel} · ${periodExpenses.toFixed(2)} CHF de charges`}>
+      <dl className="space-y-2">{[['Recettes',`${periodRevenue.toFixed(2)} CHF`],['Résultat de la période',`${periodNet.toFixed(2)} CHF`],['Trésorerie suivie',cashAvailable==null?'À initialiser':`${cashAvailable.toFixed(2)} CHF`],['Apports privés depuis le début',`${totalApports.toFixed(2)} CHF`]].map(([label,value])=><div key={label} className="flex justify-between gap-3"><dt className="text-cave-400">{label}</dt><dd className="text-right tabular-nums">{value}</dd></div>)}</dl>{!ledger.cashComplete&&<p className="text-ebc-straw">Solde initial et paiements à compléter.</p>}<button type="button" onClick={()=>onNavigateTab('finances')} className="min-h-touch text-ebc-straw">Ouvrir les finances →</button>
+    </MobileDetails>
+    <MobileDetails title="Agenda de la brasserie" summary={`${todoEvents.filter(item=>item.status!=='done').length} tâche(s) à faire`}>
+      {[...todoEvents].sort((a,b)=>Number(a.status==='done')-Number(b.status==='done')).map(item=><button type="button" key={item.id} onClick={()=>handleToggleTodo(item)} aria-pressed={item.status==='done'} aria-label={`${item.title} — ${item.status==='done'?'fait':'à faire'}`} className="min-h-touch w-full flex items-center gap-3 text-left">{item.status==='done'?<CheckCircle2 size={20} className="shrink-0 text-hop"/>:<Circle size={20} className="shrink-0 text-cave-400"/>}<span className={item.status==='done'?'line-through text-cave-400':''}>{item.title}{item.date&&<span className="block text-cave-400">{item.date}</span>}</span></button>)}<button type="button" onClick={onNavigateToCreativeLab} className="min-h-touch text-ebc-straw">Gérer dans l’atelier →</button>
+    </MobileDetails>
+    <MobileDetails title="Échéances et démarches" summary={`${swissDeadlines.filter(item=>!completedDeadlines[item.id]).length} point(s) à suivre · Fribourg / OFDF`}>
+      {swissDeadlines.map(item=><div key={item.id} className="border-b border-cave-800 pb-3"><button type="button" aria-pressed={!!completedDeadlines[item.id]} aria-label={`${item.title} — ${completedDeadlines[item.id]?'fait':'à faire'}`} onClick={()=>toggleDeadline(item.id)} className="min-h-touch w-full flex items-center gap-3 text-left">{completedDeadlines[item.id]?<CheckCircle2 size={20} className="shrink-0 text-hop"/>:<Circle size={20} className="shrink-0 text-cave-400"/>}<span className="font-medium">{item.title}</span></button><p className="text-cave-300">{item.deadline}</p><p className="mt-1 text-cave-400 leading-relaxed">{item.description}</p></div>)}
+    </MobileDetails>
+  </div>;
 
   return (
     <div className="space-y-4 pb-28 pt-2 text-sm">
@@ -282,16 +288,16 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           className="p-4 rounded-3xl bg-cave-900 border border-cave-800 hover:border-hop/50 transition cursor-pointer shadow-sm relative overflow-hidden group"
         >
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-sm text-cave-400 font-medium">Solde Disponible</span>
+            <span className="text-sm text-cave-400 font-medium">Trésorerie suivie</span>
             <div className="w-7 h-7 rounded-xl bg-cave-850 flex items-center justify-center text-cave-400 group-hover:text-hop transition">
               <TrendingUp className="w-4 h-4 text-hop" />
             </div>
           </div>
           <div className="text-xl xs:text-2xl font-black font-mono text-hop">
-            {cashAvailable.toFixed(2)} <span className="text-sm font-normal text-cave-400">CHF</span>
+            {cashAvailable == null ? 'À initialiser' : `${cashAvailable.toFixed(2)} CHF`}
           </div>
           <div className="text-footnote text-cave-500 mt-1">
-            Apports Gaëtan : {totalApports.toFixed(2)} CHF
+            {ledger.cashComplete ? `Apports privés : ${totalApports.toFixed(2)} CHF` : 'Solde initial et paiements à compléter dans Finances'}
           </div>
         </div>
       </div>
@@ -376,15 +382,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                   <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-sm bg-cave-900/60 p-2 rounded-xl border border-cave-800/80">
                     <div>
                       <span className="text-footnote text-cave-500 block font-sans">OG Initiale</span>
-                      <strong className="text-cave-200">{b.og || '1.060'}</strong>
+                      <strong className="text-cave-200">{b.og || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-footnote text-cave-500 block font-sans">FG Actuelle</span>
-                      <strong className="text-ebc-straw">{b.fg || '1.018'}</strong>
+                      <strong className="text-ebc-straw">{b.fg || '—'}</strong>
                     </div>
                     <div>
                       <span className="text-footnote text-cave-500 block font-sans">Alcool</span>
-                      <strong className="text-hop">{b.abv || '~5.8%'}</strong>
+                      <strong className="text-hop">{b.abv || '—'}</strong>
                     </div>
                   </div>
                 </div>

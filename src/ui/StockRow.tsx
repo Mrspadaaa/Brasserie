@@ -2,9 +2,10 @@ import React from 'react';
 import { ChevronRight, Tag } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
-import { computeStockLevel, allocatedBatches } from '../domain/stockLevel';
+import { computeStockLevel, allocatedBatches, pendingStockQuantity } from '../domain/stockLevel';
 import { LevelGauge } from './LevelGauge';
 import { FavoriteToggle } from './EntityList';
+import { useMobileLayout } from './useViewport';
 
 /**
  * Ligne de stock — **une seule** pour toutes les catégories.
@@ -24,6 +25,7 @@ import { FavoriteToggle } from './EntityList';
 interface StockRowProps {
   item: StockItem;
   batches: Batch[];
+  stockItems?: StockItem[];
   onOpen: (item: StockItem) => void;
   onQuickAdjust: (item: StockItem, delta: number) => void;
   onToggleFavorite: (item: StockItem) => void;
@@ -32,12 +34,15 @@ interface StockRowProps {
 export const StockRow: React.FC<StockRowProps> = ({
   item,
   batches,
+  stockItems,
   onOpen,
   onQuickAdjust,
   onToggleFavorite
 }) => {
-  const level = computeStockLevel(item, batches);
-  const allocated = allocatedBatches(item, batches);
+  const mobile = useMobileLayout();
+  const level = computeStockLevel(item, batches, stockItems);
+  const allocated = allocatedBatches(item, batches, stockItems);
+  const pending = batches.reduce((sum, batch) => sum + pendingStockQuantity(item, batch), 0);
   const ladder = Units.stepLadder(item.unit);
 
   // Repère du minimum sur la jauge, à la même échelle qu'elle (3 brassins).
@@ -45,6 +50,16 @@ export const StockRow: React.FC<StockRowProps> = ({
     level.perBatch && level.perBatch > 0 && item.minStock > 0
       ? Math.min(100, (item.minStock / level.perBatch / 3) * 100)
       : undefined;
+
+  if(mobile) return <article className="panel flex items-start overflow-hidden">
+    <button type="button" aria-label={`Ouvrir ${item.name}`} onClick={()=>onOpen(item)} className="min-w-0 flex-1 p-3 text-left">
+      <span className="flex items-start justify-between gap-3"><strong className="min-w-0 text-base leading-snug break-words">{item.name}</strong><span className="shrink-0 text-base tabular-nums">{Units.format(item.currentStock,item.unit)}</span></span>
+      <span className={`block text-sm mt-1 ${level.tone==='alert'?'text-alert':level.tone==='straw'?'text-ebc-straw':'text-cave-400'}`}>{item.alphaPct?`${item.alphaPct}% AA · `:''}{level.label}</span>
+      <span className="block mt-2"><LevelGauge level={level} minMarkerPercent={minMarker} compact/></span>
+      {pending>0&&<span className="block text-sm text-ebc-straw mt-1">{Units.format(pending,item.unit)} réservés</span>}
+    </button>
+    <div className="pt-1"><FavoriteToggle active={!!item.favorite} onToggle={()=>onToggleFavorite(item)} label={item.name}/></div>
+  </article>;
 
   return (
     <article className="panel overflow-hidden">
@@ -78,6 +93,7 @@ export const StockRow: React.FC<StockRowProps> = ({
 
         <div className="mt-2 sm:mt-3">
           <LevelGauge level={level} minMarkerPercent={minMarker} />
+          {pending > 0 && <p className="text-xs text-cave-400 mt-1">Couverture après {Units.format(pending, item.unit)} réservés en fermentation.</p>}
         </div>
 
         {allocated.length > 0 && (

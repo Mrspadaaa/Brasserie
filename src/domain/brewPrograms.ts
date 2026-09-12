@@ -204,28 +204,25 @@ export const FERMENT_PROGRAMS: FermentProgram[] = [
 ];
 
 /** Programme de fermentation par défaut, déduit du style saisi. */
-export function fermentProgramForStyle(style: string): FermentProgram {
+export function fermentProgramForStyle(style: string, ref?: BrewingStyleRef, styles?: ListedStyle[]): FermentProgram {
+  const documented = resolveBrewingStyle(style,ref,styles)?.suggestions?.fermentation;
+  if (documented) return FERMENT_PROGRAMS.find(p => p.id === documented) ?? FERMENT_PROGRAMS[0];
   const s = (style || '').toLowerCase();
   const pick = (id: string) => FERMENT_PROGRAMS.find((p) => p.id === id)!;
 
-  if (/neipa|hazy|juicy/.test(s)) return pick('neipa');
-  if (/lager|pils|helles|bock|m[äa]rzen|dunkel|schwarz/.test(s)) return pick('lager');
-  if (/tripel|quadrupel|dubbel|belg|strong dark|abbaye/.test(s)) return pick('belge');
-  if (/imperial|russian|barleywine|barley wine/.test(s)) return pick('imperiale');
-  if (/saison|farmhouse|bi[èe]re de garde/.test(s)) return pick('saison');
-  if (/sour|gose|berliner|lambic|acidul|kettle/.test(s)) return pick('acidulee');
+  if (['lager','pils','pilsner','helles'].includes(s)) return pick('lager');
   return pick('ale');
 }
 
 /** Programme d'empâtage par défaut, déduit du style saisi. */
-export function mashProgramForStyle(style: string): MashProgram {
+export function mashProgramForStyle(style: string, ref?: BrewingStyleRef, styles?: ListedStyle[]): MashProgram {
+  const documented = resolveBrewingStyle(style,ref,styles)?.suggestions?.mash;
+  if (documented) return MASH_PROGRAMS.find(p => p.id === documented) ?? MASH_PROGRAMS[0];
   const s = (style || '').toLowerCase();
   const pick = (id: string) => MASH_PROGRAMS.find((p) => p.id === id)!;
 
-  if (/lager|pils|helles|bock|m[äa]rzen|dunkel/.test(s)) return pick('lager');
-  if (/weizen|weiss|weiß|witbier|blanche|froment|hefe/.test(s)) return pick('froment');
-  if (/imperial|russian|barleywine|quadrupel/.test(s)) return pick('imperiale');
-  if (/tripel|saison|dubbel|belg/.test(s)) return pick('sec');
-  if (/neipa|stout|porter|milk|pastry/.test(s)) return pick('corps');
+  if (['lager','pils','pilsner','helles'].includes(s)) return pick('lager');
   return pick('infusion');
 }
+import { resolveBrewingStyle, type ListedStyle } from './brewingStyles';
+import type { BrewingStyleRef } from '../../functions/src/brewingStyleSchema';

@@ -1,0 +1,119 @@
+{
+  "passed": true,
+  "reports": [
+    {
+      "width": 320,
+      "updateMs": 7.615900000000693,
+      "perf": {
+        "maxMs": 0.20000000298023224,
+        "medianMs": 0
+      },
+      "controls": [
+        {
+          "all": false,
+          "cumulative": false,
+          "elapsedMs": 11.527299999999741,
+          "chemistryRows": 22
+        },
+        {
+          "all": true,
+          "cumulative": false,
+          "elapsedMs": 26.578199999999924,
+          "chemistryRows": 22
+        },
+        {
+          "all": false,
+          "cumulative": true,
+          "elapsedMs": 44.27640000000065,
+          "chemistryRows": 22
+        },
+        {
+          "all": true,
+          "cumulative": true,
+          "elapsedMs": 29.957300000000032,
+          "chemistryRows": 22
+        }
+      ],
+      "errors": [],
+      "remoteRequests": 0,
+      "simulationRequests": 0,
+      "simulationWrites": 0
+    },
+    {
+      "width": 390,
+      "updateMs": 7.361300000000483,
+      "perf": {
+        "maxMs": 0.19999999925494194,
+        "medianMs": 0
+      },
+      "controls": [
+        {
+          "all": false,
+          "cumulative": false,
+          "elapsedMs": 11.345499999999447,
+          "chemistryRows": 22
+        },
+        {
+          "all": true,
+          "cumulative": false,
+          "elapsedMs": 25.083700000001045,
+          "chemistryRows": 22
+        },
+        {
+          "all": false,
+          "cumulative": true,
+          "elapsedMs": 42.59569999999985,
+          "chemistryRows": 22
+        },
+        {
+          "all": true,
+          "cumulative": true,
+          "elapsedMs": 28.801499999999578,
+          "chemistryRows": 22
+        }
+      ],
+      "errors": [],
+      "remoteRequests": 0,
+      "simulationRequests": 0,
+      "simulationWrites": 0
+    },
+    {
+      "width": 1280,
+      "updateMs": 7.065099999999802,
+      "perf": {
+        "maxMs": 0.30000000074505806,
+        "medianMs": 0
+      },
+      "controls": [
+        {
+          "all": false,
+          "cumulative": false,
+          "elapsedMs": 10.6221000000005,
+          "chemistryRows": 22
+        },
+        {
+          "all": true,
+          "cumulative": false,
+          "elapsedMs": 28.785899999998946,
+          "chemistryRows": 22
+        },
+        {
+          "all": false,
+          "cumulative": true,
+          "elapsedMs": 40.99169999999867,
+          "chemistryRows": 22
+        },
+        {
+          "all": true,
+          "cumulative": true,
+          "elapsedMs": 29.24920000000202,
+          "chemistryRows": 22
+        }
+      ],
+      "errors": [],
+      "remoteRequests": 0,
+      "simulationRequests": 0,
+      "simulationWrites": 0
+    }
+  ]
+}

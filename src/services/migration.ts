@@ -214,7 +214,8 @@ export async function runMigrationIfNeeded(): Promise<MigrationReport> {
     typeof location !== 'undefined' &&
     new URLSearchParams(location.search).has('dev-local')
   ) {
-    const { entries, source, counts } = buildEntries();
+    const { entries, source, counts } = new URLSearchParams(location.search).has('finance-demo')
+      ? (await import('../dev/financeDemo')).financeDemoEntries() : buildEntries();
     await FirestoreRepo.bulkWrite(entries);
     return { ran: true, source, counts };
   }

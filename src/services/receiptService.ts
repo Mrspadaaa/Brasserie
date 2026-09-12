@@ -6,7 +6,7 @@ export interface ReceiptOptions {
   clientName: string;
   beerName: string;
   amountTTC: number;
-  tvaRate: number; // 0.026 or 0.081
+  tvaRate: number; // Authoritative document rate; normal rate for a new alcoholic beer sale.
   paymentMethod: 'TWINT' | 'Espèces' | 'Virement' | 'Facture';
   date?: string;
   notes?: string;
@@ -91,7 +91,7 @@ export const ReceiptService = {
     doc.text("Mode de règlement :", 20, 56);
     doc.setFontSize(9);
     doc.setTextColor(16, 185, 129); // Emerald
-    doc.text(`✓ ${options.paymentMethod} (Encaissé)`, 55, 56);
+    doc.text(options.paymentMethod === 'Facture' ? 'Facture (À régler)' : `✓ ${options.paymentMethod} (Encaissé)`, 55, 56);
 
     // --- 4. ARTICLES TABLE ---
     let y = 72;
@@ -147,15 +147,15 @@ export const ReceiptService = {
     doc.roundedRect(72, y - 4, 61, 9, 2, 2, 'F');
     doc.setFontSize(11);
     doc.setTextColor(180, 83, 9); // Amber 700
-    doc.text("TOTAL ENCAISSÉ :", 75, y + 2);
+    doc.text(options.paymentMethod === 'Facture' ? 'TOTAL À RÉGLER :' : 'TOTAL ENCAISSÉ :', 75, y + 2);
     doc.text(`${options.amountTTC.toFixed(2)} CHF`, 112, y + 2);
 
     // --- 6. FOOTER LEGAL & SWISS QR READY ---
     doc.setFontSize(7.5);
     doc.setTextColor(140);
     doc.text(
-      assujetti
-        ? "Document officiel valant quittance de paiement pour la comptabilité et la taxe fédérale sur la bière."
+      options.paymentMethod === 'Facture' ? 'Justificatif de vente à régler. Le paiement reste à confirmer.' : assujetti
+        ? "Quittance de paiement pour les articles et les montants indiqués."
         : "Quittance de paiement. Entreprise non assujettie à la TVA — aucune TVA n'est facturée ni récupérable.",
       74,
       175,
@@ -182,11 +182,12 @@ export const ReceiptService = {
     config?: AppConfig,
     uploadedProofUrl?: string
   ): Transaction {
-    const { dataUrl, fileName } = this.generateReceiptPdf(options, config);
+    const newSaleOptions = { ...options, tvaRate: config?.fiscal?.isTvaRegistered ? config.fiscal.tvaNormalRate : 0 };
+    const { dataUrl, fileName } = this.generateReceiptPdf(newSaleOptions, config);
     // L'écriture comptable doit refléter EXACTEMENT ce qui est imprimé sur la
     // quittance : sans assujettissement, ni TVA sur le papier ni TVA en compta.
     const assujetti = config?.fiscal?.isTvaRegistered === true;
-    const rate = assujetti ? options.tvaRate : 0;
+    const rate = assujetti ? newSaleOptions.tvaRate : 0;
     const ht = assujetti
       ? Math.round((options.amountTTC / (1 + rate)) * 100) / 100
       : options.amountTTC;
@@ -206,7 +207,7 @@ export const ReceiptService = {
       proofUrl: uploadedProofUrl || dataUrl, // uses uploaded image or generated PDF receipt
       proofFileName: uploadedProofUrl ? 'justificatif_paiement.jpg' : fileName,
       proofType: uploadedProofUrl ? 'image/jpeg' : 'application/pdf',
-      syncedToDrive: true
+      syncedToDrive: false
     };
   }
 };

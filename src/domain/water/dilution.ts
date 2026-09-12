@@ -9,6 +9,7 @@ import { calculateSpargeTreatment, lactateInBeer, retainAcidDose } from './acid'
 import { calculateWaterTreatment } from './treatment';
 import type { MineralTargetMode } from './practice';
 import { assessWaterProfile } from './profileAssessment';
+import { completeWaterProposal } from './proposal';
 
 // --- Juste assez d'osmosée ----------------------------------------------------
 
@@ -21,6 +22,7 @@ export interface MinimalDilutionInput {
   hco3Range?: IonBand;
   matchMashAlkalinity?: boolean;
   acidOverride?: { mash?: number; sparge?: number };
+  saltOverrides?: {mash?:Partial<Record<SaltId,number>>;sparge?:Partial<Record<SaltId,number>>};
   source: WaterIons;
   target: WaterIons;
   ranges: Record<keyof WaterIons, IonBand>;
@@ -52,6 +54,8 @@ export interface MinimalDilution {
    * l'unité de l'acide choisi.
    */
   acid: { mash: number; sparge: number; unit: string; name: string; hco3Left: number };
+  stepPct?: number;
+  proposal?: ReturnType<typeof completeWaterProposal>;
 }
 
 /**
@@ -112,10 +116,10 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
     cache.set(pct, solved);
     return solved;
   };
-  const treatments = new Map<number, ReturnType<typeof calculateWaterTreatment>>();
+  const proposals = new Map<number, ReturnType<typeof completeWaterProposal>>();
   const treatmentAt = (pct: number) => {
-    if (treatments.has(pct)) return treatments.get(pct)!;
-    const treatment = calculateWaterTreatment(
+    if (proposals.has(pct)) return proposals.get(pct)!.treatment;
+    const proposal = completeWaterProposal(
       { ...input.source, id: 'dilution', name: 'Eau de départ', ph: input.sourcePh },
       {
         diRatioPct: pct, doses: solveAt(pct).doses,
@@ -124,10 +128,10 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
         acidOverride: input.acidOverride, hco3Target: input.hco3Target, hco3Range: input.hco3Range,
         matchMashAlkalinity: input.matchMashAlkalinity, mashRaCeiling: input.raCeiling, mashRaTarget: input.raPreference
       },
-      input.targetRa
+      input.targetRa,input.disabled,input.saltOverrides?{mash:input.saltOverrides.mash??{},sparge:input.saltOverrides.sparge??{}}:undefined
     );
-    treatments.set(pct, treatment);
-    return treatment;
+    proposals.set(pct, proposal);
+    return proposal.treatment;
   };
   const evaluate = (pct: number): string[] => {
     const start = dilute(input.source, pct);
@@ -178,7 +182,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
   };
 
   const atZero = evaluate(0);
-  if (atZero.length === 0) return { feasible: true, pct: 0, reasons: [], acid: acidAt(0) };
+  if (atZero.length === 0) return { feasible: true, pct: 0, reasons: [], acid: acidAt(0),stepPct:5,proposal:proposals.get(0) };
 
   // Dilution never removes an acid dose explicitly retained by the brewer.
   // If those doses alone exceed the existing taste threshold, every interior
@@ -189,7 +193,7 @@ export function minimalDilution(input: MinimalDilutionInput): MinimalDilution {
   const retainedAcidExceedsTaste = input.acid === 'lactique'
     && lactateInBeer(retainedMash + retainedSparge, input.beerVolumeL) > LACTATE_TASTE_THRESHOLD;
   for (let pct = retainedAcidExceedsTaste ? 100 : 5; pct <= 100; pct += 5) {
-    if (evaluate(pct).length === 0) return { feasible: true, pct, reasons: atZero, acid: acidAt(pct) };
+    if (evaluate(pct).length === 0) return { feasible: true, pct, reasons: atZero, acid: acidAt(pct),stepPct:5,proposal:proposals.get(pct) };
   }
   return { feasible: false, pct: 100, reasons: [
     'La dilution seule ne suffit pas avec les doses d’acide retenues.', ...evaluate(100)

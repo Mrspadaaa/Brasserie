@@ -48,6 +48,7 @@ describe('Science de fermentation et domaines de calcul',()=>{
   expect(r.progress.range!.min).toBeCloseTo(66.6666667,5);expect(r.progress.range!.max).toBeCloseTo(70,6);
   expect(r.trigger.confidence).toBe('low');
   expect(fermentationLagerRest(science,lager,1.050,1.004).progress.range!.min).toBeGreaterThan(100);
+  for(const sg of [0,-1,NaN,Infinity,1.060])expect(fermentationLagerRest(science,lager,1.050,sg).progress.range).toBeNull();
   expect(fermentationLagerRest(science,lager,undefined).trigger.range).toBeNull();
   const revised=structuredClone(science);revised.lagerRest.progressPct={min:50,max:60};
   expect(fermentationLagerRest(revised,lager,1.050).trigger.range).not.toEqual(r.trigger.range);

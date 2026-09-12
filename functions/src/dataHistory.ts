@@ -5,6 +5,23 @@ import { BUSINESS_COLLECTIONS } from './dataSchema.js';
 import { stableJson } from './backupCore.js';
 
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
+function originalMetadata(value: Record<string, any> | null) {
+  if (!value) return null;
+  const result: Record<string, string | number> = {};
+  for (const key of ['id', 'documentId', 'fileName', 'mimeType', 'createdAt', 'provider', 'driveFileId', 'sha256']) {
+    if (typeof value[key] === 'string') result[key] = value[key].slice(0, 200);
+  }
+  for (const key of ['index', 'chunkCount', 'length', 'bytes']) {
+    if (Number.isSafeInteger(value[key]) && value[key] >= 0) result[key] = value[key];
+  }
+  if (typeof value.data === 'string') result.encodedLength = value.data.length;
+  return result;
+}
+function withoutInlineOriginal(value: Record<string, any> | null) {
+  if (!value || typeof value.proofUrl !== 'string' || !value.proofUrl.startsWith('data:')) return value;
+  const { proofUrl, ...rest } = value;
+  return { ...rest, originalProofHash: hash(proofUrl), originalProofEncodedLength: proofUrl.length };
+}
 /** Idempotent, server-observed history. It never watches its own collection. */
 export const recordDataChange = onDocumentWrittenWithAuthContext({
   document: '{collection}/{documentId}', region: 'europe-west6', retry: true, maxInstances: 2
@@ -16,15 +33,22 @@ export const recordDataChange = onDocumentWrittenWithAuthContext({
   if (beforeJson === afterJson) return;
   const changedFields = [...new Set([...Object.keys(before ?? {}), ...Object.keys(after ?? {})])]
     .filter(k => stableJson(before?.[k]) !== stableJson(after?.[k]));
+  const isOriginal = collection === 'financeDocuments';
+  const historyBefore = collection === 'transactions' ? withoutInlineOriginal(before) : before;
+  const historyAfter = collection === 'transactions' ? withoutInlineOriginal(after) : after;
+  const snapshotsIncluded = !isOriginal && Buffer.byteLength(stableJson(historyBefore)) + Buffer.byteLength(stableJson(historyAfter)) < 700_000;
   const data = {
     collection, documentId: event.params.documentId, eventId: event.id,
     action: before === null ? 'create' : after === null ? 'delete' : 'update',
     committedAt: event.data.after.updateTime?.toDate().toISOString() ?? event.time,
     recordedAt: new Date().toISOString(), authType: event.authType, authId: event.authId ?? null,
     changedFields, beforeHash: hash(beforeJson), afterHash: hash(afterJson),
-    // Large attachments remain in native backups; one history entry always fits in Firestore.
-    snapshotsIncluded: Buffer.byteLength(beforeJson) + Buffer.byteLength(afterJson) < 700_000,
-    ...(Buffer.byteLength(beforeJson) + Buffer.byteLength(afterJson) < 700_000 ? { before, after } : {})
+    // Originals are immutable and backed up from financeDocuments. Copying their
+    // 400 kB chunks here would store every invoice twice. Keep traceable hashes
+    // and bounded metadata instead; existing history is never rewritten.
+    snapshotsIncluded,
+    ...(isOriginal ? { originalMetadata: { before: originalMetadata(before), after: originalMetadata(after) } }
+      : snapshotsIncluded ? { before: historyBefore, after: historyAfter } : {})
   };
   const db = getFirestore(), id = hash(event.source + ':' + event.id);
   const batch = db.batch();

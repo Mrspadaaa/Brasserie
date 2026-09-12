@@ -57,3 +57,6 @@ AUDIT-EAU-BRIEF*.md
 
 # Pièces jointes déposées par les outils : rien à versionner.
 .codex-remote-attachments/
+
+# Personal pilot dossier: deployed as a protected server asset, never exported to Git.
+functions/reports/nolo-scenarios-2026.md

@@ -39,7 +39,7 @@
           },
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://apis.google.com https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleusercontent.com https://lh3.googleusercontent.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://firestore.googleapis.com https://www.googleapis.com wss://*.firebaseio.com; frame-src https://brasserie-l-affinee.firebaseapp.com https://accounts.google.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+            "value": "default-src 'self'; script-src https://accounts.google.com/gsi/client 'self' 'unsafe-inline' https://apis.google.com https://www.google.com https://www.gstatic.com; style-src https://accounts.google.com/gsi/style 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://*.googleusercontent.com https://lh3.googleusercontent.com; font-src 'self' data: https://fonts.gstatic.com; connect-src https://accounts.google.com/gsi/ 'self' https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://firestore.googleapis.com https://www.googleapis.com wss://*.firebaseio.com; frame-src blob: https://brasserie-l-affinee.firebaseapp.com https://accounts.google.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
           },
           {
             "key": "Cache-Control",
@@ -80,7 +80,12 @@
       },
       {
         "source": "/brew-alerts-sw.js",
-        "headers": [{"key":"Cache-Control","value":"no-cache, max-age=0"}]
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, max-age=0"
+          }
+        ]
       }
     ]
   },

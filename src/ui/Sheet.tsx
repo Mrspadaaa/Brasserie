@@ -77,6 +77,12 @@ export const Sheet: React.FC<SheetProps> = ({
       <Drawer.Overlay className="fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm" />
 
       <Drawer.Content
+        onEscapeKeyDown={(event) => {
+          // Consume Escape before removing this dialog. The recipe underneath
+          // must not receive the same key after the drawer has unmounted.
+          event.preventDefault();
+          if (dismissible) onClose();
+        }}
         style={{
           bottom: keyboardInset || undefined,
           maxHeight: keyboardInset ? `calc(94dvh - ${keyboardInset}px)` : undefined

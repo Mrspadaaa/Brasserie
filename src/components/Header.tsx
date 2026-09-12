@@ -10,14 +10,16 @@ import {
   LogOut,
   MoreVertical,
   Check,
-  ChevronDown
+  ChevronDown,
+  MessageCircle
 } from 'lucide-react';
 import { AppConfig, TimeFilterPeriod } from '../types';
 import { StorageService } from '../services/storage';
 import { IconButton } from './ui/Button';
-import { useDensity } from '../ui/useViewport';
+import { useDensity, useMobileLayout } from '../ui/useViewport';
 
 interface HeaderProps {
+  hidePeriod?: boolean;
   config: AppConfig;
   globalTimeFilter: TimeFilterPeriod;
   onChangeGlobalTimeFilter: (p: TimeFilterPeriod) => void;
@@ -37,7 +39,7 @@ const PERIODS: Array<{ key: TimeFilterPeriod; label: string }> = [
   { key: 'all', label: "Tout l'historique" },
   { key: 'this-month', label: 'Ce mois' },
   { key: 'last-month', label: 'Mois dernier' },
-  { key: 'year', label: 'Exercice 2026' },
+  { key: 'year', label: `Exercice ${new Date().getFullYear()}` },
   { key: 'q1', label: '1er trimestre' },
   { key: 'q2', label: '2e trimestre' },
   { key: 'q3', label: '3e trimestre' },
@@ -75,6 +77,7 @@ function useDismiss(onDismiss: () => void) {
  * et un menu unique pour le reste. Trois cibles, toutes à 48 px.
  */
 export const Header: React.FC<HeaderProps> = ({
+  hidePeriod = false,
   config,
   globalTimeFilter,
   onChangeGlobalTimeFilter,
@@ -93,6 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
   const currentUser = StorageService.getCurrentUser();
   /* Au doigt, l'en-tête se resserre : les cibles restent à 48 px, la marge part. */
   const compact = useDensity() !== 'comfortable';
+  const mobile = useMobileLayout();
 
   const menuRef = useDismiss(() => setMenuOpen(false));
   const periodRef = useDismiss(() => setPeriodOpen(false));
@@ -115,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({
       */}
       <div
         className={`max-w-4xl mx-auto px-3 flex items-center gap-2 ${
-          compact ? 'h-12' : 'h-16'
+          compact || mobile ? 'h-12' : 'h-16'
         }`}
       >
         {/* Identité — ramène à l'accueil */}
@@ -143,7 +147,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="block text-base font-semibold text-cave-50 leading-tight truncate group-hover:text-ebc-straw transition-colors">
               L'Affinée
             </span>
-            <span className="block text-sm text-cave-400 leading-tight truncate">
+            <span className="hidden sm:block text-sm text-cave-400 leading-tight truncate">
               Villars-sur-Glâne
             </span>
           </span>
@@ -151,8 +155,8 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex-1" />
 
-        {/* Période : un réglage de lecture qui vaut d'être visible en permanence */}
-        <div className="relative" ref={periodRef}>
+        {/* Période : dans le menu sur téléphone, visible sur grand écran. */}
+        <div className="relative" ref={periodRef} style={hidePeriod || mobile ? { display: 'none' } : undefined}>
           <button
             onClick={() => setPeriodOpen((o) => !o)}
             aria-expanded={periodOpen}
@@ -189,6 +193,7 @@ export const Header: React.FC<HeaderProps> = ({
         <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary">
           <Search className="w-5 h-5" />
         </IconButton>
+        <div id="brewer-mobile-header" className="sm:hidden empty:hidden"/>
 
         {/* Tout le reste vit derrière un seul bouton */}
         <div className="relative" ref={menuRef}>
@@ -205,7 +210,12 @@ export const Header: React.FC<HeaderProps> = ({
           </IconButton>
 
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-64 panel shadow-lift overflow-hidden py-1">
+            <div className="absolute right-0 mt-2 w-64 panel shadow-lift max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain py-1">
+              {mobile && !hidePeriod && <label className="block px-4 py-2 text-sm text-cave-300">Période de l’application
+                <select aria-label="Période de l’application" className="mt-2 w-full min-h-touch rounded-control bg-cave-950 text-cave-100 px-2" value={globalTimeFilter}
+                  onChange={event => onChangeGlobalTimeFilter(event.target.value as TimeFilterPeriod)}>{PERIODS.map(period => <option key={period.key} value={period.key}>{period.label}</option>)}</select>
+              </label>}
+              <button className={menuItem} onClick={() => { window.dispatchEvent(new Event('brewer-inbox-open')); setMenuOpen(false); }}><MessageCircle className="w-5 h-5 text-cave-400 shrink-0"/>Mes conversations</button>
               <button
                 onClick={() => {
                   StorageService.setCurrentUser(currentUser === 'Gaëtan' ? 'Aricia' : 'Gaëtan');

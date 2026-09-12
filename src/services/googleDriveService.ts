@@ -1,6 +1,7 @@
 import { DriveService } from './driveService';
 import { Transaction } from '../types';
-import { StorageService } from './storage';
+import { FirebaseAuthService } from './firebaseAuth';
+import { uploadDriveOriginal } from './driveFileStore';
 
 export interface GoogleDriveUploadResult {
   success: boolean;
@@ -10,116 +11,34 @@ export interface GoogleDriveUploadResult {
   error?: string;
 }
 
+/** Compatibility for legacy receipt screens. Financial originals use
+ * driveFileStore directly and persist their verified reference in Firestore. */
 export const GoogleDriveService = {
-  // Storage keys for OAuth / Drive config
-  TOKEN_KEY: 'laffinee_gdrive_access_token',
-  ROOT_FOLDER_KEY: 'laffinee_gdrive_root_folder_id',
-
   getAccessToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    // Remove obsolete persisted credentials rather than ever reusing them.
+    try { localStorage.removeItem('laffinee_gdrive_access_token'); } catch { /* Storage may be unavailable. */ }
+    return FirebaseAuthService.getDriveAccessToken();
   },
 
-  setAccessToken(token: string) {
-    localStorage.setItem(this.TOKEN_KEY, token.trim());
-  },
+  isConnected(): boolean { return Boolean(this.getAccessToken()); },
 
-  clearAccessToken() {
-    localStorage.removeItem(this.TOKEN_KEY);
-  },
-
-  isConnected(): boolean {
-    const token = this.getAccessToken();
-    return Boolean(token && token.length > 10);
-  },
-
-  getRootFolderId(): string | null {
-    return localStorage.getItem(this.ROOT_FOLDER_KEY);
-  },
-
-  setRootFolderId(folderId: string) {
-    localStorage.setItem(this.ROOT_FOLDER_KEY, folderId.trim());
-  },
-
-  /**
-   * Uploads a file (base64 Data URL or Blob) to Google Drive v3 REST API
-   */
   async uploadInvoiceFile(
     tx: Partial<Transaction>,
     fileDataUrl: string,
-    mimeType: string = 'application/pdf'
+    mimeType = 'application/pdf'
   ): Promise<GoogleDriveUploadResult> {
-    const drivePath = DriveService.generateDrivePath(tx);
-    const fileName = DriveService.generateFileName(
-      tx.date || '01.01.2026',
-      tx.proofNotes || tx.description || 'Document',
-      tx.amountTTC || tx.amountHT || 0,
-      mimeType === 'application/pdf' ? 'pdf' : 'jpg'
-    );
-
-    const token = this.getAccessToken();
-
-    // If no token, return path and simulate successful local drive readiness
-    if (!token) {
-      return {
-        success: true,
-        drivePath,
-        driveLink: `https://drive.google.com/drive/search?q=${encodeURIComponent(fileName)}`
-      };
-    }
-
+    this.getAccessToken(); // Remove obsolete local credentials; renewal happens in the store.
+    const year = Number((tx.date || '').split('.')[2]) || new Date().getFullYear();
+    const ext = mimeType === 'application/pdf' ? 'pdf' : mimeType === 'image/png' ? 'png' : mimeType === 'image/webp' ? 'webp' : 'jpg';
+    const fileName = DriveService.generateFileName(tx.date || `01.01.${year}`, tx.proofNotes || tx.description || 'Document', tx.amountTTC || tx.amountHT || 0, ext);
+    const drivePath = `L’Affinée/Justificatifs/${year}/${fileName}`;
     try {
-      // 1. Convert base64 Data URL to Blob
-      const base64Data = fileDataUrl.includes(',') ? fileDataUrl.split(',')[1] : fileDataUrl;
-      const byteCharacters = atob(base64Data);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: mimeType });
-
-      // 2. Prepare Multipart Body for Google Drive v3 API
-      const metadata = {
-        name: fileName,
-        mimeType: mimeType,
-        description: `Facture Brasserie L'Affinée — ${tx.description} (${tx.amountTTC} CHF)`,
-        ...(this.getRootFolderId() ? { parents: [this.getRootFolderId()] } : {})
-      };
-
-      const form = new FormData();
-      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-      form.append('file', blob);
-
-      const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: form
-      });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        return {
-          success: false,
-          drivePath,
-          error: `Google Drive Error (${res.status}): ${errText}`
-        };
-      }
-
-      const driveFile = await res.json();
-      return {
-        success: true,
-        fileId: driveFile.id,
-        driveLink: driveFile.webViewLink || `https://drive.google.com/file/d/${driveFile.id}/view`,
-        drivePath
-      };
-    } catch (err: any) {
-      return {
-        success: false,
-        drivePath,
-        error: err.message || 'Erreur de connexion Google Drive'
-      };
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${tx.id || ''}\0${fileDataUrl}`));
+      const documentId = `legacy-${[...new Uint8Array(hash)].map(byte => byte.toString(16).padStart(2, '0')).join('')}`;
+      const uploaded = await uploadDriveOriginal({ documentId, dataUrl: fileDataUrl, mimeType, fileName, year });
+      return { success: true, fileId: uploaded.driveFileId, driveLink: `https://drive.google.com/file/d/${uploaded.driveFileId}/view`, drivePath };
+    } catch (cause) {
+      return { success: false, drivePath, error: cause instanceof Error ? cause.message : 'Le justificatif n’a pas été envoyé à Google Drive.' };
     }
   }
 };

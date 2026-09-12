@@ -1,3 +1,4 @@
+import { recipeIbu } from './hopBitterness';
 import type { Recipe, SaltId } from '../types';
 import { BrewingMath } from '../services/brewingMath';
 import { computeBeerColor } from './beerColor';
@@ -10,10 +11,11 @@ import { SALT_IDS } from './water/substances';
 import { calculateWaterTreatment } from './water/treatment';
 
 export type WaterReadingsRecipe = Pick<Recipe,
-  'waterPlan' | 'fermentables' | 'hops' | 'style' | 'volumeL' | 'boilMin' | 'efficiencyPct' | 'brewhouse'>;
+  'waterPlan' | 'fermentables' | 'hops' | 'style' | 'volumeL' | 'boilMin' | 'efficiencyPct' | 'brewhouse' | 'nolo'>;
 
 /** Reconstruct a saved plan from its frozen source and retained doses, without replanning. */
 export function describeSavedRecipeWater(recipe: WaterReadingsRecipe) {
+  if((recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings'))return null;
   const plan = recipe.waterPlan;
   if (!plan) return null;
   const source = plan.sourceSnapshot;
@@ -45,7 +47,7 @@ export function describeSavedRecipeWater(recipe: WaterReadingsRecipe) {
   const start = dilute(source, plan.diRatioPct);
   const og = BrewingMath.calculateOg(fermentables, recipe.volumeL,
     recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? 75);
-  const ibu = BrewingMath.calculateTinsethIBU(hops, recipe.volumeL, og, recipe.boilMin);
+  const ibu = recipeIbu(hops, recipe.volumeL, og, recipe.boilMin);
   const customSo4 = plan.targetIons?.so4 ?? start.so4;
   const customCl = plan.targetIons?.cl ?? start.cl;
   const requestedRatio = plan.ratioOverride ?? (plan.targetIons

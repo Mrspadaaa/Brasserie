@@ -99,7 +99,14 @@ describe('Atelier expérimental utilisé pendant la formulation', () => {
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Appliquer ce scénario à la recette' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Explorer une variante sans modifier la recette' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Garder ce graphe pour comparer' }));
+    expect(screen.getByText(/Trait inférieur : comparaison conservée/)).toBeInTheDocument();
+    const retained = [...document.querySelectorAll('[data-aroma-baseline-label]')].map(e => e.textContent);
     fireEvent.change(screen.getByLabelText('Levure à simuler'), { target: { value: 'lalbrew-verdant-ipa' } });
+    expect([...document.querySelectorAll('[data-aroma-baseline-label]')].map(e => e.textContent)).toEqual(expect.arrayContaining(retained));
+    fireEvent.click(screen.getByRole('button', { name: 'Effacer la comparaison' }));
+    expect(screen.queryByText(/Trait inférieur : comparaison conservée/)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Garder ce graphe pour comparer' })).toBeInTheDocument();
     expect(r).toEqual(before); expect(memory.writes).not.toHaveBeenCalled();
   });
   it('classe des associations en conservant dose et contact, sans modifier la recette', async () => {

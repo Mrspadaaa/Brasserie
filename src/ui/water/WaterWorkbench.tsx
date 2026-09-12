@@ -181,7 +181,7 @@ export function WaterWorkbench({
           </button>
         </div>
 
-        <div className="water-radar panel px-1 py-0.5 sm:p-3 space-y-0 sm:space-y-1">
+        <div className="water-radar-panel panel p-1 sm:p-3">
           <WaterRadar
             fitToControls
             start={treatment.startTotal}
@@ -308,7 +308,12 @@ export function WaterWorkbench({
                 />
               )}
             </div>
-            <div className="water-acid-readings flex flex-wrap gap-x-2 gap-y-0.5 pt-1 text-2xs text-cave-200">
+          </div>
+        </section>
+      </div>
+      <details className="text-xs text-cave-200">
+        <summary className="min-h-11 cursor-pointer flex items-center text-water">Bicarbonates après acidification</summary>
+            <div className="water-acid-readings flex flex-wrap gap-x-2 gap-y-0.5 text-2xs text-cave-200">
               <span>HCO₃ <span className="hidden sm:inline">après acide</span></span>
               {state.mashWaterL > 0 && <span aria-label="HCO₃ après acide — empâtage">
                 <span className="sm:hidden">Emp.</span><span className="hidden sm:inline">Empâtage</span>{" "}
@@ -335,9 +340,7 @@ export function WaterWorkbench({
               <strong className="tabular-nums text-water">{formatDecimal(treatment.treatedTotal.hco3)} ppm</strong>
             </p>}
             </div>
-          </div>
-        </section>
-      </div>
+      </details>
       {manualImpact && <WaterDoseImpact impact={manualImpact} />}
       {acideForce && <div className="flex flex-wrap items-center justify-between gap-x-3 text-2xs text-ebc-straw">
         <p>Doses manuelles conservées, y compris avec « Doser ».</p>

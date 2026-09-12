@@ -60,6 +60,20 @@ describe('Solver de formulation',()=>{
     const missing=s.evaluateProgram({...c,triplets:c.triplets.map(t=>({...t,doseGL:null}))});expect(missing.totalDryHopGL).toBeNull();
     expect(()=>applyHopSolverCandidate(recipe,missing,data,intent)).toThrow(/dose/);
   });
+  it('revoit le palier à cru pour chaque candidat sans réutiliser l’absence du cache par levure',()=>{
+    const r={...recipe,fermentation:[...recipe.fermentation!,{kind:'ajout' as const,name:'Houblonnage à cru',tempC:18,days:3}]};
+    const s=search({recipe:r});
+    const evaluate=(doseGL:number,timing:HopTriplet['timing'])=>s.evaluateProgram({triplets:[{...triplet,doseGL,timing}],conditions:[[]]});
+    const missing=(candidate:HopSolverCandidate)=>candidate.recipeChecks.some(c=>c.message.includes('aucun ajout de houblon à cru'));
+    expect(missing(evaluate(2,'boil'))).toBe(true);
+    expect(missing(evaluate(2,'postFermentation'))).toBe(false);
+    expect(missing(evaluate(0,'postFermentation'))).toBe(true);
+    expect(missing(evaluate(2,'boil'))).toBe(true);
+    const existing={...r,hops:[{name:'Cascade',weightG:20,alpha:6,stage:'dryHop' as const,aromaTiming:'postFermentation' as const,hopVarietyId:data.varieties[0].id}]};
+    const kept=search({recipe:existing}).evaluateProgram({triplets:[{...triplet,timing:'boil'}],conditions:[[]]});
+    const replaced=search({recipe:existing,replacing:0}).evaluateProgram({triplets:[{...triplet,timing:'boil'}],conditions:[[]]});
+    expect(missing(kept)).toBe(false); expect(missing(replaced)).toBe(true);
+  });
   it('distingue phénols, terpènes et thiols ; ne promet pas leur absence sans analyse',()=>{
     const phenols=search({intent:{...intent,keepYeast:false,chemistry:{phenols:'seek'}}}),rows=phenols.evaluateBatch(0,phenols.total);
     expect(rows.find(c=>c.triplets[0].yeastId==='wyeast-3068')?.checks.some(c=>c.status==='supported'&&c.message.includes('phénolique'))).toBe(true);
@@ -68,9 +82,9 @@ describe('Solver de formulation',()=>{
     expect(avoidance.checks.some(c=>c.status==='unknown'&&c.message.includes('absence non établie'))).toBe(true);
   });
   it('signale la souche diastaticus et un palier hors plage sans inventer une cinétique',()=>{
-    const result=inspectHopSolverRecipe(recipe,[{...triplet,yeastId:'wyeast-3724'}],intent,data,policy);
+    const result=inspectHopSolverRecipe({...recipe,fermentation:[{kind:'primaire',name:'Primaire',tempC:18,days:10}]},[{...triplet,yeastId:'wyeast-3724'}],intent,data,policy);
     expect(result.checks.some(c=>c.message.includes('STA1'))).toBe(true);
-    expect(result.checks.some(c=>c.message.includes('hors plage fabricant'))).toBe(true);
+    expect(result.checks.some(c=>c.message.includes('hors de la fenêtre fabricant'))).toBe(true);
   });
   it('reste explicite pour une levure non résolue au lieu de choisir une autre souche',()=>{
     const r={...recipe,yeast:{...recipe.yeast,name:'Levure inconnue maison'}};

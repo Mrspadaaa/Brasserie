@@ -34,14 +34,19 @@ import { CloudConfigModal } from './CloudConfigModal';
 import { FinanceCategory, Transaction, Recipe, StockItem } from '../types';
 import { Units } from '../services/units';
 import { nextBatchId } from '../services/refs';
-import { captureSnapshot } from '../domain/recipeSnapshot';
-import { BrewingMath } from '../services/brewingMath';
+import { scaleBrewBudgetRecipe } from '../domain/finance/brewBudgetScaling';
 import { Combobox, ComboOption } from '../ui/Combobox';
 import { QuantityStepper } from '../ui/QuantityStepper';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { useDensity } from '../ui/useViewport';
 import { NumericField } from '../ui/NumericField';
 import { MoneyField, splitTva } from '../ui/MoneyField';
+import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
+import { saveIncomeEntry, type IncomeEntry } from '../services/incomeEntry';
+import { prepareFinanceDocument } from '../services/financeDocuments';
+import { DriveConnection } from '../ui/finance/DriveConnection';
+import { FirestoreRepo } from '../services/firestoreRepo';
+import { purchaseIsoDate } from '../services/purchaseEntry';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -74,6 +79,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 }) => {
   const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
   const [screen, setScreen] = useState<ModalScreen>('menu');
+  const [expenseMode, setExpenseMode] = useState<'manual'|'scan'|null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScannedInvoiceResult | null>(null);
   /** Message d'échec du scan, affiché au-dessus de la saisie manuelle. */
@@ -118,6 +124,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   const [salePaymentMethod, setSalePaymentMethod] = useState<'TWINT' | 'Espèces' | 'Virement' | 'Facture'>('TWINT');
   const [saleProofUrl, setSaleProofUrl] = useState<string | null>(null);
   const [saleProofFileName, setSaleProofFileName] = useState<string>('');
+  const [saleSaving, setSaleSaving] = useState(false), [saleError, setSaleError] = useState('');
+  const saleBusy = useRef(false), pendingSale = useRef<IncomeEntry | undefined>(undefined);
 
   // Cloud & AI Config Modal
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
@@ -128,7 +136,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     if (!recipes.some(r => r.id === selectedRecipeId)) setSelectedRecipeId(recipes[0]?.id || '');
   }, [recipes, selectedRecipeId]);
   const [batchVolumeL, setBatchVolumeL] = useState<number>(30);
-  const [autoDeductStock, setAutoDeductStock] = useState(true);
+  const [brewError, setBrewError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   /*
@@ -186,6 +194,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   if (!isOpen) return null;
 
   const resetAndClose = () => {
+    if (saleBusy.current) return;
+    setExpenseMode(null);
     setScreen('menu');
     setIsScanning(false);
     setScanResult(null);
@@ -195,6 +205,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     setAmountTTC(0);
     setDescription('');
     setVendor('');
+    setBrewError('');
+    pendingSale.current = undefined; setSaleError(''); setSaleAmount(0); setSaleProofUrl(null); setSaleProofFileName('');
     onClose();
   };
 
@@ -460,41 +472,30 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   };
 
   // Quick Sale with Official Receipt & Proof (Pillar 3 & 4)
-  const handleSaveSale = () => {
-    const ttc = saleAmount;
-    if (ttc <= 0) return;
-    const tvaRate = 0.026;
-    const cfg = StorageService.getConfig();
-
-    const saleTx = ReceiptService.createSaleTransactionWithReceipt(
-      {
-        clientName: saleClient || 'Client Comptoir',
-        beerName: saleBeer || 'Bière artisanale',
-        amountTTC: ttc,
-        tvaRate,
-        paymentMethod: salePaymentMethod,
-        notes: `Règlement : ${salePaymentMethod}`
-      },
-      cfg,
-      saleProofUrl || undefined
-    );
-
-    StorageService.addTransaction(saleTx);
-    triggerConfetti();
-
-    // Upload to Google Drive if connected
-    if (saleTx.proofUrl) {
-      GoogleDriveService.uploadInvoiceFile(
-        saleTx, 
-        saleTx.proofUrl, 
-        saleTx.proofType || 'application/pdf'
-      );
-    }
-
-    if (onSuccessMessage) {
-      onSuccessMessage(`Vente de ${ttc.toFixed(2)} CHF enregistrée avec Quittance officielle !`);
-    }
-    resetAndClose();
+  const handleSaveSale = async () => {
+    if (saleBusy.current || !(saleAmount > 0)) return;
+    saleBusy.current = true; setSaleSaving(true); setSaleError('');
+    try {
+      if (!pendingSale.current) {
+        const ttc = saleAmount, cfg = StorageService.getConfig(), id = `REC-${crypto.randomUUID()}`;
+        const saleTx = ReceiptService.createSaleTransactionWithReceipt({ clientName: saleClient || 'Client Comptoir', beerName: saleBeer || 'Bière artisanale', amountTTC: ttc, tvaRate: cfg.fiscal.tvaNormalRate, paymentMethod: salePaymentMethod, notes: `Règlement : ${salePaymentMethod}`, receiptNumber: id }, cfg, saleProofUrl || undefined);
+        saleTx.id = id;
+        const dataUrl = saleTx.proofUrl!.replace(/^data:application\/pdf;[^,]*base64,/, 'data:application/pdf;base64,');
+        const mimeType = /^data:([^;]+);/.exec(dataUrl)?.[1] ?? 'application/pdf';
+        const proof = prepareFinanceDocument(`proof-${crypto.randomUUID()}`, dataUrl, saleProofFileName || saleTx.proofFileName || 'Quittance.pdf', mimeType);
+        delete saleTx.proofUrl; saleTx.proofFileName = proof.fileName; saleTx.proofType = mimeType; saleTx.syncedToDrive = true;
+        const paid = salePaymentMethod !== 'Facture', at = new Date().toISOString();
+        saleTx.finance = { version: 1, kind: 'income', amountCents: Math.round(ttc * 100), lines: [{ id: 'sale', description: saleBeer || 'Bière artisanale', kind: 'other', amountCents: Math.round(ttc * 100) }], paymentStatus: paid ? 'paid' : 'unpaid', recordedAt: at, proofDocumentId: proof.id };
+        const payment = paid ? { id: `PAY-${id}`, transactionId: id, date: purchaseIsoDate(saleTx.date), amountCents: Math.round(ttc * 100), direction: 'in' as const, method: salePaymentMethod === 'TWINT' ? 'twint' as const : salePaymentMethod === 'Espèces' ? 'cash' as const : 'bank' as const, recordedAt: at } : undefined;
+        pendingSale.current = { transaction: saleTx, proof, payment };
+      }
+      await saveIncomeEntry(pendingSale.current);
+      triggerConfetti();
+      onSuccessMessage?.(`Vente de ${pendingSale.current.transaction.amountTTC.toFixed(2)} CHF enregistrée. Justificatif conservé dans Drive.`);
+      saleBusy.current = false;
+      resetAndClose();
+    } catch (error) { setSaleError(error instanceof Error ? error.message : 'La vente reste à confirmer. Le brouillon est conservé.'); }
+    finally { saleBusy.current = false; setSaleSaving(false); }
   };
 
   const handleDownloadSaleReceipt = () => {
@@ -506,7 +507,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
         clientName: saleClient || 'Client Comptoir',
         beerName: saleBeer || 'Bière artisanale',
         amountTTC: ttc,
-        tvaRate: 0.026,
+        tvaRate: 0.081,
         paymentMethod: salePaymentMethod,
         notes: `Règlement : ${salePaymentMethod}`
       },
@@ -519,26 +520,19 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     const selected = recipes.find((r) => r.id === selectedRecipeId);
     if (!selected || !(batchVolumeL > 0)) return;
     const cfg = StorageService.getConfig();
-    const profile = cfg.brewhouses.find(b => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
-    const recipe = batchVolumeL === selected.volumeL ? selected : BrewingMath.scaleRecipe(selected, batchVolumeL, profile, profile).scaledRecipe;
+    const profile = selected.brewhouse ?? cfg.brewhouses.find(b => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
+    let recipe: Recipe;
+    try {
+      recipe = scaleBrewBudgetRecipe(selected, batchVolumeL, profile);
+    } catch (error) {
+      setBrewError(error instanceof Error ? error.message : 'La recette ne peut pas être adaptée à ce volume.');
+      return;
+    }
 
     const newBatchId = nextBatchId(StorageService.getBatches().map(b => b.id));
 
-    if (autoDeductStock) {
-      StorageService.brewRecipeAndDeductStocks(recipe, newBatchId);
-    } else {
-      const today = new Date().toLocaleDateString('fr-CH');
-      StorageService.addBatch({
-        id: newBatchId,
-        brewDate: today,
-        name: recipe.name,
-        style: recipe.style,
-        volumeL: batchVolumeL,
-        status: 'planifie',
-        recipeRef: recipe.id,
-        recipeSnapshot: captureSnapshot(recipe)
-      });
-    }
+    // Compatibility method name: this plans the batch; it never consumes stock.
+    StorageService.brewRecipeAndDeductStocks(recipe, newBatchId);
 
     triggerConfetti();
     if (onSuccessMessage) {
@@ -546,6 +540,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     }
     resetAndClose();
   };
+
+  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'}/>;
 
   return (
     <>
@@ -560,6 +556,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
           <div className="flex items-center space-x-2">
             {screen !== 'menu' && (
               <button
+                disabled={saleSaving}
                 onClick={() => setScreen('menu')}
                 className="p-3 text-cave-400 hover:text-cave-50 mr-1"
               >
@@ -609,7 +606,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               <div className="rounded-panel border border-ebc-straw/40 bg-cave-900 overflow-hidden">
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => setExpenseMode('scan')}
                   className="w-full p-4 flex items-center gap-3.5 text-left hover:bg-cave-850 transition-colors"
                 >
                   <span className="w-touch h-touch rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center shrink-0">
@@ -626,25 +623,6 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   <ChevronRight className="w-5 h-5 text-ebc-straw shrink-0" />
                 </button>
 
-                {/* Niveau d'IA : un choix d'usage, pas un réglage technique. */}
-                <div className="px-4 pb-3 pt-1 border-t border-cave-800 flex items-center gap-2">
-                  {(['fast', 'max'] as AiTier[]).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setAiTier(t)}
-                      aria-pressed={aiTier === t}
-                      className={`flex-1 min-h-touch px-3 rounded-control border text-sm transition-colors ${
-                        aiTier === t
-                          ? 'bg-ebc-straw/15 border-ebc-straw text-ebc-straw'
-                          : 'bg-cave-950 border-cave-700 text-cave-400 hover:text-cave-200'
-                      }`}
-                    >
-                      <span className="block font-semibold">{TIER_LABEL[t]}</span>
-                      <span className="block text-footnote opacity-80">{TIER_HINT[t]}</span>
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Cloud & AI Status Bar */}
@@ -672,7 +650,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
               {/* Option 2: Dépense manuelle */}
               <div
-                onClick={() => setScreen('quick-expense')}
+                onClick={() => setExpenseMode('manual')}
                 className="p-3.5 rounded-2xl bg-cave-850/40 border border-cave-800 hover:border-cave-700 transition cursor-pointer flex items-center justify-between group"
               >
                 <div className="flex items-center space-x-3">
@@ -705,7 +683,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-cave-200">Lancer un Brassin</h4>
-                    <p className="text-footnote text-cave-400">Déduction automatique des malts & houblons</p>
+                    <p className="text-footnote text-cave-400">Préparer le brassin et réserver ses ingrédients</p>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-cave-500" />
@@ -1231,6 +1209,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
           {/* SCREEN 5: QUICK SALE (JUSTIFICATIF TWINT & QUITTANCE OFFICIELLE) */}
           {screen === 'quick-sale' && (
             <div className="space-y-3.5 text-sm">
+              <DriveConnection always={Boolean(saleError)} />
+              {pendingSale.current && <p className="text-sm text-amber-200">La vente préparée est conservée à l’identique pendant sa confirmation. Réessaie pour vérifier cet enregistrement.</p>}
+              <fieldset disabled={saleSaving || Boolean(pendingSale.current)} className="space-y-3.5 border-0 p-0 m-0">
               <div>
                 <label className="text-cave-200 font-semibold block mb-1">Client / Bénéficiaire</label>
                 <input
@@ -1273,7 +1254,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 label="Montant TTC encaissé"
                 valueTTC={saleAmount}
                 onChange={setSaleAmount}
-                tvaRate={0.026}
+                tvaRate={StorageService.getConfig().fiscal.tvaNormalRate}
                 isTvaRegistered={isTvaRegistered}
               />
 
@@ -1347,12 +1328,14 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 )}
               </div>
 
+              </fieldset>
+              {saleError && <p role="alert" className="text-sm text-amber-200">{saleError}</p>}
               {/* Boutons d'action : Quittance PDF officielle ou Validation */}
               <div className="flex space-x-2 pt-1">
                 <button
                   type="button"
                   onClick={handleDownloadSaleReceipt}
-                  disabled={saleAmount <= 0}
+                  disabled={saleAmount <= 0 || saleSaving}
                   className="py-3 px-3 bg-cave-850 hover:bg-cave-800 text-ebc-straw font-bold text-sm rounded-xl border border-cave-700 transition flex items-center justify-center space-x-1.5 disabled:opacity-50"
                   title="Télécharger une quittance officielle suisse pour le client"
                 >
@@ -1362,12 +1345,12 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
                 <button
                   type="button"
-                  onClick={handleSaveSale}
-                  disabled={saleAmount <= 0}
+                  onClick={() => void handleSaveSale()}
+                  disabled={saleAmount <= 0 || saleSaving}
                   className="flex-1 py-3 bg-gradient-to-r from-hop to-hop hover:from-hop text-cave-950 font-black rounded-xl shadow-lg transition flex items-center justify-center space-x-1 disabled:opacity-50"
                 >
                   <Check className="w-4 h-4 mr-1" />
-                  <span>Valider l'encaissement</span>
+                  <span>{saleSaving ? 'Enregistrement…' : pendingSale.current ? 'Reprendre la confirmation' : salePaymentMethod === 'Facture' ? 'Enregistrer à encaisser' : 'Valider l’encaissement'}</span>
                 </button>
               </div>
             </div>
@@ -1380,10 +1363,11 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 <label className="text-cave-200 font-semibold block mb-1">Choisir la recette</label>
                 <select
                   name="qa_brew_recipe_select"
+                  aria-label="Choisir la recette"
                   autoComplete="off"
                   data-form-type="other"
                   value={selectedRecipeId}
-                  onChange={(e) => setSelectedRecipeId(e.target.value)}
+                  onChange={(e) => { setSelectedRecipeId(e.target.value); setBrewError(''); }}
                   className="w-full bg-cave-850 border border-cave-700 rounded-xl p-2.5 text-cave-50 font-bold"
                 >
                   {recipes.map((r) => (
@@ -1401,7 +1385,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                     <button
                       key={vol}
                       type="button"
-                      onClick={() => setBatchVolumeL(vol)}
+                      onClick={() => { setBatchVolumeL(vol); setBrewError(''); }}
                       className={`py-2 rounded-xl font-bold border transition ${
                         batchVolumeL === vol
                           ? 'bg-ebc-straw text-cave-950 border-ebc-gold'
@@ -1414,21 +1398,14 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 </div>
               </div>
 
-              <div className="p-3 bg-ebc-straw/10 border border-ebc-straw/20 rounded-2xl flex items-center justify-between">
+              <div className="p-3 bg-ebc-straw/10 border border-ebc-straw/20 rounded-2xl">
                 <div>
-                  <span className="font-bold text-ebc-gold block">Déduction automatique des stocks</span>
-                  <p className="text-footnote text-cave-400">Soustrait automatiquement les malts & houblons</p>
+                  <span className="font-bold text-ebc-gold block">Ingrédients réservés pour ce brassin</span>
+                  <p className="text-sm text-cave-300 mt-1">Le stock sera retiré à la validation des étapes de production, selon les quantités confirmées.</p>
                 </div>
-                <input
-                  type="checkbox"
-                  name="qa_brew_auto_deduct"
-                  autoComplete="off"
-                  data-form-type="other"
-                  checked={autoDeductStock}
-                  onChange={(e) => setAutoDeductStock(e.target.checked)}
-                  className="w-5 h-5 accent-ebc-straw rounded cursor-pointer"
-                />
               </div>
+
+              {brewError && <p role="alert" className="text-sm text-ebc-straw">{brewError}</p>}
 
               <button
                 type="button"

@@ -44,7 +44,7 @@ function Host() {
 }
 
 const sparge = () => screen.getByRole('textbox', { name: /Dose d’acide lactique.*au rinçage/ });
-const osmosis = () => screen.getByRole('button', { name: /Juste ce qu’il faut d’osmosée/ });
+const osmosis = () => screen.getByRole('button', { name: /Minimum trouvé d’osmosée/ });
 const profile = () => screen.getByLabelText('Bilan des objectifs de l’eau');
 const ppm = (label: string) => Number(screen.getByLabelText(label).textContent!.match(/([\d,]+) ppm/)![1].replace(',', '.'));
 function checkSparge(amount: number) {

@@ -11,7 +11,7 @@ import {
   HardDrive
 } from 'lucide-react';
 import { AiClient, AiTier, TIER_LABEL, TIER_HINT } from '../services/aiClient';
-import { FirebaseAuthService } from '../services/firebaseAuth';
+import { DriveConnection } from '../ui/finance/DriveConnection';
 import { StorageService } from '../services/storage';
 import { Button } from './ui/Button';
 
@@ -48,12 +48,10 @@ export const CloudConfigModal: React.FC<CloudConfigModalProps> = ({
   const [testResult, setTestResult] = useState<
     { ok: true; model?: string; elapsedMs?: number } | { ok: false; error: string } | null
   >(null);
-  const [reconnecting, setReconnecting] = useState(false);
-  const [driveError, setDriveError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const driveConnected = FirebaseAuthService.hasDriveAccess();
+
 
   /** Vérifie que la passerelle répond réellement, avec une vraie question. */
   const handleTestAi = async () => {
@@ -71,14 +69,6 @@ export const CloudConfigModal: React.FC<CloudConfigModalProps> = ({
         : { ok: false, error: res.error || 'Échec inconnu.' }
     );
     setTesting(false);
-  };
-
-  const handleReconnectDrive = async () => {
-    setReconnecting(true);
-    setDriveError(null);
-    const res = await FirebaseAuthService.refreshDriveAccess();
-    if (!res.success) setDriveError(res.error || 'Reconnexion impossible.');
-    setReconnecting(false);
   };
 
   const handleSave = () => {
@@ -203,45 +193,8 @@ export const CloudConfigModal: React.FC<CloudConfigModalProps> = ({
               <h4 className="text-base font-semibold text-cave-50">Google Drive</h4>
             </div>
 
-            <div
-              className={`p-4 rounded-panel border flex items-start gap-3 ${
-                driveConnected ? 'bg-cave-950 border-hop/30' : 'bg-cave-950 border-cave-700'
-              }`}
-            >
-              <HardDrive
-                className={`w-5 h-5 shrink-0 mt-0.5 ${driveConnected ? 'text-hop' : 'text-cave-600'}`}
-              />
-              <div className="space-y-1">
-                <p className="text-base text-cave-100">
-                  {driveConnected ? 'Drive connecté' : 'Drive non connecté'}
-                </p>
-                <p className="text-sm text-cave-400 leading-relaxed">
-                  {driveConnected
-                    ? "L'autorisation vient de ta connexion Google. L'application ne voit que les fichiers qu'elle a elle-même créés."
-                    : "L'autorisation Drive s'obtient à la connexion Google. Elle expire au bout d'une heure ; reconnecte-toi pour la renouveler."}
-                </p>
-              </div>
-            </div>
-
-            {!driveConnected && (
-              <Button intent="secondary" full onClick={handleReconnectDrive} disabled={reconnecting}>
-                {reconnecting ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                    Reconnexion…
-                  </>
-                ) : (
-                  'Autoriser Google Drive'
-                )}
-              </Button>
-            )}
-
-            {driveError && (
-              <div className="p-3 rounded-panel bg-alert/10 border border-alert/40 text-alert text-sm flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <span>{driveError}</span>
-              </div>
-            )}
+            <p className="text-sm text-cave-300 leading-relaxed">Le Drive du compte Google connecté conserve tes justificatifs. Après l’autorisation initiale, l’accès se renouvelle automatiquement.</p>
+            <DriveConnection />
 
             <a
               href="https://drive.google.com"

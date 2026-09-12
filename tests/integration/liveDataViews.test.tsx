@@ -102,6 +102,8 @@ describe('Live records and unsaved forms', () => {
     act(() => StorageService.addCreativeItem({ id: 'CR-new', type: 'equipment', status: 'idea', title: 'Nouvelle idée' }));
     expect(screen.getByText('Nouvelle idée')).toBeInTheDocument();
     act(() => StorageService.updateCreativeItem({ id: 'CR-new', type: 'equipment', status: 'done', title: 'Idée actualisée' }));
+    expect(screen.queryByText('Idée actualisée')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Réalisés', exact: true }));
     expect(screen.getByText('Idée actualisée')).toBeInTheDocument();
     expect(screen.queryByText('Nouvelle idée')).not.toBeInTheDocument();
   });

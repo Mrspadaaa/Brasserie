@@ -188,12 +188,15 @@ export const InlineNum: React.FC<{
   integer?: boolean;
   /** Signale une valeur manquante qui bloque un calcul. */
   missing?: boolean;
-}> = ({ label, name, unit, value, onValue, min, max, integer, missing }) => (
+  /** Explicit undefined keeps an optional value unknown when cleared. */
+  emptyValue?: number | undefined;
+}> = ({ label, name, unit, value, onValue, min, max, integer, missing, ...emptyOption }) => (
   <label className="flex items-center gap-1 min-w-0">
     <span className={`text-2xs shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-500'}`}>
       {label}
     </span>
     <NumberInput
+      {...emptyOption}
       aria-label={name}
       value={value}
       onValue={onValue}

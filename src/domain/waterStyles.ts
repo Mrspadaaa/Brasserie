@@ -587,3 +587,11 @@ export function styleWaterForName(name: string): StyleWater {
   if (/garde/.test(s)) return by('24C');
   return by('—');
 }
+
+/** Current recipes use the versioned registry. The old name matcher remains only
+ * for legacy consumers; it must not silently choose a profile for a new style. */
+export function styleWaterForReference(name: string, ref?: BrewingStyleRef, styles?: ListedStyle[]): StyleWater {
+  return styleByCode(resolveBrewingStyle(name,ref,styles)?.suggestions?.water ?? '—');
+}
+import { resolveBrewingStyle, type ListedStyle } from './brewingStyles';
+import type { BrewingStyleRef } from '../../functions/src/brewingStyleSchema';

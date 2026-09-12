@@ -3,6 +3,7 @@ import type { FermentationGuide, FermentationGoal, FermentationGuidePlan } from 
 import type { HopRange, HopSource } from '../../functions/src/hopIndexSchema';
 import type { FermentationStep, YeastSpec } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
+import { findRecipeYeastMatches, withDocumentedYeastNames } from './hopIndex/recipeGuide';
 
 export interface FermentationDraft {
   goal: FermentationGoal; pitchTempC: number | undefined;
@@ -75,15 +76,16 @@ export function applyFermentationGuide<T extends TrialRecipe>(recipe: T, guide: 
   if (yeast.id !== guide.yeastId) throw Error('La souche ne correspond pas au programme.');
   const errors = fermentationDraftErrors(guide, draft, withProgram);
   if (errors.length) throw Error(errors[0]);
-  const sameYeast = recipe.yeast.hopIndexId === yeast.id;
-  const nextYeast = sameYeast ? { ...recipe.yeast } : { name: yeast.name, hopIndexId: yeast.id, form: yeast.form ?? 'liquide', qty: 0, unit: yeast.form === 'sèche' ? 'g' : 'flacon' };
+  const sameYeast = recipe.yeast.hopIndexId ? recipe.yeast.hopIndexId === yeast.id
+    : recipe.yeast.form === yeast.form && findRecipeYeastMatches(recipe.yeast.name, withDocumentedYeastNames([{ ...yeast, aliases: guide.aliases }])).length === 1;
+  const nextYeast = sameYeast ? { ...recipe.yeast, hopIndexId: yeast.id } : { name: yeast.name, hopIndexId: yeast.id, form: yeast.form ?? 'liquide', qty: 0, unit: yeast.form === 'sèche' ? 'g' : 'flacon' };
   // A different strain does not inherit attenuation, quantity, temperature or stock facts.
   if (draft.quantityG !== undefined && yeast.form === 'sèche') { nextYeast.qty = draft.quantityG; nextYeast.unit = 'g'; }
   if (withProgram) {
     nextYeast.pitchTempC = draft.pitchTempC;
-    nextYeast.fermTempMinC = Math.min(...draft.phases.map(s => s.tempC!));
-    nextYeast.fermTempMaxC = Math.max(...draft.phases.map(s => s.tempC!));
-    nextYeast.fermentDays = draft.phases.reduce((sum, s) => sum + s.days!, 0);
+    // Documentary window, never a second editable copy of actual setpoints.
+    nextYeast.fermTempMinC = guide.temperatureC.range.min;
+    nextYeast.fermTempMaxC = guide.temperatureC.range.max;
   }
   const fermentation = withProgram ? replacePrimaryFermentation(recipe.fermentation ?? [], proposedFermentationSteps(guide, draft)) : recipe.fermentation;
   return { ...recipe, yeast: nextYeast, fermentation,

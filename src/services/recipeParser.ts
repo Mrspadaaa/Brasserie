@@ -606,7 +606,8 @@ export const RecipeTextParser = {
     /*
      * L'alpha manquant se signale UNE FOIS PAR HOUBLON, et seulement après le
      * report d'une ligne à l'autre. Le houblonnage à cru en est exempté : il
-     * n'apporte pas d'amertume, réclamer son alpha n'a aucun sens.
+     * n’utilise pas l’alpha pour calculer son effet à froid. La fiche technique
+     * reste accessible à l’autocomplétion, quel que soit le moment d’ajout.
      */
     const stillWithoutAlpha = [
       ...new Set(hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name))

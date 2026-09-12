@@ -6,6 +6,7 @@ import { Sheet, ConfirmSheet } from './Sheet';
 import { useLiveSelection } from '../hooks/useLiveData';
 import { Button } from '../components/ui/Button';
 import { isCurrent } from '../domain/catalogOrganization';
+import { MobileDetails } from './ViewNavigation';
 
 /**
  * Parc de fûts.
@@ -87,6 +88,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
 
   return (
     <div className={`overflow-y-auto space-y-4 pb-4 ${className}`}>
+      <MobileDetails title="État du parc" summary={`${kegs.filter(k=>k.state==='plein').length} plein(s) · ${kegs.filter(k=>k.state==='lavage').length} à laver`}>
       <div className="grid grid-cols-4 gap-2">
         {counts.map(({ state, n }) => {
           const s = KEG_STATE[state];
@@ -99,6 +101,7 @@ export const KegBoard: React.FC<{ kegs: KegItem[]; batches: Batch[]; className?:
           );
         })}
       </div>
+      </MobileDetails>
 
       {kegs.length === 0 ? (
         <div className="py-12 text-center space-y-2">

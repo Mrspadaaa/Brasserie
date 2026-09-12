@@ -9,6 +9,11 @@ const mock = vi.hoisted(() => ({
   setDoc: vi.fn()
 }));
 vi.mock('../../src/services/firebase', () => ({ db: {} }));
+vi.mock('../../src/services/financialLedgerSync', () => ({ startFinancialLedgerSync: async (callbacks: any) => {
+  callbacks.onData([], { covered: new Set(), requestStartedAt: 0 });
+  callbacks.onState({ complete: true, loading: false, fromCache: false, loadedRows: 0 });
+  return { refresh: async () => {}, stop: () => {} };
+} }));
 vi.mock('firebase/firestore', () => ({
   collection: (_: unknown, name: string) => name,
   doc: (_: unknown, name: string, id: string) => ({ name, id }),
@@ -34,8 +39,8 @@ vi.mock('firebase/firestore', () => ({
   getDocsFromServer: vi.fn(),
   deleteField: () => ({ _methodName: 'deleteField' }),
   getDocs: vi.fn(),
-  query: vi.fn(),
-  limit: vi.fn()
+  query: (name: string) => name,
+  orderBy: vi.fn(), documentId: () => '__name__', startAfter: vi.fn(), limit: vi.fn()
 }));
 import { FirestoreRepo } from '../../src/services/firestoreRepo';
 import { StorageService } from '../../src/services/storage';

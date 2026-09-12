@@ -15,6 +15,8 @@ import { ChevronRight } from 'lucide-react';
 import { useHopCatalogue } from './useHopCatalogue';
 import { ensureGuideReferences } from './guideData';
 import { HopTechnicalPanel } from './HopTechnicalPanel';
+import { MobileDetails } from '../ViewNavigation';
+import { useMobileLayout } from '../useViewport';
 
 type Editor = { kind: 'variety'; value: HopVariety } | { kind: 'lot'; value: HopLot };
 const newVariety = (name = ''): HopVariety => ({ id: crypto.randomUUID(), name, aliases: [], form: 'unknown', descriptions: [], analysis: [] });
@@ -51,6 +53,7 @@ export function HopFactsView({ lot, variety }: { lot?: HopLot; variety?: HopVari
 }
 
 export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { kind: string; at: number } | null; onNotice?: (message: string) => void }) {
+  const mobile = useMobileLayout();
   const { varieties, error: catalogueError, loading } = useHopCatalogue();
   const lots = useStorageValue(StorageService.getHopLots);
   const [query, setQuery] = useState('');
@@ -153,12 +156,14 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     catch (e) { setError((e as Error).message); }
   };
 
-  return <section aria-label="Index houblon" className="px-1 space-y-5">
-    <div className="space-y-2"><h2 className="text-xl font-semibold text-cave-50">Index houblon</h2>
+  return <section aria-label="Index houblon" className="px-1 space-y-2 sm:space-y-5">
+    {!mobile&&<div className="space-y-2"><h2 className="text-xl font-semibold text-cave-50">Index houblon</h2>
       <p className="text-cave-200 max-w-2xl">Compare les sources, puis précise ton lot et son analyse.</p>
       <div className="flex flex-wrap gap-2"><BrewTag tone="info">{varieties.filter(v => !v.archived).length} références</BrewTag><BrewTag>{lots.filter(l => !l.archived).length} lots</BrewTag><BrewTag>{lots.filter(l => !l.archived && l.analysis.some(m => m.kind !== 'unknown')).length} lots analysés</BrewTag></div>
-    </div>
-    <Field label="Rechercher une variété ou un arôme documenté"><TextInput value={query} onChange={setQuery} placeholder="Nom, alias, agrumes…" /></Field>
+    </div>}
+    <Field label={mobile?'Variété ou arôme':'Rechercher une variété ou un arôme documenté'}><TextInput value={query} onChange={setQuery} placeholder="Nom, alias, agrumes…" /></Field>
+    <MobileDetails title="Options du catalogue" summary={[sourceFilter||'Toutes les sources',includeArchived?'Archives incluses':''].filter(Boolean).join(' · ')}>
+    {mobile&&<p className="text-sm text-cave-400">{varieties.filter(v=>!v.archived).length} références · {lots.filter(l=>!l.archived).length} lots, dont {lots.filter(l=>!l.archived&&l.analysis.some(m=>m.kind!=='unknown')).length} analysés. Compare les sources, puis précise ton lot et son analyse.</p>}
     {sources.length > 1 && <Field label="Source du référentiel"><select className={inputClass} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}><option value="">Toutes les sources</option>{sources.map(s => <option key={s} value={s}>{s}</option>)}</select></Field>}
     <div className="flex flex-wrap gap-2">
       <Button onClick={() => { requestEpoch.current++; setBusy(false); setEditor({ kind: 'variety', value: newVariety(query.trim()) }); setError(''); }} intent="primary">Nouvelle variété</Button>
@@ -171,15 +176,16 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
       </label>
       <label className="flex gap-2 items-center text-sm text-cave-400 min-h-touch"><input type="checkbox" checked={includeArchived} onChange={e => setIncludeArchived(e.target.checked)} />Inclure les variétés archivées</label>
     </div></details>
+    </MobileDetails>
     {error && !editor && <p role="alert" className="text-alert">{error}</p>}
-    <p className="text-sm text-cave-400" role="status">{matches.length} fiche(s){query ? ' correspondante(s)' : ' disponibles'}. Une variété peut avoir plusieurs sources. Le contexte de chaque description est indiqué dans sa fiche.</p>
-    <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
-        {matches.slice(0, limit).map(v => <button key={v.id} className={`w-full py-4 px-4 text-left rounded-panel border ${selected === v.id ? 'bg-cave-850 border-ebc-straw/40' : 'border-cave-800 bg-cave-900 hover:bg-cave-850'} space-y-2`}
+    <p className="text-sm text-cave-400" role="status">{matches.length} fiche(s){query ? ' correspondante(s)' : ' disponibles'}.{!mobile&&' Une variété peut avoir plusieurs sources. Le contexte de chaque description est indiqué dans sa fiche.'}</p>
+    <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3">
+        {matches.slice(0, limit).map(v => <button key={v.id} className={`w-full p-3 sm:p-4 text-left rounded-panel border ${selected === v.id ? 'bg-cave-850 border-ebc-straw/40' : 'border-cave-800 bg-cave-900 hover:bg-cave-850'} space-y-1 sm:space-y-2`}
           onClick={() => { setSelected(v.id); setLotId(undefined); }} aria-pressed={selected === v.id}>
           <span className="flex justify-between items-center gap-2 text-lg font-semibold text-cave-50"><span>{v.name}</span><ChevronRight size={18} className="text-cave-400 shrink-0" aria-hidden="true" /></span>
           <span className="block text-sm text-water break-words">{hopReferenceSource(v)}{v.origin ? ` · ${v.origin}` : ''}</span>
-          <span className="flex flex-wrap gap-2"><BrewTag>{HOP_FORM_LABELS[v.form]}</BrewTag>{!!lotCounts.get(v.id) && <BrewTag tone="info">{lotCounts.get(v.id)} lot(s)</BrewTag>}</span>
-          {v.descriptions.find(d => d.context === 'rawHop') && <span className="block text-sm text-cave-200 line-clamp-2">{v.descriptions.find(d => d.context === 'rawHop')?.text}</span>}
+          {(!mobile||v.form!=='unknown'||!!lotCounts.get(v.id))&&<span className="flex flex-wrap gap-2">{(!mobile||v.form!=='unknown')&&<BrewTag>{HOP_FORM_LABELS[v.form]}</BrewTag>}{!!lotCounts.get(v.id) && <BrewTag tone="info">{lotCounts.get(v.id)} lot(s)</BrewTag>}</span>}
+          {!mobile && v.descriptions.find(d => d.context === 'rawHop') && <span className="block text-sm text-cave-200 line-clamp-2">{v.descriptions.find(d => d.context === 'rawHop')?.text}</span>}
         </button>)}
         {!matches.length && <p className="py-5 text-cave-400">{loading ? 'Chargement du catalogue…' : catalogueError || 'Aucune variété correspondante. Ajoute une fiche ou recherche une source publiée.'}</p>}
     </div>

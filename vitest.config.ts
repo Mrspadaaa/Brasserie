@@ -26,7 +26,10 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   plugins: [react()],
   // Server deployment bundles this exact domain entry; tests use its TypeScript source.
-  resolve: { alias: [{ find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) }] },
+  resolve: { alias: [
+    { find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) },
+    { find: './financeContext.js', replacement: fileURLToPath(new URL('./src/domain/finance/assistantContext.ts', import.meta.url)) }
+  ] },
   test: {
     globals: true,
     environment: 'node',

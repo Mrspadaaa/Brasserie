@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 3,
+  "fixture": "equipment-maintenance-v3",
+  "syntheticOnly": true,
+  "maximumProviderRequests": 2,
+  "maxOutputTokensPerGeneration": 2048,
+  "scenarios": 1,
+  "retries": 0,
+  "modelFallbacks": false,
+  "pathway": "local aiTask.run -> scanInvoiceSafely -> runBudgetedInvoiceScan -> real Gemini",
+  "scope": "Handler, shared pause/limits, durable reservations, document hash/cache and independent reviewer. Published HTTPS transport and Firebase token verification are not tested.",
+  "credentials": [
+    "GEMINI_API_KEY",
+    "EVAL_GOOGLE_ACCESS_TOKEN",
+    "EVAL_FIREBASE_PROJECT_ID",
+    "AUTHORIZED_ACCOUNTS (or VITE_AUTHORIZED_ACCOUNTS)"
+  ],
+  "optionalEnvironment": [
+    "EVAL_CALLER_EMAIL (defaults to first configured authorized account)"
+  ],
+  "writes": [
+    "invoiceScans/<synthetic document hash>",
+    "brewerAiUsage/<current Zurich day>"
+  ],
+  "sharedControlsAreReadOnly": true,
+  "createsTransactionsOrStockOrChatJobs": false,
+  "output": "docs/expense-scan-evaluation.json",
+  "timestamp": "2026-09-09T11:25:00.329Z",
+  "runId": "4327eef3-4d12-49df-8339-65bf177607a9",
+  "status": "failed",
+  "generations": 2,
+  "requests": [
+    {
+      "number": 1,
+      "model": "gemini-3.5-flash-lite",
+      "stage": "extraction",
+      "requestedMaxOutputTokens": 4500,
+      "enforcedMaxOutputTokens": 2048,
+      "reservationVerifiedBeforeProvider": true,
+      "scanCallsReserved": 1,
+      "sameOriginalDocument": true,
+      "independentReviewerTargetsContainNoFirstAmounts": null,
+      "requestSha256": "d2ef6f2d680901fd5092ed31a5e1f5d12507195c5bcf51ba6dbfac6f6d88d067",
+      "status": "returned",
+      "startedAt": "2026-09-09T11:25:01.079Z",
+      "httpStatus": 200,
+      "elapsedMs": 2368,
+      "finishReason": "STOP",
+      "responseModel": "gemini-3.5-flash-lite",
+      "usage": {
+        "promptTokenCount": 748,
+        "candidatesTokenCount": 630,
+        "thoughtsTokenCount": null,
+        "cachedContentTokenCount": null,
+        "totalTokenCount": 1378
+      }
+    },
+    {
+      "number": 2,
+      "model": "gemini-3.5-flash-lite",
+      "stage": "independent-review",
+      "requestedMaxOutputTokens": 4500,
+      "enforcedMaxOutputTokens": 2048,
+      "reservationVerifiedBeforeProvider": true,
+      "scanCallsReserved": 2,
+      "sameOriginalDocument": true,
+      "independentReviewerTargetsContainNoFirstAmounts": true,
+      "requestSha256": "7c8fb230445d3bf773b7e191c172dfb0949b8d08898c6aa3dfed288a50cfeef9",
+      "status": "returned",
+      "startedAt": "2026-09-09T11:25:03.587Z",
+      "httpStatus": 200,
+      "elapsedMs": 929,
+      "finishReason": "STOP",
+      "responseModel": "gemini-3.5-flash-lite",
+      "usage": {
+        "promptTokenCount": 376,
+        "candidatesTokenCount": 48,
+        "thoughtsTokenCount": null,
+        "cachedContentTokenCount": null,
+        "totalTokenCount": 424
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "equipment-maintenance-v3",
+      "cachedBeforeRun": false,
+      "checks": {
+        "totalSourcePreserved": true,
+        "netAndVatSourcePreserved": true,
+        "currencyAndDatePreserved": true,
+        "invoiceIdentityPreserved": true,
+        "durableEquipmentSeparated": true,
+        "repairSeparatedFromEquipment": true,
+        "missingRepairQuantityNotInvented": true,
+        "shippingAndDiscountPreserved": true,
+        "independentReviewCompleted": false,
+        "disputesExplicit": true,
+        "targetedReviewerHasNoFirstAmounts": true,
+        "ownBudgetReservedBeforeEveryCall": true,
+        "onlyConfiguredModelAndBoundedOutput": true,
+        "cacheReturnsSameResultWithoutProvider": true,
+        "serverLedgerCallsBounded": true
+      },
+      "elapsedMs": 3859,
+      "extracted": {
+        "currency": "CHF",
+        "date": "09.09.2026",
+        "amountHT": 508.79,
+        "tvaRate": 0.081,
+        "tvaAmount": 41.21,
+        "amountTTC": 550,
+        "lines": [
+          {
+            "name": "Fermenteur inox 30 litres",
+            "kind": "equipment",
+            "quantity": 1,
+            "unit": "piece",
+            "amountTTC": 500
+          },
+          {
+            "name": "Reparation de la pompe existante",
+            "kind": "maintenance",
+            "quantity": null,
+            "unit": "",
+            "amountTTC": 50
+          },
+          {
+            "name": "Frais de livraison",
+            "kind": "shipping",
+            "quantity": null,
+            "unit": "",
+            "amountTTC": 12
+          },
+          {
+            "name": "Remise commerciale",
+            "kind": "discount",
+            "quantity": null,
+            "unit": "",
+            "amountTTC": -12
+          }
+        ]
+      },
+      "review": {
+        "status": "disputed",
+        "findings": [
+          "Fermenteur inox 30 litres : Fermenteur inox 30 litres - bien durable neuf"
+        ]
+      },
+      "issues": [
+        "Fermenteur inox 30 litres : Fermenteur inox 30 litres - bien durable neuf"
+      ],
+      "ok": false
+    }
+  ],
+  "transport": {
+    "authLibraryVersion": "9.15.1",
+    "explicitTokenHeaderVerified": true,
+    "authenticatedRequests": 30
+  },
+  "model": "gemini-3.5-flash-lite",
+  "document": {
+    "sha256": "4ee2e0028a94b7a631d5807c62d9f67817514291fb8912eaa1f02eda0401b4ed",
+    "bytes": 3986,
+    "mimeType": "application/pdf",
+    "pages": 1
+  },
+  "sharedBudget": {
+    "before": {
+      "day": "2026-09-09",
+      "calls": 0,
+      "tokens": 0,
+      "proCalls": 0
+    },
+    "paused": false,
+    "limits": {
+      "dailyCalls": 400,
+      "dailyProCalls": 20,
+      "dailyTokens": 5000000,
+      "questionCalls": 12,
+      "questionTokens": 1000000
+    },
+    "controlsModified": false,
+    "beforeAfterDeltasMayIncludeConcurrentUse": true,
+    "after": {
+      "day": "2026-09-09",
+      "calls": 2,
+      "tokens": 1802,
+      "proCalls": 0
+    }
+  },
+  "scanLedgerBefore": null,
+  "scanLedgerAfter": {
+    "status": "completed",
+    "calls": 2,
+    "reservedTokens": 144814,
+    "reservations": [
+      {
+        "status": "completed",
+        "reserved": 73538,
+        "charged": 1378
+      },
+      {
+        "status": "completed",
+        "reserved": 71276,
+        "charged": 424
+      }
+    ]
+  },
+  "finishedAt": "2026-09-09T11:25:04.988Z",
+  "reportedTotalTokens": 1802,
+  "tokenUsageComplete": true
+}

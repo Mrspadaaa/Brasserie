@@ -4,10 +4,12 @@ import { HopIndexPanel } from './HopIndexPanel';
 import { HopKnowledgePanel } from './HopKnowledgePanel';
 import { HopSearchPanel } from './HopSearchPanel';
 import { HopTastingsPanel } from './HopTastingsPanel';
+import { ViewNavigation } from '../ViewNavigation';
 export function HopIndexWorkspace(props: React.ComponentProps<typeof HopIndexPanel>) {
   const [view, setView] = useState('index');
   useEffect(() => { if (props.createRequest?.kind === 'newHopVariety') setView('index'); }, [props.createRequest?.at]);
-  return <div data-hop-scroll className="flex-1 min-h-0 overflow-y-auto space-y-5 pb-24">
+  return <div data-hop-scroll className="flex-1 min-h-0 overflow-y-auto space-y-2 sm:space-y-5 pb-24">
+    <ViewNavigation label="Vue des houblons" value={view} onChange={setView} options={[{value:'index',label:'Variétés et lots',shortLabel:'Variétés'},{value:'search',label:'Atelier aromatique',shortLabel:'Arômes'},{value:'tastings',label:'Dégustations'},{value:'knowledge',label:'Sources et modèles',shortLabel:'Sources'}]}>
     <nav aria-label="Index houblon" className="grid grid-cols-2 md:grid-cols-4 gap-2">
       {[
         { id: 'index', name: 'Variétés et lots', Icon: BookOpen },
@@ -20,6 +22,7 @@ export function HopIndexWorkspace(props: React.ComponentProps<typeof HopIndexPan
         <Icon size={17} className="shrink-0" aria-hidden="true" />{name}
       </button>)}
     </nav>
+    </ViewNavigation>
     {view === 'index' && <HopIndexPanel {...props} />}{view === 'search' && <HopSearchPanel />}{view === 'tastings' && <HopTastingsPanel />}{view === 'knowledge' && <HopKnowledgePanel />}
   </div>;
 }

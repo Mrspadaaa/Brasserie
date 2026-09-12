@@ -17,6 +17,8 @@ await mkdir(output, { recursive: true });
 const selected = process.env.BREWER_EVAL_CASES
   ? cases.filter((c) => process.env.BREWER_EVAL_CASES.split(',').includes(c.id))
   : cases;
+const requestedMode = ['fast', 'auto', 'deep'].includes(process.env.BREWER_EVAL_MODE)
+  ? process.env.BREWER_EVAL_MODE : 'auto';
 let next = 0;
 async function worker() {
   while (next < selected.length) {
@@ -52,7 +54,7 @@ async function worker() {
           });
           return response;
         },
-        { mode: process.env.BREWER_EVAL_MODE === 'deep' ? 'deep' : 'auto' }
+        { mode: requestedMode }
       );
       await writeFile(
         `${output}/${scenario.id}.json`,
@@ -72,15 +74,15 @@ async function worker() {
       if (
         scenario.id === 'supplier-followup' &&
         !result.evidence.some(
-          (e) => e.name === 'find_brewing_suppliers' && e.model === 'gemini-3.1-pro-preview'
+          (e) => e.name === 'find_brewing_suppliers' && e.model?.includes('flash')
         )
       )
-        throw Error('La recherche web doit être réalisée avec Gemini 3.1 Pro.');
+        throw Error('La recherche web doit être réalisée avec Gemini Flash.');
       if (
-        scenario.id === 'routing-complex' &&
-        !result.trace.some((t) => t.name === 'request_deep_analysis')
+        scenario.id === 'routing-complex' && requestedMode !== 'deep' &&
+        modelCalls.some(call => !call.model.includes('flash'))
       )
-        throw Error('Le compagnon doit juger cet arbitrage complexe et choisir Pro.');
+        throw Error('Le compagnon doit conserver Flash, y compris pour les arbitrages en mode auto.');
       results.push({
         id: scenario.id,
         ok: true,

@@ -2,6 +2,7 @@ import React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BrewerActivity } from '../../src/ui/BrewerActivity';
+import { BrewerPageShortcut } from '../../src/ui/BrewerPageShortcut';
 import { BrewerChat } from '../../src/ui/BrewerChat';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import { brewerJobs } from '../../src/services/brewerJobs';
@@ -48,6 +49,13 @@ async function ask() {
   await waitFor(() => expect(api.submit).toHaveBeenCalled());
 }
 describe('Raccourci contextuel et gestion des conversations', () => {
+  it('ouvre le même brouillon depuis la place réservée dans la page mobile', async () => {
+    render(<><BrewerPageShortcut /><BrewerChat hideLauncher scope={{ kind: 'draft', id: 'REC-INLINE' }} label="Brouillon mobile" draft={{ name: 'Brouillon mobile', volumeL: 24 }} /></>);
+    await plus();
+    expect(screen.getAllByRole('dialog')).toHaveLength(1);
+    expect(api.history).toHaveBeenLastCalledWith({ kind: 'draft', id: 'REC-INLINE' });
+    expect(api.submit).not.toHaveBeenCalled();
+  });
   it('conserve toutes les actions du bouton + et sépare clairement le compagnon', async () => {
     const create = vi.fn(), quick = vi.fn();
     render(<><BrewerActivity context={brewerAppScreen('stocks', 'materiel')} />
@@ -142,9 +150,46 @@ describe('Raccourci contextuel et gestion des conversations', () => {
     const done = { ...job('1'), status: 'done' as const, readAt: 1 };
     vi.mocked(api.activity).mockResolvedValue([done]);
     render(<BrewerActivity />);
-    expect(await screen.findByRole('button', { name: 'Compagnon : Mes conversations' })).toBeVisible();
+    await waitFor(()=>expect(api.activity).toHaveBeenCalled());
+    expect(screen.queryByRole('button', { name: 'Compagnon : Mes conversations' })).not.toBeInTheDocument();
     await plus();
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Mes conversations' })); });
     expect(screen.getByRole('dialog', { name: 'Mes conversations' })).toBeVisible();
+  });
+  it('garde le + des finances sur mobile et distingue un appui long du clic qui le suit', () => {
+    vi.useFakeTimers();
+    const match = vi.spyOn(window, 'matchMedia').mockImplementation(query => ({matches:query==='(max-width: 639px)',media:query,onchange:null,addEventListener:()=>{},removeEventListener:()=>{},addListener:()=>{},removeListener:()=>{},dispatchEvent:()=>false}));
+    try {
+      const create = vi.fn(), quick = vi.fn();
+      render(<BottomNav activeTab="finances" onChangeTab={()=>{}} action={{intent:'newTransaction',label:'Nouvelle écriture'}} onAction={create} onOpenQuickAction={quick} criticalStockCount={0}/>);
+      const add = screen.getByRole('button', {name:'Nouvelle écriture'});
+      expect(add).toBeVisible();
+      fireEvent.pointerDown(add, {pointerType:'touch',button:0,clientX:20,clientY:20});
+      act(()=>vi.advanceTimersByTime(600));
+      fireEvent.contextMenu(add);
+      fireEvent.pointerUp(add);
+      fireEvent.click(add, {detail:1});
+      expect(quick).toHaveBeenCalledOnce();
+      expect(create).not.toHaveBeenCalled();
+      fireEvent.pointerDown(add, {pointerType:'touch',button:0,clientX:20,clientY:20});
+      fireEvent.pointerMove(add, {pointerType:'touch',clientX:20,clientY:45});
+      act(()=>vi.advanceTimersByTime(600));
+      fireEvent.pointerCancel(add);
+      expect(quick).toHaveBeenCalledOnce();
+      fireEvent.click(add);
+      expect(create).toHaveBeenCalledOnce();
+    } finally { cleanup(); match.mockRestore(); vi.useRealTimers(); }
+  });
+  it('réunit l’accès au compagnon dans l’en-tête mobile, y compris sur les finances',async()=>{
+    const match=vi.spyOn(window,'matchMedia').mockImplementation(query=>({matches:query==='(max-width: 639px)',media:query,onchange:null,addEventListener:()=>{},removeEventListener:()=>{},addListener:()=>{},removeListener:()=>{},dispatchEvent:()=>false}));
+    try {
+      render(<><div id="brewer-mobile-header"/><BrewerActivity hideLauncher context={brewerAppScreen('finances')}/></>);
+      const launcher=await screen.findByRole('button',{name:'Ouvrir le compagnon brasseur'});
+      expect(document.getElementById('brewer-mobile-header')).toContainElement(launcher);
+      expect(screen.getAllByRole('button',{name:'Ouvrir le compagnon brasseur'})).toHaveLength(1);
+      await plus();
+      expect(api.history).toHaveBeenLastCalledWith({kind:'app',id:'finances'});
+      expect(screen.getByRole('dialog')).toHaveTextContent('Finances');
+    } finally {cleanup();match.mockRestore();}
   });
 });

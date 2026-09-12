@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertCircle, RefreshCw, HardDrive, Lock } from 'lucide-react';
 import { FirebaseAuthService } from '../services/firebaseAuth';
 
@@ -17,6 +17,9 @@ interface LoginPageProps {
 export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+  const prepare = () => { setError(null); void FirebaseAuthService.prepareGoogleLogin().then(() => setReady(true)).catch(() => setError('La connexion Google ne peut pas être préparée. Vérifie ta connexion et réessaie.')); };
+  useEffect(() => { prepare(); }, []);
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
@@ -65,8 +68,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
 
         <button
           type="button"
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
+          onClick={ready ? handleGoogleLogin : prepare}
+          disabled={isLoading || (!ready && !error)}
           className="w-full min-h-touch-lg px-5 rounded-control bg-cave-50 hover:bg-white
                      text-cave-950 font-semibold text-base
                      flex items-center justify-center gap-3
@@ -119,7 +122,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
             <p className="text-sm text-cave-400 leading-relaxed">
               <span className="text-cave-200">Google Drive, accès restreint</span> — pour y
               déposer factures et quittances. L'application ne voit que les fichiers qu'elle a
-              elle-même créés, jamais le reste de votre Drive.
+              elle-même créés ou reçus avec votre accord. Cette autorisation est conservée pour les prochains envois.
             </p>
           </div>
         </div>

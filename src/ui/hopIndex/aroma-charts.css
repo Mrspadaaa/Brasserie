@@ -1,0 +1,11 @@
+.aroma-range-track { position: relative; height: 26px; margin: 4px 3px; background: linear-gradient(#3D342E,#3D342E) center / 100% 1px no-repeat; }
+.aroma-interval { position: absolute; top: 12px; color: #5B8AA6; border-top: 2px solid currentColor; }
+.aroma-interval::before, .aroma-interval::after { content: ''; position: absolute; top: -5px; height: 8px; border-left: 2px solid currentColor; }
+.aroma-interval::before { left: 0; }
+.aroma-interval::after { right: 0; }
+.aroma-interval-unresolved { border-top-style: dashed; color: #9A8A7E; }
+.aroma-interval-baseline { top: 21px; color: #D8CEC5; }
+.aroma-point { position: absolute; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: #6E9B5B; transform: translateX(-50%); }
+.aroma-goal-range { position: absolute; top: 3px; height: 19px; border-left: 1px solid #F2C14E; border-right: 1px solid #F2C14E; background: #F2C14E12; }
+.aroma-radar { display: block; width: 100%; max-width: 440px; margin: 0 auto; }
+@media (max-width: 639px) { .aroma-radar { width: calc(100% + 24px); margin-left: -12px; max-width: none; } }

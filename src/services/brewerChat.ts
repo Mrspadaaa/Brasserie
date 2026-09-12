@@ -20,14 +20,15 @@ export const BrewerChat = {
   },
   async setBudget(
     paused: boolean | undefined,
-    limits?: Partial<BrewerAiLimits>
+    limits?: Partial<BrewerAiLimits>,
+    monthlyLimitMicroChf?: number
   ): Promise<BrewerAiBudget> {
     const { httpsCallable } = await import('firebase/functions');
     const { functions } = await import('./firebase');
     return (
       await httpsCallable<unknown, BrewerAiBudget>(functions, 'setBrewerAiBudget', {
         timeout: 15000
-      })({ ...(paused != null ? { paused } : {}), ...(limits ? { limits } : {}) })
+      })({ ...(paused != null ? { paused } : {}), ...(limits ? { limits } : {}), ...(monthlyLimitMicroChf != null ? { monthlyLimitMicroChf } : {}) })
     ).data;
   },
   async retry(jobId: string, operationId: string): Promise<BrewerReply> {
@@ -161,7 +162,7 @@ export function brewerChatError(error: unknown) {
   if (reason === 'proposal-stale')
     return (error as Error).message || 'Les champs ont changé. Demande une proposition actualisée.';
   if ((error as { details?: { reason?: string } })?.details?.reason === 'pro-unavailable')
-    return 'Gemini 3.1 Pro est momentanément indisponible. Ta question est conservée ; réessaie dans un instant.';
+    return 'Le modèle d’analyse est momentanément indisponible. Ta question est conservée ; réessaie dans un instant.';
   const code = String((error as { code?: string })?.code ?? '');
   if (/unauthenticated|permission-denied/.test(code))
     return 'Connecte-toi à la brasserie pour discuter avec le compagnon.';

@@ -5,6 +5,11 @@ const sdk = vi.hoisted(() => ({
   read: vi.fn(), commit: vi.fn(), callable: vi.fn(), attachments: vi.fn()
 }));
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {} }));
+vi.mock('../../src/services/financialLedgerSync', () => ({ startFinancialLedgerSync: async (callbacks: any) => {
+  callbacks.onData([], { covered: new Set(), requestStartedAt: 0 });
+  callbacks.onState({ complete: true, loading: false, fromCache: false, loadedRows: 0 });
+  return { refresh: async () => {}, stop: () => {} };
+} }));
 vi.mock('firebase/functions', () => ({ httpsCallable: () => sdk.callable }));
 vi.mock('firebase/firestore', () => ({
   collection: (_: unknown, name: string) => name,
@@ -17,9 +22,9 @@ vi.mock('firebase/firestore', () => ({
   getDocFromServer: (...args: any[]) => sdk.read(...args),
   writeBatch: () => ({ set: vi.fn(), delete: vi.fn(), commit: sdk.commit }),
   waitForPendingWrites: async () => {},
-  getDocs: vi.fn(), getDocsFromServer: vi.fn(), query: vi.fn(), limit: vi.fn(), deleteField: vi.fn()
+  getDocs: vi.fn(), getDocsFromServer: vi.fn(), query: (name: string) => name, limit: vi.fn(), orderBy: vi.fn(), documentId: () => '__name__', startAfter: vi.fn(), deleteField: vi.fn()
 }));
-import { FirestoreRepo, ALL_COLLECTIONS } from '../../src/services/firestoreRepo';
+import { FirestoreRepo, LIVE_COLLECTIONS } from '../../src/services/firestoreRepo';
 import { BrewerChat } from '../../src/services/brewerChat';
 
 const record = { id: 'R-1', name: 'Avant', volumeL: 30 };
@@ -150,6 +155,6 @@ describe('Live cache after a confirmed server mutation (no real network or Gemin
     pending.resolve(documentSnapshot(record));
     expect(await refresh).toBe(false);
     expect(FirestoreRepo.all('recipes')).toEqual([]);
-    expect(sdk.listeners.size).toBe(ALL_COLLECTIONS.length);
+    expect(sdk.listeners.size).toBe(LIVE_COLLECTIONS.length);
   });
 });

@@ -1,92 +1,39 @@
 import { TimeFilterPeriod } from '../types';
 
+/** Calendar dates, independent of UTC parsing and the selected record's year. */
 export const DateUtils = {
-  /**
-   * Parse a date string in "DD.MM.YYYY" or ISO format into a Date object.
-   */
-  parseDate(dateStr?: string): Date | null {
-    if (!dateStr) return null;
-    
-    // Check for DD.MM.YYYY
-    const parts = dateStr.split('.');
-    if (parts.length === 3) {
-      const day = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1; // 0-indexed
-      const year = parseInt(parts[2], 10);
-      if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
-        return new Date(year, month, day);
-      }
-    }
-
-    // Try native Date parsing
-    const d = new Date(dateStr);
-    return isNaN(d.getTime()) ? null : d;
+  parseDate(value?: string): Date | null {
+    if (!value) return null;
+    const swiss = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/.exec(value.trim());
+    const iso = /^(\d{4})-(\d{2})-(\d{2})(?:T.*)?$/.exec(value.trim());
+    if (!swiss && !iso) return null;
+    const [year, month, day] = swiss
+      ? [Number(swiss[3]), Number(swiss[2]), Number(swiss[1])]
+      : [Number(iso![1]), Number(iso![2]), Number(iso![3])];
+    const date = new Date(year, month - 1, day, 12);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
   },
-
-  /**
-   * Check if a given date falls within a chosen TimeFilterPeriod.
-   * Uses reference year 2026 if current year is not yet 2026 or aligns with dataset.
-   */
-  isDateInPeriod(dateStr?: string, period: TimeFilterPeriod = 'all'): boolean {
+  isDateInPeriod(value?: string, period: TimeFilterPeriod = 'all', reference = new Date()): boolean {
     if (period === 'all') return true;
-    const d = this.parseDate(dateStr);
-    if (!d) return true; // Keep entries with unparseable dates in view
-
-    const now = new Date();
-    // Default to the year of the record if it's 2026, or current year
-    const targetYear = d.getFullYear();
-    const curYear = now.getFullYear();
-    const effectiveYear = targetYear === 2026 ? 2026 : curYear;
-    
-    const y = d.getFullYear();
-    const m = d.getMonth(); // 0 to 11
-
-    // If filter is for specific year
-    if (period === 'year') {
-      return y === effectiveYear;
-    }
-
-    // Direct Activity Month Filters (Sûr & Pratique)
-    if (period === 'm-04') return y === 2026 && m === 3;
-    if (period === 'm-01') return y === 2026 && m === 0;
-
-    // Quarters
-    if (period === 'q1') return y === effectiveYear && m >= 0 && m <= 2;
-    if (period === 'q2') return y === effectiveYear && m >= 3 && m <= 5;
-    if (period === 'q3') return y === effectiveYear && m >= 6 && m <= 8;
-    if (period === 'q4') return y === effectiveYear && m >= 9 && m <= 11;
-
-    // Monthly comparisons relative to real system clock
-    if (period === 'this-month') {
-      return y === now.getFullYear() && m === now.getMonth();
-    }
-
-    if (period === 'last-month') {
-      const curM = now.getMonth();
-      const lastM = curM === 0 ? 11 : curM - 1;
-      const lastY = curM === 0 ? now.getFullYear() - 1 : now.getFullYear();
-      return y === lastY && m === lastM;
-    }
-
-    return true;
+    const date = this.parseDate(value);
+    if (!date) return false;
+    const year = date.getFullYear(), month = date.getMonth();
+    if (period.startsWith('year-')) return year === Number(period.slice(5));
+    if (period.startsWith('month-')) return `${year}-${String(month + 1).padStart(2, '0')}` === period.slice(6);
+    if (period === 'year') return year === reference.getFullYear();
+    if (period === 'm-04' || period === 'm-01') return year === reference.getFullYear() && month === (period === 'm-04' ? 3 : 0);
+    if (/^q[1-4]$/.test(period)) return year === reference.getFullYear() && Math.floor(month / 3) === Number(period[1]) - 1;
+    const anchor = period === 'last-month' ? new Date(reference.getFullYear(), reference.getMonth() - 1, 1) : reference;
+    return year === anchor.getFullYear() && month === anchor.getMonth();
   },
-
-  /**
-   * Human readable label for period
-   */
   getPeriodLabel(period: TimeFilterPeriod): string {
-    const map: Record<TimeFilterPeriod, string> = {
-      'm-04': 'Avril 2026 (Matières & Brassage)',
-      'm-01': 'Janvier 2026 (Travaux & Rénovation)',
-      'this-month': 'Ce mois en cours',
-      'last-month': 'Mois dernier',
-      'q1': '1er Trimestre (T1 2026)',
-      'q2': '2ème Trimestre (T2 2026)',
-      'q3': '3ème Trimestre (T3 2026)',
-      'q4': '4ème Trimestre (T4 2026)',
-      'year': 'Exercice 2026 (Complet)',
-      'all': 'Tout l’historique'
-    };
-    return map[period] || 'Période';
+    if (period.startsWith('year-')) return `Exercice ${period.slice(5)}`;
+    if (period.startsWith('month-')) {
+      const date = this.parseDate(`${period.slice(6)}-01`);
+      return date ? date.toLocaleDateString('fr-CH', { month: 'long', year: 'numeric' }) : 'Période à choisir';
+    }
+    const year = new Date().getFullYear();
+    const labels: Record<string, string> = { all: 'Tout l’historique', 'this-month': 'Ce mois', 'last-month': 'Mois dernier', year: `Exercice ${year}`, 'm-04': `Avril ${year}`, 'm-01': `Janvier ${year}`, q1: `1er trimestre ${year}`, q2: `2e trimestre ${year}`, q3: `3e trimestre ${year}`, q4: `4e trimestre ${year}` };
+    return labels[period] ?? 'Période à choisir';
   }
 };

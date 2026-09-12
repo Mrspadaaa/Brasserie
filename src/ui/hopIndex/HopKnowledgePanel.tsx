@@ -1,4 +1,6 @@
+import bitternessPack from '../../data/hopBitternessBootstrap.json';
 import React, { useState } from 'react';
+import { MobileDetails } from '../ViewNavigation';
 import { HopKnowledge, HopModel, assertHopKnowledge } from '../../../functions/src/hopPredictionSchema';
 import { HopSource } from '../../../functions/src/hopIndexSchema';
 import bootstrap from '../../data/hopKnowledgeBootstrap.json';
@@ -10,6 +12,8 @@ import technicalNotes from '../../data/hopTechnicalBootstrap.json';
 import extrapolationPack from '../../data/hopExtrapolationBootstrap.json';
 import fermentationPack from '../../data/fermentationGuideBootstrap.json';
 import fermentationSciencePack from '../../data/fermentationScienceBootstrap.json';
+import noloPack from '../../data/noloBootstrap.json';
+import stylePack from '../../data/brewingStylesBootstrap.json';
 import { FermentationScienceLibrary } from '../FermentationSciencePanel';
 import { guideFermentationScience } from './guideData';
 import { ensureGuideReferences, guideYeasts } from './guideData';
@@ -87,14 +91,17 @@ export function HopKnowledgePanel() {
   return <section className="space-y-4" aria-label="Connaissances du houblon">
     <h2 className="text-xl text-cave-50 font-semibold">Sources et modèles</h2>
     <details className="border border-cave-700 rounded-control p-3"><summary className="cursor-pointer min-h-touch text-ebc-straw">Catalogue complet des levures · fiches et sources</summary><div className="pt-3"><YeastCataloguePanel/></div></details>
+    <MobileDetails title="Gérer les sources et les modèles">
     <p className="text-cave-200">Les axes, plages, seuils et pondérations sont enregistrés dans l’index. Une révision prend effet au prochain calcul ; les prédictions figées restent consultables.</p>
     <div className="flex flex-wrap gap-2">
       <Button disabled={installing || loadingCatalogue} onClick={install}>Installer les conventions initiales manquantes</Button>
       <Button onClick={() => edit({ id: crypto.randomUUID(), kind: 'yeast', name: '', betaLyase: 'unknown', source: localSource() })}>Ajouter une levure</Button>
       <Button onClick={() => edit(newModel())}>Documenter un modèle</Button>
+      <Button disabled={installing} onClick={() => installPack({hopKnowledge:bitternessPack})}>Ajouter les références d’amertume à cru</Button>
     </div>
     <p className="text-sm text-cave-400">L’installation propose 12 familles aromatiques et des règles de vigilance, sans inventer de rendement ni de profil sensoriel. Les classes et l’importance égale des axes sont des conventions locales documentées.</p>
     <a className="inline-block text-sm text-cave-400 underline" href={catalogueLicenses} download="licences-referentiels-houblon.txt">Attributions et licences des référentiels GitHub</a>
+    </MobileDetails>
     <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer text-cave-100">Étude disponible · Cascade × Wyeast 1728</summary>
       <p className="text-sm text-cave-200">29 lots publiés par Lafontaine et al. (2018), cônes après fermentation en bière clarifiée. Régression reconstruite, incertitude empirique et confiance faible. Elle décrit l’axe Agrumes du panel de cette étude ; son transfert à un nouveau lot reste exploratoire.</p>
       <p className="text-sm text-cave-400">Le protocole et ses limites seront visibles dans la recherche. Le lexique et les vigilances initiales sont inclus ; les fiches déjà présentes sont conservées.</p>
@@ -121,6 +128,7 @@ export function HopKnowledgePanel() {
       }}>Enregistrer les guides de fermentation modifiables</Button>
       <FermentationScienceLibrary science={guideFermentationScience(knowledge)[0]} />
     </details>
+    <details className="border border-cave-700 rounded-control p-3"><summary className="min-h-touch cursor-pointer text-water">Styles étendus et NOLO</summary><p className="text-sm text-cave-400">Référentiels datés et procédés modifiables. Les corrections personnelles sont conservées.</p><Button disabled={installing} onClick={()=>installPack({hopKnowledge:[...stylePack,...noloPack]})}>Enregistrer les références styles et NOLO</Button></details>
     {installing && <p role="status" className="text-cave-200">Import en cours…</p>}
     {notice && <p role="status" className="text-cave-200">{notice}</p>}
     {usable.errors.length > 0 && <p className="text-ebc-straw">{usable.errors.length} connaissance(s) incomplète(s) : ignorées par le calcul, corrigeables dans l’édition avancée.</p>}
@@ -129,7 +137,7 @@ export function HopKnowledgePanel() {
     <details className="border border-cave-700 rounded-control p-3 space-y-3"><summary className="cursor-pointer min-h-touch text-cave-100">Programmes de l’atelier et informations techniques</summary><p className="text-sm text-cave-400">Les programmes sont consultables immédiatement dans l’atelier. Les enregistrer permet de les réviser ici, avec leurs conditions, résultats et sources. Un essai ne devient pas un modèle de prédiction.</p><Button disabled={installing} onClick={() => installPack({ hopVarieties: trialPack.hopVarieties, hopKnowledge: [...trialPack.hopKnowledge, ...technicalNotes] })}>Enregistrer les programmes et notes techniques</Button></details>
     <label className="block text-sm text-cave-200">Rechercher une fiche à modifier<input className={`${inputClass} mt-1`} value={recordQuery} onChange={e=>setRecordQuery(e.target.value)} placeholder="Nom ou identifiant de la connaissance"/></label>
     <p className="text-xs text-cave-400">Les fiches du catalogue se consultent ci-dessus. Recherche leur nom pour modifier leurs données ; 50 fiches affichées au maximum.</p>
-    <div className="divide-y divide-cave-700">{knowledge.filter(k=>recordQuery ? `${k.name} ${k.id}`.toLowerCase().includes(recordQuery.toLowerCase()) : k.kind!=='yeast'||!k.catalogue).slice(0,50).map(k => <div key={k.id} className="py-3 flex items-start justify-between gap-3"><div className="min-w-0 space-y-2"><p className="text-cave-100 font-semibold">{k.name || 'Fiche incomplète'}</p><p className="text-sm text-cave-400">{({ axis: 'Axe', yeast: 'Levure', model: 'Modèle', risk: 'Vigilance', confidence: 'Fiabilité', note: 'Note documentaire', trial: 'Essai de brassage', extrapolation: 'Modèle expérimental', solver: 'Guide de formulation', fermentation: 'Guide de fermentation', fermentationScience: 'Science de fermentation' })[k.kind]} · {k.source?.author || 'Source manquante'}, {k.source?.year ?? 'année inconnue'}{k.kind === 'model' ? ` · ${k.enabled ? 'actif' : 'désactivé'} · version ${k.version}` : ''}</p>{k.kind === 'note' && <details><summary className="cursor-pointer min-h-touch flex items-center text-sm text-water">Lire les résultats et leurs limites</summary><div className="space-y-2"><div className="flex flex-wrap gap-2">{k.topics.map(t => <BrewTag tone="info" key={t}>{t}</BrewTag>)}</div><p className="text-cave-200 text-sm">{k.summary}</p><p className="text-cave-400 text-sm">{k.limitation}</p><a className="text-sm underline text-water break-words" href={/^https?:\/\//i.test(k.source.reference) ? k.source.reference : undefined} target="_blank" rel="noreferrer">Consulter la publication</a></div></details>}</div>
+    <div className="divide-y divide-cave-700">{knowledge.filter(k=>recordQuery ? `${k.name} ${k.id}`.toLowerCase().includes(recordQuery.toLowerCase()) : k.kind!=='yeast'||!k.catalogue).slice(0,50).map(k => <div key={k.id} className="py-3 flex items-start justify-between gap-3"><div className="min-w-0 space-y-2"><p className="text-cave-100 font-semibold">{k.name || 'Fiche incomplète'}</p><p className="text-sm text-cave-400">{({ axis: 'Axe', yeast: 'Levure', model: 'Modèle', risk: 'Vigilance', confidence: 'Fiabilité', note: 'Note documentaire', trial: 'Essai de brassage', extrapolation: 'Modèle expérimental', solver: 'Guide de formulation', fermentation: 'Guide de fermentation', fermentationScience: 'Science de fermentation', styleGuide:'Styles de bière', noloScience:'Procédés NOLO', bitternessScience:'Amertume à cru' })[k.kind]} · {k.source?.author || 'Source manquante'}, {k.source?.year ?? 'année inconnue'}{k.kind === 'model' ? ` · ${k.enabled ? 'actif' : 'désactivé'} · version ${k.version}` : ''}</p>{k.kind === 'note' && <details><summary className="cursor-pointer min-h-touch flex items-center text-sm text-water">Lire les résultats et leurs limites</summary><div className="space-y-2"><div className="flex flex-wrap gap-2">{k.topics.map(t => <BrewTag tone="info" key={t}>{t}</BrewTag>)}</div><p className="text-cave-200 text-sm">{k.summary}</p><p className="text-cave-400 text-sm">{k.limitation}</p><a className="text-sm underline text-water break-words" href={/^https?:\/\//i.test(k.source.reference) ? k.source.reference : undefined} target="_blank" rel="noreferrer">Consulter la publication</a></div></details>}</div>
       <Button onClick={() => edit(k, !usable.valid.includes(k) || !['yeast', 'model'].includes(k.kind) || (k.kind === 'yeast' && !!k.catalogue))}>Modifier</Button></div>)}</div>
     <Sheet open={!!draft} onClose={() => { setDraft(null); setJson(null); setError(''); }} title={draft?.kind === 'yeast' ? 'Levure documentée' : draft?.kind === 'model' ? 'Modèle aromatique documenté' : 'Réviser une connaissance'} footer={<Button full intent="primary" onClick={save}>Enregistrer la connaissance</Button>}>
       {draft && <div className="space-y-4 pb-4">

@@ -100,7 +100,7 @@ export const cases = [
     question:
       'Ma chauffe plafonne à 1000 W, je manque d’eau osmosée et je devrai faire un rinçage plus court. Je veux conserver du corps sans trop d’astringence. Comment hiérarchiser les compromis entre empâtage, rinçage, volume final et ébullition ? Donne-moi un plan cohérent avec mon matériel, sans inventer mes mesures.',
     expect:
-      'Le compagnon choisit lui-même Pro pour cet arbitrage à plusieurs contraintes, puis utilise les calculateurs nécessaires.'
+      'Le compagnon conserve Flash en mode automatique, utilise les calculateurs nécessaires et fait vérifier cet arbitrage sans inventer les mesures.'
   },
   {
     id: 'supplier-followup',

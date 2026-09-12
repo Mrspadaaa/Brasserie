@@ -333,9 +333,11 @@ describe('Vérification Scientifique des Standards Brassicoles (BrewingMath Doub
       const res = BrewingMath.calculateSwissBeerTax(batches);
       expect(res.totalVolumeL).toBe(95);
       expect(res.totalHectoliters).toBe(0.95);
-      expect(res.isSmallBrewerRate).toBe(true);
-      expect(res.reductionPct).toBe(40);
-      expect(res.taxDueCHF).toBe(14.36);
+      expect(res.isSmallBrewerRate).toBe(false);
+      expect(res.reductionPct).toBe(0);
+      expect(res.estimateOnly).toBe(true);
+      expect(res.estimateLowCHF).toBe(16.04);
+      expect(res.estimateHighCHF).toBe(32.07);
     });
   });
 

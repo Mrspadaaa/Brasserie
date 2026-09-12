@@ -18,7 +18,10 @@ export function fermentationLevers(science:FermentationScience|undefined,goal:Fe
 }
 /** SG-point arithmetic, not a wort fermentability model. No automatic midpoint. */
 export function fermentationFinalGravity(guide:FermentationGuide|undefined,og:unknown):FermentationEstimate{
- const fact=guide?.attenuationPct;
+ return fermentationGravityFromAttenuation(guide?.attenuationPct,og);
+}
+/** Also accepts concordant catalogue facts without inventing a fermentation plan. */
+export function fermentationGravityFromAttenuation(fact:FermentationGuide['attenuationPct'],og:unknown):FermentationEstimate{
  if(!fact)return unknown('Plage d’atténuation de la souche absente.');
  if(!finite(og)||og<=1)return unknown('DI en SG requise, supérieure à 1.',[fact.source]);
  const a=fact.range;
@@ -34,7 +37,7 @@ export function fermentationLagerRest(science:FermentationScience|undefined,guid
  const p=science.lagerRest.progressPct, sources=[...fg.sources,science.lagerRest.source];
  const trigger:FermentationEstimate={range:{min:og-(og-fg.range.min)*p.max/100,max:og-(og-fg.range.max)*p.min/100},confidence:'low',sources,
  reasons:['Repère pour préparer le repos, calculé sur le chemin DI → DF attendue. Ce n’est pas une autorisation de refroidir ou de conditionner.']};
- if(!finite(sg)||sg>og||fg.range.max>=og)return {trigger,progress:unknown('Densité actuelle SG cohérente requise pour calculer la progression.',sources)};
+ if(!finite(sg)||sg<=0||sg>og||fg.range.max>=og)return {trigger,progress:unknown('Densité actuelle SG cohérente requise pour calculer la progression.',sources)};
  const progress:FermentationEstimate={range:{min:100*(og-sg)/(og-fg.range.min),max:100*(og-sg)/(og-fg.range.max)},confidence:'low',sources,
  reasons:['Progression vers une DF estimée ; peut dépasser 100 % si le moût atténue davantage. Aucun plafonnement qui cacherait cet écart.']};
  return {trigger,progress};

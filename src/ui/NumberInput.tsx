@@ -46,6 +46,7 @@ interface NumberInputProps {
   autoFocus?: boolean;
   id?: string;
   'aria-label'?: string;
+  'aria-describedby'?: string;
 }
 
 export const NumberInput: React.FC<NumberInputProps> = (props) => {
@@ -62,7 +63,8 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
     required,
     autoFocus,
     id,
-    'aria-label': ariaLabel
+    'aria-label': ariaLabel,
+    'aria-describedby': ariaDescribedBy
   } = props;
   const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,6 +77,7 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
       id={id}
       name={id ? `num_${id}` : undefined}
       aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
       type="text"
       inputMode={integer ? 'numeric' : 'decimal'}
       enterKeyHint="next"

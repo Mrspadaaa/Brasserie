@@ -80,6 +80,7 @@ describe('Atelier de formulation sur des essais connus', () => {
     expect(host.current().hops.map(h => h.weightG)).toEqual([40, 40, 80]);
     expect(host.current().hops.every(h => h.alpha === 0 && h.timeMin === undefined && h.tempC === undefined)).toBe(true);
     expect(StorageService.getHopVarieties()).toHaveLength(3);
+    fireEvent.click(screen.getByRole('button', { name: 'Explorer une variante' }));
     fireEvent.change(screen.getByLabelText('Levure à simuler'), { target: { value: 'fermentis-us05' } });
     expect(host.current().yeast.hopIndexId).toBe('lalbrew-verdant-ipa');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer ce scénario à la recette' }));

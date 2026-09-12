@@ -39,6 +39,7 @@ type Props = Pick<
   | "ra"
   | "phEstimate"
   | "justEnough"
+  | "applyMinimum"
   | "spargeAcidCalcule"
   | "mashAcid"
   | "spargeAcid"
@@ -102,6 +103,7 @@ export function WaterPreparation(model: Props) {
           <span>1 · L’eau — analyse, style et volumes</span>
         </div>
 
+        <details><summary className="min-h-touch cursor-pointer text-sm text-water">Analyse source · {source.name}</summary>
         <WaterAnalysisTable
           source={source}
           onChange={onSourceChange}
@@ -120,6 +122,8 @@ export function WaterPreparation(model: Props) {
           style={style}
         />
 
+        </details>
+        {source.note&&<p className="text-xs text-cave-400">{source.note}</p>}
         <WaterVolumes {...model} />
         <WaterDilution {...model} />
         <WaterAcidity {...model} />

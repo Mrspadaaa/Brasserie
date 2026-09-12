@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render as testingRender, screen, fireEvent, cleanup } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { WaterSource } from '../../src/types';
 import { changeWaterRatio } from '../helpers/waterRatio';
@@ -167,3 +167,10 @@ describe('Osmosée — sels et acides réellement pesés', () => {
     expect(screen.getByRole('button', { name: /Proposer les doses/i })).not.toBeDisabled();
   });
 });
+
+// These chemistry regressions exercise the advanced controls explicitly. Compact defaults have their own interaction tests.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);
+  return view;
+}

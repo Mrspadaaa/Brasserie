@@ -14,6 +14,12 @@ export function refreshCompanionRecipe(recipe: Recipe): Recipe {
       ? { ...f, pct: next.totalGristKg > 0 ? (f.weightKg / next.totalGristKg) * 100 : 0 }
       : f
   );
+  // The spent bed is a record of the first brew, not a fresh grist to absorb water again.
+  if (next.nolo?.enabled && next.nolo.process === 'secondRunnings') {
+    delete next.preBoilL;
+    delete next.preBoilHotL;
+    return next;
+  }
   if (p && next.totalGristKg > 0 && next.mash)
     next.mash.ratioLPerKg = p.mashWaterL / next.totalGristKg;
   if (p && rig) {

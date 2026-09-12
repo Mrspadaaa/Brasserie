@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
-import { ShieldCheck, Pause, Play } from 'lucide-react';
+import { ShieldCheck, Pause, Play, ChevronDown } from 'lucide-react';
 import { BrewerChat as api } from '../services/brewerChat';
 import { NumberInput } from './NumberInput';
 import { BREWER_LIMIT_BOUNDS } from '../../functions/src/brewerLimits';
@@ -48,7 +48,8 @@ export function BrewerBudget() {
   const [open, setOpen] = useState(false),
     [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<BrewerAiBudget>(),
-    [limits, setLimits] = useState<BrewerAiLimits>();
+    [limits, setLimits] = useState<BrewerAiLimits>(),
+    [monthlyChf, setMonthlyChf] = useState<number>();
   const [error, setError] = useState(''),
     [readError, setReadError] = useState(''),
     [notice, setNotice] = useState('');
@@ -63,6 +64,7 @@ export function BrewerBudget() {
         if (epoch !== version.current) return;
         setStatus(data);
         setLimits((current) => current ?? data.limits);
+        setMonthlyChf(current => current ?? (data.monthly?.limitMicroChf == null ? 5 : data.monthly.limitMicroChf / 1_000_000));
         setReadError('');
       } catch {
         if (epoch === version.current)
@@ -76,21 +78,23 @@ export function BrewerBudget() {
       clearInterval(timer);
     };
   }, [open, busy]);
-  const save = async (paused: boolean | undefined, nextLimits?: BrewerAiLimits) => {
+  const save = async (paused: boolean | undefined, nextLimits?: BrewerAiLimits, nextMonthly?: number) => {
     version.current++;
     setBusy(true);
     setError('');
     setNotice('');
     try {
-      const next = await api.setBudget(paused, nextLimits);
+      const next = nextMonthly === undefined ? await api.setBudget(paused, nextLimits) : await api.setBudget(paused, nextLimits, nextMonthly);
       setStatus(next);
       setLimits(next.limits);
       setNotice(
         paused
-          ? 'Compagnon suspendu. Les analyses en cours sont arrêtées.'
+          ? 'IA suspendue. Les analyses en cours du compagnon sont arrêtées.'
+          : nextMonthly !== undefined
+            ? 'Budget mensuel enregistré. Il couvre tous les appels Gemini de l’application.'
           : nextLimits
             ? 'Plafonds enregistrés.'
-            : 'Compagnon réactivé. Les questions arrêtées peuvent être relancées.'
+            : 'IA réactivée. Les questions arrêtées peuvent être relancées.'
       );
     } catch {
       setError(
@@ -127,13 +131,30 @@ export function BrewerBudget() {
     <details className="brewer-budget" onToggle={(e) => setOpen(e.currentTarget.open)}>
       <summary>
         <ShieldCheck size={15} />
-        {status?.paused ? 'Compagnon suspendu · limites IA' : 'Limites IA'}
+        {status?.paused ? 'IA suspendue · limites IA' : 'Limites IA'}
       </summary>
       <div className="brewer-budget-body">
         {(error || readError) && <p role="alert">{error || readError}</p>}
         {!status && !error && !readError && <p>Chargement des limites…</p>}
         {status && limits && (
           <>
+            <section aria-label="Budget mensuel Gemini">
+              <strong>Gemini · budget du mois</strong>
+              {status.monthly?.limitMicroChf == null
+                ? <p>Choisis et enregistre ton budget pour activer les analyses IA. Le montant proposé n’est pas encore activé.</p>
+                : <p>{((status.monthly.usedMicroChf + status.monthly.reservedMicroChf) / 1_000_000).toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} CHF comptabilisés sur {(status.monthly.limitMicroChf / 1_000_000).toLocaleString('fr-CH')} CHF · {status.monthly.month}</p>}
+              {status.monthly && status.monthly.limitMicroChf != null && status.monthly.limitMicroChf > 0 && <progress aria-label="Budget mensuel consommé ou réservé" max={status.monthly.limitMicroChf} value={Math.min(status.monthly.limitMicroChf, status.monthly.usedMicroChf + status.monthly.reservedMicroChf)} className="w-full accent-amber-400" />}
+              {Boolean(status.monthly?.reservedMicroChf) && <small>Dont {(status.monthly!.reservedMicroChf / 1_000_000).toLocaleString('fr-CH', { maximumFractionDigits: 3 })} CHF réservés pour les appels en cours ou dont le coût n’a pas été confirmé.</small>}
+              {status.monthly?.pricing === 'expired' && <p role="status">Révision des tarifs conseillée. Le budget continue avec les derniers tarifs de provision connus, sans garantie du montant exact facturé par Google.</p>}
+              <form onSubmit={event => { event.preventDefault(); if (monthlyChf != null && Number.isFinite(monthlyChf)) void save(undefined, undefined, Math.round(Math.max(0, Math.min(100, monthlyChf)) * 1_000_000)); }}>
+                <div className="flex gap-2" role="group" aria-label="Budgets mensuels proposés">
+                  {[5, 10, 20].map(amount => <button key={amount} type="button" aria-pressed={monthlyChf === amount} disabled={busy} onClick={() => setMonthlyChf(amount)} className="min-h-11 flex-1">{amount} CHF</button>)}
+                </div>
+                <div className="brewer-budget-field"><div><label htmlFor={`${field}-monthly`}>Maximum mensuel estimé · CHF</label><small>0 à 100 CHF · renouvelé le 1er, heure de Zurich</small></div><NumberInput id={`${field}-monthly`} value={monthlyChf} onValue={setMonthlyChf} min={0} max={100} required disabled={busy} /></div>
+                <button type="submit" disabled={busy || monthlyChf == null}>Enregistrer le budget mensuel</button>
+              </form>
+              <small>Factures, compagnon et autres analyses partagent ce budget. Chaque appel réserve une marge avant de démarrer ; à court de budget, l’IA s’arrête et la saisie manuelle reste disponible.</small>
+            </section>
             <button
               type="button"
               className={status.paused ? 'is-resume' : 'is-stop'}
@@ -141,9 +162,9 @@ export function BrewerBudget() {
               onClick={() => void save(!status.paused)}
             >
               {status.paused ? <Play size={16} /> : <Pause size={16} />}
-              {status.paused ? 'Réactiver le compagnon' : 'Suspendre le compagnon'}
+              {status.paused ? 'Réactiver l’IA' : 'Suspendre l’IA'}
             </button>
-            <form
+            <details className="brewer-budget-advanced"><summary>Limites quotidiennes et par question <ChevronDown size={16} /></summary><form
               onSubmit={(e) => {
                 e.preventDefault();
                 const next = clamped(limits);
@@ -172,17 +193,14 @@ export function BrewerBudget() {
                 )
               )}
               <small>
-                Restent fixes : 2 recherches web et une seule correction après relecture par
-                question. Aucune création libre de sous-agents.
+                Trois chercheurs Flash et deux relecteurs peuvent travailler en parallèle. Jusqu’à six recherches web et deux corrections si nécessaire ; le mode Approfondi garde une seule correction. Les recherches sont incluses dans le budget estimé.
               </small>
               <button type="submit" disabled={busy}>
                 Enregistrer les plafonds
               </button>
-            </form>
+            </form></details>
             <small>
-              Ces limites concernent le compagnon. Un appel déjà transmis peut rester facturé ; une
-              interruption conserve une marge de consommation. Les autres services Google ont leur
-              propre facturation.
+              Estimation prudente : tarifs Gemini vérifiés le {status.monthly?.pricingVerifiedAt ?? '—'}, 1 USD provisionné à 1,25 CHF. Ce montant n’est pas la facture Google : stockage, serveur, taxes et variation de change restent distincts. Un appel interrompu conserve sa réservation si son coût est inconnu.
             </small>
           </>
         )}

@@ -8,6 +8,8 @@ export interface HopTrial {
   assessmentSource: HopSource;
   yeastId: string; yeastName: string; yeastForm: 'sèche' | 'liquide';
   hops: { varietyId: string; name: string; form: HopProductForm; timing: HopTiming;
+    /** Relative event in the published protocol; does not invent a boil duration. */
+    boilStart?: { source: HopSource };
     doseGL: HopParameter; temperatureC: HopParameter | null; contactHours: HopParameter | null }[];
   fermentationC: HopParameter | null;
   families: string[]; result: string; matrix: string; limitations: string[];
@@ -33,10 +35,14 @@ export function assertHopTrial(v: any): asserts v is HopTrial {
   check(id(v.yeastId) && text(v.yeastName) && ['sèche','liquide'].includes(v.yeastForm), 'Levure d’essai absente.');
   check(Array.isArray(v.hops) && v.hops.length > 0 && v.hops.length <= 20, 'Programme de houblonnage absent.');
   for (const hop of v.hops) {
-    check(object(hop), 'Ajout expérimental invalide.'); keys(hop, ['varietyId','name','form','timing','doseGL','temperatureC','contactHours']);
+    check(object(hop), 'Ajout expérimental invalide.'); keys(hop, ['varietyId','name','form','timing','doseGL','temperatureC','contactHours','boilStart']);
     check(id(hop.varietyId) && text(hop.name) && ['cone','pelletT90','pelletT45','cryo','extract','unknown'].includes(hop.form)
       && ['firstWort','boil','whirlpool','fermentation','postFermentation'].includes(hop.timing), 'Triplet expérimental incomplet.');
     parameter(hop.doseGL, 0); check(hop.doseGL.range.min > 0, 'Dose expérimentale positive requise.');
+    if (hop.boilStart !== undefined) {
+      check(hop.timing === 'boil' && object(hop.boilStart), 'Le début d’ébullition exige un ajout à l’ébullition.');
+      keys(hop.boilStart, ['source']); source(hop.boilStart.source);
+    }
     if (hop.temperatureC !== null) parameter(hop.temperatureC, -273.15);
     if (hop.contactHours !== null) parameter(hop.contactHours, 0);
   }

@@ -68,7 +68,7 @@ describe('Conduites de levure documentées', () => {
     expect(original).toEqual(before);
     expect(r.hops).toEqual(original.hops); expect(r.fermentables).toEqual(original.fermentables); expect(r.waterPlan).toEqual(original.waterPlan);
     expect(r.fermentation?.slice(2)).toEqual(original.fermentation.slice(1));
-    expect(r.yeast).toMatchObject({ qty: 12, unit: 'g', pitchTempC: 20, fermentDays: 9, fermTempMinC: 20, fermTempMaxC: 21 });
+    expect(r.yeast).toMatchObject({ qty: 12, unit: 'g', pitchTempC: 20, fermTempMinC: 17, fermTempMaxC: 25 });
     expect(r.hopMatrixId).toBeUndefined(); expect(r.hopPredictionIds).toBeUndefined(); expect(r.hopTrialId).toBeUndefined();
     expect(r.yeast.attenuationPct).toBeUndefined();
     expect(r.yeastGuide?.guide).toEqual(munich); expect(r.yeastGuide?.guide).not.toBe(munich);
@@ -81,6 +81,13 @@ describe('Conduites de levure documentées', () => {
     for (const [label, id] of [['Munich Classic', munich.yeastId], ['WLP300', 'white-labs-wlp300'], ['SafAle W-68', 'fermentis-w68'], ['Wyeast 3068', 'wyeast-3068']]) {
       expect(findRecipeYeastMatches(label, guideYeasts([])).some(m => m.item.id === id)).toBe(true);
     }
+  });
+  it('ne remet pas la quantité à zéro lors du rattachement explicite d’un nom reconnu', () => {
+    const guide=guideFermentations([]).find(g=>g.yeastId==='fermentis-us05')!;
+    const r={...fullRecipe,yeast:{name:'Fermentis Levure SafAle US-05',form:'sèche' as const,qty:1,unit:'sachet'}};
+    const next=applyFermentationGuide(r,guide,yeastFor(guide),createFermentationDraft(guide,'clean')!);
+    expect(next.yeast).toMatchObject({hopIndexId:'fermentis-us05',qty:1,unit:'sachet'});
+    expect(applyFermentationGuide({...r,yeast:{...r.yeast,hopIndexId:'different'}},guide,yeastFor(guide),createFermentationDraft(guide,'clean')!).yeast.qty).toBe(0);
   });
   it('ne remplace pas une révision désactivée ou invalide par le guide initial', () => {
     for (const patch of [{ enabled: false }, { plans: [] }]) expect(guideFermentations([{ ...munich, ...patch } as FermentationGuide]).some(g => g.id === munich.id)).toBe(false);

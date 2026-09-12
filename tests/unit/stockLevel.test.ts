@@ -190,4 +190,27 @@ describe('Brassins qui réservent l’article', () => {
     ]);
     expect(alloc).toEqual([{ id: 'B-1', name: 'NEIPA #1', qty: 6 }]);
   });
+  it('garde les ajouts de fermentation réservés après le déstockage du jour J', () => {
+    const hop = item({ ref: 'H', name: 'Citra', unit: 'g', category: 'Houblon', currentStock: 80 });
+    const fermenting = modern({ status: 'fermentation', stockConsumption: { appliedAt: '2026-09-01', eventId: 'brew', completedStages: ['brewday'], items: [{ stockItemRef: 'H', quantity: 40, unit: 'g' }], pendingItems: [{ stockItemRef: 'H', quantity: 60, unit: 'g' }] } });
+    expect(allocatedBatches(hop, [fermenting])).toEqual([{ id: fermenting.id, name: fermenting.name, qty: 60 }]);
+    expect(shortfall(hop, [fermenting, modern({ id: 'next' })])).toBe(30); // 60 reserved + 50 planned - 80 on hand.
+    expect(computeStockLevel(hop, [fermenting, modern({ id: 'next' })]).coverage).toBe(.4); // 20 free / 50 for next brew.
+  });
+  it('ne réserve plus un brassin annulé, terminé ou entièrement déstocké', () => {
+    const consumed = { appliedAt: '2026-09-01', eventId: 'brew', completedStages: ['brewday', 'remaining'] as Array<'brewday' | 'remaining'>, items: [{ stockItemRef: 'MP-001', quantity: 6, unit: 'kg' }], pendingItems: [] };
+    expect(allocatedBatches(item(), [modern({ stockConsumption: consumed }), modern({ id: 'cancel', status: 'annule' }), modern({ id: 'done', status: 'termine' })])).toEqual([]);
+  });
+  it('ne devine pas un nom partiel et refuse les homonymes sans référence explicite', () => {
+    expect(allocatedBatches(item({ name: 'Pilsner' }), [modern()])).toEqual([]);
+    const duplicates = [item(), item({ ref: 'MP-002' })];
+    expect(allocatedBatches(duplicates[0], [modern()], duplicates)).toEqual([]);
+    const explicit = modern(); explicit.recipeSnapshot!.fermentables[0].stockItemRef = 'MP-001';
+    expect(allocatedBatches(duplicates[0], [explicit], duplicates)[0].qty).toBe(6);
+    expect(allocatedBatches(duplicates[1], [explicit], duplicates)).toEqual([]);
+  });
+  it('ne transforme pas une levure en grammes en nombre de sachets', () => {
+    const yeast = item({ name: 'SafAle US-05', category: 'Levure', unit: 'g' });
+    expect(allocatedBatches(yeast, [modern()])).toEqual([]);
+  });
 });

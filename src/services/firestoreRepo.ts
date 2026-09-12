@@ -5,15 +5,22 @@ import {
   writeBatch,
   getDocs,
   getDocsFromServer,
+  getDocsFromCache,
   getDocFromServer,
   waitForPendingWrites,
   deleteField,
+  increment,
   query,
   limit,
+  orderBy,
+  documentId,
+  startAfter,
   Unsubscribe
 } from 'firebase/firestore';
 import { db } from './firebase';
 import { BUSINESS_COLLECTIONS, BusinessCollection } from '../../functions/src/dataSchema';
+import { FINANCIAL_SYNC_COLLECTIONS } from '../../functions/src/financialSyncTypes';
+import { startFinancialLedgerSync, type FinancialLedgerState } from './financialLedgerSync';
 
 /**
  * Couche d'accès Firestore.
@@ -36,7 +43,14 @@ import { BUSINESS_COLLECTIONS, BusinessCollection } from '../../functions/src/da
 
 export type CollectionName = BusinessCollection;
 
-export const ALL_COLLECTIONS: CollectionName[] = [...BUSINESS_COLLECTIONS];
+// Original documents are loaded individually; don't download every receipt on startup.
+export const ALL_COLLECTIONS: CollectionName[] = BUSINESS_COLLECTIONS.filter(c => c !== 'financeDocuments');
+/** Accounting comes from a complete persistent register plus compact invalidations. */
+export const LIVE_COLLECTIONS = ALL_COLLECTIONS.filter(name => !(FINANCIAL_SYNC_COLLECTIONS as readonly string[]).includes(name));
+const isFinancialCollection = (name: CollectionName) => (FINANCIAL_SYNC_COLLECTIONS as readonly string[]).includes(name);
+let financialController: Awaited<ReturnType<typeof startFinancialLedgerSync>> | undefined;
+let financialStarting = false;
+let financialState: FinancialLedgerState = { complete: false, loading: false, fromCache: true, loadedRows: 0 };
 
 /** Cache mémoire : source de vérité des lectures synchrones. */
 const cache: Partial<Record<CollectionName, any[]>> = {};
@@ -52,24 +66,45 @@ let lastResumeAt = 0;
 const refreshFailures = new Set<string>();
 const refreshing = new Map<string, Promise<boolean>>();
 // A reconnect can emit an older cache-only query before its server snapshot arrives.
-const confirmedReads = new Map<string, { name: CollectionName; id: string; value: any | null }>();
+const confirmedReads = new Map<string, { name: CollectionName; id: string; value: any | null; at: number }>();
 let syncing = false;
 
 const listeners = new Set<() => void>();
 let lastError: string | null = null;
 const collectionState = new Map<CollectionName, { pending: boolean; fromCache: boolean }>();
+export const AUDIT_PAGE_SIZE = 100;
+let auditHistoryComplete = false;
+let auditHistoryLoading: Promise<void> | undefined;
+let auditHistoryError: string | null = null;
 const failedCollections = new Set<CollectionName>();
-type QueuedWrite = { name: CollectionName; id: string; data?: any; merge?: boolean; mergeFields?: string[]; remove?: boolean };
+export type DocumentWriteStatus = 'unknown' | 'queued' | 'pending' | 'confirmed' | 'rejected';
+export interface DocumentWriteState { status: DocumentWriteStatus; operationId?: string; error?: string }
+export class DocumentWriteError extends Error {
+  constructor(readonly status: 'pending' | 'rejected' | 'conflict', readonly path: string, readonly operationId: string | undefined, message: string) { super(message); this.name = 'DocumentWriteError'; }
+}
+export const isConfirmedWriteRejection = (error: unknown): error is DocumentWriteError => error instanceof DocumentWriteError && error.status === 'rejected';
+type QueuedWrite = { name: CollectionName; id: string; data?: any; merge?: boolean; mergeFields?: string[]; remove?: boolean; operationId?: string };
 let queuedWrites: QueuedWrite[] = [];
 const inFlight = new Set<Promise<void>>();
 const inFlightTargets = new Map<Promise<void>, Set<string>>();
 const pendingDocuments = new Set<string>();
 let writeFailure: string | null = null;
+const documentWrites = new Map<string, DocumentWriteState>();
+const unresolvedWriteError = () => [...documentWrites.values()].find(state => state.status !== 'confirmed' && state.error)?.error ?? null;
+let writeSequence = 0;
+const isLocalPreview = () => import.meta.env.DEV && typeof location !== 'undefined' && new URLSearchParams(location.search).has('dev-local');
+const permanentWriteFailure = (error: any) => ['permission-denied', 'unauthenticated', 'invalid-argument', 'failed-precondition', 'already-exists', 'not-found', 'out-of-range', 'unimplemented', 'aborted'].includes(String(error?.code ?? '').replace(/^firestore\//, ''));
+function updateWriteState(op: QueuedWrite, status: DocumentWriteStatus, error?: string) {
+  const path = `${op.name}/${op.id}`;
+  if (documentWrites.get(path)?.operationId === op.operationId) documentWrites.set(path, { operationId: op.operationId, status, ...(error ? { error } : {}) });
+}
 
 function flushWrites(): void {
   if (!queuedWrites.length) return;
   const operations = queuedWrites;
   queuedWrites = [];
+  operations.forEach(op => updateWriteState(op, 'pending'));
+  let dispatched = false;
   const promise = (async () => {
     if (operations.length > 450) throw new Error('Plus de 450 modifications simultanées. Utilise la restauration serveur. Aucune de ces modifications n’a été enregistrée.');
     const batch = writeBatch(db);
@@ -78,18 +113,32 @@ function flushWrites(): void {
       if (op.remove) batch.delete(ref);
       else batch.set(ref, op.data, op.mergeFields ? { mergeFields: op.mergeFields } : { merge: op.merge === true });
     }
+    dispatched = true;
     await batch.commit();
   })();
   inFlight.add(promise);
   inFlightTargets.set(promise, new Set(operations.map(op => `${op.name}/${op.id}`)));
-  promise.then(() => { writeFailure = null; }, err => {
-    writeFailure = `Enregistrement refusé : ${err.message}`;
+  promise.then(() => {
+    operations.forEach(op => updateWriteState(op, 'confirmed'));
+    writeFailure = unresolvedWriteError();
+  }, err => {
+    const rejected = !dispatched || permanentWriteFailure(err);
+    writeFailure = `${rejected ? 'Enregistrement refusé' : 'Confirmation incertaine'} : ${err.message}`;
+    operations.forEach(op => updateWriteState(op, rejected ? 'rejected' : 'pending', writeFailure!));
     lastError = writeFailure;
     console.error('[Firestore] atomic write', err);
-  }).finally(() => { inFlight.delete(promise); inFlightTargets.delete(promise); notify(); });
+  }).finally(() => {
+    inFlight.delete(promise); inFlightTargets.delete(promise);
+    // There is no whole-collection listener for the financial register. Confirm
+    // the exact touched rows without replaying their payment/stock operation.
+    for (const op of operations) if (isFinancialCollection(op.name)) void FirestoreRepo.refreshDocument(op.name, op.id);
+    notify();
+  });
   notify();
 }
 function enqueueWrite(operation: QueuedWrite): void {
+  operation.operationId = `write-${++writeSequence}`;
+  documentWrites.set(`${operation.name}/${operation.id}`, { operationId: operation.operationId, status: 'queued' });
   if (!queuedWrites.length) queueMicrotask(flushWrites);
   queuedWrites.push(operation);
 }
@@ -110,7 +159,7 @@ function openCollection(name: CollectionName) {
   unsubscribers.get(name)?.();
   const current = () => syncing && subscriptionTokens.get(name) === token;
   unsubscribers.set(name, onSnapshot(
-    collection(db, name),
+    name === 'auditLogs' ? query(collection(db, name), orderBy(documentId(), 'desc'), limit(AUDIT_PAGE_SIZE)) : collection(db, name),
     { includeMetadataChanges: true },
     snap => {
       if (!current()) return;
@@ -125,6 +174,14 @@ function openCollection(name: CollectionName) {
           items = items.filter(d => d.__docId !== read.id);
           if (read.value) items.push(read.value);
         }
+      }
+      // The audit journal is immutable. Keep only already visited older pages;
+      // the live query watches its newest page, never years of past activity.
+      if (name === 'auditLogs') {
+        const merged = new Map((cache[name] ?? []).map(item => [item.__docId ?? item.id, item]));
+        items.forEach(item => merged.set(item.__docId, item));
+        items = [...merged.values()];
+        if (!snap.metadata.fromCache && snap.docs.length < AUDIT_PAGE_SIZE) auditHistoryComplete = true;
       }
       cache[name] = items;
       if (!snap.metadata.fromCache) {
@@ -175,25 +232,102 @@ export function stripUndefined<T>(value: T): T {
 }
 
 export const FirestoreRepo = {
-  async waitForDocument(name: CollectionName, id: string, timeoutMs = 15000) {
+  financialLedgerStatus(): FinancialLedgerState { return { ...financialState }; },
+  auditHistoryStatus() {
+    return { complete: isLocalPreview() || auditHistoryComplete, loading: !!auditHistoryLoading, error: auditHistoryError };
+  },
+
+  /** Fetch one older audit page only after an explicit request from its viewer. */
+  async loadOlderAuditLogs(): Promise<void> {
+    if (isLocalPreview() || auditHistoryComplete) return;
+    if (auditHistoryLoading) return auditHistoryLoading;
+    if (!syncing || !loaded.has('auditLogs')) throw new Error('Le journal récent est encore en cours de chargement.');
+    const epoch = syncEpoch;
+    const cursor = (cache.auditLogs ?? []).map(item => String(item.__docId ?? item.id)).sort()[0];
+    if (!cursor) throw new Error('Le journal récent est encore en cours de chargement.');
+    auditHistoryError = null;
+    const work = (async () => {
+      try {
+        const snap = await getDocsFromServer(query(collection(db, 'auditLogs'), orderBy(documentId(), 'desc'), startAfter(cursor), limit(AUDIT_PAGE_SIZE)));
+        if (!syncing || epoch !== syncEpoch) return;
+        const merged = new Map((cache.auditLogs ?? []).map(item => [item.__docId ?? item.id, item]));
+        snap.docs.forEach(item => merged.set(item.id, { ...item.data(), __docId: item.id }));
+        cache.auditLogs = [...merged.values()];
+        auditHistoryComplete = snap.docs.length < AUDIT_PAGE_SIZE;
+      } catch (error) {
+        if (syncing && epoch === syncEpoch) auditHistoryError = 'Le journal ancien n’a pas pu être chargé. Les événements déjà affichés sont conservés.';
+        throw error;
+      }
+    })();
+    auditHistoryLoading = work;
+    notify();
+    try { await work; }
+    finally {
+      if (auditHistoryLoading === work) auditHistoryLoading = undefined;
+      if (syncing && epoch === syncEpoch) notify();
+    }
+  },
+  documentWriteState(name: CollectionName, id: string): DocumentWriteState {
+    return { ...(documentWrites.get(`${name}/${id}`) ?? { status: 'unknown' }) };
+  },
+  /** A confirmed result is a server read of this exact document, never a global queue status.
+   * A rejected write is replayable only after the server also confirms this document absent.
+   * Timeouts, network failures and a different document remain uncertain and cannot be replayed.
+   */
+  async waitForDocument<T extends { id?: string } = any>(name: CollectionName, id: string, timeoutMs = 15000, identity?: (value: T) => boolean): Promise<T> {
     flushWrites();
-    const path = `${name}/${id}`;
+    const path = `${name}/${id}`, epoch = syncEpoch;
+    const operationId = documentWrites.get(path)?.operationId;
+    const matches = (value: T) => value?.id === id && (!identity || identity(value));
+    if (isLocalPreview()) {
+      const value = this.find(name, id) as T | undefined;
+      if (!value || !matches(value)) throw new DocumentWriteError('conflict', path, operationId, 'Le document local ne correspond pas à cette saisie. Le brouillon est conservé.');
+      return value;
+    }
     const writes = [...inFlightTargets].filter(([, paths]) => paths.has(path)).map(([promise]) => promise);
-    if (!writes.length && !pendingDocuments.has(path)) return;
-    let timer: ReturnType<typeof setTimeout>;
+    const uncertain = () => new DocumentWriteError('pending', path, operationId, 'Confirmation de cette écriture en attente. Le brouillon est conservé ; vérifie la synchronisation sans la recréer.');
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const verify = async (): Promise<T> => {
+      // A rejected commit still needs its own readback: a previous identical submission may exist.
+      await Promise.allSettled(writes);
+      if (epoch !== syncEpoch) throw uncertain();
+      let snap: Awaited<ReturnType<typeof getDocFromServer>>;
+      try { snap = await getDocFromServer(doc(db, name, id)); } catch { throw uncertain(); }
+      if (epoch !== syncEpoch || snap.metadata.hasPendingWrites || snap.metadata.fromCache) throw uncertain();
+      const current = documentWrites.get(path);
+      if (current?.operationId !== operationId && current?.operationId) throw uncertain();
+      if (!snap.exists()) {
+        if (current?.status === 'rejected') {
+          // Remove only this absent document's optimistic cache entry, never an existing stock row.
+          cache[name] = (cache[name] ?? []).filter(d => d.id !== id && d.__docId !== id);
+          confirmedReads.set(path, { name, id, value: null, at: Date.now() });
+          notify();
+          throw new DocumentWriteError('rejected', path, operationId, `${current.error ?? 'Enregistrement refusé.'} Aucun document de cette saisie n’a été enregistré. Corrige le brouillon puis réessaie.`);
+        }
+        throw uncertain();
+      }
+      const value = { ...(snap.data() as Record<string, unknown>), __docId: snap.id } as unknown as T;
+      if (snap.id !== id || !matches(value)) throw new DocumentWriteError('conflict', path, operationId, 'Une écriture différente porte cet identifiant. Le brouillon est conservé ; aucun nouvel enregistrement automatique.');
+      documentWrites.set(path, { operationId, status: 'confirmed' });
+      writeFailure = unresolvedWriteError();
+      cache[name] = [...(cache[name] ?? []).filter(d => d.id !== id && d.__docId !== id), value];
+      confirmedReads.set(path, { name, id, value, at: Date.now() });
+      notify();
+      return value;
+    };
     try {
-      await Promise.race([Promise.all([...writes, waitForPendingWrites(db)]), new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error('Création du brassin à synchroniser. Réessaie au retour du réseau.')), timeoutMs);
+      return await Promise.race([verify(), new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(uncertain()), timeoutMs);
       })]);
-    } finally { clearTimeout(timer!); }
+    } finally { if (timer) clearTimeout(timer); }
   },
   syncStatus() {
     return {
-      pending: queuedWrites.length > 0 || inFlight.size > 0 || [...collectionState.values()].some(s => s.pending),
+      pending: queuedWrites.length > 0 || inFlight.size > 0 || pendingDocuments.size > 0 || [...collectionState.values()].some(s => s.pending) || [...documentWrites.values()].some(s => s.status === 'queued' || s.status === 'pending'),
       fromCache: collectionState.size === 0 || [...collectionState.values()].some(s => s.fromCache),
-      refreshing: refreshing.size > 0,
-      needsRefresh: failedCollections.size > 0 || refreshFailures.size > 0,
-      error: writeFailure || (failedCollections.size ? 'Certaines données ne sont pas accessibles.' :
+      refreshing: refreshing.size > 0 || financialState.loading,
+      needsRefresh: failedCollections.size > 0 || refreshFailures.size > 0 || !!financialState.error,
+      error: writeFailure || financialState.error || financialState.cacheWarning || (failedCollections.size ? 'Certaines données ne sont pas accessibles.' :
         refreshFailures.size ? 'Modifications enregistrées · actualisation en attente.' : null)
     };
   },
@@ -269,7 +403,7 @@ export const FirestoreRepo = {
           const value = snap.exists() ? { ...snap.data(), __docId: snap.id } : null;
           if (value) items.push(value);
           cache[name] = items;
-          confirmedReads.set(path, { name, id, value });
+          confirmedReads.set(path, { name, id, value, at: Date.now() });
         }
         refreshFailures.delete(path);
         return true;
@@ -292,7 +426,9 @@ export const FirestoreRepo = {
     if (!syncing || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
     if (!force && Date.now() - lastResumeAt < 15000) return;
     lastResumeAt = Date.now();
-    for (const name of ALL_COLLECTIONS) {
+    void financialController?.refresh();
+    if (!financialController && !isLocalPreview()) this.startFinancialSync();
+    for (const name of LIVE_COLLECTIONS) {
       if (failedCollections.has(name) || collectionState.get(name)?.fromCache) openCollection(name);
     }
     for (const path of refreshFailures) {
@@ -301,6 +437,62 @@ export const FirestoreRepo = {
         void this.refreshDocument(path.slice(0, slash) as CollectionName, path.slice(slash + 1));
       }
     }
+  },
+
+  startFinancialSync(): void {
+    if (financialStarting || financialController) return;
+    financialStarting = true;
+    const epoch = syncEpoch;
+    financialState = { complete: false, loading: true, fromCache: true, loadedRows: 0 };
+    // SDK pending writes survive a closed tab. Recover only those pending rows
+    // from its local cache (zero server reads), never treat that query as a
+    // complete ledger. Their confirmed counterparts still come from the sync.
+    const recoverPending = async () => {
+      const recovered: Array<{ name: CollectionName; id: string }> = [];
+      await Promise.all(FINANCIAL_SYNC_COLLECTIONS.map(async name => {
+        try {
+          const local = await getDocsFromCache(collection(db, name));
+          if (!syncing || epoch !== syncEpoch) return;
+          for (const document of local.docs) if (document.metadata.hasPendingWrites) {
+            const value = { ...document.data(), __docId: document.id };
+            cache[name] = [...(cache[name] ?? []).filter(item => item.__docId !== document.id && item.id !== document.id), value];
+            pendingDocuments.add(`${name}/${document.id}`); recovered.push({ name, id: document.id });
+          }
+        } catch { /* An empty/unavailable SDK cache is not a complete register. */ }
+      }));
+      if (recovered.length) {
+        notify();
+        void waitForPendingWrites(db).then(async () => {
+          if (!syncing || epoch !== syncEpoch) return;
+          recovered.forEach(({ name, id }) => pendingDocuments.delete(`${name}/${id}`));
+          await Promise.all(recovered.map(({ name, id }) => this.refreshDocument(name, id)));
+        }).catch(() => { /* Session changes cancel SDK waits; next login recovers its own queue. */ });
+      }
+    };
+    void recoverPending().then(() => startFinancialLedgerSync({
+      onData(rows, detail) {
+        if (!syncing || epoch !== syncEpoch) return;
+        for (const name of FINANCIAL_SYNC_COLLECTIONS) {
+          const previous = cache[name] ?? [];
+          const items = new Map(rows.filter(row => row.collection === name && row.data).map(row => [row.id, { ...row.data, __docId: row.id }]));
+          for (const item of previous) if (hasPendingDocumentWrite(name, item.__docId ?? item.id)) items.set(item.__docId ?? item.id, item);
+          for (const [path, read] of confirmedReads) {
+            if (read.name !== name) continue;
+            if (detail.covered.has(path) && detail.requestStartedAt >= read.at && !hasPendingDocumentWrite(name, read.id)) confirmedReads.delete(path);
+            else { items.delete(read.id); if (read.value) items.set(read.id, read.value); }
+          }
+          cache[name] = [...items.values()]; loaded.add(name);
+        }
+        notify();
+      },
+      onState(state) {
+        if (!syncing || epoch !== syncEpoch) return;
+        financialState = state;
+        for (const name of FINANCIAL_SYNC_COLLECTIONS) collectionState.set(name, { pending: false, fromCache: state.fromCache });
+        notify();
+      }
+    })).then(controller => { if (!syncing || epoch !== syncEpoch) controller.stop(); else { financialStarting = false; financialController = controller; } })
+      .catch(error => { if (syncing && epoch === syncEpoch) { financialStarting = false; financialState = { ...financialState, loading: false, error: (error as Error).message }; notify(); } });
   },
 
   /** Ouvre les abonnements temps réel. Idempotent. */
@@ -312,6 +504,9 @@ export const FirestoreRepo = {
     loaded.clear();
     failedCollections.clear();
     collectionState.clear();
+    auditHistoryComplete = false;
+    auditHistoryLoading = undefined;
+    auditHistoryError = null;
 
     if (
       import.meta.env.DEV &&
@@ -322,7 +517,8 @@ export const FirestoreRepo = {
       return;
     }
 
-    ALL_COLLECTIONS.forEach(openCollection);
+    LIVE_COLLECTIONS.forEach(openCollection);
+    this.startFinancialSync();
     if (typeof window !== 'undefined') {
       const resume = () => { if (document.visibilityState !== 'hidden') this.resumeSync(); };
       window.addEventListener('online', resume);
@@ -339,6 +535,8 @@ export const FirestoreRepo = {
   },
 
   stopSync(): void {
+    financialController?.stop(); financialController = undefined; financialStarting = false;
+    financialState = { complete: false, loading: false, fromCache: true, loadedRows: 0 };
     // Queue business writes under the current identity before clearing the views.
     flushWrites();
     syncEpoch += 1;
@@ -356,11 +554,13 @@ export const FirestoreRepo = {
     refreshFailures.clear();
     refreshing.clear();
     confirmedReads.clear();
+    documentWrites.clear();
+    writeFailure = null;
     syncing = false;
     loaded.clear();
     failedCollections.clear();
     collectionState.clear();
-    ALL_COLLECTIONS.forEach((c) => delete cache[c]);
+    BUSINESS_COLLECTIONS.forEach((c) => delete cache[c]);
     pendingDocuments.clear();
     notify();
   },
@@ -385,6 +585,7 @@ export const FirestoreRepo = {
       } else {
         cache[name]!.push(itemWithDoc);
       }
+      documentWrites.set(`${name}/${id}`, { operationId: `write-${++writeSequence}`, status: 'confirmed' });
       notify();
       return;
     }
@@ -401,6 +602,25 @@ export const FirestoreRepo = {
     // One user gesture may write stock, a lot and its audit entry. Commit them together.
     enqueueWrite({ name, id, data: cleaned, merge: options.merge === true,
       ...(managedJournal ? { mergeFields: Object.keys(cleaned) } : {}) });
+    if (isFinancialCollection(name) && syncing) {
+      cache[name] = [...(cache[name] ?? []).filter(item => item.id !== id && item.__docId !== id), { ...(options.merge ? cached : {}), ...cleaned, __docId: id }];
+      notify();
+    }
+  },
+
+  /** Add a quantity without overwriting a concurrent receipt or consumption. */
+  adjustNumber(name: CollectionName, id: string, field: string, delta: number, extra: Record<string, unknown> = {}): void {
+    if (!Number.isFinite(delta)) throw new Error('Quantité invalide.');
+    if (import.meta.env.DEV && typeof location !== 'undefined' && new URLSearchParams(location.search).has('dev-local')) {
+      const current = cache[name]?.find((d: any) => d.id === id || d.__docId === id);
+      this.put(name, id, { ...extra, [field]: Math.round(((Number(current?.[field]) || 0) + delta) * 1e6) / 1e6 }, { merge: true });
+      return;
+    }
+    enqueueWrite({ name, id, data: { ...stripUndefined(extra), [field]: increment(delta) }, merge: true });
+    if (isFinancialCollection(name) && syncing) {
+      const current = cache[name]?.find((item: any) => item.id === id || item.__docId === id);
+      if (current) { cache[name] = [...(cache[name] ?? []).filter(item => item !== current), { ...current, ...extra, [field]: (Number(current[field]) || 0) + delta }]; notify(); }
+    }
   },
 
   remove(name: CollectionName, id: string): void {

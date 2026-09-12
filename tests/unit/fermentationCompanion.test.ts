@@ -14,6 +14,14 @@ const context=():BrewerContext=>({
  hopIndex:{...publicHopData(),knowledge:[...new Map([...publicHopData().knowledge,...pack,...catalogue].map(k=>[k.id,k])).values()] as HopKnowledge[],predictions:[],tastings:[],truncated:[]}
 });
 describe('Conseils de fermentation du compagnon, appels simulés seulement',()=>{
+ it('partage la reconnaissance et les bornes du scénario Diamond avec l’écran',()=>{
+  const c=context();c.recipe!.yeast={name:'LalBrew Diamond',form:'sèche',qty:0,unit:'g'};c.recipe!.ogTarget=1.046;
+  c.recipe!.fermentation=[{kind:'primaire',name:'Principale',tempC:19,days:4}];
+  const before=JSON.stringify(c),data=runBrewerTool('fermentation_advice',{goal:'clean'},c).data as any;
+  expect(data.yeastId).toBe('lalbrew-diamond');expect(data.scenarioVersion).toBe('yeast-scenario-2');
+  expect(data.finalGravity.range.min).toBeCloseTo(1.00782,10);expect(data.finalGravity.range.max).toBeCloseTo(1.01058,10);
+  expect(data.programWarnings.join(' ')).toContain('19 °C');expect(JSON.stringify(c)).toBe(before);
+ });
  it('cherche une souche au-delà de 400 fiches sans dépendre des identités de l’aperçu',()=>{
   const c=context(),target=catalogue.find(y=>y.id==='yeast-omega-9188919542014')!,before=JSON.stringify(c);
   const data=runBrewerTool('lookup_yeast_reference',{query:target.id},c).data as any;

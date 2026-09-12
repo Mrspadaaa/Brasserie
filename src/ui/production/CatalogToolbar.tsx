@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, SlidersHorizontal, X, List, ChartNoAxesCombined, Star } from 'lucide-react';
+import { Search, SlidersHorizontal, X, List, ChartNoAxesCombined, Star, Plus } from 'lucide-react';
+import { useMobileLayout } from '../useViewport';
 import { Sheet } from '../Sheet';
 import { BATCH_STATUSES, statusOf } from '../../domain/batchStatus';
 import {
@@ -65,9 +66,12 @@ export function CatalogToolbar({
   onCreate?: () => void;
 }) {
   const [open, setOpen] = useState(false);
+  const mobile = useMobileLayout();
+  const [searchOpen, setSearchOpen] = useState(false);
   const set = (patch: Partial<CatalogFilters>) => onChange({ ...filters, ...patch });
   const criteria = catalogCriteria(filters, work, globalPeriod);
   const moreCount = criteria.length;
+  const secondaryCriteria = criteria.filter(criterion => criterion.id !== 'search');
   const scopedEntries = entries.filter((e) => inCatalogFolder(e, filters.folder));
   const remove = (criterion: CatalogCriterion) => {
     if (criterion.clear) set(criterion.clear);
@@ -163,7 +167,34 @@ export function CatalogToolbar({
           ['unbrewed', 'Sans brassin']
         ];
   return (
-    <section aria-label={`Recherche et filtres des ${noun}s`} className="space-y-3">
+    <section aria-label={`Recherche et filtres des ${noun}s`} className="space-y-2 sm:space-y-3">
+      {mobile && <>
+        <div className="flex items-center gap-1">
+          <p className="min-w-0 flex-1 text-sm text-cave-300" role="status">
+            {count} {noun}{count > 1 ? 's' : ''}{filters.folder !== 'current' ? ` · ${filters.folder === 'archived' ? 'Archives' : 'Historique'}` : ''}
+            {view === 'analysis' && <span className="block text-xs text-ebc-straw">Bilan</span>}
+          </p>
+          <button type="button" aria-label={`Rechercher des ${noun}s`} aria-expanded={searchOpen || !!filters.search}
+            onClick={() => setSearchOpen(value => !value)} className="touch-target rounded-control text-cave-200"><Search size={20}/></button>
+          <button type="button" aria-label={`Filtres avancés${moreCount ? `, ${moreCount} actifs` : ''}`} onClick={() => setOpen(true)}
+            className="relative touch-target rounded-control text-cave-200"><SlidersHorizontal size={20}/>{moreCount > 0 && <span className="absolute right-0 top-0 rounded-full bg-ebc-straw px-1.5 text-xs text-cave-950">{moreCount}</span>}</button>
+          <button type="button" aria-label={view === 'list' ? 'Afficher les analyses' : 'Afficher la liste'}
+            onClick={() => onViewChange(view === 'list' ? 'analysis' : 'list')} className={`touch-target rounded-control ${view === 'analysis' ? 'text-ebc-straw' : 'text-cave-400'}`}>
+            {view === 'list' ? <ChartNoAxesCombined size={20}/> : <List size={20}/>}</button>
+        </div>
+        {(searchOpen || !!filters.search) && <div className="flex gap-1">
+          <input type="search" aria-label={`Rechercher des ${noun}s`} placeholder="Nom, lot, houblon, malt…" className={catalogField}
+            value={filters.search} onChange={event => set({search:event.target.value})}/>
+          <button type="button" aria-label="Fermer la recherche" className="touch-target text-cave-300" onClick={() => { set({search:''}); setSearchOpen(false); }}><X size={19}/></button>
+        </div>}
+        {secondaryCriteria.length > 0 && <div className="flex items-center gap-2 rounded-control bg-ebc-straw/5 px-2">
+          <button type="button" onClick={() => setOpen(true)} className="min-h-touch min-w-0 flex-1 truncate text-left text-sm text-ebc-straw" aria-label={`Vue filtrée, ${criteria.length} critères actifs`}>
+            {secondaryCriteria[0].label} : {secondaryCriteria[0].value}{secondaryCriteria.length > 1 ? ` · +${secondaryCriteria.length - 1}` : ''}
+          </button>
+          <button type="button" onClick={reset} aria-label="Tout effacer" className="touch-target text-cave-300"><X size={17}/></button>
+        </div>}
+      </>}
+      {!mobile && <>
       <div className="flex gap-1 border-b border-cave-700" aria-label="Présentation">
         <button
           type="button"
@@ -293,6 +324,7 @@ export function CatalogToolbar({
         comparing={comparing}
         onCompare={onCompare}
       />
+      </>}
       <Sheet
         open={open}
         onClose={() => setOpen(false)}
@@ -317,6 +349,18 @@ export function CatalogToolbar({
         }
       >
         <div className="space-y-6">
+          {mobile && <>
+            <CatalogScopeBar kind={kind} entries={entries} count={count} filters={filters} onChange={onChange} comparing={comparing}
+              onCompare={() => { onCompare(); setOpen(false); }}/>
+            <label className="block space-y-1.5"><span className="text-sm text-cave-200">{kind === 'batches' ? 'Suivi des brassins' : 'Usage des recettes'}</span>
+              <select className={catalogField} aria-label={kind === 'batches' ? 'Suivi des brassins' : 'Usage des recettes'}
+                value={kind === 'batches' ? (work !== 'all' ? `work:${work}` : filters.status) : filters.use}
+                onChange={event => { const value=event.target.value; if(kind === 'batches'){onWorkChange(value.startsWith('work:') ? value.slice(5) as WorkFilter : 'all');set({status:value.startsWith('work:') ? '' : value});}else set({use:value as CatalogFilters['use']}); }}>
+                {quick.map(([value,label]) => <option key={value} value={value}>{label}</option>)}
+              </select>
+            </label>
+            <label className="min-h-touch flex items-center gap-3 text-sm text-cave-200"><input type="checkbox" checked={filters.favoritesOnly} onChange={event => set({favoritesOnly:event.target.checked})}/>Favoris uniquement</label>
+          </>}
           {criteria.length > 0 && (
             <div className="space-y-2" aria-label="Tous les critères actifs">
               <p className="text-sm text-ebc-straw font-semibold">

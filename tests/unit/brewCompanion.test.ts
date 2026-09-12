@@ -15,6 +15,13 @@ import { startBrewStep, restoreBrewDay } from '../../src/domain/brewDay';
 import { recipe, brewState, malt } from '../fixtures/brewCompanion';
 
 describe('Compagnon de cuve : tâches et horloges', () => {
+  it('la seconde extraction ne propose pas de peser une nouvelle fois le malt du brassin source',async()=>{
+    const {newNoloConfig}=await import('../../src/domain/nolo');
+    const nolo=newNoloConfig();nolo.process='secondRunnings';
+    const r={...recipe(),nolo};
+    expect(brewIngredients(r).some(i=>i.kind==='grain')).toBe(false);
+    expect(brewIngredients({...r,nolo:{...nolo,enabled:false}}).some(i=>i.kind==='grain')).toBe(true);
+  });
   it('aucun minuteur de concassage, eau, rinçage ou refroidissement', () => {
     const s = brewState();
     for (const id of ['eau', 'concassage', 'sparge', 'refroidissement']) {

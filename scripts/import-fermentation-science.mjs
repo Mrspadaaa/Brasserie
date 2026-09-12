@@ -9,13 +9,17 @@ const require=createRequire(import.meta.url),auth=require('firebase-tools/lib/au
 const project=process.argv.find(a=>a.startsWith('--project='))?.slice(10);
 if(!project||!/^[-a-z0-9]+$/.test(project))throw Error('Explicit --project=<Firebase project> required');
 const apply=process.argv.includes('--apply'),priorPath=process.argv.find(a=>a.startsWith('--previous='))?.slice(11);
-const incoming=JSON.parse(await readFile('src/data/fermentationScienceBootstrap.json','utf8'));
+const pack=process.argv.find(a=>a.startsWith('--pack='))?.slice(7)??'fermentation';
+if(!['fermentation','nolo-styles'].includes(pack))throw Error('Pack inconnu.');
+const incoming=pack==='nolo-styles'
+ ? (await Promise.all(['src/data/noloBootstrap.json','src/data/brewingStylesBootstrap.json'].map(async p=>JSON.parse(await readFile(p,'utf8'))))).flat()
+ : JSON.parse(await readFile('src/data/fermentationScienceBootstrap.json','utf8'));
 const prior=priorPath?JSON.parse(await readFile(priorPath,'utf8')):[];
 for(const rows of [incoming,prior]){
  if(!Array.isArray(rows)||new Set(rows.map(r=>r.id)).size!==rows.length)throw Error('Pack invalide ou IDs dupliqués');
  rows.forEach(r=>assertHopKnowledge(r,r.id));
 }
-const folder=resolve('.codex-remote-attachments/fermentation-science/db');await mkdir(folder,{recursive:true});
+const folder=resolve('.codex-remote-attachments/'+(pack==='nolo-styles'?'nolo-styles':'fermentation-science')+'/db');await mkdir(folder,{recursive:true});
 const account=auth.getProjectDefaultAccount(process.cwd());if(!account)throw Error('Firebase CLI sign-in required');
 const token=await auth.getAccessToken(account.tokens.refresh_token,['https://www.googleapis.com/auth/cloud-platform']);
 const parent='projects/'+project+'/databases/(default)/documents',base='https://firestore.googleapis.com/v1/'+parent;
@@ -48,6 +52,8 @@ if(apply){
  if(second.writes.length||second.conflicts.length)throw Error('Import non idempotent ou révision concurrente.');
  result.totalGuides=[...actual.values()].filter(d=>d.kind==='fermentation').length;
  result.totalScience=[...actual.values()].filter(d=>d.kind==='fermentationScience').length;
+ result.totalNoloScience=[...actual.values()].filter(d=>d.kind==='noloScience').length;
+ result.totalStyleEntries=[...actual.values()].filter(d=>d.kind==='styleGuide').reduce((n,d)=>n+d.styles.length,0);
  result.totalCataloguedYeasts=[...actual.values()].filter(d=>d.kind==='yeast'&&d.catalogue).length;
  await writeFile(resolve(folder,'after-'+stamp+'.json'),JSON.stringify({project,documents:after},null,2));
 }

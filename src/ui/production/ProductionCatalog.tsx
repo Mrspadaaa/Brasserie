@@ -21,6 +21,7 @@ import { CatalogAnalysis } from './CatalogAnalysis';
 import { RecipeCard, BatchCard } from './CatalogCards';
 import { RecipeComparison } from './RecipeComparison';
 import { Sheet } from '../Sheet';
+import { useMobileLayout } from '../useViewport';
 import { restoreCatalogFilters, catalogCriteria } from '../../domain/catalogPreferences';
 import { inCatalogFolder, isArchived, type CatalogFolder } from '../../domain/catalogOrganization';
 
@@ -45,6 +46,7 @@ export function ProductionCatalog({
   onOpenBrewDay: (batch: Batch) => void;
   onCreate?: () => void;
 }) {
+  const mobile = useMobileLayout();
   const [filters, setFilters] = useState<CatalogFilters>(() =>
     restoreCatalogFilters(kind, StorageService.getUiState(`catalog-${kind}-filters`, {}))
   );
@@ -303,12 +305,13 @@ export function ProductionCatalog({
         />
       ) : (
         <div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 items-start"
           aria-label={kind === 'recipes' ? 'Liste des recettes' : 'Liste des brassins'}
         >
           {filtered.map((entry) =>
             kind === 'recipes' ? (
               <RecipeCard
+                compact={mobile}
                 key={entry.id}
                 entry={entry}
                 onOpen={onOpenRecipe}
@@ -334,6 +337,7 @@ export function ProductionCatalog({
               />
             ) : (
               <BatchCard
+                compact={mobile}
                 key={entry.id}
                 entry={entry}
                 onOpen={onOpenBatch}

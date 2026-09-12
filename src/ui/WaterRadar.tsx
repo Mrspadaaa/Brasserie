@@ -78,9 +78,9 @@ const GRID = '#2C2521'; // cave-800
 
 const rad = (d: number) => (d * Math.PI) / 180;
 const angle = (i: number) => -90 + i * 60;
-const xy = (d: number, r: number): [number, number] => [
+const plotPoint = (d: number, r: number, cy = CY): [number, number] => [
   CX + r * Math.cos(rad(d)),
-  CY + r * Math.sin(rad(d))
+  cy + r * Math.sin(rad(d))
 ];
 const pt = ([x, y]: [number, number]) => `${x.toFixed(1)} ${y.toFixed(1)}`;
 
@@ -94,9 +94,10 @@ const anchorAt = (cos: number): 'start' | 'end' | 'middle' =>
  * intérieur dégénérerait en rayon nul, que les navigateurs traitent chacun à
  * leur façon.
  */
-function sector(d: number, r0: number, r1: number): string {
+function sector(d: number, r0: number, r1: number, cy = CY): string {
+  const xy = (d: number, r: number) => plotPoint(d, r, cy);
   const outer = `A ${r1} ${r1} 0 0 1 ${pt(xy(d + HALF, r1))}`;
-  if (r0 < 1) return `M ${CX} ${CY} L ${pt(xy(d - HALF, r1))} ${outer} Z`;
+  if (r0 < 1) return `M ${CX} ${cy} L ${pt(xy(d - HALF, r1))} ${outer} Z`;
   return [
     `M ${pt(xy(d - HALF, r1))}`,
     outer,
@@ -114,6 +115,11 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   fitToControls = false,
   className = ''
 }) => {
+  // The weighing view uses a wider diagram: the labels keep their font sizes,
+  // while the radius shrinks. Scaling the entire tall SVG made numbers unreadable.
+  const R = fitToControls ? 79 : 133;
+  const CY = 36 + R, H = 74 + 2 * R, LABEL_R = R + 12;
+  const xy = useCallback((d: number, r: number) => plotPoint(d, r, CY), [CY]);
   const lit = useMemo(() => new Set(highlight ?? []), [highlight]);
 
   /** Échelle commune fixée par la source et le profil : les zones ne se déplacent pas avec les doses. Les valeurs hors échelle restent chiffrées, au bord du tracé. */
@@ -166,7 +172,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
    */
   const rayon = useCallback(
     (v: number) => R * Math.sqrt(Math.max(0, Math.min(1, v / scale))),
-    [scale]
+    [scale, R]
   );
 
   const axes = useMemo(
@@ -210,7 +216,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           anchor: anchorAt(cos)
         };
       }),
-    [start, achieved, style, rayon]
+    [start, achieved, style, rayon, xy, R, CY, LABEL_R]
   );
 
   const path = (key: 'rStart' | 'rNow') =>
@@ -224,7 +230,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
     .join(', ');
 
   return (
-    <div className={className}>
+    <div className={`water-radar ${className}`}>
       <svg
         viewBox={`0 0 ${W} ${H}`}
         /* Sur mobile, la pesée réserve ses commandes et le Spider prend
@@ -253,7 +259,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           <path
             key={`s-${a.ion}`}
             data-ion-target={a.ion}
-            d={sector(a.d, a.rMin, a.rMax)}
+            d={sector(a.d, a.rMin, a.rMax, CY)}
             fill={GREEN}
             fillOpacity={lit.has(a.ion) ? 0.5 : lit.size ? 0.14 : 0.28}
           >

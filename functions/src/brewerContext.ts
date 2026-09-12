@@ -47,11 +47,11 @@ export function pick(value: any, keys: string[]) {
   );
 }
 export const RECIPE_FIELDS =
-  'id name style volumeL ogTarget fgTarget abvTarget ibuTarget colorEbc efficiencyPct preBoilL preBoilHotL fermentables malts totalGristKg hops adjuncts yeast boilMin mash waterPlan fermentation instructions steps notes notesCreation carboTarget brewhouse sourceRecipeId capturedAt hopMatrixId hopAromaTarget hopPredictionIds hopTrialId'.split(
+  'id name style styleRef fermentationIntent nolo volumeL ogTarget fgTarget abvTarget ibuTarget colorEbc efficiencyPct preBoilL preBoilHotL fermentables malts totalGristKg hops adjuncts yeast boilMin mash waterPlan fermentation instructions steps notes notesCreation carboTarget brewhouse sourceRecipeId capturedAt hopMatrixId hopAromaTarget hopPredictionIds hopTrialId'.split(
     ' '
   );
 export const BATCH_FIELDS =
-  'id name style status brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
+  'id name style nolo status brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
     ' '
   );
 export function validateChatInput(raw: any): BrewerChatInput {
