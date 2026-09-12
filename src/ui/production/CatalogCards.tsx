@@ -72,7 +72,7 @@ export function RecipeCard({
         <span className={`w-1 self-stretch rounded-full shrink-0 ${entry.swatch ?? 'bg-cave-700'}`} aria-hidden="true"/>
         <span className="min-w-0"><strong className="block text-base font-semibold text-cave-50 leading-snug">{entry.name}</strong>
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-cave-400 mt-1"><BeerStyleTag style={entry.style}/><span>V{entry.version}{entry.archivedAt ? ' · Archivée' : ''}</span></span>
-          <span className="block text-sm text-cave-200 mt-1 tabular-nums">{number(entry.volumeL)} L · {number(entry.abv)} % · {number(entry.ibu)} IBU</span>
+          <span className="block text-sm text-cave-200 mt-1 tabular-nums">{number(entry.volumeL)} L · {recipe.nolo?.enabled ? `NOLO ≤ ${number(recipe.nolo.targetAbvPct)} %` : `${number(entry.abv)} %`} · {number(entry.ibu)} IBU</span>
         </span>
       </button>
       {comparing ? <button type="button" role="checkbox" aria-checked={selected} aria-label={`Comparer ${entry.name}, V${entry.version}`} disabled={disabled} onClick={onSelect}
@@ -154,7 +154,7 @@ export function RecipeCard({
         )}
       </div>
       <dl className="grid grid-cols-3 gap-3 mx-4 mt-4 pb-3 border-b border-cave-800">
-        <Measure label="Alcool cible" value={`${number(entry.abv)} %`} />
+        <Measure label={recipe.nolo?.enabled ? 'Cible NOLO' : 'Alcool cible'} value={recipe.nolo?.enabled ? `≤ ${number(recipe.nolo.targetAbvPct)} %` : `${number(entry.abv)} %`} />
         <Measure label="Amertume" value={`${number(entry.ibu)} IBU`} />
         <Measure label="À cru" value={`${number(signature.dryHopPerL, 2)} g/L`} />
       </dl>
@@ -302,7 +302,7 @@ export function BatchCard({
             <>
               <Measure label="Volume visé" value={`${number(entry.volumeL)} L`} />
               <Measure label="OG cible" value={number(target?.ogTarget, 3)} />
-              <Measure label="Alcool cible" value={`${number(target?.abvTarget)} %`} />
+              <Measure label="Alcool cible" value={(batch.nolo??target?.nolo)?.enabled ? `NOLO ≤ ${number((batch.nolo??target?.nolo)?.targetAbvPct)} %` : `${number(target?.abvTarget)} %`} />
             </>
           ) : active ? (
             <>
@@ -329,7 +329,7 @@ export function BatchCard({
                 value={number(catalogNumber(batch.fg), 3)}
                 detail={target ? `cible ${number(target.fgTarget, 3)}` : undefined}
               />
-              <Measure label="Alcool" value={`${number(entry.abv)} %`} />
+              <Measure label="Alcool" value={(batch.nolo??target?.nolo)?.enabled ? <button type="button" className="min-h-touch text-xs underline" onClick={()=>onOpen(batch,'measurements')}>Analyse NOLO</button> : `${number(entry.abv)} %`} />
               <Measure label="Conditionné" value={`${number(batch.volumePackagedL)} L`} />
             </>
           )}

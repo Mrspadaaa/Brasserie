@@ -26,9 +26,10 @@ export function planCatalogueImport(incoming, documents) {
     if(row.kind!=='yeast'||!row.catalogue){unchanged.push(row.id);continue;}
     const prior=previous.data.catalogue;
     if(prior&&catalogueHash(prior)!==prior.contentSha256){conflicts.push({id:row.id,reason:'Catalogue edited locally; automatic replacement skipped'});continue;}
-    if(prior?.contentSha256===row.catalogue.contentSha256){unchanged.push(row.id);continue;}
+    const formMissing=!previous.data.form&&['sèche','liquide'].includes(row.form);
+    if(prior?.contentSha256===row.catalogue.contentSha256&&!formMissing){unchanged.push(row.id);continue;}
     // Only the managed catalogue block is replaced; names, capabilities and user corrections remain authoritative.
-    writes.push({id:row.id,data:{...previous.data,catalogue:row.catalogue},updateTime:previous.document.updateTime,previous:previous.data});
+    writes.push({id:row.id,data:{...previous.data,catalogue:row.catalogue,...(formMissing?{form:row.form}:{})},fieldPaths:['catalogue',...(formMissing?['form']:[])],updateTime:previous.document.updateTime,previous:previous.data});
   }
   return {writes,conflicts,unchanged};
 }

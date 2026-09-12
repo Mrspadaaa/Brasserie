@@ -9,6 +9,11 @@ import { Units } from '../services/units';
 import { HOP_STAGE, describeMoment } from '../domain/hopStage';
 import { Sheet } from './Sheet';
 import { Sparkles, Loader2, AlertTriangle, Camera, Check } from 'lucide-react';
+import { NoloRecipeOverview } from './NoloRecipeOverview';
+import { noloDecimal, noloProcessLabels } from '../domain/noloPresentation';
+import type { Recipe } from '../types';
+import { useStorageValue } from '../hooks/useLiveData';
+import { StorageService } from '../services/storage';
 import { YEAST_RECIPE_GOAL_LABELS } from '../domain/yeastRecipeDesign';
 
 /**
@@ -37,6 +42,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ImportedRecipe | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const request = useRef(0);
@@ -223,9 +229,9 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
       )}
 
       {result && (
-        <div className="space-y-5">
+        <div className="space-y-2">
           {/* --- Ce qui a été lu -------------------------------------------- */}
-          <div className="panel p-3">
+          <div className="panel p-2">
             <h3 className="text-base font-semibold text-cave-50">{result.name || 'Sans nom'}</h3>
             <p className="text-sm text-cave-400">
               {[
@@ -236,13 +242,18 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                 .filter(Boolean)
                 .join(' · ') || '—'}
             </p>
-            <dl className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-3">
+            {result.nolo?.enabled && <div className="mt-2 border-t border-cave-800 pt-2">
+              {result.yeast && result.volumeL != null && result.volumeL > 0
+                ? <NoloRecipeOverview recipe={{...result,id:'import-preview'} as Recipe} saved={knowledge}/>
+                : <p className="text-sm text-cave-200">{noloProcessLabels[result.nolo.process]} · cible ≤ {noloDecimal(result.nolo.targetAbvPct)} % vol. · Volume et levure à renseigner pour la projection.</p>}
+            </div>}
+            <dl className="grid gap-2 mt-2" style={{gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,3.5rem),1fr))'}}>
               {[
                 ['OG', result.ogTarget?.toFixed(3)],
                 ['FG', result.fgTarget?.toFixed(3)],
                 ['IBU', result.ibuTarget?.toString()],
                 ['EBC', result.colorEbc?.toString()],
-                ['ABV', result.abvTarget != null ? `${result.abvTarget} %` : undefined]
+                ...(result.nolo?.enabled ? [] : [['ABV', result.abvTarget != null ? `${result.abvTarget} %` : undefined]])
               ].map(([k, v]) => (
                 <div key={k as string}>
                   <dt className="text-sm text-cave-400">{k}</dt>
@@ -286,7 +297,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                     <span className="min-w-0 flex-1">
                       <span className="block text-base text-cave-200 truncate">{f.name}</span>
                       <span className="block text-sm text-cave-400">
-                        {f.kind} · {f.fermentabilityPct ?? 100} % fermentescible
+                        {f.kind} · {result.nolo?.enabled && f.use === 'fermentation' ? 'sucres suivis dans le bilan NOLO' : f.fermentabilityPct != null ? `${f.fermentabilityPct} % fermentescible` : 'fermentescibilité à préciser'}
                       </span>
                     </span>
                     <span className="reading text-base shrink-0">

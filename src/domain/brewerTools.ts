@@ -43,7 +43,10 @@ import { fermentationDose } from './fermentationGuide';
 import { evaluateFermentationScenario } from './fermentationScenario';
 import { buildYeastCompanion, type YeastCompanionOptions } from './yeastCompanion';
 import { YEAST_RECIPE_GOAL_LABELS } from './yeastRecipeDesign';
-import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, noloWaterModelIssue, noloInput } from './nolo';
+import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, noloWaterModelIssue, noloInput, noloScenarioInput } from './nolo';
+import { wortTool, fruitSugarOperation, primingSugarOperation, aromaOperation, additionImpact, dilutionTool, noloVolumeAfterOperations, scaleBenchTrial, analyzeGravityTrial, type ToolResult } from './noloBrewTools';
+import { noloToolContext } from './noloToolContext';
+import type { NoloOperation } from '../../functions/src/noloSchema';
 
 const number = (
   a: Record<string, unknown>,
@@ -98,8 +101,13 @@ export const brewerToolDeclarations = [
   ),
   tool(
     'calculate_recipe',
-    'Calculer la recette actuelle. Avec volumeL, simuler une mise à l’échelle COMPLÈTE : ingrédients ET eau recalculés. Les valeurs ingredients et water du scénario doivent toutes être proposées pour le reproduire ; changer seulement volumeL ne suffit pas. recommendedWater calcule le besoin d’eau, distinct des volumes saisis.',
+    'Calculer la recette actuelle. En NOLO : bilan ordonné, analyses contextualisées et projection distincts ; volumeL seul explore un volume hypothétique sans redimensionner les ingrédients. calculate_nolo_tools calcule les hypothèses du panneau NOLO. Hors NOLO, volumeL simule une mise à l’échelle COMPLÈTE : ingrédients ET eau recalculés, à proposer ensemble. recommendedWater est un besoin, distinct des volumes saisis.',
     { volumeL: num('Volume froid souhaité en fermenteur, L ; facultatif') }
+  ),
+  tool(
+    'calculate_nolo_tools',
+    'Rejouer les entrées enregistrées dans nolo.brewTools : extrait du moût, prochain fruit/resucrage/arôme/assemblage, dilution, dose par verre et lecture OG–FG d’un pilote. Même calcul que le panneau NOLO, en lecture seule. Les entrées manquantes ou périmées restent inconnues. Aucun résultat ne vaut analyse d’alcool, aucune opération n’est ajoutée et aucune mesure n’est créée.',
+    { section: str('Calcul souhaité ; all par défaut', ['all', 'wort', 'addition', 'dilution', 'bench', 'gravityTrial']) }
   ),
   tool(
     'simulate_boil',
@@ -355,6 +363,71 @@ export function runBrewerTool(
     throw new Error(
       'Recette manquante pour ce lot : demander les données utiles sans les inventer.'
     );
+  if (name === 'calculate_nolo_tools') {
+    if (!r.nolo?.enabled) throw Error('Activer et renseigner le contexte NOLO de la recette.');
+    const section = a.section ?? 'all';
+    if (!['all', 'wort', 'addition', 'dilution', 'bench', 'gravityTrial'].includes(section as string))
+      throw Error('Section des outils NOLO inconnue.');
+    if (Object.keys(a).some(key => key !== 'section'))
+      throw Error('Ces outils utilisent les hypothèses enregistrées ; aucun remplacement implicite de leurs entrées.');
+    const science = r.nolo.scienceSnapshot ?? noloScience(c.hopIndex?.knowledge ?? []);
+    if (!science?.enabled) return result('Préparation NOLO indisponible', null, [], ['Référence scientifique NOLO absente ou désactivée.']);
+    const current = evaluateNoloRecipe(r, c.hopIndex?.knowledge ?? []);
+    const stored = r.nolo.brewTools ?? { version: 1 as const };
+    const context = noloToolContext(r);
+    const staleBase = stored.baseAbvPct != null && stored.baseBasis !== context;
+    const staleIbu = stored.initialIbu != null && stored.ibuBasis !== context;
+    const settings = { ...stored, baseAbvPct: staleBase ? null : stored.baseAbvPct, initialIbu: staleIbu ? null : stored.initialIbu };
+    const volume = noloVolumeAfterOperations(noloInput(r).volumeL, current?.activeOperations ?? r.nolo.operations);
+    const volumeL = current ? current.volumeL : volume.value;
+    const baseAbvPct = settings.baseMode === 'hypothesis' ? settings.baseAbvPct ?? null
+      : current?.projection.max != null ? { min: current.projection.min, max: current.projection.max } : null;
+    const outputs: Record<string, unknown> = {};
+    if (section === 'all' || section === 'wort') outputs.wort = wortTool(r, {
+      targetAbvPct: r.nolo.targetAbvPct, reserveAbvPct: settings.reserveAbvPct,
+      attenuationPct: settings.attenuationPct, simulationSg: settings.simulationSg
+    }, science);
+    if (section === 'all' || section === 'addition') {
+      const kind = settings.additionKind ?? 'fruit';
+      const identity = { id: 'nolo-addition-preview', name: settings.additionName?.trim() || kind };
+      const fruit = settings.fruitRecipeIndex == null ? null : r.fermentables[settings.fruitRecipeIndex];
+      const duplicate = kind === 'priming' && r.nolo.operations.some(op => ['planned-priming', 'batch-priming'].includes(op.id));
+      const badLink = kind === 'fruit' && settings.fruitRecipeIndex != null &&
+        (fruit?.use !== 'fermentation' || r.nolo.operations.some(op => op.kind === 'sugar' && op.recipeAddition?.index === settings.fruitRecipeIndex));
+      const operation: ToolResult<NoloOperation> = duplicate || badLink
+        ? { value: null, issue: duplicate ? 'Le resucrage figure déjà au bilan ; ne pas ajouter une seconde dose.' : 'Ingrédient de fruit absent, incompatible ou déjà lié au bilan.' }
+        : kind === 'fruit' ? fruitSugarOperation({ ...identity, fruitKg: settings.fruitKg, sugarsGPer100G: settings.fruitSugarGPer100G, addedVolumeL: settings.fruitVolumeL })
+        : kind === 'priming' ? primingSugarOperation({ ...identity, doseGL: settings.primingGL, beerVolumeL: volumeL, sugar: settings.primingSugar ?? 'sucrose' })
+        : kind === 'aroma' ? aromaOperation({ ...identity, doseML: settings.aromaML,
+          carrierAbvPct: settings.carrierAbvPct == null ? null : { min: settings.carrierAbvPct, max: settings.carrierAbvPct }, sugarG: settings.aromaSugarG })
+        : { value: { ...identity, kind: 'blend', volumeL: settings.blendVolumeL ?? null, abvPct: settings.blendAbvPct ?? null,
+          remainingSugarG: settings.blendVolumeL != null && settings.blendSugarGL != null
+            ? { min: settings.blendVolumeL * settings.blendSugarGL, max: settings.blendVolumeL * settings.blendSugarGL } : null }, issue: null };
+      outputs.addition = { operation, impact: additionImpact({ baseVolumeL: volumeL, baseAbvPct,
+        targetAbvPct: r.nolo.targetAbvPct, operation: operation.value }, science) };
+    }
+    if (section === 'all' || section === 'dilution') outputs.dilution = dilutionTool({
+      baseVolumeL: volumeL, baseAbvPct, targetAbvPct: r.nolo.targetAbvPct,
+      waterL: settings.waterL, initialIbu: settings.initialIbu, capacityL: settings.capacityL
+    });
+    if (section === 'all' || section === 'bench') outputs.bench = scaleBenchTrial({
+      sampleML: settings.benchSampleML, doseML: settings.benchDoseML, beerVolumeL: volumeL
+    });
+    if (section === 'all' || section === 'gravityTrial') outputs.gravityTrial = analyzeGravityTrial({
+      ogSg: settings.trialOgSg, fgSg: settings.trialFgSg, readingToleranceSg: settings.readingToleranceSg
+    }, science);
+    return result('Préparation NOLO · hypothèses enregistrées', {
+      status: 'planning_only', scienceRef: { id: science.id, version: science.version },
+      base: { origin: settings.baseMode === 'hypothesis' ? 'hypothesis' : 'recipe_projection', volumeL, abvPct: baseAbvPct,
+        staleBase, staleIbu }, inputs: settings, ...outputs
+    }, [], [
+      'Préparation en lecture seule : hypothèses du panneau et opérations déjà inscrites au bilan, sans preuve de réalisation.',
+      'La relation OG–FG du pilote décrit une estimation sous tolérance de lecture, pas une analyse d’alcool ni un intervalle statistique.',
+      'Le prochain ajout et la dilution sont des scénarios séparés sur la même base ; leurs résultats ne se cumulent pas. La dose par verre ne prédit ni arôme ni pH.',
+      'Le bilan d’ajout borne les sucres de ce seul ajout ; une hypothèse d’alcool ne quantifie pas la reprise des sucres résiduels ni la conservation.',
+      ...(staleBase || staleIbu ? ['Le mélange a changé : les anciennes hypothèses d’alcool ou d’IBU ne sont pas réutilisées.'] : [])
+    ]);
+  }
   if (name === 'plan_recipe_water') {
     if (!r.waterPlan) throw Error('Plan d’eau manquant.');
     if (
@@ -397,9 +470,12 @@ export function runBrewerTool(
       const scenario = { ...r, volumeL,
         nolo: scaled && secondRunnings && r.nolo.secondRunnings
           ? { ...r.nolo, secondRunnings: { ...r.nolo.secondRunnings, recoveredL: volumeL } } : r.nolo };
+      const ogContext = noloScenarioInput(scenario, c.hopIndex?.knowledge ?? []).og ?? null;
       return result('Recette NOLO · bilan commun', {
+        scenario: scaled ? 'hypothetical_volume' : 'current_recipe',
         volumeL, nolo: evaluateNoloRecipe(scenario, c.hopIndex?.knowledge ?? []),
-        og: secondRunnings ? r.nolo.secondRunnings?.sg ?? null : r.ogTarget ?? null,
+        og: ogContext?.range.min === ogContext?.range.max ? ogContext?.range.min ?? null : null,
+        ogContext, ogTarget: r.ogTarget ?? null,
         fg: null, abv: null, recommendedWater: null,
         waterSummary: secondRunnings ? null : recipeWaterSummary(scenario),
         ingredients: { fermentables: r.fermentables, hops: r.hops, yeast: r.yeast }

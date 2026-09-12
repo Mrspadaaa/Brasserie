@@ -56,8 +56,14 @@ export function noloScenarioInput(recipe:TrialRecipe,saved:HopKnowledge[]=[]):No
   const measured=input.config.measurements.filter(m=>m.stage==='wort'&&m.sg!=null&&m.method.trim()&&/^\d{4}-\d{2}-\d{2}/.test(m.date)&&
     (m.basis===noloScenarioBasis(input)||!input.config.planning?.stopSg&&!input.config.planning?.stopAttenuationPct&&m.basis===noloInputBasis(input))
   ).sort((a,b)=>a.date.localeCompare(b.date)).at(-1);
-  const points=BrewingMath.extractPoints(recipe.fermentables.filter(f=>f.use!=='fermentation'),recipe.volumeL,recipe.efficiencyPct??recipe.brewhouse?.efficiencyPct??75,input.config.planning?.exactExtract?'full':'rounded');
-  const sg=measured?.sg??(recipe.nolo?.process==='secondRunnings'?recipe.nolo.secondRunnings?.sg:points?1+points.total/1000:undefined);
+  const beforeFermentation=recipe.fermentables.filter(f=>f.use!=='fermentation');
+  const needsYield=beforeFermentation.some(f=>(f.kind??'grain')==='grain'&&f.weightKg>0);
+  const efficiency=recipe.efficiencyPct??recipe.brewhouse?.efficiencyPct;
+  const knownYield=efficiency!=null&&Number.isFinite(efficiency)&&efficiency>0&&efficiency<=100;
+  const points=needsYield&&!knownYield?null:BrewingMath.extractPoints(beforeFermentation,recipe.volumeL,needsYield?efficiency!:100,input.config.planning?.exactExtract?'full':'rounded');
+  // Cold extraction has its own yield; a hot-mash grist calculation cannot
+  // stand in for an observation of this wort.
+  const sg=measured?.sg??(recipe.nolo?.process==='secondRunnings'?recipe.nolo.secondRunnings?.sg:recipe.nolo?.process==='coldExtraction'?undefined:points?1+points.total/1000:undefined);
   const yeast=resolveFermentationYeast(recipe,yeastReferences(saved));
   const attenuation=agreedFermentationFact(yeast,'attenuation','%');
   const temperature=agreedFermentationFact(yeast,'temperature','°C');
@@ -68,7 +74,7 @@ export function noloRecipeForBatch(batch:Batch):RecipeSnapshot|undefined{
   const recipe=batch.recipeSnapshot;
   const config=batch.nolo??recipe?.nolo;
   if(!recipe||!config?.enabled)return undefined;
-  const operations=config.operations.filter(o=>o.id!=='batch-priming');
+  const operations=config.operations.filter(o=>o.id!=='batch-priming'&&!(batch.carbonation?.method&&o.id==='planned-priming'));
   if(batch.carbonation?.method==='priming'){
     const mass=batch.carbonation.sugarG;
     operations.push({id:'batch-priming',kind:'sugar',name:'Resucrage du brassin (conditionnement)',sugarsG:{},complete:true,

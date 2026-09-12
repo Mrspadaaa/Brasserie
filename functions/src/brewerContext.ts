@@ -1,5 +1,6 @@
 import type { BrewerChatInput, BrewerScope } from './companionTypes.js';
 import { BREWER_APP_SCREENS } from './brewerAppScreens.js';
+import { assertNoloConfig } from './noloSchema.js';
 export const scopeKey = (s: BrewerScope) => `${s.kind}:${s.id}`;
 export function validateScope(s: unknown): BrewerScope {
   const v = s as BrewerScope;
@@ -13,8 +14,10 @@ export function validateScope(s: unknown): BrewerScope {
     throw new Error('Contexte de conversation invalide.');
   return { kind: v.kind, id: v.id };
 }
-/** Constrained JSON; reject oversized/deep payloads before allocating model context. */
-export function cleanContext(v: unknown, depth = 0): any {
+/** Constrained JSON; reject oversized/deep payloads before allocating model context.
+ * Identity strings serialize recipe inputs (including their frozen science).
+ * They need more space than prose; request and persisted-turn byte caps still apply. */
+export function cleanContext(v: unknown, depth = 0, contextIdentity = false): any {
   if (depth > 18) throw new Error('Contexte trop imbriqué.');
   if (v == null || typeof v === 'boolean') return v;
   if (typeof v === 'number') {
@@ -22,7 +25,7 @@ export function cleanContext(v: unknown, depth = 0): any {
     return v;
   }
   if (typeof v === 'string') {
-    if (v.length > 12000) throw new Error('Texte de contexte trop long.');
+    if (v.length > (contextIdentity ? 100000 : 12000)) throw new Error('Texte de contexte trop long.');
     return v;
   }
   if (Array.isArray(v)) {
@@ -38,7 +41,7 @@ export function cleanContext(v: unknown, depth = 0): any {
         ([k, x]) =>
           x !== undefined && !['__proto__', 'prototype', 'constructor', '__docId'].includes(k)
       )
-      .map(([k, x]) => [k, cleanContext(x, depth + 1)])
+      .map(([k, x]) => [k, cleanContext(x, depth + 1, ['basis', 'baseBasis', 'ibuBasis'].includes(k))])
   );
 }
 export function pick(value: any, keys: string[]) {
@@ -63,7 +66,7 @@ export function validateChatInput(raw: any): BrewerChatInput {
     raw.question.trim().length < 2 ||
     raw.question.length > 3000
   )
-    throw new Error('Écris une question de2 à3000 caractères.');
+    throw new Error('Écris une question de 2 à 3000 caractères.');
   if (Buffer.byteLength(JSON.stringify(raw)) > 100000) throw new Error('Contexte trop volumineux.');
   if (raw.mode != null && !['fast', 'auto', 'deep'].includes(raw.mode))
     throw new Error('Mode d’analyse invalide.');
@@ -82,6 +85,8 @@ export function validateChatInput(raw: any): BrewerChatInput {
     (!raw.draft || typeof raw.draft !== 'object' || Array.isArray(raw.draft))
   )
     throw new Error('Brouillon manquant.');
+  const draft = scope.kind === 'draft' ? pick(raw.draft, RECIPE_FIELDS) : undefined;
+  if (draft?.nolo !== undefined) assertNoloConfig(draft.nolo);
   return {
     scope,
     operationId: raw.operationId,
@@ -90,7 +95,7 @@ export function validateChatInput(raw: any): BrewerChatInput {
     ...(raw.mode != null ? { mode: raw.mode } : {}),
     ...(raw.generation != null ? { generation: raw.generation } : {}),
     ...(raw.editableTargets != null ? { editableTargets: raw.editableTargets } : {}),
-    ...(scope.kind === 'draft' ? { draft: pick(raw.draft, RECIPE_FIELDS) } : {}),
+    ...(draft ? { draft } : {}),
     ...(scope.kind === 'batch' && raw.localJournal
       ? { localJournal: cleanContext(raw.localJournal) }
       : {}),

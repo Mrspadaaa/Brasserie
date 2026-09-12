@@ -135,7 +135,7 @@ function familyOf(recipe: Recipe, recipes: Recipe[]): string {
 }
 export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry[] {
   return recipes.map((recipe) => {
-    const color = computeBeerColor(
+    const color = recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process) ? null : computeBeerColor(
       (recipe.fermentables ?? recipe.malts ?? []).filter((f) => !f.kind || f.kind === 'grain'),
       recipe.volumeL
     );
@@ -146,7 +146,7 @@ export function recipeEntries(recipes: Recipe[], batches: Batch[]): CatalogEntry
       volumeL: recipe.volumeL,
       date: recipe.brewDate,
       timestamp: catalogDate(recipe.brewDate),
-      abv: catalogNumber(recipe.abvTarget),
+      abv: catalogNumber(recipe.nolo?.enabled ? recipe.nolo.targetAbvPct : recipe.abvTarget),
       ibu: catalogNumber(recipe.ibuTarget),
       ebc: color?.ebc ?? recipe.colorEbc,
       swatch:
@@ -172,7 +172,8 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
     const grain = (recipe?.fermentables ?? recipe?.malts ?? batch.malts ?? []).filter(
       (f) => !f.kind || f.kind === 'grain'
     );
-    const color = computeBeerColor(grain, recipe?.volumeL ?? batch.volumeL);
+    const nolo = batch.nolo ?? recipe?.nolo;
+    const color = nolo?.enabled && ['coldExtraction','secondRunnings'].includes(nolo.process) ? null : computeBeerColor(grain, recipe?.volumeL ?? batch.volumeL);
     const og = catalogNumber(batch.og),
       fg = catalogNumber(batch.fg);
     return {
@@ -182,7 +183,9 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       volumeL: batch.volumeL,
       date: batch.brewDate,
       timestamp: catalogDate(batch.brewDate),
-      abv:
+      // NOLO alcohol is an analysis with its own context and uncertainty.
+      // Neither an old scalar nor OG–FG can replace that reading in charts.
+      abv: (batch.nolo ?? recipe?.nolo)?.enabled ? undefined :
         catalogNumber(batch.abv) ??
         (og && fg && og > 1 && fg >= 1 && og >= fg ? BrewingMath.calculateABV(og, fg) : undefined),
       ibu: catalogNumber(recipe?.ibuTarget),

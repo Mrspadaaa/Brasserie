@@ -22,7 +22,7 @@ import {
 import './brew-day.css';
 import { AppConfig, Batch, BrewDayState, RecipeSnapshot, StockItem } from '../types';
 import { ingredientsOf } from '../domain/recipeSnapshot';
-import { brewAdviceKey, finalBrewReadings, restoreBrewDay, startBrewStep } from '../domain/brewDay';
+import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep } from '../domain/brewDay';
 import {
   actualAmount,
   areaOf,
@@ -78,6 +78,8 @@ import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { recipeForHopAnalysis } from '../domain/hopIndex/engine';
 import { readingPrompt } from '../domain/brewAssist';
 import { ReadingKind } from '../domain/brewDay';
+import { NoloBrewDayGuide } from '../ui/NoloBrewDayGuide';
+import { noloExecutionRecipe } from '../domain/noloBrewDay';
 
 interface Props {
   batch: Batch;
@@ -117,6 +119,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ),
     onSave
   );
+  const executionRecipe = useMemo(() => noloExecutionRecipe(recipe), [recipe]);
+  const noloProcess = recipe.nolo?.enabled ? recipe.nolo.process : undefined;
+  const specialExtraction = noloProcess === 'secondRunnings' || noloProcess === 'coldExtraction';
+  const areaLabels = specialExtraction ? { ...AREA, mash: 'Extraire' } : AREA;
   const { state, latest, update } = session;
   const batchRef = useRef(batch);
   batchRef.current = batch;
@@ -178,24 +184,31 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   );
   const upcoming = due[0] ?? alarms.find((a) => a.at > now);
   const actualRecipe = useMemo(() => {
-    const fermentables = effectiveFermentables(recipe, state);
+    const fermentables = effectiveFermentables(executionRecipe, state);
     return {
-      ...recipe,
+      ...executionRecipe,
       fermentables,
       totalGristKg: fermentables.length
         ? fermentables
             .filter((f) => f.kind === 'grain' && f.use === 'empatage')
             .reduce((sum, f) => sum + f.weightKg, 0)
-        : recipe.totalGristKg,
-      waterPlan: recipe.waterPlan
+        : executionRecipe.totalGristKg,
+      waterPlan: executionRecipe.waterPlan
         ? {
-            ...recipe.waterPlan,
-            mashWaterL: state.additions?.['water-mash']?.amount ?? recipe.waterPlan.mashWaterL
+            ...executionRecipe.waterPlan,
+            mashWaterL: state.additions?.['water-mash']?.amount ?? executionRecipe.waterPlan.mashWaterL
           }
         : undefined
     };
-  }, [recipe, state.additions]);
-  const ingredients = brewIngredients(recipe);
+  }, [executionRecipe, state.additions]);
+  // NOLO shortcuts already show normal readings. Keep actionable feedback visible.
+  const showReadingSummary = !recipe.nolo?.enabled || Object.keys(READING).some(kind => {
+    const reading = [...(state.readings ?? [])].reverse().find(r => r.kind === kind && r.stepId === current.id);
+    if (!reading) return false;
+    const feedback = measuredReadingFeedback(reading, state, current, actualRecipe);
+    return feedback.tone === 'watch' || (kind === 'ph' && isMash(current.id) && feedback.tone === 'neutral');
+  });
+  const ingredients = brewIngredients(executionRecipe);
   const bitterness = brewBitterness(recipe, state);
   const signature =
     brewAdviceKey(state) +
@@ -321,7 +334,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       task: 'diagnoseBatch',
       tier: 'fast',
       context: {
-        recipe: actualRecipe,
+        recipe: recipe.nolo?.enabled ? recipe : actualRecipe,
         yeastPlan: recipe.yeast ? buildYeastCompanion(recipe, StorageService.getHopKnowledge(), { maxAlternatives: 0 }) : undefined,
         currentStep: current,
         phase: 'jour de brassage',
@@ -335,7 +348,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             actual: actualAmount(i, s),
             ...s.additions?.[i.id]
           })),
-        mineralFeedback: mineralFeedback(recipe, s),
+        mineralFeedback: mineralFeedback(executionRecipe, s),
         stock: stockItems.map((x) => ({
           name: x.name,
           category: x.category,
@@ -366,7 +379,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     aiLock.current = false;
   };
   const rig = config.brewhouses?.find((b) => b.id === config.activeBrewhouseId);
-  const efficiency = ['preboil', 'ensemencement'].includes(current.id)
+  const efficiency = !specialExtraction && ['preboil', 'ensemencement'].includes(current.id)
     ? measuredEfficiency(actualRecipe, state, current.id)
     : null;
   const stepsHere = state.steps
@@ -413,10 +426,16 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const doneCount = route.filter((s) =>
     isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null
   ).length;
-  const phasePreps = PREPARATIONS.filter((p) => p.area === area);
+  const phasePreps = PREPARATIONS.filter((p) => p.area === area &&
+    !(noloProcess === 'secondRunnings' && p.id === 'moulin') &&
+    !(specialExtraction && p.id === 'rinçage'));
   const preparationCount = phasePreps.filter((p) => state.preparations?.[p.id]).length;
   const instructions =
-    current.id === 'eau'
+    current.id === 'eau' && noloProcess === 'secondRunnings'
+      ? current.detail
+      : current.id === 'eau' && noloProcess === 'coldExtraction'
+        ? 'Précise le protocole d’extraction et mesure le volume d’eau ajouté. Le plan d’empâtage chaud n’est pas repris.'
+      : current.id === 'eau'
       ? 'Prépare et traite les eaux d’empâtage et de rinçage séparément.'
       : current.id === 'concassage'
         ? 'Pèse chaque grain et règle le moulin. Les quantités peuvent être ajustées à la pesée.'
@@ -488,6 +507,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const requestMeasure = (kind: ReadingKind) => {
     setRequestedReading({ kind, token: performance.now() });
     openCapture('measure');
+  };
+  const noteNolo = (subject: string) => {
+    setNote(previous => previous.trim() ? previous : `NOLO · ${subject} : `);
+    setNoteStepId(current.id);
+    openCapture('note');
   };
 
   const viewNavigation = (
@@ -708,7 +732,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   type="button"
                   key={v}
                   disabled={!phaseSteps.length || !session.canStart}
-                  aria-label={AREA[v]}
+                  aria-label={areaLabels[v]}
                   aria-pressed={!isConsulting && view === v}
                   className={`brew-phase ${phaseDone ? 'is-complete' : ''}`}
                   onClick={() => navigate(v)}
@@ -716,7 +740,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   <span className="brew-phase-number" aria-hidden="true">
                     {phaseDone ? <Check size={16} /> : index + 1}
                   </span>
-                  <span>{AREA[v]}</span>
+                  <span>{areaLabels[v]}</span>
                 </button>
               );
             })}
@@ -808,6 +832,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </strong>
                       </div>
                     </div>
+                    <NoloBrewDayGuide recipe={recipe} state={state} step={current} overview onMeasure={requestMeasure} onNote={noteNolo} />
                     <YeastBrewDayGuide recipe={recipe} state={state} phase="recipe" />
                     <details className="brew-disclosure">
                       <summary>Programme et notes de recette</summary>
@@ -1137,6 +1162,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </details>
                         )}
                     </section>
+                    <NoloBrewDayGuide recipe={recipe} state={state} step={current} onMeasure={requestMeasure} onNote={noteNolo} />
                     {prompt && current.doneAt == null && (
                       <button
                         type="button"
@@ -1152,9 +1178,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       </button>
                     )}
                     <YeastBrewDayGuide recipe={recipe} state={state} phase={area} onMeasure={requestMeasure} />
-                    <BrewAssist
+                    {(!specialExtraction || area === 'boil' || area === 'finish') && <BrewAssist
                       key={current.id}
-                      recipe={recipe}
+                      recipe={executionRecipe}
                       state={state}
                       step={current}
                       now={now}
@@ -1162,7 +1188,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       onMeasure={requestMeasure}
                       stock={stockItems}
                       brewhouse={config.brewhouses.find(b=>b.id===config.activeBrewhouseId)??recipe.brewhouse}
-                    />
+                    />}
                     {due.length > 0 && !staleTimer && (
                       <aside role="status" className="brew-due-alert">
                         <BellRing size={20} />
@@ -1179,7 +1205,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   </>
                 )}
                 <BrewIngredients
-                  recipe={recipe}
+                  recipe={displayRecipe ? recipe : executionRecipe}
                   state={state}
                   stock={stockItems}
                   area={area}
@@ -1219,7 +1245,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           </div>
 
           <div className="brew-side-column">
-            {!isConsulting && (
+            {!isConsulting && showReadingSummary && (
               <BrewReadingsSummary
                 state={state}
                 step={current}

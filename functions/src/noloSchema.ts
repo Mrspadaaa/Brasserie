@@ -51,6 +51,39 @@ export type NoloOperation =
   | { id: string; kind: 'blend'; name: string; volumeL: number | null; abvPct: HopRange | null; remainingSugarG: HopRange | null }
   | { id: string; kind: 'dilution'; name: string; volumeL: number | null }
   | { id: string; kind: 'removal'; name: string; ethanolRemovedPct: HopRange | null; finalVolumeL: number | null; source: string };
+/** Editable bench-planning inputs. These are never laboratory measurements. */
+export interface NoloBrewToolsConfig {
+  version: 1;
+  attenuationPct?: HopRange | null;
+  reserveAbvPct?: number | null;
+  simulationSg?: number | null;
+  baseMode?: 'recipe' | 'hypothesis';
+  baseAbvPct?: HopRange | null;
+  baseBasis?: string;
+  ibuBasis?: string;
+  additionKind?: 'fruit' | 'priming' | 'aroma' | 'blend';
+  additionName?: string;
+  fruitRecipeIndex?: number | null;
+  fruitKg?: number | null;
+  fruitSugarGPer100G?: number | null;
+  fruitVolumeL?: number | null;
+  primingGL?: number | null;
+  primingSugar?: 'sucrose' | 'glucose';
+  aromaML?: number | null;
+  carrierAbvPct?: number | null;
+  aromaSugarG?: number | null;
+  blendVolumeL?: number | null;
+  blendAbvPct?: HopRange | null;
+  blendSugarGL?: number | null;
+  waterL?: number | null;
+  initialIbu?: number | null;
+  capacityL?: number | null;
+  benchSampleML?: number | null;
+  benchDoseML?: number | null;
+  trialOgSg?: number | null;
+  trialFgSg?: number | null;
+  readingToleranceSg?: number | null;
+}
 export interface NoloConfig {
   version: 1; enabled: boolean; targetAbvPct: number; process: NoloProcess;
   orientation: 'free' | 'banana' | 'balanced' | 'clove';
@@ -72,6 +105,7 @@ export interface NoloConfig {
     aromaTransfer?: { axes: Record<string, HopRange>; source: HopSource };
   };
   inactiveOperations?: { process: NoloProcess; index: number; operation: NoloOperation }[];
+  brewTools?: NoloBrewToolsConfig;
 }
 const check = (v: unknown, m: string) => { if (!v) throw Error(m); };
 const range = (v: unknown, max = Infinity) => validHopRange(v) && (v as HopRange).min >= 0 && (v as HopRange).max <= max;
@@ -110,12 +144,29 @@ export function assertNoloScience(v: any): asserts v is NoloScience {
   }
   for (const p of v.processes) check(p.id && p.name && p.aroma && p.work && p.waterEnergy && p.equipment && p.analyses && p.evidence && p.limitation && !hopSourceError(p.source), 'Procédé sans documentation.');
 }
+function assertBrewTools(t: any) {
+    check(t.version === 1, 'Version des outils NOLO invalide.');
+    for (const [key, max] of [['attenuationPct',100],['baseAbvPct',100],['blendAbvPct',100]] as const)
+      if (t[key] !== undefined) check(nullable(t[key],max), 'Plage de simulation NOLO invalide.');
+    for (const [key,max] of [['reserveAbvPct',.5],['simulationSg',3],['fruitKg',Infinity],['fruitSugarGPer100G',100],['fruitVolumeL',Infinity],['primingGL',Infinity],['aromaML',Infinity],['carrierAbvPct',100],['aromaSugarG',Infinity],['waterL',Infinity],['initialIbu',Infinity],['capacityL',Infinity],['benchSampleML',Infinity],['benchDoseML',Infinity]] as const)
+      if (t[key] !== undefined) check(t[key] === null || finite(t[key],max), 'Valeur de simulation NOLO invalide.');
+    if (t.baseMode !== undefined) check(['recipe','hypothesis'].includes(t.baseMode), 'Base de simulation NOLO invalide.');
+    for (const key of ['blendVolumeL','blendSugarGL','trialOgSg','trialFgSg','readingToleranceSg'] as const)
+      if (t[key] !== undefined) check(t[key] === null || finite(t[key]), 'Valeur de simulation NOLO invalide.');
+    if (t.fruitRecipeIndex != null) check(Number.isInteger(t.fruitRecipeIndex) && t.fruitRecipeIndex >= 0, 'Ingrédient de fruit NOLO invalide.');
+    if (t.additionKind !== undefined) check(['fruit','priming','aroma','blend'].includes(t.additionKind), 'Type d’ajout NOLO invalide.');
+    if (t.primingSugar !== undefined) check(['sucrose','glucose'].includes(t.primingSugar), 'Sucre de resucrage NOLO invalide.');
+    if (t.additionName !== undefined) check(typeof t.additionName === 'string', 'Nom d’ajout NOLO invalide.');
+    for (const key of ['baseBasis','ibuBasis'] as const)
+      if (t[key] !== undefined) check(typeof t[key] === 'string', 'Contexte de simulation NOLO invalide.');
+}
 export function assertNoloConfig(v: any): asserts v is NoloConfig {
   check(v && v.version === 1 && typeof v.enabled === 'boolean' && finite(v.targetAbvPct, .5) &&
     ['restricted','restored','lowExtract','coldExtraction','coldContact','arrested','dealcoholized','secondRunnings'].includes(v.process) &&
     ['free','banana','balanced','clove'].includes(v.orientation), 'Objectif NOLO invalide.');
   check(v.wort && nullable(v.wort.ogPlato, 100) && typeof v.wort.sugarsComplete === 'boolean', 'Moût NOLO invalide.');
   assertSugarProfile(v.wort.sugarsGL);
+  if (v.brewTools !== undefined) { check(v.brewTools && typeof v.brewTools === 'object', 'Outils NOLO invalides.'); assertBrewTools(v.brewTools); }
   check(Array.isArray(v.operations) && Array.isArray(v.measurements) && Array.isArray(v.equipment) &&
     v.stabilization && typeof v.stabilization.method === 'string' && typeof v.stabilization.validationReference === 'string' && typeof v.stabilization.storage === 'string', 'Suivi NOLO incomplet.');
   const ids = new Set();

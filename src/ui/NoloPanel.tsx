@@ -1,5 +1,4 @@
 import { Input, Textarea } from './Input';
-import { NumberInput } from './NumberInput';
 import { fermentationReadiness } from '../domain/fermentationPlanning';
 import { NoloFermentationWorkshop } from './NoloFermentationWorkshop';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
@@ -19,6 +18,11 @@ import { Button } from '../components/ui/Button';
 import { BoundGraph } from './NoloAlcoholChart';
 import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
 import { guideFermentations } from './hopIndex/guideData';
+import { NumberInput } from './NumberInput';
+import { NoloBrewTools } from './NoloBrewTools';
+import { noloProcessLabels } from '../domain/noloPresentation';
+import { NoloRecipeOverview } from './NoloRecipeOverview';
+import { NoloOperationList } from './NoloOperationList';
 
 const decimal = (n: number) => n.toLocaleString('fr-FR',{maximumFractionDigits:3});
 /** Outward rounding: a narrow interval across 0.5 must never display as 0.5–0.5. */
@@ -48,7 +52,7 @@ const sugarLabel={glucose:'Glucose',fructose:'Fructose',sucrose:'Saccharose',mal
 const emptyRunnings={sourceBatchId:'',previousExtraction:'',waterAddedL:null,alkalinityPpm:null,temperatureC:null,minutes:null,recoveredL:null,sg:null,ph:null};
 const stageLabels:Record<NoloStage,string>={sourceWater:'Eau source',mash:'Empâtage',sparge:'Rinçage',lastRunnings:'Dernières eaux de coulage',wort:'Moût avant fermentation',primary:'Après fermentation, avant conditionnement',packaged:'Bière conditionnée'};
 
-export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false,hideStrainPicker=false,onChooseYeast}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean;hideStrainPicker?:boolean;onChooseYeast?:()=>void}) {
+export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false,hideStrainPicker=false,onChooseYeast,showOverview=true}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean;hideStrainPicker?:boolean;onChooseYeast?:()=>void;showOverview?:boolean}) {
   const saved=useStorageValue(StorageService.getHopKnowledge);
   const c=recipe.nolo, editable=!!onChange;
   const science=useMemo(()=>c?.enabled?noloScience(saved):undefined,[saved,c?.enabled]);
@@ -82,15 +86,23 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
   if(!c?.enabled&&!allowEnable)return null;
   if(workshop&&onChange)return <section className="space-y-3"><Button onClick={()=>setWorkshop(false)}>Revenir au bilan NOLO</Button><NoloFermentationWorkshop recipe={recipe} onChange={onChange}/></section>;
   if(variant)return <section className="space-y-3"><Button onClick={()=>setVariant(undefined)}>Fermer la variante NOLO</Button><p className="text-xs text-cave-400">Variante locale · aucune écriture</p><NoloPanel recipe={variant} onChange={setVariant}/></section>;
-  return <section aria-label="Objectif NOLO" className="min-w-0 rounded-panel border border-hop/30 bg-cave-900 p-3 sm:p-4 space-y-3">
+  const preparation=editable&&!measurementOnly&&c?.enabled&&<>
+    {!hideStrainPicker&&<Button onClick={()=>onChooseYeast?onChooseYeast():setWorkshop(true)}>Choisir une levure et préparer la conduite</Button>}
+    {science&&<NoloBrewTools recipe={recipe} onChange={onChange!} science={c.scienceSnapshot??science} result={result} saved={saved}/>}
+  </>;
+  return <section aria-label="Objectif NOLO" className={`nolo-panel min-w-0 ${showOverview?'rounded-panel border border-cave-700 bg-cave-900':'nolo-panel-embedded'}`}>
     {researchOpen&&<FermentationResearchSheet onClose={()=>setResearchOpen(false)}/>}
     <div className="flex flex-wrap items-center justify-between gap-2">
-      {allowEnable&&editable?<label className="flex min-h-touch items-center gap-2 font-semibold text-cave-50"><input name="nolo-enabled" aria-label="Objectif NOLO · ≤ 0,5 %" type="checkbox" className="accent-hop" checked={!!c?.enabled} onChange={e=>onChange?.({...recipe,nolo:{...(c??newNoloConfig()),enabled:e.target.checked}})}/>Objectif NOLO · ≤ 0,5 %</label>:<h3 className="font-semibold text-base text-cave-50">Objectif NOLO</h3>}
+      {allowEnable&&editable?<label className="flex min-h-touch items-center gap-2 font-semibold text-cave-50"><input name="nolo-enabled" aria-label="Objectif NOLO · ≤ 0,5 %" type="checkbox" className="accent-hop" checked={!!c?.enabled} onChange={e=>onChange?.({...recipe,nolo:{...(c??newNoloConfig()),enabled:e.target.checked}})}/>Objectif NOLO · ≤ 0,5 %</label>:(editable||measurementOnly)&&<h3 className="font-semibold text-sm text-cave-50">Objectif NOLO</h3>}
       {c&&!editable&&<Button onClick={()=>setVariant(structuredClone(recipe))}>Simuler une variante NOLO</Button>}
     </div>
     {c?.enabled&&<>
-      {editable?<label className="block text-sm text-cave-200">Procédé<select className={inputClass+' mt-1'} value={c.process} onChange={e=>onChange?.({...recipe,nolo:changeNoloProcess(c,e.target.value as NoloProcess)})}>{science?.processes.map(p=><option key={p.id} value={p.id}>{({restricted:'Fermentation limitée',restored:'Limité + restitution',lowExtract:'Faible extrait',coldExtraction:'Extraction à froid',coldContact:'Contact à froid',arrested:'Fermentation interrompue',dealcoholized:'Désalcoolisation',secondRunnings:'Seconde extraction'})[p.id]}</option>)}</select></label>:<p className="text-sm text-cave-200">{science?.processes.find(p=>p.id===c.process)?.name??c.process}</p>}
-      {editable&&!measurementOnly&&!hideStrainPicker&&<Button onClick={()=>onChooseYeast?onChooseYeast():setWorkshop(true)}>Choisir une levure et préparer la conduite</Button>}
+      {!editable&&showOverview&&<NoloRecipeOverview recipe={recipe} saved={saved}/>}
+      {(editable||measurementOnly)&&<div className="nolo-summary"><span>{noloProcessLabels[c.process]}</span>{editable?<label className="inline-flex items-center gap-1">Cible<select aria-label="Cible d’alcool NOLO" className="rounded-control border border-cave-700 bg-cave-850 min-h-touch px-1 text-base" value={c.targetAbvPct} onChange={e=>update({targetAbvPct:Number(e.target.value)})}>{[...new Set([.5,.3,.1,0,c.targetAbvPct])].sort((a,b)=>b-a).map(n=><option key={n} value={n}>{decimal(n)} % vol.</option>)}</select></label>:<span>Cible ≤ {decimal(c.targetAbvPct)} % vol.</span>}</div>}
+      {result?.projectionStatus==='exceeds'&&<p className="nolo-error">La projection actuelle dépasse la cible. Compare les réglages avant de préparer le pilote.</p>}
+      {preparation&&(allowEnable?<details><summary className="cursor-pointer">Comparer et préparer le procédé</summary><div className="space-y-2 pt-1">{preparation}</div></details>:preparation)}
+      <details open={measurementOnly?true:undefined}><summary className="cursor-pointer">Bilan détaillé · mesures et suivi</summary><div className="nolo-legacy">
+      {editable&&measurementOnly&&<label className="block text-xs text-cave-200">Procédé<select className={inputClass} value={c.process} onChange={e=>onChange?.({...recipe,nolo:changeNoloProcess(c,e.target.value as NoloProcess)})}>{science?.processes.map(p=><option key={p.id} value={p.id}>{noloProcessLabels[p.id]}</option>)}</select></label>}
       {c.process==='secondRunnings'&&<div className="space-y-3" aria-label="Moût de seconde extraction">
         <p className="text-sm text-cave-400">Ce procédé utilise les drêches d’un brassin précédent. Pour un brassin neuf, choisir « Fermentation limitée ».</p>
         {editable&&!measurementOnly?<div className="grid grid-cols-2 gap-3">
@@ -99,7 +111,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
         </div>:<p className="text-sm text-cave-200">Volume : {c.secondRunnings?.recoveredL??'à renseigner'} L · densité : {c.secondRunnings?.sg??'à renseigner'} SG</p>}
       </div>}
       {!result?<p role="alert" className="text-sm text-ebc-straw">{outcome.error||'Référence NOLO absente ou désactivée. Complète les références pour calculer ce scénario.'}</p>:<>
-        <BoundGraph bound={result.projection.max!==null?result.projection:result.motherBeer.max!==null?result.motherBeer:result.packagedAbv.max!==null?result.packagedAbv:result.projection} target={c.targetAbvPct} label={result.projection.max!==null?'Projection au conditionnement':result.motherBeer.max!==null?'Bière mère · avant traitement':result.packagedAbv.max!==null?'Plafond physique · pas une prédiction':'Projection à compléter'}/>
+        {editable&&<BoundGraph compact bound={result.projection.max!==null?result.projection:result.motherBeer.max!==null?result.motherBeer:result.packagedAbv.max!==null?result.packagedAbv:result.projection} target={c.targetAbvPct} label={result.projection.max!==null?'Projection au conditionnement':result.motherBeer.max!==null?'Bière mère · avant traitement':result.packagedAbv.max!==null?'Plafond physique · pas une prédiction':'Projection à compléter'}/>}
         {result.projectionStatus==='exceeds'&&<p className="text-sm text-ebc-straw">Projection au-dessus de la cible</p>}
         {editable&&!measurementOnly&&c.process==='arrested'&&<RangeInput label="Densité d’arrêt envisagée" unit="SG" max={3} value={c.planning?.stopSg} onChange={stopSg=>plan({stopSg,stopAttenuationPct:undefined})}/>}
         {editable&&!measurementOnly&&c.process==='dealcoholized'&&c.operations.filter(o=>o.kind==='removal').map(o=>o.kind==='removal'&&<details key={o.id} open={!o.ethanolRemovedPct||!o.finalVolumeL}><summary className="min-h-touch cursor-pointer text-sm text-water">Hypothèses de désalcoolisation</summary><div className="space-y-3">
@@ -122,7 +134,6 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
           <div><p className="text-xs text-cave-400">Girofle · caractère</p><p className={"text-sm "+(documentedPof==='positive'?'text-hop':'text-cave-200')}>{documentedPof==='positive'?'Potentiel POF+ documenté':documentedPof==='negative'?'Souche POF−':'POF inconnu'}</p><div className="mt-2 border-b border-dashed border-cave-600"/><p className="text-xs text-cave-400 mt-1">Intensité non quantifiée</p></div>
         </figure>}
       </>}
-      <details><summary className="cursor-pointer py-3 text-sm text-water">Affiner le pilote · mesures, procédés et sources</summary><div className="space-y-2">
       {editable&&!measurementOnly&&science&&<details><summary className="cursor-pointer min-h-touch text-water">Objectif aromatique et matériel</summary><div className="space-y-3">
         <label className="block text-sm text-cave-200">Orientation aromatique<select className={inputClass} value={c.orientation} onChange={e=>update({orientation:e.target.value as NoloConfig['orientation']})}><option value="free">Profil personnel libre</option><option value="banana">Banane dominante</option><option value="balanced">Banane / girofle équilibrés</option><option value="clove">Girofle dominant</option></select></label>
         <fieldset className="space-y-1"><legend className="text-sm text-cave-200">Matériel disponible</legend>{['pH-mètre','Maîtrise thermique','Carbonatation forcée','Conditionnement maîtrisé','Analyse faible teneur','Stabilisation validée','Désalcoolisation spécialisée'].map(e=><label key={e} className="min-h-touch flex items-center gap-2 text-sm text-cave-200"><input type="checkbox" checked={c.equipment.includes(e)} onChange={v=>update({equipment:v.target.checked?[...c.equipment,e]:c.equipment.filter(x=>x!==e)})}/>{e}</label>)}</fieldset>
@@ -142,7 +153,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
           </div></details>)}</div>
           <div className="flex flex-col sm:flex-row gap-2"><select aria-label="Type d’opération NOLO" className={inputClass} value={operationKind} onChange={e=>setOperationKind(e.target.value as NoloOperation['kind'])}><option value="sugar">Resucrage / fruit</option><option value="aroma">Restitution aromatique</option><option value="blend">Assemblage</option><option value="dilution">Dilution</option><option value="removal">Désalcoolisation</option></select><Button onClick={addOperation}>Ajouter l’opération</Button></div>
         </>:<div className="space-y-2 text-xs text-cave-200"><p>{c.operations.length} opération(s) · {c.wort.sugarsComplete?'profil de sucres déclaré complet':'sucres partiels'}</p>
-          {c.operations.map(o=><details key={o.id}><summary className="min-h-touch cursor-pointer">{o.name}</summary><dl>{Object.entries(o).filter(([k])=>!['id','kind','name'].includes(k)).map(([k,v])=><div key={k} className="flex gap-2 flex-wrap"><dt>{({volumeL:'Volume ajouté · L',volumeML:'Produit · mL',carrierAbvPct:'Support · % vol.',sugarsG:'Sucres ajoutés · g',sugarG:'Sucres · g',abvPct:'Alcool · % vol.',remainingSugarG:'Sucres encore fermentescibles · g',finalVolumeL:'Volume final · L',ethanolRemovedPct:'Retrait · %',source:'Source',composition:'Composition',moment:'Moment',complete:'Composition complète',unclassifiedSugarG:'Sucre de resucrage · g'})[k]??k}</dt><dd className="break-all">{v===null?'Inconnu':typeof v==='object'?('min'in v?decimal(v.min)+'–'+decimal(v.max):Object.entries(v).map(([s,r])=>sugarLabel[s]?sugarLabel[s]+': '+(r&&typeof r==='object'&&'min'in r&&'max'in r?decimal(Number(r.min))+'–'+decimal(Number(r.max)):'Inconnu'):s+': '+JSON.stringify(r)).join(' · ')):typeof v==='boolean'?(v?'Oui':'Non'):String(v)}</dd></div>)}</dl></details>)}
+          <NoloOperationList operations={result?.activeOperations??c.operations} recipe={recipe}/>
         </div>}
         <details><summary className="cursor-pointer min-h-touch text-sm text-cave-200">Analyses rattachées à leur étape</summary><div className="space-y-3">
           {c.measurements.map(m=><div key={m.id} className="text-xs text-cave-200 border-b border-cave-800 py-2"><p>{stageLabels[m.stage]} · {m.date} · {m.method}</p><p>{m.abvPct?decimal(m.abvPct.min)+'–'+decimal(m.abvPct.max)+' % vol.':'Alcool non mesuré'}{m.ph!=null?' · pH '+decimal(m.ph):''}</p>{editable&&<Button onClick={()=>update({measurements:c.measurements.filter(x=>x.id!==m.id)})}>Retirer cette mesure</Button>}</div>)}

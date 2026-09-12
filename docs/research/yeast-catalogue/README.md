@@ -1,5 +1,7 @@
 # Catalogue des levures — collecte du 8 septembre 2026
 
+Les comptes ci-dessous décrivent la collecte initiale. Les ajouts et vérifications du 12 septembre sont suivis dans [l’enrichissement des fiches de levures](../yeast-enrichment/README.md).
+
 **1733 références et présentations, 6476 caractéristiques sourcées, 25 fabricants et banques.** Le fichier de référence est [yeastCatalogueBootstrap.json](../../../src/data/yeastCatalogueBootstrap.json). L'import cible la collection existante **hopKnowledge** du projet **brasserie-l-affinee**, avec un document par référence. Aucun nouveau silo Firestore.
 
 ## Périmètre et état des données

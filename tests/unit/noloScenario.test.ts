@@ -22,6 +22,17 @@ const removal:NoloOperation={id:'remove',kind:'removal',name:'Traitement',ethano
 const aroma:Extract<NoloOperation,{kind:'aroma'}>={id:'banana',kind:'aroma',name:'Restitution',volumeML:12/1.032,carrierAbvPct:null,sugarG:null,composition:'99 % propylène glycol',moment:'après traitement',
   compositionBound:{massG:fixture.aroma.massG,inertMassPct:fixture.aroma.inertMassPct,source:noloPlanningSource}};
 describe('Scénarios NOLO : preuves, hypothèses, mesures et bilan commun',()=>{
+  it('identifie une bière mère inconnue avant de demander une analyse du produit conditionné',()=>{
+    const s=input();s.yeastId=science.la01.yeastId;s.yeastName='SafBrew LA-01';s.config.operations=[removal];
+    const unknown=evaluateNoloScenario(s,science);
+    expect(unknown.projection.max).toBeNull();
+    expect(unknown.nextAction).toContain('bière mère inconnu');
+    expect(unknown.nextAction).toContain('atténuation non documentée');
+    s.config.measurements=[{id:'mother',stage:'primary',date:'2026-09-12',method:'Analyse du pilote',abvPct:r(.6),basis:noloScenarioBasis(s)}];
+    const measured=evaluateNoloScenario(s,science);
+    expect(measured.projection.max).toBeCloseTo(.036);
+    expect(measured.missing.join(' ')).not.toContain('bière mère inconnu');
+  });
   it('explique les données de seconde extraction avant de demander une analyse finale',()=>{
     const s=input();s.config.process='secondRunnings';s.yeastId=science.la01.yeastId;s.yeastName='SafBrew LA-01';delete s.og;s.volumeL=0;
     const missing=evaluateNoloScenario(s,science);

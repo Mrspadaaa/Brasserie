@@ -58,7 +58,7 @@ export function brewBitterness(recipe: RecipeSnapshot, state: BrewDayState) {
 
 export type BrewArea = 'preparation' | 'mash' | 'boil' | 'finish';
 export const areaOf = (id: string): BrewArea =>
-  isMash(id) || ['sparge', 'fwh', 'preboil'].includes(id)
+  isMash(id) || ['sparge', 'fwh', 'preboil', 'nolo-extraction', 'nolo-second-runnings'].includes(id)
     ? 'mash'
     : /^(boil|hop|sucres|whirlpool)/.test(id)
       ? 'boil'
@@ -78,7 +78,7 @@ export function boilMinutes(state: BrewDayState, recipe?: RecipeSnapshot) {
   );
 }
 export const isUsefulTimer = (s: BrewDayStep) =>
-  (isMash(s.id) || s.id === 'whirlpool') && s.durationMin > 0;
+  (isMash(s.id) || ['whirlpool', 'nolo-extraction', 'nolo-second-runnings'].includes(s.id)) && s.durationMin > 0;
 export interface BrewAlarm {
   id: string;
   at: number;

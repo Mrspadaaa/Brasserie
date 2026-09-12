@@ -141,6 +141,11 @@ export function evaluateNoloScenario(original:NoloScenarioInput,currentScience:N
   const assays=config.measurements.filter(m=>m.abvPct&&['primary','packaged'].includes(m.stage)&&/^\d{4}-\d{2}-\d{2}/.test(m.date)&&m.method.trim()&&compatible(m))
     .sort((a,b)=>a.date.localeCompare(b.date));
   const assay=assays.at(-1);
+  if(config.process==='dealcoholized'&&!assay&&mother.max===null) {
+    if(!og)missing.unshift('Renseigner l’OG de la bière mère, ou une analyse d’alcool avant traitement dans le bilan détaillé.');
+    else if(!attenuation)missing.unshift('Alcool de la bière mère inconnu : atténuation non documentée pour cette souche. Choisir une référence adaptée ou renseigner une analyse avant traitement dans le bilan détaillé.');
+    else if(!models)missing.unshift('Modèle de bière mère absent de cette édition. Renseigner une analyse d’alcool avant traitement dans le bilan détaillé.');
+  }
   const start=assay?.afterOperationId?config.operations.findIndex(o=>o.id===assay.afterOperationId)+1:0;
   if(assay?.abvPct) {
     for(const o of config.operations.slice(0,start)) {

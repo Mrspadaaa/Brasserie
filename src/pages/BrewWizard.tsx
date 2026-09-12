@@ -38,6 +38,7 @@ import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { FermentationWorkshop } from '../ui/FermentationWorkshop';
 import { YeastRecipeWorkbench, YeastRecipeContext, YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { NoloPanel } from '../ui/NoloPanel';
+import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 import { noloScience } from '../domain/nolo';
 import { StorageService } from '../services/storage';
@@ -563,8 +564,19 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     [fermentables, volumeL, efficiency]
   );
   const ogPredicted = useMemo(
-    () => (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.nolo.secondRunnings?.sg??null:BrewingMath.calculateOg(fermentables, volumeL, efficiency),
-    [fermentables, volumeL, efficiency,details.nolo?.process,details.nolo?.secondRunnings?.sg]
+    () => {
+      if (!details.nolo?.enabled) return BrewingMath.calculateOg(fermentables, volumeL, efficiency);
+      if (details.nolo.process === 'secondRunnings') return details.nolo.secondRunnings?.sg ?? null;
+      if (details.nolo.process === 'coldExtraction') return null;
+      // Fruit and priming enter later and have their own NOLO operation.
+      const wort = fermentables.filter(f => f.use !== 'fermentation');
+      const usesGrain = wort.some(f => f.kind === 'grain' && f.weightKg > 0);
+      const declaredYield = details.efficiencyPct ?? brewhouse?.efficiencyPct;
+      if (usesGrain && !(declaredYield != null && declaredYield > 0 && declaredYield <= 100)) return null;
+      const extract = BrewingMath.extractPoints(wort, volumeL, usesGrain ? declaredYield! : 100, details.nolo.planning?.exactExtract ? 'full' : 'rounded');
+      return extract ? 1 + extract.total / 1000 : null;
+    },
+    [fermentables, volumeL, efficiency,details.efficiencyPct,brewhouse?.efficiencyPct,details.nolo?.enabled,details.nolo?.process,details.nolo?.secondRunnings?.sg,details.nolo?.planning?.exactExtract]
   );
   const og = ogPredicted ?? 0;
 
@@ -1146,7 +1158,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step) => {
     const current = build();
-    const preparationChanged = (['fermentables', 'hops', 'volumeL', 'boilMin', 'mash', 'waterPlan', 'carboTarget'] as const)
+    const preparationChanged = (['fermentables', 'hops', 'volumeL', 'boilMin', 'mash', 'waterPlan', 'carboTarget', 'efficiencyPct'] as const)
       .some(key => JSON.stringify(next[key]) !== JSON.stringify(current[key]));
     if (preparationChanged) {
       // Local proposals are already typed. Import normalization drops incomplete draft phases.
@@ -1380,15 +1392,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
             {matchingStyles.length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchingStyles.map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
             <BrewingStyleDetails recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}/>
-            <NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>{
-              setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide,hopPredictionIds:next.hopPredictionIds,hopMatrixId:next.hopMatrixId,hopTrialId:next.hopTrialId}));
-              setYeast(next.yeast);setFerment(next.fermentation??[]);
-            }}/>
-            <div className="border-t border-cave-800 pt-3 space-y-2">
+            <div className="border-t border-cave-800 pt-2 space-y-1">
+              <div className="flex flex-wrap items-center justify-between gap-2">
               <InlineNum label="Volume en fermenteur" name="Volume en fermenteur" value={volumeL} onValue={setVolumeL} min={1} unit="L" />
               <InlineNum label="Durée d’ébullition" name="Durée d’ébullition" value={boilMin} onValue={setBoilMin} min={0} integer unit="min" />
-              <p className="text-sm text-cave-400">{evaporationHint}</p>
+              </div>
+              <p className="text-xs text-cave-400">{evaporationHint}</p>
             </div>
+            <NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>applyFermentationRecipe(next)}/>
 
             {brewhouse?.equipment&&<div className="space-y-2">
               <p className="text-sm text-water">Fermenteur {brewhouse.equipment.fermenterCapacityL} L · cible utile {fermenterLimit(brewhouse.equipment)} L, mousse réservée.</p>
@@ -1497,7 +1508,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 ? totalGrist > 0
                                   ? `${((f.weightKg / totalGrist) * 100).toFixed(0)} % du grain`
                                   : ''
-                                : `${f.fermentabilityPct ?? 100} % ferm.`}
+                                : details.nolo?.enabled && f.use === 'fermentation' ? 'Sucres : bilan NOLO' : `${f.fermentabilityPct ?? 100} % ferm.`}
                             </span>
                           </span>
                         </div>
@@ -2189,7 +2200,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           la fiche est complète.
         */}
 
-        {details.nolo?.enabled&&<RecipeDisclosure title="Objectif NOLO" summary="Projection, traitement et analyses"><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></RecipeDisclosure>}
+        {details.nolo?.enabled&&<>
+          <section className="panel p-2"><NoloRecipeOverview recipe={build()} saved={knowledge}/></section>
+          <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures"><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></RecipeDisclosure>
+        </>}
         <BrewSheet
           onLearnIngredient={onLearnIngredient}
           yeastSummary={!details.nolo?.enabled ? <YeastRecipeHeading recipe={build()} /> : undefined}
@@ -2239,7 +2253,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             setVolumesEdited(true);
             setWater((w) => ({ ...w, spargeWaterL: v }));
           }}
-          water={waterRecap}
+          water={details.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(details.nolo.process) ? undefined : waterRecap}
           onEditWater={() => setStep('eau')}
           notes={notes}
           onNotes={setNotes}

@@ -3,6 +3,11 @@ import { recipeWaterExport } from './recipeWaterExport';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { assertNoloConfig } from '../../functions/src/noloSchema';
 import { readYeastRecipeDesign } from './yeastRecipeDesign';
+import { sameField } from '../../functions/src/brewerFields';
+import { noloInputBasis, type NoloInput } from '../../functions/src/noloCore';
+import { noloScenarioBasis } from '../../functions/src/noloScenario';
+import { noloInput } from './nolo';
+import { noloToolContext } from './noloToolContext';
 
 /** A readable, versioned text format. Labels, units and validation share one schema.
  * Only this small indentation format is parsed here; arbitrary recipes go through
@@ -255,9 +260,62 @@ export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
  * Strict mode rejects damaged exports instead of silently dropping their fields. */
 export function readRecipeFields(value: unknown, strict = false): Partial<RecipeContent> {
   const { estimates: _, ...recipe } = (readField(root, value, strict, 'Recette') ?? {}) as Record<string, unknown>;
+  rebindNoloCopy(value, recipe);
   return recipe as Partial<RecipeContent>;
 }
+
+/** The readable format reorders object keys and omits database identities.
+ * Rebind only references that matched the source copy, after proving that the
+ * brewing inputs still mean the same thing. Old/incompatible assays stay old. */
+function rebindNoloCopy(source: any, copy: any): void {
+  if (!source?.nolo || !copy?.nolo || !source.yeast || !copy.yeast ||
+    !Array.isArray(source.fermentables) || !Array.isArray(copy.fermentables) ||
+    !Array.isArray(source.hops) || !Array.isArray(copy.hops)) return;
+  const updateLink = (operation: any) => {
+    if (operation.kind !== 'sugar' || !operation.recipeAddition) return operation;
+    const link = operation.recipeAddition;
+    const original = source.fermentables[link.index], next = copy.fermentables[link.index];
+    return original && next && link.basis === JSON.stringify(original) && sameField(original, next)
+      ? { ...operation, recipeAddition: { ...link, basis: JSON.stringify(next) } } : operation;
+  };
+  copy.nolo.operations = copy.nolo.operations.map(updateLink);
+  if (copy.nolo.inactiveOperations) copy.nolo.inactiveOperations = copy.nolo.inactiveOperations
+    .map((parked: any) => ({ ...parked, operation: updateLink(parked.operation) }));
+  const before = noloInput(source), after = noloInput(copy);
+  const parseBasis = (basis: string) => { try { return JSON.parse(basis); } catch { return basis; } };
+  const comparable = (input: NoloInput) => {
+    const { measurements: _measurements, brewTools: _tools, ...config } = input.config;
+    return { ...input,
+      fermentableBasis: parseBasis(input.fermentableBasis!), config: { ...config,
+        operations: config.operations.map(operation => operation.kind === 'sugar' && operation.recipeAddition
+          ? { ...operation, recipeAddition: { ...operation.recipeAddition, basis: parseBasis(operation.recipeAddition.basis) } } : operation),
+        inactiveOperations: undefined } };
+  };
+  if (!sameField(comparable(before), comparable(after))) return;
+  copy.nolo.measurements = copy.nolo.measurements.map((measurement: any) => {
+    if (measurement.basis === noloScenarioBasis(before, measurement.afterOperationId))
+      return { ...measurement, basis: noloScenarioBasis(after, measurement.afterOperationId) };
+    if (measurement.basis === noloInputBasis(before, measurement.afterOperationId))
+      return { ...measurement, basis: noloInputBasis(after, measurement.afterOperationId) };
+    return measurement;
+  });
+  // Bench hypotheses also depend on hops, yeast details and extraction yield.
+  // Dropping a nonportable detail must not silently renew their old context.
+  if (!copy.nolo.brewTools || !sameField(source.hops, copy.hops) ||
+    !sameField(source.yeast, copy.yeast) ||
+    !sameField(source.mash, copy.mash) ||
+    source.efficiencyPct !== copy.efficiencyPct ||
+    source.brewhouse?.efficiencyPct !== copy.brewhouse?.efficiencyPct) return;
+  const oldContext = noloToolContext(source), nextContext = noloToolContext(copy);
+  for (const key of ['baseBasis', 'ibuBasis'])
+    if (source.nolo.brewTools?.[key] === oldContext) copy.nolo.brewTools[key] = nextContext;
+}
 function readField(field: Field, value: unknown, strict: boolean, path: string): unknown {
+  // An invalid NOLO payload must never quietly become an ordinary beer recipe.
+  if (field.type === 'nolo' && value !== undefined) {
+    try { assertNoloConfig(value); return structuredClone(value); }
+    catch { throw new Error(`Configuration NOLO invalide : ${path}.`); }
+  }
   if(value===null&&field.nullable)return null;
   if (value == null && !strict) return undefined;
   const fail = () => {
@@ -288,7 +346,7 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
       : fail();
   if (field.type === 'boolean') return typeof value === 'boolean' ? value : fail();
   if (field.type === 'fermentationFacts') return readIngredientFermentationFacts(value) ?? fail();
-  if (field.type === 'nolo') { try { assertNoloConfig(value); return structuredClone(value); } catch { return fail(); } }
+  if (field.type === 'nolo') return fail();
   if (field.type === 'yeastDesign') {
     const snapshot = readYeastRecipeDesign({ yeastDesign: value } as Recipe);
     if (!snapshot) return fail();
@@ -308,6 +366,7 @@ export function writeRecipeText(
   const clean = readField(root, {
     ...recipe, estimates: { ...calculated, ...recipeWaterExport(recipe) }
   }, false, 'Recette');
+  rebindNoloCopy(recipe, clean);
   const lines = [RECIPE_TEXT_HEADER, ''];
   function emit(field: Field, value: unknown, indent: number, label: string) {
     if (value === undefined) return;

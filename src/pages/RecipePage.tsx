@@ -41,6 +41,9 @@ import { YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { NoloPanel } from '../ui/NoloPanel';
+import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
+import { noloScenarioInput } from '../domain/nolo';
+import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
 
@@ -102,6 +105,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onOpenBatch
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const knowledge = useStorageValue(StorageService.getHopKnowledge);
+  const noloWort = useMemo(() => {
+    if (!recipe.nolo?.enabled) return undefined;
+    try { return noloScenarioInput(recipe, knowledge).og; } catch { return undefined; }
+  }, [recipe, knowledge]);
   const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
   const waterReadings = useMemo(() => describeSavedRecipeWater(recipe), [recipe]);
 
@@ -110,6 +118,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const hops = useMemo(() => (recipe.hops ?? []).map(normalizeHop), [recipe.hops]);
   const grouped = useMemo(() => groupByStage(hops), [hops]);
+  const measuredExtraction = !!recipe.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(recipe.nolo.process);
 
   const fermentables = recipe.fermentables ?? [];
   /** La facture de GRAIN : le sucre n'y entre pas, ni pour la masse ni pour les %. */
@@ -119,8 +128,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   // La couleur ne vient que du grain — un sucre clair n'en apporte pas.
   const color = useMemo(
-    () => computeBeerColor(grains, recipe.volumeL),
-    [grains, recipe.volumeL]
+    () => measuredExtraction ? null : computeBeerColor(grains, recipe.volumeL),
+    [grains, recipe.volumeL, measuredExtraction]
   );
   const colorMissing = useMemo(() => missingColorData(grains), [grains]);
 
@@ -134,7 +143,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct]
   );
 
-  const og = recipe.ogTarget || ogPredicted || 0;
+  const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : recipe.ogTarget || ogPredicted || 0;
 
   const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, og || null, recipe.boilMin ?? 60), [hops, recipe.volumeL, og, recipe.boilMin]);
   const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, og || null, recipe.boilMin ?? 60).additions[0].ibu;
@@ -210,11 +219,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       <BrewBudgetButton recipe={recipe} />
       {/* --- Les cinq mesures ------------------------------------------- */}
       <section className="panel p-4">
+        {recipe.nolo?.enabled && <div className="mb-2 border-b border-cave-800 pb-2"><NoloRecipeOverview recipe={recipe} saved={knowledge}/></div>}
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
           <Metric
-            label="OG"
-            value={og > 1 ? og.toFixed(3) : null}
-            hint="renseigne le potentiel des malts"
+            label={recipe.nolo?.enabled ? og > 1 ? noloWort?.origin === 'measurement' ? 'OG mesurée' : 'OG calculée' : 'OG à mesurer' : 'OG'}
+            value={og > 1 ? recipe.nolo?.enabled ? og.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3}) : og.toFixed(3) : null}
+            hint={recipe.nolo?.enabled ? 'moût à caractériser' : 'renseigne le potentiel des malts'}
             tone="text-ebc-straw"
           />
           {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint="renseigne l’atténuation" />}
@@ -240,7 +250,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <Metric
             label="EBC"
             value={color ? String(color.ebc) : null}
-            hint="renseigne la couleur des malts"
+            hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'}
             swatch={color?.swatch}
           />
           {!recipe.nolo?.enabled&&<Metric
@@ -281,11 +291,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </section>
 
-      {recipe.waterPlan&&<RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={(recipe.waterPlan.mashWaterL*recipe.waterPlan.diRatioPct+recipe.waterPlan.spargeWaterL*(recipe.waterPlan.spargeDiRatioPct??recipe.waterPlan.diRatioPct))/100}/>}
+      {recipe.waterPlan&&!measuredExtraction&&<RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={(recipe.waterPlan.mashWaterL*recipe.waterPlan.diRatioPct+recipe.waterPlan.spargeWaterL*(recipe.waterPlan.spargeDiRatioPct??recipe.waterPlan.diRatioPct))/100}/>}
       {/* --- Facture de grain -------------------------------------------- */}
       <Section
-        title="Grain"
-        hint={`${Units.format(totalGrist, 'kg')} au total · ${
+        title={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Drêches d’origine' : 'Grain'}
+        hint={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Malt du brassin d’origine · aucun nouveau débit' : measuredExtraction ? `${Units.format(totalGrist, 'kg')} à extraire · rendement à mesurer` : `${Units.format(totalGrist, 'kg')} au total · ${
           (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${recipe.efficiencyPct ?? brewhouse?.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
         }`}
       >
@@ -426,7 +436,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       </Section>
 
       {/* --- Levure ------------------------------------------------------ */}
-      {recipe.nolo?.enabled&&<Section title="Objectif NOLO" hint="Projection, traitement et analyses"><NoloPanel recipe={recipe}/></Section>}
+      {recipe.nolo?.enabled&&<Section title="Suivi NOLO" hint="Simuler, analyses et conservation"><NoloPanel recipe={recipe} showOverview={false}/></Section>}
       <Section title="Levure" summary={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}>
         {!recipe.nolo?.enabled && readYeastRecipeDesign(recipe) ? <FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /> : !recipe.yeast?.name ? (
           <p className="text-sm text-cave-400">Aucune levure renseignée.</p>
@@ -488,7 +498,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {/* --- Eau : le plan complet, empâtage et rinçage séparés ----------- */}
       {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && recipe.waterPlan && (
         <Section
-          title="Eau et sels"
+          title={measuredExtraction ? 'Eau de référence' : 'Eau et sels'}
           /*
            * ⚠️ `targetProfileId` porte un CODE BJCP (« 21C »), et il était
            * cherché dans `TARGET_PROFILES`, dont les identifiants sont des noms
@@ -503,7 +513,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           }`}
         >
           <div className="space-y-3">
-            {waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
+            {measuredExtraction && <p className="text-sm text-cave-200">Plan d’empâtage chaud conservé comme référence. Les volumes, acides et paliers d’extraction à froid restent à établir et à mesurer.</p>}
+            {!measuredExtraction&&waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
             {recipe.waterPlan.sourceSnapshot?.note&&<p className="text-xs text-cave-400">{recipe.waterPlan.sourceSnapshot.note}</p>}
             <details><summary className="min-h-touch cursor-pointer text-sm text-cave-200">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -623,7 +634,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             <details><summary className="min-h-touch cursor-pointer text-sm text-water">pH et chimie détaillée</summary>
-            {waterReadings && (
+            {!measuredExtraction && waterReadings && (
               <WaterTargetStatus
                 {...waterReadings}
                 customTarget={!!recipe.waterPlan.targetIons}
@@ -689,7 +700,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {(recipe.mash?.steps?.length || recipe.fermentation?.length) && (
         <>
             {recipe.mash?.steps?.length > 0 && (
-              <Section title="Empâtage" hint={`${recipe.mash.steps.length} paliers`}>
+              <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={`${recipe.mash.steps.length} paliers`}>
+                {measuredExtraction && <p className="text-xs text-cave-200">Ce programme enregistré ne définit pas le protocole de {recipe.nolo?.process === 'coldExtraction' ? 'l’extraction à froid' : 'la seconde extraction'}.</p>}
                 <h3 className="text-sm text-cave-400 mb-1.5">
                   Empâtage
                   {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}

@@ -1,0 +1,3968 @@
+{
+  "version": 1,
+  "collectedAt": "2026-09-12T12:22:02.772Z",
+  "items": [
+    {
+      "id": "yeast-mangrove-jacks-132005657",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 10 (page PDF 11) — fiche M41 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae var. diastaticus",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 10 (page PDF 11) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 10 (page PDF 11) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "12 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 10 (page PDF 11) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M41 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M41 Belgian Ale Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/belgian-ale-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 10. La classification var. diastaticus est explicite ; aucun résultat STA1 ou statut POF n’est inféré. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-132010761",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 16 (page PDF 17) — fiche M29 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae var. diastaticus",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 16 (page PDF 17) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "26–32 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 16 (page PDF 17) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 26,
+            "max": 32
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "14 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 16 (page PDF 17) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 14,
+            "max": 14
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M29 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M29 French Saison Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m29-french-sasion-yeast-10-g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 16. La classification var. diastaticus est explicite ; aucun résultat STA1 ou statut POF n’est inféré. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-132014919",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 15 (page PDF 16) — fiche M15 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 15 (page PDF 16) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–22 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 15 (page PDF 16) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 15 (page PDF 16) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 8,
+            "max": 8
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M15 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M15 Empire Ale Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m15-empire-ale-yeast-10-g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 15. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-132015569",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 21 (page PDF 22) — fiche M44 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 21 (page PDF 22) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–23 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 21 (page PDF 22) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 23
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "11 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 21 (page PDF 22) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 11,
+            "max": 11
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M44 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M44 US West Coast Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m44-us-west-coast-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 21. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-132017425",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 13 (page PDF 14) — fiche M84 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 13 (page PDF 14) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "10–15 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 13 (page PDF 14) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 10,
+            "max": 15
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 13 (page PDF 14) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 8,
+            "max": 8
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. À 14 °C ou moins : 2 sachets de 10 g/23 L. Si DI > 1,050 : au moins 4 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 20–25 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M84 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Garde lager",
+          "reported": "Le guide indique une garde possible de 4 semaines, avec un résultat plus affiné après 6–8 semaines.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 13 (page PDF 14) — Flavour / mouthfeel characteristics"
+          },
+          "context": "Maturation sensorielle indicative, pas durée de fermentation ni preuve de stabilité."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M84 Bohemian Lager Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m84-bohemian-lager-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 13. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-132040951",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 8 (page PDF 9) — fiche M20 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 8 (page PDF 9) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–30 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 8 (page PDF 9) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 30
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "7.5 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 8 (page PDF 9) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 7.5,
+            "max": 7.5
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M20 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M20 Bavarian Wheat Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m20-bavarian-wheat-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 8. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-132048879",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — fiche M02 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces bayanus",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "12–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — Recommended temperature range"
+          },
+          "context": "Cidre",
+          "range": {
+            "min": 12,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "17.5 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — Alcohol tolerance"
+          },
+          "context": "Cidre — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 17.5,
+            "max": 17.5
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation",
+          "reported": "95–100 %",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — Attenuation"
+          },
+          "context": "Cidre",
+          "range": {
+            "min": 95,
+            "max": 100
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — Nitrogen requirement"
+          },
+          "context": "Cidre — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "2.9–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 22 (page PDF 23) — Optimum pH range"
+          },
+          "context": "Cidre — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage pour le cidre",
+          "reported": "Sachet de 9 g pour au plus 23 L de jus ; saupoudrer directement.",
+          "source": {
+            "title": "M02 Cider Yeast 9g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/craft-series-cider-yeast",
+            "locator": "Usage Directions"
+          },
+          "context": "Cidre — instruction du produit de 9 g, sans conversion en dose de bière."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M02 Cider Yeast 9g",
+          "url": "https://mangrovejacks.com/products/craft-series-cider-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        },
+        {
+          "url": "https://mangrovejacks.com/products/craft-series-cider-yeast",
+          "retrievedAt": "2026-09-12T12:21:43.313Z",
+          "sha256": "818445ecb5433683ed8e8ef25a9fc6269ea8f9399231573d1f0bd8f5b5010b78",
+          "etag": "\"page_cache:1958620:ProductDetailsController:8f09ae67b55d4e86acbe1a1b50307c11:b44a6c5491733fbe81be1a700ace7e1a\"",
+          "lastModified": null
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 22. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513095621",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 20 (page PDF 21) — fiche M42 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 20 (page PDF 21) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "16–22 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 20 (page PDF 21) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 16,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "12 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 20 (page PDF 21) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M42 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Conditionnement",
+          "reported": "Le guide cite cette souche pour le conditionnement en cask ou en bouteille.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 20 (page PDF 21) — Flavour / mouthfeel characteristics"
+          },
+          "context": "Usage qualitatif ; la dose de refermentation et la stabilité du lot ne sont pas déterminées par cette indication."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M42 New World Strong Ale Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/new-world-strong-ale-m42-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 20. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513116869",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 19 (page PDF 20) — fiche M36 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 19 (page PDF 20) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–23 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 19 (page PDF 20) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 23
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 19 (page PDF 20) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 9,
+            "max": 9
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M36 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M36 Liberty Bell Ale Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/liberty-bell-ale-m36-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 19. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513126213",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 11 (page PDF 12) — fiche M31 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae var. diastaticus",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 11 (page PDF 12) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 11 (page PDF 12) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "10 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 11 (page PDF 12) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 10,
+            "max": 10
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M31 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M31 Belgian Tripel Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/belgian-tripel-m31-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 11. La classification var. diastaticus est explicite ; aucun résultat STA1 ou statut POF n’est inféré. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513133893",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 9 (page PDF 10) — fiche M47 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 9 (page PDF 10) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–25 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 9 (page PDF 10) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 9 (page PDF 10) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 8,
+            "max": 8
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M47 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M47 Belgian Abbey Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/belgian-abbey-m47-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 9. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513142277",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 12 (page PDF 13) — fiche M21 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 12 (page PDF 13) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–25 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 12 (page PDF 13) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 12 (page PDF 13) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 8,
+            "max": 8
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M21 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M21 Belgian Wit Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/belgian-wit-m21-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 12. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513148485",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 14 (page PDF 15) — fiche M54 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 14 (page PDF 15) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–20 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 14 (page PDF 15) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 20
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 14 (page PDF 15) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 9,
+            "max": 9
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. À 14 °C ou moins : 2 sachets de 10 g/23 L. Si DI > 1,050 : au moins 4 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 20–25 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M54 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Fermentation à température d’ale",
+          "reported": "Le fabricant destine cette lager aux températures d’ale et indique qu’une garde lager prolongée n’est pas requise.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 14 (page PDF 15) — Yeast strain description"
+          },
+          "context": "Conseil de procédé qualitatif ; le temps nécessaire au lot reste à vérifier."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M54 Californian Lager Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/californian-lager-m54-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 14. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513155397",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 7 (page PDF 8) — fiche M76 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces pastorianus and Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 7 (page PDF 8) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "8–14 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 7 (page PDF 8) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 8,
+            "max": 14
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 7 (page PDF 8) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 8,
+            "max": 8
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation",
+          "reported": "75–80 %",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 7 (page PDF 8) — Attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 75,
+            "max": 80
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. À 14 °C ou moins : 2 sachets de 10 g/23 L. Si DI > 1,050 : au moins 4 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 20–25 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M76 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M76 Bavarian Lager Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/bavarian-lager-m76-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 7. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-3513162309",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — fiche M05 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "15–30 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Recommended temperature range"
+          },
+          "context": "Hydromel",
+          "range": {
+            "min": 15,
+            "max": 30
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "18 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Alcohol tolerance"
+          },
+          "context": "Hydromel — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 18,
+            "max": 18
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Moyen",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Nitrogen requirement"
+          },
+          "context": "Hydromel — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Optimum pH range"
+          },
+          "context": "Hydromel — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage pour l’hydromel",
+          "reported": "Sachet de 10 g pour au plus 17 L de moût ; saupoudrer directement.",
+          "source": {
+            "title": "M05 Mead Yeast - 10g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/mead-m05-yeast-10g",
+            "locator": "Usage Directions"
+          },
+          "context": "Hydromel — instruction du produit de 10 g, sans conversion en dose de bière."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Fermentation du miel",
+          "reported": "Un nutriment pour levure est nécessaire lorsque le substrat est du miel.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Note sous Yeast strain description"
+          },
+          "context": "Hydromel — recommandation fabricant, dose non publiée ici."
+        },
+        {
+          "key": "application",
+          "label": "Hydromel fortement alcoolisé",
+          "reported": "Pour les hydromels fortement alcoolisés, le guide recommande une fermentation sous 25 °C.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 23 (page PDF 24) — Higher alcohol beers — texte concernant les meads"
+          },
+          "context": "Hydromel — recommandation conditionnelle, pas remplacement de la plage générale 15–30 °C."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M05 Mead Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/mead-m05-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        },
+        {
+          "url": "https://mangrovejacks.com/products/mead-m05-yeast-10g",
+          "retrievedAt": "2026-09-12T12:21:45.733Z",
+          "sha256": "1e136095e2641e231e4026e61da61e8bce22c7ccf90cefdc7ca5bf918ab6bd5c",
+          "etag": "\"page_cache:1958620:ProductDetailsController:6d39d18491f1ffe9f99b17e47cf0ca93:38dcbe31a0ed791904d61d5138c444a7\"",
+          "lastModified": null
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 23. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-4483139076158",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 18 (page PDF 19) — fiche M12 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 18 (page PDF 19) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "20–40 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 18 (page PDF 19) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 20,
+            "max": 40
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "12 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 18 (page PDF 19) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M12 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Zone optimale annoncée",
+          "reported": "Plage utilisable 20–40 °C ; la fiche produit recommande 30–40 °C pour un résultat optimal.",
+          "source": {
+            "title": "M12 Kveik Yeast - 10g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/kveik-yeast-10g",
+            "locator": "Usage Directions"
+          },
+          "context": "L’optimum est une recommandation distincte ; la plage générale reste 20–40 °C."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M12 Kveik Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/kveik-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        },
+        {
+          "url": "https://mangrovejacks.com/products/kveik-yeast-10g",
+          "retrievedAt": "2026-09-12T12:13:32.976Z",
+          "sha256": "8ea1b271ed7bbbef0e71dcb099ff490fae80e10e09668f2b0ff7816005c4f6ec",
+          "etag": "\"page_cache:1958620:ProductDetailsController:42da4bac27f588d4b249b0deffd1aba5:fbe5a3822d8906c84fada4cd6741dc2d\"",
+          "lastModified": null
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 18. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504233656382",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 30 (page PDF 31) — fiche BV7 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 30 (page PDF 31) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "14–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 30 (page PDF 31) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 14,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 30 (page PDF 31) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 30 (page PDF 31) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 30 (page PDF 31) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "BV7 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/bv7-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 30. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504234016830",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 26 (page PDF 27) — fiche CL23 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces bayanus",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 26 (page PDF 27) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "14–32 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 26 (page PDF 27) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 14,
+            "max": 32
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 26 (page PDF 27) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "2.9–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 26 (page PDF 27) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 26 (page PDF 27) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "CL23 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/cl23-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 26. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504235786302",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 27 (page PDF 28) — fiche AW4 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 27 (page PDF 28) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "16–24 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 27 (page PDF 28) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 16,
+            "max": 24
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 27 (page PDF 28) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 27 (page PDF 28) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 27 (page PDF 28) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "AW4 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/aw4-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 27. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504236310590",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 28 (page PDF 29) — fiche CY17 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 28 (page PDF 29) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "16–24 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 28 (page PDF 29) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 16,
+            "max": 24
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 28 (page PDF 29) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 28 (page PDF 29) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 28 (page PDF 29) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "CY17 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/cy17-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 28. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504237031486",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 29 (page PDF 30) — fiche MA33 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 29 (page PDF 30) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 29 (page PDF 30) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 18,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 29 (page PDF 30) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 29 (page PDF 30) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 29 (page PDF 30) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "MA33 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/ma33-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 29. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504250236990",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 31 (page PDF 32) — fiche CR51 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 31 (page PDF 32) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "16–24 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 31 (page PDF 32) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 16,
+            "max": 24
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Élevé",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 31 (page PDF 32) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 31 (page PDF 32) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 31 (page PDF 32) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "CR51 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/cr51-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 31. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504251711550",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 32 (page PDF 33) — fiche VR21 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 32 (page PDF 33) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 32 (page PDF 33) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 18,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Élevé",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 32 (page PDF 33) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 32 (page PDF 33) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 32 (page PDF 33) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "VR21 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/vr21-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 32. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504256692286",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 33 (page PDF 34) — fiche R56 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 33 (page PDF 34) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 33 (page PDF 34) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 18,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 33 (page PDF 34) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "3.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 33 (page PDF 34) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 33 (page PDF 34) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "R56 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/r56-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 33. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-504256888894",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 34 (page PDF 35) — fiche SN9 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces bayanus",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 34 (page PDF 35) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "14–28 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 34 (page PDF 35) — Recommended temperature range"
+          },
+          "context": "Vin",
+          "range": {
+            "min": 14,
+            "max": 28
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin azoté",
+          "reported": "Faible",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 34 (page PDF 35) — Nitrogen requirement"
+          },
+          "context": "Vin — indication qualitative ; dose à déterminer selon la composition du moût."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "2.9–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 34 (page PDF 35) — Optimum pH range"
+          },
+          "context": "Vin — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "application",
+          "label": "Démarrage du moût de raisin ou jus",
+          "reported": "Ajouter directement sans réhydratation et mélanger. Le guide demande plus de 20 °C au départ et pendant au moins les premières 24 h, puis de respecter la plage de la souche.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 25 (page PDF 26) — Wine yeasts — instructions for use"
+          },
+          "context": "Vin — consigne de démarrage distincte de la fenêtre de fermentation."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Complément nutritif",
+          "reported": "Vitamines et minéraux déjà associés à la levure ; le fabricant demande un apport azoté adapté en complément.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 34 (page PDF 35) — Note avant Technical characteristics"
+          },
+          "context": "Vin — le besoin dépend du moût ; aucune dose universelle ajoutée."
+        }
+      ],
+      "documents": [
+        {
+          "title": "SN9 Wine Yeast",
+          "url": "https://mangrovejacks.com/products/sn9-wine-yeast"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 34. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-6111080480956",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 17 (page PDF 18) — fiche M66 dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 17 (page PDF 18) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–22 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 17 (page PDF 18) — Recommended temperature range"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "10 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 17 (page PDF 18) — Alcohol tolerance"
+          },
+          "context": "Beer — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 10,
+            "max": 10
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage selon densité et température",
+          "reported": "Sachet de 10 g pour au plus 23 L. Si DI > 1,050 : au moins 2 sachets de 10 g/23 L ; augmenter encore pour les très fortes densités.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — exceptions et note de bas de page"
+          },
+          "context": "Gamme en sachets de 8–10 g ; les poches de 250 g ont leurs propres consignes. Pas de conversion en dose universelle par hectolitre."
+        },
+        {
+          "key": "application",
+          "label": "Préparation avant ensemencement",
+          "reported": "Ensemencement direct possible. Réhydratation facultative : contenu du sachet dans 100 mL d’eau à 30–35 °C, mélanger doucement 8–12 min puis ajouter au moût.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Rehydration instructions"
+          },
+          "context": "Préparation du sachet M66 ; ces températures concernent l’eau de réhydratation, pas la fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Composition du produit",
+          "reported": "Mélange de levure et d’enzymes destiné aux bières houblonnées et fruitées.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 17 (page PDF 18) — Yeast strain description"
+          },
+          "context": "Aucun rendement de libération des thiols ni coefficient aromatique n’est déduit."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M66 Hophead Ale Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m66-hophead-ale-yeast-10g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 17. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-6620370567356",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — fiche MHS dans la gamme de levures sèches"
+          }
+        },
+        {
+          "key": "species",
+          "label": "Classification du fabricant",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — Yeast classification"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "20–25 °C",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — Recommended temperature range"
+          },
+          "context": "Hard seltzer",
+          "range": {
+            "min": 20,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "5 % vol.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — Alcohol tolerance"
+          },
+          "context": "Mélange Hard Seltzer : sachet de 25 g pour au plus 20 L ; limite liée au produit et à sa nutrition, pas tolérance intrinsèque isolée de la souche.",
+          "range": {
+            "min": 5,
+            "max": 5
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "flocculation",
+          "label": "Floculation",
+          "reported": "5/5",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — Performance characteristics — flocculation rate"
+          },
+          "context": "Échelle ordinale du fabricant : 1 faible, 5 élevée ; ce n’est pas une mesure en pourcentage."
+        },
+        {
+          "key": "ph",
+          "label": "Plage de pH optimale",
+          "reported": "4.0–6.0",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — Optimum pH range"
+          },
+          "context": "Hard seltzer — plage du fabricant pour cette application, pas une consigne de pH de bière NOLO."
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage du mélange levure et nutriments",
+          "reported": "Un sachet de 25 g pour 19–20 L de hard seltzer.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 4 (page PDF 5) — Number of sachets to use — Hard Seltzer"
+          },
+          "context": "Hard seltzer — dosage du mélange complet, pas de la levure seule."
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Nutrition du mélange",
+          "reported": "Complexe à base de phosphate diammonique, vitamines B et oligoéléments.",
+          "source": {
+            "title": "Mangrove Jack’s — Yeast Range, version 10",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "locator": "p. 24 (page PDF 25) — Nutrient content"
+          },
+          "context": "Composition qualitative du mélange ; quantités et rendement non publiés."
+        },
+        {
+          "key": "application",
+          "label": "Préparation du hard seltzer",
+          "reported": "Ajouter directement au volume de fermentation et mélanger, sans étape de réhydratation décrite.",
+          "source": {
+            "title": "Hard Seltzer Yeast and Nutrient – 25g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/hard-seltzer-yeast-and-nutrient-25g",
+            "locator": "Usage Directions"
+          },
+          "context": "Hard seltzer — instruction de préparation du mélange complet."
+        }
+      ],
+      "documents": [
+        {
+          "title": "Hard Seltzer Yeast and Nutrient – 25g",
+          "url": "https://mangrovejacks.com/products/hard-seltzer-yeast-and-nutrient-25g"
+        },
+        {
+          "title": "Guide fabricant des levures, version 10",
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+          "retrievedAt": "2026-09-12T12:10:27.316Z",
+          "sha256": "a59a2a709675b552bd3a94eb46ca530fd8851bcc98b748d81ce5f21db33a1a4a",
+          "etag": "\"b1425de9f46d08be5e3944d90d85be51\"",
+          "lastModified": "Thu, 17 Aug 2023 13:52:23 GMT"
+        },
+        {
+          "url": "https://mangrovejacks.com/products/hard-seltzer-yeast-and-nutrient-25g",
+          "retrievedAt": "2026-09-12T12:21:48.152Z",
+          "sha256": "b51aa21960532064ab6358f58991c57c425fa06b996380c57731936d57c63b62",
+          "etag": "\"page_cache:1958620:ProductDetailsController:ecdd5952a7b0458a5883a4121665a29c:cd2e5999db573bcdb4c2ab2f10bf8a08\"",
+          "lastModified": null
+        }
+      ],
+      "notes": "Données techniques du guide version 10, p. 24. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-8467493945532",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — gamme Craft Series de levures sèches",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/collections/beer-yeasts",
+            "locator": "Présentation de la gamme sèche et liste contenant M24"
+          }
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "10–25 °C",
+          "source": {
+            "title": "M24 Versa Lager Yeast - 10g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m24-versa-lager-yeast-10g",
+            "locator": "Usage Directions — suitable to ferment"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 10,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "application",
+          "label": "Zone optimale annoncée",
+          "reported": "Plage utilisable 10–25 °C ; la fiche produit recommande 10–20 °C pour un résultat optimal.",
+          "source": {
+            "title": "M24 Versa Lager Yeast - 10g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m24-versa-lager-yeast-10g",
+            "locator": "Usage Directions"
+          },
+          "context": "L’optimum est une recommandation distincte ; la plage générale reste 10–25 °C."
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage du sachet",
+          "reported": "Saupoudrer le sachet de 10 g sur au plus 23 L de moût.",
+          "source": {
+            "title": "M24 Versa Lager Yeast - 10g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m24-versa-lager-yeast-10g",
+            "locator": "Usage Directions"
+          },
+          "context": "Instruction du produit ; la fiche ne précise pas ici la densité initiale ni une correction de dosage au froid."
+        },
+        {
+          "key": "application",
+          "label": "Identité commerciale documentée",
+          "reported": "La fiche fabricant identifie LalBrew NovaLager comme levure utilisée pour ce produit.",
+          "source": {
+            "title": "M24 Versa Lager Yeast - 10g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m24-versa-lager-yeast-10g",
+            "locator": "This product is powered by Lallemand Brewing yeast — LalBrew NovaLager"
+          },
+          "context": "Aucune autre valeur de NovaLager n’est transposée automatiquement au produit M24."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M24 Versa Lager Yeast - 10g",
+          "url": "https://mangrovejacks.com/products/m24-versa-lager-yeast-10g"
+        },
+        {
+          "title": "Gamme fabricant de levures de bière sèches",
+          "url": "https://mangrovejacks.com/collections/beer-yeasts"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://mangrovejacks.com/products/m24-versa-lager-yeast-10g",
+          "retrievedAt": "2026-09-12T12:10:32.557Z",
+          "sha256": "c76db9ab6c35322a4e818b1c89481a2b3273cbc3bc816aea3e33f836c75fcbae",
+          "etag": "\"page_cache:1958620:ProductDetailsController:467e72983121ed11b855944e61ff39f0:e5d857305d3671abc612c1481092d494\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://mangrovejacks.com/collections/beer-yeasts",
+          "retrievedAt": "2026-09-12T12:18:02.327Z",
+          "sha256": "2961f6163c195e30d9e60f577a6dec183c2ba9b0b8914e751ebe6b764cdf2096",
+          "etag": "\"page_cache:1958620:CollectionDetailsController:5b932f0109f0820ebc08fc69ea22caa2:88d662b21acca540fcffaad2200755f2\"",
+          "lastModified": null
+        }
+      ],
+      "notes": "Aucune tolérance alcool ni espèce n’est transposée depuis NovaLager. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-mangrove-jacks-9314046279868",
+      "facts": [
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Sèche",
+          "source": {
+            "title": "Mangrove Jack’s — gamme Craft Series de levures sèches",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/collections/yeasts?page=2",
+            "locator": "Présentation de la gamme et liste des levures"
+          }
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "15 % vol.",
+          "source": {
+            "title": "M08 Craft Series Premium Cider Yeast 9g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m08-premium-cider-yeast-9g",
+            "locator": "Technical specifications"
+          },
+          "context": "Cidre — tolérance déclarée, sans garantie du titre alcoométrique obtenu.",
+          "range": {
+            "min": 15,
+            "max": 15
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "flocculation",
+          "label": "Floculation",
+          "reported": "Très élevée (5/5)",
+          "source": {
+            "title": "M08 Craft Series Premium Cider Yeast 9g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m08-premium-cider-yeast-9g",
+            "locator": "Technical specifications"
+          },
+          "context": "Échelle ordinale du fabricant, pas un pourcentage."
+        },
+        {
+          "key": "h2s",
+          "label": "Production de H₂S",
+          "reported": "Non détectable selon le fabricant.",
+          "source": {
+            "title": "M08 Craft Series Premium Cider Yeast 9g",
+            "author": "Mangrove Jack’s",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://mangrovejacks.com/products/m08-premium-cider-yeast-9g",
+            "locator": "Description du produit"
+          },
+          "context": "Méthode, limite de détection et conditions de mesure non publiées ; ne signifie pas une concentration nulle."
+        }
+      ],
+      "documents": [
+        {
+          "title": "M08 Craft Series Premium Cider Yeast 9g",
+          "url": "https://mangrovejacks.com/products/m08-premium-cider-yeast-9g"
+        },
+        {
+          "title": "Gamme fabricant de levures sèches",
+          "url": "https://mangrovejacks.com/collections/yeasts?page=2"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-12T12:10:30.153Z",
+          "sha256": "8140b0cd3a207f1243c233891ad279ff21583221798e2b7c702e58c039f73920",
+          "etag": "\"page_cache:1958620:ProductListController:a54f13b6207f5cee9ceb260f10e9cbfc\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://mangrovejacks.com/products/m08-premium-cider-yeast-9g",
+          "retrievedAt": "2026-09-12T12:10:34.933Z",
+          "sha256": "7c22e398edaccf229c86a5db87aeda0ee77680a2f65e67bdaf981039d1357543",
+          "etag": "\"page_cache:1958620:ProductDetailsController:05838332ad7f390bb90dfe77a75ff58a:b7255ccec2ff09f78450bf47d07992a5\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://mangrovejacks.com/collections/yeasts?page=2",
+          "retrievedAt": "2026-09-12T12:13:30.583Z",
+          "sha256": "4af12ec7bece5ee5ca213fd198922dce0a4fadf4ac32ad6e25dc391a36ec0834",
+          "etag": "\"page_cache:1958620:CollectionDetailsController:151efbad629816060c38aed247865b3f:64ef803c547d87a44bf45039fbfd17b0\"",
+          "lastModified": null
+        }
+      ],
+      "notes": "Température générale et dosage non publiés dans la fiche consultée ; les consignes de kits cidre ne sont pas généralisées. Ajouts documentaires, sans remplacement des observations antérieures. Date de publication inconnue ; dates de collecte distinctes.",
+      "form": "sèche"
+    }
+  ],
+  "gaps": [
+    "M08 : pas de fenêtre thermique générale ni de dose dans la fiche technique consultée ; ne pas transposer les 17–22 °C de recettes de kits à tout emploi de cette souche.",
+    "M24 : le guide version 10 ne contient pas ce produit. La plage 10–25 °C, l’optimum 10–20 °C et le sachet 10 g/23 L viennent de sa fiche actuelle ; autres propriétés de NovaLager non transférées.",
+    "Statuts POF, gène STA1, activité bêta-lyase et rendements aromatiques non ajoutés sans résultat explicite. La taxonomie var. diastaticus de M29, M31 et M41 est conservée comme classification fabricant.",
+    "Les consignes de dose des sachets de bière dépendent de la DI et du froid ; ce ne sont pas des plages g/hL universelles. La réhydratation n’est pas une température de fermentation.",
+    "Applications vin, cidre, hydromel et hard seltzer restent contextualisées. Le pH n’est pas converti en consigne de pH NOLO ; les recommandations de garde ne prouvent pas la stabilité du lot.",
+    "Le guide est la version 10 actuellement liée par la page d’aide fabricant ; date de publication inconnue. Le Last-Modified HTTP du PDF n’est pas une date de publication.",
+    "La page d’aide species a été lue via recherche web mais sa collecte HTTP a retourné 403 ; aucun fait ni reçu de cette page n’est importé. Le PDF primaire fournit les classifications conservées."
+  ]
+}

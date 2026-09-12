@@ -366,7 +366,7 @@ export function BrewIngredients({
       );
     if (area === 'mash')
       return (
-        (i.kind === 'grain' && /^mash/.test(stepId)) ||
+        (i.kind === 'grain' && (/^mash/.test(stepId) || stepId === 'nolo-extraction')) ||
         (i.side === 'sparge' && stepId === 'sparge') ||
         (i.area === 'mash' && (i.stepId === 'fwh' ? stepId === 'fwh' : /^mash/.test(stepId)))
       );
@@ -431,7 +431,7 @@ export function BrewIngredients({
         : i.kind === 'grain'
           ? {
               key: 'grain',
-              label: 'Grains à l’empâtage',
+              label: recipe.nolo?.process === 'coldExtraction' ? 'Grains à extraire' : 'Grains à l’empâtage',
               hint: 'Pesée et concassage',
               icon: Wheat
             }

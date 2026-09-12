@@ -3,6 +3,7 @@ import { SALTS, ACIDS } from '../domain/water';
 import { HOP_STAGE, groupByStage, describeMoment } from '../domain/hopStage';
 import { Units } from '../services/units';
 import { BREW_ALARM_VIBRATION, scheduleBrewAlarm } from './brewSound';
+import { noloExecutionRecipe } from '../domain/noloBrewDay';
 
 /**
  * Le déroulé minuté du jour de brassage.
@@ -35,8 +36,13 @@ import { BREW_ALARM_VIBRATION, scheduleBrewAlarm } from './brewSound';
  * cru n'apparaît PAS ici — il a lieu en fermenteur, plusieurs jours plus tard.
  */
 export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
+  recipe = noloExecutionRecipe(recipe);
   const steps: BrewDayStep[] = [];
-  const boilMin = Math.max(0, recipe.boilMin ?? 60);
+  const nolo = recipe.nolo?.enabled ? recipe.nolo : undefined;
+  const secondRunnings = nolo?.process === 'secondRunnings';
+  const coldExtraction = nolo?.process === 'coldExtraction';
+  const specialExtraction = secondRunnings || coldExtraction;
+  const boilMin = Math.max(0, recipe.boilMin ?? (nolo ? 0 : 60));
   const mash = recipe.mash;
 
   // Le concassage ne concerne que le GRAIN : le sucre et le lactose ne se
@@ -64,8 +70,14 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
 
   steps.push({
     id: 'eau',
-    label: 'Eau et sels',
-    detail: plan
+    label: secondRunnings ? 'Eau de seconde extraction' : coldExtraction ? 'Eau d’extraction à froid' : 'Eau et sels',
+    detail: secondRunnings
+      ? nolo.secondRunnings?.waterAddedL != null
+        ? `${Units.format(nolo.secondRunnings.waterAddedL, 'L')} d’eau prévue. Consigner l’eau réellement ajoutée et le brassin d’origine.`
+        : 'Volume d’eau à renseigner pour la seconde extraction. Consigner l’eau réellement ajoutée et le brassin d’origine.'
+      : coldExtraction
+      ? 'Préciser le protocole d’extraction et mesurer le volume d’eau ajouté. Le plan d’eau de l’empâtage chaud n’est pas repris.'
+      : plan
       ? (() => {
           const mashL = plan.mashWaterL ?? 0;
           const spargeL = plan.spargeWaterL ?? 0;
@@ -114,7 +126,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     durationMin: 0
   });
 
-  steps.push({
+  if (!secondRunnings) steps.push({
     id: 'concassage',
     label: 'Concassage',
     detail:
@@ -126,18 +138,29 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     durationMin: 0
   });
 
-  (mash?.steps ?? [{ name: 'Empâtage', tempC: 67, durationMin: 60 }]).forEach((s, i) => {
+  if (specialExtraction) {
+    const recovery = secondRunnings ? nolo.secondRunnings : undefined;
+    steps.push({
+      id: secondRunnings ? 'nolo-second-runnings' : 'nolo-extraction',
+      label: secondRunnings ? 'Seconde extraction des drêches' : 'Extraction à froid et filtration',
+      detail: secondRunnings
+        ? 'Identifier le brassin d’origine, puis relever volume, densité et pH du moût récupéré.'
+        : 'Consigner le temps et la température du protocole choisi. Mesurer le volume et la densité après filtration ; aucun palier à chaud repris automatiquement.',
+      durationMin: recovery?.minutes ?? 0,
+      ...(recovery?.temperatureC != null ? { tempC: recovery.temperatureC } : {})
+    });
+  } else (mash?.steps ?? (nolo ? [{ name: 'Empâtage à préciser', durationMin: 0 }] : [{ name: 'Empâtage', tempC: 67, durationMin: 60 }])).forEach((s, i) => {
     steps.push({
       id: `mash-${i}`,
       label: s.name,
       detail: mashWaterL ? `${mashWaterL} L d’eau d’empâtage` : undefined,
       durationMin: s.durationMin,
-      tempC: s.tempC
+      ...('tempC' in s ? { tempC: s.tempC } : {})
     });
   });
 
   if (
-    mash?.mashoutTempC &&
+    !specialExtraction && mash?.mashoutTempC &&
     !mash.steps?.some(
       (s) => Math.abs(s.tempC - mash.mashoutTempC!) < 0.5 && /mash.?out/i.test(s.name)
     )
@@ -146,14 +169,14 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       id: 'mashout',
       label: 'Mashout',
       detail: 'Monter en température pour arrêter l’activité enzymatique.',
-      durationMin: mash.mashoutDurationMin ?? 10,
+      durationMin: mash.mashoutDurationMin ?? (nolo ? 0 : 10),
       tempC: mash.mashoutTempC
     });
   }
 
   const byStage = groupByStage(recipe.hops ?? []);
   const firstWort = byStage.find((g) => g.stage === 'firstWort')?.hops ?? [];
-  const boilHops = byStage.find((g) => g.stage === 'boil')?.hops ?? [];
+  const boilHops = nolo && boilMin <= 0 ? [] : byStage.find((g) => g.stage === 'boil')?.hops ?? [];
   const whirlpool = byStage.find((g) => g.stage === 'whirlpool')?.hops ?? [];
   if (firstWort.length)
     steps.push({
@@ -164,13 +187,13 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       hopNames: firstWort.map((h) => h.name)
     });
 
-  if (mash?.spargeType && mash.spargeType !== 'none') {
+  if (!specialExtraction && mash?.spargeType && mash.spargeType !== 'none') {
     steps.push({
       id: 'sparge',
       label: mash.spargeType === 'fly' ? 'Rinçage continu' : 'Rinçage par bacs',
       detail: plan?.spargeWaterL ? `${plan.spargeWaterL} L d’eau de rinçage` : undefined,
       durationMin: 0,
-      tempC: mash.spargeTempC ?? 76
+      ...(mash.spargeTempC != null ? { tempC: mash.spargeTempC } : nolo ? {} : { tempC: 76 })
     });
   }
 
@@ -189,7 +212,12 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       ? Math.round((plan.mashWaterL - grist * 0.96 + (plan.spargeWaterL ?? 0)) * 10) / 10
       : null);
 
-  if (preBoilL && preBoilL > 0) {
+  if (specialExtraction && boilMin > 0) {
+    steps.push({
+      id: 'preboil', label: 'Contrôle du moût avant chauffe', durationMin: 0,
+      detail: 'Relever volume, densité et pH du moût recueilli. Le rendement d’un empâtage à chaud ne remplace pas ces mesures.'
+    });
+  } else if (!specialExtraction && preBoilL && preBoilL > 0 && (!nolo || boilMin > 0)) {
     steps.push({
       id: 'preboil',
       label: 'Contrôle avant ébullition',
@@ -216,7 +244,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   });
 
   const boilAdditions = (recipe.fermentables ?? []).filter(
-    (f) => f.use === 'ebullition' && f.weightKg > 0
+    (f) => f.use === 'ebullition' && f.weightKg > 0 && (!nolo || boilMin > 0)
   );
   const sugarMark = Math.max(0, boilMin - 10);
   const marks = [
@@ -268,7 +296,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   }
 
   if (whirlpool.length > 0) {
-    const contact = Math.max(...whirlpool.map((h) => h.timeMin ?? 20));
+    const contact = Math.max(...whirlpool.map((h) => h.timeMin ?? (nolo ? 0 : 20)));
     steps.push({
       id: 'whirlpool',
       label: HOP_STAGE.whirlpool.label,
