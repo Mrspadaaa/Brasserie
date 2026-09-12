@@ -1,6 +1,16 @@
 // Compiled only by scripts/check-hop-recipe-ui.mjs. Never imported from src/.
 import { BUSINESS_COLLECTIONS } from '../../../functions/src/dataSchema';
 export const ALL_COLLECTIONS = [...BUSINESS_COLLECTIONS];
+/** Same serialization boundary as the real repository; this adapter owns no network. */
+export function stripUndefined<T>(value: T): T {
+  if (value === null || value === undefined) return value;
+  if (Array.isArray(value)) return value.map(v => v === undefined ? null : stripUndefined(v)) as T;
+  if (typeof value === 'object' && Object.getPrototypeOf(value) === Object.prototype) {
+    return Object.fromEntries(Object.entries(value).filter(([key, v]) => v !== undefined && key !== '__docId')
+      .map(([key, v]) => [key, stripUndefined(v)])) as T;
+  }
+  return value;
+}
 // Compatibility with the installed finance screens in a combined release.
 export class DocumentWriteError extends Error {
   constructor(readonly status:'pending'|'rejected'|'conflict',readonly path:string,readonly operationId:string|undefined,message:string){super(message);this.name='DocumentWriteError';}
@@ -10,7 +20,10 @@ const key = '__HOP_RECIPE_QA_ONLY__';
 let rows: Record<string, Record<string, any>> = JSON.parse(localStorage.getItem(key) || '{}');
 let ready = false, failure: string | null = null;
 const listeners = new Set<() => void>();
-export const qaMetrics = { writes: 0, reads: 0, confirmations: 0, failNext: false };
+export const qaMetrics = { writes: 0, reads: 0, confirmations: 0, failNext: false, rejectNextRecipe: false, holdNextRecipe: false };
+let releaseRecipe: (() => void) | undefined;
+export const releaseQaRecipe = () => { releaseRecipe?.(); releaseRecipe = undefined; };
+const rejectedRecipes = new Map<string, string>();
 const notify = () => listeners.forEach(fn => fn());
 const persist = () => { localStorage.setItem(key, JSON.stringify(rows)); notify(); };
 export function seedQa(data: Record<string, any[]>) {
@@ -28,9 +41,28 @@ export const FirestoreRepo = {
   subscribe(cb: () => void) { listeners.add(cb); return () => { listeners.delete(cb); }; },
   consumeError() { const value = failure; failure = null; return value; },
   syncStatus: () => ({ pending: false, fromCache: false, refreshing: false, needsRefresh: false, error: failure }),
-  resumeSync() {}, refreshDocument: async () => true, waitForDocument: async () => {},
+  resumeSync() {}, refreshDocument: async () => true,
+  async waitForDocument(name: string, id: string, _timeout?: number, identity?: (value: any) => boolean) {
+    qaMetrics.confirmations++;
+    if (name === 'recipes' && qaMetrics.holdNextRecipe) {
+      qaMetrics.holdNextRecipe = false;
+      await new Promise<void>(resolve => { releaseRecipe = resolve; });
+    }
+    if (name === 'recipes' && rejectedRecipes.has(id)) throw Error(rejectedRecipes.get(id));
+    const value = rows[name]?.[id];
+    if (!value || (identity && !identity(value))) throw Error('QA : document différent de la saisie');
+    return structuredClone(value);
+  },
   put(name: string, id: string, data: any, options: { merge?: boolean } = {}) {
     qaMetrics.writes++;
+    if (name === 'recipes') {
+      if (qaMetrics.rejectNextRecipe) {
+        qaMetrics.rejectNextRecipe = false;
+        failure = 'QA : enregistrement refusé. Le brouillon est conservé.';
+        rejectedRecipes.set(id, failure); notify(); return;
+      }
+      rejectedRecipes.delete(id);
+    }
     rows[name] ??= {};
     rows[name][id] = JSON.parse(JSON.stringify(options.merge ? { ...rows[name][id], ...data } : data));
     persist();

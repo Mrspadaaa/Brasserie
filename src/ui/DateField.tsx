@@ -89,7 +89,7 @@ export const DateField: React.FC<DateFieldProps> = ({
 
   return (
     <Field label={label} hint={hint} error={error} htmlFor={id}>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <input
           id={id}
           name="date_picker_field"
@@ -108,12 +108,12 @@ export const DateField: React.FC<DateFieldProps> = ({
         {monthShortcuts ? <div className="space-y-1">
           <span className="text-xs text-cave-400">Changer le mois, garder le jour</span>
           <div className="grid grid-cols-[auto_1fr_auto] gap-1.5 min-w-0">
-            <button type="button" disabled={disabled || !iso} aria-label={`Mois précédent — ${label}`} onClick={() => onChange(shiftSwissMonth(value, -1))} className="min-h-11 min-w-11 rounded-control border border-cave-700 text-cave-200">←</button>
+            <button type="button" disabled={disabled || !iso} aria-label={`Mois précédent — ${label}`} onClick={() => onChange(shiftSwissMonth(value, -1))} className="min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200">←</button>
             <input aria-label={`Mois — ${label}`} type="month" min="1900-01" max="2200-12" value={iso.slice(0, 7)} disabled={disabled || !iso} onChange={e => onChange(changeSwissMonth(value, e.target.value))} className={`${inputClass} min-w-0 [color-scheme:dark]`}/>
-            <button type="button" disabled={disabled || !iso} aria-label={`Mois suivant — ${label}`} onClick={() => onChange(shiftSwissMonth(value, 1))} className="min-h-11 min-w-11 rounded-control border border-cave-700 text-cave-200">→</button>
+            <button type="button" disabled={disabled || !iso} aria-label={`Mois suivant — ${label}`} onClick={() => onChange(shiftSwissMonth(value, 1))} className="min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200">→</button>
           </div>
         </div> : null}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1">
           {shortcuts.map((s) => {
             const target = swissToday(s.offsetDays);
             const active = value === target;
@@ -122,8 +122,9 @@ export const DateField: React.FC<DateFieldProps> = ({
                 key={s.label}
                 type="button"
                 disabled={disabled}
+                aria-pressed={active}
                 onClick={() => onChange(target)}
-                className={`min-h-11 sm:min-h-touch py-1 px-2.5 rounded-control border text-xs sm:text-sm transition-colors ${
+                className={`min-h-touch-sm py-0.5 px-1.5 rounded-control border text-xs transition-colors ${
                   active
                     ? 'bg-ebc-straw/15 border-ebc-straw text-ebc-straw font-medium'
                     : 'bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50'

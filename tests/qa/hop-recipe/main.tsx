@@ -8,7 +8,7 @@ import { createRoot } from 'react-dom/client';
 import { HopExplorationChart } from '../../../src/ui/hopIndex/HopAromaChart';
 import { App } from '../../../src/App';
 import { StorageService } from '../../../src/services/storage';
-import { FirestoreRepo, qaMetrics, seedQa } from './repo';
+import { FirestoreRepo, qaMetrics, seedQa, releaseQaRecipe } from './repo';
 import { guidePredictionKnowledge, guideYeasts, guideAxes, loadGuideVarieties, guideFermentations, guideFermentationScience } from '../../../src/ui/hopIndex/guideData';
 import { evaluateFermentationScenario } from '../../../src/domain/fermentationScenario';
 import { evaluateNoloRecipe,newNoloConfig,noloScience } from '../../../src/domain/nolo';
@@ -109,6 +109,9 @@ async function start() {
       StorageService.addRecipe(r); return r;
     },
     failNext() { qaMetrics.failNext = true; },
+    rejectNextRecipe() { qaMetrics.rejectNextRecipe = true; },
+    holdNextRecipe() { qaMetrics.holdNextRecipe = true; },
+    releaseRecipe: releaseQaRecipe,
     forgetKnowledge(id: string) { FirestoreRepo.remove('hopKnowledge', id); },
     ready: () => FirestoreRepo.isReady()
     ,showAromaChart(props:React.ComponentProps<typeof HopExplorationChart>) { appRoot.render(<main className="max-w-2xl mx-auto p-5"><p className="text-sm text-cave-400 mb-4">Banc visuel · données synthétiques</p><HopExplorationChart {...props}/></main>); }

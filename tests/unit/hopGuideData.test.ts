@@ -17,7 +17,7 @@ vi.mock('../../src/services/storage', () => ({ StorageService: {
   importHopIndex: memory.importPack
 } }));
 
-import { ensureGuideReferences, guideAxes, guideRiskPolicies, guideYeasts, loadGuideVarieties } from '../../src/ui/hopIndex/guideData';
+import { ensureGuideReferences, guideAxes, guidePredictionKnowledge, guideRiskPolicies, guideYeasts, loadGuideVarieties } from '../../src/ui/hopIndex/guideData';
 
 async function applyPack(json: string): Promise<number> {
   const pack: { hopVarieties?: HopVariety[]; hopKnowledge?: HopKnowledge[] } = JSON.parse(json);
@@ -34,6 +34,22 @@ beforeEach(() => {
 });
 
 describe('Références proposées dans le guide de recette', () => {
+  it('partage le catalogue levure avec la prédiction sans écraser une référence personnelle ou invalide', () => {
+    const { aliases, ...reference } = structuredClone(guideYeasts([]).find(row => row.id === 'wyeast-3068')!);
+    const legacy = { ...reference }; delete legacy.catalogue;
+    const personal = { ...reference, catalogue: { ...reference.catalogue!, facts: [] } };
+    for (const saved of [[], [legacy], [personal]]) {
+      const predicted = guidePredictionKnowledge(saved).find(row => row.id === reference.id);
+      expect(predicted?.kind).toBe('yeast');
+      expect(predicted && 'catalogue' in predicted ? predicted.catalogue : undefined)
+        .toEqual(guideYeasts(saved).find(row => row.id === reference.id)?.catalogue);
+    }
+    const invalid = { ...reference, version: '' };
+    expect(guideYeasts([invalid]).find(row => row.id === reference.id)).toBeUndefined();
+    expect(guidePredictionKnowledge([invalid]).find(row => row.id === reference.id)).toEqual(invalid);
+    expect(() => assertHopKnowledge(invalid)).toThrow();
+    expect(memory.importPack).not.toHaveBeenCalled();
+  });
   it('propose des axes et US-05 sourcés sans écrire ni inventer de capacité enzymatique', () => {
     expect(guideAxes([])).toHaveLength(12);
     expect(guideYeasts([]).find(row => row.id === 'fermentis-us05')).toMatchObject({

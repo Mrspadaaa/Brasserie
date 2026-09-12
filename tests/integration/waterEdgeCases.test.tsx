@@ -88,7 +88,7 @@ describe('Le rinçage affiche son alcalinité après la dose retenue', () => {
     expect(remaining()).toHaveTextContent('107');
     expect(radar()).toHaveAccessibleName(/Alcalinité .*210 ppm/);
 
-    clic(/Ajouter 0\.5 mL — rinçage/i);
+    clic(/Ajouter 0,5 mL — rinçage/i);
     expect(doseAcide('empâtage')).toBe(0);
     expect(remaining()).toHaveTextContent('82');
     expect(radar()).toHaveAccessibleName(/Alcalinité .*200 ppm/);
@@ -163,7 +163,7 @@ describe('La dose posée à la main gèle l’acide — et le dit', () => {
   it('⚠️ après un appui sur +, l’acide ne suit plus l’eau', () => {
     monter();
     const avant = doseAcide('empâtage');
-    clic(/Ajouter 0\.5 mL — empâtage/i);
+    clic(/Ajouter 0,5 mL — empâtage/i);
     expect(doseAcide('empâtage')).toBeCloseTo(avant + 0.5, 1);
 
     // L'eau change du tout au tout : la dose forcée, elle, ne bouge pas.
@@ -174,14 +174,14 @@ describe('La dose posée à la main gèle l’acide — et le dit', () => {
 
   it('⚠️ et l’écran annonce que la dose est à la main', () => {
     monter();
-    clic(/Ajouter 0\.5 mL — empâtage/i);
+    clic(/Ajouter 0,5 mL — empâtage/i);
     expect(document.body.textContent).toMatch(/à la main/);
   });
 
   it('⚠️ le retour au calcul rend l’acide à son eau', () => {
     monter();
     const calcule = doseAcide('empâtage');
-    clic(/Ajouter 0\.5 mL — empâtage/i);
+    clic(/Ajouter 0,5 mL — empâtage/i);
     expect(doseAcide('empâtage')).not.toBe(calcule);
 
     fireEvent.click(screen.getByRole('button', { name: 'Revenir aux doses d’acide calculées' }));
@@ -195,7 +195,7 @@ describe('La dose posée à la main gèle l’acide — et le dit', () => {
   it('Doser conserve l’acide manuel et propose un retour explicite au calcul', () => {
     monter();
     const calcule = doseAcide('empâtage');
-    clic(/Ajouter 0\.5 mL — empâtage/i);
+    clic(/Ajouter 0,5 mL — empâtage/i);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
     expect(screen.getByRole('button', { name: 'Revenir aux doses d’acide calculées' })).toBeInTheDocument();
     expect(doseAcide('empâtage')).toBe(calcule + 0.5);

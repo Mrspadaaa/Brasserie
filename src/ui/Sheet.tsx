@@ -64,6 +64,7 @@ export const Sheet: React.FC<SheetProps> = ({
    * poignée, le sous-titre et les rembourrages en consommaient la moitié.
    */
   const tight = useDensity() === 'tight';
+  const returnFocus = React.useRef<HTMLElement | null>(null);
 
   return (
   <Drawer.Root
@@ -72,11 +73,21 @@ export const Sheet: React.FC<SheetProps> = ({
     snapPoints={snapPoints}
     dismissible={dismissible}
     repositionInputs={false}
+    autoFocus
   >
     <Drawer.Portal>
       <Drawer.Overlay className="fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm" />
 
       <Drawer.Content
+        onOpenAutoFocus={() => { returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          // Une autre fiche peut venir de s'ouvrir : ne pas lui voler le focus.
+          const nextDialog = document.querySelector('[role="dialog"][data-state="open"]');
+          if (returnFocus.current?.isConnected && (!nextDialog || nextDialog.contains(returnFocus.current))) {
+            returnFocus.current.focus({ preventScroll: true });
+          }
+        }}
         onEscapeKeyDown={(event) => {
           // Consume Escape before removing this dialog. The recipe underneath
           // must not receive the same key after the drawer has unmounted.
@@ -94,30 +105,24 @@ export const Sheet: React.FC<SheetProps> = ({
       >
         {/* Poignée : indique qu'on peut glisser, et sert de zone de préhension. */}
         <div
-          className={`shrink-0 flex justify-center cursor-grab active:cursor-grabbing ${
-            tight ? 'pt-1 pb-0.5' : 'pt-2 pb-1'
-          }`}
+          className="shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"
         >
           <div className="w-8 h-1 rounded-full bg-cave-700" aria-hidden="true" />
         </div>
 
         <header
-          className={`shrink-0 flex items-center gap-2 border-b border-cave-800 ${
-            tight ? 'px-3 py-1' : 'px-4 py-2'
-          }`}
+          className="shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"
         >
           <div className="min-w-0 flex-1">
             <Drawer.Title
-              className="text-sm sm:text-base font-semibold text-cave-50 leading-tight truncate"
+              className="text-sm font-semibold text-cave-50 leading-tight break-words"
             >
               {title}
             </Drawer.Title>
             {/* Le sous-titre est du contexte */}
-            {subtitle && !tight && (
-              <Drawer.Description className="text-2xs sm:text-sm text-cave-400 leading-tight truncate mt-0.5">
-                {subtitle}
-              </Drawer.Description>
-            )}
+            <Drawer.Description className={subtitle && !tight ? 'text-xs text-cave-400 leading-tight break-words' : 'sr-only'}>
+              {subtitle || title}
+            </Drawer.Description>
           </div>
 
           <button
@@ -126,7 +131,7 @@ export const Sheet: React.FC<SheetProps> = ({
             className="min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
                        hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"
           >
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
+            <X className="w-4 h-4" />
           </button>
         </header>
 
@@ -134,22 +139,15 @@ export const Sheet: React.FC<SheetProps> = ({
           `scroll-pb-20` réserve la place du pied.
         */}
         <div
-          className={`flex-1 overflow-y-auto overscroll-contain scroll-pb-20 ${
-            tight ? 'px-2.5 py-1.5 space-y-2' : 'px-3 sm:px-4 py-2.5 sm:py-3 space-y-3'
-          }`}
+          className="flex-1 overflow-y-auto overscroll-contain scroll-pb-20 p-2 space-y-2"
         >
           {children}
         </div>
 
         {footer && (
           <div
-            className={`shrink-0 border-t border-cave-800 bg-cave-900 ${
-              tight ? 'px-2.5 py-1.5' : 'px-3 sm:px-4 py-2 sm:py-2.5'
-            } ${
-              // Clavier ouvert, la zone sûre du bas est déjà couverte par le
-              // clavier : la réserver une deuxième fois gaspille une rangée.
-              keyboardInset ? '' : 'pb-safe'
-            }`}
+            className="shrink-0 border-t border-cave-800 bg-cave-900 px-2 py-0.5"
+            style={{ paddingBottom: keyboardInset ? '.125rem' : 'calc(.125rem + env(safe-area-inset-bottom, 0px))' }}
           >
             {footer}
           </div>

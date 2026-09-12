@@ -1,3 +1,4 @@
+import { Units } from '../services/units';
 import React, { useMemo } from 'react';
 import type { BrewDayState } from '../types';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
@@ -36,7 +37,7 @@ export function YeastBrewDayGuide({ recipe, state, phase, onMeasure }: {
     </>}
     <details><summary>Programme, ajouts à cru et sources</summary><div>
       <FermentationTemperatureChart compact steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />
-      {guide.hops.additions.length > 0 && <table className="yeast-contacts"><caption>Ajouts prévus dans le brassin</caption><thead><tr><th>Houblon</th><th>Phase</th><th>Contact</th></tr></thead><tbody>{guide.hops.additions.map((h, i) => <tr key={i}><th scope="row">{h.name}<span className="block yeast-small">{h.dayOffset == null ? 'Jour à préciser' : `J+${fmt(h.dayOffset)}`} · {fmt(h.weightG)} g</span></th><td>{h.phase === 'active' ? 'Active' : h.phase === 'post' ? 'Après fermentation' : 'À préciser'}</td><td>{fmt(h.contactHours)} h · {fmt(h.temperatureC)} °C</td></tr>)}</tbody></table>}
+      {guide.hops.additions.length > 0 && <table className="yeast-contacts"><caption>Ajouts prévus dans le brassin</caption><thead><tr><th>Houblon</th><th>Phase</th><th>Contact</th></tr></thead><tbody>{guide.hops.additions.map((h, i) => <tr key={i}><th scope="row">{h.name}<span className="block yeast-small">{h.dayOffset == null ? 'Jour à préciser' : `J+${fmt(h.dayOffset)}`} · {Units.format(h.weightG, 'g')}</span></th><td>{h.phase === 'active' ? 'Active' : h.phase === 'post' ? 'Après fermentation' : 'À préciser'}</td><td>{fmt(h.contactHours)} h · {fmt(h.temperatureC)} °C</td></tr>)}</tbody></table>}
       <p className="yeast-small">Consignes prévues. Les relevés et les ajouts réels restent dans le journal.</p>
       {guide.sources.map((s, i) => <p key={i} className="yeast-small">{/^https?:\/\//.test(s.reference) ? <a className="yeast-source" href={s.reference} target="_blank" rel="noreferrer">{s.author} · {s.title}</a> : `${s.author} · ${s.title}`}</p>)}
     </div></details>

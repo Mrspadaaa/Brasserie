@@ -58,7 +58,7 @@ describe('Export texte d’une recette', () => {
 
   it('donne la facture de grain avec les parts', () => {
     const t = recipeToText(BASE, DATE);
-    expect(t).toContain('4.1 kg');
+    expect(t).toContain('4,1 kg');
     expect(t).toContain('US 2-row');
     expect(t).toContain('100 %');
   });

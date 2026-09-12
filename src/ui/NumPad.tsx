@@ -10,7 +10,7 @@ import { Delete, Check } from 'lucide-react';
  * dessous. Or pour saisir « 25 » ou « 12,50 », on n'a besoin ni des lettres, ni
  * de la barre d'espace, ni de la ligne de suggestions.
  *
- * Ce pavé fait 4 rangées de 48 px, soit ~210 px : on garde le champ ET les
+ * Ce pavé utilise quatre rangées compactes : on garde le champ ET les
  * champs voisins ET le pied de feuille à l'écran.
  *
  * Il s'affiche EN PLACE, juste sous le champ concerné, plutôt qu'ancré en bas :

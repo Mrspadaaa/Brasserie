@@ -5,6 +5,7 @@ import { WaterVolumes } from "./WaterVolumes";
 import { WaterAnalysisTable } from "../WaterAnalysisTable";
 
 import { IonComparison } from "../IonComparison";
+import { formatDecimal } from "../numericInput";
 
 import { Droplets, ChevronRight } from "lucide-react";
 
@@ -111,7 +112,7 @@ export function WaterPreparation(model: Props) {
             ions: start,
             caption:
               state.diRatioPct > 0
-                ? `${source.name} · coupée à ${Number(state.diRatioPct.toFixed(2))} % d’osmosée`
+                ? `${source.name} · coupée à ${formatDecimal(Number(state.diRatioPct.toFixed(2)))} % d’osmosée`
                 : source.name,
           }}
         />

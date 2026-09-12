@@ -188,6 +188,7 @@ describe('Recipe data entry regressions', () => {
     wizard({ ...base, yeast: { ...base.yeast, hopIndexId: 'fermentis-us05', pitchTempC: 30, fermentDays: 3,
       fermentation: { version: 1, strainName: 'Ancienne souche', sugars: {}, pof: 'negative', hydrolysis: 'unknown' } as any } });
     step(/^Levure$/);
+    fireEvent.click(screen.getByText(/Saisie libre et stock ·/));
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker);
     fireEvent.change(picker, { target: { value: 'Nouvelle souche' } });
@@ -211,6 +212,8 @@ describe('Recipe data entry regressions', () => {
     original.fermentation.push({ kind: 'garde', name: 'Garde', tempC: 4, days: 7 });
     const save = vi.fn(); const view = wizard(original, save);
     step(/^Levure$/);
+    fireEvent.click(screen.getByText('Programme détaillé et guides enregistrés'));
+    expect(screen.queryByRole('button', { name: 'Trouver une conduite' })).not.toBeInTheDocument();
     const temperature = screen.getByLabelText('Température du scénario 1 (°C)');
     change(temperature, '');
     expect(temperature).toBeInTheDocument();
@@ -228,14 +231,17 @@ describe('Recipe data entry regressions', () => {
     expect(saved.waterPlan.mash).toEqual(original.waterPlan.mash);
     view.unmount(); wizard(saved);
     step(/^Levure$/);
+    fireEvent.click(screen.getByText('Programme détaillé et guides enregistrés'));
     expect(screen.getByLabelText('Température du scénario 1 (°C)')).toHaveValue('18,5');
   });
   it('chooses a documented yeast outside the stock and returns to the actual recipe assessment', () => {
     const save = vi.fn(); wizard(base, save); step(/^Levure$/);
+    fireEvent.click(screen.getByText(/Saisie libre et stock ·/));
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker); fireEvent.change(picker, { target: { value: 'Verdant' } });
     expect(screen.getByRole('option', { name: /LalBrew Verdant IPA/ })).toHaveTextContent('Stock non renseigné');
     fireEvent.keyDown(picker, { key: 'Enter' });
+    fireEvent.click(screen.getByText('Programme détaillé et guides enregistrés'));
     expect(screen.getByRole('region', { name: 'Résultat de ma fermentation' })).toHaveTextContent('Verdant');
     expect(screen.queryByRole('region', { name: 'Programme de levure proposé' })).not.toBeInTheDocument();
     step(/^Récapitulatif$/);
@@ -243,6 +249,30 @@ describe('Recipe data entry regressions', () => {
     expect(save.mock.calls[0][0].yeast.hopIndexId).toBe('lalbrew-verdant-ipa');
     expect(save.mock.calls[0][0].yeast.qty).toBe(0);
     expect(save.mock.calls[0][0].yeastGuide).toBeUndefined();
+  });
+  it('applies the style-first yeast scenario across mash, fermentation, save and reopen', () => {
+    const original: Recipe = { ...structuredClone(base), style: 'Hefeweizen',
+      yeast: { name: 'Wyeast 3068 Weihenstephan Weizen', hopIndexId: 'wyeast-3068', form: 'liquide', qty: 100, unit: 'mL', pitchTempC: 20 },
+      fermentation: [{ name: 'Primaire', kind: 'primaire', tempC: 20, days: 10 }, { name: 'Garde', kind: 'garde', tempC: 4, days: 5 }],
+    };
+    const save = vi.fn(), view = wizard(original, save);
+    step(/^Levure$/);
+    fireEvent.click(screen.getByRole('radio', { name: 'Girofle · épices' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Préparer un essai girofle' }));
+    change(screen.getByLabelText('Contre-pression du scénario en bar'), '0');
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer le scénario' }));
+    expect(screen.queryByText(/La recette a changé pendant la comparaison/)).not.toBeInTheDocument();
+    step(/^Paliers$/);
+    expect(screen.getByLabelText('Nom du palier 1')).toHaveValue('Repos férulique · proposition L’Affinée');
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
+    const saved = save.mock.calls[0][0];
+    expect(saved.yeastDesign).toMatchObject({ goal: 'clove', pressureBar: 0, ferulicRest: true });
+    expect(saved.fermentation).toEqual([{ ...original.fermentation[0], tempC: 18 }, original.fermentation[1]]);
+    expect(saved.hops).toEqual(original.hops); expect(saved.waterPlan.mash).toEqual(original.waterPlan.mash);
+    view.unmount(); wizard(saved); step(/^Levure$/);
+    expect(screen.getByRole('radio', { name: 'Girofle · épices' })).toBeChecked();
+    expect(screen.getByLabelText('Température principale du scénario')).toHaveValue('18');
   });
   it('preserves aroma associations, target and historical predictions through recipe editing', () => {
     const original = { ...structuredClone(base), hopMatrixId: 'pale-ale',

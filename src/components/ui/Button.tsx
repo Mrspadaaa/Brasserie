@@ -8,7 +8,8 @@ import React from 'react';
  *   - `secondary` : les autres actions possibles ;
  *   - `danger`    : ce qui retire ou annule.
  *
- * Toutes font au moins 48 px de haut. Les libellés disent ce qui va se passer
+ * Dimensions communes : 24 px pour une petite action, 28 px en usage courant,
+ * 32 px pour l'action principale. Les libellés disent ce qui va se passer
  * (« Enregistrer l'achat »), pas une catégorie abstraite (« Valider »), et le
  * même mot est repris dans la confirmation qui suit.
  */
@@ -19,7 +20,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   intent?: Intent;
   icon?: React.ReactNode;
   full?: boolean;
-  size?: 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const INTENTS: Record<Intent, string> = {
@@ -35,7 +36,7 @@ export const Button: React.FC<ButtonProps> = ({
   intent = 'secondary',
   icon,
   full = false,
-  size = 'md',
+  size = intent === 'primary' ? 'lg' : 'md',
   className = '',
   children,
   ...rest
@@ -43,15 +44,9 @@ export const Button: React.FC<ButtonProps> = ({
   <button
     {...rest}
     className={[
-      'inline-flex items-center justify-center gap-2 rounded-control',
+      'inline-flex items-center justify-center gap-1 rounded-control leading-tight',
       'transition-colors disabled:opacity-40 disabled:pointer-events-none',
-      /*
-       * Révisé le 12.09.2026 : « beaucoup trop grands, larges et imposants ».
-       * Le rembourrage horizontal passe de 24/16 px à 16/12, et le libellé de
-       * 16 px à 14 — le plancher typographique, pas en dessous. Un bouton fait
-       * la taille de son mot, pas celle de la place disponible.
-       */
-      size === 'lg' ? 'min-h-touch-lg px-3 text-sm' : 'min-h-touch px-2.5 text-sm',
+      size === 'sm' ? 'min-h-touch-sm px-1.5 text-xs' : size === 'lg' ? 'min-h-touch-lg px-2 text-sm' : 'min-h-touch px-2 text-2xs',
       INTENTS[intent],
       full ? 'w-full' : '',
       className

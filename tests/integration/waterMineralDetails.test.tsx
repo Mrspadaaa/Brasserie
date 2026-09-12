@@ -40,9 +40,22 @@ describe('Lecture des minéraux au moment de la pesée', () => {
   it('doses inférieures au centième et acide de rinçage restent lisibles', () => {
     render(<WaterAdditivesTable doses={{ gypse: 0.004 }} split={{ mash: { gypse: 0.004 }, sparge: {} }} acidId="lactique" mashAcid={{ amount: 0, unit: 'mL' }} spargeAcid={{ amount: 1.5, unit: 'mL' }} totalWaterL={20} hasSparge spargeTargetPh={5.5} />);
     const saltRow = screen.getByRole('row', { name: /Gypse/ });
-    expect(within(saltRow).getAllByText('<0.01 g')).toHaveLength(2);
-    expect(screen.getAllByText('1.5 mL')).toHaveLength(2);
+    expect(within(saltRow).getAllByText('<0,01 g')).toHaveLength(2);
+    expect(within(saltRow).getByText('0,00 g')).toBeVisible();
+    expect(screen.getAllByText('1,5 mL')).toHaveLength(2);
+    expect(screen.getByText('Rinçage · cible pH 5,5')).toBeVisible();
     expect(screen.queryByText('Aucun ajout dosé.')).toBeNull();
+  });
+  it('conserve la précision des doses et affiche les minéraux, acides et pH avec une virgule', () => {
+    render(<WaterAdditivesTable doses={{ kcl: 2 }} split={{ mash: { kcl: 1.25 }, sparge: { kcl: 0.75 } }}
+      acidId="lactique" mashAcid={{ amount: 1.23456, unit: 'mL' }} spargeAcid={{ amount: 0.75, unit: 'mL' }}
+      totalWaterL={10} hasSparge spargeTargetPh={5.55} />);
+    const saltRow = screen.getByRole('row', { name: /Chlorure de potassium/ });
+    expect(within(saltRow).getAllByRole('cell').map(cell => cell.textContent)).toEqual(['1,25 g', '0,75 g', '2,00 g']);
+    expect(screen.getByText(/Cl \+95,1 · K \+104,9 ppm/)).toBeVisible();
+    expect(screen.getAllByText('1,23456 mL')).toHaveLength(2);
+    expect(screen.getAllByText('0,75 mL')).toHaveLength(2);
+    expect(screen.getByText('Rinçage · cible pH 5,55')).toBeVisible();
   });
   it('signale un HCO₃ sous la cible pour les profils de style et les profils personnels', () => {
     const ions = { ca: 40, mg: 2, na: 5, so4: 60, cl: 60, hco3: 10 };
@@ -51,10 +64,17 @@ describe('Lecture des minéraux au moment de la pesée', () => {
     rerender(<IonComparison start={ions} achieved={ions} style={styleFromTargetIons({ hco3: 50 })} />);
     expect(screen.getByRole('listitem', { name: /Alcalinité.*sous la cible/ })).toBeVisible();
   });
-  it('ne présente pas 49.9 ppm comme conforme à un minimum de 50', () => {
-    const ions = { ca: 49.9, mg: 2, na: 5, so4: 60, cl: 60, hco3: 10 };
+  it.each([
+    [49.9, '49,9', 'sous la cible'],
+    [49.999, '49,999', 'sous la cible'],
+    [100.001, '100,001', 'au-dessus de la cible'],
+    [50, '50', 'dans la cible']
+  ] as const)('garde la valeur %s et son état face aux bornes après localisation', (calcium, reading, status) => {
+    const ions = { ca: calcium, mg: 2, na: 5, so4: 60, cl: 60, hco3: 10 };
     const style = { ...styleByCode('20C'), ions: { ...styleByCode('20C').ions, ca: { min: 50, max: 100 } } };
     render(<IonComparison start={ions} achieved={ions} style={style} />);
-    expect(screen.getByRole('listitem', { name: /Calcium.*corrigée 49.9 ppm ; sous la cible/ })).toBeVisible();
+    expect(screen.getByRole('listitem', { name: /Calcium/ })).toHaveAccessibleName(
+      expect.stringContaining(`corrigée ${reading} ppm ; ${status}`)
+    );
   });
 });

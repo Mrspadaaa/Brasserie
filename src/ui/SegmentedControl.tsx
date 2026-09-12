@@ -1,4 +1,4 @@
-import React, { useId } from 'react';
+import React, { useId, useRef } from 'react';
 import { useDensity } from './useViewport';
 
 /**
@@ -49,12 +49,13 @@ export function SegmentedControl<T extends string>({
   className = ''
 }: SegmentedControlProps<T>) {
   const groupId = useId();
+  const groupRef = useRef<HTMLDivElement>(null);
 
   /*
    * ⚠️ Clavier ouvert, la disposition en grille est ruineuse : cinq options sur
    * deux colonnes font trois rangées, soit ~165 px — plus que le formulaire
    * qu'elles servent à remplir. Elles passent alors sur une seule ligne qui
-   * défile latéralement, à 56 px, sans qu'aucune option ne disparaisse.
+   * défile latéralement, sans qu'aucune option ne disparaisse.
    *
    * Seule la grille bascule : une disposition `row` tient déjà sur une ligne.
    */
@@ -65,7 +66,10 @@ export function SegmentedControl<T extends string>({
     const usable = options.filter((o) => !o.disabled);
     const i = usable.findIndex((o) => o.value === value);
     const next = usable[(i + direction + usable.length) % usable.length];
-    if (next) onChange(next.value);
+    if (next) {
+      onChange(next.value);
+      groupRef.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[options.indexOf(next)]?.focus();
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -87,15 +91,16 @@ export function SegmentedControl<T extends string>({
 
   return (
     <div
+      ref={groupRef}
       role="radiogroup"
       aria-label={label}
       onKeyDown={handleKeyDown}
       className={`${
         scrolls
-          ? 'flex gap-1 p-1 overflow-x-auto overscroll-x-contain scrollbar-none'
+          ? 'flex gap-1 p-0.5 overflow-x-auto overscroll-x-contain scrollbar-none'
           : layout === 'row'
-            ? 'flex gap-1 p-1'
-            : 'grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-1'
+            ? 'flex gap-1 p-0.5'
+            : 'grid grid-cols-2 sm:grid-cols-3 gap-1 p-0.5'
       } rounded-control bg-cave-950 border border-cave-800 ${className}`}
     >
       {options.map((opt) => {
@@ -112,8 +117,8 @@ export function SegmentedControl<T extends string>({
             // l'option cochée, les flèches font le reste.
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(opt.value)}
-            className={`min-h-touch px-2.5 sm:px-3 py-1 rounded-control text-sm transition-colors
-                        flex items-center justify-center gap-1.5 sm:gap-2
+            className={`min-h-touch px-1.5 py-0.5 rounded-control text-2xs leading-tight transition-colors
+                        flex items-center justify-center gap-1
                         ${scrolls ? 'shrink-0 whitespace-nowrap' : 'flex-1 min-w-0'}
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-ebc-straw
                         disabled:opacity-40 disabled:cursor-not-allowed
@@ -124,7 +129,7 @@ export function SegmentedControl<T extends string>({
                         }`}
           >
             {opt.icon}
-            <span className="min-w-0 truncate">
+            <span className="min-w-0 break-words">
               {opt.label}
               {/* La précision sous le libellé est le premier sacrifice quand la
                   place manque : elle double la hauteur de chaque option. */}

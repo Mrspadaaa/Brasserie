@@ -1,5 +1,6 @@
 import { NumberInput } from "../NumberInput";
 import { formatDecimal } from "../numericInput";
+import { formatWaterMessage } from "../waterReadings";
 
 import { DilutionField } from "../DilutionField";
 
@@ -123,7 +124,7 @@ export function WaterDilution({
             Minimum trouvé d’osmosée
           </span>
           <span className="shrink-0 reading font-semibold text-water">
-            {justEnough ? `${justEnough.pct} %` : 'Calcul…'}
+            {justEnough ? `${formatDecimal(justEnough.pct)} %` : 'Calcul…'}
           </span>
         </button>
         {justEnough && state.roLimitL != null &&
@@ -140,7 +141,7 @@ export function WaterDilution({
           )}
         {justEnough && totalWaterL > 0 && !justEnough.feasible && (
           <p className="text-sm text-ebc-straw">
-            {justEnough.reasons.join(" ; ")}
+            {formatWaterMessage(justEnough.reasons.join(" ; "))}
           </p>
         )}
         {justEnough && totalWaterL > 0 && justEnough.feasible && (
@@ -149,18 +150,18 @@ export function WaterDilution({
               "Le réseau avec les sels et acides proposés suffit pour les plages ioniques."
             ) : state.diRatioPct > justEnough.pct ? (
               <>
-                Coupe en place {Number(state.diRatioPct.toFixed(2))} %, minimum{" "}
-                {justEnough.pct} % — descendre plus bas buterait sur :{" "}
-                {justEnough.reasons.join(" ; ")}.
+                Coupe en place {formatDecimal(Number(state.diRatioPct.toFixed(2)))} %, minimum{" "}
+                {formatDecimal(justEnough.pct)} % — descendre plus bas buterait sur :{" "}
+                {formatWaterMessage(justEnough.reasons.join(" ; "))}.
               </>
             ) : state.diRatioPct === justEnough.pct ? (
               <>
-                Minimum trouvé au pas de {justEnough.stepPct??5} %. Les plages sont visées, pas leurs centres.
+                Minimum trouvé au pas de {formatDecimal(justEnough.stepPct??5)} %. Les plages sont visées, pas leurs centres.
               </>
             ) : (
               <>
-                Sous le minimum de {justEnough.pct} % —{" "}
-                {justEnough.reasons.join(" ; ")}.
+                Sous le minimum de {formatDecimal(justEnough.pct)} % —{" "}
+                {formatWaterMessage(justEnough.reasons.join(" ; "))}.
               </>
             )}
           </p>
@@ -190,7 +191,7 @@ export function WaterDilution({
                   <Link2 className="w-3.5 h-3.5 text-hop shrink-0" />
 
                   <span className="min-w-0 flex-1 text-left truncate">
-                    Rinçage identique · {state.spargeWaterL} L
+                    Rinçage identique · {formatDecimal(state.spargeWaterL)} L
                   </span>
                   <span className="shrink-0 text-cave-400">délier</span>
                 </>
@@ -201,7 +202,7 @@ export function WaterDilution({
                     Rinçage réglé à part
                   </span>
                   <span className="shrink-0 text-cave-400">
-                    relier à {Number(state.diRatioPct.toFixed(2))} %
+                    relier à {formatDecimal(Number(state.diRatioPct.toFixed(2)))} %
                   </span>
                 </>
               )}
@@ -224,19 +225,19 @@ export function WaterDilution({
             <span>
               Osmosée{" "}
               <span className="reading text-water font-semibold">
-                {totalOsmoseeL} L
+                {formatDecimal(totalOsmoseeL)} L
               </span>
             </span>
             <span>·</span>
             <span>
               Réseau{" "}
-              <span className="reading text-cave-200">{totalReseauL} L</span>
+              <span className="reading text-cave-200">{formatDecimal(totalReseauL)} L</span>
             </span>
             <span>·</span>
             <span>
               Total{" "}
               <span className="reading text-ebc-straw font-semibold">
-                {totalWaterL} L
+                {formatDecimal(totalWaterL)} L
               </span>
             </span>
           </p>

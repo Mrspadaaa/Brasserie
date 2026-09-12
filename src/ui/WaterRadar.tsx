@@ -194,7 +194,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           band,
           targeted,
           value,
-          reading: ion === 'hco3' ? reading.replace(/\.0$/, '').replace('.', ',') : reading,
+          reading: ion === 'hco3' ? reading.replace(/,0$/, '') : reading,
           ex,
           ey,
           /** −1 sous la fourchette, 1 au-dessus, 0 dedans. */

@@ -156,10 +156,10 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     catch (e) { setError((e as Error).message); }
   };
 
-  return <section aria-label="Index houblon" className="px-1 space-y-2 sm:space-y-5">
-    {!mobile&&<div className="space-y-2"><h2 className="text-lg font-semibold text-cave-50">Index houblon</h2>
-      <p className="text-cave-200 max-w-2xl">Compare les sources, puis précise ton lot et son analyse.</p>
-      <div className="flex flex-wrap gap-2"><BrewTag tone="info">{varieties.filter(v => !v.archived).length} références</BrewTag><BrewTag>{lots.filter(l => !l.archived).length} lots</BrewTag><BrewTag>{lots.filter(l => !l.archived && l.analysis.some(m => m.kind !== 'unknown')).length} lots analysés</BrewTag></div>
+  return <section aria-label="Index houblon" className="px-1 space-y-2">
+    {!mobile&&<div className="space-y-1"><h2 className="text-base font-semibold text-cave-50">Index houblon</h2>
+      <p className="text-sm text-cave-200 max-w-2xl">Compare les sources, puis précise ton lot et son analyse.</p>
+      <div className="flex flex-wrap gap-1"><BrewTag tone="info">{varieties.filter(v => !v.archived).length} références</BrewTag><BrewTag>{lots.filter(l => !l.archived).length} lots</BrewTag><BrewTag>{lots.filter(l => !l.archived && l.analysis.some(m => m.kind !== 'unknown')).length} lots analysés</BrewTag></div>
     </div>}
     <Field label={mobile?'Variété ou arôme':'Rechercher une variété ou un arôme documenté'}><TextInput value={query} onChange={setQuery} placeholder="Nom, alias, agrumes…" /></Field>
     <MobileDetails title="Options du catalogue" summary={[sourceFilter||'Toutes les sources',includeArchived?'Archives incluses':''].filter(Boolean).join(' · ')}>
@@ -179,11 +179,11 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
     </MobileDetails>
     {error && !editor && <p role="alert" className="text-alert">{error}</p>}
     <p className="text-sm text-cave-400" role="status">{matches.length} fiche(s){query ? ' correspondante(s)' : ' disponibles'}.{!mobile&&' Une variété peut avoir plusieurs sources. Le contexte de chaque description est indiqué dans sa fiche.'}</p>
-    <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-3">
-        {matches.slice(0, limit).map(v => <button key={v.id} className={`w-full p-3 sm:p-4 text-left rounded-panel border ${selected === v.id ? 'bg-cave-850 border-ebc-straw/40' : 'border-cave-800 bg-cave-900 hover:bg-cave-850'} space-y-1 sm:space-y-2`}
+    <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-1 sm:gap-2">
+        {matches.slice(0, limit).map(v => <button key={v.id} className={`w-full min-h-touch px-2 py-1.5 text-left rounded-control border ${selected === v.id ? 'bg-cave-850 border-ebc-straw/40' : 'border-cave-800 bg-cave-900 hover:bg-cave-850'} space-y-0.5`}
           onClick={() => { setSelected(v.id); setLotId(undefined); }} aria-pressed={selected === v.id}>
-          <span className="flex justify-between items-center gap-2 text-lg font-semibold text-cave-50"><span>{v.name}</span><ChevronRight size={18} className="text-cave-400 shrink-0" aria-hidden="true" /></span>
-          <span className="block text-sm text-water break-words">{hopReferenceSource(v)}{v.origin ? ` · ${v.origin}` : ''}</span>
+          <span className="flex justify-between items-center gap-2 text-sm font-semibold text-cave-50"><span>{v.name}</span><ChevronRight size={16} className="text-cave-400 shrink-0" aria-hidden="true" /></span>
+          <span className="block text-xs text-water break-words">{hopReferenceSource(v)}{v.origin ? ` · ${v.origin}` : ''}</span>
           {(!mobile||v.form!=='unknown'||!!lotCounts.get(v.id))&&<span className="flex flex-wrap gap-2">{(!mobile||v.form!=='unknown')&&<BrewTag>{HOP_FORM_LABELS[v.form]}</BrewTag>}{!!lotCounts.get(v.id) && <BrewTag tone="info">{lotCounts.get(v.id)} lot(s)</BrewTag>}</span>}
           {!mobile && v.descriptions.find(d => d.context === 'rawHop') && <span className="block text-sm text-cave-200 line-clamp-2">{v.descriptions.find(d => d.context === 'rawHop')?.text}</span>}
         </button>)}

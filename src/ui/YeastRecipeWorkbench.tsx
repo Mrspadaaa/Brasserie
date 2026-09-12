@@ -45,7 +45,7 @@ function Disclosure({ title, children }: { title: React.ReactNode; children: Rea
 
 /** Local exploration is separate from the editable recipe; apply is synchronous and explicit. */
 export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationOnly = false, initialGoal, initialYeastId }: {
-  recipe: TrialRecipe; onChange: (next: TrialRecipe) => void;
+  recipe: TrialRecipe; onChange: (next: TrialRecipe) => TrialRecipe | void;
   onNavigate?: (destination: YeastRecipeDestination) => void; simulationOnly?: boolean;
   initialGoal?: YeastRecipeGoal; initialYeastId?: string;
 }) {
@@ -102,8 +102,10 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     try {
       if (stale) throw Error('Reprends les données actuelles avant d’appliquer ce scénario.');
       const next = applyYeastRecipeDesign(recipe, draft, refs, mode);
-      setLocal({ key: baseKey(next), draft: createYeastRecipeDraft(next, refs, draft.styleId, draft.yeastId) });
-      onChange(next);
+      // The wizard completes local ingredient facts before accepting the proposal.
+      // Compare future edits with that accepted recipe, including its snapshot.
+      const applied = onChange(next) || next;
+      setLocal({ key: baseKey(applied), draft: createYeastRecipeDraft(applied, refs, draft.styleId, draft.yeastId) });
       setNotice(simulationOnly ? 'Variante locale mise à jour.' : mode === 'strain' ? 'Souche reprise dans la recette. Quantité et paliers à vérifier.' : 'Scénario repris dans la recette. Enregistre la recette pour le conserver.');
       setError('');
     } catch (e) { setError(e instanceof Error ? e.message : 'Vérifie les réglages du scénario.'); }

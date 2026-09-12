@@ -8,20 +8,21 @@
   font-size: 14px;
 }
 [role='dialog']:has(.equipment-settings) button {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 32px;
+  min-width: 28px;
 }
 .equipment-settings > summary,
 .equipment-summary > summary,
 .equipment-calibration > summary {
-  min-height: 48px;
-  padding: 12px;
+  min-height: 28px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
   cursor: pointer;
   list-style: none;
+  line-height: 1.25;
 }
 .equipment-settings summary::-webkit-details-marker,
 .equipment-summary summary::-webkit-details-marker {
@@ -40,9 +41,9 @@
 }
 .equipment-settings-body,
 .equipment-summary-body {
-  padding: 0 14px 14px;
+  padding: 0 8px 8px;
   display: grid;
-  gap: 14px;
+  gap: 8px;
 }
 .equipment-summary-body {
   line-height: 1.55;
@@ -68,12 +69,12 @@
 .equipment-target {
   display: grid;
   gap: 4px;
-  padding: 12px;
+  padding: 8px;
   border-radius: 10px;
   background: #a7cee40b;
 }
 .equipment-target strong {
-  font-size: 18px;
+  font-size: 14px;
 }
 .equipment-target span {
   color: #b6aaa0;
@@ -82,29 +83,30 @@
 .equipment-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 16px;
+  gap: 8px;
 }
 .equipment-field {
   display: grid;
-  gap: 6px;
+  align-content: start;
+  gap: 4px;
   min-width: 0;
 }
 .equipment-field :is(input, textarea:where([data-single-line])) {
-  min-height: 46px;
+  min-height: 32px;
   font-size: 16px;
   width: 100%;
 }
 .equipment-warning {
   color: #f1b99b !important;
   border-left: 3px solid #e8a986;
-  padding: 8px 12px;
+  padding: 8px 8px;
   background: #e8a9860b;
 }
 .equipment-check {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 48px;
+  gap: 8px;
+  min-height: 32px;
   cursor: pointer;
 }
 .equipment-check :is(input, textarea:where([data-single-line])) {
@@ -113,8 +115,8 @@
   accent-color: #f2c14e;
 }
 .equipment-button {
-  min-height: 48px;
-  padding: 10px 14px;
+  min-height: 32px;
+  padding: 4px 8px;
   border: 1px solid #c0a466;
   border-radius: 10px;
   color: #f2c14e;

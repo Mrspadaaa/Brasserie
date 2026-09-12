@@ -157,14 +157,16 @@ export const Units = {
 
   /** Affichage compact : 1500 g ➔ « 1.5 kg », 0.25 kg ➔ « 250 g ». */
   format(qty: number, unit: string): string {
+    if (!Number.isFinite(qty)) return `— ${unit}`;
+    const number = (value: number) => String(value).replace('.', ',');
     const key = normalizeKey(unit);
     if (key === 'g' && Math.abs(qty) >= 1000) {
-      return `${this.round(qty / 1000, 'kg')} kg`;
+      return `${number(this.round(qty / 1000, 'kg'))} kg`;
     }
     if (key === 'kg' && Math.abs(qty) > 0 && Math.abs(qty) < 1) {
-      return `${this.round(qty * 1000, 'g')} g`;
+      return `${number(this.round(qty * 1000, 'g'))} g`;
     }
-    return `${this.round(qty, unit)} ${unit}`;
+    return `${number(this.round(qty, unit))} ${unit}`;
   },
 
   /*
@@ -211,6 +213,6 @@ export const Units = {
   formatDual(qty: number, unit: string): string {
     const metric = this.format(qty, unit);
     const us = this.toUs(qty, unit);
-    return us ? `${metric} (${us.qty} ${us.unit})` : metric;
+    return us && Number.isFinite(us.qty) ? `${metric} (${String(us.qty).replace('.', ',')} ${us.unit})` : metric;
   }
 };

@@ -94,20 +94,25 @@ export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
   return old && next && canonical(row) === canonical(old) ? next as HopKnowledge : row;
 }
 export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
+  const yeastById = new Map(guideYeasts(knowledge).map(row => [row.id, storedKnowledge(row)]));
   const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([]), ...checkedKnowledge(noloPack)];
-  return [...new Map([...proposed, ...knowledge.filter(k=>k.kind!=='styleGuide').map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
+  const merged = [...new Map([...proposed, ...knowledge.filter(k=>k.kind!=='styleGuide').map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
+  // Use the same manufacturer facts as recipe selection. Invalid saved rows
+  // remain visible to validation, and a personal catalogue is never replaced.
+  return merged.map(row => row?.kind === 'yeast' ? yeastById.get(row.id) ?? row : row);
 }
 export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {
-  const policy = guidePredictionKnowledge(knowledge).find((k): k is HopSolverPolicy => {
+  const predictionKnowledge = guidePredictionKnowledge(knowledge);
+  const policy = predictionKnowledge.find((k): k is HopSolverPolicy => {
     try { assertHopKnowledge(k); return k.kind === 'solver' && k.enabled; } catch { return false; }
   });
   if (!policy) return undefined;
   const fermentation = guideFermentations(knowledge);
-  const catalogue = catalogueSolverFacts(knowledge);
+  const catalogue = catalogueSolverFacts(predictionKnowledge);
   // A current active guide is the explicit operating reference, then concordant
   // catalogue facts. Legacy solver defaults must not override either, or hide a
   // disabled guide / contradictory catalogue behind an older default.
-  const referenceIds = new Set(knowledge.filter(k => k.kind === 'yeast' && k.catalogue?.facts.some(f => f.key === 'temperature')).map(k => k.id));
+  const referenceIds = new Set([...predictionKnowledge, ...knowledge].filter(k => k.kind === 'yeast' && k.catalogue?.facts.some(f => f.key === 'temperature')).map(k => k.id));
   for (const k of [...fermentationPack, ...fermentationSciencePack, ...knowledge]) if (k.kind === 'fermentation') referenceIds.add(k.yeastId);
   return { ...policy,
     styles: [policy.styles[0], ...brewingStyles(knowledge).map(s => {

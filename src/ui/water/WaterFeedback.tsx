@@ -1,4 +1,5 @@
 import { formatDecimal } from "../numericInput";
+import { formatWaterMessage } from "../waterReadings";
 
 import {
   SALTS,
@@ -105,7 +106,7 @@ export function WaterFeedback({
         >
           {treatment.hco3Target.reached
             ? `HCO₃ après acide : ${formatDecimal(treatment.hco3Target.achieved)} ppm, cible ${formatDecimal(treatment.hco3Target.requested)} ppm atteinte.`
-            : treatment.hco3Target.message}
+            : formatWaterMessage(treatment.hco3Target.message)}
         </p>
       )}
       {hasSparge && state.acidOverride?.sparge != null && (
@@ -131,8 +132,8 @@ export function WaterFeedback({
           totale ;{" "}
           {formatDecimal(Math.round(treatment.treated.mash.hco3 * 10) / 10)} à
           l’empâtage. Le profil d’eau choisi commande les doses. Avec
-          ces doses : pH estimé {phEstimate.phPredicted.toFixed(2)} ±
-          {phEstimate.uncertainty}, à vérifier au brassage.
+          ces doses : pH estimé {phEstimate.phPredicted.toFixed(2).replace('.', ',')} ±
+          {formatDecimal(phEstimate.uncertainty)}, à vérifier au brassage.
           {!state.customTarget &&
             " Le respect du profil ne garantit pas le pH d’empâtage."}
         </p>
@@ -182,7 +183,7 @@ export function WaterFeedback({
           —{" "}
           {activeSalt === "acide"
             ? "Neutralise le bicarbonate ; vérifier la correction sur l’alcalinité de l’empâtage."
-            : SALTS[activeSalt].effect}
+            : formatWaterMessage(SALTS[activeSalt].effect)}
         </p>
       )}
       {rienAProposer && (
@@ -205,19 +206,19 @@ export function WaterFeedback({
           key={c.id}
           className={`text-2xs leading-snug px-1 ${c.franchi ? "text-ebc-amber" : "text-cave-400"}`}
         >
-          {c.franchi ? "⚠️" : "ℹ️"} {SALT_SHORT[c.id]} — {c.text}
+          {c.franchi ? "⚠️" : "ℹ️"} {SALT_SHORT[c.id]} — {formatWaterMessage(c.text)}
         </p>
       ))}
       <p className="text-2xs text-cave-400 leading-snug px-1">
-        {ACIDS[state.acidId].note}
-        {seuilGoutProche && ` ${ACIDS[state.acidId].taste!.text}`}
+        {formatWaterMessage(ACIDS[state.acidId].note)}
+        {seuilGoutProche && ` ${formatWaterMessage(ACIDS[state.acidId].taste!.text)}`}
       </p>
       {!state.customTarget && (
         <details className="text-2xs text-cave-400 px-1">
           <summary className="cursor-pointer py-1">
             Repères du profil · sources
           </summary>
-          <p className="pt-1">{style.note}</p>
+          <p className="pt-1">{formatWaterMessage(style.note)}</p>
           <p className="pt-1">
             Ces plages maison sont les objectifs du dosage, pour les six ions
             après sels et acides. Ce ne sont pas des normes BJCP. Le pH
@@ -240,7 +241,7 @@ export function WaterFeedback({
       )}
       {hopHint?.note && (
         <p className="text-2xs text-cave-400 leading-snug px-1">
-          {hopHint.note}
+          {formatWaterMessage(hopHint.note)}
         </p>
       )}
       {hopHint &&
@@ -251,7 +252,7 @@ export function WaterFeedback({
             onClick={() => applyRatio(hopHint.ratio)}
             className="text-2xs text-ebc-straw hover:text-ebc-gold underline underline-offset-2 px-1"
           >
-            Revenir au {hopHint.ratio} que dit le houblonnage
+            Revenir au {formatDecimal(hopHint.ratio)} que dit le houblonnage
           </button>
         )}
       {(messagesSolveur.length > 0 ||
@@ -265,7 +266,7 @@ export function WaterFeedback({
               className="flex items-start gap-2 text-xs text-ebc-amber leading-snug"
             >
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              <span>{msg}</span>
+              <span>{formatWaterMessage(msg)}</span>
             </li>
           ))}
 
@@ -274,7 +275,7 @@ export function WaterFeedback({
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span>
                 Calcium à {Math.round(achievedTotalApresAcide.ca)} ppm sur l’eau
-                totale, le profil en demande au moins {style.ions.ca.min}.
+                totale, le profil en demande au moins {formatDecimal(style.ions.ca.min)}.
               </span>
             </li>
           )}
@@ -283,9 +284,9 @@ export function WaterFeedback({
             <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span>
-                Acide lactique cumulé : {lactate} g par litre de bière (
-                {mashAcid.amount} + {spargeAcid.amount} mL pour {beerVolumeL} L)
-                — au-delà de {LACTATE_TASTE_THRESHOLD}, il commence à se goûter.
+                Acide lactique cumulé : {formatDecimal(lactate)} g par litre de bière (
+                {formatDecimal(mashAcid.amount)} + {formatDecimal(spargeAcid.amount)} mL pour {formatDecimal(beerVolumeL)} L)
+                — au-delà de {formatDecimal(LACTATE_TASTE_THRESHOLD)}, il commence à se goûter.
                 Passe au phosphorique, ou coupe davantage à l’osmosée.
               </span>
             </li>
@@ -294,7 +295,7 @@ export function WaterFeedback({
           {spargeAcid.warning && (
             <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-              <span>{spargeAcid.warning}</span>
+              <span>{formatWaterMessage(spargeAcid.warning)}</span>
             </li>
           )}
         </ul>

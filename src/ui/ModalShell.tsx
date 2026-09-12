@@ -66,6 +66,9 @@ export const ModalShell: React.FC<ModalShellProps> = ({
 }) => {
   const coarse = useCoarsePointer();
   const keyboardInset = useKeyboardInset();
+  // Un appareil hybride peut ouvrir le clavier avec un pointeur précis : le
+  // formulaire doit alors quitter le centre de la fenêtre entière lui aussi.
+  const bottomAligned = coarse || keyboardInset > 0;
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
   const dismissibleRef = useRef(dismissible);
@@ -137,7 +140,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
     <div
       className={`fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
                   animate-in fade-in
-                  ${coarse ? 'items-end' : 'items-center p-3 sm:p-4'}`}
+                  ${bottomAligned ? 'items-end' : 'items-center p-3 sm:p-4'}`}
       onPointerDown={(e) => {
         // Uniquement le fond : un glissement parti de l'intérieur ne ferme pas.
         if (dismissible && e.target === e.currentTarget) onClose();
@@ -154,15 +157,15 @@ export const ModalShell: React.FC<ModalShellProps> = ({
            * Le clavier ne réduit ni `vh` ni `dvh` : on retranche nous-mêmes sa
            * hauteur mesurée, sans quoi le bas du formulaire reste dessous.
            */
-          marginBottom: coarse ? keyboardInset || undefined : undefined,
+          marginBottom: keyboardInset || undefined,
           maxHeight: keyboardInset
-            ? `calc(100dvh - ${keyboardInset}px - ${coarse ? 8 : 32}px)`
+            ? `calc(100dvh - ${keyboardInset}px - 8px)`
             : undefined
         }}
         className={`w-full ${maxWidth} flex flex-col overflow-hidden
                     bg-cave-900 border border-cave-800 shadow-2xl
                     ${
-                      coarse
+                      bottomAligned
                         ? 'rounded-t-sheet border-b-0 max-h-[94dvh]'
                         : 'rounded-3xl max-h-[92dvh]'
                     }`}

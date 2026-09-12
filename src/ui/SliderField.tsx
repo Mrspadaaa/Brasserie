@@ -9,7 +9,7 @@ import { Field } from './FormNav';
  * saisir 5.3 précisément, et la valeur exacte reste invisible. Un champ seul est
  * l'inverse. On garde donc les deux, sur la même valeur :
  *
- *   TÉLÉPHONE  — on glisse le curseur, piste de 44 px de haut pour ne pas rater.
+ *   TÉLÉPHONE  — on glisse le curseur, zone active de 28 px de haut pour ne pas rater.
  *   ORDINATEUR — on tape la valeur, ou on ajuste au clavier une fois le curseur
  *                focalisé (← → d'un pas, ⇞ ⇟ de dix pas, ⇱ ⇲ aux extrémités).
  *
@@ -65,8 +65,8 @@ export const SliderField: React.FC<SliderFieldProps> = ({
 
   return (
     <Field label={label} hint={hint} htmlFor={id}>
-      <div className="space-y-1.5 sm:space-y-2">
-        <div className="flex items-center gap-2 sm:gap-3">
+      <div className="space-y-1">
+        <div className="flex flex-wrap items-center gap-2">
           {/*
             Le curseur reste le geste principal ; le champ sert à poser une
             valeur exacte.
@@ -80,23 +80,22 @@ export const SliderField: React.FC<SliderFieldProps> = ({
             emptyValue={min}
             disabled={disabled}
             pad={false}
-            className="w-16 sm:w-24 shrink-0 min-h-touch px-1 sm:px-3 rounded-control
+            className="w-20 shrink-0 min-h-touch-lg px-1 rounded-control
                        bg-cave-950 border border-cave-700
-                       reading text-base sm:text-lg text-ebc-straw text-center
+                       reading text-base text-ebc-straw text-center
                        focus:outline-none focus:border-ebc-straw"
           />
 
           {unit && <span className="reading-unit shrink-0 text-sm">{unit}</span>}
           {after}
           {readout && (
-            <span className="text-2xs sm:text-sm text-cave-400 min-w-0 truncate ml-auto text-right">
+            <span className="text-2xs sm:text-sm text-cave-400 min-w-0 break-words ml-auto text-right">
               {readout}
             </span>
           )}
         </div>
 
-        {/* Piste du curseur. Pas de marge propre : la zone d'attrape de
-            44 px en fournit déjà de part et d'autre de la piste de 8 px. */}
+        {/* Piste fine, cible de 28 px dans sa propre rangée. */}
         <div className="relative">
           <input
             type="range"
@@ -113,22 +112,8 @@ export const SliderField: React.FC<SliderFieldProps> = ({
             value={value}
             disabled={disabled}
             onChange={(e) => onChange(parseFloat(e.target.value))}
-            /*
-             * ⚠️ LA ZONE D'ATTRAPE FAIT 44 px, LA PISTE EN FAIT 8.
-             *
-             * Le champ mesurait 24 px de haut, piste comprise : c'est la
-             * hauteur de ce qu'on VOIT, et c'était aussi tout ce qu'on pouvait
-             * VISER. Un curseur se saisit en posant le pouce puis en glissant
-             * — le doigt dérive verticalement pendant le geste, et sortir de
-             * 24 px lâche la prise en pleine course. Mesuré sur l'écran, pas
-             * deviné : 40×24 pour l'interrupteur, 293×24 ici.
-             *
-             * On sépare donc les deux : `h-11` donne 44 px de surface tactile,
-             * le fond transparent et la piste dessinée en `::-webkit-slider-
-             * runnable-track` gardent l'apparence fine. Rien ne grossit à
-             * l'œil, tout devient attrapable au doigt.
-             */
-            className="w-full h-11 cursor-pointer appearance-none bg-transparent
+            /* Le pouce de 24 px reste dans la zone active de 28 px. */
+            className="w-full h-7 cursor-pointer appearance-none bg-transparent
                        focus:outline-none disabled:opacity-40
                        [&::-webkit-slider-runnable-track]:h-2
                        [&::-webkit-slider-runnable-track]:rounded-full
@@ -180,10 +165,9 @@ export const SliderField: React.FC<SliderFieldProps> = ({
            * centre du curseur ne va pas de 0 à 100 % mais de `pouce/2` à
            * `largeur − pouce/2` — le pouce fait 24 px.
            *
-           * Le libellé reste fin à l'œil ; sa zone d'attrape fait 44 px de
-           * haut, comme la piste au-dessus.
+           * Le libellé possède sa propre cible de 24 px, sans chevauchement.
            */
-          <div className="relative h-11 -mt-2">
+          <div className="relative h-6">
             {marks.map((m) => {
               const at = ((m.value - min) / (max - min)) * 100;
               const active = Math.abs(value - m.value) < step / 2;
@@ -191,12 +175,11 @@ export const SliderField: React.FC<SliderFieldProps> = ({
                 <button
                   key={m.value}
                   type="button"
-                  tabIndex={-1}
+                  aria-pressed={active}
                   disabled={disabled}
                   onClick={() => onChange(m.value)}
                   style={{ left: `calc(${at}% + ${(12 - at * 0.24).toFixed(2)}px)` }}
-                  className={`absolute top-0 h-11 px-2 -translate-x-1/2 flex items-start pt-1
-                              before:absolute before:-inset-x-2 before:inset-y-0 before:content-['']
+                  className={`absolute top-0 min-h-touch-sm min-w-touch-sm px-1 -translate-x-1/2 flex items-center
                               whitespace-nowrap text-2xs sm:text-sm transition-colors ${
                     active ? 'text-ebc-straw font-medium' : 'text-cave-400 hover:text-cave-200'
                   }`}

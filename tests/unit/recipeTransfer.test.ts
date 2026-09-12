@@ -5,6 +5,19 @@ import { normalizeRecipeImport, parseLocalRecipe } from '../../src/domain/recipe
 import { styleFromTargetIons } from '../../src/domain/waterStyles';
 
 describe('Complete recipe text round trip', () => {
+  it('retains explicit yeast identity and biological hop timing while keeping copy-time intent informational', () => {
+    const recipe = structuredClone(fullRecipe);
+    recipe.yeast.hopIndexId = 'yeast-fermentis-safbrew-la-01';
+    recipe.hops[0] = { ...recipe.hops[0], aromaTiming: 'fermentation', aromaContactHours: .125, aromaTemperatureC: 19.5 };
+    recipe.hops[1] = { ...recipe.hops[1], aromaTiming: 'postFermentation', aromaContactHours: 0, aromaTemperatureC: 0 };
+    const text = writeRecipeText(recipe, { yeastIntent: 'Banane, fruits et acidité choisies pour ce pilote.' });
+    const imported = readRecipeText(text)!;
+    expect(imported.yeast).toEqual(recipe.yeast);
+    expect(imported.hops).toEqual(recipe.hops);
+    expect(text).toContain('Intention levure à la copie');
+    expect(imported).not.toHaveProperty('estimates');
+    expect(() => readRecipeText(text.replace('Moment biologique : "fermentation"', 'Moment biologique : "inconnu"'))).toThrow();
+  });
   it('preserves every business field, precision, zero, empty lists and multiline notes', () => {
     const { id, batchRef, favorite, ...expected } = fullRecipe;
     const text = writeRecipeText(fullRecipe);

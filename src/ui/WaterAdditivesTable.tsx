@@ -2,6 +2,7 @@ import React from 'react';
 import { SaltId, AcidId, WaterIons } from '../types';
 import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS, ION_SYMBOL_SHORT, saltIons } from '../domain/water';
 import { formatSaltDose } from './waterReadings';
+import { formatDecimal } from './numericInput';
 
 export interface AcidLine {
   amount: number;
@@ -34,7 +35,7 @@ export const WaterAdditivesTable: React.FC<WaterAdditivesTableProps> = ({
   const spargeAmount = hasSparge ? validDose(spargeAcid.amount) : 0;
   const nothing = dosed.length === 0 && mashAmount === 0 && spargeAmount === 0;
   const isAllInMash = allSaltsInMash || (dosed.length > 0 && dosed.every(id => !validDose(split.sparge[id])));
-  const splitDose = (amount: number | undefined) => validDose(amount) > 0 ? formatSaltDose(amount!) : '0.00 g';
+  const splitDose = (amount: number | undefined) => validDose(amount) > 0 ? formatSaltDose(amount!) : '0,00 g';
 
   return (
     <div className="panel overflow-hidden">
@@ -53,10 +54,10 @@ export const WaterAdditivesTable: React.FC<WaterAdditivesTableProps> = ({
             const grams = validDose(doses[id]);
             const minerals = hasVolume ? (Object.entries(saltIons(id)) as Array<[keyof WaterIons, number]>)
               .filter(([, amount]) => amount > 0)
-              .map(([ion, amount]) => `${ION_SYMBOL_SHORT[ion]}${ion === 'hco3' ? ' éq.' : ''} +${(amount * grams / totalWaterL).toLocaleString('fr-CH', { maximumFractionDigits: 1 })}`) : [];
+              .map(([ion, amount]) => `${ION_SYMBOL_SHORT[ion]}${ion === 'hco3' ? ' éq.' : ''} +${(amount * grams / totalWaterL).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}`) : [];
             if (hasVolume && SALTS[id].untracked) {
               const salt = SALTS[id];
-              minerals.push(`K +${(salt.untracked!.ppmPerGramPerLitre * (salt.solubility ?? 1) * (salt.purity ?? 1) * grams / totalWaterL).toLocaleString('fr-CH', { maximumFractionDigits: 1 })}`);
+              minerals.push(`K +${(salt.untracked!.ppmPerGramPerLitre * (salt.solubility ?? 1) * (salt.purity ?? 1) * grams / totalWaterL).toLocaleString('fr-FR', { maximumFractionDigits: 1 })}`);
             }
             return (
               <React.Fragment key={id}>
@@ -82,19 +83,19 @@ export const WaterAdditivesTable: React.FC<WaterAdditivesTableProps> = ({
               <th scope="row" className={`text-left font-normal text-cave-50 ${pad}`}>
                 {ACIDS[acidId].name}<span className="block text-2xs text-cave-400">Empâtage</span>
               </th>
-              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{mashAmount} {mashAcid.unit}</td>
+              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{formatDecimal(mashAmount)} {mashAcid.unit}</td>
               <td className={`${pad} text-cave-400 text-right`}>—</td>
-              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{mashAmount} {mashAcid.unit}</td>
+              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{formatDecimal(mashAmount)} {mashAcid.unit}</td>
             </tr>
           )}
           {hasVolume && spargeAmount > 0 && (
             <tr className="border-t border-cave-800">
               <th scope="row" className={`text-left font-normal text-cave-50 ${pad}`}>
-                {ACIDS[acidId].name}<span className="block text-2xs text-cave-400">Rinçage · cible pH {spargeTargetPh}</span>
+                {ACIDS[acidId].name}<span className="block text-2xs text-cave-400">Rinçage · cible pH {formatDecimal(spargeTargetPh) || '—'}</span>
               </th>
               <td className={`${pad} text-cave-400 text-right`}>—</td>
-              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{spargeAmount} {spargeAcid.unit}</td>
-              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{spargeAmount} {spargeAcid.unit}</td>
+              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{formatDecimal(spargeAmount)} {spargeAcid.unit}</td>
+              <td className={`${pad} tabular-nums whitespace-nowrap text-water text-right`}>{formatDecimal(spargeAmount)} {spargeAcid.unit}</td>
             </tr>
           )}
           {nothing && (

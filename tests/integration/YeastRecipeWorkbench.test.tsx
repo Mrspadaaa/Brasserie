@@ -3,10 +3,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { YeastRecipeWorkbench, YeastRecipeContext } from '../../src/ui/YeastRecipeWorkbench';
 import { fullRecipe } from '../fixtures/fullRecipe';
-import { applyYeastRecipeDesign, createYeastRecipeDraft } from '../../src/domain/yeastRecipeDesign';
+import { applyYeastRecipeDesign, createYeastRecipeDraft, readYeastRecipeDesign, yeastRecipeDesignChanged } from '../../src/domain/yeastRecipeDesign';
 import { yeastReferences } from '../../src/domain/yeastReferences';
 import { readRecipeText, writeRecipeText } from '../../src/domain/recipeTransfer';
 import type { Recipe } from '../../src/types';
+import { BrewWizard } from '../../src/pages/BrewWizard';
+import { defaultConfig } from '../../src/services/storage';
+import { allerEtape } from '../helpers/wizard';
 
 const knowledge = vi.hoisted(() => []);
 vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: () => knowledge }));
@@ -28,6 +31,44 @@ function Host({ initial, changed }: { initial: Recipe; changed: (r: Recipe) => v
 }
 
 describe('Levure : style, comparaison et application', () => {
+  it('keeps the first dry-yeast application current through the actual wizard steps', () => {
+    const initial: Recipe = { ...wheat(), style: 'American Pale Ale', name: 'Première application',
+      yeast: { name: '', form: 'sèche', qty: 1, unit: 'sachet' },
+      fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 10 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 5 }] };
+    const onSave = vi.fn();
+    render(<BrewWizard seed={{ recipe: initial }} stockItems={[]} config={defaultConfig} knownStyles={[]}
+      onClose={vi.fn()} onSave={onSave} onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
+    allerEtape(/^Levure/);
+    fireEvent.click(screen.getByRole('button', { name: /Voir les .* souches du style/ }));
+    fireEvent.click(screen.getByRole('radio', { name: /Comparer .*US-05/ }));
+    open(/Ensemencement et durée à préparer/);
+    change('Température d’ensemencement du scénario', '19');
+    change('Masse de levure du scénario en grammes', '20');
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer le scénario' }));
+    expect(screen.getByText(/Scénario repris dans la recette/)).toBeInTheDocument();
+    expect(screen.queryByText(/La recette a changé pendant la comparaison/)).not.toBeInTheDocument();
+    allerEtape(/^Paliers/);
+    expect(screen.queryByText(/Des réglages ont changé/)).not.toBeInTheDocument();
+    allerEtape(/^Récapitulatif/);
+    expect(screen.queryByText(/réglages modifiés/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
+    const saved = onSave.mock.calls[0][0] as Recipe;
+    expect({ yeast: saved.yeast, volumeL: saved.volumeL, fermentation: saved.fermentation, mashSteps: saved.mash.steps,
+      style: saved.style, ...(saved.styleRef ? { styleRef: saved.styleRef } : {}) }).toEqual(saved.yeastDesign?.applied);
+    expect(yeastRecipeDesignChanged(saved, readYeastRecipeDesign(saved)!)).toBe(false);
+    allerEtape(/^Levure/);
+    open(/Saisie libre et stock/);
+    change('Quantité de levure, en g', '25');
+    allerEtape(/^Paliers/);
+    expect(screen.getByText(/Des réglages ont changé/)).toBeInTheDocument();
+    allerEtape(/^Récapitulatif/);
+    expect(screen.getByText(/réglages modifiés/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
+    const changed = onSave.mock.calls[1][0] as Recipe;
+    expect(changed.yeast.qty).toBe(25);
+    expect(changed.yeastDesign!.applied.yeast.qty).toBe(20);
+    expect(yeastRecipeDesignChanged(changed, readYeastRecipeDesign(changed)!)).toBe(true);
+  });
   it('starts with the beer style and limits wheat choices before choosing a flavor', () => {
     const onChange = vi.fn(); render(<YeastRecipeWorkbench recipe={wheat()} onChange={onChange} />);
     expect(screen.getByLabelText('Filtrer les levures par style')).toHaveValue('weissbier');

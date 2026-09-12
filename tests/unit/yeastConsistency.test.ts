@@ -51,10 +51,23 @@ describe('Même contexte de levure dans les quatre parcours', () => {
     const r = recipe(); r.yeast.hopIndexId = guide.yeastId; r.yeast.name = 'Wyeast 3068'; r.fermentation[0].tempC = 17.5;
     expect(compare(r, [guide]).issues).toEqual([]);
   });
-  it('un guide désactivé ne ressuscite ni dans le cumul ni via les anciens repères du solveur', () => {
+  it('un guide désactivé laisse les faits fabricant indépendants cohérents dans les quatre parcours', () => {
     const guide = { ...guideFermentations([]).find(g => g.yeastId === 'wyeast-3068')!, enabled: false };
     const r = recipe(); r.yeast.hopIndexId = guide.yeastId; r.yeast.name = 'Wyeast 3068'; r.fermentation[0].tempC = 30;
-    const p = compare(r, [guide]); expect(p.temperature).toBeUndefined(); expect(p.issues.map(i => i.code)).toEqual(['window']);
+    const p = compare(r, [guide]);
+    expect(p.guide).toBeUndefined();
+    expect(p.temperature?.range).toEqual({ min: 18, max: 24 });
+    expect(p.issues.map(i => i.code)).toEqual(['outside']);
+  });
+  it('un guide désactivé et un catalogue personnel sans température ne ressuscitent aucun ancien repère', () => {
+    const guide = { ...guideFermentations([]).find(g => g.yeastId === 'wyeast-3068')!, enabled: false };
+    const yeast = structuredClone(guideYeasts([]).find(y => y.id === guide.yeastId)!);
+    yeast.catalogue!.facts = yeast.catalogue!.facts.filter(f => f.key !== 'temperature');
+    const r = recipe(); r.yeast.hopIndexId = guide.yeastId; r.yeast.name = 'Wyeast 3068'; r.fermentation[0].tempC = 30;
+    const p = compare(r, [guide, yeast]);
+    expect(p.guide).toBeUndefined();
+    expect(p.temperature).toBeUndefined();
+    expect(p.issues.map(i => i.code)).toEqual(['window']);
   });
   it.each(['Cider', 'Wine'])('la fenêtre d’une autre application (%s) reste documentaire', context => {
     const y = diamond(); y.catalogue!.facts.filter(f => f.key === 'temperature').forEach(f => { f.context = context; });

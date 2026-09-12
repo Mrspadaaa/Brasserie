@@ -27,6 +27,14 @@ import { StyleWater } from '../domain/waterStyles';
 import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
 import { RecipeReview } from './RecipeReview';
+import { formatDecimal } from './numericInput';
+
+/** Preserve Units' conversion and rounding; only localize the displayed number. */
+const formatQuantity = (quantity: number, unit: string) =>
+  Number.isFinite(quantity) ? Units.format(quantity, unit).replace(/^(-?\d+)\.(\d+)/, '$1,$2') : `— ${unit}`;
+const formatFixed = (value: number, digits: number) =>
+  Number.isFinite(value) ? value.toFixed(digits).replace('.', ',') : '—';
+const formatReading = (value: number) => formatDecimal(value) || '—';
 
 /**
  * La fiche de brassage : tout ce qui compose la recette, sur un seul écran, et
@@ -40,7 +48,7 @@ import { RecipeReview } from './RecipeReview';
  *
  * Deux règles de composition :
  *
- *   - Une ligne par ingrédient, hauteur fixe : le nom se lit, les nombres se
+ *   - Une ligne par ingrédient, hauteur adaptée au contenu : le nom se lit, les nombres se
  *     tapent. Les sections restent indépendantes : on doit pouvoir parcourir
  *     les volumes et pesées essentiels, puis ouvrir les détails utiles.
  *
@@ -90,7 +98,8 @@ const Cell: React.FC<{
   label: string;
 }> = (props) => {
   const { value, onValue, unit, width = 'w-[4.5rem] sm:w-20', integer, min, max, label } = props;
-  const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
+  // An erased required measure remains unavailable until the wizard validates it.
+  const emptyValue = 'emptyValue' in props ? props.emptyValue : Number.NaN;
   return (
     <span className="flex items-baseline gap-1">
       <NumberInput
@@ -272,6 +281,21 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
     onHops(hops.map((h, j) => (j === i ? patchIndexedHop(h, patch) : h)));
 
   const totalHopG = hops.reduce((s, h) => s + h.weightG, 0);
+  const hasStockNeeds = fermentables.some(f => f.name.trim() && f.weightKg > 0)
+    || hops.some(h => h.name.trim() && h.weightG > 0)
+    || Boolean(yeast.name.trim() && yeast.qty > 0 && yeast.unit);
+  const incompleteStockNeeds = fermentables.some(f => !f.name.trim() || !Number.isFinite(f.weightKg) || f.weightKg <= 0)
+    || hops.some(h => !h.name.trim() || !Number.isFinite(h.weightG) || h.weightG <= 0)
+    || Boolean(yeast.name.trim() && (!Number.isFinite(yeast.qty) || yeast.qty <= 0 || !yeast.unit));
+  const stockSummary = shortages.length > 0
+    ? <span role="status" className="inline-flex max-w-full items-center gap-1 rounded-full border border-attention/40 bg-attention/10 px-1.5 py-px text-xs leading-tight text-attention">
+        <AlertTriangle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+        <span>{shortages.length} ingrédient{shortages.length > 1 ? 's' : ''} à commander</span>
+      </span>
+    : <span role="status" className="inline-flex max-w-full items-center gap-1 text-xs leading-tight text-cave-200">
+        {hasStockNeeds && !incompleteStockNeeds && <Check className="w-3.5 h-3.5 shrink-0 text-hop" aria-hidden="true" />}
+        {incompleteStockNeeds ? 'Besoins à compléter' : hasStockNeeds ? 'Stock suffisant' : 'Besoins à renseigner'}
+      </span>;
 
   /*
    * Les houblons se lisent dans l'ordre de la JOURNÉE, pas dans celui où on les
@@ -286,7 +310,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
     <div className={tight ? 'space-y-2' : 'space-y-3'}>
       {/* --- Identité ------------------------------------------------------ */}
       {water&&<RecipeWaterVolumes totalL={mashWaterL+spargeWaterL} roL={water.mashOsmoseeL+water.spargeOsmoseeL}/>}
-      <Block title="Identité" aside={[name || 'Nom à renseigner', style, Units.format(volumeL, 'L')].filter(Boolean).join(' · ')}>
+      <Block title="Identité" aside={[name || 'Nom à renseigner', style, formatQuantity(volumeL, 'L')].filter(Boolean).join(' · ')}>
         <Row label="Nom">
           <Input
             type="text"
@@ -327,7 +351,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
         <Row label="Ébullition">
           <Cell label="Ébullition" value={boilMin} onValue={onBoilMin} unit="min" integer min={0} />
         </Row>
-        <Row label="Carbonatation" hint="Ce que la recette annonce — « 2.5 vol ».">
+        <Row label="Carbonatation" hint="Ce que la recette annonce — « 2,5 vol ».">
           <Input
             type="text"
             name="brewsheet_carbo_target"
@@ -340,7 +364,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             data-bwignore="true"
             value={carboTarget}
             onChange={(e) => onCarboTarget(e.target.value)}
-            placeholder="2.5 vol"
+            placeholder="2,5 vol"
             aria-label="Carbonatation visée"
             className={`${inputClass} w-28 text-right`}
           />
@@ -348,7 +372,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Fermentescibles ----------------------------------------------- */}
-      <Block title="Fermentescibles" aside={Units.format(totalGristKg, 'kg')}>
+      <Block title="Fermentescibles" aside={formatQuantity(totalGristKg, 'kg')}>
         {fermentables.length === 0 ? (
           <p className="py-2 text-sm text-cave-400">Aucun fermentescible.</p>
         ) : (
@@ -382,7 +406,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Houblons ------------------------------------------------------ */}
-      <Block title="Houblons" aside={Units.format(totalHopG, 'g')}>
+      <Block title="Houblons" aside={formatQuantity(totalHopG, 'g')}>
         {hops.length === 0 ? (
           <p className="py-2 text-sm text-cave-400">Aucun houblon.</p>
         ) : (
@@ -404,7 +428,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                       <span className="text-cave-400">
                         {def.bitters
                           ? ibu !== null
-                            ? `${ibu.toFixed(1)} IBU`
+                            ? `${formatFixed(ibu, 1)} IBU`
                             : 'IBU incalculable'
                           : 'effet à cru séparé'}
                       </span>
@@ -602,11 +626,11 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
         title="Eau"
         aside={
           totalGristKg > 0
-            ? `${(mashWaterL / totalGristKg).toFixed(1)} L/kg`
+            ? `${formatFixed(mashWaterL / totalGristKg, 1)} L/kg`
             : undefined
         }
       >
-        <Row label="Empâtage" hint={water ? `${Number(water.diRatioPct.toFixed(2))} % d’osmosée` : undefined}>
+        <Row label="Empâtage" hint={water ? `${formatReading(Number(water.diRatioPct.toFixed(2)))} % d’osmosée` : undefined}>
           <Cell
             label="Eau d’empâtage"
             value={mashWaterL}
@@ -621,7 +645,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             water
               ? water.spargeWaterL <= 0
                 ? 'aucun — tout passe par la maische'
-                : `${Number(water.spargeDiRatioPct.toFixed(2))} % d’osmosée${water.spargeLinked ? '' : ' · délié'}`
+                : `${formatReading(Number(water.spargeDiRatioPct.toFixed(2)))} % d’osmosée${water.spargeLinked ? '' : ' · délié'}`
               : undefined
           }
         >
@@ -635,13 +659,13 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
         </Row>
         <Row label="Eau totale de brassage" hint="Empâtage + rinçage : volume total d’eau à engager.">
           <span className="reading text-base text-cave-200 pr-9">
-            {Units.format(Math.round((mashWaterL + spargeWaterL) * 10) / 10, 'L')}
+            {formatQuantity(Math.round((mashWaterL + spargeWaterL) * 10) / 10, 'L')}
           </span>
         </Row>
         {totalGristKg > 0 && (
-          <Row label="Moût avant ébullition estimé" hint="Après rétention des drêches (~0.96 L/kg).">
+          <Row label="Moût avant ébullition estimé" hint="Après rétention des drêches (~0,96 L/kg).">
             <span className="reading text-base text-cave-200 pr-9">
-              {Units.format(
+              {formatQuantity(
                 Math.max(0, Math.round((mashWaterL + spargeWaterL - totalGristKg * 0.96) * 10) / 10),
                 'L'
               )}
@@ -658,10 +682,10 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             */}
             <Row
               label="Eau osmosée à préparer"
-              hint={`${water.mashOsmoseeL} L empâtage + ${water.spargeOsmoseeL} L rinçage`}
+              hint={`${formatReading(water.mashOsmoseeL)} L empâtage + ${formatReading(water.spargeOsmoseeL)} L rinçage`}
             >
               <span className="reading text-base text-water pr-9">
-                {Units.format(
+                {formatQuantity(
                   Math.round((water.mashOsmoseeL + water.spargeOsmoseeL) * 10) / 10,
                   'L'
                 )}
@@ -672,7 +696,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               hint={water.sourceName}
             >
               <span className="reading text-base text-cave-200 pr-9">
-                {Units.format(
+                {formatQuantity(
                   Math.round(
                     (mashWaterL + spargeWaterL - water.mashOsmoseeL - water.spargeOsmoseeL) * 10
                   ) / 10,
@@ -714,7 +738,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                         {ION_LABEL[ion]}
                       </dt>
                       <dd className="reading text-sm sm:text-base text-cave-50">
-                        {Math.round(water.mashIons[ion])}
+                        {formatReading(Math.round(water.mashIons[ion]))}
                       </dd>
                     </div>
                   ))}
@@ -734,16 +758,16 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                         : 'text-ebc-amber'
                     }`}
                   >
-                    {water.ra}
+                    {formatReading(water.ra)}
                   </span>{' '}
                   {water.raSaltTarget != null
-                    ? `— repère pour les malts ≈ ${water.raSaltTarget} ppm (estimation du mash)`
-                    : `— repère des malts ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
+                    ? `— repère pour les malts ≈ ${formatReading(water.raSaltTarget)} ppm (estimation du mash)`
+                    : `— repère des malts ${formatReading(water.raBand.min)} à ${formatReading(water.raBand.max)} (${water.raBand.label})`}
                 </span>
                 <span className="text-cave-400">
                   SO₄:Cl{' '}
                   <span className="reading text-sm text-cave-200">
-                    {water.ratio.ratio !== null ? water.ratio.ratio.toFixed(1) : '—'}
+                    {water.ratio.ratio !== null ? formatFixed(water.ratio.ratio, 1) : '—'}
                   </span>{' '}
                   · {water.ratio.label}
                 </span>
@@ -752,9 +776,9 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               {(water.mashPh || water.spargePh) && (
                 <p className="text-sm text-cave-400">
                   pH mesuré à la cuve :{' '}
-                  {water.mashPh ? `maische ${water.mashPh}` : ''}
+                  {water.mashPh ? `maische ${formatDecimal(water.mashPh)}` : ''}
                   {water.mashPh && water.spargePh ? ' · ' : ''}
-                  {water.spargePh ? `rinçage ${water.spargePh}` : ''}.
+                  {water.spargePh ? `rinçage ${formatDecimal(water.spargePh)}` : ''}.
                 </p>
               )}
               </details>
@@ -800,24 +824,34 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Ce qui manque -------------------------------------------------- */}
-      <Block title="Stock">
+      <Block title="Stock" aside={stockSummary}>
         {shortages.length === 0 ? (
-          <p className="py-2 flex items-center gap-2 text-base text-hop">
-            <Check className="w-5 h-5 shrink-0" />
-            Tout est disponible pour brasser.
+          <p className="py-1 text-sm text-cave-200">
+            {incompleteStockNeeds
+              ? 'Complète les ingrédients et leurs quantités pour vérifier tout le stock.'
+              : hasStockNeeds ? 'Tout est disponible pour brasser.' : 'Renseigne les ingrédients et leurs quantités pour vérifier le stock.'}
           </p>
         ) : (
-          shortages.map((s) => (
-            // Nom + unité : c'est l'identité d'un besoin cumulé, le nom seul
-            // dédoublait la ligne quand un houblon revenait deux fois.
-            <div key={`${s.name}-${s.unit}`} className="py-2 flex items-baseline gap-2">
-              <AlertTriangle className="w-4 h-4 text-ebc-amber shrink-0" />
-              <span className="min-w-0 flex-1 text-base text-cave-50 truncate">{s.name}</span>
-              <span className="reading text-sm text-cave-400 shrink-0">
-                {Units.format(s.have, s.unit)} / {Units.format(s.needed, s.unit)}
-              </span>
-            </div>
-          ))
+          <table className="w-full table-fixed text-[13px] leading-snug">
+            <caption className="sr-only">Disponibilités pour les ingrédients à commander</caption>
+            <thead>
+              <tr className="text-cave-400">
+                <th scope="col" className="w-2/5 pb-1 pr-1 text-left font-normal break-words">Ingrédient</th>
+                <th scope="col" className="pb-1 px-1 text-right font-normal break-words">Disponible</th>
+                <th scope="col" className="pb-1 pl-1 text-right font-normal break-words">Nécessaire</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-cave-850">
+              {shortages.map(s => (
+                // Nom + unité identifient le besoin cumulé par l’assistant.
+                <tr key={`${s.name}-${s.unit}`} className="align-top">
+                  <th scope="row" className="py-1.5 pr-1 text-left font-normal text-cave-50 [overflow-wrap:anywhere]">{s.name}</th>
+                  <td className="py-1.5 px-1 text-right font-mono tabular-nums text-cave-200 [overflow-wrap:anywhere]">{formatQuantity(s.have, s.unit)}</td>
+                  <td className="py-1.5 pl-1 text-right font-mono tabular-nums text-cave-50 [overflow-wrap:anywhere]">{formatQuantity(s.needed, s.unit)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </Block>
 

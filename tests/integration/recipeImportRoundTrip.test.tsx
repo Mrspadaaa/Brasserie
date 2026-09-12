@@ -113,7 +113,7 @@ describe('Recipe import through the real UI', () => {
     render(<RecipeImportSheet open onApply={apply} onClose={vi.fn()} />);
     paste(writeRecipeText(fullRecipe));
     expect(ai).not.toHaveBeenCalled();
-    expect(screen.getByLabelText('Traitement d’eau importé')).toHaveTextContent('0.325');
+    expect(screen.getByLabelText('Traitement d’eau importé')).toHaveTextContent('0,325');
     expect(screen.getByLabelText('Autres ajouts importés')).toHaveTextContent('Whirlfloc');
     click(/^Reprendre$/);
     expect(apply.mock.calls[0][0].waterPlan).toEqual(fullRecipe.waterPlan);

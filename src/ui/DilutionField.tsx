@@ -1,6 +1,7 @@
 import React, { useId } from 'react';
 import { NumberInput } from './NumberInput';
 import { SliderField } from './SliderField';
+import { formatDecimal } from './numericInput';
 
 /**
  * Part d'eau osmosée — en POURCENTAGE et en LITRES, sur la même valeur.
@@ -114,7 +115,7 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
          * litrage auquel il se rapporte, et `readout` reste vide.
          */
         after={
-          <span className="flex items-baseline gap-1 ml-auto min-w-0 shrink">
+          <span className="flex flex-wrap items-baseline justify-end gap-1 ml-auto min-w-0 shrink">
             <NumberInput
               id={litresId}
               /*
@@ -143,7 +144,7 @@ export const DilutionField: React.FC<DilutionFieldProps> = ({
             <span className="text-2xs text-cave-400 shrink-0">
               {hasVolume ? (
                 <>
-                  + <span className="reading text-cave-400">{reseauL}</span> réseau
+                  + <span className="reading text-cave-400">{formatDecimal(reseauL)}</span> réseau
                 </>
               ) : (
                 '— volume non posé'

@@ -52,7 +52,7 @@ describe('Copie, import et relecture de la conduite levure', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Scénario de levure invalide');
     expect(screen.getByRole('button', { name: 'Faire relire la recette' })).toBeDisabled(); expect(AiClient.run).not.toHaveBeenCalled();
   });
-  it('imports an unknown quantity without carrying the old sachets into the recap or export', async () => {
+  it('imports an unknown quantity without carrying old sachets and requires a value before saving', async () => {
     const unknown = yeastFlowRecipe();
     delete (unknown.yeast as any).qty; delete (unknown.yeast as any).unit;
     delete (unknown.yeastDesign!.applied.yeast as any).qty; delete (unknown.yeastDesign!.applied.yeast as any).unit;
@@ -74,7 +74,8 @@ describe('Copie, import et relecture de la conduite levure', () => {
     const copied = readRecipeText(copy.mock.calls[0][0])!;
     expect(copied.yeast.qty).toBeUndefined(); expect(copied.yeast.unit).toBeUndefined();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
-    expect(save.mock.calls[0][0].yeast.qty).toBeUndefined();
+    expect(save).not.toHaveBeenCalled();
+    expect(screen.getByText('Quantité de levure : renseigne une valeur.')).toBeInTheDocument();
     expect(AiClient.run).not.toHaveBeenCalled();
   });
 });

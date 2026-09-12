@@ -60,7 +60,8 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(FinanceService.getPlans()[0]).toMatchObject({ id: idea.id, status: 'active', amountCents: 215000, upgrade: { budgetKnown: true, timing: 'next' } });
     expect(StorageService.getTransactions()).toHaveLength(0);
     expect(StorageService.getStocks().equipment).toHaveLength(0);
-    fireEvent.click(screen.getByRole('tab', { name: 'Prévoir' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
     expect(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ })).toBeChecked();
     expect(screen.getByRole('button', { name: /Nouvelle cuverie.*Projet de matériel/ })).toBeVisible();
     fireEvent.click(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ }));
@@ -101,14 +102,17 @@ describe('Projets de matériel, du besoin à l’achat', () => {
      await saved();
     expect(StorageService.getTransactions()[0]).toMatchObject({ amountTTC: 800, finance: { planId: 'HOTTE', amountCents: 80000, paymentStatus } });
     expect(StorageService.getStocks().equipment[0]).toMatchObject({ name: 'Hotte de brassage', purchasePrice: 800 });
-    fireEvent.click(screen.getByRole('tab', { name: 'Prévoir' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
     const due = within(screen.getByRole('heading', { name: 'Prochaines échéances' }).closest('section')!);
     expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*400/ })).toBeVisible();
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/2[\s'’]?800\.00/);
+    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/2[\s'’]?800,00/);
     fireEvent.click(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ }));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent(paymentStatus === 'paid' ? '0.00' : '800.00');
-    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/3[\s'’]?200\.00/);
-    fireEvent.click(screen.getByRole('tab', { name: 'Coûts' }));
+    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent(paymentStatus === 'paid' ? '0,00' : '800,00');
+    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/3[\s'’]?200,00/);
+    fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
+    fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
     fireEvent.click(screen.getByRole('button', { name: /Hotte de brassage.*Depuis le début du projet/ }));
     fireEvent.click(screen.getByText(/Achats liés ·/));
     fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: /Hotte de brassage.*Part du projet/ }));
@@ -121,10 +125,13 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     render(<Finances/>);
     fireEvent.click(screen.getByRole('checkbox', { name: 'Inclure Hotte de brassage dans les prévisions' }));
     await waitFor(() => expect(FinanceService.getPlans()[0].status).toBe('draft'));
-    fireEvent.click(screen.getByRole('tab', { name: 'Prévoir' }));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('300.00');
+    fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
+    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('300,00');
     expect(screen.queryByRole('checkbox', { name: /Inclure mes projets de matériel/ })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('tab', { name: 'Coûts' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Synthèse' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Coûts', exact: true }));
+    fireEvent.click(screen.getByText('Investissements et matériel', { exact: true }));
     expect(screen.getByRole('button', { name: /Hotte de brassage.*1 facture.*300/ })).toBeVisible();
   });
 
@@ -144,7 +151,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     StorageService.saveConfig({ ...defaultConfig, fiscal: { ...defaultConfig.fiscal, isTvaRegistered: registered, tvaNormalRate: 0.081 } });
     render(<CreativePricing/>); expect(screen.getByText('À renseigner')).toBeVisible();
     change('Prix de vente TTC (CHF)', '10.81'); change('Coût de revient de ce format (CHF)', '6');
-    expect(screen.getByText('Marge unitaire estimée').parentElement).toHaveTextContent(registered ? '4.00' : '4.81');
+    expect(screen.getByText('Marge unitaire estimée').parentElement).toHaveTextContent(registered ? '4,00' : '4,81');
     expect(FinanceService.getPlans()).toHaveLength(0);
   });
 });

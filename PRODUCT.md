@@ -29,8 +29,32 @@ Deux scènes d'usage, opposées, dans la même journée :
 | Erreur coûte | Un brassin de 30 L | Une ligne à corriger |
 | Écrans | Assistant de recette, jour de brassage, atelier de l'eau | Finances, clients, stocks |
 
-La cuverie commande. Quand les deux scènes s'opposent, c'est la cuverie qui
-tranche : on peut refaire une saisie comptable, pas un empâtage.
+Les opérations de cuverie demandent de préserver les mesures, les alertes et
+les actions au bon moment. Les gants ou la pénombre peuvent justifier une
+adaptation locale d'une commande ; ils n'imposent pas de grossir toute l'app.
+
+## Priorité d'interface : densité utile sur mobile
+
+**Maximiser l'espace disponible et compacter les données autant que possible,
+en conservant une lecture et des actions claires.** Cette décision explicite
+s'applique à toute l'interface : boutons, champs, en-têtes, pieds de page,
+navigation, titres, lignes, marges et panneaux.
+
+Des tailles standardisées sont souhaitées, mais nettement plus petites.
+Le téléphone doit montrer le travail du brasseur : données comparables,
+valeurs modifiables là où elles se lisent et action courante rapide. Les
+explications secondaires s'ouvrent à la demande. Ni une alerte utile ni une
+information nécessaire à la décision ne disparaît pour gagner de la place.
+
+Choisir l'outil qui exprime le mieux la donnée ou le geste : les sélections,
+pastilles, jauges, courbes, tableaux et résumés repliables font partie du
+vocabulaire courant de l'application. Leur intérêt se mesure au temps gagné,
+à la compréhension et à l'espace utile, pas à leur nouveauté.
+
+Cette priorité remplace les anciennes obligations UI qui surdimensionnaient
+l'application. [DESIGN.md](DESIGN.md) fixe l'échelle ; le
+[guide UI](docs/ui-compacte.md) relie les besoins aux composants disponibles.
+Toute tâche frontend, y compris déléguée, prend ces documents en entrée.
 
 ## Travaux
 

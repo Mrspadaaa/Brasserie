@@ -100,7 +100,7 @@ export const SaltDoseControl: React.FC<{
           type="button"
           disabled={off || grams <= 0}
           {...presse(-0.5)}
-          aria-label={`Retirer 0.5 g de ${def.name}`}
+          aria-label={`Retirer 0,5 g de ${def.name}`}
           className="w-11 h-11 shrink-0 rounded-l-control bg-cave-800 active:bg-cave-700
                          text-cave-50 flex items-center justify-center disabled:opacity-30"
         >
@@ -122,7 +122,7 @@ export const SaltDoseControl: React.FC<{
           type="button"
           disabled={off}
           {...presse(0.5)}
-          aria-label={`Ajouter 0.5 g de ${def.name}`}
+          aria-label={`Ajouter 0,5 g de ${def.name}`}
           className="w-11 h-11 shrink-0 rounded-r-control bg-cave-800 active:bg-cave-700
                          text-cave-50 flex items-center justify-center disabled:opacity-30"
         >

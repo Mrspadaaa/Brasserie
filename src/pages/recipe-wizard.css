@@ -12,7 +12,10 @@
 }
 .recipe-wizard .recipe-metrics {
   padding: 4px 8px;
+  flex-wrap: wrap;
+  row-gap: 4px;
 }
+.recipe-wizard .recipe-metrics .reading { white-space: nowrap; }
 .recipe-wizard :is(.space-y-3, .space-y-4, .space-y-5) > :not([hidden]) ~ :not([hidden]) {
   margin-top: 8px;
 }
@@ -66,9 +69,19 @@
   padding-block: 4px;
 }
 .recipe-wizard [data-recipe-section] > summary {
-  min-height: 32px;
+  min-height: 28px;
+  padding: 4px 8px;
   gap: 8px;
 }
+.recipe-wizard .recipe-disclosure { padding: 0; }
+.recipe-wizard :is(.space-y-2, .space-y-3) > [data-recipe-section] + [data-recipe-section] { margin-top: 4px; }
+.recipe-wizard .recipe-disclosure > summary > span { min-width: 0; overflow-wrap: anywhere; }
+.recipe-wizard .recipe-draft-status { margin-bottom: 4px; }
+.recipe-wizard .recipe-draft-status button { min-height: 24px; font-size: 12px; }
+.recipe-wizard .wizard-step-rail { scrollbar-width: none; }
+.recipe-wizard .wizard-step-rail::-webkit-scrollbar { display: none; }
+.recipe-wizard .recipe-hop-tools > summary { min-height: 28px; }
+.recipe-wizard [aria-invalid='true'] { border-color: theme('colors.alert-strong'); }
 .recipe-wizard [data-recipe-section] > summary > span {
   display: flex;
   flex-wrap: wrap;
@@ -85,7 +98,9 @@
 }
 .recipe-wizard [aria-label='Eaux à préparer'] {
   padding: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr));
 }
+.recipe-wizard [aria-label='Eaux à préparer'] dt { overflow-wrap: anywhere; }
 .recipe-wizard [data-water-volume] {
   font-size: 16px;
 }
@@ -133,4 +148,7 @@
 @media (min-width: 640px) {
   .recipe-wizard > main > div { padding-inline: 12px; }
   .recipe-wizard [aria-label='Moment d’ajout'] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .recipe-wizard [data-recipe-section] > summary > span > span:first-child { flex: 0 1 auto; }
 }

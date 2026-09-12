@@ -1,6 +1,78 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewport';
+import './page-shell.css';
+
+const PAGE_OVERLAYS = [
+  'dialog[open]', '[role="dialog"]', '[role="alertdialog"]',
+  '[role="menu"]', '[role="listbox"]', '[data-page-overlay]',
+  '[data-vaul-overlay]', '[data-radix-popper-content-wrapper]',
+  '[role="alert"]', '[role="status"]', '[aria-live]:not([aria-live="off"])'
+].join(',');
+// A drawer's focus scope can still run during its closing transition. Defer to
+// the mounted, visible dialog until its trap cleans up, even with data-state=closed.
+const PAGE_DIALOGS = 'dialog[open], [role="dialog"], [role="alertdialog"]';
+const pageScopes: HTMLElement[] = [];
+const pageInert = new Map<HTMLElement, string | null>();
+let isolationObserver: MutationObserver | undefined;
+
+/** Layout visibility, independent of inert that this scope temporarily owns. */
+function pageElementShown(element: HTMLElement) {
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+    const style = getComputedStyle(node);
+    if (node.hidden || node.getAttribute('aria-hidden') === 'true' || style.display === 'none' || style.visibility === 'hidden') return false;
+    if (node instanceof HTMLDetailsElement && !node.open && !node.querySelector('summary')?.contains(element)) return false;
+  }
+  return true;
+}
+
+const foregroundPage = () => pageScopes.at(-1);
+function pageOverlayShown(element: HTMLElement) {
+  if (!pageElementShown(element)) return false;
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+    // Ignore only inert introduced here; a pre-existing inert surface stays disabled.
+    if (node.hasAttribute('inert') && !(pageInert.has(node) && pageInert.get(node) === null)) return false;
+  }
+  return true;
+}
+const pageOverlays = () => [...document.querySelectorAll<HTMLElement>(PAGE_OVERLAYS)].filter(pageOverlayShown);
+const hasPageDialog = () => [...document.querySelectorAll<HTMLElement>(PAGE_DIALOGS)].some(pageOverlayShown);
+
+/** Keep the active page, portals and announcements; isolate only their sibling branches. */
+function refreshPageIsolation() {
+  const page = foregroundPage();
+  const blocked = new Set<HTMLElement>();
+  if (page) {
+    const allowed = [page, ...pageOverlays()];
+    const visit = (element: HTMLElement) => {
+      if (allowed.includes(element)) return;
+      if (allowed.some(surface => element.contains(surface))) {
+        [...element.children].forEach(child => { if (child instanceof HTMLElement) visit(child); });
+      } else if (!element.matches('script, style, link, meta')) blocked.add(element);
+    };
+    [...document.body.children].forEach(child => { if (child instanceof HTMLElement) visit(child); });
+  }
+  for (const [element, previous] of pageInert) {
+    if (blocked.has(element)) continue;
+    if (previous === null) element.removeAttribute('inert');
+    else element.setAttribute('inert', previous);
+    pageInert.delete(element);
+  }
+  for (const element of blocked) {
+    if (pageInert.has(element)) continue;
+    pageInert.set(element, element.getAttribute('inert'));
+    element.setAttribute('inert', '');
+  }
+}
+
+function pageFocusTargets(page: HTMLElement) {
+  const surfaces = [page, ...pageOverlays()];
+  return [...document.querySelectorAll<HTMLElement>(
+    'button, a[href], input, select, textarea, summary, [tabindex], [contenteditable="true"], [contenteditable="plaintext-only"]'
+  )].filter(element => surfaces.some(surface => surface.contains(element)) &&
+    element.tabIndex >= 0 && !element.matches(':disabled, input[type="hidden"]') &&
+    !element.closest('[inert]') && pageElementShown(element));
+}
 
 /**
  * Cadre commun des pages plein écran.
@@ -71,8 +143,76 @@ export const PageShell: React.FC<PageShellProps> = ({
   const coarse = useCoarsePointer();
   const keyboardInset = useKeyboardInset();
   const frame = wide ? 'max-w-6xl' : 'max-w-3xl';
+  const pageRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLElement>(null);
-  useLayoutEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; }, [scrollKey]);
+  const [opener] = useState(() => document.activeElement instanceof HTMLElement ? document.activeElement : null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+    let lastFocus: HTMLElement | null = null;
+    const focusPage = () => {
+      const target = lastFocus?.isConnected && page.contains(lastFocus) && pageElementShown(lastFocus) &&
+        !lastFocus.matches(':disabled') ? lastFocus : scrollRef.current;
+      target?.focus({ preventScroll: true });
+    };
+    pageScopes.push(page);
+    refreshPageIsolation();
+    if (!isolationObserver) {
+      isolationObserver = new MutationObserver(refreshPageIsolation);
+      isolationObserver.observe(document.body, {
+        childList: true, subtree: true, attributes: true,
+        attributeFilter: ['open', 'hidden', 'data-state', 'role', 'aria-live']
+      });
+    }
+    if (!page.contains(document.activeElement) && !hasPageDialog()) focusPage();
+    const onFocus = (event: FocusEvent) => {
+      if (foregroundPage() !== page) return;
+      const target = event.target as HTMLElement;
+      if (page.contains(target)) { lastFocus = target; return; }
+      // Portaled dialogs own their focus; live alerts may carry a retry action.
+      if (hasPageDialog() || pageOverlays().some(overlay => overlay.contains(target))) return;
+      focusPage();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || foregroundPage() !== page || hasPageDialog()) return;
+      const target = event.target as HTMLElement;
+      if (event.key === 'Escape') {
+        if (!page.contains(target) && pageOverlays().some(overlay => overlay.contains(target))) return;
+        event.preventDefault(); closeRef.current(); return;
+      }
+      if (event.key !== 'Tab') return;
+      const targets = pageFocusTargets(page);
+      const first = targets[0], last = targets.at(-1);
+      if (!first || !last) { event.preventDefault(); scrollRef.current?.focus(); return; }
+      const active = document.activeElement;
+      if (!targets.includes(active as HTMLElement) || (event.shiftKey ? active === first : active === last)) {
+        event.preventDefault(); (event.shiftKey ? last : first).focus();
+      }
+    };
+    document.addEventListener('focusin', onFocus);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('focusin', onFocus);
+      document.removeEventListener('keydown', onKey);
+      pageScopes.splice(pageScopes.indexOf(page), 1);
+      if (!pageScopes.length) { isolationObserver?.disconnect(); isolationObserver = undefined; }
+      refreshPageIsolation();
+      const remaining = foregroundPage();
+      if (opener?.isConnected && !opener.closest('[inert]') && pageElementShown(opener) &&
+        (!remaining || remaining.contains(opener)) && !hasPageDialog()) opener.focus({ preventScroll: true });
+    };
+  }, [opener]);
+
+  useLayoutEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    // A field can disappear when Enter changes steps. Keep rail/button focus when it survives.
+    if (foregroundPage() === pageRef.current && !pageRef.current?.contains(document.activeElement) && !hasPageDialog()) {
+      scrollRef.current?.focus({ preventScroll: true });
+    }
+  }, [scrollKey]);
 
   const [isFieldFocused, setIsFieldFocused] = useState(false);
 
@@ -105,23 +245,14 @@ export const PageShell: React.FC<PageShellProps> = ({
 
   const isTypingOnMobile = coarse && isFieldFocused;
 
-  // Échap ferme, comme partout ailleurs dans l'application.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || e.defaultPrevented) return;
-      if ((e.target as HTMLElement)?.closest?.('[role="dialog"]') || document.querySelector('[role="dialog"][data-state="open"]')) return;
-      e.preventDefault(); onClose();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
   return (
     <div
+      ref={pageRef}
+      data-page-shell
       style={{
         bottom: keyboardInset || undefined
       }}
-      className={`fixed inset-0 z-50 flex flex-col bg-cave-950 ${className}`}
+      className={`page-shell fixed inset-0 z-50 flex flex-col bg-cave-950 ${className}`}
     >
       <header
         className={`shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm ${
@@ -137,30 +268,30 @@ export const PageShell: React.FC<PageShellProps> = ({
               <div
                 data-page-titlebar
                 className={`${frame} mx-auto flex items-center gap-1.5 ${
-                  tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-0.5' : 'px-3 py-1'
+                  tight ? 'px-1.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
                 }`}
               >
                 <button
                   type="button"
                   onClick={onClose}
                   aria-label="Fermer"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+                  className="w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
                 >
-                  <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-base sm:text-lg font-semibold text-cave-50 truncate leading-tight">
+                  <h1 className="text-sm font-semibold text-cave-50 break-words leading-tight">
                     {title}
                   </h1>
                   {subtitle && !tight && (
-                    <p className="text-2xs sm:text-sm text-cave-400 truncate leading-tight mt-0.5">
+                    <p className="text-xs text-cave-400 break-words leading-tight mt-0.5">
                       {subtitle}
                     </p>
                   )}
                 </div>
 
-                {actions && <div className="flex items-center gap-1 shrink-0">{actions}</div>}
+                {actions && <div className="page-title-actions shrink-0">{actions}</div>}
               </div>
 
               {progress && (
@@ -178,31 +309,31 @@ export const PageShell: React.FC<PageShellProps> = ({
             <div
               data-page-titlebar
               className={`${frame} mx-auto flex items-center gap-1.5 ${
-                tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-0.5' : 'px-3 py-1'
+                tight ? 'px-1.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
               }`}
             >
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Fermer"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+                className="w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-base sm:text-lg font-semibold text-cave-50 truncate leading-tight">
+                <h1 className="text-sm font-semibold text-cave-50 break-words leading-tight">
                   {title}
                 </h1>
                 {/* Le sous-titre — style, volume, date — est concis et discret */}
                 {subtitle && !tight && (
-                  <p className="text-2xs sm:text-sm text-cave-400 truncate leading-tight mt-0.5">
+                  <p className="text-xs text-cave-400 break-words leading-tight mt-0.5">
                     {subtitle}
                   </p>
                 )}
               </div>
 
-              {actions && <div className="flex items-center gap-1 shrink-0">{actions}</div>}
+              {actions && <div className="page-title-actions shrink-0">{actions}</div>}
             </div>
 
             {progress && (
@@ -218,14 +349,15 @@ export const PageShell: React.FC<PageShellProps> = ({
       </header>
 
       {/* `scroll-pb-16` réserve la place du pied */}
-      <main ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+      <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw focus-visible:-outline-offset-2">
         <div
-          className={`${frame} mx-auto pb-20 sm:pb-24 ${
+          className={`${frame} mx-auto pb-3 ${
             tight
               ? 'px-2.5 py-1.5 space-y-1.5'
               : compact
-                ? 'px-3 py-2 space-y-2.5'
-                : 'px-4 py-4 space-y-4'
+                ? 'px-2 py-2 space-y-2'
+                : 'px-2 py-2 space-y-2'
           }`}
         >
           {children}
@@ -241,7 +373,7 @@ export const PageShell: React.FC<PageShellProps> = ({
         >
           <div
             className={`${frame} mx-auto ${
-              tight ? 'px-2.5 py-0.5' : compact ? 'px-2.5 py-1' : 'px-4 py-2'
+              tight ? 'px-2.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
             }`}
           >
             {footer}
@@ -266,7 +398,7 @@ export const Section: React.FC<{
 
   return (
     <section
-      className={`panel ${tight ? 'p-2 space-y-1.5' : compact ? 'p-3 space-y-2' : 'p-4 space-y-3'}`}
+      className={`panel ${tight ? 'p-2 space-y-1.5' : compact ? 'p-2 space-y-2' : 'p-2 space-y-2'}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
@@ -25,6 +25,7 @@ import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef, nextBatchId } from './services/refs';
 import { Suggestions } from './services/suggestions';
 import { Units } from './services/units';
+import { saveRecipeConfirmed } from './services/recipeSave';
 import { Beaker, FlaskConical, Package, Users, Receipt } from 'lucide-react';
 import { LoginPage } from './components/LoginPage';
 import { DashboardTab } from './components/tabs/DashboardTab';
@@ -162,6 +163,8 @@ export const App: React.FC = () => {
    */
   const [createRequest, setCreateRequest] = useState<{ kind: FabIntent; at: number } | null>(null);
   const route = useFullScreenRoute();
+  const currentRoute = useRef(route.route);
+  currentRoute.current = route.route;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
   const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
@@ -330,9 +333,10 @@ export const App: React.FC = () => {
   const openRecipe = (recipe: Recipe) => route.open({ view: 'recipe', recipeId: recipe.id });
   const openBrewDay = (batch: Batch) => route.open({ view: 'brewday', batchId: batch.id });
 
-  const openWizard = (seed?: WizardSeed) => {
+  const openWizard = (seed?: WizardSeed, duplicateOf?: string) => {
     setWizardSeed(seed);
-    route.open({ view: 'wizard' });
+    route.open({ view: 'wizard', recipeId: duplicateOf ?? seed?.recipe?.id,
+      duplicate: !!duplicateOf, title: seed?.title, description: seed?.description });
   };
 
   /**
@@ -373,6 +377,9 @@ export const App: React.FC = () => {
   // Déstructuré pour que TypeScript sache restreindre l'union : la
   // restriction ne traverse pas un accès de propriété (`route.route.view`).
   const view = route.route;
+  const wizardDraftId = view.view === 'wizard' && view.recipeId
+    ? `${view.duplicate ? 'duplicate:' : ''}${view.recipeId}`
+    : view.view === 'wizard' && view.title ? `idea:${view.title}` : 'new';
   const routedRecipe =
     view.view === 'recipe' ? recipes.find((r) => r.id === view.recipeId) : undefined;
   const routedBatch =
@@ -420,14 +427,13 @@ export const App: React.FC = () => {
   };
 
   /** Enregistre la recette, et lance éventuellement le brassin dans la foulée. */
-  const saveFromWizard = (recipe: Recipe, thenBrew: boolean) => {
-    const exists = recipes.some((r) => r.id === recipe.id);
-    if (exists) StorageService.updateRecipe(recipe);
-    else StorageService.addRecipe(recipe);
+  const saveFromWizard = async (recipe: Recipe, thenBrew: boolean) => {
+    const sourceRoute = route.route;
+    recipe = await saveRecipeConfirmed(recipe);
 
     if (!thenBrew) {
       showToast(`Recette « ${recipe.name} » enregistrée.`);
-      route.close();
+      if (currentRoute.current === sourceRoute) route.close();
       return;
     }
 
@@ -450,7 +456,7 @@ export const App: React.FC = () => {
     };
     StorageService.addBatch(batch);
     showToast(`Brassin ${batch.id} planifié depuis « ${recipe.name} ».`);
-    route.open({ view: 'brewday', batchId: batch.id });
+    if (currentRoute.current === sourceRoute) route.open({ view: 'brewday', batchId: batch.id });
   };
 
   /**
@@ -599,8 +605,8 @@ export const App: React.FC = () => {
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
-      {writeError && (
-        <div className="fixed top-0 inset-x-0 z-[60] bg-alert text-white px-4 py-3 shadow-2xl flex items-start gap-3">
+      {writeError && view.view !== 'wizard' && (
+        <div role="alert" className="fixed top-0 inset-x-0 z-[60] bg-alert text-white px-4 py-3 shadow-2xl flex items-start gap-3">
           <span className="text-lg leading-none shrink-0">⚠️</span>
           <div className="flex-1 text-sm leading-relaxed font-medium">{writeError}</div>
           <button
@@ -803,14 +809,14 @@ export const App: React.FC = () => {
                 id: `REC-${Date.now().toString(36).toUpperCase()}`,
                 name: `${routedRecipe.name} (copie)`
               }
-            })
+            }, routedRecipe.id)
           }
           onDelete={() => {
             StorageService.deleteRecipe(routedRecipe.id);
             showToast(`Recette « ${routedRecipe.name} » supprimée.`);
             route.close();
           }}
-          onBrew={() => saveFromWizard(routedRecipe, true)}
+          onBrew={() => { void saveFromWizard(routedRecipe, true).catch(error => setWriteError(error instanceof Error ? error.message : 'La recette n’a pas pu être enregistrée.')); }}
           onOpenBatch={openBrewDay}
         />
       )}
@@ -829,6 +835,8 @@ export const App: React.FC = () => {
 
       {view.view === 'wizard' && (
         <BrewWizard
+          key={`${currentUser.uid}:${wizardDraftId}`}
+          draftKey={`${currentUser.uid}:${wizardDraftId}`}
           seed={wizardSeed}
           stockItems={allStockItems}
           config={config}
@@ -838,6 +846,8 @@ export const App: React.FC = () => {
           onLearnIngredient={learnIngredient}
           onSaveWaterSource={saveWaterSource}
           onSave={saveFromWizard}
+          writeError={writeError}
+          onDismissWriteError={() => setWriteError(null)}
         />
       )}
     </div>

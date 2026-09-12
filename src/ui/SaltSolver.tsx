@@ -53,7 +53,7 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
             <Droplets className="w-4 h-4 text-water shrink-0" />
             <span className="text-2xs font-semibold whitespace-nowrap">1. Eau</span>
             <span className="text-2xs text-cave-400 reading truncate">
-              {formatDecimal(totalWaterL)} L
+              {Number.isFinite(totalWaterL) ? formatDecimal(totalWaterL) : '—'} L
             </span>
           </button>
 

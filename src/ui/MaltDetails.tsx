@@ -8,6 +8,7 @@ import {
   LearnIngredient
 } from '../domain/ingredientFacts';
 import { NumberInput } from './NumberInput';
+import { formatDecimal } from './numericInput';
 import { AiAssist } from './AiAssist';
 
 /** Technical data stay editable, including after an AI lookup. */
@@ -26,7 +27,7 @@ export function MaltDetails({
     <details className="text-sm mt-1" aria-label={`Fiche technique de ${malt.name}`}>
       <summary className="cursor-pointer w-fit min-h-touch-sm rounded-control border border-cave-700 px-2 py-1.5 text-cave-200 marker:text-cave-400">
         <span className={grade?.tone}>
-          {grade ? `${grade.label} · ${malt.colorEbc} EBC` : 'Couleur à renseigner'}
+          {grade ? `${grade.label} · ${formatDecimal(malt.colorEbc)} EBC` : 'Couleur à renseigner'}
         </span>
         <span className="text-cave-400"> · modifier</span>
       </summary>

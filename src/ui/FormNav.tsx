@@ -134,13 +134,13 @@ export const Field: React.FC<FieldProps> = ({
   className = ''
 }) => (
   <div className={`space-y-1 ${className}`}>
-    <label htmlFor={htmlFor} className="block text-sm text-cave-400 font-medium">
+    <label htmlFor={htmlFor} className="block text-xs text-cave-400 font-medium">
       {label}
     </label>
     {children}
-    {hint && !error && <p className="text-sm text-cave-400 leading-snug">{hint}</p>}
+    {hint && !error && <p className="text-xs text-cave-400 leading-snug">{hint}</p>}
     {error && (
-      <p role="alert" className="text-sm text-alert leading-snug">
+      <p role="alert" className="text-xs text-alert leading-snug">
         {error}
       </p>
     )}
@@ -149,7 +149,7 @@ export const Field: React.FC<FieldProps> = ({
 
 /** Classe commune des champs de saisie — un seul endroit à ajuster. */
 export const inputClass =
-  'w-full min-h-touch px-3 py-1.5 rounded-control bg-cave-950 border border-cave-700 ' +
+  'w-full min-h-touch-lg px-2 py-0.5 rounded-control bg-cave-950 border border-cave-700 ' +
   'text-cave-50 text-base placeholder-cave-400 ' +
   'focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 ' +
   'transition-colors disabled:opacity-50';
@@ -183,6 +183,10 @@ export const InlineNum: React.FC<{
   missing?: boolean;
   /** Explicit undefined keeps an optional value unknown when cleared. */
   emptyValue?: number | undefined;
+  id?: string;
+  required?: boolean;
+  'aria-invalid'?: React.AriaAttributes['aria-invalid'];
+  'aria-describedby'?: string;
 }> = ({ label, name, unit, value, onValue, min, max, integer, missing, ...emptyOption }) => (
   <label className="flex items-center gap-1 min-w-0">
     <span className={`text-sm shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>

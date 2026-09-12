@@ -1,10 +1,9 @@
 import { Input, type InputElement } from './Input';
-import React, { useRef, useCallback, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { Units } from '../services/units';
-import { useNumericDraft } from './numericInput';
+import { formatDecimal, useNumericDraft } from './numericInput';
 import { useCoarsePointer } from './useViewport';
-import { NumPad } from './NumPad';
 
 /**
  * Saisie de quantité.
@@ -23,11 +22,14 @@ import { NumPad } from './NumPad';
  *   - − / +, pour l'ajustement fin, avec répétition à l'appui long ;
  *   - le champ lui-même, pour taper directement une grosse quantité.
  *
- * Toutes les cibles font 56 px : l'app se manipule avec des gants ou les doigts
- * mouillés.
+ * Commandes à 28/32 px, paliers à 24 px : la saisie reste compacte dès l'ouverture.
  */
 
 interface QuantityStepperProps {
+  id?: string;
+  emptyValue?: number;
+  'aria-invalid'?: React.AriaAttributes['aria-invalid'];
+  'aria-describedby'?: string;
   value: number;
   onChange: (next: number) => void;
   unit: string;
@@ -50,6 +52,10 @@ interface QuantityStepperProps {
 }
 
 export const QuantityStepper: React.FC<QuantityStepperProps> = ({
+  id,
+  emptyValue,
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
   value,
   onChange,
   unit,
@@ -77,7 +83,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
     [min, max]
   );
 
-  const { draft, push, settle } = useNumericDraft(value, onChange, { emptyValue: min });
+  const { draft, push, settle } = useNumericDraft(value, onChange, { emptyValue: emptyValue ?? min });
 
   /**
    * ⚠️ LA VALEUR VIVANTE, dans une ref.
@@ -102,11 +108,11 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
 
   const bump = useCallback(
     (delta: number) => {
-      const next = clamp(Units.round(valueRef.current + delta, unit));
+      const next = clamp(Units.round((Number.isFinite(valueRef.current) ? valueRef.current : min) + delta, unit));
       valueRef.current = next;
       onChange(next);
     },
-    [unit, clamp, onChange]
+    [unit, clamp, onChange, min]
   );
 
   const stopHold = useCallback(() => {
@@ -115,6 +121,9 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
     holdTimer.current = null;
     repeatTimer.current = null;
   }, []);
+
+  useEffect(() => stopHold, [stopHold]);
+  useEffect(() => { if (disabled) stopHold(); }, [disabled, stopHold]);
 
   /** Appui long : répétition qui accélère, pour couvrir les grands écarts. */
   const startHold = useCallback(
@@ -171,20 +180,20 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
     onPointerCancel: stopHold
   });
 
-  const roundBtn = compact
-    ? 'w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none'
-    : 'w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none';
+  const roundBtn = `${compact ? 'w-touch h-touch' : 'w-touch-lg h-touch-lg'} shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none`;
 
   return (
-    <div className={compact ? 'space-y-1' : 'space-y-2'}>
+    <div className="space-y-1">
       {label && (
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-2xs sm:text-sm text-cave-400 font-medium">{label}</span>
+          <span className="text-xs text-cave-400 font-medium">{label}</span>
           {initialValue !== undefined && value !== initialValue && (
             <button
               type="button"
+              disabled={disabled}
+              aria-label={`Rétablir ${Units.format(initialValue, unit)}`}
               onClick={() => onChange(initialValue)}
-              className="text-2xs sm:text-sm text-cave-400 hover:text-cave-50 inline-flex items-center gap-1 min-h-touch-sm px-1"
+              className="text-xs text-cave-400 hover:text-cave-50 inline-flex items-center gap-1 min-h-touch-sm px-1 disabled:opacity-40"
             >
               <RotateCcw className="w-3 h-3" />
               {Units.format(initialValue, unit)}
@@ -197,18 +206,21 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
       <div className="flex items-center gap-1 sm:gap-1.5">
         <button
           type="button"
-          aria-label={`Retirer ${fineStep} ${unit}`}
+          aria-label={`Retirer ${formatDecimal(fineStep)} ${unit}`}
           disabled={disabled || value <= min}
           className={roundBtn}
           onClick={() => tap(-fineStep)}
           {...holdProps(-1)}
         >
-          <Minus className={compact ? 'w-3.5 h-3.5 sm:w-4 sm:h-4' : 'w-4 h-4 sm:w-5 sm:h-5'} />
+          <Minus className="w-4 h-4" />
         </button>
 
         <div className="flex-1 flex items-baseline justify-center gap-0.5 sm:gap-1 min-w-0">
           <Input
             ref={inputRef}
+            id={id}
+            aria-invalid={ariaInvalid}
+            aria-describedby={ariaDescribedBy}
             type="text"
             name="qty_stepper_input"
             inputMode="decimal"
@@ -227,22 +239,20 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
             onFocus={(e) => e.currentTarget.select()}
             onBlur={() => settle({ min, max })}
             onChange={(e) => push(e.target.value)}
-            className={`w-full min-w-0 bg-transparent text-center reading ${
-              compact ? 'text-base sm:text-lg' : 'text-xl sm:text-2xl'
-            } text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850`}
+            className="w-full min-w-0 min-h-touch-lg bg-transparent text-center reading text-base text-ebc-straw rounded-control py-0.5 focus:outline-none focus:bg-cave-850"
           />
-          <span className="reading-unit shrink-0 text-2xs sm:text-sm">{unit}</span>
+          <span className="reading-unit shrink-0 text-xs">{unit}</span>
         </div>
 
         <button
           type="button"
-          aria-label={`Ajouter ${fineStep} ${unit}`}
+          aria-label={`Ajouter ${formatDecimal(fineStep)} ${unit}`}
           disabled={disabled || (max !== undefined && value >= max)}
           className={roundBtn}
           onClick={() => tap(fineStep)}
           {...holdProps(1)}
         >
-          <Plus className={compact ? 'w-3.5 h-3.5 sm:w-4 sm:h-4' : 'w-4 h-4 sm:w-5 sm:h-5'} />
+          <Plus className="w-4 h-4" />
         </button>
       </div>
 
@@ -263,11 +273,11 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
             <button
               key={step}
               type="button"
-              disabled={disabled || (step < 0 && value <= min)}
+              disabled={disabled || (step < 0 && value <= min) || (step > 0 && max !== undefined && value >= max)}
               onClick={() => bump(step)}
-              aria-label={`${step > 0 ? 'Ajouter' : 'Retirer'} ${Math.abs(step)} ${unit}`}
-              className={`min-h-touch-sm sm:min-h-touch rounded-control border bg-cave-950
-                         font-mono text-sm sm:text-base transition-colors active:bg-cave-850
+              aria-label={`${step > 0 ? 'Ajouter' : 'Retirer'} ${formatDecimal(Math.abs(step))} ${unit}`}
+              className={`min-h-touch-sm rounded-control border bg-cave-950
+                         font-mono text-2xs transition-colors active:bg-cave-850
                          disabled:opacity-40 disabled:pointer-events-none ${
                            step < 0
                              ? 'border-cave-700 text-cave-400 hover:border-cave-600 hover:text-cave-200'
@@ -280,7 +290,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
         </div>
       )}
 
-      {projection && <div className="text-sm text-cave-400">{projection}</div>}
+      {projection && <output className="block text-2xs text-cave-400" aria-live="polite">{projection}</output>}
     </div>
   );
 };

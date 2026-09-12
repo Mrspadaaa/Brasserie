@@ -25,7 +25,7 @@ export function WaterVolumes({
   vol,
   hasSparge,
 }: Props) {
-  const litres = (n: number) => n.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
+  const litres = (n: number) => Number.isFinite(n) ? n.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '—';
   const grainKg = brew?.totalGristKg ?? 0;
   const moreSparge = hasSparge && grainKg > 0 && state.spargeWaterL > state.mashWaterL;
   const check = equipmentCheck(brew?.equipment, {
@@ -71,6 +71,10 @@ export function WaterVolumes({
 
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
           <InlineNum
+            id="wz-mash-water"
+            emptyValue={Number.NaN}
+            required
+            aria-invalid={!Number.isFinite(state.mashWaterL)}
             label="Empâtage"
             name="Volume d’eau d’empâtage, en litres"
             unit="L"
@@ -80,6 +84,10 @@ export function WaterVolumes({
           />
           {hasSparge && (
             <InlineNum
+              id="wz-sparge-water"
+              emptyValue={Number.NaN}
+              required
+              aria-invalid={!Number.isFinite(state.spargeWaterL)}
               label="Rinçage"
               name="Volume d’eau de rinçage, en litres"
               unit="L"
@@ -153,7 +161,7 @@ export function WaterVolumes({
                 Épaisseur de maische
               </label>
               <span className="reading text-sm text-cave-50 shrink-0">
-                {mashRatioLPerKg.toFixed(1)}
+                {Number.isFinite(mashRatioLPerKg) ? mashRatioLPerKg.toFixed(1).replace('.', ',') : '—'}
                 <span className="reading-unit"> L/kg</span>
               </span>
             </div>

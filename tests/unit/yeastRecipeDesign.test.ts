@@ -4,11 +4,13 @@ import { yeastReferences, type YeastReference } from '../../src/domain/yeastRefe
 import references from '../../src/data/yeastRecipeReferences.json';
 import { YEAST_RECIPE_PROFILES } from '../../src/data/yeastRecipeProfiles';
 import {
-  applyYeastRecipeDesign, calculateYeastCellRequirement, createYeastRecipeDraft, evaluateYeastRecipeDesign,
+  applyYeastRecipeDesign, calculateYeastCellRequirement, completeYeastRecipeDesignApplication, createYeastRecipeDraft, evaluateYeastRecipeDesign,
   inferYeastRecipeStyle, proposeYeastGoalSettings, readYeastRecipeDesign, yeastRecipeCandidates, yeastRecipeDesignChanged, yeastRecipeHopSummary,
   type YeastRecipeDraft, type YeastStyleId
 } from '../../src/domain/yeastRecipeDesign';
 import { fullRecipe } from '../fixtures/fullRecipe';
+import { completeFromLocalReferences } from '../../src/domain/localIngredientFacts';
+import type { Recipe } from '../../src/types';
 
 const refs = references.map(y => ({ ...y, aliases: y.catalogue.aliases })) as YeastReference[];
 const ref = (id: string) => refs.find(y => y.id === id)!;
@@ -290,6 +292,51 @@ describe('Application explicite et traçabilité de l’intention', () => {
     expect(readYeastRecipeDesign({ ...next, yeastDesign: { ...saved, modelVersion: 'future' } as any })).toBeUndefined();
     expect(readYeastRecipeDesign({ ...next, yeastDesign: { ...saved, yeastId: 'another-strain' } })).toBeUndefined();
     expect(readYeastRecipeDesign({ ...next, yeastDesign: { ...saved, applied: { ...saved.applied, mashSteps: [null] } } as any })).toBeUndefined();
+  });
+  it.each(['strain', 'settings'] as const)('fige les faits locaux dès la première application en mode %s', mode => {
+    const original = recipe(), before = structuredClone(original);
+    const proposal = applyYeastRecipeDesign(original, draft(original, { yeastId: 'fermentis-us05', temperatureC: 19, pitchTempC: 19, quantityG: 20 }), refs, mode);
+    const enriched = completeFromLocalReferences(proposal.fermentables, proposal.hops, proposal.yeast, [], []).yeast;
+    expect(proposal.yeast.fermentationFacts).toBeUndefined();
+    expect(enriched.fermentationFacts?.pitchGL).toEqual({ min: 0.5, max: 0.8 });
+    // Negative control: the old post-render completion produced the false warning.
+    expect(yeastRecipeDesignChanged({ ...proposal, yeast: enriched }, readYeastRecipeDesign(proposal)!)).toBe(true);
+    const accepted = completeYeastRecipeDesignApplication(proposal, enriched);
+    expect(accepted.yeastDesign!.applied.yeast).toEqual(accepted.yeast);
+    expect(accepted.yeast.qty).toBe(mode === 'settings' ? 20 : 0);
+    expect(yeastRecipeDesignChanged(accepted, readYeastRecipeDesign(accepted)!)).toBe(false);
+    const restored = JSON.parse(JSON.stringify(accepted));
+    expect(yeastRecipeDesignChanged(restored, readYeastRecipeDesign(restored)!)).toBe(false);
+    const completedAgain = completeFromLocalReferences(accepted.fermentables, accepted.hops, accepted.yeast, [], []).yeast;
+    expect(completeYeastRecipeDesignApplication(accepted, completedAgain)).toEqual(accepted);
+    expect(original).toEqual(before);
+    accepted.yeast.qty = 25;
+    expect(accepted.yeastDesign!.applied.yeast.qty).toBe(mode === 'settings' ? 20 : 0);
+    expect(yeastRecipeDesignChanged(accepted, readYeastRecipeDesign(accepted)!)).toBe(true);
+  });
+  it.each<[string, (r: Recipe) => void]>([
+    ['dose', r => { r.yeast.qty = 25; }],
+    ['ensemencement', r => { r.yeast.pitchTempC = 21; }],
+    ['plage de fermentation', r => { r.yeast.fermTempMaxC = 24; }],
+    ['volume', r => { r.volumeL = 25; }],
+    ['palier de fermentation', r => { r.fermentation[0].tempC = 22; }],
+    ['durée', r => { r.fermentation[0].days = 12; }],
+    ['empâtage', r => { r.mash.steps[0].tempC = 68; }],
+    ['style', r => { r.style = 'NEIPA'; }],
+  ])('ne remet pas à zéro la comparaison après une vraie modification : %s', (_label, modify) => {
+    const original = recipe('fermentis-us05');
+    const applied = applyYeastRecipeDesign(original, draft(original, { temperatureC: 19, pitchTempC: 19, quantityG: 20 }), refs);
+    const changed = structuredClone(applied) as Recipe;
+    modify(changed);
+    const enriched = completeFromLocalReferences(changed.fermentables!, changed.hops, changed.yeast, [], []).yeast;
+    const completed = completeYeastRecipeDesignApplication(changed, enriched);
+    expect(completed.yeastDesign).toEqual(applied.yeastDesign);
+    expect(yeastRecipeDesignChanged(completed, readYeastRecipeDesign(completed)!)).toBe(true);
+  });
+  it('ne fabrique aucune intention lorsque la recette n’en a pas', () => {
+    const original = recipe('fermentis-us05');
+    const enriched = completeFromLocalReferences(original.fermentables, original.hops, original.yeast, [], []).yeast;
+    expect(completeYeastRecipeDesignApplication(original, enriched).yeastDesign).toBeUndefined();
   });
   it('invalide aussi les anciennes prédictions lorsqu’une pression précoce est adoptée ou effacée', () => {
     const r = recipe(), adopted = applyYeastRecipeDesign(r, draft(r), refs);

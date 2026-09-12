@@ -6,6 +6,7 @@ import { readRecipeText } from '../domain/recipeTransfer';
 import { ACIDS, SALTS } from '../domain/water';
 export type { ImportedRecipe } from '../domain/recipeImport';
 import { Units } from '../services/units';
+import { formatDecimal } from './numericInput';
 import { HOP_STAGE, describeMoment } from '../domain/hopStage';
 import { Sheet } from './Sheet';
 import { Sparkles, Loader2, AlertTriangle, Camera, Check } from 'lucide-react';
@@ -236,8 +237,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             <p className="text-sm text-cave-400">
               {[
                 result.style,
-                result.volumeL != null ? `${result.volumeL} L` : null,
-                result.boilMin != null ? `ébullition ${result.boilMin} min` : null
+                result.volumeL != null ? `${formatDecimal(result.volumeL)} L` : null,
+                result.boilMin != null ? `ébullition ${formatDecimal(result.boilMin)} min` : null
               ]
                 .filter(Boolean)
                 .join(' · ') || '—'}
@@ -249,11 +250,11 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             </div>}
             <dl className="grid gap-2 mt-2" style={{gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,3.5rem),1fr))'}}>
               {[
-                ['OG', result.ogTarget?.toFixed(3)],
-                ['FG', result.fgTarget?.toFixed(3)],
-                ['IBU', result.ibuTarget?.toString()],
-                ['EBC', result.colorEbc?.toString()],
-                ...(result.nolo?.enabled ? [] : [['ABV', result.abvTarget != null ? `${result.abvTarget} %` : undefined]])
+                ['OG', result.ogTarget?.toFixed(3).replace('.', ',')],
+                ['FG', result.fgTarget?.toFixed(3).replace('.', ',')],
+                ['IBU', result.ibuTarget == null ? undefined : formatDecimal(result.ibuTarget)],
+                ['EBC', result.colorEbc == null ? undefined : formatDecimal(result.colorEbc)],
+                ...(result.nolo?.enabled ? [] : [['ABV', result.abvTarget != null ? `${formatDecimal(result.abvTarget)} %` : undefined]])
               ].map(([k, v]) => (
                 <div key={k as string}>
                   <dt className="text-sm text-cave-400">{k}</dt>
@@ -276,7 +277,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                     </span>
                     {f.colorEbc != null && (
                       <span className="reading text-sm text-cave-400 shrink-0">
-                        {f.colorEbc} EBC
+                        {formatDecimal(f.colorEbc)} EBC
                       </span>
                     )}
                     <span className="reading text-base shrink-0">
@@ -297,7 +298,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                     <span className="min-w-0 flex-1">
                       <span className="block text-base text-cave-200 truncate">{f.name}</span>
                       <span className="block text-sm text-cave-400">
-                        {f.kind} · {result.nolo?.enabled && f.use === 'fermentation' ? 'sucres suivis dans le bilan NOLO' : f.fermentabilityPct != null ? `${f.fermentabilityPct} % fermentescible` : 'fermentescibilité à préciser'}
+                        {f.kind} · {result.nolo?.enabled && f.use === 'fermentation' ? 'sucres suivis dans le bilan NOLO' : f.fermentabilityPct != null ? `${formatDecimal(f.fermentabilityPct)} % fermentescible` : 'fermentescibilité à préciser'}
                       </span>
                     </span>
                     <span className="reading text-base shrink-0">
@@ -327,7 +328,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                         </span>
                         <span className="text-sm text-cave-400 truncate">
                           {describeMoment(h)}
-                          {h.alpha ? ` · ${h.alpha} %` : ' · alpha inconnu'}
+                          {h.alpha ? ` · ${formatDecimal(h.alpha)} %` : ' · alpha inconnu'}
                         </span>
                       </span>
                     </span>
@@ -352,11 +353,11 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
               </p>
               <p className="text-sm text-cave-400">
                 {[
-                  result.yeast.qty > 0 && result.yeast.unit ? `${result.yeast.qty} ${result.yeast.unit}` : 'Quantité à préciser',
+                  result.yeast.qty > 0 && result.yeast.unit ? `${formatDecimal(result.yeast.qty)} ${result.yeast.unit}` : 'Quantité à préciser',
                   result.yeast.form || 'forme à préciser',
-                  result.yeast.attenuationPct ? `${result.yeast.attenuationPct} % att.` : null,
+                  result.yeast.attenuationPct ? `${formatDecimal(result.yeast.attenuationPct)} % att.` : null,
                   result.yeast.fermTempMinC != null && result.yeast.fermTempMaxC != null
-                    ? `${result.yeast.fermTempMinC}–${result.yeast.fermTempMaxC} °C`
+                    ? `${formatDecimal(result.yeast.fermTempMinC)}–${formatDecimal(result.yeast.fermTempMaxC)} °C`
                     : null
                 ]
                   .filter(Boolean)
@@ -368,7 +369,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
               {result.hops.some(h => h.stage === 'dryHop') && <details className="mt-1 border-t border-cave-800 pt-1">
                 <summary className="min-h-touch cursor-pointer text-xs text-cave-200">Contacts des houblons à cru</summary>
                 <ul className="text-xs text-cave-400 space-y-1">{result.hops.filter(h => h.stage === 'dryHop').map((h, i) => <li key={i}>
-                  <strong className="text-cave-200">{h.name}</strong> · {h.aromaTiming === 'fermentation' ? 'fermentation active' : h.aromaTiming === 'postFermentation' ? 'après fermentation' : 'phase à préciser'} · {h.aromaContactHours ?? '—'} h · {h.aromaTemperatureC ?? h.tempC ?? '—'} °C
+                  <strong className="text-cave-200">{h.name}</strong> · {h.aromaTiming === 'fermentation' ? 'fermentation active' : h.aromaTiming === 'postFermentation' ? 'après fermentation' : 'phase à préciser'} · {h.aromaContactHours == null ? '—' : formatDecimal(h.aromaContactHours)} h · {h.aromaTemperatureC == null && h.tempC == null ? '—' : formatDecimal(h.aromaTemperatureC ?? h.tempC)} °C
                 </li>)}</ul>
               </details>}
             </section>
@@ -381,9 +382,9 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                 {result.mashSteps.map((s, i) => (
                   <li key={i} className="py-1.5 flex items-baseline gap-3 text-base">
                     <span className="flex-1 text-cave-200">{s.name}</span>
-                    <span className="reading text-water">{s.tempC} °C</span>
+                    <span className="reading text-water">{formatDecimal(s.tempC)} °C</span>
                     <span className="reading text-cave-400 w-20 shrink-0 whitespace-nowrap text-right">
-                      {s.durationMin} min
+                      {formatDecimal(s.durationMin)} min
                     </span>
                   </li>
                 ))}
@@ -398,9 +399,9 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                 {result.fermentation.map((s, i) => (
                   <li key={i} className="py-1.5 flex items-baseline gap-3 text-base">
                     <span className="flex-1 text-cave-200 truncate">{s.name}</span>
-                    <span className="reading text-water">{s.tempC} °C</span>
+                    <span className="reading text-water">{formatDecimal(s.tempC)} °C</span>
                     <span className="reading text-cave-400 w-16 text-right">
-                      {s.days != null ? `${s.days} j` : '—'}
+                      {s.days != null ? `${formatDecimal(s.days)} j` : '—'}
                     </span>
                   </li>
                 ))}
@@ -420,7 +421,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
               <h3 className="text-base font-semibold text-cave-50 mb-1">Autres ajouts</h3>
               {result.adjuncts.map((a, i) => (
                 <p key={i} className="text-sm text-cave-200 py-1">
-                  {a.name} · {a.amount} {a.unit} · {a.step}
+                  {a.name} · {formatDecimal(a.amount)} {a.unit} · {a.step}
                   {a.notes && ` — ${a.notes}`}
                 </p>
               ))}
@@ -438,16 +439,16 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                   <p className="text-cave-50">
                     {side === 'mash' ? 'Empâtage' : 'Rinçage'}
                     {result.waterPlan[`${side}WaterL`] != null &&
-                      ` · ${result.waterPlan[`${side}WaterL`]} L`}
+                      ` · ${formatDecimal(result.waterPlan[`${side}WaterL`])} L`}
                   </p>
                   {Object.entries(result.waterPlan[side] ?? {}).map(([id, g]) => (
                     <p key={id}>
-                      {SALTS[id].name} · {g} g
+                      {SALTS[id].name} · {formatDecimal(g)} g
                     </p>
                   ))}
                   {result.waterPlan.acid?.[side] != null && (
                     <p>
-                      {ACIDS[result.waterPlan.acid.id]?.name} · {result.waterPlan.acid[side]}{' '}
+                      {ACIDS[result.waterPlan.acid.id]?.name} · {formatDecimal(result.waterPlan.acid[side])}{' '}
                       {ACIDS[result.waterPlan.acid.id]?.unit}
                     </p>
                   )}
@@ -459,7 +460,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             <p className="text-sm text-cave-200">
               Cible d’eau :{' '}
               {Object.entries(result.waterTarget)
-                .map(([k, v]) => `${k} ${v}`)
+                .map(([k, v]) => `${k} ${formatDecimal(v)}`)
                 .join(' · ')}{' '}
               ppm
             </p>
@@ -473,8 +474,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                 Consignes et notes importées
               </summary>
               {result.carboTarget && <p>Carbonatation : {result.carboTarget}</p>}
-              {result.mash?.mashoutTempC != null && <p>Mash-out : {result.mash.mashoutTempC} °C</p>}
-              {result.mash?.spargeTempC != null && <p>Rinçage : {result.mash.spargeTempC} °C</p>}
+              {result.mash?.mashoutTempC != null && <p>Mash-out : {formatDecimal(result.mash.mashoutTempC)} °C</p>}
+              {result.mash?.spargeTempC != null && <p>Rinçage : {formatDecimal(result.mash.spargeTempC)} °C</p>}
               {result.notes?.map((note, i) => (
                 <p key={i} className="whitespace-pre-wrap">
                   {note}

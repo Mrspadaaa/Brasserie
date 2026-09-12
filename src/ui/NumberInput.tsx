@@ -27,7 +27,7 @@ import { useCoarsePointer } from './useViewport';
 interface NumberInputProps {
   /** `undefined` sur un champ facultatif non renseigné. */
   value: number | undefined;
-  /** Reçoit un nombre déjà lu, jamais `NaN`. */
+  /** Reçoit le nombre lu, ou la sentinelle emptyValue explicitement choisie. */
   onValue: (next: any) => void;
   className?: string;
   min?: number;

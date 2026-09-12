@@ -1,4 +1,5 @@
 import { WaterAdditivesTable } from "../WaterAdditivesTable";
+import { formatDecimal } from "../numericInput";
 
 import { ChevronLeft } from "lucide-react";
 
@@ -90,10 +91,10 @@ export function WaterSummary({
 
         <p className="text-2xs sm:text-sm text-cave-400 leading-snug px-1">
           Chaque dose se verse dans son eau. L’acide calculé à l’empâtage
-          respecte le HCO₃ total du profil ; le rinçage vise pH {spargeAcid.targetPh}.
+          respecte le HCO₃ total du profil ; le rinçage vise pH {formatDecimal(spargeAcid.targetPh)}.
           {" "}Le pH d’empâtage reste à mesurer avant une correction.
           {lactate > 0 && state.acidId === "lactique" && (
-            <> Dans la bière finie, cela fait {lactate} g/L d’acide lactique.</>
+            <> Dans la bière finie, cela fait {formatDecimal(lactate)} g/L d’acide lactique.</>
           )}
         </p>
       </section>

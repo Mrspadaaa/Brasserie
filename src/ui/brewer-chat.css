@@ -1,16 +1,16 @@
 .brewer-chat-launch {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  min-height: 60px;
-  padding: 10px 12px;
+  min-height: 32px;
+  padding: 4px 8px;
   border: 1px solid #3b4942;
   border-radius: 13px;
   background: linear-gradient(110deg, #23322c, #242625);
   color: #e4ece5;
   text-align: left;
-  margin: 8px 0;
+  margin: 4px 0;
 }
 .brewer-chat-launch > span:nth-child(2) {
   flex: 1;
@@ -22,7 +22,7 @@
   font-weight: 600;
 }
 .brewer-chat-launch small {
-  display: block;
+  display: none;
   font-size: 12px;
   color: #b0bcb4;
   margin-top: 3px;
@@ -31,8 +31,8 @@
   display: grid;
   place-items: center;
   color: #acd6ad;
-  width: 34px;
-  height: 34px;
+  width: 24px;
+  height: 24px;
   background: #9ac5a314;
   border-radius: 11px;
   flex-shrink: 0;

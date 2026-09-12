@@ -66,8 +66,7 @@ export function PresetChips<T>({
               aria-pressed={on}
               aria-label={`${name} : ${label(p)}${on ? ' — en place' : ''}`}
               onClick={() => onApply(p)}
-              className={`relative before:absolute before:-inset-y-2 before:-inset-x-1 before:content-['']
-                          px-2 py-1 rounded-full border text-2xs transition-colors active:scale-[0.97] ${
+              className={`relative min-h-touch-sm px-1.5 py-0.5 rounded-control border text-2xs transition-colors active:scale-[0.97] ${
                 on
                   ? 'border-ebc-straw text-ebc-straw bg-ebc-straw/10 font-semibold'
                   : 'border-cave-700 text-cave-200 hover:border-cave-600'

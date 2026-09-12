@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render as testingRender, screen, fireEvent, cleanup, within, act } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
+import { WaterDilution } from '../../src/ui/water/WaterDilution';
 import { DEFAULT_WATER_SOURCE } from '../../src/domain/water';
 import { WaterSource } from '../../src/types';
 import { changeWaterRatio, readWaterRatio } from '../helpers/waterRatio';
@@ -39,7 +40,7 @@ it('Doser respecte les cinq ions d’une cible personnalisée (Angles), puis sui
   expect((screen.getByLabelText(/Dose de Gypse en grammes/) as HTMLInputElement).value).toBe('0');
   const slider = screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' }) as HTMLInputElement;
   const before = readWaterRatio(slider);
-  fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0,5 g de Gypse' }));
   expect(readWaterRatio(slider)).toBeGreaterThan(before);
 });
 
@@ -135,6 +136,9 @@ function montants(nom: string | RegExp): string[] {
     .map((td) => (td.textContent ?? '').trim());
 }
 
+/** Lit toute la décimale affichée, y compris lorsque le séparateur est une virgule. */
+const montantNumerique = (text: string) => Number.parseFloat(text.replace(',', '.'));
+
 /**
  * L'alcalinité résiduelle de l'eau, telle qu'affichée sur l'onglet Empâtage.
  *
@@ -187,7 +191,7 @@ describe('La couleur de la bière pilote l’alcalinité', () => {
     const pale = montants(/(?:Acide|Malt acidulé).*Empâtage/)[0];
 
     expect(noire).toBeUndefined(); // Suitable alkaline water: no acid just to centre HCO3.
-    expect(pale).toBe('2.9 mL'); // Combined water reaches the compulsory 120 ppm floor.
+    expect(pale).toBe('2,9 mL'); // Combined water reaches the compulsory 120 ppm floor.
     expect(screen.getByRole('img', { name: /Profil ionique/ })).toHaveAccessibleName(/Alcalinité.*120 ppm pour 120 à 250/);
     expect(zone()).toBe(avant);
     expect(screen.getByLabelText('Critères du dosage automatique')).toHaveTextContent('repère ajusté à 120 ppm');
@@ -195,9 +199,9 @@ describe('La couleur de la bière pilote l’alcalinité', () => {
 
   it('l’acide suit encore la couleur lorsque le profil ne demande aucun minimum de HCO₃', () => {
     monter({ styleCode: '—' }, 80);
-    const noire = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    const noire = montantNumerique(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
     clic('rendre pâle');
-    const pale = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    const pale = montantNumerique(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
     expect(pale).toBeGreaterThan(noire);
   });
 });
@@ -227,14 +231,14 @@ describe('Les volumes pilotent les concentrations', () => {
     monter({ doses: { gypse: 9 }, allSaltsInMash: false });
     expect(screen.getAllByRole('tab')).toHaveLength(2);
     expect(montants(/Rinçage · cible/)).not.toEqual([]);
-    expect(montants('Gypse')[1]).toBe('3.00 g');
+    expect(montants('Gypse')[1]).toBe('3,00 g');
 
     clic('supprimer rinçage');
 
     expect(screen.getAllByRole('tab')).toHaveLength(1);
     expect(ligne(/Rinçage · cible/)).toBeNull();
-    expect(montants('Gypse')[0]).toBe('9.00 g');
-    expect(montants('Gypse')[1]).toBe('0.00 g');
+    expect(montants('Gypse')[0]).toBe('9,00 g');
+    expect(montants('Gypse')[1]).toBe('0,00 g');
   });
 });
 
@@ -265,13 +269,13 @@ describe('L’analyse du réseau pilote tout le reste', () => {
 describe('L’acidifiant pilote les deux doses', () => {
   it('passer au phosphorique baisse les deux doses d’environ 20 %', () => {
     monter({}, 6);
-    const lactiqueEmp = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
-    const lactiqueRin = parseFloat(montants(/Rinçage · cible/)[1]);
+    const lactiqueEmp = montantNumerique(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    const lactiqueRin = montantNumerique(montants(/Rinçage · cible/)[1]);
 
     clic('phosphorique');
 
-    const phosphoEmp = parseFloat(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
-    const phosphoRin = parseFloat(montants(/Rinçage · cible/)[1]);
+    const phosphoEmp = montantNumerique(montants(/(?:Acide|Malt acidulé).*Empâtage/)[0]);
+    const phosphoRin = montantNumerique(montants(/Rinçage · cible/)[1]);
 
     expect(phosphoEmp).toBeLessThan(lactiqueEmp);
     expect(phosphoRin).toBeLessThan(lactiqueRin);
@@ -285,7 +289,7 @@ describe('L’acidifiant pilote les deux doses', () => {
   /* ⚠️ Il n'y a pas de grain au rinçage : le malt acidulé doit y être refusé. */
   it('⚠️ choisir le malt acidulé annule la dose de rinçage et l’explique', () => {
     monter({}, 6);
-    expect(parseFloat(montants(/Rinçage · cible/)[1])).toBeGreaterThan(0);
+    expect(montantNumerique(montants(/Rinçage · cible/)[1])).toBeGreaterThan(0);
 
     clic('malt acidulé');
 
@@ -370,7 +374,7 @@ describe('Proposer les doses', () => {
 
     fireEvent.click(bouton);
     const premier = montants('Gypse');
-    expect(parseFloat(premier[2])).toBeGreaterThan(0);
+    expect(montantNumerique(premier[2])).toBeGreaterThan(0);
 
     fireEvent.click(bouton);
     expect(montants('Gypse')).toEqual(premier);
@@ -388,7 +392,7 @@ describe('Proposer les doses', () => {
     ['Bicarbonate de soude', 'Craie', 'Chaux éteinte'].forEach((nom) => {
       const m = montants(nom);
       if (m.length === 0) return; // ce sel n'a pas été proposé
-      expect(m[1]).toBe('0.00 g');
+      expect(m[1]).toBe('0,00 g');
       expect(m[0]).toBe(m[2]);
     });
   });
@@ -490,6 +494,28 @@ describe('La part d’osmosée se saisit aussi en litres', () => {
   const litres = () =>
     screen.getAllByLabelText(/Litres d’osmosée/i)[0] as HTMLInputElement;
 
+  it('garde les litres fractionnaires en français dans le partage, les totaux et le rinçage lié', () => {
+    monter({ mashWaterL: 22, spargeWaterL: 11.5, diRatioPct: 60 });
+    const coupe = screen.getByText('Coupe à l’osmosée').parentElement!;
+    expect(litres()).toHaveValue('13,2');
+    expect(within(coupe).getByText('8,8')).toBeVisible();
+    expect(coupe).toHaveTextContent(/Osmosée 20,1 L\s*·\s*Réseau 13,4 L\s*·\s*Total 33,5 L/);
+    expect(screen.getByRole('button', { name: /^Rinçage identique · 11,5 L\s*délier$/ })).toBeVisible();
+
+    const pct = screen.getByLabelText(/Osmosée — empâtage$/i);
+    fireEvent.change(pct, { target: { value: '60,25' } });
+    fireEvent.blur(pct);
+    expect(screen.getByText(/coupée à 60,25 % d’osmosée/)).toBeVisible();
+    expect(litres()).toHaveValue('13,3');
+    expect(coupe).toHaveTextContent(/Osmosée 20,2 L\s*·\s*Réseau 13,3 L\s*·\s*Total 33,5 L/);
+
+    fireEvent.click(screen.getByRole('button', { name: /Rinçage identique/ }));
+    expect(screen.getByRole('button', { name: /^Rinçage réglé à part\s*relier à 60,25 %$/ })).toBeVisible();
+    expect(screen.getByLabelText(/Osmosée — rinçage$/i)).toHaveValue('60,25');
+    expect(screen.getByLabelText(/Volume d’eau d’empâtage/i)).toHaveValue('22');
+    expect(screen.getByLabelText(/Volume d’eau de rinçage/i)).toHaveValue('11,5');
+  });
+
   it('taper des litres pose le pourcentage', () => {
     monter({ mashWaterL: 20, spargeWaterL: 10, diRatioPct: 0 });
     const c = litres();
@@ -506,6 +532,37 @@ describe('La part d’osmosée se saisit aussi en litres', () => {
     fireEvent.change(pct, { target: { value: '50' } });
     fireEvent.blur(pct);
     expect(litres().value).toBe('10');
+  });
+});
+
+describe('Les motifs numériques de la dilution restent lisibles sans modifier la proposition', () => {
+  it.each([
+    { feasible: true, currentPct: 40 },
+    { feasible: true, currentPct: 70.125 },
+    { feasible: false, currentPct: 40 },
+  ])('localise le diagnostic avec faisabilité $feasible et coupe $currentPct', ({ feasible, currentPct }) => {
+    const reasons = ['acide lactique à 0.53 g/L de bière (seuil 0.3) — ou passe au phosphorique',
+      'Calcium après traitement : 49.999 ppm pour 50.5–100.25 visés'];
+    const props: React.ComponentProps<typeof WaterDilution> = {
+      state: { ...ETAT, diRatioPct: currentPct },
+      onChange: vi.fn(), set: vi.fn(), applyMinimum: vi.fn(),
+      totalWaterL: 30, spargeDi: currentPct, spargeLinked: true, hasSparge: true,
+      totalOsmoseeL: 12, totalReseauL: 18,
+      justEnough: { feasible, pct: 65, reasons, acid: {
+        mash: 3.6, sparge: 1.2, unit: 'mL', name: 'Acide lactique', hco3Left: 25,
+      } },
+    };
+    const before = structuredClone(props.justEnough);
+    render(<WaterDilution {...props} />);
+    const message = screen.getByText(/acide lactique à 0,53 g\/L de bière/);
+    expect(message).toHaveTextContent('(seuil 0,3)');
+    expect(message).toHaveTextContent('49,999 ppm pour 50,5–100,25 visés');
+    expect(message).not.toHaveTextContent(/\d\.\d/);
+    if (currentPct > 65) expect(message).toHaveTextContent('Coupe en place 70,13 %, minimum 65 %');
+    expect(screen.getByRole('button', { name: /Minimum trouvé d’osmosée/ }).hasAttribute('disabled')).toBe(!feasible);
+    expect(props.justEnough).toEqual(before);
+    expect(props.onChange).not.toHaveBeenCalled();
+    expect(props.set).not.toHaveBeenCalled();
   });
 });
 
@@ -548,16 +605,16 @@ describe('Tous les sels à l’empâtage', () => {
   it('le switch Tous les sels à l’empâtage verse la totalité des sels dans la maische', () => {
     monter({ doses: { gypse: 6 }, mashWaterL: 20, spargeWaterL: 10, allSaltsInMash: false });
     // Répartition proportionnelle initiale : 4g mash, 2g sparge
-    expect(montants('Gypse')[0]).toBe('4.00 g');
-    expect(montants('Gypse')[1]).toBe('2.00 g');
+    expect(montants('Gypse')[0]).toBe('4,00 g');
+    expect(montants('Gypse')[1]).toBe('2,00 g');
 
     // Clic sur le switch
     const switchBtn = screen.getByRole('switch', { name: /Tous les sels à l’empâtage/i });
     fireEvent.click(switchBtn);
 
     // Tous les sels passent à l'empâtage
-    expect(montants('Gypse')[0]).toBe('6.00 g');
-    expect(montants('Gypse')[1]).toBe('0.00 g');
+    expect(montants('Gypse')[0]).toBe('6,00 g');
+    expect(montants('Gypse')[1]).toBe('0,00 g');
   });
 });
 
@@ -572,7 +629,7 @@ describe('Les boutons ± de la grille des sels', () => {
    * seule mécanique, un seul endroit où la corriger.
    */
   const boutonPlus = () =>
-    screen.getByRole('button', { name: /Ajouter 0\.5 g de Gypse/i });
+    screen.getByRole('button', { name: /Ajouter 0,5 g de Gypse/i });
 
   it('un appui simple ajoute un demi-gramme', () => {
     monter({ doses: { gypse: 2 } });
@@ -604,7 +661,7 @@ describe('Les boutons ± de la grille des sels', () => {
 
   it('⚠️ le moins ne descend jamais sous zéro', () => {
     monter({ doses: { gypse: 0.5 } });
-    const moins = screen.getByRole('button', { name: /Retirer 0\.5 g de Gypse/i });
+    const moins = screen.getByRole('button', { name: /Retirer 0,5 g de Gypse/i });
     fireEvent.click(moins);
     expect((screen.getByLabelText(/Dose de Gypse en grammes/i) as HTMLInputElement).value)
       .toBe('0');
@@ -703,12 +760,32 @@ describe('Dose d’acide sur l’onglet Empâtage', () => {
     // Eau de réseau non diluée sur une bière pâle : l'AR sort de sa cible.
     monter({ diRatioPct: 0 }, 6);
     expect(arAffichee()).toBeGreaterThan(0);
-    expect(ligneAcide()).toMatch(/[\d.]+\s*mL/);
+    expect(ligneAcide()).toMatch(/[\d,]+\s*mL/);
   });
 
   it('nomme l’acide choisi, pas « acide » en général', () => {
     monter({ diRatioPct: 0, acidId: 'phosphorique' }, 6);
     expect(ligneAcide()).toMatch(/phosphorique/i);
+  });
+
+  it('affiche pH, incertitude et doses décimales dans les deux onglets sans déplacer les volumes', () => {
+    monter({ mashWaterL: 22, spargeWaterL: 11.5, acidOverride: { mash: 3.6, sparge: 1.2 } }, 6, 20.5,
+      { grist: [{ name: 'Pale Ale', weightKg: 5, colorEbc: 6 }], totalGristKg: 5 });
+    const mash = screen.getByRole('tabpanel', { name: 'Empâtage' });
+    const ph = within(mash).getByText('pH estimé — cible 5,2–5,5').parentElement!;
+    expect(ph).toHaveTextContent(/\d,\d{2}\s*±0,15/);
+    expect(within(mash).getByText(/Facture de grain seule/)).toHaveTextContent('5,75 en eau distillée');
+    expect(within(mash).getByText(/— à l’empâtage$/).parentElement).toHaveTextContent('3,6 mL');
+    expect(mash).not.toHaveTextContent(/\d\.\d/);
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Rinçage' }));
+    const sparge = screen.getByRole('tabpanel', { name: 'Rinçage' });
+    expect(sparge).toHaveTextContent('Cible pH 5,5');
+    expect(sparge).toHaveTextContent('Avec 1,2 mL');
+    expect(sparge).toHaveTextContent('11,5 L de rinçage');
+    expect(sparge).not.toHaveTextContent(/\d\.\d/);
+    expect(screen.getByLabelText(/Volume d’eau d’empâtage/i)).toHaveValue('22');
+    expect(screen.getByLabelText(/Volume d’eau de rinçage/i)).toHaveValue('11,5');
   });
 
   /*
@@ -987,10 +1064,10 @@ describe('Alcalinité, acide et bouton Doser', () => {
 
     /* Virgule, pas point : le champ affiche à la française — c'est ce que le
        brasseur lit sur sa pipette, et ce que `NumberInput` écrit. */
-    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0\.5 mL — empâtage/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0,5 mL — empâtage/i }));
     expect(champAcide().value).toBe('3,5');
 
-    fireEvent.click(screen.getByRole('button', { name: /Retirer 0\.5 mL — empâtage/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Retirer 0,5 mL — empâtage/i }));
     expect(champAcide().value).toBe('3');
   });
 });
@@ -1057,6 +1134,21 @@ describe('Une noire sur osmosée reçoit du bicarbonate, et l’écran dit jusqu
 describe('Les avertissements de seuil, à l’écran', () => {
   const texte = () => document.body.textContent ?? '';
 
+  it('affiche les décimales du seuil d’acide puis retire l’alerte quand la dose est corrigée', () => {
+    monter({ acidOverride: { mash: 10.5, sparge: 3.6 } }, 6, 20.5);
+    const warning = screen.getByText(/Acide lactique cumulé/);
+    expect(warning).toHaveTextContent('0,65 g par litre de bière (10,5 + 3,6 mL pour 20,5 L)');
+    expect(warning).toHaveTextContent('au-delà de 0,3');
+    expect(warning).not.toHaveTextContent(/\d\.\d/);
+
+    const mashAcid = screen.getByLabelText(/Dose d’acide lactique.*à l’empâtage/);
+    fireEvent.change(mashAcid, { target: { value: '2' } });
+    fireEvent.blur(mashAcid);
+    expect(screen.queryByText(/Acide lactique cumulé/)).not.toBeInTheDocument();
+    expect(screen.getByText(/son goût commence à se percevoir vers/)).toHaveTextContent('0,3 g par litre');
+    expect(mashAcid).toHaveValue('2');
+  });
+
   it('⚠️ le seuil de sodium se tait sur une pincée de sel de table', () => {
     monter({ doses: { nacl: 0.3 } });
     expect(texte()).not.toMatch(/le goût devient franchement salé/);
@@ -1106,8 +1198,8 @@ describe('Le curseur suit les sels, et pas seulement la consigne', () => {
     monter({ doses: { gypse: 2, cacl2: 6 }, diRatioPct: 100 });
     const avant = pouce();
 
-    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0\.5 g de Gypse/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0\.5 g de Gypse/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0,5 g de Gypse/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0,5 g de Gypse/i }));
 
     expect(pouce()).toBeGreaterThan(avant);
   });
@@ -1116,8 +1208,8 @@ describe('Le curseur suit les sels, et pas seulement la consigne', () => {
     monter({ doses: { gypse: 6, cacl2: 2 }, diRatioPct: 100 });
     const avant = pouce();
 
-    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0\.5 g de Chlorure de calcium/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0\.5 g de Chlorure de calcium/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0,5 g de Chlorure de calcium/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Ajouter 0,5 g de Chlorure de calcium/i }));
 
     expect(pouce()).toBeLessThan(avant);
   });
@@ -1142,7 +1234,7 @@ describe('Le curseur suit les sels, et pas seulement la consigne', () => {
     expect(pouce()).toBeCloseTo(3, 1);
 
     for (let i = 0; i < 6; i += 1) {
-      fireEvent.click(screen.getByRole('button', { name: /Ajouter 0\.5 g de Chlorure de calcium/i }));
+      fireEvent.click(screen.getByRole('button', { name: /Ajouter 0,5 g de Chlorure de calcium/i }));
     }
     expect(pouce()).toBeLessThan(3);
   });

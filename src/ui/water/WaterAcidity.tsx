@@ -1,4 +1,6 @@
+import { useId, useRef } from "react";
 import { formatDecimal } from "../numericInput";
+import { formatWaterMessage } from "../waterReadings";
 
 import { ACIDS, MASH_PH_BAND } from "../../domain/water";
 
@@ -42,6 +44,9 @@ export function WaterAcidity({
   hasSparge,
   activeTab,
 }: Props) {
+  const id = useId();
+  const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
+  const tabs: Tab[] = hasSparge ? ["empatage", "rincage"] : ["empatage"];
   return (
     <>
       {" "}
@@ -50,22 +55,28 @@ export function WaterAcidity({
           role="tablist"
           aria-label="Eau traitée"
           className="flex border-b border-cave-800"
-          onKeyDown={(e) => {
-            if (!hasSparge) return;
-            if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-              e.preventDefault();
-              setTab(activeTab === "empatage" ? "rincage" : "empatage");
-            }
-          }}
         >
-          {((hasSparge ? ["empatage", "rincage"] : ["empatage"]) as Tab[]).map(
-            (t) => (
+          {tabs.map(
+            (t, index) => (
               <button
                 key={t}
+                ref={node => { tabRefs.current[t] = node; }}
+                type="button"
                 role="tab"
+                id={`${id}-tab-${t}`}
+                aria-controls={`${id}-panel-${t}`}
                 aria-selected={activeTab === t}
                 tabIndex={activeTab === t ? 0 : -1}
                 onClick={() => setTab(t)}
+                onKeyDown={event => {
+                  if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+                  event.preventDefault();
+                  const nextIndex = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 :
+                    (index + (event.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
+                  const next = tabs[nextIndex];
+                  setTab(next);
+                  tabRefs.current[next]?.focus();
+                }}
                 className={`flex-1 py-2 text-sm sm:text-base font-semibold transition-colors border-b-2 -mb-px ${
                   activeTab === t
                     ? "text-cave-50 border-ebc-straw"
@@ -78,13 +89,19 @@ export function WaterAcidity({
           )}
         </div>
 
-        {activeTab === "empatage" ? (
-          <div className="panel p-2.5 sm:p-3 space-y-1">
+          <div
+            role="tabpanel"
+            id={`${id}-panel-empatage`}
+            aria-labelledby={`${id}-tab-empatage`}
+            tabIndex={0}
+            hidden={activeTab !== "empatage"}
+            className="panel p-2.5 sm:p-3 space-y-1"
+          >
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-xs sm:text-sm text-cave-400">
                 {alkaliGoal.limitedByGrist
-                  ? `Alcalinité résiduelle — repère pour les malts ≈ ${alkaliGoal.target} ppm (`
-                  : `Alcalinité résiduelle — repère ${raBand.min} à ${raBand.max} ppm (`}
+                  ? `Alcalinité résiduelle — repère pour les malts ≈ ${formatDecimal(alkaliGoal.target)} ppm (`
+                  : `Alcalinité résiduelle — repère ${formatDecimal(raBand.min)} à ${formatDecimal(raBand.max)} ppm (`}
                 {alkaliGoal.limitedByGrist
                   ? "estimation du mash"
                   : raBand.from === "facture"
@@ -136,36 +153,36 @@ export function WaterAcidity({
               <>
                 <div className="flex items-baseline justify-between gap-3 pt-1 border-t border-cave-800">
                   <span className="text-2xs sm:text-sm text-cave-400">
-                    pH estimé — cible {MASH_PH_BAND.min}–{MASH_PH_BAND.max}
+                    pH estimé — cible {formatDecimal(MASH_PH_BAND.min)}–{formatDecimal(MASH_PH_BAND.max)}
                   </span>
                   <span
                     className={`reading text-sm sm:text-base font-bold shrink-0 ${
                       phEstimate.position === 0 ? "text-hop" : "text-ebc-amber"
                     }`}
                   >
-                    {phEstimate.phPredicted.toFixed(2)}
+                    {phEstimate.phPredicted.toFixed(2).replace('.', ',')}
                     <span className="reading-unit">
                       {" "}
-                      ±{phEstimate.uncertainty}
+                      ±{formatDecimal(phEstimate.uncertainty)}
                     </span>
                   </span>
                 </div>
                 <p className="text-2xs sm:text-sm text-cave-400 leading-snug">
-                  Facture de grain seule : {phEstimate.phDistilled.toFixed(2)}{" "}
+                  Facture de grain seule : {phEstimate.phDistilled.toFixed(2).replace('.', ',')}{" "}
                   en eau distillée
                   {phEstimate.acidulatedPct > 0 && (
                     <>
                       {" "}
-                      · {phEstimate.acidulatedPct} % de malt acidulé, que la
+                      · {formatDecimal(phEstimate.acidulatedPct)} % de malt acidulé, que la
                       couleur ne voit pas
                     </>
                   )}
-                  . {phEstimate.note}
+                  . {formatWaterMessage(phEstimate.note)}
                 </p>
 
                 {raBand.from === "facture" && (
                   <p className="text-2xs sm:text-sm text-hop leading-snug">
-                    {raBand.hint}
+                    {formatWaterMessage(raBand.hint)}
                   </p>
                 )}
               </>
@@ -183,7 +200,7 @@ export function WaterAcidity({
               </span>
               {mashAcid.amount > 0 ? (
                 <span className="reading text-sm sm:text-base font-bold text-ebc-straw shrink-0">
-                  {mashAcid.amount}
+                  {formatDecimal(mashAcid.amount)}
                   <span className="reading-unit"> {mashAcid.unit}</span>
                 </span>
               ) : (
@@ -200,8 +217,15 @@ export function WaterAcidity({
               </p>
             )}
           </div>
-        ) : (
-          <div className="panel p-2.5 sm:p-3 space-y-1.5">
+        {hasSparge && (
+          <div
+            role="tabpanel"
+            id={`${id}-panel-rincage`}
+            aria-labelledby={`${id}-tab-rincage`}
+            tabIndex={0}
+            hidden={activeTab !== "rincage"}
+            className="panel p-2.5 sm:p-3 space-y-1.5"
+          >
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-xs sm:text-sm text-cave-400">
                 Alcalinité restante après acide
@@ -211,7 +235,7 @@ export function WaterAcidity({
                   spargeAlkalinity <= 25 ? "text-hop" : "text-cave-50"
                 }`}
               >
-                {spargeAlkalinity}{" "}
+                {formatDecimal(spargeAlkalinity)}{" "}
                 <span className="reading-unit text-2xs">ppm CaCO₃</span>
               </span>
             </div>
@@ -221,13 +245,13 @@ export function WaterAcidity({
               {formatDecimal(
                 Math.round(treatment.treated.sparge.hco3 * 10) / 10,
               )}{" "}
-              ppm. Cible pH {spargeAcid.targetPh}, à vérifier au pH-mètre.
+              ppm. Cible pH {formatDecimal(spargeAcid.targetPh)}, à vérifier au pH-mètre.
             </p>
             {spargeAcid.amount > 0 ? (
               <p className="text-2xs sm:text-sm text-cave-200 leading-snug">
                 Avec{" "}
                 <span className="reading text-water font-semibold">
-                  {spargeAcid.amount} {spargeAcid.unit}
+                  {formatDecimal(spargeAcid.amount)} {spargeAcid.unit}
                 </span>{" "}
                 d’{ACIDS[state.acidId].name.charAt(0).toLowerCase()}
                 {ACIDS[state.acidId].name.slice(1)} dans{" "}
@@ -241,8 +265,8 @@ export function WaterAcidity({
               </p>
             ) : achievedSparge.hco3 > 0 ? (
               <p className="text-2xs sm:text-sm text-cave-200 leading-snug">
-                {spargeAcid.warning ??
-                  "Dose calculée nulle : vérifier le pH de cette eau avant tout ajout."}
+                {formatWaterMessage(spargeAcid.warning ??
+                  "Dose calculée nulle : vérifier le pH de cette eau avant tout ajout.")}
               </p>
             ) : (
               <p className="text-2xs sm:text-sm text-hop leading-snug">

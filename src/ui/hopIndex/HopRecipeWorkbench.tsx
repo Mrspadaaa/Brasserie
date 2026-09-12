@@ -1,3 +1,4 @@
+import { Units } from '../../services/units';
 import React, { useId, useMemo, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
@@ -140,7 +141,7 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
         <p className="hop-small">Repères d’usage L’Affinée, non exclusifs. Le catalogue privilégie ce style ; les autres variétés restent accessibles. L’alpha vient du lot utilisé.</p>
       </Detail>
       {analysis.warnings.length > 0 && <div className="hop-warning"><p>{analysis.warnings[0]}</p>{analysis.warnings.length > 1 && <Detail title={`${analysis.warnings.length - 1} consigne${analysis.warnings.length > 2 ? 's' : ''} de conduite`}><ul>{analysis.warnings.slice(1).map(w => <li key={w}>{w}</li>)}</ul></Detail>}</div>}
-      {analysis.dry.additions.length > 0 && <Detail title="Planning du houblonnage à cru"><ol className="hop-instructions">{analysis.dry.additions.map((h, i) => <li key={i}><strong>{h.name} · {fmt(h.weightG)} g · {fmt(h.doseGL)} g/L</strong><span>{h.phase === 'active' ? 'Fermentation active constatée' : h.phase === 'post' ? 'Après fermentation principale constatée' : 'Phase biologique à préciser'} · {fmt(h.temperatureC)} °C · {fmt(h.contactHours)} h{h.dayOffset != null ? ` · J${fmt(h.dayOffset)} indicatif` : ''}</span></li>)}</ol>
+      {analysis.dry.additions.length > 0 && <Detail title="Planning du houblonnage à cru"><ol className="hop-instructions">{analysis.dry.additions.map((h, i) => <li key={i}><strong>{h.name} · {Units.format(h.weightG, 'g')} · {fmt(h.doseGL)} g/L</strong><span>{h.phase === 'active' ? 'Fermentation active constatée' : h.phase === 'post' ? 'Après fermentation principale constatée' : 'Phase biologique à préciser'} · {fmt(h.temperatureC)} °C · {fmt(h.contactHours)} h{h.dayOffset != null ? ` · J${fmt(h.dayOffset)} indicatif` : ''}</span></li>)}</ol>
         {onNavigate && <button type="button" onClick={() => onNavigate('paliers')}>Vérifier le programme de fermentation</button>}</Detail>}
     </>}
     {view === 'adjust' && <fieldset disabled={busy} className="hop-adjustment" aria-label="Simulation de houblonnage">

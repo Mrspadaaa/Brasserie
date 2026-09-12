@@ -1,0 +1,7 @@
+.page-shell { container-type: inline-size; container-name: page-shell; }
+.page-shell [data-page-titlebar] { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; }
+.page-shell .page-title-actions { display: flex; align-items: center; gap: .25rem; }
+@container page-shell (max-width: 18rem) {
+  .page-shell [data-page-titlebar] { grid-template-columns: auto minmax(0, 1fr); }
+  .page-shell .page-title-actions { grid-column: 2; justify-self: end; flex-wrap: wrap; }
+}

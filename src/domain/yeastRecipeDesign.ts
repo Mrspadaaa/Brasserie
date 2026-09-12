@@ -394,6 +394,16 @@ export function yeastRecipeDesignChanged(recipe: TrialRecipe, snapshot: YeastRec
     fermentationStateKey(recipe.mash?.steps ?? []) !== fermentationStateKey(snapshot.applied.mashSteps);
 }
 
+/** Complete local reference facts in the same transaction as an explicit application.
+ * A later edit must retain its original comparison baseline. Never call this from
+ * an enrichment effect: only a still-current proposal can adopt the completed facts. */
+export function completeYeastRecipeDesignApplication<T extends TrialRecipe>(recipe: T, yeast: YeastSpec): T {
+  const snapshot = readYeastRecipeDesign(recipe);
+  const completed = { ...recipe, yeast };
+  if (!snapshot || yeastRecipeDesignChanged(recipe, snapshot)) return completed;
+  return { ...completed, yeastDesign: { ...snapshot, applied: { ...snapshot.applied, yeast: structuredClone(yeast) } } };
+}
+
 /** Arithmetic helper with an explicit viable-cell pitch target. Never guesses viability, packet count or starter growth. */
 export function calculateYeastCellRequirement(input: { volumeL: number; og: number | null; pitchRateMillionPerMlPlato?: number; viableCellsBillion?: number }): {
   plato?: number; requiredBillion?: number; availableBillion?: number; balanceBillion?: number; errors: string[]; reasons: string[];

@@ -58,7 +58,7 @@ describe('Unités', () => {
   });
 
   it('formate selon l’ordre de grandeur', () => {
-    expect(Units.format(1500, 'g')).toBe('1.5 kg');
+    expect(Units.format(1500, 'g')).toBe('1,5 kg');
     expect(Units.format(0.25, 'kg')).toBe('250 g');
     expect(Units.format(43, 'g')).toBe('43 g');
   });

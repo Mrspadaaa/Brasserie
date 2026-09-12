@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { allerEtape } from '../helpers/wizard';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, act, within } from '@testing-library/react';
 import { Combobox, ComboOption } from '../../src/ui/Combobox';
 import { NumericField } from '../../src/ui/NumericField';
 import { QuantityStepper } from '../../src/ui/QuantityStepper';
@@ -298,7 +298,7 @@ describe('QuantityStepper — réceptionner une marchandise', () => {
     vi.useFakeTimers();
     const onChange = vi.fn();
     render(<QuantityStepper value={0} onChange={onChange} unit="kg" label="Quantité" />);
-    const plus = screen.getByRole('button', { name: 'Ajouter 0.5 kg' });
+    const plus = screen.getByRole('button', { name: 'Ajouter 0,5 kg' });
 
     fireEvent.pointerDown(plus, { pointerId: 1 });
     // 400 ms d'attente, puis trois tics de 90 ms.
@@ -317,7 +317,7 @@ describe('QuantityStepper — réceptionner une marchandise', () => {
     vi.useFakeTimers();
     const onChange = vi.fn();
     render(<QuantityStepper value={2} onChange={onChange} unit="kg" label="Quantité" />);
-    const plus = screen.getByRole('button', { name: 'Ajouter 0.5 kg' });
+    const plus = screen.getByRole('button', { name: 'Ajouter 0,5 kg' });
 
     fireEvent.pointerDown(plus, { pointerId: 1 });
     act(() => {
@@ -355,7 +355,7 @@ describe('QuantityStepper — réceptionner une marchandise', () => {
     );
     expect(screen.queryByRole('button', { name: 'Ajouter 1 kg' })).toBeNull();
     // Les ± restent : l'ajustement fin ne dépend pas des paliers.
-    expect(screen.getByRole('button', { name: 'Ajouter 0.5 kg' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ajouter 0,5 kg' })).toBeInTheDocument();
   });
 });
 
@@ -549,6 +549,7 @@ describe('Manques en stock', () => {
       />
     );
     allerEtape(/Récapitulatif/);
+    fireEvent.click(screen.getByText('Stock', { exact: true }));
   };
 
   /*
@@ -560,14 +561,15 @@ describe('Manques en stock', () => {
    */
   it('⚠️ cumule un houblon employé deux fois avant de le comparer au stock', () => {
     ouvrirRecap(70);
-    expect(screen.getByText(/70 g \/ 100 g/)).toBeInTheDocument();
+    const row = screen.getByRole('row', { name: /Citra 70 g 100 g/ });
+    expect(within(row).getByRole('cell', { name: '70 g' })).toBeInTheDocument();
+    expect(within(row).getByRole('cell', { name: '100 g' })).toBeInTheDocument();
     expect(screen.queryByText(/Tout est disponible/)).not.toBeInTheDocument();
   });
 
   it('n’annonce le manque qu’une fois, avec le besoin total', () => {
     ouvrirRecap(70);
-    expect(screen.getAllByText(/70 g \/ 100 g/)).toHaveLength(1);
-    expect(screen.getByText(/70 g \/ 100 g/)).toBeInTheDocument();
+    expect(screen.getAllByRole('row', { name: /Citra 70 g 100 g/ })).toHaveLength(1);
   });
 
   it('se tait quand le stock couvre vraiment le besoin cumulé', () => {
@@ -630,7 +632,7 @@ describe('Nommage des champs de l’assistant', () => {
         .filter((i) => i.type !== 'hidden' && i.type !== 'range')
         .filter((i) => {
           const parId = i.id ? container.querySelector(`label[for="${CSS.escape(i.id)}"]`) : null;
-          return !(i.getAttribute('aria-label') || i.getAttribute('aria-labelledby') || parId);
+          return !(i.getAttribute('aria-label') || i.getAttribute('aria-labelledby') || parId || i.labels?.length);
         })
         .map((i) => `${i.name || i.type} · ${i.className.slice(0, 30)}`);
 

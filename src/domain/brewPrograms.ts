@@ -110,7 +110,7 @@ export const PHASE_LABEL: Record<FermentPhaseKind, { label: string; hint: string
   garde: {
     label: 'Garde',
     hint: 'Au froid, plusieurs semaines. Clarifie et affine.',
-    tone: 'text-water border-water/40 bg-water/10'
+    tone: 'text-cave-200 border-water/40 bg-water/10'
   },
   refermentation: {
     label: 'Refermentation',

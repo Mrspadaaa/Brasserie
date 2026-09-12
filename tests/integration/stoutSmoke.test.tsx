@@ -30,7 +30,7 @@ const click = (name: string | RegExp) => fireEvent.click(screen.getByRole('butto
 const doser = () => click('Proposer les doses');
 const graph = () => screen.getByRole('img', { name: /Profil ionique/ });
 const zones = () => Array.from(graph().querySelectorAll('[data-ion-target]')).map(e => e.getAttribute('d'));
-const readPh = () => Number(screen.getByText(/^pH estimé — cible/).parentElement!.textContent!.match(/(\d\.\d{2})\s*±/)![1]);
+const readPh = () => Number(screen.getByText(/^pH estimé — cible/).parentElement!.textContent!.match(/(\d[.,]\d{2})\s*±/)![1].replace(',', '.'));
 function acid(amount: string) {
   const field = screen.getByRole('textbox', { name: /Dose d’acide.*à l’empâtage/ });
   fireEvent.change(field, { target: { value: amount } });
@@ -75,7 +75,7 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     doser();
     expect(state().doses).toEqual(doses);
     const oldRatio = Number(document.querySelector('[data-ratio-obtained]')!.getAttribute('data-ratio'));
-    click('Ajouter 0.5 g de Chlorure de calcium');
+    click('Ajouter 0,5 g de Chlorure de calcium');
     expect(readWaterRatio(slider)).toBeLessThan(oldRatio);
     expect(zones()).toEqual(before);
   });
@@ -84,7 +84,7 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     mount();
     expect(screen.getByText(/Mg : 0 ppm dans l’eau/)).toBeInTheDocument();
     const before = zones();
-    click('Ajouter 0.5 g de Sel d’Epsom');
+    click('Ajouter 0,5 g de Sel d’Epsom');
     expect(graph()).toHaveAccessibleName(/Magnésium[^)]*\) 1 ppm/);
     expect(screen.queryByText(/Mg : 0 ppm dans l’eau/)).not.toBeInTheDocument();
     expect(zones()).toEqual(before);

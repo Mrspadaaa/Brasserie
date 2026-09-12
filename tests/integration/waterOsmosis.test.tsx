@@ -145,14 +145,14 @@ describe('Osmosée — sels et acides réellement pesés', () => {
     expect(sectors()).toHaveLength(6);
     const beforeSectors = sectors();
     for (const name of ['Bicarbonate de soude', 'Sel d’Epsom']) {
-      fireEvent.click(screen.getByRole('button', { name: `Ajouter 0.5 g de ${name}` }));
+      fireEvent.click(screen.getByRole('button', { name: `Ajouter 0,5 g de ${name}` }));
       expect(bands()).toEqual(before);
       expect(sectors()).toEqual(beforeSectors);
     }
     changeWaterRatio(screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' }), 2.8);
     expect(bands()).toEqual(before);
     expect(sectors()).toEqual(beforeSectors);
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 mL — empâtage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0,5 mL — empâtage' }));
     expect(bands()).toEqual(before);
     expect(sectors()).toEqual(beforeSectors);
   });

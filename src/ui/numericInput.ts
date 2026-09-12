@@ -73,7 +73,7 @@ export function useNumericDraft(
   const emitted = useRef<number | undefined>(value);
 
   useEffect(() => {
-    if (value !== emitted.current) {
+    if (!Object.is(value, emitted.current)) {
       emitted.current = value;
       setDraft(formatDecimal(value));
     }
@@ -84,7 +84,7 @@ export function useNumericDraft(
     setDraft(next);
 
     if (next.trim() === '') {
-      if (emitted.current !== emptyValue) {
+      if (!Object.is(emitted.current, emptyValue)) {
         emitted.current = emptyValue;
         onChange(emptyValue);
       }

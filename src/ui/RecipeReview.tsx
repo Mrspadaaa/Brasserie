@@ -116,6 +116,10 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
 
   return (
     <div className={`space-y-2 ${className}`}>
+      <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {busy ? 'Relecture de la recette en cours.' : review ?
+          `Relecture terminée. ${review.verdict} ${findings.length === 0 ? 'Aucun point signalé.' : `${findings.length} ${findings.length === 1 ? 'point signalé' : 'points signalés'}.`}` : ''}
+      </p>
       <button
         type="button"
         onClick={analyser}
@@ -139,8 +143,8 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
 
       {exportError && <p role="alert" className="text-xs text-alert-strong">{exportError}</p>}
       {error && (
-        <p className="flex items-start gap-2 text-2xs sm:text-sm text-ebc-amber leading-snug px-1">
-          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+        <p role="alert" className="flex items-start gap-2 text-2xs sm:text-sm text-alert-strong leading-snug px-1">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
           <span>{error}</span>
         </p>
       )}

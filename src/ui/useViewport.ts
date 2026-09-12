@@ -126,16 +126,17 @@ export function useKeyboardOpen(): boolean {
  * un téléphone, il ne restait par moments **pas un seul champ** visible entre
  * les deux barres.
  *
- *   'comfortable' — ordinateur, ou grand écran : rien à économiser.
+ *   'comfortable' — ancien nom du mode sans clavier sur pointeur précis.
  *   'compact'     — téléphone, clavier fermé : chrome allégé, espacements
  *                   resserrés, sous-titres conservés.
  *   'tight'       — téléphone, CLAVIER OUVERT : il reste environ 300 px. Tout
  *                   ce qui n'est pas un champ ou une action se réduit au strict
  *                   minimum — sous-titres, marges, hauteurs de barres.
  *
- * Les tailles de police et les cibles tactiles, elles, ne bougent pas : le
- * plancher à 14 px et les 48 px de cible sont des décisions du système de
- * design, et un champ qu'on rate au doigt ne fait pas gagner de place.
+ * Ces modes renseignent le contexte de saisie, pas une permission de dilater
+ * les composants. DESIGN.md impose les commandes 24/28/32 px, les champs de
+ * 32 px et une typographie selon le rôle sur téléphone comme sur ordinateur.
+ * Une zone active reste dans les limites de sa commande, sans chevauchement.
  */
 export type Density = 'comfortable' | 'compact' | 'tight';
 

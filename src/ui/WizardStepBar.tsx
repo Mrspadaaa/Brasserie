@@ -1,39 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Fil des étapes d'un assistant, en deux pièces.
- *
- * ⚠️ TROIS CONTRAINTES QUI SE CONTREDISENT, ET COMMENT ELLES TIENNENT ENSEMBLE.
- *
- * 1. **On change d'étape en UN appui.** Demande explicite de Gaëtan. Une
- *    version intermédiaire ouvrait une feuille listant les sept étapes : le nom
- *    devenait lisible, mais il fallait deux gestes au lieu d'un. En cuverie,
- *    avec une minuterie qui tourne, c'est un geste de trop.
- * 2. **On doit savoir où on est.** Le fil d'origine était fait de sept barres de
- *    `30 × 6 px` dont le nom vivait dans un `sr-only` rendu en 1 × 1 px :
- *    présent pour un lecteur d'écran, invisible pour tout le monde d'autre.
- * 3. **Une cible fait 48 px** (`DESIGN.md`), 44 pour un contrôle répété.
- *
- * D'où la séparation en deux pièces, posées sur deux rangs :
- *
- *   · `WizardStepName` — le nom et la position, en clair, dans la rangée de
- *     l'en-tête, à côté du retour et des actions ;
- *   · `WizardStepRail` — les sept barres, seules sur leur rang, donc sur TOUTE
- *     la largeur. C'est ce qui règle la cible : serré contre le bouton retour et
- *     deux icônes, chaque segment ne mesurait que 30 px de large ; sur un rang à
- *     lui, il en fait une cinquantaine.
- *
- * La hauteur, elle, vient de `h-11` ramené par `-my-3.5` : 44 px d'attrape pour
- * 16 px de place réelle. Le dessin reste fin, le doigt ne rate plus.
- *
- * La barre ne prend PAS la couleur de la bière : l'avancement d'un formulaire
- * est un état d'interface, pas un moût. `ebc-straw` reste à l'action principale
- * (`DESIGN.md`, « L'échelle EBC — réservée »).
+ * Navigation directe en un appui, avec nom et position de l’étape.
+ * Les libellés courts restent visibles sur téléphone, dans un rail de 28 px
+ * défilant localement si nécessaire. La densité suit l’échelle de DESIGN.md.
+ * L’avancement garde une couleur d’interface indépendante de celle de la bière.
  */
 
 export interface WizardStep {
   id: string;
   label: string;
+  shortLabel?: string;
 }
 
 interface CommunProps {
@@ -71,9 +48,19 @@ export const WizardStepName: React.FC<CommunProps> = ({ steps, currentIndex }) =
 
 /** Les sept barres, directement tapables. À poser seules sur leur rang. */
 export const WizardStepRail: React.FC<
-  CommunProps & { onSelect: (id: string) => void; disabled?: boolean; showLabels?: boolean }
-> = ({ steps, currentIndex, onSelect, disabled = false, showLabels = false }) => (
-  <nav aria-label="Étapes" className="flex w-full gap-1">
+  CommunProps & { onSelect: (id: string) => void; disabled?: boolean; showLabels?: boolean; compactLabels?: boolean }
+> = ({ steps, currentIndex, onSelect, disabled = false, showLabels = false, compactLabels = false }) => {
+  const rail = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = rail.current;
+    if (!compactLabels || !element) return;
+    const revealCurrent = () => element.querySelector('[aria-current="step"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    revealCurrent();
+    const observer = new ResizeObserver(revealCurrent);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [currentIndex, compactLabels]);
+  return <nav ref={rail} aria-label="Étapes" className={`wizard-step-rail flex w-full gap-1 ${compactLabels ? 'overflow-x-auto overscroll-x-contain' : ''}`}>
     {steps.map((s, i) => (
       <button
         key={s.id}
@@ -84,10 +71,10 @@ export const WizardStepRail: React.FC<
         aria-label={s.label}
         // La cible reste dans sa rangée pour ne pas recouvrir les actions du titre.
         title={s.label}
-        className={`group flex h-11 min-w-0 flex-1 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
-                   disabled:opacity-40 disabled:pointer-events-none ${showLabels ? 'flex-col justify-center gap-2' : ''}`}
+        className={`group flex min-h-touch min-w-0 ${compactLabels ? 'shrink-0 px-1' : 'flex-1'} items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                   disabled:opacity-40 disabled:pointer-events-none ${showLabels ? 'flex-col justify-center gap-1' : ''}`}
       >
-        {showLabels && <span className={`max-w-full truncate text-sm ${i === currentIndex ? 'text-cave-50 font-semibold' : 'text-cave-400'}`}>{s.label}</span>}
+        {showLabels && <span className={`max-w-full ${compactLabels ? 'whitespace-nowrap' : 'truncate'} text-xs ${i === currentIndex ? 'text-cave-50 font-semibold' : 'text-cave-400'}`}>{compactLabels ? s.shortLabel ?? s.label : s.label}</span>}
         <span
           className={`h-1.5 w-full rounded-full transition-colors ${
             i === currentIndex
@@ -99,5 +86,5 @@ export const WizardStepRail: React.FC<
         />
       </button>
     ))}
-  </nav>
-);
+  </nav>;
+};

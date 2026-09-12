@@ -30,7 +30,7 @@ function acid(side: string, value: string) {
 describe('Manual water edits explain their actual consequences below the complete dosing surface', () => {
   it('shows gypsum ion increments, the newly exceeded calcium bound and the balance shift', () => {
     mount(boundaryDoses);
-    fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0,5 g de Gypse' }));
     const impact = screen.getByLabelText('Conséquences du réglage de Gypse');
     // 0.5 g * coefficients / 32.3 L, with the treatment's 0.1 ppm rounding.
     expect(impact).toHaveTextContent(/Ca \+3,6/);
@@ -85,7 +85,7 @@ describe('Manual water edits explain their actual consequences below the complet
 
   it('discards the before/after claim when applying Doser or changing the volume', () => {
     mount();
-    const add = () => fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 g de Gypse' }));
+    const add = () => fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0,5 g de Gypse' }));
     add();
     fireEvent.click(screen.getByRole('button', { name: 'Proposer les doses' }));
     expect(screen.queryByLabelText(/Conséquences du réglage/)).not.toBeInTheDocument();

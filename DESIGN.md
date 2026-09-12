@@ -1,6 +1,6 @@
 ---
 name: L'Affinée
-description: Instrument de cave — une app de brasserie qui se lit à bout de bras, dans la pénombre, avec des gants.
+description: Instrument de brasserie compact — un maximum de données utiles sur téléphone, des gestes courts et une lecture claire.
 colors:
   cave-950: "#12100E"
   cave-900: "#1A1613"
@@ -29,46 +29,46 @@ colors:
 typography:
   display:
     fontFamily: "Source Sans 3, system-ui, sans-serif"
-    fontSize: "2.441rem"
+    fontSize: "1.75rem"
     fontWeight: 600
-    lineHeight: "2.6rem"
+    lineHeight: "2rem"
     letterSpacing: "-0.02em"
   title:
     fontFamily: "Source Sans 3, system-ui, sans-serif"
-    fontSize: "1.5625rem"
+    fontSize: "1.125rem"
     fontWeight: 600
-    lineHeight: "1.9rem"
+    lineHeight: "1.375rem"
   body:
-    fontFamily: "Source Sans 3, system-ui, sans-serif"
-    fontSize: "1rem"
-    fontWeight: 400
-    lineHeight: "1.5rem"
-  label:
     fontFamily: "Source Sans 3, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
-    lineHeight: "1.25rem"
+    lineHeight: "1.125rem"
+  label:
+    fontFamily: "Source Sans 3, system-ui, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 400
+    lineHeight: "1rem"
   reading:
     fontFamily: "IBM Plex Mono, ui-monospace, monospace"
-    fontSize: "1.953rem"
+    fontSize: "1rem"
     fontWeight: 600
-    lineHeight: "2.2rem"
+    lineHeight: "1.25rem"
     letterSpacing: "-0.01em"
 rounded:
   control: "0.625rem"
   panel: "1rem"
   sheet: "1.5rem"
 spacing:
-  touch-sm: "2rem"
-  touch: "2.25rem"
-  touch-lg: "2.75rem"
+  touch-sm: "1.5rem"
+  touch: "1.75rem"
+  touch-lg: "2rem"
 components:
   button-primary:
     backgroundColor: "{colors.ebc-straw}"
     textColor: "{colors.cave-950}"
     rounded: "{rounded.control}"
-    height: "{spacing.touch}"
-    padding: "0 1rem"
+    height: "{spacing.touch-lg}"
+    padding: "0 0.5rem"
   button-secondary:
     backgroundColor: "{colors.cave-850}"
     textColor: "{colors.cave-200}"
@@ -82,7 +82,7 @@ components:
   panel:
     backgroundColor: "{colors.cave-900}"
     rounded: "{rounded.panel}"
-    padding: "1rem"
+    padding: "0.5rem"
   reading-value:
     textColor: "{colors.cave-50}"
     typography: "{typography.reading}"
@@ -90,9 +90,20 @@ components:
 
 ## Overview
 
-**Instrument de cave.** L'application se manipule dans une cuverie : pénombre,
-gants mouillés, une seule main libre, une minuterie qui tourne. Tout ce qui suit
-découle de cette scène — pas d'un goût.
+**Instrument de brasserie compact.** La priorité est de maximiser l'espace utile
+sur téléphone et de compacter les données sans perdre leur sens. Les commandes
+et les barres servent le contenu. La cuverie demande des alertes repérables et
+des gestes fiables ; elle ne justifie pas des contrôles surdimensionnés partout.
+
+**Décision utilisateur du 12.09.2026.** Cette échelle remplace les anciennes
+obligations de 36 px dessinés avec 44 px de zone tactile, les minima généraux de
+44/48 px et le plancher général de texte à 14 px. Elle s'applique aussi aux
+champs, en-têtes, pieds, titres, listes et espacements. Les valeurs du frontmatter
+et les tableaux ci-dessous sont la norme à appliquer, pas une mesure du rendu
+actuel : modifier ce document ne migre pas automatiquement les styles existants.
+
+Lire aussi [le guide des outils UI](docs/ui-compacte.md) avant de choisir une
+interaction ou une représentation. Cette consigne accompagne toute délégation.
 
 Le fond est un charbon **chaud**, dérivé du malt torréfié, jamais le bleu-noir
 des tableaux de bord. Une cave n'est pas bleue.
@@ -107,7 +118,9 @@ Cinq lois portent le système :
    et les états d'interface utilisent leurs propres jetons.
 3. **Un instrument ne ment pas sur sa position** — un curseur, une jauge ou une
    barre place ses repères à leur valeur réelle, ou ne les place pas.
-4. **14 px plancher, 36 px dessinés, 44 px au doigt** — rien en dessous, jamais, sur aucun écran.
+4. **La densité utile commande les tailles** — petites dimensions communes,
+   contenu prioritaire visible, détails à la demande. Un agrandissement répond
+   à un besoin précis et vérifié, pas à une préférence générique de skill.
 5. **Des couleurs stables pour se repérer** — une rubrique garde son identité
    sur téléphone et ordinateur, même quand tout va bien. La couleur accompagne
    toujours un libellé ; les alertes restent distinctes de ces repères.
@@ -286,28 +299,32 @@ mesure est une faute.
 
 ### L'échelle
 
-Base 16, ratio ~1.25. **14 px est le plancher** : en dessous, illisible à bout de
-bras dans une cave.
+Échelle resserrée. La racine reste à 16 px pour les unités `rem` et le zoom ;
+ce n'est pas la taille de tous les textes. Les valeurs suivantes sont les
+cibles à taille de texte normale, à laisser grandir avec les préférences utilisateur.
 
-| Classe | px | Emploi |
+| Rôle | Taille mobile | Emploi |
 |---|---|---|
-| `text-3xl` | 39 | La grande lecture — une valeur, seule, qu'on relève de loin |
-| `text-xl` | 25 | Titre d'écran |
-| `text-lg` | 20 | Titre de panneau |
-| `text-base` | 16 | Texte courant · **tout champ de saisie** |
-| `text-sm` | 14 | Intitulé, unité, aide — **plancher** |
-| `text-2xs` | 13 | Chrome de saisie mobile uniquement, jamais une valeur |
-| `text-footnote` | 12 | Mentions légales uniquement |
+| Grande lecture dédiée (`display`) | 28 px | Une minuterie ou une mesure prioritaire, pas chaque chiffre |
+| Titre d'écran (`title`) | 18 px | Une ligne dans un en-tête compact |
+| Titre de section | 14–16 px | Hiérarchie par graisse et position |
+| Texte courant (`body`) | 14 px | Explication utile, message, contenu à lire |
+| Données en liste ou tableau | 13–14 px | Valeurs, noms, unités, comparaisons alignées |
+| Lecture mise en avant (`reading`) | 16 px | Nombre et unité sur une même ligne |
+| Libellé compact (`label`) | 12 px | Métadonnée, légende, badge ; 13 px si plus lisible |
+| Commande | 12–13 px | Mot d'action court et explicite |
+| Texte saisi | 16 px | Conserver la protection de saisie mobile de `index.css` |
 
-> **La hiérarchie ne s'inverse jamais.**
-> Un titre de section ne peut pas être plus gros que le titre de l'écran qui le
-> contient. Une paire responsive ne rétrécit jamais quand l'écran s'élargit :
-> `text-2xs sm:text-xs` est interdit (13 px → 12 px). Gardé par
-> `tests/unit/classesTailwind.test.ts`.
+Le 12/13 px n'est plus réservé au « chrome expérimental » ou aux mentions
+légales. L'utiliser selon le rôle ci-dessus, avec contraste et zoom conservés.
+Les mesures à surveiller restent plus visibles que leurs métadonnées. Éviter
+les titres géants, les unités sur une ligne séparée et les hauteurs de ligne
+qui doublent artificiellement chaque rangée.
 
-> **Jamais `text-2xs` sur un `<input>`, `<select>` ou `<textarea>`.**
-> Ils sont protégés à 16 px dans `index.css` contre le zoom automatique de
-> Safari, et l'utilitaire l'emporterait sur cette protection.
+Un champ peut garder du texte à 16 px dans une hauteur de 32 px : réduire son
+rembourrage, pas le zoom utilisateur. Ne pas écraser la protection de saisie
+mobile avec `text-2xs`, `text-xs` ou `text-sm`. La hiérarchie des titres reste
+cohérente ; le bureau conserve une densité utile sans grossissement automatique.
 
 
 ## Layout
@@ -323,62 +340,69 @@ Vérifier tout rendu à **320 / 375 / 430 / 1280 px**. Rien ne doit dépasser
 - **Le clavier virtuel ne réduit ni `vh`, ni `dvh`, ni `innerHeight`.** Seul
   `visualViewport` bouge avec lui : tout conteneur ancré en bas doit retrancher
   `useKeyboardInset()`, sinon son bouton d'enregistrement passe dessous.
-- **Densité pilotée par le clavier** (`useDensity`) : `comfortable` / `compact` /
-  `tight`. En `tight`, les sous-titres et les rembourrages cèdent. **Ce qui ne
-  cède jamais : le plancher à 14 px et la ZONE D’ATTRAPE à 44 px.**
+- **Densité compacte dès l'ouverture.** Les modes existants de `useDensity`
+  (`comfortable` / `compact` / `tight`) sont des détails d'implémentation,
+  pas une permission d'agrandir l'écran quand le clavier est fermé. En `tight`,
+  réduire encore les marges et les explications secondaires. Garder le champ
+  actif, sa valeur, son erreur et l'action nécessaire accessibles.
 
 ### Le budget vertical
 
-Un écran de téléphone fait ~700 px utiles. Une grandeur qui ne change presque
-jamais n'a pas droit à plus de place qu'une qui change à chaque brassin.
+Compter ce qui reste pour les données après les barres fixes. Regrouper titre,
+état et commandes sur une ligne dès que cela reste clair. Éviter d'empiler
+en-tête global, en-tête de page, sous-titre et barre d'outils sur téléphone.
+Un pied fixe n'existe que si l'action doit réellement rester à portée ; réserver
+son espace dans le défilement et compter la zone de sécurité une seule fois.
 
-> Constaté sur l'étape « Identité » : le volume (fixé par l'installation) et la
-> durée d'ébullition (60 min neuf fois sur dix) occupaient **322 px** à eux deux,
-> contre 61 px chacun pour le nom et le style — les deux seuls champs qu'on
-> remplit vraiment. Un curseur coûte cher : le réserver aux grandeurs qu'on
-> explore, pas à celles qu'on confirme.
+Une grandeur rarement modifiée peut se lire en ligne et s'éditer sur place.
+Un curseur convient à l'exploration d'une plage ; il ne doit pas remplacer une
+valeur stable si sa piste et ses légendes consomment davantage de hauteur.
 
-### Les cibles tactiles
+### Dimensions compactes
 
 | Jeton | Taille | Emploi |
 |---|---|---|
-| `touch-lg` | 44 px | Steppers manipulés avec des gants ou les mains mouillées |
-| `touch` | 36 px | Le dessin de toute commande : boutons, champs, lignes de liste |
-| `touch-sm` | 32 px | Contrôles **répétés** seulement. Jamais une validation finale |
+| `touch-sm` | 24 px | Commande répétée sur une ligne, petite action avec cible vérifiée |
+| `touch` | 28 px | Bouton courant, icône interactive, pastille, segment |
+| `touch-lg` | 32 px | Action principale, champ simple, stepper |
 
-> **Échelle révisée deux fois le 12.09.2026 — 48 px, puis 44, puis 36.**
-> Demandé trois fois, en ces termes : « les boutons sont toujours beaucoup trop
-> grands, larges et imposants », « maximise la place », « réajuste les règles
-> pour mobile ».
->
-> **La règle a changé de nature, pas seulement de valeur.** Elle ne dit plus
-> « une commande mesure 44 px » mais :
->
-> > **Le DESSIN fait 36 px. La ZONE D'ATTRAPE fait 44 px.**
->
-> Les deux ne sont plus le même nombre. Un bouton occupe 36 px dans la mise en
-> page et se vise sur 44 grâce à un `::before` en `-inset-*` ou à `p-2 -m-2`,
-> qui ne coûtent aucune place. C'est ce qui permet de compacter l'écran sans
-> rendre l'application imprécise en cuverie.
->
-> WCAG 2.2 AA (2.5.8) exige 24 px : même le dessin seul reste au-dessus.
->
-> Ce qui ne change PAS : le plancher typographique de 14 px.
+| Élément | Cible mobile au repos | Règle de composition |
+|---|---|---|
+| Champ simple, select, combobox | 32 px | Libellé proche, unité accolée, largeur selon la donnée |
+| En-tête de page ou de feuille | 36 px | Titre et actions sur une rangée |
+| Pied d'actions | 36 px | Commandes de 28/32 px ; marge basse de sécurité en plus si nécessaire |
+| Navigation principale basse | 40 px | Icône et libellé compacts ; zone de sécurité en plus |
+| Onglets, filtres, barre d'outils | 28–32 px | Une rangée si les choix restent lisibles |
+| Ligne de données | 28–32 px pour une ligne ; 40–48 px pour deux | Hauteur selon le contenu, pas une grande carte par valeur |
+| Icône dessinée | 14–16 px | Sa cible interactive suit les jetons ci-dessus |
+| Espaces entre éléments liés | 4–6 px | Éviter les marges empilées |
+| Espaces entre groupes | 8–12 px | Regroupement clair sans grands vides |
+| Marge latérale de page | 8–12 px | Préserver la largeur des données à 320 px |
+| Rembourrage de panneau | 8 px | Séparateurs et lignes avant cartes imbriquées |
 
-> **Gain mesuré sur l'assistant de recette, à 375 px.**
-> En-tête **73 → 45 px**, pied **61 → 45 px**, boutons courants **48 → 36 px**.
-> La part de l'écran prise par le chrome passe de **9 % à 6 %**, et le contenu
-> utile de 739 à 767 px.
+Ce sont des dimensions normales, pas des plafonds qui coupent le texte. Employer
+une hauteur minimale et laisser grandir pour le zoom, un libellé long, une erreur
+ou une saisie multiligne. Une commande critique réellement manipulée en action
+peut recevoir 36–40 px après vérification du besoin ; ce cas ne devient pas le
+défaut d'une page entière. La pleine largeur est un choix local, jamais le
+défaut des boutons ou de tous les champs ; même l'action principale peut rester
+à la largeur de son libellé, avec 6–8 px de marge horizontale.
 
-> **Un bouton fait la largeur de son mot.**
-> La pleine largeur est réservée à l'action principale de l'écran — une seule.
-> Un bouton secondaire étiré sur toute la largeur pèse autant qu'elle à l'œil et
-> brouille la hiérarchie qu'il était censé servir.
+### Cibles et accessibilité web
 
-> **Séparer le dessin de la zone d'attrape.**
-> Un contrôle peut rester fin à l'œil et faire 44 px au doigt : `p-2 -m-2` sur un
-> bouton, ou un `::before` en `-inset-*` qui ne prend aucune place dans la mise
-> en page. C'est ce qui permet de rétrécir sans rendre l'application imprécise.
+Le [critère WCAG 2.2 AA 2.5.8](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html)
+prévoit 24 × 24 px CSS ou ses exceptions, notamment un espacement suffisant.
+Le [critère renforcé 2.5.5, niveau AAA](https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html)
+vise 44 × 44 px. **44 px n'est pas une obligation générale de cette application.**
+Les minima natifs en points iOS ou en dp Android ne fixent pas ses tailles web.
+
+Vérifier la surface réellement activable et sa forme, pas seulement l'icône ou
+sa boîte englobante. Préférer une cible qui contient un carré de 24 px ; sinon
+vérifier une exception applicable. Un dessin plus petit peut avoir une cible
+plus grande dans l'espace libre, mais jamais au-dessus d'une commande voisine.
+Les `::before` débordants et marges négatives ne sont pas un agrandissement
+« gratuit » à généraliser. Garder focus visible, noms accessibles et contraste ;
+ne pas annoncer une conformité globale sur la seule base de la taille.
 
 ## Elevation & Depth
 
@@ -416,26 +440,29 @@ toujours le même, partout.
 ## Components
 
 - **`Button`** — trois intentions : `primary` (une par écran), `secondary`,
-  `danger`. 36 px dessinés, libellé à 14 px. Un bouton fait la largeur de son
-  mot, pas celle de la place disponible. Le libellé dit ce qui va se passer
-  (« Enregistrer l'achat »), jamais une catégorie abstraite (« Valider »), et le
-  même mot est repris dans la confirmation qui suit.
-- **`Reading`** — la lecture d'instrument : un grand nombre en mono, son unité en
-  sans à côté, jamais en dessous.
-- **`QuantityStepper`** — 44 px, appui long accélérant, paliers dans les deux
-  sens. Pour une quantité **sans plafond naturel**.
-- **`SliderField`** — pour une grandeur **bornée** (température, pH, dilution).
-  Zone d'attrape 44 px, piste dessinée à 8 px. Ses repères se placent à leur
-  valeur réelle sur la piste.
-- **`CycleTag`** — pastille qui change de valeur à l'appui. **Cinq valeurs
-  maximum**, et **jamais** pour un choix dont l'erreur se paie (la famille d'un
-  malt, non ; le moment d'un houblon, oui).
-- **`PresetChips`** — un préréglage est une **action**, pas une valeur. La puce
-  reconnaît le programme en place en comparant les paliers saisis, plutôt que de
-  retenir le dernier chargé.
-- **`NumberInput` / `NumericField`** — **jamais `<input type="number">`** : il
-  refuse la virgule du clavier français en renvoyant une chaîne vide, que les
-  `parseFloat(v) || 0` transforment en zéro. Tout champ numérique porte sa borne.
+  `danger`. Utiliser l'échelle compacte ci-dessus. Le libellé dit ce qui va se
+  passer (« Enregistrer l'achat »), jamais une catégorie abstraite (« Valider »).
+- **`Reading`** — nombre en mono et unité à côté. Réserver la grande variante
+  à une lecture prioritaire ; les valeurs répétées restent compactes.
+- **`QuantityStepper`** — variante compacte, champ et ajustements sur une ligne,
+  paliers dans les deux sens. Pour une quantité souvent ajustée ; les raccourcis
+  supplémentaires ne doivent pas ajouter plusieurs rangées à chaque ingrédient.
+- **`SliderField`** — pour explorer une grandeur bornée, avec accès à une valeur
+  exacte. Ses repères se placent à leur valeur réelle ; une piste n'est pas une
+  obligation pour tout nombre borné.
+- **`CycleTag`** — pastille qui change de valeur à l'appui. Cinq valeurs maximum,
+  familières et réversibles. Pour un choix important dont les options doivent
+  être comparées, préférer les segments ou une liste explicite.
+- **`PresetChips`** — un préréglage est une action. La puce reconnaît le programme
+  en place en comparant les paliers saisis, plutôt que de retenir le dernier chargé.
+- **`NumberInput` / `NumericField`** — conserver les composants de saisie décimale
+  française ; ne pas réintroduire `<input type="number">` ni transformer une
+  entrée invalide ou absente en zéro. Toute borne métier reste explicite.
+
+Cette liste n'épuise pas les outils disponibles : [le guide commun](docs/ui-compacte.md)
+recense les sélections, contrôles natifs, interactions sur place et représentations
+visuelles avec leurs usages métier. Consulter ce guide avant d'ajouter un champ
+texte, une rangée de boutons ou un bloc d'explication.
 
 ## Do's and Don'ts
 
@@ -455,8 +482,9 @@ toujours le même, partout.
 
 ### Interface
 
-- **Une grandeur, une commande.** Deux commandes pour le même nombre, il faut en
-  supprimer une.
+- **Une grandeur, un éditeur cohérent.** Une valeur exacte peut compléter un
+  curseur ou un stepper dans le même éditeur. Éviter deux contrôles séparés qui
+  dupliquent la saisie et occupent deux blocs.
 - **Deux vues d'une même donnée ne sont un doublon que si elles servent la même
   lecture.** Une forme (toile ionique) et des nombres (écart départ → corrigé)
   sont deux lectures : garder les deux.
@@ -464,8 +492,9 @@ toujours le même, partout.
   sur ce qui change une décision, pas sur ce qui est différent.
 - **Pas d'emoji en guise d'icône.** Les icônes sont dessinées, d'une seule
   bibliothèque, d'un seul poids de trait.
-- **Séparer le dessin de la zone d'attrape.** Un interrupteur peut rester fin à
-  l'œil et faire 44 px au doigt : `p-2 -m-2`, ou `h-11` + fond transparent.
+- **Une petite commande reste compréhensible et activable.** La taille du dessin,
+  celle de la cible et l'espace entre commandes se vérifient ensemble, selon
+  la section « Cibles et accessibilité web ».
 - **Une liste ne se sélectionne jamais au `pointerdown`** — un défilement
   commence par un `pointerdown` sur une option. Valider au `pointerup`, si le
   doigt a bougé de moins de 12 px.
@@ -481,5 +510,9 @@ fichier ; les doublons **structurels** ne se voient qu'à l'écran, parce qu'ils
 sont répartis sur plusieurs composants qu'on ne lit jamais ensemble. Capturer
 l'écran entier, par tranches, et le lire comme un brasseur.
 
-Mesurer avant de juger : contraste composé (empiler les `rgba` jusqu'à
-l'opacité 1), taille réelle des cibles, position réelle d'un curseur.
+Mesurer avant et après : hauteur cumulée des barres, nombre de lignes et de
+données utiles visibles, défilement pour finir l'action, taille réelle des cibles
+et chevauchements, contraste composé et position des repères. Inspecter les
+captures téléphone puis bureau et jouer le parcours, clavier ouvert compris.
+Les erreurs doivent ouvrir les détails qui les contiennent. Un gain de place
+n'est réussi que si la lecture et l'action restent simples.
