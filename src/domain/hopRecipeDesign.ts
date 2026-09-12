@@ -44,7 +44,8 @@ export function hopFitsStyle(name: string, family: YeastStyleId, otherNames: str
   return HOP_STYLE_ROLES[family].examples.some(example => hopMatchesName(name, example, otherNames));
 }
 export function hopRecipeStyle(recipe: TrialRecipe) {
-  const style = resolveBrewingStyle(recipe.style, recipe.styleRef);
+  // Older brew-day snapshots may omit the free-text style.
+  const style = resolveBrewingStyle(recipe.style ?? '', recipe.styleRef);
   // A resolved guide identity can be an opaque ID (e.g. BA); use its actual name.
   const family = inferYeastRecipeStyle(style ? { ...recipe, styleRef: undefined, style: style.name } : recipe);
   return { family, ...HOP_STYLE_ROLES[family], name: style?.name ?? recipe.style, ibu: style?.stats.ibu, source: style?.source, edition: style?.edition };

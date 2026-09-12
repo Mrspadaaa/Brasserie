@@ -73,8 +73,8 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
   const activeGoal = goals.includes(goal) ? goal : goals[0];
   const yeastGoal: YeastRecipeGoal = activeGoal === 'banana' || activeGoal === 'clove' ? activeGoal : hoppy ? 'hops' : 'balanced';
   const candidates = yeastRecipeCandidates(family, yeastGoal, refs, recipe.volumeL);
-  const currentYeast = candidates.find(c => c.yeastId === recipe.yeast.hopIndexId);
-  const comparisons = candidates.filter(c => c.yeastId !== recipe.yeast.hopIndexId).slice(0, 3);
+  const currentYeast = candidates.find(c => c.yeastId === recipe.yeast?.hopIndexId);
+  const comparisons = candidates.filter(c => c.yeastId !== recipe.yeast?.hopIndexId).slice(0, 3);
   const catalogue = useMemo(() => varieties.filter(v => !v.archived && ['unknown', 'pelletT90', 'cone'].includes(v.form))
     .map(v => ({ ...v, fits: hopFitsStyle(v.name, family, v.aliases) }))
     .sort((a, b) => Number(b.fits) - Number(a.fits) || a.name.localeCompare(b.name, 'fr')), [varieties, family]);
@@ -186,7 +186,7 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
         <SegmentedControl label="Caractère à renforcer" value={activeGoal} onChange={setGoal} options={goals.map(value => ({ value, label: sensoryNames[value] }))} />
         {wheat ? <>
           <p>{activeGoal === 'banana' ? 'La banane vient surtout de l’acétate d’isoamyle produit par la levure. Compare d’abord la souche, puis sa conduite.' : activeGoal === 'clove' ? 'Le girofle vient surtout du 4-VG de la levure. Compare une souche phénolique et le repos férulique avant saccharification.' : 'Pour garder l’équilibre banane–girofle, commence par la souche puis limite le houblon à son rôle de soutien.'}</p>
-          <p className="hop-small">{currentYeast ? `Actuelle : ${currentYeast.label} · ${currentYeast.descriptor}` : `Actuelle : ${recipe.yeast.name || 'à choisir'} · adéquation au style à vérifier.`}</p>
+          <p className="hop-small">{currentYeast ? `Actuelle : ${currentYeast.label} · ${currentYeast.descriptor}` : `Actuelle : ${recipe.yeast?.name || 'à choisir'} · adéquation au style à vérifier.`}</p>
           <ol className="hop-instructions"><li><strong>1. Souche</strong><span>{activeGoal === 'clove' ? 'Comparer le profil épicé de WLP380 à la souche actuelle.' : 'Comparer 3068 et WLP300, puis les alternatives sèches.'}</span></li><li><strong>2. Conduite</strong><span>{activeGoal === 'clove' ? 'Examiner le précurseur au brassage et les esters qui peuvent masquer le girofle.' : 'La réponse à la température dépend de la souche. Dose viable et pression précoce comptent aussi.'}</span></li><li><strong>3. Essai</strong><span>Changer un levier, garder un témoin et comparer à dégustation. Aucun pourcentage de goût prédit.</span></li></ol>
         </> : <>
           <p>{hoppy ? 'Choisis une variété compatible avec le style, puis compare un ajout tardif ou à cru. Le lot, la souche et le contact déterminent le résultat.' : 'Compare une finition florale ou épicée au caractère de fermentation et au malt du style.'}</p>

@@ -31,6 +31,15 @@ function Host({changed}:{changed:(r:Recipe)=>void}){
  const [r,setR]=useState(wheat());return <HopRecipeWorkbench recipe={r} onChange={next=>{setR(next as Recipe);changed(next as Recipe);}} />;
 }
 describe('Atelier houblons : décisions et application',()=>{
+ it('reads historical snapshots with unknown style and yeast, including the flavor view',()=>{
+  const legacy={...wheat(),name:'Brassin historique',style:undefined,yeast:undefined,fermentation:undefined,mash:undefined};
+  const {rerender}=render(<HopRecipeWorkbench recipe={legacy}/>);
+  expect(screen.getByRole('heading',{name:'Style à préciser'})).toBeInTheDocument();
+  tab('Goût / levure');expect(screen.getByText(/Aucune famille de levure n’est supposée/)).toBeInTheDocument();
+  rerender(<HopRecipeWorkbench recipe={{...legacy,style:'Hefeweizen'}}/>);
+  expect(screen.getByText(/Actuelle : à choisir/)).toBeInTheDocument();
+  expect(screen.queryByRole('button',{name:'Appliquer cet ajout'})).not.toBeInTheDocument();
+ });
  it('leads with actual style, useful metrics and a keyboard-accessible view choice',()=>{
   render(<HopRecipeWorkbench recipe={wheat()} />);
   expect(screen.getByRole('heading',{name:'Weissbier'})).toBeInTheDocument();expect(screen.getByText('Repère du style : 8–15 IBU')).toBeInTheDocument();

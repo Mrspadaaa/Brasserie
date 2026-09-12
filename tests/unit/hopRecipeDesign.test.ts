@@ -14,6 +14,14 @@ const recipe = (): Recipe => ({ ...structuredClone(fullRecipe), nolo: undefined,
 const variety = (id: string, form: HopVariety['form'] = 'pelletT90'): HopVariety => ({ id, name: id, form, aliases: [], analysis: [], descriptions: [] });
 
 describe('Houblonnage par style et scénarios de recette', () => {
+  it('keeps legacy snapshots without a style readable without inventing a style range', () => {
+    const legacy = { ...recipe(), name: 'Brassin historique', style: undefined, styleRef: undefined, yeast: undefined };
+    const analysis = analyseHopRecipe(legacy);
+    expect(analysis.style.family).toBe('unknown');
+    expect(analysis.style.ibu).toBeUndefined();
+    expect(analysis.hot.total).toBeCloseTo(36.906, 2);
+    expect(hopRecipeStyle({ ...legacy, styleRef: { styleId: 'ba-969', guideId: 'styles-ba-2026', version: '2026-09-09.1' } }).family).toBe('weissbier');
+  });
   it('carries a resolved guide identity and actual bitterness into the yeast step', () => {
     const r = { ...recipe(), ibuTarget: 12, styleRef: { styleId: 'ba-969', guideId: 'styles-ba-2026', version: '2026-09-09.1' } };
     const refs = yeastReferences([]), d = createYeastRecipeDraft(r, refs);
