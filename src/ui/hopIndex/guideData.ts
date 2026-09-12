@@ -67,7 +67,8 @@ export function guideYeasts(knowledge: HopKnowledge[]): GuideYeast[] {
 /** A saved disabled or invalid guide is never silently replaced by its bootstrap. */
 export function guideFermentations(knowledge: HopKnowledge[]): FermentationGuide[] {
   return [...new Map([...checkedKnowledge(fermentationPack), ...checkedKnowledge(fermentationSciencePack), ...knowledge].map((k, i) => [k?.id ?? `invalid-${i}`, k])).values()].filter((k): k is FermentationGuide => {
-    try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; }
+    if (k?.kind !== 'fermentation') return false;
+    try { assertHopKnowledge(k); return k.enabled; } catch { return false; }
   });
 }
 

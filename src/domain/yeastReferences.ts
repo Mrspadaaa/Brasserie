@@ -23,11 +23,19 @@ export function yeastReferences(saved: HopKnowledge[] = empty): YeastReference[]
       const {aliases: _aliases, ...stored}=r as YeastReference; return stored;
     })].map(r => [r.id, r])).values()];
   const valid = rows.filter((r): r is HopKnowledge => {
+    if (r.kind !== 'yeast' && r.kind !== 'fermentation' && r.kind !== 'noloScience') return false;
     try { assertHopKnowledge(r); return true; } catch { return false; }
   });
+  // Index aliases once. Scanning the entire catalogue for each strain made
+  // opening the recipe quadratic after the full catalogue was merged.
+  const aliases = new Map<string, string[]>();
+  const addAliases = (id: string, names: string[]) => aliases.set(id, [...aliases.get(id) ?? [], ...names]);
+  for (const row of valid) {
+    if (row.kind === 'fermentation' && row.enabled) addAliases(row.yeastId, row.aliases);
+    if (row.kind === 'noloScience' && row.enabled) for (const strain of row.strains) addAliases(strain.yeastId, strain.aliases);
+  }
   const result = valid.filter((r): r is HopYeast => r.kind === 'yeast').map(y => {
-    const names = valid.flatMap(r => r.kind === 'fermentation' && r.enabled && r.yeastId === y.id ? r.aliases
-      : r.kind === 'noloScience' && r.enabled ? r.strains.filter(s => s.yeastId === y.id).flatMap(s => s.aliases) : []);
+    const names = [...aliases.get(y.id) ?? []];
     if (y.id === 'fermentis-us05') names.push('SafAle US-05', 'Fermentis SafAle US-05', 'Fermentis Levure SafAle US-05', 'US-05');
     const form = y.form ?? trials.hopKnowledge.find(r => r.kind === 'hopTrial' && r.yeastId === y.id)?.yeastForm
       ?? initial.find(r => r.id === y.id)?.form;

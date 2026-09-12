@@ -59,7 +59,7 @@ const Row: React.FC<{
   <div className="py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
     <div className="min-w-0 flex-1">
       <div className="text-sm sm:text-base text-cave-50 truncate leading-tight">{label}</div>
-      {hint && <div className="text-2xs sm:text-sm text-cave-400 truncate leading-tight mt-0.5">{hint}</div>}
+      {hint && <div className="text-sm text-cave-400 truncate leading-tight mt-0.5">{hint}</div>}
     </div>
     <div className="shrink-0 flex items-center gap-1 sm:gap-1.5">{children}</div>
     {onDelete && (
@@ -104,7 +104,7 @@ const Cell: React.FC<{
                     font-mono font-semibold text-right text-sm sm:text-base text-cave-50
                     focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40`}
       />
-      <span className="reading-unit w-6 sm:w-8 text-2xs sm:text-sm shrink-0">{unit}</span>
+      <span className="reading-unit w-6 sm:w-8 text-sm shrink-0">{unit}</span>
     </span>
   );
 };
@@ -284,7 +284,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
     <div className={tight ? 'space-y-2' : 'space-y-3'}>
       {/* --- Identité ------------------------------------------------------ */}
       {water&&<RecipeWaterVolumes totalL={mashWaterL+spargeWaterL} roL={water.mashOsmoseeL+water.spargeOsmoseeL}/>}
-      <Block title="Identité">
+      <Block title="Identité" aside={[name || 'Nom à renseigner', style, Units.format(volumeL, 'L')].filter(Boolean).join(' · ')}>
         <Row label="Nom">
           <input
             type="text"
@@ -481,7 +481,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Levure -------------------------------------------------------- */}
-      <Block title="Levure" aside={yeast.lab ?? undefined}>
+      <Block title="Levure" aside={yeast.name ? `${yeast.name} · ${yeast.qty.toLocaleString('fr-FR')} ${yeast.unit}` : 'Souche à choisir'}>
         <Row label={yeast.name || '—'} hint={yeast.strain}>
           <Cell
             label="Quantité de levure"
@@ -519,7 +519,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Paliers ------------------------------------------------------- */}
-      <Block title="Paliers d’empâtage">
+      <Block title="Paliers d’empâtage" aside={mashSteps.length ? `${mashSteps.length} palier${mashSteps.length > 1 ? 's' : ''}` : 'Aucun palier'}>
         {mashSteps.length === 0 ? (
           <p className="py-2 text-sm text-cave-400">Aucun palier.</p>
         ) : (
@@ -557,7 +557,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Fermentation -------------------------------------------------- */}
-      <Block title="Fermentation">
+      <Block title="Fermentation" aside={fermentation.length ? `${fermentation.length} palier${fermentation.length > 1 ? 's' : ''}` : 'Conduite à définir'}>
         {fermentation.length === 0 ? (
           <p className="py-2 text-sm text-cave-400">Aucune phase.</p>
         ) : (
@@ -682,10 +682,10 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             {/* --- Profil atteint ----------------------------------------- */}
             <div className="pt-2 space-y-2">
               <div className="flex items-baseline justify-between gap-2">
-                <span className="text-2xs sm:text-sm text-cave-400">
+                <span className="text-sm text-cave-400">
                   Profil visé — {water.styleName}
                 </span>
-                <span className="text-2xs sm:text-sm text-cave-400 shrink-0">
+                <span className="text-sm text-cave-400 shrink-0">
                   {water.wortIons ? 'eau traitée, ppm' : 'eau d’empâtage, ppm'}
                 </span>
               </div>
@@ -708,7 +708,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 <dl className="grid grid-cols-3 gap-x-2 gap-y-1.5">
                   {(Object.keys(ION_LABEL) as Array<keyof WaterIons>).map((ion) => (
                     <div key={ion}>
-                      <dt className="text-2xs sm:text-sm text-cave-400 truncate">
+                      <dt className="text-sm text-cave-400 truncate">
                         {ION_LABEL[ion]}
                       </dt>
                       <dd className="reading text-sm sm:text-base text-cave-50">
@@ -722,7 +722,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               <details><summary className="cursor-pointer min-h-touch text-sm text-water">pH et chimie détaillée</summary>
               {water.targetStatus && <WaterTargetStatus {...water.targetStatus} />}
 
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xs sm:text-sm">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
                 <span className="text-cave-400">
                   Alcalinité résiduelle après acide{' '}
                   <span
@@ -748,7 +748,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               </div>
 
               {(water.mashPh || water.spargePh) && (
-                <p className="text-2xs sm:text-sm text-cave-400">
+                <p className="text-sm text-cave-400">
                   pH mesuré à la cuve :{' '}
                   {water.mashPh ? `maische ${water.mashPh}` : ''}
                   {water.mashPh && water.spargePh ? ' · ' : ''}
@@ -773,7 +773,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 compact
               />
               {water.disabled.length > 0 && (
-                <p className="text-2xs sm:text-sm text-cave-400">
+                <p className="text-sm text-cave-400">
                   Écartés : {water.disabled.map((d) => SALTS[d].name).join(', ')}.
                 </p>
               )}
@@ -785,7 +785,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                   type="button"
                   onClick={onEditWater}
                   className="w-full min-h-touch rounded-control border border-water/40
-                             text-water text-xs sm:text-sm flex items-center justify-center gap-2
+                             text-water text-sm flex items-center justify-center gap-2
                              transition-colors hover:bg-cave-850"
                 >
                   <Droplets className="w-4 h-4" />

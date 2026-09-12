@@ -1,6 +1,7 @@
 import { RecipeDisclosure, revealRecipeErrors } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import { MaltDetails } from '../ui/MaltDetails';
+import './recipe-wizard.css';
 import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -74,6 +75,9 @@ import { QuantityStepper } from '../ui/QuantityStepper';
 import { CycleTag } from '../ui/CycleTag';
 import { PresetChips } from '../ui/PresetChips';
 import { IngredientPicker } from '../ui/IngredientPicker';
+import { YeastIngredientPicker } from '../ui/YeastIngredientPicker';
+import { applyCatalogueYeast } from '../domain/yeastCatalogue';
+import { useStorageValue } from '../hooks/useLiveData';
 import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
 import { AiAssist } from '../ui/AiAssist';
@@ -358,6 +362,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   const [step, setStep] = useState<StepId>('identite');
   const [hopGuideBusy, setHopGuideBusy] = useState(false);
+  const [hopWorkshopOpen, setHopWorkshopOpen] = useState(false);
+  const [yeastSelection, setYeastSelection] = useState(0);
+  const knowledge = useStorageValue(StorageService.getHopKnowledge);
+  const styles = useMemo(() => brewingStyles(knowledge), [knowledge]);
   /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
   const density = useDensity();
   const tight = density === 'tight';
@@ -368,6 +376,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   // --- Étape 1 : identité ---------------------------------------------------
   const [name, setName] = useState(base?.name ?? seed?.title ?? '');
   const [style, setStyle] = useState(base?.style ?? '');
+  const matchingStyles = useMemo(() => matchBrewingStyles(style, styles), [style, styles]);
   const [volumeL, setVolumeL] = useState(base?.volumeL ?? defaultBrewVolume(brewhouse));
   const [equipmentNotice,setEquipmentNotice]=useState('');
   /**
@@ -420,13 +429,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
   const [mashSteps, setMashSteps] = useState<TempStep[]>(
-    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,brewingStyles(StorageService.getHopKnowledge())).steps
+    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
   );
   const [spargeType, setSpargeType] = useState<'fly' | 'batch' | 'none'>(
     base?.mash?.spargeType ?? 'batch'
   );
   const [ferment, setFerment] = useState<FermentationStep[]>(
-    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,brewingStyles(StorageService.getHopKnowledge())).steps
+    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
@@ -499,10 +508,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const waterProfileAuto = useRef(!base?.waterPlan?.targetProfileId && !base?.waterPlan?.targetIons);
   const changeStyle = (next: string) => {
     setStyle(next);
-    const resolved=resolveBrewingStyle(next,undefined,brewingStyles(StorageService.getHopKnowledge()));
+    const resolved=resolveBrewingStyle(next,undefined,styles);
     setDetails(d=>({...d,styleRef:resolved?.ref}));
     if (waterProfileAuto.current && resolved) {
-      setWater(w => ({ ...w, styleCode: styleWaterForReference(next,resolved.ref,brewingStyles(StorageService.getHopKnowledge())).code, ratioOverride: undefined }));
+      setWater(w => ({ ...w, styleCode: styleWaterForReference(next,resolved.ref,styles).code, ratioOverride: undefined }));
     }
   };
 
@@ -1021,13 +1030,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
     if (yeast.name.trim().toLocaleLowerCase('fr') !== selectedName.trim().toLocaleLowerCase('fr')) {
-      setDetails(previous => ({ ...previous, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+      setDetails(previous => ({ ...previous, yeastGuide: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+      setYeastSelection(n => n + 1);
     }
     setYeast(current => {
       if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr')) return current;
       const unit = item?.unit ?? 'sachet';
       return {
-        ...current, name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
+        name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
         form: item?.yeastForm ?? 'sèche', unit, qty: current.unit === unit ? current.qty : 1,
         attenuationPct: item?.yeastAttenuationPct,
         fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
@@ -1132,8 +1142,20 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   });
 
   const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step) => {
-    applyImport(normalizeRecipeImport(next, 'local', true), next);
-    setYeast(next.yeast); setStep(destination);
+    const current = build();
+    const preparationChanged = (['fermentables', 'hops', 'volumeL', 'boilMin', 'mash', 'waterPlan', 'carboTarget'] as const)
+      .some(key => JSON.stringify(next[key]) !== JSON.stringify(current[key]));
+    if (preparationChanged) {
+      // Local proposals are already typed. Import normalization drops incomplete draft phases.
+      applyImport({ ...next, mashSteps: next.mash?.steps ?? [], present: Object.keys(next), complete: true, warnings: [], via: 'local' } as ImportedRecipe, next);
+    } else {
+      setDetails(previous => ({ ...previous, nolo: next.nolo, fermentationIntent: next.fermentationIntent,
+        yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId,
+        hopPredictionIds: next.hopPredictionIds }));
+      setFerment(next.fermentation ?? []);
+    }
+    setYeast(next.yeast);
+    setStep(destination);
   };
 
   const hasMetrics = fermentables.length > 0 || hops.length > 0;
@@ -1172,8 +1194,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   };
 
   const mobileHeader = (
-    <div className="px-2 py-0.5 bg-cave-950">
-      <div className="flex items-center gap-2">
+    <div className="recipe-mobile-header px-2 bg-cave-950">
+      <div className="recipe-titlebar flex items-center gap-1.5">
       {/* Les actions du titre gardent leur propre zone tactile. */}
       <button
         type="button"
@@ -1213,6 +1235,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
+      className="recipe-wizard"
+      scrollKey={step}
       actions={<BrewerPageShortcut />}
       /*
        * Le fil d'étapes vit dans l'en-tête. Sur ordinateur, `PageShell` affiche
@@ -1221,28 +1245,23 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        * pas en visant une barre de 6 px.
        */
       progress={
-        <div aria-hidden className="h-1 w-full overflow-hidden rounded-full bg-cave-800">
-          <div
-            className="h-full rounded-full bg-cave-50 transition-[width] duration-300 ease-out"
-            style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }}
-          />
-        </div>
+        <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy} showLabels />
       }
       footer={
         step === 'recap' ? (
-          <div className="flex gap-2">
+          <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={() => onSave(build(), false)}
-              className="flex-1 min-h-touch rounded-control border border-cave-700
-                         text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
+              className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
+                         text-sm font-semibold transition-colors hover:brightness-105"
             >
               Enregistrer la recette
             </button>
             <button
               type="button"
               onClick={() => onSave(build(), true)}
-              className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950 text-sm font-semibold transition-colors hover:brightness-105"
+              className="min-h-touch px-3 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
             >
               Lancer le brassin
             </button>
@@ -1263,28 +1282,27 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         sont les quatre chiffres qu'un brasseur regarde en composant sa facture,
         et rien d'autre.
       */}
-      {step === 'recap' && <BrewBudgetButton recipe={build()} />}
       {hasMetrics && (
         <div
-          className={`panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
+          className={`recipe-metrics panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
                      sm:grid sm:grid-cols-4 sm:gap-3 sm:items-stretch ${step === 'eau' ? 'hidden' : 'flex'}`}
         >
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-2xs text-cave-400">Grain</span>
-            <span className="reading text-2xs sm:text-base">{Units.format(totalGrist, 'kg')}</span>
+            <span className="text-sm text-cave-400">Grain</span>
+            <span className="reading text-sm sm:text-base">{Units.format(totalGrist, 'kg')}</span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-2xs text-cave-400">OG</span>
-            <span className="reading text-2xs sm:text-base text-ebc-straw">
-              {ogPredicted ? ogPredicted.toFixed(3) : '—'}
+            <span className="text-sm text-cave-400">OG</span>
+            <span className="reading text-sm sm:text-base text-ebc-straw">
+              {ogPredicted ? ogPredicted.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-2xs text-cave-400">{hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
-            <span className="reading text-2xs sm:text-base">{ibu ?? '—'}</span>
+            <span className="text-sm text-cave-400">{hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
+            <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-2xs text-cave-400">EBC</span>
+            <span className="text-sm text-cave-400">EBC</span>
             <span className="flex items-center gap-1">
               {color && (
                 <span
@@ -1292,7 +1310,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                   aria-hidden
                 />
               )}
-              <span className="reading text-2xs sm:text-base">{color?.ebc ?? '—'}</span>
+              <span className="reading text-sm sm:text-base">{color?.ebc ?? '—'}</span>
             </span>
           </div>
         </div>
@@ -1357,31 +1375,17 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               />
             </Field>
 
-            {matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
+            {matchingStyles.length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchingStyles.map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
             <BrewingStyleDetails recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}/>
             <NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>{
               setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide,hopPredictionIds:next.hopPredictionIds,hopMatrixId:next.hopMatrixId,hopTrialId:next.hopTrialId}));
               setYeast(next.yeast);setFerment(next.fermentation??[]);
             }}/>
-            <SliderField
-              label="Volume en fermenteur"
-              value={volumeL}
-              onChange={setVolumeL}
-              min={10}
-              max={60}
-              step={1}
-              unit="L"
-              readout={
-                brewhouse && volumeL === brewhouse.volumeL
-                  ? `installation « ${brewhouse.name} »`
-                  : undefined
-              }
-              marks={[
-                { value: 20, label: '20' },
-                { value: 30, label: '30' },
-                { value: 50, label: '50' }
-              ]}
-            />
+            <div className="border-t border-cave-800 pt-3 space-y-2">
+              <InlineNum label="Volume en fermenteur" name="Volume en fermenteur" value={volumeL} onValue={setVolumeL} min={1} unit="L" />
+              <InlineNum label="Durée d’ébullition" name="Durée d’ébullition" value={boilMin} onValue={setBoilMin} min={0} integer unit="min" />
+              <p className="text-sm text-cave-400">{evaporationHint}</p>
+            </div>
 
             {brewhouse?.equipment&&<div className="space-y-2">
               <p className="text-sm text-water">Fermenteur {brewhouse.equipment.fermenterCapacityL} L · cible utile {fermenterLimit(brewhouse.equipment)} L, mousse réservée.</p>
@@ -1391,22 +1395,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               {equipmentNotice&&<p role="status" className="text-sm text-ebc-straw">{equipmentNotice}</p>}
               <BrewEquipmentSummary recipe={build()} profile={brewhouse}/>
             </div>}
-
-            <SliderField
-              label="Durée d’ébullition"
-              value={boilMin}
-              onChange={setBoilMin}
-              min={30}
-              max={120}
-              step={5}
-              unit="min"
-              hint={evaporationHint}
-              marks={[
-                { value: 60, label: '60' },
-                { value: 75, label: '75' },
-                { value: 90, label: '90' }
-              ]}
-            />
 
             <DateField label="Date de brassage prévue" value={brewDate} onChange={setBrewDate} />
           </FormNav>
@@ -1429,7 +1417,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               de la famille courante se lit juste à côté au lieu d'en dessous.
             */}
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-2xs text-cave-400 shrink-0">Ajouter</span>
+              <span className="text-sm text-cave-400 shrink-0">Ajouter</span>
               <CycleTag<FermentableKind>
                 name="Famille de fermentescible"
                 value={addKind}
@@ -1439,7 +1427,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 tone={(k) => KIND_TONE[k]}
               />
               {!tight && (
-                <span className="text-2xs text-cave-400 leading-snug min-w-0">
+                <span className="text-sm text-cave-400 leading-snug min-w-0">
                   {KIND_DEF[addKind].hint}
                 </span>
               )}
@@ -1492,7 +1480,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             Le MOMENT, lui, tourne — comme l'étape d'un houblon.
                           */}
                           <span className="flex items-center gap-1 flex-wrap mt-0.5">
-                            {f.kind !== 'grain' && <span className="text-2xs text-cave-200">{KIND_DEF[f.kind].label}</span>}
+                            {f.kind !== 'grain' && <span className="text-sm text-cave-200">{KIND_DEF[f.kind].label}</span>}
                             <CycleTag
                               name={`Moment de ${f.name}`}
                               value={f.use}
@@ -1501,7 +1489,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               label={(u) => USE_LABEL[u]}
                               tone={(u) => USE_TONE[u]}
                             />
-                            <span className="text-2xs text-cave-400 truncate">
+                            <span className="text-sm text-cave-400 truncate">
                               {f.kind === 'grain'
                                 ? totalGrist > 0
                                   ? `${((f.weightKg / totalGrist) * 100).toFixed(0)} % du grain`
@@ -1554,7 +1542,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                       )}
 
                       {f.kind === 'lactose' && f.weightKg > 0 && (
-                        <p className="text-2xs sm:text-sm text-ebc-amber leading-snug">
+                        <p className="text-sm text-ebc-amber leading-snug">
                           Non fermentescible : il remonte la densité finale et reste en bouche.
                         </p>
                       )}
@@ -1569,7 +1557,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             )}
 
             {gravityWarning?.note && (
-              <p className="flex items-start gap-2 text-2xs sm:text-sm text-ebc-amber leading-snug">
+              <p className="flex items-start gap-2 text-sm text-ebc-amber leading-snug">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 <span>{gravityWarning.note}</span>
               </p>
@@ -1585,15 +1573,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
-            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-lg font-semibold text-cave-50 pt-3">Mes ajouts de houblons</h3>
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
               layout="grid"
               value={hopStage}
               onChange={setHopStage}
-              options={HOP_STAGES.map((s) => ({ value: s, label: HOP_STAGE[s].label }))}
+              options={HOP_STAGES.map((s) => ({ value: s, label: s === 'dryHop' ? 'À cru' : HOP_STAGE[s].label }))}
             />
-            {!tight && <p className="text-2xs sm:text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
+            {!tight && <p className="text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
 
             <HopIngredientPicker
               items={stockItems}
@@ -1646,12 +1634,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               tone={(st) => HOP_STAGE[st].tone}
                             />
                             {!style.ask && (
-                              <span className="text-2xs text-cave-400 truncate">
+                              <span className="text-sm text-cave-400 truncate">
                                 {describeMoment(h)}
                               </span>
                             )}
                             {style.bitters && bitterness.additions[i].ibu != null && (
-                              <span className="text-2xs text-cave-200 font-mono">
+                              <span className="text-sm text-cave-200 font-mono">
                                 {bitterness.additions[i].ibu!.toFixed(1)} IBU
                               </span>
                             )}
@@ -1780,7 +1768,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   onValue={(v) => patchHop(i, { dayOffset: v })}
                                 />
                               </div>
-                              <span className="text-2xs text-cave-400 shrink-0">
+                              <span className="text-sm text-cave-400 shrink-0">
                                 0 = à l’ensemencement
                               </span>
                             </div>
@@ -1788,9 +1776,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         </div>
                       )}
 
-                      <p className="text-xs text-ebc-amber">{bitterness.additions[i].missing.length > 0 && `À préciser : ${bitterness.additions[i].missing.join(' · ')}.`}</p>
+                      <p className="text-sm text-ebc-amber">{bitterness.additions[i].missing.length > 0 && `À préciser : ${bitterness.additions[i].missing.join(' · ')}.`}</p>
                       {h.stage === 'dryHop' && <div className="space-y-2 border-t border-cave-800 pt-2">
-                        <label className="block text-xs text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
+                        <label className="block text-sm text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
                           <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
                         </select></label>
                         <div className="flex flex-wrap gap-3"><InlineNum label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
@@ -1811,14 +1799,17 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 })}
               </ul>
             )}
-            <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
+            <details className="border-t border-cave-700 pt-2" open={hopWorkshopOpen} onToggle={e => setHopWorkshopOpen(e.currentTarget.open)}>
+              <summary className="cursor-pointer min-h-touch text-water" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>Explorer les arômes et les accords</summary>
+              {hopWorkshopOpen && <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
               setHops(next.hops);
               setYeast(next.yeast);
               setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
             }} contextEditor={<details><summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary><HopRecipeGuide contextOnly recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
               setHops(next.hops); setYeast(next.yeast);
               setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
-            }} /></details>} />
+            }} /></details>} />}
+            </details>
           </div>
         </Section>
       )}
@@ -1828,21 +1819,26 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         <Section title="Levure" hint="Saisis ta souche ou choisis une conduite pour l’arôme recherché.">
           <FormNav className="space-y-3">
             <Field label="Souche">
-              <IngredientPicker categories={['Levure']} items={stockItems} value={yeast.name} onChange={selectYeast}
+              <YeastIngredientPicker items={stockItems} yeast={yeast} onStock={selectYeast}
                 onCreate={n => { const item = onCreateStockItem(n, 'Levure', 'sachet'); selectYeast(item.name, item); }}
-                placeholder="US-05, Verdant IPA, WLP095…" ariaLabel="Souche de levure" />
+                onReference={reference => {
+                  applyFermentationRecipe(applyCatalogueYeast(build(), reference, reference.form ?? yeast.form), 'levure');
+                  setYeastSelection(n => n + 1);
+                }} />
             </Field>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <InlineNum label="Quantité" name={'Quantité de levure, en ' + yeast.unit} unit={yeast.unit} min={0} value={yeast.qty} onValue={qty => setYeast({ ...yeast, qty })} />
-            <InlineNum label="Ensemencement" name="Température d’ensemencement" unit="°C" value={yeast.pitchTempC} emptyValue={undefined}
+            <InlineNum label="T° départ" name="Température d’ensemencement" unit="°C" value={yeast.pitchTempC} emptyValue={undefined}
               onValue={pitchTempC => setYeast({ ...yeast, pitchTempC })} missing={yeast.pitchTempC == null} />
+            </div>
           </FormNav>
-          <FermentationWorkshop recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
+          <FermentationWorkshop key={yeastSelection} recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
             applyFermentationRecipe(next, 'levure');
           }} />
           <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
             <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
             <FormNav className="space-y-3 py-3">
-              <p className="text-xs text-cave-400">Repères de la fiche ou de ton expérience. Le calendrier des paliers fait foi pour les températures et durées du brassin. L’atténuation saisie alimente l’estimation générale de la recette ; la DF documentaire conserve la plage fabricant.</p>
+              <p className="text-sm text-cave-400">Repères de la fiche ou de ton expérience. Le calendrier des paliers fait foi pour les températures et durées du brassin. L’atténuation saisie alimente l’estimation générale de la recette ; la DF documentaire conserve la plage fabricant.</p>
               <Field label="Forme de la levure"><SegmentedControl label="Forme de la levure" value={yeast.form}
                 onChange={form => setYeast({ ...yeast, form, unit: form === 'liquide' ? 'flacon' : form === 'levain' ? 'L' : 'sachet' })}
                 options={[{value:'sèche',label:'Sèche'},{value:'liquide',label:'Liquide'},{value:'levain',label:'Levain / Récup'}]} /></Field>
@@ -1986,7 +1982,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               </Field>
 
               {attenuation != null && yeast.attenuationPct != null && (
-                <p className="text-2xs sm:text-sm text-cave-400 leading-relaxed">
+                <p className="text-sm text-cave-400 leading-relaxed">
                   À {mashTemp} °C, atténuation attendue :{' '}
                   <span className="reading text-ebc-straw">{attenuation} %</span>
                   {fgPredicted ? ` · FG estimée ${fgPredicted.toFixed(3)}.` : '.'}
@@ -2019,7 +2015,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                       <div className="flex items-center justify-between gap-2">
                         <span className="min-w-0 flex-1">
                           <span
-                            className={`inline-block text-2xs px-1.5 py-0.5 rounded-full border ${phase.tone}`}
+                            className={`inline-block text-sm px-1.5 py-0.5 rounded-full border ${phase.tone}`}
                           >
                             {phase.label}
                           </span>
@@ -2139,13 +2135,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 le calcul propose — et le geste pour les prendre.
               */}
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-ebc-amber" />
-              <span className="min-w-0 flex-1 text-2xs text-cave-200 leading-snug">
+              <span className="min-w-0 flex-1 text-sm text-cave-200 leading-snug">
                 Le calcul donne{' '}
                 <span className="reading text-ebc-amber">
                   {suggestedVolumes.mashWaterL} / {suggestedVolumes.spargeWaterL} L
                 </span>
               </span>
-              <span className="shrink-0 text-2xs text-ebc-amber font-medium">recaler</span>
+              <span className="shrink-0 text-sm text-ebc-amber font-medium">recaler</span>
             </button>
           )}
 
@@ -2288,6 +2284,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             })
           }
         />
+        <BrewBudgetButton recipe={build()} />
         </>
       )}
 
@@ -2304,7 +2301,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         « Lancer le brassin » sont la décision de la page, pas une navigation.
       */}
       {step !== 'recap' && (
-        <nav className="flex gap-2 pt-1 pb-2">
+        <nav className="recipe-step-actions flex justify-between gap-2 pt-1 pb-2">
           <button
             type="button"
             onClick={() => go(-1)}
@@ -2318,7 +2315,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             type="button"
             onClick={() => go(1)}
             disabled={!canAdvance || hopGuideBusy}
-            className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950
+            className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
                        text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
           >
             {canAdvance ? `Suivant — ${STEPS[stepIndex + 1]?.label ?? ''}` : 'Donne un nom à la recette'}

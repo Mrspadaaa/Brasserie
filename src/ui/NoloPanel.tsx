@@ -48,16 +48,17 @@ const stageLabels:Record<NoloStage,string>={sourceWater:'Eau source',mash:'Empâ
 
 export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=false,hideStrainPicker=false,onChooseYeast}:{recipe:TrialRecipe;onChange?:(r:TrialRecipe)=>void;allowEnable?:boolean;measurementOnly?:boolean;hideStrainPicker?:boolean;onChooseYeast?:()=>void}) {
   const saved=useStorageValue(StorageService.getHopKnowledge);
-  const science=useMemo(()=>noloScience(saved),[saved]);
   const c=recipe.nolo, editable=!!onChange;
-  const outcome=useMemo(()=>{try{return {result:evaluateNoloRecipe(recipe,saved),error:''};}catch(e){return {result:null,error:e instanceof Error?e.message:'Configuration NOLO invalide.'};}},[recipe,saved]);
+  const science=useMemo(()=>c?.enabled?noloScience(saved):undefined,[saved,c?.enabled]);
+  const outcome=useMemo(()=>{if(!c?.enabled)return {result:null,error:''};try{return {result:evaluateNoloRecipe(recipe,saved),error:''};}catch(e){return {result:null,error:e instanceof Error?e.message:'Configuration NOLO invalide.'};}},[recipe,saved]);
   const result=outcome.result;
-  const diagnoses=useMemo(()=>{try{return fermentationReadiness(recipe,saved);}catch{return [];}},[recipe,saved]);
+  const diagnoses=useMemo(()=>{if(!c?.enabled)return [];try{return fermentationReadiness(recipe,saved);}catch{return [];}},[recipe,saved]);
   const [workshop,setWorkshop]=useState(false);
   const documentedPof=useMemo(()=>{
+    if (!c?.enabled) return 'unknown';
     const values=[result?.strain?.pof,...guideFermentations(saved).filter(g=>g.yeastId===recipe.yeast.hopIndexId).map(g=>g.aroma.pof)].filter(v=>v&&v!=='unknown');
     return new Set(values).size===1?values[0]:'unknown';
-  },[result?.strain?.pof,saved,recipe.yeast.hopIndexId]);
+  },[c?.enabled,result?.strain?.pof,saved,recipe.yeast.hopIndexId]);
   const [selectedStrain,setStrain]=useState(''),[operationKind,setOperationKind]=useState<NoloOperation['kind']>('sugar');
   const [measure,setMeasure]=useState<Partial<NoloMeasurement>>({stage:'packaged',date:new Date().toISOString().slice(0,10),method:''});
   const [variant,setVariant]=useState<TrialRecipe>();

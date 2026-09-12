@@ -13,7 +13,7 @@ export function RecipeDisclosure({title,summary,children,actions}:{title:string;
   return <details ref={ref} data-recipe-section={title} className="group/recipe panel p-3 sm:p-4 min-w-0"
     onInvalidCapture={event=>{event.currentTarget.open=true;}}>
     <summary aria-controls={id} className="list-none cursor-pointer min-h-11 flex items-center gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water rounded-control">
-      <span className="min-w-0 flex-1"><span className="block text-sm sm:text-base font-semibold text-cave-50">{title}</span>{summary&&<span className="block text-xs text-cave-400 truncate mt-1">{summary}</span>}</span>
+      <span className="min-w-0 flex-1"><span className="block text-sm sm:text-base font-semibold text-cave-50">{title}</span>{summary&&<span className="block text-sm text-cave-400 break-words mt-1">{summary}</span>}</span>
       <ChevronDown className="w-4 h-4 shrink-0 text-cave-400 group-open/recipe:rotate-180" aria-hidden="true"/>
     </summary>
     <div id={id} className="mt-3 min-w-0 space-y-3">{actions&&<div className="flex flex-wrap gap-2">{actions}</div>}{children}</div>

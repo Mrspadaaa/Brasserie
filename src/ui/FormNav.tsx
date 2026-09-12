@@ -141,13 +141,13 @@ export const Field: React.FC<FieldProps> = ({
   className = ''
 }) => (
   <div className={`space-y-1 ${className}`}>
-    <label htmlFor={htmlFor} className="block text-2xs sm:text-sm text-cave-400 font-medium">
+    <label htmlFor={htmlFor} className="block text-sm text-cave-400 font-medium">
       {label}
     </label>
     {children}
-    {hint && !error && <p className="text-2xs text-cave-400 leading-snug">{hint}</p>}
+    {hint && !error && <p className="text-sm text-cave-400 leading-snug">{hint}</p>}
     {error && (
-      <p role="alert" className="text-2xs sm:text-sm text-alert leading-snug">
+      <p role="alert" className="text-sm text-alert leading-snug">
         {error}
       </p>
     )}
@@ -192,7 +192,7 @@ export const InlineNum: React.FC<{
   emptyValue?: number | undefined;
 }> = ({ label, name, unit, value, onValue, min, max, integer, missing, ...emptyOption }) => (
   <label className="flex items-center gap-1 min-w-0">
-    <span className={`text-2xs shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>
+    <span className={`text-sm shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>
       {label}
     </span>
     <NumberInput
@@ -205,9 +205,9 @@ export const InlineNum: React.FC<{
       integer={integer}
       pad
       className={`w-14 shrink-0 min-h-touch-sm px-1 rounded-control bg-cave-950 border
-                  reading text-2xs text-center text-cave-50 focus:outline-none focus:border-ebc-straw
+                  reading text-base text-center text-cave-50 focus:outline-none focus:border-ebc-straw
                   ${missing ? 'border-ebc-amber/60' : 'border-cave-700'}`}
     />
-    {unit && <span className="reading-unit text-2xs shrink-0">{unit}</span>}
+    {unit && <span className="reading-unit text-sm shrink-0">{unit}</span>}
   </label>
 );

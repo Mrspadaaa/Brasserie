@@ -1,0 +1,136 @@
+/* Recipe views adopt DESIGN.md's compact scale without changing other pages.
+   Minimum heights grow with text/zoom. Targets stay inside their own rows. */
+.recipe-wizard {
+  font-size: 14px;
+  line-height: 1.4;
+}
+.recipe-wizard > main > div {
+  padding: 8px 8px 12px;
+}
+.recipe-wizard .panel {
+  padding: 8px;
+}
+.recipe-wizard .recipe-metrics {
+  padding: 4px 8px;
+}
+.recipe-wizard :is(.space-y-3, .space-y-4, .space-y-5) > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 8px;
+}
+.recipe-wizard :is(h2, h3) {
+  font-size: 14px;
+  line-height: 1.3;
+}
+.recipe-wizard :is(.text-cave-400, .reading-unit) {
+  font-size: 13px;
+  line-height: 1.35;
+}
+.recipe-wizard button {
+  min-height: 28px;
+  height: auto;
+  font-size: 13px;
+  line-height: 1.3;
+  padding-block: 3px;
+}
+.recipe-wizard button :is(.text-sm, .text-2xs) {
+  font-size: 13px;
+}
+.recipe-wizard button:is(.w-8, .w-9, .w-10, .w-11, .w-touch-sm, .touch-target) {
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+}
+.recipe-wizard button.w-8 {
+  width: 24px;
+  min-width: 24px;
+  min-height: 24px;
+}
+.recipe-wizard button.recipe-primary-action {
+  min-height: 32px;
+}
+.recipe-wizard :is(input:not([type='checkbox']):not([type='radio']):not([type='range']), select, [contenteditable]:not([contenteditable='false'])) {
+  min-height: 32px;
+  height: auto;
+  padding-block: 2px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.recipe-wizard textarea {
+  font-size: 16px;
+}
+.recipe-wizard section[aria-label='Objectif NOLO'] { padding: 8px; }
+.recipe-wizard section[aria-label='Objectif NOLO'] > div > label { min-height: 28px; }
+.recipe-wizard summary {
+  min-height: 28px;
+  font-size: 13px;
+  line-height: 1.35;
+  padding-block: 4px;
+}
+.recipe-wizard [data-recipe-section] > summary {
+  min-height: 32px;
+  gap: 8px;
+}
+.recipe-wizard [data-recipe-section] > summary > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+}
+.recipe-wizard [data-recipe-section] > summary > span > span:first-child {
+  flex: 0 0 8rem;
+  font-size: 14px;
+}
+.recipe-wizard [data-recipe-section] > summary > span > span + span {
+  margin-top: 0;
+  font-size: 13px;
+}
+.recipe-wizard [aria-label='Eaux à préparer'] {
+  padding: 8px;
+}
+.recipe-wizard [data-water-volume] {
+  font-size: 16px;
+}
+.recipe-wizard .recipe-titlebar,
+.recipe-wizard [data-page-titlebar] {
+  min-height: 36px;
+  padding-block: 2px;
+}
+.recipe-wizard [data-page-titlebar] > .min-w-0 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.recipe-wizard [data-page-titlebar] h1 {
+  font-size: 18px;
+}
+.recipe-wizard [data-page-titlebar] h1 + p {
+  display: none; /* The labelled step rail already names this destination. */
+}
+.recipe-wizard .recipe-titlebar > button,
+.recipe-wizard .recipe-titlebar .brewer-page-shortcut {
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+}
+.recipe-wizard [data-page-progress] {
+  padding-block: 0;
+}
+.recipe-wizard nav[aria-label='Étapes'] > button {
+  min-height: 28px;
+  padding-block: 2px;
+  gap: 3px;
+}
+.recipe-wizard nav[aria-label='Étapes'] > button > span:last-child {
+  height: 4px;
+}
+.recipe-wizard > footer > div {
+  padding: 2px 8px;
+}
+.recipe-wizard [aria-label='Moment d’ajout'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 3px;
+}
+@media (min-width: 640px) {
+  .recipe-wizard > main > div { padding-inline: 12px; }
+  .recipe-wizard [aria-label='Moment d’ajout'] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

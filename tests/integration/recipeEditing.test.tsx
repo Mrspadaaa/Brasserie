@@ -185,7 +185,8 @@ describe('Recipe data entry regressions', () => {
     );
   });
   it('does not carry the previous yeast technical data into a different strain', async () => {
-    wizard({ ...base, yeast: { ...base.yeast, hopIndexId: 'fermentis-us05' } });
+    wizard({ ...base, yeast: { ...base.yeast, hopIndexId: 'fermentis-us05', pitchTempC: 30, fermentDays: 3,
+      fermentation: { version: 1, strainName: 'Ancienne souche', sugars: {}, pof: 'negative', hydrolysis: 'unknown' } as any } });
     step(/^Levure$/);
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker);
@@ -201,6 +202,47 @@ describe('Recipe data entry regressions', () => {
     expect(yeast.lab).toBeUndefined();
     expect(yeast.fermTempMinC).toBeUndefined();
     expect(yeast.hopIndexId).toBeUndefined();
+    expect(yeast.pitchTempC).toBeUndefined();
+    expect(yeast.fermentDays).toBeUndefined();
+    expect(yeast.fermentation).toBeUndefined();
+  });
+  it('keeps an incomplete fermentation phase while editing and preserves the other recipe data', () => {
+    const original = structuredClone(base);
+    original.fermentation.push({ kind: 'garde', name: 'Garde', tempC: 4, days: 7 });
+    const save = vi.fn(); const view = wizard(original, save);
+    step(/^Levure$/);
+    const temperature = screen.getByLabelText('Température du scénario 1 (°C)');
+    change(temperature, '');
+    expect(temperature).toBeInTheDocument();
+    expect(temperature).toHaveValue('');
+    expect(screen.getByLabelText('Température du scénario 2 (°C)')).toHaveValue('4');
+    change(temperature, '18,5');
+    const duration = screen.getByLabelText('Durée du scénario 1 (j)');
+    change(duration, ''); change(duration, '12');
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
+    const saved = save.mock.calls[0][0];
+    expect(saved.fermentation).toEqual([{ ...original.fermentation[0], tempC: 18.5, days: 12 }, original.fermentation[1]]);
+    expect(saved.hops).toEqual(original.hops);
+    expect(saved.fermentables).toEqual(original.fermentables);
+    expect(saved.waterPlan.mash).toEqual(original.waterPlan.mash);
+    view.unmount(); wizard(saved);
+    step(/^Levure$/);
+    expect(screen.getByLabelText('Température du scénario 1 (°C)')).toHaveValue('18,5');
+  });
+  it('chooses a documented yeast outside the stock and returns to the actual recipe assessment', () => {
+    const save = vi.fn(); wizard(base, save); step(/^Levure$/);
+    const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
+    fireEvent.focus(picker); fireEvent.change(picker, { target: { value: 'Verdant' } });
+    expect(screen.getByRole('option', { name: /LalBrew Verdant IPA/ })).toHaveTextContent('Stock non renseigné');
+    fireEvent.keyDown(picker, { key: 'Enter' });
+    expect(screen.getByRole('region', { name: 'Résultat de ma fermentation' })).toHaveTextContent('Verdant');
+    expect(screen.queryByRole('region', { name: 'Programme de levure proposé' })).not.toBeInTheDocument();
+    step(/^Récapitulatif$/);
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
+    expect(save.mock.calls[0][0].yeast.hopIndexId).toBe('lalbrew-verdant-ipa');
+    expect(save.mock.calls[0][0].yeast.qty).toBe(0);
+    expect(save.mock.calls[0][0].yeastGuide).toBeUndefined();
   });
   it('preserves aroma associations, target and historical predictions through recipe editing', () => {
     const original = { ...structuredClone(base), hopMatrixId: 'pale-ale',

@@ -34,7 +34,10 @@ export interface ComboOption {
   favorite?: boolean;
   /** Groupe d'appartenance, affiché en en-tête. */
   group?: string;
+  keywords?: string;
 }
+
+const DEFAULT_SEARCH_KEYS: Array<keyof ComboOption> = ['label', 'detail', 'keywords'];
 
 interface ComboboxProps {
   value: string;
@@ -69,6 +72,8 @@ interface ComboboxProps {
    * `placeholder` d'origine, qui vaut toujours mieux que rien.
    */
   ariaLabel?: string;
+  /** Search the whole catalogue, then bound the rendered suggestions. */
+  maxResults?: number;
 }
 
 export const Combobox: React.FC<ComboboxProps> = ({
@@ -81,9 +86,10 @@ export const Combobox: React.FC<ComboboxProps> = ({
   allowCreate = false,
   onCreate,
   createLabel = (s) => `Ajouter « ${s} »`,
-  searchKeys = ['label', 'detail'],
+  searchKeys = DEFAULT_SEARCH_KEYS,
   searchThreshold = 8,
-  ariaLabel
+  ariaLabel,
+  maxResults = Infinity
 }) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -128,7 +134,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
     [options, searchKeys]
   );
 
-  const results = useMemo(() => {
+  const matches = useMemo(() => {
     const q = query.trim();
     const base = q ? runSearch(fuse, q) : options;
     // Les épinglés remontent, sauf pendant une recherche où la pertinence prime.
@@ -136,6 +142,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
       ? base
       : [...base].sort((a, b) => (a.favorite === b.favorite ? 0 : a.favorite ? -1 : 1));
   }, [query, fuse, options]);
+  const results = matches.slice(0, maxResults);
 
   const canCreate =
     allowCreate &&
@@ -441,6 +448,9 @@ export const Combobox: React.FC<ComboboxProps> = ({
               {query ? `Rien ne correspond à « ${query} »` : 'Aucune option'}
             </li>
           )}
+          {matches.length > results.length && <li role="presentation" className="px-4 py-2 text-sm text-cave-400">
+            {matches.length} résultats · précise le nom pour affiner.
+          </li>}
 
           {results.map((opt, i) => {
             const isActive = i === active;
@@ -478,6 +488,7 @@ export const Combobox: React.FC<ComboboxProps> = ({
 
           {canCreate && (
             <li
+              id={`${inputId}-opt-${results.length}`}
               data-index={results.length}
               role="option"
               aria-selected={false}

@@ -7,7 +7,12 @@ const unknown=(reason:string,sources:HopSource[]=[]):FermentationEstimate=>({ran
 const fold=(v:string)=>v.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
 /** Invalid and disabled records never resurrect their bundled equivalent here. */
 export function activeFermentationScience(knowledge:unknown[]):FermentationScience[] {
- return knowledge.filter((v):v is FermentationScience=>{try{assertFermentationScience(v);return v.enabled;}catch{return false;}});
+ return knowledge.filter((v):v is FermentationScience=>{
+  // A mixed catalogue contains thousands of other records. Reject their kind
+  // before the schema validator, rather than constructing an error for each.
+  if (!v || typeof v !== 'object' || !('kind' in v) || v.kind !== 'fermentationScience') return false;
+  try{assertFermentationScience(v);return v.enabled;}catch{return false;}
+ });
 }
 export function suggestFermentationGoals(science:FermentationScience|undefined,query:string){
  const terms=fold(query).split(' ').filter(Boolean);

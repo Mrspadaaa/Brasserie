@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewport';
 
@@ -42,6 +42,7 @@ interface PageShellProps {
   /** Largeur de travail pour les pages avec une colonne de contrôle. */
   wide?: boolean;
   className?: string;
+  scrollKey?: string;
   children: React.ReactNode;
 }
 
@@ -55,6 +56,7 @@ export const PageShell: React.FC<PageShellProps> = ({
   mobileHeader,
   wide = false,
   className = '',
+  scrollKey,
   children
 }) => {
   /*
@@ -69,6 +71,8 @@ export const PageShell: React.FC<PageShellProps> = ({
   const coarse = useCoarsePointer();
   const keyboardInset = useKeyboardInset();
   const frame = wide ? 'max-w-6xl' : 'max-w-3xl';
+  const scrollRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; }, [scrollKey]);
 
   const [isFieldFocused, setIsFieldFocused] = useState(false);
 
@@ -131,6 +135,7 @@ export const PageShell: React.FC<PageShellProps> = ({
             <div className="sm:hidden">{mobileHeader}</div>
             <div className="hidden sm:block">
               <div
+                data-page-titlebar
                 className={`${frame} mx-auto flex items-center gap-1.5 ${
                   tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-0.5' : 'px-3 py-1'
                 }`}
@@ -160,6 +165,7 @@ export const PageShell: React.FC<PageShellProps> = ({
 
               {progress && (
                 <div
+                  data-page-progress
                   className={`${frame} mx-auto ${tight ? 'px-1.5 pb-1' : 'px-2.5 sm:px-3 pb-1.5'}`}
                 >
                   {progress}
@@ -170,6 +176,7 @@ export const PageShell: React.FC<PageShellProps> = ({
         ) : (
           <>
             <div
+              data-page-titlebar
               className={`${frame} mx-auto flex items-center gap-1.5 ${
                 tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-0.5' : 'px-3 py-1'
               }`}
@@ -200,6 +207,7 @@ export const PageShell: React.FC<PageShellProps> = ({
 
             {progress && (
               <div
+                data-page-progress
                 className={`${frame} mx-auto ${tight ? 'px-1.5 pb-1' : 'px-2.5 sm:px-3 pb-1.5'}`}
               >
                 {progress}
@@ -210,7 +218,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       </header>
 
       {/* `scroll-pb-16` réserve la place du pied */}
-      <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+      <main ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
         <div
           className={`${frame} mx-auto pb-20 sm:pb-24 ${
             tight
@@ -265,7 +273,7 @@ export const Section: React.FC<{
           <h2 className="text-sm sm:text-base font-semibold text-cave-50 leading-tight">{title}</h2>
           {/* L'explication d'une section se lit une fois. */}
           {hint && !tight && (
-            <p className="text-2xs sm:text-sm text-cave-400 leading-snug mt-0.5">{hint}</p>
+            <p className="text-sm text-cave-400 leading-snug mt-0.5">{hint}</p>
           )}
         </div>
         {actions && <div className="shrink-0 flex items-center gap-1">{actions}</div>}

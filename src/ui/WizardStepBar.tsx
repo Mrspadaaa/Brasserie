@@ -71,8 +71,8 @@ export const WizardStepName: React.FC<CommunProps> = ({ steps, currentIndex }) =
 
 /** Les sept barres, directement tapables. À poser seules sur leur rang. */
 export const WizardStepRail: React.FC<
-  CommunProps & { onSelect: (id: string) => void; disabled?: boolean }
-> = ({ steps, currentIndex, onSelect, disabled = false }) => (
+  CommunProps & { onSelect: (id: string) => void; disabled?: boolean; showLabels?: boolean }
+> = ({ steps, currentIndex, onSelect, disabled = false, showLabels = false }) => (
   <nav aria-label="Étapes" className="flex w-full gap-1">
     {steps.map((s, i) => (
       <button
@@ -83,9 +83,11 @@ export const WizardStepRail: React.FC<
         aria-current={i === currentIndex ? 'step' : undefined}
         aria-label={s.label}
         // La cible reste dans sa rangée pour ne pas recouvrir les actions du titre.
-        className="group flex h-11 min-w-0 flex-1 items-center
-                   disabled:opacity-40 disabled:pointer-events-none"
+        title={s.label}
+        className={`group flex h-11 min-w-0 flex-1 items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+                   disabled:opacity-40 disabled:pointer-events-none ${showLabels ? 'flex-col justify-center gap-2' : ''}`}
       >
+        {showLabels && <span className={`max-w-full truncate text-sm ${i === currentIndex ? 'text-cave-50 font-semibold' : 'text-cave-400'}`}>{s.label}</span>}
         <span
           className={`h-1.5 w-full rounded-full transition-colors ${
             i === currentIndex

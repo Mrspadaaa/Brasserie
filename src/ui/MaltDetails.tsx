@@ -23,15 +23,15 @@ export function MaltDetails({
   const grade = maltGrade(malt.colorEbc);
   const missing = ingredientGaps([malt], [], { name: '' } as any)[0]?.missing ?? [];
   return (
-    <details className="text-2xs mt-1" aria-label={`Fiche technique de ${malt.name}`}>
-      <summary className="cursor-pointer w-fit rounded-full border border-cave-700 px-2 py-1 text-cave-200 marker:text-cave-400">
+    <details className="text-sm mt-1" aria-label={`Fiche technique de ${malt.name}`}>
+      <summary className="cursor-pointer w-fit min-h-touch-sm rounded-control border border-cave-700 px-2 py-1.5 text-cave-200 marker:text-cave-400">
         <span className={grade?.tone}>
           {grade ? `${grade.label} · ${malt.colorEbc} EBC` : 'Couleur à renseigner'}
         </span>
         <span className="text-cave-400"> · modifier</span>
       </summary>
       <div className="pt-2 pb-1 space-y-2">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
           {(
             [
               { key: 'colorEbc', label: 'Couleur', unit: 'EBC', max: 5000, min: 0 },
@@ -47,7 +47,7 @@ export function MaltDetails({
                 max={field.max}
                 aria-label={`${field.label} de ${malt.name} en ${field.unit}`}
                 onValue={(value) => onChange({ [field.key]: value })}
-                className="w-14 h-8 px-1 rounded-control border border-cave-700 bg-cave-950 text-cave-50 text-right font-mono focus:border-ebc-straw focus:outline-none"
+                className="w-14 min-h-touch-sm px-1 text-base rounded-control border border-cave-700 bg-cave-950 text-cave-50 text-right font-mono focus:border-ebc-straw focus:outline-none"
               />
               {field.unit}
             </label>

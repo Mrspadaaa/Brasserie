@@ -66,7 +66,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
   const outsideDose = dose && draft.quantityG != null && (draft.quantityG < dose.range.min || draft.quantityG > dose.range.max);
   return <section aria-label="Programme de levure proposé" className="border-t border-cave-700 pt-4 space-y-4">
     <div>
-      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-cave-400">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-sm text-cave-400">
         <span>Fenêtre fabricant : {rangeLabel(guide.temperatureC.range, '°C')}</span>
         <span>Principale et repos : {rangeLabel(fermentationDuration(plan), 'j')} · confiance faible</span>
       </div>
@@ -103,7 +103,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
     </ol>
     {yeast.form === 'sèche' ? <div className="border-t border-cave-800 pt-3 space-y-2">
       <p className="text-sm text-cave-200">{dose ? <>Dose fabricant pour {Units.format(recipe.volumeL, 'L')} : <strong>{rangeLabel(dose.range, 'g')}</strong>. Confiance {dose.confidence === 'low' ? 'faible' : 'moyenne'} pour ce brassin.</> : 'Dose à renseigner : volume ou plage fabricant manquants.'}</p>
-      <p className="text-xs text-cave-400">Conversion au volume seulement. Densité, fraîcheur et conditions d’ensemencement restent à vérifier ; aucune masse de sachet n’est supposée.</p>
+      <p className="text-sm text-cave-400">Conversion au volume seulement. Densité, fraîcheur et conditions d’ensemencement restent à vérifier ; aucune masse de sachet n’est supposée.</p>
       <HopField label="Quantité prévue de levure sèche (g)" hint="Facultative à ce stade ; une valeur vide reste à renseigner dans la recette."><NumberInput className={inputClass} value={draft.quantityG} emptyValue={undefined} disabled={busy} onValue={quantityG => setDraft({ ...draft, quantityG })} /></HopField>
       {outsideDose && <p role="status" className="text-sm text-ebc-straw">Quantité hors de la plage fabricant calculée au volume. Vérifie ce choix avec la densité et l’état de la levure.</p>}
     </div> : <p className="text-sm text-cave-200">Quantité de levure liquide à établir avec les cellules viables et la densité. Le guide ne suppose ni un flacon suffisant, ni une atténuation au milieu de la plage.</p>}
@@ -120,7 +120,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
       <HopSourceLink source={guide.aroma.source} /><HopSourceLink source={guide.temperatureC.source} />
       {guide.dryPitchGHL && <HopSourceLink source={guide.dryPitchGHL.source} />}
       {plan.notes.map((n, i) => <div className="text-sm space-y-1 text-cave-200" key={i}><p>{n.text}</p><HopSourceLink source={n.source} /></div>)}
-      <p className="text-xs text-cave-400">Les consignes et durées sont des propositions éditoriales datées. Les fiches sans date gardent « année inconnue ». Le guide appliqué est enregistré dans l’Index puis modifiable dans ses connaissances, avec une nouvelle version.</p>
+      <p className="text-sm text-cave-400">Les consignes et durées sont des propositions éditoriales datées. Les fiches sans date gardent « année inconnue ». Le guide appliqué est enregistré dans l’Index puis modifiable dans ses connaissances, avec une nouvelle version.</p>
       <HopSourceLink source={plan.source} />
       <FermentationPlanningCalculations science={science} guide={guide} ogInitial={recipe.ogTarget} />
     </details>
@@ -147,16 +147,17 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
   const selected = choices.find(g => g.id === selectedId) ?? choices.find(g => g.yeastId === currentYeast?.id) ?? choices.find(g => yeasts.find(y => y.id === g.yeastId)?.form === recipe.yeast.form) ?? choices[0];
   const yeast = selected && yeasts.find(y => y.id === selected.yeastId);
   if(recipe.nolo?.enabled)return <NoloFermentationWorkshop recipe={recipe} onChange={onChange}/>;
-  return <section aria-label="Atelier des arômes de levure" className="mb-6 p-3 sm:p-5 rounded-panel border border-ebc-straw/30 bg-cave-900 space-y-4">
+  return <section aria-label="Atelier des arômes de levure" className="mt-4 border-t border-cave-700 pt-4 space-y-3">
     <div className="flex items-start gap-3"><FlaskConical className="text-ebc-straw shrink-0 mt-1" size={22} /><div>
-      <h3 className="text-lg font-semibold text-cave-50">Levure & fermentation</h3>
-      {simulationOnly && <p className="text-xs text-cave-400 mt-1">Variante locale · recette enregistrée inchangée</p>}
+      <h3 className="text-sm font-semibold text-cave-50">Conduite de fermentation</h3>
+      {simulationOnly && <p className="text-sm text-cave-400 mt-1">Variante locale · recette enregistrée inchangée</p>}
     </div></div>
-    <div className="grid grid-cols-2 gap-2" role="group" aria-label="Parcours de fermentation">
-      <Button disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Évaluer ma recette</Button>
-      <Button disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Trouver une conduite</Button>
+    <div className="flex flex-wrap gap-2" role="group" aria-label="Parcours de fermentation">
+      <Button className={mode === 'current' ? 'border-cave-400 bg-cave-800' : ''} disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Évaluer ma recette</Button>
+      <Button className={mode === 'choose' ? 'border-cave-400 bg-cave-800' : ''} disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Trouver une conduite</Button>
     </div>
     {mode === 'current' ? <FermentationScenarioPanel recipe={recipe} yeasts={yeasts} guides={guides} science={science} goal={goal} onChange={onChange}/> : <>
+    <p className="text-sm text-cave-400">Proposition à comparer. La souche et les paliers de la recette changent uniquement après application.</p>
     <HopField label="Objectif de fermentation"><select className={inputClass} value={goal} disabled={busy} onChange={e => setGoal(e.target.value as FermentationGoal)}>{Object.entries(FERMENTATION_GOAL_LABELS).map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></HopField>
     <HopField label="Souche documentée"><select className={inputClass} value={selected?.id ?? ''} disabled={busy || !choices.length} onChange={e => setSelectedId(e.target.value)}>{!choices.length && <option value="">Aucune conduite active</option>}{choices.map(g => <option key={g.id} value={g.id}>{yeasts.find(y => y.id === g.yeastId)?.name}</option>)}</select></HopField>
     <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Comparer les souches et affiner la recherche</summary><div className="space-y-3 pt-2">
@@ -168,7 +169,7 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
     <div className="grid sm:grid-cols-2 gap-2" role="group" aria-label="Souches documentées pour cet objectif">
       {choices.map(g => <button key={g.id} type="button" disabled={busy} aria-pressed={g.id === selected?.id} onClick={() => setSelectedId(g.id)} className={`text-left min-h-touch p-3 rounded-control border transition-colors ${g.id === selected?.id ? 'border-ebc-straw bg-ebc-straw/10' : 'border-cave-700 hover:border-cave-400'}`}>
         <span className="block font-semibold text-cave-50">{yeasts.find(y => y.id === g.yeastId)?.name}</span>
-        <span className="block text-xs text-ebc-straw mt-1">{yeasts.find(y => y.id === g.yeastId)?.form} · {rangeLabel(g.temperatureC.range, '°C')}</span>
+        <span className="block text-sm text-ebc-straw mt-1">{yeasts.find(y => y.id === g.yeastId)?.form} · {rangeLabel(g.temperatureC.range, '°C')}</span>
       </button>)}
     </div>
     <details className="border border-cave-700 rounded-control p-3" onToggle={e=>setCatalogueOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-cave-50">Chercher dans toutes les levures et consulter leurs caractéristiques</summary>{catalogueOpen&&<div className="pt-3"><YeastCataloguePanel selectedId={recipe.yeast.hopIndexId} initialForm={recipe.yeast.form} disabled={busy} onSelect={(y,form)=>{
