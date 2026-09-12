@@ -1133,7 +1133,7 @@
 }
 .brew-station-heading h2 {
   color: #f5f0ea;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 650;
   line-height: 1.2;
 }
@@ -2377,7 +2377,7 @@
     font-size: 14px;
   }
   .brew-assist-summary .brew-tag {
-    font-size: 10px;
+    font-size: 13px;
     padding-inline: 5px;
   }
   .brew-assist-body {

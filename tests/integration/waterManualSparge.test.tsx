@@ -1,4 +1,5 @@
 import React from 'react';
+import { allerEtape } from '../helpers/wizard';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
@@ -40,7 +41,7 @@ describe('Manual sparge acid through the complete recipe workflow', () => {
         acidOverride: { mash: 0, sparge: 0 }, startIons: undefined, wortIons: undefined }
     };
     const view = mount(recipe);
-    click('Eau et sels');
+    allerEtape('Eau et sels');
     changeAcid('2');
     expect(spargeAcid()).toHaveValue('2');
     // 250 mg/L − 2 mL × 600 mg/mL / 10 L, independent of mash salts.
@@ -59,7 +60,7 @@ describe('Manual sparge acid through the complete recipe workflow', () => {
     expect(radar()).not.toBe(acidifiedGraph);
     changeAcid('2');
     const finalGraph = radar();
-    click('Récapitulatif');
+    allerEtape('Récapitulatif');
     expect(radar()).toBe(finalGraph);
     click('Enregistrer la recette');
     const saved = view.save.mock.calls[0][0] as Recipe;
@@ -71,11 +72,11 @@ describe('Manual sparge acid through the complete recipe workflow', () => {
     view.unmount();
 
     const reopened = mount(exported);
-    click('Eau et sels');
+    allerEtape('Eau et sels');
     expect(spargeAcid()).toHaveValue('2');
     expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('130');
     expect(radar()).toBe(finalGraph);
-    click('Récapitulatif');
+    allerEtape('Récapitulatif');
     click('Enregistrer la recette');
     expect(reopened.save.mock.calls[0][0].waterPlan).toEqual(saved.waterPlan);
   });

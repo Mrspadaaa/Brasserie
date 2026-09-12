@@ -23,7 +23,7 @@ export function RecipeDisclosure({title,summary,children,actions}:{title:string;
 export function RecipeWaterVolumes({totalL,roL}:{totalL:number;roL:number}) {
   const fmt=(n:number)=>n.toLocaleString('fr-FR',{maximumFractionDigits:1});
   return <dl aria-label="Eaux à préparer" className="grid grid-cols-3 gap-2 rounded-panel border border-water/35 bg-water/5 p-3 min-w-0">
-    {[['Osmosée',roL],['Réseau',Math.max(0,totalL-roL)],['Eau totale',totalL]].map(([label,value])=><div key={String(label)} className="min-w-0"><dt className="text-xs text-cave-300">{label}</dt><dd className={'font-mono tabular-nums text-base sm:text-xl '+(label==='Osmosée'?'text-water font-semibold':'text-cave-100')} data-water-volume={label}>{fmt(Number(value))} L</dd></div>)}
+    {[['Osmosée',roL],['Réseau',Math.max(0,totalL-roL)],['Eau totale',totalL]].map(([label,value])=><div key={String(label)} className="min-w-0"><dt className="text-xs text-cave-200">{label}</dt><dd className={'font-mono tabular-nums text-base sm:text-xl '+(label==='Osmosée'?'text-water font-semibold':'text-cave-50')} data-water-volume={label}>{fmt(Number(value))} L</dd></div>)}
   </dl>;
 }
 /** Validation errors must not remain inside a closed preparation section. */

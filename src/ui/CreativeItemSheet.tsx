@@ -213,7 +213,7 @@ export const CreativeItemSheet: React.FC<CreativeItemSheetProps> = ({
             />
           </Field>
 
-          <p className="text-sm text-cave-600">
+          <p className="text-sm text-cave-400">
             Entrée passe au champ suivant · Ctrl+Entrée enregistre
           </p>
         </FormNav>

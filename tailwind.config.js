@@ -103,26 +103,41 @@ export default {
       },
 
       spacing: {
-        // Cibles tactiles : 48 px minimum, 56 px pour les steppers manipulés
-        // avec des gants ou les mains mouillées.
-        touch: '3rem',
-        'touch-lg': '3.5rem',
         /**
-         * 44 px — EXPÉRIMENTAL, à la demande de Gaëtan (04.09.2026), pour les
-         * listes répétées sur mobile (une carte d'ingrédient parmi dix). Reste
-         * au-dessus du minimum Apple/WCAG (44 pt) : en dessous, le risque d'un
-         * mauvais poids de houblon tapé par erreur devient réel. Réservé aux
-         * boutons répétés (± d'un stepper, corbeille d'une carte) — jamais à
-         * l'action de validation finale (Enregistrer, Lancer le brassin), dont
-         * l'erreur coûte plus cher qu'un geste raté sur une carte.
+         * ÉCHELLE RÉVISÉE LE 12.09.2026, à la demande explicite de Gaëtan :
+         * « les boutons sont toujours beaucoup trop grands, larges et imposants ».
+         *
+         * L'échelle précédente — 48 px de base, 56 px pour les steppers — était
+         * calquée sur Material Design. Elle rendait chaque écran de l'assistant
+         * plus haut que nécessaire : un formulaire de six champs perdait près de
+         * 50 px en hauteur de contrôles, et les aplats pleine largeur écrasaient
+         * le contenu qu'ils devaient servir.
+         *
+         * La base est descendue à 48, puis 44, puis **36 px**, sur trois demandes
+         * successives. La règle a changé de NATURE : le dessin fait 36 px, la
+         * zone d'attrape 44. Les deux ne sont plus le même nombre.
+         *
+         * Un `::before` en `-inset-*` ou `p-2 -m-2` porte les 44 px sans occuper
+         * la moindre place. WCAG 2.2 AA (2.5.8) exige 24 px : même le dessin
+         * seul reste au-dessus.
+         *
+         * ⚠️ CE QUI NE CHANGE PAS : le plancher typographique de 14 px.
          */
-        'touch-sm': '2.75rem'
+        touch: '2.25rem',
+        /** 44 px — steppers manipulés avec des gants ou les mains mouillées. */
+        'touch-lg': '2.75rem',
+        /**
+         * 32 px — contrôles RÉPÉTÉS uniquement : ± d'un stepper, corbeille d'une
+         * carte, puce d'une liste de dix. Jamais une validation finale
+         * (Enregistrer, Lancer le brassin), dont l'erreur coûte un brassin.
+         */
+        'touch-sm': '2rem'
       },
 
       // minHeight et minWidth n'héritent pas de l'échelle spacing dans
       // Tailwind v3 : sans ces trois entrées, les classes min-h-touch-* n'existent pas.
-      minHeight: { touch: '3rem', 'touch-lg': '3.5rem', 'touch-sm': '2.75rem' },
-      minWidth: { touch: '3rem', 'touch-lg': '3.5rem', 'touch-sm': '2.75rem' },
+      minHeight: { touch: '2.25rem', 'touch-lg': '2.75rem', 'touch-sm': '2rem' },
+      minWidth: { touch: '2.25rem', 'touch-lg': '2.75rem', 'touch-sm': '2rem' },
 
       borderRadius: {
         // Trois rayons seulement, chacun porteur d'un niveau de hiérarchie.

@@ -17,7 +17,7 @@ export function BrewingStyleDetails({recipe,onChange}:{recipe:TrialRecipe;onChan
   const labels={og:'OG · SG',fg:'FG · SG',abv:'Alcool · % vol.',ibu:'IBU',srm:'Couleur · SRM'};
   return <details className="text-sm min-w-0"><summary className="min-h-touch cursor-pointer text-water">Repères du style · {style.code} · {style.edition}</summary>
     <div className="space-y-3 py-2">
-      <dl className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">{Object.entries(style.stats).map(([k,r])=><div key={k}><dt className="text-cave-400">{labels[k]}</dt><dd className="font-mono text-cave-100">{r.min.toLocaleString('fr')}–{r.max.toLocaleString('fr')}</dd></div>)}</dl>
+      <dl className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">{Object.entries(style.stats).map(([k,r])=><div key={k}><dt className="text-cave-400">{labels[k]}</dt><dd className="font-mono text-cave-50">{r.min.toLocaleString('fr')}–{r.max.toLocaleString('fr')}</dd></div>)}</dl>
       {recipe.nolo?.enabled&&<p className="text-xs text-cave-400">Ces plages décrivent le style de référence. Ton objectif d’alcool reste celui du mode NOLO.</p>}
       <HopSourceLink source={style.source}/>
       {onChange&&!recipe.nolo?.enabled&&<div className="flex flex-col gap-2">

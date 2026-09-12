@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { allerEtape } from '../helpers/wizard';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { SaltSolver, type WaterState } from '../../src/ui/SaltSolver';
@@ -68,11 +69,11 @@ describe('Product contract: Doser respects the complete chosen water profile', (
     const click = (name: string) => fireEvent.click(screen.getAllByRole('button', { name, exact: true })[0]);
     const graph = () => screen.getAllByRole('img', { name: /Profil ionique/ })[0].getAttribute('aria-label');
     mount(recipe);
-    click('Eau et sels');
+    allerEtape('Eau et sels');
     click('Proposer les doses');
     expect(screen.getByLabelText('Bilan des objectifs de l’eau')).toHaveTextContent('Profil atteint : 6/6');
     const workshop = graph();
-    click('Récapitulatif');
+    allerEtape('Récapitulatif');
     expect(graph()).toBe(workshop);
     click('Enregistrer la recette');
     const saved = save.mock.calls[0][0] as Recipe;
@@ -88,7 +89,7 @@ describe('Product contract: Doser respects the complete chosen water profile', (
     expect(imported.waterPlan).toEqual(saved.waterPlan);
     cleanup();
     mount(imported);
-    click('Eau et sels');
+    allerEtape('Eau et sels');
     expect(graph()).toBe(workshop);
     expect(screen.getByLabelText('Bilan des objectifs de l’eau')).toHaveTextContent('Profil atteint : 6/6');
   });

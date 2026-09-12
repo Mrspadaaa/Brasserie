@@ -24,11 +24,11 @@ export function MaltDetails({
   const missing = ingredientGaps([malt], [], { name: '' } as any)[0]?.missing ?? [];
   return (
     <details className="text-2xs mt-1" aria-label={`Fiche technique de ${malt.name}`}>
-      <summary className="cursor-pointer w-fit rounded-full border border-cave-700 px-2 py-1 text-cave-300 marker:text-cave-500">
+      <summary className="cursor-pointer w-fit rounded-full border border-cave-700 px-2 py-1 text-cave-200 marker:text-cave-400">
         <span className={grade?.tone}>
           {grade ? `${grade.label} · ${malt.colorEbc} EBC` : 'Couleur à renseigner'}
         </span>
-        <span className="text-cave-500"> · modifier</span>
+        <span className="text-cave-400"> · modifier</span>
       </summary>
       <div className="pt-2 pb-1 space-y-2">
         <div className="flex gap-2">

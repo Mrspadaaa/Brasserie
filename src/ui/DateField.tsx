@@ -126,7 +126,7 @@ export const DateField: React.FC<DateFieldProps> = ({
                 className={`min-h-11 sm:min-h-touch py-1 px-2.5 rounded-control border text-xs sm:text-sm transition-colors ${
                   active
                     ? 'bg-ebc-straw/15 border-ebc-straw text-ebc-straw font-medium'
-                    : 'bg-cave-900 border-cave-700 text-cave-300 hover:text-cave-50'
+                    : 'bg-cave-900 border-cave-700 text-cave-200 hover:text-cave-50'
                 }`}
               >
                 {s.label}

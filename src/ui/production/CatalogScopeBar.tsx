@@ -45,7 +45,7 @@ export function CatalogScopeBar({
           id={`catalog-folder-${kind}`}
           value={filters.folder}
           onChange={(e) => set({ folder: e.target.value as CatalogFolder })}
-          className="min-h-touch min-w-0 flex-1 bg-cave-950 text-base font-semibold text-cave-100"
+          className="min-h-touch min-w-0 flex-1 bg-cave-950 text-base font-semibold text-cave-50"
         >
           {(Object.keys(CATALOG_FOLDER_LABELS) as CatalogFolder[]).map((folder) => (
             <option key={folder} value={folder}>

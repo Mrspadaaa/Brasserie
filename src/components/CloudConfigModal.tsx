@@ -98,7 +98,7 @@ export const CloudConfigModal: React.FC<CloudConfigModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Fermer"
-            className="touch-target rounded-control text-cave-400 hover:text-cave-100 hover:bg-cave-850 transition-colors"
+            className="touch-target rounded-control text-cave-400 hover:text-cave-50 hover:bg-cave-850 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -166,7 +166,7 @@ export const CloudConfigModal: React.FC<CloudConfigModalProps> = ({
                 <Check className="w-5 h-5 shrink-0" />
                 <span>
                   L'IA répond. Modèle utilisé :{' '}
-                  <span className="font-mono text-cave-100">{testResult.model}</span>
+                  <span className="font-mono text-cave-50">{testResult.model}</span>
                   {testResult.elapsedMs !== undefined && (
                     <>
                       {' '}
@@ -193,7 +193,7 @@ export const CloudConfigModal: React.FC<CloudConfigModalProps> = ({
               <h4 className="text-base font-semibold text-cave-50">Google Drive</h4>
             </div>
 
-            <p className="text-sm text-cave-300 leading-relaxed">Le Drive du compte Google connecté conserve tes justificatifs. Après l’autorisation initiale, l’accès se renouvelle automatiquement.</p>
+            <p className="text-sm text-cave-200 leading-relaxed">Le Drive du compte Google connecté conserve tes justificatifs. Après l’autorisation initiale, l’accès se renouvelle automatiquement.</p>
             <DriveConnection />
 
             <a

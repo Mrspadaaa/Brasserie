@@ -1,4 +1,5 @@
 import type { AnnualReport, DepreciationCategory, DepreciationRow, FinanceTransaction, FinancialAsset, FinancialClosing, FinancialPayment, FinancialProfile } from './types';
+import { compte } from '../../services/plural';
 import { isoDate, isActiveTransaction, paymentState, refundLinkIssue, summarizeLedger, transactionAmount, transactionDirection, transactionKind, transactionVendor, validPayment } from './ledger';
 import { buildFribourgTaxReport } from './fribourgTax';
 
@@ -154,7 +155,7 @@ export function buildAnnualReport(input: { year: number; transactions: FinanceTr
   if (!ledger.cashComplete) missing.push('Trésorerie incomplète : confirmer le solde initial et les paiements depuis sa date.');
   if (payments.some(p => !validPayment(p))) missing.push('Des paiements ont une date ou un montant invalide ; corriger ces mouvements pour vérifier la trésorerie.');
   const unknown = transactions.filter(isActiveTransaction).filter(t => isoDate(t.date) && isoDate(t.date)! <= end && paymentState(t, payments, transactions, end).state === 'unknown');
-  if (unknown.length) missing.push(`${unknown.length} pièce(s) sans paiement vérifiable : créances et dettes incomplètes.`);
+  if (unknown.length) missing.push(`${compte(unknown.length, 'pièce')} sans paiement vérifiable : créances et dettes incomplètes.`);
   if (transactions.some(tx => isActiveTransaction(tx) && !isoDate(tx.date))) missing.push('Des pièces sans date valide ne peuvent pas être affectées à un exercice.');
   report.depreciation = assets.map(a => depreciationForYear(a, year));
   report.assetEvidence = assets.filter(a => isoDate(a.acquisitionDate) && isoDate(a.acquisitionDate)! <= end && (!a.disposedDate || isoDate(a.disposedDate)! >= start)).map(a => ({

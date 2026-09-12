@@ -35,15 +35,15 @@ export function NoloFermentationWorkshop({ recipe, onChange }: { recipe: TrialRe
       <p className="text-sm text-cave-200">{recipe.yeast.name || 'Souche à choisir'}</p>
       {diagnostics[0] && <p role="status" className="text-sm text-ebc-straw">{diagnostics[0].message}</p>}
       {result?.projection.max != null && <BoundGraph bound={result.projection} target={recipe.nolo!.targetAbvPct} label="Projection avec mes réglages" />}
-      {diagnostics.length > 1 && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Autres points à préparer · {diagnostics.length - 1}</summary><ul className="space-y-2 text-sm text-cave-300">{diagnostics.slice(1).map(d => <li key={d.id}>{d.message}{d.source && <HopSourceLink source={d.source}/>}</li>)}</ul></details>}
+      {diagnostics.length > 1 && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Autres points à préparer · {diagnostics.length - 1}</summary><ul className="space-y-2 text-sm text-cave-200">{diagnostics.slice(1).map(d => <li key={d.id}>{d.message}{d.source && <HopSourceLink source={d.source}/>}</li>)}</ul></details>}
     </>}
-    {mode === 'choose' && <label className="block text-sm text-cave-300">Profil recherché, libre
+    {mode === 'choose' && <label className="block text-sm text-cave-200">Profil recherché, libre
       <input className={inputClass + ' mt-1'} value={intent.aroma} placeholder="Fruité, acidulé, banane, rond…" maxLength={1000} onChange={e => onChange({ ...recipe, fermentationIntent: { ...intent, aroma: e.target.value } })}/>
     </label>}
     <div className="space-y-2" aria-label="Propositions NOLO">
       <p className="text-xs text-cave-400">{['restricted', 'restored'].includes(recipe.nolo!.process) ? 'Souches de fermentation limitée · conduites à comparer' : 'Souches NOLO à explorer · le procédé choisi reste à vérifier'}</p>
       {candidates.map(p => <button type="button" key={p.id} className="w-full min-h-touch rounded-control border border-cave-700 hover:border-ebc-straw p-3 text-left" onClick={() => { setMode('choose'); setPreview(p); setNotice(''); }}>
-        <span className="flex flex-wrap justify-between gap-1 text-sm text-cave-100"><strong>{p.strain.name}</strong><span className="text-hop">Voir la proposition</span></span>
+        <span className="flex flex-wrap justify-between gap-1 text-sm text-cave-50"><strong>{p.strain.name}</strong><span className="text-hop">Voir la proposition</span></span>
         <span className="block text-xs text-cave-400 mt-1">{p.strain.pof === 'positive' ? 'Phénols documentés' : p.strain.pof === 'negative' ? 'POF négative' : 'POF non documentée'} · {p.strain.temperatureC ? `${p.strain.temperatureC.min}–${p.strain.temperatureC.max} °C` : 'Température à préciser'} · {p.result?.projectionStatus === 'within' ? 'Cible projetée atteignable' : p.result?.projectionStatus === 'exceeds' ? 'Projection au-dessus de la cible' : 'Alcool à caractériser'}</span>
         {p.goalMatches[0] && <span className="block text-xs text-hop mt-1">{p.goalMatches[0]} · caractère publié</span>}
       </button>)}
@@ -56,7 +56,7 @@ export function NoloFermentationWorkshop({ recipe, onChange }: { recipe: TrialRe
         {preview.diagnostics.filter(d => d.severity === 'action').map(d => <p key={d.id} className="text-xs text-ebc-straw">{d.message}</p>)}
         <Button intent="primary" onClick={() => { onChange(applyFermentationProposal(recipe, preview)); setPreview(undefined); setMode('current'); setNotice('Proposition appliquée au brouillon. Les réglages restent modifiables avant enregistrement.'); }}>Appliquer cette proposition</Button>
       </>}
-      <details><summary className="min-h-touch text-sm text-water cursor-pointer">Hypothèses, chimie et sources</summary><div className="space-y-2 text-xs text-cave-300">{preview.assumptions.map(s => <p key={s}>{s}</p>)}<p>{preview.strain.aroma.join(' · ')}. {preview.strain.limitation}</p>{intent.aroma && !preview.goalMatches.length && <p>L’objectif « {intent.aroma} » n’est pas établi pour cette souche. Prévoir un essai comparatif ou une restitution ; aucune intensité supposée.</p>}{preview.sources.map((s, i) => <HopSourceLink key={i} source={s}/>)}</div></details>
+      <details><summary className="min-h-touch text-sm text-water cursor-pointer">Hypothèses, chimie et sources</summary><div className="space-y-2 text-xs text-cave-200">{preview.assumptions.map(s => <p key={s}>{s}</p>)}<p>{preview.strain.aroma.join(' · ')}. {preview.strain.limitation}</p>{intent.aroma && !preview.goalMatches.length && <p>L’objectif « {intent.aroma} » n’est pas établi pour cette souche. Prévoir un essai comparatif ou une restitution ; aucune intensité supposée.</p>}{preview.sources.map((s, i) => <HopSourceLink key={i} source={s}/>)}</div></details>
     </section>}
     {notice && <p role="status" className="text-sm text-hop">{notice}</p>}
     <details onToggle={e => setCatalogue(e.currentTarget.open)}><summary className="min-h-touch cursor-pointer text-sm text-water">Toutes les levures · aucune exclusion par style</summary>{catalogue && <div className="space-y-3">{rows.slice(3).map(p => <Button key={p.id} onClick={() => { setPreview(p); setMode('choose'); }}>Préparer {p.strain.name}</Button>)}<YeastCataloguePanel selectedId={recipe.yeast.hopIndexId} initialForm={recipe.yeast.form} onSelect={(y, form) => onChange(applyCatalogueYeast(recipe, y, form))}/></div>}</details>

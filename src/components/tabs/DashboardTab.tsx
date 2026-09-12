@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { compte } from '../../services/plural';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -230,18 +231,18 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       {activeBatches.length>3&&<button type="button" className="min-h-touch text-ebc-straw" onClick={()=>onNavigateTab('production')}>Voir les {activeBatches.length} brassins en cuve →</button>}
     </section>
     {plannedBatches.length>0&&<section aria-label="Prochains brassins" className="space-y-2"><h3 className="font-semibold text-cave-200">À brasser · {plannedBatches.length}</h3>{[...plannedBatches].sort((a,b)=>(DateUtils.parseDate(a.brewDate)?.getTime()??Infinity)-(DateUtils.parseDate(b.brewDate)?.getTime()??Infinity)).slice(0,2).map(batch=><button key={batch.id} type="button" onClick={()=>onNavigateTab('production')} className="w-full min-h-touch rounded-panel border border-cave-800 bg-cave-900 p-3 flex items-center gap-2 text-left"><span className="min-w-0 flex-1"><strong className="block break-words">{batch.name}</strong><span className="text-cave-400">{batch.volumeL} L · {batch.brewDate||'Date à choisir'}</span></span><ChevronRight size={18} className="shrink-0 text-cave-400"/></button>)}{plannedBatches.length>2&&<button type="button" onClick={()=>onNavigateTab('production')} className="min-h-touch text-ebc-straw">Voir les {plannedBatches.length} brassins prévus →</button>}</section>}
-    <MobileDetails title="Stocks à réapprovisionner" summary={itemsToOrder.length?`${itemsToOrder.length} article(s) sous le seuil`:'Stocks suffisants'}>
+    <MobileDetails title="Stocks à réapprovisionner" summary={itemsToOrder.length?`${compte(itemsToOrder.length, 'article')} sous le seuil`:'Stocks suffisants'}>
       {itemsToOrder.map(item=><button type="button" key={item.name} onClick={()=>onNavigateTab('stocks')} className="flex w-full min-h-touch items-center justify-between gap-3 text-left border-b border-cave-800 py-2"><span className="min-w-0"><strong className="block break-words">{item.name}</strong><span className="text-cave-400">{item.supplier}{item.neededFor.length?` · ${item.neededFor.join(', ')}`:''}</span></span><span className="shrink-0 text-ebc-straw">{item.missing} {item.unit}</span></button>)}
       <div className="flex flex-wrap gap-2">{itemsToOrder.length>0&&<button type="button" onClick={handleCopyQuickShopping} className="min-h-touch px-3 rounded-control bg-cave-850 text-ebc-straw">{quickCopied?'Liste copiée':'Copier la liste'}</button>}<button type="button" onClick={()=>onNavigateTab('stocks')} className="min-h-touch px-3 text-ebc-straw">Voir les stocks →</button></div>
     </MobileDetails>
     <MobileDetails title="Repères financiers" summary={`${periodLabel} · ${periodExpenses.toFixed(2)} CHF de charges`}>
       <dl className="space-y-2">{[['Recettes',`${periodRevenue.toFixed(2)} CHF`],['Résultat de la période',`${periodNet.toFixed(2)} CHF`],['Trésorerie suivie',cashAvailable==null?'À initialiser':`${cashAvailable.toFixed(2)} CHF`],['Apports privés depuis le début',`${totalApports.toFixed(2)} CHF`]].map(([label,value])=><div key={label} className="flex justify-between gap-3"><dt className="text-cave-400">{label}</dt><dd className="text-right tabular-nums">{value}</dd></div>)}</dl>{!ledger.cashComplete&&<p className="text-ebc-straw">Solde initial et paiements à compléter.</p>}<button type="button" onClick={()=>onNavigateTab('finances')} className="min-h-touch text-ebc-straw">Ouvrir les finances →</button>
     </MobileDetails>
-    <MobileDetails title="Agenda de la brasserie" summary={`${todoEvents.filter(item=>item.status!=='done').length} tâche(s) à faire`}>
+    <MobileDetails title="Agenda de la brasserie" summary={`${compte(todoEvents.filter(item=>item.status!=='done').length, 'tâche')} à faire`}>
       {[...todoEvents].sort((a,b)=>Number(a.status==='done')-Number(b.status==='done')).map(item=><button type="button" key={item.id} onClick={()=>handleToggleTodo(item)} aria-pressed={item.status==='done'} aria-label={`${item.title} — ${item.status==='done'?'fait':'à faire'}`} className="min-h-touch w-full flex items-center gap-3 text-left">{item.status==='done'?<CheckCircle2 size={20} className="shrink-0 text-hop"/>:<Circle size={20} className="shrink-0 text-cave-400"/>}<span className={item.status==='done'?'line-through text-cave-400':''}>{item.title}{item.date&&<span className="block text-cave-400">{item.date}</span>}</span></button>)}<button type="button" onClick={onNavigateToCreativeLab} className="min-h-touch text-ebc-straw">Gérer dans l’atelier →</button>
     </MobileDetails>
-    <MobileDetails title="Échéances et démarches" summary={`${swissDeadlines.filter(item=>!completedDeadlines[item.id]).length} point(s) à suivre · Fribourg / OFDF`}>
-      {swissDeadlines.map(item=><div key={item.id} className="border-b border-cave-800 pb-3"><button type="button" aria-pressed={!!completedDeadlines[item.id]} aria-label={`${item.title} — ${completedDeadlines[item.id]?'fait':'à faire'}`} onClick={()=>toggleDeadline(item.id)} className="min-h-touch w-full flex items-center gap-3 text-left">{completedDeadlines[item.id]?<CheckCircle2 size={20} className="shrink-0 text-hop"/>:<Circle size={20} className="shrink-0 text-cave-400"/>}<span className="font-medium">{item.title}</span></button><p className="text-cave-300">{item.deadline}</p><p className="mt-1 text-cave-400 leading-relaxed">{item.description}</p></div>)}
+    <MobileDetails title="Échéances et démarches" summary={`${compte(swissDeadlines.filter(item=>!completedDeadlines[item.id]).length, 'point')} à suivre · Fribourg / OFDF`}>
+      {swissDeadlines.map(item=><div key={item.id} className="border-b border-cave-800 pb-3"><button type="button" aria-pressed={!!completedDeadlines[item.id]} aria-label={`${item.title} — ${completedDeadlines[item.id]?'fait':'à faire'}`} onClick={()=>toggleDeadline(item.id)} className="min-h-touch w-full flex items-center gap-3 text-left">{completedDeadlines[item.id]?<CheckCircle2 size={20} className="shrink-0 text-hop"/>:<Circle size={20} className="shrink-0 text-cave-400"/>}<span className="font-medium">{item.title}</span></button><p className="text-cave-200">{item.deadline}</p><p className="mt-1 text-cave-400 leading-relaxed">{item.description}</p></div>)}
     </MobileDetails>
   </div>;
 
@@ -254,7 +255,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <span className="font-bold text-cave-200">{periodLabel}</span>
         </div>
         <span className="text-sm font-mono text-cave-400">
-          {periodTxs.length} opération(s)
+          {compte(periodTxs.length, 'opération')}
         </span>
       </div>
 
@@ -274,7 +275,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <div className="text-xl xs:text-2xl font-black font-mono text-cave-50">
             {periodExpenses.toFixed(2)} <span className="text-sm font-normal text-cave-400">CHF</span>
           </div>
-          <div className="text-footnote text-cave-500 mt-1 flex items-center justify-between">
+          <div className="text-footnote text-cave-400 mt-1 flex items-center justify-between">
             <span>Recettes : {periodRevenue.toFixed(2)} CHF</span>
             <span className={periodNet >= 0 ? 'text-hop font-bold' : 'text-alert font-bold'}>
               {periodNet >= 0 ? `+${periodNet.toFixed(2)}` : periodNet.toFixed(2)}
@@ -296,7 +297,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <div className="text-xl xs:text-2xl font-black font-mono text-hop">
             {cashAvailable == null ? 'À initialiser' : `${cashAvailable.toFixed(2)} CHF`}
           </div>
-          <div className="text-footnote text-cave-500 mt-1">
+          <div className="text-footnote text-cave-400 mt-1">
             {ledger.cashComplete ? `Apports privés : ${totalApports.toFixed(2)} CHF` : 'Solde initial et paiements à compléter dans Finances'}
           </div>
         </div>
@@ -381,15 +382,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                   {/* Metrics Badges */}
                   <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-sm bg-cave-900/60 p-2 rounded-xl border border-cave-800/80">
                     <div>
-                      <span className="text-footnote text-cave-500 block font-sans">OG Initiale</span>
+                      <span className="text-footnote text-cave-400 block font-sans">OG Initiale</span>
                       <strong className="text-cave-200">{b.og || '—'}</strong>
                     </div>
                     <div>
-                      <span className="text-footnote text-cave-500 block font-sans">FG Actuelle</span>
+                      <span className="text-footnote text-cave-400 block font-sans">FG Actuelle</span>
                       <strong className="text-ebc-straw">{b.fg || '—'}</strong>
                     </div>
                     <div>
-                      <span className="text-footnote text-cave-500 block font-sans">Alcool</span>
+                      <span className="text-footnote text-cave-400 block font-sans">Alcool</span>
                       <strong className="text-hop">{b.abv || '—'}</strong>
                     </div>
                   </div>
@@ -428,7 +429,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                       <span className="text-footnote text-cave-400">{pb.style} · {pb.volumeL}L</span>
                     </div>
                   </div>
-                  <span className="text-footnote font-mono text-cave-500">Prévu {pb.brewDate}</span>
+                  <span className="text-footnote font-mono text-cave-400">Prévu {pb.brewDate}</span>
                 </div>
               ))}
             </div>
@@ -457,13 +458,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               <CheckCircle2 className="w-4 h-4 text-hop" />
               <span>Tous les ingrédients et produits sont en stock suffisant !</span>
             </div>
-            <span className="text-footnote text-cave-500">0 rupture</span>
+            <span className="text-footnote text-cave-400">0 rupture</span>
           </div>
         ) : (
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm">
               <span className="text-alert font-bold">
-                ⚠️ {itemsToOrder.length} article(s) sous le seuil mini à commander :
+                ⚠️ {compte(itemsToOrder.length, 'article')} sous le seuil mini à commander :
               </span>
               <button
                 onClick={handleCopyQuickShopping}
@@ -484,7 +485,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                   <div className="truncate mr-2">
                     <span className="font-bold text-cave-200 block truncate">{item.name}</span>
                     <div className="flex items-center space-x-1.5 text-footnote">
-                      <span className="text-cave-500">{item.supplier}</span>
+                      <span className="text-cave-400">{item.supplier}</span>
                       {item.neededFor.length > 0 && (
                         <span className="text-ebc-straw font-bold flex items-center">
                           <Tag className="w-2.5 h-2.5 mr-0.5" />
@@ -505,7 +506,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 onClick={() => onNavigateTab('stocks')} 
                 className="text-footnote text-cave-400 text-center hover:text-ebc-straw cursor-pointer pt-1"
               >
-                + {itemsToOrder.length - 4} autre(s) article(s) dans l'onglet Stocks →
+                + {compte(itemsToOrder.length - 4, 'autre article', 'autres articles')} dans l'onglet Stocks →
               </p>
             )}
           </div>
@@ -530,7 +531,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
 
         <div className="space-y-2">
           {todoEvents.length === 0 ? (
-            <p className="text-sm text-cave-500 italic py-2 text-center">
+            <p className="text-sm text-cave-400 italic py-2 text-center">
               Aucune tâche en attente. Ajoutez-en dans l'Atelier R&D !
             </p>
           ) : (
@@ -554,11 +555,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                     {item.status === 'done' ? (
                       <CheckCircle2 className="w-5 h-5 text-hop" />
                     ) : (
-                      <Circle className="w-5 h-5 text-cave-500" />
+                      <Circle className="w-5 h-5 text-cave-400" />
                     )}
                   </button>
                   <div>
-                    <h4 className={`font-bold text-sm ${item.status === 'done' ? 'line-through text-cave-500' : 'text-cave-200'}`}>
+                    <h4 className={`font-bold text-sm ${item.status === 'done' ? 'line-through text-cave-400' : 'text-cave-200'}`}>
                       {item.title}
                     </h4>
                     {item.date && (
@@ -620,15 +621,15 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                     {isDone ? (
                       <CheckCircle2 className="w-5 h-5 text-hop" />
                     ) : (
-                      <Circle className="w-5 h-5 text-cave-500" />
+                      <Circle className="w-5 h-5 text-cave-400" />
                     )}
                   </button>
                   <div>
                     <div className="flex items-center space-x-1.5">
-                      <span className={`font-bold text-sm ${isDone ? 'line-through text-cave-500' : 'text-cave-200'}`}>
+                      <span className={`font-bold text-sm ${isDone ? 'line-through text-cave-400' : 'text-cave-200'}`}>
                         {dl.title}
                       </span>
-                      <span className="text-footnote text-cave-500 font-mono">({dl.category})</span>
+                      <span className="text-footnote text-cave-400 font-mono">({dl.category})</span>
                     </div>
                     <p className="text-sm text-cave-400 mt-0.5 leading-relaxed">
                       {dl.description}

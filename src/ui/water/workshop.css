@@ -14,7 +14,7 @@
   }
 
   .water-radar .water-radar-caption {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.2;
     padding-bottom: 0;
   }
@@ -74,7 +74,7 @@
 
   .water-ratio-compact .ratio-orientation {
     display: block;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.2;
     font-weight: normal;
     color: #9a8a7e;
@@ -94,7 +94,7 @@
 
   .water-ratio-compact .ratio-readings dt {
     gap: 3px;
-    font-size: 10px;
+    font-size: 13px;
   }
 
   .water-ratio-compact .ratio-readings dd {

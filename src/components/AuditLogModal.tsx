@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { compte } from '../services/plural';
 import { X, Search, Shield, Clock, Download } from 'lucide-react';
 import { AuditLog } from '../types';
 import { ModalShell } from '../ui/ModalShell';
@@ -113,7 +114,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
             placeholder="Filtrer par mot-clé, réf (LOT-001, B-008)..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-cave-900 border border-cave-800 rounded-xl pl-8 pr-3 py-1.5 text-cave-50 placeholder-cave-600 focus:outline-none focus:border-ebc-straw text-xs sm:text-sm"
+            className="w-full bg-cave-900 border border-cave-800 rounded-xl pl-8 pr-3 py-1.5 text-cave-50 placeholder-cave-400 focus:outline-none focus:border-ebc-straw text-xs sm:text-sm"
           />
         </div>
 
@@ -168,7 +169,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
       <div className="p-3 sm:p-4 overflow-y-auto space-y-2 flex-1 text-xs sm:text-sm overscroll-contain">
         {!history.complete && <p className="text-cave-400 leading-relaxed">Les événements récents sont chargés en premier. La recherche et l’export portent sur les {logs.length} événements chargés.</p>}
         {filteredLogs.length === 0 ? (
-          <div className="py-12 text-center text-cave-500">
+          <div className="py-12 text-center text-cave-400">
             Aucun événement ne correspond à vos filtres.
           </div>
         ) : (
@@ -191,12 +192,12 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
                     <span className={`text-footnote font-bold px-1.5 py-0.5 rounded border ${col.border} ${col.bg} ${col.text}`}>
                       {log.action}
                     </span>
-                    <span className="text-footnote text-cave-500 font-medium">{log.category}</span>
+                    <span className="text-footnote text-cave-400 font-medium">{log.category}</span>
                     <span className="text-footnote font-mono text-ebc-straw font-bold whitespace-nowrap">{log.entityId}</span>
                   </div>
                   <div className="flex items-center gap-2 text-footnote text-cave-400 shrink-0 ml-auto sm:ml-0">
                     <span className="flex items-center whitespace-nowrap">
-                      <Clock className="w-3 h-3 mr-1 text-cave-500" />
+                      <Clock className="w-3 h-3 mr-1 text-cave-400" />
                       {formatTimestamp(log.timestamp)}
                     </span>
                     <span className={`font-semibold px-1.5 py-0.5 rounded text-footnote ${
@@ -226,7 +227,7 @@ export const AuditLogModal: React.FC<AuditLogModalProps> = ({
 
       {/* Footer */}
       <div className="px-4 sm:px-5 py-3 border-t border-cave-800 bg-cave-900 flex justify-between items-center text-xs sm:text-sm text-cave-400 shrink-0">
-        <span>{filteredLogs.length} / {logs.length} entrée(s)</span>
+        <span>{filteredLogs.length} / {compte(logs.length, 'entrée')}</span>
         <button
           type="button"
           onClick={onClose}

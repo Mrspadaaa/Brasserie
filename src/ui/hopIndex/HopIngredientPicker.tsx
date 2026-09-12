@@ -30,7 +30,7 @@ export function HopIngredientPicker({ items, onChange, onReference, onCreate, pl
       ensureGuideReferences({ varieties: [variety] }).then(() => onReference(variety)).catch(e => setError(e instanceof Error ? e.message : 'Référence indisponible.'))
         .finally(() => { setBusy(false); onBusyChange?.(false); });
     }} />
-    <p className="text-xs text-cave-400">Recherche dans tes articles et le catalogue. L’alpha du lot reste à saisir pour une référence documentaire.</p>
+    <p className="text-xs text-cave-400">L’alpha du lot reste à saisir.</p>
     {(error || catalogueError) && <p role="alert" className="text-sm text-alert">{error || catalogueError}</p>}
   </div>;
 }

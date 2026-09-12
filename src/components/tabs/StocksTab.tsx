@@ -289,7 +289,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                         text-sm font-medium transition-colors ${
                           subTab === id
                             ? 'bg-ebc-straw text-cave-950'
-                            : 'text-cave-400 hover:text-cave-100'
+                            : 'text-cave-400 hover:text-cave-50'
                         }`}
           >
             <Icon className="w-4 h-4 shrink-0" />

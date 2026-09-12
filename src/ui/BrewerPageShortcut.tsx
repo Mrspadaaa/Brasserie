@@ -7,8 +7,8 @@ import './brewer-navigation.css';
 export function BrewerPageShortcut() {
   return <button type="button" data-inline-companion
     aria-label="Ouvrir le compagnon brasseur" title="Compagnon brasseur"
-    className="shrink-0 w-11 h-11 rounded-control border border-hop/50 bg-hop/10 text-hop flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+    className="shrink-0 relative before:absolute before:-inset-1.5 before:content-[''] w-8 h-8 rounded-control border border-hop/50 bg-hop/10 text-hop flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
     onClick={() => { brewerLauncher.open(); }}>
-    <MessageCircle size={21} />
+    <MessageCircle size={17} />
   </button>;
 }

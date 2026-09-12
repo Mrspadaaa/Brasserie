@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => setPeriodOpen((o) => !o)}
             aria-expanded={periodOpen}
             className="min-h-touch px-3 rounded-control border border-cave-700 bg-cave-900
-                       text-cave-100 flex items-center gap-1.5 hover:border-cave-600 transition-colors"
+                       text-cave-50 flex items-center gap-1.5 hover:border-cave-600 transition-colors"
           >
             <span className="text-sm max-w-[7.5rem] truncate">{activePeriod.label}</span>
             <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
@@ -211,8 +211,8 @@ export const Header: React.FC<HeaderProps> = ({
 
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-64 panel shadow-lift max-h-[calc(100dvh-5rem)] overflow-y-auto overscroll-contain py-1">
-              {mobile && !hidePeriod && <label className="block px-4 py-2 text-sm text-cave-300">Période de l’application
-                <select aria-label="Période de l’application" className="mt-2 w-full min-h-touch rounded-control bg-cave-950 text-cave-100 px-2" value={globalTimeFilter}
+              {mobile && !hidePeriod && <label className="block px-4 py-2 text-sm text-cave-200">Période de l’application
+                <select aria-label="Période de l’application" className="mt-2 w-full min-h-touch rounded-control bg-cave-950 text-cave-50 px-2" value={globalTimeFilter}
                   onChange={event => onChangeGlobalTimeFilter(event.target.value as TimeFilterPeriod)}>{PERIODS.map(period => <option key={period.key} value={period.key}>{period.label}</option>)}</select>
               </label>}
               <button className={menuItem} onClick={() => { window.dispatchEvent(new Event('brewer-inbox-open')); setMenuOpen(false); }}><MessageCircle className="w-5 h-5 text-cave-400 shrink-0"/>Mes conversations</button>

@@ -223,7 +223,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
                   <button
                     aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                    className="text-cave-500 hover:text-alert p-1"
+                    className="text-cave-400 hover:text-alert p-1"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
@@ -284,7 +284,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
                   <button
                     aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                    className="text-cave-500 hover:text-alert p-1"
+                    className="text-cave-400 hover:text-alert p-1"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
@@ -343,7 +343,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                     )}
                   </button>
                   <div>
-                    <h4 className={`font-bold text-sm ${item.status === 'done' ? 'line-through text-cave-500' : 'text-cave-50'}`}>
+                    <h4 className={`font-bold text-sm ${item.status === 'done' ? 'line-through text-cave-400' : 'text-cave-50'}`}>
                       {item.title}
                     </h4>
                     {item.date && (
@@ -356,7 +356,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
 
                 <button
                   aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
-                  className="text-cave-500 hover:text-alert p-1"
+                  className="text-cave-400 hover:text-alert p-1"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>

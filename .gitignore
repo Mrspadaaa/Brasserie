@@ -55,6 +55,10 @@ AUDIT-EAU-BRIEF*.md
 # Réglages locaux de l'outillage (chemins de la machine).
 .claude/settings.local.json
 
+# État local du suivi Unlazy.
+/.unlazy/
+/.unlazy-hook-state.json
+
 # Pièces jointes déposées par les outils : rien à versionner.
 .codex-remote-attachments/
 

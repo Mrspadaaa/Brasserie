@@ -26,9 +26,9 @@ const INTENTS: Record<Intent, string> = {
   // Le seul aplat clair de l'interface : impossible de le rater dans la pénombre.
   primary: 'bg-ebc-straw text-cave-950 font-semibold hover:bg-ebc-gold active:bg-ebc-amber',
   secondary:
-    'bg-cave-850 text-cave-100 border border-cave-700 hover:border-cave-600 active:bg-cave-800',
+    'bg-cave-850 text-cave-50 border border-cave-700 hover:border-cave-600 active:bg-cave-800',
   danger: 'bg-transparent text-alert border border-alert/40 hover:bg-alert/10 active:bg-alert/20',
-  ghost: 'bg-transparent text-cave-400 hover:text-cave-100 active:bg-cave-850'
+  ghost: 'bg-transparent text-cave-400 hover:text-cave-50 active:bg-cave-850'
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -45,7 +45,13 @@ export const Button: React.FC<ButtonProps> = ({
     className={[
       'inline-flex items-center justify-center gap-2 rounded-control',
       'transition-colors disabled:opacity-40 disabled:pointer-events-none',
-      size === 'lg' ? 'min-h-touch-lg px-6 text-base' : 'min-h-touch px-4 text-base',
+      /*
+       * Révisé le 12.09.2026 : « beaucoup trop grands, larges et imposants ».
+       * Le rembourrage horizontal passe de 24/16 px à 16/12, et le libellé de
+       * 16 px à 14 — le plancher typographique, pas en dessous. Un bouton fait
+       * la taille de son mot, pas celle de la place disponible.
+       */
+      size === 'lg' ? 'min-h-touch-lg px-3 text-sm' : 'min-h-touch px-2.5 text-sm',
       INTENTS[intent],
       full ? 'w-full' : '',
       className

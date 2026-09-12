@@ -92,7 +92,7 @@ export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange, 
       apply({ hopAromaTarget });
     })} />}
     <div className="border-t border-cave-700 pt-3 space-y-2">
-      <p className="font-semibold text-cave-100">Avec quelle levure ?</p>
+      <p className="font-semibold text-cave-50">Avec quelle levure ?</p>
       <p className="text-sm text-cave-200">{recipe.yeast?.name || 'La levure de la recette reste à choisir.'}</p>
       {onChooseYeast && <Button type="button" disabled={busy} onClick={onChooseYeast}>{recipe.yeast?.name ? 'Modifier la levure' : 'Choisir la levure'}</Button>}
       {selectedYeast ? <p className="text-sm text-hop">Référence associée : {selectedYeast.name}</p>
@@ -107,14 +107,14 @@ export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange, 
       <p className="text-sm text-cave-400">Identifier la souche ne suffit pas à connaître son rendement de biotransformation.</p>
     </div>
     {recipe.hops.length > 0 && <details className="border-t border-cave-700 pt-3" open>
-      <summary className="cursor-pointer min-h-touch font-semibold text-cave-100">Préciser tes ajouts</summary>
+      <summary className="cursor-pointer min-h-touch font-semibold text-cave-50">Préciser tes ajouts</summary>
       <div className="divide-y divide-cave-800">{recipe.hops.map((hop, index) => {
         const associated = varieties.find(v => v.id === hop.hopVarietyId);
         const matches = findRecipeHopMatches(hop.name, varieties);
         const preferred = [...new Map([...(associated ? [associated] : []), ...matches.map(m => m.item)].map(v => [v.id, v])).values()];
         const availableLots = lots.filter(l => (l.varietyId === hop.hopVarietyId && !l.referenceOnly) || l.id === hop.hopLotId);
         return <div key={index} className="py-3 space-y-3">
-          <p className="font-medium text-cave-100">Ajout {index + 1} · {hop.name}</p>
+          <p className="font-medium text-cave-50">Ajout {index + 1} · {hop.name}</p>
           <HopField label={`Référence documentaire de l’ajout ${index + 1}`}>
             <select className={inputClass} disabled={busy || loading} value={hop.hopVarietyId ?? ''} onChange={e => {
               const choice = varieties.find(v => v.id === e.target.value);

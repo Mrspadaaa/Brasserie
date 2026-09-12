@@ -65,12 +65,12 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
         {/* Aligné sur les autres titres de bloc de la feuille : le rang
             `text-base` en faisait le plus gros titre de l’écran, pour la
             donnée qu’on regarde le moins. */}
-        <h2 className="text-xs font-semibold text-cave-300">Eau de départ</h2>
+        <h2 className="text-xs font-semibold text-cave-200">Eau de départ</h2>
         {!editing ? (
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="touch-target px-3 rounded-control text-sm text-cave-300
+            className="touch-target px-3 rounded-control text-sm text-cave-200
                        hover:text-ebc-straw flex items-center gap-1.5"
           >
             <Pencil className="w-4 h-4" />
@@ -113,7 +113,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
           data-1p-ignore="true"
           data-bwignore="true"
           className="w-full min-h-touch px-3 rounded-control bg-cave-950 border border-cave-700
-                     text-cave-100 text-base focus:outline-none focus:border-ebc-straw"
+                     text-cave-50 text-base focus:outline-none focus:border-ebc-straw"
           value={draft.name}
           aria-label="Nom du réseau ou de la source"
           onChange={(e) => setDraft({ ...draft, name: e.target.value })}
@@ -148,16 +148,16 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
           coûte moins qu'effacer.
         */
         <div className="panel px-2.5 py-2 space-y-0.5">
-          <p className="text-2xs text-cave-500 leading-snug">{display?.caption ?? source.name}</p>
+          <p className="text-2xs text-cave-400 leading-snug">{display?.caption ?? source.name}</p>
           {!display && (
             <p className="text-2xs text-cave-400 flex flex-wrap gap-x-2.5 gap-y-1">
               {IONS.map((ion) => (
                 <span key={ion} title={ION_LABEL[ion]}>
-                  {SYMBOL[ion]} <span className="reading text-cave-100">{source[ion]}</span>
+                  {SYMBOL[ion]} <span className="reading text-cave-50">{source[ion]}</span>
                 </span>
               ))}
               <span>
-                pH <span className="reading text-cave-100">{source.ph ?? '—'}</span>
+                pH <span className="reading text-cave-50">{source.ph ?? '—'}</span>
               </span>
               <span className="reading-unit">ppm</span>
             </p>
@@ -191,7 +191,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
             <tr>
               <th
                 scope="row"
-                className="text-left font-normal text-cave-100 py-2 px-3 max-w-[9rem] truncate"
+                className="text-left font-normal text-cave-50 py-2 px-3 max-w-[9rem] truncate"
                 title={source.name}
               >
                 {editing ? '—' : source.name}
@@ -213,7 +213,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
                                  [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   ) : (
-                    <span className="reading text-cave-100">{source[ion]}</span>
+                    <span className="reading text-cave-50">{source[ion]}</span>
                   )}
                 </td>
               ))}
@@ -234,7 +234,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
                                [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 ) : (
-                  <span className="reading text-cave-100">{source.ph ?? '—'}</span>
+                  <span className="reading text-cave-50">{source.ph ?? '—'}</span>
                 )}
               </td>
             </tr>
@@ -252,7 +252,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
             chiffre reste parfaitement crédible. On donne donc les conversions
             là où la saisie se fait, plutôt que d'espérer qu'on les connaisse.
           */}
-          <p className="flex items-start gap-2 text-sm text-cave-500 leading-snug px-1">
+          <p className="flex items-start gap-2 text-sm text-cave-400 leading-snug px-1">
             <Info className="w-4 h-4 shrink-0 mt-0.5" />
             <span>
               Des degrés français sur l’analyse ? 1 °fH de TAC = 12.2 ppm de HCO₃ ; 1 °fH de
@@ -270,7 +270,7 @@ export const WaterAnalysisTable: React.FC<WaterAnalysisTableProps> = ({
             data-1p-ignore="true"
             data-bwignore="true"
             className="w-full min-h-touch px-3 rounded-control bg-cave-950 border border-cave-700
-                       text-cave-100 text-base placeholder-cave-600
+                       text-cave-50 text-base placeholder-cave-400
                        focus:outline-none focus:border-ebc-straw"
             placeholder="Provenance et date de l’analyse"
             aria-label="Provenance de l’analyse"

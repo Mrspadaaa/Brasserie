@@ -25,22 +25,22 @@ export function HopBitternessPanel({ hops, volumeL, og, boilMin, hot: supplied }
   if (!hops.length) return null;
   return <section aria-label="Amertume des houblons" className="panel p-3 space-y-2 text-sm">
     <div className="flex flex-wrap items-baseline justify-between gap-2">
-      <span className="font-semibold text-cave-100">IBU à chaud · Tinseth</span>
+      <span className="font-semibold text-cave-50">IBU à chaud · Tinseth</span>
       <strong data-hot-ibu={hot.total ?? ''} className="reading text-ebc-straw">{hot.total == null ? 'À compléter' : formatDecimal(Math.round(hot.total * 10) / 10)}</strong>
     </div>
     {hot.missing.length > 0 && <p role="status" className="text-xs text-ebc-amber">{hot.missing.join(' · ')}.{hot.known > 0 && ` Part connue : ${formatDecimal(Math.round(hot.known*10)/10)} IBU.`}</p>}
     {cold.length > 0 && <>
-      <label className="flex items-center gap-2 min-h-11 cursor-pointer text-cave-100"><input type="checkbox" aria-label="Simuler l’amertume à cru" checked={simulate} onChange={e=>setSimulate(e.target.checked)} className="accent-ebc-straw w-4 h-4"/>Simuler l’amertume à cru<span className="ml-auto text-xs reading text-cave-300">{grams != null && volumeL > 0 ? `${formatDecimal(Math.round(grams/volumeL*100)/100)} g/L` : 'dose à préciser'}</span></label>
-      {!simulate && <p className="text-xs text-cave-300">Le dry hop peut modifier l’amertume. Il n’entre pas dans la formule Tinseth.</p>}
+      <label className="flex items-center gap-2 min-h-11 cursor-pointer text-cave-50"><input type="checkbox" aria-label="Simuler l’amertume à cru" checked={simulate} onChange={e=>setSimulate(e.target.checked)} className="accent-ebc-straw w-4 h-4"/>Simuler l’amertume à cru<span className="ml-auto text-xs reading text-cave-200">{grams != null && volumeL > 0 ? `${formatDecimal(Math.round(grams/volumeL*100)/100)} g/L` : 'dose à préciser'}</span></label>
+      {!simulate && <p className="text-xs text-cave-200">Le dry hop peut modifier l’amertume. Il n’entre pas dans la formule Tinseth.</p>}
       {projection && <div className="space-y-2" aria-live="polite">
         {projection.finalEquivalent && <div className="rounded-control bg-cave-950 p-3 space-y-1" data-dry-bitterness-min={projection.finalEquivalent.min} data-dry-bitterness-max={projection.finalEquivalent.max}>
           <span className="text-xs text-water">Scénario pellets · 16 °C · 1–5 jours</span>
           <p className="reading text-lg text-cave-50">{rangeText(projection.finalEquivalent)} <span className="text-xs">mg/L éq. iso-α</span></p>
-          <p className="text-xs text-cave-300">Confiance faible · plage de scénarios. Les IBU de laboratoire restent à mesurer.</p>
+          <p className="text-xs text-cave-200">Confiance faible · plage de scénarios. Les IBU de laboratoire restent à mesurer.</p>
         </div>}
         {!projection.finalEquivalent && <p className="text-xs text-ebc-amber">{projection.reasons.join(' ')}</p>}
         <details><summary className="min-h-11 cursor-pointer flex items-center text-water">Hypothèses à cru et source</summary>
-          <div className="space-y-3 text-xs text-cave-300">
+          <div className="space-y-3 text-xs text-cave-200">
             <p>Le calcul transpose des essais sur pellets Cascade et Centennial à 16 °C, pendant 1–5 jours. Les pertes d’iso-alpha et l’extraction restent liées au même essai. Un autre lot, une autre température, une fermentation active ou une bière NOLO peuvent sortir de cette plage.</p>
             <p>L’amertume à chaud sert ici de proxy d’iso-alpha initial. Ni le pH, ni les polyphénols, ni les autres composés du test IBU ne sont chiffrés. Cette projection n’est pas une analyse finale.</p>
             {assumed && <><p>Humulinones du houblon (% masse) · hypothèse de simulation</p><div className="grid grid-cols-2 gap-3">
@@ -53,6 +53,6 @@ export function HopBitternessPanel({ hops, volumeL, og, boilMin, hot: supplied }
         </details>
       </div>}
     </>}
-    {hops.some(h=>h.stage==='whirlpool'||h.stage==='firstWort') && <details><summary className="min-h-11 cursor-pointer flex items-center text-xs text-water">Modèle à chaud et limites</summary><p className="text-xs text-cave-300">Tinseth utilise le volume final de bière. Les facteurs de premier moût et de whirlpool sont les approximations historiques de l’application ; le refroidissement réel et les pertes de la brasserie peuvent modifier le résultat.</p></details>}
+    {hops.some(h=>h.stage==='whirlpool'||h.stage==='firstWort') && <details><summary className="min-h-11 cursor-pointer flex items-center text-xs text-water">Modèle à chaud et limites</summary><p className="text-xs text-cave-200">Tinseth utilise le volume final de bière. Les facteurs de premier moût et de whirlpool sont les approximations historiques de l’application ; le refroidissement réel et les pertes de la brasserie peuvent modifier le résultat.</p></details>}
   </section>;
 }

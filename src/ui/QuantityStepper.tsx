@@ -171,8 +171,8 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
   });
 
   const roundBtn = compact
-    ? 'w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-100 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none'
-    : 'w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-100 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none';
+    ? 'w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none'
+    : 'w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-control border border-cave-700 bg-cave-850 text-cave-50 flex items-center justify-center transition-colors active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none';
 
   return (
     <div className={compact ? 'space-y-1' : 'space-y-2'}>
@@ -183,7 +183,7 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
             <button
               type="button"
               onClick={() => onChange(initialValue)}
-              className="text-2xs sm:text-sm text-cave-400 hover:text-cave-100 inline-flex items-center gap-1 min-h-[32px] px-1"
+              className="text-2xs sm:text-sm text-cave-400 hover:text-cave-50 inline-flex items-center gap-1 min-h-touch-sm px-1"
             >
               <RotateCcw className="w-3 h-3" />
               {Units.format(initialValue, unit)}
@@ -265,11 +265,11 @@ export const QuantityStepper: React.FC<QuantityStepperProps> = ({
               disabled={disabled || (step < 0 && value <= min)}
               onClick={() => bump(step)}
               aria-label={`${step > 0 ? 'Ajouter' : 'Retirer'} ${Math.abs(step)} ${unit}`}
-              className={`min-h-[38px] sm:min-h-touch rounded-control border bg-cave-950
+              className={`min-h-touch-sm sm:min-h-touch rounded-control border bg-cave-950
                          font-mono text-sm sm:text-base transition-colors active:bg-cave-850
                          disabled:opacity-40 disabled:pointer-events-none ${
                            step < 0
-                             ? 'border-cave-750 text-cave-400 hover:border-cave-600 hover:text-cave-200'
+                             ? 'border-cave-700 text-cave-400 hover:border-cave-600 hover:text-cave-200'
                              : 'border-cave-700 text-cave-200 hover:border-ebc-straw hover:text-ebc-straw'
                          }`}
             >

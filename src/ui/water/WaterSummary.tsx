@@ -57,7 +57,7 @@ export function WaterSummary({
           </button>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <span className="text-xs sm:text-sm font-semibold text-cave-50">
+              <span className="text-sm font-semibold text-cave-50">
                 Tous les sels à l’empâtage
               </span>
               <span className="text-2xs text-hop bg-hop/15 px-1.5 py-0.5 rounded font-medium">
@@ -73,7 +73,7 @@ export function WaterSummary({
         </div>
       )}
       <section className="space-y-2">
-        <h2 className="text-xs sm:text-sm font-semibold text-cave-200">
+        <h2 className="text-sm font-semibold text-cave-200">
           Total des additifs nécessaires
         </h2>
         <WaterAdditivesTable

@@ -60,9 +60,23 @@ export function CycleTag<T extends string>({
        */
       aria-label={`${name} : ${label(value)} — appuyer pour passer à ${label(suivant)}`}
       onClick={() => onChange(suivant)}
-      className={`inline-flex items-center gap-1 pl-1.5 pr-1 py-0.5 rounded-full border
+      /*
+       * ⚠️ 23 px À L'ŒIL, 47 PX AU DOIGT.
+       *
+       * La pastille mesurait 55 × 23 px. C'est un contrôle RÉPÉTÉ — une par
+       * ligne d'ingrédient — donc son plancher est 44 px (`DESIGN.md`), et 23
+       * n'y est pas : on change le moment d'un houblon par erreur en visant
+       * celui du dessous.
+       *
+       * La grossir déformerait chaque liste. On sépare donc le dessin de la
+       * zone d'attrape : le pseudo-élément déborde de 12 px en haut et en bas,
+       * 4 px sur les côtés, sans occuper la moindre place dans la mise en page.
+       * Rien ne bouge à l'écran, la cible passe de 23 à 47 px.
+       */
+      className={`relative before:absolute before:-inset-y-3 before:-inset-x-1 before:content-['']
+                  inline-flex items-center gap-1 pl-1.5 pr-1 py-0.5 rounded-full border
                   text-2xs transition-colors active:scale-[0.97] ${
-                    tone ? tone(value) : 'border-cave-700 text-cave-300'
+                    tone ? tone(value) : 'border-cave-700 text-cave-200'
                   } ${className}`}
     >
       <span className="truncate">{label(value)}</span>

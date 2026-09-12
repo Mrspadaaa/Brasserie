@@ -89,8 +89,8 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
       <FormNav className="space-y-5" onSubmit={submit}>
         <div className="panel p-3 flex items-baseline justify-between gap-3">
           <span className="min-w-0">
-            <span className="block text-base text-cave-100 truncate">{item.name}</span>
-            <span className="block text-sm text-cave-500">
+            <span className="block text-base text-cave-50 truncate">{item.name}</span>
+            <span className="block text-sm text-cave-400">
               Stock théorique · {item.category}
             </span>
           </span>
@@ -111,10 +111,10 @@ export const InventoryCorrectionSheet: React.FC<InventoryCorrectionSheetProps> =
           category={item.category}
           projection={
             delta === 0 ? (
-              <span className="text-cave-500">Aucun écart.</span>
+              <span className="text-cave-400">Aucun écart.</span>
             ) : (
               <>
-                <span className="text-cave-500">Écart </span>
+                <span className="text-cave-400">Écart </span>
                 <span className={`reading ${delta < 0 ? 'text-alert' : 'text-hop'}`}>
                   {delta > 0 ? '+' : ''}
                   {Units.format(delta, item.unit)}

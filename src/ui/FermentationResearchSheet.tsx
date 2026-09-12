@@ -34,7 +34,7 @@ export function FermentationResearchSheet({ onClose }: { onClose: () => void }) 
     return () => { cancelled = true; };
   }, [attempt]);
   return <Sheet open onClose={onClose} title="Recherche sur la fermentation" subtitle="Synthèse et sources" className="sm:max-w-4xl sm:mx-auto">
-    {!markdown && !error && <p role="status" className="text-cave-300 py-4">Chargement de la synthèse…</p>}
+    {!markdown && !error && <p role="status" className="text-cave-200 py-4">Chargement de la synthèse…</p>}
     {error && <div className="space-y-3 py-4"><p role="alert" className="text-cave-200">{error}</p><button className="min-h-touch text-water underline" onClick={() => setAttempt(n => n + 1)}>Réessayer</button></div>}
     {markdown && <article aria-label="Synthèse de recherche sur la fermentation" className="mx-auto max-w-3xl pb-8 text-base leading-relaxed text-cave-200">
       {markdown.trim().split(/\r?\n\r?\n/).map((block, i) => {

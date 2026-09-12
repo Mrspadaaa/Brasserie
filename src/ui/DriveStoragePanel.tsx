@@ -20,7 +20,7 @@ export function DriveStoragePanel({ onBusyChange, disabled = false }: { onBusyCh
     <h4 id="drive-storage-title" className="flex items-center gap-2 font-semibold text-cave-50"><Cloud size={18} className="text-ebc-straw"/>Justificatifs sur Drive</h4>
     <p className="text-sm leading-relaxed text-cave-200">Tes PDF et photos sont rangés par année dans ton Drive privé. La base garde seulement leur référence.</p>
     <DriveConnection compact/>
-    <details className="text-sm text-cave-300"><summary className="min-h-11 cursor-pointer py-3 font-medium">Anciens justificatifs et conservation</summary>
+    <details className="text-sm text-cave-200"><summary className="min-h-11 cursor-pointer py-3 font-medium">Anciens justificatifs et conservation</summary>
       <p className="pb-3 leading-relaxed">Déplace les fichiers déjà enregistrés pour alléger la base. Chaque original est copié, relu et vérifié avant que sa copie en base soit retirée. Les comptes et références restent identiques.</p>
       <p className="pb-3 leading-relaxed">Dossier : L’Affinée / Justificatifs / année. L’app garde une empreinte pour vérifier chaque fichier. Les retirer de Drive les rendrait indisponibles dans l’app. Télécharge aussi une sauvegarde annuelle complète sur un autre support. La capacité de ton compte Drive s’applique.</p>
     </details>

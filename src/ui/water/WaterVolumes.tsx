@@ -56,7 +56,7 @@ export function WaterVolumes({
               </span>
             </button>
 
-            <span className="text-xs sm:text-sm font-semibold text-cave-50">
+            <span className="text-sm font-semibold text-cave-50">
               {hasSparge
                 ? "Eau de rinçage"
                 : "Sans rinçage — tout à l’empâtage"}

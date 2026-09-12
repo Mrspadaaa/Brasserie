@@ -1,4 +1,5 @@
 import React from 'react';
+import { allerEtape } from '../helpers/wizard';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { RecipeImportSheet } from '../../src/ui/RecipeImportSheet';
@@ -54,7 +55,7 @@ describe('Recipe import through the real UI', () => {
     paste('Ajouter cette nouvelle consigne au déroulé de la recette.');
     await screen.findByRole('button', { name: 'Reprendre' });
     click(/^Reprendre$/);
-    click(/^Récapitulatif$/);
+    allerEtape(/^Récapitulatif$/);
     click(/^Enregistrer la recette$/);
     expect(save.mock.calls[0][0].fermentables).toEqual(fullRecipe.fermentables);
     expect(save.mock.calls[0][0].hops).toEqual(fullRecipe.hops);
@@ -85,7 +86,7 @@ describe('Recipe import through the real UI', () => {
         onCreateStockItem={vi.fn()}
       />
     );
-    click(/^Récapitulatif$/);
+    allerEtape(/^Récapitulatif$/);
     fireEvent.change(screen.getByLabelText('Eau d’empâtage'), { target: { value: '10' } });
     fireEvent.blur(screen.getByLabelText('Eau d’empâtage'));
     click(/^Enregistrer la recette$/);
@@ -150,7 +151,7 @@ describe('Recipe import through the real UI', () => {
     click(/Coller une recette/);
     paste(writeRecipeText(fullRecipe));
     click(/^Reprendre$/);
-    click(/^Récapitulatif$/);
+    allerEtape(/^Récapitulatif$/);
     click(/^Enregistrer la recette$/);
     const saved = save.mock.calls[0][0];
     const { id, favorite, batchRef, ...imported } = fullRecipe;
@@ -173,7 +174,7 @@ describe('Recipe import through the real UI', () => {
     expect(saved.batchRef).toBeUndefined();
     cleanup();
     show(JSON.parse(JSON.stringify(saved)));
-    click(/^Récapitulatif$/);
+    allerEtape(/^Récapitulatif$/);
     const clipboard = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -215,7 +216,7 @@ describe('Recipe import through the real UI', () => {
     paste('Une recette à lire : 20 litres de Hazy IPA, liste complète.');
     await screen.findByRole('button', { name: 'Reprendre' });
     click(/^Reprendre$/);
-    click(/^Récapitulatif$/);
+    allerEtape(/^Récapitulatif$/);
     click(/^Enregistrer la recette$/);
     const saved = save.mock.calls[0][0];
     expect(saved.waterPlan.spargeWaterL).toBe(0);

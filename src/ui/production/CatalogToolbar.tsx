@@ -170,7 +170,7 @@ export function CatalogToolbar({
     <section aria-label={`Recherche et filtres des ${noun}s`} className="space-y-2 sm:space-y-3">
       {mobile && <>
         <div className="flex items-center gap-1">
-          <p className="min-w-0 flex-1 text-sm text-cave-300" role="status">
+          <p className="min-w-0 flex-1 text-sm text-cave-200" role="status">
             {count} {noun}{count > 1 ? 's' : ''}{filters.folder !== 'current' ? ` · ${filters.folder === 'archived' ? 'Archives' : 'Historique'}` : ''}
             {view === 'analysis' && <span className="block text-xs text-ebc-straw">Bilan</span>}
           </p>
@@ -185,13 +185,13 @@ export function CatalogToolbar({
         {(searchOpen || !!filters.search) && <div className="flex gap-1">
           <input type="search" aria-label={`Rechercher des ${noun}s`} placeholder="Nom, lot, houblon, malt…" className={catalogField}
             value={filters.search} onChange={event => set({search:event.target.value})}/>
-          <button type="button" aria-label="Fermer la recherche" className="touch-target text-cave-300" onClick={() => { set({search:''}); setSearchOpen(false); }}><X size={19}/></button>
+          <button type="button" aria-label="Fermer la recherche" className="touch-target text-cave-200" onClick={() => { set({search:''}); setSearchOpen(false); }}><X size={19}/></button>
         </div>}
         {secondaryCriteria.length > 0 && <div className="flex items-center gap-2 rounded-control bg-ebc-straw/5 px-2">
           <button type="button" onClick={() => setOpen(true)} className="min-h-touch min-w-0 flex-1 truncate text-left text-sm text-ebc-straw" aria-label={`Vue filtrée, ${criteria.length} critères actifs`}>
             {secondaryCriteria[0].label} : {secondaryCriteria[0].value}{secondaryCriteria.length > 1 ? ` · +${secondaryCriteria.length - 1}` : ''}
           </button>
-          <button type="button" onClick={reset} aria-label="Tout effacer" className="touch-target text-cave-300"><X size={17}/></button>
+          <button type="button" onClick={reset} aria-label="Tout effacer" className="touch-target text-cave-200"><X size={17}/></button>
         </div>}
       </>}
       {!mobile && <>
@@ -374,7 +374,7 @@ export function CatalogToolbar({
                     key={c.id}
                     onClick={() => remove(c)}
                     aria-label={`Retirer le filtre ${c.label}`}
-                    className="min-h-touch max-w-full inline-flex items-center gap-2 px-3 rounded-control bg-cave-850 text-sm text-cave-100"
+                    className="min-h-touch max-w-full inline-flex items-center gap-2 px-3 rounded-control bg-cave-850 text-sm text-cave-50"
                   >
                     <span className="truncate">
                       {c.label} : {c.value}

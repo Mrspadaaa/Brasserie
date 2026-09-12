@@ -132,20 +132,20 @@ export const PageShell: React.FC<PageShellProps> = ({
             <div className="hidden sm:block">
               <div
                 className={`${frame} mx-auto flex items-center gap-1.5 ${
-                  tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-1' : 'px-3 py-1.5'
+                  tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-0.5' : 'px-3 py-1'
                 }`}
               >
                 <button
                   type="button"
                   onClick={onClose}
                   aria-label="Fermer"
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-control flex items-center justify-center text-cave-300 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <h1 className="text-sm sm:text-base font-semibold text-cave-50 truncate leading-tight">
+                  <h1 className="text-base sm:text-lg font-semibold text-cave-50 truncate leading-tight">
                     {title}
                   </h1>
                   {subtitle && !tight && (
@@ -171,20 +171,20 @@ export const PageShell: React.FC<PageShellProps> = ({
           <>
             <div
               className={`${frame} mx-auto flex items-center gap-1.5 ${
-                tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-1' : 'px-3 py-1.5'
+                tight ? 'px-1.5 py-0.5' : compact ? 'px-2.5 py-0.5' : 'px-3 py-1'
               }`}
             >
               <button
                 type="button"
                 onClick={onClose}
                 aria-label="Fermer"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-control flex items-center justify-center text-cave-300 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
               >
                 <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               <div className="min-w-0 flex-1">
-                <h1 className="text-sm sm:text-base font-semibold text-cave-50 truncate leading-tight">
+                <h1 className="text-base sm:text-lg font-semibold text-cave-50 truncate leading-tight">
                   {title}
                 </h1>
                 {/* Le sous-titre — style, volume, date — est concis et discret */}
@@ -233,7 +233,7 @@ export const PageShell: React.FC<PageShellProps> = ({
         >
           <div
             className={`${frame} mx-auto ${
-              tight ? 'px-2.5 py-1' : compact ? 'px-3 py-1.5' : 'px-4 py-2.5'
+              tight ? 'px-2.5 py-0.5' : compact ? 'px-2.5 py-1' : 'px-4 py-2'
             }`}
           >
             {footer}

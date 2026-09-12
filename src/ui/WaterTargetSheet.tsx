@@ -95,7 +95,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
                 onRemove();
                 onClose();
               }}
-              className="min-h-touch px-4 rounded-control border border-cave-700 text-cave-300 text-sm"
+              className="min-h-touch px-4 rounded-control border border-cave-700 text-cave-200 text-sm"
             >
               Revenir à un style
             </button>
@@ -160,7 +160,7 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
             <p className="text-2xs text-hop leading-snug">
               Lu : {lu.found.map((ion) => ION_SYMBOL[ion]).join(' · ')}
               {lu.found.length < 6 && (
-                <span className="text-cave-500">
+                <span className="text-cave-400">
                   {' '}
                   — les autres n’étaient pas dans le texte et n’ont pas été touchés.
                 </span>
@@ -217,12 +217,12 @@ export const WaterTargetSheet: React.FC<WaterTargetSheetProps> = ({
         {!vide && (
           <div className="rounded-control border border-cave-800 bg-cave-950/70 p-2.5 space-y-1">
             <p className="text-2xs text-cave-400">Fourchette qui en découle</p>
-            <p className="text-2xs text-cave-300 leading-snug">
+            <p className="text-2xs text-cave-200 leading-snug">
               {IONS.filter(ion => ions[ion] != null).map(
                 (ion) => `${ION_SYMBOL[ion]} ${apercu.ions[ion].min}–${apercu.ions[ion].max}`
               ).join(' · ')}
             </p>
-            <p className="text-2xs text-cave-500 leading-snug">
+            <p className="text-2xs text-cave-400 leading-snug">
               ±20 %, avec un plancher de ±10 ppm — sous ce plancher, aucune balance ne sait
               viser. Rapport SO₄:Cl visé {apercu.ratio.min} à {apercu.ratio.max}.
             </p>

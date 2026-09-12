@@ -113,7 +113,7 @@ export const NumPad: React.FC<NumPadProps> = ({
       <button
         type="button"
         aria-label="Effacer le dernier chiffre"
-        className={`${KEY_BASE} text-cave-300`}
+        className={`${KEY_BASE} text-cave-200`}
         {...press(backspace)}
       >
         <Delete className="w-5 h-5" />
@@ -123,7 +123,7 @@ export const NumPad: React.FC<NumPadProps> = ({
       <button
         type="button"
         aria-label="Tout effacer"
-        className={`${KEY_BASE} text-sm text-cave-300`}
+        className={`${KEY_BASE} text-sm text-cave-200`}
         {...press(() => onChange(''))}
       >
         C

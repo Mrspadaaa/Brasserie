@@ -99,12 +99,12 @@ export function HopWorkshop({ recipe, onChange, onBusyChange, contextEditor, onE
   });
   return <section aria-label="Atelier aromatique" className="min-w-0 border border-cave-700 rounded-panel bg-cave-900 overflow-hidden">
     <header className="p-3 sm:p-4 border-b border-cave-700">
-      <h2 className="font-serif text-xl text-cave-50">Construire le goût de ta bière</h2>
+      <h2 className="font-sans text-lg font-semibold text-cave-50">Construire le goût de ta bière</h2>
       {onChooseYeast && <div className="mt-3"><Button disabled={busy} onClick={onChooseYeast}>Levure et fermentation</Button></div>}
     </header>
     <div className="p-3 sm:p-5 space-y-5">
       <nav aria-label="Étapes de l’atelier aromatique" className="grid grid-cols-2 sm:grid-cols-4 gap-1">
-        {([{ id: 'adapt', name: 'Simuler mes ajouts', Icon: SlidersHorizontal }, { id: 'solver', name: 'Trouver mon combo', Icon: SlidersHorizontal }, { id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-2 rounded-control text-xs sm:text-sm flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
+        {([{ id: 'adapt', name: 'Simuler mes ajouts', Icon: SlidersHorizontal }, { id: 'solver', name: 'Trouver mon combo', Icon: SlidersHorizontal }, { id: 'trials', name: 'Essais documentés', Icon: BookOpen }, { id: 'technical', name: 'Chimie', Icon: FlaskConical }] as const).map(({ id, name, Icon }) => <button key={id} type="button" disabled={busy} onClick={() => setView(id)} aria-current={view === id ? 'page' : undefined} className={`min-h-touch px-2 py-1 rounded-control text-sm leading-tight flex items-center justify-center flex-wrap gap-1 ${view === id ? 'bg-ebc-straw/10 text-ebc-straw border border-ebc-straw/40' : 'text-cave-200 bg-cave-850 border border-transparent'}`}><Icon size={16} />{name}</button>)}
       </nav>
       {view === 'solver' && <HopSolverPanel recipe={recipe} onChange={onChange} target={target}
         onTargetChange={next => { if (recipe && onChange) change({ ...latest.current.recipe!, hopAromaTarget: next }); else setLocalTarget(next); }}

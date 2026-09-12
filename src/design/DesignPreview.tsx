@@ -41,7 +41,7 @@ const Swatch: React.FC<{ name: string; value: string; dark?: boolean }> = ({
       style={{ background: value }}
     />
     <div className="min-w-0">
-      <div className={`text-base ${dark ? 'text-cave-400' : 'text-cave-100'}`}>{name}</div>
+      <div className={`text-base ${dark ? 'text-cave-400' : 'text-cave-50'}`}>{name}</div>
       <div className="font-mono text-sm text-cave-600">{value}</div>
     </div>
   </div>
@@ -110,7 +110,7 @@ export const DesignPreview: React.FC = () => {
             <div className="text-3xl reading text-ebc-straw">1.062</div>
             <div className="text-2xl text-cave-50 font-semibold">Milk Stout</div>
             <div className="text-xl text-cave-50">Journal des brassins</div>
-            <div className="text-lg text-cave-100">Titre de carte</div>
+            <div className="text-lg text-cave-50">Titre de carte</div>
             <div className="text-base text-cave-200">
               Texte courant, seize pixels. C'est la taille à laquelle on lit une phrase à bout
               de bras, dans une cave, sans plisser les yeux.
@@ -147,7 +147,7 @@ export const DesignPreview: React.FC = () => {
             <Stepper label="Houblon Citra reçu" value={hops} onChange={setHops} unit="g" />
             <Stepper label="Bouteilles 33 cl" value={bottles} onChange={setBottles} unit="btl" />
             <p className="text-sm text-cave-400">
-              Stock après réception : <span className="font-mono text-cave-100">18.5 kg</span> →{' '}
+              Stock après réception : <span className="font-mono text-cave-50">18.5 kg</span> →{' '}
               <span className="font-mono text-hop">{(18.5 + malt).toFixed(1)} kg</span>
             </p>
           </div>

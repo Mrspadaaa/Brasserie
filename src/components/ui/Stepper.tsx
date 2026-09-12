@@ -74,7 +74,7 @@ export const Stepper: React.FC<StepperProps> = ({
 
   const btn =
     'w-touch-lg h-touch-lg shrink-0 rounded-control border border-cave-700 bg-cave-850 ' +
-    'text-cave-100 flex items-center justify-center transition-colors ' +
+    'text-cave-50 flex items-center justify-center transition-colors ' +
     'active:bg-cave-800 disabled:opacity-40 disabled:pointer-events-none';
 
   return (

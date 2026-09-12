@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { allerEtape } from '../helpers/wizard';
 import { describe, it, expect, afterEach } from 'vitest';
 import { render as testingRender, screen, fireEvent, cleanup } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
@@ -297,8 +298,7 @@ describe('Fuzz — l’assistant de recette', () => {
     const fautes: string[] = [];
 
     etapes.forEach((etape) => {
-      const [onglet] = screen.queryAllByRole('button', { name: etape });
-      if (onglet) fireEvent.click(onglet);
+      allerEtape(etape);
 
       [...container.querySelectorAll('input')]
         .filter((i) => i.type !== 'range' && !i.disabled)
@@ -326,8 +326,7 @@ describe('Fuzz — l’assistant de recette', () => {
     const { container } = monterAssistant();
 
     etapes.forEach((etape) => {
-      const [onglet] = screen.queryAllByRole('button', { name: etape });
-      if (onglet) fireEvent.click(onglet);
+      allerEtape(etape);
 
       [...container.querySelectorAll('input')]
         .filter((i) => {
@@ -347,8 +346,7 @@ describe('Fuzz — l’assistant de recette', () => {
   /* Un pourcentage d'alpha au-delà de 100 n'existe pas. */
   it('⚠️ l’alpha d’un houblon reste dans 0–100', () => {
     monterAssistant();
-    const [onglet] = screen.queryAllByRole('button', { name: 'Houblons' });
-    if (onglet) fireEvent.click(onglet);
+    allerEtape('Houblons');
 
     screen.queryAllByLabelText(/^Alpha de/i).forEach((champ) => {
       ['-5', '250', '1e9', 'abc'].forEach((v) => {

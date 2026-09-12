@@ -82,7 +82,7 @@ export const LevelGauge: React.FC<LevelGaugeProps> = ({
         <span className={`text-sm truncate ${TONE_TEXT[level.tone]}`}>{level.label}</span>
         {level.source !== 'aucune' && level.perBatch !== null && (
           <span
-            className="hidden sm:inline text-footnote text-cave-600 shrink-0 ml-auto"
+            className="hidden sm:inline text-footnote text-cave-400 shrink-0 ml-auto"
             title={sourceLabel(level.source)}
           >
             {sourceLabel(level.source)}

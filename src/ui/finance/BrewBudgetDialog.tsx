@@ -45,5 +45,5 @@ export function BrewBudgetDialog({recipe,batch,onClose}:{recipe?:Recipe;batch?:B
 
 export function BrewBudgetButton({recipe,batch}:{recipe?:Recipe;batch?:Batch}) {
   const [open,setOpen]=React.useState(false);
-  return <><button type="button" className="min-h-touch w-full rounded-control border border-cave-700 text-ebc-straw font-semibold px-3 py-3 my-3 text-left" onClick={()=>setOpen(true)}>Estimer le budget de ce brassin</button>{open&&<BrewBudgetDialog recipe={recipe} batch={batch} onClose={()=>setOpen(false)}/>}</>;
+  return <><button type="button" className="min-h-touch rounded-control border border-cave-700 px-2.5 py-0 text-sm leading-tight text-ebc-straw font-semibold px-3 py-3 my-3 text-left" onClick={()=>setOpen(true)}>Estimer le budget de ce brassin</button>{open&&<BrewBudgetDialog recipe={recipe} batch={batch} onClose={()=>setOpen(false)}/>}</>;
 }

@@ -58,8 +58,8 @@ const Row: React.FC<{
 }> = ({ label, hint, onDelete, children }) => (
   <div className="py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
     <div className="min-w-0 flex-1">
-      <div className="text-sm sm:text-base text-cave-100 truncate leading-tight">{label}</div>
-      {hint && <div className="text-2xs sm:text-sm text-cave-500 truncate leading-tight mt-0.5">{hint}</div>}
+      <div className="text-sm sm:text-base text-cave-50 truncate leading-tight">{label}</div>
+      {hint && <div className="text-2xs sm:text-sm text-cave-400 truncate leading-tight mt-0.5">{hint}</div>}
     </div>
     <div className="shrink-0 flex items-center gap-1 sm:gap-1.5">{children}</div>
     {onDelete && (
@@ -67,7 +67,7 @@ const Row: React.FC<{
         type="button"
         onClick={onDelete}
         aria-label="Retirer"
-        className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-control -mr-1 text-cave-500 hover:text-alert transition-colors"
+        className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-control -mr-1 text-cave-400 hover:text-alert transition-colors"
       >
         <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
       </button>
@@ -100,7 +100,7 @@ const Cell: React.FC<{
         max={max}
         pad
         aria-label={label}
-        className={`${width} min-h-[34px] sm:min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
+        className={`${width} min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
                     font-mono font-semibold text-right text-sm sm:text-base text-cave-50
                     focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40`}
       />
@@ -348,7 +348,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       {/* --- Fermentescibles ----------------------------------------------- */}
       <Block title="Fermentescibles" aside={Units.format(totalGristKg, 'kg')}>
         {fermentables.length === 0 ? (
-          <p className="py-2 text-sm text-cave-500">Aucun fermentescible.</p>
+          <p className="py-2 text-sm text-cave-400">Aucun fermentescible.</p>
         ) : (
           fermentables.map((f, i) => (
             <div key={`${f.name}-${i}`} className="pb-1">
@@ -382,7 +382,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       {/* --- Houblons ------------------------------------------------------ */}
       <Block title="Houblons" aside={Units.format(totalHopG, 'g')}>
         {hops.length === 0 ? (
-          <p className="py-2 text-sm text-cave-500">Aucun houblon.</p>
+          <p className="py-2 text-sm text-cave-400">Aucun houblon.</p>
         ) : (
           hopsInOrder.map(({ h, index }) => {
             const def = HOP_STAGE[h.stage];
@@ -391,7 +391,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               <div key={`${h.name}-${index}`} className="py-1.5 space-y-1.5">
                 <div className="flex items-center gap-2">
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base text-cave-100 truncate leading-tight">
+                    <span className="block text-base text-cave-50 truncate leading-tight">
                       {h.name}
                     </span>
                     <span className="flex items-center gap-1.5 text-sm leading-tight">
@@ -399,7 +399,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                         {def.label}
                       </span>
                       {/* L'amertume d'un ajout est une CONSÉQUENCE : jamais saisie. */}
-                      <span className="text-cave-500">
+                      <span className="text-cave-400">
                         {def.bitters
                           ? ibu !== null
                             ? `${ibu.toFixed(1)} IBU`
@@ -412,7 +412,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     type="button"
                     onClick={() => onHops(hops.filter((_, j) => j !== index))}
                     aria-label={`Retirer ${h.name}`}
-                    className="shrink-0 touch-target -mr-2 text-cave-600 hover:text-alert transition-colors"
+                    className="shrink-0 touch-target -mr-2 text-cave-400 hover:text-alert transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -521,7 +521,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       {/* --- Paliers ------------------------------------------------------- */}
       <Block title="Paliers d’empâtage">
         {mashSteps.length === 0 ? (
-          <p className="py-2 text-sm text-cave-500">Aucun palier.</p>
+          <p className="py-2 text-sm text-cave-400">Aucun palier.</p>
         ) : (
           mashSteps.map((s, i) => (
             <Row
@@ -559,7 +559,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       {/* --- Fermentation -------------------------------------------------- */}
       <Block title="Fermentation">
         {fermentation.length === 0 ? (
-          <p className="py-2 text-sm text-cave-500">Aucune phase.</p>
+          <p className="py-2 text-sm text-cave-400">Aucune phase.</p>
         ) : (
           fermentation.map((s, i) => (
             <Row
@@ -632,13 +632,13 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           />
         </Row>
         <Row label="Eau totale de brassage" hint="Empâtage + rinçage : volume total d’eau à engager.">
-          <span className="reading text-base text-cave-300 pr-9">
+          <span className="reading text-base text-cave-200 pr-9">
             {Units.format(Math.round((mashWaterL + spargeWaterL) * 10) / 10, 'L')}
           </span>
         </Row>
         {totalGristKg > 0 && (
           <Row label="Moût avant ébullition estimé" hint="Après rétention des drêches (~0.96 L/kg).">
-            <span className="reading text-base text-cave-300 pr-9">
+            <span className="reading text-base text-cave-200 pr-9">
               {Units.format(
                 Math.max(0, Math.round((mashWaterL + spargeWaterL - totalGristKg * 0.96) * 10) / 10),
                 'L'
@@ -669,7 +669,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               label="Eau de réseau"
               hint={water.sourceName}
             >
-              <span className="reading text-base text-cave-300 pr-9">
+              <span className="reading text-base text-cave-200 pr-9">
                 {Units.format(
                   Math.round(
                     (mashWaterL + spargeWaterL - water.mashOsmoseeL - water.spargeOsmoseeL) * 10
@@ -682,10 +682,10 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             {/* --- Profil atteint ----------------------------------------- */}
             <div className="pt-2 space-y-2">
               <div className="flex items-baseline justify-between gap-2">
-                <span className="text-2xs sm:text-sm text-cave-500">
+                <span className="text-2xs sm:text-sm text-cave-400">
                   Profil visé — {water.styleName}
                 </span>
-                <span className="text-2xs sm:text-sm text-cave-500 shrink-0">
+                <span className="text-2xs sm:text-sm text-cave-400 shrink-0">
                   {water.wortIons ? 'eau traitée, ppm' : 'eau d’empâtage, ppm'}
                 </span>
               </div>
@@ -708,10 +708,10 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 <dl className="grid grid-cols-3 gap-x-2 gap-y-1.5">
                   {(Object.keys(ION_LABEL) as Array<keyof WaterIons>).map((ion) => (
                     <div key={ion}>
-                      <dt className="text-2xs sm:text-sm text-cave-500 truncate">
+                      <dt className="text-2xs sm:text-sm text-cave-400 truncate">
                         {ION_LABEL[ion]}
                       </dt>
-                      <dd className="reading text-sm sm:text-base text-cave-100">
+                      <dd className="reading text-sm sm:text-base text-cave-50">
                         {Math.round(water.mashIons[ion])}
                       </dd>
                     </div>
@@ -723,11 +723,11 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               {water.targetStatus && <WaterTargetStatus {...water.targetStatus} />}
 
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xs sm:text-sm">
-                <span className="text-cave-500">
+                <span className="text-cave-400">
                   Alcalinité résiduelle après acide{' '}
                   <span
                     className={`reading text-sm ${
-                      water.raSaltTarget != null ? 'text-cave-100' : water.ra >= water.raBand.min && water.ra <= water.raBand.max
+                      water.raSaltTarget != null ? 'text-cave-50' : water.ra >= water.raBand.min && water.ra <= water.raBand.max
                         ? 'text-hop'
                         : 'text-ebc-amber'
                     }`}
@@ -738,7 +738,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     ? `— repère pour les malts ≈ ${water.raSaltTarget} ppm (estimation du mash)`
                     : `— repère des malts ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
                 </span>
-                <span className="text-cave-500">
+                <span className="text-cave-400">
                   SO₄:Cl{' '}
                   <span className="reading text-sm text-cave-200">
                     {water.ratio.ratio !== null ? water.ratio.ratio.toFixed(1) : '—'}
@@ -748,7 +748,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               </div>
 
               {(water.mashPh || water.spargePh) && (
-                <p className="text-2xs sm:text-sm text-cave-500">
+                <p className="text-2xs sm:text-sm text-cave-400">
                   pH mesuré à la cuve :{' '}
                   {water.mashPh ? `maische ${water.mashPh}` : ''}
                   {water.mashPh && water.spargePh ? ' · ' : ''}
@@ -773,7 +773,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 compact
               />
               {water.disabled.length > 0 && (
-                <p className="text-2xs sm:text-sm text-cave-500">
+                <p className="text-2xs sm:text-sm text-cave-400">
                   Écartés : {water.disabled.map((d) => SALTS[d].name).join(', ')}.
                 </p>
               )}
@@ -784,7 +784,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 <button
                   type="button"
                   onClick={onEditWater}
-                  className="w-full min-h-[34px] sm:min-h-touch rounded-control border border-water/40
+                  className="w-full min-h-touch rounded-control border border-water/40
                              text-water text-xs sm:text-sm flex items-center justify-center gap-2
                              transition-colors hover:bg-cave-850"
                 >
@@ -810,7 +810,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
             // dédoublait la ligne quand un houblon revenait deux fois.
             <div key={`${s.name}-${s.unit}`} className="py-2 flex items-baseline gap-2">
               <AlertTriangle className="w-4 h-4 text-ebc-amber shrink-0" />
-              <span className="min-w-0 flex-1 text-base text-cave-100 truncate">{s.name}</span>
+              <span className="min-w-0 flex-1 text-base text-cave-50 truncate">{s.name}</span>
               <span className="reading text-sm text-cave-400 shrink-0">
                 {Units.format(s.have, s.unit)} / {Units.format(s.needed, s.unit)}
               </span>

@@ -35,7 +35,7 @@ export interface BrewBudgetSheetProps {
 export function BrewBudgetSheet(props: BrewBudgetSheetProps) {
   if (!props.open) return null;
   const recipe = props.batch?.recipeSnapshot ? { ...props.batch.recipeSnapshot, id: props.batch.recipeSnapshot.sourceRecipeId ?? props.batch.recipeRef ?? props.batch.id } as Recipe : props.recipe;
-  if (!recipe) return <Sheet open onClose={props.onClose} title="Budget du brassin"><p className="p-4 text-cave-300">Associe une recette à ce brassin pour calculer ses besoins.</p></Sheet>;
+  if (!recipe) return <Sheet open onClose={props.onClose} title="Budget du brassin"><p className="p-4 text-cave-200">Associe une recette à ce brassin pour calculer ses besoins.</p></Sheet>;
   return <BrewBudgetDraft key={`${props.batch?.id ?? recipe.id}:${props.savedEstimate?.id ?? 'new'}`} {...props} recipe={recipe} />;
 }
 

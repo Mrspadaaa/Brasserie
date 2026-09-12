@@ -158,7 +158,7 @@ const MALT_GRADES: Array<{
     maxEbc: Infinity,
     label: 'Torréfié',
     hint: 'Café et cacao, très astringent. Se dose en dizaines de grammes.',
-    tone: 'text-cave-300 border-cave-600 bg-cave-800'
+    tone: 'text-cave-200 border-cave-600 bg-cave-800'
   }
 ];
 

@@ -145,7 +145,7 @@ export const Field: React.FC<FieldProps> = ({
       {label}
     </label>
     {children}
-    {hint && !error && <p className="text-2xs text-cave-500 leading-snug">{hint}</p>}
+    {hint && !error && <p className="text-2xs text-cave-400 leading-snug">{hint}</p>}
     {error && (
       <p role="alert" className="text-2xs sm:text-sm text-alert leading-snug">
         {error}
@@ -156,8 +156,8 @@ export const Field: React.FC<FieldProps> = ({
 
 /** Classe commune des champs de saisie — un seul endroit à ajuster. */
 export const inputClass =
-  'w-full min-h-[40px] sm:min-h-touch px-3 py-1.5 rounded-control bg-cave-950 border border-cave-700 ' +
-  'text-cave-100 text-base placeholder-cave-600 ' +
+  'w-full min-h-touch px-3 py-1.5 rounded-control bg-cave-950 border border-cave-700 ' +
+  'text-cave-50 text-base placeholder-cave-400 ' +
   'focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40 ' +
   'transition-colors disabled:opacity-50';
 
@@ -192,7 +192,7 @@ export const InlineNum: React.FC<{
   emptyValue?: number | undefined;
 }> = ({ label, name, unit, value, onValue, min, max, integer, missing, ...emptyOption }) => (
   <label className="flex items-center gap-1 min-w-0">
-    <span className={`text-2xs shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-500'}`}>
+    <span className={`text-2xs shrink-0 ${missing ? 'text-ebc-amber' : 'text-cave-400'}`}>
       {label}
     </span>
     <NumberInput

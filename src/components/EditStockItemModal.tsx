@@ -76,7 +76,7 @@ export const EditStockItemModal: React.FC<EditStockItemModalProps> = ({
           <div className="flex items-center space-x-2">
             <Package className="w-5 h-5 text-ebc-straw" />
             <div>
-              <span className="text-footnote text-cave-500 font-mono font-bold">{item.ref}</span>
+              <span className="text-footnote text-cave-400 font-mono font-bold">{item.ref}</span>
               <h3 className="font-bold text-base text-cave-50">Modifier l'article</h3>
             </div>
           </div>
