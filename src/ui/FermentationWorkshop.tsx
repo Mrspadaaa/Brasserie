@@ -128,7 +128,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
   </section>;
 }
 
-export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulationOnly = false }: { recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void; simulationOnly?: boolean }) {
+export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulationOnly = false, currentRecipeOnly = false }: { recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; onBusyChange?: (busy: boolean) => void; simulationOnly?: boolean; currentRecipeOnly?: boolean }) {
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const guides = useMemo(() => guideFermentations(saved), [saved]), yeasts = useMemo(() => guideYeasts(saved), [saved]);
   const science = useMemo(() => guideFermentationScience(saved)[0], [saved]);
@@ -153,11 +153,11 @@ export function FermentationWorkshop({ recipe, onChange, onBusyChange, simulatio
       <h3 className="text-sm font-semibold text-cave-50">Conduite de fermentation</h3>
       {simulationOnly && <p className="text-sm text-cave-400 mt-1">Variante locale · recette enregistrée inchangée</p>}
     </div></div>
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Parcours de fermentation">
+    {!currentRecipeOnly && <div className="flex flex-wrap gap-2" role="group" aria-label="Parcours de fermentation">
       <Button className={mode === 'current' ? 'border-cave-400 bg-cave-800' : ''} disabled={busy} aria-pressed={mode === 'current'} onClick={() => setMode('current')}>Évaluer ma recette</Button>
       <Button className={mode === 'choose' ? 'border-cave-400 bg-cave-800' : ''} disabled={busy} aria-pressed={mode === 'choose'} onClick={() => setMode('choose')}>Trouver une conduite</Button>
-    </div>
-    {mode === 'current' ? <FermentationScenarioPanel recipe={recipe} yeasts={yeasts} guides={guides} science={science} goal={goal} onChange={onChange}/> : <>
+    </div>}
+    {currentRecipeOnly || mode === 'current' ? <FermentationScenarioPanel recipe={recipe} yeasts={yeasts} guides={guides} science={science} goal={goal} onChange={onChange} programOnly={currentRecipeOnly}/> : <>
     <p className="text-sm text-cave-400">Proposition à comparer. La souche et les paliers de la recette changent uniquement après application.</p>
     <HopField label="Objectif de fermentation"><select className={inputClass} value={goal} disabled={busy} onChange={e => setGoal(e.target.value as FermentationGoal)}>{Object.entries(FERMENTATION_GOAL_LABELS).map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></HopField>
     <HopField label="Souche documentée"><select className={inputClass} value={selected?.id ?? ''} disabled={busy || !choices.length} onChange={e => setSelectedId(e.target.value)}>{!choices.length && <option value="">Aucune conduite active</option>}{choices.map(g => <option key={g.id} value={g.id}>{yeasts.find(y => y.id === g.yeastId)?.name}</option>)}</select></HopField>
@@ -196,6 +196,7 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
   const current = resolveFermentationYeast(recipe, yeasts);
   const goal = (snapshot?.yeast.id === current?.id ? snapshot?.goal : undefined) ?? fermentationDefaultGoal(guides.find(g => g.yeastId === current?.id));
   if (recipe.nolo?.enabled) return null; // The shared NOLO panel already owns this result and its variant.
+  if (readYeastRecipeDesign(recipe)) return <YeastRecipeSummary recipe={recipe} onEdit={onEdit} />;
   return <section aria-label="Conduite de levure de la recette" className="pt-4 mt-4 border-t border-cave-700 space-y-3">
     {variant ? <>
       <Button onClick={() => setVariant(undefined)}>Fermer la variante de levure</Button>
@@ -219,3 +220,5 @@ export function FermentationRecipeSummary({ recipe, onEdit }: { recipe: TrialRec
   </section>;
 }
 import { NoloFermentationWorkshop } from './NoloFermentationWorkshop';
+import { YeastRecipeSummary } from './YeastRecipeWorkbench';
+import { readYeastRecipeDesign } from '../domain/yeastRecipeDesign';

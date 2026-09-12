@@ -41,6 +41,8 @@ import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredic
 import { catalogueMatches } from './yeastCatalogue';
 import { fermentationDose } from './fermentationGuide';
 import { evaluateFermentationScenario } from './fermentationScenario';
+import { buildYeastCompanion, type YeastCompanionOptions } from './yeastCompanion';
+import { YEAST_RECIPE_GOAL_LABELS } from './yeastRecipeDesign';
 import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, noloWaterModelIssue, noloInput } from './nolo';
 
 const number = (
@@ -73,10 +75,10 @@ const tool = (
 
 export const brewerToolDeclarations = [
   tool('lookup_yeast_reference', 'Rechercher toutes les levures par nom, code, alias ou arôme. Retourne les faits et sources séparés, sans assimiler deux souches ou inventer une caractéristique manquante.', { query: str('Nom, code, arôme ou ID exact') }, ['query']),
-  tool('fermentation_advice', 'Conduites documentées par objectif et souche : paliers, leviers qualitatifs, sources, limites, dose et DF en plage. Ne prédit pas une intensité d’ester ou de phénol. Lecture seule ; tout changement de recette passe par propose_changes.', {
-    goal: str('Objectif', [...FERMENTATION_GOALS]), yeastId: str('ID exact facultatif ; défaut souche associée à la recette'),
+  tool('fermentation_advice', 'Partir du style de la recette et de son intention adoptée, puis comparer les souches compatibles et les réglages. Fournit contexte actuel, pression prévue, paliers, contacts des houblons, alternatives par style, sources et plages documentaires. Lecture seule, aucun gain aromatique chiffré ; modifier avec propose_changes.', {
+    goal: str('Objectif facultatif ; défaut intention adoptée ou orientation du style', [...new Set([...FERMENTATION_GOALS, ...Object.keys(YEAST_RECIPE_GOAL_LABELS)])]), yeastId: str('ID exact facultatif ; défaut souche associée à la recette'),
     og: num('DI SG du scénario, facultative ; prévue ou mesurée à distinguer dans la réponse'), sg: num('Densité actuelle corrigée SG, facultative')
-  }, ['goal']),
+  }),
   tool('lookup_hop_reference', 'Rechercher les fiches et COA complets par nom, alias, région ou ID exact. Renvoie chaque source séparément ; aucune fusion de plages.', { query: str('Nom, alias ou ID de variété/lot') }, ['query']),
   tool('predict_hop_aroma', 'Sans triplets explicites, simuler la recette du contexte : ajouts réels, souche unique, paliers, profil global expérimental et chimie disponible. Les plages du cumul sont conditionnelles au modèle, sans couverture statistique des interactions. Avec triplets explicites, classer des alternatives indépendantes ; ne pas les assembler. Aucun chiffre inventé.', {
     triplets: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
@@ -217,7 +219,7 @@ export function runBrewerTool(
     ]);
   }
   if (name === 'fermentation_advice') {
-    if (!FERMENTATION_GOALS.includes(a.goal as FermentationGoal)) throw Error('Objectif de fermentation requis.');
+    if (a.goal != null && ![...FERMENTATION_GOALS, ...Object.keys(YEAST_RECIPE_GOAL_LABELS)].includes(a.goal as string)) throw Error('Objectif de fermentation invalide.');
     if (a.yeastId != null && (typeof a.yeastId !== 'string' || !a.yeastId.trim())) throw Error('Identifiant de levure invalide.');
     if (r?.nolo?.enabled) {
       const knowledge = c.hopIndex?.knowledge ?? [];
@@ -231,31 +233,35 @@ export function runBrewerTool(
       }, [], ['Les données des souches et le bilan NOLO remplacent les conseils de bière alcoolisée. Une température ne devient pas un bonus banane ; aucune durée ne valide la fin ou la conservation.']);
     }
     const knowledge = c.hopIndex?.knowledge ?? [], science = activeFermentationScience(knowledge)[0];
-    const goal = a.goal as FermentationGoal;
+    const design = buildYeastCompanion(r, knowledge, { goal: a.goal as YeastCompanionOptions['goal'], yeastId: a.yeastId as string | undefined, ...(a.og !== undefined ? { og: a.og as number } : {}) });
+    const requestedGoal = a.goal ?? design.analysis?.goal;
+    const goal = (({ clove: 'phenolic', hops: 'thiols' } as Record<string, string>)[requestedGoal as string] ?? requestedGoal) as FermentationGoal;
+    const requestAllowed = !r || !Object.values(design.request).some(request => request.status === 'rejected');
     const guides = knowledge.filter(k => { try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; } }).filter(k => k.kind === 'fermentation');
     const yeasts = knowledge.filter((k): k is HopYeast => { try { assertHopKnowledge(k); return k.kind === 'yeast'; } catch { return false; } })
       .map(y => ({ ...y, aliases: [...(guides.find(g => g.yeastId === y.id)?.aliases ?? []), ...(y.catalogue?.aliases ?? [])] }));
-    const og = a.og == null ? r?.ogTarget : number(a, 'og', 1.001, 1.3);
+    const og = r && design.analysis ? design.analysis.og : a.og == null ? r?.ogTarget : number(a, 'og', 1.001, 1.3);
     const scenario = r ? evaluateFermentationScenario({ ...r, ogTarget: og,
-      yeast: a.yeastId ? { ...r.yeast, hopIndexId: a.yeastId as string } : r.yeast }, yeasts, guides) : undefined;
-    const yeastId = (a.yeastId as string | undefined) ?? scenario?.yeast?.id ?? r?.yeast?.hopIndexId;
-    const choices = guides.filter(g => (!yeastId || g.yeastId === yeastId) && g.plans.some(p => p.goal === goal));
+      yeast: design.request.yeastId.status === 'accepted' && a.yeastId ? { ...r.yeast, hopIndexId: a.yeastId as string } : r.yeast }, yeasts, guides) : undefined;
+    const yeastId = (r ? design.analysis?.yeastId : a.yeastId as string | undefined) ?? scenario?.yeast?.id ?? r?.yeast?.hopIndexId;
+    const choices = requestAllowed ? guides.filter(g => (!yeastId || g.yeastId === yeastId) && g.plans.some(p => p.goal === goal)) : [];
     const current = guides.find(g => g.yeastId === yeastId);
     const sg = a.sg == null ? undefined : number(a, 'sg', .95, 1.3);
     return result('Conduite fermentaire documentée', {
+      recipeDesign: design,
       goal, yeastId: yeastId ?? null, scienceVersion: science?.version ?? null,
       guides: choices.map(g => ({ ...g, plans: g.plans.filter(p => p.goal === goal) })),
       doses: choices.map(g => ({ yeastId:g.yeastId, volumeL:r?.volumeL??null, estimate:fermentationDose(g,r?.volumeL??0)??null })),
-      alternatives: guides.filter(g => g.plans.some(p => p.goal === goal)).map(g => ({ id:g.id, yeastId:g.yeastId, name:g.name, aroma:g.aroma })),
-      levers: fermentationLevers(science, goal, yeastId), compounds: science?.compounds ?? [],
+      alternatives: design.alternatives,
+      levers: requestAllowed && FERMENTATION_GOALS.includes(goal) ? fermentationLevers(science, goal, yeastId) : [], compounds: science?.compounds ?? [],
       benchmarks: science?.benchmarks.filter(b => b.yeastId === yeastId) ?? [],
-      finalGravity: scenario?.fg ?? fermentationFinalGravity(current, og), lagerRest: fermentationLagerRest(science,current,og,sg),
-      gravityContext: { og: og ?? null, origin: a.og == null ? 'cible prévue de recette, pas mesure' : 'DI fournie pour ce scénario, statut mesuré à confirmer' },
+      finalGravity: design.analysis?.finalGravity ?? scenario?.fg ?? fermentationFinalGravity(current, og), lagerRest: fermentationLagerRest(science,current,og,sg),
+      gravityContext: { og: og ?? null, origin: !r ? 'DI fournie, statut mesuré à confirmer' : design.analysis?.gravityOrigin === 'explicit-scenario-not-certified' ? 'DI fournie pour ce scénario, statut mesuré à confirmer' : 'cible prévue de recette, pas mesure' },
       programWarnings: scenario?.warnings ?? fermentationProgramWarnings(current, []), scenarioVersion: scenario?.version ?? null
     }, [], [
       'Plages de conduite et durées proposées : confiance faible, pas de couverture statistique ni de garantie de fin. Respecter la fenêtre fabricant et contrôler densité/VDK après le dernier ajout.',
       'Pas de concentration universelle d’ester, phénol, thiol, lactone ou défaut. Le modèle DM303 ne se transfère pas à cette recette.',
-      ...(!science ? ['Aide scientifique absente, invalide ou désactivée.'] : []), ...(c.hopIndex?.truncated ?? [])
+      ...design.limits, ...(!science ? ['Aide scientifique absente, invalide ou désactivée.'] : []), ...(c.hopIndex?.truncated ?? [])
     ]);
   }
   if (name === 'inspect_brewery') {

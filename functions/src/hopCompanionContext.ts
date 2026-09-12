@@ -1,4 +1,5 @@
 import type { BrewerContext, BrewerProposal } from './companionTypes.js';
+import { yeastCompanionSummary } from './yeastCompanion.js';
 type Index = NonNullable<BrewerContext['hopIndex']>;
 /** Keep the complete catalogue in tool memory, not duplicated in every model prompt. */
 export function hopIndexOverview(index: Index | undefined) {
@@ -52,7 +53,8 @@ export function brewerContextForPrompt(context: BrewerContext) {
       inventory, material: context.workspace.finance.equipment?.records ?? [], waterSources: [],
       provenance: [...(context.provenance ?? []), `Aperçu de stock limité à ${inventory.length} sur ${context.inventory?.length ?? 0} articles chargés ; outils de lecture inchangés. Le résumé financier indique séparément ses limites de lecture. Les périodes absentes sont inconnues.`] };
   }
-  return context.hopIndex ? { ...context, hopIndex: hopIndexOverview(context.hopIndex) } : context;
+  return { ...context, yeastContext: yeastCompanionSummary(context.recipe, context.hopIndex?.knowledge),
+    ...(context.hopIndex ? { hopIndex: hopIndexOverview(context.hopIndex) } : {}) };
 }
 /** Proposal replay needs identities and definitions, not a copy of every catalogue COA. */
 export function brewerContextForStorage(context: BrewerContext, proposal?: BrewerProposal): BrewerContext {

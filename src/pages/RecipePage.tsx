@@ -37,6 +37,8 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
 import { BrewerChat } from '../ui/BrewerChat';
 import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
+import { YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
+import { readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { NoloPanel } from '../ui/NoloPanel';
 import { StorageService } from '../services/storage';
@@ -425,8 +427,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
       {/* --- Levure ------------------------------------------------------ */}
       {recipe.nolo?.enabled&&<Section title="Objectif NOLO" hint="Projection, traitement et analyses"><NoloPanel recipe={recipe}/></Section>}
-      <Section title="Levure" hint={recipe.yeast.name}>
-        {!recipe.yeast?.name ? (
+      <Section title="Levure" summary={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}>
+        {!recipe.nolo?.enabled && readYeastRecipeDesign(recipe) ? <FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /> : !recipe.yeast?.name ? (
           <p className="text-sm text-cave-400">Aucune levure renseignée.</p>
         ) : (
           <div className="space-y-2">
@@ -462,7 +464,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </Section>
 
-      {!recipe.nolo?.enabled&&<Section title="Conduite de levure"><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></Section>}
+      {!recipe.nolo?.enabled&&!readYeastRecipeDesign(recipe)&&<Section title="Conduite de levure"><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></Section>}
 
       {/* --- Additifs ---------------------------------------------------- */}
       {recipe.adjuncts && recipe.adjuncts.length > 0 && (

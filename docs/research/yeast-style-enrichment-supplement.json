@@ -1,0 +1,2854 @@
+{
+  "version": 1,
+  "collectedAt": "2026-09-12T12:55:33.873Z",
+  "items": [
+    {
+      "id": "wyeast-1214",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "20–26 °C. Plage de fermentation indiquée par le fabricant en degrés Celsius.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 20,
+            "max": 26
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "74–78 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 74,
+            "max": 78
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "12 % — valeur rapportée.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Tolérance apparente annoncée, dépendante des conditions.",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Basse à moyenne.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "La fiche associe la souche à Belgian IPA, White IPA, Witbier, dubbel, tripel et Belgian Dark Strong Ale.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Esters présents et notes alcoolisées légèrement épicées.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "species",
+          "label": "Espèce ou préparation",
+          "reported": "Saccharomyces cerevisiae.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "fermentationRate",
+          "label": "Démarrage",
+          "reported": "Un démarrage lent est possible ; la souche atténue bien une fois lancée.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Observation fabricant sans durée de latence chiffrée."
+        },
+        {
+          "key": "application",
+          "label": "Choix et suivi",
+          "reported": "Pour un profil belge estérifié, avec une vigilance sur le démarrage parfois lent.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1214 Belgian Abbey Style Ale",
+            "reference": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La fiche ne prescrit ni délai avant intervention ni protocole de relance."
+        },
+        {
+          "key": "form",
+          "label": "Forme documentée",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Premium Liquid Yeast for Beer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Le catalogue Premium Liquid Yeast présente la référence 1214."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/belgian-abbey-style-ale/",
+          "retrievedAt": "2026-09-12T12:36:52.297Z",
+          "sha256": "edba434939dce5f33ad04cab62eb6543584e74cf52c3217b2cf81ae95fca390f",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:52 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "1214 Belgian Abbey Style Ale",
+          "url": "https://wyeastlab.com/product/belgian-abbey-style-ale/"
+        },
+        {
+          "title": "Premium Liquid Yeast for Beer",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "wyeast-3787",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–26 °C. Plage de fermentation indiquée par le fabricant en degrés Celsius.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 26
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "74–78 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 74,
+            "max": 78
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "11–12 %.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Tolérance apparente annoncée, dépendante des conditions.",
+          "range": {
+            "min": 11,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Moyenne.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "La fiche associe la souche à Belgian IPA, bière de garde, Belgian Golden Strong Ale, Belgian Single, dubbel et tripel.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Association équilibrée d’esters fruités et de composés phénoliques.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "species",
+          "label": "Espèce ou préparation",
+          "reported": "Saccharomyces cerevisiae.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "foam",
+          "label": "Espace libre",
+          "reported": "Le fabricant recommande un espace libre supplémentaire au-dessus du moût.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Souche adaptée à la récolte par le haut ; aucun pourcentage de remplissage ou volume de mousse n’est donné."
+        },
+        {
+          "key": "application",
+          "label": "Choix et conduite",
+          "reported": "Une souche polyvalente pour une gamme belge ; prévoir le dégagement nécessaire à une fermentation avec récolte par le haut.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3787 Belgian High Gravity",
+            "reference": "https://wyeastlab.com/product/belgian-high-gravity/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La capacité de cuve et le dispositif de dégagement doivent être connus ; aucune marge numérique n’est déduite."
+        },
+        {
+          "key": "form",
+          "label": "Forme documentée",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Premium Liquid Yeast for Beer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Le catalogue Premium Liquid Yeast présente la référence 3787."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/belgian-high-gravity/",
+          "retrievedAt": "2026-09-12T12:36:52.325Z",
+          "sha256": "372531054cc2de35bf179a78635481de6028da6f14c0710594f961691c2110d4",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:21 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "3787 Belgian High Gravity",
+          "url": "https://wyeastlab.com/product/belgian-high-gravity/"
+        },
+        {
+          "title": "Premium Liquid Yeast for Beer",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "wyeast-3522",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–24 °C. Plage de fermentation indiquée par le fabricant en degrés Celsius.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 24
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "72–76 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 72,
+            "max": 76
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "12 % — valeur rapportée.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Tolérance apparente annoncée, dépendante des conditions.",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Haute.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "La fiche associe la souche à Belgian IPA, Belgian Pale Ale, Belgian Blond Ale, Belgian Golden Strong Ale, dubbel et tripel.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Esters fruités délicats et épices discrètes, sans dominante annoncée.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "species",
+          "label": "Espèce ou préparation",
+          "reported": "Saccharomyces cerevisiae.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "application",
+          "label": "Équilibre et clarification",
+          "reported": "À comparer pour garder fruit et épices en équilibre tout en favorisant une bière limpide grâce à la forte flocculation.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3522 Belgian Ardennes",
+            "reference": "https://wyeastlab.com/product/belgian-ardennes/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La limpidité est décrite par le fabricant, sans délai de clarification garanti."
+        },
+        {
+          "key": "form",
+          "label": "Forme documentée",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Premium Liquid Yeast for Beer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Le catalogue Premium Liquid Yeast présente la référence 3522."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/belgian-ardennes/",
+          "retrievedAt": "2026-09-12T12:36:52.580Z",
+          "sha256": "77c29f55ff69f14c25fb1aa8afca89f80485994f729fce39b2c7a2b6ecd32a96",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:52 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "3522 Belgian Ardennes",
+          "url": "https://wyeastlab.com/product/belgian-ardennes/"
+        },
+        {
+          "title": "Premium Liquid Yeast for Beer",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "wyeast-3711",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–25 °C. Plage de fermentation indiquée par le fabricant en degrés Celsius.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "77–83 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 77,
+            "max": 83
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "12 % — valeur rapportée.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Tolérance apparente annoncée, dépendante des conditions.",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Basse.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "La fiche associe la souche à saison, Belgian IPA, Witbier, bière de garde, Belgian Blond Ale et Belgian Golden Strong Ale.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Esters, poivre, épices et agrumes ; bouche décrite comme soyeuse malgré la forte atténuation.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "species",
+          "label": "Espèce ou préparation",
+          "reported": "Saccharomyces cerevisiae var. diastaticus.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "sta1",
+          "label": "STA1 · positif",
+          "reported": "positive",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "STA1 positif : le gène est présent. Wyeast indique une identification par méthode PCR rapide ; cette présence ne chiffre pas l’activité dans une recette donnée."
+        },
+        {
+          "key": "diastatic",
+          "label": "Identité diastasique · positif",
+          "reported": "positive",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Classée Saccharomyces cerevisiae var. diastaticus par le fabricant. La classification ne fournit pas de délai de fermentation ni de critère de conditionnement."
+        },
+        {
+          "key": "application",
+          "label": "Épices et houblons",
+          "reported": "Le fabricant décrit une mise en valeur des épices et des houblons aromatiques.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Observation qualitative : aucun rendement de conversion des thiols, moment d’ajout ou dose de houblon n’est fourni."
+        },
+        {
+          "key": "application",
+          "label": "Forte atténuation",
+          "reported": "La souche est décrite comme très atténuative tout en conservant une bouche soyeuse et riche.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La sensation de corps ne se déduit pas de la seule atténuation ; aucune densité finale n’est garantie."
+        },
+        {
+          "key": "application",
+          "label": "Relance : usage documenté",
+          "reported": "Wyeast mentionne son emploi pour relancer des fermentations bloquées ou dans des bières de haute densité.",
+          "source": {
+            "author": "Wyeast",
+            "title": "3711 French Saison",
+            "reference": "https://wyeastlab.com/product/french-saison/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La fiche ne donne pas de protocole de relance ; cette mention n’autorise pas un ajout automatique à une recette."
+        },
+        {
+          "key": "form",
+          "label": "Forme documentée",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Premium Liquid Yeast for Beer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Le catalogue Premium Liquid Yeast présente la référence 3711."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/french-saison/",
+          "retrievedAt": "2026-09-12T12:36:52.563Z",
+          "sha256": "4caf87114e49cd49850b2fab3eaf3444ac06cc1488a9f7880a403d2d5ad6069a",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:52 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "3711 French Saison",
+          "url": "https://wyeastlab.com/product/french-saison/"
+        },
+        {
+          "title": "Premium Liquid Yeast for Beer",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "white-labs-wlp500",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–22 °C. Plage de fermentation indiquée par le fabricant en degrés Celsius.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "75–80 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 75,
+            "max": 80
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "10–15 %.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Catégorie fabricant de tolérance, pas une garantie de résultat dans un moût donné.",
+          "range": {
+            "min": 10,
+            "max": 15
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Basse à moyenne.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "Dubbel, tripel, Belgian Dark Strong Ale et Belgian Pale Ale ; la fiche mentionne aussi bière de garde et cidre.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Prune et cerise, avec une touche de gomme à mâcher.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "sta1",
+          "label": "STA1 · négatif",
+          "reported": "negative",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "STA1 négatif dans le résultat de contrôle qualité indiqué. Un résultat STA1 négatif n’est pas une analyse POF ni une garantie de fin de fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Ajuster le fruit",
+          "reported": "À 18–19 °C, White Labs décrit un résultat moins fruité et plus terreux.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Levier propre à WLP500, qualitatif, dans sa plage de fermentation ; ne pas généraliser aux autres souches."
+        },
+        {
+          "key": "application",
+          "label": "Choix belge",
+          "reported": "Pour des bières belges de type dubbel, tripel ou quadruple avec une orientation prune–cerise.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP500 Monastery Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La tolérance à l’alcool est une catégorie fabricant, pas un objectif de fermentation garanti."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Levure liquide en PurePitch Next Generation.",
+          "source": {
+            "author": "White Labs",
+            "title": "FAQ — PurePitch Next Generation",
+            "reference": "https://www.whitelabs.com/faq",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La fiche produit classe WLP500 en Core ; Our Yeast décrit la gamme Core en PurePitch, et la FAQ confirme que ce conditionnement est liquide."
+        },
+        {
+          "key": "application",
+          "label": "Préparer le conditionnement liquide",
+          "reported": "Pour PurePitch liquide : conserver à 2–4 °C et respecter la date du lot ; désinfecter le bouchon avant ouverture et ensemencement.",
+          "source": {
+            "author": "White Labs",
+            "title": "Our Yeast — liquid yeast and PurePitch",
+            "reference": "https://www.whitelabs.com/research-development",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Consignes générales White Labs pour le conditionnement liquide ; pas de nombre de sachets déduit du seul volume de recette."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST",
+          "retrievedAt": "2026-09-12T12:36:52.017Z",
+          "sha256": "f4a1e13fe13fe5b579c8a98cb532c23c116db6f6169ae3da77f0464cc26cf67e",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/research-development",
+          "retrievedAt": "2026-09-12T12:41:07.935Z",
+          "sha256": "1b2e7cb11cc56c851cb41102d85862553464e8f1a11472b6536470a421f72ccf",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/faq",
+          "retrievedAt": "2026-09-12T12:41:08.007Z",
+          "sha256": "24d582bb5b4aedf29d291789b094c5a371957510337e3626c67ca6c7c52c333d",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "WLP500 Monastery Ale Yeast",
+          "url": "https://www.whitelabs.com/yeast-single?id=154&type=YEAST"
+        },
+        {
+          "title": "Our Yeast — liquid yeast and PurePitch",
+          "url": "https://www.whitelabs.com/research-development"
+        },
+        {
+          "title": "FAQ — PurePitch Next Generation",
+          "url": "https://www.whitelabs.com/faq"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "white-labs-wlp530",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "19–22 °C. Plage de fermentation indiquée par le fabricant en degrés Celsius.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 19,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "75–80 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 75,
+            "max": 80
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8–12 %.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Catégorie fabricant de tolérance, pas une garantie de résultat dans un moût donné.",
+          "range": {
+            "min": 8,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Moyenne à haute dans l’encadré ; moyenne dans la description.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Nuance interne à la même fiche : les deux libellés sont conservés, sans moyenne numérique ni délai de clarification."
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "Dubbel, tripel, Belgian Dark Strong Ale et Belgian Pale Ale.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Esters rappelant cerise, prune et poire.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "sta1",
+          "label": "STA1 · négatif",
+          "reported": "negative",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "STA1 négatif dans le résultat de contrôle qualité indiqué. Un résultat STA1 négatif n’est pas une analyse POF ni une garantie de fin de fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Choix et clarification",
+          "reported": "Pour une bière belge d’abbaye fruitée ; le fabricant associe sa flocculation à une bière claire.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP530 Abbey Ale Yeast",
+            "reference": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La fiche ne documente ni rampe thermique, ni volume de mousse, ni équivalence avec une souche d’un autre laboratoire."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Levure liquide en PurePitch Next Generation.",
+          "source": {
+            "author": "White Labs",
+            "title": "FAQ — PurePitch Next Generation",
+            "reference": "https://www.whitelabs.com/faq",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "La fiche produit classe WLP530 en Core ; Our Yeast décrit la gamme Core en PurePitch, et la FAQ confirme que ce conditionnement est liquide."
+        },
+        {
+          "key": "application",
+          "label": "Préparer le conditionnement liquide",
+          "reported": "Pour PurePitch liquide : conserver à 2–4 °C et respecter la date du lot ; désinfecter le bouchon avant ouverture et ensemencement.",
+          "source": {
+            "author": "White Labs",
+            "title": "Our Yeast — liquid yeast and PurePitch",
+            "reference": "https://www.whitelabs.com/research-development",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Consignes générales White Labs pour le conditionnement liquide ; pas de nombre de sachets déduit du seul volume de recette."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST",
+          "retrievedAt": "2026-09-12T12:36:52.015Z",
+          "sha256": "bdc6506e0a356293b73577f61ca76bbc07141edc121d75f63461735c56529dd5",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/research-development",
+          "retrievedAt": "2026-09-12T12:41:07.935Z",
+          "sha256": "1b2e7cb11cc56c851cb41102d85862553464e8f1a11472b6536470a421f72ccf",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/faq",
+          "retrievedAt": "2026-09-12T12:41:08.007Z",
+          "sha256": "24d582bb5b4aedf29d291789b094c5a371957510337e3626c67ca6c7c52c333d",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "WLP530 Abbey Ale Yeast",
+          "url": "https://www.whitelabs.com/yeast-single?id=161&type=YEAST"
+        },
+        {
+          "title": "Our Yeast — liquid yeast and PurePitch",
+          "url": "https://www.whitelabs.com/research-development"
+        },
+        {
+          "title": "FAQ — PurePitch Next Generation",
+          "url": "https://www.whitelabs.com/faq"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "yeast-fermentis-safale-be-e2-80-91256",
+      "form": "sèche",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–26 °C. Plage idéale indiquée par Fermentis, distincte de la température de réhydratation.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Temperature Range / Fermentation Temperature / Dosage-Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 26
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "82–86 %. Plage documentaire fabricant ; elle ne constitue pas une prédiction de densité finale.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Attenuation / Apparent attenuation"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 82,
+            "max": 86
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9–11 %.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Plage de tolérance fabricant, dépendante des conditions.",
+          "range": {
+            "min": 9,
+            "max": 11
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "flocculation",
+          "label": "Temps de sédimentation",
+          "reported": "Sédimentation rapide.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Le fabricant renseigne le temps de sédimentation, pas une classe de flocculation ; aucune durée chiffrée."
+        },
+        {
+          "key": "styles",
+          "label": "Styles et usages",
+          "reported": "Bières belges fortes de type abbaye.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Expression aromatique",
+          "reported": "Expression fruitée affirmée, notamment à densité et température de fermentation plus élevées.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description fabricant qualitative ; pas une intensité prédite."
+        },
+        {
+          "key": "species",
+          "label": "Espèce ou préparation",
+          "reported": "Saccharomyces cerevisiae ; la préparation contient aussi l’émulsifiant E491.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "pof",
+          "label": "Caractère POF · négatif",
+          "reported": "negative",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "POF négatif (signe moins dans le tableau fabricant). Le Q&A officiel confirme l’absence de caractère épicé ; aucun résultat STA1 n’est donné."
+        },
+        {
+          "key": "fermentationRate",
+          "label": "Vitesse de fermentation",
+          "reported": "Fermentation décrite comme très rapide.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Aucun délai universel n’est déduit du graphique réalisé dans les conditions d’essai du fabricant."
+        },
+        {
+          "key": "application",
+          "label": "Ensemencement direct",
+          "reported": "L’ensemencement direct est admis : répartir progressivement la levure à la surface du moût en évitant les amas.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Le fabricant demande un moût à la température de fermentation ou au-dessus ; cela ne change pas la plage de fermentation de la souche."
+        },
+        {
+          "key": "application",
+          "label": "Réhydratation facultative",
+          "reported": "Si réhydratation : au moins dix fois le poids de levure en eau stérile ou moût houblonné bouilli, à 25–29 °C ; attendre 15–30 min, mélanger doucement puis ensemencer.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Ce sont les conditions de réhydratation ; la fermentation est idéalement à 18–26 °C."
+        },
+        {
+          "key": "application",
+          "label": "Récolte après fermentation",
+          "reported": "Le fabricant recommande une récolte rapide après la fermentation pour préserver le profil aromatique.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Recommandation conditionnée à la fin de fermentation, sans jour de récolte ni validation de conditionnement automatique."
+        },
+        {
+          "key": "form",
+          "label": "Forme documentée",
+          "reported": "Levure sèche active.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null
+          }
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dose de levure sèche",
+          "reported": "50–80 g/hL. Recommandation fabricant à la plage idéale 18–26 °C ; quantité à calculer seulement si le volume est connu.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle™ BE-256",
+            "reference": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+            "kind": "manufacturer",
+            "year": null,
+            "locator": "Dosage/Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 50,
+            "max": 80
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "application",
+          "label": "Orienter le fruit",
+          "reported": "Fermentis relie une densité initiale et une température plus élevées à davantage d’esters fruités, de banane et de notes florales.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle BE-256 Questions & Answers",
+            "reference": "https://fermentis.com/en/knowledge-center/expert-insights/beer/safale-be-256-questions-answers/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Relation qualitative propre à BE-256 ; aucun pourcentage de gain ni équivalence entre laboratoires."
+        },
+        {
+          "key": "aroma",
+          "label": "Fruit sans épices",
+          "reported": "Le Q&A décrit un potentiel d’acétate d’isoamyle, avec des notes de banane et florales, sans caractère épicé.",
+          "source": {
+            "author": "Fermentis",
+            "title": "SafAle BE-256 Questions & Answers",
+            "reference": "https://fermentis.com/en/knowledge-center/expert-insights/beer/safale-be-256-questions-answers/",
+            "kind": "manufacturer",
+            "year": null
+          },
+          "context": "Description sensorielle fabricant ; elle ne donne pas un résultat STA1."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://fermentis.com/en/product/safale-be%e2%80%91256/",
+          "retrievedAt": "2026-09-12T12:36:52.431Z",
+          "sha256": "579bdac6e90db2d76dd05c75b10af9384b662c1d215c8a2e9a332db40f0c9c70",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://fermentis.com/en/knowledge-center/expert-insights/beer/safale-be-256-questions-answers/",
+          "retrievedAt": "2026-09-12T12:41:07.100Z",
+          "sha256": "2890850961ba86d8171386179c8bcd82d60347f1f7d8f2a4052047848abcee18",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "SafAle™ BE-256",
+          "url": "https://fermentis.com/en/product/safale-be%e2%80%91256/"
+        },
+        {
+          "title": "SafAle BE-256 Questions & Answers",
+          "url": "https://fermentis.com/en/knowledge-center/expert-insights/beer/safale-be-256-questions-answers/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "wyeast-2124",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "7–20 °C",
+          "range": {
+            "min": 7,
+            "max": 20
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage générale ; conduite lager et Common détaillées dans les applications."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "73–77 %",
+          "range": {
+            "min": 73,
+            "max": 77
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage documentaire ; la fermentescibilité du moût n’est pas mesurée par cette fiche."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9 %",
+          "range": {
+            "min": 9,
+            "max": 9
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Tolérance apparente documentaire, pas une garantie pour tout moût."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Faible à moyenne",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Classe qualitative fabricant, sans durée de clarification calculée."
+        },
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces pastorianus",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Identification déclarée par le fabricant."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Malt perceptible, quelques esters, finale nette.",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "application",
+          "label": "Lager ou Common",
+          "reported": "Lager/Pilsner : 8–12 °C dans le texte ; Common : 18–20 °C.",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "La plage générale 7–20 °C ne constitue pas une recommandation unique pour tous les styles."
+        },
+        {
+          "key": "application",
+          "label": "Maturation",
+          "reported": "Repos de diacétyle approfondi recommandé après la fermentation.",
+          "source": {
+            "author": "Wyeast",
+            "title": "2124 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/bohemian-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "La fiche ne fixe ni température, ni durée, ni date de conditionnement."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Beer Strains — Premium Liquid Yeast",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "locator": "Introduction et liste des souches 1968, 2124 et 2308."
+          },
+          "context": "La gamme Premium Liquid Yeast liste explicitement cette référence."
+        },
+        {
+          "key": "application",
+          "label": "Préparer l’inoculum",
+          "reported": "À froid ou pour un moût plus dense, augmenter le taux par rapport au cas standard de la notice Activator.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Activator Smack-Pack System — For Beer",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/activator-smack-pack-system/",
+            "locator": "Notice du conditionnement Activator ; distinguer départ à froid et consigne de fermentation."
+          },
+          "context": "Notice de conditionnement ; aucun volume de levain ni nombre de poches n’est calculé sans données adaptées."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/bohemian-lager/",
+          "retrievedAt": "2026-09-12T12:36:52.287Z",
+          "sha256": "6e027d7f112cb13001cae1beb3caafbcb7fb2b6c140eab9b4a7afcf62b401406",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:52 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/activator-smack-pack-system/",
+          "retrievedAt": "2026-09-12T12:41:08.280Z",
+          "sha256": "e5d706e3daabe97a097c142d366f52697c21d4210851e035b71f94ac21cf79b5",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "2124 — fiche fabricant",
+          "url": "https://wyeastlab.com/product/bohemian-lager/"
+        },
+        {
+          "title": "Beer Strains — Premium Liquid Yeast",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        },
+        {
+          "title": "Activator Smack-Pack System — For Beer",
+          "url": "https://wyeastlab.com/activator-smack-pack-system/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "wyeast-2308",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "9–13 °C",
+          "range": {
+            "min": 9,
+            "max": 13
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Bornes en °C imprimées par le fabricant, sans recalcul des arrondis en °F."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "70–74 %",
+          "range": {
+            "min": 70,
+            "max": 74
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage documentaire ; la fermentescibilité du moût n’est pas mesurée par cette fiche."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9 %",
+          "range": {
+            "min": 9,
+            "max": 9
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Tolérance apparente documentaire, pas une garantie pour tout moût."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Moyenne",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Classe qualitative fabricant, sans durée de clarification calculée."
+        },
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces pastorianus",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Identification déclarée par le fabricant."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Profil souple, rond et avec du corps.",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "application",
+          "label": "Maturation",
+          "reported": "Repos de diacétyle approfondi recommandé après la fermentation.",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Aucune durée de maturation ni température de repos chiffrée dans la fiche."
+        },
+        {
+          "key": "styles",
+          "label": "Usages cités",
+          "reported": "Festbier, Helles Bock, Märzen, Rauchbier, Dunkles Bock et Vienna Lager.",
+          "source": {
+            "author": "Wyeast",
+            "title": "2308 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/munich-lager/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Styles liés à la fiche fabricant ; la sélection reste un point de départ."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Beer Strains — Premium Liquid Yeast",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "locator": "Introduction et liste des souches 1968, 2124 et 2308."
+          },
+          "context": "La gamme Premium Liquid Yeast liste explicitement cette référence."
+        },
+        {
+          "key": "application",
+          "label": "Préparer l’inoculum",
+          "reported": "À froid ou pour un moût plus dense, augmenter le taux par rapport au cas standard de la notice Activator.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Activator Smack-Pack System — For Beer",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/activator-smack-pack-system/",
+            "locator": "Notice du conditionnement Activator ; distinguer départ à froid et consigne de fermentation."
+          },
+          "context": "Notice de conditionnement ; aucun volume de levain ni nombre de poches n’est calculé sans données adaptées."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/munich-lager/",
+          "retrievedAt": "2026-09-12T12:36:52.285Z",
+          "sha256": "b18ef2a451acdf6732914a15b26ca4f51137fbae6e81f13e2c84aec087f497db",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:52 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/activator-smack-pack-system/",
+          "retrievedAt": "2026-09-12T12:41:08.280Z",
+          "sha256": "e5d706e3daabe97a097c142d366f52697c21d4210851e035b71f94ac21cf79b5",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "2308 — fiche fabricant",
+          "url": "https://wyeastlab.com/product/munich-lager/"
+        },
+        {
+          "title": "Beer Strains — Premium Liquid Yeast",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        },
+        {
+          "title": "Activator Smack-Pack System — For Beer",
+          "url": "https://wyeastlab.com/activator-smack-pack-system/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "white-labs-wlp830",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "10–13 °C",
+          "range": {
+            "min": 10,
+            "max": 13
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Bornes en °C imprimées par le fabricant, sans recalcul des arrondis en °F."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "74–79 %",
+          "range": {
+            "min": 74,
+            "max": 79
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage documentaire ; la fermentescibilité du moût n’est pas mesurée par cette fiche."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "5–10 %",
+          "range": {
+            "min": 5,
+            "max": 10
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Catégorie fabricant moyenne (5–10 % vol), pas un point de rupture expérimental."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Moyenne",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Classe qualitative fabricant, sans durée de clarification calculée."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Profil net et vif, pouvant souligner les caractéristiques du houblon.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "sta1",
+          "label": "Contrôle STA1 · négatif",
+          "reported": "negative",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Résultat QC déclaré ; ne dispense pas des contrôles après un ajout à cru."
+        },
+        {
+          "key": "betaLyase",
+          "label": "Activité β-lyase",
+          "reported": "Potentiel d’activité relativement élevé observé dans la recherche White Labs.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Information qualitative : ni rendement en thiols du lot, ni intensité sensorielle prédite."
+        },
+        {
+          "key": "styles",
+          "label": "Usages cités",
+          "reported": "Helles, Pilsner, Bock, Märzen, Schwarzbier, Vienna Lager et autres lagers.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP830 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Usages de la fiche ; aucune identité supposée avec Wyeast ou Fermentis."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Variante liquide PurePitch Next Generation.",
+          "source": {
+            "author": "White Labs",
+            "title": "FAQ — PurePitch Next Generation",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/faq",
+            "locator": "PurePitch Next Generation est explicitement une culture liquide."
+          },
+          "context": "La fiche classe la souche Core ; la page Our Yeast associe Core à PurePitch. La FAQ explicite sa forme liquide."
+        },
+        {
+          "key": "application",
+          "label": "Gamme et conservation",
+          "reported": "Référence Core proposée en PurePitch ; conserver la culture liquide à 2–4 °C, sans la congeler.",
+          "source": {
+            "author": "White Labs",
+            "title": "Our Yeast — Core, Select, Vault",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/research-development",
+            "locator": "Offre Core en conditionnements PurePitch Next Generation ; conservation des levures liquides."
+          },
+          "context": "Conditions de la variante liquide ; lire la date et la notice du lot. Aucun taux de viabilité n’est supposé."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST",
+          "retrievedAt": "2026-09-12T12:36:51.981Z",
+          "sha256": "be0376e7590ff2f1888b2fbefccf9dacbb0d6c67c86f523bada487b3afe16beb",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/faq",
+          "retrievedAt": "2026-09-12T12:41:08.007Z",
+          "sha256": "24d582bb5b4aedf29d291789b094c5a371957510337e3626c67ca6c7c52c333d",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/research-development",
+          "retrievedAt": "2026-09-12T12:41:07.935Z",
+          "sha256": "1b2e7cb11cc56c851cb41102d85862553464e8f1a11472b6536470a421f72ccf",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "WLP830 — fiche fabricant",
+          "url": "https://www.whitelabs.com/yeast-single?id=223&type=YEAST"
+        },
+        {
+          "title": "FAQ — PurePitch Next Generation",
+          "url": "https://www.whitelabs.com/faq"
+        },
+        {
+          "title": "Our Yeast — Core, Select, Vault",
+          "url": "https://www.whitelabs.com/research-development"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "yeast-fermentis-saflager-s-189",
+      "form": "sèche",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "12–18 °C",
+          "range": {
+            "min": 12,
+            "max": 18
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage idéale fabricant, associée à la dose 80–120 g/hL."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "80–84 %",
+          "range": {
+            "min": 80,
+            "max": 84
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Repère du tableau comparatif fabricant ; essais SafLager à 12 °C pendant 48 h puis 14 °C."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9–11 %",
+          "range": {
+            "min": 9,
+            "max": 11
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Tolérance apparente documentaire, pas une garantie pour tout moût."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Sédimentation",
+          "reported": "Sédimentation rapide",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Temps de sédimentation décrit comme rapide ; ne signifie pas une classe de flocculation élevée."
+        },
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces pastorianus",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Identification déclarée par le fabricant."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Profil assez discret, avec notes florales et herbacées selon les conditions.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Levure sèche active.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Instructions d’ensemencement direct de la fiche."
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dose de levure sèche",
+          "reported": "80–120 g/hL",
+          "range": {
+            "min": 80,
+            "max": 120
+          },
+          "unit": "g/hL",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. À 12–18 °C selon la fiche actuelle. Dose hors de cette plage non établie ici."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "application",
+          "label": "Ensemencement direct",
+          "reported": "Répartir progressivement à la surface du moût à température de fermentation ou au-dessus.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Méthode fabricant E2U ; éviter les amas. La quantité reste celle choisie pour le moût."
+        },
+        {
+          "key": "application",
+          "label": "Réhydratation facultative",
+          "reported": "Alternative : au moins dix fois la masse en eau stérile ou moût bouilli houblonné, à 15–25 °C ; attendre 15–30 min puis mélanger doucement et ensemencer.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Méthode alternative à l’ajout direct ; ces températures ne sont pas une nouvelle fenêtre de fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Sachet ouvert",
+          "reported": "Refermer, conserver à 4 °C et utiliser sous sept jours.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-189 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s-189/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Notice du produit sec ; vérifier aussi la date imprimée et l’intégrité du sachet."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://fermentis.com/en/product/saflager-s-189/",
+          "retrievedAt": "2026-09-12T12:36:52.629Z",
+          "sha256": "c44da01f78e6720f28df29adf4b0ff0ee64421ba4fc8a7c94760ca5805a28d8e",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "S-189 — fiche fabricant",
+          "url": "https://fermentis.com/en/product/saflager-s-189/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "yeast-fermentis-saflager-s-e2-80-9123",
+      "form": "sèche",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "12–18 °C",
+          "range": {
+            "min": 12,
+            "max": 18
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage idéale fabricant, associée à la dose 80–120 g/hL."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "80–84 %",
+          "range": {
+            "min": 80,
+            "max": 84
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Repère du tableau comparatif fabricant ; essais SafLager à 12 °C pendant 48 h puis 14 °C."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9–11 %",
+          "range": {
+            "min": 9,
+            "max": 11
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Tolérance apparente documentaire, pas une garantie pour tout moût."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Sédimentation",
+          "reported": "Sédimentation rapide",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Temps de sédimentation décrit comme rapide ; ne signifie pas une classe de flocculation élevée."
+        },
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces pastorianus",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Identification déclarée par le fabricant."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Orientation lager fruitée et estérifiée, avec de la longueur en bouche.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "esters",
+          "label": "Lecture des esters",
+          "reported": "Le tableau indique des esters totaux faibles malgré une description de lagers plus fruitées.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Indicateur analytique relatif et description sensorielle sont conservés séparément ; aucun classement universel."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Levure sèche active.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Instructions d’ensemencement direct de la fiche."
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dose de levure sèche",
+          "reported": "80–120 g/hL",
+          "range": {
+            "min": 80,
+            "max": 120
+          },
+          "unit": "g/hL",
+          "qualifier": "range",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. À 12–18 °C selon la fiche actuelle. Dose hors de cette plage non établie ici."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "application",
+          "label": "Ensemencement direct",
+          "reported": "Répartir progressivement à la surface du moût à température de fermentation ou au-dessus.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Méthode fabricant E2U ; éviter les amas. La quantité reste celle choisie pour le moût."
+        },
+        {
+          "key": "application",
+          "label": "Réhydratation facultative",
+          "reported": "Alternative : au moins dix fois la masse en eau stérile ou moût bouilli houblonné, à 15–25 °C ; attendre 15–30 min puis mélanger doucement et ensemencer.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Méthode alternative à l’ajout direct ; ces températures ne sont pas une nouvelle fenêtre de fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Sachet ouvert",
+          "reported": "Refermer, conserver à 4 °C et utiliser sous sept jours.",
+          "source": {
+            "author": "Fermentis",
+            "title": "S-23 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Notice du produit sec ; vérifier aussi la date imprimée et l’intégrité du sachet."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://fermentis.com/en/product/saflager-s%e2%80%9123/",
+          "retrievedAt": "2026-09-12T12:36:53.575Z",
+          "sha256": "90db85993fa3218b3c5de2a181be02aec998b443dea2fa2c4bd1aaa72fbbc389",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "S-23 — fiche fabricant",
+          "url": "https://fermentis.com/en/product/saflager-s%e2%80%9123/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "wyeast-1968",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–22 °C",
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Bornes en °C imprimées par le fabricant, sans recalcul des arrondis en °F."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "67–71 %",
+          "range": {
+            "min": 67,
+            "max": 71
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage documentaire ; la fermentescibilité du moût n’est pas mesurée par cette fiche."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "9 %",
+          "range": {
+            "min": 9,
+            "max": 9
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Tolérance apparente documentaire, pas une garantie pour tout moût."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Élevée",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Classe qualitative fabricant, sans durée de clarification calculée."
+        },
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces cerevisiae",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Identification déclarée par le fabricant."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Malt, fruité et finale légèrement douce.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "esters",
+          "label": "Température et fruité",
+          "reported": "Fruité plus présent à 21–23 °C dans le texte fabricant.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "La rubrique température donne 18–22 °C : ce constat ne prolonge pas automatiquement la fenêtre à 23 °C."
+        },
+        {
+          "key": "application",
+          "label": "Maturation",
+          "reported": "Repos de diacétyle approfondi recommandé après la fermentation.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Clarté visuelle et fin de maturation restent deux observations distinctes."
+        },
+        {
+          "key": "application",
+          "label": "Clarification et usage",
+          "reported": "Bière brillante obtenue facilement en quelques jours sans filtration ; adaptée au cask.",
+          "source": {
+            "author": "Wyeast",
+            "title": "1968 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/product/london-esb-ale/",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Délai descriptif sans durée chiffrée garantie et sans preuve de fin de fermentation."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Culture liquide.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Beer Strains — Premium Liquid Yeast",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+            "locator": "Introduction et liste des souches 1968, 2124 et 2308."
+          },
+          "context": "La gamme Premium Liquid Yeast liste explicitement cette référence."
+        },
+        {
+          "key": "application",
+          "label": "Préparer l’inoculum",
+          "reported": "À froid ou pour un moût plus dense, augmenter le taux par rapport au cas standard de la notice Activator.",
+          "source": {
+            "author": "Wyeast",
+            "title": "Activator Smack-Pack System — For Beer",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://wyeastlab.com/activator-smack-pack-system/",
+            "locator": "Notice du conditionnement Activator ; distinguer départ à froid et consigne de fermentation."
+          },
+          "context": "Notice de conditionnement ; aucun volume de levain ni nombre de poches n’est calculé sans données adaptées."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://wyeastlab.com/product/london-esb-ale/",
+          "retrievedAt": "2026-09-12T12:36:52.289Z",
+          "sha256": "13197d2f95c71e0f3f4f0c02bb866b359ba13d6bbf51c34be63710e085fce60f",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:36:52 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/",
+          "retrievedAt": "2026-09-12T12:41:08.234Z",
+          "sha256": "5790e3dfd67349a20f2fa9ab18c0b5ef9422cd97dba40f5ce0c4252bf2296f05",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        },
+        {
+          "url": "https://wyeastlab.com/activator-smack-pack-system/",
+          "retrievedAt": "2026-09-12T12:41:08.280Z",
+          "sha256": "e5d706e3daabe97a097c142d366f52697c21d4210851e035b71f94ac21cf79b5",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:41:08 GMT"
+        }
+      ],
+      "documents": [
+        {
+          "title": "1968 — fiche fabricant",
+          "url": "https://wyeastlab.com/product/london-esb-ale/"
+        },
+        {
+          "title": "Beer Strains — Premium Liquid Yeast",
+          "url": "https://wyeastlab.com/yeast-cultures/beer/strains/"
+        },
+        {
+          "title": "Activator Smack-Pack System — For Beer",
+          "url": "https://wyeastlab.com/activator-smack-pack-system/"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    },
+    {
+      "id": "white-labs-wlp002",
+      "form": "liquide",
+      "facts": [
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–20 °C",
+          "range": {
+            "min": 18,
+            "max": 20
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Bornes en °C imprimées par le fabricant, sans recalcul des arrondis en °F."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente",
+          "reported": "63–70 %",
+          "range": {
+            "min": 63,
+            "max": 70
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Plage documentaire ; la fermentescibilité du moût n’est pas mesurée par cette fiche."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "5–10 %",
+          "range": {
+            "min": 5,
+            "max": 10
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026. Catégorie fabricant moyenne (5–10 % vol), pas un point de rupture expérimental."
+          },
+          "context": "Beer"
+        },
+        {
+          "key": "flocculation",
+          "label": "Flocculation",
+          "reported": "Très élevée",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Classe qualitative fabricant, sans durée de clarification calculée."
+        },
+        {
+          "key": "aroma",
+          "label": "Caractère de fermentation",
+          "reported": "Malt accentué, douceur résiduelle et esters fruités légers.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche ; ni concentration ni pourcentage de goût."
+        },
+        {
+          "key": "sta1",
+          "label": "Contrôle STA1 · négatif",
+          "reported": "negative",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Résultat QC déclaré ; ne dispense pas des contrôles après un ajout à cru."
+        },
+        {
+          "key": "application",
+          "label": "Diacétyle et clarification",
+          "reported": "Légère production de diacétyle fréquente ; clarification facilitée par la forte flocculation.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Une bière déjà claire ne prouve pas que le diacétyle est résorbé."
+        },
+        {
+          "key": "application",
+          "label": "Récolte de levure",
+          "reported": "La récolte en fermenteur est facilitée ; un aspect coagulé est habituel.",
+          "source": {
+            "author": "White Labs",
+            "title": "WLP002 — fiche fabricant",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+            "locator": "Caractéristiques et description, lues le 12 septembre 2026."
+          },
+          "context": "Description de la souche, sans nombre de générations ni recommandation automatique de réensemencement."
+        },
+        {
+          "key": "form",
+          "label": "Forme retenue",
+          "reported": "Variante liquide PurePitch Next Generation.",
+          "source": {
+            "author": "White Labs",
+            "title": "FAQ — PurePitch Next Generation",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/faq",
+            "locator": "PurePitch Next Generation est explicitement une culture liquide."
+          },
+          "context": "La fiche classe la souche Core ; la page Our Yeast associe Core à PurePitch. La FAQ explicite sa forme liquide."
+        },
+        {
+          "key": "application",
+          "label": "Gamme et conservation",
+          "reported": "Référence Core proposée en PurePitch ; conserver la culture liquide à 2–4 °C, sans la congeler.",
+          "source": {
+            "author": "White Labs",
+            "title": "Our Yeast — Core, Select, Vault",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/research-development",
+            "locator": "Offre Core en conditionnements PurePitch Next Generation ; conservation des levures liquides."
+          },
+          "context": "Conditions de la variante liquide ; lire la date et la notice du lot. Aucun taux de viabilité n’est supposé."
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST",
+          "retrievedAt": "2026-09-12T12:36:51.991Z",
+          "sha256": "4b306a48cd6abb3d0ea241ffaf4c45faeb28946751853584cb78d34d2a5ef234",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/faq",
+          "retrievedAt": "2026-09-12T12:41:08.007Z",
+          "sha256": "24d582bb5b4aedf29d291789b094c5a371957510337e3626c67ca6c7c52c333d",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/research-development",
+          "retrievedAt": "2026-09-12T12:41:07.935Z",
+          "sha256": "1b2e7cb11cc56c851cb41102d85862553464e8f1a11472b6536470a421f72ccf",
+          "etag": null,
+          "lastModified": null
+        }
+      ],
+      "documents": [
+        {
+          "title": "WLP002 — fiche fabricant",
+          "url": "https://www.whitelabs.com/yeast-single?id=102&type=YEAST"
+        },
+        {
+          "title": "FAQ — PurePitch Next Generation",
+          "url": "https://www.whitelabs.com/faq"
+        },
+        {
+          "title": "Our Yeast — Core, Select, Vault",
+          "url": "https://www.whitelabs.com/research-development"
+        }
+      ],
+      "notes": "Enrichissement par style vérifié le 12 septembre 2026. Les reçus portent les empreintes des corps HTTP bruts effectivement téléchargés ; aucun hash de résumé ou d’extraction recomposée. Les conditions, absences et contradictions restent dans les observations. Rapports : yeast-belgian-enrichment.md et yeast-lager-enrichment.md."
+    }
+  ],
+  "gaps": []
+}

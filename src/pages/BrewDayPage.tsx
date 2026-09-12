@@ -70,6 +70,9 @@ import { NumberInput } from '../ui/NumberInput';
 import { useBrewSession } from '../ui/useBrewSession';
 import { brewNow } from '../services/brewClock';
 import { BrewAssist } from '../ui/BrewAssist';
+import { YeastBrewDayGuide } from '../ui/YeastBrewDayGuide';
+import { buildYeastCompanion } from '../domain/yeastCompanion';
+import { StorageService } from '../services/storage';
 import { BrewerChat } from '../ui/BrewerChat';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { recipeForHopAnalysis } from '../domain/hopIndex/engine';
@@ -319,6 +322,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       tier: 'fast',
       context: {
         recipe: actualRecipe,
+        yeastPlan: recipe.yeast ? buildYeastCompanion(recipe, StorageService.getHopKnowledge(), { maxAlternatives: 0 }) : undefined,
         currentStep: current,
         phase: 'jour de brassage',
         readings: s.readings,
@@ -804,6 +808,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </strong>
                       </div>
                     </div>
+                    <YeastBrewDayGuide recipe={recipe} state={state} phase="recipe" />
                     <details className="brew-disclosure">
                       <summary>Programme et notes de recette</summary>
                       <p className="brew-muted">
@@ -1146,6 +1151,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         <ChevronRight size={18} />
                       </button>
                     )}
+                    <YeastBrewDayGuide recipe={recipe} state={state} phase={area} onMeasure={requestMeasure} />
                     <BrewAssist
                       key={current.id}
                       recipe={recipe}

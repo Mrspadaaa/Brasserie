@@ -2,6 +2,7 @@ import { Recipe } from '../types';
 import { recipeWaterExport } from './recipeWaterExport';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { assertNoloConfig } from '../../functions/src/noloSchema';
+import { readYeastRecipeDesign } from './yeastRecipeDesign';
 
 /** A readable, versioned text format. Labels, units and validation share one schema.
  * Only this small indentation format is parsed here; arbitrary recipes go through
@@ -11,7 +12,7 @@ type Field = {
   label: string;
   /** Older labels remain readable when wording is clarified within format v1. */
   aliases?: readonly string[];
-  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts';
+  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'yeastDesign';
   fields?: Fields;
   item?: Field;
   values?: readonly string[];
@@ -62,6 +63,7 @@ export const recipeFields = {
   name: t('Nom'),
   style: t('Style'),
   fermentationIntent: o('Intention de fermentation', {version:n('Version',1,1),aroma:t('Arômes'),fruit:t('Fruits'),acidity:t('Acidité')}),
+  yeastDesign: { label: 'Scénario de levure versionné', type: 'yeastDesign' } as Field,
   styleRef: o('Référence du style', {guideId:t('Référentiel'),version:t('Édition des données'),styleId:t('Identifiant du style')}),
   nolo: {label:'Configuration NOLO versionnée',type:'nolo'} as Field,
   volumeL: n('Volume fermenteur (L)'),
@@ -107,6 +109,9 @@ export const recipeFields = {
       timeMin: n('Durée (min)'),
       tempC: temp('Température (°C)'),
       dayOffset: n('Jour'),
+      aromaTiming: t('Moment biologique', ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation']),
+      aromaContactHours: n('Contact aromatique (h)'),
+      aromaTemperatureC: temp('Température aromatique (°C)'),
       step: t('Indication d’origine')
     })
   ),
@@ -122,17 +127,18 @@ export const recipeFields = {
   ),
   yeast: o('Levure', {
     name: t('Nom'),
+    hopIndexId: t('Souche de référence'),
     lab: t('Laboratoire'),
     strain: t('Souche'),
     fermentationFacts: {label:'Données fermentaires sourcées',type:'fermentationFacts'} as Field,
     form: t('Forme', ['sèche', 'liquide', 'levain']),
-    qty: n('Quantité'),
+    qty: { ...n('Quantité'), nullable: true },
     unit: t('Unité'),
-    pitchTempC: temp('Ensemencement (°C)'),
-    fermTempMinC: temp('Fermentation minimum (°C)'),
-    fermTempMaxC: temp('Fermentation maximum (°C)'),
-    attenuationPct: pct('Atténuation (%)'),
-    fermentDays: n('Durée (jours)'),
+    pitchTempC: { ...temp('Ensemencement (°C)'), nullable: true },
+    fermTempMinC: { ...temp('Fermentation minimum (°C)'), nullable: true },
+    fermTempMaxC: { ...temp('Fermentation maximum (°C)'), nullable: true },
+    attenuationPct: { ...pct('Atténuation (%)'), nullable: true },
+    fermentDays: { ...n('Durée (jours)'), nullable: true },
     notes: t('Notes')
   }),
   mash: o('Empâtage', {
@@ -144,7 +150,7 @@ export const recipeFields = {
     spargeType: t('Méthode de rinçage', ['fly', 'batch', 'none']),
     steps: a(
       'Paliers',
-      o('', { name: t('Nom'), tempC: temp('Température (°C)'), durationMin: n('Durée (min)') })
+      o('', { name: t('Nom'), tempC: { ...temp('Température (°C)'), nullable: true }, durationMin: { ...n('Durée (min)'), nullable: true } })
     )
   }),
   waterPlan: o('Eau', {
@@ -193,8 +199,8 @@ export const recipeFields = {
     o('', {
       kind: t('Phase', ['primaire', 'reposDiacetyle', 'garde', 'refermentation', 'ajout']),
       name: t('Nom'),
-      tempC: temp('Température (°C)'),
-      days: n('Durée (jours)'),
+      tempC: { ...temp('Température (°C)'), nullable: true },
+      days: { ...n('Durée (jours)'), nullable: true },
       note: t('Note')
     })
   ),
@@ -219,6 +225,7 @@ export const recipeFields = {
 >;
 
 const estimates = o('Estimations au moment de la copie', {
+  yeastIntent: t('Intention levure à la copie'),
   og: n('OG estimée'),
   fg: n('FG estimée'),
   abv: pct('ABV estimé (%)'),
@@ -282,6 +289,13 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
   if (field.type === 'boolean') return typeof value === 'boolean' ? value : fail();
   if (field.type === 'fermentationFacts') return readIngredientFermentationFacts(value) ?? fail();
   if (field.type === 'nolo') { try { assertNoloConfig(value); return structuredClone(value); } catch { return fail(); } }
+  if (field.type === 'yeastDesign') {
+    const snapshot = readYeastRecipeDesign({ yeastDesign: value } as Recipe);
+    if (!snapshot) return fail();
+    const portable = structuredClone(snapshot);
+    delete portable.applied.yeast.stockItemRef;
+    return portable;
+  }
   return typeof value === 'string' && (!field.values || field.values.includes(value))
     ? value
     : fail();
@@ -402,14 +416,14 @@ export function readRecipeText(raw: string): RecipeContent | null {
   };
   recipe.fermentables.forEach((f) => require(f, ['name', 'weightKg', 'kind', 'use']));
   recipe.hops.forEach((h) => require(h, ['name', 'weightG', 'alpha', 'stage']));
-  require(recipe.yeast, ['name', 'form', 'qty', 'unit']);
+  require(recipe.yeast, ['name']);
   recipe.adjuncts?.forEach((a) => require(a, ['name', 'amount', 'unit', 'step']));
   recipe.steps.forEach((s) => require(s, ['step', 'tempC', 'durationMin', 'notes']));
   if (recipe.mash) {
     require(recipe.mash, ['steps']);
-    recipe.mash.steps.forEach((s) => require(s, ['name', 'tempC', 'durationMin']));
+    recipe.mash.steps.forEach((s) => require(s, ['name']));
   }
-  recipe.fermentation?.forEach((s) => require(s, ['name', 'kind', 'tempC', 'days']));
+  recipe.fermentation?.forEach((s) => require(s, ['name', 'kind']));
   if (recipe.waterPlan) {
     const w = recipe.waterPlan;
     require(w, [

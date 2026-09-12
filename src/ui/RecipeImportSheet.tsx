@@ -9,6 +9,7 @@ import { Units } from '../services/units';
 import { HOP_STAGE, describeMoment } from '../domain/hopStage';
 import { Sheet } from './Sheet';
 import { Sparkles, Loader2, AlertTriangle, Camera, Check } from 'lucide-react';
+import { YEAST_RECIPE_GOAL_LABELS } from '../domain/yeastRecipeDesign';
 
 /**
  * Coller une recette, et qu'elle se remplisse.
@@ -213,7 +214,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
           />
 
           {error && (
-            <p className="flex items-start gap-2 text-sm text-alert leading-snug">
+            <p role="alert" className="flex items-start gap-2 text-sm text-alert-strong leading-snug">
               <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </p>
@@ -340,8 +341,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
               </p>
               <p className="text-sm text-cave-400">
                 {[
-                  `${result.yeast.qty} ${result.yeast.unit}`,
-                  result.yeast.form,
+                  result.yeast.qty > 0 && result.yeast.unit ? `${result.yeast.qty} ${result.yeast.unit}` : 'Quantité à préciser',
+                  result.yeast.form || 'forme à préciser',
                   result.yeast.attenuationPct ? `${result.yeast.attenuationPct} % att.` : null,
                   result.yeast.fermTempMinC != null && result.yeast.fermTempMaxC != null
                     ? `${result.yeast.fermTempMinC}–${result.yeast.fermTempMaxC} °C`
@@ -350,6 +351,15 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                   .filter(Boolean)
                   .join(' · ')}
               </p>
+              {!result.nolo?.enabled && result.yeastDesign && <p className="text-xs text-cave-200 mt-1">
+                Objectif adopté : <strong>{YEAST_RECIPE_GOAL_LABELS[result.yeastDesign.goal]}</strong> · pression précoce {result.yeastDesign.pressureBar == null ? 'inconnue' : `${result.yeastDesign.pressureBar.toLocaleString('fr-FR')} bar rel.`}
+              </p>}
+              {result.hops.some(h => h.stage === 'dryHop') && <details className="mt-1 border-t border-cave-800 pt-1">
+                <summary className="min-h-touch cursor-pointer text-xs text-cave-200">Contacts des houblons à cru</summary>
+                <ul className="text-xs text-cave-400 space-y-1">{result.hops.filter(h => h.stage === 'dryHop').map((h, i) => <li key={i}>
+                  <strong className="text-cave-200">{h.name}</strong> · {h.aromaTiming === 'fermentation' ? 'fermentation active' : h.aromaTiming === 'postFermentation' ? 'après fermentation' : 'phase à préciser'} · {h.aromaContactHours ?? '—'} h · {h.aromaTemperatureC ?? h.tempC ?? '—'} °C
+                </li>)}</ul>
+              </details>}
             </section>
           )}
 

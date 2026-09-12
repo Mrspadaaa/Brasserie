@@ -41,9 +41,9 @@ export interface ParsedRecipeResult {
   malts: MaltIngredient[];
   hops: HopIngredient[];
   adjuncts: AdjunctIngredient[];
-  yeast: YeastSpec | null;
+  yeast: (Partial<YeastSpec> & Pick<YeastSpec, 'name'>) | null;
   mashSteps: TempStep[];
-  fermentation: FermentationStep[];
+  fermentation: Array<Omit<FermentationStep, 'days'> & { days?: number }>;
   /** Eau d'empâtage annoncée par le déroulé, en litres. */
   mashWaterL: number | null;
   /** Eau de rinçage annoncée par le déroulé, en litres. */
@@ -71,10 +71,12 @@ export interface ParsedRecipeResult {
 }
 
 const NUM = String.raw`\d+(?:[.,]\d+)?`;
+const YEAST_LAB = /\b(GigaYeast|White Labs|Wyeast|Lallemand|Fermentis|Omega|Imperial|Mangrove Jack(?:['’]s|s)?)\b/i;
+const YEAST_STRAIN = /\b(WLP\d+|GY\d+|WY\d{4}|US-?05|BE-?256|S-?\d{2}|W-?34[/-]70|W-?68|WB-?06|K-?97|M20)\b/i;
 
 function toNumber(raw: string | undefined): number | null {
   if (!raw) return null;
-  const n = parseFloat(raw.replace(',', '.'));
+  const n = parseFloat(raw.replace(',', '.').replace('−', '-'));
   return Number.isFinite(n) ? n : null;
 }
 
@@ -127,10 +129,10 @@ function volumeL(line: string): number | null {
  * Sans parenthèse métrique, le Fahrenheit est converti.
  */
 function tempC(fragment: string): number | null {
-  const celsius = new RegExp(String.raw`(${NUM})\s*°?\s*C\b`).exec(fragment);
+  const celsius = new RegExp(String.raw`([-−]?${NUM})\s*°?\s*C\b`, 'i').exec(fragment);
   if (celsius) return toNumber(celsius[1]);
 
-  const fahrenheit = new RegExp(String.raw`(${NUM})\s*°?\s*F\b`).exec(fragment);
+  const fahrenheit = new RegExp(String.raw`([-−]?${NUM})\s*°?\s*F\b`, 'i').exec(fragment);
   if (fahrenheit) {
     const value = toNumber(fahrenheit[1]);
     if (value !== null) return Units.fToC(value);
@@ -142,7 +144,7 @@ function tempC(fragment: string): number | null {
 function hopStage(line: string): { stage: HopStage; timeMin?: number; dayOffset?: number } {
   const s = line.toLowerCase();
 
-  if (s.includes('dry hop') || s.includes('houblonnage à cru') || s.includes('à cru')) {
+  if (/dry[ -]?hop|houblonnage à cru|à cru/.test(s)) {
     const day = new RegExp(String.raw`(?:day|jour|j\+)\s*(\d+)`, 'i').exec(line);
     return { stage: 'dryHop', dayOffset: day ? Number(day[1]) : undefined };
   }
@@ -156,6 +158,22 @@ function hopStage(line: string): { stage: HopStage; timeMin?: number; dayOffset?
 
   const min = new RegExp(String.raw`(${NUM})\s*min`, 'i').exec(line);
   return { stage: 'boil', timeMin: min ? Number(min[1]) : undefined };
+}
+
+/** Read a contact only when it is stated on that ingredient's line. A day is not a phase. */
+function hopContact(line: string, stage: HopStage): Partial<HopIngredient> {
+  const temperature = tempC(line);
+  if (stage !== 'dryHop') return stage === 'whirlpool' && temperature !== null ? { tempC: temperature } : {};
+  const active = /active fermentation|fermentation active|pendant la fermentation|during fermentation/i.test(line);
+  const post = /after fermentation|post[ -]?fermentation|apr[èe]s (?:la )?fermentation/i.test(line);
+  const negated = /\b(?:not|never|avoid|pas|sans)\b/i.test(line);
+  const duration = new RegExp(String.raw`(?:contact|pendant|for|dur[ée]e)\s*[:=]?\s*(${NUM})\s*(heures?|hours?|hrs?|h|jours?|days?)\b`, 'i').exec(line);
+  const hours = duration ? toNumber(duration[1])! * (/^(?:jour|day)/i.test(duration[2]) ? 24 : 1) : undefined;
+  return {
+    ...(!negated && active !== post ? { aromaTiming: active ? 'fermentation' : 'postFermentation' } : {}),
+    ...(temperature !== null ? { aromaTemperatureC: temperature } : {}),
+    ...(hours !== undefined ? { aromaContactHours: hours } : {})
+  };
 }
 
 /**
@@ -267,7 +285,7 @@ export const RecipeTextParser = {
     const styleMatch =
       new RegExp(String.raw`(?:style|type|cat[ée]gorie)\s*[:=-]\s*([^\n\r,;]+)`, 'i').exec(text)?.[1] ??
       // Sinon, le style est souvent dans le titre lui-même.
-      /\b(NEIPA|IPA|APA|Pale Ale|Stout|Porter|Saison|Lager|Pilsner|Weizen|Witbier|Gose|Sour|Bitter|Amber|Brown Ale|Barleywine|Tripel|Dubbel)\b/i.exec(
+      /\b(American Wheat|Dunkles Weissbier|Dunkelweizen|Weizenbock|Hefeweizen|Hefeweisse|Weissbier|NEIPA|IPA|APA|Pale Ale|Stout|Porter|Saison|Lager|Pilsner|Weizen|Witbier|Gose|Sour|Bitter|Amber|Brown Ale|Barleywine|Tripel|Dubbel)\b/i.exec(
         name
       )?.[1];
 
@@ -275,33 +293,46 @@ export const RecipeTextParser = {
     const malts: MaltIngredient[] = [];
     const hops: HopIngredient[] = [];
     const adjuncts: AdjunctIngredient[] = [];
-    let yeast: YeastSpec | null = null;
+    let yeast: ParsedRecipeResult['yeast'] = null;
 
     headLines.forEach((line) => {
       const lower = line.toLowerCase();
-      if (!line || /^(ingredients?|ingr[ée]dients?)\s*$/i.test(line)) return;
+      if (!line || /^(ingredients?|ingr[ée]dients?|yeast|levures?)\s*:?\s*$/i.test(line)) return;
       if (line === name) return;
 
       // Levure — repérée au laboratoire ou au mot « yeast »/« levure ».
       if (
         !yeast &&
-        (/\byeast\b|\blevure\b/i.test(line) ||
-          /\b(wlp\d+|gy\d+|s-?\d{2}|us-?05|be-?256|wy\d{4}|omega|lallemand|fermentis|white labs|wyeast|gigayeast)\b/i.test(
-            line
-          ))
+        (/\byeast\b|\blevure\b/i.test(line) || YEAST_LAB.test(line) || YEAST_STRAIN.test(line))
       ) {
         // « GigaYeast GY054 … or White Labs WLP095 … » propose une équivalence,
         // pas deux levures : on retient la première et on garde l'autre en note.
         const [primary, ...alternatives] = line.split(/\s+\b(?:or|ou)\b\s+/i);
 
-        const lab =
-          /\b(GigaYeast|White Labs|Wyeast|Lallemand|Fermentis|Omega|Imperial|Mangrove Jack)\b/i.exec(
-            primary
-          )?.[1];
-        const strain = /\b(WLP\d+|GY\d+|WY\d{4}|US-?05|BE-?256|S-?\d{2}|K-?97)\b/i.exec(primary)?.[1];
-        const form: YeastSpec['form'] = /liquid|liquide|starter|slurry/i.test(line)
-          ? 'liquide'
-          : 'sèche';
+        const lab = YEAST_LAB.exec(primary)?.[1];
+        const strain = YEAST_STRAIN.exec(primary)?.[1] ?? /\bWyeast\s+(\d{4})\b/i.exec(primary)?.[1];
+        const form: YeastSpec['form'] | undefined = /\blevain\b/i.test(primary) ? 'levain'
+          : /\bliquid|\bstarter\b|\bslurry\b/i.test(primary) ? 'liquide'
+            : /\bs[èe]che\b|\bdried\b|\bdry yeast\b|\bady\b/i.test(primary) ? 'sèche' : undefined;
+        const dose = new RegExp(String.raw`([-−]?${NUM})\s*(mL|L|kg|g|sachets?|flacons?|packets?|packs?|pouch(?:es)?|vials?)\b`, 'i').exec(primary);
+        const doseBefore = dose ? primary.slice(0, dose.index) : '';
+        const doseAfter = dose ? primary.slice(dose.index + dose[0].length) : '';
+        const rateOrBatchVolume = dose && (
+          /^\s*(?:\/|par\b|per\b)/i.test(doseAfter) ||
+          new RegExp(String.raw`^\s*(?:pour|for)\s+${NUM}\s*(?:hL|L|litres?)\b`, 'i').test(doseAfter) ||
+          /\b(?:pour|for|dans|into)\s*$/i.test(doseBefore) ||
+          /^\s*(?:de\s+)?(?:mo[uû]t|wort|brassin|batch|eau)\b/i.test(doseAfter)
+        );
+        const doseRange = new RegExp(String.raw`${NUM}\s*(?:[-–—]|à)\s*${NUM}\s*(?:mL|L|kg|g|sachets?|flacons?)\b`, 'i').test(primary);
+        const readQty = dose && !rateOrBatchVolume && !doseRange ? toNumber(dose[1])! : undefined;
+        if (rateOrBatchVolume) warnings.push('Levure : taux d’ensemencement ou volume de moût conservé dans le texte ; aucune dose totale déduite.');
+        else if (doseRange) warnings.push('Levure : plage de quantité annoncée ; choisir une dose sans retenir automatiquement une borne.');
+        const qty = readQty !== undefined && readQty >= 0 ? readQty : undefined;
+        if (readQty !== undefined && readQty < 0) warnings.push('Quantité de levure négative : valeur non importée.');
+        const rawUnit = !rateOrBatchVolume ? dose?.[2].toLowerCase() : undefined;
+        const unit = rawUnit === 'ml' ? 'mL' : rawUnit === 'l' ? 'L' : rawUnit === 'pouches' ? 'pouch'
+          : rawUnit?.replace(/s$/, '');
+        const pitchFragment = /(?:ensemenc\w*|pitch\w*)[^;\n]*/i.exec(primary)?.[0];
 
         /*
          * Le nom commercial d'une levure vit souvent entre parenthèses :
@@ -311,26 +342,31 @@ export const RecipeTextParser = {
          * laboratoire et la souche du reste : sans ça, l'affichage rendait
          * « GigaYeast GigaYeast GY054 · GY054 ».
          */
-        const parenName = /\(([^)\d]{3,40})\)/.exec(primary)?.[1]?.trim();
-        const stripped = cleanName(primary, [
+        const paren = /\(([^)\d]{3,40})\)/.exec(primary)?.[1]?.trim();
+        const parenName = paren && !/^(?:liquide?|s[èe]che|levain|dry|starter)$/i.test(paren) ? paren : undefined;
+        const stripped = cleanName(dose ? primary.replace(dose[0], '') : primary, [
           /\byeast\b/gi,
           /\blevure\b/gi,
+          /\b(?:liquide?|s[èe]che|levain|dried|dry|starter|slurry)\b/gi,
+          /(?:ensemenc\w*|pitch\w*|fermentation)[^;\n]*/gi,
+          /\b(?:dose|dosage|pour|for|dans|into)\b[^;\n]*/gi,
+          /\/\s*(?:hL|L|litres?)\b/gi,
           ...(lab ? [new RegExp(lab.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')] : []),
           ...(strain ? [new RegExp(strain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')] : [])
         ]);
 
-        yeast = {
-          name: parenName || stripped || strain || '',
-          lab,
-          strain,
-          form,
-          qty: 1,
-          unit: form === 'liquide' ? 'flacon' : 'sachet',
-          pitchTempC: tempC(line) ?? undefined,
-          notes: alternatives.length
-            ? `Équivalence proposée par la recette : ${alternatives.join(' / ').trim()}`
-            : undefined
-        };
+        const yeastName = parenName || stripped || strain;
+        if (!yeastName) {
+          warnings.push(`Nom de levure illisible : « ${line} » — à préciser.`);
+          return;
+        }
+        const pitch = pitchFragment ? tempC(pitchFragment) : null;
+        yeast = { name: yeastName, ...(lab ? { lab } : {}), ...(strain ? { strain } : {}),
+          ...(form ? { form } : {}), ...(qty !== undefined ? { qty } : {}), ...(unit ? { unit } : {}),
+          ...(pitch !== null ? { pitchTempC: pitch } : {}),
+          ...(alternatives.length ? { notes: `Alternative proposée par la recette, sans équivalence validée : ${alternatives.join(' / ').trim()}` } : {}) };
+        const missing = [qty === undefined ? 'quantité' : '', !unit ? 'unité' : '', !form ? 'forme' : ''].filter(Boolean);
+        if (missing.length) warnings.push(`Levure : ${missing.join(', ')} manquante(s) ; aucune valeur supposée.`);
         return;
       }
 
@@ -348,7 +384,7 @@ export const RecipeTextParser = {
       const hasBoilTime = /\(\s*\d+\s*(?:min|minutes?)\b/i.test(line);
       const looksLikeHop =
         /\bhops?\b|\bhoublons?\b|\bAAU\b/i.test(line) ||
-        /\b(dry hop|hop stand|whirlpool|first wort)\b/i.test(lower) ||
+        /\b(dry[ -]?hop|hop stand|whirlpool|first wort)\b/i.test(lower) ||
         /houblonnage|à cru|am[ée]risant|aromatique/i.test(lower) ||
         hasAlpha ||
         (hasBoilTime && !ADJUNCT_LINE.test(lower));
@@ -365,7 +401,7 @@ export const RecipeTextParser = {
             new RegExp(String.raw`at\s*(${NUM})\s*%`, 'i').exec(line)?.[1]
         );
         const hopName = cleanName(line, [
-          /\b(dry hop|hop stand|whirlpool|first wort hop|first wort|boil)\b/gi,
+          /\b(dry[ -]?hop|hop stand|whirlpool|first wort hop|first wort|boil)\b/gi,
           /\bat\b/gi,
           /\balpha acids?\b/gi,
           new RegExp(String.raw`${NUM}\s*%`, 'g'),
@@ -390,6 +426,7 @@ export const RecipeTextParser = {
           alpha: alpha ?? 0,
           weightG: Math.round(weightG),
           stage,
+          ...hopContact(line, stage),
           ...(timeMin !== undefined ? { timeMin } : {}),
           ...(dayOffset !== undefined ? { dayOffset } : {})
         });
@@ -450,7 +487,7 @@ export const RecipeTextParser = {
 
     // --- Empâtage et fermentation, lus dans le déroulé ----------------------
     const mashSteps: TempStep[] = [];
-    const fermentation: FermentationStep[] = [];
+    const fermentation: ParsedRecipeResult['fermentation'] = [];
 
     if (instructions) {
       // On raisonne PHRASE par phrase plutôt qu'avec une expression qui
@@ -476,15 +513,25 @@ export const RecipeTextParser = {
            */
           mashSteps.push({ name: 'Mashout', tempC: t, durationMin: minutes ?? 0 });
           if (minutes === null) warnings.push('Durée du mashout absente — à saisir.');
-        } else if (/\bmash in\b|\bempât|\bempat/.test(lower) && minutes !== null) {
-          mashSteps.push({ name: 'Empâtage', tempC: t, durationMin: minutes });
+        } else if (/\bferulic\b|f[ée]rulique|saccharification|\bmash in\b|\bempât|\bempat/.test(lower)) {
+          if (minutes !== null) mashSteps.push({
+            name: /ferulic|f[ée]rulique/.test(lower) ? 'Repos férulique' : /saccharification/.test(lower) ? 'Saccharification' : 'Empâtage',
+            tempC: t, durationMin: minutes
+          });
+          else warnings.push('Durée d’un palier d’empâtage absente : conserver le déroulé et compléter le programme.');
         } else if (/\bsparge\b|\brin[cç]age\b/.test(lower)) {
           mashSteps.push({ name: 'Rinçage', tempC: t, durationMin: minutes ?? 0 });
-        } else if (/ferment/.test(lower) && fermentation.length === 0) {
+        } else if (!/dry[ -]?hop|à cru|houblon/.test(lower) && /ferment|\bgarde\b|lagering|cold crash|diac[ée]tyle/.test(lower)) {
           const days = toNumber(
             new RegExp(String.raw`(${NUM})\s*(?:days?|jours?)`, 'i').exec(sentence)?.[1]
           );
-          fermentation.push({ kind: 'primaire', name: 'Fermentation primaire', tempC: t, days: days ?? 0 });
+          const kind: FermentationStep['kind'] = /diac[ée]tyle/.test(lower) ? 'reposDiacetyle'
+            : /\bgarde\b|lagering|cold crash/.test(lower) ? 'garde' : 'primaire';
+          if (kind !== 'primaire' || !fermentation.some(s => s.kind === 'primaire')) {
+            fermentation.push({ kind, name: kind === 'garde' ? 'Garde' : kind === 'reposDiacetyle' ? 'Repos diacétyle' : 'Fermentation primaire',
+              tempC: t, ...(days !== null ? { days } : {}) });
+            if (days === null) warnings.push('Durée de fermentation manquante : aucun nombre de jours supposé.');
+          }
         }
       });
 

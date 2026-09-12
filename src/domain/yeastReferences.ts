@@ -1,5 +1,8 @@
 import { assertHopKnowledge, type HopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
 import core from '../data/yeastCoreReferences.json';
+import recipeProfiles from '../data/yeastRecipeReferences.json';
+import belgian from '../data/yeastEnrichmentBelgian.json';
+import lager from '../data/yeastEnrichmentLager.json';
 import initial from '../data/hopYeastBootstrap.json';
 import studies from '../data/hopStudyBootstrap.json';
 import trials from '../data/hopTrialBootstrap.json';
@@ -14,13 +17,22 @@ export type YeastReference = HopYeast & { aliases?: string[] };
  * Saved records win by id, including a disabled or invalid personal reference.
  * Aliases identify products; they never assert equivalence between strains. */
 const empty: HopKnowledge[] = [];
+const documented = [...core, ...recipeProfiles, ...belgian.references, ...lager.references];
+const documentedById = new Map(documented.map(row => [row.id, row]));
 const cache = new WeakMap<HopKnowledge[], YeastReference[]>();
 export function yeastReferences(saved: HopKnowledge[] = empty): YeastReference[] {
   const cached = cache.get(saved); if(cached) return cached;
   const rows = [...new Map([...initial, ...studies.hopKnowledge, ...trials.hopKnowledge,
-    ...solver, ...guides, ...science, ...legacy, ...nolo, ...core, ...saved.map(r=>{
+    ...solver, ...guides, ...science, ...legacy, ...nolo, ...documented, ...saved.map(r=>{
       if(r.kind!=='yeast') return r;
-      const {aliases: _aliases, ...stored}=r as YeastReference; return stored;
+      const {aliases: _aliases, ...stored}=r as YeastReference;
+      // Earlier bootstraps were saved without catalogue facts. Enrich that exact
+      // product identity, while an existing personal catalogue (even conflicting)
+      // remains authoritative. Invalid saved records must still mask the default.
+      try { assertHopKnowledge(stored); } catch { return stored; }
+      const documented = documentedById.get(stored.id);
+      return documented && stored.catalogue === undefined && (!stored.form || stored.form === documented.form) ? { ...stored, catalogue: documented.catalogue,
+        form: stored.form ?? documented.form } : stored;
     })].map(r => [r.id, r])).values()];
   const valid = rows.filter((r): r is HopKnowledge => {
     if (r.kind !== 'yeast' && r.kind !== 'fermentation' && r.kind !== 'noloScience') return false;

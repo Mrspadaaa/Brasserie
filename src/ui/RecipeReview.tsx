@@ -63,7 +63,9 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const text = buildText();
+  let text = '', exportError = '';
+  try { text = buildText(); }
+  catch (error) { exportError = error instanceof Error ? error.message : 'Vérifie les données de la recette avant la relecture.'; }
   const snapshot = JSON.stringify({ recette: text, fiche: data });
   const request = useRef(0);
   useEffect(() => {
@@ -77,6 +79,7 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
   }, [snapshot]);
 
   const analyser = async () => {
+    if (exportError) return;
     const id = ++request.current;
     setBusy(true);
     setError(null);
@@ -116,7 +119,7 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
       <button
         type="button"
         onClick={analyser}
-        disabled={busy}
+        disabled={busy || !!exportError}
         className="w-full min-h-touch-sm rounded-control border border-ebc-straw/50 text-ebc-straw
                    flex items-center justify-center gap-2 text-sm disabled:opacity-50
                    hover:bg-ebc-straw/5 transition-colors"
@@ -134,6 +137,7 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
         )}
       </button>
 
+      {exportError && <p role="alert" className="text-xs text-alert-strong">{exportError}</p>}
       {error && (
         <p className="flex items-start gap-2 text-2xs sm:text-sm text-ebc-amber leading-snug px-1">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />

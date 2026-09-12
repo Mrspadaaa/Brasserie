@@ -11,6 +11,8 @@ import {
   Recipe
 } from '../types';
 import { writeRecipeText } from './recipeTransfer';
+import { normalizeRecipeImport } from './recipeImport';
+import { readYeastRecipeDesign, yeastRecipeDesignChanged, YEAST_RECIPE_GOAL_LABELS, YEAST_STYLE_FAMILIES } from './yeastRecipeDesign';
 import { HOP_STAGE } from './hopStage';
 import { SALTS, ACIDS, ION_SYMBOL_SHORT } from './water';
 import { Units } from '../services/units';
@@ -119,11 +121,32 @@ const masse = (kg: number) =>
 /** Un titre de section, souligné — c'est ce qui rend la fiche parcourable. */
 const titre = (t: string) => [``, t.toUpperCase(), '─'.repeat(t.length)];
 
+/** A copy-time reading aid. The versioned snapshot and current recipe stay authoritative. */
+export function recipeYeastIntentText(recipe: Recipe): string | undefined {
+  if (recipe.yeastDesign === undefined) return undefined;
+  const snapshot = readYeastRecipeDesign(recipe);
+  if (!snapshot) throw new Error('Scénario de levure invalide : vérifier la recette avant de la copier.');
+  const family = YEAST_STYLE_FAMILIES.find(style => style.id === snapshot.styleId)!.label;
+  const pressure = snapshot.pressureBar === undefined ? 'pression inconnue'
+    : `pression de fermentation ${n(snapshot.pressureBar, 3)} bar`;
+  const changed = yeastRecipeDesignChanged(recipe, snapshot);
+  return `${family} · objectif ${YEAST_RECIPE_GOAL_LABELS[snapshot.goal]} · ${pressure}. ` +
+    (changed ? 'Scénario ancien : réglages modifiés depuis son adoption ; les consignes actuelles figurent dans la recette.'
+      : 'Intention adoptée ; les consignes figurent dans Levure, Empâtage et Fermentation.') +
+    ' L’objectif aromatique ne prédit pas une intensité de goût.';
+}
+
 export function recipeToText(r: RecipeTextInput, date = new Date()): string {
-  if (r.recipe) return writeRecipeText(r.recipe, {
-    og: r.og, fg: r.fg, abv: r.abv, ibu: r.ibu, ebc: r.ebc,
-    mashIons: r.water?.mashIons, spargeIons: r.water?.spargeIons, ra: r.water?.ra
-  });
+  if (r.recipe) {
+    // Check for rejected yeast/contact data before the writer can omit it.
+    // The original business fields, not the normalized copy, are exported.
+    normalizeRecipeImport(r.recipe, 'local', true);
+    return writeRecipeText(r.recipe, {
+      og: r.og, fg: r.fg, abv: r.abv, ibu: r.ibu, ebc: r.ebc,
+      mashIons: r.water?.mashIons, spargeIons: r.water?.spargeIons, ra: r.water?.ra,
+      yeastIntent: recipeYeastIntentText(r.recipe)
+    });
+  }
   const l: string[] = [];
 
   l.push(`${r.name || 'Recette sans nom'}${r.style ? ` — ${r.style}` : ''}`);
@@ -206,7 +229,8 @@ export function recipeToText(r: RecipeTextInput, date = new Date()): string {
   if (r.yeast?.name) {
     l.push(...titre('Levure'));
     const y = r.yeast;
-    l.push(`  ${[y.lab, y.name].filter(Boolean).join(' ')} — ${y.qty} ${y.unit} (${y.form})`);
+    const dose = Number.isFinite(y.qty) ? `${n(y.qty, 3)} ${y.unit || '(unité inconnue)'}` : 'quantité inconnue';
+    l.push(`  ${[y.lab, y.name].filter(Boolean).join(' ')} — ${dose}${y.form ? ` (${y.form})` : ' · forme inconnue'}`);
     const cond = [
       y.pitchTempC != null ? `ensemencement ${n(y.pitchTempC)} °C` : null,
       y.fermTempMinC != null && y.fermTempMaxC != null

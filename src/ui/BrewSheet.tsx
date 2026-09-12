@@ -2,8 +2,9 @@ import { Input, Textarea } from './Input';
 import { RecipeDisclosure, RecipeWaterVolumes } from './RecipeDisclosure';
 import { MaltDetails } from './MaltDetails';
 import { LearnIngredient } from '../domain/ingredientFacts';
-import React, { useState } from 'react';
-import { Trash2, AlertTriangle, Check, Droplets, ClipboardCopy } from 'lucide-react';
+import React from 'react';
+import { Trash2, AlertTriangle, Check, Droplets } from 'lucide-react';
+import { RecipeTextExport } from './RecipeTextExport';
 import {
   Fermentable,
   HopIngredient,
@@ -162,6 +163,7 @@ export interface WaterRecap {
 export interface BrewSheetProps {
   onLearnIngredient?: LearnIngredient;
   reviewData?: unknown;
+  yeastSummary?: React.ReactNode;
   name: string;
   onName: (v: string) => void;
   style: string;
@@ -228,6 +230,7 @@ export interface BrewSheetProps {
 export const BrewSheet: React.FC<BrewSheetProps> = ({
   onLearnIngredient,
   reviewData,
+  yeastSummary,
   name,
   onName,
   style,
@@ -262,8 +265,6 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   shortages
 }) => {
   const tight = useDensity() === 'tight';
-  /* Confirmation de copie : le presse-papier ne donne aucun retour visible. */
-  const [copie, setCopie] = useState(false);
 
   const patchFerm = (i: number, patch: Partial<Fermentable>) =>
     onFermentables(fermentables.map((f, j) => (j === i ? { ...f, ...patch } : f)));
@@ -482,7 +483,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
       </Block>
 
       {/* --- Levure -------------------------------------------------------- */}
-      <Block title="Levure" aside={yeast.name ? `${yeast.name} · ${yeast.qty.toLocaleString('fr-FR')} ${yeast.unit}` : 'Souche à choisir'}>
+      <Block title="Levure" aside={yeastSummary ?? (yeast.name ? `${yeast.name} · ${Number.isFinite(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${yeast.unit}` : 'quantité à préciser'}` : 'Souche à choisir')}>
         <Row label={yeast.name || '—'} hint={yeast.strain}>
           <Cell
             label="Quantité de levure"
@@ -852,37 +853,11 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
         pouvoir les extraire au format texte ». En BAS de la fiche, donc, et
         nulle part ailleurs : c'est un geste de fin, quand tout est posé.
 
-        Le presse-papier plutôt qu'un fichier téléchargé — c'est la convention
-        déjà tenue par les stocks et les commandes, et c'est ce qui rend le
-        texte utile : il part dans un message, un forum, ou l'import d'une
-        autre application sans passer par le dossier Téléchargements.
+        La copie est l'action directe. Le texte complet et le fichier .txt
+        restent accessibles dans le détail, notamment si le navigateur
+        refuse l'accès au presse-papier.
       */}
-      {onExportText && (
-        <button
-          type="button"
-          onClick={() => {
-            const texte = onExportText();
-            navigator.clipboard?.writeText(texte);
-            setCopie(true);
-            window.setTimeout(() => setCopie(false), 2500);
-          }}
-          className="w-full min-h-touch-sm rounded-control border border-cave-700 text-cave-200
-                     hover:border-ebc-straw hover:text-ebc-straw transition-colors
-                     flex items-center justify-center gap-2 text-sm"
-        >
-          {copie ? (
-            <>
-              <Check className="w-4 h-4 text-hop" />
-              Recette copiée — collez-la où vous voulez
-            </>
-          ) : (
-            <>
-              <ClipboardCopy className="w-4 h-4" />
-              Copier la recette en texte
-            </>
-          )}
-        </button>
-      )}
+      {onExportText && <RecipeTextExport buildText={onExportText}/>}
 
       {/*
         La relecture reçoit LE MÊME TEXTE que l'export, volontairement : le

@@ -36,10 +36,12 @@ import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { FermentationWorkshop } from '../ui/FermentationWorkshop';
+import { YeastRecipeWorkbench, YeastRecipeContext, YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { NoloPanel } from '../ui/NoloPanel';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 import { noloScience } from '../domain/nolo';
 import { StorageService } from '../services/storage';
+import { buildYeastCompanion } from '../domain/yeastCompanion';
 import { FermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
@@ -915,7 +917,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide'>) => {
+  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'yeastDesign'>) => {
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
@@ -923,7 +925,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
       waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide } : {}) }));
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide, yeastDesign: internal.yeastDesign } : {}) }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -1030,7 +1032,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
     if (yeast.name.trim().toLocaleLowerCase('fr') !== selectedName.trim().toLocaleLowerCase('fr')) {
-      setDetails(previous => ({ ...previous, yeastGuide: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+      setDetails(previous => ({ ...previous, yeastGuide: undefined, yeastDesign: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
       setYeastSelection(n => n + 1);
     }
     setYeast(current => {
@@ -1077,6 +1079,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     hops,
     yeast,
     yeastGuide: details.yeastGuide,
+    yeastDesign: details.yeastDesign,
     hopMatrixId: details.hopMatrixId,
     hopTrialId: details.hopTrialId,
     hopSolverIntent: details.hopSolverIntent,
@@ -1150,7 +1153,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       applyImport({ ...next, mashSteps: next.mash?.steps ?? [], present: Object.keys(next), complete: true, warnings: [], via: 'local' } as ImportedRecipe, next);
     } else {
       setDetails(previous => ({ ...previous, nolo: next.nolo, fermentationIntent: next.fermentationIntent,
-        yeastGuide: next.yeastGuide, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId,
+        yeastGuide: next.yeastGuide, yeastDesign: next.yeastDesign, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId,
         hopPredictionIds: next.hopPredictionIds }));
       setFerment(next.fermentation ?? []);
     }
@@ -1799,6 +1802,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 })}
               </ul>
             )}
+            <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
             <details className="border-t border-cave-700 pt-2" open={hopWorkshopOpen} onToggle={e => setHopWorkshopOpen(e.currentTarget.open)}>
               <summary className="cursor-pointer min-h-touch text-water" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>Explorer les arômes et les accords</summary>
               {hopWorkshopOpen && <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
@@ -1816,7 +1820,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
       {/* ---------------------------------------------------- ÉTAPE 4 */}
       {step === 'levure' && (
-        <Section title="Levure" hint="Saisis ta souche ou choisis une conduite pour l’arôme recherché.">
+        <Section title="Levure" hint="Compare les souches de ton style, puis prépare leur conduite.">
+          <YeastRecipeWorkbench key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={next => applyFermentationRecipe(next, 'levure')} onNavigate={setStep} />
+          <details className="border-t border-cave-700 mt-3 pt-2">
+            <summary className="cursor-pointer min-h-touch flex items-center text-cave-200 text-[13px]">Saisie libre et stock · {yeast.name || 'autre souche'}</summary>
           <FormNav className="space-y-3">
             <Field label="Souche">
               <YeastIngredientPicker items={stockItems} yeast={yeast} onStock={selectYeast}
@@ -1832,9 +1839,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               onValue={pitchTempC => setYeast({ ...yeast, pitchTempC })} missing={yeast.pitchTempC == null} />
             </div>
           </FormNav>
-          <FermentationWorkshop key={yeastSelection} recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
+          </details>
+          <details className="border-t border-cave-700 mt-2 pt-2">
+            <summary className="cursor-pointer min-h-touch flex items-center text-cave-200 text-[13px]">Programme détaillé et guides enregistrés</summary>
+          <FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
             applyFermentationRecipe(next, 'levure');
           }} />
+          </details>
           <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
             <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
             <FormNav className="space-y-3 py-3">
@@ -1996,6 +2007,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             hint="Phases de fermentation et températures de consigne."
           >
             <FermentationRecipeAdvice recipe={build()} />
+            <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
             <div className="space-y-2 sm:space-y-3">
               <PresetChips
                 name="Programme de fermentation"
@@ -2180,8 +2192,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         {details.nolo?.enabled&&<RecipeDisclosure title="Objectif NOLO" summary="Projection, traitement et analyses"><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></RecipeDisclosure>}
         <BrewSheet
           onLearnIngredient={onLearnIngredient}
+          yeastSummary={!details.nolo?.enabled ? <YeastRecipeHeading recipe={build()} /> : undefined}
           reviewData={{
             recipe: { ...build(), id: undefined },
+            yeastContext: buildYeastCompanion(build(), StorageService.getHopKnowledge(), { maxAlternatives: 3 }),
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
               efficiencyPct: efficiency, volumes: suggestedVolumes },
             waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecap,

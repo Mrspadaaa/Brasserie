@@ -445,6 +445,8 @@ export interface Recipe {
   yeast: YeastSpec;
   /** Frozen guide and adopted fermentation settings, independent of later catalogue edits. */
   yeastGuide?: import('../domain/fermentationGuide').FermentationGuideSnapshot;
+  /** Intent and applied settings from the style-first yeast workbench. */
+  yeastDesign?: import('../domain/yeastRecipeDesign').YeastRecipeDesignSnapshot;
   /** Durée d'ébullition. Les recettes américaines montent souvent à 75 ou 90 min. */
   boilMin?: number;
   mash?: MashProfile;

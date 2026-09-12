@@ -1,0 +1,140 @@
+.yeast-workbench {
+  color: theme('colors.cave.200');
+  font-size: 0.875rem;
+  line-height: 1.4;
+  min-width: 0;
+}
+.yeast-workbench > * + * { margin-top: 8px; }
+.yeast-strain-details > div { container: yeast-info / inline-size; }
+.yeast-strain-details :is(section, dl) { min-width: 0; }
+.yeast-strain-details h4 { font-size: 0.8125rem; font-weight: 600; color: theme('colors.cave.50'); }
+.yeast-strain-facts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px 12px; padding-block: 6px; font-size: 0.8125rem; }
+.yeast-strain-facts dt { font-size: 0.75rem; color: theme('colors.cave.400'); }
+.yeast-strain-facts dd { color: theme('colors.cave.50'); overflow-wrap: anywhere; }
+.yeast-strain-notes { font-size: 0.8125rem; }
+.yeast-strain-notes > div { padding-block: 5px; border-bottom: 1px solid theme('colors.cave.800'); }
+.yeast-strain-notes dt { font-weight: 500; color: theme('colors.cave.50'); }
+.yeast-strain-notes dd { overflow-wrap: anywhere; }
+.yeast-strain-details > div > * + * { margin-top: 6px; }
+@container yeast-info (max-width: 19em) { .yeast-strain-facts { grid-template-columns: minmax(0,1fr); } }
+.yeast-workbench :is(button, summary,:is(input, textarea:where([data-single-line])), select) { font-family: inherit; }
+.yeast-workbench :is(button, summary) {
+  min-height: 28px;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+.yeast-workbench button {
+  border: 1px solid theme('colors.cave.700');
+  border-radius: 10px;
+  padding: 3px 8px;
+  color: theme('colors.cave.50');
+}
+.yeast-workbench :is(button,:is(input, textarea:where([data-single-line])), select, summary):focus-visible {
+  outline: 2px solid theme('colors.ebc.straw');
+  outline-offset: 2px;
+}
+.yeast-workbench button:disabled { opacity: 0.45; cursor: not-allowed; }
+.yeast-workbench .yeast-link { border: 0; text-decoration: underline; text-underline-offset: 3px; padding-inline: 0; }
+.yeast-workbench :is(:is(input, textarea:where([data-single-line])):not([type='radio']):not([type='checkbox']):not([type='range']), select) {
+  min-height: 32px;
+  background: theme('colors.cave.950');
+  color: theme('colors.cave.50');
+  border: 1px solid theme('colors.cave.700');
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.yeast-workbench :is(input, textarea:where([data-single-line]))::placeholder { color: theme('colors.cave.400'); }
+.yeast-workbench :is(input[type='checkbox'], input[type='radio']) {
+  width: 24px; height: 24px; flex: 0 0 24px; accent-color: theme('colors.ebc.straw');
+}
+.yeast-workbench label { color: theme('colors.cave.200'); }
+.yeast-workbench .yeast-filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.yeast-workbench .yeast-filter > select { flex: 1; width: 0; min-width: 100px; }
+.yeast-workbench .yeast-goals { padding: 2px; gap: 2px; }
+.yeast-workbench .yeast-goals button { padding: 3px 2px; }
+.yeast-workbench .yeast-goals button:first-child { flex-grow: 1.2; }
+.yeast-workbench .yeast-goals button[aria-checked='true'] { background: theme('colors.cave.800'); color: theme('colors.cave.50'); border-color: theme('colors.cave.400'); }
+.yeast-workbench .yeast-goals button span { white-space: normal; overflow: visible; }
+.yeast-candidate-list { container: yeast-list / inline-size; font-size: 0.8125rem; }
+.yeast-candidates { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.8125rem; }
+.yeast-candidates caption { text-align: left; padding: 4px 0; color: theme('colors.cave.400'); font-size: 0.75rem; }
+.yeast-candidates :is(th,td) { text-align: left; vertical-align: middle; padding: 5px 4px; overflow-wrap: anywhere; border-bottom: 1px solid theme('colors.cave.700'); }
+.yeast-candidates th { font-size: 0.75rem; color: theme('colors.cave.400'); font-weight: 400; }
+.yeast-candidates th:first-child { width: 45%; padding-left: 0; }
+.yeast-candidates th:last-child { width: 20%; text-align: right; }
+.yeast-candidates td:last-child { text-align: right; }
+.yeast-candidates td:first-child { padding-left: 0; }
+.yeast-candidates tr[data-selected='true'] { background: theme('colors.cave.850'); }
+.yeast-candidates label { display: flex; align-items: center; gap: 5px; cursor: pointer; min-height: 28px; }
+.yeast-candidates .yeast-candidate-name { display: block; font-weight: 600; color: theme('colors.cave.50'); }
+.yeast-candidates .yeast-candidate-meta { display: block; color: theme('colors.cave.400'); font-size: 0.75rem; }
+/* Reflow when enlarged text leaves too little room for three useful columns. */
+@container yeast-list (max-width: 20em) {
+  .yeast-candidates thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+  .yeast-candidates tbody { display: block; }
+  .yeast-candidates tbody tr { display: grid; grid-template-columns: minmax(0,1fr); padding: 6px 4px; border-bottom: 1px solid theme('colors.cave.700'); }
+  .yeast-candidates td { display: block; padding: 3px 0; border: 0; }
+  .yeast-candidates td:last-child { text-align: left; }
+  .yeast-candidates td:last-child::before { content: 'Plage : '; font-family: inherit; }
+}
+.yeast-workbench .yeast-scenario { border-top: 1px solid theme('colors.cave.700'); padding-top: 8px; }
+.yeast-workbench .yeast-scenario > * + * { margin-top: 8px; }
+.yeast-workbench .yeast-setting-line { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }
+.yeast-workbench .yeast-setting-line label { flex: 1; font-size: 0.8125rem; }
+.yeast-workbench .yeast-setting-line :is(input, textarea:where([data-single-line])):not([type='range']) { width: 72px; text-align: right; }
+.yeast-workbench .yeast-setting-line select { max-width: 55%; }
+.yeast-workbench .yeast-temperature-range { width: 100%; height: 28px; accent-color: theme('colors.cave.200'); cursor: pointer; }
+.yeast-workbench .yeast-temperature-range:disabled { opacity: 0.45; }
+.yeast-workbench .yeast-temperature-limits { display: flex; justify-content: space-between; gap: 4px; font-size: 0.75rem; color: theme('colors.cave.400'); }
+.yeast-temperature-limits span:first-child, .yeast-temperature-limits span:last-child { white-space: nowrap; }
+.yeast-temperature-limits span:nth-child(2) { text-align: center; }
+.yeast-workbench .yeast-check { display: flex; align-items: flex-start; gap: 6px; cursor: pointer; font-size: 0.8125rem; }
+.yeast-workbench .yeast-effects { margin: 0; container: yeast-effects / inline-size; font-size: 0.8125rem; }
+.yeast-workbench .yeast-effect { display: grid; grid-template-columns: minmax(0,24%) minmax(0,1fr); gap: 4px 8px; padding-block: 6px; border-bottom: 1px solid theme('colors.cave.700'); }
+.yeast-workbench :is(p, dd, dt, output, .yeast-small) { overflow-wrap: anywhere; min-width: 0; }
+.yeast-workbench .yeast-effect dt { color: theme('colors.cave.400'); font-size: 0.75rem; }
+.yeast-workbench .yeast-effect dd { font-size: 0.8125rem; }
+.yeast-workbench .yeast-effect strong { color: theme('colors.cave.50'); font-weight: 600; }
+@container yeast-effects (max-width: 20em) {
+  .yeast-workbench .yeast-effect { grid-template-columns: minmax(0,1fr); gap: 2px; }
+}
+.yeast-workbench .yeast-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.yeast-workbench .yeast-actions button:first-child { background: theme('colors.cave.800'); border-color: theme('colors.cave.400'); }
+.yeast-workbench .yeast-error { color: theme('colors.alert-strong'); font-size: 0.8125rem; }
+.yeast-workbench .yeast-notice { color: theme('colors.attention'); font-size: 0.8125rem; }
+.yeast-workbench .yeast-small { color: theme('colors.cave.400'); font-size: 0.75rem; }
+.yeast-workbench .yeast-source { color: theme('colors.cave.200'); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.yeast-workbench details { border-top: 1px solid theme('colors.cave.700'); padding-top: 4px; }
+.yeast-workbench details > div { padding-top: 6px; }
+.yeast-workbench summary { display: flex; align-items: center; justify-content: space-between; gap: 6px; cursor: pointer; list-style: none; }
+.yeast-workbench summary::-webkit-details-marker { display: none; }
+.yeast-workbench details[open] > summary svg { transform: rotate(180deg); }
+.yeast-range-comparison { min-width: 0; }
+.yeast-range-comparison figcaption { font-size: 0.8125rem; font-weight: 600; color: theme('colors.cave.50'); margin-bottom: 4px; }
+.yeast-range-row { display: grid; grid-template-columns: minmax(0,3.5rem) minmax(30px,1fr) minmax(0,auto); align-items: center; gap: 6px; min-height: 26px; font-size: 0.75rem; }
+.yeast-range-track { position: relative; height: 10px; background: theme('colors.cave.800'); border-radius: 2px; }
+.yeast-range-interval { position: absolute; top: 1px; bottom: 1px; min-width: 2px; background: theme('colors.cave.200'); border-radius: 2px; }
+.yeast-range-proposed { background: theme('colors.area.production'); }
+.yeast-range-unknown { border-bottom: 1px dashed theme('colors.cave.600'); }
+@media (min-width: 640px) {
+  .yeast-workbench .yeast-simulation-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+  .yeast-workbench .yeast-figures { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+}
+
+.yeast-contacts { width:100%; table-layout:fixed; border-collapse:collapse; font-size:0.8125rem; }
+.yeast-contacts :is(th,td) { text-align:left; padding:5px 4px; overflow-wrap:anywhere; border-bottom:1px solid theme('colors.cave.700'); }
+.yeast-contacts thead th { color:theme('colors.cave.400'); font-size:0.75rem; font-weight:400; }
+.yeast-contacts th { font-weight:400; }
+
+.yeast-range-point { position:absolute; top:-3px; bottom:-3px; width:2px; background:theme('colors.cave.50'); transform:translateX(-1px); }
+
+.yeast-brew-guide { border:1px solid theme('colors.cave.700'); border-radius:10px; padding:8px; }
+.yeast-brew-instructions > div + div { margin-top:6px; }
+.yeast-brew-instructions { font-size:0.8125rem; }
+.yeast-brew-instructions dd { color:theme('colors.cave.400'); font-size:0.75rem; }
+.yeast-brew-readings { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; font-size:0.8125rem; }
+.yeast-brew-readings dt { color:theme('colors.cave.400'); font-size:0.75rem; }
+.yeast-brew-readings dd { font-variant-numeric:tabular-nums; }
+.yeast-brew-readings button { margin-top:4px; }

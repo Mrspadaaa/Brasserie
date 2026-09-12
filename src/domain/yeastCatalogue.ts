@@ -26,7 +26,7 @@ export function catalogueSolverFacts(knowledge: HopKnowledge[]) {
   const yeastPhenols: {yeastId:string;status:'positive'|'negative';source:YeastCatalogueFact['source']}[]=[], yeastConditions: {yeastId:string;temperatureC:NonNullable<YeastCatalogueFact['range']>;source:YeastCatalogueFact['source']}[]=[];
   for(const yeast of catalogueYeasts(knowledge)){
     const facts=catalogueFacts(yeast);
-    const phenols=facts.filter(f=>f.key==='pof').map(f=>({f,status:/^(?:positive|yes|phenolic|pof\s*\+)$/i.test(f.reported)?'positive':/^(?:negative|no|non[ -]?phenolic|pof\s*-)$/i.test(f.reported)?'negative':undefined}));
+    const phenols=facts.filter(f=>f.key==='pof').map(f=>({f,status:/^(?:positive|yes|phenolic|pof\s*\+|\+)$/i.test(f.reported.trim())?'positive':/^(?:negative|no|non[ -]?phenolic|pof\s*[-−]|[-−])$/i.test(f.reported.trim())?'negative':undefined}));
     if(phenols.length&&phenols.every(p=>p.status&&p.status===phenols[0].status))yeastPhenols.push({yeastId:yeast.id,status:phenols[0].status as 'positive'|'negative',source:phenols[0].f.source});
     else if (phenols.some(p => p.status === 'positive') && phenols.some(p => p.status === 'negative')) {
       for (const p of phenols) if (p.status) yeastPhenols.push({yeastId:yeast.id,status:p.status as 'positive'|'negative',source:p.f.source});
@@ -40,5 +40,5 @@ export function applyCatalogueYeast<T extends TrialRecipe>(recipe: T, yeast: Hop
   // Applying a reference is explicit. Never carry a previous strain's pitch, attenuation or schedule claim.
   const same = recipe.yeast.hopIndexId === yeast.id && recipe.yeast.form === form;
   const next: YeastSpec = same ? { ...recipe.yeast, form } : { name: yeast.name, hopIndexId: yeast.id, lab: yeast.catalogue?.manufacturer, strain: yeast.catalogue?.productCode ?? undefined, form, qty: 0, unit: form === 'sèche' ? 'g' : 'mL', notes: `Référence fabricant : ${yeast.source.reference}. Quantité et conduite à définir pour le moût.` };
-  return { ...recipe, yeast: next, yeastGuide: undefined, hopPredictionIds: undefined, hopTrialId: undefined, hopMatrixId: undefined };
+  return { ...recipe, yeast: next, yeastDesign: same ? recipe.yeastDesign : undefined, yeastGuide: undefined, hopPredictionIds: undefined, hopTrialId: undefined, hopMatrixId: undefined };
 }

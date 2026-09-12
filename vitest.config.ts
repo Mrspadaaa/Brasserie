@@ -27,6 +27,7 @@ export default defineConfig({
   plugins: [react()],
   // Server deployment bundles this exact domain entry; tests use its TypeScript source.
   resolve: { alias: [
+    { find: './yeastCompanion.js', replacement: fileURLToPath(new URL('./src/domain/yeastCompanion.ts', import.meta.url)) },
     { find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) },
     { find: './financeContext.js', replacement: fileURLToPath(new URL('./src/domain/finance/assistantContext.ts', import.meta.url)) }
   ] },
