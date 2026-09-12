@@ -667,7 +667,7 @@ export const App: React.FC = () => {
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
       <PersistenceStatus />
       <Header
-        compactLayout={activeTab === 'dashboard'}
+        compactLayout={activeTab === 'dashboard' || activeTab === 'finances'}
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
@@ -684,7 +684,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-3 xs:px-4">
+      <main className={`flex-1 max-w-4xl w-full mx-auto ${activeTab === 'finances' ? 'px-2 xs:px-3' : 'px-3 xs:px-4'}`}>
         {activeTab === 'dashboard' && (
           <DashboardTab
             transactions={transactions}
