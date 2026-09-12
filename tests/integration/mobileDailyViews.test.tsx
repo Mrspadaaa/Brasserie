@@ -102,21 +102,29 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.getByRole('button',{name:'Corriger l’inventaire'})).toBeVisible();
   });
 
-  it('ouvre les finances sur le journal et change de vue directement par les onglets visibles',()=>{
+  it('ouvre les finances sur la synthèse et conserve la recherche visible entre les quatre vues',()=>{
     const tx:Transaction={id:'T1',description:'Houblon Cascade',date:todayISO(),category:'brassage',subcategory:'',amountHT:50,amountTTC:50,tvaAmount:0,tvaRate:0};
     render(<FinancesTab transactions={[tx]} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" onOpenQuickAction={()=>{}}/>);
-    const navigation=within(screen.getByRole('tablist',{name:'Vue des finances'}));
-    expect(navigation.getByRole('tab',{name:'Journal'})).toHaveAttribute('aria-selected','true');
-    expect(navigation.getAllByRole('tab')).toHaveLength(5);
-    expect(screen.getByRole('textbox',{name:'Rechercher une opération',hidden:true})).not.toBeVisible();
+    const navigation=within(screen.getByRole('tablist',{name:'Finances'}));
+    expect(navigation.getAllByRole('tab').map(tab=>tab.textContent)).toEqual(['Synthèse','Opérations','Prévisions','Annuel']);
+    expect(navigation.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
+    expect(screen.getByRole('heading',{name:'Situation financière'})).toBeVisible();
+    fireEvent.click(navigation.getByRole('tab',{name:'Opérations'}));
+    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
+    expect(screen.getByLabelText('Période du journal')).toBeVisible();
     expect(screen.getByRole('button',{name:/Houblon Cascade/})).toBeVisible();
-    const summary=screen.getByText('Rechercher et filtrer').closest('summary')!;
-    fireEvent.click(summary);expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toBeVisible();
     expect(screen.getByRole('button',{name:'Archives',exact:true})).toBeVisible();
-    fireEvent.click(navigation.getByRole('tab',{name:'Prévoir'}));
+    fireEvent.change(screen.getByRole('textbox',{name:'Rechercher une opération'}),{target:{value:'Cascade'}});
+    fireEvent.click(navigation.getByRole('tab',{name:'Prévisions'}));
     expect(screen.getByRole('heading',{name:'Prochaines échéances'})).toBeVisible();
-    expect(screen.getByRole('button',{name:'Prévoir un brassin',hidden:true})).not.toBeVisible();
-    fireEvent.click(screen.getByText('Ajouter une prévision'));
-    expect(screen.getByRole('button',{name:'Prévoir un brassin'})).toBeVisible();
+    expect(screen.getByRole('button',{name:'Budget d’un brassin'})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'Ajouter une prévision'}));
+    const plan=within(screen.getByRole('dialog',{name:'Prévoir une dépense'}));
+    fireEvent.click(plan.getByRole('button',{name:'Fermer'}));
+    fireEvent.click(navigation.getByRole('tab',{name:'Annuel'}));
+    expect(screen.getByRole('heading',{name:'Bilan et impôts'})).toBeVisible();
+    fireEvent.click(navigation.getByRole('tab',{name:'Opérations'}));
+    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toHaveValue('Cascade');
+    expect(screen.getByRole('button',{name:/Houblon Cascade/})).toBeVisible();
   });
 });
