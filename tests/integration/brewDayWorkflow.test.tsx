@@ -4,11 +4,13 @@ import { cleanup, fireEvent, render, screen, waitFor, within, act } from '@testi
 import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { defaultConfig } from '../../src/services/storage';
 import { AiClient } from '../../src/services/aiClient';
+import { brewerJobs } from '../../src/services/brewerJobs';
 import { Batch, BrewDayState } from '../../src/types';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 afterEach(() => {
   cleanup();
+  brewerJobs.stop();
   vi.restoreAllMocks();
   vi.clearAllMocks();
 });

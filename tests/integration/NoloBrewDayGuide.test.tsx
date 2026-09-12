@@ -6,10 +6,11 @@ import { BrewDayPage } from '../../src/pages/BrewDayPage';
 import { newNoloConfig } from '../../src/domain/nolo';
 import { defaultConfig } from '../../src/services/storage';
 import { AiClient } from '../../src/services/aiClient';
+import { brewerJobs } from '../../src/services/brewerJobs';
 import type { Batch, BrewDayState, RecipeSnapshot } from '../../src/types';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
-afterEach(() => { cleanup(); vi.clearAllMocks(); });
+afterEach(() => { cleanup(); brewerJobs.stop(); vi.clearAllMocks(); });
 
 const recipe = (): RecipeSnapshot => ({
   name: 'Pilote NOLO figé', capturedAt: '2026-09-12', volumeL: 20, ogTarget: 1.018,
