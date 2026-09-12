@@ -1,4 +1,5 @@
 import { recipeIbu } from './hopBitterness';
+import { yeastReferences } from './yeastReferences';
 import { fermentationProposals, fermentationReadiness } from './fermentationPlanning';
 import { BrewingMath } from '../services/brewingMath';
 import {
@@ -228,13 +229,12 @@ export function runBrewerTool(
   });
   if (name === 'lookup_yeast_reference') {
     if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom, code ou arôme de levure requis.');
-    if (!c.hopIndex) return result('Référentiel levure non chargé', null, [], ['Données indisponibles.']);
-    const yeasts = c.hopIndex.knowledge.filter((k): k is HopYeast => { try { assertHopKnowledge(k); return k.kind === 'yeast'; } catch { return false; } });
+    const yeasts = yeastReferences(c.hopIndex?.knowledge);
     const exact = yeasts.find(k => k.id === a.query);
     const matches = exact ? [exact] : yeasts.filter(y => catalogueMatches(y, a.query as string));
     return result('Références de levures', { yeasts: matches.slice(0, 10), totalMatches: matches.length }, [], [
       'Descripteurs fabricant et analyses ne sont pas une prédiction de la bière. Faits contradictoires conservés séparément. POF, STA1, caractère diastatique et β-lyase distincts.',
-      ...c.hopIndex.truncated, ...(matches.length > 10 ? ['Affiner le nom ou choisir un ID exact pour les autres résultats.'] : [])
+      ...c.hopIndex?.truncated ?? [], ...(matches.length > 10 ? ['Affiner le nom ou choisir un ID exact pour les autres résultats.'] : [])
     ]);
   }
   if (name === 'fermentation_advice') {

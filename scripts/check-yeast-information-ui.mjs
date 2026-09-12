@@ -94,14 +94,14 @@ try {
     assert.equal(await page.evaluate(() => window.__hopQa.metrics.writes), writes);
     if (!process.argv.includes('--base-only')) {
       await page.select(byLabel('Filtrer les levures par style'), 'belgian-ale');
-      await clickText(page, 'Voir les', 'button', true);
+      await page.locator(byLabel('Rechercher une levure')).fill('3787');
       const radio = await page.waitForFunction(() => [...document.querySelectorAll('.yeast-candidates input')].find(e => e.getAttribute('aria-label').includes('3787')));
       await radio.asElement().asLocator().click();
       await page.waitForFunction(() => document.querySelector('[aria-label="Scénario de levure"] h3')?.textContent.includes('3787'));
       await openInfo(page); assert.match(await page.$eval(info, e => e.innerText), /mousse|espace libre/i);
       await capture(page, `belgian-${width}`, info);
       await page.select(byLabel('Filtrer les levures par style'), 'lager');
-      await clickText(page, 'Voir les', 'button', true);
+      await page.locator(byLabel('Rechercher une levure')).fill('S-189');
       const lager = await page.waitForFunction(() => [...document.querySelectorAll('.yeast-candidates input')].find(e => e.getAttribute('aria-label').includes('S-189')));
       await lager.asElement().asLocator().click();
       await page.waitForFunction(() => document.querySelector('[aria-label="Scénario de levure"] h3')?.textContent.includes('S-189'));

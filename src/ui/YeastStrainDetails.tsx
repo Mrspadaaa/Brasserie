@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import type { YeastStrainInformation } from '../domain/yeastStrainInformation';
 import type { HopSource } from '../../functions/src/hopIndexSchema';
+import { yeastFactValue } from '../domain/yeastStrainInformation';
 
 function SourceLink({ source }: { source: HopSource }) {
   const label = `${source.author} · ${source.title}`;
@@ -32,6 +33,9 @@ export function YeastStrainDetails({ information }: { information: YeastStrainIn
       {groups.filter(g => g.notes.length).map(group => <section key={group.label} aria-label={group.label}>
         <h4>{group.label}</h4><dl className="yeast-strain-notes">{group.notes.map(note => <div key={note.id}><dt>{note.title}</dt><dd>{note.detail}</dd></div>)}</dl>
       </section>)}
+      {info.documentary.length > 0 && <section aria-label="Descriptions du fabricant"><h4>Descriptions du fabricant</h4>
+        <dl className="yeast-strain-notes">{info.documentary.map((fact, i) => <div key={i}><dt>{fact.label}</dt><dd>{yeastFactValue(fact)}{fact.context ? ` · ${fact.context}` : ''}<span className="block yeast-small"><SourceLink source={fact.source} /></span></dd></div>)}</dl>
+      </section>}
       <details><summary>Conditions et sources des repères<ChevronDown size={14} aria-hidden="true" /></summary><div>
         <p className="yeast-small">Les notices du lot et du conditionnement précisent l’utilisation. Ces informations n’attestent ni la viabilité du lot ni la fin de fermentation du brassin.</p>
         <dl className="yeast-strain-notes">{info.facts.flatMap(f => f.values.map((v, i) => <div key={`${f.key}-${i}`}><dt>{f.label} · {v.value}</dt><dd>{v.reported}{v.condition ? ` · ${v.condition}` : ''}<span className="block"><SourceLink source={v.source} /></span></dd></div>))}</dl>

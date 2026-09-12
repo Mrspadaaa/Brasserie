@@ -6,7 +6,7 @@ import { Combobox } from '../Combobox';
 
 const chipClass = (selected: boolean) => `min-h-touch px-2 py-0.5 rounded-control border text-xs inline-flex items-center gap-1 ${selected
   ? 'border-ebc-straw text-ebc-straw bg-ebc-straw/10'
-  : 'border-cave-700 text-cave-200 hover:border-cave-500'}`;
+  : 'border-cave-700 text-cave-200 hover:border-cave-600'}`;
 
 /** A multi-selection of candidate varieties, independent of the sensory target.
  * Empty means automatic ranking; selecting a hop limits the search domain. */

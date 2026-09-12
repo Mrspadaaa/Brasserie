@@ -2,7 +2,7 @@ import type { HopSource } from '../../functions/src/hopIndexSchema';
 import belgian from './yeastEnrichmentBelgian.json';
 import lager from './yeastEnrichmentLager.json';
 
-export type YeastStyleId = 'weissbier' | 'witbier' | 'american-wheat' | 'hazy-ipa' | 'clean-ale' | 'english-ale' | 'lager' | 'saison' | 'belgian-ale' | 'unknown';
+export type YeastStyleId = 'weissbier' | 'witbier' | 'american-wheat' | 'hazy-ipa' | 'clean-ale' | 'english-ale' | 'lager' | 'saison' | 'belgian-ale' | 'stout-porter' | 'kolsch-alt' | 'sour' | 'unknown';
 export type YeastRecipeGoal = 'balanced' | 'banana' | 'clove' | 'fruit' | 'clean' | 'dry' | 'hops';
 export const YEAST_RECIPE_GOAL_LABELS: Record<YeastRecipeGoal, string> = {
   balanced: 'Équilibre', banana: 'Banane', clove: 'Girofle · épices', fruit: 'Fruits · esters', clean: 'Profil discret', dry: 'Finale sèche', hops: 'Expression du houblon'
@@ -17,6 +17,9 @@ export const YEAST_STYLE_FAMILIES: { id: YeastStyleId; label: string; goals: Yea
   { id: 'lager', label: 'Lager', goals: ['clean', 'hops', 'dry'] },
   { id: 'saison', label: 'Saison', goals: ['balanced', 'clove', 'dry'] },
   { id: 'belgian-ale', label: 'Ale belge · abbaye', goals: ['balanced', 'fruit', 'clove'] },
+  { id: 'stout-porter', label: 'Stout · Porter', goals: ['balanced', 'clean', 'fruit', 'dry', 'hops'] },
+  { id: 'kolsch-alt', label: 'Kölsch · Altbier', goals: ['balanced', 'clean', 'fruit', 'dry'] },
+  { id: 'sour', label: 'Bières acidulées · fermentations mixtes', goals: ['balanced', 'fruit', 'dry', 'hops'] },
   { id: 'unknown', label: 'Autre style · choix libre', goals: ['balanced', 'banana', 'clove', 'fruit', 'clean', 'dry', 'hops'] }
 ];
 

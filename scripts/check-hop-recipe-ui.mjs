@@ -27,12 +27,38 @@ const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH
 const reports = [];
 let active;
 const click = async (page, label, partial = false) => {
-  const h = await page.waitForFunction((label, partial) => [...document.querySelectorAll('button')].find(b => b.getClientRects().length && !b.disabled && (partial ? b.textContent.includes(label) : b.textContent.trim() === label)), {}, label, partial);
+  const h = await page.waitForFunction((label, partial) => {
+    const labels = label === '+ Recette' ? [label, 'Nouvelle recette'] : [label];
+    return [...document.querySelectorAll('button')].find(b => {
+      if (!b.getClientRects().length || b.disabled) return false;
+      const values = [b.textContent.trim(), b.getAttribute('aria-label') || ''];
+      return labels.some(candidate => values.some(value => partial ? value.includes(candidate) : value === candidate));
+    });
+  }, {}, label, partial);
   await h.asElement().evaluate(e => e.scrollIntoView({ block: 'center' })); await h.asElement().click(); await h.dispose();
 };
 const chooseOption = async (page, text) => {
   const h = await page.waitForFunction(text => [...document.querySelectorAll('[role="option"]')].find(e => e.getClientRects().length && e.textContent.trim().startsWith(text)), {}, text);
   await h.asElement().click(); await h.dispose();
+};
+const fillCombobox = async (page, selector, value) => {
+  const field = page.locator(selector);
+  if (await page.$eval(selector, element => element.readOnly)) {
+    await field.click();
+    await field.click();
+    await page.waitForFunction(selector => !document.querySelector(selector)?.readOnly, {}, selector);
+  }
+  await field.fill(value);
+};
+const fillVisibleInput = async (page, selector, value) => {
+  const element = await page.waitForSelector(selector);
+  await element.evaluate((element, value) => {
+    element.scrollIntoView({ block: 'center' });
+    element.focus();
+    const prototype = element instanceof HTMLTextAreaElement ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(prototype, 'value').set.call(element, value);
+    element.dispatchEvent(new Event('input', { bubbles: true }));
+  }, value);
 };
 const details = async (page, label, open = true) => {
   const h = await page.waitForFunction(label => [...document.querySelectorAll('summary')].find(e => e.getClientRects().length && e.textContent.includes(label)), {}, label);
@@ -40,15 +66,48 @@ const details = async (page, label, open = true) => {
   if (current !== open) { await h.asElement().evaluate(e => e.scrollIntoView({ block: 'center' })); await h.asElement().click(); }
   await h.dispose();
 };
+const openAdvancedAnalysis = async page => {
+  const h = await page.waitForFunction(() => [...document.querySelectorAll('summary')]
+    .find(element => element.getClientRects().length && element.textContent.includes('Analyses aromatiques avancées')));
+  await h.evaluate(element => {
+    element.parentElement.open = true;
+    element.scrollIntoView({ block: 'center' });
+  });
+  await h.dispose();
+};
+const openHopSimulation = async page => {
+  const summary = await page.waitForFunction(() => [...document.querySelectorAll('summary')].find(element => {
+    if (!element.getClientRects().length) return false;
+    return element.textContent.includes('Potentiel aromatique')
+      || element.textContent.includes('Recherche avancée · arômes, essais et analyses');
+  }));
+  const label = await summary.evaluate(element => element.textContent.includes('Potentiel aromatique')
+    ? 'Potentiel aromatique'
+    : 'Recherche avancée · arômes, essais et analyses');
+  await summary.dispose();
+  await details(page, label);
+  await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+};
 const selectField = async (page, label, value) => {
   const h = await page.waitForFunction(label => [...document.querySelectorAll('label')].find(e => e.textContent.trim() === label && e.getClientRects().length)?.control, {}, label);
   await h.asElement().select(value); await h.dispose();
 };
 const solverIdle = page => page.waitForFunction(() => ![...document.querySelectorAll('[aria-label="Solver de houblonnage"] button')].some(b => b.textContent.includes('Arrêter la recherche')));
 const checkbox = async (page, name, checked) => {
-  const element = await page.waitForSelector(`[aria-label="Simulation de mes ajouts"] input[aria-label="${name}"]`);
-  if (await element.evaluate(e => e.checked) !== checked) { await element.evaluate(e => e.scrollIntoView({ block: 'center' })); await element.click(); }
-  await page.waitForFunction((name, checked) => document.querySelector(`[aria-label="Simulation de mes ajouts"] input[aria-label="${name}"]`)?.checked === checked, {}, name, checked);
+  const selector = `[aria-label="Simulation de mes ajouts"] input[aria-label="${name}"]`;
+  const visible = await page.$$eval(selector, elements => elements.some(element => !!element.getClientRects().length));
+  if (!visible && name === 'Toutes les saveurs et la chimie') {
+    await openAdvancedAnalysis(page);
+  }
+  const handle = await page.waitForFunction(selector => [...document.querySelectorAll(selector)]
+    .find(element => element.getClientRects().length), {}, selector);
+  const element = handle.asElement();
+  if (await element.evaluate(e => e.checked) !== checked) {
+    await element.evaluate(e => { e.scrollIntoView({ block: 'center' }); e.click(); });
+  }
+  await page.waitForFunction((selector, checked) => [...document.querySelectorAll(selector)]
+    .some(element => element.getClientRects().length && element.checked === checked), {}, selector, checked);
+  await handle.dispose();
 };
 const capture = async (page, name, selector = '[aria-label="Simulation de mes ajouts"]') => {
   const element = await page.$(selector); if (element) await element.evaluate(e => e.scrollIntoView({ block: 'start' }));
@@ -62,7 +121,10 @@ const back = async page => {
 import { verifyGraph } from './qa/verify-hop-graph.mjs';
 
 try {
-  for (const width of process.env.HOP_QA_PROBE ? [390] : [320, 390, 1280]) {
+  const widths = process.env.HOP_QA_WIDTH
+    ? [Number(process.env.HOP_QA_WIDTH)]
+    : process.env.HOP_QA_PROBE ? [390] : [320, 390, 1280];
+  for (const width of widths) {
     const context = await browser.createBrowserContext(), page = await context.newPage(); active = page;
     await page.setViewport({ width, height: 1000, isMobile: width < 600, hasTouch: width < 600 });
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
@@ -88,7 +150,7 @@ try {
       await page.evaluate(() => window.__hopQa.seedRecipe(window.__hopQa.recipe()));
       await click(page, 'Recettes', true);
       await click(page, 'Test houb', true);
-      if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+      await openHopSimulation(page);
       await capture(page, 'probe');
       await writeFile(resolve(out, 'probe.txt'), await page.evaluate(() => document.body.innerText));
       console.log(JSON.stringify({ errors, remoteRequests: remote }));
@@ -100,9 +162,9 @@ try {
     await page.locator('#wz-title').fill(`QA recette ${width}`);
     await capture(page, `creation-${width}`, '#wz-title');
     await click(page, 'Houblons', true);
-    await page.locator('input[aria-label^="Ajouter un houblon"]').fill('Cascade');
+    await fillCombobox(page, '[aria-label^="Ajouter un houblon"]', 'Cascade');
     await chooseOption(page, 'Cascade');
-    if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await openHopSimulation(page);
     await page.locator('[aria-label="Alpha de Cascade en pourcent"]').fill('6.2');
     await page.locator('[aria-label="Quantité en g"]').fill('48');
     await page.locator('[aria-label="Minutes avant la fin pour Cascade"]').fill('10');
@@ -113,8 +175,9 @@ try {
     await page.locator('[aria-label="Minutes avant la fin pour Cascade"]').fill('10'); await page.keyboard.press('Tab');
     await capture(page, `saisie-${width}`);
     await click(page, 'Levure et fermentation');
-    await page.locator('[aria-label="Souche de levure"]').fill('SafAle US-05');
-    await chooseOption(page, 'SafAle US-05');
+    await page.locator('[aria-label="Rechercher une levure"]').fill('SafAle US-05');
+    await page.locator('[aria-label="Comparer SafAle US-05"]').click();
+    await click(page, 'Appliquer le scénario');
     await click(page, 'Houblons', true);
     await page.waitForFunction(() => document.querySelector('[aria-label="Simulation de mes ajouts"]')?.textContent.includes('SafAle US-05'));
     const varietyId = await page.evaluate(() => window.__hopQa.partialCoa());
@@ -150,17 +213,17 @@ try {
     const stoppedWorkers = await page.evaluate(() => window.__qaWorkers.terminated);
     assert(stoppedWorkers > 0, 'Stop terminates the real Worker');
     await click(page, 'Trouver mes combinaisons');
-    await click(page, 'Éviter agrumes'); await solverIdle(page);
+    await click(page, 'Agrumes'); await solverIdle(page);
     await page.evaluate(() => new Promise(r => setTimeout(r, 250)));
     assert.equal(await page.$('[aria-label="Programme proposé par le solver"]'), null, 'No stale proposal after context change');
     await click(page, 'Trouver mes combinaisons');
     const navStart = performance.now(); await click(page, 'Levure et fermentation');
-    await page.waitForSelector('[aria-label="Souche de levure"]');
+    await page.waitForSelector('[aria-label="Rechercher une levure"]');
     const navigationMs = performance.now() - navStart;
     assert(navigationMs < 1000, 'Navigation stays responsive during exhaustive search');
     assert((await page.evaluate(() => window.__qaWorkers.terminated)) > stoppedWorkers, 'Navigation cancels Worker');
     assert.deepEqual(await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length })), beforeSearch, 'Search never persists or calls a backend');
-    await click(page, 'Houblons', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Houblons', true); await openHopSimulation(page);
     await checkbox(page, 'Cumuler tous les ajouts', true);
     await page.evaluate(() => window.__hopQa.failNext());
     await click(page, 'Conserver le programme pour une dégustation');
@@ -177,7 +240,7 @@ try {
     assert.equal(saved.hops[0].hopLotId, 'qa-partial-coa');
     await page.reload({ waitUntil: 'networkidle0' }); await page.waitForFunction(() => window.__hopQa?.ready());
     await click(page, 'Recettes', true); await click(page, `QA recette ${width}`, true);
-    if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await openHopSimulation(page);
     assert.equal(await page.$$eval('[aria-label="Potentiel aromatique de la recette"] input:not([type="checkbox"]),[aria-label="Potentiel aromatique de la recette"] textarea', e => e.length), 0);
     await capture(page, `lecture-${width}`);
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
@@ -186,15 +249,17 @@ try {
     assert.equal(coaProof.raw.chemistry.introduced.totalOil.range, null, 'Variety oil of unspecified form is documentary, not an invented mass');
     assert(coaProof.raw.chemistry.introduced.totalOil.sources.some(s => s.author === 'Hopsteiner'), 'Unmeasured lot oil preserves manufacturer fallback evidence');
     await checkbox(page, 'Toutes les saveurs et la chimie', false);
+    await openAdvancedAnalysis(page);
     await click(page, 'Explorer une variante');
     await capture(page, `variante-${width}`, '[aria-label="Simulateur aromatique expérimental"]');
     assert.deepEqual(await page.evaluate(id => window.__hopQa.storage.getRecipes().find(r => r.id === id), saved.id), saved, 'Readonly variant mutated recipe');
     await back(page);
     const scientific = await page.evaluate(() => { const r = window.__hopQa.documented(); window.__hopQa.seedRecipe(r); return r; });
-    await click(page, 'Cascade documenté', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Cascade documenté', true); await openHopSimulation(page);
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
     const documented = await verifyGraph(page, scientific, false);
     assert(documented.checked.some(c => c.range && c.range.max - c.range.min < 20), 'Documented bounded output actually displayed');
+    await openAdvancedAnalysis(page);
     await capture(page, `documente-${width}`);
     await details(page, 'Calcul et portée du résultat');
     await page.$$eval('summary', els => els.find(e => e.textContent.includes('Calcul et portée du résultat')).parentElement.setAttribute('data-qa-open-calculation', 'true'));
@@ -203,8 +268,8 @@ try {
     const comparisonBefore = await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length }));
     const comparisonRequests = requests.length;
     await click(page, 'Garder ce graphe pour comparer');
-    await page.locator('[aria-label="Simulateur aromatique expérimental"] input[aria-label="Dose (g/L)"]').fill('2');
-    if (width < 640) assert.equal(await page.$eval('.brewer-global-companion', e => e.getClientRects().length), 0, 'Typing must not restore a floating control over the graph');
+    await fillVisibleInput(page, '[aria-label="Simulateur aromatique expérimental"] [aria-label="Dose (g/L)"]', '2');
+    if (width < 640) assert.equal(await page.$$eval('.brewer-global-companion', elements => elements.filter(element => element.getClientRects().length).length), 0, 'Typing must not restore a floating control over the graph');
     await page.keyboard.press('Tab');
     const comparisonProof = await page.evaluate(scientific => {
       const qa = window.__hopQa, old = qa.raw(scientific, false).additions[0];
@@ -235,7 +300,7 @@ try {
     await click(page, 'Effacer la comparaison');
     if (width < 640) {
       await page.waitForFunction(() => !!document.querySelector('[data-inline-companion]')?.getClientRects().length);
-      assert.equal(await page.$eval('.brewer-global-companion', e => e.getClientRects().length), 0, 'Reserved companion restored after typing');
+      assert.equal(await page.$$eval('.brewer-global-companion', elements => elements.filter(element => element.getClientRects().length).length), 0, 'Reserved companion restored after typing');
     }
     assert.equal(await page.$$eval('[aria-label="Simulateur aromatique expérimental"] [data-aroma-baseline]', e => e.length), 0);
     assert.deepEqual(await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length })), comparisonBefore);
@@ -243,7 +308,7 @@ try {
     assert.deepEqual(await page.evaluate(id => window.__hopQa.storage.getRecipes().find(r => r.id === id), scientific.id), scientific, 'Comparison changed the saved recipe');
     await back(page);
     const twenty = await page.evaluate(() => { const r = { ...window.__hopQa.recipe(20), id: 'qa-twenty', name: 'Vingt ajouts' }; window.__hopQa.seedRecipe(r); return r; });
-    await click(page, 'Vingt ajouts', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Vingt ajouts', true); await openHopSimulation(page);
     const beforeTwenty = await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length }));
     const twentyRequests = requests.length;
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
@@ -256,12 +321,15 @@ try {
     await capture(page, `cumul-20-${width}`);
     assert.deepEqual(await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length })), beforeTwenty);
     assert.equal(requests.length, twentyRequests);
-    await page.focus('input[aria-label="Toutes les saveurs et la chimie"]'); await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Cumuler tous les ajouts', 'Keyboard focus order');
+    const checkboxOrder = await page.$$eval('[aria-label="Simulation de mes ajouts"] input[type="checkbox"]', elements => elements
+      .filter(element => element.getClientRects().length)
+      .map(element => ({ label: element.getAttribute('aria-label'), tabIndex: element.tabIndex, disabled: element.disabled })));
+    assert.deepEqual(checkboxOrder.slice(0, 2).map(element => element.label), ['Toutes les saveurs et la chimie', 'Cumuler tous les ajouts'], 'Keyboard focus order');
+    assert(checkboxOrder.slice(0, 2).every(element => element.tabIndex === 0 && !element.disabled), 'Simulation toggles stay keyboard-focusable');
     await back(page);
     for (const confidence of ['medium', 'high']) {
     const synthetic = await page.evaluate(confidence => window.__hopQa.syntheticConfidence(confidence), confidence);
-    await click(page, 'Contrôle synthétique de confiance', true); if(await page.$('[data-recipe-section="Potentiel aromatique"]'))await details(page,'Potentiel aromatique'); await page.waitForSelector('[aria-label="Simulation de mes ajouts"]');
+    await click(page, 'Contrôle synthétique de confiance', true); await openHopSimulation(page);
     await checkbox(page, 'Toutes les saveurs et la chimie', true);
     const confidenceProof = await verifyGraph(page, synthetic, false);
     assert(confidenceProof.checked.some(c => c.axis === 'qa-citrus' && c.confidence === (confidence === 'medium' ? 'moyenne' : 'élevée')), 'Actual model confidence rendered');

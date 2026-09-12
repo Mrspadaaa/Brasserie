@@ -94,7 +94,8 @@ describe('Contexte levure : intention adoptée et recette actuelle', () => {
     expect(data.analysis).toMatchObject({ goal: 'hops', goalOrigin: 'style-default' });
     expect(data.analysis?.proposedSettings).toBeNull();
     expect(data.current?.pressure.plannedBar).toBe(0.5);
-    expect(data.alternatives.map(a => a.yeastId).sort()).toEqual(['lalbrew-verdant-ipa', 'white-labs-wlp066', 'wyeast-1318']);
+    expect(data.alternatives.every(a => a.styleMatch === 'documented' && a.styleEvidence.some(e => e.styleId === 'hazy-ipa'))).toBe(true);
+    expect(new Set(data.alternatives.map(a => a.lab)).size).toBeGreaterThan(3);
   });
 
   it('garde une ancienne intention comme trace quand la souche actuelle a changé', () => {
@@ -145,8 +146,8 @@ describe('Outil de conseil : demande explicite, famille et propositions sourcée
     expect(data.analysis?.proposedSettings?.patch.quantityG).toBeUndefined();
     expect(data.analysis?.proposedSettings?.patch.pressureBar).toBeUndefined();
     expect(data.sources).toContainEqual(data.analysis?.proposedSettings?.source);
-    const wlp380 = data.alternatives.find(a => a.yeastId === 'white-labs-wlp380')!;
-    expect(wlp380.reason).toContain('aucun classement universel');
+    const wlp380 = buildYeastCompanion(r, [], { goal: 'phenolic', yeastId: 'white-labs-wlp380' }).analysis!.candidate!;
+    expect(wlp380.preferred).toBe(true);
     expect(wlp380.sources.some(s => s.reference.includes('whitelabs.com'))).toBe(true);
     expect(data.alternatives.map(a => a.yeastId)).not.toContain('wyeast-3944');
     expect(data.alternatives.map(a => a.yeastId)).not.toContain('wyeast-1010');
@@ -162,8 +163,9 @@ describe('Outil de conseil : demande explicite, famille et propositions sourcée
     const data = buildYeastCompanion(r, [], { goal: 'banana' });
     expect(data.request.goal.status).toBe('rejected');
     expect(data.analysis).toMatchObject({ goal: 'clean', goalOrigin: 'style-default', scenario: false });
-    expect(data.alternatives.map(a => a.yeastId)).toEqual(['yeast-fermentis-saflager-w-34-70', 'wyeast-2124', 'wyeast-2308', 'white-labs-wlp830', 'yeast-fermentis-saflager-s-189']);
-    expect(data.alternativeCount).toBe(6); expect(data.alternativesLimited).toBe(true);
+    expect(data.alternatives).toHaveLength(5);
+    expect(data.alternatives.every(a => a.styleEvidence.some(e => e.styleId === 'lager'))).toBe(true);
+    expect(data.alternativeCount).toBeGreaterThan(6); expect(data.alternativesLimited).toBe(true);
     expect(data.alternatives.some(a => a.yeastId === 'wyeast-3068')).toBe(false);
   });
 
@@ -172,7 +174,8 @@ describe('Outil de conseil : demande explicite, famille et propositions sourcée
     expect(data.request.goal).toMatchObject({ mappedGoal: 'hops', status: 'accepted' });
     expect(data.request.goal.reason).toContain('ne signifie pas un gain de fruité garanti');
     expect(data.analysis?.effects.find(e => e.id === 'hop-sensory')).toMatchObject({ impact: 'Thiols mesurés ≠ fruité prédit', state: 'conditional' });
-    expect(data.alternatives.map(a => a.yeastId).sort()).toEqual(['white-labs-wlp066', 'wyeast-1318']);
+    expect(data.alternatives).toHaveLength(5);
+    expect(data.alternatives.every(a => a.styleEvidence.some(e => e.styleId === 'hazy-ipa'))).toBe(true);
   });
 
   it('compare une souche dans la famille avec sa propre atténuation, en conservant la vraie levure', () => {
@@ -186,7 +189,9 @@ describe('Outil de conseil : demande explicite, famille et propositions sourcée
     expect(data.analysis?.finalGravity.range?.min).toBeCloseTo(1.015, 10);
     expect(data.analysis?.finalGravity.range?.max).toBeCloseTo(1.0174, 10);
     expect(data.analysis?.proposedChanges.some(c => c.id === 'yeast')).toBe(true);
-    expect(data.alternatives.map(a => a.yeastId)).toEqual(['white-labs-wlp066']);
+    expect(data.alternatives.map(a => a.yeastId)).not.toContain('wyeast-1318');
+    expect(data.alternatives.map(a => a.yeastId)).not.toContain('lalbrew-verdant-ipa');
+    expect(data.alternatives.every(a => a.styleMatch === 'documented')).toBe(true);
   });
 
   it('refuse une souche hors style ou un ID absent sans remplacement implicite', () => {
@@ -397,7 +402,7 @@ describe('Limites de transport IA et résumé métier', () => {
     const beforeRecipe = JSON.stringify(r), beforeKnowledge = JSON.stringify(knowledge);
     const data = buildYeastCompanion(r, knowledge, { maxAlternatives: 999 });
     expect(JSON.parse(JSON.stringify(data))).toEqual(data);
-    expect(data.alternatives.length).toBe(7);
+    expect(data.alternatives.length).toBe(8);
     expect(JSON.stringify(data).length).toBeLessThan(80000);
     expect(data.analysis?.effects.every(e => !('score' in e) && !('intensity' in e) && !('percent' in e))).toBe(true);
     data.current!.mash[0].tempC = 99;
@@ -412,7 +417,7 @@ describe('Limites de transport IA et résumé métier', () => {
   it('annonce une liste volontairement limitée et permet de ne demander que le contexte', () => {
     const limited = buildYeastCompanion(brew(), [], { maxAlternatives: 2 });
     expect(limited.alternatives.length).toBe(2);
-    expect(limited.alternativeCount).toBe(7); expect(limited.alternativesLimited).toBe(true);
+    expect(limited.alternativeCount).toBeGreaterThan(7); expect(limited.alternativesLimited).toBe(true);
     expect(buildYeastCompanion(brew(), [], { maxAlternatives: 0 }).alternatives).toEqual([]);
   });
 

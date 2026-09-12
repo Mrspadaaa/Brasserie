@@ -42,8 +42,9 @@ describe('Extrapolation expérimentale, intervalles et provenance', () => {
     const narrowed = structuredClone(model); narrowed.descriptor.unmentioned.range.max = .4; narrowed.descriptor.unmentioned.central = .2;
     expect(() => assertHopKnowledge(narrowed)).toThrow(/non mentionné/);
   });
-  it('produit une plage sourcée pour chaque combinaison du catalogue, sans inventer de concentration', () => {
-    const combinations = varieties.flatMap(v => guideYeasts([]).flatMap(y => HOP_TIMINGS.map(timing => ({ ...triplet, varietyId: v.id, yeastId: y.id, timing }))));
+  it('produit une plage sourcée pour chaque combinaison des références chargées, sans inventer de concentration', () => {
+    const engineYeasts = knowledge.filter(k => k.kind === 'yeast');
+    const combinations = varieties.flatMap(v => engineYeasts.flatMap(y => HOP_TIMINGS.map(timing => ({ ...triplet, varietyId: v.id, yeastId: y.id, timing }))));
     const predictions = rankHopTriplets(combinations, target, base);
     expect(predictions.length).toBeGreaterThan(3500);
     for (const p of predictions) {
@@ -57,6 +58,16 @@ describe('Extrapolation expérimentale, intervalles et provenance', () => {
       }
     }
   }, 30000);
+  it('laisse les axes inconnus pour une identité consultable mais absente des données du moteur', () => {
+    const engineIds = new Set(knowledge.filter(k => k.kind === 'yeast').map(k => k.id));
+    const unselected = guideYeasts([]).find(y => !engineIds.has(y.id))!;
+    expect(unselected).toBeDefined();
+    const result = predict({ ...triplet, yeastId: unselected.id });
+    expect(result.extrapolatedAxes).toBeUndefined();
+    expect(result.score.range).toBeNull();
+    expect(Object.values(result.profile).every(axis => axis.range === null)).toBe(true);
+    expect(result.compounds['4mmpFree'].range).toBeNull();
+  });
   it('retirer une condition, une description ou le profil de souche ne resserre jamais la plage', () => {
     const current = predict();
     const cases = ['doseGL', 'temperatureC', 'contactHours'].map(key => predict({ ...triplet, [key]: null }));

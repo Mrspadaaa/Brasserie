@@ -12,6 +12,7 @@ import { normalizeHop } from './hopStage';
 import { hotBitterness } from './hopBitterness';
 import { resolveBrewingStyle } from './brewingStyles';
 import { BrewingMath } from '../services/brewingMath';
+import { yeastStyleEvidence } from './yeastStyleEvidence';
 import guides from '../data/fermentationGuideBootstrap.json';
 import { YEAST_RECIPE_PROFILES, YEAST_RECIPE_SOURCES, YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS, type YeastRecipeGoal, type YeastStyleId } from '../data/yeastRecipeProfiles';
 
@@ -20,12 +21,18 @@ export type { YeastRecipeGoal, YeastStyleId };
 
 export interface YeastRecipeDraft {
   yeastId: string; styleId: YeastStyleId; goal: YeastRecipeGoal;
+  /** Physical product confirmed by the brewer; never changes the catalogue's documented form. */
+  form?: YeastSpec['form'];
+  formYeastId?: string;
   temperatureC?: number; days?: number; pitchTempC?: number; pressureBar?: number; quantityG?: number;
   /** Requests an editorial 44 °C / 15 min rest; never removes an existing mash step. */
   ferulicRest: boolean;
 }
 export interface YeastRecipeCandidate {
   yeastId: string; label: string; lab: string; descriptor: string; reason: string; preferred: boolean;
+  form?: YeastSpec['form'];
+  styleMatch: 'documented' | 'other-style' | 'unclassified' | 'excluded';
+  evidence: ReturnType<typeof yeastStyleEvidence>;
   reference: YeastReference; temperature?: FermentationRange; attenuation?: FermentationRange; doseG?: FermentationRange; sources: HopSource[];
 }
 export interface YeastRecipeEffect {
@@ -63,6 +70,7 @@ const format = (v: unknown, unit = '') => finite(v) ? `${v.toLocaleString('fr-FR
 const unknownEstimate = (reason: string, sources: HopSource[] = []): YeastRecipeEstimate => ({ range: null, reasons: [reason], sources, confidence: 'low' });
 const defaultGoal = (styleId: YeastStyleId) => YEAST_STYLE_FAMILIES.find(s => s.id === styleId)?.goals[0] ?? 'balanced';
 const knownGoal = (goal: unknown) => typeof goal === 'string' && Object.prototype.hasOwnProperty.call(YEAST_RECIPE_GOAL_LABELS, goal);
+const draftForm = (draft: YeastRecipeDraft, reference: YeastReference) => draft.formYeastId === reference.id ? draft.form : reference.form;
 
 function yeastTrait(reference: YeastReference | undefined, key: 'pof' | 'diastatic'): { value?: boolean; source?: HopSource; conflict: boolean } {
   if (!reference) return { conflict: false };
@@ -81,14 +89,17 @@ function yeastTrait(reference: YeastReference | undefined, key: 'pof' | 'diastat
 export function inferYeastRecipeStyle(recipe: TrialRecipe): YeastStyleId {
   const infer = (raw: string): YeastStyleId => {
     const s = textKey(raw);
+    if (/\b(sour|berliner weisse|gose|lambic|gueuze|geuze|oud bruin|flanders|mixed fermentation|wild ale)\b/.test(s)) return 'sour';
     if (/\b(witbier|wit beer|belgian wit|blanche belge)\b/.test(s)) return 'witbier';
     if (/\b(american wheat|american hefeweizen|ble americain)\b/.test(s)) return 'american-wheat';
     if (/\b(weissbier|hefeweizen|hefeweiss|hefeweisse|weizenbock|weizen|dunkelweizen|kristallweizen)\b/.test(s)) return 'weissbier';
     if (/\b(hazy|neipa|new england|juicy ipa)\b/.test(s)) return 'hazy-ipa';
     if (/\b(saison|farmhouse)\b/.test(s)) return 'saison';
+    if (/\b(kolsch|koelsch|altbier|alt beer)\b/.test(s)) return 'kolsch-alt';
     if (/\b(lager|pils|pilsner|pilsener|helles|dunkel|bock|marzen|festbier|schwarzbier|vienna|dortmunder|czech premium|czech pale|czech amber|czech dark)\b/.test(s)) return 'lager';
     if (/\b(tripel|dubbel|quadrupel|abbaye|abbey|belgian|belge)\b/.test(s)) return 'belgian-ale';
-    if (/\b(english|anglaise|british|bitter|esb|mild|sweet stout|oatmeal stout)\b/.test(s)) return 'english-ale';
+    if (/\b(stout|porter)\b/.test(s)) return 'stout-porter';
+    if (/\b(english|anglaise|british|bitter|esb|mild|scottish|scotch|irish red)\b/.test(s)) return 'english-ale';
     if (/\b(american|west coast|pale ale|ipa|india pale ale)\b/.test(s)) return 'clean-ale';
     return 'unknown';
   };
@@ -97,24 +108,32 @@ export function inferYeastRecipeStyle(recipe: TrialRecipe): YeastStyleId {
   return explicit === 'unknown' && !recipe.style?.trim() ? infer(recipe.name ?? '') : explicit;
 }
 
-function candidateFor(reference: YeastReference, goal: YeastRecipeGoal, volumeL?: number): YeastRecipeCandidate {
-  const profile = profileFor(reference.id), pitch = agreedFermentationFact(reference, 'pitchRate', 'g/hL');
-  const doseG = reference.form === 'sèche' && pitch && positive(volumeL) ? {
+function candidateFor(reference: YeastReference, goal: YeastRecipeGoal, volumeL?: number, styleId: YeastStyleId = 'unknown', form = reference.form): YeastRecipeCandidate {
+  const profile = profileFor(reference.id), evidence = yeastStyleEvidence(reference), pitch = agreedFermentationFact(reference, 'pitchRate', 'g/hL');
+  const doseG = form === 'sèche' && reference.form === 'sèche' && pitch && positive(volumeL) ? {
     range: { min: pitch.range.min * volumeL / 100, max: pitch.range.max * volumeL / 100 }, source: pitch.source
   } : undefined;
   const temperature = agreedFermentationFact(reference, 'temperature', '°C'), attenuation = agreedFermentationFact(reference, 'attenuation', '%');
-  return { yeastId: reference.id, label: profile?.label ?? reference.name, lab: reference.catalogue?.manufacturer ?? reference.source.author,
-    descriptor: profile?.descriptor ?? 'Profil aromatique à consulter dans sa fiche.',
-    reason: profile?.affinities[goal] ?? (profile ? 'Adaptation au style retenue dans la sélection éditoriale ; vérifier les conditions du moût.' : 'Choix libre : adéquation au style et effet de l’objectif non évalués.'),
-    preferred: !!profile?.affinities[goal], reference, temperature, attenuation, doseG,
-    sources: uniqueSources([profile?.source, temperature?.source, attenuation?.source, doseG?.source, reference.source]) };
+  const styleMatch = evidence.exclusions.some(e => e.styleId === styleId) ? 'excluded'
+    : evidence.styles.includes(styleId) ? 'documented' : evidence.styles.length ? 'other-style' : 'unclassified';
+  const goalReason = evidence.goalReasons[goal];
+  const lab = reference.catalogue?.manufacturer ?? reference.source.author;
+  const suffix = ` (${lab})`;
+  const label = reference.name.startsWith(`${lab} · `) ? reference.name.slice(lab.length + 3)
+    : reference.name.endsWith(suffix) ? reference.name.slice(0, -suffix.length) : reference.name;
+  return { yeastId: reference.id, label: profile?.label ?? label, lab,
+    descriptor: evidence.descriptor ?? 'Caractère aromatique non documenté.',
+    reason: goalReason?.text ?? (styleMatch === 'documented' ? 'Usage documenté pour cette famille. Aucun effet spécifique de cet objectif n’est décrit.' : 'Adéquation au style à confirmer à partir des usages et conditions de cette fiche.'),
+    preferred: !!goalReason, form, styleMatch, evidence, reference, temperature, attenuation, doseG,
+    sources: uniqueSources([evidence.descriptorSource, goalReason?.source, ...evidence.styleMatches.map(e => e.source),
+      ...evidence.exclusions.map(e => e.source), temperature?.source, attenuation?.source, doseG?.source, reference.source]) };
 }
 
-export function yeastRecipeCandidates(styleId: YeastStyleId, goal: YeastRecipeGoal, refs: YeastReference[], volumeL?: number): YeastRecipeCandidate[] {
-  const ids = styleId === 'unknown' ? undefined : new Set(YEAST_RECIPE_PROFILES.filter(p => p.styles.includes(styleId)).map(p => p.yeastId));
-  return refs.filter(r => !ids || ids.has(r.id)).map(r => candidateFor(r, goal, volumeL))
+export function yeastRecipeCandidates(styleId: YeastStyleId, goal: YeastRecipeGoal, refs: YeastReference[], volumeL?: number, options: { includeOtherStyles?: boolean } = {}): YeastRecipeCandidate[] {
+  return refs.filter(r => styleId === 'unknown' || options.includeOtherStyles || yeastStyleEvidence(r).styles.includes(styleId))
+    .map(r => candidateFor(r, goal, volumeL, styleId))
     .sort((a, b) => Number(b.preferred) - Number(a.preferred) ||
-      (YEAST_RECIPE_PROFILES.findIndex(p => p.yeastId === a.yeastId) - YEAST_RECIPE_PROFILES.findIndex(p => p.yeastId === b.yeastId)) || a.label.localeCompare(b.label, 'fr'));
+      Number(b.styleMatch === 'documented') - Number(a.styleMatch === 'documented') || a.label.localeCompare(b.label, 'fr'));
 }
 
 /** A catalogue dose describes its product form, not a propagated culture of that strain. */
@@ -149,6 +168,7 @@ export function createYeastRecipeDraft(recipe: TrialRecipe, refs: YeastReference
   const sameStyle = !!saved && recipeStyleUnchanged(recipe, saved);
   const selectedStyle = styleId ?? (sameStyle ? saved!.styleId : inferYeastRecipeStyle(recipe));
   return { yeastId: selected, styleId: selectedStyle, goal: sameStyle && saved!.styleId === selectedStyle ? saved!.goal : defaultGoal(selectedStyle),
+    form: same ? recipe.yeast.form : refs.find(r => r.id === selected)?.form, formYeastId: selected,
     temperatureC: finite(primary?.tempC) ? primary.tempC : undefined, days: positive(primary?.days) ? primary.days : undefined,
     pitchTempC: same && finite(recipe.yeast.pitchTempC) ? recipe.yeast.pitchTempC : undefined,
     quantityG: same && recipe.yeast.form === 'sèche' && recipe.yeast.unit === 'g' && positive(recipe.yeast.qty) ? recipe.yeast.qty : undefined,
@@ -204,14 +224,14 @@ function draftErrors(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Ye
   if (!candidate) errors.push('Choisis une référence de levure identifiée.');
   if (!YEAST_STYLE_FAMILIES.some(s => s.id === draft.styleId)) errors.push('Le style sélectionné est inconnu.');
   if (!knownGoal(draft.goal)) errors.push('L’objectif sélectionné est inconnu.');
-  if (candidate && !candidate.reference.form) errors.push('La forme de cette référence est à préciser dans le choix manuel avant de l’appliquer.');
+  if (candidate && !['sèche', 'liquide', 'levain'].includes(candidate.form ?? '')) errors.push('Confirme la forme du produit avant de l’appliquer.');
   if (mode === 'strain') return errors;
   const practicalGuide = candidate && YEAST_PRACTICAL_GUIDES[candidate.yeastId];
   for (const [label, value] of [['Température', draft.temperatureC], ['Ensemencement', draft.pitchTempC]] as const) {
     if (value === undefined) continue;
     if (!finite(value) || value < 0 || value > 60) errors.push(`${label} : saisis une température valide en °C.`);
     else {
-      const directPitch = label === 'Ensemencement' && practicalGuide?.form === candidate?.reference.form ? practicalGuide?.directPitchTemperatureC : undefined;
+      const directPitch = label === 'Ensemencement' && practicalGuide?.form === candidate?.form ? practicalGuide?.directPitchTemperatureC : undefined;
       const window = candidate?.temperature?.range;
       const inDirectPitch = directPitch && value >= directPitch.min && value <= directPitch.max;
       if (window && (value < window.min || value > window.max) && !inDirectPitch) errors.push(`${label} : ${format(value, '°C')} hors de la fenêtre fabricant (${format(window.min)}–${format(window.max, '°C')})${directPitch ? ` et de la plage d’ensemencement direct (${format(directPitch.min)}–${format(directPitch.max, '°C')})` : ''}.`);
@@ -219,7 +239,7 @@ function draftErrors(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Ye
   }
   if (draft.days !== undefined && !positive(draft.days)) errors.push('La durée indicative doit être positive ou rester à renseigner.');
   if (draft.pressureBar !== undefined && (!finite(draft.pressureBar) || draft.pressureBar < 0)) errors.push('La pression en fermentation doit être positive ou nulle, en bar relatif.');
-  if (draft.quantityG !== undefined && (!positive(draft.quantityG) || candidate?.reference.form !== 'sèche')) errors.push('La quantité en grammes doit être positive et concerne une levure sèche.');
+  if (draft.quantityG !== undefined && (!positive(draft.quantityG) || candidate?.form !== 'sèche')) errors.push('La quantité en grammes doit être positive et concerne une levure sèche.');
   if (!recipe.fermentation?.some(s => s.kind === 'primaire') && (draft.temperatureC !== undefined || draft.days !== undefined) && (!finite(draft.temperatureC) || !positive(draft.days))) errors.push('Pour créer une phase principale, renseigne sa température et sa durée indicative.');
   const steps = recipe.mash?.steps ?? [];
   if (draft.ferulicRest && ferulicRestIndex(steps) < 0) {
@@ -231,15 +251,15 @@ function draftErrors(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Ye
 }
 
 function proposedRecipe<T extends TrialRecipe>(recipe: T, draft: YeastRecipeDraft, candidate: YeastRecipeCandidate, refs: YeastReference[], mode: 'strain' | 'settings'): T {
-  const same = resolveFermentationYeast(recipe, refs)?.id === candidate.yeastId && recipe.yeast.form === candidate.reference.form;
+  const same = resolveFermentationYeast(recipe, refs)?.id === candidate.yeastId && recipe.yeast.form === candidate.form;
   const nextYeast: YeastSpec = same ? { ...recipe.yeast, hopIndexId: candidate.yeastId } : {
-    name: candidate.reference.name, hopIndexId: candidate.yeastId, form: candidate.reference.form!, qty: 0,
-    unit: candidate.reference.form === 'sèche' ? 'g' : 'mL', lab: candidate.lab,
+    name: candidate.label, hopIndexId: candidate.yeastId, form: candidate.form!, qty: 0,
+    unit: candidate.form === 'sèche' ? 'g' : 'mL', lab: candidate.lab,
     ...(candidate.reference.catalogue?.productCode ? { strain: candidate.reference.catalogue.productCode } : {})
   };
   let fermentation = recipe.fermentation?.map(s => ({ ...s })), mash = recipe.mash;
   if (mode === 'settings') {
-    if (candidate.reference.form === 'sèche') { nextYeast.qty = draft.quantityG ?? 0; nextYeast.unit = 'g'; }
+    if (candidate.form === 'sèche') { nextYeast.qty = draft.quantityG ?? 0; nextYeast.unit = 'g'; }
     if (draft.pitchTempC !== undefined) nextYeast.pitchTempC = draft.pitchTempC;
     else delete nextYeast.pitchTempC;
     if (candidate.temperature) { nextYeast.fermTempMinC = candidate.temperature.range.min; nextYeast.fermTempMaxC = candidate.temperature.range.max; }
@@ -268,10 +288,11 @@ function changesFor(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Yea
   const changes: YeastRecipeChange[] = [], primary = recipe.fermentation?.find(s => s.kind === 'primaire');
   const add = (id: string, label: string, before: string, after: string) => { if (before !== after) changes.push({ id, label, before, after }); };
   if (candidate) add('yeast', 'Levure', recipe.yeast.name || 'À choisir', candidate.reference.name);
+  if (candidate) add('form', 'Forme de levure', recipe.yeast.form || 'À confirmer', candidate.form || 'À confirmer');
   if (draft.temperatureC !== undefined) add('temperature', 'Primaire', format(primary?.tempC, '°C'), format(draft.temperatureC, '°C'));
   if (draft.days !== undefined) add('duration', 'Durée indicative', format(primary?.days, 'j'), format(draft.days, 'j'));
   add('pitch', 'Ensemencement', format(recipe.yeast.pitchTempC, '°C'), format(draft.pitchTempC, '°C'));
-  if (candidate?.reference.form === 'sèche') add('quantity', 'Levure sèche', positive(recipe.yeast.qty) ? format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner', format(draft.quantityG, 'g'));
+  if (candidate?.form === 'sèche') add('quantity', 'Levure sèche', positive(recipe.yeast.qty) ? format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner', format(draft.quantityG, 'g'));
   else if (candidate && resolveFermentationYeast(recipe, refs)?.id !== candidate.yeastId && positive(recipe.yeast.qty)) add('quantity', 'Quantité', format(recipe.yeast.qty, recipe.yeast.unit), 'À renseigner pour la nouvelle souche');
   add('pressure', 'Pression précoce · scénario', format(readYeastRecipeDesign(recipe)?.pressureBar, 'bar rel.'), format(draft.pressureBar, 'bar rel.'));
   if (draft.ferulicRest && ferulicRestIndex(recipe.mash?.steps ?? []) < 0) changes.push({ id: 'mash', label: 'Empâtage', before: 'Sans repos férulique avant saccharification', after: 'Ajouter 44 °C · 15 min au début (proposition éditoriale)' });
@@ -279,13 +300,13 @@ function changesFor(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Yea
 }
 
 export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecipeDraft, refs: YeastReference[]): YeastRecipeEvaluation {
-  const reference = refs.find(r => r.id === draft.yeastId), candidate = reference && candidateFor(reference, draft.goal, recipe.volumeL), profile = profileFor(draft.yeastId);
+  const reference = refs.find(r => r.id === draft.yeastId), candidate = reference && candidateFor(reference, draft.goal, recipe.volumeL, draft.styleId, draftForm(draft, reference)), profile = profileFor(draft.yeastId);
   const phenolic = yeastTrait(reference, 'pof'), diastatic = yeastTrait(reference, 'diastatic');
   const effects: YeastRecipeEffect[] = [], warnings: string[] = [], errors = draftErrors(recipe, draft, candidate, 'settings'), hops = yeastRecipeHopSummary(recipe);
   const effect = (e: YeastRecipeEffect) => effects.push(e);
   const source = profile?.source ?? reference?.source;
   const directPitchGuide = reference && YEAST_PRACTICAL_GUIDES[reference.id];
-  const directPitch = directPitchGuide?.form === reference?.form ? directPitchGuide?.directPitchTemperatureC : undefined;
+  const directPitch = directPitchGuide?.form === candidate?.form ? directPitchGuide?.directPitchTemperatureC : undefined;
   if (directPitch && finite(draft.pitchTempC) && candidate?.temperature &&
     (draft.pitchTempC < candidate.temperature.range.min || draft.pitchTempC > candidate.temperature.range.max) &&
     draft.pitchTempC >= directPitch.min && draft.pitchTempC <= directPitch.max) {
@@ -295,11 +316,15 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
   if (!reference) warnings.push('Souche non identifiée : aucune propriété d’une autre souche n’est substituée.');
   if (phenolic.conflict) warnings.push('Capacité phénolique non concordante ou non interprétable : aucun effet du repos férulique n’est affirmé.');
   if (diastatic.conflict) warnings.push('Statut diastatique / STA1 non concordant ou non interprétable : vérifier les sources de la référence.');
-  if (reference?.form === 'sèche' && draft.quantityG === undefined) warnings.push('Quantité de levure sèche à renseigner en grammes ; consulter la plage puis saisir la quantité réellement prévue.');
+  if (candidate?.form === 'sèche' && draft.quantityG === undefined) warnings.push('Quantité de levure sèche à renseigner en grammes ; consulter la plage puis saisir la quantité réellement prévue.');
+  if (reference?.form && candidate?.form && reference.form !== candidate.form) warnings.push(`Forme choisie : ${candidate.form} ; produit documenté : ${reference.form}. Les doses et protocoles de ce conditionnement ne sont pas transférés.`);
   if (recipe.fermentation?.some(s => s.kind === 'primaire') && (draft.temperatureC === undefined || draft.days === undefined)) warnings.push('Une température ou durée laissée vide conserve la phase existante ; modifier son programme dans Fermentation.');
   if (draft.styleId === 'unknown') warnings.push('Style non reconnu : choisis une famille ou conserve explicitement un choix libre.');
-  if (profile && draft.styleId !== 'unknown' && !profile.styles.includes(draft.styleId)) warnings.push('Cette référence sort de la sélection éditoriale du style. Le choix libre reste possible ; vérifie le caractère recherché.');
-  if (candidate) effect({ id: 'strain', label: 'Souche', impact: candidate.descriptor, detail: candidate.reason, state: profile ? 'documented' : 'unknown', source });
+  if (candidate && draft.styleId !== 'unknown' && candidate.styleMatch !== 'documented') warnings.push(candidate.styleMatch === 'excluded'
+    ? 'Une source déconseille cette famille pour cette culture. Consulte les usages avant de la choisir.'
+    : 'Usage non documenté pour cette famille. Le scénario reste accessible ; confirme la compatibilité avec ton style.');
+  warnings.push(...candidate?.evidence.warnings ?? []);
+  if (candidate) effect({ id: 'strain', label: 'Souche', impact: candidate.descriptor, detail: candidate.reason, state: candidate.evidence.descriptor ? 'documented' : 'unknown', source: candidate.evidence.descriptorSource });
   const oldT = recipe.fermentation?.find(s => s.kind === 'primaire')?.tempC, t = draft.temperatureC;
   if (!finite(t)) effect({ id: 'temperature', label: 'Température', impact: 'Consigne à renseigner', detail: 'La fenêtre fabricant décrit un domaine de fermentation ; elle ne choisit pas ta consigne.', state: 'unknown', source: candidate?.temperature?.source });
   else if (profile?.temperatureEsters) {
@@ -326,7 +351,7 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
     const dose = candidate.doseG.range, q = draft.quantityG;
     effect({ id: 'dose', label: 'Dose sèche', impact: `${format(dose.min)}–${format(dose.max, 'g')} pour ${format(recipe.volumeL, 'L')}`,
       detail: `${finite(q) && (q < dose.min || q > dose.max) ? 'Quantité saisie hors de ce repère. ' : ''}Conversion des g/hL fabricant si ce volume de moût entre au fermenteur. Adapter au moût et au lot ; aucune masse de sachet ni viabilité supposée.`, state: finite(q) && (q < dose.min || q > dose.max) ? 'warning' : 'documented', source: candidate.doseG.source });
-  } else effect({ id: 'dose', label: 'Ensemencement', impact: reference?.form === 'sèche' ? 'Dose sèche non documentée ou volume manquant' : 'Besoin en cellules à calculer', detail: reference?.form === 'sèche' ? 'Aucune quantité n’est déduite de la taille supposée d’un sachet.' : 'Saisis un taux cible et des cellules viables connues ; mL, âge ou nombre de flacons ne suffisent pas.', state: 'unknown' });
+  } else effect({ id: 'dose', label: 'Ensemencement', impact: candidate?.form === 'sèche' ? 'Dose sèche non documentée ou volume manquant' : 'Besoin en cellules à calculer', detail: candidate?.form === 'sèche' ? 'Aucune quantité n’est déduite de la taille supposée d’un sachet.' : 'Saisis un taux cible et des cellules viables connues ; mL, âge ou nombre de flacons ne suffisent pas.', state: 'unknown' });
   if (hops.additions.length) {
     effect({ id: 'hop-creep', label: 'Houblons · fin de fermentation', impact: 'Recontrôler après le dernier ajout à cru', detail: 'Les enzymes du houblon peuvent libérer des sucres puis relancer la fermentation. Vérifier séparément stabilité de densité et diacétyle avant conditionnement ; le froid et le retrait des houblons ne prouvent pas l’arrêt.', state: 'warning', source: YEAST_RECIPE_SOURCES.hopCreep });
     if (hops.additions.some(h => h.phase === 'active')) effect({ id: 'hop-active', label: 'Houblons · contact actif', impact: 'Contact avec la levure et pertes possibles', detail: 'La fermentation active permet certains contacts et transformations ; le CO₂ et l’adsorption peuvent aussi retirer des arômes. Effets différents selon les molécules, sans gain ni perte universels.', state: 'conditional', source: YEAST_RECIPE_SOURCES.hopContact });
@@ -343,7 +368,9 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
   if (draft.styleId === 'witbier' && recipe.adjuncts?.length) effect({ id: 'wit-adjuncts', label: 'Wit · ingrédients', impact: 'Comparer épices ajoutées et phénols de la souche', detail: `Ajouts présents : ${recipe.adjuncts.map(a => a.name).join(', ')}. Leur présence ne mesure pas l’intensité finale ; régler les apports dans leur étape.`, state: 'conditional', source });
   const proposed = candidate && !errors.length ? proposedRecipe(recipe, draft, candidate, refs, 'settings') : recipe;
   warnings.push(...fermentationProgramIssues(proposed.fermentation ?? [], candidate?.temperature, { pitchTempC: proposed.yeast.pitchTempC, hasDryHop: !!hops.additions.length }).map(i => i.message));
-  let fg: YeastRecipeEstimate = recipe.nolo?.enabled ? unknownEstimate('NOLO : l’atténuation catalogue ne prédit pas l’alcool au conditionnement. Utiliser le bilan des sucres et les analyses NOLO.')
+  const specialisedCulture = draft.styleId === 'sour' || candidate && ['mixed', 'bacteria', 'other-fermentation'].includes(candidate.evidence.culture);
+  let fg: YeastRecipeEstimate = specialisedCulture ? unknownEstimate('Fermentation acidulée, culture mixte ou autre usage : cette projection simple ne modélise pas le procédé complet. Consulter le protocole de la culture et suivre les mesures.')
+    : recipe.nolo?.enabled ? unknownEstimate('NOLO : l’atténuation catalogue ne prédit pas l’alcool au conditionnement. Utiliser le bilan des sucres et les analyses NOLO.')
     : finite(recipe.ogTarget) && recipe.ogTarget > 1.25 ? unknownEstimate('DI hors du domaine de cette projection simple (1,000–1,250 SG). Vérifier l’unité et la fermentescibilité.')
       : fermentationGravityFromAttenuation(candidate?.attenuation, recipe.ogTarget);
   if (recipe.fermentables?.some(f => f.use === 'fermentation' || f.kind === 'lactose' || f.fermentabilityPct === 0)) fg = { ...fg, reasons: [...fg.reasons, 'La recette contient des ajouts ultérieurs ou des matières non fermentescibles ; cette enveloppe documentaire ne les modélise pas.'] };
@@ -355,7 +382,7 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
 
 /** The explicit commit boundary. Goals alone never rewrite hops, saccharification, targets, conditioning or ingredient events. */
 export function applyYeastRecipeDesign<T extends TrialRecipe>(recipe: T, draft: YeastRecipeDraft, refs: YeastReference[], mode: 'strain' | 'settings' = 'settings'): T {
-  const reference = refs.find(r => r.id === draft.yeastId), candidate = reference && candidateFor(reference, draft.goal, recipe.volumeL);
+  const reference = refs.find(r => r.id === draft.yeastId), candidate = reference && candidateFor(reference, draft.goal, recipe.volumeL, draft.styleId, draftForm(draft, reference));
   if (reference) { const { aliases: _aliases, ...knowledge } = reference; assertHopKnowledge(knowledge); }
   const errors = draftErrors(recipe, draft, candidate, mode); if (errors.length) throw Error(errors[0]);
   const next = proposedRecipe(recipe, draft, candidate!, refs, mode);

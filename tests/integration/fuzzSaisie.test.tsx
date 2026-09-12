@@ -337,7 +337,10 @@ describe('Fuzz — l’assistant de recette', () => {
           HOSTILES.forEach((v) => {
             saisir(champ, v);
             if (champ.value === '') return;
-            expect(Number(champ.value.replace(',', '.'))).toBeGreaterThanOrEqual(0);
+            expect(
+              Number(champ.value.replace(',', '.')),
+              `${etape} / ${champ.getAttribute('aria-label') || champ.id || '?'} après « ${v} »`
+            ).toBeGreaterThanOrEqual(0);
           });
         });
     });

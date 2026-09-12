@@ -96,7 +96,7 @@ export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
 }
 export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
   const yeastById = new Map(guideYeasts(knowledge).map(row => [row.id, storedKnowledge(row)]));
-  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...guideYeasts([]).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([]), ...checkedKnowledge(noloPack)];
+  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...yeastReferences([], { includeCatalogue: false }).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([]), ...checkedKnowledge(noloPack)];
   const merged = [...new Map([...proposed, ...knowledge.filter(k=>k.kind!=='styleGuide').map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
   // Use the same manufacturer facts as recipe selection. Invalid saved rows
   // remain visible to validation, and a personal catalogue is never replaced.

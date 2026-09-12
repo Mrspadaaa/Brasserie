@@ -17,7 +17,9 @@ describe('Routage IA de la recette levure', () => {
   it('uses the adopted intent without requiring a new taste-first request', () => {
     const c = context(), before = JSON.stringify(c), data = runBrewerTool('fermentation_advice', {}, c).data as any;
     expect(data.recipeDesign.analysis.goal).toBe('clove'); expect(data.recipeDesign.analysis.goalOrigin).toBe('adopted');
-    expect(data.alternatives.some((a: any) => a.yeastId === 'white-labs-wlp380')).toBe(true);
+    expect(data.alternatives.length).toBeGreaterThan(0);
+    expect(data.alternatives.every((a: any) => a.styleMatch === 'documented')).toBe(true);
+    expect(new Set(data.alternatives.map((a: any) => a.lab)).size).toBe(data.alternatives.length);
     expect(data.alternatives.some((a: any) => a.yeastId === 'fermentis-us05')).toBe(false);
     expect(data.alternatives).toEqual(data.recipeDesign.alternatives);
     expect(data.recipeDesign.style.comparisonFamily).toBe('weissbier'); expect(JSON.stringify(c)).toBe(before);

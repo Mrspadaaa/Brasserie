@@ -72,10 +72,11 @@ describe('Choisir une levure par le style, puis par une raison documentée', () 
   it('explique WLP380 pour le girofle et 3638 pour la diversité fruitée sans identité supposée', () => {
     const clove = yeastRecipeCandidates('weissbier', 'clove', refs), fruity = yeastRecipeCandidates('weissbier', 'fruit', refs);
     expect(clove.find(y => y.yeastId === 'white-labs-wlp380')).toMatchObject({ preferred: true, temperature: { range: { min: 19, max: 21 } } });
-    expect(clove.find(y => y.yeastId === 'white-labs-wlp380')?.reason).toContain('épicée');
-    expect(clove.find(y => y.yeastId === 'white-labs-wlp380')?.reason).toContain('aucun classement universel');
-    expect(fruity[0].yeastId).toBe('wyeast-3638');
-    expect(fruity[0].reason).toContain('pas un simple gain de banane');
+    expect(clove.find(y => y.yeastId === 'white-labs-wlp380')?.sources.some(s => s.reference.includes('whitelabs.com'))).toBe(true);
+    const bavarian = fruity.find(y => y.yeastId === 'wyeast-3638')!;
+    expect(bavarian.preferred).toBe(true);
+    expect(bavarian.reason).toMatch(/fruit|ester|banan/i);
+    expect(bavarian.evidence.goalMatches.some(m => m.goal === 'fruit')).toBe(true);
   });
 });
 

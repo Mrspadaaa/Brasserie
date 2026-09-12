@@ -46,7 +46,10 @@ async function capture(page, name, selector = '[aria-label="Choix et simulation 
   const state = await page.evaluate(() => ({
     width: innerWidth, overflow: document.documentElement.scrollWidth > innerWidth,
     text: document.body.innerText, fixed: [...document.querySelectorAll('.recipe-wizard header,.recipe-wizard footer')].filter(e => e.getClientRects().length).map(e => ({ tag: e.tagName, height: e.getBoundingClientRect().height })),
-    escaping: [...document.querySelectorAll('.yeast-workbench *')].filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden').filter(e => { const r = e.getBoundingClientRect(); return r.left < -1 || r.right > innerWidth + 1; }).map(e => ({ tag: e.tagName, text: e.textContent.slice(0, 90) })).slice(0, 10),
+    escaping: [...document.querySelectorAll('.yeast-workbench *')].filter(e => {
+      const head = e.closest('thead');
+      return e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && !e.closest('.sr-only') && (!head || getComputedStyle(head).clip === 'auto');
+    }).filter(e => { const r = e.getBoundingClientRect(); return r.left < -1 || r.right > innerWidth + 1; }).map(e => ({ tag: e.tagName, text: e.textContent.slice(0, 90) })).slice(0, 10),
   }));
   assert(!state.overflow, `Page overflow: ${name}`); assert.equal(state.escaping.length, 0, `Yeast control overflow: ${name} ${JSON.stringify(state.escaping)}`);
   assert(!/NaN|Infinity/.test(state.text)); reports.push({ name, ...state });
@@ -105,6 +108,7 @@ try {
     await clickText(page, 'Girofle · épices');
     await clickText(page, 'Comparer les souches du style', true, 'summary');
     await page.waitForSelector('.yeast-strain-comparison[open]');
+    await page.locator(byLabel('Rechercher une levure')).fill('WLP380');
     await page.locator(byLabel('Comparer WLP380 · Hefeweizen IV')).click();
     await page.waitForFunction(() => document.querySelector('[aria-label="Scénario de levure"] h3')?.textContent.includes('WLP380'));
     await capture(page, `after-alternative-${width}`, '[aria-label="Scénario de levure"]');
@@ -136,7 +140,7 @@ try {
     assert.equal(saved.yeastDesign.pressureBar, 0); assert.equal(saved.fermentation[0].tempC, 18);
     assert.deepEqual(saved.fermentation[1], original.fermentation[1]); assert.deepEqual(saved.hops, original.hops); assert.equal(saved.mash.steps.length, 2);
     await page.reload({ waitUntil: 'domcontentloaded' }); await page.waitForFunction(() => window.__hopQa?.ready());
-    await page.click(byLabel(`Ouvrir la recette ${name}`));
+    await page.locator(byLabel(`Ouvrir la recette ${name}`)).click();
     await page.waitForSelector(byLabel('Conduite de levure de la recette'));
     // RecipePage puts sections behind disclosure only on some formats.
     const section = await page.$(byLabel('Conduite de levure de la recette'));
@@ -208,8 +212,9 @@ try {
   await seed(page, 'QA levure incomplète', 'unknown'); await openEdit(page, 'QA levure incomplète'); await step(page, 'Levure');
   assert.equal(await page.$eval(byLabel('Filtrer les levures par style'), e => e.value), 'unknown');
   await capture(page, 'after-empty-style-375');
-  await page.select(byLabel('Filtrer les levures par style'), 'belgian-ale'); await page.select(byLabel('Forme à comparer'), 'liquide');
-  assert.match(await page.$eval('[aria-label="Choix et simulation de levure"] [role="status"]', e => e.textContent), /Aucune souche/);
+  await page.select(byLabel('Filtrer les levures par style'), 'belgian-ale');
+  await page.locator(byLabel('Rechercher une levure')).fill('zzzz-introuvable');
+  assert.match(await page.$eval('.yeast-picker', e => e.innerText), /Aucune référence/);
   await capture(page, 'after-empty-filter-375');
   await page.select(byLabel('Filtrer les levures par style'), 'weissbier');
   assert.equal(await page.$eval(byLabel('Température principale du scénario'), e => e.value), '');

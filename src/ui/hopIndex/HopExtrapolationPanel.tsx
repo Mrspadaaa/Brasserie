@@ -41,10 +41,8 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const [personalVarieties, setPersonalVarieties] = useState<HopVariety[]>([]), [personalYeasts, setPersonalYeasts] = useState<HopYeast[]>([]);
   const [newYeast, setNewYeast] = useState<string | null>(null);
   const varieties = useMemo(() => [...new Map([...personalVarieties, ...catalogue].map(v => [v.id, v])).values()], [personalVarieties, catalogue]);
-  const knowledge = useMemo(() => guidePredictionKnowledge([...personalYeasts, ...savedKnowledge]), [savedKnowledge, personalYeasts]);
-  const valid = useMemo(() => usableHopKnowledge(knowledge), [knowledge]);
+  const proposedKnowledge = useMemo(() => guidePredictionKnowledge([...personalYeasts, ...savedKnowledge]), [savedKnowledge, personalYeasts]);
   const axes = useMemo(() => guideAxes(savedKnowledge), [savedKnowledge]), yeasts = useMemo(() => guideYeasts([...personalYeasts, ...savedKnowledge]), [savedKnowledge, personalYeasts]);
-  const models = valid.valid.filter((k): k is HopExtrapolation => k.kind === 'extrapolation' && k.enabled);
   const [addition, setAddition] = useState(0);
   const [variantOpen, setVariantOpen] = useState(initiallyExpanded);
   const [explanationOpen, setExplanationOpen] = useState(false);
@@ -56,6 +54,26 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const recipeFingerprint = JSON.stringify([recipe?.hops[addition], recipe?.yeast, recipe?.volumeL, recipe?.nolo?.enabled, addition]);
   const edited = useRef(false), previousRecipe = useRef(recipeFingerprint);
   const [scenario, setScenario] = useState<HopTriplet>(initial);
+  // Browsing exposes the full catalogue. Load an explicitly selected identity
+  // into this simulation without copying every catalogue row into its evidence.
+  const knowledge = useMemo(() => {
+    if (proposedKnowledge.some(row => row.id === scenario.yeastId)) return proposedKnowledge;
+    const selected = yeasts.find(row => row.id === scenario.yeastId);
+    if (!selected) return proposedKnowledge;
+    const { aliases: _aliases, ...reference } = selected;
+    return [...proposedKnowledge, reference];
+  }, [proposedKnowledge, scenario.yeastId, yeasts]);
+  const valid = useMemo(() => usableHopKnowledge(knowledge), [knowledge]);
+  const models = valid.valid.filter((k): k is HopExtrapolation => k.kind === 'extrapolation' && k.enabled);
+  const comparisonYeastIds = useMemo(() => {
+    const characterized = new Set<string>();
+    for (const row of valid.valid) {
+      if (row.kind === 'extrapolation' && row.enabled) row.yeasts.forEach(strain => characterized.add(strain.yeastId));
+      if (row.kind === 'model' && row.enabled) characterized.add(row.scope.yeastId);
+    }
+    if (scenario.yeastId) characterized.add(scenario.yeastId);
+    return valid.valid.filter(row => row.kind === 'yeast' && characterized.has(row.id)).map(row => row.id);
+  }, [valid, scenario.yeastId]);
   const axisSignature = JSON.stringify([recipe?.nolo?.enabled,axes.map(a => [a.id, a.version, a.scale])]);
   const [comparison, setComparison] = useState<{ prediction: HopPrediction; axisSignature: string }>();
   const comparable = comparison?.axisSignature === axisSignature ? comparison.prediction : undefined;
@@ -91,7 +109,10 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
   const search = (associations: boolean) => run(async () => {
     setRanked(null); setRankedAssociations(associations);
     const timings = associations && ['fermentation', 'postFermentation'].includes(scenario.timing ?? '') ? ['fermentation', 'postFermentation'] as const : [scenario.timing];
-    const yeastIds = associations ? yeasts.map(y => y.id) : [scenario.yeastId];
+    // Uncharacterized strains share the same unknown envelope. Ranking every
+    // catalogue identity repeats that estimate thousands of times, including
+    // after a full catalogue import. Keep explicit model profiles and the chosen strain.
+    const yeastIds = associations ? comparisonYeastIds : [scenario.yeastId];
     const hops=varieties.filter(v=>!v.archived),total=hops.length*yeastIds.length*timings.length;
     const rawPredict=createHopPredictor(data), predict:typeof rawPredict=(...args)=>recipe?.nolo?.enabled?noloReferencePrediction(rawPredict(...args)):rawPredict(...args);
     const results: HopPrediction[] = [];
@@ -161,7 +182,7 @@ export function HopExtrapolationPanel({ recipe, onChange, onBusyChange, target =
     </div>}
     {!readOnly && !!Object.keys(target).length && <div className="space-y-3 border-t border-cave-700 pt-3"><div className="flex flex-wrap gap-2"><Button disabled={busy || loading || !yeast || !scenario.timing} onClick={() => void search(false)}>Chercher des houblons pour cet objectif</Button><Button disabled={busy || loading || !scenario.timing} onClick={() => void search(true)}>Comparer aussi les levures</Button></div>
       {busy && <p role="status" className="text-xs text-cave-400">Traitement du scénario…</p>}
-      {ranked && <><p className="text-xs text-cave-400">{rankedAssociations ? 'Associations comparées à dose, température et contact identiques. À cru, les phases active et après fermentation sont comparées.' : 'Même levure, timing et dose.'} Ordre par borne basse d’adéquation, puis plage la plus étroite. Les plages se recouvrent : ce classement ne désigne pas un gagnant démontré.</p>{ranked.map(p => <button key={JSON.stringify(p.triplet)} type="button" className="w-full min-h-touch flex gap-3 justify-between text-left rounded-control bg-cave-850 p-3 text-sm" onClick={() => { setComparison({ prediction, axisSignature }); edited.current = true; setScenario(p.triplet); setRanked(null); }}><span><span className="block text-cave-50">{varieties.find(v => v.id === p.triplet.varietyId)?.name}</span><span className="block text-xs text-cave-400">{yeasts.find(y => y.id === p.triplet.yeastId)?.name} · {HOP_TIMING_LABELS[p.triplet.timing!]}</span></span><span className="text-hop flex gap-2 items-center">{hopRangeLabel(p.score.range)} <ArrowRight size={16} /></span></button>)}</>}
+      {ranked && <><p className="text-xs text-cave-400">{rankedAssociations ? `Associations comparées à dose, température et contact identiques. À cru, les phases active et après fermentation sont comparées. Le classement couvre ${comparisonYeastIds.length} souches ; les autres restent comparables par sélection directe.` : 'Même levure, timing et dose.'} Ordre par borne basse d’adéquation, puis plage la plus étroite. Les plages se recouvrent : ce classement ne désigne pas un gagnant démontré.</p>{ranked.map(p => <button key={JSON.stringify(p.triplet)} type="button" className="w-full min-h-touch flex gap-3 justify-between text-left rounded-control bg-cave-850 p-3 text-sm" onClick={() => { setComparison({ prediction, axisSignature }); edited.current = true; setScenario(p.triplet); setRanked(null); }}><span><span className="block text-cave-50">{varieties.find(v => v.id === p.triplet.varietyId)?.name}</span><span className="block text-xs text-cave-400">{yeasts.find(y => y.id === p.triplet.yeastId)?.name} · {HOP_TIMING_LABELS[p.triplet.timing!]}</span></span><span className="text-hop flex gap-2 items-center">{hopRangeLabel(p.score.range)} <ArrowRight size={16} /></span></button>)}</>}
     </div>}
     {recipe && onChange && !readOnly && <div className="space-y-2 border-t border-cave-700 pt-4"><p className="text-sm text-cave-200">Appliquer remplace {recipe.hops[addition] ? `l’ajout ${addition + 1}` : 'le premier ajout à créer'} et la souche de la recette. Les autres houblons restent en place.</p><Button intent="primary" disabled={busy || !variety || !yeast || !scenario.timing} onClick={() => void apply()}>Appliquer ce scénario à la recette</Button></div>}
     <details onToggle={e => setExplanationOpen(e.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-sm text-cave-400">Calcul, voies chimiques et sources</summary>{explanationOpen && <div className="pt-2"><HopPredictionView prediction={prediction} axes={axes.filter(a => highlighted.includes(a.id) || target[a.id])} target={target} names={{ variety: variety?.name, yeast: yeast?.name }} /></div>}</details>
