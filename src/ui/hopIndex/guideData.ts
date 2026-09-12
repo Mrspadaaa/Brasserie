@@ -25,6 +25,7 @@ import type { HopSolverPolicy } from '../../../functions/src/hopSolverSchema';
 import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
 import { catalogueSolverFacts } from '../../domain/yeastCatalogue';
+import { isModernIpaStyle } from '../../domain/hopIndex/styleSelection';
 
 export type GuideYeast = HopYeast & { aliases?: string[] };
 
@@ -117,7 +118,12 @@ export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | 
   return { ...policy,
     styles: [policy.styles[0], ...brewingStyles(knowledge).map(s => {
       const start=policy.styles.find(p=>p.id===s.suggestions?.hop)??policy.styles[0];
-      return {...start,id:s.ref.guideId+':'+s.id,name:s.name+' · '+s.edition,aliases:[s.name,...s.aliases],
+      // Several IPA substyles have only the generic editorial mapping. Give
+      // them a usable starting point without imposing Hazy's exclusions or
+      // overriding a saved target / constraint in a personalised policy.
+      const targets: HopSolverPolicy['styles'][number]['targets']=start.id==='free'&&isModernIpaStyle(s.name)&&!Object.keys(start.targets).length
+        ?{citrus:'high',tropical:'medium'}:start.targets;
+      return {...start,targets,id:s.ref.guideId+':'+s.id,name:s.name+' · '+s.edition,aliases:[s.name,...s.aliases],
         source:s.suggestions?.source??policy.source};
     })],
     // Keep opposing POF evidence: chemistryChecks reports it as unknown.
@@ -138,11 +144,12 @@ export function guideRiskPolicies(knowledge: HopKnowledge[]): HopRiskPolicy[] {
 }
 
 export async function loadGuideVarieties(): Promise<HopVariety[]> {
-  const [manufacturer, guide] = await Promise.all([
+  const [manufacturer, guide, styleReferences] = await Promise.all([
     import('../../data/hopManufacturerBootstrap.json'),
-    import('../../data/hopGuideVarietyBootstrap.json')
+    import('../../data/hopGuideVarietyBootstrap.json'),
+    import('../../data/hopStyleVarietyBootstrap.json')
   ]);
-  return [...manufacturer.default.hopVarieties, ...guide.default.hopVarieties, ...studyPack.hopVarieties, ...trialPack.hopVarieties].map(row => {
+  return [...manufacturer.default.hopVarieties, ...guide.default.hopVarieties, ...styleReferences.default.hopVarieties, ...studyPack.hopVarieties, ...trialPack.hopVarieties].map(row => {
     assertHopDocument('hopVarieties', row);
     return row as HopVariety;
   });

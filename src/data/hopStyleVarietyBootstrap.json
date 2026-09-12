@@ -1,0 +1,652 @@
+{
+  "hopVarieties": [
+    {
+      "id": "crosby-amarillo",
+      "name": "Amarillo",
+      "aliases": [
+        "Amarillo®"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes d’orange, pamplemousse, fruits tropicaux, fleurs, herbes et épices. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Amarillo — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/amarillo",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "ych-azacca",
+      "name": "Azacca",
+      "aliases": [
+        "Azacca®",
+        "ADHA 483"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Yakima Chief Hops décrit ce profil : Des agrumes, fruits tropicaux, petits fruits mûrs, pin et fruits à noyau. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Azacca® Brand · ADHA 483",
+            "author": "Yakima Chief Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.yakimachief.com/variety/azacca-brand",
+            "locator": "Présentation et profil variétal ; consulté le 12 septembre 2026. Aucune analyse de lot ou intensité importée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-belma",
+      "name": "Belma",
+      "aliases": [
+        "Belma®"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes de fraise, melon, orange, fleurs et pamplemousse. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Belma — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/belma",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-dolcita",
+      "name": "Dolcita",
+      "aliases": [
+        "Dolcita®",
+        "HBC 1019"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes de pêche, ananas caramélisé et orange avec des nuances sucrées et crémeuses. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Dolcita — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/dolcita",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-elani",
+      "name": "Elani",
+      "aliases": [
+        "Elani®",
+        "YQH 1320"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes d’orange douce et de citron Meyer, accompagnées de fruits tropicaux. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Elani — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/elani",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-krush",
+      "name": "Krush",
+      "aliases": [
+        "Krush®",
+        "HBC 586"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes d’orange, pêche, mangue et petits fruits avec une nuance résineuse. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Krush — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/krush",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "nz-moutere",
+      "name": "Moutere",
+      "aliases": [
+        "Moutere™"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "NZ Hops décrit ce profil : Des notes de pamplemousse, fruits tropicaux et fruit de la passion dans la bière. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "beer",
+          "source": {
+            "title": "Moutere® · HORT0605",
+            "author": "NZ Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://nzhops.co.nz/products/moutere%E2%84%A2",
+            "locator": "Brewing : descripteurs dans la bière. Consulté le 12 septembre 2026 ; aucune intensité ou analyse de lot importée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-pacific-sunrise",
+      "name": "Pacific Sunrise",
+      "aliases": [],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes d’orange, ananas confit, petits fruits rouges, zestes d’agrumes et fleurs. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Pacific Sunrise — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/pacificsunrise",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "nz-rakau",
+      "name": "Rakau",
+      "aliases": [
+        "Rākau",
+        "Rakau™"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "NZ Hops décrit ce profil : Des notes de fruits à noyau, notamment abricot, et de figue. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Rakau™ · fiche variétale",
+            "author": "NZ Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://nzhops.co.nz/products/rakau",
+            "locator": "Présentation et profil variétal ; consulté le 12 septembre 2026. Aucune analyse de lot ou intensité importée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-triumph",
+      "name": "Triumph",
+      "aliases": [],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes de bubblegum et pêche. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Triumph — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/triumph",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-vista",
+      "name": "Vista",
+      "aliases": [],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes de melon, poire, fruits tropicaux, agrumes et thé vert. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Vista — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/vista",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-vera",
+      "name": "Vera",
+      "aliases": [],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes de mangue, pêche, ananas, mandarine, citron et citron vert avec une nuance florale. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Vera — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/vera",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "nz-wai-iti",
+      "name": "Wai-iti",
+      "aliases": [
+        "Wai iti",
+        "Wai-iti™"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "NZ Hops décrit ce profil : Des notes de pêche fraîche et abricot dans la bière ; citron vert et agrumes à la sélection. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Wai-iti™ · fiche variétale",
+            "author": "NZ Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://nzhops.co.nz/products/wai-iti",
+            "locator": "Selection et Brewing distinguent l’évaluation du houblon et les notes dans la bière. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "nz-waimea",
+      "name": "Waimea",
+      "aliases": [
+        "Waimea™",
+        "HORT 3953"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "NZ Hops décrit ce profil : Des notes de pin et d’agrumes, notamment de tangelo. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Waimea™ · HORT 3953",
+            "author": "NZ Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://nzhops.co.nz/products/waimea",
+            "locator": "Présentation et profil variétal ; consulté le 12 septembre 2026. Aucune analyse de lot ou intensité importée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "crosby-zappa",
+      "name": "Zappa",
+      "aliases": [
+        "Zappa®"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Crosby Hops décrit ce profil : Des notes de fruit de la passion, mangue, agrumes, menthe, épices, fleurs et résine. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Zappa — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/zappa",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "hpa-eclipse",
+      "name": "Eclipse",
+      "aliases": [
+        "Eclipse®",
+        "04-337-016"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Hop Products Australia décrit ce profil : Des notes de mandarine, écorces d’agrumes et pin. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Eclipse — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.hops.com.au/media-kit/data-sheets/HPA-Eclipse-Data-Sheet.pdf",
+            "locator": "Pages 1–2, Recommended beer styles. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "hpa-vic-secret",
+      "name": "Vic Secret",
+      "aliases": [
+        "Vic Secret™"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Hop Products Australia décrit ce profil : Des notes d’ananas et de pin. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Vic Secret — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://hops.com.au/hop-navigator-vic-secret/",
+            "locator": "Recommended beer styles. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "indie-strata",
+      "name": "Strata",
+      "aliases": [
+        "Strata®",
+        "X-331"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Indie Hops décrit ce profil : Des notes de fruit de la passion, melon, fraise, pamplemousse, cannabis et piment séché. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Strata — Indie Hops",
+            "author": "Indie Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://indiehops.com/hops/strata",
+            "locator": "Brewing notes by beer style : New England / Hazy IPA et American / West Coast IPA. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "nz-nectaron",
+      "name": "Nectaron",
+      "aliases": [
+        "Nectaron®",
+        "HORT 4337"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "NZ Hops décrit ce profil : Des notes d’ananas, fruit de la passion, pêche et pamplemousse. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Nectaron — NZ Hops",
+            "author": "NZ Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://nzhops.co.nz/products/nectaron",
+            "locator": "Brewing et Applications. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "hpa-luna",
+      "name": "Luna",
+      "aliases": [
+        "Luna™"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Hop Products Australia décrit ce profil : Des notes de mangue, petits fruits noirs et agrumes épicés. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Luna — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://hops.com.au/introducing-luna/",
+            "locator": "Présentation du 6 février 2026 : IPA, whirlpool et dry hopping."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "ych-sabro",
+      "name": "Sabro",
+      "aliases": [
+        "Sabro®",
+        "HBC 438"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Yakima Chief Hops décrit ce profil : Des notes de noix de coco, fruits tropicaux, agrumes, épices herbacées et fruits à noyau. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Sabro® Brand · HBC 438",
+            "author": "Yakima Chief Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.yakimachief.com/variety/sabro-brand",
+            "locator": "Présentation et profil variétal ; consulté le 12 septembre 2026. Aucune analyse de lot ou intensité importée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "barth-bru1",
+      "name": "BRU-1",
+      "aliases": [
+        "BRU 1",
+        "BRU-1™"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "BarthHaas décrit ce profil : Un profil fruité évoquant l’ananas. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "barth-talus",
+      "name": "Talus",
+      "aliases": [
+        "Talus®",
+        "HBC 692"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "BarthHaas décrit ce profil : Des notes de pamplemousse, fleurs, fruits à noyau, bois, crème et pin. Indications qualitatives variétales ; l’intensité dans la recette et l’alpha du lot restent à vérifier.",
+          "context": "unspecified",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "style-east-kent-goldings",
+      "name": "East Kent Goldings",
+      "aliases": [
+        "East Kent Golding",
+        "EKG"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Recette présentée comme English India Pale Ale : Sovereign, East Kent Goldings et Ernest. À 4,7 % et 25 IBU, cet exemple ne constitue pas un modèle strict BJCP 12C. Référence d’usage uniquement ; aucun profil sensoriel chiffré ni analyse de lot importé.",
+          "context": "unspecified",
+          "source": {
+            "title": "East Kent Goldings — Crisp Malt",
+            "author": "Crisp Malt",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://crispmalt.com/en-us/recipes/ipa/",
+            "locator": "Recipe et Hops ; début, milieu et extinction selon le tableau de recette. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "style-ernest",
+      "name": "Ernest",
+      "aliases": [],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Recette présentée comme English India Pale Ale : Sovereign, East Kent Goldings et Ernest. À 4,7 % et 25 IBU, cet exemple ne constitue pas un modèle strict BJCP 12C. Référence d’usage uniquement ; aucun profil sensoriel chiffré ni analyse de lot importé.",
+          "context": "unspecified",
+          "source": {
+            "title": "Ernest — Crisp Malt",
+            "author": "Crisp Malt",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://crispmalt.com/en-us/recipes/ipa/",
+            "locator": "Recipe et Hops ; début, milieu et extinction selon le tableau de recette. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "style-olicana",
+      "name": "Olicana",
+      "aliases": [
+        "Olicana®"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90. Référence d’usage uniquement ; aucun profil sensoriel chiffré ni analyse de lot importé.",
+          "context": "unspecified",
+          "source": {
+            "title": "Olicana — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "style-harlequin",
+      "name": "Harlequin",
+      "aliases": [
+        "Harlequin®"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90. Référence d’usage uniquement ; aucun profil sensoriel chiffré ni analyse de lot importé.",
+          "context": "unspecified",
+          "source": {
+            "title": "Harlequin — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ],
+      "analysis": []
+    },
+    {
+      "id": "style-jester",
+      "name": "Jester",
+      "aliases": [
+        "Jester®"
+      ],
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90. Référence d’usage uniquement ; aucun profil sensoriel chiffré ni analyse de lot importé.",
+          "context": "unspecified",
+          "source": {
+            "title": "Jester — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ],
+      "analysis": []
+    }
+  ]
+}

@@ -7,13 +7,15 @@ import { YeastRecipeWorkbench } from '../../src/ui/YeastRecipeWorkbench';
 import { fullRecipe } from '../fixtures/fullRecipe';
 import type { Recipe } from '../../src/types';
 import type { YeastRecipeGoal } from '../../src/domain/yeastRecipeDesign';
+import type { HopVariety } from '../../functions/src/hopIndexSchema';
+import { loadGuideVarieties } from '../../src/ui/hopIndex/guideData';
 
 const mocks = vi.hoisted(() => ({ knowledge: [], ensure: vi.fn(async () => {}), varieties: [
   { id:'mittelfruh',name:'Hallertauer Mittelfrüh',aliases:[],form:'pelletT90',descriptions:[],analysis:[] },
   { id:'tettnanger',name:'Tettnanger',aliases:[],form:'pelletT90',descriptions:[],analysis:[] },
   { id:'citra',name:'Citra',aliases:[],form:'pelletT90',descriptions:[],analysis:[] },
   { id:'mosaic',name:'Mosaic',aliases:[],form:'pelletT90',descriptions:[],analysis:[] },
-] }));
+] as HopVariety[] }));
 vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: () => mocks.knowledge }));
 vi.mock('../../src/ui/hopIndex/useHopCatalogue', () => ({ useHopCatalogue: () => ({ varieties:mocks.varieties,loading:false,error:'' }) }));
 vi.mock('../../src/ui/hopIndex/guideData',async importOriginal=>({ ...await importOriginal<any>(),ensureGuideReferences:mocks.ensure }));
@@ -31,6 +33,46 @@ function Host({changed}:{changed:(r:Recipe)=>void}){
  const [r,setR]=useState(wheat());return <HopRecipeWorkbench recipe={r} onChange={next=>{setR(next as Recipe);changed(next as Recipe);}} />;
 }
 describe('Atelier houblons : décisions et application',()=>{
+ it('affine tout le catalogue du style par descriptions et prépare une variété hors des anciens exemples',async()=>{
+  const original=mocks.varieties;
+  try{
+   mocks.varieties=await loadGuideVarieties();
+   const changed=vi.fn();
+   render(<HopRecipeWorkbench recipe={{...wheat(),style:'Double IPA'}} onChange={changed}/>);
+   tab('Goût / levure');
+   fireEvent.click(screen.getByRole('radio',{name:'Fruits tropicaux'}));
+   const more=screen.queryByText(/Voir les \d+ autres références/);
+   if(more)fireEvent.click(more);
+   expect(screen.getByRole('button',{name:'Préparer un ajout de Lotus'})).toBeVisible();
+   fireEvent.click(screen.getByRole('button',{name:'Préparer un ajout de Lotus'}));
+   expect(screen.getByRole('combobox',{name:'Houblon du scénario'})).toHaveValue('Lotus');
+   expect(changed).not.toHaveBeenCalled();expect(mocks.ensure).not.toHaveBeenCalled();
+ }finally{mocks.varieties=original;}
+ });
+ it('garde les références anglaises accessibles quand aucun arôme particulier n’est demandé',async()=>{
+  const original=mocks.varieties;
+  try{
+   mocks.varieties=await loadGuideVarieties();
+   render(<HopRecipeWorkbench recipe={{...wheat(),style:'English IPA'}}/>);
+   tab('Goût / levure');
+   expect(screen.getByRole('radio',{name:'Équilibre'})).toBeChecked();
+   expect(screen.getByRole('button',{name:'Préparer un ajout de Challenger'})).toBeVisible();
+   expect(screen.getByText(/références à comparer pour l’équilibre du style/)).toBeVisible();
+  }finally{mocks.varieties=original;}
+ });
+ it('utilise le style IPA exact dans le catalogue d’ajout simple',async()=>{
+  const original=mocks.varieties;
+  try{
+   mocks.varieties=await loadGuideVarieties();
+   render(<HopIngredientPicker recipe={{...wheat(),style:'English IPA'}} items={[]} onChange={vi.fn()} onReference={vi.fn()} onCreate={vi.fn()} placeholder="Houblon" ariaLabel="Catalogue houblons"/>);
+   fireEvent.click(screen.getByRole('combobox',{name:'Catalogue houblons'}));
+   expect(screen.getByRole('option',{name:/^Jester ·/})).toBeVisible();
+   expect(screen.queryByRole('option',{name:/^Citra ·/})).not.toBeInTheDocument();
+   fireEvent.click(screen.getByRole('checkbox',{name:/Tous les styles/}));
+   fireEvent.click(screen.getByRole('combobox',{name:'Catalogue houblons'}));
+   expect(screen.getByRole('option',{name:/^Citra ·/})).toBeVisible();
+  }finally{mocks.varieties=original;}
+ });
  it('reads historical snapshots with unknown style and yeast, including the flavor view',()=>{
   const legacy={...wheat(),name:'Brassin historique',style:undefined,yeast:undefined,fermentation:undefined,mash:undefined};
   const {rerender}=render(<HopRecipeWorkbench recipe={legacy}/>);
@@ -94,10 +136,16 @@ describe('Atelier houblons : décisions et application',()=>{
    ? <YeastRecipeWorkbench recipe={wheat()} initialGoal={focus.goal} initialYeastId={focus.yeastId} onChange={onChange}/>
    : <HopRecipeWorkbench recipe={wheat()} onChange={onChange} onPlanYeast={(goal,yeastId)=>setFocus({goal,yeastId})}/>;}
   render(<Journey/>);tab('Goût / levure');fireEvent.click(screen.getByRole('radio',{name:'Girofle'}));
-  fireEvent.click(screen.getByText(/Alternatives de levure/));const alternatives=screen.getByText('WLP380 · Hefeweizen IV · White Labs').closest('li')!;
+  fireEvent.click(screen.getByText(/Alternatives de levure/));
+  // Follow an actual displayed alternative; catalogue order is not a strain recommendation.
+  const alternatives=screen.getAllByRole('button',{name:'Comparer cette souche'})
+    .map(button=>button.closest('li')!).find(row=>!row.querySelector('strong')!.textContent!.endsWith(' · Wyeast'))!;
+  expect(alternatives).toBeDefined();
+  const candidateLabel=alternatives.querySelector('strong')!.textContent!.split(' · ').slice(0,-1).join(' · ');
   fireEvent.click(within(alternatives).getByRole('button',{name:'Comparer cette souche'}));
-  expect(screen.getByRole('radio',{name:'Girofle · épices'})).toBeChecked();expect(screen.getByRole('radio',{name:'Comparer WLP380 · Hefeweizen IV'})).toBeChecked();
-  expect(screen.getByRole('region',{name:'Scénario de levure'})).toHaveTextContent('WLP380');expect(onChange).not.toHaveBeenCalled();
+  expect(screen.getByRole('radio',{name:'Girofle · épices'})).toBeChecked();
+  expect(screen.getByRole('radio',{name:`Comparer ${candidateLabel}`})).toBeChecked();
+  expect(screen.getByRole('region',{name:'Scénario de levure'})).toHaveTextContent(candidateLabel);expect(onChange).not.toHaveBeenCalled();
  });
  it('prepares an IPA dry hop with a biological phase and preserves its conditions',async()=>{
   const onChange=vi.fn(),r={...wheat(),style:'NEIPA',hops:[]};render(<HopRecipeWorkbench recipe={r} onChange={onChange}/>);

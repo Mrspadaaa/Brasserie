@@ -5,6 +5,7 @@ import { hotBitterness } from './hopBitterness';
 import { resolveBrewingStyle } from './brewingStyles';
 import { inferYeastRecipeStyle, yeastRecipeHopSummary, type YeastStyleId } from './yeastRecipeDesign';
 import { fermentationStateKey } from './fermentationGuide';
+import { documentedHopNamesForStyle, hopNameHasStyleUsage, isIpaStyleName } from './hopIndex/styleSelection';
 
 export const HOP_RECIPE_SOURCES = {
   tinseth: { label: 'Formule Tinseth · documentation Grainfather', url: 'https://help.grainfather.com/hc/en-us/articles/360014527537-Calculation-IBU' },
@@ -15,16 +16,19 @@ export const HOP_RECIPE_SOURCES = {
 };
 
 /** Editorial usage families, never a taxonomy of molecules or an exclusive permitted list. */
-export const HOP_STYLE_ROLES: Record<YeastStyleId, { role: string; examples: string[] }> = {
+export const HOP_STYLE_ROLES: Record<YeastStyleId | 'stout-porter' | 'kolsch-alt' | 'sour', { role: string; examples: string[] }> = {
   weissbier: { role: 'Amertume en soutien. Banane et girofle se travaillent avec la levure et le procédé.', examples: ['Hallertauer Mittelfrüh', 'Tettnanger', 'Spalter Select', 'Hersbrucker'] },
   lager: { role: 'Construire une amertume nette ; doser la finition florale, herbacée ou épicée selon la lager précise.', examples: ['Saaz', 'Hallertauer Mittelfrüh', 'Tettnanger', 'Spalter Select', 'Perle', 'Magnum'] },
-  'hazy-ipa': { role: 'Arômes de houblon et esters se complètent. Comparer les apports tardifs et à cru, puis leur phase de fermentation.', examples: ['Citra', 'Mosaic', 'El Dorado', 'Simcoe', 'Amarillo'] },
-  'clean-ale': { role: 'Séparer l’amertume structurante de la finition aromatique ; choisir une fermentation qui laisse lire le houblon.', examples: ['Cascade', 'Centennial', 'Chinook', 'Simcoe', 'Citra', 'Columbus', 'Magnum'] },
+  'hazy-ipa': { role: 'Arômes de houblon et esters se complètent. Comparer les apports tardifs et à cru, puis leur phase de fermentation.', examples: documentedHopNamesForStyle('Hazy IPA') },
+  'clean-ale': { role: 'Séparer l’amertume structurante de la finition aromatique ; choisir une fermentation qui laisse lire le houblon.', examples: documentedHopNamesForStyle('American IPA') },
   'english-ale': { role: 'Accorder le houblon au malt et aux esters anglais, sans confondre intensité et quantité.', examples: ['East Kent Goldings', 'Fuggle', 'Challenger', 'Target'] },
   witbier: { role: 'Laisser la place aux phénols de fermentation et aux épices éventuelles. Le houblon apporte le soutien amer.', examples: ['Saaz', 'Hallertauer Mittelfrüh', 'Styrian Golding', 'Tettnanger'] },
   'american-wheat': { role: 'Le blé américain peut mettre le houblon en avant avec une fermentation discrète ; ne pas lui appliquer le profil banane–girofle allemand.', examples: ['Cascade', 'Centennial', 'Amarillo', 'Hallertauer Mittelfrüh'] },
   saison: { role: 'Comparer la finale sèche et épicée de la levure au houblonnage ; l’amertume calculée ne décrit pas à elle seule l’équilibre.', examples: ['Saaz', 'Styrian Golding', 'East Kent Goldings', 'Hallertauer Mittelfrüh'] },
   'belgian-ale': { role: 'Mettre en balance fermentation, malt et amertume selon le style belge précis.', examples: ['Saaz', 'Styrian Golding', 'Hallertauer Mittelfrüh', 'Magnum'] },
+  'stout-porter': { role: 'Équilibrer la torréfaction et l’amertume. L’expression houblonnée dépend de la variante exacte.', examples: [] },
+  'kolsch-alt': { role: 'Situer le houblon face au malt et à la fermentation ; Kölsch et Altbier demandent des équilibres distincts.', examples: [] },
+  sour: { role: 'Vérifier la tolérance aux houblons de la culture acidifiante ; amertume et houblonnage à cru dépendent du procédé, sans seuil universel.', examples: [] },
   unknown: { role: 'Précise le style dans Identité pour situer le rôle des houblons. Les calculs restent disponibles.', examples: [] },
 };
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -40,7 +44,11 @@ export function hopMatchesName(name: string, expected: string, otherNames: strin
   const expectedKeys = [fold(expected), ...(aliases[fold(expected)] ?? [])];
   return [name, ...otherNames].some(value => expectedKeys.includes(fold(value)));
 }
-export function hopFitsStyle(name: string, family: YeastStyleId, otherNames: string[] = []): boolean {
+export function hopFitsStyle(name: string, family: YeastStyleId, otherNames: string[] = [], styleName?: string): boolean {
+  if (styleName && isIpaStyleName(styleName))
+    return hopNameHasStyleUsage(name, styleName, otherNames);
+  if (family === 'hazy-ipa' || family === 'clean-ale')
+    return hopNameHasStyleUsage(name, family === 'hazy-ipa' ? 'Hazy IPA' : 'American IPA', otherNames);
   return HOP_STYLE_ROLES[family].examples.some(example => hopMatchesName(name, example, otherNames));
 }
 export function hopRecipeStyle(recipe: TrialRecipe) {

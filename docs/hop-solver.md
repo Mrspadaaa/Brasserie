@@ -1,12 +1,18 @@
 # Solver houblon × levure × timing
 
-Révision du 8 septembre 2026. Guide de formulation expérimental pour L’Affinée.
+Révision du 12 septembre 2026. Guide de formulation expérimental pour L’Affinée.
 
 ## Utilisation
 
 Pendant la création ou la modification d’une recette, ouvrir **Construire le goût de ma bière → Trouver mon combo**. Le même atelier reste accessible dans l’Index Houblon.
 
 Choisir un style de départ, les familles souhaitées et celles à éviter, puis éventuellement favoriser ou éviter thiols, terpènes et phénols de levure. Le style est un preset éditorial modifiable, pas une conformité BJCP certifiée. Une famille à éviter signifie « rester dans la classe discrète » ; cela ne garantit pas son absence chimique.
+
+Le catalogue des houblons distingue les **usages documentés pour le style** des références **à explorer**. Ces usages proviennent de fiches fabricant ou de recettes publiées, avec leurs sources consultables dans le programme proposé. Un usage générique « IPA » n’est pas transformé en preuve spécifique Hazy ou anglaise. L’absence de référence n’établit aucune incompatibilité. La recherche aromatique affine ce choix ; le nom d’une variété ne reçoit aucun bonus de popularité.
+
+La sélection manuelle limite les variétés effectivement comparées. **Automatique** réouvre le catalogue complet, sous le budget éventuel du mode rapide. Les essais comportant un houblon hors sélection ne sont pas proposés partiellement. Une référence sélectionnée devenue indisponible ou archivée produit une erreur explicite. Modifier le choix annule les résultats précédents ; aucune importation ni modification de recette n’a lieu pendant la comparaison.
+
+Cette séparation reflète les guides BJCP : l’[American IPA](https://www.bjcp.org/style/2021/21/ipa/) admet une grande diversité de houblons, la [Double IPA](https://www.bjcp.org/style/2021/22/22A/double-ipa/) conserve une expression houblonnée avec une fermentation neutre à légèrement fruitée, tandis que l’[English IPA](https://styles.bjcp.org/bjcp-2021-beer/12/12c-english-ipa) privilégie les ingrédients britanniques, notamment en finition. Le type de houblon ne remplace ni le contrôle de la levure ni celui des paliers.
 
 Le mode **Ciblée · rapide**, choisi par défaut, présélectionne les variétés et les souches avant d’explorer les timings et les doses enregistrées dans le guide. Le mode **Exhaustive** examine toutes les associations du domaine défini. Il peut conserver la souche actuelle. Une souche non résolue n’est pas remplacée silencieusement. Le programme choisi préremplit dose, température de contact et durée :
 
@@ -24,10 +30,12 @@ Le bouton d’application ajoute le programme, ou remplace seulement l’ajout c
 
 Le produit variétés × souches × timings × doses peut dépasser un million de scénarios. La présélection du mode ciblé utilise seulement des informations déjà chargées :
 
-- variétés : exclusions documentées, références présentes dans la recette, familles aromatiques recherchées, présence d’essais ou de modèles dédiés ;
+- variétés : exclusions documentées, usages du style documentés, références présentes dans la recette, familles aromatiques recherchées, présence d’essais ou de modèles dédiés ;
 - souches : souche actuelle, compatibilité POF et température documentée, présence de références utilisables, orientation β-lyase si demandée.
 
 Ces critères se comparent dans cet ordre, sans somme pondérée. Un identifiant stable départage les égalités. Une information manquante ne devient ni une absence d’arôme ni une exclusion. La souche imposée est conservée, même sans modèle dédié. Les programmes publiés applicables aux levures et timings autorisés sont tous examinés, en dehors du budget de présélection.
+
+Pour laisser apparaître plusieurs variétés, les résultats exploratoires retiennent la meilleure condition évaluée pour chaque couple houblon / levure. Tous les timings et doses du domaine restent évalués, et les essais publiés conservent leur identité. L’usage documenté oriente l’ordre d’affichage mais ne modifie ni les scores sensoriels ni leurs incertitudes.
 
 Le budget technique est de **24 variétés et 8 souches au maximum**, réduit si nécessaire pour rester sous **2 048 variantes**, auxquelles s’ajoutent les programmes publiés. Un domaine plus petit est examiné entièrement. Ces limites sont des budgets de calcul, pas des coefficients chimiques ni des poids de confiance. La présélection peut manquer une meilleure piste : son résultat ne certifie aucun optimum global. Le mode exhaustif conserve le domaine complet aux doses et timings définis, sans garantir la justesse sensorielle du modèle.
 

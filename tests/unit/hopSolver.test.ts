@@ -75,9 +75,12 @@ describe('Solver de formulation',()=>{
     expect(missing(kept)).toBe(false); expect(missing(replaced)).toBe(true);
   });
   it('distingue phénols, terpènes et thiols ; ne promet pas leur absence sans analyse',()=>{
-    const phenols=search({intent:{...intent,keepYeast:false,chemistry:{phenols:'seek'}}}),rows=phenols.evaluateBatch(0,phenols.total);
-    expect(rows.find(c=>c.triplets[0].yeastId==='wyeast-3068')?.checks.some(c=>c.status==='supported'&&c.message.includes('phénolique'))).toBe(true);
-    expect(rows.find(c=>c.triplets[0].yeastId==='lalbrew-verdant-ipa')?.checks.some(c=>c.status==='conflict')).toBe(true);
+    const phenols=search({intent:{...intent,keepYeast:false,chemistry:{phenols:'seek'}}});
+    // Verify the chemistry contract independently of the quick catalogue's
+    // legitimate preference for other POF-positive strains.
+    const evaluate=(yeastId:string)=>phenols.evaluateProgram({triplets:[{...triplet,yeastId}],conditions:[[]]});
+    expect(evaluate('wyeast-3068').checks.some(c=>c.status==='supported'&&c.message.includes('phénolique'))).toBe(true);
+    expect(evaluate('lalbrew-verdant-ipa').checks.some(c=>c.status==='conflict')).toBe(true);
     const avoidance=search({intent:{...intent,chemistry:{thiols:'avoid'}}}).evaluateBatch(0,1)[0];
     expect(avoidance.checks.some(c=>c.status==='unknown'&&c.message.includes('absence non établie'))).toBe(true);
   });

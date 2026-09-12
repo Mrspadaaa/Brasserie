@@ -13,6 +13,7 @@ import { selectHopSearchDomain, type HopSearchMode } from './solverSelection';
 import { fermentationProgramIssues } from '../../../functions/src/fermentationContext';
 import { normalizeHop } from '../hopStage';
 import { noloReferencePrediction } from '../../../functions/src/hopRecipePrediction';
+import { hopStyleFamily, suggestedHopVarieties } from './styleSelection';
 
 export type SolverCheck = { status: 'conflict' | 'unknown' | 'supported'; message: string; source?: HopSource };
 export type SolverCondition = { field: 'doseGL' | 'temperatureC' | 'contactHours'; value: number; range: HopRange; origin: 'trial' | 'recipe' | 'proposal'; source: HopSource };
@@ -20,6 +21,8 @@ export interface HopSolverCandidate {
   id: string; triplets: HopTriplet[]; predictions: HopPrediction[]; trial?: HopTrial;
   conditions: SolverCondition[][]; checks: SolverCheck[]; recipeChecks: SolverCheck[];
   score: HopEstimate; evidenceFamilies: string[]; totalDryHopGL: number | null;
+  /** Documentary style guidance only; never included in the sensory score. */
+  styleSuggested?: boolean;
 }
 const dry = (t: HopTriplet['timing']) => t === 'fermentation' || t === 'postFermentation';
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -155,7 +158,7 @@ export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets
 export function compareHopSolverCandidates(a: HopSolverCandidate,b: HopSolverCandidate): number {
   const conflicts=(c:HopSolverCandidate)=>c.checks.filter(k=>k.status==='conflict').length+c.recipeChecks.filter(k=>k.status==='conflict').length;
   const unresolved=(c:HopSolverCandidate)=>c.checks.filter(k=>k.status==='unknown').length;
-  return conflicts(a)-conflicts(b) || unresolved(a)-unresolved(b)
+  return conflicts(a)-conflicts(b) || Number(!!b.styleSuggested)-Number(!!a.styleSuggested) || unresolved(a)-unresolved(b)
     || b.evidenceFamilies.length-a.evidenceFamilies.length
     || compareHopPredictions({...a.predictions[0],score:a.score},{...b.predictions[0],score:b.score})
     || (a.totalDryHopGL??Infinity)-(b.totalDryHopGL??Infinity) || a.id.localeCompare(b.id);
@@ -165,6 +168,8 @@ export interface HopSolverSearchOptions {
   data: HopEngineData; policy: HopSolverPolicy; intent: HopSolverIntent; target: Record<string,HopRange>; recipe?:TrialRecipe;
   doseGL?:number; temperatureC?:number; contactHours?:number; replacing?:number;
   mode?: HopSearchMode;
+  /** Candidate varieties to compare. Empty / omitted means automatic selection. */
+  varietyIds?: string[];
 }
 /** Finite, explicit search domain. Qualitative trials are never fitted as numbers. */
 export function createHopSolverSearch(options: HopSolverSearchOptions) {
@@ -184,17 +189,24 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
   };
   const wanted=Object.keys(target).filter(id=>!intent.avoid.includes(id));
   const scoreTarget=Object.fromEntries(Object.entries(target).filter(([id])=>!intent.avoid.includes(id)));
+  const selectedIds=options.varietyIds?.length?new Set(options.varietyIds):undefined;
+  const activeVarieties=data.varieties.filter(v=>!v.archived);
+  const unavailableSelection=selectedIds&&[...selectedIds].some(id=>!activeVarieties.some(v=>v.id===id));
+  const eligibleVarieties=unavailableSelection?[]:activeVarieties.filter(v=>!selectedIds||selectedIds.has(v.id));
+  const eligibleIds=new Set(eligibleVarieties.map(v=>v.id));
+  const styleName=policy.styles.find(s=>s.id===intent.styleId)?.name??'';
+  const styleVarieties=new Set(suggestedHopVarieties(eligibleVarieties,styleName).map(v=>v.id));
   const queue:{triplets:HopTriplet[];conditions:SolverCondition[][];trial?:HopTrial}[]=[];
   const make=(v:HopVariety,y:HopYeast,t:HopTriplet['timing'],dose:number|null,trial?:HopTrial)=>prefillHopScenario({varietyId:v.id,yeastId:y.id,timing:t,doseGL:options.doseGL??dose,temperatureC:options.temperatureC??null,contactHours:options.contactHours??null,matrixId:null,lotId:null},policy,recipe,trial);
   for (const trial of trials) {
     const y=eligibleYeasts.find(y=>y.id===trial.yeastId);
-    if (!y || trial.hops.some(h=>!intent.timings.includes(h.timing))) continue;
+    if (!y || trial.hops.some(h=>!intent.timings.includes(h.timing)||!eligibleIds.has(h.varietyId))) continue;
     const filled=trial.hops.map(h=>{const v=data.varieties.find(v=>v.id===h.varietyId && !v.archived);return v?make(v,y,h.timing,null,trial):null;});
     if (filled.every(x=>x!==null)) queue.push({trial,triplets:filled.map(x=>x!.triplet),conditions:filled.map(x=>x!.conditions)});
   }
   // Index the full Cartesian domain without allocating every scenario upfront.
   const conditions=intent.timings.flatMap(timing=>(options.doseGL!==undefined?[options.doseGL]:policy.defaults[timing].searchDosesGL.map(p=>p.central)).map(dose=>({timing,dose})));
-  const domain=selectHopSearchDomain({mode:options.mode??'quick',varieties:data.varieties.filter(v=>!v.archived),yeasts:eligibleYeasts,valid,policy,intent,wanted,
+  const domain=selectHopSearchDomain({mode:options.mode??'quick',varieties:eligibleVarieties,yeasts:eligibleYeasts,valid,policy,intent,wanted,styleVarieties,
     conditions:conditions.length,trials:queue.length,currentYeast,recipeVarieties:new Set(recipe?.hops.map(h=>h.hopVarietyId).filter((id):id is string=>!!id)??[]),
     primaryTemperature:recipe?.fermentation?.[0]?.tempC,descriptorFamilies});
   const {varieties,yeasts,coverage}=domain,total=coverage.total;
@@ -210,6 +222,7 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
     const predictions=item.triplets.map(t=>recipe?.nolo?.enabled?noloReferencePrediction(predict(t,scoreTarget)):predict(t,scoreTarget));
     const yeast=yeastById.get(item.triplets[0].yeastId!)!;
     const checks=predictions.flatMap(p=>checkHopExclusions(p,intent.avoid,axes));
+    if(selectedIds&&item.triplets.some(t=>!t.varietyId||!eligibleIds.has(t.varietyId))) checks.push({status:'conflict',message:'Ce programme contient une variété hors de ta sélection actuelle. Relance la comparaison.'});
     for (const t of item.triplets) {
       if (!finite(t.doseGL)) checks.push({status:'unknown',message:'Dose manquante : quantité totale et application indisponibles.'});
       if (t.doseGL !== null && (!finite(t.doseGL) || t.doseGL < 0) || t.contactHours !== null && (!finite(t.contactHours) || t.contactHours < 0) || t.temperatureC !== null && (!finite(t.temperatureC) || t.temperatureC < -273.15)) checks.push({status:'conflict',message:'Condition de procédé invalide : corrige la dose, la durée ou la température.'});
@@ -235,9 +248,12 @@ export function createHopSolverSearch(options: HopSolverSearchOptions) {
     if(total!==null && total>policy.dryHopReviewGL.central && !(common.totalDryHopGL!==null && common.totalDryHopGL>policy.dryHopReviewGL.central)) recipeChecks.push({status:'unknown',message:`Dry-hop cumulé proposé : ${total.toLocaleString('fr',{maximumFractionDigits:2})} g/L. Revoir le rendement aromatique et le risque de caractère herbacé, sans seuil universel.`,source:policy.dryHopReviewGL.source});
     for(const risk of predictions.flatMap(p=>p.risks).filter(r=>r.status!=='unknown')) recipeChecks.push({status:'unknown',message: risk.message,source:risk.source});
     const evidenceFamilies=item.trial?wanted.filter(id=>item.trial!.families.includes(id)):wanted.filter(id=>item.triplets.some(t=>descriptorFamilies(t.varietyId??'').has(id)));
-    return {id: item.trial?.id ?? JSON.stringify(item.triplets),...item,predictions,checks,recipeChecks,score:predictions.length===1?predictions[0].score:unknownScore(),evidenceFamilies,totalDryHopGL:total};
+    return {id: item.trial?.id ?? JSON.stringify(item.triplets),...item,predictions,checks,recipeChecks,score:predictions.length===1?predictions[0].score:unknownScore(),evidenceFamilies,totalDryHopGL:total,
+      styleSuggested:hopStyleFamily(styleName)?item.triplets.every(t=>!!t.varietyId&&styleVarieties.has(t.varietyId)):undefined};
   };
-  return {total,coverage,emptyReason:!yeasts.length?'La levure de la recette n’est pas identifiée. Associe sa référence ou autorise une autre souche.':null,
+  return {total,coverage,emptyReason:unavailableSelection?'Une variété choisie est indisponible ou archivée. Revois ta sélection de houblons.'
+    :!eligibleVarieties.length?'Aucune variété de houblon disponible pour cette sélection.'
+    :!yeasts.length?'La levure de la recette n’est pas identifiée. Associe sa référence ou autorise une autre souche.':null,
     evaluateProgram:evaluate, evaluateBatch:(from:number,count:number)=>{
       const start=Math.max(0,Math.floor(from)),end=Math.min(total,start+Math.max(0,Math.floor(count)));
       return Array.from({length:Math.max(0,end-start)},(_,i)=>evaluate(itemAt(start+i)));

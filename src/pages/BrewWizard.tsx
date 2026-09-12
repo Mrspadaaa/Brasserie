@@ -1066,7 +1066,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {
         name: ingName,
         // L'alpha vient de l'article de stock — c'est celui du lot acheté.
-        alpha: item?.alphaPct ?? 0,
+        alpha: item?.alphaPct ?? Number.NaN,
         ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
         stage: hopStage,
@@ -1884,6 +1884,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 label="α"
                                 name={`Alpha de ${h.name} en pourcent`}
                                 unit="%"
+                                emptyValue={Number.NaN}
                                 min={0}
                                 max={100}
                                 value={h.alpha}
