@@ -12,3 +12,13 @@ await build({
   format: 'esm',
   sourcemap: true
 });
+await build({
+  absWorkingDir: root,
+  entryPoints: ['src/domain/finance/assistantContext.ts'],
+  outfile: 'functions/lib/financeContext.js',
+  bundle: true,
+  platform: 'node',
+  target: 'node22',
+  format: 'esm',
+  sourcemap: true
+});

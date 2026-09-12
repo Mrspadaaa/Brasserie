@@ -1,0 +1,27 @@
+{
+  "la01_2025": {
+    "source": "Fermentis, SafBrew LA-01 Technical Guidelines V3, November 2025, p.1 Gravity",
+    "url": "https://sbi4beer.com/wp-content/uploads/2025/11/SafBrew-LA-01-technical-guidelines-nov-25.pdf",
+    "mash": [{"tempC":65,"durationMin":40},{"tempC":73,"durationMin":25}],
+    "temperatureC":20,
+    "points":[{"plato":6,"abv":0.3964},{"plato":8,"abv":0.5688},{"plato":10,"abv":0.7412},{"plato":15,"abv":1.1722}],
+    "meaning":"Reproduction de la relation publiée, pas observations indépendantes ni validation externe.",
+    "publishedResidualInterval":null
+  },
+  "mother": {
+    "source":"Lallemand Munich Classic product facts, consulted September 2026",
+    "url":"https://www.lallemandbrewing.com/en/africa/products/munich-classic-wheat-beer-yeast/",
+    "yeastId":"lallemand-munich-classic",
+    "attenuationPct":{"min":76,"max":83},
+    "og":1.048,
+    "expectedApproxAbv":{"min":4.788,"max":5.229},
+    "meaning":"Propagation de la plage fabricant dans une relation approchée SG/alcool ; pas mesure de Nuage Banane."
+  },
+  "aroma": {
+    "source":"EvodiaBio, Yops Y-Banana specification, issue 2, 29 October 2025",
+    "massG":12,
+    "inertMassPct":{"min":99,"max":99},
+    "unclassifiedMassG":0.12,
+    "meaning":"La fraction restante peut contenir alcool OU sucre ; les maxima ne sont pas additionnés séparément."
+  }
+}

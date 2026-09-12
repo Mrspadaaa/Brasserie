@@ -15,6 +15,8 @@ import { BREWER_APP_SCREENS } from './brewerAppScreens.js';
 import { cleanContext, pick, validateChatInput } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
 import { loadBrewerContext, history, threadKey, publicTurn } from './brewerChat.js';
+import { loadBrewerHopContext } from './brewerHopContext.js';
+import { brewerContextForStorage } from './hopCompanionContext.js';
 import type { BrewerJob, BrewerStage } from './companionTypes.js';
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
@@ -276,13 +278,14 @@ export const processBrewerQuestion = onTaskDispatched(
       const past = await history(job.threadId, undefined, session?.resetAt);
       const result = await runBrewerHarness(context, job.question, past, guarded.generate, {
         mode: job.input.mode,
+        loadHopIndex: loadBrewerHopContext,
         onProgress: progress,
         // Private diagnostics record concrete reviewer objections and tool errors,
         // never model thoughts or credentials. Public receipts exclude this field.
         onDiagnostic: (diagnostics) => updateJob({ diagnostics })
       });
       await progress('saving', 'Enregistrement de la réponse vérifiée');
-      const snapshot = cleanContext({ ...context, now: undefined }),
+      const snapshot = cleanContext({ ...brewerContextForStorage(context, result.proposal), now: undefined }),
         contextId = hash(stableJson(snapshot));
       const contextRef = db.doc(`brewerContexts/${contextId}`),
         turnRef = db.doc(`brewerChats/${id}`);

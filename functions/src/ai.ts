@@ -3,6 +3,12 @@ import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
 import { AiTier, TIERS, modelChain } from './models.js';
 import { TASKS, TaskId } from './prompts.js';
+import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
+import { reconcileInvoiceVision, type InvoiceScanResult } from './invoiceVisionReview.js';
+import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
+import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
+import { BrewerBudgetError } from './brewerLimits.js';
+import { GeminiApiError, parseGeminiError } from './geminiErrors.js';
 
 /**
  * Passerelle IA.
@@ -71,6 +77,69 @@ interface AiTaskResult {
   tier?: AiTier;
   elapsedMs?: number;
   error?: string;
+  cached?: boolean;
+  documentHash?: string;
+}
+
+/** A separate, fixed-cost path: no model chain, no client tier/context/instruction. */
+export async function scanInvoiceSafely(uid: string, suppliedFile: unknown, apiKey: string, evaluationOptions?: { maxOutputTokens: number }): Promise<AiTaskResult> {
+  const started = Date.now();
+  const maxOutputTokens=evaluationOptions?.maxOutputTokens??4500;
+  if(!Number.isSafeInteger(maxOutputTokens)||maxOutputTokens<1||maxOutputTokens>4500)throw new Error('Plafond de sortie invalide.');
+  const file: InvoiceFile = validateInvoiceFile(suppliedFile), model = SCAN_MODEL;
+  const provider = async (body: Record<string, unknown>, signal: AbortSignal) => {
+    const response = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
+      method:'POST', headers:{ 'Content-Type':'application/json', 'x-goog-api-key':apiKey }, body:JSON.stringify(body), signal
+    });
+    if (!response.ok) throw parseGeminiError(response.status, model, await response.json().catch(() => ({})));
+    return response.json();
+  };
+  const parse = (response: any) => {
+    const candidate = response?.candidates?.[0];
+    if (candidate?.finishReason !== 'STOP') throw new Error('Lecture incomplète. Complète le justificatif manuellement.');
+    const raw = candidate.content?.parts?.filter((part: any) => part.thought !== true && typeof part.text === 'string').map((part: any) => part.text).join('');
+    if (!raw || raw.length > 45000) throw new Error('Lecture non exploitable.');
+    const decoded = JSON.parse(raw);
+    if (!decoded || typeof decoded !== 'object' || Array.isArray(decoded) || !Array.isArray(decoded.items)) throw new Error('Lecture non exploitable.');
+    return decoded;
+  };
+  const body = (system: string, prompt: string, schema: Record<string, unknown>) => ({
+    systemInstruction:{ parts:[{ text:system }] },
+    contents:[{ role:'user', parts:[{ text:prompt }, { inlineData:file }] }],
+    generationConfig:{ responseMimeType:'application/json', responseSchema:schema, temperature:0, maxOutputTokens,
+      mediaResolution:'MEDIA_RESOLUTION_HIGH', thinkingConfig:{ thinkingLevel:'LOW' } }
+  });
+  const reviewed = await runBudgetedInvoiceScan(uid, file, async generate => {
+    const deadline = AbortSignal.timeout(100_000);
+    const read = (prompt: string) => generate(body(TASKS.scanInvoice.system, prompt, TASKS.scanInvoice.schema),
+      AbortSignal.any([deadline, AbortSignal.timeout(45_000)])).then(parse).then(normalizeInvoiceScan);
+    // Both see only the original. Await every in-flight call before closing the budget ledger.
+    const attempts = await Promise.allSettled([
+      read('Transcris tout le justificatif joint, en-tête, totaux et chaque ligne, dans l’ordre du document. Contrôle les chiffres et les signes des remises.'),
+      read('Effectue une lecture indépendante complète du justificatif joint. Vérifie en priorité fournisseur, date, référence, devise, HT, TVA, TTC puis chaque article dans l’ordre imprimé. Distingue achat durable, réparation et consommable. Ne paraphrase pas les désignations.')
+    ]);
+    const readings = attempts.flatMap(attempt => attempt.status === 'fulfilled' ? [attempt.value] : []);
+    if (!readings.length) throw (attempts[0] as PromiseRejectedResult).reason;
+    if (readings.length === 1) {
+      const finding = 'La double lecture n’a pas abouti. Vérifie les informations et les montants sur le justificatif.';
+      return { ...readings[0], review:{ status:'unavailable', readers:1, correctedFields:[], findings:[finding] },
+        issues:[...readings[0].issues, finding] };
+    }
+    let reconciled = reconcileInvoiceVision(readings);
+    if (reconciled.needsCorrection && !deadline.aborted) {
+      try {
+        // No competing amounts or classifications are disclosed: a third independent vote.
+        const correction: InvoiceScanResult = await read('Troisième contrôle attentif du document original : relis les petites lignes, séparateurs décimaux, signes, totaux, quantités, unités et la nature achat durable/réparation/consommable. Transcris de nouveau TOUS les champs et lignes dans leur ordre imprimé, avec les désignations exactes. Ne calcule aucune valeur absente.');
+        reconciled = reconcileInvoiceVision([...readings, correction]);
+      } catch {
+        const finding = 'Le contrôle complémentaire n’a pas abouti. Les divergences restent à vérifier sur le justificatif.';
+        reconciled.review.findings.push(finding);
+      }
+    }
+    return { ...reconciled.result, review:reconciled.review,
+      issues:[...new Set([...reconciled.result.issues, ...reconciled.review.findings])] };
+  }, provider);
+  return { ok:true, data:reviewed.result, model, tier:'fast', elapsedMs:Date.now() - started, cached:reviewed.cached, documentHash:reviewed.documentHash };
 }
 
 function assertAuthorized(request: CallableRequest): string {
@@ -111,27 +180,25 @@ async function callGemini(
     parts.push({ inlineData: { mimeType: file.mimeType, data: file.data } });
   }
 
-  const res = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+  const body = {
       systemInstruction: { parts: [{ text: systemPrompt }] },
       contents: [{ role: 'user', parts }],
       ...(grounded ? { tools: [{ googleSearch: {} }] } : {}),
       generationConfig: {
         responseMimeType: 'application/json',
         responseSchema: schema,
-        temperature
+        temperature,
+        maxOutputTokens: 4500
       }
-    })
-  });
-
-  if (!res.ok) {
-    const detail = await res.text().catch(() => '');
-    throw new Error(`HTTP ${res.status} ${detail.slice(0, 300)}`);
-  }
-
-  const json = (await res.json()) as any;
+    };
+  const json = await runWithMonthlyAiBudget(model, body, async normalized => {
+    const res = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify(normalized), signal: AbortSignal.timeout(100_000)
+    });
+    if (!res.ok) throw parseGeminiError(res.status, model, await res.json().catch(() => ({})));
+    return res.json();
+  }, { daily: true });
   const raw = json?.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!raw) {
     const reason = json?.candidates?.[0]?.finishReason ?? 'réponse vide';
@@ -182,6 +249,14 @@ export const aiTask = onCall(
       );
     }
 
+    if (task === 'scanInvoice') {
+      try {
+        return await scanInvoiceSafely(request.auth!.uid, file, apiKey);
+      } catch (error: any) {
+        return { ok:false, tier:'fast', error:error?.message || 'Lecture indisponible. Complète le justificatif manuellement.' };
+      }
+    }
+
     const userText = [
       instruction?.trim() ? `Demande : ${instruction.trim()}` : '',
       context !== undefined && context !== null
@@ -214,6 +289,9 @@ export const aiTask = onCall(
         logger.info('Tâche IA exécutée', { task, tier, model, elapsedMs, email });
         return { ok: true, data, model, tier, elapsedMs };
       } catch (err: any) {
+        if (err instanceof BrewerBudgetError) return { ok: false, tier, elapsedMs: Date.now() - started, error: err.message };
+        if (err instanceof GeminiApiError && !err.canTryAnotherModel)
+          return { ok: false, tier, elapsedMs: Date.now() - started, error: err.message };
         const message = err?.message ?? String(err);
         attempts.push(`${model} : ${message}`);
         logger.warn('Modèle en échec, repli', { task, model, message });

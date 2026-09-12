@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Command } from 'cmdk';
-import { normalize } from '../services/search';
+import { X } from 'lucide-react';
+import { searchCommandGroups } from '../services/search';
 import { useCoarsePointer } from './useViewport';
 
 /**
@@ -28,6 +29,8 @@ export interface CommandItem {
   icon?: React.ReactNode;
   /** Termes supplémentaires indexés (référence, style, fournisseur…). */
   keywords?: string[];
+  /** Seules les écritures comptables reçoivent ce statut dans l'index. */
+  archived?: boolean;
   onSelect: () => void;
 }
 
@@ -47,6 +50,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onOpenChange,
   groups
 }) => {
+  const [query, setQuery] = useState('');
+  const [includeArchives, setIncludeArchives] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setQuery('');
+      setIncludeArchives(false);
+    }
+  }, [open]);
+
   // ⌘K sur Mac, Ctrl+K ailleurs. On bascule plutôt qu'on ouvre : le même
   // raccourci referme, ce qui évite d'avoir à viser Échap.
   useEffect(() => {
@@ -55,48 +68,41 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         e.preventDefault();
         onOpenChange(!open);
       }
+      if (open && e.key === 'Escape') {
+        e.preventDefault();
+        onOpenChange(false);
+      }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [open, onOpenChange]);
 
-  /**
-   * Filtre insensible aux accents. Celui de cmdk compare les chaînes brutes :
-   * « rostgerste » n'y trouverait pas « Röstgerste ».
-   */
-  const filter = useMemo(
-    () => (value: string, search: string, keywords?: string[]) => {
-      const haystack = normalize([value, ...(keywords ?? [])].join(' '));
-      const needle = normalize(search);
-      if (!needle) return 1;
-      // Un mot entier au début pèse plus qu'une occurrence au milieu.
-      if (haystack.startsWith(needle)) return 1;
-      return haystack.includes(needle) ? 0.5 : 0;
-    },
-    []
+  const results = useMemo(
+    () => open ? searchCommandGroups(groups, query, includeArchives) : { groups: [], total: 0, visible: 0 },
+    [open, groups, query, includeArchives]
   );
 
   const coarse = useCoarsePointer();
   if (!open) return null;
 
-  const total = groups.reduce((n, g) => n + g.items.length, 0);
-
   return (
     <div
       className="fixed inset-0 z-[100] flex items-start justify-center
-                 px-4 pt-[12vh] bg-cave-950/80 backdrop-blur-sm"
+                 px-3 pt-[6dvh] sm:px-4 sm:pt-[12vh] bg-cave-950/80 backdrop-blur-sm"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) onOpenChange(false);
       }}
     >
       <Command
         label="Recherche universelle"
-        filter={filter}
+        shouldFilter={false}
         loop
         className="w-full max-w-xl panel shadow-lift overflow-hidden"
       >
-        <div className="border-b border-cave-800">
+        <div className="flex items-center border-b border-cave-800">
           <Command.Input
+            value={query}
+            onValueChange={setQuery}
             name="universal_command_search_query"
             autoComplete="off"
             autoCorrect="off"
@@ -107,20 +113,33 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             data-bwignore="true"
             autoFocus={!coarse}
             placeholder="Article, recette, brassin, client, écriture…"
-            className="w-full min-h-touch px-4 bg-transparent text-cave-50 text-base
+            className="min-w-0 flex-1 min-h-touch px-4 bg-transparent text-cave-50 text-base
                        placeholder-cave-600 focus:outline-none"
           />
+          <button type="button" aria-label="Fermer la recherche" onClick={() => onOpenChange(false)} className="min-h-touch min-w-touch flex items-center justify-center text-cave-400 hover:text-cave-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
-        <Command.List className="max-h-[60vh] overflow-y-auto overscroll-contain py-2">
+        <label className="min-h-touch px-4 flex items-center gap-3 border-b border-cave-800 text-sm text-cave-300 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={includeArchives}
+            onChange={event => setIncludeArchives(event.target.checked)}
+            className="h-4 w-4 accent-amber-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400"
+          />
+          <span>Inclure les archives <span className="text-cave-500">· écritures comptables</span></span>
+        </label>
+
+        <Command.List className="max-h-[55dvh] overflow-y-auto overscroll-contain py-2">
           <Command.Empty className="px-4 py-8 text-center space-y-1">
             <p className="text-base text-cave-200">Rien ne correspond</p>
             <p className="text-sm text-cave-500">
-              La recherche tolère les fautes et les accents manquants.
+              Cherche un nom, une référence ou un fournisseur, avec ou sans accents.
             </p>
           </Command.Empty>
 
-          {groups.map((group) => (
+          {results.groups.map((group) => (
             <Command.Group
               key={group.heading}
               heading={group.heading}
@@ -130,8 +149,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               {group.items.map((item) => (
                 <Command.Item
                   key={item.id}
-                  value={`${item.label} ${item.detail ?? ''}`}
-                  keywords={item.keywords}
+                  value={item.id}
                   onSelect={() => {
                     item.onSelect();
                     onOpenChange(false);
@@ -142,7 +160,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 >
                   {item.icon && <span className="shrink-0 text-cave-400">{item.icon}</span>}
                   <span className="min-w-0 flex-1">
-                    <span className="block text-base truncate">{item.label}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="text-base truncate">{item.label}</span>
+                      {item.archived && <span className="shrink-0 rounded bg-cave-800 px-1.5 py-0.5 text-xs text-cave-400">Archivée</span>}
+                    </span>
                     {item.detail && (
                       <span className="block text-sm text-cave-500 truncate">{item.detail}</span>
                     )}
@@ -153,11 +174,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           ))}
         </Command.List>
 
-        <div className="border-t border-cave-800 px-4 py-2 flex items-center justify-between">
-          <span className="text-sm text-cave-600">
-            {total.toLocaleString('fr-CH')} entrée{total > 1 ? 's' : ''}
+        <div className="border-t border-cave-800 px-4 py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <span className="text-sm text-cave-500" role="status">
+            {results.visible < results.total
+              ? `${results.visible} sur ${results.total.toLocaleString('fr-CH')} résultats · précise la recherche`
+              : `${results.total.toLocaleString('fr-CH')} résultat${results.total > 1 ? 's' : ''}`}
           </span>
-          <span className="text-sm text-cave-600">↑↓ parcourir · ↵ ouvrir · Échap fermer</span>
+          <span className="hidden sm:inline text-sm text-cave-600">↑↓ parcourir · ↵ ouvrir · Échap fermer</span>
         </div>
       </Command>
     </div>

@@ -1,0 +1,2 @@
+# Preserve generated reports byte-for-byte, including PDF offset tables.
+*.pdf binary

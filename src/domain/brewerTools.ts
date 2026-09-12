@@ -1,3 +1,5 @@
+import { recipeIbu } from './hopBitterness';
+import { fermentationProposals, fermentationReadiness } from './fermentationPlanning';
 import { BrewingMath } from '../services/brewingMath';
 import {
   actualWater,
@@ -25,6 +27,21 @@ import { equipmentCheck, roPackages } from './brewEquipment';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
 import type { Recipe, RecipeSnapshot, BrewDayState, AcidId } from '../types';
+import { compareHopTasting, compareHopPredictions, rankHopTriplets, recipeForHopAnalysis, usableHopKnowledge } from '../../functions/src/hopPredictionCore';
+import { predictHopRecipe, noloScopedPrediction } from '../../functions/src/hopRecipePrediction';
+import { prepareHopRecipeInput } from './hopIndex/recipePrediction';
+import { compactHopRecipeEvidence } from './hopIndex/companionPrediction';
+import { assertHopTriplet, HopAxis, HopTriplet } from '../../functions/src/hopPredictionSchema';
+import { HopRange } from '../../functions/src/hopIndexSchema';
+import { searchHopVarieties } from '../../functions/src/hopIndexFacts';
+import { hopIndexOverview } from '../../functions/src/hopCompanionContext';
+import { activeFermentationScience, fermentationFinalGravity, fermentationLagerRest, fermentationLevers, fermentationProgramWarnings } from '../../functions/src/fermentationScienceCore';
+import { FERMENTATION_GOALS, type FermentationGoal } from '../../functions/src/fermentationGuideSchema';
+import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
+import { catalogueMatches } from './yeastCatalogue';
+import { fermentationDose } from './fermentationGuide';
+import { evaluateFermentationScenario } from './fermentationScenario';
+import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, noloWaterModelIssue, noloInput } from './nolo';
 
 const number = (
   a: Record<string, unknown>,
@@ -55,11 +72,25 @@ const tool = (
 ) => ({ name, description, parameters: { type: 'OBJECT', properties, required } });
 
 export const brewerToolDeclarations = [
+  tool('lookup_yeast_reference', 'Rechercher toutes les levures par nom, code, alias ou arôme. Retourne les faits et sources séparés, sans assimiler deux souches ou inventer une caractéristique manquante.', { query: str('Nom, code, arôme ou ID exact') }, ['query']),
+  tool('fermentation_advice', 'Conduites documentées par objectif et souche : paliers, leviers qualitatifs, sources, limites, dose et DF en plage. Ne prédit pas une intensité d’ester ou de phénol. Lecture seule ; tout changement de recette passe par propose_changes.', {
+    goal: str('Objectif', [...FERMENTATION_GOALS]), yeastId: str('ID exact facultatif ; défaut souche associée à la recette'),
+    og: num('DI SG du scénario, facultative ; prévue ou mesurée à distinguer dans la réponse'), sg: num('Densité actuelle corrigée SG, facultative')
+  }, ['goal']),
+  tool('lookup_hop_reference', 'Rechercher les fiches et COA complets par nom, alias, région ou ID exact. Renvoie chaque source séparément ; aucune fusion de plages.', { query: str('Nom, alias ou ID de variété/lot') }, ['query']),
+  tool('predict_hop_aroma', 'Sans triplets explicites, simuler la recette du contexte : ajouts réels, souche unique, paliers, profil global expérimental et chimie disponible. Les plages du cumul sont conditionnelles au modèle, sans couverture statistique des interactions. Avec triplets explicites, classer des alternatives indépendantes ; ne pas les assembler. Aucun chiffre inventé.', {
+    triplets: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+      varietyId: str('ID exact de variété'), lotId: str('ID exact de lot, facultatif'), yeastId: str('ID exact de levure'), timing: str('Moment biologique', ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation']),
+      doseGL: num('Dose g/L'), temperatureC: num('Température °C'), contactHours: num('Contact heures'), matrixId: str('ID de la matrice documentée')
+    }, required: ['varietyId', 'yeastId', 'timing', 'doseGL', 'temperatureC', 'contactHours', 'matrixId'] } },
+    target: { type: 'ARRAY', items: { type: 'OBJECT', properties: { axisId: str('ID de l’axe'), min: num('Borne basse'), max: num('Borne haute') }, required: ['axisId', 'min', 'max'] } }
+  }),
+  tool('compare_hop_tasting', 'Comparer une dégustation à sa prédiction figée, avec ses anciennes sources et coefficients.', { tastingId: str('ID exact de dégustation') }, ['tastingId']),
   tool(
     'inspect_brewery',
     'Lire recette et IDs ingrédients, matériel, stock disponible, eau, journal horodaté ou fermentation. Les valeurs prévues ne sont pas des relevés.',
     {
-      section: str('Section', ['recipe', 'equipment', 'stock', 'water', 'journal', 'fermentation'])
+      section: str('Section', ['recipe', 'equipment', 'stock', 'water', 'journal', 'fermentation', 'hopIndex'])
     },
     ['section']
   ),
@@ -163,7 +194,10 @@ export function runBrewerTool(
 ): Omit<BrewerEvidence, 'id'> {
   if (!brewerToolDeclarations.some((t) => t.name === name)) throw new Error('Outil inconnu.');
   const state: BrewDayState = c.journal ?? { steps: [], currentIndex: 0 };
-  const r = c.recipe as RecipeSnapshot | undefined;
+  const base = c.recipe as RecipeSnapshot | undefined;
+  const effective = base && c.batch?.nolo ? { ...base, nolo: c.batch.nolo } : base;
+  const r = effective?.nolo?.enabled && c.batch
+    ? noloRecipeForBatch({ ...c.batch, recipeSnapshot: effective }) ?? effective : effective;
   const result = (label: string, data: unknown, facts: string[] = [], limits: string[] = []) => ({
     name,
     label,
@@ -171,6 +205,59 @@ export function runBrewerTool(
     facts,
     limits
   });
+  if (name === 'lookup_yeast_reference') {
+    if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom, code ou arôme de levure requis.');
+    if (!c.hopIndex) return result('Référentiel levure non chargé', null, [], ['Données indisponibles.']);
+    const yeasts = c.hopIndex.knowledge.filter((k): k is HopYeast => { try { assertHopKnowledge(k); return k.kind === 'yeast'; } catch { return false; } });
+    const exact = yeasts.find(k => k.id === a.query);
+    const matches = exact ? [exact] : yeasts.filter(y => catalogueMatches(y, a.query as string));
+    return result('Références de levures', { yeasts: matches.slice(0, 10), totalMatches: matches.length }, [], [
+      'Descripteurs fabricant et analyses ne sont pas une prédiction de la bière. Faits contradictoires conservés séparément. POF, STA1, caractère diastatique et β-lyase distincts.',
+      ...c.hopIndex.truncated, ...(matches.length > 10 ? ['Affiner le nom ou choisir un ID exact pour les autres résultats.'] : [])
+    ]);
+  }
+  if (name === 'fermentation_advice') {
+    if (!FERMENTATION_GOALS.includes(a.goal as FermentationGoal)) throw Error('Objectif de fermentation requis.');
+    if (a.yeastId != null && (typeof a.yeastId !== 'string' || !a.yeastId.trim())) throw Error('Identifiant de levure invalide.');
+    if (r?.nolo?.enabled) {
+      const knowledge = c.hopIndex?.knowledge ?? [];
+      const science = r.nolo.scienceSnapshot ?? noloScience(knowledge);
+      const proposed = a.yeastId ? { ...r, yeast: { ...r.yeast, hopIndexId: a.yeastId as string } } : r;
+      return result('Conduite NOLO · bilan commun', {
+        nolo: evaluateNoloRecipe(proposed, knowledge),
+        diagnostics: fermentationReadiness(proposed, knowledge),
+        alternatives: science ? fermentationProposals(proposed, knowledge).map(p=>({version:p.version, yeastId:p.id, changes:p.changes, diagnostics:p.diagnostics, processFit:p.processFit, aromaFit:p.aromaFit, targetPlato:p.targetPlato, projection:p.result?.projection, projectionStatus:p.result?.projectionStatus, sources:p.sources, assumptions:p.assumptions, proposedFields:{yeast:p.recipe.yeast,fermentables:p.recipe.fermentables,mash:p.recipe.mash,fermentation:p.recipe.fermentation,waterPlan:p.recipe.waterPlan,carboTarget:p.recipe.carboTarget}})) : [],
+        finalGravity: null, lagerRest: null
+      }, [], ['Les données des souches et le bilan NOLO remplacent les conseils de bière alcoolisée. Une température ne devient pas un bonus banane ; aucune durée ne valide la fin ou la conservation.']);
+    }
+    const knowledge = c.hopIndex?.knowledge ?? [], science = activeFermentationScience(knowledge)[0];
+    const goal = a.goal as FermentationGoal;
+    const guides = knowledge.filter(k => { try { assertHopKnowledge(k); return k.kind === 'fermentation' && k.enabled; } catch { return false; } }).filter(k => k.kind === 'fermentation');
+    const yeasts = knowledge.filter((k): k is HopYeast => { try { assertHopKnowledge(k); return k.kind === 'yeast'; } catch { return false; } })
+      .map(y => ({ ...y, aliases: [...(guides.find(g => g.yeastId === y.id)?.aliases ?? []), ...(y.catalogue?.aliases ?? [])] }));
+    const og = a.og == null ? r?.ogTarget : number(a, 'og', 1.001, 1.3);
+    const scenario = r ? evaluateFermentationScenario({ ...r, ogTarget: og,
+      yeast: a.yeastId ? { ...r.yeast, hopIndexId: a.yeastId as string } : r.yeast }, yeasts, guides) : undefined;
+    const yeastId = (a.yeastId as string | undefined) ?? scenario?.yeast?.id ?? r?.yeast?.hopIndexId;
+    const choices = guides.filter(g => (!yeastId || g.yeastId === yeastId) && g.plans.some(p => p.goal === goal));
+    const current = guides.find(g => g.yeastId === yeastId);
+    const sg = a.sg == null ? undefined : number(a, 'sg', .95, 1.3);
+    return result('Conduite fermentaire documentée', {
+      goal, yeastId: yeastId ?? null, scienceVersion: science?.version ?? null,
+      guides: choices.map(g => ({ ...g, plans: g.plans.filter(p => p.goal === goal) })),
+      doses: choices.map(g => ({ yeastId:g.yeastId, volumeL:r?.volumeL??null, estimate:fermentationDose(g,r?.volumeL??0)??null })),
+      alternatives: guides.filter(g => g.plans.some(p => p.goal === goal)).map(g => ({ id:g.id, yeastId:g.yeastId, name:g.name, aroma:g.aroma })),
+      levers: fermentationLevers(science, goal, yeastId), compounds: science?.compounds ?? [],
+      benchmarks: science?.benchmarks.filter(b => b.yeastId === yeastId) ?? [],
+      finalGravity: scenario?.fg ?? fermentationFinalGravity(current, og), lagerRest: fermentationLagerRest(science,current,og,sg),
+      gravityContext: { og: og ?? null, origin: a.og == null ? 'cible prévue de recette, pas mesure' : 'DI fournie pour ce scénario, statut mesuré à confirmer' },
+      programWarnings: scenario?.warnings ?? fermentationProgramWarnings(current, []), scenarioVersion: scenario?.version ?? null
+    }, [], [
+      'Plages de conduite et durées proposées : confiance faible, pas de couverture statistique ni de garantie de fin. Respecter la fenêtre fabricant et contrôler densité/VDK après le dernier ajout.',
+      'Pas de concentration universelle d’ester, phénol, thiol, lactone ou défaut. Le modèle DM303 ne se transfère pas à cette recette.',
+      ...(!science ? ['Aide scientifique absente, invalide ou désactivée.'] : []), ...(c.hopIndex?.truncated ?? [])
+    ]);
+  }
   if (name === 'inspect_brewery') {
     const sections: Record<string, unknown> = {
       recipe: r ? { recipe: r, ingredientIds: brewIngredients(r) } : null,
@@ -178,10 +265,67 @@ export function runBrewerTool(
       stock: c.inventory,
       water: { plan: r?.waterPlan, sources: c.waterSources },
       journal: { confirmed: c.journal, localNotConfirmed: c.localJournal, now: c.now },
-      fermentation: c.batch ?? null
+      fermentation: c.batch ?? null,
+      hopIndex: hopIndexOverview(c.hopIndex)
     };
     if (!(String(a.section) in sections)) throw new Error('Section inconnue.');
     return result('Contexte de la brasserie', sections[String(a.section)], [], c.provenance);
+  }
+  if (name === 'lookup_hop_reference') {
+    if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom ou identifiant de houblon requis.');
+    const index = c.hopIndex;
+    if (!index) return result('Index houblon non chargé', null, [], ['Données indisponibles.']);
+    const query = a.query.trim(), fold = (v: string) => v.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr');
+    const terms = fold(query).split(/\s+/);
+    const exactLot = index.lots.find(l => l.id === query || l.lotNumber === query);
+    const matchingLots = exactLot ? [exactLot] : index.lots.filter(l => !l.archived && terms.every(t => fold([l.name, l.lotNumber, l.growingRegion, l.grower, l.harvestYear].join(' ')).includes(t)));
+    const lotVarieties = new Set(matchingLots.map(l => l.varietyId));
+    const exact = index.varieties.find(v => v.id === (exactLot?.varietyId ?? query));
+    const byName = searchHopVarieties(index.varieties, query);
+    const matches = exact ? [exact] : [...new Map([...byName, ...index.varieties.filter(v => lotVarieties.has(v.id))].map(v => [v.id, v])).values()];
+    const varieties = matches.slice(0, 10), ids = new Set(varieties.map(v => v.id));
+    const lots = matchingLots.length ? matchingLots : index.lots.filter(l => ids.has(l.varietyId));
+    return result('Références documentaires et COA', { varieties, lots: lots.slice(0, 20), totalMatches: matches.length, totalLots: lots.length }, [], [
+      'Descripteurs documentaires : aucune intensité en bière sans calcul du triplet. Année de publication ≠ année de récolte.',
+      ...index.truncated, ...(matches.length > 10 || lots.length > 20 ? ['Résultats limités : préciser le nom ou utiliser un identifiant exact.'] : [])
+    ]);
+  }
+  if (name === 'predict_hop_aroma') {
+    const data = c.hopIndex ?? { varieties: [], lots: [], knowledge: [], truncated: [] };
+    let triplets: HopTriplet[] = [];
+    if (a.triplets != null) {
+      if (!Array.isArray(a.triplets) || a.triplets.length > 100) throw Error('Au maximum 100 triplets par calcul.');
+      a.triplets.forEach(t => assertHopTriplet(t)); triplets = a.triplets as HopTriplet[];
+    }
+    let target: Record<string, HopRange> = r?.hopAromaTarget ?? {};
+    if (a.target != null) {
+      if (!Array.isArray(a.target) || a.target.length > 100) throw Error('Cible invalide.');
+      target = Object.fromEntries(a.target.map(t => {
+        if (!t || typeof t.axisId !== 'string' || ['__proto__', 'constructor', 'prototype'].includes(t.axisId)) throw Error('Axe cible invalide.');
+        return [t.axisId, { min: t.min, max: t.max }];
+      }));
+    }
+    if (a.triplets == null && r) {
+      const yeasts = usableHopKnowledge(data.knowledge).valid.filter((k): k is HopYeast => k.kind === 'yeast');
+      const prepared = prepareHopRecipeInput(recipeForHopAnalysis(r, c.journal), data.varieties, yeasts);
+      return result('Simulation de la recette complète', compactHopRecipeEvidence(predictHopRecipe(prepared.input, target, data)), prepared.proposed, [
+        'Plages et confiance obligatoires. Valeur inconnue ≠ zéro. Enveloppe conditionnelle au modèle ; interactions du mélange non quantifiées, aucun taux de couverture statistique.',
+        'Références dédupliquées : sourceRef → sourceDictionary ; sourceSetRef → sourceSets → sourceDictionary ; reasonSetRef → reasonSets. Aucune source, raison, année ou valeur numérique n’est supprimée.',
+        'Quantités introduites distinctes des concentrations finales en bière ; aucun rendement de conversion inventé.',
+        ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
+      ]);
+    }
+    const ranked = rankHopTriplets(triplets, target, data);
+    return result('Houblon × levure × timing', r?.nolo?.enabled ? ranked.map(noloScopedPrediction).sort(compareHopPredictions) : ranked, [], [
+      'Alternatives indépendantes : leurs graphes et scores ne constituent pas un profil de recette. Plages et confiance obligatoires. Valeur inconnue ≠ zéro.',
+      ...(data.truncated.length ? [`Catalogue partiel : ${data.truncated.join(', ')}.`] : [])
+    ]);
+  }
+  if (name === 'compare_hop_tasting') {
+    const tasting = c.hopIndex?.tastings.find(t => t.id === a.tastingId);
+    if (!tasting) return result('Dégustation introuvable', null, [], ['Observation non disponible dans le contexte chargé.']);
+    const snapshot = c.hopIndex?.predictions.find(p => p.id === tasting.predictionId);
+    return result('Écart aromatique historique', compareHopTasting(tasting, snapshot?.recipePrediction?.overall ?? snapshot?.prediction, snapshot?.evidence.knowledge.filter((k): k is HopAxis => k.kind === 'axis') ?? []), [], [snapshot?.recipePrediction ? 'Programme complet expérimental figé ; bande conditionnelle, interactions non quantifiées.' : 'Prédiction de l’ajout figé.', 'Écart perçu moins prévu, avec les deux marges ; aucune attribution causale automatique.']);
   }
   if (name === 'heating_power') {
     const volume = number(a, 'volumeL', 0.1, 500),
@@ -237,9 +381,27 @@ export function runBrewerTool(
   if (name === 'calculate_recipe') {
     const rig = r.brewhouse ?? c.equipment;
     const volumeL = number(a, 'volumeL', 0.1, 500, r.volumeL);
-    if (volumeL !== r.volumeL && !rig)
+    if (volumeL !== r.volumeL && !rig && !r.nolo?.enabled)
       throw new Error('Profil matériel nécessaire au redimensionnement.');
     const scaled = volumeL !== r.volumeL;
+    if (r.nolo?.enabled) {
+      // A physical blend/dilution is an ordered NOLO operation. Scaling an already
+      // measured beer as if it were a fresh grist would silently reuse its assay.
+      const secondRunnings = r.nolo.process === 'secondRunnings';
+      const scenario = { ...r, volumeL,
+        nolo: scaled && secondRunnings && r.nolo.secondRunnings
+          ? { ...r.nolo, secondRunnings: { ...r.nolo.secondRunnings, recoveredL: volumeL } } : r.nolo };
+      return result('Recette NOLO · bilan commun', {
+        volumeL, nolo: evaluateNoloRecipe(scenario, c.hopIndex?.knowledge ?? []),
+        og: secondRunnings ? r.nolo.secondRunnings?.sg ?? null : r.ogTarget ?? null,
+        fg: null, abv: null, recommendedWater: null,
+        waterSummary: secondRunnings ? null : recipeWaterSummary(scenario),
+        ingredients: { fermentables: r.fermentables, hops: r.hops, yeast: r.yeast }
+      }, [], [
+        'OG prévue ou mesurée sur le moût récupéré ; alcool et sucres évalués par le même bilan que l’écran NOLO.',
+        ...(scaled ? ['Volume hypothétique seulement, ingrédients non redimensionnés. Décrire une dilution ou un assemblage dans les opérations NOLO ; les anciennes analyses ne valident pas ce nouveau scénario.'] : [])
+      ]);
+    }
     let scenario: Recipe = { ...structuredClone(r), id: 'simulation' };
     if (scaled) {
       const sizing = BrewingMath.scaleRecipe({ ...r, id: 'simulation' }, volumeL, rig, rig);
@@ -271,10 +433,7 @@ export function runBrewerTool(
       og != null && predictedAttenuation != null
         ? BrewingMath.calculateFg(og, predictedAttenuation, extract?.unfermentable)
         : null;
-    const ibu =
-      og && recipe.hops.every((h) => h.alpha > 0 || h.stage === 'dryHop')
-        ? BrewingMath.calculateTinsethIBU(recipe.hops, volumeL, og, recipe.boilMin)
-        : null;
+    const ibu = recipeIbu(recipe.hops, volumeL, og, recipe.boilMin);
     const color = computeBeerColor(recipe.fermentables, volumeL);
     const water = recipe.waterPlan;
     const recommendedWater = rig
@@ -453,6 +612,8 @@ export function runBrewerTool(
   }
   if (name === 'check_ph') {
     const ph = number(a, 'ph', 0, 14);
+    const noloWaterIssue = noloWaterModelIssue(r.nolo, noloInput(r).mashRatioLKg ?? 0);
+    if (noloWaterIssue) return result('pH · mesure hors domaine du modèle', { ph, correction: null }, [], [noloWaterIssue]);
     if (!/mash|empât|sacchar|mais[c]?he/i.test(c.phase))
       return result(
         'pH · stade à préciser',
@@ -518,7 +679,8 @@ export function runBrewerTool(
       og,
       sg,
       apparentAttenuationPct: og && sg ? (100 * (og - sg)) / (og - 1) : null,
-      abv: og && sg ? BrewingMath.calculateABV(og, sg) : null,
+      abv: !r.nolo?.enabled && og && sg ? BrewingMath.calculateABV(og, sg) : null,
+      ...(r.nolo?.enabled ? { nolo: evaluateNoloRecipe(r, c.hopIndex?.knowledge ?? []) } : {}),
       pitch: temp != null ? pitchFeedback(r, temp) : null,
       log: c.batch?.gravityLog ?? []
     },
@@ -530,6 +692,7 @@ export function runBrewerTool(
         : [])
     ],
     [
+      ...(r.nolo?.enabled ? ['NOLO : une différence de densités ne remplace pas une analyse d’alcool adaptée aux faibles teneurs.'] : []),
       'Les bulles ne prouvent ni anomalie ni fin de fermentation. Confirmer la stabilité par plusieurs densités espacées, surtout après houblonnage à cru ; respecter la plage de la souche.'
     ]
   );

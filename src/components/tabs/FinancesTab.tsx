@@ -1,778 +1,173 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Wallet, 
-  Search, 
-  Filter, 
-  Download, 
-  FileSpreadsheet, 
-  Plus, 
-  Trash2, 
-  FileText, 
-  ChevronDown, 
-  ChevronUp, 
-  Edit3, 
-  Copy, 
-  Check, 
-  FolderTree, 
-  RotateCcw,
-  Sparkles,
-  Calendar,
-  Layers,
-  ChevronLeft,
-  ChevronRight,
-  Camera,
-  UploadCloud
-} from 'lucide-react';
-import { Transaction, FinanceCategory, BudgetLine, AppConfig, TimeFilterPeriod } from '../../types';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Plus, ChevronRight, Settings2, FileDown, CalendarDays, Wheat, Wrench, AlertCircle, Check } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import type { Transaction, BudgetLine, AppConfig, TimeFilterPeriod, Recipe, Batch, StockItem } from '../../types';
+import type { FinancialAsset, FinancialPlan } from '../../domain/finance/types';
+import { FinanceService } from '../../services/financeService';
+import { FinancialArchiveService } from '../../services/financialArchiveService';
 import { StorageService } from '../../services/storage';
-import { ExcelService } from '../../services/excelService';
-import { DriveService } from '../../services/driveService';
-import { ReceiptService } from '../../services/receiptService';
+import { useStorageValue, useLiveSelection } from '../../hooks/useLiveData';
+import { formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionDirection, transactionVendor, isActiveTransaction, paymentState, summarizeLedger } from '../../domain/finance/ledger';
+import { buildForecast, forecastHorizonEnd, type ForecastItem } from '../../domain/finance/forecast';
+import { buildAnnualReport } from '../../domain/finance/annual';
+import { TaxWorkspace } from '../../ui/finance/TaxWorkspace';
+import type { BrewBudgetSnapshot } from '../../domain/finance/brewBudget';
+import { Sheet } from '../../ui/Sheet';
+import { ProfileSheet, PlanSheet, AssetSheet, ClosingSheet, PaymentSheet, Field, CATEGORY_LABELS, idFor } from '../../ui/finance/FinanceForms';
+import { ExpenseSheet } from '../../ui/finance/ExpenseSheet';
+import { BrewBudgetDialog } from '../../ui/finance/BrewBudgetDialog';
+import { TransactionDetails } from '../../ui/finance/TransactionDetails';
+import { MovementSheet } from '../../ui/finance/MovementSheet';
+import { ArchiveManagerSheet } from '../../ui/finance/ArchiveManagerSheet';
+import { TransactionJournal, type JournalRequest, type JournalScope } from '../../ui/finance/TransactionJournal';
+import { FinanceAssistant } from '../../ui/finance/FinanceAssistant';
+import { UpgradeWorkspace, UpgradeAnalytics, upgradeDateLabel } from '../../ui/finance/UpgradeWorkspace';
+import { UpgradeSheet } from '../../ui/finance/UpgradeSheet';
+import { isUpgradePlan } from '../../domain/finance/upgrades';
 import { EditTransactionModal } from '../EditTransactionModal';
-import { useLiveSelection } from '../../hooks/useLiveData';
-import { ConfirmModal } from '../ConfirmModal';
-import { ExpenseDonutChart } from '../charts/ExpenseDonutChart';
-import { CashflowBarChart } from '../charts/CashflowBarChart';
-import { DateUtils } from '../../services/dateUtils';
+import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
+import { useMobileLayout } from '../../ui/useViewport';
+import '../../ui/finance/finance.css';
 
 interface FinancesTabProps {
-  transactions: Transaction[];
-  budgetLines: BudgetLine[];
-  config: AppConfig;
-  globalTimeFilter: TimeFilterPeriod;
-  onOpenQuickAction: () => void;
+  transactions:Transaction[]; budgetLines:BudgetLine[]; config:AppConfig; globalTimeFilter:TimeFilterPeriod;
+  onOpenQuickAction:()=>void; recipes?:Recipe[]; batches?:Batch[]; stockItems?:StockItem[];
+  openTransactionRequest?:{id:string;at:number}|null;
 }
+const readFinance=()=>FinanceService.snapshot();
+const views=[['costs','Coûts'],['journal','Journal'],['forecast','Prévoir'],['projects','Projets'],['annual','Annuel']] as const;
+const labels={paid:'Payé',partial:'Partiellement payé',unpaid:'À payer',unknown:'Paiement à confirmer'};
+const shortDate=(date?:string)=>{const d=isoDate(date);return d?new Date(`${d}T12:00:00`).toLocaleDateString('fr-CH',{day:'numeric',month:'short',year:d.slice(0,4)===todayISO().slice(0,4)?undefined:'numeric'}):'Date à vérifier';};
+const monthLabel=(month:string)=>new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH',{month:'long',year:'numeric'});
+const EMPTY: never[]=[];
 
-export const FinancesTab: React.FC<FinancesTabProps> = ({
-  transactions,
-  budgetLines,
-  config,
-  globalTimeFilter,
-  onOpenQuickAction
-}) => {
-  // Persistent Filter States
-  const [selectedCategory, setSelectedCategory] = useState<string>(() => 
-    StorageService.getUiState('finances_category', 'all')
-  );
-  const [searchTerm, setSearchTerm] = useState<string>(() => 
-    StorageService.getUiState('finances_search', '')
-  );
-  const [viewMode, setViewMode] = useState<'by_month' | 'by_vendor' | 'flat'>(() =>
-    StorageService.getUiState('finances_view_mode', 'by_month')
-  );
-  const [showCharts, setShowCharts] = useState<boolean>(() => 
-    StorageService.getUiState('finances_show_charts', true)
-  );
-
-  // Pagination for flat view (15 items per page)
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const ITEMS_PER_PAGE = 15;
-
-  // Collapsible monthly sections (persisted)
-  const [openMonths, setOpenMonths] = useState<Record<string, boolean>>(() =>
-    StorageService.getUiState('finances_open_months', { '2026-04': true, '2026-01': true })
-  );
-
-  const [expandedTxId, setExpandedTxId] = useState<string | null>(null);
-  const [editingTx, setEditingTx] = useLiveSelection(transactions, 'id');
-  const [deletingTxId, setDeletingTxId] = useState<string | null>(null);
-  const [revertingTxId, setRevertingTxId] = useState<string | null>(null);
-  const [activeProofModal, setActiveProofModal] = useState<string | null>(null);
-  const [copiedDriveId, setCopiedDriveId] = useState<string | null>(null);
-
-  useEffect(() => {
-    StorageService.setUiState('finances_category', selectedCategory);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    StorageService.setUiState('finances_search', searchTerm);
-    setCurrentPage(1); // Reset page on search
-  }, [searchTerm]);
-
-  useEffect(() => {
-    StorageService.setUiState('finances_view_mode', viewMode);
-  }, [viewMode]);
-
-  useEffect(() => {
-    StorageService.setUiState('finances_show_charts', showCharts);
-  }, [showCharts]);
-
-  useEffect(() => {
-    StorageService.setUiState('finances_open_months', openMonths);
-  }, [openMonths]);
-
-  const toggleMonth = (monthKey: string) => {
-    setOpenMonths((prev) => ({ ...prev, [monthKey]: !prev[monthKey] }));
+export function FinancesTab({transactions,config,onOpenQuickAction,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest}:FinancesTabProps) {
+  const mobile=useMobileLayout();
+  const data=useStorageValue(readFinance);
+  const archives=useStorageValue(FinancialArchiveService.getArchives);
+  const [archiveOpen,setArchiveOpen]=useState(false),[journalRequest,setJournalRequest]=useState<JournalRequest>();
+  const [journalScope,setJournalScope]=useState<JournalScope>('current');
+  const handledOpenRequest=useRef<string>('');
+  const [view,setView]=useState<typeof views[number][0]>(()=>StorageService.getUiState('finances_workspace',mobile?'journal':'costs'));
+  const [month,setMonth]=useState(todayISO().slice(0,7)),[allDates,setAllDates]=useState(false);
+  const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);
+  const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
+  const [includeEquipmentProjects,setIncludeEquipmentProjects]=useState(true);
+  const [upcomingLimit,setUpcomingLimit]=useState(6),[chartOpen,setChartOpen]=useState(false);
+  const [movement,setMovement]=useState<Transaction|null|undefined>(undefined),[closingId,setClosingId]=useState('');
+  const [profileOpen,setProfileOpen]=useState(false),[expenseOpen,setExpenseOpen]=useState(false),[newEquipment,setNewEquipment]=useState(false);
+  const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
+  const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
+  const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
+  const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile),[transactions,data.payments,data.profile]);
+  const active=useMemo(()=>transactions.filter(isActiveTransaction),[transactions]);
+  const undated=active.filter(t=>!isoDate(t.date));
+  const period=useMemo(()=>active.filter(t=>allDates||isoDate(t.date)?.startsWith(month)),[active,allDates,month]);
+  const isCost=(t:Transaction)=>transactionKind(t)==='expense'||transactionKind(t)==='refund'&&transactionDirection(t,transactions)==='in';
+  const costSign=(t:Transaction)=>transactionKind(t)==='refund'?-1:1;
+  const expenses=useMemo(()=>period.filter(isCost),[period]);
+  const totals=useMemo(()=>{const sums=new Map<string,number>();for(const t of expenses){if(t.finance?.lines.length){for(const l of t.finance.lines){const cat=l.category??(l.kind==='equipment'?'materiel':l.kind==='cleaning'?'nettoyage':['ingredient','packaging'].includes(l.kind)?'brassage':t.category);sums.set(cat,(sums.get(cat)??0)+costSign(t)*l.amountCents);}}else sums.set(t.category,(sums.get(t.category)??0)+costSign(t)*transactionAmount(t));}return [...sums.entries()].sort((a,b)=>b[1]-a[1]);},[expenses]);
+  const sum=expenses.reduce((n,t)=>n+costSign(t)*transactionAmount(t),0);
+  const vendors=useMemo(()=>{const sums=new Map<string,number>();expenses.forEach(t=>{const v=transactionVendor(t)||'Fournisseur à compléter';sums.set(v,(sums.get(v)??0)+costSign(t)*transactionAmount(t));});return [...sums.entries()].sort((a,b)=>b[1]-a[1]);},[expenses]);
+  const previousMonth=new Date(Number(month.slice(0,4)),Number(month.slice(5))-2,1);const previousKey=`${previousMonth.getFullYear()}-${String(previousMonth.getMonth()+1).padStart(2,'0')}`;
+  const previousTotal=active.filter(t=>isCost(t)&&isoDate(t.date)?.startsWith(previousKey)).reduce((n,t)=>n+costSign(t)*transactionAmount(t),0);
+  const forecastWithProjects=useMemo(()=>buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13}),[transactions,data]);
+  const forecast=useMemo(()=>includeEquipmentProjects?forecastWithProjects:buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13,includeEquipmentProjects:false}),[transactions,data,forecastWithProjects,includeEquipmentProjects]);
+  const endKey=forecastHorizonEnd(todayISO(),horizon);
+  const upcoming=forecast.items.filter(i=>i.date<endKey);
+  const projectOut=forecastWithProjects.items.filter(i=>i.source==='equipment'&&i.date<endKey).reduce((sum,item)=>sum+item.amountCents,0);
+  const openPlan=(p:FinancialPlan)=>{if(isUpgradePlan(p))setUpgrade(p);else setPlan(p);};
+  const invoiceOut=upcoming.filter(i=>i.direction==='out'&&i.source==='invoice').reduce((s,i)=>s+i.amountCents,0);
+  const estimatedOut=upcoming.filter(i=>i.direction==='out'&&i.source!=='invoice').reduce((s,i)=>s+i.amountCents,0);
+  let projectedCash=ledger.cashComplete?ledger.cashCents:null;
+  const forecastChart=forecast.months.filter(m=>m.month<endKey.slice(0,7)||(m.month===endKey.slice(0,7)&&endKey.slice(8)!=='01')).map(m=>{const rows=upcoming.filter(i=>i.date.startsWith(m.month));const out=rows.filter(i=>i.direction==='out').reduce((sum,i)=>sum+i.amountCents,0),income=rows.filter(i=>i.direction==='in').reduce((sum,i)=>sum+i.amountCents,0);if(projectedCash!=null)projectedCash+=income-out;return {label:monthLabel(m.month),expense:out/100,balance:projectedCash==null?null:projectedCash/100};});
+  const yearClosings=data.closings.filter(c=>c.year===year);
+  const latestClosing=yearClosings.find(c=>c.id===closingId)??yearClosings[0];
+  const annual=useMemo(()=>latestClosing?.report??buildAnnualReport({year,transactions,payments:data.payments,assets:data.assets,profile:{...data.profile,vatRegistered:data.profile.vatRegistered||config.fiscal.isTvaRegistered},closing:latestClosing}),[year,transactions,data,latestClosing,config.fiscal.isTvaRegistered]);
+  const snapshots=useMemo(()=>{const seen=new Set<string>();return data.plans.filter(p=>p.brewEstimate).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).filter(p=>{const s=p.brewEstimate as BrewBudgetSnapshot,key=s.batchId??s.recipeId??p.id;if(seen.has(key))return false;seen.add(key);return true;});},[data.plans]);
+  const selectView=(v:typeof view)=>{setView(v);StorageService.setUiState('finances_workspace',v);};
+  const openJournal=(request:Omit<JournalRequest,'key'>)=>{setJournalRequest({...request,key:crypto.randomUUID()});selectView('journal');};
+  useEffect(()=>{
+    if(!openTransactionRequest)return;
+    const key=`${openTransactionRequest.id}:${openTransactionRequest.at}`;
+    if(handledOpenRequest.current===key)return;
+    const transaction=transactions.find(t=>t.id===openTransactionRequest.id);
+    if(!transaction)return;
+    handledOpenRequest.current=key;
+    setSelected(transaction);
+    setView('journal');StorageService.setUiState('finances_workspace','journal');
+    setJournalRequest({key,scope:'all',query:transaction.id,allDates:true});
+  },[openTransactionRequest,transactions]);
+  const financeAssistant=<FinanceAssistant view={view} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
+  const row=(t:Transaction)=>{const state=paymentState(t,data.payments,transactions),incoming=transactionDirection(t,transactions)==='in';return <button key={t.id} className="finance-row" onClick={()=>setSelected(t)}><div className="finance-row-main"><strong>{t.description}</strong><span className="finance-muted">{shortDate(t.date)} · {transactionVendor(t)||CATEGORY_LABELS[t.category]}</span></div><div className="finance-row-tail"><span className="finance-money">{incoming?'+ ':''}{formatCHF(transactionAmount(t))}</span><br/><span className={`finance-status ${state.overpaidCents>0?'alert':state.state}`}>{t.finance?.voidedAt?'Annulé':t.finance?.refundApplication==='offset'?'Imputé':state.overpaidCents>0?'Paiement à vérifier':state.state==='paid'&&state.appliedCreditCents>0?'Soldé':state.state==='partial'?<>Reste {formatCHF(state.remainingCents)}<br/>à {incoming?'encaisser':'payer'}</>:incoming&&state.state==='unpaid'?'À encaisser':incoming&&state.state==='paid'?'Encaissé':labels[state.state]}</span></div><ChevronRight size={16} className="shrink-0 text-cave-400"/></button>;};
+  const forecastRow=(item:ForecastItem)=>{
+    const invoice=item.source==='invoice'?transactions.find(t=>`invoice:${t.id}`===item.id):undefined;
+    const linkedPlan=item.planId?data.plans.find(p=>p.id===item.planId):undefined;
+    const due=isoDate(invoice?.finance?.dueDate);
+    const when=invoice?!due?'Date à préciser':due<todayISO()?`En retard · ${shortDate(due)}`:shortDate(due):shortDate(item.date);
+    const origin=item.source==='equipment'?'Projet de matériel':item.source==='trend'?'Estimation historique':item.source==='invoice'?'Facture':item.source==='brew'?(linkedPlan?.brewEstimate as BrewBudgetSnapshot|undefined)?.complete===false?'Brassin · à compléter':'Brassin':'Planifié';
+    const title=item.source==='trend'?`Dépenses courantes · ${CATEGORY_LABELS[item.category as keyof typeof CATEGORY_LABELS]??item.category}`:item.label;
+    return <button className="finance-row" key={item.id} onClick={()=>{
+      if(invoice)setSelected(invoice);
+      else if(linkedPlan)openPlan(linkedPlan);
+      else setNotice('Tendance calculée sur les dépenses courantes des mois complets, hors investissements et dépenses déjà planifiées.');
+    }}><div className="finance-row-main"><strong>{title}</strong><span className="finance-muted">{item.source==='equipment'&&linkedPlan?upgradeDateLabel(linkedPlan):when} · {origin}</span></div><span className="finance-money">{item.direction==='in'?'+ ':''}{formatCHF(item.amountCents)}</span><ChevronRight size={16}/></button>;
   };
+  return <div className="finance">
+    <div className="mb-2 sm:mb-0">
+    <ViewNavigation label="Vue des finances" value={view} onChange={selectView} panelIdPrefix="finance-" options={views.map(([value,label])=>({value,label}))}>
+    <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button key={key} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
+    </ViewNavigation></div>
+    {notice&&<div className="finance-notice" role="status">{notice}<button className="finance-link" onClick={()=>setNotice('')}>Fermer</button></div>}
+    {undated.length>0&&<p className="finance-notice">{undated.length} pièce(s) avec une date à corriger. <button className="finance-link" onClick={()=>openJournal({scope:'all',allDates:true,filter:'review'})}>Retrouver ces pièces dans l’historique</button></p>}
+    <section role="tabpanel" id={`finance-${view}`} aria-label={views.find(v=>v[0]===view)?.[1]}>
+      {!mobile&&<div className="finance-heading"><h2>{view==='costs'?'Comprendre mes coûts':view==='journal'?'Mes opérations':view==='forecast'?'Les prochains mois':view==='projects'?'Faire évoluer la brasserie':'Préparer mon année'}</h2><button className="min-h-touch min-w-touch flex items-center justify-center" aria-label="Mes repères financiers" onClick={()=>setProfileOpen(true)}><Settings2 size={21}/></button></div>}
+      {view==='costs'&&<MobileDetails title="Choisir la période" summary={allDates?'Tout l’historique':monthLabel(month)}><div className="finance-actions finance-period"><Field label="Période"><input type="month" value={month} onChange={e=>{if(e.target.value){setMonth(e.target.value);setAllDates(false);}}}/></Field><button className="finance-link self-end" aria-pressed={allDates} onClick={()=>setAllDates(!allDates)}>{allDates?<Check size={16}/>:<CalendarDays size={16}/>}Tout l’historique</button></div></MobileDetails>}
+      {view==='costs'&&<>
+        <div className="finance-summary"><span className="finance-label">Dépenses nettes enregistrées · {allDates?'Tout l’historique':monthLabel(month)}</span><div className="reading finance-money">{formatCHF(sum)}</div>{!allDates&&previousTotal>0&&<p className="finance-muted">{sum>=previousTotal?'+':'−'}{formatCHF(Math.abs(sum-previousTotal))} par rapport à {monthLabel(previousKey)}{month===todayISO().slice(0,7)?' · mois en cours':''}</p>}<MobileDetails title="Détail du total" className="mt-2"><div className="finance-split"><div><span className="finance-label">Matières et brassage</span><span className="finance-money">{formatCHF(totals.find(([k])=>k==='brassage')?.[1]??0)}</span></div><div><span className="finance-label">Matériel</span><span className="finance-money">{formatCHF(totals.find(([k])=>k==='materiel')?.[1]??0)}</span></div></div></MobileDetails></div>
+        <div className="finance-columns"><section className="finance-section"><div className="finance-heading"><h3>Répartition des dépenses</h3></div>{totals.length?<div className="finance-bars">{totals.map(([cat,amount])=><button className="finance-bar" key={cat} onClick={()=>openJournal({scope:'all',category:cat,month,allDates})}><span>{CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]??cat}</span><span className="finance-bar-track"><span className="finance-bar-fill" style={{display:'block',width:`${Math.min(100,Math.max(0,amount/Math.max(1,sum)*100))}%`}}/></span><span className="finance-money">{formatCHF(amount)}</span></button>)}</div>:<div className="finance-empty"><Wheat className="mx-auto"/><h3>Aucune dépense sur cette période</h3><p>Ajoute un achat pour retrouver ici les coûts de ta brasserie.</p><button className="finance-link mx-auto" onClick={()=>setExpenseOpen(true)}>Ajouter une dépense</button></div>}</section>
+        <section className="finance-section"><div className="finance-heading"><h3>Coût des brassins</h3></div>{snapshots.length?<div className="finance-list">{snapshots.slice(0,6).map(p=>{const s=p.brewEstimate as BrewBudgetSnapshot;return <button className="finance-row" key={p.id} onClick={()=>{const batch=batches.find(b=>b.id===s.batchId),recipe=recipes.find(r=>r.id===s.recipeId);if(batch||recipe)setBudget({batch,recipe});else setNotice('La recette de ce budget est absente. Le budget enregistré reste conservé.');}}><div className="finance-row-main"><strong>{s.title}</strong><span className="finance-muted">{s.netVolumeL} L · {s.complete?'Estimation enregistrée':'Estimation partielle'}</span></div><span className="finance-money">{s.costPerL!=null?`${formatCHF(Math.round(s.costPerL*100))}/L`:'À compléter'}</span><ChevronRight size={16}/></button>;})}</div>:<p className="finance-muted">Estime un brassin pour connaître son coût par litre et les achats nécessaires.</p>}<button className="finance-link" onClick={()=>setBudgetPicker(true)}><Plus size={18}/>Estimer un brassin</button></section></div>
+        {!!vendors.length&&<section className="finance-section"><h3>Principaux fournisseurs</h3><div className="finance-list">{vendors.slice(0,5).map(([name,amount])=><button key={name} className="finance-row" onClick={()=>openJournal({scope:'all',query:name==='Fournisseur à compléter'?'':name,month,allDates})}><span className="finance-row-main">{name}</span><span className="finance-money">{formatCHF(amount)}</span><ChevronRight size={16}/></button>)}</div></section>}
+        <MobileDetails title="Évolution de la brasserie" className="mt-4"><UpgradeAnalytics plans={data.plans} transactions={transactions} payments={data.payments} onOpen={setUpgrade} onBrowse={()=>selectView('projects')}/></MobileDetails>
+        {financeAssistant}
+      </>}
+      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onSale={onOpenQuickAction} onPrivateMovement={()=>setMovement(null)} onScopeChange={setJournalScope}/>{financeAssistant}</>}
+      {view==='forecast'&&<>
+        <div className="finance-filter" role="group" aria-label="Horizon de prévision">{[[30,'30 jours'],[90,'90 jours'],[365,'12 mois']].map(([value,label])=><button key={value} aria-pressed={horizon===value} onClick={()=>{setHorizon(Number(value) as 30|90|365);setUpcomingLimit(6);}}>{label}</button>)}</div>
+        <div className="finance-summary"><span className="finance-label">Sorties prévues · {horizon===365?'12 mois':`${horizon} jours`}</span><div className="reading finance-money">{formatCHF(invoiceOut+estimatedOut)}</div><MobileDetails title="Factures, budgets et trésorerie" className="mt-2"><div className="finance-split"><div><span className="finance-label">Factures à régler</span><span className="finance-money">{formatCHF(invoiceOut)}</span></div><div><span className="finance-label">Budgets et estimations</span><span className="finance-money">{formatCHF(estimatedOut)}</span></div></div><p className="finance-muted mt-4">Trésorerie connue : {ledger.cashCents==null?'solde à renseigner':formatCHF(ledger.cashCents)}{ledger.cashCents!=null&&!ledger.cashComplete?' · à compléter':''}</p><p className="finance-muted mt-2"><span>Solde estimé en fin de période</span> : <strong className={projectedCash!=null&&projectedCash<0?'text-amber-200':'text-cave-100'}>{projectedCash==null?'À compléter':formatCHF(projectedCash)}</strong></p></MobileDetails></div>
+        {mobile&&projectedCash!=null&&projectedCash<0&&<p className="finance-notice" role="status">Trésorerie estimée en fin de période : {formatCHF(projectedCash)}.</p>}
+        {projectOut>0&&<div className="upgrade-forecast-impact"><label className="finance-check"><input type="checkbox" checked={includeEquipmentProjects} onChange={e=>setIncludeEquipmentProjects(e.target.checked)}/>Inclure mes projets de matériel · {formatCHF(projectOut)}</label><p className="finance-muted">Les factures restent incluses, même sans les projets.</p></div>}
 
-  // Helper to parse date "DD.MM.YYYY"
-  const parseDate = (dStr?: string) => {
-    if (!dStr) return null;
-    const parts = dStr.split('.');
-    if (parts.length === 3) {
-      return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
-    }
-    return null;
-  };
-
-  // 1. Filter by Global Time Period
-  const timeFilteredTxs = useMemo(() => {
-    return transactions.filter((tx) => DateUtils.isDateInPeriod(tx.date, globalTimeFilter));
-  }, [transactions, globalTimeFilter]);
-
-  // 2. Filter by Category & Search
-  const filteredTxs = useMemo(() => {
-    return timeFilteredTxs.filter((tx) => {
-      const matchesCat = selectedCategory === 'all' || tx.category === selectedCategory;
-      const matchesSearch = 
-        tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (tx.subcategory && tx.subcategory.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (tx.proofNotes && tx.proofNotes.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        tx.id.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesCat && matchesSearch;
-    });
-  }, [timeFilteredTxs, selectedCategory, searchTerm]);
-
-  // Totals (Strict TTC Accounting & Memoized)
-  const { totalApports, totalRecettes, totalCharges, totalChargesTTC, cashDispo } = useMemo(() => {
-    let apports = 0;
-    let recettes = 0;
-    let chargesHT = 0;
-    let chargesTTC = 0;
-
-    filteredTxs.forEach((t) => {
-      if (t.category === 'apports') {
-        apports += t.amountHT;
-      } else if (t.category === 'recettes') {
-        recettes += t.amountHT;
-      } else {
-        chargesHT += t.amountHT;
-        chargesTTC += (t.amountTTC || t.amountHT);
-      }
-    });
-
-    const dispo = apports + recettes - chargesTTC;
-
-    return {
-      totalApports: apports,
-      totalRecettes: recettes,
-      totalCharges: chargesHT,
-      totalChargesTTC: chargesTTC,
-      cashDispo: dispo
-    };
-  }, [filteredTxs]);
-
-  // 3. Grouping by Month
-  const monthlyGroups = useMemo(() => {
-    const groups: Record<string, { label: string; count: number; totalTTC: number; txs: Transaction[] }> = {};
-
-    filteredTxs.forEach((tx) => {
-      const d = parseDate(tx.date);
-      let key = 'Inconnu';
-      let label = 'Date inconnue';
-      if (d) {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        key = `${y}-${m}`;
-        const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-        label = `${monthNames[d.getMonth()]} ${y}`;
-      }
-
-      if (!groups[key]) {
-        groups[key] = { label, count: 0, totalTTC: 0, txs: [] };
-      }
-      groups[key].count += 1;
-      groups[key].totalTTC += (tx.amountTTC || tx.amountHT);
-      groups[key].txs.push(tx);
-    });
-
-    return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
-  }, [filteredTxs]);
-
-  // 4. Grouping by Vendor
-  const vendorGroups = useMemo(() => {
-    const groups: Record<string, { count: number; totalTTC: number; txs: Transaction[] }> = {};
-
-    filteredTxs.forEach((tx) => {
-      const vendor = tx.proofNotes?.replace('Fournisseur: ', '').trim() || tx.description || 'Divers';
-      if (!groups[vendor]) groups[vendor] = { count: 0, totalTTC: 0, txs: [] };
-      groups[vendor].count += 1;
-      groups[vendor].totalTTC += (tx.amountTTC || tx.amountHT);
-      groups[vendor].txs.push(tx);
-    });
-
-    return Object.entries(groups).sort((a, b) => b[1].totalTTC - a[1].totalTTC);
-  }, [filteredTxs]);
-
-  // 5. Pagination for Flat View
-  const totalPages = Math.max(1, Math.ceil(filteredTxs.length / ITEMS_PER_PAGE));
-  const paginatedTxs = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredTxs.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredTxs, currentPage]);
-
-  const handleConfirmDelete = () => {
-    if (deletingTxId) {
-      StorageService.deleteTransaction(deletingTxId);
-      setDeletingTxId(null);
-    }
-  };
-
-  const handleConfirmRevert = () => {
-    if (revertingTxId) {
-      StorageService.revertTransaction(revertingTxId);
-      setRevertingTxId(null);
-    }
-  };
-
-  const handleCopyDrivePath = (tx: Transaction) => {
-    const p = DriveService.generateDrivePath(tx);
-    navigator.clipboard.writeText(p);
-    setCopiedDriveId(tx.id);
-    setTimeout(() => setCopiedDriveId(null), 2000);
-  };
-
-  return (
-    <div className="space-y-4 pb-28 pt-2">
-      {/* 1. Global Period Active Banner */}
-      <div className="flex items-center justify-between px-3 py-2 bg-cave-900 rounded-2xl border border-cave-800 shadow-sm">
-        <div className="flex items-center space-x-1.5">
-          <Calendar className="w-3.5 h-3.5 text-ebc-straw" />
-          <span className="text-sm font-bold text-cave-200">
-            {DateUtils.getPeriodLabel(globalTimeFilter)}
-          </span>
-        </div>
-        <span className="text-sm font-mono text-cave-400 font-bold">
-          {filteredTxs.length} opération(s)
-        </span>
-      </div>
-
-      {/* 2. Top Controls Bar: Charts toggle & View mode */}
-      <div className="flex items-center justify-between px-1">
-        <div className="flex items-center space-x-1.5">
-          <button
-            onClick={() => setShowCharts(!showCharts)}
-            className={`px-3 py-1.5 rounded-xl text-sm font-bold border transition ${
-              showCharts 
-                ? 'bg-ebc-straw text-cave-950 border-ebc-gold shadow-md' 
-                : 'bg-cave-900 text-cave-400 border-cave-800'
-            }`}
-          >
-            {showCharts ? '📊 Masquer Graphiques' : '📊 Afficher Graphiques'}
-          </button>
-        </div>
-
-        {/* View Mode Selector (Mois / Fournisseur / Liste) */}
-        <div className="flex bg-cave-900 p-1 rounded-xl border border-cave-800 text-sm font-bold">
-          <button
-            onClick={() => setViewMode('by_month')}
-            className={`px-2.5 py-1 rounded-lg transition ${
-              viewMode === 'by_month' ? 'bg-ebc-straw text-cave-950' : 'text-cave-400'
-            }`}
-          >
-            Mois
-          </button>
-          <button
-            onClick={() => setViewMode('by_vendor')}
-            className={`px-2.5 py-1 rounded-lg transition ${
-              viewMode === 'by_vendor' ? 'bg-ebc-straw text-cave-950' : 'text-cave-400'
-            }`}
-          >
-            Tiers
-          </button>
-          <button
-            onClick={() => setViewMode('flat')}
-            className={`px-2.5 py-1 rounded-lg transition ${
-              viewMode === 'flat' ? 'bg-ebc-straw text-cave-950' : 'text-cave-400'
-            }`}
-          >
-            Liste
-          </button>
-        </div>
-      </div>
-
-      {/* 3. VISUAL CHARTS (RECHARTS) */}
-      {showCharts && (
-        <div className="space-y-3">
-          <ExpenseDonutChart
-            transactions={timeFilteredTxs}
-            selectedCategory={selectedCategory}
-            onSelectCategory={(cat) => setSelectedCategory(cat)}
-          />
-
-          <CashflowBarChart
-            apports={totalApports}
-            charges={totalChargesTTC}
-            disponible={cashDispo}
-          />
-        </div>
-      )}
-
-      {/* 4. Search & Category Filter Pills */}
-      <div className="space-y-2">
-        <div className="relative">
-          <Search className="w-4 h-4 text-cave-400 absolute left-3.5 top-3" />
-          <input
-            type="text"
-            name="finances_search_query"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck={false}
-            data-form-type="other"
-            data-lpignore="true"
-            data-1p-ignore="true"
-            data-bwignore="true"
-            placeholder="Rechercher par libellé, fournisseur, montant..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-cave-900 border border-cave-800 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-cave-50 placeholder-cave-600 focus:outline-none focus:border-ebc-straw"
-          />
-        </div>
-
-        <div className="flex space-x-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {[
-            { key: 'all', label: 'Tous flux', icon: '📋' },
-            { key: 'brassage', label: 'Brassage', icon: '🌾' },
-            { key: 'materiel', label: 'Matériel', icon: '⚙️' },
-            { key: 'nettoyage', label: 'CIP & Hygiène', icon: '🧼' },
-            { key: 'chargesFixes', label: 'Charges Fixes', icon: '🏢' },
-            { key: 'renovation', label: 'Local & Rénov', icon: '🔨' },
-            { key: 'divers', label: 'Divers', icon: '📦' },
-            { key: 'apports', label: 'Apports', icon: '💎' },
-            { key: 'recettes', label: 'Ventes', icon: '💰' },
-          ].map((cat) => (
-            <button
-              key={cat.key}
-              onClick={() => setSelectedCategory(cat.key)}
-              className={`px-3 py-1.5 rounded-xl text-sm font-semibold shrink-0 flex items-center space-x-1 border transition ${
-                selectedCategory === cat.key
-                  ? 'bg-ebc-straw text-cave-950 border-ebc-gold font-bold shadow-md scale-102'
-                  : 'bg-cave-900 text-cave-400 border-cave-800 hover:text-cave-200'
-              }`}
-            >
-              <span>{cat.icon}</span>
-              <span>{cat.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 5. Active Filter Summary */}
-      <div className="p-3 bg-cave-900 rounded-2xl border border-cave-800 flex items-center justify-between text-sm">
-        <div className="flex items-center space-x-2">
-          <span className="font-bold text-cave-200">{filteredTxs.length} écriture(s)</span>
-          <span className="text-cave-500">·</span>
-          <span className="text-cave-400">
-            Total : <strong className="text-ebc-straw font-mono">{totalChargesTTC.toFixed(2)} CHF TTC</strong>
-          </span>
-        </div>
-        <button
-          onClick={onOpenQuickAction}
-          className="px-3 py-1.5 bg-ebc-straw hover:bg-ebc-gold text-cave-950 font-black text-sm rounded-xl shadow transition"
-        >
-          + Saisie
-        </button>
-      </div>
-
-      {/* 6. CONTENT VIEWS (ORGANISÉES POUR DES DIZAINES DE MILLIERS DE DONNÉES) */}
-
-      {/* VIEW 1: GROUPED BY MONTH (ACCORDÉONS MENSUELS REPLIABLES) */}
-      {viewMode === 'by_month' && (
-        <div className="space-y-3">
-          {monthlyGroups.map(([monthKey, group]) => {
-            const isOpen = openMonths[monthKey] ?? true;
-            return (
-              <div key={monthKey} className="rounded-3xl bg-cave-900 border border-cave-800 overflow-hidden shadow-sm">
-                <button
-                  onClick={() => toggleMonth(monthKey)}
-                  className="w-full p-4 flex items-center justify-between bg-cave-900 hover:bg-cave-850/60 transition"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-2xl bg-ebc-straw/10 border border-ebc-straw/20 text-ebc-straw flex items-center justify-center font-bold text-sm">
-                      📅
-                    </div>
-                    <div className="text-left">
-                      <h4 className="font-bold text-sm text-cave-50">{group.label}</h4>
-                      <span className="text-sm text-cave-400 font-mono">
-                        {group.count} opération(s)
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <span className="font-mono font-black text-ebc-straw text-sm">
-                      {group.totalTTC.toLocaleString('fr-CH', { minimumFractionDigits: 2 })} CHF
-                    </span>
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-cave-400" /> : <ChevronDown className="w-4 h-4 text-cave-400" />}
-                  </div>
-                </button>
-
-                {isOpen && (
-                  <div className="p-3 pt-0 space-y-2 border-t border-cave-800/80">
-                    {group.txs.map((tx) => renderTransactionRow(tx, expandedTxId, setExpandedTxId, setEditingTx, setDeletingTxId, setRevertingTxId, handleCopyDrivePath, copiedDriveId, setActiveProofModal))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* VIEW 2: GROUPED BY VENDOR (VUE PAR FOURNISSEUR & TIERS) */}
-      {viewMode === 'by_vendor' && (
-        <div className="space-y-3">
-          {vendorGroups.map(([vendorName, group]) => (
-            <div key={vendorName} className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-2.5 shadow-sm">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-bold text-sm text-cave-50">{vendorName}</h4>
-                  <span className="text-sm text-cave-400 font-mono">{group.count} achat(s)</span>
-                </div>
-                <div className="text-right">
-                  <span className="font-mono font-black text-ebc-straw text-sm">
-                    {group.totalTTC.toLocaleString('fr-CH', { minimumFractionDigits: 2 })} CHF
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-1.5 pt-1 border-t border-cave-800/80">
-                {group.txs.map((tx) => renderTransactionRow(tx, expandedTxId, setExpandedTxId, setEditingTx, setDeletingTxId, setRevertingTxId, handleCopyDrivePath, copiedDriveId, setActiveProofModal))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* VIEW 3: FLAT PAGINATED VIEW (PAGES DE 15 LIGNES SANS AUCUN LAG) */}
-      {viewMode === 'flat' && (
-        <div className="space-y-3">
-          <div className="space-y-2">
-            {paginatedTxs.map((tx) => renderTransactionRow(tx, expandedTxId, setExpandedTxId, setEditingTx, setDeletingTxId, setRevertingTxId, handleCopyDrivePath, copiedDriveId, setActiveProofModal))}
-          </div>
-
-          {/* Pagination Controls */}
-          <div className="flex items-center justify-between p-3 bg-cave-900 rounded-2xl border border-cave-800 text-sm">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1.5 bg-cave-850 disabled:opacity-30 rounded-xl font-bold transition flex items-center space-x-1"
-            >
-              <ChevronLeft className="w-3.5 h-3.5 mr-0.5" /> Précédent
-            </button>
-            <span className="font-mono font-bold text-cave-200">
-              Page {currentPage} / {totalPages}
-            </span>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1.5 bg-cave-850 disabled:opacity-30 rounded-xl font-bold transition flex items-center space-x-1"
-            >
-              Suivant <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Modals */}
-      <EditTransactionModal
-        isOpen={Boolean(editingTx)}
-        transaction={editingTx}
-        onClose={() => setEditingTx(null)}
-        onSave={() => setEditingTx(null)}
-      />
-
-      <ConfirmModal
-        isOpen={Boolean(revertingTxId)}
-        title="Annuler cette saisie et restaurer les stocks ?"
-        message="Cette action va supprimer l'écriture comptable ET soustraire automatiquement les quantités ajoutées pour remettre le stock exactement à son état antérieur."
-        confirmLabel="Annuler & Restaurer les stocks"
-        isDanger={true}
-        onConfirm={handleConfirmRevert}
-        onCancel={() => setRevertingTxId(null)}
-      />
-
-      <ConfirmModal
-        isOpen={Boolean(deletingTxId)}
-        title="Supprimer cette écriture ?"
-        message="Cette action retirera la transaction du journal comptable sans toucher aux stocks."
-        confirmLabel="Supprimer"
-        isDanger={true}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setDeletingTxId(null)}
-      />
-
-      {activeProofModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-cave-950/80 backdrop-blur-sm animate-in fade-in">
-          {/*
-            ⚠️ `role` / `aria-modal` / `aria-labelledby` manquaient, et le bouton
-            de fermeture n'était qu'un caractère « ✕ » sans nom : au lecteur
-            d'écran, l'ouverture ne s'annonçait pas et la sortie ne se trouvait
-            pas.
-          */}
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="justificatif-titre"
-            className="bg-cave-900 border border-cave-800 rounded-2xl p-4 max-w-lg w-full space-y-3"
-          >
-            <div className="flex justify-between items-center">
-              <h4 id="justificatif-titre" className="text-sm font-bold text-cave-200">
-                Justificatif comptable
-              </h4>
-              <button
-                onClick={() => setActiveProofModal(null)}
-                aria-label="Fermer le justificatif"
-                className="p-3 text-cave-400 hover:text-cave-50"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="max-h-[70vh] overflow-auto rounded-xl border border-cave-800 bg-cave-950 flex items-center justify-center p-2">
-              {activeProofModal.startsWith('data:application/pdf') ? (
-                <iframe 
-                  src={activeProofModal} 
-                  title="Justificatif PDF" 
-                  className="w-full h-[65vh] rounded-lg border-0 bg-white" 
-                />
-              ) : (
-                <img 
-                  src={activeProofModal} 
-                  alt="Justificatif" 
-                  className="max-h-[65vh] object-contain rounded-lg" 
-                />
-              )}
-            </div>
-            <div className="flex justify-end">
-              <a
-                href={activeProofModal}
-                download={activeProofModal.startsWith('data:application/pdf') ? 'justificatif_comptable.pdf' : 'justificatif_comptable.jpg'}
-                className="px-4 py-2 bg-ebc-straw hover:bg-ebc-gold text-cave-950 font-bold text-sm rounded-xl transition flex items-center shadow-lg"
-              >
-                <Download className="w-3.5 h-3.5 mr-1.5" /> Télécharger
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Render an individual transaction row with full interactive actions
-function renderTransactionRow(
-  tx: Transaction,
-  expandedTxId: string | null,
-  setExpandedTxId: (id: string | null) => void,
-  setEditingTx: (tx: Transaction) => void,
-  setDeletingTxId: (id: string) => void,
-  setRevertingTxId: (id: string) => void,
-  handleCopyDrivePath: (tx: Transaction) => void,
-  copiedDriveId: string | null,
-  setActiveProofModal: (url: string) => void
-) {
-  const isExpanded = expandedTxId === tx.id;
-  const isRevenue = tx.category === 'recettes' || tx.category === 'apports';
-  const drivePath = DriveService.generateDrivePath(tx);
-  const hasStockImpact = tx.stockImpact && tx.stockImpact.length > 0;
-
-  return (
-    <div 
-      key={tx.id}
-      className="rounded-2xl bg-cave-950/70 border border-cave-800 hover:border-cave-700 transition overflow-hidden shadow-sm"
-    >
-      <div 
-        onClick={() => setExpandedTxId(isExpanded ? null : tx.id)}
-        className="p-3.5 flex items-center justify-between cursor-pointer active:bg-cave-850/50"
-      >
-        <div className="flex items-center space-x-3">
-          <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 ${
-            isRevenue
-              ? 'bg-hop/10 text-hop border border-hop/20'
-              : 'bg-cave-850 text-cave-200 border border-cave-700'
-          }`}>
-            {tx.category === 'apports' && '💎'}
-            {tx.category === 'recettes' && '💰'}
-            {tx.category === 'brassage' && '🌾'}
-            {tx.category === 'materiel' && '⚙️'}
-            {tx.category === 'nettoyage' && '🧼'}
-            {tx.category === 'chargesFixes' && '🏢'}
-            {tx.category === 'renovation' && '🔨'}
-            {tx.category === 'divers' && '📦'}
-          </div>
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="font-bold text-sm text-cave-50">{tx.description}</span>
-            </div>
-            <div className="text-sm text-cave-400 flex items-center space-x-1.5 mt-0.5 font-mono">
-              <span>{tx.date}</span>
-              <span>·</span>
-              <span className="text-ebc-straw/90 font-sans">{tx.subcategory}</span>
-              {hasStockImpact && (
-                <span className="text-footnote bg-hop/20 text-hop px-1 py-0.5 rounded font-sans font-bold">
-                  Stock
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2.5">
-          <div className="text-right">
-            <div className={`text-sm xs:text-sm font-black font-mono ${
-              isRevenue ? 'text-hop' : 'text-cave-50'
-            }`}>
-              {isRevenue ? '+' : '-'}
-              {tx.amountTTC ? tx.amountTTC.toFixed(2) : tx.amountHT.toFixed(2)} <span className="text-footnote font-normal">CHF</span>
-            </div>
-            <div className="text-footnote text-cave-400 font-mono">
-              HT: {tx.amountHT.toFixed(2)}
-            </div>
-          </div>
-          {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-cave-400" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-cave-500" />
-          )}
-        </div>
-      </div>
-
-      {/* Expanded Detail Panel */}
-      {isExpanded && (
-        <div className="px-4 pb-3 pt-1 border-t border-cave-800/80 bg-cave-950/70 space-y-2.5 text-sm animate-in fade-in duration-150">
-          <div className="grid grid-cols-2 gap-2 text-sm text-cave-400">
-            <div>
-              <span>TVA : </span>
-              <strong className="text-cave-200">{(tx.tvaRate * 100).toFixed(1)}% ({tx.tvaAmount.toFixed(2)} CHF)</strong>
-            </div>
-            <div>
-              <span>Fournisseur / Notes : </span>
-              <strong className="text-cave-200">{tx.proofNotes || '—'}</strong>
-            </div>
-          </div>
-
-          {/* Stock impact details if present */}
-          {hasStockImpact && (
-            <div className="p-2 rounded-xl bg-hop/10 border border-hop/20 text-sm space-y-1">
-              <span className="font-bold text-hop flex items-center">
-                📦 Impact sur le stock :
-              </span>
-              {tx.stockImpact!.map((imp, idx) => (
-                <div key={idx} className="flex justify-between text-footnote text-emerald-200 font-mono">
-                  <span>{imp.itemName} :</span>
-                  <span>+{imp.addedQty} {imp.unit} (était: {imp.previousStock} ➔ actuel: {imp.newStock})</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Google Drive Path Box */}
-          <div className="p-2 rounded-xl bg-water/10 border border-water/20 flex items-center justify-between text-sm">
-            <div className="truncate max-w-[240px] text-water font-mono text-footnote">
-              📁 {drivePath}
-            </div>
-            <button
-              onClick={() => handleCopyDrivePath(tx)}
-              className="px-2 py-0.5 bg-water/20 hover:bg-water/30 text-water rounded text-footnote font-semibold transition flex items-center shrink-0 ml-2"
-            >
-              {copiedDriveId === tx.id ? <Check className="w-3 h-3 mr-0.5" /> : <Copy className="w-3 h-3 mr-0.5" />}
-              {copiedDriveId === tx.id ? 'Copié' : 'Copier'}
-            </button>
-          </div>
-
-          {/* Actions: Revert, Edit, View Proof, Delete */}
-          <div className="flex items-center justify-between pt-1 border-t border-cave-800/60">
-            {hasStockImpact ? (
-              <button
-                onClick={() => setRevertingTxId(tx.id)}
-                className="px-2.5 py-1 bg-ebc-straw/10 hover:bg-ebc-straw/20 text-ebc-gold border border-ebc-straw/30 rounded-lg text-sm font-bold flex items-center transition"
-                title="Annuler l'écriture et remettre les stocks à leur niveau antérieur"
-              >
-                <RotateCcw className="w-3 h-3 mr-1 text-ebc-straw" /> Annuler & Restaurer
-              </button>
-            ) : (
-              <div />
-            )}
-
-            <div className="flex items-center space-x-1.5">
-              {/* If sale (recettes): Download Official Quittance PDF (Point Clé de Gaëtan) */}
-              {isRevenue && (
-                <button
-                  onClick={() => {
-                    const cfg = StorageService.getConfig();
-                    ReceiptService.downloadReceipt(
-                      {
-                        clientName: tx.proofNotes?.replace(/Client:\s*/, '').split('·')[0].trim() || 'Client Comptoir',
-                        beerName: tx.description.replace('Vente bière ', '').replace('Vente ', '').split('—')[0].trim() || 'Bière artisanale',
-                        amountTTC: tx.amountTTC || tx.amountHT,
-                        tvaRate: tx.tvaRate || 0.026,
-                        paymentMethod: tx.proofNotes?.includes('TWINT') ? 'TWINT' : (tx.proofNotes?.includes('Espèces') ? 'Espèces' : 'Virement'),
-                        date: tx.date,
-                        receiptNumber: `QUITTANCE-${tx.id.replace(/[^0-9]/g, '').slice(-6)}`
-                      },
-                      cfg
-                    );
-                  }}
-                  className="px-2.5 py-1 bg-hop/10 hover:bg-hop/20 text-hop border border-hop/30 rounded-lg text-sm font-bold flex items-center transition"
-                  title="Télécharger la quittance / justificatif de vente officiel suisse"
-                >
-                  <FileText className="w-3 h-3 mr-1 text-hop" /> Quittance PDF
-                </button>
-              )}
-
-              {tx.proofUrl ? (
-                <button
-                  onClick={() => setActiveProofModal(tx.proofUrl!)}
-                  className="px-2.5 py-1 bg-cave-850 hover:bg-cave-800 text-cave-200 rounded-lg text-sm font-medium flex items-center transition"
-                  title="Voir la pièce justificative attachée"
-                >
-                  <FileText className="w-3 h-3 mr-1 text-ebc-straw" /> Reçu
-                </button>
-              ) : (
-                <label 
-                  className="px-2.5 py-1 bg-cave-850 hover:bg-cave-800 text-cave-400 hover:text-cave-200 rounded-lg text-sm font-medium flex items-center cursor-pointer transition" 
-                  title="Joindre une photo ou scan de justificatif"
-                >
-                  <Camera className="w-3 h-3 mr-1 text-ebc-straw" /> + Preuve
-                  <input
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          const dataUrl = reader.result as string;
-                          const updated: Transaction = {
-                            ...tx,
-                            proofUrl: dataUrl,
-                            proofFileName: f.name,
-                            proofType: f.type || 'image/jpeg'
-                          };
-                          StorageService.updateTransaction(updated);
-                        };
-                        reader.readAsDataURL(f);
-                      }
-                    }}
-                  />
-                </label>
-              )}
-              <button
-                onClick={() => setEditingTx(tx)}
-                className="px-3 py-1 bg-ebc-straw/20 hover:bg-ebc-straw/30 text-ebc-gold border border-ebc-straw/40 rounded-lg text-sm font-bold flex items-center transition"
-              >
-                <Edit3 className="w-3 h-3 mr-1" /> Modifier
-              </button>
-              <button
-                onClick={() => setDeletingTxId(tx.id)}
-                className="px-2.5 py-1 bg-alert/10 hover:bg-alert/20 text-alert border border-alert/30 rounded-lg text-sm font-medium flex items-center transition"
-              >
-                <Trash2 className="w-3 h-3 mr-1" /> Supprimer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        <section className="finance-section"><h3>Prochaines échéances</h3><div className="finance-list">{upcoming.slice(0,upcomingLimit).map(forecastRow)}</div>{upcoming.length>upcomingLimit&&<button className="finance-link" onClick={()=>setUpcomingLimit(limit=>limit+6)}>Voir les {Math.min(6,upcoming.length-upcomingLimit)} échéances suivantes<ChevronRight size={16}/></button>}{!upcoming.length&&<div className="finance-empty"><h3>Aucune échéance prévue</h3><p>Ajoute tes charges récurrentes et les achats de tes prochains brassins.</p></div>}</section>
+        <MobileDetails title="Ajouter une prévision" className="mt-3"><div className="finance-actions finance-section"><button className="finance-action" onClick={()=>setBudgetPicker(true)}><Wheat size={20}/>Prévoir un brassin</button><button className="finance-action secondary" onClick={()=>setPlan(null)}><Plus size={20}/>Autre prévision</button></div></MobileDetails>
+        <details className="finance-disclosure finance-section" onToggle={e=>setChartOpen(e.currentTarget.open)}><summary>Voir l’évolution mois par mois</summary>{chartOpen&&<><p className="finance-muted">Trait doré : sorties prévues{ledger.cashComplete&&ledger.cashCents!=null?' · Pointillé vert : trésorerie':''}.</p><div className="finance-chart" aria-label="Évolution mensuelle des dépenses prévues"><ResponsiveContainer width="100%" height="100%"><AreaChart data={forecastChart} margin={{top:8,right:12,left:0,bottom:0}}><CartesianGrid stroke="#3D342E" vertical={false}/><XAxis dataKey="label" tick={{fill:'#B3A397',fontSize:14}} tickFormatter={v=>v.split(' ')[0].slice(0,4)} minTickGap={28}/><YAxis width={48} tick={{fill:'#B3A397',fontSize:14}}/><Tooltip contentStyle={{background:'#221D19',border:'1px solid #574A42',borderRadius:8}} formatter={(v:number,name:string)=>[formatCHF(Math.round(v*100)),name==='expense'?'Sorties prévues':'Trésorerie']}/><Area type="monotone" dataKey="expense" stroke="#F2C14E" fill="#F2C14E" fillOpacity={.09} isAnimationActive={false}/>{ledger.cashComplete&&ledger.cashCents!=null&&<Area type="monotone" dataKey="balance" stroke="#89B378" strokeDasharray="5 4" fill="transparent" isAnimationActive={false}/>}</AreaChart></ResponsiveContainer></div></>}</details>
+        {forecast.warnings.length>0&&<details className="finance-notice"><summary>{forecast.warnings.length} point{forecast.warnings.length>1?'s':''} à compléter pour affiner la prévision</summary><ul className="list-disc pl-5 mt-2 space-y-1">{forecast.warnings.map((w,i)=><li key={i}>{w}</li>)}</ul><button className="finance-link" onClick={()=>setProfileOpen(true)}>Renseigner mes repères</button></details>}
+        <details className="finance-section"><summary className="finance-link">Toutes mes prévisions ({data.plans.filter(p=>p.status!=='draft'&&!isUpgradePlan(p)).length})</summary>{data.plans.filter(p=>p.status!=='draft'&&!isUpgradePlan(p)).map(p=><button key={p.id} className="finance-row" onClick={()=>setPlan(p)}><span className="finance-row-main">{p.title}<br/><span className="finance-muted">{p.status==='active'?'À venir':p.status==='cancelled'?'Annulée':'Terminée'}</span></span><span>{formatCHF(p.amountCents)}</span><ChevronRight size={16}/></button>)}</details>
+        {financeAssistant}
+      </>}
+      {view==='projects'&&<><UpgradeWorkspace onOpenProject={setUpgrade}/>{financeAssistant}</>}
+      {view==='annual'&&<>
+        <Field label="Exercice"><input type="number" min="1900" max="2200" value={year} onChange={e=>{setYear(Number(e.target.value)||new Date().getFullYear());setClosingId('');}}/></Field>
+        {!!yearClosings.length&&<Field label="Version de l’année"><select value={latestClosing?.id??''} onChange={e=>setClosingId(e.target.value)}>{yearClosings.map(c=><option key={c.id} value={c.id}>{c.report?'Version figée':'Brouillon'} · {new Date(c.createdAt).toLocaleString('fr-CH')}</option>)}</select></Field>}
+        <TaxWorkspace key={year} report={annual} closing={latestClosing} transactions={transactions} assets={data.assets} profile={data.profile} companyName={config.company.name} onProfile={()=>setProfileOpen(true)} onInventories={()=>setClosingOpen(true)} onAsset={setAsset} onVersion={setClosingId}/>
+        <button className="finance-link" onClick={()=>setArchiveOpen(true)}>Gérer les archives par année<ChevronRight size={16}/></button>
+        {financeAssistant}
+      </>}
+    </section>
+    {!mobile&&(view==='costs'||view==='journal'&&journalScope!=='archives')&&<div className="finance-quick-entry"><button className="finance-action" onClick={()=>setExpenseOpen(true)}><Plus size={20}/>Ajouter une dépense</button><button className="finance-action secondary" onClick={()=>{setNewEquipment(true);setExpenseOpen(true);}} aria-label="Acheter du matériel"><Wrench size={20}/><span>Matériel</span></button></div>}
+    {archiveOpen&&<ArchiveManagerSheet transactions={transactions} payments={data.payments} archives={archives} closings={data.closings} onClose={()=>setArchiveOpen(false)} onSaved={setNotice} onBrowse={(year,archived)=>{setArchiveOpen(false);openJournal(archived?{scope:'archives',archiveYear:String(year),allDates:true}:{scope:'all',year:String(year),allDates:true});}}/>}
+    {mobile&&<button type="button" className="finance-link mt-3" onClick={()=>setProfileOpen(true)}><Settings2 size={18}/>Mes repères financiers</button>}
+    {profileOpen&&<ProfileSheet profile={data.profile} onClose={()=>setProfileOpen(false)}/>}
+    {expenseOpen&&<ExpenseSheet initialIntent={newEquipment?'equipment':'expense'} onClose={()=>{setExpenseOpen(false);setNewEquipment(false);}} onSaved={()=>setNotice('Dépense enregistrée.')}/>}
+    {upgrade!==undefined&&<UpgradeSheet plan={upgrade??undefined} onClose={()=>setUpgrade(undefined)} onOpenTransaction={tx=>{setUpgrade(undefined);setSelected(tx);}}/>}
+    {plan!==undefined&&<PlanSheet plan={plan??undefined} onClose={()=>setPlan(undefined)}/>}
+    {asset!==undefined&&<AssetSheet asset={asset??undefined} onClose={()=>setAsset(undefined)}/>}
+    {closingOpen&&<ClosingSheet year={year} closing={latestClosing?.report?{...latestClosing,id:idFor(`CLOTURE-${year}`),createdAt:new Date().toISOString(),report:undefined}:latestClosing} stockItems={stockItems} onClose={()=>{setClosingOpen(false);setClosingId('');}}/>}
+    {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} onClose={()=>setPaying(null)}/>}
+    {editing&&<EditTransactionModal isOpen transaction={transactions.find(t=>t.id===editing.id)??editing} onClose={()=>setEditing(null)} onSave={()=>setNotice('Opération mise à jour.')}/>}
+    {movement!==undefined&&<MovementSheet original={movement??undefined} onClose={()=>setMovement(undefined)} onSaved={()=>setNotice('Mouvement enregistré.')}/>}
+    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}}/>}
+    {budgetPicker&&<Sheet open title="Quel brassin veux-tu estimer ?" onClose={()=>setBudgetPicker(false)} className="finance-sheet"><div className="finance-list">{batches.filter(b=>b.status==='planifie').map(b=><button key={b.id} className="finance-row" onClick={()=>{setBudget({batch:b});setBudgetPicker(false);}}><span className="finance-row-main"><strong>{b.name}</strong><span className="finance-muted">{b.id} · {b.volumeL} L</span></span><ChevronRight size={18}/></button>)}{recipes.map(r=><button key={r.id} className="finance-row" onClick={()=>{setBudget({recipe:r});setBudgetPicker(false);}}><span className="finance-row-main"><strong>{r.name}</strong><span className="finance-muted">Recette · {r.volumeL} L</span></span><ChevronRight size={18}/></button>)}{!recipes.length&&!batches.some(b=>b.status==='planifie')&&<p className="finance-notice">Crée d’abord une recette dans Brassins pour calculer ses besoins.</p>}</div></Sheet>}
+    {budget&&<BrewBudgetDialog {...budget} onClose={()=>setBudget(null)}/>}
+  </div>;
 }

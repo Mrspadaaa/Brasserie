@@ -52,19 +52,26 @@ const BAND_TONE: Record<LevelBand, StockLevel['tone']> = {
 };
 
 /** Un nom de recette correspond-il à cet article de stock ? */
-function matches(itemName: string, ingredientName: string): boolean {
-  const a = itemName.trim().toLowerCase();
+function matches(item: StockItem, ingredientName: string, ref?: string, stockItems?: StockItem[]): boolean {
+  if (ref) return item.ref === ref;
+  const a = item.name.trim().toLowerCase();
   const b = ingredientName.trim().toLowerCase();
   if (!a || !b) return false;
-  return a === b || a.includes(b) || b.includes(a);
+  if (a !== b) return false;
+  return !stockItems || stockItems.filter(s => s.name.trim().toLowerCase() === b).length === 1;
 }
 
 /**
  * Quantité de cet article consommée par un brassin, dans l'unité de l'article.
  * Renvoie 0 si le brassin ne l'utilise pas.
  */
-function usageInBatch(item: StockItem, batch: Batch): number {
+function usageInBatch(item: StockItem, batch: Batch, stockItems?: StockItem[]): number {
   let total = 0;
+  if (batch.stockConsumption?.items?.length) {
+    return [...batch.stockConsumption.items, ...(batch.stockConsumption.pendingItems ?? [])]
+      .filter(line => line.stockItemRef === item.ref)
+      .reduce((sum, line) => sum + (Units.convert(line.quantity, line.unit, item.unit) ?? 0), 0);
+  }
 
   /*
    * ⚠️ On passe par `ingredientsOf` et JAMAIS par `batch.malts`.
@@ -78,31 +85,42 @@ function usageInBatch(item: StockItem, batch: Batch): number {
   const { fermentables, hops, yeast } = ingredientsOf(batch);
 
   fermentables.forEach((f) => {
-    if (matches(item.name, f.name)) {
+    if (matches(item, f.name, f.stockItemRef, stockItems)) {
       total += Units.convert(f.weightKg, 'kg', item.unit) ?? 0;
     }
   });
 
   hops.forEach((h) => {
-    if (matches(item.name, h.name)) {
+    if (matches(item, h.name, h.stockItemRef, stockItems)) {
       total += Units.convert(h.weightG, 'g', item.unit) ?? 0;
     }
   });
 
   // Les ajouts d'avant la refonte ; le nouveau modèle les range en fermentescibles.
-  batch.adjuncts?.forEach((a) => {
-    if (matches(item.name, a.name)) {
+  (batch.recipeSnapshot?.adjuncts ?? batch.adjuncts)?.forEach((a) => {
+    if (matches(item, a.name, a.stockItemRef, stockItems)) {
       total += Units.convert(a.amount, a.unit, item.unit) ?? 0;
     }
   });
 
-  if (item.category === 'Levure' && yeast && matches(item.name, yeast.name)) {
-    // La levure se compte en sachets, pas au poids : on prend la quantité telle
-    // qu'elle est ensemencée, et 1 à défaut.
-    total += Units.convert(yeast.qty || 1, yeast.unit || item.unit, item.unit) ?? yeast.qty ?? 1;
+  if (yeast && matches(item, yeast.name, yeast.stockItemRef, stockItems)) {
+    // A zero dose is intentional; an incompatible package cannot be treated as grams.
+    total += Units.convert(yeast.qty ?? 1, yeast.unit || item.unit, item.unit) ?? 0;
   }
 
   return total;
+}
+
+/** Physical ingredients still earmarked for fermentation after the brew day. */
+export function pendingStockQuantity(item: StockItem, batch: Batch): number {
+  if (batch.status === 'annule' || batch.status === 'termine') return 0;
+  return (batch.stockConsumption?.pendingItems ?? []).filter(line => line.stockItemRef === item.ref)
+    .reduce((sum, line) => sum + (Units.convert(line.quantity, line.unit, item.unit) ?? 0), 0);
+}
+
+function outstandingInBatch(item: StockItem, batch: Batch, stockItems?: StockItem[]): number {
+  if (batch.stockConsumption?.appliedAt) return pendingStockQuantity(item, batch);
+  return batch.status === 'planifie' ? usageInBatch(item, batch, stockItems) : 0;
 }
 
 /**
@@ -110,10 +128,11 @@ function usageInBatch(item: StockItem, batch: Batch): number {
  */
 function perBatchNeed(
   item: StockItem,
-  batches: Batch[]
+  batches: Batch[],
+  stockItems?: StockItem[]
 ): { need: number; source: StockLevel['source'] } {
-  const planned = batches.filter((b) => b.status === 'planifie');
-  const plannedUse = planned.map((b) => usageInBatch(item, b)).filter((q) => q > 0);
+  const planned = batches.filter((b) => b.status === 'planifie' && !b.stockConsumption?.appliedAt);
+  const plannedUse = planned.map((b) => usageInBatch(item, b, stockItems)).filter((q) => q > 0);
   if (plannedUse.length > 0) {
     return {
       need: plannedUse.reduce((a, b) => a + b, 0) / plannedUse.length,
@@ -122,7 +141,7 @@ function perBatchNeed(
   }
 
   const past = batches.filter((b) => b.status !== 'planifie' && b.status !== 'annule');
-  const pastUse = past.map((b) => usageInBatch(item, b)).filter((q) => q > 0);
+  const pastUse = past.map((b) => usageInBatch(item, b, stockItems)).filter((q) => q > 0);
   if (pastUse.length > 0) {
     return {
       need: pastUse.reduce((a, b) => a + b, 0) / pastUse.length,
@@ -137,9 +156,9 @@ function perBatchNeed(
   return { need: 0, source: 'aucune' };
 }
 
-export function computeStockLevel(item: StockItem, batches: Batch[]): StockLevel {
-  const stock = item.currentStock ?? 0;
-  const { need, source } = perBatchNeed(item, batches);
+export function computeStockLevel(item: StockItem, batches: Batch[], stockItems?: StockItem[]): StockLevel {
+  const stock = Math.max(0, (item.currentStock ?? 0) - batches.reduce((sum, b) => sum + pendingStockQuantity(item, b), 0));
+  const { need, source } = perBatchNeed(item, batches, stockItems);
 
   // Rien pour estimer : on le dit, plutôt que de simuler une jauge pleine.
   if (need <= 0) {
@@ -185,10 +204,9 @@ export function computeStockLevel(item: StockItem, batches: Batch[]): StockLevel
  * Manque à commander pour couvrir tous les brassins planifiés.
  * Renvoie 0 quand le stock suffit.
  */
-export function shortfall(item: StockItem, batches: Batch[]): number {
+export function shortfall(item: StockItem, batches: Batch[], stockItems?: StockItem[]): number {
   const needed = batches
-    .filter((b) => b.status === 'planifie')
-    .reduce((sum, b) => sum + usageInBatch(item, b), 0);
+    .reduce((sum, b) => sum + outstandingInBatch(item, b, stockItems), 0);
   const missing = needed - (item.currentStock ?? 0);
   return missing > 0 ? Units.round(missing, item.unit) : 0;
 }
@@ -196,10 +214,10 @@ export function shortfall(item: StockItem, batches: Batch[]): number {
 /** Les brassins planifiés qui consomment cet article, pour l'affichage des étiquettes. */
 export function allocatedBatches(
   item: StockItem,
-  batches: Batch[]
+  batches: Batch[],
+  stockItems?: StockItem[]
 ): Array<{ id: string; name: string; qty: number }> {
   return batches
-    .filter((b) => b.status === 'planifie')
-    .map((b) => ({ id: b.id, name: b.name, qty: usageInBatch(item, b) }))
+    .map((b) => ({ id: b.id, name: b.name, qty: outstandingInBatch(item, b, stockItems) }))
     .filter((x) => x.qty > 0);
 }

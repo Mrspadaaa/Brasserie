@@ -2,6 +2,7 @@ import React, { StrictMode } from 'react';
 import { render, screen, fireEvent, waitFor, cleanup, act } from '@testing-library/react';
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest';
 import { BrewerChat } from '../../src/ui/BrewerChat';
+import { FinanceAssistant } from '../../src/ui/finance/FinanceAssistant';
 import { brewerJobs } from '../../src/services/brewerJobs';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import type { BrewerTurn } from '../../src/services/brewerChat';
@@ -69,6 +70,48 @@ afterEach(() => {
   brewerJobs.stop();
 });
 describe('Conversation dans la recette / le brassin', () => {
+  it('prépare une analyse financière datée sans consommer de génération à l’ouverture', async () => {
+    vi.mocked(api.submit).mockImplementation(() => new Promise(() => {}));
+    render(<FinanceAssistant view="costs" month="2026-08" allDates={false} year={2025} horizon={90} />);
+    fireEvent.click(screen.getByRole('button', { name: /Comprendre mes dépenses/ }));
+    await waitFor(() => expect(api.history).toHaveBeenCalledWith({ kind: 'app', id: 'finances' }));
+    await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('2026-08');
+    expect(screen.getByText(/Gemini reçoit un résumé de tes comptes/)).toBeVisible();
+    expect(api.submit).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('Compare acheter, réparer ou attendre');
+    expect(api.submit).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Compare une nouvelle pompe à 300 CHF avec une réparation à 80 CHF.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
+    await waitFor(() => expect(api.submit).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(api.submit).mock.calls[0][0]).toMatchObject({
+      scope: { kind: 'app', id: 'finances' },
+      question: 'Compare une nouvelle pompe à 300 CHF avec une réparation à 80 CHF.',
+      editableTargets: []
+    });
+  });
+
+  it('porte l’exercice choisi dans le brouillon annuel et exige un envoi explicite', async () => {
+    render(<FinanceAssistant view="annual" month="2026-09" allDates={false} year={2024} horizon={30} />);
+    fireEvent.click(screen.getByRole('button', { name: /Préparer l’année 2024/ }));
+    await waitFor(() => expect(api.history).toHaveBeenCalled());
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('dossier annuel 2024');
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('Si cette année n’est pas couverte');
+    expect(api.submit).not.toHaveBeenCalled();
+  });
+
+  it('garde les questions financières disponibles après les premiers échanges', async () => {
+    vi.mocked(api.history).mockResolvedValue([turn('Analyse précédente')]);
+    render(<FinanceAssistant view="forecast" month="2026-09" allDates={false} year={2026} horizon={30} />);
+    fireEvent.click(screen.getByRole('button', { name: /Prévoir mes prochains paiements/ }));
+    await screen.findByText('Analyse précédente');
+    fireEvent.click(screen.getByText('Autres questions utiles'));
+    fireEvent.click(screen.getByRole('button', { name: 'Préparer un achat de matériel' }));
+    expect((screen.getByRole('textbox') as HTMLTextAreaElement).value).toContain('achat de matériel');
+    expect(api.submit).not.toHaveBeenCalled();
+  });
+
   it('ne transforme pas une réponse récupérée en erreur si le premier envoi expire ensuite', async () => {
     let reject!: (error: Error) => void;
     vi.mocked(api.submit).mockImplementation(
@@ -457,7 +500,7 @@ describe('Conversation dans la recette / le brassin', () => {
     vi.mocked(api.submit).mockRejectedValueOnce(new Error('network'));
     render(<BrewerChat {...props} />);
     await open();
-    const mode = screen.getByRole('radio', { name: 'Pro 3.1' });
+    const mode = screen.getByRole('radio', { name: 'Approfondi' });
     expect(mode).not.toBeChecked();
     fireEvent.click(mode);
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Compare mes malts' } });
@@ -472,13 +515,14 @@ describe('Conversation dans la recette / le brassin', () => {
     const mounted = render(<BrewerChat {...props} />);
     await open();
     expect(screen.getByRole('radio', { name: 'Auto' })).toBeChecked();
+    expect(screen.getByText('Flash adapte ses recherches et vérifie le conseil')).toBeVisible();
     fireEvent.click(screen.getByRole('radio', { name: 'Rapide' }));
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Propose un nom' } });
     fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
     await waitFor(() => expect(api.submit).toHaveBeenCalled());
     expect(vi.mocked(api.submit).mock.calls[0][0].mode).toBe('fast');
     expect(screen.getByRole('textbox')).toHaveValue('');
-    expect(screen.getByRole('radio', { name: 'Pro 3.1' })).toBeEnabled();
+    expect(screen.getByRole('radio', { name: 'Approfondi' })).toBeEnabled();
     mounted.unmount();
     render(<BrewerChat {...props} scope={{ kind: 'recipe', id: 'REC-B' }} />);
     await open();
@@ -523,7 +567,11 @@ describe('Conversation dans la recette / le brassin', () => {
             url: 'https://www.brauundrauchshop.ch/maris-otter',
             availability: 'in_stock',
             availabilityText: 'En stock',
-            checkedAt: Date.now()
+            checkedAt: Date.now(),
+            verifiedBy: 'product-page',
+            stockEvidence: 'visible-text',
+            packageLabel: '1 kg',
+            priceText: 'CHF 4.50'
           },
           {
             name: 'Röstgerste, Kg',
@@ -545,6 +593,47 @@ describe('Conversation dans la recette / le brassin', () => {
     );
     expect(screen.getByText('Annoncé en stock')).toBeVisible();
     expect(screen.getByText('Stock à revérifier')).toBeVisible();
+    const currentProduct = screen.getByRole('link', { name: /Maris Otter/ });
+    expect(currentProduct).toHaveTextContent('1 kg · CHF 4.50 · prix annoncé');
+    expect(currentProduct).toHaveTextContent('Lien produit vérifié');
+    expect(screen.getByRole('link', { name: /Röstgerste/ })).not.toHaveTextContent('Lien produit vérifié');
+  });
+  it('garde les petits conditionnements et deux boutiques sans affirmer un stock sans preuve', async () => {
+    const t = turn();
+    t.evidence = [{ id: 'E1', name: 'find_brewing_suppliers', label: 'Achats', facts: [], limits: [], data: {},
+      products: ['5 kg', 'Au gramme', '100 g', '1 kg', '2 kg', '3 kg', '4 kg'].map((packageLabel, index) => ({
+        name: `Cascade · ${packageLabel}`, supplier: index === 2 ? 'Boutique B' : 'Boutique A',
+        url: `https://example.invalid/product-${index}`, packageLabel, checkedAt: Date.now(),
+        verifiedBy: 'product-page' as const, stockEvidence: 'none' as const,
+        availability: 'in_stock' as const, availabilityText: ''
+      })) }];
+    vi.mocked(api.history).mockResolvedValue([t]);
+    render(<BrewerChat {...props} />);
+    await open();
+    const products = screen.getAllByRole('link', { name: /Cascade/ });
+    expect(products).toHaveLength(6);
+    expect(products[0]).toHaveTextContent('Au gramme');
+    expect(products[1]).toHaveTextContent('Boutique B');
+    expect(products[1]).toHaveTextContent('100 g');
+    expect(products.every(product => product.textContent?.includes('Stock non confirmé'))).toBe(true);
+    expect(screen.queryByText('Annoncé en stock')).not.toBeInTheDocument();
+  });
+  it('affiche d’abord le conditionnement demandé et retire les fiches non retenues', async () => {
+    const t = turn();
+    t.advice.productUrls = ['https://example.invalid/exact', 'https://example.invalid/loose'];
+    t.evidence = [{ id: 'E1', name: 'find_brewing_suppliers', label: 'Achats', facts: [], limits: [], data: {},
+      products: [
+        { name: 'Cascade au gramme', url: 'https://example.invalid/loose', supplier: 'A' },
+        { name: 'Sucre', url: 'https://example.invalid/sugar', supplier: 'B' },
+        { name: 'Cascade 100 g', url: 'https://example.invalid/exact', supplier: 'B' }
+      ].map(p => ({ ...p, availability: 'unknown' as const, availabilityText: '', checkedAt: Date.now(), verifiedBy: 'product-page' as const })) }];
+    vi.mocked(api.history).mockResolvedValue([t]);
+    render(<BrewerChat {...props} />);
+    await open();
+    const cards = screen.getAllByRole('link', { name: /Cascade/ });
+    expect(cards[0]).toHaveTextContent('Cascade 100 g');
+    expect(cards).toHaveLength(2);
+    expect(screen.queryByRole('link', { name: /Sucre/ })).not.toBeInTheDocument();
   });
   it('ne place jamais une réponse tardive dans une autre recette', async () => {
     let resolve!: (value: { turn: BrewerTurn }) => void;

@@ -107,7 +107,7 @@ describe('Le rinçage affiche son alcalinité après la dose retenue', () => {
     fireEvent.click(screen.getByRole('tab', { name: 'Rinçage' }));
     expect(screen.getByLabelText('HCO₃ après acide — rinçage')).toHaveTextContent('0');
     expect(screen.getByText(/ne diminue plus le HCO₃/)).toHaveTextContent(/pH/);
-    expect(screen.getByRole('img', { name: /Profil ionique/ })).toHaveAccessibleName(/Alcalinité .*167 ppm/);
+    expect(screen.getByRole('img', { name: /Profil ionique/ })).toHaveAccessibleName(/Alcalinité .*166,7 ppm/);
   });
 });
 
@@ -192,13 +192,13 @@ describe('La dose posée à la main gèle l’acide — et le dit', () => {
     expect(doseAcide('empâtage')).not.toBe(calcule);
   });
 
-  it('Doser rend aussi l’acide au calcul', () => {
+  it('Doser conserve l’acide manuel et propose un retour explicite au calcul', () => {
     monter();
     const calcule = doseAcide('empâtage');
     clic(/Ajouter 0\.5 mL — empâtage/i);
     fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
-    expect(screen.queryByRole('button', { name: 'Revenir aux doses d’acide calculées' })).not.toBeInTheDocument();
-    expect(doseAcide('empâtage')).not.toBe(calcule + 0.5);
+    expect(screen.getByRole('button', { name: 'Revenir aux doses d’acide calculées' })).toBeInTheDocument();
+    expect(doseAcide('empâtage')).toBe(calcule + 0.5);
   });
 });
 
@@ -234,10 +234,10 @@ describe('L’alcalinité se juge à la maische, pas sur une cible mobile de sty
       fireEvent.click(screen.getByRole('button', { name: /Proposer les doses/i }));
       const label = screen.getByRole('img', { name: /Profil ionique/ }).getAttribute('aria-label');
       expect(label).toMatch(
-        /Alcalinité[^)]*\)\s*[\d.]+ ppm pour [\d.]+ à [\d.]+ \(repère indicatif ; dosage selon le pH d’empâtage\)/
+        /Alcalinité[^)]*\)\s*[\d.,]+ ppm pour [\d.]+ à [\d.]+/
       );
       expect(document.body.textContent).toMatch(/Après l’acide|rien à corriger/);
-      expect(document.body.textContent).toMatch(/cible -?\d+ à -?\d+ ppm/);
+      expect(document.body.textContent).toMatch(/repère -?\d+ à -?\d+ ppm/);
     });
   }
 
@@ -248,7 +248,7 @@ describe('L’alcalinité se juge à la maische, pas sur une cible mobile de sty
         screen
           .getByRole('img', { name: /Profil ionique/ })
           .getAttribute('aria-label')!
-          .match(/Alcalinité[^)]*\)\s*([\d.]+) ppm/)?.[1]
+          .match(/Alcalinité[^)]*\)\s*([\d.,]+) ppm/)?.[1].replace(',', '.')
       );
     const avant = mesure();
     fireEvent.change(screen.getByLabelText(/à l’empâtage, en /), { target: { value: '4' } });

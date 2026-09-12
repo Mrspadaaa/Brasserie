@@ -1,0 +1,85 @@
+// Local full-catalogue performance and cancellation check. No production requests or writes.
+import puppeteer from 'puppeteer-core';
+import assert from 'node:assert/strict';
+import {mkdir,readdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+const base=process.env.HOP_WORKSHOP_QA_URL||'http://127.0.0.1:3015';
+assert(/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(base));
+const out=resolve('.codex-remote-attachments/hop-index/speed');await mkdir(out,{recursive:true});
+const compiled=process.env.HOP_SOLVER_BUILT_WORKER==='1'?(await readdir('dist/assets')).find(f=>/^hopSolver\.worker-.*\.js$/.test(f)):null;
+if(process.env.HOP_SOLVER_BUILT_WORKER==='1')assert(compiled,'Build the worker before testing it');
+const browser=await puppeteer.launch({executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',headless:true,args:['--mute-audio']});
+const reports=[];
+let activePage;
+const click=async(page,label)=>{const h=await page.waitForFunction(label=>[...document.querySelectorAll('button')].find(b=>b.getClientRects().length&&!b.disabled&&b.textContent.includes(label)),{timeout:15000},label);await h.asElement().evaluate(b=>b.scrollIntoView({block:'center'}));await h.asElement().click();await h.dispose();};
+const choose=async(page,label,value)=>{const id=await page.evaluate(label=>[...document.querySelectorAll('label')].find(l=>l.textContent.trim()===label)?.htmlFor,label);assert(id,label);await page.select('select[id="'+id+'"]',value);};
+try{
+ for(const width of [390,320,1280]){
+  const context=await browser.createBrowserContext(),page=await context.newPage(),errors=[];
+  activePage=page;
+  page.setDefaultTimeout(20000);await page.setViewport({width,height:1000,isMobile:width<600,hasTouch:width<600});
+  page.on('pageerror',e=>errors.push(e.message));
+  // Blocking in Chrome avoids Puppeteer's interception deadlock on module workers.
+  const cdp=await page.createCDPSession();await cdp.send('Network.enable');
+  await cdp.send('Network.setBlockedURLs',{urlPatterns:[{urlPattern:base+'/*',block:false}],urls:['http://*','https://*']});
+  await page.evaluateOnNewDocument(()=>localStorage.setItem('laffinee_ui_state',JSON.stringify({app_active_tab:'production',production_subtab:'recipes'})));
+  await page.goto(base+'/?dev-local',{waitUntil:'networkidle0'});
+  await page.waitForFunction(async()=>(await import('/src/services/storage.ts')).StorageService.isReady());
+  await page.waitForFunction(()=>!document.body.innerText.includes('Base initialisée avec'));
+  await page.evaluate(async compiledUrl=>{
+    const {StorageService}=await import('/src/services/storage.ts');
+    const rows=(await import('/src/data/yeastCatalogueBootstrap.json')).default;
+    const knowledge=[...new Map([...StorageService.getHopKnowledge(),...rows].map(r=>[r.id,r])).values()];
+    StorageService.getHopKnowledge=()=>knowledge;
+    const {FirestoreRepo}=await import('/src/services/firestoreRepo.ts');
+    window.__searchWrites=0;
+    for(const method of ['put','bulkWrite','remove'])FirestoreRepo[method]=()=>{window.__searchWrites++;throw Error('Unexpected write in performance search');};
+    window.__workerCreated=0;window.__workerStopped=0;window.__progressPackets=0;window.__detailPackets=0;
+    const NativeWorker=window.Worker;
+    window.Worker=class extends NativeWorker{constructor(url,options){const isHopSearch=String(url).includes('hopSolver.worker');super(isHopSearch&&compiledUrl?compiledUrl:url,options);this.isHopSearch=isHopSearch;if(this.isHopSearch){window.__workerCreated++;this.addEventListener('message',e=>{if(e.data.kind==='progress')window.__progressPackets++;else if(e.data.kind==='update')window.__detailPackets++;});}}terminate(){if(this.isHopSearch)window.__workerStopped++;super.terminate();}};
+  },compiled?base+'/dist/assets/'+compiled:null);
+  await click(page,'📜 Recettes');await click(page,'+ Recette');
+  await page.locator('#wz-title').fill('Vitesse du solver');
+  await click(page,'Construire le goût de ma bière');
+  await page.waitForSelector('[aria-label="Solver de houblonnage"]');
+  await choose(page,'Point de départ par style','free');
+  await click(page,'Agrumes');
+  await page.evaluate(()=>{window.__heartbeats=0;window.__heartbeat=setInterval(()=>window.__heartbeats++,16);});
+  const start=Date.now();
+  await click(page,'Trouver mes combinaisons');
+  await page.waitForSelector('[aria-label="Programme proposé par le solver"]');
+  const firstResultMs=Date.now()-start;
+  await page.waitForFunction(()=>!Array.from(document.querySelectorAll('button')).some(b=>b.textContent.includes('Arrêter la recherche')));
+  const completeMs=Date.now()-start;
+  const coverage=await page.$eval('[aria-label="Solver de houblonnage"]',e=>e.innerText.match(/\d+ houblons et \d+ levures présélectionnés[^.]*\./)?.[0]);
+  assert(coverage,'Bounded full-catalogue search');
+  assert(await page.evaluate(()=>window.__heartbeats>0&&window.__workerCreated===1&&window.__workerStopped===1&&window.__searchWrites===0));
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow');
+  await page.$eval('[aria-label="Programme proposé par le solver"]',e=>e.scrollIntoView({block:'start'}));await page.screenshot({path:resolve(out,'quick-'+width+'.png')});
+  await choose(page,'Étendue de la recherche','exhaustive');
+  await click(page,'Trouver mes combinaisons');
+  await page.waitForSelector('[aria-label="Programme proposé par le solver"]');
+  assert(await page.evaluate(()=>Array.from(document.querySelectorAll('button')).some(b=>b.textContent.trim()==='Essais documentés'&&!b.disabled)),'Navigation stays enabled');
+  await page.waitForFunction(()=>window.__progressPackets>0);
+  const stoppedAt=Date.now();await click(page,'Arrêter la recherche');
+  await page.waitForFunction(()=>document.body.innerText.includes('Recherche arrêtée'));
+  const cancelMs=Date.now()-stoppedAt;
+  assert(await page.$('[aria-label="Programme proposé par le solver"]'),'Partial result kept after stop');
+  await page.screenshot({path:resolve(out,'stopped-'+width+'.png')});
+  await click(page,'Trouver mes combinaisons');await page.waitForSelector('[aria-label="Programme proposé par le solver"]');
+  await choose(page,'Point de départ par style','lager');
+  await page.waitForFunction(()=>!document.querySelector('[aria-label="Programme proposé par le solver"]'));
+  assert(await page.evaluate(()=>window.__workerStopped===window.__workerCreated&&window.__searchWrites===0));
+  await click(page,'Trouver mes combinaisons');await page.waitForSelector('[aria-label="Programme proposé par le solver"]');
+  await click(page,'Essais documentés');
+  await page.waitForFunction(()=>!document.querySelector('[aria-label="Solver de houblonnage"]'));
+  assert(await page.evaluate(()=>window.__workerStopped===window.__workerCreated&&window.__searchWrites===0));
+  assert.deepEqual(errors,[]);
+  const workers=await page.evaluate(()=>({created:window.__workerCreated,stopped:window.__workerStopped,heartbeats:window.__heartbeats,writes:window.__searchWrites,progressPackets:window.__progressPackets,detailPackets:window.__detailPackets}));
+  reports.push({width,compiledWorker:!!compiled,firstResultMs,completeMs,cancelMs,coverage,...workers});
+  console.log(JSON.stringify(reports.at(-1)));
+  await context.close();
+ }
+ await writeFile(resolve(out,'report.json'),JSON.stringify(reports,null,2));
+}catch(error){console.error(error);if(activePage&&!activePage.isClosed()){try{await activePage.screenshot({path:resolve(out,'failure.png')});await writeFile(resolve(out,'failure.txt'),await activePage.evaluate(()=>document.body.innerText));}catch{ /* Keep the original failure if the page has already detached. */ }}throw error;
+}finally{await browser.close();}

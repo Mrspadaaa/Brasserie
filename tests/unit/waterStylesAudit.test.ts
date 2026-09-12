@@ -5,7 +5,6 @@ import {
   styleByCode,
   styleWaterForName,
   styleIonRange,
-  isIndicativeIon,
   styleFromTargetIons
 } from '../../src/domain/waterStyles';
 import { ratioLabel, sulfateChlorideRatio } from '../../src/domain/water/ions';
@@ -51,13 +50,10 @@ describe('Profils : audit des identités et des plages', () => {
     }
     expect(s.ions.mg.min).toBe(0);
     expect(styleIonRange(s, 'hco3')).toEqual(s.ions.hco3);
-    expect(isIndicativeIon(s, 'hco3')).toBe(true);
-    expect(isIndicativeIon(s, 'ca')).toBe(false);
   });
   it('un profil chiffré conserve aussi sa cible HCO3', () => {
     const s = styleFromTargetIons({ ca: 80, mg: 10, na: 20, so4: 100, cl: 100, hco3: 100 });
     expect(styleIonRange(s, 'hco3')).toEqual({ min: 80, max: 120 });
-    expect(isIndicativeIon(s, 'hco3')).toBe(false);
   });
   it.each([20, 30, 31, 40, 60])('Gose : le plancher Na est pesable sur %i L', (litres) => {
     const style = styleByCode('23G');
@@ -78,7 +74,23 @@ describe('Profils : audit des identités et des plages', () => {
       expect(ratioLabel(ratio)).not.toMatch(/amer|malt|houblon/i);
     }
     const tiny = sulfateChlorideRatio({ ca: 0, mg: 0, na: 0, so4: 2, cl: 1, hco3: 0 });
-    expect(tiny.label).toContain('peu minéralisée');
+    expect(tiny.label).toBe('Sulfate et chlorure faibles');
+  });
+  it('ne déduit pas la minéralité globale de SO₄ et Cl seuls', () => {
+    const mineralWater = { ca: 200, mg: 25, na: 300, so4: 2, cl: 1, hco3: 400 };
+    expect(sulfateChlorideRatio(mineralWater)).toEqual({ ratio: 2, label: 'Sulfate et chlorure faibles' });
+    expect(sulfateChlorideRatio({ ...mineralWater, so4: 0, cl: 0 }))
+      .toEqual({ ratio: null, label: 'Sulfate et chlorure absents' });
+    expect(sulfateChlorideRatio({ ...mineralWater, so4: 80, cl: 0 }))
+      .toEqual({ ratio: null, label: 'Sans chlorure' });
+  });
+  it.each([
+    [79.6, 0.8, 'Côté rond'],
+    [120.4, 1.2, 'Côté sec'],
+    [199.6, 2, 'Côté sec']
+  ])('classe %s/100 avant l’arrondi de lecture', (so4, rounded, label) => {
+    expect(sulfateChlorideRatio({ ca: 0, mg: 0, na: 0, so4: Number(so4), cl: 100, hco3: 0 }))
+      .toEqual({ ratio: rounded, label });
   });
 });
 

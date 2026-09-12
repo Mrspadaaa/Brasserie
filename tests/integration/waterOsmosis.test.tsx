@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render as testingRender, screen, fireEvent, cleanup } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { WaterSource } from '../../src/types';
+import { changeWaterRatio } from '../helpers/waterRatio';
 import {
   waterFromPlan,
   ionsAfterAcid,
@@ -63,7 +64,7 @@ const ions = () => waterFromPlan(OSMOSEE, current.doses, 20, 10).mash;
 const cible = (ion: string) =>
   graphique()
     .getAttribute('aria-label')!
-    .match(new RegExp(`${ion}[^)]*\\)\\s*([\\d.]+) ppm pour ([\\d.]+) à ([\\d.]+)`));
+    .match(new RegExp(`${ion}[^)]*\\)\\s*([\\d.,]+) ppm pour (\\d+(?:\\.\\d+)?) à (\\d+(?:\\.\\d+)?)`));
 
 describe('Osmosée — sels et acides réellement pesés', () => {
   it.each([4, 8, 12, 16, 20])(
@@ -76,7 +77,7 @@ describe('Osmosée — sels et acides réellement pesés', () => {
       ).toBe(0);
       expect(doseAcide()).toBe(0);
       expect(ions().hco3).toBe(0);
-      expect(graphique().getAttribute('aria-label')).toContain('repère indicatif');
+      expect(graphique().getAttribute('aria-label')).not.toContain('repère indicatif');
       expect(cible('Alcalinité')!.slice(2)).toEqual(['0', '60']);
     }
   );
@@ -90,13 +91,15 @@ describe('Osmosée — sels et acides réellement pesés', () => {
       const treated = ionsAfterAcid(ions(), doseAcide(), 'lactique', 20);
       const ra = residualAlkalinity(treated);
       const band = targetRaForColor(ebc);
-      expect(ra).toBeGreaterThanOrEqual(band.min - 10);
-      expect(ra).toBeLessThanOrEqual(band.max + 2);
+      // The requested water profile stays the same for every grist. Its pH
+      // implications are reported separately, never hidden by lowering HCO3.
       const label = graphique().getAttribute('aria-label')!;
-      const shown = Number(label.match(/Alcalinité[^)]*\)\s*([\d.]+) ppm/)?.[1]);
+      const shown = Number(label.match(/Alcalinité[^)]*\)\s*([\d.,]+) ppm/)?.[1].replace(',', '.'));
       // Tous les alcalins à l’empâtage, rinçage RO à zéro : dilution 20 / 30.
-      expect(shown).toBeCloseTo(Math.round((treated.hco3 * 20) / 30), 0);
-      expect(label).toContain('repère indicatif');
+      expect(shown).toBeCloseTo(Math.round((treated.hco3 * 20) / 30 * 10) / 10, 1);
+      expect(shown).toBeGreaterThanOrEqual(120);
+      expect(shown).toBeLessThanOrEqual(250);
+      expect(label).not.toContain('repère indicatif');
       expect(cible('Alcalinité')!.slice(2)).toEqual(['120', '250']);
     }
   );
@@ -146,9 +149,7 @@ describe('Osmosée — sels et acides réellement pesés', () => {
       expect(bands()).toEqual(before);
       expect(sectors()).toEqual(beforeSectors);
     }
-    fireEvent.change(screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' }), {
-      target: { value: '2.8' }
-    });
+    changeWaterRatio(screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' }), 2.8);
     expect(bands()).toEqual(before);
     expect(sectors()).toEqual(beforeSectors);
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter 0.5 mL — empâtage' }));
@@ -156,13 +157,20 @@ describe('Osmosée — sels et acides réellement pesés', () => {
     expect(sectors()).toEqual(beforeSectors);
   });
 
-  it('Doser reste reproductible et efface une correction acide manuelle', () => {
+  it('Doser reste reproductible et conserve une correction acide manuelle', () => {
     monter({ styleCode: '23G', acidOverride: { mash: 5 } });
     doser();
     const doses = { ...current.doses };
-    expect(current.acidOverride).toBeUndefined();
+    expect(current.acidOverride).toEqual({ mash: 5 });
     doser();
     expect(current.doses).toEqual(doses);
     expect(screen.getByRole('button', { name: /Proposer les doses/i })).not.toBeDisabled();
   });
 });
+
+// These chemistry regressions exercise the advanced controls explicitly. Compact defaults have their own interaction tests.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);
+  return view;
+}

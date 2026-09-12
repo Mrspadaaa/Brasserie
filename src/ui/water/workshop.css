@@ -1,0 +1,258 @@
+.water-workshop :is(button, input, summary):focus-visible {
+  outline: 2px solid #f2c14e;
+  outline-offset: 3px;
+}
+
+.water-workshop input[type="text"] {
+  font-size: 1rem;
+}
+
+/* The mobile weighing surface keeps the four linked controls together. */
+@media (max-width: 639px) {
+  .water-controls {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .water-radar .water-radar-caption {
+    font-size: 10px;
+    line-height: 1.2;
+    padding-bottom: 0;
+  }
+  .water-radar .water-radar-caption > span,
+  .water-radar .water-radar-legend {
+    display: none;
+  }
+
+  .water-controls .water-salt-cell {
+    padding: 1px;
+  }
+
+  .water-salt-cell .water-salt-name {
+    min-height: 24px;
+    width: 100%;
+    padding-left: 3px;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .water-salt-cell .water-salt-switch {
+    width: 32px;
+    height: 24px;
+  }
+
+  .water-salt-cell .water-salt-dose {
+    margin-top: 2px;
+  }
+
+  .water-salt-dose > button,
+  .water-acid-dose button {
+    width: 24px;
+  }
+
+  .water-acid-dose > span {
+    white-space: nowrap;
+    font-size: 11px;
+  }
+
+  .water-acid-readings {
+    column-gap: 6px;
+    font-size: 11px;
+  }
+
+  .water-controls .water-ratio-compact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 6px;
+    padding: 5px 8px;
+  }
+
+  .water-ratio-compact .ratio-title {
+    font-size: 12px;
+    line-height: 1.1;
+  }
+
+  .water-ratio-compact .ratio-orientation {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+    font-weight: normal;
+    color: #9a8a7e;
+  }
+
+  .water-ratio-compact .ratio-readings {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .water-ratio-compact .ratio-readings > div {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+
+  .water-ratio-compact .ratio-readings dt {
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  .water-ratio-compact .ratio-readings dd {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .water-ratio-compact .ratio-track {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+
+  .water-ratio-compact input[type="range"]:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .water-ratio-compact .ratio-help {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 6px;
+    margin-top: 0;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .water-ratio-compact .ratio-profile {
+    order: -1;
+    margin-top: 0;
+  }
+
+  .water-acid-readings .water-acid-mean {
+    font-size: 11px;
+    margin-left: auto;
+  }
+
+  /* Dock the existing companion beside the tabs, away from the weighing fields. */
+  body:has(.brewer-global-companion) [data-water-step="sels"] .water-mobile-nav {
+    padding-right: 44px;
+  }
+
+  body:has(.brewer-global-companion):has([data-water-step="sels"]) .brewer-chat-launch {
+    display: none;
+  }
+
+  body:has(.brewer-activity-pill) [data-water-step="sels"] .water-mobile-nav {
+    padding-right: 88px;
+  }
+
+  body:has(.brewer-activity-pill):has([data-water-step="sels"]) .brewer-global-companion {
+    right: 58px;
+  }
+
+  body:has([data-water-step="sels"]) .brewer-global-companion {
+    top: var(--water-navigation-top, 51px);
+    right: 14px;
+    bottom: auto;
+    width: 36px;
+    height: 36px;
+  }
+
+  body:has([data-water-step="sels"]) .brewer-activity-pill {
+    top: var(--water-navigation-top, 51px);
+    bottom: auto;
+    right: 14px;
+    left: auto;
+    width: 36px;
+    min-height: 36px;
+    height: 36px;
+    padding: 8px;
+  }
+
+  body:has([data-water-step="sels"]) .brewer-activity-pill > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .water-ratio-compact .ratio-profile-short {
+    display: inline;
+  }
+
+  .water-ratio-compact .ratio-profile-full,
+  .water-ratio-compact .ratio-explanation,
+  .water-ratio-compact .ratio-ticks,
+  .water-ratio-compact .ratio-directions {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 639px) and (max-height: 790px) {
+  .water-mobile-nav button {
+    height: 36px;
+  }
+
+  .water-workshop .water-controls > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 2px;
+  }
+
+  .water-controls > div:first-child {
+    height: 36px;
+  }
+
+  .water-controls > div:first-child button {
+    height: 36px;
+    min-height: 36px;
+  }
+
+  .water-salt-dose > button,
+  .water-salt-dose > input,
+  .water-acid-dose button,
+  .water-acid-dose input,
+  .water-acid-row button,
+  .water-ratio-compact input[type="range"] {
+    height: 40px;
+    min-height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-workshop *,
+  .water-workshop *::before,
+  .water-workshop *::after {
+    transition: none !important;
+  }
+}
+
+/* Keep the ratio action and both readings on one row on narrow phones.
+   The taste explanation remains available in the slider's accessible text. */
+@media (max-width: 359px) {
+  .water-ratio-compact .ratio-orientation { display: none; }
+}
+
+/* Browser chrome can leave only 700 CSS px on a phone. Keep actions and the
+   graph; omit repeated concentrations already labelled on that graph. */
+@media (max-width: 639px) and (max-height: 720px) {
+  .water-ratio-compact .ratio-orientation,
+  .water-ratio-compact .ratio-help { display: none; }
+  .water-salt-dose > button,
+  .water-salt-dose > input,
+  .water-acid-dose button,
+  .water-acid-dose input,
+  .water-acid-row button { height: 36px; min-height: 36px; }
+}
+
+body:has([data-inline-companion]) [data-water-step="sels"] .water-mobile-nav {
+  padding-right: 0;
+}
+body:has([data-inline-companion]):has(.brewer-activity-pill) [data-water-step="sels"] .water-mobile-nav {
+  padding-right: 44px;
+}

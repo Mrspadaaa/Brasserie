@@ -179,8 +179,9 @@ describe('Extrait et densités', () => {
     expect(BrewingMath.calculateFg(1.05, 100)).toBeCloseTo(1.0, 3);
   });
 
-  it('rend null sans atténuation ou sans densité initiale', () => {
-    expect(BrewingMath.calculateFg(1.05, 0)).toBeNull();
+  it('préserve une atténuation nulle et distingue une atténuation inconnue', () => {
+    expect(BrewingMath.calculateFg(1.05, 0)).toBe(1.05);
+    expect(BrewingMath.calculateFg(1.05, NaN)).toBeNull();
     expect(BrewingMath.calculateFg(1, 75)).toBeNull();
   });
 });
@@ -277,7 +278,7 @@ describe('Écart de rendement au brassin', () => {
 });
 
 describe('Impôt suisse sur la bière', () => {
-  /** L'assiette est le volume CONDITIONNÉ, jamais le volume visé. */
+  /** La réserve indicative utilise le volume conditionné ; l'impôt dû exige les sorties. */
   const batch = (o: Partial<Batch>): Batch => ({
     id: 'LOT-1',
     name: 'Test',
@@ -288,14 +289,17 @@ describe('Impôt suisse sur la bière', () => {
     ...o
   });
 
-  it('taxe la production et applique la réduction petit brasseur', () => {
+  it('estime une réserve sans inventer une réduction annuelle ni les densités manquantes', () => {
     const r = BrewingMath.calculateSwissBeerTax([
       batch({ volumePackagedL: 30 }),
       batch({ id: 'LOT-2', volumePackagedL: 25 })
     ]);
     expect(r.totalHectoliters).toBeCloseTo(0.55, 2);
     expect(r.taxDueCHF).toBeGreaterThan(0);
-    expect(r.reductionPct).toBe(40);
+    expect(r.reductionPct).toBe(0);
+    expect(r.estimateOnly).toBe(true);
+    expect(r.missingPlatoCount).toBe(2);
+    expect(r.estimateLowCHF).toBeLessThan(r.estimateHighCHF);
   });
 
   it('⚠️ ignore les brassins annulés — ils ne sont jamais sortis de la cuve', () => {

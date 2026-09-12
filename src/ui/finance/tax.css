@@ -1,0 +1,43 @@
+.tax-workspace { margin-top:20px; }
+.tax-intro { display:flex; justify-content:space-between; align-items:start; gap:12px; margin-bottom:18px; }
+.tax-intro .finance-status { flex-shrink:0; }
+.tax-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; border-bottom:1px solid #574A42; }
+.tax-steps button { display:flex; gap:7px; align-items:center; justify-content:center; min-height:52px; border-bottom:3px solid transparent; font-size:14px; color:#D8CEC5; }
+.tax-steps button > span { border:1px solid #574A42; border-radius:50%; width:22px; height:22px; display:grid; place-items:center; font-size:12px; }
+.tax-steps button[aria-selected=true] { border-color:#F2C14E; color:#F2C14E; font-weight:600; }
+.tax-steps button[aria-selected=true] > span { color:#12100E; background:#F2C14E; border-color:#F2C14E; }
+.tax-status { display:flex; gap:9px; margin:16px 0; font-size:14px; line-height:1.5; color:#D8CEC5; }
+.tax-status > span { flex-shrink:0; margin-top:2px; color:#F2C14E; }
+.tax-issues { list-style:disc; padding:0 0 0 20px; color:#D8CEC5; font-size:14px; line-height:1.6; }
+.tax-issues li { margin:8px 0; }
+.tax-next { width:100%; margin-top:20px; }
+.tax-copy-card { border-bottom:1px solid #574A42; padding:18px 0 22px; }
+.tax-copy-heading { display:flex; align-items:start; gap:12px; justify-content:space-between; margin-bottom:8px; }
+.tax-code { display:block; flex-shrink:0; font-size:13px; padding:4px 8px; border:1px solid #574A42; border-radius:6px; color:#F2C14E; }
+.tax-copy-value { display:flex; gap:8px; align-items:center; margin:16px 0 12px; }
+.tax-copy-value input { min-width:0; width:100%; flex:1; font-size:25px; font-variant-numeric:tabular-nums; font-weight:600; background:#221D19; border:1px solid #574A42; padding:9px; border-radius:8px; }
+.tax-copy-value input:focus-visible { outline:2px solid #F2C14E; }
+.tax-copy-value > span { font-size:13px; color:#B3A397; }
+.tax-copy-value button { flex-shrink:0; }
+.tax-copy-pending { font-size:13px; color:#F2C14E; margin-top:10px; }
+.tax-document-intro { display:flex; gap:14px; margin:20px 0; align-items:start; }
+.tax-document-intro > svg { flex-shrink:0; color:#F2C14E; margin-top:3px; }
+.tax-review-list { display:grid; gap:18px; }
+.tax-review-list > div { padding-bottom:16px; border-bottom:1px solid #3D342E; }
+.tax-review-list p { margin:3px 0 0 32px; }
+.tax-review-list .finance-check { align-items:start; }
+.tax-review-list input { margin-top:2px; }
+.tax-reconciliation { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:14px; border:1px solid #574A42; border-radius:10px; }
+.tax-reconciliation span { font-size:13px; color:#D8CEC5; min-width:0; }
+.tax-reconciliation strong { display:block; font-size:18px; margin-top:6px; color:#F5F0EA; overflow-wrap:anywhere; }
+.tax-file-name { display:flex; gap:8px; align-items:start; overflow-wrap:anywhere; font-size:14px; }
+.tax-file-name svg { flex-shrink:0; }
+@media (max-width:380px) {
+  .tax-intro { flex-wrap:wrap; }
+  .tax-copy-heading { flex-wrap:wrap; gap:8px; }
+  .tax-copy-value { flex-wrap:wrap; }
+  .tax-copy-value input { width:calc(100% - 45px); flex-basis:calc(100% - 45px); }
+  .tax-copy-value button { width:100%; }
+  .tax-steps button { gap:4px; font-size:13px; }
+}
+@media (prefers-reduced-motion:reduce) { .tax-workspace * { scroll-behavior:auto!important; } }

@@ -21,6 +21,7 @@ export type FabIntent =
   | 'newRecipe'
   | 'newIdea'
   | 'newStockItem'
+  | 'newHopVariety'
   | 'newKeg'
   | 'newEquipment'
   | 'newClient'
@@ -41,7 +42,7 @@ export type SubTabOf = {
   dashboard: null;
   finances: null;
   production: 'batches' | 'recipes' | 'lab' | 'scaler';
-  stocks: 'stock' | 'courses' | 'futs' | 'materiel';
+  stocks: 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
   clients: 'crm' | 'ofdf' | 'tarifs';
 };
 
@@ -72,7 +73,8 @@ const ACTIONS: {
     // Sur la liste de courses, ce qu'on veut n'est pas créer mais emporter.
     courses: A('copyShoppingList', 'Copier la liste de courses'),
     futs: A('newKeg', 'Nouveau fût'),
-    materiel: A('newEquipment', 'Nouveau matériel')
+    materiel: A('newEquipment', 'Nouveau matériel'),
+    hops: A('newHopVariety', 'Nouvelle variété de houblon')
   },
 
   clients: {

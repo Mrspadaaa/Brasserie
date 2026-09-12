@@ -79,7 +79,7 @@ export const RA_BAND_HALF = 30;
  * juste, et elle ne commande rien.
  */
 export function targetRaForColor(ebc: number | null): RaBand {
-  if (ebc === null) {
+  if (ebc === null || !Number.isFinite(ebc)) {
     return {
       /*
        * ⚠️ L'étiquette entre dans des phrases : « pour une ${label} ». Avec
@@ -125,20 +125,12 @@ export function targetRaForColor(ebc: number | null): RaBand {
 // --- pH d'empâtage estimé depuis la facture de grain --------------------------
 
 /**
- * ⚠️ REVIREMENT ASSUMÉ (04.09.2026, à la demande de Gaëtan).
- *
- * L'en-tête de ce fichier posait : « on ne prédit PAS le pH d'empâtage depuis
- * le grain ». La raison tenait : la donnée par malt n'est pas publiée de façon
- * fiable, et un chiffre faux est pire que pas de chiffre. Elle tient toujours.
- *
- * Ce qui change, c'est l'usage. On ne remplace pas la mesure à la cuve, et on
- * ne laisse PAS cette estimation commander une goutte d'acide de plus : elle ne
- * peut que RELÂCHER la cible, jamais la durcir. Ce qu'elle apporte, c'est la
- * seule chose que la couleur ne saura jamais dire — deux bières de la même
- * teinte n'ont pas la même acidité. Le malt acidulé en est le cas d'école : 5
- * EBC, invisible à la couleur, et 1 % de la facture déplace le pH de 0.1.
- *
- * Marge annoncée : ±0.15 pH. C'est beaucoup, et c'est dit à l'écran.
+ * Estimation empirique : deux factures de même couleur n'ont pas la même
+ * acidité, notamment avec du malt acidulé. La marge annoncée est ±0.15 pH.
+ * Les fonctions ci-dessous fournissent les repères d'AR de la maische ;
+ * bicarbonatePreference et treatment décident des sels et de l'acide dans
+ * les bornes du profil choisi. Une eau adaptée ne reçoit pas d'acide pour
+ * centrer un graphique. La correction fine reste fondée sur le pH mesuré.
  */
 
 /**
@@ -196,6 +188,8 @@ export interface MashPhEstimate {
   /** Dans la fenêtre 5.2–5.5 ? `-1` en dessous, `1` au-dessus. */
   position: -1 | 0 | 1;
   note: string;
+  /** The bounded approximation has reached its limit; it cannot predict further changes. */
+  limited?: boolean;
 }
 
 /** La fenêtre de pH d'empâtage que vise un brasseur, quelle que soit la bière. */
@@ -218,12 +212,17 @@ export const MASH_PH_BAND = { min: 5.2, max: 5.5, target: 5.4 };
 export const MALT_BUFFER_MEQ_PER_KG_PH = 45;
 
 export const RA_PH_DIVISOR = 50 * MALT_BUFFER_MEQ_PER_KG_PH;
+const MAX_PH_SHIFT = 0.6;
 
-export function phShiftFromRa(ra: number, mashRatioLPerKg: number): number {
+function rawPhShift(ra: number, mashRatioLPerKg: number): number {
   const safeRa = Number.isFinite(ra) ? ra : 0;
   const ratio = Number.isFinite(mashRatioLPerKg) && mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;
   const shift = (safeRa * ratio) / RA_PH_DIVISOR;
-  return Number.isFinite(shift) ? Math.max(-0.6, Math.min(0.6, shift)) : 0;
+  return Number.isFinite(shift) ? shift : 0;
+}
+
+export function phShiftFromRa(ra: number, mashRatioLPerKg: number): number {
+  return Math.max(-MAX_PH_SHIFT, Math.min(MAX_PH_SHIFT, rawPhShift(ra, mashRatioLPerKg)));
 }
 
 /**
@@ -337,11 +336,13 @@ export function estimateMashPh(
    * Les notes disent donc où l'on est, et laissent la ligne de dose dire ce
    * qu'on verse. Une seule voix par question.
    */
-  const note =
-    position === 1
+  const limited = Math.abs(rawPhShift(ra, mashRatioLPerKg)) >= MAX_PH_SHIFT;
+  const note = limited
+    ? 'Limite du modèle atteinte : le pH réel peut continuer à varier. Mesurer avant toute correction.'
+    : position === 1
       ? 'Au-dessus de la fenêtre — l’acide se dose sur l’alcalinité, pas sur cette estimation.'
       : position === -1
-        ? 'Sous la fenêtre : cette maische est déjà acide toute seule.'
+        ? 'Estimation sous la fenêtre : vérifier les doses retenues et mesurer le pH.'
         : 'Dans la fenêtre.';
 
   return {
@@ -351,7 +352,8 @@ export function estimateMashPh(
     uncertainty: MASH_PH_UNCERTAINTY,
     acidulatedPct,
     position,
-    note
+    note,
+    ...(limited ? { limited: true } : {})
   };
 }
 
@@ -364,71 +366,31 @@ export function estimateMashPh(
  */
 export const MASH_PH_UNCERTAINTY = 0.15;
 
-/**
- * L'AR qui poserait cette facture au milieu de la fenêtre de pH — l'inverse
- * exact de `phShiftFromRa`. `null` quand la facture ne dit rien.
- *
- * ⚠️ Deux usages, deux sens. Vers le HAUT, elle relâche la fenêtre d'acide
- * (`targetRaForGrist`). Vers le BAS, elle plafonne les SELS alcalins que le
- * solveur verse : une bande « bière noire » commandait 120 ppm d'AR à une
- * stout ordinaire dont la facture, à 5.47 en eau distillée, n'en voulait
- * aucun — 4.3 g de chaux pour un pH prédit à 5.71. Retenir moins de sel n'est
- * pas durcir l'acide : la garantie « jamais une goutte de plus » tient.
- *
- * ⚠️ ELLE PEUT ÊTRE NÉGATIVE, et c'est le piège. Une facture de stout titre
- * 5.56 en eau distillée d'après ce modèle : la fonction rend alors −103, et le
- * solveur, qui prenait `min(bande.min, plafond)`, se donnait pour cible −103
- * d'AR sur une bière dont le style en demande +120. Résultat signalé par
- * Gaëtan : « pour une stout ou une impériale sur eau très osmosée, Doser
- * n'ajoute pas de HCO₃ » — pas un gramme, et pas un mot d'explication, pendant
- * que la toile allumait l'alarme du bicarbonate. C'est le solveur qui borne
- * désormais, voir l'étape 5.
- */
-/**
- * Le plafond des SELS ALCALINS que cette facture supporte.
- *
- * ⚠️ CE N'EST PAS `raForGrist`, et les confondre était le défaut. Signalé
- * ainsi : « pour une stout ou une impériale, avec de l'eau très osmosée, Doser
- * n'ajoute pas de HCO₃ ». Le solveur plafonnait les sels alcalins avec
- * `raForGrist`, qui vise le MILIEU de la fenêtre de pH (5.4) — c'est-à-dire
- * l'AR qui poserait la maische pile au centre. Sur une facture de stout à 5.56
- * en eau distillée, ce milieu réclame une AR de −103 : le solveur se donnait
- * donc pour cible −103 sur une bière dont le style demande +120, ne versait pas
- * un gramme de bicarbonate, et n'en disait rien pendant que la toile allumait
- * l'alarme du HCO₃.
- *
- * Or on ne cherche pas ici à poser la maische au centre : on cherche à savoir
- * JUSQU'OÙ l'on peut suivre la couleur sans sortir la maische de sa fenêtre.
- * C'est donc le HAUT (5.5) qu'il faut viser, et le plafond devient l'AR qui
- * mène la maische à la limite haute — pas un pixel plus loin.
- *
- * Sur les trois factures mesurées, la différence entre les deux lectures :
- *
- *   facture                  pH distillée   `raForGrist`   ce plafond-ci
- *   stout irlandaise             5.56           −103            −39
- *   impériale                    5.48            −51            +12
- *   stout du test unitaire       5.47            −47            +16
- *
- * Les trois reçoivent maintenant du bicarbonate, et les trois posent la maische
- * à 5.50 — le haut de la fenêtre, ce qui est exactement le contrat.
- *
- * `floor` et non `round` : une borne haute s'arrondit vers le bas, sans quoi
- * la moitié des cas la franchit d'un demi-ppm.
+/** AR correspondant à la limite haute de pH estimé (5.5), distincte du repère
+ * de dosage (5.4). Elle peut être négative. Les profils prioritaires ne
+ * relâchent jamais leurs minimums pour la respecter : ils signalent le conflit.
+ * Les appels historiques sans profil prioritaire l'utilisent comme plafond.
+ * Une limite haute s'arrondit vers le bas, d'où floor plutôt que round.
  */
 export function raSaltCeilingForGrist(
   fermentables: Parameters<typeof estimateMashPh>[0],
   mashRatioLPerKg: number
 ): number | null {
+  if (!Number.isFinite(mashRatioLPerKg) || mashRatioLPerKg <= 0) return null;
   const est = estimateMashPh(fermentables, 0, mashRatioLPerKg);
   if (!est.known) return null;
   const ratio = mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;
   return Math.floor(((MASH_PH_BAND.max - est.phDistilled) * RA_PH_DIVISOR) / ratio);
 }
 
+/** AR correspondant au pH préféré (5.4), inverse du modèle non plafonné.
+ * Préférence souple dans le profil choisi ; null si la facture est inconnue.
+ */
 export function raForGrist(
   fermentables: Parameters<typeof estimateMashPh>[0],
   mashRatioLPerKg: number
 ): number | null {
+  if (!Number.isFinite(mashRatioLPerKg) || mashRatioLPerKg <= 0) return null;
   const est = estimateMashPh(fermentables, 0, mashRatioLPerKg);
   if (!est.known) return null;
   const ratio = mashRatioLPerKg > 0 ? Math.min(8, mashRatioLPerKg) : 3.5;

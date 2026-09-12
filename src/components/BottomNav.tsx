@@ -1,6 +1,7 @@
 import React from 'react';
 import { LayoutDashboard, Wallet, Beer, Boxes, Users, Plus, ClipboardList } from 'lucide-react';
 import { FabAction } from '../domain/fabActions';
+import { useMobileLayout } from '../ui/useViewport';
 
 export type TabType = 'dashboard' | 'finances' | 'production' | 'stocks' | 'clients';
 
@@ -13,6 +14,7 @@ interface BottomNavProps {
   /** Appui long : la saisie rapide, quel que soit l'écran. */
   onOpenQuickAction: () => void;
   criticalStockCount: number;
+  hideAction?: boolean;
 }
 
 /**
@@ -45,12 +47,26 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   action,
   onAction,
   onOpenQuickAction,
-  criticalStockCount
-}) => (
+  criticalStockCount,
+  hideAction = false
+}) => {
+  const mobile = useMobileLayout();
+  const pressTimer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const longPressed = React.useRef(false);
+  const pressOrigin = React.useRef({ x: 0, y: 0 });
+  const cancelPress = () => { clearTimeout(pressTimer.current); pressTimer.current = undefined; };
+  React.useEffect(() => cancelPress, [action.intent, hideAction]);
+  const openQuickActions = () => {
+    cancelPress();
+    if (longPressed.current) return;
+    longPressed.current = true;
+    onOpenQuickAction();
+  };
+  return (
   <>
     <div
       className="fixed right-4 z-40 flex items-center gap-2"
-      style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom, 0px))' }}
+      style={{ bottom: `calc(${mobile ? '5rem' : '6rem'} + env(safe-area-inset-bottom, 0px))`, ...(activeTab === 'finances' && !mobile || hideAction ? { display: 'none' } : {}) }}
     >
       <span
         className="hidden sm:block px-3 py-1.5 rounded-control bg-cave-850/95 backdrop-blur-sm
@@ -61,15 +77,30 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       </span>
       <button
         type="button"
-        onClick={onAction}
+        onClick={(event) => { if (event.detail === 0 || !longPressed.current) onAction(); longPressed.current = false; }}
+        onPointerDown={(event) => {
+          cancelPress(); longPressed.current = false;
+          if (event.button !== 0 || event.isPrimary === false) return;
+          pressOrigin.current = { x: event.clientX, y: event.clientY };
+          pressTimer.current = setTimeout(openQuickActions, 550);
+        }}
+        onPointerMove={(event) => {
+          if (Math.hypot(event.clientX - pressOrigin.current.x, event.clientY - pressOrigin.current.y) > 10) cancelPress();
+        }}
+        onPointerUp={cancelPress}
+        onPointerCancel={cancelPress}
+        onPointerLeave={cancelPress}
         onContextMenu={(event) => {
           event.preventDefault();
-          onOpenQuickAction();
+          openQuickActions();
         }}
         aria-label={action.label}
+        aria-description="Appui long pour ouvrir les autres saisies rapides."
+        aria-haspopup={action.intent === 'copyShoppingList' ? undefined : 'dialog'}
+        title={`${action.label} · Appui long : saisie rapide`}
         className="w-touch-lg h-touch-lg rounded-full shrink-0
                    bg-ebc-straw text-cave-950 shadow-lift
-                   flex items-center justify-center
+                   flex items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
                    transition-transform active:scale-95
                    focus-visible:outline-2 focus-visible:outline-offset-4"
       >
@@ -125,3 +156,4 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     </nav>
   </>
 );
+};

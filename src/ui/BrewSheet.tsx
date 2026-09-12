@@ -1,3 +1,4 @@
+import { RecipeDisclosure, RecipeWaterVolumes } from './RecipeDisclosure';
 import { MaltDetails } from './MaltDetails';
 import { LearnIngredient } from '../domain/ingredientFacts';
 import React, { useState } from 'react';
@@ -14,10 +15,12 @@ import {
 } from '../types';
 import { Units } from '../services/units';
 import { HOP_STAGE } from '../domain/hopStage';
+import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { ION_LABEL, SALTS } from '../domain/water';
 import { NumberInput } from './NumberInput';
 import { WaterAdditivesTable } from './WaterAdditivesTable';
 import { WaterRadar } from './WaterRadar';
+import { WaterTargetStatus } from './water/WaterTargetStatus';
 import { StyleWater } from '../domain/waterStyles';
 import { useDensity } from './useViewport';
 import { inputClass } from './FormNav';
@@ -36,8 +39,8 @@ import { RecipeReview } from './RecipeReview';
  * Deux règles de composition :
  *
  *   - Une ligne par ingrédient, hauteur fixe : le nom se lit, les nombres se
- *     tapent. Rien ne se déplie, rien ne se replie — on doit pouvoir parcourir
- *     la fiche du pouce sans que la mise en page bouge sous le doigt.
+ *     tapent. Les sections restent indépendantes : on doit pouvoir parcourir
+ *     les volumes et pesées essentiels, puis ouvrir les détails utiles.
  *
  *   - Les champs n'ouvrent PAS le clavier du système (`pad`) : sur une fiche de
  *     vingt valeurs, le clavier passerait son temps à masquer celle d'après.
@@ -112,20 +115,12 @@ const Block: React.FC<{
   aside?: React.ReactNode;
   children: React.ReactNode;
 }> = ({ title, aside, children }) => {
-  const tight = useDensity() === 'tight';
-  return (
-    <section className={`panel ${tight ? 'p-2' : 'p-2.5 sm:p-3'}`}>
-      <div className="flex items-baseline justify-between gap-2 pb-1 border-b border-cave-850">
-        <h3 className="text-xs sm:text-sm font-semibold text-cave-50">{title}</h3>
-        {aside && <span className="reading text-2xs sm:text-sm text-cave-400 shrink-0">{aside}</span>}
-      </div>
-      <div className="divide-y divide-cave-850">{children}</div>
-    </section>
-  );
+  return <RecipeDisclosure title={title} summary={aside}><div className="divide-y divide-cave-850">{children}</div></RecipeDisclosure>;
 };
 
 /** Tout ce que la fiche montre de l'eau, calculé par l'assistant. */
 export interface WaterRecap {
+  targetStatus?: React.ComponentProps<typeof WaterTargetStatus>;
   sourceName: string;
   styleName: string;
   mashWaterL: number;
@@ -272,7 +267,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   const patchFerm = (i: number, patch: Partial<Fermentable>) =>
     onFermentables(fermentables.map((f, j) => (j === i ? { ...f, ...patch } : f)));
   const patchHop = (i: number, patch: Partial<HopIngredient>) =>
-    onHops(hops.map((h, j) => (j === i ? { ...h, ...patch } : h)));
+    onHops(hops.map((h, j) => (j === i ? patchIndexedHop(h, patch) : h)));
 
   const totalHopG = hops.reduce((s, h) => s + h.weightG, 0);
 
@@ -288,6 +283,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   return (
     <div className={tight ? 'space-y-2' : 'space-y-3'}>
       {/* --- Identité ------------------------------------------------------ */}
+      {water&&<RecipeWaterVolumes totalL={mashWaterL+spargeWaterL} roL={water.mashOsmoseeL+water.spargeOsmoseeL}/>}
       <Block title="Identité">
         <Row label="Nom">
           <input
@@ -408,7 +404,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                           ? ibu !== null
                             ? `${ibu.toFixed(1)} IBU`
                             : 'IBU incalculable'
-                          : 'arôme seul'}
+                          : 'effet à cru séparé'}
                       </span>
                     </span>
                   </span>
@@ -723,6 +719,9 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                 </dl>
               )}
 
+              <details><summary className="cursor-pointer min-h-touch text-sm text-water">pH et chimie détaillée</summary>
+              {water.targetStatus && <WaterTargetStatus {...water.targetStatus} />}
+
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xs sm:text-sm">
                 <span className="text-cave-500">
                   Alcalinité résiduelle après acide{' '}
@@ -736,8 +735,8 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                     {water.ra}
                   </span>{' '}
                   {water.raSaltTarget != null
-                    ? `— objectif des sels ≈ ${water.raSaltTarget} ppm (estimation du mash)`
-                    : `— cible ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
+                    ? `— repère pour les malts ≈ ${water.raSaltTarget} ppm (estimation du mash)`
+                    : `— repère des malts ${water.raBand.min} à ${water.raBand.max} (${water.raBand.label})`}
                 </span>
                 <span className="text-cave-500">
                   SO₄:Cl{' '}
@@ -756,6 +755,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
                   {water.spargePh ? `rinçage ${water.spargePh}` : ''}.
                 </p>
               )}
+              </details>
             </div>
 
             {/* --- Sels et acides à peser ---------------------------------- */}

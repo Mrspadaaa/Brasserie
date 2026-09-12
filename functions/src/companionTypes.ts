@@ -11,6 +11,8 @@ export interface BrewerAdvice {
   watch: string;
   question: string;
   evidenceIds: string[];
+  /** Exact verified product/pack URLs selected as relevant for this advice. */
+  productUrls?: string[];
 }
 export interface BrewerEvidence {
   id: string;
@@ -30,6 +32,13 @@ export interface BrewerProduct {
   availability: 'in_stock' | 'out_of_stock' | 'unknown';
   availabilityText: string;
   checkedAt: number;
+  /** Set only after the server has read an actual supplier product page. */
+  verifiedBy?: 'product-page';
+  stockEvidence?: 'visible-text' | 'structured-data' | 'none';
+  canonicalUrl?: string;
+  packageLabel?: string;
+  priceText?: string;
+  sku?: string;
 }
 export interface BrewerPending {
   operationId: string;
@@ -92,7 +101,8 @@ export interface BrewerProposal {
   decidedAt?: number;
 }
 export interface BrewerContext {
-  workspace?: { screen: string; records: Record<string, any[]>; truncated: string[] };
+  hopIndex?: import('./hopPredictionCore.js').HopEngineData & { predictions: import('./hopPredictionSchema.js').HopPredictionComparison[]; tastings: import('./hopPredictionSchema.js').HopTasting[]; truncated: string[] };
+  workspace?: { screen: string; records: Record<string, any[]>; truncated: string[]; finance?: any; coverage?: Record<string, { loaded: number; limit: number; complete: boolean; totalAtLeast: number; order: 'document-id'; firstDate?: string; lastDate?: string; unavailable?: boolean }> };
   recipe?: any;
   journal?: any;
   batch?: any;

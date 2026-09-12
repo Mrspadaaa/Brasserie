@@ -1,3 +1,6 @@
+import { hotBitterness } from '../domain/hopBitterness';
+import { HopBitternessPanel } from '../ui/HopBitternessPanel';
+import { mashPhDiagnostic } from '../domain/water/readiness';
 import React, { useMemo, useState } from 'react';
 import { Recipe, Batch, HopIngredient, AppConfig } from '../types';
 import { Units } from '../services/units';
@@ -7,8 +10,12 @@ import { HOP_STAGE, groupByStage, describeMoment, normalizeHop } from '../domain
 import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS, savedWaterDisplay } from '../domain/water';
 import { styleByCode, styleFromTargetIons } from '../domain/waterStyles';
 import { WaterRadar } from '../ui/WaterRadar';
+import { WaterTargetStatus } from '../ui/water/WaterTargetStatus';
+import { describeSavedRecipeWater } from '../domain/recipeWaterReadings';
 import { PHASE_LABEL } from '../domain/brewPrograms';
-import { PageShell, Section } from './PageShell';
+import { PageShell } from './PageShell';
+import { RecipeDisclosure, RecipeWaterVolumes } from '../ui/RecipeDisclosure';
+const Section=({hint,...props}:React.ComponentProps<typeof RecipeDisclosure>&{hint?:string})=><RecipeDisclosure {...props} summary={hint??props.summary}/>;
 import { ConfirmSheet } from '../ui/Sheet';
 import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react';
 
@@ -28,6 +35,12 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  */
 
 import { BrewerChat } from '../ui/BrewerChat';
+import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
+import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
+import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
+import { NoloPanel } from '../ui/NoloPanel';
+import { StorageService } from '../services/storage';
+import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
 
 interface RecipePageProps {
   recipe: Recipe;
@@ -88,6 +101,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
+  const waterReadings = useMemo(() => describeSavedRecipeWater(recipe), [recipe]);
 
   const brewhouse =
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -120,24 +134,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   const og = recipe.ogTarget || ogPredicted || 0;
 
-  /** IBU par houblon — c'est la répartition qui informe, pas seulement le total. */
-  const ibuOf = (hop: HopIngredient) =>
-    og > 1 ? BrewingMath.hopIbu(hop, recipe.volumeL, og, recipe.boilMin ?? 60) : 0;
-
-  const ibuTotal = useMemo(
-    () =>
-      og > 1
-        ? BrewingMath.calculateTinsethIBU(hops, recipe.volumeL, og, recipe.boilMin ?? 60)
-        : null,
-    [hops, recipe.volumeL, og, recipe.boilMin]
-  );
+  const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, og || null, recipe.boilMin ?? 60), [hops, recipe.volumeL, og, recipe.boilMin]);
+  const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, og || null, recipe.boilMin ?? 60).additions[0].ibu;
+  const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
 
-  const fgPredicted = recipe.yeast?.attenuationPct
+  const fgPredicted = !recipe.nolo?.enabled && recipe.yeast?.attenuationPct != null
     ? BrewingMath.calculateFg(og, recipe.yeast.attenuationPct, points?.unfermentable ?? 0)
     : null;
-  const fg = recipe.fgTarget || fgPredicted;
+  const fg = recipe.nolo?.enabled ? null : recipe.fgTarget || fgPredicted;
 
   const abv = og > 1 && fg ? BrewingMath.calculateABV(og, fg) : null;
 
@@ -151,6 +157,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
   return (
     <PageShell
+      className="recipe-reference"
       title={recipe.name}
       subtitle={[recipe.style, `${recipe.volumeL} L`, recipe.brewDate].filter(Boolean).join(' · ')}
       onClose={onClose}
@@ -183,18 +190,22 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         </>
       }
       footer={
+        <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={onBrew}
-          className="w-full min-h-touch rounded-control bg-ebc-straw text-cave-950
+          className="flex-1 min-h-touch rounded-control bg-ebc-straw text-cave-950
                      font-semibold flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
         >
           <FlaskConical className="w-5 h-5" />
           Lancer un brassin
         </button>
+        <BrewerPageShortcut />
+        </div>
       }
     >
-      <BrewerChat scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
+      <BrewerChat hideLauncher scope={{kind:'recipe',id:recipe.id}} label={recipe.name} phase="Recette" />
+      <BrewBudgetButton recipe={recipe} />
       {/* --- Les cinq mesures ------------------------------------------- */}
       <section className="panel p-4">
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
@@ -204,7 +215,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             hint="renseigne le potentiel des malts"
             tone="text-ebc-straw"
           />
-          <Metric label="FG" value={fg ? fg.toFixed(3) : null} hint="renseigne l’atténuation" />
+          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint="renseigne l’atténuation" />}
           {/*
             L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un
             houblon. Quand la recette d'origine en annonce un autre, on montre
@@ -213,9 +224,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             l'écart laisserait croire à une erreur.
           */}
           <Metric
-            label="IBU"
+            label={dryHopTotal > 0 ? "IBU à chaud" : "IBU"}
             value={ibuTotal !== null ? String(ibuTotal) : null}
-            hint="renseigne l’alpha des houblons"
+            hint="vérifie les ajouts de houblons"
             note={
               ibuTotal !== null &&
               recipe.ibuTarget &&
@@ -230,12 +241,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             hint="renseigne la couleur des malts"
             swatch={color?.swatch}
           />
-          <Metric
+          {!recipe.nolo?.enabled&&<Metric
             label="ABV"
             value={abv ? `${abv.toFixed(1)} %` : null}
             hint="dépend de l’OG et de la FG"
             tone="text-ebc-amber"
-          />
+          />}
         </div>
 
         {(colorMissing.length > 0 || hopsMissingAlpha.length > 0) && (
@@ -268,10 +279,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </section>
 
+      {recipe.waterPlan&&<RecipeWaterVolumes totalL={recipe.waterPlan.mashWaterL+recipe.waterPlan.spargeWaterL} roL={(recipe.waterPlan.mashWaterL*recipe.waterPlan.diRatioPct+recipe.waterPlan.spargeWaterL*(recipe.waterPlan.spargeDiRatioPct??recipe.waterPlan.diRatioPct))/100}/>}
       {/* --- Facture de grain -------------------------------------------- */}
       <Section
         title="Grain"
-        hint={`${Units.formatDual(totalGrist, 'kg')} au total · ${
+        hint={`${Units.format(totalGrist, 'kg')} au total · ${
           (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${recipe.efficiencyPct ?? brewhouse?.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
         }`}
       >
@@ -347,10 +359,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         title="Houblons"
         hint={
           dryHopTotal > 0
-            ? `dont ${Units.format(dryHopTotal, 'g')} à cru — sans effet sur l’amertume`
-            : undefined
+            ? `dont ${Units.format(dryHopTotal, 'g')} à cru · effet simulé séparément`
+            : `${hops.length} ajout(s) · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
         }
       >
+        <HopBitternessPanel hops={hops} volumeL={recipe.volumeL} og={og || null} boilMin={recipe.boilMin ?? 60} hot={bitterness}/>
         {grouped.length === 0 ? (
           <p className="text-sm text-cave-500">Aucun houblon renseigné.</p>
         ) : (
@@ -390,7 +403,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             </span>
                             {style.bitters && (
                               <span className="block reading text-sm text-cave-500">
-                                {h.alpha ? `${ibu.toFixed(1)} IBU` : '— IBU'}
+                                {ibu != null ? `${ibu.toFixed(1)} IBU` : '— IBU'}
                               </span>
                             )}
                           </span>
@@ -405,8 +418,14 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </Section>
 
+      <Section title="Potentiel aromatique">
+        <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
+        <HopRecipePanel recipe={recipe} onEdit={onEdit} />
+      </Section>
+
       {/* --- Levure ------------------------------------------------------ */}
-      <Section title="Levure">
+      {recipe.nolo?.enabled&&<Section title="Objectif NOLO" hint="Projection, traitement et analyses"><NoloPanel recipe={recipe}/></Section>}
+      <Section title="Levure" hint={recipe.yeast.name}>
         {!recipe.yeast?.name ? (
           <p className="text-sm text-cave-500">Aucune levure renseignée.</p>
         ) : (
@@ -418,12 +437,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 <span className="text-cave-400"> · {recipe.yeast.strain}</span>
               )}
             </p>
-            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <dl className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
                 <dt className="text-sm text-cave-500">Quantité</dt>
                 <dd className="reading text-base">
-                  {recipe.yeast.qty} {recipe.yeast.unit}
-                  {recipe.yeast.qty > 1 ? 's' : ''}
+                  {recipe.yeast.qty > 0 ? Units.format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner'}
                 </dd>
               </div>
               <div>
@@ -436,14 +454,6 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   {recipe.yeast.pitchTempC != null ? `${recipe.yeast.pitchTempC} °C` : '—'}
                 </dd>
               </div>
-              <div>
-                <dt className="text-sm text-cave-500">Fermentation</dt>
-                <dd className="reading text-base">
-                  {recipe.yeast.fermTempMinC != null && recipe.yeast.fermTempMaxC != null
-                    ? `${recipe.yeast.fermTempMinC}–${recipe.yeast.fermTempMaxC} °C`
-                    : '—'}
-                </dd>
-              </div>
             </dl>
             {recipe.yeast.notes && (
               <p className="text-sm text-cave-400 leading-snug">{recipe.yeast.notes}</p>
@@ -451,6 +461,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           </div>
         )}
       </Section>
+
+      {!recipe.nolo?.enabled&&<Section title="Conduite de levure"><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></Section>}
 
       {/* --- Additifs ---------------------------------------------------- */}
       {recipe.adjuncts && recipe.adjuncts.length > 0 && (
@@ -472,7 +484,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       )}
 
       {/* --- Eau : le plan complet, empâtage et rinçage séparés ----------- */}
-      {recipe.waterPlan && (
+      {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && recipe.waterPlan && (
         <Section
           title="Eau et sels"
           /*
@@ -489,7 +501,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           }`}
         >
           <div className="space-y-3">
-            <BrewEquipmentSummary recipe={recipe} profile={brewhouse}/>
+            {waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
+            {recipe.waterPlan.sourceSnapshot?.note&&<p className="text-xs text-cave-400">{recipe.waterPlan.sourceSnapshot.note}</p>}
+            <details><summary className="min-h-touch cursor-pointer text-sm text-cave-300">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-500">Empâtage</div>
@@ -529,21 +543,6 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               Un plan enregistré avant cette version ne porte pas les deux
               eaux : on n'affiche alors rien plutôt qu'une toile fausse.
             */}
-            {waterDisplay && (
-              <WaterRadar
-                start={waterDisplay.start}
-                achieved={waterDisplay.achieved}
-                style={
-                  recipe.waterPlan.targetIons
-                    ? styleFromTargetIons(
-                        recipe.waterPlan.targetIons,
-                        recipe.waterPlan.targetName ?? 'Cible de la recette'
-                      )
-                    : styleByCode(recipe.waterPlan.targetProfileId)
-                }
-              />
-            )}
-
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -606,6 +605,32 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               </div>
             )}
 
+            {waterDisplay && (
+              <WaterRadar
+                start={waterDisplay.start}
+                achieved={waterDisplay.achieved}
+                style={
+                  recipe.waterPlan.targetIons
+                    ? styleFromTargetIons(
+                        recipe.waterPlan.targetIons,
+                        recipe.waterPlan.targetName ?? 'Cible de la recette'
+                      )
+                    : styleByCode(recipe.waterPlan.targetProfileId)
+                }
+              />
+            )}
+
+            <details><summary className="min-h-touch cursor-pointer text-sm text-water">pH et chimie détaillée</summary>
+            {waterReadings && (
+              <WaterTargetStatus
+                {...waterReadings}
+                customTarget={!!recipe.waterPlan.targetIons}
+                mashWaterL={recipe.waterPlan.mashWaterL}
+                spargeWaterL={recipe.waterPlan.spargeWaterL}
+              />
+            )}
+
+</details>
             {(recipe.waterPlan.measuredPh || recipe.waterPlan.measuredSpargePh) && (
               <p className="text-sm text-cave-400">
                 pH mesuré à la cuve :{' '}
@@ -619,16 +644,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             )}
 
             {recipe.waterPlan.disabled && recipe.waterPlan.disabled.length > 0 && (
-              <p className="text-sm text-cave-500">
+              <details><summary className="min-h-touch cursor-pointer text-sm text-cave-400">Sels non utilisés</summary><p className="text-sm text-cave-500">
                 Écartés : {recipe.waterPlan.disabled.map((d) => SALTS[d].name).join(', ')}.
-              </p>
+              </p></details>
             )}
           </div>
         </Section>
       )}
 
       {/* --- Eau (ancien format, lu tel quel) ----------------------------- */}
-      {!recipe.waterPlan && recipe.water?.salts && (
+      {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && !recipe.waterPlan && recipe.water?.salts && (
         <Section
           title="Eau"
           hint={`${recipe.water.sourceName} · ${recipe.water.diRatioPct} % d’osmosée`}
@@ -660,13 +685,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
       {/* --- Empâtage et fermentation ------------------------------------ */}
       {(recipe.mash?.steps?.length || recipe.fermentation?.length) && (
-        <Section title="Paliers">
-          <div className="space-y-4">
+        <>
             {recipe.mash?.steps?.length > 0 && (
-              <div>
+              <Section title="Empâtage" hint={`${recipe.mash.steps.length} paliers`}>
                 <h3 className="text-sm text-cave-500 mb-1.5">
                   Empâtage
-                  {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg} L/kg` : ''}
+                  {recipe.mash.ratioLPerKg ? ` · ${recipe.mash.ratioLPerKg.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} L/kg` : ''}
                   {recipe.mash.spargeType === 'fly'
                     ? ' · rinçage continu'
                     : recipe.mash.spargeType === 'batch'
@@ -686,11 +710,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                 </ul>
                 <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
                 {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {recipe.mash.heatingRateCPerMin.toFixed(2)} °C/min. La montée est suivie séparément dans le journal.</p>}
-              </div>
+              </Section>
             )}
 
             {recipe.fermentation && recipe.fermentation.length > 0 && (
-              <div>
+              <Section title="Fermentation" hint={`${recipe.fermentation.length} étapes`}>
                 <h3 className="text-sm text-cave-500 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {recipe.fermentation.map((s, i) => {
@@ -720,10 +744,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     );
                   })}
                 </ul>
-              </div>
+              </Section>
             )}
-          </div>
-        </Section>
+        </>
       )}
 
       {/* --- Déroulé ----------------------------------------------------- */}
@@ -804,3 +827,5 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     </PageShell>
   );
 };
+
+import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';

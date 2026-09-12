@@ -7,7 +7,7 @@
     "node": "22"
   },
   "scripts": {
-    "build": "node build-brewer-tools.mjs && tsc",
+    "build": "node ../scripts/build-fermentation-report.mjs && node build-brewer-tools.mjs && tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "logs": "firebase functions:log"
   },
@@ -15,6 +15,7 @@
     "cheerio": "1.1.2",
     "firebase-admin": "^13.0.2",
     "firebase-functions": "^6.3.2",
+    "google-auth-library": "^10.6.1",
     "web-push": "^3.6.7"
   },
   "devDependencies": {

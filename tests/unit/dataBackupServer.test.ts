@@ -44,6 +44,22 @@ beforeEach(() => { mock.docs.clear(); mock.failHistory = false; mock.commits = 0
 afterEach(() => vi.unstubAllEnvs());
 
 describe('Validation intégrale des sauvegardes', () => {
+  it('redirige l’ancien export vers les ZIP pour ne pas omettre les octets Drive', async () => {
+    mock.docs.set('financeDocuments/original-drive', { id: 'original-drive', provider: 'google-drive' });
+    await expect(exportBreweryData.run(request() as any)).rejects.toThrow('volumes ZIP');
+    expect(mock.docs.size).toBe(1);
+  });
+  it('refuse la restauration binaire par l’ancien endpoint avant toute écriture', async () => {
+    const json = backup({ financeDocuments: [{ id: 'original-legacy', data: { id: 'original-legacy', chunkCount: 1 } }] });
+    await expect(restoreBreweryData.run(request({ json, operationId: 'restore-original-legacy' }) as any)).rejects.toThrow('restaurer sur Drive');
+    expect(mock.docs.size).toBe(0); expect(mock.commits).toBe(0);
+  });
+  it('refuse une politique d’archivage invalide avant toute restauration', async () => {
+    const row = { id: 'ARCHIVE-2025', year: 2025, status: 'archived', updatedAt: '2026-09-01T12:00:00.000Z', archivedAt: 'date-invalide', operationId: 'archive-backup-test' };
+    const json = backup({ recipes: [{ id: 'R', data: recipe }], financialArchives: [{ id: row.id, data: row }] });
+    await expect(restoreBreweryData.run(request({ json, operationId: 'restore-invalid-archive-123' }) as any)).rejects.toThrow();
+    expect(mock.commits).toBe(0); expect(mock.docs.size).toBe(0);
+  });
   it.each(['{}', '[]', '{"schemaVersion":99}', '{"schemaVersion":3,"exportedAt":"bad","collections":{}}'])('refuse %s sans écrire', async json => {
     await expect(restoreBreweryData.run(request({ json, operationId: 'validation-test-1234' }) as any)).rejects.toThrow();
     expect(mock.commits).toBe(0);
@@ -85,6 +101,26 @@ describe('Export et restauration serveur', () => {
     expect(b.collections.creativeItems![0].data.title).toBe('À conserver');
     expect(createHash('sha256').update(result.json).digest('hex')).toBe(result.sha256);
   });
+  it('sauvegarde et restaure le classement réversible, ses seuils et son audit sans modifier les pièces', async () => {
+    const archived = { id: 'ARCHIVE-2025', year: 2025, status: 'archived', archivedAt: '2026-03-01T12:00:00.000Z', updatedAt: '2026-03-01T12:00:00.000Z', operationId: 'archive-backup-2025' };
+    const opened = { id: 'ARCHIVE-2024', year: 2024, status: 'open', updatedAt: '2026-03-01T13:00:00.000Z', operationId: 'archive-open-2024' };
+    const transaction = { id: 'old-invoice', date: '10.12.2025', amountHT: 100, amountTTC: 100, tvaRate: 0, tvaAmount: 0, settlementBalanceCents: 0, lastPaymentId: '' };
+    const audit = { id: `ARCHIVE-${archived.operationId}`, entityId: archived.id, operationId: archived.operationId, summary: 'Classement' };
+    mock.docs.set(`financialArchives/${archived.id}`, archived); mock.docs.set(`financialArchives/${opened.id}`, opened);
+    mock.docs.set(`transactions/${transaction.id}`, transaction); mock.docs.set(`auditLogs/${audit.id}`, audit);
+    const result = await exportBreweryData.run(request() as any);
+    expect(parseBackup(result.json).collections.financialArchives).toHaveLength(2);
+    mock.docs.clear();
+    await restoreBreweryData.run(request({ json: result.json, operationId: 'restore-archive-roundtrip-123' }) as any);
+    expect(mock.docs.get(`financialArchives/${archived.id}`)).toEqual(archived);
+    expect(mock.docs.get(`financialArchives/${opened.id}`)).toEqual(opened);
+    expect(mock.docs.get(`transactions/${transaction.id}`)).toEqual(transaction);
+    expect(mock.docs.get(`auditLogs/${audit.id}`)).toEqual(audit);
+    // An older backup with no archive collection cannot delete the current policies.
+    await restoreBreweryData.run(request({ json: backup({ recipes: [{ id: 'R', data: recipe }] }), operationId: 'restore-old-no-archive-123' }) as any);
+    expect(mock.docs.get(`financialArchives/${archived.id}`)).toEqual(archived);
+    expect(mock.docs.get(`financialArchives/${opened.id}`)).toEqual(opened);
+  });
   it('conserve le journal actif, les registres existants et les documents absents du fichier', async () => {
     const brewDay = { revision: 12, steps: [{ id: 'mash-0', durationMin: 60, startedAt: Date.now(), label: 'Palier' }], currentIndex: 0 };
     mock.docs.set('batches/B', { id: 'B', volumeL: 24, brewDay });
@@ -113,11 +149,60 @@ describe('Export et restauration serveur', () => {
     await restoreBreweryData.run(req as any);
     expect(mock.docs.size).toBe(size);
   });
+  it('préserve une pièce annulée et une clôture figée lors de la restauration d’anciens états', async () => {
+    const cancelled = { id: 'T1', amountHT: 100, amountTTC: 100, tvaRate: 0, finance: { voidedAt: '2026-09-09T10:00:00Z' } };
+    const frozen = { id: 'C1', year: 2026, report: { year: 2026, resultCents: 42_000 } };
+    mock.docs.set('transactions/T1', cancelled); mock.docs.set('financialClosings/C1', frozen);
+    mock.docs.set('transactions/absent-in-backup', { ...cancelled, id: 'absent-in-backup' });
+    const json = backup({ transactions: [{ id: 'T1', data: { ...cancelled, finance: {} } }], financialClosings: [{ id: 'C1', data: { id: 'C1', year: 2026 } }] });
+    await restoreBreweryData.run(request({ json, operationId: 'restore-finance-12345' }) as any);
+    expect(mock.docs.get('transactions/T1')).toEqual(cancelled);
+    expect(mock.docs.get('financialClosings/C1')).toEqual(frozen);
+    expect(mock.docs.has('transactions/absent-in-backup')).toBe(true);
+  });
+  it('reconstruit le verrou des paiements du registre, sans restaurer un ancien solde nul', async () => {
+    const tx = { id: 'T1', amountHT: 100, amountTTC: 100, tvaRate: 0, category: 'brassage', settlementBalanceCents: 4000, lastPaymentId: 'P1' };
+    mock.docs.set('transactions/T1', tx);
+    mock.docs.set('financialPayments/P1', { id: 'P1', transactionId: 'T1', amountCents: 4000, direction: 'out', date: '2026-09-01', recordedAt: '2026-09-01T10:00:00Z' });
+    const json = backup({ transactions: [{ id: 'T1', data: { ...tx, settlementBalanceCents: 0, lastPaymentId: '' } }], financialPayments: [{ id: 'P1', data: { id: 'P1', transactionId: 'T1', amountCents: 9000, direction: 'out' } }] });
+    await restoreBreweryData.run(request({ json, operationId: 'restore-guard-12345' }) as any);
+    expect(mock.docs.get('transactions/T1')).toMatchObject({ settlementBalanceCents: 4000, lastPaymentId: 'P1' });
+    expect(mock.docs.get('financialPayments/P1').amountCents).toBe(4000);
+  });
+  it('réserve le paiement à restaurer avant une interruption et reprend sans le compter deux fois', async () => {
+    mock.docs.set('transactions/T1', { id: 'T1', amountHT: 100, amountTTC: 100, tvaRate: 0, category: 'brassage' });
+    const json = backup({ auditLogs: [{ id: 'H', data: { id: 'H' } }], financialPayments: [{ id: 'P1', data: { id: 'P1', transactionId: 'T1', amountCents: 4000, direction: 'out', recordedAt: '2026-09-01T10:00:00Z' } }] });
+    const req = request({ json, operationId: 'restore-guard-retry-12345' });
+    mock.failHistory = true;
+    await expect(restoreBreweryData.run(req as any)).rejects.toThrow('interruption');
+    expect(mock.docs.get('transactions/T1').settlementBalanceCents).toBe(4000);
+    mock.failHistory = false;
+    await restoreBreweryData.run(req as any);
+    expect(mock.docs.get('transactions/T1').settlementBalanceCents).toBe(4000);
+    expect(mock.docs.get('financialPayments/P1').amountCents).toBe(4000);
+  });
+  it('refuse avant écriture un paiement restauré sur une pièce annulée', async () => {
+    mock.docs.set('transactions/T1', { id: 'T1', amountHT: 100, amountTTC: 100, tvaRate: 0, finance: { voidedAt: '2026-09-01T10:00:00Z' } });
+    const json = backup({ financialPayments: [{ id: 'P1', data: { id: 'P1', transactionId: 'T1', amountCents: 4000, direction: 'out' } }] });
+    await expect(restoreBreweryData.run(request({ json, operationId: 'restore-guard-void-12345' }) as any)).rejects.toThrow('incompatible');
+    expect(mock.commits).toBe(0);
+    expect(mock.docs.has('financialPayments/P1')).toBe(false);
+  });
   it('un journal restauré ne relance pas une ancienne sonnerie', async () => {
     const state = { steps: [{ id: 'mash-0', label: 'Palier', durationMin: 60, startedAt: Date.now() }], currentIndex: 0 };
     const json = backup({ batches: [{ id: 'B', data: { id: 'B', volumeL: 24, brewDay: state } }] });
     await restoreBreweryData.run(request({ json, operationId: 'restore-alarm-12345' }) as any);
     expect(sessionEvents(mock.docs.get('batches/B').brewDay, {})).toEqual([]);
+  });
+  it('préserve aussi les quantités et les brassins actifs depuis l’ancien endpoint', async () => {
+    const currentStock = { ref: 'MALT', currentStock: 7, unit: 'kg' };
+    const currentBatch = { id: 'B', volumeL: 24, recipeId: 'CURRENT', stockConsumption: { items: [{ ref: 'MALT', quantity: 3 }] } };
+    mock.docs.set('stockItems/MALT', currentStock); mock.docs.set('batches/B', currentBatch);
+    const json = backup({ stockItems: [{ id: 'MALT', data: { ...currentStock, currentStock: 10 } }], batches: [{ id: 'B', data: { id: 'B', volumeL: 30, recipeId: 'OLD' } }] });
+    const result = await restoreBreweryData.run(request({ json, operationId: 'restore-operational-12345' }) as any);
+    expect(mock.docs.get('stockItems/MALT')).toEqual(currentStock);
+    expect(mock.docs.get('batches/B')).toEqual(currentBatch);
+    expect(result.operationalPreserved).toBe(2);
   });
 });
 

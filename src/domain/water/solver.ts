@@ -5,7 +5,9 @@ import { saltIons, netRaPerGramPerLitre, ALKALINE_SALTS } from './substances';
 import { CHALK_RA_CAP_PPM, mineralTarget, MineralTargetMode, alkalineSaltGoal } from './practice';
 import { waterFromPlan } from './plan';
 import { solveMinerals, TASTE_IONS } from './mineralSolver';
+import { solveNumericProfile } from './profileSolver';
 import type { SolveIssue } from './solverMessages';
+import { bicarbonatePreference } from './bicarbonatePreference';
 export type { IonBand } from '../../types';
 
 export interface SolveInput {
@@ -18,10 +20,24 @@ export interface SolveInput {
   disabled?: SaltId[];
   targetRa?: RaBand;
   raCeiling?: number | null;
+  /** Soft mash RA preference derived from the grist; profile bounds remain fixed. */
+  raPreference?: number | null;
   ratio?: number;
   allSaltsInMash?: boolean;
   /** Existing style policy by default; custom numeric profiles use `target`. */
   mineralTargetMode?: MineralTargetMode;
+  /** Partial custom profiles may omit bicarbonate: then it remains governed
+   * by the mash policy instead of becoming an implicit source-water target. */
+  fitBicarbonate?: boolean;
+  /** Selected profile bounds take precedence over the heuristic mash RA estimate. */
+  profilePriority?: boolean;
+  /** Retained manual mash acid, expressed as mg HCO3 equivalent in that water. */
+  mashAcidHco3Mg?: number;
+  /** Missing values of partial custom profiles have no optimization weight. */
+  targetedIons?: Array<keyof WaterIons>;
+  /** Numeric HCO3 targets describe both waters after acid. Account for the
+   * retained sparge acid before deciding how much mash alkali to add. */
+  spargeHco3AfterAcid?: number;
 }
 export interface SolveResult {
   doses: Partial<Record<SaltId, number>>;
@@ -57,18 +73,23 @@ export function solveSaltsCore(
     issues.push({ code: 'volume' });
     return { doses: {}, achievedMash: start, achievedSparge: start, achievedWort: start, issues };
   }
-  const mashL =
-    Number.isFinite(input.mashWaterL) && input.mashWaterL > 0
-      ? Math.min(total, input.mashWaterL)
-      : total;
-  const spargeL = total - mashL;
   const startSparge = input.startSparge ? clean(input.startSparge) : start;
+  if (!Number.isFinite(input.mashWaterL) || input.mashWaterL <= 0) {
+    issues.push({ code: 'volume' });
+    return { doses: {}, achievedMash: start, achievedSparge: startSparge, achievedWort: startSparge, issues };
+  }
+  const mashL = Math.min(total, input.mashWaterL);
+  const spargeL = total - mashL;
   const allInMash = input.allSaltsInMash !== false;
   const target = mineralTarget(
     clean(input.target),
     input.ranges,
     input.mineralTargetMode ?? 'minimum'
   );
+  const numericProfile = input.mineralTargetMode === 'target';
+  const practicalProfile = input.profilePriority && !numericProfile;
+  const balancedProfile = input.mineralTargetMode === 'balanced';
+  const numericBicarbonate = input.fitBicarbonate ?? numericProfile;
   const maxima = Object.fromEntries(
     Object.keys(ZERO).map((ion) => [
       ion,
@@ -79,14 +100,16 @@ export function solveSaltsCore(
   // An explicit Mg/Na floor is a recipe choice, even below the Gose range.
   // Zero minima stay optional: the grist supplies magnesium.
   const weights = [
-    1,
-    (input.ranges?.mg?.min ?? 0) > 0 ? 8 : 0.5,
-    (input.ranges?.na?.min ?? 0) > 0 ? 8 : 0.5,
+    // Calcium has a soft interior preference; its coupled taste ions matter
+    // more. Joint lower bounds, not large Mg/Na weights, enforce style floors.
+    balancedProfile ? 0.1 : practicalProfile ? 0 : 1,
+    !balancedProfile && (input.ranges?.mg?.min ?? 0) > 0 ? 8 : 0.5,
+    !balancedProfile && (input.ranges?.na?.min ?? 0) > 0 ? 8 : 0.5,
     2,
     2
-  ];
+  ].map((weight, index) => input.targetedIons && !input.targetedIons.includes(TASTE_IONS[index]) ? 0 : weight);
   const minima = Object.fromEntries(
-    TASTE_IONS.map((ion) => [
+    [...TASTE_IONS, ...(numericBicarbonate ? ['hco3' as const] : [])].map((ion) => [
       ion,
       Number.isFinite(input.ranges?.[ion]?.min) ? Math.max(0, input.ranges[ion].min) : 0
     ])
@@ -96,6 +119,22 @@ export function solveSaltsCore(
       Object.keys(ZERO).map((ion) => [ion, (mash[ion] * mashL + sparge[ion] * spargeL) / total])
     ) as unknown as WaterIons;
   const base = combined(start, startSparge);
+  const spargeHco3Removed = numericBicarbonate && Number.isFinite(input.spargeHco3AfterAcid)
+    ? Math.max(0, startSparge.hco3 - Math.max(0, input.spargeHco3AfterAcid)) * spargeL / total
+    : 0;
+  const mashHco3Removed = numericBicarbonate && Number.isFinite(input.mashAcidHco3Mg)
+    ? Math.max(0, input.mashAcidHco3Mg) / total : 0;
+  const acidHco3Removed = spargeHco3Removed + mashHco3Removed;
+  const spargeAfterContribution = startSparge.hco3 * spargeL / total - spargeHco3Removed;
+  // Each water is neutralized separately and cannot have negative HCO3.
+  // If the sparge already supplies the requested minimum, zero mash HCO3
+  // is valid: do not buy alkali merely to cancel an excessive manual acid dose.
+  const rawTarget = (after: number) => after > spargeAfterContribution
+    ? after + acidHco3Removed : startSparge.hco3 * spargeL / total;
+  target.hco3 = rawTarget(target.hco3);
+  maxima.hco3 += acidHco3Removed;
+  if (numericBicarbonate) minima.hco3 = minima.hco3 > spargeAfterContribution
+    ? minima.hco3 + acidHco3Removed : 0;
   const waters = (doses: Partial<Record<SaltId, number>>) =>
     waterFromPlan(start, doses, mashL, spargeL, startSparge, allInMash);
   const wort = (doses: Partial<Record<SaltId, number>>) => {
@@ -148,35 +187,62 @@ export function solveSaltsCore(
       ALKALINE_SALTS.filter((id) => doses[id]).map((id) => [id, doses[id]])
     );
   };
-  let alk: Partial<Record<SaltId, number>> = alkaline({});
   let doses: Partial<Record<SaltId, number>> = {};
   let stable = !needsAlkaline;
-  const seen = new Set<string>();
-  for (let pass = 0; pass < (needsAlkaline ? 12 : 1); pass++) {
-    const flavour = solveMinerals(wort(alk), target, maxima, total, off, weights, minima);
-    // Recompute from scratch: corrections must not accumulate and need acid
-    // merely to undo the previous iteration.
-    const nextAlk = alkaline(flavour);
-    doses = { ...flavour, ...nextAlk };
-    const signature = JSON.stringify(nextAlk);
-    if (signature === JSON.stringify(alk)) {
-      stable = true;
-      break;
+  let numericAlkalinityLimit = false;
+  if (numericBicarbonate) {
+    const fitted = solveNumericProfile({
+      start: base, target, maxima, minima, totalL: total, mashL,
+      disabled: off, weights, waters,
+      preferRanges: input.profilePriority,
+      practical: practicalProfile,
+      requestedRatio: input.ratio ?? (target.cl > 0 ? target.so4 / target.cl : undefined),
+      bicarbonateTargetForMash: balancedProfile ? mash => rawTarget(bicarbonatePreference({
+        range: input.ranges.hco3, mash, mashL, spargeL,
+        spargeHco3: Number.isFinite(input.spargeHco3AfterAcid) ? input.spargeHco3AfterAcid! : startSparge.hco3,
+        mashRaCeiling: Number.isFinite(input.raCeiling) ? input.raCeiling : band?.max,
+        mashRaTarget: Number.isFinite(input.raPreference) ? input.raPreference : band ? (band.min + band.max) / 2 : undefined,
+        allowAlkaliPreference: Number.isFinite(input.raPreference) || (band?.min ?? -Infinity) >= 0,
+        sourceAfterManualAcid: (input.mashAcidHco3Mg ?? 0) > 0
+          ? (Math.max(0, start.hco3 * mashL - input.mashAcidHco3Mg!) / total + spargeAfterContribution) : undefined,
+      }).value) : undefined,
+      raCeiling: input.profilePriority ? Infinity : Math.min(
+        Number.isFinite(band?.max) ? band.max : Infinity,
+        Number.isFinite(input.raCeiling) ? input.raCeiling : Infinity
+      )
+    });
+    doses = fitted.doses;
+    stable = fitted.converged;
+    numericAlkalinityLimit = fitted.limitedByAlkalinity;
+  } else {
+    let alk: Partial<Record<SaltId, number>> = alkaline({});
+    const seen = new Set<string>();
+    for (let pass = 0; pass < (needsAlkaline ? 12 : 1); pass++) {
+      const flavour = solveMinerals(wort(alk), target, maxima, total, off, weights, minima, input.profilePriority);
+      // Recompute from scratch: corrections must not accumulate and need acid
+      // merely to undo the previous iteration.
+      const nextAlk = alkaline(flavour);
+      doses = { ...flavour, ...nextAlk };
+      const signature = JSON.stringify(nextAlk);
+      if (signature === JSON.stringify(alk)) {
+        stable = true;
+        break;
+      }
+      if (seen.has(signature)) break;
+      seen.add(signature);
+      alk = nextAlk;
     }
-    if (seen.has(signature)) break;
-    seen.add(signature);
-    alk = nextAlk;
   }
   const water = waters(doses);
   const finalWort = combined(water.mash, water.sparge);
   const ra = residualAlkalinity(water.mash);
   let convergence: SolveResult['convergence'] = 'stable';
-  if (!stable) {
+  if (!stable && !numericBicarbonate) {
     const finalAlk = Object.fromEntries(
       ALKALINE_SALTS.filter((id) => doses[id]).map((id) => [id, doses[id]])
     );
     const refit = {
-      ...solveMinerals(wort(finalAlk), target, maxima, total, off, weights, minima),
+      ...solveMinerals(wort(finalAlk), target, maxima, total, off, weights, minima, input.profilePriority),
       ...finalAlk
     };
     const check = wort(refit);
@@ -188,10 +254,20 @@ export function solveSaltsCore(
         ? 'rounded'
         : 'bounded';
   }
+  if (!stable && numericBicarbonate) convergence = 'bounded';
+  if (numericBicarbonate && (input.profilePriority
+    ? round1(finalWort.hco3) < minima.hco3 : target.hco3 - finalWort.hco3 > 3)) {
+    issues.push({
+      code: 'bicarbonate-target', value: finalWort.hco3 - acidHco3Removed,
+      target: (input.profilePriority ? minima.hco3 : target.hco3) - acidHco3Removed,
+      limitedByAlkalinity: numericAlkalinityLimit,
+      excluded: ALKALINE_SALTS.every(id => off.has(id))
+    });
+  }
   if (band) {
-    if (alkaliGoal.limitedByGrist)
+    if (!numericBicarbonate && alkaliGoal.limitedByGrist)
       issues.push({ code: 'grist', target: saltTarget, colour: band.min });
-    if (needsAlkaline && ra < saltTarget - 10)
+    if (!numericBicarbonate && needsAlkaline && ra < saltTarget - 10)
       issues.push({
         code: 'alkalinity-low',
         value: saltTarget - ra,
@@ -202,6 +278,13 @@ export function solveSaltsCore(
     if (convergence === 'bounded') issues.push({ code: 'iteration' });
   }
   for (const ion of TASTE_IONS) {
+    if (input.profilePriority) {
+      if (input.targetedIons && !input.targetedIons.includes(ion)) continue;
+      const value = round1(finalWort[ion]);
+      if (value < (minima[ion] ?? 0)) issues.push({ code: 'low', ion, value, target: minima[ion] });
+      if (value > maxima[ion]) issues.push({ code: 'high', ion, value, max: maxima[ion], source: base[ion] });
+      continue;
+    }
     if (finalWort[ion] > maxima[ion] + 2)
       issues.push({
         code: 'high',
@@ -211,8 +294,8 @@ export function solveSaltsCore(
         source: base[ion]
       });
     const minimum = input.ranges?.[ion]?.min ?? 0;
-    if (ion === 'ca' && finalWort.ca < minimum - 2)
-      issues.push({ code: 'low', ion, value: finalWort.ca, target: minimum });
+    if (ion === 'ca' && (finalWort.ca < minimum - 2 || numericProfile && target.ca - finalWort.ca > 3))
+      issues.push({ code: 'low', ion, value: finalWort.ca, target: numericProfile ? Math.max(minimum, target.ca) : minimum });
     if (
       ion !== 'ca' &&
       (minimum - finalWort[ion] > 2 || target[ion] - finalWort[ion] > (ion === 'mg' ? 3 : 10))

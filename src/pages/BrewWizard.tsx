@@ -1,7 +1,9 @@
+import { RecipeDisclosure, revealRecipeErrors } from '../ui/RecipeDisclosure';
 import { MaltDetails } from '../ui/MaltDetails';
 import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../ui/NumberInput';
+import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
 import {
   Recipe,
   StockItem,
@@ -29,6 +31,18 @@ import { computeBeerColor } from '../domain/beerColor';
 import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
+import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
+import { HopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
+import { FermentationWorkshop } from '../ui/FermentationWorkshop';
+import { NoloPanel } from '../ui/NoloPanel';
+import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
+import { noloScience } from '../domain/nolo';
+import { StorageService } from '../services/storage';
+import { FermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
+import { HopWorkshop } from '../ui/hopIndex/HopWorkshop';
+import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
+import { HopBitternessPanel } from '../ui/HopBitternessPanel';
+import { hotBitterness } from '../domain/hopBitterness';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -43,9 +57,12 @@ import {
   splitDoses,
   targetRaForGrist,
   raSaltCeilingForGrist,
+  raForGrist,
   alkalineSaltGoal,
+  estimateMashPh,
 } from '../domain/water';
-import { styleWaterForName, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
+import { styleWaterForReference, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
+import { waterTreatmentTarget } from '../domain/water/profileTarget';
 import { PageShell, Section } from './PageShell';
 import { useDensity, useCoarsePointer } from '../ui/useViewport';
 import { FormNav, Field, InlineNum, TextInput, inputClass } from '../ui/FormNav';
@@ -60,11 +77,12 @@ import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
 import { AiAssist } from '../ui/AiAssist';
 import { BrewerChat } from '../ui/BrewerChat';
+import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import { RecipeImportSheet, ImportedRecipe } from '../ui/RecipeImportSheet';
 import { BrewSheet } from '../ui/BrewSheet';
 import { RecipeAutoComplete } from '../ui/RecipeAutoComplete';
-import { Trash2, Plus, Check, AlertTriangle, Beaker, ClipboardPaste, ClipboardList, Droplets, ChevronLeft } from 'lucide-react';
+import { Trash2, Plus, Check, AlertTriangle, ClipboardPaste, ClipboardList, Droplets, ChevronLeft } from 'lucide-react';
 
 /** Un ancien malt, ramené à la forme typée : du grain, à l'empâtage. */
 function asGrain(m: MaltIngredient): Fermentable {
@@ -327,6 +345,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
 
   const [step, setStep] = useState<StepId>('identite');
+  const [hopGuideBusy, setHopGuideBusy] = useState(false);
   /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
   const density = useDensity();
   const tight = density === 'tight';
@@ -389,13 +408,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
   const [mashSteps, setMashSteps] = useState<TempStep[]>(
-    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '').steps
+    () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,brewingStyles(StorageService.getHopKnowledge())).steps
   );
   const [spargeType, setSpargeType] = useState<'fly' | 'batch' | 'none'>(
     base?.mash?.spargeType ?? 'batch'
   );
   const [ferment, setFerment] = useState<FermentationStep[]>(
-    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '').steps
+    () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,brewingStyles(StorageService.getHopKnowledge())).steps
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
@@ -418,7 +437,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     spargeDiRatioPct: base?.waterPlan?.spargeDiRatioPct,
     // Le style d'eau se devine du style de bière saisi — c'est le point de
     // départ le plus juste, et il reste modifiable.
-    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForName(base?.style ?? '').code,
+    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(base?.style ?? '').code,
     // Une cible chiffrée enregistrée reprend la main sur le style deviné du nom.
     customTarget: base?.waterPlan?.targetIons
       ? {
@@ -447,7 +466,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     if (!state.autoTreatment || state.mashWaterL <= 0) return { water: state, error: '' };
     try {
       const { plan } = replanRecipeWater({
-        style, volumeL, fermentables, hops, boilMin,
+        style, volumeL, fermentables, hops, boilMin, nolo:details.nolo,
         efficiencyPct: details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75,
         waterPlan: { ...state, sourceId: waterSource.id, sourceSnapshot: waterSource,
           targetProfileId: state.styleCode, targetIons: state.customTarget?.ions,
@@ -460,7 +479,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     } catch (e) {
       return { water: state, error: (e as Error).message };
     }
-  }, [waterDraft, waterSource, name, style, volumeL, fermentables, hops, boilMin, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
+  }, [waterDraft, waterSource, name, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
   const water = automaticWater.water;
 
   // Follow the beer style until an explicit water profile is chosen. Saved
@@ -468,8 +487,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const waterProfileAuto = useRef(!base?.waterPlan?.targetProfileId && !base?.waterPlan?.targetIons);
   const changeStyle = (next: string) => {
     setStyle(next);
-    if (waterProfileAuto.current) {
-      setWater(w => ({ ...w, styleCode: styleWaterForName(next).code, ratioOverride: undefined }));
+    const resolved=resolveBrewingStyle(next,undefined,brewingStyles(StorageService.getHopKnowledge()));
+    setDetails(d=>({...d,styleRef:resolved?.ref}));
+    if (waterProfileAuto.current && resolved) {
+      setWater(w => ({ ...w, styleCode: styleWaterForReference(next,resolved.ref,brewingStyles(StorageService.getHopKnowledge())).code, ratioOverride: undefined }));
     }
   };
 
@@ -519,39 +540,29 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     [fermentables, volumeL, efficiency]
   );
   const ogPredicted = useMemo(
-    () => BrewingMath.calculateOg(fermentables, volumeL, efficiency),
-    [fermentables, volumeL, efficiency]
+    () => (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.nolo.secondRunnings?.sg??null:BrewingMath.calculateOg(fermentables, volumeL, efficiency),
+    [fermentables, volumeL, efficiency,details.nolo?.process,details.nolo?.secondRunnings?.sg]
   );
   const og = ogPredicted ?? 0;
 
-  const ibu = useMemo(
-    () => (og > 1 ? BrewingMath.calculateTinsethIBU(hops, volumeL, og, boilMin) : null),
-    [hops, volumeL, og, boilMin]
-  );
+  const bitterness = useMemo(() => hotBitterness(hops, volumeL, og || null, boilMin), [hops, volumeL, og, boilMin]);
+  const ibu = bitterness.total == null ? null : Math.round(bitterness.total);
 
   /** L'atténuation réelle dépend du palier de saccharification, pas seulement de la levure. */
   const mashTemp = useMemo(() => saccharificationTemp(mashSteps), [mashSteps]);
   const attenuation = useMemo(() => {
-    if (!yeast.attenuationPct) return null;
+    if (yeast.attenuationPct == null || details.nolo?.enabled) return null;
     return mashTemp
       ? BrewingMath.attenuationForMashTemp(yeast.attenuationPct, mashTemp)
       : yeast.attenuationPct;
-  }, [yeast.attenuationPct, mashTemp]);
+  }, [yeast.attenuationPct, mashTemp, details.nolo?.enabled]);
 
   const fgPredicted = useMemo(
     () =>
-      attenuation && og > 1
+      attenuation != null && og > 1
         ? BrewingMath.calculateFg(og, attenuation, points?.unfermentable ?? 0)
         : null,
     [attenuation, og, points]
-  );
-
-  const pitch = useMemo(
-    () =>
-      og > 1
-        ? BrewingMath.pitchRate(og, volumeL, /lager|pils|helles|bock/i.test(style) ? 'lager' : 'ale')
-        : null,
-    [og, volumeL, style]
   );
 
   const gravityWarning = useMemo(
@@ -588,7 +599,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const kettleHopG = useMemo(() => kettleHopGrams(hops), [hops]);
 
   useEffect(() => {
-    if (volumesEdited || totalGrist <= 0) return;
+    if (volumesEdited || totalGrist <= 0 || (details.nolo?.enabled&&details.nolo.process==='secondRunnings')) return;
     const v = BrewingMath.waterVolumes(
       totalGrist,
       volumeL,
@@ -602,7 +613,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         ? w
         : { ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }
     );
-  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited]);
+  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited,details.nolo?.process]);
 
   /**
    * Les deux doses d'acide, calculées ici pour être ENREGISTRÉES.
@@ -622,19 +633,28 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const waterRecap = useMemo(() => {
     const spargeDi = water.spargeDiRatioPct ?? water.diRatioPct;
     const allSaltsInMash = water.allSaltsInMash !== false;
-    const band = targetRaForGrist(color?.ebc ?? null, grains,
-      totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
-    const treatment = calculateWaterTreatment(waterSource, water, band);
-    const alkaliGoal = alkalineSaltGoal(band, raSaltCeilingForGrist(grains,
-      totalGrist > 0 ? water.mashWaterL / totalGrist : 0));
+    const mashRatio = totalGrist > 0 ? water.mashWaterL / totalGrist : 0;
+    const band = targetRaForGrist(color?.ebc ?? null, grains, mashRatio);
+    const mashAlkalinity = { ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio) };
+    const alkaliGoal = alkalineSaltGoal(band, mashAlkalinity.ceiling);
     const r1 = (n: number) => Math.round(n * 10) / 10;
 
     /* La cible saisie l'emporte sur le style de la liste — comme dans l'atelier. */
     const style = water.customTarget
       ? styleFromTargetIons(water.customTarget.ions, water.customTarget.name)
       : styleByCode(water.styleCode);
+    const treatment = calculateWaterTreatment(waterSource,
+      { ...water, ...waterTreatmentTarget(style, water.customTarget?.ions, mashAlkalinity) }, band);
 
     return {
+      targetStatus: {
+        style, treatment, raBand: band, beerEbc: color?.ebc ?? null,
+        phEstimate: noloWaterModelIssue(details.nolo,mashRatio)?null:estimateMashPh(grains, treatment.mashPhRa,
+          totalGrist > 0 ? water.mashWaterL / totalGrist : 0),
+        targetPh: details.waterPlan?.targetPh,
+        customTarget: !!water.customTarget,
+        mashWaterL: water.mashWaterL, spargeWaterL: water.spargeWaterL
+      },
       sourceName: waterSource.name,
       styleName: style.name,
       style,
@@ -667,7 +687,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       mashPh: water.mashPh,
       spargePh: water.spargePh
     };
-  }, [waterSource, water, color, grains, totalGrist]);
+  }, [waterSource, water, color, grains, totalGrist, details.waterPlan?.targetPh, details.nolo]);
 
   const waterAcid = useMemo(
     () => ({
@@ -790,10 +810,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
     fermentables.forEach((f) => add(f.name, f.weightKg, 'kg'));
     hops.forEach((h) => add(h.name, h.weightG, 'g'));
-    // La levure se compte en sachets : c'est le BESOIN calculé qu'on confronte
-    // au stock, pas la quantité saisie — sous-ensemencer est un vrai risque.
+    // Stock follows the actual planned dose, without assuming cells per packet.
     if (yeast.name) {
-      add(yeast.name, pitch && yeast.unit === 'sachet' ? pitch.sachetsDry : yeast.qty, yeast.unit);
+      add(yeast.name, yeast.qty, yeast.unit);
     }
 
     const need: Array<{ name: string; needed: number; unit: string; have: number }> = [];
@@ -803,7 +822,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       if (have < b.needed) need.push({ ...b, have });
     });
     return need;
-  }, [fermentables, hops, yeast, pitch, stockItems]);
+  }, [fermentables, hops, yeast, stockItems]);
 
   /*
    * Quel programme est en place ?
@@ -875,15 +894,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe) => {
+  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide'>) => {
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
-    setDetails(previous => r.complete ? content : {
+    setDetails(previous => ({ ...(r.complete ? content : {
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
       waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    });
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide } : {}) }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -918,11 +937,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       .filter(f => f.kind === 'grain').reduce((sum, f) => sum + f.weightKg, 0);
     setWater(w => {
       const next = r.complete ? {
-        diRatioPct: 0, styleCode: styleWaterForName(r.style ?? '').code,
+        diRatioPct: 0, styleCode: styleWaterForReference(r.style ?? '').code,
         doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 0, spargeWaterL: 0,
         allSaltsInMash: true
       } as WaterState : { ...w };
-      if (r.style != null && waterProfileAuto.current && !next.customTarget) next.styleCode = styleWaterForName(r.style).code;
+      if (r.style != null && waterProfileAuto.current && !next.customTarget) next.styleCode = styleWaterForReference(r.style).code;
       if (mashL != null) next.mashWaterL = mashL;
       if (spargeL != null) next.spargeWaterL = spargeL;
       else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
@@ -965,16 +984,17 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setStep('fermentescibles');
   };
 
-  const addHop = (ingName: string, item?: StockItem) => {
+  const addHop = (ingName: string, item?: StockItem, variety?: import('../../functions/src/hopIndexSchema').HopVariety) => {
     if (!ingName) return;
     // Même règle que les fermentescibles : au clavier, le poids prend le focus.
     if (!coarse) setFocusHop(hops.length);
-    setHops([
-      ...hops,
+    setHops(current => [
+      ...current,
       {
         name: ingName,
         // L'alpha vient de l'article de stock — c'est celui du lot acheté.
         alpha: item?.alphaPct ?? 0,
+        ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
         stage: hopStage,
         ...(hopStage === 'boil' ? { timeMin: boilMin } : {}),
@@ -985,9 +1005,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   };
 
   const patchHop = (index: number, patch: Partial<HopIngredient>) =>
-    setHops(hops.map((h, i) => (i === index ? { ...h, ...patch } : h)));
+    setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
+    if (yeast.name.trim().toLocaleLowerCase('fr') !== selectedName.trim().toLocaleLowerCase('fr')) {
+      setDetails(previous => ({ ...previous, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+    }
     setYeast(current => {
       if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr')) return current;
       const unit = item?.unit ?? 'sachet';
@@ -996,7 +1019,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         form: item?.yeastForm ?? 'sèche', unit, qty: current.unit === unit ? current.qty : 1,
         attenuationPct: item?.yeastAttenuationPct,
         fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
-        notes: undefined
+        notes: undefined, hopIndexId: undefined
       };
     });
   };
@@ -1007,27 +1030,36 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     parentRecipeId: base?.parentRecipeId,
     name: name.trim(),
     style: style.trim(),
+    styleRef: details.styleRef,
+    nolo: details.nolo,
+    fermentationIntent: details.fermentationIntent,
     volumeL,
     brewDate,
     boilMin,
-    ogTarget: (keepTargets ? details.ogTarget : undefined) ?? ogPredicted ?? 0,
+    ogTarget: (keepTargets ? details.ogTarget : undefined) ?? ogPredicted ?? null,
     // La densité finale tient compte de ce que la levure ne peut PAS manger.
-    fgTarget: (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? 0,
-    abvTarget: keepTargets && details.abvTarget != null ? details.abvTarget :
+    fgTarget: details.nolo?.enabled ? null : (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? null,
+    abvTarget: details.nolo?.enabled ? details.nolo.targetAbvPct : keepTargets && details.abvTarget != null ? details.abvTarget :
       ogPredicted && fgPredicted
         ? BrewingMath.calculateABV(ogPredicted, fgPredicted)
-        : 0,
+        : null,
     ibuTarget: (keepTargets ? details.ibuTarget : undefined) ?? ibu ?? undefined,
     colorEbc: details.colorEbc,
     efficiencyPct: details.efficiencyPct,
-    preBoilL: rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)*10)/10 : details.preBoilL,
-    preBoilHotL: rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
+    preBoilL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)*10)/10 : details.preBoilL,
+    preBoilHotL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
     brewhouse: rig?.equipment ? structuredClone(rig) : details.brewhouse,
     carboTarget: carboTarget.trim() || undefined,
     fermentables,
     totalGristKg: totalGrist,
     hops,
     yeast,
+    yeastGuide: details.yeastGuide,
+    hopMatrixId: details.hopMatrixId,
+    hopTrialId: details.hopTrialId,
+    hopSolverIntent: details.hopSolverIntent,
+    hopAromaTarget: details.hopAromaTarget,
+    hopPredictionIds: details.hopPredictionIds,
     adjuncts: details.adjuncts,
     mash: {
       steps: mashSteps,
@@ -1039,7 +1071,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       spargeTempC: details.mash?.spargeTempC ?? 76,
       spargeType
     },
-    waterPlan: {
+    waterPlan: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.waterPlan:{
       roLimitL: water.roLimitL,
       autoTreatment: water.autoTreatment,
       saltOverrides: water.saltOverrides,
@@ -1083,8 +1115,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     steps: details.steps ?? [],
     notes: details.notes ?? [],
     notesCreation: details.notesCreation,
-    favorite: base?.favorite
+    favorite: base?.favorite,
+    archivedAt: base?.archivedAt
   });
+
+  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step) => {
+    applyImport(normalizeRecipeImport(next, 'local', true), next);
+    setYeast(next.yeast); setStep(destination);
+  };
 
   const hasMetrics = fermentables.length > 0 || hops.length > 0;
 
@@ -1108,7 +1146,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     try {
       if(!brewhouse)return;
       const resized=adaptRecipeEquipment(build(),brewhouse,defaultBrewVolume(brewhouse));
-      applyImport(normalizeRecipeImport(resized,'local',true));
+      applyImport(normalizeRecipeImport(resized,'local',true), resized);
       setStep('identite');
       setEquipmentNotice(`Recette adaptée à ${resized.volumeL} L : ingrédients, eaux, sels et acide recalculés.`);
     }catch(e){setEquipmentNotice(e instanceof Error?e.message:'Adaptation impossible.');}
@@ -1116,6 +1154,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const canAdvance = step !== 'identite' || name.trim().length > 1;
 
   const go = (delta: 1 | -1) => {
+    if (hopGuideBusy) return;
     const next = STEPS[stepIndex + delta];
     if (next) setStep(next.id);
   };
@@ -1137,6 +1176,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             key={s.id}
             type="button"
+            disabled={hopGuideBusy}
             onClick={() => setStep(s.id)}
             aria-current={s.id === step ? 'step' : undefined}
             className={`flex-1 h-1.5 rounded-full transition-colors ${
@@ -1156,6 +1196,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       >
         <ClipboardPaste className="w-3.5 h-3.5" />
       </button>
+      <BrewerPageShortcut />
     </div>
   );
 
@@ -1165,6 +1206,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
+      actions={<BrewerPageShortcut />}
       /* Le fil d'étapes vit dans l'en-tête : il ne coûte plus une rangée. */
       progress={
         <nav aria-label="Étapes" className="flex gap-1">
@@ -1172,6 +1214,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <button
               key={s.id}
               type="button"
+              disabled={hopGuideBusy}
               onClick={() => setStep(s.id)}
               aria-current={s.id === step ? 'step' : undefined}
               className={`flex-1 h-1 sm:h-1.5 rounded-full transition-colors ${
@@ -1218,6 +1261,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         sont les quatre chiffres qu'un brasseur regarde en composant sa facture,
         et rien d'autre.
       */}
+      {step === 'recap' && <BrewBudgetButton recipe={build()} />}
       {hasMetrics && (
         <div
           className={`panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
@@ -1234,7 +1278,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
-            <span className="text-2xs text-cave-400">IBU</span>
+            <span className="text-2xs text-cave-400">{hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
             <span className="reading text-2xs sm:text-base">{ibu ?? '—'}</span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
@@ -1252,12 +1296,22 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         </div>
       )}
 
-      <BrewerChat scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
+      <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
         onDraftApply={value => {
-          applyImport({...value, mashSteps:value.mash?.steps ?? [], present:Object.keys(value), complete:true} as ImportedRecipe);
+          applyImport({...value, mashSteps:value.mash?.steps ?? [], present:Object.keys(value), complete:true} as ImportedRecipe, value);
           setStep(step);
         }} />
       {/* ---------------------------------------------------- ÉTAPE 1 */}
+        <RecipeAutoComplete active={['fermentescibles', 'houblons', 'levure', 'recap'].includes(step)} nolo={details.nolo?.enabled}
+          onLearnIngredient={onLearnIngredient}
+          stockItems={stockItems}
+          fermentables={fermentables}
+          onFermentables={setFermentables}
+          hops={hops}
+          onHops={setHops}
+          yeast={yeast}
+          onYeast={setYeast}
+        />
       {step === 'identite' && (
         <>
           {/*
@@ -1300,6 +1354,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               />
             </Field>
 
+            {matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchBrewingStyles(style,brewingStyles(StorageService.getHopKnowledge())).map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
+            <BrewingStyleDetails recipe={build()} onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}/>
+            <NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>{
+              setDetails(d=>({...d,nolo:next.nolo,yeastGuide:next.yeastGuide,hopPredictionIds:next.hopPredictionIds,hopMatrixId:next.hopMatrixId,hopTrialId:next.hopTrialId}));
+              setYeast(next.yeast);setFerment(next.fermentation??[]);
+            }}/>
             <SliderField
               label="Volume en fermenteur"
               value={volumeL}
@@ -1521,6 +1581,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hint="Un même houblon à deux moments fait DEUX lignes : 28 g au whirlpool et 85 g à cru ne sont pas 113 g."
         >
           <div className="space-y-2 sm:space-y-3">
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-lg font-semibold text-cave-100 pt-3">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
               layout="grid"
@@ -1530,11 +1591,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             />
             {!tight && <p className="text-2xs sm:text-sm text-cave-500 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
 
-            <IngredientPicker
-              categories={['Houblon']}
+            <HopIngredientPicker
               items={stockItems}
-              value=""
               onChange={addHop}
+              onBusyChange={setHopGuideBusy}
+              onReference={variety => addHop(variety.name, undefined, variety)}
               onCreate={(n) => {
                 const created = onCreateStockItem(n, 'Houblon', 'g');
                 addHop(created.name, created);
@@ -1543,6 +1604,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
             />
 
+            <HopBitternessPanel hops={hops} volumeL={volumeL} og={og || null} boilMin={boilMin} hot={bitterness}/>
             {hops.length === 0 ? (
               <p className="text-xs sm:text-sm text-cave-500 py-1">Aucun houblon.</p>
             ) : (
@@ -1584,9 +1646,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 {describeMoment(h)}
                               </span>
                             )}
-                            {style.bitters && h.alpha > 0 && og > 1 && (
+                            {style.bitters && bitterness.additions[i].ibu != null && (
                               <span className="text-2xs text-cave-300 font-mono">
-                                {BrewingMath.hopIbu(h, volumeL, og, boilMin).toFixed(1)} IBU
+                                {bitterness.additions[i].ibu!.toFixed(1)} IBU
                               </span>
                             )}
                           </span>
@@ -1645,7 +1707,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             fréquent que d'en saisir un manquant — et l'ambre
                             ne signale que l'absence.
                           */}
-                          {style.bitters && (
+                          {(
                             <div>
                               <InlineNum
                                 label="α"
@@ -1668,7 +1730,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 unit="min"
                                 min={0}
                                 integer
-                                value={h.timeMin ?? 0}
+                                value={h.timeMin}
                                 onValue={(v) => patchHop(i, { timeMin: v })}
                               />
                             </div>
@@ -1683,7 +1745,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   unit="min"
                                   min={0}
                                   integer
-                                  value={h.timeMin ?? 20}
+                                  value={h.timeMin}
                                   onValue={(v) => patchHop(i, { timeMin: v })}
                                 />
                               </div>
@@ -1695,7 +1757,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   min={0}
                                   max={100}
                                   integer
-                                  value={h.tempC ?? 80}
+                                  value={h.tempC}
                                   onValue={(v) => patchHop(i, { tempC: v })}
                                 />
                               </div>
@@ -1710,7 +1772,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                   name={`Jour en cuve pour ${h.name}`}
                                   min={0}
                                   integer
-                                  value={h.dayOffset ?? 0}
+                                  value={h.dayOffset}
                                   onValue={(v) => patchHop(i, { dayOffset: v })}
                                 />
                               </div>
@@ -1722,207 +1784,75 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         </div>
                       )}
 
-                      {/* Sans alpha, l'amertume de cette ligne ne compte pas. */}
+                      <p className="text-xs text-ebc-amber">{bitterness.additions[i].missing.length > 0 && `À préciser : ${bitterness.additions[i].missing.join(' · ')}.`}</p>
+                      {h.stage === 'dryHop' && <div className="space-y-2 border-t border-cave-800 pt-2">
+                        <label className="block text-xs text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
+                          <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
+                        </select></label>
+                        <div className="flex flex-wrap gap-3"><InlineNum label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
+                      </div>}
                       <AiAssist
                         kind="houblon"
                         name={h.name}
-                        missing={h.stage !== 'dryHop' && !h.alpha ? ['acides alpha'] : []}
+                        missing={!h.alpha ? ['acides alpha'] : []}
                         onApply={(facts) => {
                           patchHop(i, applyHopFacts(h, facts));
                           onLearnIngredient(h.name, factsForStock('houblon', facts));
                         }}
                       />
 
-                      {/*
-                        ⚠️ « Aucune amertume — arôme seul » a disparu des cartes.
-                        Elle s'écrivait sur CHACUN des houblons à cru : sur cette
-                        NEIPA, trois fois la même phrase, à trois lignes
-                        d'intervalle. C'est un fait général du houblonnage à cru,
-                        pas une propriété de ce sachet-là — il est dit une fois,
-                        dans le choix du moment.
-                      */}
+
                     </li>
                   );
                 })}
               </ul>
             )}
+            <HopWorkshop recipe={build()} onChooseYeast={() => setStep('levure')} onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })} onBusyChange={setHopGuideBusy} onChange={next => {
+              setHops(next.hops);
+              setYeast(next.yeast);
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
+            }} contextEditor={<details><summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary><HopRecipeGuide contextOnly recipe={build()} onBusyChange={setHopGuideBusy} onChooseYeast={() => setStep('levure')} onChange={next => {
+              setHops(next.hops); setYeast(next.yeast);
+              setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
+            }} /></details>} />
           </div>
         </Section>
       )}
 
       {/* ---------------------------------------------------- ÉTAPE 4 */}
       {step === 'levure' && (
-        <Section title="Levure" hint="Souche, quantité, et la fenêtre de température à tenir.">
-          <FormNav className="space-y-2.5 sm:space-y-3">
+        <Section title="Levure" hint="Saisis ta souche ou choisis une conduite pour l’arôme recherché.">
+          <FormNav className="space-y-3">
             <Field label="Souche">
-              <IngredientPicker
-                categories={['Levure']}
-                items={stockItems}
-                value={yeast.name}
-                onChange={selectYeast}
-                onCreate={(n) => {
-                  const created = onCreateStockItem(n, 'Levure', 'sachet');
-                  selectYeast(created.name, created);
-                }}
-                placeholder="US-05, Verdant IPA, WLP095…"
-                /* Le placeholder énumère des exemples : il ne peut pas servir
-                   de nom accessible, on le pose donc explicitement. */
-                ariaLabel="Souche de levure"
-              />
+              <IngredientPicker categories={['Levure']} items={stockItems} value={yeast.name} onChange={selectYeast}
+                onCreate={n => { const item = onCreateStockItem(n, 'Levure', 'sachet'); selectYeast(item.name, item); }}
+                placeholder="US-05, Verdant IPA, WLP095…" ariaLabel="Souche de levure" />
             </Field>
-
-            <Field label="Forme de la levure">
-              <SegmentedControl
-                label="Forme de la levure"
-                value={yeast.form}
-                onChange={(f) =>
-                  setYeast({
-                    ...yeast,
-                    form: f,
-                    unit: f === 'liquide' ? 'flacon' : f === 'levain' ? 'L' : 'sachet'
-                  })
-                }
-                options={[
-                  { value: 'sèche', label: 'Sèche' },
-                  { value: 'liquide', label: 'Liquide' },
-                  { value: 'levain', label: 'Levain / Récup' }
-                ]}
-              />
-            </Field>
-
-            {/*
-              ⚠️ Trois `Field` empilés deviennent trois lignes couchées.
-
-              Chacun occupait un intitulé pleine largeur PUIS son champ en
-              dessous — deux étages pour un nombre à deux chiffres. `InlineNum`
-              pose le nom, le champ et l'unité sur la même ligne, comme sur les
-              cartes de houblon.
-
-              Le nom accessible vient d'`InlineNum` et non plus d'un `<label>`
-              orphelin : `Field` posait bien « Quantité (sachet) », mais sans
-              `htmlFor`, et le champ n'avait pas d'identifiant — les deux ne se
-              connaissaient pas. Taper sur l'intitulé ne donnait donc pas le
-              focus, ce qui au doigt se ressent comme un champ mort.
-            */}
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-              <InlineNum
-                label="Quantité"
-                name={`Quantité de levure, en ${yeast.unit}`}
-                unit={yeast.unit}
-                min={0}
-                value={yeast.qty}
-                onValue={(v) => setYeast({ ...yeast, qty: v })}
-              />
-              <InlineNum
-                label="Atténuation"
-                name="Atténuation de la levure, en pourcent"
-                unit="%"
-                min={0}
-                max={100}
-                value={yeast.attenuationPct}
-                onValue={(v) => setYeast({ ...yeast, attenuationPct: v })}
-                missing={yeast.attenuationPct == null}
-              />
-            </div>
-
-            <SliderField
-              label="Température d’ensemencement"
-              value={yeast.pitchTempC ?? 19}
-              onChange={(v) => setYeast({ ...yeast, pitchTempC: v })}
-              min={8}
-              max={28}
-              step={0.5}
-              unit="°C"
-              hint="Ensemencer plus chaud produit des faux-goûts."
-            />
-
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              <SliderField
-                label="Fermentation — mini"
-                value={yeast.fermTempMinC ?? 18}
-                onChange={(v) => setYeast({ ...yeast, fermTempMinC: v })}
-                min={8}
-                max={30}
-                step={0.5}
-                unit="°C"
-              />
-              <SliderField
-                label="Fermentation — maxi"
-                value={yeast.fermTempMaxC ?? 22}
-                onChange={(v) => setYeast({ ...yeast, fermTempMaxC: v })}
-                min={8}
-                max={30}
-                step={0.5}
-                unit="°C"
-              />
-            </div>
-
-            <InlineNum
-              label="Durée de fermentation"
-              name="Durée de fermentation, en jours"
-              unit="j"
-              min={0}
-              integer
-              value={yeast.fermentDays}
-              onValue={(v) => setYeast({ ...yeast, fermentDays: v })}
-            />
+            <InlineNum label="Quantité" name={'Quantité de levure, en ' + yeast.unit} unit={yeast.unit} min={0} value={yeast.qty} onValue={qty => setYeast({ ...yeast, qty })} />
+            <InlineNum label="Ensemencement" name="Température d’ensemencement" unit="°C" value={yeast.pitchTempC} emptyValue={undefined}
+              onValue={pitchTempC => setYeast({ ...yeast, pitchTempC })} missing={yeast.pitchTempC == null} />
           </FormNav>
+          <FermentationWorkshop recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
+            applyFermentationRecipe(next, 'levure');
+          }} />
+          <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
+            <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
+            <FormNav className="space-y-3 py-3">
+              <p className="text-xs text-cave-400">Repères de la fiche ou de ton expérience. Le calendrier des paliers fait foi pour les températures et durées du brassin. L’atténuation saisie alimente l’estimation générale de la recette ; la DF documentaire conserve la plage fabricant.</p>
+              <Field label="Forme de la levure"><SegmentedControl label="Forme de la levure" value={yeast.form}
+                onChange={form => setYeast({ ...yeast, form, unit: form === 'liquide' ? 'flacon' : form === 'levain' ? 'L' : 'sachet' })}
+                options={[{value:'sèche',label:'Sèche'},{value:'liquide',label:'Liquide'},{value:'levain',label:'Levain / Récup'}]} /></Field>
+              <InlineNum label="Atténuation saisie" name="Atténuation de la levure, en pourcent" unit="%" min={0} max={100} value={yeast.attenuationPct} emptyValue={undefined}
+                onValue={attenuationPct => setYeast({ ...yeast, attenuationPct })} missing={yeast.attenuationPct == null} />
+              <InlineNum label="Repère mini" name="Température minimale de la fiche saisie" unit="°C" value={yeast.fermTempMinC} emptyValue={undefined}
+                onValue={fermTempMinC => setYeast({ ...yeast, fermTempMinC })} missing={yeast.fermTempMinC == null} />
+              <InlineNum label="Repère maxi" name="Température maximale de la fiche saisie" unit="°C" value={yeast.fermTempMaxC} emptyValue={undefined}
+                onValue={fermTempMaxC => setYeast({ ...yeast, fermTempMaxC })} missing={yeast.fermTempMaxC == null} />
+              <InlineNum label="Durée indicative" name="Durée indicative de la fiche, en jours" unit="j" min={0} value={yeast.fermentDays} emptyValue={undefined}
+                onValue={fermentDays => setYeast({ ...yeast, fermentDays })} missing={yeast.fermentDays == null} />
+            </FormNav>
 
-          <AiAssist
-            className="mt-2 sm:mt-3"
-            kind="levure"
-            name={yeast.name}
-            missing={[
-              yeast.attenuationPct == null ? 'atténuation' : null,
-              yeast.fermTempMinC == null ? 'température minimale' : null,
-              yeast.fermTempMaxC == null ? 'température maximale' : null,
-              !yeast.lab ? 'laboratoire' : null
-            ].filter(Boolean) as string[]}
-            onApply={(f) => {
-              setYeast(current => applyYeastFacts(current, f));
-              onLearnIngredient(yeast.name, factsForStock('levure', f));
-            }}
-          />
-
-          {pitch && (
-            <div className="panel p-2.5 sm:p-3 mt-3 space-y-1.5">
-              <div className="flex items-baseline justify-between gap-2">
-                <span className="min-w-0">
-                  <span className="block text-xs sm:text-sm font-semibold text-cave-100">
-                    Ensemencement
-                  </span>
-                  <span className="block text-2xs text-cave-400">
-                    {pitch.degreesPlato} °P · {pitch.rate} M cell/mL/°P
-                  </span>
-                </span>
-                <span className="reading text-base sm:text-xl text-ebc-straw shrink-0">
-                  {pitch.cellsNeededB} Md
-                </span>
-              </div>
-
-              <p
-                className={`text-2xs sm:text-sm ${
-                  yeast.unit === 'sachet' && yeast.qty < pitch.sachetsDry
-                    ? 'text-ebc-amber'
-                    : 'text-hop'
-                }`}
-              >
-                {pitch.verdict}
-              </p>
-
-              {yeast.unit === 'sachet' && yeast.qty < pitch.sachetsDry && (
-                <button
-                  type="button"
-                  onClick={() => setYeast({ ...yeast, qty: pitch.sachetsDry })}
-                  className="w-full min-h-[34px] sm:min-h-touch rounded-control border border-ebc-straw/50
-                             text-ebc-straw text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 py-1"
-                >
-                  <Beaker className="w-4 h-4" />
-                  Passer à {pitch.sachetsDry} sachets
-                </button>
-              )}
-            </div>
-          )}
+          </details>
         </Section>
       )}
 
@@ -2065,6 +1995,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             title="Fermentation"
             hint="Phases de fermentation et températures de consigne."
           >
+            <FermentationRecipeAdvice recipe={build()} />
             <div className="space-y-2 sm:space-y-3">
               <PresetChips
                 name="Programme de fermentation"
@@ -2143,7 +2074,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step === 'eau' && (
         <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
           {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
-          <SaltSolver
+          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?<NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/>:<SaltSolver
             source={waterSource}
             onSourceChange={(source) => {
               setRecipeWaterSource(source);
@@ -2159,6 +2090,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
              */
             brew={{
               style,
+              targetPh: details.waterPlan?.targetPh,
+              nolo: details.nolo, styleRef: details.styleRef,
               grist: grains,
               totalGristKg: totalGrist,
               hops,
@@ -2177,9 +2110,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             onChange={onWaterChange}
             noSparge={spargeType === 'none'}
             onNoSpargeChange={setNoSparge}
-          />
+          />}
 
-          {volumesStale && (
+          {(!details.nolo?.enabled||details.nolo.process!=='secondRunnings') && volumesStale && (
             <button
               type="button"
               onClick={() =>
@@ -2242,23 +2175,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           potentiels, alphas, atténuation. Le bouton disparaît de lui-même quand
           la fiche est complète.
         */}
-        <RecipeAutoComplete
-          onLearnIngredient={onLearnIngredient}
-          stockItems={stockItems}
-          fermentables={fermentables}
-          onFermentables={setFermentables}
-          hops={hops}
-          onHops={setHops}
-          yeast={yeast}
-          onYeast={setYeast}
-        />
+
+        {details.nolo?.enabled&&<RecipeDisclosure title="Objectif NOLO" summary="Projection, traitement et analyses"><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></RecipeDisclosure>}
         <BrewSheet
           onLearnIngredient={onLearnIngredient}
           reviewData={{
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
               efficiencyPct: efficiency, volumes: suggestedVolumes },
-            waterTreatment: waterRecap,
+            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecap,
             conventions: { ions: 'mg/L dans les eaux de traitement, avant extraction et ébullition',
               salts: 'grammes réellement retenus, répartis entre empâtage et rinçage',
               acid: 'doses retenues, concentration indiquée dans le nom du produit',
@@ -2281,7 +2206,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hops={hops}
           onHops={setHops}
           hopIbu={(h) =>
-            og > 1 ? BrewingMath.hopIbu(h, volumeL, og, boilMin) : null
+            hotBitterness([h], volumeL, og || null, boilMin).additions[0].ibu
           }
           yeast={yeast}
           onYeast={setYeast}
@@ -2334,11 +2259,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               fermentables,
               totalGristKg: totalGrist,
               hops,
-              hopIbu: (h) => BrewingMath.hopIbu(h, volumeL, og, boilMin),
+              hopIbu: (h) => hotBitterness([h], volumeL, og || null, boilMin).additions[0].ibu,
               yeast,
               mashSteps,
               fermentation: ferment,
-              water: waterRecap && {
+              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecap ? {
                 ...waterRecap,
                 sourceName: waterRecap.sourceName,
                 styleName: waterRecap.styleName,
@@ -2353,7 +2278,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 spargeAcid: waterRecap.spargeAcid,
                 ra: waterRecap.ra,
                 mashPh: waterRecap.mashPh
-              },
+              }:undefined,
               notes
             })
           }
@@ -2378,7 +2303,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             type="button"
             onClick={() => go(-1)}
-            disabled={stepIndex === 0}
+            disabled={stepIndex === 0 || hopGuideBusy}
             className="min-h-touch-sm px-3 rounded-control border border-cave-800
                        text-cave-400 text-2xs disabled:opacity-30 transition-colors hover:bg-cave-850"
           >
@@ -2387,7 +2312,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <button
             type="button"
             onClick={() => go(1)}
-            disabled={!canAdvance}
+            disabled={!canAdvance || hopGuideBusy}
             className="flex-1 min-h-touch-sm rounded-control bg-ebc-straw text-cave-950
                        text-2xs font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
           >
@@ -2410,3 +2335,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     </PageShell>
   );
 };
+
+import { noloWaterModelIssue } from '../domain/nolo';
+
+import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';

@@ -6,6 +6,7 @@ import {
 } from '../../functions/src/brewerProposals';
 import { refreshCompanionRecipe } from '../../src/domain/brewerRecipeRefresh';
 import type { BrewerContext } from '../../functions/src/companionTypes';
+import { testHopData } from '../fixtures/hopPrediction';
 const context = (): BrewerContext => ({
   recipe: {
     name: 'Pale',
@@ -43,6 +44,35 @@ const args = (path: string, value: any, target = 'recipe') => ({
   changes: [{ path, valueJson: JSON.stringify(value), reason: 'À ta demande' }]
 });
 describe('Propositions de champs : aucune écriture avant validation', () => {
+  it('ne propose pas un échantillon documentaire comme lot de brassage', () => {
+    const c = context(); c.hopIndex = { ...testHopData(), predictions: [], tastings: [], truncated: [] };
+    c.hopIndex.lots[0].referenceOnly = true;
+    c.recipe.hops[0].hopVarietyId = c.hopIndex.lots[0].varietyId;
+    expect(() => prepareProposal(c, args('hops.0.hopLotId', c.hopIndex.lots[0].id))).toThrow(/documentaire/);
+  });
+  it.each([
+    ['stage', 'whirlpool', 'aromaTiming', 'boil'],
+    ['timeMin', 30, 'aromaContactHours', 1],
+    ['tempC', 80, 'aromaTemperatureC', 100]
+  ])('retire explicitement le contexte devenu périmé quand %s change', (field, value, aromaField, prior) => {
+    const c = context(); c.recipe.hops[0][aromaField] = prior;
+    const a = args(`hops.0.${field}`, value);
+    expect(() => prepareProposal(c, a)).toThrow(/procédé change/);
+    a.changes.push({ path: `hops.0.${aromaField}`, valueJson: 'null', reason: 'Précision à redocumenter après ce changement' });
+    const p = prepareProposal(c, a);
+    expect(() => applyProposal(c, p, ['C1'])).toThrow(/procédé change/);
+    expect(applyProposal(c, p, p.changes.map(ch => ch.id)).hops[0][aromaField]).toBeUndefined();
+    expect(c.recipe.hops[0][aromaField]).toBe(prior);
+  });
+  it('propose un contexte et une plage aromatiques, en gardant les deux bornes liées', () => {
+    const c = context(); c.hopIndex = { ...testHopData(), predictions: [], tastings: [], truncated: [] };
+    const a = args('hopMatrixId', 'fixture-beer');
+    a.changes.push({ path: 'hopAromaTarget.citrus.min', valueJson: '3', reason: 'Cible demandée' },
+      { path: 'hopAromaTarget.citrus.max', valueJson: '7', reason: 'Cible demandée' });
+    const p = prepareProposal(c, a);
+    expect(applyProposal(c, p, p.changes.map(ch => ch.id))).toMatchObject({ hopMatrixId: 'fixture-beer', hopAromaTarget: { citrus: { min: 3, max: 7 } } });
+    expect(() => applyProposal(c, p, p.changes.filter(ch => !ch.path.endsWith('.max')).map(ch => ch.id))).toThrow(/ensemble/);
+  });
   it('prépare un avant/après sans toucher au contexte, puis applique seulement la sélection', () => {
     const c = context(),
       copy = structuredClone(c);

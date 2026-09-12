@@ -1,3 +1,6 @@
+import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction } from '../domain/finance/ledger';
+import type { FinancialPayment } from '../domain/finance/types';
+import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
 import {
   Transaction,
   StockItem,
@@ -18,9 +21,14 @@ import {
 
 import { initialCompany, initialBrewhouses } from '../data/seedData';
 import { FirestoreRepo, CollectionName } from './firestoreRepo';
+import { writeCatalogOrganization } from './catalogOrganization';
 import { deviceBackup, restoreBackup } from './dataBackup';
 import { captureSnapshot, normalizeBatch, normalizeRecipe } from '../domain/recipeSnapshot';
 import { Units } from './units';
+import { HopVariety, HopLot, assertHopDocument } from '../../functions/src/hopIndexSchema';
+import { parseBackup } from '../../functions/src/backupCore';
+import { HopKnowledge, HopPredictionSnapshot, HopTasting, assertHopKnowledge, assertHopTasting } from '../../functions/src/hopPredictionSchema';
+import { assertHopPredictionSnapshot } from '../../functions/src/hopPredictionValidation';
 
 /**
  * Façade de données de l'application.
@@ -408,7 +416,8 @@ export const StorageService = {
 
   // 1. ÉCRITURES COMPTABLES
   getTransactions(): Transaction[] {
-    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) => t.amountHT > 0);
+    return clean<Transaction>(FirestoreRepo.all('transactions')).filter((t) =>
+      Number.isFinite(t.amountTTC ?? t.amountHT) && (t.amountTTC ?? t.amountHT) !== 0);
   },
 
   saveTransactions(transactions: Transaction[]) {
@@ -428,6 +437,8 @@ export const StorageService = {
 
   updateTransaction(tx: Transaction) {
     const old = this.getTransactions().find((t) => t.id === tx.id);
+    if (old?.finance?.voidedAt) throw new Error('Cette écriture est annulée. Crée une nouvelle opération pour la remplacer.');
+    if (tx.finance) validateFinanceTransaction(tx);
     FirestoreRepo.put('transactions', tx.id, tx);
     this.logAction(
       'Modification',
@@ -440,48 +451,119 @@ export const StorageService = {
     );
   },
 
+  /** An erroneous entry is retained, with its reversal trace. */
   deleteTransaction(id: string) {
-    const target = this.getTransactions().find((t) => t.id === id);
-    FirestoreRepo.remove('transactions', id);
-    if (target) {
-      this.logAction(
-        'Suppression',
-        'Finances',
-        id,
-        `Suppression écriture ${id} : ${target.description} (${target.amountTTC.toFixed(2)} CHF)`
-      );
-    }
+    const result = this.revertTransaction(id);
+    if (!result.success) throw new Error(result.message);
   },
 
-  // Annule une écriture et défait son impact sur les stocks
   revertTransaction(id: string): { success: boolean; message: string } {
-    const target = this.getTransactions().find((t) => t.id === id);
-    if (!target) return { success: false, message: 'Écriture introuvable' };
-
-    if (target.stockImpact && target.stockImpact.length > 0) {
-      const stocks = this.getStocks();
-      target.stockImpact.forEach((impact) => {
-        const list = stocks[impact.itemType];
-        const item = list.find((s) => s.ref === impact.itemRef);
-        if (item) {
-          item.currentStock = Math.max(
-            0,
-            Math.round((item.currentStock - impact.addedQty) * 100) / 100
-          );
-          item.reorder = item.currentStock <= item.minStock;
-          FirestoreRepo.put('stockItems', item.ref, { ...item, kind: impact.itemType });
-        }
-      });
+    const target = this.getTransactions().find(t => t.id === id);
+    if (!target) return { success: false, message: 'Écriture introuvable.' };
+    if (target.finance?.voidedAt) return { success: true, message: 'Écriture déjà annulée ; aucun stock modifié.' };
+    if (this.getTransactions().some(t => !t.finance?.voidedAt && t.finance?.refundOfId === id)) return { success: false, message: 'Un avoir est lié à cette pièce. Corrige d’abord cet avoir pour conserver des comptes cohérents.' };
+    const payments = clean<FinancialPayment>(FirestoreRepo.all('financialPayments'));
+    if (paidForTransaction(target, payments, this.getTransactions()) !== 0) return { success: false, message: 'Annule d’abord le paiement erroné, ou enregistre un remboursement si l’argent a réellement circulé.' };
+    if (FirestoreRepo.all<any>('financialAssets').some(a => a.transactionId === id)) return { success: false, message: 'Cet achat est lié à un amortissement. Corrige sa fiche avant d’annuler l’achat.' };
+    const receipts = FirestoreRepo.all<any>('movements').filter(m => m.type === 'receipt' && m.transactionId === id);
+    const impact = new Map<string, number>();
+    if (receipts.length) for (const m of receipts) impact.set(m.stockItemRef, (impact.get(m.stockItemRef) ?? 0) + m.quantity);
+    else for (const item of target.stockImpact ?? []) impact.set(item.itemRef, (impact.get(item.itemRef) ?? 0) + item.addedQty);
+    const stocks = this.getStocks(), all = [...stocks.rawMaterials, ...stocks.cleaning];
+    for (const [ref, qty] of impact) {
+      const item = all.find(s => s.ref === ref);
+      if (!Number.isFinite(qty) || qty < 0 || !item || item.currentStock + 1e-8 < qty) return { success: false, message: 'Le stock de cet achat a été consommé ou corrigé. Vérifie l’inventaire avant d’annuler ; aucune quantité ne sera effacée.' };
     }
+    const at = new Date().toISOString();
+    for (const [ref, qty] of impact) {
+      const item = all.find(s => s.ref === ref)!;
+      FirestoreRepo.adjustNumber('stockItems', ref, 'currentStock', -qty, { reorder: item.currentStock - qty <= item.minStock });
+      const movementId = 'VOID-STOCK-' + id + '-' + ref;
+      FirestoreRepo.put('movements', movementId, { id: movementId, type: 'receipt-reversal', transactionId: id, stockItemRef: ref, delta: -qty, unit: item.unit, createdAt: at });
+    }
+    const finance = { version: 1 as const, kind: transactionKind(target), amountCents: transactionAmount(target), lines: [], ...target.finance, voidedAt: at };
+    FirestoreRepo.put('transactions', id, { ...target, finance });
+    FirestoreRepo.put('movements', 'VOID-' + id, { id: 'VOID-' + id, type: 'transaction-void', transactionId: id, createdAt: at });
+    this.logAction('Annulation', 'Finances', id, 'Annulation conservée : ' + target.description, 'Le justificatif et les mouvements antérieurs sont conservés.');
+    return { success: true, message: 'Écriture annulée. Son justificatif et son historique sont conservés.' };
+  },
 
-    this.deleteTransaction(id);
-    this.logAction(
-      'Suppression',
-      'Finances',
-      id,
-      `↩️ Annulation écriture ${id} et restauration des stocks antérieurs (${target.description})`
-    );
-    return { success: true, message: `Écriture ${id} annulée et stocks restaurés avec succès !` };
+  // Documentary hop index. Upserts never replace a filtered collection or copy inherited facts.
+  getHopVarieties(): HopVariety[] {
+    return clean<HopVariety>(FirestoreRepo.all('hopVarieties'));
+  },
+  getHopLots(): HopLot[] {
+    return clean<HopLot>(FirestoreRepo.all('hopLots'));
+  },
+  getHopKnowledge(): HopKnowledge[] { return clean<HopKnowledge>(FirestoreRepo.all('hopKnowledge')); },
+  getHopPredictions(): HopPredictionSnapshot[] { return clean<HopPredictionSnapshot>(FirestoreRepo.all('hopPredictions')); },
+  getHopTastings(): HopTasting[] { return clean<HopTasting>(FirestoreRepo.all('hopTastings')); },
+  saveHopKnowledge(item: HopKnowledge): void {
+    assertHopKnowledge(item);
+    const previous = this.getHopKnowledge().find(row => row.id === item.id);
+    if (previous && sameDoc(previous, item)) return;
+    if (previous && previous.kind !== item.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
+    if (previous && 'version' in previous && 'version' in item && previous.version === item.version) throw Error('Changer la version du modèle pour conserver une révision identifiable.');
+    if (previous && previous.kind === 'axis' && item.kind === 'axis' && previous.version === item.version) throw Error('Changer la version de l’axe pour conserver son échelle historique.');
+    FirestoreRepo.put('hopKnowledge', item.id, item);
+  },
+  saveHopPrediction(item: HopPredictionSnapshot): void {
+    assertHopPredictionSnapshot(item);
+    const previous = this.getHopPredictions().find(row => row.id === item.id);
+    if (previous) { if (!sameDoc(previous, item)) throw Error('Une prédiction figée ne peut pas être remplacée.'); return; }
+    FirestoreRepo.put('hopPredictions', item.id, item);
+  },
+  saveHopTasting(item: HopTasting): void {
+    assertHopTasting(item);
+    const previous = this.getHopTastings().find(row => row.id === item.id);
+    if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopTastings', item.id, item);
+  },
+  saveHopVariety(item: HopVariety): void {
+    assertHopDocument('hopVarieties', item);
+    const previous = FirestoreRepo.all<any>('hopVarieties').find(row => row.id === item.id || row.__docId === item.id);
+    if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopVarieties', item.id, item);
+  },
+  saveHopLot(item: HopLot): void {
+    assertHopDocument('hopLots', item);
+    const previous = FirestoreRepo.all<any>('hopLots').find(row => row.id === item.id || row.__docId === item.id);
+    if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopLots', item.id, item);
+  },
+  /** A backup or a documentary pack; both pass the same full validation before any write. */
+  async importHopIndex(json: string): Promise<number> {
+    const indexCollections = ['hopVarieties', 'hopLots', 'hopKnowledge', 'hopPredictions', 'hopTastings'];
+    const input = JSON.parse(json), raw = Array.isArray(input) ? { hopKnowledge: input } : input;
+    const isPack = raw && typeof raw === 'object' && !raw.schemaVersion && Object.keys(raw).length > 0 && Object.keys(raw).every(name => indexCollections.includes(name));
+    const normalized = isPack ? JSON.stringify({ schemaVersion: 3, source: 'device', exportedAt: new Date().toISOString(), collections: Object.fromEntries(Object.entries(raw).map(([name, rows]) => {
+      if (!Array.isArray(rows) || rows.some(row => !row || typeof row.id !== 'string')) throw Error('Pack documentaire : chaque collection doit contenir des fiches identifiées.');
+      return [name, rows.map(data => ({ id: data.id, data }))];
+    })) }) : json;
+    const backup = parseBackup(normalized);
+    const entries = Object.entries(backup.collections);
+    if (entries.some(([name]) => !indexCollections.includes(name))) throw Error('Ce fichier doit contenir seulement les collections de l’index houblon.');
+    const changes: Array<{ name: CollectionName; id: string; data: unknown }> = [];
+    for (const [name, rows] of entries) {
+      const current = new Map(FirestoreRepo.all<any>(name as CollectionName).map(d => [d.__docId || d.id, d]));
+      for (const row of rows ?? []) {
+        const previous = current.get(row.id), unchanged = previous && sameDoc(previous, row.data);
+        if (previous && !unchanged && name === 'hopPredictions') throw Error('Une prédiction figée différente existe déjà. Aucun import effectué.');
+        if (previous && !unchanged && name === 'hopKnowledge') {
+          if (previous.kind !== row.data.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
+          if (['model', 'axis', 'extrapolation', 'solver', 'fermentation', 'fermentationScience'].includes(previous.kind) && previous.version === row.data.version) throw Error('La connaissance importée doit porter une nouvelle version.');
+        }
+        if (!unchanged) changes.push({ name: name as CollectionName, ...row });
+      }
+    }
+    if (changes.length) await FirestoreRepo.bulkWrite(changes);
+    return changes.length;
+  },
+  exportHopIndex(): string {
+    return JSON.stringify({ schemaVersion: 3, source: 'device', exportedAt: new Date().toISOString(), collections: {
+      hopVarieties: this.getHopVarieties().map(data => ({ id: data.id, data })),
+      hopLots: this.getHopLots().map(data => ({ id: data.id, data })),
+      hopKnowledge: this.getHopKnowledge().map(data => ({ id: data.id, data })),
+      hopPredictions: this.getHopPredictions().map(data => ({ id: data.id, data })),
+      hopTastings: this.getHopTastings().map(data => ({ id: data.id, data }))
+    } }, null, 2);
   },
 
   // 2. STOCKS
@@ -713,9 +795,15 @@ export const StorageService = {
     );
   },
 
-  updateBatch(batch: Batch) {
+  updateBatch(batch: Batch, stockCommit?: { previous: Batch['stockConsumption'] }) {
+    if(batch.nolo) assertNoloConfig(batch.nolo);
+    if(batch.recipeSnapshot?.nolo) assertNoloConfig(batch.recipeSnapshot.nolo);
     const old = this.getBatches().find((b) => b.id === batch.id);
-    FirestoreRepo.put('batches', batch.id, batch);
+    if (stockCommit && !sameDoc(old?.stockConsumption, stockCommit.previous)) throw new Error('Le stock de ce brassin a changé. Recharge sa fiche avant de confirmer.');
+    // An ordinary form may be hours old or offline. Omit the stock marker entirely,
+    // so merging on the server cannot erase or regress a completed consumption.
+    const { stockConsumption: _stockConsumption, ...ordinary } = batch;
+    FirestoreRepo.put('batches', batch.id, stockCommit ? batch : ordinary, { merge: true });
     this.logAction(
       'Modification',
       'Production',
@@ -733,96 +821,55 @@ export const StorageService = {
    * premier article contenant le premier mot du nom (« Malt Pale Ale » ➔ jeton
    * « malt »), ce qui pouvait débiter silencieusement le mauvais malt.
    */
+  /** Compatibility name: planning never consumes ingredients. */
   brewRecipeAndDeductStocks(recipe: Recipe, batchId: string): Batch {
-    const stocks = this.getStocks();
-    const touched: StockItem[] = [];
-
-    const findIn = (pool: StockItem[], needle: string, category?: string) => {
-      const n = needle.trim().toLowerCase();
-      if (!n) return undefined;
-      const scoped = category ? pool.filter((p) => p.category === category) : pool;
-      return (
-        scoped.find((p) => p.name.toLowerCase() === n) ||
-        scoped.find(
-          (p) => p.name.toLowerCase().includes(n) || n.includes(p.name.toLowerCase())
-        )
-      );
+    const existing = this.getBatches().find(b => b.id === batchId);
+    if (existing) return existing;
+    const batch: Batch = {
+      id: batchId, brewDate: recipe.brewDate ?? new Date().toLocaleDateString('fr-CH'),
+      name: recipe.name, style: recipe.style, volumeL: recipe.volumeL,
+      status: 'planifie', stockAccountingVersion: 1,
+      recipeRef: recipe.id, recipeSnapshot: captureSnapshot(recipe), gravityLog: []
     };
+    this.addBatch(batch);
+    return batch;
+  },
 
-    const deduct = (item: StockItem | undefined, qty: number, fromUnit: string) => {
-      if (!item) return;
-      const converted = Units.convert(qty, fromUnit, item.unit);
-      if (converted === null) {
-        console.warn(
-          `[Brassin] ${item.name} : ${qty} ${fromUnit} non convertible en ${item.unit}, stock inchangé.`
-        );
-        return;
-      }
-      item.currentStock = Units.round(Math.max(0, item.currentStock - converted), item.unit);
-      item.reorder = item.currentStock <= item.minStock;
-      touched.push(item);
-    };
-
-    /*
-     * ⚠️ On lit `fermentables` et non `recipe.malts`.
-     *
-     * Le champ hérité n'existe plus sur aucune recette créée depuis la refonte :
-     * `recipe.malts.forEach` JETAIT, et le lancement d'un brassin depuis
-     * l'action rapide échouait sans rien déduire du tout.
-     *
-     * Le sucre et le lactose se déduisent aussi : ils sortent du stock au même
-     * titre que le grain, seule leur catégorie d'article change.
-     */
-    const fermentables = normalizeRecipe(recipe).fermentables;
-    fermentables.forEach((f) =>
-      deduct(
-        findIn(stocks.rawMaterials, f.name, f.kind === 'grain' ? 'Malt' : undefined),
-        f.weightKg,
-        'kg'
-      )
-    );
-    (recipe.hops ?? []).forEach((h) =>
-      deduct(findIn(stocks.rawMaterials, h.name, 'Houblon'), h.weightG, 'g')
-    );
-
-    // La levure sort du stock comme le reste — elle s'y comptait sans jamais
-    // en sortir, et le nombre de sachets ne baissait donc jamais.
-    const yeast = recipe.yeast;
-    if (yeast?.name) {
-      deduct(
-        findIn(stocks.rawMaterials, yeast.name, 'Levure'),
-        yeast.qty || 1,
-        yeast.unit || 'sachet'
-      );
+  /** Save production progress and consume verified ingredients once, in the same batch. */
+  completeBrewStock(updated: Batch, stage: 'brewday' | 'remaining' | 'historical-already' | 'historical-unconsumed' = 'brewday', confirmHistorical = false): { success: boolean; issues: string[] } {
+    const live = this.getBatches().find(b => b.id === updated.id);
+    const batch = { ...updated, stockAccountingVersion: live ? live.stockAccountingVersion : updated.stockAccountingVersion, stockConsumption: live?.stockConsumption };
+    if (stage === 'historical-already' || stage === 'historical-unconsumed') {
+      if (!confirmHistorical) return { success: false, issues: ['Confirme explicitement le suivi historique du stock.'] };
+      if (live?.stockConsumption) return { success: false, issues: ['Une consommation est déjà enregistrée. Recharge le dossier pour voir le suivi actuel.'] };
+      const now = new Date().toISOString();
+      const marker: Batch['stockConsumption'] = stage === 'historical-already' ? { appliedAt: now, eventId: `HISTORICAL-CONFIRMED-${batch.id}`, items: [], pendingItems: [], completedStages: ['brewday', 'remaining'], historicalConfirmation: { choice: 'already-consumed', confirmedAt: now } } : undefined;
+      this.updateBatch({ ...batch, stockAccountingVersion: 1, stockReviewIssues: [], ...(marker ? { stockConsumption: marker } : {}) }, { previous: live?.stockConsumption });
+      return { success: true, issues: [] };
     }
-
-    touched.forEach((item) =>
-      FirestoreRepo.put('stockItems', item.ref, { ...item, kind: 'rawMaterials' })
-    );
-
-    const newBatch: Batch = {
-      id: batchId,
-      brewDate: new Date().toLocaleDateString('fr-CH'),
-      name: recipe.name,
-      style: recipe.style,
-      volumeL: recipe.volumeL,
-      // Targets belong to the snapshot; only actual readings belong to the lot.
-      status: 'planifie',
-      recipeRef: recipe.id,
-      // Le brassin fige la recette : corriger la recette demain ne réécrira pas
-      // ce qu'on a réellement brassé aujourd'hui.
-      recipeSnapshot: captureSnapshot(recipe),
-      gravityLog: []
-    };
-
-    this.addBatch(newBatch);
-    this.logAction(
-      'Création',
-      'Production',
-      batchId,
-      `Lancement du brassin ${recipe.name} (${recipe.volumeL}L) — ${touched.length} ingrédient(s) déduit(s) du stock`
-    );
-    return newBatch;
+    if (batch.stockAccountingVersion !== 1 && !confirmHistorical) {
+      const issues = ['Brassin historique : confirmer si les ingrédients ont déjà été retirés avant de modifier le stock.'];
+      this.updateBatch({ ...batch, stockReviewIssues: issues });
+      return { success: false, issues };
+    }
+    const stocks = this.getStocks();
+    const all = [...stocks.rawMaterials, ...stocks.cleaning];
+    const plan = FirestoreRepo.all<any>('financialPlans').filter(p => p.brewEstimate?.batchId === batch.id)
+      .sort((a,b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0];
+    const proposal = prepareBrewStockConsumption(batch, all, { stage, bindings: plan?.brewEstimate?.bindings });
+    if (proposal.status === 'needs-review') {
+      this.updateBatch({ ...batch, stockReviewIssues: proposal.issues });
+      return { success: false, issues: proposal.issues };
+    }
+    if (proposal.status === 'ready') {
+      for (const movement of proposal.movements) {
+        const stock = proposal.stockUpdates.find(s => s.ref === movement.itemRef);
+        FirestoreRepo.adjustNumber('stockItems', movement.itemRef, 'currentStock', movement.delta, stock ? { reorder: stock.reorder } : {});
+        FirestoreRepo.put('movements', movement.id, movement);
+      }
+    }
+    this.updateBatch({ ...proposal.batch, stockAccountingVersion: 1, stockReviewIssues: [] }, { previous: live?.stockConsumption });
+    return { success: true, issues: [] };
   },
 
   /**
@@ -860,6 +907,7 @@ export const StorageService = {
    * onglets ouverts pouvaient s'écraser mutuellement.
    */
   updateRecipe(recipe: Recipe) {
+    if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     const old = this.getRecipes().find((r) => r.id === recipe.id);
     FirestoreRepo.put('recipes', recipe.id, recipe);
     this.logAction(
@@ -878,10 +926,12 @@ export const StorageService = {
   },
 
   saveRecipes(recipes: Recipe[]) {
+    recipes=recipes.map(recipe=>{if(!recipe.nolo)return recipe;assertNoloConfig(recipe.nolo);return {...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};});
     syncCollection('recipes', recipes, (r) => r.id);
   },
 
   addRecipe(recipe: Recipe) {
+    if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     FirestoreRepo.put('recipes', recipe.id, recipe);
     this.logAction(
       'Création',
@@ -1144,7 +1194,7 @@ export const StorageService = {
    * remontent ensuite automatiquement en tête des listes, des autocomplétions
    * et de la palette de recherche.
    */
-  toggleFavorite(kind: 'stockItem' | 'recipe' | 'client' | 'template', id: string) {
+  toggleFavorite(kind: 'stockItem' | 'recipe' | 'batch' | 'client' | 'template', id: string) {
     switch (kind) {
       case 'stockItem': {
         const stocks = this.getStocks();
@@ -1158,7 +1208,12 @@ export const StorageService = {
       }
       case 'recipe': {
         const r = this.getRecipes().find((x) => x.id === id);
-        if (r) FirestoreRepo.put('recipes', id, { ...r, favorite: !r.favorite });
+        if (r) this.setCatalogFavorite('recipe', id, !r.favorite);
+        break;
+      }
+      case 'batch': {
+        const b = this.getBatches().find((x) => x.id === id);
+        if (b) this.setCatalogFavorite('batch', id, !b.favorite);
         break;
       }
       case 'client': {
@@ -1172,6 +1227,23 @@ export const StorageService = {
         break;
       }
     }
+  },
+
+  // ORGANISATION DU CARNET — ne modifie ni les recettes ni le journal de brassage.
+  setCatalogFavorite(kind: 'recipe' | 'batch', id: string, favorite: boolean): boolean {
+    return !!writeCatalogOrganization(kind, id, { favorite });
+  },
+
+  setCatalogArchived(kind: 'recipe' | 'batch', id: string, archived: boolean): boolean {
+    const changed = writeCatalogOrganization(kind, id, {
+      archivedAt: archived ? new Date().toISOString() : null
+    });
+    if (!changed) return false;
+    this.logAction(
+      'Modification', 'Production', id,
+      `${kind === 'recipe' ? 'Recette' : 'Brassin'} « ${changed.name} » ${archived ? 'classé dans les archives' : 'remis dans le carnet courant'}`
+    );
+    return true;
   },
 
   // SAUVEGARDE & RESTAURATION
@@ -1204,3 +1276,5 @@ function slugify(s: string): string {
     .replace(/^-|-$/g, '')
     .slice(0, 80);
 }
+import { assertNoloConfig } from '../../functions/src/noloSchema';
+import { noloScience } from '../domain/nolo';

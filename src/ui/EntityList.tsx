@@ -36,6 +36,7 @@ export interface EntityListProps<T> {
   emptyState?: React.ReactNode;
   /** Bandeau libre au-dessus de la liste (totaux, actions). */
   header?: React.ReactNode;
+  toolbarAction?: React.ReactNode;
   /** Hauteur de la zone défilante. Par défaut, tout l'espace disponible. */
   className?: string;
 }
@@ -51,6 +52,7 @@ export function EntityList<T>({
   searchPlaceholder = 'Rechercher…',
   emptyState,
   header,
+  toolbarAction,
   className = ''
 }: EntityListProps<T>) {
   const [query, setQuery] = useState('');
@@ -106,8 +108,8 @@ export function EntityList<T>({
   return (
     <div className={`flex flex-col min-h-0 ${className}`}>
       {showSearch && (
-        <div className="shrink-0 px-1 pb-3">
-          <div className="relative">
+        <div className="shrink-0 px-1 pb-2 sm:pb-3 flex gap-2 items-center">
+          <div className="relative min-w-0 flex-1">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-cave-600 pointer-events-none" />
             <input
               type="text"
@@ -138,8 +140,10 @@ export function EntityList<T>({
               </button>
             )}
           </div>
+          {toolbarAction}
         </div>
       )}
+      {!showSearch && toolbarAction && <div className="shrink-0 flex justify-end pb-2">{toolbarAction}</div>}
 
       {header && <div className="shrink-0 px-1 pb-3">{header}</div>}
 
@@ -209,7 +213,7 @@ export const FavoriteToggle: React.FC<{
     aria-label={active ? `Retirer ${label} des favoris` : `Épingler ${label}`}
     aria-pressed={active}
     className="touch-target rounded-control shrink-0 transition-colors
-               text-cave-600 hover:text-ebc-straw"
+               text-cave-400 hover:text-ebc-straw"
   >
     <Star
       className={`w-5 h-5 transition-colors ${active ? 'fill-ebc-straw text-ebc-straw' : ''}`}

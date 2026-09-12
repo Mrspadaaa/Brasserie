@@ -1,0 +1,240 @@
+[
+  {
+    "id": "research-cys-gsh-2015", "kind": "note", "name": "Conjugués Cys/GSH : des voies distinctes",
+    "topics": ["thiols", "levure", "précurseurs"],
+    "summary": "Les précurseurs cystéinylés et glutathionylés mobilisent des étapes de transport et de transformation différentes. L’étude identifie des gènes impliqués dans la libération de thiols par la levure.",
+    "limitation": "Expériences en contexte vinicole. Aucun rapport universel de conversion GSH/Cys ne doit être transféré à la bière ; une activité β-lyase déclarée ne suffit pas à calculer un rendement.",
+    "source": { "title": "Yeast genes required for conversion of grape precursors to varietal thiols in wine", "author": "Santiago et Gardner", "year": 2015, "kind": "research", "reference": "https://doi.org/10.1093/femsyr/fov034" }
+  },
+  {
+    "id": "research-cascade-2018", "kind": "note", "name": "Huiles et perception : domaine expérimental requis",
+    "topics": ["sensoriel", "géraniol", "timing"],
+    "summary": "Lafontaine et al. étudient la relation entre marqueurs volatils du houblon et perceptions en bière dry-hoppée. La relation géraniol–Citrus de Cascade 2015 est reconstruite séparément dans le modèle exploratoire de l’index.",
+    "limitation": "Les associations dépendent de la variété, du millésime, de la bière et du protocole. La reconstruction locale et ses marges ne constituent ni une formule universelle ni une validation externe.",
+    "source": { "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops", "author": "Lafontaine et al.", "year": 2018, "kind": "research", "reference": "https://doi.org/10.23763/BrSc18-19lafontaine", "locator": "Tableaux S6 et S12 ; figure 1." }
+  },
+  {
+    "id": "research-creep-2018", "kind": "note", "name": "Hop creep : une vigilance indépendante du parfum",
+    "topics": ["hop creep", "fermentation", "timing"],
+    "summary": "Des activités enzymatiques hydrolysant les dextrines sont mises en évidence dans Cascade. Un ajout à cru peut ainsi modifier l’atténuation, indépendamment du résultat aromatique recherché.",
+    "limitation": "Ce résultat ne définit pas une dose universelle sans risque. L’alerte de l’index indique une possibilité, sans inventer l’ampleur de la reprise de fermentation.",
+    "source": { "title": "Evidence of Dextrin Hydrolyzing Enzymes in Cascade Hops", "author": "Kirkpatrick et Shellhammer", "year": 2018, "kind": "research", "reference": "https://doi.org/10.1021/acs.jafc.8b03563" }
+  },
+  {
+    "id": "research-beer-chemistry-2024", "kind": "note", "name": "Apprentissage sensoriel : la chimie de la bière finie",
+    "topics": ["sensoriel", "bière commerciale", "modélisation"],
+    "summary": "Une étude de 250 bières associe mesures chimiques, panel entraîné et appréciations de consommateurs. Les modèles multivariés montrent l’intérêt des interactions pour relier chimie de bière finie et perceptions.",
+    "limitation": "Les entrées sont des mesures de bière finie, pas un COA de houblon. Aucune conversion automatique de ce modèle en prédiction houblon × levure × timing. Les données manquantes restent inconnues dans l’index.",
+    "source": { "title": "Predicting and improving complex beer flavor through machine learning", "author": "Schreurs et al.", "year": 2024, "kind": "research", "reference": "https://doi.org/10.1038/s41467-024-46346-0" }
+  },
+  {
+    "id": "research-free-thiols-2024", "kind": "note", "name": "Thiol impact : thiols libres, pas rendement de levure",
+    "topics": ["thiols", "COA", "terroir"],
+    "summary": "L’analyse de 250 échantillons couvrant 97 variétés fonde des classes de thiols libres. Ces classes retiennent des maxima variétaux et ne mesurent pas la libération de précurseurs par une souche.",
+    "limitation": "Les hypothèses de transfert ne sont pas des rendements enzymatiques. Garder les isomères distincts ; le seuil olfactif n’est pas un seuil universel d’excès ou de défaut.",
+    "source": { "title": "Determination of Variety Dependent Thiol Impact Based on LC-MS/MS Analysis of Different Hop Samples Collected Worldwide", "author": "Schmidt, Hoferer et Biendl", "year": 2024, "kind": "research", "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2024-12_Determination_of_Variety_Dependent_Thiol_Impact_Based_on_LC-MS_MS_Analysis_of_Different_Hop_Samples_Collected_Worldwide_BS_Schmidt_et_al.pdf" }
+  },
+  {
+    "id": "research-strata-vintage-2026", "kind": "note", "name": "Strata : millésime, exploitation et stockage",
+    "topics": ["millésime", "terroir", "stockage"],
+    "summary": "L’étude de Strata sur plusieurs récoltes et sites constate des différences de terpènes et thiols selon le millésime et l’exploitation/parcelle. Sous faible oxygène, le stockage paraît moins déterminant dans cet échantillon ; un emballage plus oxygéné montre des pertes différentes selon les composés.",
+    "limitation": "Une seule variété ; les effets exploitation, parcelle, conduite culturale et transformation sont confondus. Ne pas appliquer un coefficient régional, annuel ou de vieillissement universel. La date seule ne remplace pas l’état du conditionnement ni le COA.",
+    "source": { "title": "Storage Stability and Vintage-Dependent Aroma Variation in Strata Hops", "author": "Chenot et Shellhammer", "year": 2026, "kind": "research", "reference": "https://doi.org/10.1080/03610470.2026.2673486", "locator": "Publication en ligne le 18 juin 2026 ; conclusions et limites exploitation × parcelle." }
+  },
+  {
+    "id": "research-harvest-guide-2023", "kind": "note", "name": "Récolte et date de publication sont deux informations",
+    "topics": ["millésime", "lexique", "sensoriel"],
+    "summary": "Le Hop Harvest Guide 2023, présenté en mars 2024, compare des profils de cette récolte aux caractéristiques usuelles des variétés. Il illustre l’intérêt d’un suivi par millésime pour adapter une recette.",
+    "limitation": "Une roue sensorielle de houblon brut ne devient pas un profil prédit en bière. L’année du guide ou de sa mise à jour ne doit pas être saisie comme année de récolte d’un lot acheté.",
+    "source": { "title": "BarthHaas issues Hop Harvest Guide 2023", "author": "BarthHaas", "year": 2024, "kind": "manufacturer", "reference": "https://www.barthhaas.com/company/news/news-article/bh/barthhaas-issues-hop-harvest-guide-2023", "locator": "Article daté du 12 mars 2024 ; guide portant sur la récolte 2023." }
+  },
+  {
+    "id": "research-yeast-temperature-2024", "kind": "note", "name": "Température et souche : davantage de thiols ne garantit pas davantage de fruit",
+    "topics": ["levure", "température", "thiols", "sensoriel"],
+    "summary": "Des essais Cascade sans dry-hop comparent LalBrew Diamond, Nottingham, London, BRY-97 et Verdant IPA à trois températures. Diamond libère le plus de thiols mais n’obtient pas le caractère fruité-tropical le plus élevé. Les composés fermentaires et notes soufrées contribuent au profil perçu.",
+    "limitation": "Compte rendu expérimental de deux pages, pas une table de rendements transférables. L’analyse sensorielle est de type CATA : fréquences de citation, pas intensités par axe. Une activité β-lyase isolée n’est pas quantifiée pour chaque souche. La température de fermentation ne doit pas être confondue avec celle du whirlpool.",
+    "source": { "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer", "author": "Samia, Shayevitz, Fischborn et Shellhammer", "year": 2024, "kind": "research", "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416", "locator": "Compte rendu EBC, publié le 29 août 2024. Article détaillé ultérieur : DOI 10.1080/03610470.2025.2593042, en ligne le 26 décembre 2025, volume 2026." }
+  },
+  {
+    "id": "manufacturer-split-fermentation-2026", "kind": "note", "name": "Verdant IPA et Pomona : comparaison sur un moût commun",
+    "topics": ["levure", "whirlpool", "protocole"],
+    "summary": "Lallemand décrit un brassage comparant Verdant IPA et Pomona, avec un mélange de houblons au whirlpool et sans dry-hop. Les différences analytiques de thiols et de perception illustrent l’intérêt de comparer les souches sur un même moût.",
+    "limitation": "Communication du fabricant sur un mélange et un protocole particuliers. Les écarts relatifs ne sont ni un rendement universel par souche ni une prédiction pour chacun des houblons isolés. Aucun coefficient n’est extrait de ce billet.",
+    "source": { "title": "Practical tips for Thiol Boosting Recipes", "author": "Lallemand Brewing", "year": 2026, "kind": "manufacturer", "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/", "locator": "Publié le 27 mars 2026, mise à jour du 16 avril 2026. Version HTML publique consultée ; PDF de newsletter non accessible." }
+  },
+  {
+    "id": "community-dry-hop-timing-2021", "kind": "note", "name": "Retour de brassage : comparer le timing exige des répétitions indépendantes",
+    "topics": ["retour de brasseur", "timing", "dégustation"],
+    "summary": "Phil Rusher rapporte un essai de NEIPA avec Imperial A24 et deux timings d’ajout. Ses tests triangulaires répétés ne distinguent pas significativement les bières dans ce protocole personnel.",
+    "limitation": "Un même dégustateur répète dix tests : ce ne sont pas dix personnes indépendantes. Plusieurs houblons, aucun COA ni bilan de composés volatils. Un résultat non significatif ne prouve ni l’équivalence des timings ni l’absence de biotransformation.",
+    "source": { "title": "Biotransformation: Impact Of Dry Hopping NEIPA At High Kräusen When Fermented With Imperial Yeast A24 Dry Hop", "author": "Phil Rusher · Brülosophy", "year": 2021, "kind": "community", "reference": "https://brulosophy.com/2021/03/01/biotransformation-impact-of-dry-hopping-neipa-at-high-krausen-when-fermented-with-imperial-yeast-a24-dry-hop-exbeeriment-results/", "locator": "Billet du 1er mars 2021, protocole et résultats personnels." }
+  },
+  {
+    "id": "community-creep-discussion-2019", "kind": "note", "name": "Forum : distinguer reprise de fermentation, dégazage et hypothèses",
+    "topics": ["retour de brasseur", "hop creep", "mesure"],
+    "summary": "Une discussion Aussie Home Brewer oppose plusieurs explications de l’activité observée après dry-hop : sucres, enzymes, oxygène ou dégazage. Elle montre les difficultés d’interprétation d’un simple barboteur et l’intérêt d’un suivi de densité.",
+    "limitation": "Témoignages contradictoires sans protocole commun. Les assertions niant le hop creep ne remplacent pas les travaux expérimentaux sur l’hydrolyse des dextrines. Aucun délai, seuil ou coefficient de ce fil n’est utilisé dans le moteur.",
+    "source": { "title": "Dry Hop, Hop Creep, and D-Rest", "author": "Participants au forum Aussie Home Brewer", "year": 2019, "kind": "community", "reference": "https://aussiehomebrewer.com/threads/dry-hop-hop-creep-and-d-rest.101168/", "locator": "Discussion du 11 au 13 novembre 2019, première page." }
+  },
+  {
+    "id": "research-time-course-thiols-2026", "kind": "note", "name": "Cinétique des thiols : répétitions analytiques et brassins distincts",
+    "topics": ["thiols", "timing", "levure", "répétitions"],
+    "summary": "Cascade T90 avec Diamond ou Verdant IPA : l’étude suit thiols et expression génique, y compris après fermentation. Les cinétiques chimiques portent sur un brassin par condition ; les bières finales sur trois brassins.",
+    "limitation": "Un lot, plusieurs étapes de houblonnage, garde et conditionnement. Ni courbe cinétique générale ni activité post-fermentaire supposée nulle. Tableau 2 en équivalents thiol libre, base sèche/tel quel inconnue.",
+    "source": { "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers", "author": "Samia, Chenot, Divilov, Shayevitz et Shellhammer", "year": 2026, "kind": "research", "reference": "https://doi.org/10.1016/j.fochms.2026.100445", "locator": "Publication électronique du 30 juillet 2026 ; §2.7, tableau 2 et figures 3A/3B. Texte intégral consulté par API NCBI, PMC13476479." }
+  },
+  {
+    "id": "research-transfer-release-2026", "kind": "note", "name": "Transfert de précurseurs et conversion : deux rendements différents",
+    "topics": ["thiols", "précurseurs", "bilan matière"],
+    "summary": "Chenot et al. mesurent dans leur protocole un transfert important des conjugués au moût, puis une faible conversion globale en 3SH. Les devenirs des conjugués diffèrent entre levure ale et lager.",
+    "limitation": "Résumé primaire consulté ; tableaux détaillés et dénominateurs exacts non vérifiés. Aucun pourcentage du résumé n’est un coefficient installé. Un doublement de précurseurs n’est pas un doublement de masse de houblon ; des études du même groupe peuvent partager des brassins.",
+    "source": { "title": "Bound and Free 3-Sulfanylhexan-1-ol in Beer: Transfer and Release Rates from Kettle, Late, and Dry Hopping", "author": "Chenot, Samia et Shellhammer", "year": 2026, "kind": "research", "reference": "https://doi.org/10.1021/acs.jafc.5c14936", "locator": "En ligne le 6 mars 2026 ; résumé PubMed PMID41790498. Article intégral non récupéré." }
+  },
+  {
+    "id": "research-equivalent-units-2025", "kind": "note", "name": "Équivalents d’étalon : ne pas les traiter comme concentrations absolues",
+    "topics": ["unités", "sensoriel", "levure", "protocole"],
+    "summary": "Costantini et al. comparent Hallertau Mittelfrüh et Mosaic avec ISE77 et Rock. Les volatils du tableau 4 sont rapportés en µg/L équivalents d’étalon interne ; le protocole comporte deux ajouts pendant la fermentation.",
+    "limitation": "Ne pas convertir ces valeurs en concentrations absolues ni réduire le protocole à un seul ajout. La méthode statistique indique SE mais les légendes de tableaux SD : cette ambiguïté empêche de déduire une marge prédictive fiable.",
+    "source": { "title": "Exploring the Influence of Different Saccharomyces cerevisiae Strains and Hop Varieties on Beer Composition and Sensory Profiles", "author": "Costantini et al.", "year": 2025, "kind": "research", "reference": "https://doi.org/10.3390/foods14132357", "locator": "2 juillet 2025 ; §2.8 et 2.11, tableaux 3–5 ; texte et annexes via Europe PMC, PMC12249449." }
+  },
+  {
+    "id": "research-hop-freshness-2022", "kind": "note", "name": "Fraîcheur mesurée : le HSI n’est pas l’âge civil",
+    "topics": ["HSI", "stockage", "sensoriel"],
+    "summary": "Quinze traitements associent trois variétés et cinq niveaux de HSI. Avec SafAle S-04 et un protocole commun, les tableaux relient vieillissement expérimental, chimie et appréciations sensorielles.",
+    "limitation": "HSI obtenu par exposition à l’air et à température ambiante. Pas de pénalité annuelle ou régionale générale ; forme commerciale non explicitée. Citronellol et nérol sont co-mesurés. Les écarts-types du panel ne sont pas une marge de prédiction pour un futur brassin.",
+    "source": { "title": "Impact of Hop Freshness on Dry Hopped Beer Quality", "author": "Rutnik, Ocvirk et Košir", "year": 2022, "kind": "research", "reference": "https://doi.org/10.3390/foods11091310", "locator": "30 avril 2022 ; tableaux 2–4, méthodes 2.2–2.5 ; texte intégral PMC9102888." }
+  },
+  {
+    "id": "research-medium-perception-2023", "kind": "note", "name": "Une levure β-lyase positive ne garantit pas le profil recherché",
+    "topics": ["levure", "milieu", "précurseurs", "sensoriel"],
+    "summary": "Dix souches commerciales sont comparées dans deux milieux. Le milieu et les autres composés aromatiques modifient production de thiols et perception ; le caractère tropical ne résume pas toutes les réponses.",
+    "limitation": "Résumé primaire consulté. Une β-lyase génériquement positive ne prouve pas un rendement suffisant pour un conjugué et un milieu donnés. La vigilance reste possible, sans conclure à une incapacité de la souche ni inventer un seuil de défaut.",
+    "source": { "title": "Examining How the Fermentation Medium Influences Thiol Expression and Its Perceived Aroma in Commercial Brewing Yeast Strains", "author": "Molitor, Fischborn, Dagan et Shellhammer", "year": 2023, "kind": "research", "reference": "https://doi.org/10.1021/acs.jafc.2c06966", "locator": "En ligne le 24 janvier 2023 ; résumé PubMed PMID36693141." }
+  },
+  {
+    "id": "research-creep-esters-2025", "kind": "note", "name": "Après dry-hop : enzymes du houblon et évolution des esters",
+    "topics": ["hop creep", "esters", "température", "contact"],
+    "summary": "Des essais sans croissance microbienne isolent des activités du houblon : évolution du glucose et perte d’isoamyl-acétate selon durée, température et éthanol.",
+    "limitation": "Essais avec azide, sans fermentation active ; ne pas calculer ABV ou CO₂ depuis ces données. Pour certains esters, adsorption et hydrolyse ne sont pas séparées. Aucune concentration d’éthanol n’est un seuil universel de protection.",
+    "source": { "title": "Impact of Contact Time, Temperature, and Ethanol Content on Hop Creep-Related Enzymatic Activities in Beer", "author": "Willemart, Tanriverdi et Collin", "year": 2025, "kind": "research", "reference": "https://doi.org/10.1080/03610470.2024.2432146", "locator": "16 janvier 2025 ; texte intégral universitaire : https://research.dial.uclouvain.be/server/api/core/bitstreams/2200e013-f488-4dd2-ac16-95e267be6c59/content" }
+  },
+  {
+    "id": "research-malt-precursors-2023", "kind": "note", "name": "Le malt contribue aussi au réservoir de précurseurs",
+    "topics": ["précurseurs", "malt", "matrice"],
+    "summary": "L’étude de malts identifie plusieurs formes de précurseurs et des différences entre produits, y compris de couleur voisine. Le réservoir initial ne provient donc pas nécessairement du seul houblon.",
+    "limitation": "Ne pas supposer nul le fond non mesuré du malt et ne pas en déduire un coefficient depuis la couleur EBC. Certaines transformations chimiques proposées ne sont pas démontrées par suivi isotopique.",
+    "source": { "title": "Unusual Profile of Thiol Precursors in Special Malts: First Evidence of Chemical Glutathione-/γGluCys- and CysGly-/Cys- Conversions", "author": "Chenot, Collin, Suc et Roland", "year": 2023, "kind": "research", "reference": "https://doi.org/10.1080/03610470.2023.2187990", "locator": "7 avril 2023 ; texte intégral des auteurs, tableaux 1–2 et figures 3–5." }
+  },
+  {
+    "id": "research-dose-nonlinearity-2018", "kind": "note", "name": "Augmenter la dose ne multiplie pas tous les arômes pareillement",
+    "topics": ["dose", "sensoriel", "dry-hop"],
+    "summary": "Avec Cascade et Wyeast 1728 dans une bière clarifiée, une série de doses montre des évolutions différentes d’intensité globale, d’agrumes et de caractère herbacé/thé.",
+    "limitation": "Un lot et un protocole. Les lettres de comparaison statistique du tableau ne fournissent pas de marges numériques. Aucun multiplicateur de dose ni plateau universel repris dans le moteur.",
+    "source": { "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer", "author": "Lafontaine et Shellhammer", "year": 2018, "kind": "research", "reference": "https://doi.org/10.1002/jib.517", "locator": "12 août 2018 ; tableau 3 et protocole expérimental." }
+  },
+  {
+    "id": "research-harvest-yeast-2026", "kind": "note", "name": "Maturité de récolte × variété × levure : données encore à obtenir",
+    "topics": ["récolte", "levure", "sensoriel"],
+    "summary": "Une étude de 2026 examine Cascade et Columbus à plusieurs maturités avec Rock et ISE77, au plus près de la question du contexte biologique.",
+    "limitation": "Résumé et annonce institutionnelle consultés ; tableaux complets non vérifiés, données annoncées disponibles sur demande. Les résultats narratifs ne deviennent pas des coefficients.",
+    "source": { "title": "Exploring the interplay of hop variety, harvest time and yeast: Sensory and chemical dynamics in beer brewing", "author": "Lino, Forte, Rodolfi et al.", "year": 2026, "kind": "research", "reference": "https://doi.org/10.1016/j.afres.2026.101729", "locator": "Volume daté juin 2026 ; annonce des auteurs CREA du 28 janvier 2026. Aucun jeu brut ouvert vérifié." }
+  },
+  {
+    "id": "research-jackknife-minmax-2021", "kind": "note", "name": "Une marge statistique exige des hypothèses vérifiées",
+    "topics": ["incertitude", "validation", "statistiques"],
+    "summary": "Les méthodes jackknife+ et jackknife-minmax utilisent les prédictions obtenues en retirant des observations ; leurs garanties dépendent notamment de l’échangeabilité entre données et observation future.",
+    "limitation": "Les lots, années et panels de l’index ne satisfont pas automatiquement ces hypothèses. Le R² ou les extrema LOO ne suffisent pas à annoncer une couverture de 95 %. Aucune nouvelle probabilité de couverture installée.",
+    "source": { "title": "Predictive Inference with the Jackknife+", "author": "Barber, Candès, Ramdas et Tibshirani", "year": 2021, "kind": "research", "reference": "https://doi.org/10.1214/20-AOS1965", "locator": "§2.2, théorème 3. Texte des auteurs : https://stat.cmu.edu/~ryantibs/papers/jackknife.pdf" }
+  },
+  {
+    "id": "manufacturer-sensory-dose-2019", "kind": "note", "name": "Une dose de kit sensoriel n’est pas une analyse de lot",
+    "topics": ["sensoriel", "lactones", "unités"],
+    "summary": "La notice Siebel indique 0,06 mg/L de γ-nonalactone pour l’échantillon Exotic. Cette préparation sensorielle correspond aux 60 µg/L visibles dans la formation photographiée.",
+    "limitation": "Ne pas saisir cette dose comme teneur naturelle, seuil de détection ou COA. La nature des concentrations de 36 ng/L et 480 µg/L des autres diapositives reste à confirmer.",
+    "source": { "title": "Sensory Kit Instructional Leaflet", "author": "Siebel Institute of Technology", "year": 2019, "kind": "manufacturer", "reference": "https://www.siebelinstitute.com/images/uploads/Sensory-Kit-Instructional-Leaflet-2019.pdf", "locator": "Pages 6 et 8 du PDF : Exotic et préparation ; texte et pages vérifiés." }
+  },
+  {
+    "id": "research-atf1-thiol-acetate-2006", "kind": "note", "name": "ATF1 contribue à l’acétate de thiol sans tout expliquer",
+    "topics": ["thiols", "esters", "levure"],
+    "summary": "La surexpression d’ATF1 augmente le 3MHA et sa suppression le réduit sans abolir sa formation. Le 3MHA/3SHA doit rester distinct de son alcool parent 3MH/3SH.",
+    "limitation": "Résumé primaire, levures de vin modifiées. Ce résultat n’établit ni une voie exclusive ni un rendement pour une souche commerciale de brasserie.",
+    "source": { "title": "Modulation of volatile thiol and ester aromas by modified wine yeast", "author": "Swiegers et al.", "year": 2006, "kind": "research", "reference": "https://doi.org/10.1016/S0167-4501(06)80027-0", "locator": "Developments in Food Science 43, 113–116 ; résumé consulté." }
+  },
+  {
+    "id": "research-thiol-acetate-brewing-2008", "kind": "note", "name": "3SH et 3SHA évoluent différemment pendant le brassage",
+    "topics": ["thiols", "levure", "timing"],
+    "summary": "L’étude brassicole suit le 3MH et le 3MHA et rapporte une conversion pendant la fermentation dépendant de la souche.",
+    "limitation": "Résumé primaire consulté, pas de rendement transférable extrait. Une recommandation de houblonnage tardif ne démontre pas l’absence universelle de 3SHA dans le houblon.",
+    "source": { "title": "Behaviors of 3-Mercaptohexan-1-ol and 3-Mercaptohexyl Acetate during Brewing Processes", "author": "Kishimoto, Morimoto, Kobayashi, Yako et Wanikawa", "year": 2008, "kind": "research", "reference": "https://doi.org/10.1094/ASBCJ-2008-0702-01", "locator": "Année de l’article : 2008 ; la mise en ligne rétrospective de 2018 ne date pas l’expérience." }
+  },
+  {
+    "id": "research-thiol-molar-balance-2021", "kind": "note", "name": "Rendement molaire et ratio massique d’acétate sont distincts",
+    "topics": ["thiols", "unités", "précurseurs"],
+    "summary": "Chenot et al. corrigent les rendements de libération par les masses molaires ; les acétates sont rapportés en équivalents alcool. Leur ratio acétate/(alcool + acétate) emploie séparément les concentrations massiques.",
+    "limitation": "Moûts volontairement enrichis pour faciliter la détection. Ne pas additionner directement les masses des conjugués, alcools et acétates comme un bilan conservé, ni reprendre ces rendements hors protocole.",
+    "source": { "title": "Modulation of the Sulfanylalkyl Acetate/Alcohol Ratio and Free Thiol Release from Cysteinylated and/or Glutathionylated Sulfanylalkyl Alcohols in Beer under Different Fermentation Conditions", "author": "Chenot et al.", "year": 2021, "kind": "research", "reference": "https://doi.org/10.1021/acs.jafc.1c01610", "locator": "Texte intégral des auteurs, p. 6007 : Release Efficiency Determination et Acetate Ratio Determination ; tableaux 1–2." }
+  },
+  {
+    "id": "research-branched-esters-transfer-2018", "kind": "note", "name": "Esters du houblon : transfert et transformation ne se confondent pas",
+    "topics": ["esters", "timing", "modélisation"],
+    "summary": "Takoi et al. comparent des esters dans les moûts et les bières. Pour le 2-methylbutyl isobutyrate, la pente 0,65 décrit le transfert moyen observé du même composé ; une transestérification est proposée séparément.",
+    "limitation": "Ce nombre n’est pas un rendement enzymatique. Houblonnage chaud et fermentation lager : aucun coefficient de dry-hop NEIPA. Le texte contient aussi une divergence interne 73/78 µg/L pour un seuil.",
+    "source": { "title": "Behaviour of Hop-derived Branched-chain Esters during Fermentation and Unique Characteristics of Huell Melon and Ekuanot (HBC366) Hops", "author": "Takoi et al.", "year": 2018, "kind": "research", "reference": "https://doi.org/10.23763/BrSc18-14takoi", "locator": "Texte intégral BrewingScience 71, 100–109 ; tableau 1, figures 3 et 6, pages 105–108." }
+  },
+  {
+    "id": "research-ester-threshold-matrix-2009", "kind": "note", "name": "Un seuil d’ester dépend de la matrice sensorielle",
+    "topics": ["esters", "sensoriel", "matrice"],
+    "summary": "Pour le 2-methylbutyl isobutyrate, Takoi et al. rapportent 57 µg/L dans une solution modèle et 78 µg/L dans la bière étudiée. Un essai de mélange montre aussi un effet à une teneur inférieure au seuil isolé.",
+    "limitation": "Un OAV inférieur à 1 ne signifie pas une contribution nulle. Ces essais ne fournissent ni seuil universel ni multiplicateur de synergie, et ne justifient pas les 480 µg/L de la photo comme teneur de bière.",
+    "source": { "title": "Specific Flavor Compounds Derived from Nelson Sauvin Hop and Synergy of these Compounds", "author": "Takoi et al.", "year": 2009, "kind": "research", "reference": "https://www.researchgate.net/publication/261476079_Specific_Flavor_Compounds_Derived_from_Nelson_Sauvin_Hop_and_Synergy_of_these_Compounds", "locator": "Article des auteurs, BrewingScience 62, 108–118 ; §3.4 et tableau 1." }
+  },
+  {
+    "id": "research-lactone-biosynthesis-2008", "kind": "note", "name": "La γ-nonalactone a des voies de biosynthèse documentées",
+    "topics": ["lactones", "levure", "précurseurs"],
+    "summary": "Un traçage isotopique explore la formation de γ-nonalactone à partir de dérivés de l’acide linoléique. Les voies proposées demandent davantage qu’une simple association houblon–noix de coco.",
+    "limitation": "Deux organismes et des cultures enrichies : tous les résultats ne concernent pas S. cerevisiae. Les pourcentages d’excès énantiomérique ne sont pas des rendements de conversion.",
+    "source": { "title": "γ-Nonalactone in Beer: Biosynthesis by Yeast", "author": "Leif-Alexander Garbe", "year": 2008, "kind": "research", "reference": "https://brewingscience.de/index.php/brewingscience/article/view/501", "locator": "BrewingScience 61, 175–180 ; texte intégral, traçage isotopique et organismes expérimentaux." }
+  },
+  {
+    "id": "research-lactones-beer-fruit-2017", "kind": "note", "name": "Des mélanges lactones–esters–terpènes modifient le fruité en bière",
+    "topics": ["lactones", "esters", "sensoriel"],
+    "summary": "Hotchko et Shellhammer étudient l’effet de mélanges aromatiques ajoutés à une ale non houblonnée. Les lactones peuvent contribuer au caractère fruité dans ce contexte sensoriel.",
+    "limitation": "Résumé primaire et tableau photographié consultés, protocole complet du tableau non obtenu. Les lettres de significativité ne donnent ni marge numérique ni coefficient d’interaction universel.",
+    "source": { "title": "Influence of Ethyl Esters, Oxygenated Terpenes, and Aliphatic γ- and δ-Lactones (C9–12) on Beer Fruit Aroma", "author": "Rachel A. Hotchko et Thomas H. Shellhammer", "year": 2017, "kind": "research", "reference": "https://doi.org/10.1094/ASBCJ-2017-1805-01", "locator": "JASBC 75(1), 27–34 ; résumé et photographie du tableau V, texte intégral non vérifié." }
+  },
+  {
+    "id": "research-lactone-terpene-interaction-2022", "kind": "note", "name": "L’interaction sensorielle dépend de l’attribut recherché",
+    "topics": ["lactones", "sensoriel", "interactions"],
+    "summary": "Un plan factoriel en vin modèle relève une interaction monoterpènes × lactones pour l’abricot, sans résultat identique pour la pêche. Les ajouts représentent des groupes de composés.",
+    "limitation": "Ni bière ni effet isolé de γ-nonalactone. Les seuils de la table proviennent de plusieurs matrices ; ne pas les transformer en seuils bière ou en pondérations d’axes universelles.",
+    "source": { "title": "Understanding the interactive effects of volatile compounds contributing to ‘stone fruit’ aroma nuances in white wines", "author": "Espinase Nandorfy, Siebert, Watson, Keast et Francis", "year": 2022, "kind": "research", "reference": "https://doi.org/10.1111/ajgw.12540", "locator": "Texte intégral, tableaux 1 et 3 ; article en ligne le 21 décembre 2021, volume 2022." }
+  },
+  {
+    "id": "research-lactone-precursors-wine-2025", "kind": "note", "name": "De nouveaux précurseurs de lactone confirmés en fermentation vinicole",
+    "topics": ["lactones", "précurseurs", "levure"],
+    "summary": "Miller et al. étudient les précurseurs de γ-nonalactone en jus de raisin synthétique fermenté par S. cerevisiae. L’acide linoléique, le 13-HPODE et l’acide 4-oxononanoïque participent aux voies étudiées, avec des différences entre souches.",
+    "limitation": "Résumé et points clés consultés ; données sur demande. Aucun rendement chiffré brassicole, ni classement Pomona/Verdant, n’en est extrait.",
+    "source": { "title": "Investigation into the biogenesis of γ-nonalactone from fatty acid precursors during alcoholic fermentation by Saccharomyces cerevisiae", "author": "Miller, Barker, Pilkington et Deed", "year": 2025, "kind": "research", "reference": "https://doi.org/10.1016/j.jfca.2025.107727", "locator": "Journal of Food Composition and Analysis 145, 107727 ; septembre 2025, résumé primaire." }
+  },
+  {
+    "id": "review-new-ipa-book-2019", "kind": "note", "name": "The New IPA : une porte d’entrée vers les expériences originales",
+    "topics": ["ouvrage", "houblonnage", "sensoriel"],
+    "summary": "L’ouvrage de Scott Janish organise les recherches autour du procédé : whirlpool, stockage, esters, dry-hop et biotransformation. Il aide à retrouver les expériences à lire pour une question de brassage.",
+    "limitation": "Présentation et plan détaillé de l’auteur consultés, pas le livre intégral. Une synthèse ou un conseil de brassage ne devient pas directement un coefficient du moteur.",
+    "source": { "title": "The New IPA: Scientific Guide to Hop Aroma and Flavor", "author": "Scott Janish", "year": 2019, "kind": "review", "reference": "https://scottjanish.com/the-new-ipa-scientific-guide-to-hop-aroma-and-flavor/", "locator": "Page officielle de l’auteur présentant le livre et son contenu." }
+  },
+  {
+    "id": "manufacturer-lactone-patent-2025", "kind": "note", "name": "Brevet Kirin : lactone et équilibre sensoriel d’une bière désalcoolisée",
+    "topics": ["lactones", "matrice", "brevet"],
+    "summary": "Un brevet Kirin décrit des ajouts de γ-nonalactone, d’acétate d’éthyle et d’acide succinique dans une boisson de type bière désalcoolisée pour agir sur la perception de douceur.",
+    "limitation": "Essais déclarés par le déposant, sans validation indépendante établie. Matrice désalcoolisée et ajout direct : aucun rendement de levure ou prédiction de houblonnage n’en découle.",
+    "source": { "title": "Non-alcoholic beer-flavored beverage with reduced prominence of sweetness", "author": "Kirin Holdings", "year": 2025, "kind": "manufacturer", "reference": "https://patents.google.com/patent/WO2025083822A1/en", "locator": "WO2025083822A1, publié le 24 avril 2025 ; texte du brevet, exemples expérimentaux." }
+  },
+  {
+    "id": "research-lactone-matrix-2026", "kind": "note", "name": "Libération dans l’espace de tête et perception ne sont pas équivalentes",
+    "topics": ["lactones", "matrice", "sensoriel"],
+    "summary": "Di Fede et al. comparent des matrices de vin rouge contenant γ-nonalactone et massoia lactone en faisant varier éthanol et acidité. Les changements analytiques de libération ne décrivent pas à eux seuls toutes les réponses sensorielles.",
+    "limitation": "Vin désodorisé puis supplémenté, pas fermentation de bière. Un pourcentage de libération dans l’espace de tête n’est pas un rendement de biosynthèse. Aucun coefficient transféré.",
+    "source": { "title": "Impact of climate-induced compositional shifts of ethanol and acidity on aroma release and perception in red wine: a case study on γ-nonalactone and massoia lactone", "author": "Di Fede, Pittari, Moio et Piombino", "year": 2026, "kind": "research", "reference": "https://doi.org/10.1002/jsfa.70876", "locator": "6 juillet 2026 ; texte intégral, version avec figure 1 corrigée le 13 juillet 2026." }
+  }
+]

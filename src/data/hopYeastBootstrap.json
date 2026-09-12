@@ -1,0 +1,92 @@
+[
+  {
+    "id": "fermentis-us05",
+    "kind": "yeast",
+    "name": "SafAle US-05 (Fermentis)",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "SafAle US-05 — fiche produit",
+      "author": "Fermentis",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://fermentis.com/fr/produit/safale-us-05/",
+      "locator": "Identité SafAle US-05, Saccharomyces cerevisiae, et description du profil neutre. Aucune date de publication ou de mise à jour de la fiche n’est affichée. Cette source ne fournit pas de mesure de β-lyase ni de rendement de biotransformation."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "lalbrew-diamond",
+    "kind": "yeast",
+    "name": "LalBrew Diamond",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Souche étudiée en fermentation avec Cascade ; l’activité β-lyase isolée n’est pas mesurée. Aucun rendement générique déduit des thiols libres."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "lalbrew-nottingham",
+    "kind": "yeast",
+    "name": "LalBrew Nottingham",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Souche étudiée en fermentation avec Cascade ; l’activité β-lyase isolée n’est pas mesurée. Aucun rendement générique déduit des thiols libres."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "lalbrew-london",
+    "kind": "yeast",
+    "name": "LalBrew London",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Identité historique de la souche étudiée ; disponibilité commerciale non attestée. L’activité β-lyase isolée n’est pas mesurée."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "lalbrew-bry97",
+    "kind": "yeast",
+    "name": "LalBrew BRY-97",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Souche étudiée en fermentation avec Cascade ; l’activité β-lyase isolée n’est pas mesurée. Aucun rendement générique déduit des thiols libres."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "lalbrew-verdant-ipa",
+    "kind": "yeast",
+    "name": "LalBrew Verdant IPA",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Souche étudiée en fermentation avec Cascade ; l’activité β-lyase isolée n’est pas mesurée. Aucun rendement générique déduit des thiols libres."
+    },
+    "form": "sèche"
+  }
+]

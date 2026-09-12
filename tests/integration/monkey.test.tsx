@@ -338,7 +338,9 @@ describe('Monkey — l’atelier de l’eau', () => {
     it(`survit à 250 gestes au hasard — graine ${graine}`, () => {
       const journal = lacherLeSinge(atelier, graine, 250);
       expect(journal.length).toBe(251);
-    });
+      // Les 250 interactions et leurs assertions sont conservées : ce parcours
+      // dépasse 15 s sur Windows, même avec un seul worker.
+    }, 30_000);
   });
 });
 

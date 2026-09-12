@@ -1,0 +1,877 @@
+[
+  {
+    "id": "laffinee-hop-solver",
+    "kind": "solver",
+    "name": "Formuler le houblonnage",
+    "version": "2026-09-08.1",
+    "enabled": true,
+    "source": {
+      "title": "Points de départ et contraintes du solver aromatique",
+      "author": "L’Affinée — hypothèses de formulation assistées par IA",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/hop-solver.md",
+      "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+    },
+    "defaults": {
+      "firstWort": {
+        "doseGL": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "central": 1,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Dose proposée pour firstWort, en g/L. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "temperatureC": {
+          "range": {
+            "min": 80,
+            "max": 80
+          },
+          "central": 80,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Température de contact proposée pour firstWort, en °C ; pas une mesure de la cuve. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "contactHours": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "central": 1,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Durée de scénario proposée pour firstWort, en heures ; pas un optimum. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "searchDosesGL": [
+          {
+            "range": {
+              "min": 0.5,
+              "max": 0.5
+            },
+            "central": 0.5,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour firstWort, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 1,
+              "max": 1
+            },
+            "central": 1,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour firstWort, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "central": 2,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour firstWort, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          }
+        ]
+      },
+      "boil": {
+        "doseGL": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "central": 1,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Dose proposée pour boil, en g/L. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "temperatureC": {
+          "range": {
+            "min": 100,
+            "max": 100
+          },
+          "central": 100,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Température de contact proposée pour boil, en °C ; pas une mesure de la cuve. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "contactHours": {
+          "range": {
+            "min": 0.16666666666666666,
+            "max": 0.16666666666666666
+          },
+          "central": 0.16666666666666666,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Durée de scénario proposée pour boil, en heures ; pas un optimum. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "searchDosesGL": [
+          {
+            "range": {
+              "min": 0.5,
+              "max": 0.5
+            },
+            "central": 0.5,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour boil, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 1,
+              "max": 1
+            },
+            "central": 1,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour boil, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "central": 2,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour boil, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          }
+        ]
+      },
+      "whirlpool": {
+        "doseGL": {
+          "range": {
+            "min": 3,
+            "max": 3
+          },
+          "central": 3,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Dose proposée pour whirlpool, en g/L. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "temperatureC": {
+          "range": {
+            "min": 80,
+            "max": 80
+          },
+          "central": 80,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Température de contact proposée pour whirlpool, en °C ; pas une mesure de la cuve. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "contactHours": {
+          "range": {
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333
+          },
+          "central": 0.3333333333333333,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Durée de scénario proposée pour whirlpool, en heures ; pas un optimum. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "searchDosesGL": [
+          {
+            "range": {
+              "min": 1,
+              "max": 1
+            },
+            "central": 1,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour whirlpool, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "central": 2,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour whirlpool, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 3,
+              "max": 3
+            },
+            "central": 3,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour whirlpool, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          }
+        ]
+      },
+      "fermentation": {
+        "doseGL": {
+          "range": {
+            "min": 4,
+            "max": 4
+          },
+          "central": 4,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Dose proposée pour fermentation, en g/L. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "temperatureC": {
+          "range": {
+            "min": 18,
+            "max": 18
+          },
+          "central": 18,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Température de contact proposée pour fermentation, en °C ; pas une mesure de la cuve. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "contactHours": {
+          "range": {
+            "min": 24,
+            "max": 24
+          },
+          "central": 24,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Durée de scénario proposée pour fermentation, en heures ; pas un optimum. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "searchDosesGL": [
+          {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "central": 2,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour fermentation, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 4,
+              "max": 4
+            },
+            "central": 4,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour fermentation, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 6,
+              "max": 6
+            },
+            "central": 6,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour fermentation, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          }
+        ]
+      },
+      "postFermentation": {
+        "doseGL": {
+          "range": {
+            "min": 4,
+            "max": 4
+          },
+          "central": 4,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Dose proposée pour postFermentation, en g/L. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "temperatureC": {
+          "range": {
+            "min": 18,
+            "max": 18
+          },
+          "central": 18,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Température de contact proposée pour postFermentation, en °C ; pas une mesure de la cuve. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "contactHours": {
+          "range": {
+            "min": 24,
+            "max": 24
+          },
+          "central": 24,
+          "source": {
+            "title": "Points de départ et contraintes du solver aromatique",
+            "author": "L’Affinée — hypothèses de formulation assistées par IA",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Durée de scénario proposée pour postFermentation, en heures ; pas un optimum. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+          }
+        },
+        "searchDosesGL": [
+          {
+            "range": {
+              "min": 2,
+              "max": 2
+            },
+            "central": 2,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour postFermentation, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 4,
+              "max": 4
+            },
+            "central": 4,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour postFermentation, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          },
+          {
+            "range": {
+              "min": 6,
+              "max": 6
+            },
+            "central": 6,
+            "source": {
+              "title": "Points de départ et contraintes du solver aromatique",
+              "author": "L’Affinée — hypothèses de formulation assistées par IA",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Dose candidate pour postFermentation, en g/L ; discrétisation éditoriale du domaine de recherche. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+            }
+          }
+        ]
+      }
+    },
+    "styles": [
+      {
+        "id": "free",
+        "name": "Libre",
+        "aliases": [],
+        "targets": {},
+        "avoid": [],
+        "timings": [
+          "whirlpool",
+          "fermentation",
+          "postFermentation"
+        ],
+        "chemistry": {},
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      },
+      {
+        "id": "hazy",
+        "name": "IPA fruitée / Hazy",
+        "aliases": [
+          "Hazy IPA",
+          "NEIPA",
+          "New England IPA",
+          "Juicy IPA"
+        ],
+        "targets": {
+          "tropical": "high",
+          "citrus": "medium",
+          "stoneFruit": "medium"
+        },
+        "avoid": [
+          "herbal"
+        ],
+        "timings": [
+          "whirlpool",
+          "fermentation",
+          "postFermentation"
+        ],
+        "chemistry": {},
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      },
+      {
+        "id": "westcoast",
+        "name": "IPA agrumes et résine",
+        "aliases": [
+          "American IPA",
+          "West Coast IPA",
+          "IPA"
+        ],
+        "targets": {
+          "citrus": "high",
+          "resin": "medium"
+        },
+        "avoid": [],
+        "timings": [
+          "whirlpool",
+          "postFermentation"
+        ],
+        "chemistry": {},
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      },
+      {
+        "id": "pale",
+        "name": "Pale ale",
+        "aliases": [
+          "Pale Ale",
+          "American Pale Ale",
+          "Blonde Ale"
+        ],
+        "targets": {
+          "citrus": "medium",
+          "floral": "low"
+        },
+        "avoid": [],
+        "timings": [
+          "whirlpool",
+          "postFermentation"
+        ],
+        "chemistry": {},
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      },
+      {
+        "id": "lager",
+        "name": "Lager / Pils",
+        "aliases": [
+          "Lager",
+          "Pils",
+          "Pilsner",
+          "Helles",
+          "German Pils"
+        ],
+        "targets": {
+          "floral": "medium",
+          "spice": "low"
+        },
+        "avoid": [
+          "tropical"
+        ],
+        "timings": [
+          "boil",
+          "whirlpool"
+        ],
+        "chemistry": {
+          "phenols": "avoid"
+        },
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      },
+      {
+        "id": "saison",
+        "name": "Saison / blanche épicée",
+        "aliases": [
+          "Saison",
+          "Witbier",
+          "Blanche",
+          "Weissbier"
+        ],
+        "targets": {
+          "spice": "medium",
+          "citrus": "low"
+        },
+        "avoid": [],
+        "timings": [
+          "boil",
+          "whirlpool"
+        ],
+        "chemistry": {
+          "phenols": "seek"
+        },
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      },
+      {
+        "id": "stout",
+        "name": "Stout / Porter",
+        "aliases": [
+          "Stout",
+          "Dry Stout",
+          "Porter",
+          "Robust Porter"
+        ],
+        "targets": {
+          "earthy": "low",
+          "herbal": "low"
+        },
+        "avoid": [],
+        "timings": [
+          "boil",
+          "whirlpool"
+        ],
+        "chemistry": {},
+        "source": {
+          "title": "Points de départ et contraintes du solver aromatique",
+          "author": "L’Affinée — hypothèses de formulation assistées par IA",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+        }
+      }
+    ],
+    "yeastPhenols": [
+      {
+        "yeastId": "lalbrew-verdant-ipa",
+        "status": "negative",
+        "source": {
+          "title": "LalBrew Verdant IPA — fiche technique",
+          "author": "Lallemand",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_VERDANT_ENG_A4-4.pdf",
+          "locator": "Abricot dominant, tropical et agrumes ; POF négative. Date de publication non établie par le chemin du fichier."
+        }
+      },
+      {
+        "yeastId": "lalbrew-pomona",
+        "status": "negative",
+        "source": {
+          "title": "LalBrew Pomona — fiche technique",
+          "author": "Lallemand",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2024/04/Pomona-TDS-FRA-A4-Print-LalBrew.pdf",
+          "locator": "Pêche, agrumes et tropical ; POF négative. Date de publication non établie par le chemin du fichier."
+        }
+      },
+      {
+        "yeastId": "wyeast-3068",
+        "status": "positive",
+        "source": {
+          "title": "3068 Weihenstephan Weizen — fiche fabricant",
+          "author": "Wyeast",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+          "locator": "Consultée le 8 septembre 2026, publication non datée. Caractère phénolique de girofle et esters de banane ; plage 18–24 °C. Pas de mesure β-lyase ni de rendement thiol."
+        }
+      }
+    ],
+    "yeastConditions": [
+      {
+        "yeastId": "wyeast-3068",
+        "temperatureC": {
+          "min": 18,
+          "max": 24
+        },
+        "source": {
+          "title": "3068 Weihenstephan Weizen — fiche fabricant",
+          "author": "Wyeast",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+          "locator": "Consultée le 8 septembre 2026, publication non datée. Caractère phénolique de girofle et esters de banane ; plage 18–24 °C. Pas de mesure β-lyase ni de rendement thiol."
+        }
+      },
+      {
+        "yeastId": "wyeast-3724",
+        "temperatureC": {
+          "min": 21,
+          "max": 35
+        },
+        "source": {
+          "title": "3724 Belgian Saison — fiche fabricant",
+          "author": "Wyeast",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://wyeastlab.com/product/belgian-saison/",
+          "locator": "Consultée le 8 septembre 2026, publication non datée. Profil épicé et fruité, plage 21–35 °C, STA1/diastaticus signalé par le fabricant. Le caractère POF n’est pas quantifié ici."
+        },
+        "warning": "Wyeast 3724 : souche diastaticus / STA1 signalée par le fabricant. Prévoir une fin de fermentation confirmée, surveiller la densité et maîtriser les contaminations croisées ; l’atténuation peut se prolonger."
+      }
+    ],
+    "trialChemistry": [
+      {
+        "trialId": "trial-cascade-verdant-ebc2024",
+        "goals": [
+          "thiols"
+        ],
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+          "year": 2024,
+          "kind": "research",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+          "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+        }
+      },
+      {
+        "trialId": "trial-cascade-nottingham-ebc2024",
+        "goals": [
+          "thiols"
+        ],
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+          "year": 2024,
+          "kind": "research",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+          "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+        }
+      },
+      {
+        "trialId": "trial-cascade-diamond-ebc2024",
+        "goals": [
+          "thiols"
+        ],
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+          "year": 2024,
+          "kind": "research",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+          "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+        }
+      },
+      {
+        "trialId": "trial-split-verdant-2026",
+        "goals": [
+          "thiols"
+        ],
+        "source": {
+          "title": "Practical tips for Thiol Boosting Recipes",
+          "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+          "year": 2026,
+          "kind": "manufacturer",
+          "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+          "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+        }
+      },
+      {
+        "trialId": "trial-split-pomona-2026",
+        "goals": [
+          "thiols"
+        ],
+        "source": {
+          "title": "Practical tips for Thiol Boosting Recipes",
+          "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+          "year": 2026,
+          "kind": "manufacturer",
+          "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+          "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+        }
+      }
+    ],
+    "dryHopReviewGL": {
+      "range": {
+        "min": 8,
+        "max": 8
+      },
+      "central": 8,
+      "source": {
+        "title": "Points de départ et contraintes du solver aromatique",
+        "author": "L’Affinée — hypothèses de formulation assistées par IA",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-solver.md",
+        "locator": "Repère de revue du dry-hop cumulé, pas seuil de danger : rendement aromatique non linéaire dans l’essai Cascade, DOI 10.1002/jib.517. Ce repère ne garantit ni plateau ni défaut pour une autre bière. 8 septembre 2026. Presets de formulation à adapter ; aucune garantie de style, de rendement enzymatique ou d’intensité sensorielle."
+      }
+    }
+  },
+  {
+    "id": "wyeast-3068",
+    "kind": "yeast",
+    "name": "Wyeast 3068 Weihenstephan Weizen",
+    "form": "liquide",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "3068 Weihenstephan Weizen — fiche fabricant",
+      "author": "Wyeast",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+      "locator": "Consultée le 8 septembre 2026, publication non datée. Caractère phénolique de girofle et esters de banane ; plage 18–24 °C. Pas de mesure β-lyase ni de rendement thiol."
+    }
+  },
+  {
+    "id": "wyeast-3724",
+    "kind": "yeast",
+    "name": "Wyeast 3724 Belgian Saison",
+    "form": "liquide",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "3724 Belgian Saison — fiche fabricant",
+      "author": "Wyeast",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://wyeastlab.com/product/belgian-saison/",
+      "locator": "Consultée le 8 septembre 2026, publication non datée. Profil épicé et fruité, plage 21–35 °C, STA1/diastaticus signalé par le fabricant. Le caractère POF n’est pas quantifié ici."
+    }
+  }
+]

@@ -57,3 +57,41 @@ export function runSearch<T>(fuse: Fuse<T>, query: string): T[] {
   if (!q) return [];
   return fuse.search(q).map((r) => r.item);
 }
+
+export interface SearchableCommand {
+  label: string;
+  detail?: string;
+  keywords?: string[];
+  /** Présentation uniquement : aucun effet sur le registre comptable. */
+  archived?: boolean;
+}
+
+/** Recherche tout l'index avant de borner le rendu de chaque rubrique. */
+export function searchCommandGroups<T extends SearchableCommand>(
+  groups: { heading: string; items: T[] }[],
+  query: string,
+  includeArchives = false,
+  limitPerGroup = 12
+): { groups: { heading: string; items: T[] }[]; total: number; visible: number } {
+  const needle = normalize(query.trim());
+  const terms = needle.split(/\s+/).filter(Boolean);
+  const limit = Number.isFinite(limitPerGroup) ? Math.max(1, Math.floor(limitPerGroup)) : 12;
+  let total = 0;
+  let visible = 0;
+  const matchedGroups = groups.flatMap(group => {
+    const matches = group.items.flatMap(item => {
+      if (item.archived && !includeArchives) return [];
+      const label = normalize(item.label);
+      const haystack = normalize([item.label, item.detail, ...(item.keywords ?? [])].join(' '));
+      if (!terms.every(term => haystack.includes(term))) return [];
+      const score = !needle || label.startsWith(needle) ? 2 : label.includes(needle) ? 1 : 0;
+      return [{ item, score }];
+    });
+    total += matches.length;
+    if (!matches.length) return [];
+    const items = matches.sort((a, b) => b.score - a.score).slice(0, limit).map(match => match.item);
+    visible += items.length;
+    return [{ heading: group.heading, items }];
+  });
+  return { groups: matchedGroups, total, visible };
+}

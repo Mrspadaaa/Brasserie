@@ -1,0 +1,26 @@
+.finance.upgrade-workspace { padding:0; }
+.creative-nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; padding-bottom:12px; margin-bottom:20px; border-bottom:1px solid #3D342E; }
+.creative-nav button { min-height:48px; min-width:0; padding:8px 2px; border-radius:8px; color:#D8CEC5; font-size:14px; }
+.creative-nav button[aria-pressed=true] { background:#F2C14E; color:#12100E; font-weight:600; }
+.creative-nav button:focus-visible { outline:2px solid #F2C14E; outline-offset:2px; }
+.upgrade-toolbar { display:flex; gap:12px; margin:20px 0; }
+.upgrade-toolbar .finance-action { width:100%; }
+.upgrade-timings, .upgrade-scopes { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+.upgrade-timings { margin:0; }
+.upgrade-timings button, .upgrade-scopes button { padding:8px; }
+.upgrade-stage { margin-top:28px; }
+.upgrade-stage > h3 { padding-bottom:8px; border-bottom:1px solid #574A42; }
+.upgrade-item { padding:8px 0 12px; border-bottom:1px solid #3D342E; }
+.upgrade-project { width:100%; min-height:76px; padding:12px 0; display:flex; gap:12px; text-align:left; align-items:flex-start; }
+.upgrade-purpose { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:14px; line-height:1.5; color:#B3A397; margin-top:6px; }
+.upgrade-price { flex-shrink:0; display:flex; gap:8px; align-items:center; font-variant-numeric:tabular-nums; font-size:15px; font-weight:600; }
+.upgrade-project-actions { display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 16px; }
+.upgrade-project-actions .finance-check { font-size:14px; }
+.upgrade-project-actions .finance-check input { width:22px; height:22px; }
+.upgrade-actual { padding:4px 0; }
+.upgrade-budget { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:center; padding:16px 0; border-bottom:1px solid #3D342E; }
+.upgrade-budget > span { color:#D8CEC5; font-size:14px; }
+.upgrade-inclusion { padding:12px 14px; border:1px solid #574A42; border-radius:10px; background:#221D19; }
+.upgrade-inclusion .finance-check { font-weight:600; }
+.upgrade-forecast-impact { padding-top:14px; margin-top:16px; border-top:1px solid #3D342E; }
+@media (max-width:359px) { .upgrade-project { flex-wrap:wrap; } .upgrade-project .finance-row-main { flex-basis:100%; } .upgrade-price { margin-left:auto; } }

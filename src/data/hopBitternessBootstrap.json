@@ -1,0 +1,215 @@
+[
+  {
+    "id": "dry-hop-bitterness-maye-2016-v1",
+    "kind": "bitternessScience",
+    "name": "Amertume à cru · scénarios Maye 2016",
+    "version": "2026-09-09.1",
+    "enabled": true,
+    "source": {
+      "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+      "author": "Maye, Smith et Leker",
+      "year": 2016,
+      "kind": "research",
+      "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+      "locator": "MBAA TQ 53(1), 23–27 ; tableaux 1 à 6"
+    },
+    "humulinonesPct": {
+      "range": {
+        "min": 0.26,
+        "max": 0.35
+      },
+      "source": {
+        "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+        "author": "Maye, Smith et Leker",
+        "year": 2016,
+        "kind": "research",
+        "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+        "locator": "Composition des deux lots expérimentaux : Cascade tableau 2 ; Centennial tableau 1"
+      },
+      "limitation": "Deux compositions de lots publiées servant d’hypothèses de simulation. Ce ne sont ni les analyses de ton lot ni une plage représentative de toutes les variétés. Une analyse de ton lot ou une hypothèse explicite peut les remplacer."
+    },
+    "relativeBitterness": {
+      "value": 0.66,
+      "source": {
+        "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+        "author": "Maye, Smith et Leker",
+        "year": 2016,
+        "kind": "research",
+        "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+        "locator": "Tableaux 1 et 6 ; comparaison sensorielle humulinones/iso-alpha. Valeur de référence, sans intervalle statistique dans ce modèle."
+      }
+    },
+    "experiments": [
+      {
+        "id": "centennial-low-120h",
+        "name": "Centennial · bière peu amère · 5 jours",
+        "temperatureC": 16,
+        "contactHours": 120,
+        "source": {
+          "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+          "author": "Maye, Smith et Leker",
+          "year": 2016,
+          "kind": "research",
+          "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+          "locator": "Tableau 1, contrôle 8,6 mg/L iso-alpha"
+        },
+        "points": [
+          {
+            "doseLbBbl": 0.5,
+            "isoBeforeMgL": 8.6,
+            "isoAfterMgL": 8.1,
+            "recovery": 0.98
+          },
+          {
+            "doseLbBbl": 1,
+            "isoBeforeMgL": 8.6,
+            "isoAfterMgL": 7.9,
+            "recovery": 0.91
+          },
+          {
+            "doseLbBbl": 2,
+            "isoBeforeMgL": 8.6,
+            "isoAfterMgL": 7.5,
+            "recovery": 0.88
+          }
+        ]
+      },
+      {
+        "id": "centennial-high-120h",
+        "name": "Centennial · bière amère · 5 jours",
+        "temperatureC": 16,
+        "contactHours": 120,
+        "source": {
+          "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+          "author": "Maye, Smith et Leker",
+          "year": 2016,
+          "kind": "research",
+          "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+          "locator": "Tableau 1, contrôle 48 mg/L iso-alpha"
+        },
+        "points": [
+          {
+            "doseLbBbl": 0.5,
+            "isoBeforeMgL": 48,
+            "isoAfterMgL": 39,
+            "recovery": 0.98
+          },
+          {
+            "doseLbBbl": 1,
+            "isoBeforeMgL": 48,
+            "isoAfterMgL": 35,
+            "recovery": 0.91
+          },
+          {
+            "doseLbBbl": 2,
+            "isoBeforeMgL": 48,
+            "isoAfterMgL": 30,
+            "recovery": 0.87
+          }
+        ]
+      },
+      {
+        "id": "cascade-high-24h",
+        "name": "Cascade · bière amère · 1 jour",
+        "temperatureC": 16,
+        "contactHours": 24,
+        "source": {
+          "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+          "author": "Maye, Smith et Leker",
+          "year": 2016,
+          "kind": "research",
+          "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+          "locator": "Tableau 3, concentrations mesurées et utilisation publiée ; le % de perte iso indiqué à 2 lb/bbl est incohérent avec 51,3 → 36, les concentrations sont conservées"
+        },
+        "points": [
+          {
+            "doseLbBbl": 0.5,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 48,
+            "recovery": 0.88
+          },
+          {
+            "doseLbBbl": 1,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 38,
+            "recovery": 0.62
+          },
+          {
+            "doseLbBbl": 2,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 36,
+            "recovery": 0.39
+          }
+        ]
+      },
+      {
+        "id": "cascade-high-48h",
+        "name": "Cascade · bière amère · 2 jours",
+        "temperatureC": 16,
+        "contactHours": 48,
+        "source": {
+          "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+          "author": "Maye, Smith et Leker",
+          "year": 2016,
+          "kind": "research",
+          "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+          "locator": "Tableau 4, concentrations mesurées et utilisation publiée"
+        },
+        "points": [
+          {
+            "doseLbBbl": 0.5,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 45,
+            "recovery": 0.91
+          },
+          {
+            "doseLbBbl": 1,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 33,
+            "recovery": 0.9
+          },
+          {
+            "doseLbBbl": 2,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 29,
+            "recovery": 0.72
+          }
+        ]
+      },
+      {
+        "id": "cascade-high-120h",
+        "name": "Cascade · bière amère · 5 jours",
+        "temperatureC": 16,
+        "contactHours": 120,
+        "source": {
+          "title": "Humulinone Formation in Hops and Hop Pellets and Its Implications for Dry Hopped Beers",
+          "author": "Maye, Smith et Leker",
+          "year": 2016,
+          "kind": "research",
+          "reference": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2016-06_humulinone-formation-in-hops-and-hop-pellets-and-its-implications-for-dry-hopped-beers_maye_et-al_mbaa.pdf",
+          "locator": "Tableau 5 ; arrondis différents du tableau 6 conservés, pas corrigés par ajustement"
+        },
+        "points": [
+          {
+            "doseLbBbl": 0.5,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 42,
+            "recovery": 1
+          },
+          {
+            "doseLbBbl": 1,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 29,
+            "recovery": 0.97
+          },
+          {
+            "doseLbBbl": 2,
+            "isoBeforeMgL": 51.3,
+            "isoAfterMgL": 25,
+            "recovery": 0.9
+          }
+        ]
+      }
+    ]
+  }
+]

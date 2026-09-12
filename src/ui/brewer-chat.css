@@ -673,6 +673,23 @@
   display: grid;
   gap: 10px;
 }
+.brewer-budget-body section {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.brewer-budget-body button[aria-pressed='false'] {
+  background: #20231e;
+  color: #cbd4bf;
+  border: 1px solid #565a4e;
+}
+.brewer-budget-advanced > summary {
+  justify-content: space-between;
+  gap: 10px;
+}
+.brewer-budget-advanced[open] > summary svg {
+  transform: rotate(180deg);
+}
 .brewer-budget-body input {
   min-height: 44px;
   width: 100%;
@@ -699,7 +716,7 @@
 }
 .brewer-chat-suppliers small {
   color: #aeb7ad;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.6;
 }
 .brewer-chat-product {
@@ -718,7 +735,8 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.4;
 }
 .brewer-chat-product-name svg {
   flex-shrink: 0;
@@ -726,13 +744,13 @@
 }
 .brewer-chat-product-supplier {
   color: #c2c8ba;
-  font-size: 11px;
+  font-size: 12px;
 }
 .brewer-chat-product small {
   grid-column: 1/-1;
 }
 .brewer-chat-stock {
-  font-size: 10px;
+  font-size: 11px;
   color: #d2c5a8;
   border-radius: 20px;
   padding: 2px 6px;
@@ -845,6 +863,7 @@
   }
 }
 
-body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill {
+body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill,
+body:has([data-vaul-drawer][data-state='open']) .brewer-global-companion {
   display: none;
 }

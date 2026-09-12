@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
+import { HopIndexWorkspace as HopIndexPanel } from '../../ui/hopIndex/HopIndexWorkspace';
 import { StockItem, EquipmentItem, KegItem, Batch } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
@@ -17,9 +18,12 @@ import { Combobox } from '../../ui/Combobox';
 import { Suggestions } from '../../services/suggestions';
 import { InventoryCorrectionSheet } from '../../ui/InventoryCorrectionSheet';
 import { INVENTORY_REASONS, InventoryReason } from '../../services/storage';
+import { ExpenseSheet } from '../../ui/finance/ExpenseSheet';
 import { EquipmentSheet } from '../../ui/EquipmentSheet';
 import { KegSheet } from '../../ui/KegSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
+import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
+import { useMobileLayout } from '../../ui/useViewport';
 
 interface StocksTabProps {
   stocks: {
@@ -35,9 +39,10 @@ interface StocksTabProps {
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
   onSuccessMessage?: (msg: string) => void;
+  onOpenEquipmentProjects?: () => void;
 }
 
-type SubTab = 'stock' | 'courses' | 'futs' | 'materiel';
+type SubTab = 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
 
 /**
  * Écran Stocks.
@@ -73,11 +78,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   onOpenQuickAction,
   onSubTabChange,
   createRequest,
-  onSuccessMessage
+  onSuccessMessage,
+  onOpenEquipmentProjects
 }) => {
   const [subTab, setSubTab] = useState<SubTab>(() =>
     StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
   );
+  const tabsRef = useRef<HTMLElement>(null);
+  useEffect(() => { tabsRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }, [subTab]);
   const allItems = useMemo(
     () => [...stocks.rawMaterials, ...stocks.cleaning],
     [stocks.rawMaterials, stocks.cleaning]
@@ -91,6 +99,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
    * ouverte à `null` ferme la feuille ; une fiche vide vaut création.
    */
   const [equipmentSheet, setEquipmentSheet] = useLiveSelection(stocks.equipment, 'ref');
+  const [purchasingEquipment, setPurchasingEquipment] = useState(false);
   const [kegSheet, setKegSheet] = useLiveSelection(stocks.kegs, 'id');
 
   const blankEquipment = (): EquipmentItem => ({
@@ -148,7 +157,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         setCreatingKeg(true);
         break;
       case 'newEquipment':
-        setCreatingEquipment(true);
+        setPurchasingEquipment(true);
         break;
       case 'copyShoppingList':
         copyEverything();
@@ -192,7 +201,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   };
 
   const criticalCount = useMemo(
-    () => allItems.filter((i) => computeStockLevel(i, batches).band === 'rupture').length,
+    () => allItems.filter((i) => computeStockLevel(i, batches, allItems).band === 'rupture').length,
     [allItems, batches]
   );
 
@@ -204,7 +213,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     const map = new Map<string, Array<{ item: StockItem; missing: number }>>();
 
     allItems.forEach((item) => {
-      const missing = shortfall(item, batches);
+      const missing = shortfall(item, batches, allItems);
       const belowMin = item.minStock > 0 && item.currentStock <= item.minStock;
       if (missing <= 0 && !belowMin) return;
 
@@ -261,18 +270,22 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     { id: 'stock', label: 'Stock', Icon: Boxes, badge: criticalCount },
     { id: 'courses', label: 'Courses', Icon: ShoppingCart, badge: totalToOrder },
     { id: 'futs', label: 'Fûts', Icon: Beer },
-    { id: 'materiel', label: 'Matériel', Icon: Wrench }
+    { id: 'materiel', label: 'Matériel', Icon: Wrench },
+    { id: 'hops', label: 'Houblons', Icon: Hop }
   ];
 
+  const mobile = useMobileLayout();
   return (
-    <div className="flex flex-col h-[calc(100dvh-8.5rem)] pt-3">
-      <nav className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 mb-3">
+    <div className="flex flex-col h-[calc(100dvh-8.5rem)] pt-2 gap-2">
+      <div className="min-w-0 shrink-0">
+      <ViewNavigation<typeof subTab> label="Vue des stocks" value={subTab} onChange={setSubTab} options={tabs.map(tab => ({value:tab.id,label:tab.label+(tab.badge ? ` (${tab.badge})` : ''),shortLabel:tab.label}))}>
+      <nav ref={tabsRef} className="shrink-0 flex gap-1 p-1 rounded-control bg-cave-900 border border-cave-800 mb-3 overflow-x-auto">
         {tabs.map(({ id, label, Icon, badge }) => (
           <button
             key={id}
             onClick={() => setSubTab(id)}
             aria-current={subTab === id ? 'page' : undefined}
-            className={`flex-1 min-h-touch rounded-control flex items-center justify-center gap-1.5
+            className={`flex-1 min-w-fit px-2 min-h-touch rounded-control flex items-center justify-center gap-1.5
                         text-sm font-medium transition-colors ${
                           subTab === id
                             ? 'bg-ebc-straw text-cave-950'
@@ -293,6 +306,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           </button>
         ))}
       </nav>
+      </ViewNavigation>
+      </div>
+
+      {subTab === 'hops' && <HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} />}
 
       {subTab === 'stock' && (
         <EntityList
@@ -304,14 +321,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}
           searchPlaceholder="Chercher un malt, un houblon, une levure…"
-          header={
+          toolbarAction={!mobile &&
             <Button
               intent="secondary"
-              full
+              aria-label="Ajouter un article"
               onClick={() => setCreating(true)}
               icon={<Plus className="w-5 h-5" />}
             >
-              Ajouter un article
+              <span className="hidden sm:inline">Ajouter un article</span>
             </Button>
           }
           emptyState={
@@ -326,7 +343,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             </div>
           }
           renderItem={(item) => (
-            <StockRow
+            <StockRow stockItems={allItems}
               item={item}
               batches={batches}
               onOpen={setSelected}
@@ -387,13 +404,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'futs' && <KegBoard kegs={stocks.kegs} batches={batches} className="flex-1" />}
 
       {subTab === 'materiel' && (
-        <EquipmentList
+        <><MobileDetails title="Actions du matériel">{onOpenEquipmentProjects&&<button className="finance-link mb-3" onClick={onOpenEquipmentProjects}><Wrench size={18}/>Préparer mes futurs équipements</button>}<div className="flex flex-wrap gap-2 mb-3"><Button intent="primary" onClick={()=>setPurchasingEquipment(true)}>Enregistrer un achat</Button><Button intent="secondary" onClick={()=>setCreatingEquipment(true)}>Matériel déjà possédé</Button></div></MobileDetails><EquipmentList
           equipment={stocks.equipment}
           onOpen={setEquipmentSheet}
           className="flex-1"
-        />
+        /></>
       )}
 
+      {purchasingEquipment && <ExpenseSheet initialIntent="equipment" onClose={()=>setPurchasingEquipment(false)} onSaved={()=>onSuccessMessage?.("Achat et matériel enregistrés.")}/>}
       {/* Le matériel se modifie et se supprime : il n'était que consultable. */}
       <EquipmentSheet
         item={equipmentSheet}
@@ -426,7 +444,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         }}
       />
 
-      <StockDetailSheet
+      <StockDetailSheet stockItems={allItems}
         item={selected}
         batches={batches}
         onClose={() => setSelected(null)}

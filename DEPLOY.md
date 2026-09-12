@@ -61,8 +61,9 @@ bière ratée ou une déclaration fausse.
 
 ## Déploiement
 
-Une seule commande. Elle construit le bundle, **régénère les règles Firestore
-depuis `.env`**, puis publie les deux.
+Une seule commande : `npm run deploy`. Elle construit le bundle, **régénère les règles Firestore depuis `.env`**, publie les règles et index, puis les Functions, puis l’interface. Le serveur compatible est disponible avant le nouveau frontend. Les lanceurs Windows utilisent cette même commande et s’arrêtent à la première erreur ; ils n’annoncent plus un succès après un déploiement incomplet.
+
+Le nouveau transfert de sauvegarde utilise `transferBreweryData` et le nettoyage des sessions temporaires `cleanupBreweryTransfers`. Les collections de staging restent privées, accessibles uniquement au serveur. L’exemption d’index `backupTransferRows.data` évite d’indexer les gros fichiers et rapports préparés pour la restauration. Ne pas publier seulement Hosting pour cette évolution.
 
 ```bash
 npm run deploy

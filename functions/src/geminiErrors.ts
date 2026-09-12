@@ -7,6 +7,16 @@ export type GeminiFailureKind =
   | 'model-unavailable'
   | 'server';
 
+/** Server-only proof that transport never started. Throw this before fetch, never for an
+ * aborted/timed-out fetch: Google may already have generated and charged that request.
+ */
+export class GeminiRequestNotSentError extends Error {
+  constructor(cause?: unknown) {
+    super(cause instanceof Error ? cause.message : 'La requête IA a été annulée avant son envoi.', { cause });
+    this.name = 'GeminiRequestNotSentError';
+  }
+}
+
 /** Provider text is used for classification only; prompts, keys and raw responses are never retained. */
 export class GeminiApiError extends Error {
   constructor(
@@ -51,6 +61,11 @@ export class GeminiApiError extends Error {
       retryable: this.kind !== 'invalid-request'
     };
   }
+}
+
+/** Only explicit server preflight cancellation or a definite provider rejection has zero cost. */
+export function isGeminiRequestUncharged(error: unknown): boolean {
+  return error instanceof GeminiRequestNotSentError || error instanceof GeminiApiError && error.rejectedBeforeGeneration;
 }
 
 export function parseGeminiError(

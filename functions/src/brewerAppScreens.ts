@@ -10,6 +10,7 @@ export const BREWER_APP_SCREENS: Record<string, string> = {
   'stocks-courses': 'Liste de courses',
   'stocks-futs': 'Fûts',
   'stocks-materiel': 'Matériel',
+  'stocks-hops': 'Index houblon',
   'clients-crm': 'Clients',
   'clients-ofdf': 'Déclaration de bière',
   'clients-tarifs': 'Tarifs'

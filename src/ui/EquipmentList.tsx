@@ -1,6 +1,7 @@
 import React from 'react';
 import { EquipmentItem } from '../types';
 import { EntityList } from './EntityList';
+import { isoDate } from '../domain/finance/ledger';
 
 /**
  * Matériel de la brasserie.
@@ -56,7 +57,7 @@ export const EquipmentList: React.FC<{
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h3 className="text-base font-semibold text-cave-50 truncate">{item.name}</h3>
-            <p className="text-sm text-cave-400 font-mono">{item.ref}</p>
+            {/^EQ-[0-9a-f]{8}-[0-9a-f]{4}-/i.test(item.ref) ? isoDate(item.purchaseDate) && <p className="text-sm text-cave-400">Acquis le {new Date(`${isoDate(item.purchaseDate)}T12:00:00`).toLocaleDateString('fr-CH')}</p> : <p className="text-sm text-cave-400 font-mono truncate">{item.ref}</p>}
           </div>
 
           <span
@@ -68,8 +69,8 @@ export const EquipmentList: React.FC<{
           </span>
         </div>
 
-        {item.maintenance && <p className="text-sm text-cave-400">{item.maintenance}</p>}
-        {item.notes && <p className="text-sm text-cave-400 italic">{item.notes}</p>}
+        {item.maintenance && <p className="text-sm text-cave-400 line-clamp-2 sm:line-clamp-none">{item.maintenance}</p>}
+        {item.notes && <p className="text-sm text-cave-400 italic line-clamp-2 sm:line-clamp-none">{item.notes}</p>}
       </article>
     )}
   />

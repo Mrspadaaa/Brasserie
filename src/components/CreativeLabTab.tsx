@@ -23,9 +23,15 @@ import confetti from 'canvas-confetti';
 import { CreativeItem, Recipe, Client } from '../types';
 import { StorageService } from '../services/storage';
 import { CreativeItemSheet } from '../ui/CreativeItemSheet';
+import { UpgradeWorkspace } from '../ui/finance/UpgradeWorkspace';
+import { CreativePricing } from '../ui/finance/CreativePricing';
+import { BrewerChat } from '../ui/BrewerChat';
+import { Pencil } from 'lucide-react';
 import { ModalShell, StickyActions } from '../ui/ModalShell';
 import { inputClass } from '../ui/FormNav';
 import { useLiveSelection, useStorageValue } from '../hooks/useLiveData';
+import { ViewNavigation } from '../ui/ViewNavigation';
+import { useMobileLayout } from '../ui/useViewport';
 
 interface CreativeLabTabProps {
   onSuccessMessage?: (msg: string) => void;
@@ -36,14 +42,18 @@ interface CreativeLabTabProps {
   onDraftRecipe?: (seed: { title: string; description?: string }) => void;
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
+  onCreateRequestHandled?: () => void;
 }
 
 export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   onSuccessMessage,
   onDraftRecipe,
-  createRequest
+  createRequest,
+  onCreateRequestHandled
 }) => {
+  const mobile = useMobileLayout();
   const [activeSection, setActiveSection] = useState<'equipment' | 'recipe-idea' | 'pricing-test' | 'prospect' | 'event'>('equipment');
+  const [assistantOpen,setAssistantOpen] = useState(false);
 
   const items = useStorageValue(StorageService.getCreativeItems);
 
@@ -54,31 +64,15 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   const [newCost, setNewCost] = useState<string>('');
   const [newDate, setNewDate] = useState('');
   const [newContact, setNewContact] = useState('');
+  const [equipmentCreateRequest,setEquipmentCreateRequest]=useState<{kind:string;at:number}|null>(null);
 
   /** Le bouton d'action ouvre le formulaire d'ajout de la section courante. */
   React.useEffect(() => {
-    if (createRequest?.kind === 'newIdea') setIsAdding(true);
+    if (createRequest?.kind === 'newIdea') { if(activeSection==='equipment')setEquipmentCreateRequest(createRequest);else setIsAdding(true); onCreateRequestHandled?.(); }
   }, [createRequest?.at]);
 
 
-  // Interactive Pricing Sandbox Sliders
-  const [simFormat, setSimFormat] = useState<'33cl' | '75cl' | 'keg30L'>('75cl');
-  const [simPriceTTC, setSimPriceTTC] = useState<number>(7.50);
-  const [simCostRaw, setSimCostRaw] = useState<number>(1.20);
-  const [simLabor, setSimLabor] = useState<number>(1.00);
-
-  // Pricing calculations:
-  const simTvaRate = 0.026;
-  const simPriceHT = Math.round((simPriceTTC / (1 + simTvaRate)) * 100) / 100;
-  const simCostTotal = simCostRaw + simLabor;
-  const simMarginCHF = Math.round((simPriceHT - simCostTotal) * 100) / 100;
-  const simMarginPct = simPriceHT > 0 ? Math.round((simMarginCHF / simPriceHT) * 1000) / 10 : 0;
-  const breakevenBatchBottles = Math.ceil(50 / Math.max(0.5, simMarginCHF));
-
-  const currentItems = items.filter((i) => i.type === activeSection);
-  const totalEquipmentBudget = items
-    .filter((i) => i.type === 'equipment' && i.estimatedCost)
-    .reduce((sum, i) => sum + (i.estimatedCost || 0), 0);
+  const currentItems = items.filter(i => i.type === activeSection);
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,138 +177,14 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   };
 
   return (
-    <div className="space-y-4 animate-in fade-in text-sm">
-      {/* 1. Header Banner */}
-      <div className="p-4 rounded-3xl bg-gradient-to-br from-ebc-straw/20 via-cave-900 to-cave-950 border border-ebc-straw/40 shadow-xl relative overflow-hidden">
-        <div className="flex justify-between items-start">
-          <div>
-            <div className="flex items-center space-x-1.5">
-              <span className="text-footnote text-ebc-straw uppercase font-black tracking-widest flex items-center">
-                <Sparkles className="w-3.5 h-3.5 mr-1" /> Laboratoire d'Idées & Prospections
-              </span>
-            </div>
-            <h3 className="text-base font-black text-cave-50 mt-0.5">
-              Atelier R&D de la Brasserie L'Affinée
-            </h3>
-            <p className="text-sm text-cave-400 mt-0.5">
-              Projets matériels, recettes éphémères, prospection commerciale et simulations de tarifs.
-            </p>
-          </div>
-          {activeSection === 'equipment' && (
-            <div className="text-right">
-              <span className="text-footnote text-cave-400 block">Budget projets :</span>
-              <strong className="text-sm font-black text-ebc-straw font-mono">
-                {totalEquipmentBudget.toLocaleString('fr-CH')} CHF
-              </strong>
-            </div>
-          )}
-        </div>
+    <div className="space-y-2 sm:space-y-4 animate-in fade-in text-sm">
+      {!mobile&&<div className="finance-heading"><h2 className="text-2xl font-semibold">Idées et projets</h2></div>}
+      <ViewNavigation<typeof activeSection> label="Vue de l’atelier" value={activeSection} onChange={setActiveSection} options={[{value:'equipment',label:'Projets de matériel',shortLabel:'Matériel'},{value:'recipe-idea',label:'Idées de bières',shortLabel:'Bières'},{value:'pricing-test',label:'Essais de tarifs',shortLabel:'Tarifs'},{value:'prospect',label:'Contacts'},{value:'event',label:'À faire'}]}>
+      <div className="creative-nav" role="group" aria-label="Mon atelier">
+        {([['equipment','Matériel'],['recipe-idea','Bières'],['pricing-test','Tarifs'],['prospect','Contacts'],['event','À faire']] as const).map(([key,label])=><button key={key} aria-pressed={activeSection===key} onClick={()=>setActiveSection(key)}>{label}</button>)}
       </div>
-
-      {/* 2. Sub-navigation Pills */}
-      <div className="flex bg-cave-900 p-1 rounded-2xl border border-cave-800 shadow-md overflow-x-auto scrollbar-none space-x-1">
-        <button
-          onClick={() => setActiveSection('equipment')}
-          className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition ${
-            activeSection === 'equipment' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          ⚙️ Matériel Futur
-        </button>
-        <button
-          onClick={() => setActiveSection('recipe-idea')}
-          className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition ${
-            activeSection === 'recipe-idea' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          🍺 Studio Recettes
-        </button>
-        <button
-          onClick={() => setActiveSection('pricing-test')}
-          className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition ${
-            activeSection === 'pricing-test' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          📊 Simulateur Tarifs
-        </button>
-        <button
-          onClick={() => setActiveSection('prospect')}
-          className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition ${
-            activeSection === 'prospect' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          🤝 Prospects & Développements
-        </button>
-        <button
-          onClick={() => setActiveSection('event')}
-          className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition ${
-            activeSection === 'event' ? 'bg-ebc-straw text-cave-950 shadow' : 'text-cave-400 hover:text-cave-200'
-          }`}
-        >
-          📅 Événements & To-Do
-        </button>
-      </div>
-
-      {/* 3. SECTION 1: EQUIPMENT (KANBAN DES INVESTISSEMENTS) */}
-      {activeSection === 'equipment' && (
-        <div className="space-y-3">
-          <button
-            onClick={() => setIsAdding(true)}
-            className="w-full py-2.5 bg-cave-900 hover:bg-cave-850 text-ebc-straw font-bold rounded-2xl border border-dashed border-cave-700 flex items-center justify-center space-x-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ Ajouter un projet de matériel / aménagement</span>
-          </button>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {currentItems.map((item) => {
-              const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-                idea: { bg: 'bg-cave-850', text: 'text-cave-200', label: '💡 Idée' },
-                research: { bg: 'bg-water/20', text: 'text-water', label: '🔍 Recherche' },
-                quote: { bg: 'bg-ebc-straw/20', text: 'text-ebc-gold', label: '📑 Devis demandé' },
-                validated: { bg: 'bg-hop/20', text: 'text-hop', label: '✅ Validé' }
-              };
-              const s = statusColors[item.status] || statusColors.idea;
-
-              return (
-                <div
-                  key={item.id}
-                  className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-3 shadow-sm flex flex-col justify-between hover:border-cave-700 transition"
-                >
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-start">
-                      <h4 className="font-bold text-sm text-cave-50">{item.title}</h4>
-                      <button
-                        onClick={() => handleToggleStatus(item)}
-                        className={`text-footnote font-bold px-2 py-0.5 rounded-lg border border-cave-700 ${s.bg} ${s.text} transition`}
-                      >
-                        {s.label}
-                      </button>
-                    </div>
-                    {item.description && (
-                      <p className="text-sm text-cave-400 leading-relaxed">
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="pt-2 border-t border-cave-800/80 flex items-center justify-between">
-                    <span className="text-ebc-straw font-mono font-bold text-sm">
-                      {item.estimatedCost ? `${item.estimatedCost.toLocaleString('fr-CH')} CHF` : 'Budget à définir'}
-                    </span>
-                    <button
-                      onClick={() => setEditing(item)}
-                      className="text-cave-500 hover:text-alert p-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      </ViewNavigation>
+      {activeSection==='equipment'&&<UpgradeWorkspace createRequest={equipmentCreateRequest} onCreateRequestHandled={()=>setEquipmentCreateRequest(null)}/>}
 
       {/* 4. SECTION 2: RECIPE STUDIO & PASSERELLE EN 1 CLIC */}
       {activeSection === 'recipe-idea' && (
@@ -352,10 +222,10 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                   </div>
 
                   <button
-                    onClick={() => setEditing(item)}
+                    aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
                     className="text-cave-500 hover:text-alert p-1"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Pencil className="w-4 h-4" />
                   </button>
                 </div>
 
@@ -375,117 +245,7 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
         </div>
       )}
 
-      {/* 5. SECTION 3: INTERACTIVE PRICING SANDBOX (SLIDERS EN DIRECT) */}
-      {activeSection === 'pricing-test' && (
-        <div className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-4 shadow-sm">
-          <div>
-            <h4 className="font-bold text-sm text-cave-50">Simulateur Interactif de Rentabilité</h4>
-            <p className="text-sm text-cave-400">
-              Testez différents barèmes de prix pour vos bouteilles et fûts sans toucher à la compta.
-            </p>
-          </div>
-
-          {/* Format selector */}
-          <div className="flex bg-cave-950 p-1 rounded-xl border border-cave-800">
-            <button
-              onClick={() => { setSimFormat('33cl'); setSimPriceTTC(4.50); setSimCostRaw(0.70); }}
-              className={`flex-1 py-1.5 text-sm font-bold rounded-lg transition ${
-                simFormat === '33cl' ? 'bg-ebc-straw text-cave-950' : 'text-cave-400'
-              }`}
-            >
-              Bouteille 33cl
-            </button>
-            <button
-              onClick={() => { setSimFormat('75cl'); setSimPriceTTC(7.50); setSimCostRaw(1.30); }}
-              className={`flex-1 py-1.5 text-sm font-bold rounded-lg transition ${
-                simFormat === '75cl' ? 'bg-ebc-straw text-cave-950' : 'text-cave-400'
-              }`}
-            >
-              Bouteille 75cl
-            </button>
-            <button
-              onClick={() => { setSimFormat('keg30L'); setSimPriceTTC(120.0); setSimCostRaw(28.0); }}
-              className={`flex-1 py-1.5 text-sm font-bold rounded-lg transition ${
-                simFormat === 'keg30L' ? 'bg-ebc-straw text-cave-950' : 'text-cave-400'
-              }`}
-            >
-              Fût Inox 30L
-            </button>
-          </div>
-
-          {/* Sliders */}
-          <div className="space-y-3 bg-cave-950/70 p-3.5 rounded-2xl border border-cave-800">
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-cave-200">Prix de Vente Conseillé (TTC) :</span>
-                <strong className="text-ebc-straw font-mono text-sm">{simPriceTTC.toFixed(2)} CHF</strong>
-              </div>
-              <input
-                type="range"
-                name="sim_price_range"
-                autoComplete="off"
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                data-bwignore="true"
-                min={simFormat === 'keg30L' ? 80 : 3.0}
-                max={simFormat === 'keg30L' ? 180 : 15.0}
-                step={simFormat === 'keg30L' ? 5 : 0.25}
-                value={simPriceTTC}
-                onChange={(e) => setSimPriceTTC(parseFloat(e.target.value))}
-                className="w-full accent-ebc-straw cursor-pointer"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-cave-200">Coût Matières & Bouteille :</span>
-                <strong className="text-alert font-mono text-sm">{simCostRaw.toFixed(2)} CHF</strong>
-              </div>
-              <input
-                type="range"
-                name="sim_cost_range"
-                autoComplete="off"
-                data-form-type="other"
-                data-lpignore="true"
-                data-1p-ignore="true"
-                data-bwignore="true"
-                min={simFormat === 'keg30L' ? 15 : 0.4}
-                max={simFormat === 'keg30L' ? 50 : 3.5}
-                step={simFormat === 'keg30L' ? 1 : 0.1}
-                value={simCostRaw}
-                onChange={(e) => setSimCostRaw(parseFloat(e.target.value))}
-                className="w-full accent-rose-500 cursor-pointer"
-              />
-            </div>
-          </div>
-
-          {/* Live Profitability Output */}
-          <div className="grid grid-cols-3 gap-2 bg-gradient-to-br from-cave-950 to-cave-900 p-4 rounded-2xl border border-hop/30 text-center shadow-lg">
-            <div>
-              <span className="text-footnote text-cave-400 uppercase font-bold">Marge Brute</span>
-              <div className="text-xl font-black text-hop mt-1 font-mono">
-                +{simMarginCHF.toFixed(2)} CHF
-              </div>
-              <span className="text-footnote text-cave-500">par unité</span>
-            </div>
-            <div>
-              <span className="text-footnote text-cave-400 uppercase font-bold">% Marge</span>
-              <div className="text-xl font-black text-ebc-straw mt-1 font-mono">
-                {simMarginPct}%
-              </div>
-              <span className="text-footnote text-cave-500">sur prix HT</span>
-            </div>
-            <div>
-              <span className="text-footnote text-cave-400 uppercase font-bold">Amortissement</span>
-              <div className="text-xl font-black text-water mt-1 font-mono">
-                {breakevenBatchBottles}
-              </div>
-              <span className="text-footnote text-cave-500">unités / 30L</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeSection==='pricing-test'&&<><CreativePricing/><button className="finance-action secondary w-full" onClick={()=>setIsAdding(true)}><Plus size={18}/>Garder une idée de tarif</button>{currentItems.map(item=><button key={item.id} className="finance-row" onClick={()=>setEditing(item)}><span className="finance-row-main">{item.title}</span><Pencil size={18}/></button>)}</>}
 
       {/* 6. SECTION 4: PROSPECTS & PASSERELLE CRM EN 1 CLIC */}
       {activeSection === 'prospect' && (
@@ -523,10 +283,10 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                   </div>
 
                   <button
-                    onClick={() => setEditing(item)}
+                    aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
                     className="text-cave-500 hover:text-alert p-1"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Pencil className="w-4 h-4" />
                   </button>
                 </div>
 
@@ -595,10 +355,10 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
                 </div>
 
                 <button
-                  onClick={() => setEditing(item)}
+                  aria-label={`Modifier ${item.title}`} onClick={() => setEditing(item)}
                   className="text-cave-500 hover:text-alert p-1"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Pencil className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -607,6 +367,8 @@ export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
       )}
 
       {/* Form modal when adding an item */}
+      <button className="finance-assistant" onClick={()=>setAssistantOpen(true)}><Sparkles size={19}/><span><strong>Réfléchir à mes projets</strong><small>Avec Gemini</small></span><ArrowRight size={18}/></button>
+      {assistantOpen&&<BrewerChat scope={{kind:'app',id:'production-lab'}} label="Mon atelier" phase="Idées et projets de la brasserie" initialOpen hideLauncher onClose={()=>setAssistantOpen(false)} initialQuestion={activeSection==='equipment'?'Aide-moi à prioriser mes projets de matériel enregistrés : besoin pour le brassage, bientôt ou plus tard, devis et coûts manquants, impact sur les prévisions et la trésorerie avec ou sans ces projets. Distingue les achats déjà facturés des intentions, sans inventer de ventes ni de gains.':`Aide-moi à faire le point sur mes ${activeSection==='recipe-idea'?'idées de bières':activeSection==='pricing-test'?'notes de tarifs enregistrées':activeSection==='prospect'?'contacts et débouchés':'événements et tâches'} dans l’atelier. Appuie-toi sur les données enregistrées et indique ce qui manque pour décider.`}/>}
       {isAdding && (
         <ModalShell open={isAdding} onClose={() => setIsAdding(false)} size="md">
           <div className="flex justify-between items-center px-4 sm:px-5 py-3.5 border-b border-cave-800 bg-cave-900/90 shrink-0">

@@ -1,13 +1,18 @@
 import { act, renderHook, waitFor, cleanup } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
-const mock = vi.hoisted(() => ({ call: vi.fn() }));
+const mock = vi.hoisted(() => ({ call: vi.fn(), waitForDocument: vi.fn() }));
 vi.mock('../../src/services/firebase', () => ({
   auth: { currentUser: { uid: 'server-test' } },
   functions: {}
 }));
 vi.mock('firebase/functions', () => ({
   httpsCallable: (_f: any, name: string) => (data: any) => mock.call(name, data)
+}));
+// The journal uses a strict document acknowledgement before calling its server.
+// Model that network boundary explicitly; these hook tests never initialize Firestore.
+vi.mock('../../src/services/firestoreRepo', () => ({
+  FirestoreRepo: { waitForDocument: mock.waitForDocument }
 }));
 vi.mock('../../src/services/brewClock', () => ({
   brewNow: () => Date.now(),
@@ -24,6 +29,7 @@ const batch = () =>
 beforeEach(() => {
   localStorage.clear();
   mock.call.mockReset();
+  mock.waitForDocument.mockReset().mockResolvedValue({ id: 'LOT-SERVER' });
 });
 afterEach(() => {
   cleanup();
@@ -60,6 +66,33 @@ function useMockLocks() {
   });
 }
 describe('Journal navigateur : file persistante et conflits', () => {
+  it('attend la confirmation du brassin avant de charger le journal ou autoriser la saisie', async () => {
+    const b = batch();
+    let confirm: () => void = () => {};
+    mock.waitForDocument.mockImplementation(() => new Promise(resolve => { confirm = () => resolve({ id: b.id }); }));
+    mock.call.mockResolvedValue({ data: { state: b.brewDay, serverNow: Date.now() } });
+    const view = renderHook(() => useBrewSession(b, () => b.brewDay!, vi.fn()));
+    await waitFor(() => expect(mock.waitForDocument).toHaveBeenCalledWith('batches', b.id));
+    expect(view.result.current.canStart).toBe(false);
+    expect(mock.call).not.toHaveBeenCalled();
+    act(() => view.result.current.update(s => ({ ...s, currentIndex: 4 })));
+    expect(view.result.current.state.currentIndex).toBe(0);
+    await act(async () => confirm());
+    await waitFor(() => expect(view.result.current.canStart).toBe(true));
+    expect(mock.call).toHaveBeenCalledWith('getBrewSession', { batchId: b.id });
+  });
+  it('garde la confirmation refusée visible et reprend après une confirmation serveur réussie', async () => {
+    const b = batch();
+    mock.waitForDocument.mockRejectedValueOnce(new Error('Création du brassin refusée'));
+    mock.call.mockResolvedValue({ data: { state: b.brewDay, serverNow: Date.now() } });
+    const view = renderHook(() => useBrewSession(b, () => b.brewDay!, vi.fn()));
+    await waitFor(() => expect(view.result.current.error).toBe('Création du brassin refusée'));
+    expect(view.result.current.canStart).toBe(false);
+    expect(mock.call).not.toHaveBeenCalled();
+    await act(async () => { await view.result.current.retry(); });
+    await waitFor(() => expect(view.result.current.canStart).toBe(true));
+    expect(view.result.current.error).toBe('');
+  });
   it('deux onglets du même appareil ne peuvent pas écraser leur file locale', async () => {
     useMockLocks();
     let server = batch().brewDay!;

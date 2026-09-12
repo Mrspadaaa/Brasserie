@@ -95,5 +95,5 @@ fs.writeFileSync(SORTIE, gabarit.replace(JETON, liste));
 console.log(
   `✅ firestore.rules généré — ${comptes.length} compte${comptes.length > 1 ? 's' : ''} autorisé${
     comptes.length > 1 ? 's' : ''
-  } : ${comptes.join(', ')}`
+  }.`
 );

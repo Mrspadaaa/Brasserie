@@ -1,0 +1,43 @@
+{
+  "note": "Transcription indépendante des fichiers de paramètres. Une SD analytique n’est pas une marge prédictive, et une répétition en flacon n’est pas un brassin indépendant.",
+  "la01": {
+    "source": "https://rahrbsg.com/wp-content/uploads/2025/08/SafBrew_LA-_01_-_Technical_Guidelines.pdf",
+    "edition": "Fermentis v1.5, 18 février 2022",
+    "unit": "% vol.",
+    "validation": "reproduction de la relation publiée, pas validation externe",
+    "mash": [{"tempC":65,"durationMin":50},{"tempC":73,"durationMin":10}],
+    "points": [{"plato":6,"abv":0.3964},{"plato":8,"abv":0.5688},{"plato":10,"abv":0.7412},{"plato":15,"abv":1.1722}],
+    "residualUncertainty": null
+  },
+  "spent2024": {
+    "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10887606/",
+    "locator": "Méthodes 2.2/2.3 ; tableaux 1, 2 et 3. XML Europe PMC relu le 9 septembre 2026.",
+    "ogPlato":1.2,"initialPh":5.5,"volumeML":450,"temperatureC":{"min":18,"max":22},
+    "sugarsGL":{"glucose":0.8,"sucrose":0.11,"maltose":3.9},"completeSugarProfile":false,
+    "yanMgL":{"methods":4.47,"table":41.47},"primaryBeforePriming":true,"laterSucroseGL":1.5,
+    "trials":[
+      {"strain":"W. anomalus DiSVA 2","abv":0.27,"sd":0,"residualMaltoseGL":3.53,"grapeJuiceAbv":1.32},
+      {"strain":"P. kluyveri DiSVA 1076","abv":0.12,"sd":0,"residualMaltoseGL":3.54,"grapeJuiceAbv":0.82},
+      {"strain":"T. delbrueckii DiSVA 254","abv":0.49,"sd":0,"residualMaltoseGL":0.22,"grapeJuiceAbv":1.66},
+      {"strain":"L. thermotolerans DiSVA 322","abv":0.47,"sd":0.02,"residualMaltoseGL":1.19,"grapeJuiceAbv":1.40},
+      {"strain":"S. cerevisiae US-05","abv":0.54,"sd":0.01,"residualMaltoseGL":0.08,"grapeJuiceAbv":1.10}
+    ]
+  },
+  "cold2022": {
+    "source":"https://doi.org/10.1002/jib.681",
+    "locator":"Résumé, méthodes et essai pilote 10 L ; document VTT consulté le 9 septembre 2026.",
+    "temperatureC":{"min":0.5,"max":1.5},"volumeL":10,"wortPh":4.3,
+    "trials":[{"strain":"T. delbrueckii Tdel8","abv":0.07,"sd":0.01,"hours":139},{"strain":"S. pastorianus A15","abv":0.28,"sd":0.02,"hours":66}],
+    "claim":"Résultats propres à Tdel8 et A15. L’égalité sensorielle hefeweisse n’est pas établie ; pas de transfert à toute une espèce."
+  },
+  "weizen2026":{
+    "source":"https://doi.org/10.1016/j.foodchem.2026.147924",
+    "access":"abstract only","numericData":null,
+    "claim":"Lager et Weizen ; différences de rétention aromatique selon fermentation limitée, souche spécialisée, procédé thermique ou osmose inverse."
+  },
+  "stability2026":{
+    "source":"https://doi.org/10.3389/fmicb.2026.1835393",
+    "ph":[5,4.2],"co2Vol":[0,0.75,1.5],
+    "claim":"Le pH 4,2 seul ne valide pas la conservation ; aucune dose universelle de pasteurisation ne résulte de cette étude."
+  }
+}

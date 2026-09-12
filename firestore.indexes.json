@@ -101,6 +101,26 @@
   ],
   "fieldOverrides": [
     {
+      "collectionGroup": "backupTransferRows",
+      "fieldPath": "data",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "financeDocuments",
+      "fieldPath": "data",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "financialClosings",
+      "fieldPath": "report",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "financialClosings",
+      "fieldPath": "tax",
+      "indexes": []
+    },
+    {
       "collectionGroup": "brewerContexts",
       "fieldPath": "context",
       "indexes": []

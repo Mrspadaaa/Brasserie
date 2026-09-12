@@ -42,6 +42,8 @@ interface Props {
   beforeApply?: () => Promise<boolean>;
   onApplied?: () => void;
   initialOpen?: boolean;
+  initialQuestion?: string;
+  suggestedPrompts?: Array<{ label: string; question: string }>;
   hideLauncher?: boolean;
   onClose?: () => void;
 }
@@ -80,9 +82,9 @@ const prompts = (kind: string, phase = '') =>
           'Je n’atteins pas la consigne'
         ];
 const responseModes: Array<{ value: BrewerMode; label: string; description: string }> = [
-  { value: 'fast', label: 'Rapide', description: 'Flash pour le conseil · Pro pour le web' },
-  { value: 'auto', label: 'Auto', description: 'Le compagnon choisit Pro si nécessaire' },
-  { value: 'deep', label: 'Pro 3.1', description: 'Pro pour toute l’analyse · plus de temps' }
+  { value: 'fast', label: 'Rapide', description: 'Conseil concis, vérifié avec Flash' },
+  { value: 'auto', label: 'Auto', description: 'Flash adapte ses recherches et vérifie le conseil' },
+  { value: 'deep', label: 'Approfondi', description: 'Analyse Pro à ta demande · budget plus élevé' }
 ];
 const modePreference = (): BrewerMode => {
   try {
@@ -110,6 +112,8 @@ function ScopedChat({
   beforeApply,
   onApplied,
   initialOpen = false,
+  initialQuestion = '',
+  suggestedPrompts,
   hideLauncher = false,
   onClose
 }: Props) {
@@ -117,7 +121,14 @@ function ScopedChat({
   const draft = currentDraft ?? savedDraft;
   const [open, setOpen] = useState(initialOpen),
     [turns, setTurns] = useState<BrewerTurn[]>([]),
-    [question, setQuestion] = useState('');
+    [question, setQuestion] = useState(initialQuestion);
+  const finance = scope.kind === 'app' && scope.id === 'finances';
+  const questions = suggestedPrompts ?? (finance ? [
+    'Explique mes principaux postes de dépenses et les variations.',
+    'Quels paiements dois-je anticiper pour mes prochains brassins ?',
+    'Aide-moi à préparer un investissement de matériel.',
+    'Quelles opérations ou valeurs d’amortissement faut-il vérifier ?'
+  ] : prompts(scope.kind, phase)).map((text) => ({ label: text, question: text }));
   const [loading, setLoading] = useState(false),
     [error, setError] = useState(''),
     [more, setMore] = useState(false),
@@ -146,8 +157,8 @@ function ScopedChat({
     lock = useRef(false),
     end = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!hideLauncher) return brewerLauncher.register(scope, () => setOpen(true));
-  }, [scope.kind, scope.id, hideLauncher]);
+    return brewerLauncher.register(scope, () => setOpen(true));
+  }, [scope.kind, scope.id]);
   useEffect(() => {
     if (open) return brewerLauncher.dialog();
   }, [open]);
@@ -416,7 +427,7 @@ function ScopedChat({
               value={question}
               maxLength={3000}
               rows={2}
-              placeholder="Décris ce que tu observes…"
+              placeholder={finance ? 'Une dépense à comprendre, un achat à préparer…' : 'Décris ce que tu observes…'}
               readOnly={applying || resetting}
               onChange={(e) => setQuestion(e.target.value)}
             />
@@ -466,6 +477,7 @@ function ScopedChat({
         </div>
         <BrewerNotificationOption />
         <BrewerBudget />
+        {finance && <p className="brewer-chat-status">Gemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.</p>}
         {scope.kind === 'draft' && !currentDraft && (
           <p className="brewer-chat-status">
             Cette vue reprend le dernier brouillon analysé. Rouvre l’assistant recette pour valider
@@ -480,8 +492,7 @@ function ScopedChat({
           >
             <strong>Repartir à zéro ?</strong>
             <p>
-              Les échanges et la réponse en cours seront effacés. Ta recette et les notes déjà
-              conservées restent intactes.
+              {finance ? 'Les échanges et la réponse en cours seront effacés. Tes opérations, paiements et budgets restent conservés.' : 'Les échanges et la réponse en cours seront effacés. Ta recette et les notes déjà conservées restent intactes.'}
             </p>
             <div>
               <button type="button" disabled={resetting} onClick={() => setConfirmReset(false)}>
@@ -508,25 +519,27 @@ function ScopedChat({
             Échanges précédents
           </button>
         )}
+        {finance && timeline.length > 0 && <details className="brewer-chat-proof">
+          <summary>Autres questions utiles</summary>
+          <div className="brewer-chat-prompts">{questions.map((p) => <button type="button" key={p.label} disabled={resetting} onClick={() => setQuestion(p.question)}>{p.label}<ArrowUpRight size={15}/></button>)}</div>
+        </details>}
         {!timeline.length && !loading && (
           <div className="brewer-chat-welcome">
             <Sparkles size={25} />
             <h3>On regarde ça ensemble.</h3>
             <p>
-              Je m’appuie sur ta recette, ton matériel et tes relevés pour t’aider à décider du
-              prochain geste.
+              {finance ? 'Comprendre où va ton argent, anticiper un brassin ou décider d’un achat utile à ta brasserie.' : 'Je m’appuie sur ta recette, ton matériel et tes relevés pour t’aider à décider du prochain geste.'}
             </p>
             <div className="brewer-chat-prompts">
-              {prompts(scope.kind, phase).map((p) => (
-                <button type="button" key={p} disabled={resetting} onClick={() => setQuestion(p)}>
-                  {p}
+              {questions.map((p) => (
+                <button type="button" key={p.label} disabled={resetting} onClick={() => setQuestion(p.question)}>
+                  {p.label}
                   <ArrowUpRight size={15} />
                 </button>
               ))}
             </div>
             <small>
-              Les simulations restent des propositions. Les relevés et les gestes se consignent dans
-              le journal.
+              {finance ? 'Choisis une question, adapte-la puis envoie-la. Ouvrir cette aide ne lance aucune analyse.' : 'Les simulations restent des propositions. Les relevés et les gestes se consignent dans le journal.'}
             </small>
           </div>
         )}
@@ -592,7 +605,7 @@ function ScopedChat({
                     </p>
                   )}
                   {t.advice.question && <p className="brewer-chat-followup">{t.advice.question}</p>}
-                  <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} />
+                  <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} selectedUrls={t.advice.productUrls} />
                   {t.proposal && (
                     <BrewerProposalCard
                       proposal={t.proposal}
@@ -619,16 +632,16 @@ function ScopedChat({
                           : t.reviewReason === 'sensitive'
                             ? ' · situation sensible'
                             : t.reviewReason === 'research'
-                              ? ' · recherche web avec Pro'
+                              ? ' · contrôle des sources web'
                               : t.reviewReason === 'complexity'
-                                ? ' · analyse approfondie choisie par le compagnon'
+                                ? ' · analyse détaillée'
                                 : t.reviewReason === 'repair'
                                   ? ' · vérification renforcée'
                                   : ' · rapide'}
                         .
                       </p>
                     )}
-                    <p>Seconde relecture IA. Les estimations restent à confirmer à la cuve.</p>
+                    <p>{finance ? 'Seconde relecture IA. Vérifie les hypothèses et les montants avant toute décision.' : 'Seconde relecture IA. Les estimations restent à confirmer à la cuve.'}</p>
                     {t.evidence.map((e) => (
                       <div key={e.id}>
                         <strong>
@@ -789,26 +802,44 @@ function BrewerWorkCard({
   );
 }
 
-function SupplierCards({ products }: { products: BrewerProduct[] }) {
+function SupplierCards({ products, selectedUrls }: { products: BrewerProduct[]; selectedUrls?: string[] }) {
   // Prefer useful small packs and an available variant, with one card per product URL.
+  const packGrams = (product: BrewerProduct) => {
+    const label = product.packageLabel || product.name;
+    const weight = label.match(/(\d+(?:[.,]\d+)?)\s*(kg|kilogramm(?:e)?s?|gramm(?:e)?s?|g)\b/i);
+    if (weight) return Number(weight[1].replace(',', '.')) * (/^(kg|kilo)/i.test(weight[2]) ? 1000 : 1);
+    if (/\b(?:gramm(?:e)?s?|g)\b/i.test(label)) return 1;
+    if (/\b(?:kg|kilogramm(?:e)?s?)\b/i.test(label)) return 1000;
+    return Number.MAX_SAFE_INTEGER;
+  };
   const sorted = [...products]
-    .filter((p) => /^https:\/\//.test(p.url))
+    .filter((p) => {
+      if (selectedUrls && !selectedUrls.includes(p.url)) return false;
+      try { const url = new URL(p.url); return url.protocol === 'https:' && !url.username && !url.password; }
+      catch { return false; }
+    })
     .sort(
       (a, b) =>
+        (selectedUrls ? selectedUrls.indexOf(a.url) - selectedUrls.indexOf(b.url) : 0) ||
+        Number(b.verifiedBy === 'product-page') - Number(a.verifiedBy === 'product-page') ||
         Number(b.availability === 'in_stock') - Number(a.availability === 'in_stock') ||
-        Number(/25\s*kg/i.test(a.name)) - Number(/25\s*kg/i.test(b.name)) ||
-        Number(/gramm/i.test(a.name)) - Number(/gramm/i.test(b.name))
+        packGrams(a) - packGrams(b)
     );
-  const cards = [...new Map(sorted.reverse().map((p) => [p.url, p])).values()]
-    .reverse()
-    .slice(0, 4);
+  const unique = [...new Map(sorted.reverse().map((p) => [p.url, p])).values()].reverse();
+  const suppliers = new Set<string>();
+  const firstPerSupplier = unique.filter(p => {
+    if (suppliers.has(p.supplier)) return false;
+    suppliers.add(p.supplier); return true;
+  });
+  const cards = [...firstPerSupplier, ...unique.filter(p => !firstPerSupplier.includes(p))].slice(0, 6);
   if (!cards.length) return null;
   return (
     <div className="brewer-chat-suppliers" aria-label="Produits chez les fournisseurs suisses">
-      <strong>Où trouver tes ingrédients</strong>
+      <strong>Où acheter</strong>
       {cards.map((p) => {
-        const stale = Date.now() - p.checkedAt > 86400000;
-        const status = stale ? 'unknown' : p.availability;
+        const dated = Number.isFinite(p.checkedAt) && p.checkedAt > 0 && p.checkedAt <= Date.now() + 300000;
+        const stale = !dated || Date.now() - p.checkedAt > 86400000;
+        const status = stale || (p.verifiedBy === 'product-page' && p.stockEvidence === 'none') ? 'unknown' : p.availability;
         return (
           <a
             key={p.url}
@@ -818,7 +849,7 @@ function SupplierCards({ products }: { products: BrewerProduct[] }) {
             className="brewer-chat-product"
           >
             <span className="brewer-chat-product-name">
-              <strong>{p.name}</strong>
+              <strong style={{ overflowWrap: 'anywhere' }}>{p.name}</strong>
               <ArrowUpRight size={17} />
             </span>
             <span className="brewer-chat-product-supplier">{p.supplier}</span>
@@ -831,14 +862,17 @@ function SupplierCards({ products }: { products: BrewerProduct[] }) {
                     ? 'Stock à revérifier'
                     : 'Stock non confirmé'}
             </span>
+            {(p.packageLabel || p.priceText) && <small>
+              {[p.packageLabel, p.priceText ? `${p.priceText} · prix annoncé` : ''].filter(Boolean).join(' · ')}
+            </small>}
             <small>
-              Page consultée le{' '}
-              {new Date(p.checkedAt).toLocaleString('fr-CH', {
+              {p.verifiedBy === 'product-page' ? 'Lien produit vérifié' : 'Page consultée'}
+              {dated ? ` · ${new Date(p.checkedAt).toLocaleString('fr-CH', {
                 day: '2-digit',
                 month: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit'
-              })}
+              })}` : ' · date de contrôle inconnue'}
             </small>
           </a>
         );

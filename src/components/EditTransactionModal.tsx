@@ -24,14 +24,19 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 }) => {
   const [draft, setDraft] = useSyncedDraft(isOpen ? transaction : null, transaction?.id);
   const [copiedDrive, setCopiedDrive] = useState(false);
+  const [saveError,setSaveError]=useState('');
   if (!isOpen || !transaction || !draft) return null;
   const { description, category, subcategory = '', date, amountHT, tvaRate,
     proofNotes = '', proofUrl, proofFileName } = draft;
   const field = <K extends keyof Transaction>(key: K, value: Transaction[K]) =>
     setDraft(current => current?.id === transaction.id ? { ...current, [key]: value } : current);
 
-  const tvaAmount = Math.round(amountHT * tvaRate * 100) / 100;
-  const amountTTC = Math.round((amountHT + tvaAmount) * 100) / 100;
+  // An edited label must never re-tax a historical non-VAT receipt.
+  const moneyLocked = !!draft.finance;
+  const moneyChanged = amountHT !== transaction.amountHT || tvaRate !== transaction.tvaRate;
+  const effectiveRate = StorageService.getConfig().fiscal.isTvaRegistered ? tvaRate : 0;
+  const tvaAmount = moneyChanged ? Math.round(amountHT * effectiveRate * 100) / 100 : draft.tvaAmount;
+  const amountTTC = moneyChanged ? Math.round((amountHT + tvaAmount) * 100) / 100 : draft.amountTTC;
 
   const currentDrivePath = DriveService.generateDrivePath({
     ...draft,
@@ -54,13 +59,18 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
       tvaRate,
       tvaAmount,
       amountTTC,
+      ...(draft.finance ? { finance: { ...draft.finance, amountCents: Math.round(amountTTC * 100) } } : {}),
       proofNotes: proofNotes.trim(),
       proofUrl,
       proofFileName
     };
-    StorageService.updateTransaction(updated);
-    onSave(updated);
-    onClose();
+    try {
+      StorageService.updateTransaction(updated);
+      onSave(updated);
+      onClose();
+    } catch (error) {
+      setSaveError((error as Error).message);
+    }
   };
 
   const handleCopyDrive = () => {
@@ -91,6 +101,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
 
       {/* Form Body */}
       <form onSubmit={handleSave} autoComplete="off" className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3.5 text-sm overscroll-contain">
+        {saveError&&<p role="alert" className="finance-error">{saveError}</p>}
+        {moneyLocked&&<p className="text-sm text-cave-300">Les montants validés sont conservés. Pour une correction financière, utilise un avoir ou l’annulation de l’écriture.</p>}
         {/* Description */}
         <div>
           <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Description / Intitulé</label>
@@ -182,13 +194,13 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 name="tx_edit_tva_mobile"
                 autoComplete="off"
                 data-form-type="other"
-                value={tvaRate}
+                value={tvaRate} disabled={moneyLocked||!StorageService.getConfig().fiscal.isTvaRegistered}
                 onChange={(e) => field('tvaRate', parseFloat(e.target.value))}
                 className={`${inputClass} text-center`}
               >
                 <option value={0.0}>0.0% (Exonéré)</option>
-                <option value={0.026}>2.6% (Bière)</option>
-                <option value={0.081}>8.1% (Mat.)</option>
+                <option value={0.026}>2.6% (Réduit)</option>
+                <option value={0.081}>8.1% (Normal)</option>
               </select>
             </div>
           </div>
@@ -197,6 +209,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Montant HT</label>
             <NumberInput
               value={amountHT}
+              disabled={moneyLocked}
               onValue={(v) => field('amountHT', v)}
               pad={false}
               className={`${inputClass} font-mono font-bold text-center`}
@@ -207,6 +220,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             <label className="text-cave-200 font-semibold block mb-1 text-xs sm:text-sm">Taux TVA</label>
             <select
               name="tx_edit_tva_desktop"
+              disabled={moneyLocked || !StorageService.getConfig().fiscal.isTvaRegistered}
               autoComplete="off"
               data-form-type="other"
               value={tvaRate}
@@ -214,7 +228,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               className={`${inputClass} text-center`}
             >
               <option value={0.0}>0.0% (Exonéré)</option>
-              <option value={0.026}>2.6% (Bière)</option>
+              <option value={0.026}>2.6% (Réduit)</option>
               <option value={0.081}>8.1% (Matériel)</option>
             </select>
           </div>

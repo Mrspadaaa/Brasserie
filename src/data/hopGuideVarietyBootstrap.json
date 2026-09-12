@@ -1,0 +1,26 @@
+{
+  "hopVarieties": [
+    {
+      "id": "ych-idaho7",
+      "name": "Idaho 7",
+      "aliases": ["Idaho 7® Brand", "J-007"],
+      "origin": "États-Unis",
+      "form": "unknown",
+      "descriptions": [
+        {
+          "text": "Descripteurs du catalogue fabricant : petits fruits, bubblegum, agrumes, fruits à noyau et fruits tropicaux. L’ananas est également cité dans la présentation de la variété. Ces indications documentaires ne prédisent pas l’intensité aromatique d’une bière.",
+          "context": "rawHop",
+          "source": {
+            "title": "Idaho 7® Brand — fiche variétale",
+            "author": "Yakima Chief Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.yakimachief.com/variety/idaho-7-brand",
+            "locator": "Rubriques de présentation et Aroma Profile ; identité J-007. Aucune date de publication ou de mise à jour de la fiche n’est affichée ; le copyright du site ne la remplace pas."
+          }
+        }
+      ],
+      "analysis": []
+    }
+  ]
+}

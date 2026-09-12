@@ -16,6 +16,14 @@
 }
 .brewer-global-companion:active { transform: scale(.95); }
 .brewer-global-companion:focus-visible { outline: 2px solid #e5d9bb; outline-offset: 4px; }
+@media (max-width: 639px) {
+  /* The recipe and wizard have a reserved button; floating over their data
+     would hide ranges, confidence labels and disclosure controls. */
+  /* Recipe footer unmounts while typing; keep the floating control suppressed
+     until the reserved shortcut returns, including inside aroma variants. */
+  body:has([data-inline-companion], .recipe-reference) .brewer-global-companion { display: none; }
+}
+body:has([data-inline-companion]) .brewer-global-companion { display: none; }
 .brewer-conversation { border: 1px solid #53604d; border-radius: 14px; overflow: hidden; }
 .brewer-conversation-row { display: flex; align-items: center; }
 .brewer-activity-list .brewer-conversation-open { flex: 1; min-width: 0; border: 0; border-radius: 0; }
@@ -31,3 +39,8 @@
 .brewer-activity-list .is-destructive { background: #6b3930; border-color: #b67d66; color: #fff2e9; }
 .brewer-inbox-empty { color: #b6b0a1; padding: 20px 4px; line-height: 1.6; }
 .brewer-conversation button:disabled { opacity: .6; }
+/* Keep a phone's form controls clear while a dialog owns the interaction. */
+body:has([role="dialog"][aria-modal="true"]) .brewer-global-companion,
+body:has([role="dialog"][aria-modal="true"]) .brewer-activity-pill {
+  display: none;
+}

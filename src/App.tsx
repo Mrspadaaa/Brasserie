@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
@@ -14,8 +14,14 @@ import { BrewWizard, WizardSeed } from './pages/BrewWizard';
 import { BrewDayPage } from './pages/BrewDayPage';
 import { useFullScreenRoute } from './pages/useFullScreenRoute';
 import { CommandPalette, CommandGroup } from './ui/CommandPalette';
+import { useStorageValue } from './hooks/useLiveData';
+import { FinancialArchiveService } from './services/financialArchiveService';
+import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
+import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
+import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
 import { captureSnapshot } from './domain/recipeSnapshot';
+import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef, nextBatchId } from './services/refs';
 import { Suggestions } from './services/suggestions';
 import { Units } from './services/units';
@@ -120,17 +126,25 @@ export const App: React.FC = () => {
 
   // Persistent Global Time Filter (Single Source of Truth across the ENTIRE APP)
   const [globalTimeFilter, setGlobalTimeFilter] = useState<TimeFilterPeriod>(() =>
-    StorageService.getUiState('app_global_time_filter', 'all')
+    StorageService.getUiState('app_global_time_filter', 'this-month')
   );
 
   // SubTab targeting for Production (e.g. from 💡 or 🧰 in Header)
-  const [productionSubTab, setProductionSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>('batches');
+  const [productionSubTab, setProductionSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() => StorageService.getUiState('production_subtab', 'batches'));
 
   const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  useEffect(() => {
+    if (activeTab !== 'finances') setFinanceOpenRequest(null);
+  }, [activeTab]);
   const [wizardSeed, setWizardSeed] = useState<WizardSeed | undefined>(undefined);
   /** Sous-onglet courant, remonté par l'onglet actif. */
   const [subTab, setSubTab] = useState<AnySubTab>(null);
+  const handleProductionSubTabChange = React.useCallback((sub: string) => {
+    setSubTab(sub as AnySubTab);
+    setProductionSubTab(sub as 'batches' | 'recipes' | 'lab' | 'scaler');
+  }, []);
   /**
    * Demande de création adressée à l'écran courant.
    *
@@ -375,6 +389,7 @@ export const App: React.FC = () => {
         setCreateRequest({ kind: 'newIdea', at: Date.now() });
         break;
       case 'newStockItem':
+      case 'newHopVariety':
       case 'newKeg':
       case 'newEquipment':
       case 'newClient':
@@ -461,6 +476,7 @@ export const App: React.FC = () => {
       volumeL: recipe.volumeL,
       brewDate: recipe.brewDate ?? new Date().toLocaleDateString('fr-CH'),
       status: 'planifie',
+      stockAccountingVersion: 1,
       recipeRef: recipe.id,
       recipeSnapshot: captureSnapshot(recipe),
       malts: recipe.malts,
@@ -489,17 +505,19 @@ export const App: React.FC = () => {
 
   /** Clôture du jour de brassage : sauvegarde des relevés, puis fermentation. */
   const finishBrewDay = (updated: Batch) => {
-    StorageService.updateBatch(updated);
-    showToast(`${updated.id} en fermentation. Relevés de brassage enregistrés.`);
+    const result = StorageService.completeBrewStock(updated);
+    showToast(result.success ? `${updated.id} en fermentation. Consommation enregistrée.` : `${updated.id} enregistré. Stock à vérifier dans le dossier du brassin.`);
     route.close();
   };
 
   // --- Recherche universelle ------------------------------------------------
 
+  const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
+  const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
   const commandGroups: CommandGroup[] = [
     {
       heading: 'Recettes',
-      items: recipes.map((r) => ({
+      items: recipes.filter(isCurrent).map((r) => ({
         id: `rec-${r.id}`,
         label: r.name,
         detail: [r.style, `${r.volumeL} L`].filter(Boolean).join(' · '),
@@ -510,7 +528,7 @@ export const App: React.FC = () => {
     },
     {
       heading: 'Brassins',
-      items: batches.map((b) => ({
+      items: batches.filter(isCurrent).map((b) => ({
         id: `bat-${b.id}`,
         label: `${b.id} — ${b.name}`,
         detail: [b.style, b.brewDate, b.status].filter(Boolean).join(' · '),
@@ -543,13 +561,17 @@ export const App: React.FC = () => {
     },
     {
       heading: 'Écritures',
-      items: transactions.slice(0, 200).map((t) => ({
+      items: [...transactions].sort((a, b) => (isoDate(b.date) ?? '').localeCompare(isoDate(a.date) ?? '') || b.id.localeCompare(a.id)).map((t) => ({
         id: `tx-${t.id}`,
         label: t.description,
         detail: `${t.date} · ${t.amountTTC.toFixed(2)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
-        keywords: [t.category, t.subcategory],
-        onSelect: () => setActiveTab('finances')
+        keywords: [t.id, t.category, t.subcategory, t.finance?.vendor ?? '', t.finance?.invoiceNumber ?? ''],
+        archived: isTransactionArchived(t, financialArchiveIndex),
+        onSelect: () => {
+          setActiveTab('finances');
+          setFinanceOpenRequest({ id: t.id, at: Date.now() });
+        }
       }))
     }
   ].filter((g) => g.items.length > 0);
@@ -596,6 +618,7 @@ export const App: React.FC = () => {
         <span className="text-sm font-medium tracking-wide text-center">
           Synchronisation des données de la brasserie...
         </span>
+        <FinancialLedgerLoading />
         {writeError && (
           <div className="text-center space-y-3">
             <p className="text-sm text-alert max-w-xs leading-relaxed">{writeError}</p>
@@ -608,7 +631,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
-      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} />
+      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} hideLauncher={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'} />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
@@ -635,6 +658,7 @@ export const App: React.FC = () => {
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
       <PersistenceStatus />
       <Header
+        hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
         onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
@@ -659,7 +683,7 @@ export const App: React.FC = () => {
             planning={planning}
             config={config}
             globalTimeFilter={globalTimeFilter}
-            onNavigateTab={(tab) => setActiveTab(tab)}
+            onNavigateTab={(tab) => { if(tab==='production') setProductionSubTab('batches'); setActiveTab(tab); }}
             onNavigateToCreativeLab={navigateToCreativeLab}
             onOpenCreateBatch={() => openWizard()}
             onOpenQuickAction={() => setIsQuickActionOpen(true)}
@@ -669,6 +693,10 @@ export const App: React.FC = () => {
         {activeTab === 'finances' && (
           <FinancesTab
             transactions={transactions}
+            openTransactionRequest={financeOpenRequest}
+            recipes={recipes}
+            batches={batches}
+            stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
             budgetLines={budgetLines}
             config={config}
             globalTimeFilter={globalTimeFilter}
@@ -687,10 +715,12 @@ export const App: React.FC = () => {
             onOpenCreateBatch={() => openWizard()}
             onOpenQuickAction={() => setIsQuickActionOpen(true)}
             onOpenRecipe={openRecipe}
+            onEditRecipe={(recipe) => openWizard({ recipe })}
             onOpenBrewDay={openBrewDay}
-            onSubTabChange={(sub) => setSubTab(sub as never)}
+            onSubTabChange={handleProductionSubTabChange}
             createRequest={createRequest}
             onDraftRecipe={(seed) => openWizard(seed)}
+            onCreateRequestHandled={() => setCreateRequest(null)}
             onSuccessMessage={showToast}
           />
         )}
@@ -699,6 +729,7 @@ export const App: React.FC = () => {
           <StocksTab
             stocks={stocks}
             batches={batches}
+            onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
             onOpenQuickAction={() => setIsQuickActionOpen(true)}
             onSubTabChange={(sub) => setSubTab(sub as never)}
             createRequest={createRequest}
@@ -790,6 +821,7 @@ export const App: React.FC = () => {
             openWizard({
               recipe: {
                 ...routedRecipe,
+                archivedAt: null,
                 id: `REC-${Date.now().toString(36).toUpperCase()}`,
                 name: `${routedRecipe.name} (copie)`
               }
@@ -822,7 +854,7 @@ export const App: React.FC = () => {
           seed={wizardSeed}
           stockItems={allStockItems}
           config={config}
-          knownStyles={Suggestions.knownStyles()}
+          knownStyles={Suggestions.recipeStyles()}
           onClose={route.close}
           onCreateStockItem={createStockItem}
           onLearnIngredient={learnIngredient}

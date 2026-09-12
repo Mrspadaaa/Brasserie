@@ -9,17 +9,22 @@ import {
   Copy, 
   Check, 
   Edit3,
-  Sparkles
+  Sparkles,
+  Plus,
+  ChevronDown
 } from 'lucide-react';
 import { Client, Batch, PricingItem, AppConfig } from '../../types';
 import { StorageService } from '../../services/storage';
 import { BrewingMath } from '../../services/brewingMath';
-import { SwissQrBillService } from '../../services/swissQrBill';
+import { BEER_TAX_SOURCE } from '../../domain/finance/swissBeerTax';
 import { ClientStatsService } from '../../services/clientStats';
 import { EditClientModal } from '../EditClientModal';
 import { TarifSheet } from '../../ui/TarifSheet';
 import { nextClientId } from '../../services/refs';
 import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
+import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
+import { useMobileLayout } from '../../ui/useViewport';
+const InvoiceSheet = React.lazy(() => import('../../ui/finance/InvoiceSheet').then(m => ({ default: m.InvoiceSheet })));
 
 interface ClientsTabProps {
   clients: Client[];
@@ -44,6 +49,9 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   createRequest,
   onSuccessMessage
 }) => {
+  const mobile = useMobileLayout();
+  const [clientQuery, setClientQuery] = useState('');
+  const visibleClients = useMemo(() => clients.filter(client => !clientQuery.trim() || [client.name,client.contact,client.id,client.phone,client.email].some(value=>value?.toLocaleLowerCase('fr').includes(clientQuery.toLocaleLowerCase('fr').trim()))), [clients,clientQuery]);
   // Persistent subtab
   const [subTab, setSubTab] = useState<'crm' | 'ofdf' | 'tarifs'>(() =>
     StorageService.getUiState('clients_subtab', 'crm')
@@ -51,6 +59,9 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
 
   const [copiedTax, setCopiedTax] = useState(false);
   const [editingClient, setEditingClient] = useLiveSelection(clients, 'id');
+  const [invoiceClient, setInvoiceClient] = useLiveSelection(clients, 'id');
+  const [taxYear, setTaxYear] = useState(new Date().getFullYear());
+  const displayedTarifs = useMemo(() => tarifs.map(t => { const costTotal = Math.round((t.costIngredients + t.costFixed) * 100) / 100; const marginCHF = Math.round((t.priceHT - costTotal) * 100) / 100; return { ...t, costLabor: 0, costTotal, marginCHF, marginPercent: t.priceHT > 0 ? marginCHF / t.priceHT * 100 : 0 }; }), [tarifs]);
   /** Fiche tarif ouverte. Un tarif sans produit vaut création. */
   const [tarifSheet, setTarifSheet] = useLiveSelection(tarifs, 'product');
 
@@ -97,11 +108,11 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   const taxReport = useMemo(
     () =>
       BrewingMath.calculateSwissBeerTax(batches, {
-        ratePerHl: config.fiscal.beerTaxFullRatePerHl,
-        maxSmallBrewerHl: config.fiscal.beerTaxSmallBrewerMaxHl,
-        reliefTiersHl: config.fiscal.beerTaxReliefTiersHl
+        year: taxYear,
+        annualReductionPct: config.fiscal.beerTaxAnnualReductionPct,
+        reductionYear: config.fiscal.beerTaxReductionYear
       }),
-    [batches, config.fiscal]
+    [batches, config.fiscal, taxYear]
   );
 
   // Chiffres clients calculés depuis les ventes réelles (jamais stockés).
@@ -112,15 +123,16 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({
   );
 
   const handleCopyOfdfValues = () => {
-    const text = `DÉCLARATION DROIT BRASSICOLE SUISSE (OFDF - Formulaire 45.60)
+    const text = `RÉSERVE INDICATIVE IMPÔT SUR LA BIÈRE — ${taxYear}
 Entreprise : ${config.company.name}
 Volume conditionné : ${taxReport.totalHectoliters.toFixed(2)} hl (${taxReport.totalVolumeL} L)
 Taux plein : ${taxReport.fullRatePerHl.toFixed(2)} CHF/hl
 Réduction petit brasseur : ${taxReport.reductionPct}%
 Taux appliqué : ${taxReport.ratePerHl.toFixed(2)} CHF/hl
-Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
+Réserve : ${taxReport.estimateLowCHF.toFixed(2)} à ${taxReport.estimateHighCHF.toFixed(2)} CHF
 
-⚠️ Taux à vérifier contre le tarif OFDF en vigueur avant envoi.`;
+${taxReport.warning}
+Réduction annuelle ${taxReport.reductionConfirmed ? 'confirmée' : 'non confirmée : calcul au taux plein'}.`;
 
     navigator.clipboard.writeText(text);
     setCopiedTax(true);
@@ -128,16 +140,13 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
   };
 
   const handleGenerateInvoicePdf = (client: Client) => {
-    const sampleItems = [
-      { description: "Carton 12x 75cl — Milk Stout Artisanale (5.8% vol)", quantity: 2, unitPriceHT: 68.0, tvaRate: 0.026 },
-      { description: "Carton 12x 75cl — NEIPA Tropical Hazy (6.2% vol)", quantity: 2, unitPriceHT: 72.0, tvaRate: 0.026 },
-    ];
-    SwissQrBillService.generateInvoicePdf(client, sampleItems, config);
+    setInvoiceClient(client);
   };
 
   return (
-    <div className="space-y-4 pb-28 pt-2">
+    <div className="space-y-2 sm:space-y-4 pb-24 pt-2">
       {/* 1. Sub-navigation */}
+      <ViewNavigation<typeof subTab> label="Vue des clients" value={subTab} onChange={setSubTab} options={[{value:'crm',label:'Clients'},{value:'ofdf',label:'Impôt sur la bière',shortLabel:'Impôt bière'},{value:'tarifs',label:'Prix et marges'}]}>
       <div className="flex bg-cave-900 p-1 rounded-2xl border border-cave-800 shadow-md">
         <button
           onClick={() => setSubTab('crm')}
@@ -164,26 +173,48 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
           📊 Prix & Marges
         </button>
       </div>
+      </ViewNavigation>
 
       {/* 2. SUBTAB: CRM CLIENTS */}
       {subTab === 'crm' && (
         <div className="space-y-3">
-          <div className="flex justify-between items-center px-1">
+          {mobile ? <div className="flex items-center gap-2">
+            <input type="search" aria-label="Rechercher un client" placeholder={`${clients.length} clients · Rechercher…`} value={clientQuery} onChange={e=>setClientQuery(e.target.value)} className="min-w-0 flex-1 min-h-touch rounded-control border border-cave-800 bg-cave-950 px-3 text-base"/>
+          </div> : <div className="flex justify-between items-center px-1">
             <div>
               <h3 className="font-bold text-sm text-cave-50">Carnet Clients & Facturation</h3>
-              <p className="text-sm text-cave-400">Modifier coordonnées, mots de passe et générer les QR-Factures</p>
+              <p className="text-sm text-cave-400">Coordonnées, ventes et factures à encaisser</p>
             </div>
             <span className="text-sm text-ebc-straw font-bold">{clients.length} comptes</span>
-          </div>
+          </div>}
+          {!mobile&&clientQuery&&<input type="search" aria-label="Rechercher un client" value={clientQuery} onChange={e=>setClientQuery(e.target.value)} className="min-h-touch w-full rounded-control bg-cave-900 border border-cave-800 px-3"/>}
+          {!visibleClients.length&&<div className="py-6 text-center text-cave-400"><p>{clientQuery?'Aucun client ne correspond à ta recherche.':'Ajoute ton premier client pour préparer ses factures.'}</p>{clientQuery&&<button type="button" onClick={()=>setClientQuery('')} className="min-h-touch text-ebc-straw">Effacer la recherche</button>}</div>}
 
           <div className="space-y-2.5">
-            {clients.map((c) => {
+            {visibleClients.map((c) => {
               const stats = clientStats.get(c.id) ?? {
                 totalSales: 0,
                 orderCount: 0,
                 lastOrder: null,
                 status: 'Prospect' as const
               };
+              if(mobile) return <details key={c.id} className="group/client rounded-panel border border-cave-800 bg-cave-900">
+                <summary className="list-none flex min-h-touch items-center gap-3 p-3 cursor-pointer">
+                  <span className="min-w-0 flex-1"><strong className="block text-base text-cave-50 break-words">{c.name}</strong><span className="block text-sm text-cave-400 mt-0.5">{c.type} · {c.contact || stats.status}</span></span>
+                  <ChevronDown size={18} className="shrink-0 text-cave-400 group-open/client:rotate-180"/>
+                </summary>
+                <div className="px-3 pb-3 space-y-3 border-t border-cave-800 pt-3 text-sm">
+                  <div className="flex items-center justify-between gap-2"><span className="text-cave-400">{c.id} · {stats.status}</span><button type="button" aria-label={`Modifier ${c.name}`} onClick={()=>setEditingClient(c)} className="min-h-touch px-3 rounded-control bg-cave-850 text-ebc-straw">Modifier</button></div>
+                  {c.email&&<a className="block min-h-touch py-3 break-all text-cave-200" href={`mailto:${c.email}`}>{c.email}</a>}
+                  {c.phone&&<p className="text-cave-300">{c.phone}</p>}
+                  {c.notes&&<p className="text-cave-400 break-words">{c.notes}</p>}
+                  <p className="text-cave-300">{stats.totalSales.toLocaleString('fr-CH')} CHF de ventes depuis le début · {stats.orderCount} vente(s){stats.lastOrder?` · dernière le ${stats.lastOrder}`:''}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {c.phone&&<><a href={`tel:${c.phone}`} className="min-h-touch flex-1 px-3 rounded-control bg-cave-850 flex items-center justify-center gap-1"><Phone size={16}/>Appeler</a><a href={`https://wa.me/${c.phone.replace(/[^0-9]/g,'')}`} target="_blank" rel="noreferrer" className="min-h-touch flex-1 px-3 rounded-control bg-cave-850 flex items-center justify-center">WhatsApp</a></>}
+                    <button type="button" onClick={()=>handleGenerateInvoicePdf(c)} className="min-h-touch flex-1 px-3 rounded-control bg-ebc-straw/10 text-ebc-straw font-semibold">Facturer</button>
+                  </div>
+                </div>
+              </details>;
               return (
               <div
                 key={c.id}
@@ -227,6 +258,7 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
                       <div className="text-sm font-black text-ebc-straw mt-1 font-mono">
                         {stats.totalSales.toLocaleString('fr-CH')} CHF
                       </div>
+                      <div className="text-footnote text-cave-500">Ventes depuis le début</div>
                       <div className="text-footnote text-cave-500 mt-0.5">
                         {stats.orderCount > 0
                           ? `${stats.orderCount} vente${stats.orderCount > 1 ? 's' : ''} · ${stats.lastOrder}`
@@ -268,7 +300,7 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
                     onClick={() => handleGenerateInvoicePdf(c)}
                     className="flex-1 py-1.5 bg-ebc-straw/10 hover:bg-ebc-straw/20 text-ebc-gold border border-ebc-straw/30 text-sm font-bold rounded-xl flex items-center justify-center transition shadow-sm"
                   >
-                    <FileText className="w-3.5 h-3.5 mr-1 text-ebc-straw" /> Facture QR
+                    <FileText className="w-3.5 h-3.5 mr-1 text-ebc-straw" /> Facturer
                   </button>
                 </div>
               </div>
@@ -280,105 +312,23 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
 
       {/* 3. SUBTAB: OFDF SWISS BEER TAX */}
       {subTab === 'ofdf' && (
-        <div className="p-4 rounded-3xl bg-cave-900 border border-cave-800 space-y-4 shadow-sm">
-          <div className="flex items-center space-x-2 text-ebc-straw">
-            <ShieldCheck className="w-5 h-5" />
-            <h3 className="font-bold text-base text-cave-50">Droit Brassicole Suisse (OFDF)</h3>
-          </div>
-          <p className="text-sm text-cave-400">
-            Calculateur mensuel pour la télédéclaration sur ezv.admin.ch (Formulaire officiel 45.60 avant le 15).
-          </p>
-
-          <div className="p-4 rounded-2xl bg-cave-950 border border-cave-800 space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-center text-sm">
-              <div className="bg-cave-900 p-3 rounded-xl border border-cave-800">
-                <span className="text-footnote text-cave-400 uppercase">Volume conditionné</span>
-                <div className="text-lg font-black text-cave-50 mt-0.5 font-mono">
-                  {taxReport.totalHectoliters} <span className="text-sm text-cave-400">hl</span>
-                </div>
-                <div className="text-footnote text-cave-500">({taxReport.totalVolumeL} litres)</div>
-              </div>
-
-              <div className="bg-cave-900 p-3 rounded-xl border border-cave-800">
-                <span className="text-footnote text-cave-400 uppercase">Taux appliqué</span>
-                <div className="text-lg font-black text-ebc-straw mt-0.5 font-mono">
-                  {taxReport.ratePerHl.toFixed(2)} <span className="text-sm text-cave-400">CHF/hl</span>
-                </div>
-                {/* Le rabais affiché est celui RÉELLEMENT calculé, pas un texte figé */}
-                <div className="text-footnote text-hop font-semibold">
-                  {taxReport.reductionPct > 0
-                    ? `Réduction petit brasseur −${taxReport.reductionPct}%`
-                    : `Taux plein (${taxReport.fullRatePerHl.toFixed(2)} CHF/hl)`}
-                </div>
-              </div>
-            </div>
-
-            {taxReport.totalVolumeL === 0 && (
-              <div className="p-3 bg-cave-900 border border-cave-800 rounded-xl text-sm text-cave-400 leading-relaxed">
-                Aucune bière conditionnée sur la période : rien n'est imposable.
-                L'impôt porte sur la bière <strong className="text-cave-200">réellement mise en
-                bouteille ou en fût</strong>, pas sur les brassins planifiés ou encore en cuve.
-                Le montant apparaîtra dès le premier embouteillage enregistré.
-              </div>
-            )}
-
-            <div className="p-3 bg-ebc-straw/10 border border-ebc-straw/30 rounded-xl flex items-center justify-between">
-              <div>
-                <span className="text-sm text-cave-400">Droit brassicole total à payer :</span>
-                <div className="text-xl font-black text-ebc-straw font-mono">
-                  {taxReport.taxDueCHF.toFixed(2)} CHF
-                </div>
-              </div>
-              <button
-                onClick={handleCopyOfdfValues}
-                className="px-3 py-2 bg-ebc-straw hover:bg-ebc-gold text-cave-950 text-sm font-bold rounded-xl transition flex items-center shadow"
-              >
-                {copiedTax ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
-                {copiedTax ? 'Copié !' : 'Copier pour ezv'}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-2 text-sm text-cave-400 bg-cave-850/30 p-3 rounded-2xl border border-cave-800">
-            <h4 className="font-bold text-cave-200">Barème appliqué (configurable dans Réglages) :</h4>
-            <ul className="list-disc pl-4 space-y-1 text-sm">
-              <li>
-                <strong>Taux plein :</strong> {config.fiscal.beerTaxFullRatePerHl.toFixed(2)} CHF/hl.
-              </li>
-              <li>
-                <strong>Régime petit brasseur :</strong> production annuelle sous{' '}
-                {config.fiscal.beerTaxSmallBrewerMaxHl.toLocaleString('fr-CH')} hl (soit{' '}
-                {(config.fiscal.beerTaxSmallBrewerMaxHl * 100).toLocaleString('fr-CH')} litres).
-              </li>
-              <li>
-                <strong>Paliers de réduction :</strong>{' '}
-                {config.fiscal.beerTaxReliefTiersHl
-                  .map((t) => `−${t.reductionPct}% sous ${t.upToHl.toLocaleString('fr-CH')} hl`)
-                  .join(' · ')}
-              </li>
-              <li>
-                <strong>TVA bière :</strong>{' '}
-                {config.fiscal.isTvaRegistered
-                  ? `${(config.fiscal.tvaReducedRate * 100).toFixed(1)}% (brasserie assujettie)`
-                  : 'non assujettie — aucune TVA facturée'}
-              </li>
-            </ul>
-            <p className="text-footnote text-ebc-gold/90 pt-1">
-              ⚠️ Vérifie ces taux contre le tarif OFDF en vigueur avant toute télédéclaration.
-            </p>
-          </div>
+        <div className="space-y-4 rounded-3xl border border-cave-800 bg-cave-900 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-lg font-bold">Réserve pour l’impôt sur la bière</h3><label className="text-sm">Année <select aria-label="Année de réserve OFDF" value={taxYear} onChange={e => setTaxYear(Number(e.target.value))} className="rounded-xl bg-cave-950 p-2">{Array.from({ length: 6 }, (_, i) => new Date().getFullYear() - i).map(year => <option key={year}>{year}</option>)}</select></label></div>
+          <p className="text-sm text-cave-300 leading-relaxed">{taxReport.warning}</p>
+          <div className="rounded-2xl bg-cave-950 p-4"><div className="text-sm text-cave-400">Pour {taxReport.totalVolumeL} litres conditionnés</div><div className="mt-2 text-2xl font-black text-ebc-straw">{taxReport.estimateLowCHF === taxReport.estimateHighCHF ? taxReport.estimateHighCHF.toFixed(2) : `${taxReport.estimateLowCHF.toFixed(2)} – ${taxReport.estimateHighCHF.toFixed(2)}`} CHF</div><p className="mt-2 text-sm text-cave-400">{taxReport.reductionConfirmed ? `Réduction annuelle confirmée : ${taxReport.reductionPct} %.` : 'Réduction annuelle à confirmer dans les réglages : réserve calculée au taux plein.'}</p>{taxReport.missingPlatoCount > 0 && <p className="mt-2 text-sm text-ebc-gold">Densité initiale manquante pour {taxReport.missingPlatoCount} brassin(s) : fourchette entre les catégories légère et forte.</p>}</div>
+          <MobileDetails title="Comprendre le calcul et les démarches"><div className="space-y-2 text-sm text-cave-300"><p>Barème par hectolitre : 16,88 CHF jusqu’à 10 °P ; 25,32 CHF de 10,1 à 14 °P ; 33,76 CHF dès 14,1 °P.</p><p>Le taux annuel de réduction est communiqué par l’OFDF. Il ne se déduit pas du seul volume de cette période.</p><p>Selon le régime attribué : déclaration sous 20 jours et paiement sous 30 jours après la fin du trimestre ou de l’année, via Taxas.</p><p>TVA de la bière alcoolisée : {config.fiscal.isTvaRegistered ? 'taux normal de 8,1 %.' : 'brasserie non assujettie, aucune TVA facturée.'}</p></div></MobileDetails>
+          <div className="flex flex-wrap gap-3"><button onClick={handleCopyOfdfValues} className="min-h-[44px] rounded-xl bg-ebc-straw px-4 py-2 font-bold text-cave-950">{copiedTax ? 'Estimation copiée' : 'Copier cette estimation'}</button><a href="https://www.bazg.admin.ch/fr/taxas-plateforme-pour-les-taxes-a-la-consommation" target="_blank" rel="noreferrer" className="min-h-[44px] px-3 py-2 text-ebc-straw underline">Ouvrir Taxas</a><a href={BEER_TAX_SOURCE} target="_blank" rel="noreferrer" className="min-h-[44px] px-3 py-2 text-cave-300 underline">Directives OFDF</a></div>
         </div>
       )}
-
       {/* 4. SUBTAB: PRICING & MARGINS */}
       {subTab === 'tarifs' && (
         <div className="space-y-3">
           <div className="px-1">
-            <h3 className="font-bold text-sm text-cave-50">Prix de Revient & Marges Brutes</h3>
-            <p className="text-sm text-cave-400">Répartition matières, main d'œuvre et charges fixes</p>
+            <div className="flex items-center justify-between gap-2"><h3 className="font-bold text-sm text-cave-50">Prix et marges</h3>{mobile&&<button type="button" aria-label="Ajouter un tarif" onClick={()=>setTarifSheet(blankTarif())} className="touch-target rounded-control bg-ebc-straw text-cave-950"><Plus size={21}/></button>}</div>
+            <p className="text-sm text-cave-400">Matières et charges fixes · temps personnel exclu</p>
           </div>
 
-          {tarifs.map((t, idx) => (
+          {displayedTarifs.map((t, idx) => (
             <div
               key={idx}
               role="button"
@@ -408,14 +358,10 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-1.5 bg-cave-950/70 p-2.5 rounded-xl text-center text-sm">
+              {!mobile&&<div className="grid grid-cols-3 gap-1.5 bg-cave-950/70 p-2.5 rounded-xl text-center text-sm">
                 <div>
                   <div className="text-footnote text-cave-500">Matières</div>
                   <div className="font-semibold text-cave-200 font-mono">{t.costIngredients} CHF</div>
-                </div>
-                <div>
-                  <div className="text-footnote text-cave-500">Main d'œuvre</div>
-                  <div className="font-semibold text-cave-200 font-mono">{t.costLabor} CHF</div>
                 </div>
                 <div>
                   <div className="text-footnote text-cave-500">Fixes</div>
@@ -425,7 +371,7 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
                   <div className="text-footnote text-cave-500">Coût total</div>
                   <div className="font-bold text-alert font-mono">{t.costTotal} CHF</div>
                 </div>
-              </div>
+              </div>}
 
               <div className="text-right text-sm font-bold text-hop">
                 Marge brute : +{t.marginCHF.toFixed(2)} CHF / lot
@@ -436,6 +382,7 @@ Montant total à payer : ${taxReport.taxDueCHF.toFixed(2)} CHF
       )}
 
       {/* Edit Client Modal */}
+      {invoiceClient && <React.Suspense fallback={<p role="status">Ouverture de la facture…</p>}><InvoiceSheet client={invoiceClient} tarifs={tarifs} config={config} onClose={() => setInvoiceClient(null)} onSaved={() => onSuccessMessage?.('Facture enregistrée à encaisser et PDF téléchargé.')} /></React.Suspense>}
       <TarifSheet
         item={tarifSheet}
         config={config}

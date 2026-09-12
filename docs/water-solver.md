@@ -1,123 +1,306 @@
-# Solveur de sels — vérification du plan et résultat
+# Solveur de sels et traitement de l’eau
 
-Suite de cet audit : [profils, sources et interface du 6 septembre](water-style-audit.md).
-Les mesures comparatives ci-dessous décrivent la passe initiale. Le solveur donne
-désormais davantage de priorité aux planchers explicites Mg/Na ; NaCl porte une
-borne de dose dérivée du sodium demandé. Les plages de HCO₃ par style ne sont
-plus présentées comme une cible de pH sur le radar.
+Mise à jour du 8 septembre 2026. Les concentrations affichées sont celles de
+l’eau de traitement combinée, **après les doses d’acide retenues**. Ce ne sont
+pas des concentrations prédites dans la bière après extraction et ébullition.
 
-Le solveur minéral résout maintenant les sels simultanément. Le cas de référence
-d’Angles, sur **30 L traités**, donne **CaCl₂ 5,6 g, Epsom 7,2 g, NaCl 1 g**.
+## Cibles et priorités
 
-| Ion | Cible (ppm) | Résultat (ppm) |
-|---|---:|---:|
-| Calcium | 100 | 99,9 |
-| Magnésium | 25 | 24,8 |
-| Sodium | 15 | 15,0 |
-| Sulfate | 100 | 100,6 |
-| Chlorure | 111 | 111,5 |
+- **Le profil choisi est le contrat du dosage : Ca, Mg, Na, SO₄, Cl et HCO₃
+  doivent tous respecter leurs plages après les deux doses d’acide.** Le bilan
+  ne peut afficher « Profil atteint » que si chaque ion demandé est dans sa
+  plage. L’AR et le pH estimés restent des diagnostics distincts.
+- Les sels compensent le HCO₃ neutralisé par l’acide de rinçage et par une
+  éventuelle dose manuelle à l’empâtage. L’acide automatique d’empâtage reste
+  dans l’intervalle qui respecte le HCO₃ total du profil. Une dose manuelle
+  positive n’entraîne aucune compensation alcaline pour un simple repère
+  intérieur : seul le minimum obligatoire du profil justifie cette compensation.
+- **Le milieu bas est un point de départ pour Ca, SO₄ et Cl** :
+  `minimum + (maximum − minimum) / 3`. C’est une préférence de l’application,
+  pas un optimum chimique ni une nouvelle borne. Le calcium a un poids faible
+  car les sels apportent plusieurs ions ensemble. L’eau de départ, les doses
+  manuelles et les produits disponibles peuvent conduire ailleurs dans la plage.
+- Le magnésium reste facultatif lorsque son minimum est zéro. Le sodium reste
+  modéré : cible au plus à 20 ppm, sans descendre sous le minimum demandé.
+  Un profil demandant au moins 50 ppm de sodium, comme une Gose, conserve le
+  tiers de sa plage : la salinité y est un choix explicite. Ces seuils de
+  préférence sont des choix de l’application, pas des seuils sensoriels universels.
+- **HCO₃ suit le besoin d’alcalinité des malts, sans fraction fixe de sa plage.**
+  L’AR correspondant au pH estimé de 5,4 fournit une préférence ; celle de 5,5
+  indique la limite supérieure estimée pour cette maische. On convertit cette
+  AR en HCO₃ avec Ca et Mg de l’empâtage effectivement dosé, puis on mélange
+  avec le rinçage traité séparément, en pondérant par les volumes. La préférence
+  est bornée par le profil choisi. Elle peut justifier moins **ou plus** que
+  le milieu bas ; un minimum de style trop élevé reste respecté et le conflit
+  avec les malts est expliqué. Sans facture exploitable, la bande par couleur
+  reste un repli : une couleur pâle seule ne justifie aucun ajout alcalin.
+- L’acide automatique laisse une eau déjà sous la limite haute d’AR estimée
+  sans correction, sauf dépassement de la plage HCO₃ du profil. Il ne sert pas
+  à centrer le graphique. Sinon, il vise l’AR préférée de la facture, ou le
+  milieu de la bande par couleur en l’absence de facture, dans les limites
+  des six ions. Ces estimations ne remplacent pas une mesure de pH au brassage.
+  Le malt fournit du magnésium et le besoin de bicarbonate dépend de l’acidité
+  de la maische ([Bru’n Water, sections 2.3–2.5](https://www.brunwater.com/water-knowledge)).
+- Une cible numérique explicite précise les ions souhaités. Pour HCO₃, la
+  tolérance est de ±2 ppm. Un résultat inaccessible affiche la valeur réelle
+  et l’écart ; aucune plage n’est élargie pour le déclarer atteint.
+- Un ion absent d’une cible partielle n’a pas de poids dans l’optimisation.
+  Il conserve un plafond minéral, sans devenir une cible implicite à zéro.
+  Un HCO₃ non renseigné reste piloté par l’empâtage.
+- Les limites minérales ne sont pas relâchées pour améliorer le résultat.
+  Un excès déjà présent dans la source ne peut pas disparaître par ajout de sel.
+  Le curseur ne peut pas non plus élargir les plages SO₄/Cl. Une consigne de
+  ratio incompatible reste visible face au rapport réellement obtenu.
+- **Doser conserve les doses manuelles d’acide**, y compris zéro au rinçage.
+  Le résultat est recalculé depuis ces quantités. Revenir à l’acide calculé est
+  une action explicite. Le malt acidulé appartient au grain, pas au rinçage.
+- Les sels alcalins vont uniquement à l’empâtage. Les autres sels suivent
+  l’option de répartition. Les doses absentes, nulles ou invalides ne sont pas
+  des additions physiques ; les zéros manuels restent dans les métadonnées
+  d’override quand il faut conserver cette intention.
 
-L’[URL fournie](https://www.moneaudebrassage.fr/?departement=04&commune=ANGLES&quartier=VILLAGE&beerstyle=01D%20-%20American%20Wheat%20Beer&NaCl=94.8200465034199&CaSO4=166.50834334056245&disabledAdditives=%5B%22KCl%22%5D)
-encode un autre dosage : gypse et sel de table, ratio voisin de 1,7. Ce cas manuel
-et la cible chiffrée à trois sels ont chacun leur test. La page consultée expose
-des corrections manuelles ; nous ne prétendons pas reproduire son autosolveur.
+## Calcul et unités
 
-## Corrections apportées au plan
+Les coefficients des sels sont en **mg/L apportés par g/L de produit**. Pour
+une dose `g` dans un volume `L`, l’apport vaut `coefficient × g / L`. Les hydrates
+sont ceux du catalogue : CaSO₄·2H₂O, CaCl₂·2H₂O, MgSO₄·7H₂O, MgCl₂·6H₂O.
 
-- **Contraintes conjointes** : rejeter les moindres carrés non contraints ignore
-  les optima sur un plafond. Le calcul traite explicitement `Cx ≤ plafond` et
-  les doses positives, par ensemble actif.
-- **Précision avant nombre de sels** : l’ordre inverse retiendrait une mauvaise
-  recette à un seul sel. Les supports sont tous examinés ; parmi ceux à moins
-  de 0,75 ppm pondéré du meilleur dosage pesable, le plus court est retenu.
-- **Six colonnes, pas cinq** : le cas complet est un système sous-déterminé.
-  Une régularisation numérique de 1e-9 stabilise les dépendances. Six sels ne
-  garantissent pas qu’une cible arbitraire soit physiquement atteignable.
-- **Aucun relâchement des plafonds** : si la source dépasse déjà une limite,
-  son excès est annoncé et aucun ajout ne l’aggrave. Le KCl conserve son plafond
-  d’apport de potassium de 50 ppm, règle existante, pas nouvelle valeur scientifique.
-- **Pesée vérifiée** : choix entre les voisins au dixième de gramme, vérification
-  des plafonds après arrondi, minimum 0,5 g (chaux : 0,1 g). Les chiffres rendus
-  sont reconstruits depuis les doses réellement retenues, y compris au rinçage.
-- **Alcalinité** : deux allers-retours ne garantissent pas la convergence. La boucle
-  est bornée à douze, distingue stabilité, arrondi et compromis non stabilisé.
-  Les compromis restants sont signalés, sans présenter une cible comme atteinte.
-- **Cibles personnalisées** : leurs cinq valeurs sont réellement visées. Leur
-  milieu de fourchette graphique ne remplace plus la valeur saisie, notamment zéro.
+Le bilan total de chaque ion est `(Cm × Vm + Cs × Vs) / (Vm + Vs)`, avec les
+sources diluées, additions et acides propres à chaque eau. L’alcalinité est en
+ppm CaCO₃ : `HCO₃ × 50 / 61`. L’approximation de Kolbach appliquée aux ppm d’ions
+est `AR = alcalinité − Ca / 1,4 − Mg / 1,7` ; 3,5 et 7 seraient les diviseurs
+pour les duretés déjà exprimées en CaCO₃, pas pour les ions bruts.
+
+Le HCO₃ associé à la chaux représente une **équivalence d’alcalinité**, pas du
+bicarbonate réellement contenu dans Ca(OH)₂. La craie conserve la convention
+existante de 50 % de dissolution ; son effet réel dépend des conditions et
+elle reste un recours lorsque la chaux est exclue. Ces conventions sont
+visibles avec les contributions et précautions des produits.
+
+Les équations et tables ont été recoupées avec [Bru’n Water, Water Knowledge,
+sections 4.2 et 4.3](https://www.brunwater.com/water-knowledge), qui décrit les
+hydrates, les apports par gramme, les équivalents de la chaux et les limites de
+dissolution de la craie. La distinction entre dureté et alcalinité résiduelle
+est également documentée par [MEBAK, Residual Alkalinity in Brewing
+Liquor](https://www.mebak.org/en/methode/w-030-01-900/residual-alkalinity-in-brewing-liquor/2988).
+Les tests de stœchiométrie reconstruisent séparément les masses molaires.
+
+Les coefficients d’acide et le modèle empirique de grain ne sont pas une
+mesure du pH. Le bilan garde séparément l’acidité au-delà du bicarbonate
+neutralisé pour l’estimation de maische ; l’affichage HCO₃ ne devient pas
+négatif. Le pH mesuré au brassage reste la référence pour la correction fine.
+
+## Optimisation
+
+`lsq.ts` résout des moindres carrés avec doses positives et bornes conjointes.
+Une phase de faisabilité fournit un point initial lorsque les minimums
+excluent l’origine. Les cas faisable et incompatible sont testés analytiquement.
+`saltFit.ts` examine les sous-ensembles disponibles, puis les voisins sur la
+grille de pesée de 0,1 g. Le minimum proposé est 0,5 g, sauf 0,1 g pour la chaux.
+Le premier passage impose ensemble tous les minimums et maximums. Les voisins
+arrondis sont eux aussi contrôlés contre ces bornes. S’il existe une pesée
+conforme parmi les candidats, une pesée hors plage ne peut pas la remplacer
+pour améliorer une moyenne d’erreurs. En l’absence de candidat conforme, un
+second passage cherche un compromis et le bilan expose les ions hors plage.
+Pour les cibles chiffrées, à précision comparable (0,75 ppm pondéré), moins de
+sels sont privilégiés. Pour un profil de style, on cherche d’abord le meilleur
+rapport SO₄/Cl parmi les candidats conformes ; dans une marge maison de 0,05
+autour de ce meilleur rapport, on cherche les concentrations les plus proches
+des repères intérieurs. À erreur pondérée comparable (marge de 5 ppm), on
+privilégie moins de produits différents, puis l’erreur et la masse totale.
+Le nombre de sels ne peut donc plus supprimer à lui seul une correction
+utile vers le milieu bas. Ces marges sont des choix d’application, pas des
+seuils sensoriels. Les poids des styles sont Ca 0,1 ; Mg et Na 0,5 ; SO₄, Cl
+et HCO₃ 2. Le calcium a une préférence souple : on évite de substituer du
+magnésium ou du potassium uniquement pour centrer Ca alors qu’il est autorisé.
+Les six bornes sont imposées indépendamment de ces poids. Les profils chiffrés
+personnels gardent leurs points et leur classement distincts.
+
+L’erreur minimale irréductible de la source est retirée **du seuil de
+comparaison**, pas de l’objectif du problème numérique. Sans cela, beaucoup de
+HCO₃ déjà présent rendait artificiellement négligeable une perte de précision
+sur du sodium pourtant atteignable, et faisait retirer un sel utile.
+
+Les profils de l’application passent par `waterProfileTarget` et ajustent les
+six ions ensemble. Pour les styles, la préférence HCO₃ est réévaluée après
+chaque ajustement de Ca/Mg dans la maische, vers le haut ou le bas, sans
+modifier les bornes du profil. L’itération s’arrête au plus après 16 passages
+ou lorsqu’une pesée se répète sur la grille de 0,1 g.
+L’ancien contrat d’AR reste disponible pour les appels
+techniques qui le demandent sans profil prioritaire ; il ne gouverne plus
+les profils choisis dans l’atelier. Les profils partiels sans HCO₃ conservent
+l’ajustement minéral et alcalin itératif. L’exploration locale de la grille
+ne constitue pas une preuve d’optimum global sels, acides et dilution.
+Le résultat et les diagnostics proviennent toujours du plan final pesable.
+
+Le rapport zéro du curseur est une consigne valide, mais ne permet pas de
+descendre sous le minimum SO₄ du profil. Un profil numérique sans chlorure reste inchangé
+jusqu’à une modification explicite du ratio ; l’interface indique un rapport
+non défini plutôt qu’une division par zéro.
+
+Le curseur distingue le **réglage** (poignée dorée) du rapport **obtenu**
+(repère bleu calculé sur SO₄/Cl). Sa piste représente la part de sulfate dans
+SO₄ + Cl : `position = 100 × ratio / (1 + ratio)`. Pour la limite 9:1,
+la coordonnée de la piste va de 0 à 90 et le repère 1:1 se trouve à 50 ; les
+rapports courants disposent ainsi d’une largeur lisible sur mobile. Les gestes
+sont convertis depuis cette coordonnée, tandis que le contrôle natif conserve
+le ratio et ses bornes 0–9 pour les lecteurs d’écran. Les flèches le règlent par 0,05.
+Le repère obtenu garde la précision des concentrations et ne subit pas le pas
+de saisie. Le libellé d’orientation est choisi avant tout arrondi ; des teneurs
+faibles en sulfate et chlorure ne décrivent pas la minéralité de toute l’eau.
 
 ## Séparation des responsabilités
 
-`water.ts` devient `water/index.ts`, qui conserve les imports publics.
-
-| Modules | Responsabilité |
+| Module | Responsabilité |
 |---|---|
-| `ions.ts`, `lsq.ts` | Arithmétique ionique et optimisation numérique indépendante |
-| `substances.ts` | Composition des produits, pureté et contributions par gramme |
-| `mashPh.ts`, `acid.ts`, `practice.ts` | Modèles et règles de brassage |
-| `mineralSolver.ts`, `solver.ts` | Combinaisons minérales et coordination avec l’alcalinité |
-| `plan.ts` | Répartition et recalcul des eaux depuis une pesée ; aucune dépendance au solveur |
-| `solve.ts`, `solverMessages.ts` | Façade compatible et mise en texte des diagnostics structurés |
-| `dilution.ts` | Recherche de dilution ; une résolution réutilisée par pourcentage |
-| `labels.ts`, `parse.ts` | Libellés et lecture des cibles textuelles |
+| `domain/water/ions.ts`, `lsq.ts` | Arithmétique ionique et optimisation numérique indépendante |
+| `substances.ts` | Composition des produits et contributions par gramme |
+| `mashPh.ts`, `acid.ts`, `practice.ts` | Modèles et règles de brassage, doses d’acide retenues |
+| `profileTarget.ts` | Construction commune des cibles, ions absents et ratio explicite |
+| `bicarbonatePreference.ts` | Préférence HCO₃ selon l’alcalinité de la maische, les deux volumes, le rinçage traité et l’acide manuel |
+| `profileAssessment.ts` | Respect des six plages, écarts et statut partagé du profil |
+| `profileDiagnosis.ts` | Causes vérifiées : source, rinçage, exclusions, apports liés, alternative calculée et ratio incompatible |
+| `manualImpact.ts` | Comparaison des traitements avant/après une saisie, y compris les acides automatiques et le pH estimé |
+| `saltFit.ts`, `mineralSolver.ts`, `profileSolver.ts` | Ajustement des pesées, profils de style et profils numériques |
+| `solver.ts`, `solve.ts`, `solverMessages.ts` | Coordination et diagnostics structurés |
+| `plan.ts`, `treatment.ts` | Répartition, bilan de masse et eau réellement traitée |
+| `dilution.ts`, `domain/recipeWater.ts` | Proposition de dilution et orchestration de la recette |
+| `ui/water/types.ts`, `useWaterWorkshop.ts` | Contrat d’édition et état dérivé de l’atelier |
+| `ui/water/useWaterAnalysis.ts`, `waterAnalysisTransport.ts`, `waterAnalysisProtocol.ts` | Calcul des conseils en arrière-plan, instantanés et rejet des réponses périmées |
+| `ui/water/waterAnalysis.worker.ts`, `computeWaterAnalysis.ts` | Exécution du même moteur dans un Worker, cache limité au dernier résultat de chaque sous-calcul |
+| `ui/water/WaterWorkbench.tsx` et vues associées | Parcours mobile, doses et détails de composition |
+| `ui/water/WaterBicarbonateBalance.tsx` | Lecture des deux eaux et de leur moyenne après acide, sans formule chimique dans la vue |
+| `ui/RatioSlider.tsx` | Consigne et ratio réel issus des ions, avec gestion des limites de piste |
 
-`hopBalanceHint` est dans `domain/hopBalance.ts`. Un seul type `IonBand` reste dans
-`types`. Le moteur ne dépend pas de React. La répartition est une primitive
-partagée avec le moteur, évitant une deuxième formule. L’extraction de toute la
-logique d’écran et la révision scientifique des règles de pH restent hors périmètre.
+`ui/SaltSolver.tsx` compose l’atelier. Le moteur de domaine ne dépend pas de
+React. Les vues ne possèdent pas de seconde formule de traitement.
 
-## Comparaison reproductible
+Le bilan des doses retenues et le graphique se mettent à jour pendant la
+saisie. Les recherches de sels et d’osmosée tournent dans un Worker : une
+demande en cours et seulement la dernière demande en attente. Une réponse
+ne devient utilisable que si ses entrées correspondent encore à la saisie.
+Pendant ce calcul, le conseil d’osmosée affiche « Calcul… » et son bouton est
+désactivé. Doser reste disponible : il calcule explicitement depuis la saisie
+courante si le conseil n’est pas encore prêt. Le mode automatique de la recette
+conserve son recalcul synchrone pour que les pesées affichées et sauvegardées
+restent cohérentes. Un navigateur sans Worker utilise le moteur synchrone.
 
-Exécuter `node scripts/compare-solveur.mjs` ; ancienne version fixée au commit
-`6c4c409` (`--baseline=<commit>` permet de la choisir explicitement).
+La recherche de dilution réutilise le traitement de chaque candidat. Lorsque
+les seules doses lactiques manuelles dépassent déjà le seuil de goût, aucune
+dilution ne peut les supprimer : on vérifie les extrémités 0 et 100 %, sans
+résoudre les 19 candidats intermédiaires. Le résultat et les diagnostics
+restent identiques à la recherche exhaustive.
 
-**12 eaux × 29 styles × 3 variantes = 1 044 plans.** Les profils historiques
-proviennent des anciennes fixtures : ils ne sont pas les analyses actuelles de
-ces villes. Deux eaux synthétiques couvrent les excès de dureté et de sodium.
+Sur mobile, le radar, le slider, les neuf sels en grille 3 × 3 et les deux
+doses d’acide restent ensemble. La hauteur du radar utilise l’espace laissé
+par les commandes. Le compagnon est placé à côté des onglets, sans recouvrir
+les doses ; le nom de chaque sel ouvre sa composition. Les explications
+détaillées suivent ce bloc, sans interrompre la pesée.
 
-| Variante | Objectif Mg / Na | Nombre moyen de sels |
-|---|---|---:|
-| A, conservée par défaut pour les styles | Minimum de la fourchette | 2,07 |
-| B, cible numérique | Point cible | 2,14 |
-| C, modérée | Mg ≤ 10, Na ≤ 20, minimum du style prioritaire | 2,18 |
+Les conséquences d’un réglage manuel apparaissent sous les commandes :
+deltas en ppm sur l’eau totale, sorties/retours dans le profil,
+rapport, pH estimé et acide automatique ajusté. Le point de comparaison est
+l’état avant ce geste, jamais une autre recette hypothétique. Il est effacé
+après Doser et invalidé si l’analyse, les volumes, les dilutions ou les malts
+changent. Ces instantanés d’interface ne sont pas enregistrés dans la recette.
+Si le modèle de pH atteint sa limite de variation, cette limite est annoncée :
+un affichage plafonné ne prouve pas que le pH réel cesse de baisser avec l’acide.
 
-La cible Mg/Na est une politique explicite, distincte des maths. Même en A, un
-sel de magnésium ou de sodium peut transporter le sulfate ou le chlorure quand
-cela améliore le profil sans franchir les plafonds. Une cible personnalisée utilise
-B. Aucun basculement général vers B ou C n’est imposé par cette modification.
+Les explications de goût restent des orientations, avec les concentrations
+absolues visibles : un rapport identique ne rend pas deux eaux équivalentes.
+Cette distinction et les effets de Ca, Mg, Na, SO₄ et Cl sont recoupés dans
+[Bru’n Water, Water Knowledge, sections 3 et 4.4](https://www.brunwater.com/water-knowledge).
+Les critères numériques de classement des pesées restent une politique de
+l’application, pas une règle publiée par cette source.
 
-Sur ce banc : **aucun dépassement ajouté**, **1 044/1 044 plans à moins de 3 ppm
-pondérés de la borne minérale continue**, les alcalins du plan étant fixés. Cette
-borne n’est **pas** un optimum global prouvé pour sels + alcalinité + acides.
-La recherche de dilution de la Pils sur Fribourg prend environ **12 ms**, p95
-environ **13 ms** sur cette machine ; les performances mobiles peuvent différer.
+## Vérifications reproductibles
 
-La promesse « jamais pire que l’ancien » doit être qualifiée : en A, 17/348 plans
-s’écartent davantage des cinq cibles de goût de plus de 0,1 ppm pondéré. Trois
-écarts dépassent 1 ppm, tous sur Vienne, où le nouveau calcul corrige davantage
-l’alcalinité au prix du sodium. Exemple NA-STOUT : AR -2,5 → 86,9 pour une cible
-103 ; l’erreur minérale augmente de 9,9 ppm. Le sodium reste sous plafond.
-Cinq cas sur les trois variantes gardent un compromis non stabilisé et un message
-explicite. Aucun résultat n’est certifié exact pour masquer ces limites.
+Le bilan affiché distingue le respect des six ions du profil et le pH estimé.
+La consigne de pH enregistrée n’est pas un résultat de calcul : une correction
+de pH se prépare à partir d’une mesure. `recipeWaterReadings.ts` relit la source figée et les doses
+retenues pour la fiche et l’export, sans relancer le solveur.
 
-Le [CSV complet](water-solver-comparison.csv) donne les 1 044 mesures et dosages.
-Le [résumé JSON](water-solver-comparison.json) conserve les écarts notables.
+Cas de régression **Ttt** : 2,2 kg de Pilsner, 3,6 EBC, profil 20C,
+10,8 L d’empâtage et 21,5 L de rinçage, dilution à 20 %. Les doses retenues
+donnent Ca 103, Mg 11,2, Na 12,5, SO₄ 75,9 et Cl 93,6 ppm, tous dans les
+plages 20C. Les 1,2 mL et 6,2 mL de lactique produisent respectivement
+133,33 et 26,98 ppm de HCO₃, soit une moyenne pondérée de 62,54 ppm.
+Ce résultat **ne respecte pas le profil HCO₃ de 120–250 ppm**. L’AR d’empâtage vaut −20,64 ppm CaCO₃
+(plage calculée −43 à 0), tandis que le modèle estime pH 5,70 ±0,15 :
+ni l’AR dans sa plage ni les cinq minéraux ne prouvent que la consigne 5,4
+est atteinte. Le plan historique reste lisible tel qu’il a été pesé ; « Doser »
+propose une nouvelle pesée respectant les six plages. Les diagnostics
+pré-acide déjà résolus sont retirés du bilan.
 
-## Vérifications
+Avec l’acide manuel de la photo (0 mL à l’empâtage, 6,2 mL au rinçage) et
+une consigne de ratio de 0,7, la nouvelle proposition donne environ 120,8 ppm
+de HCO₃. La facture Pilsner ne justifie pas de pousser jusqu’aux 163 ppm du
+tiers de la plage. Le minimum de 120 reste toutefois trop alcalin selon le
+modèle de cette maische : le pH estimé reste vers 5,9 et le conflit est visible.
 
-Tests analytiques indépendants de l’optimiseur (plafond conjoint, colonnes
-dépendantes, bornes nulles, comparaison à une grille exhaustive sur 40 problèmes),
-100 cibles construites depuis des doses connues, balayages existants et tests
-d’interface. Les anciennes assertions « jamais Epsom/NaCl/KCl » deviennent des
-vérifications sur les concentrations, avec leur justification dans les tests.
-La suite complète compte **1 154 tests réussis** (1 141 avant cette passe).
+Sur la capture suivante, l’acide d’empâtage est à 0 mL : les valeurs sont alors
+200 ppm sur 10,8 L et 26,98 ppm sur 21,5 L, soit **84,83 ppm** au total
+(85 sur l’ancien radar, désormais 84,8 comme dans le bilan). Les deux eaux après acide et leur moyenne
+restent visibles, même dans la plage du style ou avec une cible personnelle.
+Le détail expose le départ après chaque dilution, les sels et les doses retenues.
+Ce bilan décrit les eaux traitées séparément avant malts et ébullition ; il ne
+simule pas la chimie du moût ni le transfert d’un éventuel excès d’acide entre eaux.
 
-Contrôle réel du navigateur à 390 × 844 : Doser, ajout manuel de gypse et d’acide,
-retour au calcul. Le ratio suit les sels, le graphe suit aussi l’acide ; graphe,
-curseur et deux groupes de doses restent visibles ensemble. Aucun message d’erreur
-JavaScript durant ce parcours. Un test couvre aussi Doser avec uniquement un acide
-manuel à recalculer et aucune proposition de sels.
+La lacune des anciens tests était fonctionnelle : ils validaient cinq ions
+et exigeaient parfois que HCO₃ reste sous le profil pour suivre l’AR du grain.
+Les tests d’acceptation vérifient désormais les six bornes **après traitement**,
+et pas uniquement la cohérence des formules ou l’absence d’erreur d’exécution.
 
-Les coefficients d’acidification et le modèle de grain ne sont pas modifiés. L’EBC
-reste un indicateur de l’alcalinité selon les règles existantes ; il n’entre pas
-dans l’objectif minéral du profil de goût. La mesure du pH au brassage reste
-nécessaire pour la correction fine.
+- `tests/unit/lsq.test.ts` : optima analytiques, contraintes couplées, colonnes
+  dépendantes, comparaison à une grille exhaustive indépendante.
+- `tests/unit/globalWaterSolver.test.ts` : cible d’Angles et 100 profils
+  construits depuis des additions connues.
+- `tests/unit/styleWaterContract.test.ts` : chaque profil du catalogue depuis
+  l’osmosée, six ions après acide, minimums conjoints et ratio incompatible.
+- `tests/unit/waterPreferredTargets.test.ts` : minimum obligatoire pour la
+  facture Pilsner, alcalinité utile à une facture plus acide, repère inaccessible
+  sans faux échec du profil, ions facultatifs, deux dilutions et trois acides,
+  absence d’acide pour centrer une eau adaptée et absence de compensation
+  alcaline inutile d’une dose manuelle.
+- `tests/integration/waterProfileContract.test.tsx` : le bouton Doser sur le
+  cas de la photo, les acides manuels conservés, le récapitulatif, l’export et
+  la réouverture avec les six ions toujours dans les plages.
+- `tests/unit/numericWaterProfile.test.ts` : HCO₃ explicite, neutralisation du
+  rinçage, chaux sans sodium, limites du grain, profils partiels et stœchiométrie.
+- `tests/unit/waterBalanceAdvice.test.ts` : balance conforme avec trois sels
+  courants, causes chiffrées des écarts et ratio incompatible avec le profil.
+- `tests/integration/waterManualImpact.test.tsx` : conséquences des pesées et
+  des deux acides, saisie décimale complète, limites du modèle de pH et
+  invalidation du bilan lorsque le contexte change.
+- `tests/unit/waterSweep.test.ts`, `waterPractice.test.ts`, `stoutAlkalinity.test.ts` :
+  balayages d’eaux et styles, continuité, plafonds, doses et dilution.
+- `tests/integration/waterAnalysis.test.tsx`, `waterAnalysisInteraction.test.tsx` :
+  saisie et HCO₃ immédiats pendant un calcul lent, doses manuelles conservées,
+  Doser avant réponse, conseils périmés inutilisables et cycle de vie du Worker.
+- `tests/unit/waterAnalysisComputer.test.ts`, `waterDilutionPerformance.test.ts` :
+  cache borné par sous-calcul et parité complète avec une recherche exhaustive.
+- Tests du traitement et de l’interface : doses manuelles conservées, bilan
+  après acide, sauvegarde, ratio réel et composition de chaque sel.
+- `scripts/check-water-ui-review.mjs` : captures et assertions dans Chrome à
+  320, 390 et 768 px (champs tactiles, détails et fiche de pesée).
+  `WATER_PREVIEW_URL` indique le serveur Vite local, `http://127.0.0.1:3008` par défaut.
+- `scripts/check-water-bicarbonate.mjs`, puis `scripts/check-water-consequences.mjs` :
+  reproduction de la photo, profil après Doser et conséquences sous les commandes,
+  avec une saisie au clavier réel et les mêmes trois largeurs.
+- `scripts/check-water-mobile-layout.mjs` : atelier et assistant à 320 × 740,
+  390 × 740, 390 × 844 et 414 × 896. Les quatre blocs doivent être visibles
+  ensemble, dans l’ordre, avant/après saisie et changement de ratio ; les
+  boutons flottants ne doivent recouvrir aucune dose.
+- `scripts/check-water-input-performance.mjs` : saisie réelle et boutons ±
+  de l’acide de rinçage, atelier et assistant en mode manuel et automatique.
+  Vérifie les deux HCO₃ et leur moyenne à chaque geste, attend une réponse du
+  vrai Worker, puis mesure le délai jusqu’à l’affichage avec Chrome ralenti
+  (`CPU_RATE=4`). `WATER_PERF_LABEL` sépare les rapports avant/après ; les
+  profils CPU et messages rejouables restent dans les pièces jointes ignorées.
+
+Le banc historique de 1 044 plans est conservé dans
+[water-solver-comparison.csv](water-solver-comparison.csv) et
+[water-solver-comparison.json](water-solver-comparison.json). Ses mesures
+précèdent le pilotage HCO₃ numérique actuel ; elles ne servent pas de preuve
+pour les nouveaux comportements. `scripts/compare-solveur.mjs` permet de
+refaire cette comparaison avec un commit de référence explicite.

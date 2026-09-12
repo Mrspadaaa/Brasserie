@@ -3,7 +3,7 @@ import { NumberInput } from './NumberInput';
 import { Trash2, Star } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
-import { computeStockLevel } from '../domain/stockLevel';
+import { computeStockLevel, pendingStockQuantity, allocatedBatches } from '../domain/stockLevel';
 import { Suggestions } from '../services/suggestions';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { QuantityStepper } from './QuantityStepper';
@@ -24,6 +24,7 @@ import { useSyncedDraft } from '../hooks/useLiveData';
 interface StockDetailSheetProps {
   item: StockItem | null;
   batches: Batch[];
+  stockItems?: StockItem[];
   onClose: () => void;
   onSave: (item: StockItem) => void;
   onDelete: (item: StockItem) => void;
@@ -35,6 +36,7 @@ interface StockDetailSheetProps {
 export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   item,
   batches,
+  stockItems,
   onClose,
   onSave,
   onDelete,
@@ -47,7 +49,9 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
 
   if (!item || !draft) return null;
 
-  const level = computeStockLevel(draft, batches);
+  const level = computeStockLevel(draft, batches, stockItems);
+  const allocated = allocatedBatches(item, batches, stockItems);
+  const pending = batches.reduce((sum, batch) => sum + pendingStockQuantity(draft, batch), 0);
   const changed = draft.currentStock !== item.currentStock;
   // Toutes les propositions viennent de la base — aucune liste inventée.
   const unitOptions: ComboOption[] = Suggestions.knownUnits().map((u) => ({
@@ -92,6 +96,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
         <div className="space-y-7">
           <section className="space-y-3">
             <LevelGauge level={level} />
+            {pending > 0 && <p className="text-sm text-water leading-relaxed">{Units.format(pending, draft.unit)} sont réservés pour les ajouts de fermentation. La couverture ci-dessus utilise le stock encore disponible après cette réserve.</p>}
             {level.perBatch !== null && (
               <p className="text-sm text-cave-400 leading-relaxed">
                 Un brassin consomme environ{' '}
@@ -107,6 +112,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
               </p>
             )}
           </section>
+          {allocated.length>0&&<details className="border-y border-cave-800"><summary className="min-h-touch py-3 cursor-pointer text-sm text-cave-200">Besoins des brassins · {allocated.length} brassin(s)</summary><ul className="space-y-2 pb-3">{allocated.map(batch=><li key={batch.id} className="flex justify-between gap-3 text-sm"><span className="min-w-0 break-words">{batch.name}<span className="block text-cave-400">{batch.id}</span></span><span className="shrink-0 tabular-nums">{Units.format(batch.qty,item.unit)}</span></li>)}</ul></details>}
 
           {/*
             Le stock ne se règle plus librement ici.

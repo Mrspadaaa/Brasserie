@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 const fake = vi.hoisted(() => ({ records: new Map<string, any[]>(), reads: [] as string[] }));
+vi.mock('../../functions/src/brewerFinanceContext', () => ({ loadBrewerFinanceContext: async () => ({ version: 1, coverage: { transactions: { loaded: 82, limit: 1500, complete: true, totalAtLeast: 82, order: 'document-id' } }, ledger: { observedExpensesCents: 886420, cashCents: null } }) }));
 vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js', () => ({
   getFirestore: () => ({ collection: (name: string) => ({ select: (...fields: string[]) => ({ limit: (limit: number) => ({ get: async () => {
     fake.reads.push(name);
@@ -12,6 +13,11 @@ import { validateChatInput, validateScope } from '../../functions/src/brewerCont
 import { brewerAppScreen } from '../../functions/src/brewerAppScreens';
 beforeEach(() => { fake.records.clear(); fake.reads.length = 0; });
 describe('Contexte des écrans du compagnon', () => {
+  it('donne aussi le contexte financier au laboratoire pour ses projets de matériel', async () => {
+    const context = await loadBrewerAppContext('production-lab');
+    expect(context.finance?.version).toBe(1);
+    expect(fake.reads).toEqual(['creativeItems', 'recipes']);
+  });
   it('autorise seulement les écrans connus et aucune modification de recette depuis un écran général', () => {
     expect(validateScope({ kind: 'app', id: 'stocks-materiel' })).toEqual({ kind: 'app', id: 'stocks-materiel' });
     expect(() => validateScope({ kind: 'app', id: 'config' })).toThrow();
@@ -27,14 +33,13 @@ describe('Contexte des écrans du compagnon', () => {
     expect(context.records.clients).toEqual([{ id: '0', name: 'Client test', type: 'Pro' }]);
     expect(JSON.stringify(context)).not.toMatch(/privé|secret/);
   });
-  it('reprend les champs financiers réels et signale les aperçus partiels', async () => {
+  it('utilise le résumé financier dédié plutôt que les 80 premières écritures brutes', async () => {
     fake.records.set('transactions', Array.from({ length: 82 }, () => ({ amountTTC: 108.1, tvaAmount: 8.1, proofUrl: 'private-file' })));
     const context = await loadBrewerAppContext('finances');
-    expect(context.records.transactions).toHaveLength(80);
-    expect(context.truncated).toEqual(['transactions']);
-    expect(context.records.transactions[0]).toMatchObject({ amountTTC: 108.1, tvaAmount: 8.1 });
+    expect(context.records).toEqual({});
+    expect(context.finance?.version).toBe(1);
+    expect(context.coverage?.transactions).toMatchObject({ loaded: 82, complete: true });
     expect(JSON.stringify(context)).not.toContain('private-file');
-    fake.records.set('transactions', [{ amountTTC: 30 }]);
-    expect((await loadBrewerAppContext('finances')).records.transactions).toEqual([{ id: '0', amountTTC: 30 }]);
+    expect(fake.reads).toEqual([]);
   });
 });

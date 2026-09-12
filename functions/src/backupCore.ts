@@ -1,4 +1,9 @@
 import { BACKUP_COLLECTIONS as BUSINESS_COLLECTIONS, BackupCollection as BusinessCollection } from './dataSchema.js';
+import { assertHopDocument } from './hopIndexSchema.js';
+import { assertHopKnowledge, assertHopTasting } from './hopPredictionSchema.js';
+import { assertHopPredictionSnapshot } from './hopPredictionValidation.js';
+import { assertNoloConfig } from './noloSchema.js';
+import { assertFinancialArchive } from './financialArchiveCore.js';
 
 export interface BackupDocument { id: string; data: Record<string, any> }
 export interface BreweryBackup {
@@ -6,6 +11,10 @@ export interface BreweryBackup {
   exportedAt: string;
   source: 'server' | 'device' | 'legacy';
   collections: Partial<Record<BusinessCollection, BackupDocument[]>>;
+}
+/** A merge restore cannot rewind a physical stock or an already started brew. */
+export function preserveOperationalState(collection: BusinessCollection, current: Record<string, any> | undefined): boolean {
+  return !!current && (['stockItems', 'finishedGoods', 'reservations', 'kegs'].includes(collection) || collection === 'batches' && !!(current.brewDay || current.stockConsumption));
 }
 const plain = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
 const validId = (id: unknown): id is string => typeof id === 'string' && id.length > 0 &&
@@ -67,6 +76,14 @@ export function parseBackup(json: string): BreweryBackup {
       if (!plain(row) || !validId(row.id) || !plain(row.data) || !Object.keys(row.data).length || seen.has(row.id)) throw new Error(`Document invalide ou dupliqué dans ${name}.`);
       seen.add(row.id);
       checkValue(row.data);
+      if (name === 'recipes' && row.data.nolo !== undefined) assertNoloConfig(row.data.nolo);
+      if (name === 'batches' && row.data.recipeSnapshot?.nolo !== undefined) assertNoloConfig(row.data.recipeSnapshot.nolo);
+      if (name === 'batches' && row.data.nolo !== undefined) assertNoloConfig(row.data.nolo);
+      if (name === 'hopVarieties' || name === 'hopLots') assertHopDocument(name, row.data, row.id);
+      if (name === 'hopKnowledge') assertHopKnowledge(row.data, row.id);
+      if (name === 'hopPredictions') assertHopPredictionSnapshot(row.data, row.id);
+      if (name === 'hopTastings') assertHopTasting(row.data, row.id);
+      if (name === 'financialArchives') assertFinancialArchive(row.data, row.id);
       const numericFields: Record<string, string[]> = {
         recipes: ['volumeL', 'boilMin'], batches: ['volumeL'], stockItems: ['currentStock', 'minStock', 'maxStock'],
         transactions: ['amountHT', 'amountTTC', 'tvaRate'], kegs: ['capacityL']
@@ -74,9 +91,14 @@ export function parseBackup(json: string): BreweryBackup {
       for (const field of numericFields[name] ?? []) if (row.data[field] != null &&
         (typeof row.data[field] !== 'number' || !Number.isFinite(row.data[field]))) throw new Error(`Valeur ${field} invalide dans ${name}/${row.id}.`);
       if (['recipes', 'batches'].includes(name) && !(row.data.volumeL > 0)) throw new Error(`Volume invalide dans ${name}/${row.id}.`);
-      if (['recipes', 'batches', 'transactions', 'clients', 'kegs', 'planning', 'creativeItems', 'expenseTemplates', 'auditLogs', 'movements', 'finishedGoods', 'reservations'].includes(name) && row.data.id !== row.id) throw new Error(`Identifiant incohérent dans ${name}/${row.id}.`);
+      if (['recipes', 'batches', 'transactions', 'clients', 'kegs', 'planning', 'creativeItems', 'expenseTemplates', 'auditLogs', 'movements', 'finishedGoods', 'reservations', 'financialPlans', 'financialAssets', 'financialClosings', 'financialPayments', 'financialProfiles', 'financeDocuments'].includes(name) && row.data.id !== row.id) throw new Error(`Identifiant incohérent dans ${name}/${row.id}.`);
+      if (['financialPlans', 'financialPayments'].includes(name) && (!Number.isSafeInteger(row.data.amountCents) || row.data.amountCents < 0)) throw new Error(`Montant CHF invalide dans ${name}/${row.id}.`);
+      if (name === 'financialPayments' && (!(row.data.amountCents > 0) || !['in', 'out'].includes(row.data.direction))) throw new Error(`Paiement invalide : ${row.id}.`);
+      if (name === 'financialClosings' && (!Number.isInteger(row.data.year) || row.data.report != null && !plain(row.data.report))) throw new Error(`Clôture invalide : ${row.id}.`);
       if (['stockItems', 'equipment'].includes(name) && row.data.ref !== row.id) throw new Error(`Référence incohérente dans ${name}/${row.id}.`);
-      if (JSON.stringify(row.data).length > 700_000) throw new Error(`Document trop volumineux : ${name}/${row.id}.`);
+      // Annual statements accept up to 900 kB in the app. Use UTF-8 bytes and
+      // leave Firestore's 1 MiB limit room for field names and document metadata.
+      if (new TextEncoder().encode(JSON.stringify(row.data)).length > 950_000) throw new Error(`Document trop volumineux : ${name}/${row.id}.`);
     }
   }
   return backup;

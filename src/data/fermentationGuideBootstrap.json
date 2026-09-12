@@ -1,0 +1,1592 @@
+[
+  {
+    "id": "white-labs-wlp300",
+    "kind": "yeast",
+    "name": "White Labs WLP300 Hefeweizen",
+    "form": "liquide",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "WLP300 Hefeweizen Ale Yeast",
+      "author": "White Labs",
+      "reference": "https://www.whitelabs.com/yeast-single?id=148&type=YEAST",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+    }
+  },
+  {
+    "id": "fermentation-white-labs-wlp300",
+    "kind": "fermentation",
+    "name": "White Labs WLP300 Hefeweizen · conduite Weissbier",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites Weissbier proposées par L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/fermentation-guide.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+    },
+    "yeastId": "white-labs-wlp300",
+    "aliases": [
+      "WLP300",
+      "WLP 300",
+      "White Labs Hefeweizen"
+    ],
+    "styles": [
+      "Weissbier",
+      "Weizen",
+      "Hefeweizen",
+      "Dunkelweizen"
+    ],
+    "aroma": {
+      "banana": "Banane en avant, explicitement décrite par le fabricant.",
+      "phenols": "Girofle présent ; la souche ne promet pas un profil sans phénols.",
+      "pof": "positive",
+      "source": {
+        "title": "WLP300 Hefeweizen Ale Yeast",
+        "author": "White Labs",
+        "reference": "https://www.whitelabs.com/yeast-single?id=148&type=YEAST",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 20,
+        "max": 22
+      },
+      "source": {
+        "title": "WLP300 Hefeweizen Ale Yeast",
+        "author": "White Labs",
+        "reference": "https://www.whitelabs.com/yeast-single?id=148&type=YEAST",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 72,
+        "max": 76
+      },
+      "source": {
+        "title": "WLP300 Hefeweizen Ale Yeast",
+        "author": "White Labs",
+        "reference": "https://www.whitelabs.com/yeast-single?id=148&type=YEAST",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "banana",
+        "name": "Banane en avant",
+        "rationale": "Premier choix liquide pour une Weissbier orientée banane : profil documenté, sans comparaison chiffrée entre marques. Le réglage proposé reste dans la fenêtre étroite du fabricant.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 22
+          },
+          "central": 21,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 21,
+                "max": 22
+              },
+              "central": 22,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "White Labs décrit un effet du taux d’ensemencement et de la température. Aucun nombre de flacons fiable sans connaître leur teneur en cellules et leur viabilité.",
+            "source": {
+              "title": "WLP300 Hefeweizen Ale Yeast",
+              "author": "White Labs",
+              "reference": "https://www.whitelabs.com/yeast-single?id=148&type=YEAST",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+            }
+          },
+          {
+            "text": "Un repos férulique à l’empâtage peut favoriser le précurseur du girofle ; ce n’est pas le levier pour accentuer la banane. Le guide ne modifie pas ton empâtage.",
+            "source": {
+              "title": "Wheat Beer Solutions — Best Practices",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/10/Wheat-Beer-Solutions-BP-ENG-digital-LalBrew.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Sections grist/mashing et phenolics. Année de publication non confirmée ; le chemin de stockage n’est pas une date bibliographique."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "balanced",
+        "name": "Banane et girofle en équilibre",
+        "rationale": "Point de départ modéré pour rechercher un équilibre banane/girofle. L’équilibre final dépend aussi du moût ; aucun ratio sensoriel n’est garanti.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 21
+          },
+          "central": 20,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 21
+              },
+              "central": 20,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "White Labs décrit un effet du taux d’ensemencement et de la température. Aucun nombre de flacons fiable sans connaître leur teneur en cellules et leur viabilité.",
+            "source": {
+              "title": "WLP300 Hefeweizen Ale Yeast",
+              "author": "White Labs",
+              "reference": "https://www.whitelabs.com/yeast-single?id=148&type=YEAST",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fermentation-wyeast-3068",
+    "kind": "fermentation",
+    "name": "Wyeast 3068 Weihenstephan Weizen · conduite Weissbier",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites Weissbier proposées par L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/fermentation-guide.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+    },
+    "yeastId": "wyeast-3068",
+    "aliases": [
+      "3068",
+      "Wyeast 3068",
+      "Weihenstephan Weizen"
+    ],
+    "styles": [
+      "Weissbier",
+      "Weizen",
+      "Hefeweizen",
+      "Dunkelweizen"
+    ],
+    "aroma": {
+      "banana": "Banane documentée ; équilibre modulable par la conduite.",
+      "phenols": "Girofle documenté et susceptible de ressortir quand les esters diminuent.",
+      "pof": "positive",
+      "source": {
+        "title": "3068 Weihenstephan Weizen",
+        "author": "Wyeast",
+        "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 18,
+        "max": 24
+      },
+      "source": {
+        "title": "3068 Weihenstephan Weizen",
+        "author": "Wyeast",
+        "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 73,
+        "max": 77
+      },
+      "source": {
+        "title": "3068 Weihenstephan Weizen",
+        "author": "Wyeast",
+        "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "banana",
+        "name": "Banane en avant",
+        "rationale": "Alternative liquide documentée. Wyeast décrit davantage d’esters avec une fermentation plus chaude ou un taux d’ensemencement réduit. Le programme chaud proposé n’est pas un optimum mesuré.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 21,
+            "max": 23
+          },
+          "central": 22,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 21,
+                "max": 23
+              },
+              "central": 22,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 22,
+                "max": 24
+              },
+              "central": 23,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Prévoir du volume libre pour une fermentation vigoureuse. Wyeast avertit qu’un surensemencement peut fortement réduire la banane ; ne pas réduire les cellules au hasard.",
+            "source": {
+              "title": "3068 Weihenstephan Weizen",
+              "author": "Wyeast",
+              "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+            }
+          },
+          {
+            "text": "Un repos férulique à l’empâtage peut favoriser le précurseur du girofle ; ce n’est pas le levier pour accentuer la banane. Le guide ne modifie pas ton empâtage.",
+            "source": {
+              "title": "Wheat Beer Solutions — Best Practices",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/10/Wheat-Beer-Solutions-BP-ENG-digital-LalBrew.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Sections grist/mashing et phenolics. Année de publication non confirmée ; le chemin de stockage n’est pas une date bibliographique."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "balanced",
+        "name": "Banane et girofle en équilibre",
+        "rationale": "Point de départ modéré pour rechercher un équilibre banane/girofle. L’équilibre final dépend aussi du moût ; aucun ratio sensoriel n’est garanti.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 19,
+            "max": 21
+          },
+          "central": 20,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 19,
+                "max": 21
+              },
+              "central": 20,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Prévoir du volume libre pour une fermentation vigoureuse. Wyeast avertit qu’un surensemencement peut fortement réduire la banane ; ne pas réduire les cellules au hasard.",
+            "source": {
+              "title": "3068 Weihenstephan Weizen",
+              "author": "Wyeast",
+              "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lallemand-munich-classic",
+    "kind": "yeast",
+    "name": "LalBrew Munich Classic",
+    "form": "sèche",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "LalBrew Munich Classic — fiche technique",
+      "author": "Lallemand",
+      "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+    }
+  },
+  {
+    "id": "fermentation-lallemand-munich-classic",
+    "kind": "fermentation",
+    "name": "LalBrew Munich Classic · conduite Weissbier",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites Weissbier proposées par L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/fermentation-guide.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+    },
+    "yeastId": "lallemand-munich-classic",
+    "aliases": [
+      "Munich Classic",
+      "Lallemand Munich Classic",
+      "LalBrew Munich Classic"
+    ],
+    "styles": [
+      "Weissbier",
+      "Weizen",
+      "Hefeweizen",
+      "Dunkelweizen"
+    ],
+    "aroma": {
+      "banana": "Banane et esters marqués dans la documentation Lallemand.",
+      "phenols": "POF+ : le girofle demeure possible, même avec une conduite orientée banane.",
+      "pof": "positive",
+      "source": {
+        "title": "LalBrew Munich Classic — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 17,
+        "max": 25
+      },
+      "source": {
+        "title": "LalBrew Munich Classic — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 76,
+        "max": 83
+      },
+      "source": {
+        "title": "LalBrew Munich Classic — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Munich Classic — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+      }
+    },
+    "plans": [
+      {
+        "goal": "banana",
+        "name": "Banane en avant",
+        "rationale": "Option sèche pour privilégier la banane. Lallemand conseille une dose plutôt basse et une température modérée pour éviter d’accentuer aussi le girofle. Rester dans la dose fabricant, à ajuster au moût.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 20
+          },
+          "central": 20,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 20
+              },
+              "central": 20,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Le levier documenté est le couple taux d’ensemencement × température. Une température maximale ne signifie pas un meilleur équilibre banane/girofle.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "La fiche annonce une fermentation possible en quatre jours à 20 °C dans son moût standard. Ce résultat de laboratoire ne fixe pas la durée de ta bière.",
+            "source": {
+              "title": "LalBrew Munich Classic — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+            }
+          },
+          {
+            "text": "Un repos férulique à l’empâtage peut favoriser le précurseur du girofle ; ce n’est pas le levier pour accentuer la banane. Le guide ne modifie pas ton empâtage.",
+            "source": {
+              "title": "Wheat Beer Solutions — Best Practices",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/10/Wheat-Beer-Solutions-BP-ENG-digital-LalBrew.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Sections grist/mashing et phenolics. Année de publication non confirmée ; le chemin de stockage n’est pas une date bibliographique."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "balanced",
+        "name": "Banane et girofle en équilibre",
+        "rationale": "Point de départ modéré pour rechercher un équilibre banane/girofle. L’équilibre final dépend aussi du moût ; aucun ratio sensoriel n’est garanti.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 19,
+            "max": 21
+          },
+          "central": 20,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 19,
+                "max": 21
+              },
+              "central": 20,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Le levier documenté est le couple taux d’ensemencement × température. Une température maximale ne signifie pas un meilleur équilibre banane/girofle.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "La fiche annonce une fermentation possible en quatre jours à 20 °C dans son moût standard. Ce résultat de laboratoire ne fixe pas la durée de ta bière.",
+            "source": {
+              "title": "LalBrew Munich Classic — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_MUNICHCLASSIC_ENG_A4-5.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026, température 17–25 °C. L’ancienne fiche Oct 2020 indique 17–22 °C ; le chemin du fichier ne donne pas une date de publication fiable."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fermentis-w68",
+    "kind": "yeast",
+    "name": "Fermentis SafAle W-68",
+    "form": "sèche",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "SafAle W-68",
+      "author": "Fermentis",
+      "reference": "https://fermentis.com/en/product/safale-w-68/",
+      "year": null,
+      "kind": "manufacturer",
+      "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+    }
+  },
+  {
+    "id": "fermentation-fermentis-w68",
+    "kind": "fermentation",
+    "name": "Fermentis SafAle W-68 · conduite Weissbier",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites Weissbier proposées par L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/fermentation-guide.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+    },
+    "yeastId": "fermentis-w68",
+    "aliases": [
+      "W-68",
+      "W68",
+      "SafAle W-68",
+      "Fermentis W-68"
+    ],
+    "styles": [
+      "Weissbier",
+      "Weizen",
+      "Hefeweizen",
+      "Dunkelweizen"
+    ],
+    "aroma": {
+      "banana": "Banane et fruits documentés, sans intensité comparative publiée ici.",
+      "phenols": "POF+ : girofle et notes poivrées font partie du profil annoncé.",
+      "pof": "positive",
+      "source": {
+        "title": "SafAle W-68",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/safale-w-68/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 18,
+        "max": 26
+      },
+      "source": {
+        "title": "SafAle W-68",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/safale-w-68/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 80
+      },
+      "source": {
+        "title": "SafAle W-68",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/safale-w-68/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "banana",
+        "name": "Banane en avant",
+        "rationale": "Autre option sèche documentée pour une bière de blé. Le choix de température est une proposition prudente : aucun optimum banane spécifique à W-68 n’est établi par la fiche.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 22
+          },
+          "central": 21,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 21,
+                "max": 23
+              },
+              "central": 22,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "La fenêtre de fermentation et la température autorisée pour le versement direct de la levure sont deux indications différentes. Ce guide utilise la fenêtre de fermentation.",
+            "source": {
+              "title": "SafAle W-68",
+              "author": "Fermentis",
+              "reference": "https://fermentis.com/en/product/safale-w-68/",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+            }
+          },
+          {
+            "text": "Un repos férulique à l’empâtage peut favoriser le précurseur du girofle ; ce n’est pas le levier pour accentuer la banane. Le guide ne modifie pas ton empâtage.",
+            "source": {
+              "title": "Wheat Beer Solutions — Best Practices",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/10/Wheat-Beer-Solutions-BP-ENG-digital-LalBrew.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Sections grist/mashing et phenolics. Année de publication non confirmée ; le chemin de stockage n’est pas une date bibliographique."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "balanced",
+        "name": "Banane et girofle en équilibre",
+        "rationale": "Point de départ modéré pour rechercher un équilibre banane/girofle. L’équilibre final dépend aussi du moût ; aucun ratio sensoriel n’est garanti.",
+        "source": {
+          "title": "Conduites Weissbier proposées par L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/fermentation-guide.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 19,
+            "max": 21
+          },
+          "central": 20,
+          "source": {
+            "title": "Conduites Weissbier proposées par L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/fermentation-guide.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+          }
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 19,
+                "max": 21
+              },
+              "central": 20,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "central": 5,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Attendre que la fermentation ralentisse et que la densité approche sa fin attendue avant de monter au palier suivant."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "central": 21,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 3
+              },
+              "central": 3,
+              "source": {
+                "title": "Conduites Weissbier proposées par L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/fermentation-guide.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+              }
+            },
+            "completeWhen": "Densité finale cohérente et stable sur des mesures successives, puis dégustation sans défaut résiduel avant refroidissement ou conditionnement. Prolonger au besoin."
+          }
+        ],
+        "notes": [
+          {
+            "text": "La fenêtre de fermentation et la température autorisée pour le versement direct de la levure sont deux indications différentes. Ce guide utilise la fenêtre de fermentation.",
+            "source": {
+              "title": "SafAle W-68",
+              "author": "Fermentis",
+              "reference": "https://fermentis.com/en/product/safale-w-68/",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fiche consultée le 8 septembre 2026 ; date de publication non indiquée."
+            }
+          },
+          {
+            "text": "Piloter la température de la bière. Pour rechercher les esters, privilégier une fermentation sans contre-pression volontaire ; ne pas fermer une cuve non prévue pour la pression.",
+            "source": {
+              "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+              "author": "Souffriau et al.",
+              "reference": "https://doi.org/10.1128/aem.00814-22",
+              "year": 2022,
+              "kind": "research",
+              "locator": "Applied and Environmental Microbiology 88(18). Effet de la pression dépendant des souches ; pas de facteur de correction applicable à ces quatre levures."
+            }
+          },
+          {
+            "text": "Garder une levure saine et une nutrition adaptée. Ne pas provoquer une carence ou un sous-ensemencement extrême pour forcer la banane. La quantité doit tenir compte du moût, de la fraîcheur et de la viabilité.",
+            "source": {
+              "title": "Precision Flavor Through Fermentation Control",
+              "author": "Lallemand",
+              "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+              "year": 2025,
+              "kind": "manufacturer",
+              "locator": "Publié le 12 juillet 2025, mis à jour le 17 septembre 2025. Section « The wheat beer example: Balancing banana and cloves »."
+            }
+          },
+          {
+            "text": "Les jours donnent un budget de temps. La densité et la dégustation décident de la fin ; prolonger si nécessaire. Le repos final ne garantit pas davantage de banane. Aucun froid ni conditionnement automatique n’est imposé.",
+            "source": {
+              "title": "Conduites Weissbier proposées par L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/fermentation-guide.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Choix éditorial du 8 septembre 2026. Consignes et plages de planification à tester : ni optimum établi, ni intervalle de confiance statistique. Les durées sont communes faute de mesures comparables par souche."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

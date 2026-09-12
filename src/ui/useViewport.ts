@@ -42,6 +42,20 @@ export function useCoarsePointer(): boolean {
   return coarse;
 }
 
+/** Layout follows available width, including a narrow desktop window or browser preview. */
+export function useMobileLayout(): boolean {
+  const [mobile, setMobile] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 639px)').matches);
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const query = window.matchMedia('(max-width: 639px)');
+    const update = () => setMobile(query.matches);
+    update();
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
+  }, []);
+  return mobile;
+}
+
 /**
  * Hauteur, en pixels, que le clavier virtuel mange en bas de l'écran.
  *

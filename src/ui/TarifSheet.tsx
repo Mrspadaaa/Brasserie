@@ -44,18 +44,19 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({
 
   // Recalculés à chaque frappe : un total stocké finit par mentir.
   const costTotal =
-    Math.round((draft.costIngredients + draft.costLabor + draft.costFixed) * 100) / 100;
+    Math.round((draft.costIngredients + draft.costFixed) * 100) / 100;
   const marginCHF = Math.round((draft.priceHT - costTotal) * 100) / 100;
   const marginPercent =
     draft.priceHT > 0 ? Math.round((marginCHF / draft.priceHT) * 1000) / 10 : 0;
 
-  const tvaRate = config.fiscal.isTvaRegistered ? config.fiscal.tvaReducedRate : 0;
+  const tvaRate = config.fiscal.isTvaRegistered ? config.fiscal.tvaNormalRate : 0;
   const priceTTC = Math.round(draft.priceHT * (1 + tvaRate) * 100) / 100;
 
   const save = () => {
     onSave({
       ...draft,
       product: draft.product.trim(),
+      costLabor: 0,
       costTotal,
       marginCHF,
       marginPercent
@@ -119,9 +120,9 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {money('Ingrédients', 'costIngredients', 'Malt, houblon, levure')}
-            {money('Main-d’œuvre', 'costLabor', 'Temps passé')}
             {money('Charges fixes', 'costFixed', 'Loyer, énergie, amortissement')}
           </div>
+          <p className="text-sm text-cave-400">Le temps personnel du brasseur est exclu du coût.</p>
 
           {money('Prix de vente HT', 'priceHT')}
 

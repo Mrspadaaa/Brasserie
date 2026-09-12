@@ -1,3 +1,4 @@
+import { estimateSwissBeerTax } from '../domain/finance/swissBeerTax';
 import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind,
   Fermentable
 } from '../types';
@@ -61,7 +62,8 @@ export const BrewingMath = {
    *   Whirlpool    — Tinseth sur la durée de contact, atténué par la
    *                  température : l'isomérisation ralentit de moitié environ
    *                  tous les 10 °C sous l'ébullition.
-   *   À cru        — ZÉRO. Le houblonnage à froid n'isomérise rien.
+   *   À cru        — aucune contribution Tinseth. L’extraction des humulinones
+   *                  et les pertes d’iso-alpha relèvent du modèle séparé à cru.
    */
   hopIbu(
     hop: { weightG: number; alpha: number; stage: HopStage; timeMin?: number; tempC?: number },
@@ -151,11 +153,12 @@ export const BrewingMath = {
       fermentabilityPct?: number;
     }>,
     volumeL: number,
-    efficiencyPct: number
+    efficiencyPct: number,
+    precision: 'rounded' | 'full' = 'rounded'
   ): { total: number; unfermentable: number } | null {
     if (!volumeL || !Number.isFinite(volumeL) || volumeL <= 0 || !fermentables.length) return null;
     if (!Number.isFinite(efficiencyPct) || efficiencyPct <= 0) return null;
-    if (fermentables.some((f) => f.potentialPpg == null || !Number.isFinite(f.potentialPpg))) {
+    if (fermentables.some((f) => (precision !== 'full' || f.weightKg !== 0) && (f.potentialPpg == null || !Number.isFinite(f.potentialPpg)))) {
       return null;
     }
 
@@ -164,6 +167,7 @@ export const BrewingMath = {
     let unfermentable = 0;
 
     fermentables.forEach((f) => {
+      if (precision === 'full' && f.weightKg === 0) return;
       const weightKg = Number.isFinite(f.weightKg) ? Math.max(0, f.weightKg) : 0;
       const isGrain = (f.kind ?? 'grain') === 'grain';
       // Le rendement d'empâtage ne concerne que ce qui passe par la maische.
@@ -183,8 +187,8 @@ export const BrewingMath = {
     });
 
     return {
-      total: Math.round(total * 10) / 10,
-      unfermentable: Math.round(unfermentable * 10) / 10
+      total: precision === 'full' ? total : Math.round(total * 10) / 10,
+      unfermentable: precision === 'full' ? unfermentable : Math.round(unfermentable * 10) / 10
     };
   },
 
@@ -225,12 +229,12 @@ export const BrewingMath = {
     attenuationPct: number,
     unfermentablePoints = 0
   ): number | null {
-    if (!og || !Number.isFinite(og) || og <= 1 || !attenuationPct || !Number.isFinite(attenuationPct) || attenuationPct <= 0) return null;
+    if (!Number.isFinite(og) || og <= 1 || !Number.isFinite(attenuationPct) || attenuationPct < 0 || attenuationPct > 100) return null;
     const safeUnfermentable = Number.isFinite(unfermentablePoints) ? Math.max(0, unfermentablePoints) : 0;
     const totalPoints = (og - 1) * 1000;
     const fermentable = Math.max(0, totalPoints - safeUnfermentable);
     const remaining = safeUnfermentable + fermentable * (1 - Math.min(100, attenuationPct) / 100);
-    return Math.round((1 + remaining / 1000) * 1000) / 1000;
+    return 1 + remaining / 1000;
   },
 
   /**
@@ -248,6 +252,9 @@ export const BrewingMath = {
   attenuationForMashTemp(baseAttenuationPct: number, mashTempC: number): number {
     if (!baseAttenuationPct || !Number.isFinite(baseAttenuationPct) || baseAttenuationPct <= 0) return 0;
     if (!Number.isFinite(mashTempC)) return baseAttenuationPct;
+    // The legacy correction was calibrated only for ordinary brewing attenuation.
+    // A maltose-negative strain must never be lifted to its old 45% floor.
+    if (baseAttenuationPct < 45) return baseAttenuationPct;
     const shift = Math.max(-8, Math.min(8, (66.5 - mashTempC) * 1.5));
     return Math.round(Math.max(45, Math.min(95, baseAttenuationPct + shift)) * 10) / 10;
   },
@@ -631,92 +638,8 @@ export const BrewingMath = {
     };
   },
 
-  // 5. Impôt fédéral sur la bière (OFDF — formulaire 45.60)
-  //
-  // ⚠️ Les taux et seuils ci-dessous sont des VALEURS PAR DÉFAUT paramétrables
-  // dans `config.fiscal`. Ils doivent être vérifiés contre le tarif OFDF en
-  // vigueur avant toute déclaration réelle. Ce qui est garanti ici, c'est la
-  // STRUCTURE du calcul :
-  //   - l'assiette est le volume RÉELLEMENT CONDITIONNÉ (bouteilles + fûts),
-  //     jamais un volume planifié ;
-  //   - le seuil « petit brasseur » se compte en HECTOLITRES de production
-  //     annuelle, pas en litres ;
-  //   - la réduction est GRADUÉE par paliers, pas binaire.
-  calculateSwissBeerTax(
-    batches: Batch[],
-    options?: {
-      ratePerHl?: number;              // taux plein CHF/hl
-      maxSmallBrewerHl?: number;       // plafond du régime petit brasseur, en hl/an
-      reliefTiersHl?: Array<{ upToHl: number; reductionPct: number }>;
-      selectedMonthYear?: string;      // MM.YYYY
-    }
-  ): {
-    totalVolumeL: number;
-    totalHectoliters: number;
-    ratePerHl: number;
-    fullRatePerHl: number;
-    reductionPct: number;
-    taxDueCHF: number;
-    batchesCount: number;
-    isSmallBrewerRate: boolean;
-  } {
-    const fullRate = options?.ratePerHl ?? 25.20;
-    const maxSmallHl = options?.maxSmallBrewerHl ?? 55000;
-    // Paliers de réduction dégressifs (production annuelle cumulée, en hl).
-    const tiers = options?.reliefTiersHl ?? [
-      { upToHl: 15000, reductionPct: 40 },
-      { upToHl: 22000, reductionPct: 20 },
-      { upToHl: 45000, reductionPct: 10 }
-    ];
-
-    let eligibleBatches = batches.filter((b) => b.status !== 'annule');
-
-    // Assiette : uniquement la bière effectivement mise en bouteille / en fût.
-    // Un brassin planifié ou encore en cuve n'est pas imposable.
-    eligibleBatches = eligibleBatches.filter(
-      (b) => typeof b.volumePackagedL === 'number' && b.volumePackagedL > 0
-    );
-
-    if (options?.selectedMonthYear) {
-      eligibleBatches = eligibleBatches.filter((b) => {
-        // On impose à la date de conditionnement, pas à la date de brassage.
-        const refDate = b.bottlingDate || b.brewDate;
-        if (!refDate) return false;
-        const parts = refDate.split('.');
-        if (parts.length === 3) {
-          const mY = `${parts[1].padStart(2, '0')}.${parts[2]}`;
-          return mY === options.selectedMonthYear;
-        }
-        return false;
-      });
-    }
-
-    const totalVolumeL = Math.round(eligibleBatches.reduce((acc, b) => acc + (b.volumePackagedL || 0), 0) * 100) / 100;
-    // 4 décimales : 0.0001 hl = 0.01 L. Arrondir l'hectolitre à 2 décimales
-    // perdrait jusqu'à 0.5 L par déclaration.
-    const totalHectoliters = Math.round((totalVolumeL / 100) * 10000) / 10000;
-
-    const isSmallBrewerRate = totalHectoliters < maxSmallHl;
-    const matchedTier = isSmallBrewerRate
-      ? tiers.find((t) => totalHectoliters < t.upToHl)
-      : undefined;
-    const reductionPct = matchedTier?.reductionPct ?? 0;
-
-    const appliedRate = Math.round(fullRate * (1 - reductionPct / 100) * 100) / 100;
-    // L'impôt se calcule sur le volume exact, on n'arrondit qu'au centime final.
-    const taxDueCHF = Math.round((totalVolumeL / 100) * appliedRate * 100) / 100;
-
-    return {
-      totalVolumeL,
-      totalHectoliters,
-      ratePerHl: appliedRate,
-      fullRatePerHl: fullRate,
-      reductionPct,
-      taxDueCHF,
-      batchesCount: eligibleBatches.length,
-      isSmallBrewerRate
-    };
-  },
+  // Compatibility entrypoint: packaged-stock reserve, never a filed tax declaration.
+  calculateSwissBeerTax: estimateSwissBeerTax,
 
   /*
    * L'ancien modèle d'eau — profil de base codé en dur, dilution et dosage des

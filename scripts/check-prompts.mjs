@@ -1,5 +1,4 @@
 import { createRequire } from 'node:module';
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -23,21 +22,17 @@ import { dirname, join } from 'node:path';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..');
 const require_ = createRequire(join(ROOT, 'package.json'));
-const { transformSync } = require_('esbuild');
+const { buildSync } = require_('esbuild');
 
-const OUT = join(ROOT, 'node_modules', '.check-prompts');
-mkdirSync(OUT, { recursive: true });
-
-/** Les prompts importent `models.js` uniquement pour un type — on le neutralise. */
-const ts = readFileSync(join(ROOT, 'functions/src/prompts.ts'), 'utf8');
-const js = transformSync(ts, { loader: 'ts', format: 'esm' }).code.replace(
-  /import\s*\{[^}]*\}\s*from\s*['"]\.\/models\.js['"];?/,
-  ''
-);
-const file = join(OUT, 'prompts.mjs');
-writeFileSync(file, js);
-
-const { TASKS } = await import(`file:///${file.split('\\').join('/')}`);
+/** Inclut les constantes locales du contrat ; les imports de types sont éliminés. */
+const { outputFiles } = buildSync({
+  entryPoints: [join(ROOT, 'functions/src/prompts.ts')],
+  bundle: true,
+  platform: 'node',
+  format: 'esm',
+  write: false
+});
+const { TASKS } = await import(`data:text/javascript;base64,${Buffer.from(outputFiles[0].text).toString('base64')}`);
 
 const VALID_TYPES = new Set(['OBJECT', 'ARRAY', 'STRING', 'NUMBER', 'INTEGER', 'BOOLEAN']);
 
@@ -94,8 +89,6 @@ Object.entries(TASKS).forEach(([id, def]) => {
     );
   }
 });
-
-rmSync(OUT, { recursive: true, force: true });
 
 if (problems.length > 0) {
   console.log(`⛔ ${problems.length} problème(s) dans les schémas IA :\n`);

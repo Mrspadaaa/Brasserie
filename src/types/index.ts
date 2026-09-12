@@ -1,3 +1,5 @@
+import type { TransactionFinance } from '../domain/finance/types';
+
 export type FinanceCategory = 
   | 'apports'
   | 'recettes'
@@ -9,6 +11,10 @@ export type FinanceCategory =
   | 'divers';
 
 export interface Transaction {
+  finance?: TransactionFinance;
+  /** Atomically maintained with dated payment events, never edited by a form. */
+  settlementBalanceCents?: number;
+  lastPaymentId?: string;
   id: string;
   date: string; // DD.MM.YYYY
   description: string;
@@ -63,6 +69,7 @@ export interface StockItem {
   potentialPpg?: number;
 
   technicalSource?: string;
+  yeastFermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
 
   /** Levure : laboratoire, souche, forme, atténuation, fourchette de fermentation. */
   yeastLab?: string;
@@ -115,6 +122,7 @@ export type FermentableKind = 'grain' | 'sucre' | 'extrait' | 'fruit' | 'lactose
 export type FermentableUse = 'empatage' | 'ebullition' | 'fermentation';
 
 export interface Fermentable {
+  stockItemRef?: string;
   name: string;
   /** Masse en kilogrammes. Nom conservé depuis `MaltIngredient` : les anciennes
    *  recettes en base restent lisibles sans réécriture. */
@@ -157,6 +165,7 @@ export type MaltIngredient = Omit<Fermentable, 'kind' | 'use'> &
 export type HopStage = 'firstWort' | 'boil' | 'whirlpool' | 'dryHop';
 
 export interface HopIngredient {
+  stockItemRef?: string;
   name: string;
   alpha: number;
   weightG: number;
@@ -169,6 +178,12 @@ export interface HopIngredient {
   dayOffset?: number;
   /** Ancien champ libre. Conservé en lecture pour les brassins déjà enregistrés. */
   step?: string;
+  /** Explicit index association; never guessed from a partial ingredient name. */
+  hopVarietyId?: string;
+  hopLotId?: string;
+  aromaTiming?: import('../../functions/src/hopPredictionSchema').HopTiming;
+  aromaContactHours?: number;
+  aromaTemperatureC?: number;
 }
 
 /**
@@ -177,7 +192,10 @@ export interface HopIngredient {
  * pour la FG.
  */
 export interface YeastSpec {
+  stockItemRef?: string;
+  fermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
   name: string;
+  hopIndexId?: string;
   /** Lallemand, White Labs, Fermentis, GigaYeast, Omega… */
   lab?: string;
   /** Référence de souche : US-05, WLP095, GY054. */
@@ -364,6 +382,7 @@ export interface FermentationStep {
 }
 
 export interface AdjunctIngredient {
+  stockItemRef?: string;
   name: string;
   amount: number;
   unit: string; // 'g', 'kg', 'mL', 'L', 'pastille', 'sachet', 'gousse'
@@ -379,7 +398,12 @@ export interface RecipeStep {
 }
 
 export interface Recipe {
+  fermentationIntent?: import('../../functions/src/fermentationIntent').FermentationIntent;
+  styleRef?: import('../../functions/src/brewingStyleSchema').BrewingStyleRef;
+  nolo?: import('../../functions/src/noloSchema').NoloConfig;
   id: string;
+  /** Organisation du carnet uniquement ; l'historique de production reste conservé. */
+  archivedAt?: string | null;
   version?: number;
   parentRecipeId?: string;
   batchRef?: string;
@@ -387,9 +411,9 @@ export interface Recipe {
   style: string;
   volumeL: number;
   brewDate?: string;
-  ogTarget: number;
-  fgTarget: number;
-  abvTarget: number;
+  ogTarget: number | null;
+  fgTarget: number | null;
+  abvTarget: number | null;
   ibuTarget?: number;
   carboTarget?: string;
   /** Values supplied by the recipe author, distinct from calculated estimates. */
@@ -411,8 +435,16 @@ export interface Recipe {
   /** Masse de GRAIN seul — le sucre n'entre pas dans une facture de grain. */
   totalGristKg: number;
   hops: HopIngredient[];
+  hopMatrixId?: string;
+  /** Documentary brewing trial used as an anchor; never certifies model scope. */
+  hopTrialId?: string;
+  hopAromaTarget?: Record<string, import('../../functions/src/hopIndexSchema').HopRange>;
+  hopSolverIntent?: import('../../functions/src/hopSolverSchema').HopSolverIntent;
+  hopPredictionIds?: string[];
   adjuncts?: AdjunctIngredient[];
   yeast: YeastSpec;
+  /** Frozen guide and adopted fermentation settings, independent of later catalogue edits. */
+  yeastGuide?: import('../domain/fermentationGuide').FermentationGuideSnapshot;
   /** Durée d'ébullition. Les recettes américaines montent souvent à 75 ou 90 min. */
   boilMin?: number;
   mash?: MashProfile;
@@ -440,7 +472,7 @@ export interface Recipe {
  * Volontairement sans `id` ni `favorite` : ce n'est plus une recette qu'on
  * range, c'est le contenu réel d'une cuve à une date donnée.
  */
-export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef'> & {
+export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef' | 'archivedAt'> & {
   /** Recette d'origine, et sa date de copie. */
   sourceRecipeId?: string;
   capturedAt: string; // ISO
@@ -526,7 +558,14 @@ export interface BatchPackaging {
 }
 
 export interface Batch {
+  nolo?: import('../../functions/src/noloSchema').NoloConfig;
+  stockAccountingVersion?: 1;
+  stockReviewIssues?: string[];
+  stockConsumption?: import('../domain/finance/brewStockConsumption').BrewStockConsumption;
   id: string; // LOT-001
+  favorite?: boolean;
+  /** Masqué du carnet courant, disponible dans Archives et les analyses. */
+  archivedAt?: string | null;
   brewDate: string;
   name: string;
   style: string;
@@ -564,7 +603,7 @@ export interface Batch {
   recipeSnapshot?: RecipeSnapshot;
   /** Déroulé du jour de brassage : minuteurs et étapes cochées. */
   brewDay?: BrewDayState;
-  gravityLog?: Array<{ date: string; sg: number; tempC: number; notes?: string }>;
+  gravityLog?: Array<{ date: string; sg: number; tempC?: number; notes?: string }>;
   waterDilutionPct?: number; // e.g. 50 for 50-50 tap/DI
   waterSalts?: {
     gypseG: number;
@@ -699,6 +738,9 @@ export interface AppConfig {
     tvaThresholdTurnover: number; // 100000 CHF
     /** Taux plein de l'impôt sur la bière, CHF/hl. À vérifier auprès de l'OFDF. */
     beerTaxFullRatePerHl: number;
+    beerTaxAnnualReductionPct?: number;
+    beerTaxReductionYear?: number;
+    beerTaxPeriod?: 'annual' | 'quarterly';
     /** Plafond du régime petit brasseur, en HECTOLITRES de production annuelle. */
     beerTaxSmallBrewerMaxHl: number;
     /** Paliers de réduction dégressifs (production annuelle en hl). */
@@ -730,6 +772,8 @@ export interface AuditLog {
 }
 
 export type TimeFilterPeriod = 
+  | `year-${number}`
+  | `month-${string}`
   | 'this-month' 
   | 'last-month' 
   | 'm-04'

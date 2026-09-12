@@ -10,6 +10,8 @@ import {
 } from './brewerLimits.js';
 import type { BrewerAiLimits } from './brewerLimits.js';
 import { GeminiApiError } from './geminiErrors.js';
+import { aiBudgetMonth, GEMINI_COST_POLICY, monthlyLimit, pricesCurrent, readMonthlyUsage } from './geminiCosts.js';
+import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 
 const controlPath = 'brewerAiControls/current';
 const emptyUsage = () => ({ calls: 0, proCalls: 0, tokens: 0 });
@@ -30,7 +32,7 @@ function readControls(data: any = {}) {
       'ai-budget-unavailable',
       'Les limites IA ne peuvent pas être vérifiées. Aucun nouvel appel Gemini.'
     );
-  return { paused: data.paused === true, limits: limits as BrewerAiLimits };
+  return { paused: data.paused === true, limits: limits as BrewerAiLimits, monthlyLimitMicroChf: monthlyLimit(data.monthlyLimitMicroChf) };
 }
 const unavailable = () =>
   new BrewerBudgetError(
@@ -43,15 +45,18 @@ export const getBrewerAiBudget = onCall(
   async (request) => {
     requireBrewer(request);
     const db = getFirestore(),
-      day = brewerBudgetDay();
-    const [controls, daily] = await Promise.all([
+      day = brewerBudgetDay(), month = aiBudgetMonth();
+    const [controls, daily, monthly] = await Promise.all([
       db.doc(controlPath).get(),
-      db.doc(`brewerAiUsage/${day}`).get()
+      db.doc(`brewerAiUsage/${day}`).get(),
+      db.doc(`brewerAiCosts/${month}`).get()
     ]);
+    const state = readControls(controls.data());
     return {
-      ...readControls(controls.data()),
+      paused: state.paused, limits: state.limits,
       day,
-      usage: { ...emptyUsage(), ...daily.data()?.usage }
+      usage: { ...emptyUsage(), ...daily.data()?.usage },
+      monthly: { month, limitMicroChf: state.monthlyLimitMicroChf, ...readMonthlyUsage(monthly.data()), pricing: pricesCurrent() ? 'current' : 'expired', pricingVerifiedAt: GEMINI_COST_POLICY.verifiedAt, pricingValidUntil: GEMINI_COST_POLICY.validUntil }
     };
   }
 );
@@ -64,7 +69,7 @@ export const setBrewerAiBudget = onCall(
     if (
       !input ||
       (input.paused != null && typeof input.paused !== 'boolean') ||
-      (input.paused == null && input.limits == null)
+      (input.paused == null && input.limits == null && input.monthlyLimitMicroChf == null)
     )
       throw new HttpsError('invalid-argument', 'État IA invalide.');
     if (
@@ -82,6 +87,10 @@ export const setBrewerAiBudget = onCall(
         }))
     )
       throw new HttpsError('invalid-argument', 'Plafonds IA invalides.');
+    if (input.monthlyLimitMicroChf != null) {
+      try { monthlyLimit(input.monthlyLimitMicroChf); }
+      catch { throw new HttpsError('invalid-argument', 'Budget mensuel invalide (0 à 100 CHF).'); }
+    }
     const db = getFirestore(),
       ref = db.doc(controlPath);
     await db.runTransaction(async (tx) => {
@@ -89,6 +98,7 @@ export const setBrewerAiBudget = onCall(
       tx.set(ref, {
         paused: input.paused ?? previous.paused,
         limits: { ...previous.limits, ...input.limits },
+        monthlyLimitMicroChf: input.monthlyLimitMicroChf ?? previous.monthlyLimitMicroChf,
         updatedAt: Date.now(),
         updatedBy: uid
       });
@@ -242,11 +252,9 @@ export function budgetedBrewerTransport(generate: Generate, jobId: string, fence
           });
       };
       try {
-        const result = await generate(
-          model,
-          requestBody,
-          AbortSignal.any([signal, stopped.signal])
-        );
+        const result = await runWithMonthlyAiBudget(model, requestBody, normalized => generate(
+          model, normalized, AbortSignal.any([signal, stopped.signal])
+        ));
         const reported = result.usageMetadata?.totalTokenCount;
         const charged = Number.isSafeInteger(reported) && reported > 0 ? reported : reserve;
         await settle(charged, 'completed');
@@ -257,6 +265,7 @@ export function budgetedBrewerTransport(generate: Generate, jobId: string, fence
         // attempted-call counter to bound loops, but release the unused tokens.
         // Timeouts, transport failures and 5xx keep their conservative reservation.
         if (e instanceof GeminiApiError && e.rejectedBeforeGeneration) await settle(0, 'rejected', e);
+        if (e instanceof BrewerBudgetError && ['ai-monthly-unconfigured', 'ai-monthly-limit', 'ai-cost-unavailable', 'ai-grounding-unavailable', 'ai-budget-unavailable'].includes(e.code)) await settle(0, 'rejected');
         if (stopped.signal.aborted) throw stopped.signal.reason;
         throw e;
       }

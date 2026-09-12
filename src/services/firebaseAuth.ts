@@ -1,11 +1,12 @@
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithCredential,
   signOut,
   onAuthStateChanged,
   User
 } from 'firebase/auth';
 import { app, auth } from './firebase';
+import { authorizeGoogleDrive, prepareGoogleAuthorization, renewGoogleDriveToken } from './googleAuthorization';
 
 export { app, auth };
 export { firebaseConfig } from './firebase';
@@ -57,25 +58,14 @@ export const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope(DRIVE_SCOPE);
-// Force le ré-affichage du sélecteur de compte : évite qu'un mauvais compte
-// reste collé en session, et redonne un jeton Drive frais.
-googleProvider.setCustomParameters({ prompt: 'consent select_account' });
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-/**
- * Jeton d'accès Google (Drive) issu de la connexion.
- *
- * Gardé EN MÉMOIRE uniquement, jamais dans localStorage : un jeton OAuth donne
- * accès au Drive de Gaëtan, il n'a rien à faire dans un stockage persistant que
- * n'importe quel script de la page peut relire. Il vit environ une heure ; à
- * l'expiration, `driveTokenExpired()` le signale et l'interface propose une
- * reconnexion.
- */
-let driveAccessToken: string | null = null;
-let driveTokenExpiresAt = 0;
-
-function setDriveToken(token: string | null, lifetimeSeconds = 3600) {
-  driveAccessToken = token;
-  driveTokenExpiresAt = token ? Date.now() + lifetimeSeconds * 1000 : 0;
+// Only the short-lived access token lives in browser memory. The offline grant
+// is encrypted on the server and strictly bound to the Google/Firebase owner.
+let driveAccessToken: string | null = null, driveTokenExpiresAt = 0, driveTokenOwner: string | null = null;
+let renewal: { uid: string; promise: Promise<string | null> } | null = null;
+function setDriveToken(token: string | null, expiresAt = 0, uid: string | null = null) {
+  driveAccessToken = token; driveTokenExpiresAt = expiresAt; driveTokenOwner = uid;
 }
 
 function isEmailAuthorized(email?: string | null): boolean {
@@ -108,76 +98,56 @@ export const FirebaseAuthService = {
   // --- Jeton Google Drive ---
 
   getDriveAccessToken(): string | null {
-    if (!driveAccessToken) return null;
-    if (Date.now() >= driveTokenExpiresAt) return null;
-    return driveAccessToken;
+    return driveTokenOwner === auth.currentUser?.uid && Date.now() < driveTokenExpiresAt - 60_000 ? driveAccessToken : null;
+  },
+  driveTokenExpired(): boolean { return driveTokenOwner === auth.currentUser?.uid && Boolean(driveAccessToken) && !this.getDriveAccessToken(); },
+  hasDriveAccess(): boolean { return this.getDriveAccessToken() !== null; },
+  prepareGoogleLogin: prepareGoogleAuthorization,
+
+  /** Silent renewal after a reload or expiry. Never opens a consent popup. */
+  async ensureDriveAccessToken(rejectedToken?: string): Promise<string | null> {
+    const user = auth.currentUser;
+    if (!user) return null;
+    const cached = this.getDriveAccessToken();
+    if (cached && cached !== rejectedToken) return cached;
+    if (renewal?.uid === user.uid) return renewal.promise;
+    const promise = renewGoogleDriveToken(rejectedToken).then(result => {
+      if (auth.currentUser?.uid !== user.uid) return null;
+      setDriveToken(result.accessToken, result.expiresAt, user.uid);
+      return result.accessToken;
+    }).catch(error => {
+      if (auth.currentUser?.uid === user.uid && error?.code === 'functions/failed-precondition') { setDriveToken(null); return null; }
+      throw error;
+    }).finally(() => { if (renewal?.promise === promise) renewal = null; });
+    renewal = { uid: user.uid, promise };
+    return promise;
   },
 
-  /** Vrai si un jeton a existé mais a expiré : l'interface doit proposer de se reconnecter. */
-  driveTokenExpired(): boolean {
-    return driveAccessToken !== null && Date.now() >= driveTokenExpiresAt;
-  },
-
-  hasDriveAccess(): boolean {
-    return this.getDriveAccessToken() !== null;
-  },
-
-  /**
-   * Redemande un jeton Drive sans changer de compte. Utilisé quand un envoi
-   * échoue parce que le jeton d'une heure a expiré.
-   */
+  /** One-time offline consent for existing sessions, on the same Google account. */
   async refreshDriveAccess(): Promise<{ success: boolean; error?: string }> {
+    const current = auth.currentUser;
+    if (!current) return { success: false, error: 'Reconnecte-toi à la brasserie avant de connecter Drive.' };
     try {
-      const provider = new GoogleAuthProvider();
-      provider.addScope(DRIVE_SCOPE);
-      const currentEmail = auth.currentUser?.email;
-      provider.setCustomParameters(
-        currentEmail ? { login_hint: currentEmail } : { prompt: 'select_account' }
-      );
-
-      const result = await signInWithPopup(auth, provider);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      if (!credential?.accessToken) {
-        return { success: false, error: "Google n'a pas renvoyé d'autorisation Drive." };
-      }
-      setDriveToken(credential.accessToken);
+      const result = await authorizeGoogleDrive(current.email || undefined);
+      if (auth.currentUser?.uid !== current.uid) return { success: false, error: 'Le compte a changé. Reconnecte le compte de la brasserie.' };
+      if (!result.persistent || !result.accessToken) return { success: false, error: 'Coche l’accès aux fichiers Drive de la brasserie dans la fenêtre Google pour conserver la connexion.' };
+      setDriveToken(result.accessToken, result.expiresAt, current.uid);
       return { success: true };
-    } catch (err: any) {
-      if (err?.code === 'auth/popup-closed-by-user') {
-        return { success: false, error: 'Reconnexion annulée.' };
-      }
-      return { success: false, error: err?.message || 'Reconnexion à Google Drive impossible.' };
-    }
+    } catch (error: any) { return { success: false, error: error.message || 'La connexion Google n’a pas abouti.' }; }
   },
 
   async loginWithGoogle(): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-
-      if (!isEmailAuthorized(user.email)) {
-        await signOut(auth);
-        setDriveToken(null);
-        return {
-          success: false,
-          error: "Accès refusé. Ce compte n'est pas autorisé."
-        };
+      const grant = await authorizeGoogleDrive();
+      if (!grant.idToken) return { success: false, error: 'La connexion Google n’a pas abouti. Réessaie.' };
+      const result = await signInWithCredential(auth, GoogleAuthProvider.credential(grant.idToken, grant.accessToken));
+      if (!isEmailAuthorized(result.user.email)) {
+        await signOut(auth); setDriveToken(null);
+        return { success: false, error: 'Accès refusé. Ce compte n’est pas autorisé.' };
       }
-
-      // Le jeton Drive arrive avec la connexion : plus rien à coller à la main.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      setDriveToken(credential?.accessToken ?? null);
-
-      return { success: true, user };
-    } catch (err: any) {
-      if (err.code === 'auth/popup-closed-by-user') {
-        return { success: false, error: 'Connexion annulée.' };
-      }
-      return {
-        success: false,
-        error: err.message || 'Erreur lors de la connexion avec Google.'
-      };
-    }
+      setDriveToken(grant.accessToken, grant.expiresAt, result.user.uid);
+      return { success: true, user: result.user };
+    } catch (error: any) { return { success: false, error: error.message || 'Erreur lors de la connexion avec Google.' }; }
   },
 
   async logout(): Promise<void> {

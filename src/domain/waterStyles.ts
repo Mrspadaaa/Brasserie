@@ -30,16 +30,10 @@ export const WATER_PROFILE_SOURCES = [
   }
 ];
 
-/** Repère visuel fixe, y compris HCO₃. Il ne se recalcule jamais depuis les
- * doses : le dosage alcalin/acide reste piloté par la maische, pas ce repère.
- */
+/** All six selected ion ranges remain fixed when doses or the ratio change. */
 export function styleIonRange(style: StyleWater, ion: keyof WaterIons): IonRange {
   return style.ions[ion];
 }
-
-/** Hors cible HCO₃ n’est pas une alerte de pH. Une cible personnelle reste explicite. */
-export const isIndicativeIon = (style: StyleWater, ion: keyof WaterIons): boolean =>
-  ion === 'hco3' && style.code !== '~';
 
 const R = (min: number, max: number): IonRange => ({ min, max });
 
@@ -453,7 +447,7 @@ export const STYLE_WATERS: StyleWater[] = [
   }
 ];
 
-/** Le milieu de fourchette — ce que vise le solveur. */
+/** Centre géométrique des plages ; la politique de dosage vit dans water/profileTarget. */
 export function midpoint(style: StyleWater): WaterIons {
   const mid = (r: IonRange) => Math.round((r.min + r.max) / 2);
   return {
@@ -593,3 +587,11 @@ export function styleWaterForName(name: string): StyleWater {
   if (/garde/.test(s)) return by('24C');
   return by('—');
 }
+
+/** Current recipes use the versioned registry. The old name matcher remains only
+ * for legacy consumers; it must not silently choose a profile for a new style. */
+export function styleWaterForReference(name: string, ref?: BrewingStyleRef, styles?: ListedStyle[]): StyleWater {
+  return styleByCode(resolveBrewingStyle(name,ref,styles)?.suggestions?.water ?? '—');
+}
+import { resolveBrewingStyle, type ListedStyle } from './brewingStyles';
+import type { BrewingStyleRef } from '../../functions/src/brewingStyleSchema';

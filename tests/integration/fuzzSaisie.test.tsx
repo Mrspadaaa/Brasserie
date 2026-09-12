@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render as testingRender, screen, fireEvent, cleanup } from '@testing-library/react';
 import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
 import { QuantityStepper } from '../../src/ui/QuantityStepper';
 import { NumberInput } from '../../src/ui/NumberInput';
@@ -122,7 +122,9 @@ describe('Fuzz — l’atelier de l’eau encaisse n’importe quelle saisie', (
       });
     });
     expect(fautes).toEqual([]);
-  });
+    // This batch exercises hundreds of sequential React updates. Keep its
+    // assertions intact while allowing the full suite's parallel CPU load.
+  }, 30_000);
 
   it('⚠️ aucune dose de sel ne devient négative', () => {
     const { container } = atelier();
@@ -381,3 +383,9 @@ const RECETTE_FUZZ = {
   steps: [],
   notes: []
 } as unknown as Recipe;
+
+// Open advanced salts for the existing numeric/chemistry regressions.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);return view;
+}

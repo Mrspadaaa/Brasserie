@@ -9,9 +9,11 @@ import { defaultConfig, StorageService } from '../../src/services/storage';
 import { SettingsModal } from '../../src/components/SettingsModal';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { Recipe } from '../../src/types';
+import { brewerJobs } from '../../src/services/brewerJobs';
 const rig = { ...defaultConfig.brewhouses[0], volumeL: 24, equipment: { ...practicalEquipment } };
 afterEach(() => {
   cleanup();
+  brewerJobs.stop(); // The app-wide poller must not outlive this browser fixture.
   vi.restoreAllMocks();
 });
 describe('Réglages matériels discrets', () => {

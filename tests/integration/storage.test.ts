@@ -22,9 +22,14 @@ const fakeRepo = {
     Array.from(store.get(name)?.entries() ?? []).map(
       ([__docId, doc]) => ({ ...doc, __docId }) as T
     ),
-  put: (name: string, id: string, doc: unknown) => {
+  put: (name: string, id: string, doc: unknown, options?: { merge?: boolean }) => {
     if (!store.has(name)) store.set(name, new Map());
-    store.get(name)!.set(id, JSON.parse(JSON.stringify(doc)));
+    const value = options?.merge ? { ...store.get(name)!.get(id), ...(doc as object) } : doc;
+    store.get(name)!.set(id, JSON.parse(JSON.stringify(value)));
+  },
+  adjustNumber: (name: string, id: string, field: string, delta: number, extra: Record<string, unknown> = {}) => {
+    const current = store.get(name)?.get(id) ?? {};
+    fakeRepo.put(name, id, { ...extra, [field]: (Number(current[field]) || 0) + delta }, { merge: true });
   },
   remove: (name: string, id: string) => {
     store.get(name)?.delete(id);
@@ -212,6 +217,72 @@ describe('Recettes et brassins', () => {
     steps: [],
     notes: []
   };
+
+  it('planifie sans sortir le stock, puis journalise la sortie une seule fois', () => {
+    StorageService.addStockItem('rawMaterials', stockItem({ name: 'Pale' }));
+    StorageService.addStockItem('rawMaterials', stockItem({ ref: 'H', name: 'Citra', category: 'Houblon', unit: 'g', currentStock: 100 }));
+    StorageService.addStockItem('rawMaterials', stockItem({ ref: 'Y', name: 'US-05', category: 'Levure', unit: 'sachet', currentStock: 4 }));
+    const planned = StorageService.brewRecipeAndDeductStocks(recipe, 'LOT-NEW');
+    expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'MP-001')?.currentStock).toBe(25);
+    expect(planned.stockAccountingVersion).toBe(1);
+    expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
+    expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'MP-001')?.currentStock).toBe(20);
+    expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'H')?.currentStock).toBe(100); // dry hop remains reserved
+    expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
+    expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'MP-001')?.currentStock).toBe(20);
+    expect(fakeRepo.all('movements')).toHaveLength(2);
+  });
+
+  it('ne reconstruit pas automatiquement le stock d’un brassin historique', () => {
+    const historical = { id: 'LOT-OLD', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'fermentation' as const, recipeSnapshot: captureSnapshot(recipe) };
+    StorageService.addBatch(historical);
+    const result = StorageService.completeBrewStock(historical);
+    expect(result.success).toBe(false);
+    expect(result.issues.join(' ')).toContain('historique');
+    expect(fakeRepo.all('movements')).toEqual([]);
+    expect(StorageService.getBatches()[0].stockReviewIssues).toEqual(result.issues);
+  });
+
+  it('une ancienne fiche ne peut ni effacer ni régresser les étapes de stock confirmées', () => {
+    const historical = { id: 'LOT-OLD', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'fermentation' as const };
+    StorageService.addBatch(historical);
+    expect(StorageService.completeBrewStock(historical, 'historical-already', true).success).toBe(true);
+    const confirmed = StorageService.getBatches()[0].stockConsumption;
+    const put = vi.spyOn(fakeRepo, 'put');
+    StorageService.updateBatch({ ...historical, fg: '1.012', stockConsumption: { appliedAt: 'old', eventId: 'old', items: [], pendingItems: [], completedStages: ['brewday'] } });
+    const write = put.mock.calls.find(call => call[0] === 'batches');
+    expect(write?.[2]).not.toHaveProperty('stockConsumption');
+    expect(write?.[3]).toEqual({ merge: true });
+    expect(StorageService.getBatches()[0].stockConsumption).toEqual(confirmed);
+    expect(StorageService.getBatches()[0].stockAccountingVersion).toBe(1);
+    expect(StorageService.getBatches()[0].fg).toBe('1.012');
+    put.mockRestore();
+    StorageService.updateBatch({ ...historical, og: '1.055' });
+    expect(StorageService.getBatches()[0].stockConsumption).toEqual(confirmed);
+  });
+
+  it('réconcilie explicitement les historiques sans écrire de mouvements ou remplacer un marqueur confirmé', () => {
+    const old = { id: 'LOT-OLD', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'planifie' as const };
+    StorageService.addBatch(old);
+    expect(StorageService.completeBrewStock(old, 'historical-unconsumed').success).toBe(false);
+    expect(StorageService.completeBrewStock(old, 'historical-unconsumed', true).success).toBe(true);
+    expect(StorageService.getBatches()[0].stockAccountingVersion).toBe(1);
+    expect(StorageService.getBatches()[0].stockConsumption).toBeUndefined();
+    expect(StorageService.completeBrewStock(old, 'historical-already', true).success).toBe(true);
+    const marker = StorageService.getBatches()[0].stockConsumption;
+    expect(marker).toMatchObject({ historicalConfirmation: { choice: 'already-consumed' }, completedStages: ['brewday', 'remaining'], items: [] });
+    expect(StorageService.completeBrewStock(old, 'historical-unconsumed', true).success).toBe(false);
+    expect(StorageService.getBatches()[0].stockConsumption).toEqual(marker);
+    expect(fakeRepo.all('movements')).toEqual([]);
+  });
+
+  it('refuse un commit de stock préparé avant une confirmation plus récente', () => {
+    const old = { id: 'LOT-OLD', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'planifie' as const };
+    StorageService.addBatch(old);
+    StorageService.completeBrewStock(old, 'historical-already', true);
+    expect(() => StorageService.updateBatch(old, { previous: undefined })).toThrow('Le stock de ce brassin a changé');
+    expect(StorageService.getBatches()[0].stockConsumption?.historicalConfirmation?.choice).toBe('already-consumed');
+  });
 
   it('⚠️ `updateRecipe` modifie UNE recette — seul `saveRecipes` existait, réécrivant tout', () => {
     StorageService.addRecipe(recipe);

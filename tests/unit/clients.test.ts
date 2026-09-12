@@ -47,10 +47,9 @@ describe('Filtre par période', () => {
     expect(DateUtils.isDateInPeriod(undefined, 'all')).toBe(true);
   });
 
-  it('garde une écriture dont la date est illisible plutôt que de la cacher', () => {
-    // Cacher une pièce comptable parce qu'on n'a pas su lire sa date serait la
-    // faire disparaître des totaux sans que personne s'en aperçoive.
-    expect(DateUtils.isDateInPeriod('date inconnue', 'q1')).toBe(true);
+  it('conserve les dates inconnues dans l’historique sans inventer leur trimestre', () => {
+    expect(DateUtils.isDateInPeriod('date inconnue', 'all')).toBe(true);
+    expect(DateUtils.isDateInPeriod('date inconnue', 'q1')).toBe(false);
   });
 
   it('range les mois dans le bon trimestre', () => {
@@ -70,7 +69,7 @@ describe('Filtre par période', () => {
   });
 
   it('donne un libellé lisible à chaque période', () => {
-    expect(DateUtils.getPeriodLabel('q3')).toContain('Trimestre');
+    expect(DateUtils.getPeriodLabel('q3')).toContain('trimestre');
     expect(DateUtils.getPeriodLabel('all')).toContain('historique');
   });
 });

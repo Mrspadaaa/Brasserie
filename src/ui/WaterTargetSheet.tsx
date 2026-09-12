@@ -6,6 +6,8 @@ import { NumberInput } from './NumberInput';
 import { Sheet } from './Sheet';
 import { Field, inputClass } from './FormNav';
 import { ClipboardPaste, Check, AlertTriangle } from 'lucide-react';
+import type { CustomTarget } from './water/types';
+export type { CustomTarget } from './water/types';
 
 /**
  * Créer une cible d'eau à partir de ce que dit la recette.
@@ -22,11 +24,6 @@ import { ClipboardPaste, Check, AlertTriangle } from 'lucide-react';
  * inventer. Ce que le lecteur ne trouve pas reste VIDE et le dit — jamais une
  * valeur plausible.
  */
-
-export interface CustomTarget {
-  name: string;
-  ions: Partial<WaterIons>;
-}
 
 interface WaterTargetSheetProps {
   open: boolean;
