@@ -48,6 +48,7 @@ interface NumberInputProps {
   id?: string;
   'aria-label'?: string;
   'aria-describedby'?: string;
+  'aria-invalid'?: React.AriaAttributes['aria-invalid'];
 }
 
 export const NumberInput: React.FC<NumberInputProps> = (props) => {
@@ -65,7 +66,8 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
     autoFocus,
     id,
     'aria-label': ariaLabel,
-    'aria-describedby': ariaDescribedBy
+    'aria-describedby': ariaDescribedBy,
+    'aria-invalid': ariaInvalid
   } = props;
   const emptyValue = 'emptyValue' in props ? props.emptyValue : 0;
   const inputRef = useRef<InputElement>(null);
@@ -79,6 +81,7 @@ export const NumberInput: React.FC<NumberInputProps> = (props) => {
       name={id ? `num_${id}` : undefined}
       aria-label={ariaLabel}
       aria-describedby={ariaDescribedBy}
+      aria-invalid={ariaInvalid}
       type="text"
       inputMode={integer ? 'numeric' : 'decimal'}
       enterKeyHint="next"

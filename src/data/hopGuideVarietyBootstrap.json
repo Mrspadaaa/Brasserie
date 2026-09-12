@@ -1,6 +1,46 @@
 {
   "hopVarieties": [
     {
+      "id": "ych-citra",
+      "name": "Citra",
+      "aliases": ["Citra® Brand", "HBC 394"],
+      "origin": "États-Unis",
+      "form": "unknown",
+      "descriptions": [{
+        "text": "Le fabricant décrit des agrumes, fruits à noyau et fruits tropicaux, avec une nuance boisée. Ce profil variétal ne mesure pas l’intensité dans la bière. Plusieurs formes sont commercialisées : identifier le produit et l’alpha du lot avant un calcul d’amertume.",
+        "context": "unspecified",
+        "source": {
+          "title": "Citra® Brand · HBC 394",
+          "author": "Yakima Chief Hops",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.yakimachief.com/variety/citra-brand",
+          "locator": "Présentation, Aroma Profile et formes commercialisées ; consulté le 12 septembre 2026. Fiche non datée, sans analyse de lot importée."
+        }
+      }],
+      "analysis": []
+    },
+    {
+      "id": "ych-mosaic",
+      "name": "Mosaic",
+      "aliases": ["Mosaic® Brand", "HBC 369"],
+      "origin": "États-Unis",
+      "form": "unknown",
+      "descriptions": [{
+        "text": "Le fabricant décrit des petits fruits, agrumes, fruits tropicaux et fruits à noyau. Ce profil variétal ne mesure pas l’intensité dans la bière. Plusieurs formes sont commercialisées : identifier le produit et l’alpha du lot avant un calcul d’amertume.",
+        "context": "unspecified",
+        "source": {
+          "title": "Mosaic® Brand · HBC 369",
+          "author": "Yakima Chief Hops",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.yakimachief.com/variety/mosaic-brand",
+          "locator": "Présentation, Aroma Profile et formes commercialisées ; consulté le 12 septembre 2026. Fiche non datée, sans analyse de lot importée."
+        }
+      }],
+      "analysis": []
+    },
+    {
       "id": "ych-idaho7",
       "name": "Idaho 7",
       "aliases": ["Idaho 7® Brand", "J-007"],

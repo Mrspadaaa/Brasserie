@@ -17,8 +17,8 @@ import { useCoarsePointer, useKeyboardInset } from './useViewport';
  * Ce composant marche des deux côtés :
  *   ORDINATEUR — on tape, ↑ ↓ parcourent, Entrée choisit, Échap ferme.
  *                Tab ferme et passe au champ suivant en conservant la saisie.
- *   TÉLÉPHONE  — la liste s'ouvre au toucher, les options font 48 px,
- *                et chacune affiche son stock réel.
+ *   TÉLÉPHONE — la liste s'ouvre au toucher ; les options présentent leurs
+ *              données utiles, avec une variante compacte pour les catalogues.
  *
  * La recherche est floue (fuse.js) : « caramunch » trouve « Caramünch »,
  * « rostgerste » trouve « Röstgerste ». Sur des noms allemands, c'est la
@@ -75,6 +75,8 @@ interface ComboboxProps {
   ariaLabel?: string;
   /** Search the whole catalogue, then bound the rendered suggestions. */
   maxResults?: number;
+  /** Compact two-line options and visible groups for dense ingredient catalogues. */
+  compact?: boolean;
 }
 
 export const Combobox: React.FC<ComboboxProps> = ({
@@ -90,7 +92,8 @@ export const Combobox: React.FC<ComboboxProps> = ({
   searchKeys = DEFAULT_SEARCH_KEYS,
   searchThreshold = 8,
   ariaLabel,
-  maxResults = Infinity
+  maxResults = Infinity,
+  compact = false
 }) => {
   const generatedId = useId();
   const inputId = id ?? generatedId;
@@ -457,13 +460,15 @@ export const Combobox: React.FC<ComboboxProps> = ({
           {results.map((opt, i) => {
             const isActive = i === active;
             const isSelected = opt.value === value;
-            return (
+            return <React.Fragment key={opt.value}>
+              {compact && opt.group && opt.group !== results[i - 1]?.group && <li role="presentation" aria-hidden="true" className="px-2 pt-1.5 pb-0.5 text-xs font-semibold text-cave-200">{opt.group}</li>}
+              {(
               <li
-                key={opt.value}
                 id={`${inputId}-opt-${i}`}
                 data-index={i}
                 role="option"
                 aria-selected={isSelected}
+                aria-label={compact ? [opt.label, opt.group, opt.detail].filter(Boolean).join(' · ') : undefined}
                 onPointerDown={(e) => onOptionPointerDown(e, i)}
                 onPointerUp={(e) => onOptionPointerUp(e, i)}
                 onPointerCancel={onOptionPointerCancel}
@@ -471,21 +476,21 @@ export const Combobox: React.FC<ComboboxProps> = ({
                 // Le survol ne surligne qu'à la souris : au doigt, il se
                 // déclencherait à chaque option traversée en défilant.
                 onPointerEnter={(e) => e.pointerType === 'mouse' && setActive(i)}
-                className={`min-h-touch px-4 py-2 flex items-center gap-3 cursor-pointer
+                className={`min-h-touch flex items-center cursor-pointer ${compact ? 'px-2 py-1 gap-2' : 'px-4 py-2 gap-3'}
                             ${isActive ? 'bg-cave-850' : ''}`}
               >
                 {opt.favorite && <Star className="w-4 h-4 fill-ebc-straw text-ebc-straw shrink-0" />}
 
                 <span className="min-w-0 flex-1">
-                  <span className="block text-base text-cave-50 truncate">{opt.label}</span>
+                  <span className={`block text-cave-50 truncate ${compact ? 'text-[13px] leading-tight' : 'text-base'}`}>{opt.label}</span>
                   {opt.detail && (
-                    <span className="block text-sm text-cave-400 truncate">{opt.detail}</span>
+                    <span className={`block text-cave-400 truncate ${compact ? 'text-xs leading-tight' : 'text-sm'}`}>{opt.detail}</span>
                   )}
                 </span>
 
                 {isSelected && <Check className="w-5 h-5 text-ebc-straw shrink-0" />}
               </li>
-            );
+            )}</React.Fragment>;
           })}
 
           {canCreate && (
@@ -499,12 +504,12 @@ export const Combobox: React.FC<ComboboxProps> = ({
               onPointerCancel={onOptionPointerCancel}
               onClick={(e) => onOptionClick(e, results.length)}
               onPointerEnter={(e) => e.pointerType === 'mouse' && setActive(results.length)}
-              className={`min-h-touch px-4 py-2 flex items-center gap-3 cursor-pointer
+              className={`min-h-touch flex items-center cursor-pointer ${compact ? 'px-2 py-1 gap-2' : 'px-4 py-2 gap-3'}
                           border-t border-cave-800 text-ebc-straw
                           ${active === results.length ? 'bg-cave-850' : ''}`}
             >
               <Plus className="w-5 h-5 shrink-0" />
-              <span className="text-base truncate">{createLabel(query.trim())}</span>
+              <span className={`${compact ? 'text-[13px]' : 'text-base'} truncate`}>{createLabel(query.trim())}</span>
             </li>
           )}
         </ul>
