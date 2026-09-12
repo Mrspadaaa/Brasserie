@@ -3,12 +3,11 @@ import {beforeEach,describe,it,expect,vi} from 'vitest';
 import {render,screen,fireEvent,waitFor,cleanup,within} from '@testing-library/react';
 import {webcrypto} from 'node:crypto';
 const state=vi.hoisted(()=>({saved:vi.fn(),scanned:vi.fn(),confirmed:vi.fn().mockResolvedValue(undefined)}));
-vi.mock('../../src/ui/Sheet',()=>({Sheet:({title,children,footer}:any)=><div role="dialog" aria-label={title}><h2>{title}</h2>{children}{footer}</div>}));
 vi.mock('../../src/services/storage',()=>({StorageService:{getStocks:()=>({rawMaterials:[],cleaning:[],equipment:[]}),getTransactions:()=>[],confirmPendingWrites:()=>state.confirmed()}}));
 vi.mock('../../src/services/financeService',()=>({FinanceService:{getPlans:()=>[]}}));
 vi.mock('../../src/services/firestoreRepo',()=>({isConfirmedWriteRejection:(error:any)=>error?.status==='rejected'}));
 vi.mock('../../src/services/geminiScanner',()=>({GeminiScannerService:{scanDocument:(...args:any[])=>state.scanned(...args),fileToDataUrl:async()=>'data:application/pdf;base64,JVBERi0xLjQK',normalizeMimeType:()=>'application/pdf'}}));
-vi.mock('../../src/services/purchaseEntry',()=>({savePurchaseWithProof:async(draft:any)=>{await state.saved(draft);return 'TX-test';},confirmPurchase:()=>state.confirmed(),purchaseDuplicates:()=>[],validatePurchase:(draft:any)=>!draft.amount||!draft.description?['Renseigne le montant et le libellé.']:[]}));
+vi.mock('../../src/services/purchaseEntry',async importOriginal=>({...await importOriginal<any>(),savePurchaseWithProof:async(draft:any)=>{await state.saved(draft);return 'TX-test';},confirmPurchase:()=>state.confirmed(),purchaseDuplicates:()=>[]}));
 import {ExpenseSheet} from '../../src/ui/finance/ExpenseSheet';
 import {FirebaseAuthService} from '../../src/services/firebaseAuth';
 beforeEach(()=>{cleanup();vi.restoreAllMocks();state.saved.mockReset();state.scanned.mockReset().mockResolvedValue({ok:false,error:'Lecture indisponible. Saisie manuelle possible.'});vi.spyOn(FirebaseAuthService,'ensureDriveAccessToken').mockResolvedValue('synthetic-token');vi.spyOn(FirebaseAuthService,'prepareGoogleLogin').mockResolvedValue();state.confirmed.mockReset().mockResolvedValue(undefined);});
@@ -114,6 +113,7 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     expect(screen.queryByRole('button',{name:'Remplir depuis le justificatif'})).not.toBeInTheDocument();
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'555'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
+    fireEvent.change(screen.getByLabelText('Montant ligne 1'),{target:{value:'505'}});fireEvent.blur(screen.getByLabelText('Montant ligne 1'));
     fireEvent.click(screen.getByRole('button',{name:'Confirmer et enregistrer'}));
     await waitFor(()=>expect(state.saved).toHaveBeenCalledOnce());
     expect(state.scanned).toHaveBeenCalledOnce();
@@ -122,6 +122,19 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
 });
 
 describe('Saisie quotidienne et reprise sans doublon',()=>{
+  it('ouvre uniquement la TVA fautive et efface le message dès sa correction',()=>{
+    const view=render(<ExpenseSheet onClose={()=>{}} onSaved={()=>{}}/>);
+    fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'50'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
+    fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Achat fictif'}});
+    const vat=screen.getByLabelText('TVA source (CHF)');
+    fireEvent.change(vat,{target:{value:'60'}});fireEvent.blur(vat);
+    fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));
+    expect(screen.getByRole('alert')).toHaveTextContent('Vérifie le montant de TVA');
+    expect(vat).toHaveFocus();expect(vat.closest('details')).toHaveAttribute('open');
+    expect(view.container.querySelectorAll('details[data-purchase-options][open]')).toHaveLength(0);
+    fireEvent.change(vat,{target:{value:'0'}});fireEvent.blur(vat);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();expect(state.saved).not.toHaveBeenCalled();
+  });
   it('garde la facture et les montants après révocation Drive, sans relancer la lecture à la reconnexion',async()=>{
     Object.defineProperty(crypto,'subtle',{configurable:true,value:webcrypto.subtle});
     vi.spyOn(FirebaseAuthService,'hasDriveAccess').mockReturnValue(false);vi.mocked(FirebaseAuthService.ensureDriveAccessToken).mockResolvedValue(null);
@@ -166,7 +179,6 @@ describe('Saisie quotidienne et reprise sans doublon',()=>{
   });
   it('préclasse un achat simple et conserve le type choisi explicitement par le brasseur',()=>{
     render(<ExpenseSheet onClose={()=>{}} onSaved={()=>{}}/>);
-    fireEvent.click(screen.getByRole('button',{name:'Saisir sans justificatif'}));
     fireEvent.change(screen.getByLabelText('Catégorie'),{target:{value:'nettoyage'}});
     expect(screen.getByLabelText('Nature ligne 1')).toHaveValue('cleaning');
     expect(screen.getByLabelText('Stock ligne 1')).toHaveValue('none');
@@ -175,14 +187,18 @@ describe('Saisie quotidienne et reprise sans doublon',()=>{
     expect(screen.getByLabelText('Nature ligne 1')).toHaveValue('maintenance');
     expect(screen.getByLabelText('Matériel ligne 1')).toHaveValue('none');
   });
-  it('ouvre sur photo/fichier, valide la saisie manuelle et enregistre une seule fois',async()=>{
+  it('ouvre directement le formulaire, corrige les erreurs sans ouvrir les options et enregistre une seule fois',async()=>{
     const onSaved=vi.fn();render(<React.StrictMode><ExpenseSheet onClose={()=>{}} onSaved={onSaved}/></React.StrictMode>);
-    expect(screen.queryByLabelText('Total TTC en CHF')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button',{name:'Saisir sans justificatif'}));
+    expect(screen.getByLabelText('Total TTC en CHF')).toBeVisible();
+    expect(screen.queryByRole('button',{name:'Saisir sans justificatif'})).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));
-    expect(screen.getAllByRole('alert')[0]).toHaveTextContent('montant');expect(state.saved).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent('Décris cette dépense');expect(state.saved).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('Pour quoi ?')).toHaveFocus();
+    expect(document.querySelectorAll('details[data-purchase-options][open]')).toHaveLength(0);
     fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'34,50'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Malt pour le prochain brassin'}});
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(document.querySelectorAll('details[data-purchase-options][open]')).toHaveLength(0);
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));await waitFor(()=>expect(onSaved).toHaveBeenCalledOnce());
     expect(state.saved).toHaveBeenCalledOnce();expect(state.saved.mock.calls[0][0]).toMatchObject({amount:34.5,paymentStatus:'paid',lines:[{stockAction:'none'}]});expect(state.scanned).not.toHaveBeenCalled();
   });
@@ -191,7 +207,7 @@ describe('Saisie quotidienne et reprise sans doublon',()=>{
     expect(screen.getByRole('dialog')).toHaveAccessibleName('Acheter du matériel');expect(screen.getByLabelText('Matériel ligne 1')).toHaveValue('new');expect(state.saved).not.toHaveBeenCalled();expect(state.scanned).not.toHaveBeenCalled();
   });
   it.each(['pending','rejected'])('garde le brouillon après %s et réémet uniquement un refus certain',async(status)=>{
-    state.confirmed.mockRejectedValueOnce({status,message:'Confirmation ciblée impossible'});const onSaved=vi.fn();render(<ExpenseSheet onClose={()=>{}} onSaved={onSaved}/>);fireEvent.click(screen.getByRole('button',{name:'Saisir sans justificatif'}));
+    state.confirmed.mockRejectedValueOnce({status,message:'Confirmation ciblée impossible'});const onSaved=vi.fn();render(<ExpenseSheet onClose={()=>{}} onSaved={onSaved}/>);
     fireEvent.change(screen.getByLabelText('Total TTC en CHF'),{target:{value:'40'}});fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     fireEvent.change(screen.getByLabelText('Pour quoi ?'),{target:{value:'Malt test reprise'}});fireEvent.click(screen.getByRole('button',{name:'Enregistrer la dépense'}));
     await waitFor(()=>expect(screen.getByRole('alert')).toHaveTextContent('Confirmation ciblée'));expect(onSaved).not.toHaveBeenCalled();expect(state.saved).toHaveBeenCalledOnce();

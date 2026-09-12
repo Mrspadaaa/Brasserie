@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useEffect, useLayoutEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { useCoarsePointer } from './useViewport';
 import { inputClass } from './FormNav';
 
@@ -17,6 +17,9 @@ export interface TextInputProps {
   onBlur?: (e: React.FocusEvent) => void;
   onFocus?: (e: React.FocusEvent) => void;
   'aria-label'?: string;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean;
 }
 
 export interface TextInputHandle {
@@ -54,13 +57,35 @@ export const TextInput = forwardRef<TextInputHandle, TextInputProps>(function Te
     onKeyDown,
     onBlur,
     onFocus,
-    'aria-label': ariaLabel
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-describedby': ariaDescribedBy,
+    'aria-invalid': ariaInvalid
   },
   ref
 ) {
   const coarse = useCoarsePointer();
   const inputRef = useRef<HTMLInputElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
+  const [visibleLabel, setVisibleLabel] = useState<string>();
+
+  // Un label HTML ne nomme ni ne cible un contentEditable. Conserver le vrai
+  // libellé du champ au toucher, ainsi que le clic sur ce libellé.
+  useLayoutEffect(() => {
+    if (!coarse || !divRef.current) return;
+    const field = divRef.current;
+    const labels = [...document.querySelectorAll('label')].filter(label => (id && label.htmlFor === id) || label.contains(field));
+    const siblingLabel = field.parentElement?.querySelector<HTMLLabelElement>(':scope > label:not([for])');
+    if (!labels.length && siblingLabel) labels.push(siblingLabel);
+    setVisibleLabel(labels.map(label => {
+      const copy = label.cloneNode(true) as HTMLLabelElement;
+      copy.querySelectorAll('input, select, textarea, [role="textbox"]').forEach(control => control.remove());
+      return copy.textContent?.trim();
+    }).filter(Boolean).join(' ') || undefined);
+    const focus = () => { if (!disabled) field.focus(); };
+    labels.forEach(label => label.addEventListener('click', focus));
+    return () => labels.forEach(label => label.removeEventListener('click', focus));
+  }, [coarse, id, disabled]);
 
   useImperativeHandle(ref, () => ({
     focus: () => {
@@ -103,6 +128,9 @@ export const TextInput = forwardRef<TextInputHandle, TextInputProps>(function Te
         onBlur={onBlur}
         onFocus={onFocus}
         aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={ariaInvalid}
         autoComplete="off"
         autoCorrect="off"
         spellCheck={false}
@@ -126,7 +154,12 @@ export const TextInput = forwardRef<TextInputHandle, TextInputProps>(function Te
       suppressContentEditableWarning
       inputMode="text"
       enterKeyHint={enterKeyHint}
-      aria-label={ariaLabel ?? placeholder}
+      aria-label={ariaLabel ?? visibleLabel ?? placeholder}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
+      aria-invalid={ariaInvalid}
+      aria-required={required || undefined}
+      aria-disabled={disabled || undefined}
       data-placeholder={placeholder}
       className={`${className} ${isEmpty ? 'empty-text-input' : ''} whitespace-nowrap overflow-x-auto select-text`}
       onInput={(e) => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useLayoutEffect, useId } from 'react';
 import { isCurrent } from '../domain/catalogOrganization';
 import { 
   X, 
@@ -47,6 +47,8 @@ import { prepareFinanceDocument } from '../services/financeDocuments';
 import { DriveConnection } from '../ui/finance/DriveConnection';
 import { FirestoreRepo } from '../services/firestoreRepo';
 import { purchaseIsoDate } from '../services/purchaseEntry';
+import { TextInput } from '../ui/TextInput';
+import { Field, inputClass } from '../ui/FormNav';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -55,6 +57,7 @@ interface QuickActionModalProps {
   geminiApiKey?: string;
   onSuccessMessage?: (msg: string) => void;
   onOpenCreateBatch?: () => void;
+  initialScreen?: 'menu' | 'quick-sale' | 'quick-expense' | 'scan';
 }
 
 type ModalScreen = 'menu' | 'scan' | 'matching' | 'quick-expense' | 'quick-sale' | 'brew-batch';
@@ -75,11 +78,21 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   recipes: allRecipes,
   geminiApiKey,
   onSuccessMessage,
-  onOpenCreateBatch
+  onOpenCreateBatch,
+  initialScreen = 'menu'
 }) => {
   const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
-  const [screen, setScreen] = useState<ModalScreen>('menu');
-  const [expenseMode, setExpenseMode] = useState<'manual'|'scan'|null>(null);
+  const [screen, setScreen] = useState<ModalScreen>(initialScreen);
+  const [expenseMode, setExpenseMode] = useState<'manual'|'scan'|null>(initialScreen === 'quick-expense' ? 'manual' : initialScreen === 'scan' ? 'scan' : null);
+  const wasOpen = useRef(false);
+  const titleId = useId();
+  useLayoutEffect(() => {
+    if (isOpen && !wasOpen.current) {
+      setScreen(initialScreen);
+      setExpenseMode(initialScreen === 'quick-expense' ? 'manual' : initialScreen === 'scan' ? 'scan' : null);
+    }
+    wasOpen.current = isOpen;
+  }, [isOpen, initialScreen]);
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<ScannedInvoiceResult | null>(null);
   /** Message d'échec du scan, affiché au-dessus de la saisie manuelle. */
@@ -119,8 +132,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   // Quick Sale State (Point Clé Justificatifs de Vente & Quittance)
   const [saleAmount, setSaleAmount] = useState<number>(0);
-  const [saleClient, setSaleClient] = useState<string>('Restaurant du Lac');
-  const [saleBeer, setSaleBeer] = useState<string>('Milk Stout');
+  const [saleClient, setSaleClient] = useState<string>('');
+  const [saleBeer, setSaleBeer] = useState<string>('');
   const [salePaymentMethod, setSalePaymentMethod] = useState<'TWINT' | 'Espèces' | 'Virement' | 'Facture'>('TWINT');
   const [saleProofUrl, setSaleProofUrl] = useState<string | null>(null);
   const [saleProofFileName, setSaleProofFileName] = useState<string>('');
@@ -139,6 +152,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   const [brewError, setBrewError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const saleFileInputRef = useRef<HTMLInputElement>(null);
   /*
    * Tant que la brasserie n'est pas assujettie, il n'y a aucune TVA à ventiler
    * ni à récupérer : le TTC saisi EST le HT enregistré.
@@ -206,7 +220,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     setDescription('');
     setVendor('');
     setBrewError('');
-    pendingSale.current = undefined; setSaleError(''); setSaleAmount(0); setSaleProofUrl(null); setSaleProofFileName('');
+    pendingSale.current = undefined; setSaleError(''); setSaleAmount(0); setSaleClient(''); setSaleBeer(''); setSalePaymentMethod('TWINT'); setSaleProofUrl(null); setSaleProofFileName('');
     onClose();
   };
 
@@ -541,41 +555,47 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
     resetAndClose();
   };
 
+  if (!isOpen) return null;
   if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'}/>;
 
   return (
     <>
-      <ModalShell open={isOpen} onClose={resetAndClose} size="lg">
+      <ModalShell open={isOpen} onClose={resetAndClose} size="lg" labelledBy={titleId} dismissible={!saleSaving}>
         {/* En-tête : réduit au titre et aux deux boutons quand le clavier
             occupe l'écran — c'est 28 px rendus à la saisie. */}
         <div
           className={`shrink-0 flex items-center justify-between border-b border-cave-800 bg-cave-900/60 ${
-            tight ? 'px-2 py-1.5' : 'px-5 py-4'
+            tight ? 'min-h-9 px-2 py-0.5' : 'min-h-9 px-3 py-0.5'
           }`}
         >
           <div className="flex items-center space-x-2">
-            {screen !== 'menu' && (
+            {screen !== 'menu' && initialScreen === 'menu' && (
               <button
                 disabled={saleSaving}
+                type="button"
+                aria-label="Toutes les actions"
                 onClick={() => setScreen('menu')}
-                className="p-3 text-cave-400 hover:text-cave-50 mr-1"
+                className="min-h-7 min-w-7 flex items-center justify-center rounded-control text-cave-400 hover:text-cave-50"
               >
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            <Sparkles className="w-5 h-5 text-ebc-straw" />
-            <h3 className="font-bold text-base text-cave-50">
-              {screen === 'menu' && 'Action Express'}
-              {screen === 'scan' && 'Scanner une Facture'}
+            <Sparkles className="w-4 h-4 text-area-finances" />
+            <h2 id={titleId} className="font-semibold text-lg text-cave-50">
+              {screen === 'menu' && 'Nouvelle action'}
+              {screen === 'scan' && 'Lire un justificatif'}
               {screen === 'matching' && 'Matching & Contrôle Stocks'}
               {screen === 'quick-expense' && 'Saisie Dépense'}
-              {screen === 'quick-sale' && 'Saisie Vente'}
+              {screen === 'quick-sale' && 'Enregistrer une vente'}
               {screen === 'brew-batch' && 'Lancer un Brassin'}
-            </h3>
+            </h2>
           </div>
           <button
+            type="button"
+            aria-label="Fermer"
+            disabled={saleSaving}
             onClick={resetAndClose}
-            className="p-3 text-cave-400 hover:text-cave-200 bg-cave-850 rounded-full transition"
+            className="min-h-7 min-w-7 flex items-center justify-center text-cave-400 hover:text-cave-200 rounded-control transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -584,6 +604,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
         {/* Hidden File Input for Document Scan */}
         <input
           ref={fileInputRef}
+          hidden
           type="file"
           accept="image/*,application/pdf"
           onChange={handleFileUpload}
@@ -596,115 +617,27 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
         */}
         <div
           className={`flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pb-24 ${
-            tight ? 'p-3 space-y-2' : 'p-5 space-y-4'
+            tight ? 'p-2 space-y-2' : 'p-3 space-y-3'
           }`}
         >
-          {/* SCREEN 1: MENU */}
+          {/* Les entrées nomment le résultat ; la saisie manuelle ne repasse pas par le scan. */}
           {screen === 'menu' && (
-            <div className="space-y-3">
-              {/* Option 1 : lire un justificatif */}
-              <div className="rounded-panel border border-ebc-straw/40 bg-cave-900 overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setExpenseMode('scan')}
-                  className="w-full p-4 flex items-center gap-3.5 text-left hover:bg-cave-850 transition-colors"
-                >
-                  <span className="w-touch h-touch rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center shrink-0">
-                    <Camera className="w-6 h-6" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-base font-semibold text-cave-50">
-                      Photographier une facture
-                    </span>
-                    <span className="block text-sm text-cave-400">
-                      L'IA en extrait le fournisseur, les montants et les articles
-                    </span>
-                  </span>
-                  <ChevronRight className="w-5 h-5 text-ebc-straw shrink-0" />
-                </button>
-
-              </div>
-
-              {/* Cloud & AI Status Bar */}
-              <div 
-                onClick={() => setIsCloudConfigOpen(true)}
-                className="p-3 rounded-2xl bg-cave-950/70 border border-cave-800 hover:border-ebc-straw/40 transition cursor-pointer flex items-center justify-between group"
-              >
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-7 h-7 rounded-xl bg-ebc-straw/10 flex items-center justify-center text-ebc-straw">
-                    <Cloud className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-sm text-cave-200 font-bold block">
-                      IA hébergée sur le serveur de la brasserie
-                    </span>
-                    <span className="text-footnote text-cave-400">
-                      {GoogleDriveService.isConnected() ? '📁 Google Drive Cloud Activé' : '📁 Drive : Mode Dossier Local'}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-sm bg-cave-850 group-hover:bg-ebc-straw group-hover:text-cave-950 text-cave-200 px-2.5 py-1 rounded-xl font-bold transition">
-                  Configurer ⚙️
-                </span>
-              </div>
-
-              {/* Option 2: Dépense manuelle */}
-              <div
-                onClick={() => setExpenseMode('manual')}
-                className="p-3.5 rounded-2xl bg-cave-850/40 border border-cave-800 hover:border-cave-700 transition cursor-pointer flex items-center justify-between group"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-xl bg-cave-850 text-cave-200 flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-ebc-straw" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-200">Dépense Express (sans justificatif)</h4>
-                    <p className="text-footnote text-cave-400">Saisie en 10 secondes</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-cave-400" />
-              </div>
-
-              {/* Option 3: Lancer Brassin */}
-              <div
-                onClick={() => {
-                  if (onOpenCreateBatch) {
-                    onClose();
-                    onOpenCreateBatch();
-                  } else {
-                    setScreen('brew-batch');
-                  }
-                }}
-                className="p-3.5 rounded-2xl bg-cave-850/40 border border-cave-800 hover:border-cave-700 transition cursor-pointer flex items-center justify-between group"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-xl bg-cave-850 text-cave-200 flex items-center justify-center">
-                    <Beer className="w-4 h-4 text-ebc-straw" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-200">Lancer un Brassin</h4>
-                    <p className="text-footnote text-cave-400">Préparer le brassin et réserver ses ingrédients</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-cave-400" />
-              </div>
-
-              {/* Option 4: Vente Rapide */}
-              <div
-                onClick={() => setScreen('quick-sale')}
-                className="p-3.5 rounded-2xl bg-cave-850/40 border border-cave-800 hover:border-cave-700 transition cursor-pointer flex items-center justify-between group"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-9 h-9 rounded-xl bg-cave-850 text-cave-200 flex items-center justify-center">
-                    <TrendingUp className="w-4 h-4 text-hop" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-cave-200">Encaisser une Vente</h4>
-                    <p className="text-footnote text-cave-400">Carton, fût ou vente directe</p>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-cave-400" />
-              </div>
+            <div className="divide-y divide-cave-800">
+              <button type="button" onClick={() => setExpenseMode('scan')} className="w-full min-h-10 py-2 flex items-center gap-2 text-left text-[13px] text-cave-200 hover:bg-cave-850 rounded-control">
+                <Camera size={16} className="text-area-finances shrink-0"/><span className="flex-1 min-w-0">Lire un justificatif <span className="block text-xs text-cave-400">Photo ou fichier, puis vérification</span></span><ChevronRight size={14}/>
+              </button>
+              <button type="button" onClick={() => setExpenseMode('manual')} className="w-full min-h-9 py-1 flex items-center gap-2 text-left text-[13px] text-cave-200 hover:bg-cave-850 rounded-control">
+                <Zap size={16} className="text-area-finances shrink-0"/><span className="flex-1">Saisir une dépense</span><ChevronRight size={14}/>
+              </button>
+              <button type="button" onClick={() => setScreen('quick-sale')} className="w-full min-h-9 py-1 flex items-center gap-2 text-left text-[13px] text-cave-200 hover:bg-cave-850 rounded-control">
+                <TrendingUp size={16} className="text-area-finances shrink-0"/><span className="flex-1">Encaisser une vente</span><ChevronRight size={14}/>
+              </button>
+              <button type="button" onClick={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } else setScreen('brew-batch'); }} className="w-full min-h-9 py-1 flex items-center gap-2 text-left text-[13px] text-cave-200 hover:bg-cave-850 rounded-control">
+                <Beer size={16} className="text-area-production shrink-0"/><span className="flex-1">Préparer un brassin</span><ChevronRight size={14}/>
+              </button>
+              <button type="button" onClick={() => setIsCloudConfigOpen(true)} className="min-h-7 py-1 inline-flex items-center gap-2 text-xs text-cave-400 hover:text-cave-50">
+                <Cloud size={14}/>Connexion et justificatifs
+              </button>
             </div>
           )}
 
@@ -1206,152 +1139,38 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             </div>
           )}
 
-          {/* SCREEN 5: QUICK SALE (JUSTIFICATIF TWINT & QUITTANCE OFFICIELLE) */}
+          {/* Une vente, son montant et son règlement ; justificatif facultatif. */}
           {screen === 'quick-sale' && (
-            <div className="space-y-3.5 text-sm">
-              <DriveConnection always={Boolean(saleError)} />
-              {pendingSale.current && <p className="text-sm text-amber-200">La vente préparée est conservée à l’identique pendant sa confirmation. Réessaie pour vérifier cet enregistrement.</p>}
-              <fieldset disabled={saleSaving || Boolean(pendingSale.current)} className="space-y-3.5 border-0 p-0 m-0">
-              <div>
-                <label className="text-cave-200 font-semibold block mb-1">Client / Bénéficiaire</label>
-                <input
-                  type="text"
-                  name="qa_sale_client_label"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  data-form-type="other"
-                  data-lpignore="true"
-                  data-1p-ignore="true"
-                  data-bwignore="true"
-                  value={saleClient}
-                  onChange={(e) => setSaleClient(e.target.value)}
-                  placeholder="ex: Client Comptoir, Restaurant du Lac, Bar..."
-                  className="w-full bg-cave-850 border border-cave-700 rounded-xl p-2.5 text-cave-50 font-medium"
-                />
-              </div>
-
-              <div>
-                <label className="text-cave-200 font-semibold block mb-1">Bière vendue / Conditionnement</label>
-                <input
-                  type="text"
-                  name="qa_sale_beer_item"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  data-form-type="other"
-                  data-lpignore="true"
-                  data-1p-ignore="true"
-                  data-bwignore="true"
-                  value={saleBeer}
-                  onChange={(e) => setSaleBeer(e.target.value)}
-                  placeholder="ex: Carton 12x 75cl Milk Stout, Fût 30L..."
-                  className="w-full bg-cave-850 border border-cave-700 rounded-xl p-2.5 text-cave-50 font-medium"
-                />
-              </div>
-
-              <MoneyField
-                label="Montant TTC encaissé"
-                valueTTC={saleAmount}
-                onChange={setSaleAmount}
-                tvaRate={StorageService.getConfig().fiscal.tvaNormalRate}
-                isTvaRegistered={isTvaRegistered}
-              />
-
-              {/* Mode de règlement */}
-              <div>
-                <label className="text-cave-200 font-semibold block mb-1">Mode de règlement :</label>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {(['TWINT', 'Espèces', 'Virement', 'Facture'] as const).map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => setSalePaymentMethod(m)}
-                      className={`py-2 rounded-xl text-sm font-bold border transition ${
-                        salePaymentMethod === m
-                          ? 'bg-ebc-straw text-cave-950 border-ebc-gold shadow'
-                          : 'bg-cave-850 text-cave-200 border-cave-700 hover:border-cave-600'
-                      }`}
-                    >
-                      {m === 'TWINT' && '📱 TWINT'}
-                      {m === 'Espèces' && '💵 Cash'}
-                      {m === 'Virement' && '🏦 Virement'}
-                      {m === 'Facture' && '📄 Facture'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Justificatif de vente (Screenshot TWINT ou ticket) */}
-              <div className="p-3 bg-cave-950/70 border border-cave-800 rounded-2xl space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold text-cave-200 flex items-center space-x-1">
-                    <Camera className="w-3.5 h-3.5 text-ebc-straw" />
-                    <span>Justificatif de paiement (Capture TWINT, ticket, reçu) :</span>
-                  </span>
-                  {saleProofUrl && (
-                    <button
-                      type="button"
-                      onClick={() => { setSaleProofUrl(null); setSaleProofFileName(''); }}
-                      className="text-footnote text-alert font-bold"
-                    >
-                      Supprimer
-                    </button>
-                  )}
-                </div>
-
-                {saleProofUrl ? (
-                  <div className="flex items-center space-x-2 text-sm text-hop bg-cave-900 p-2 rounded-xl border border-hop/30">
-                    <Check className="w-4 h-4" />
-                    <span className="truncate">Justificatif joint : {saleProofFileName || 'capture_twint.jpg'}</span>
+            <div className="space-y-2 text-[13px] [&_label]:text-xs [&_input]:min-h-8 [&_input]:py-0.5 [&_input]:text-base [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_p]:text-xs">
+              {pendingSale.current && <p className="text-amber-200">La vente est conservée à l’identique. Réessaie pour confirmer cet enregistrement.</p>}
+              <fieldset disabled={saleSaving || Boolean(pendingSale.current)} className="space-y-2 border-0 p-0 m-0 min-w-0">
+                <MoneyField label={salePaymentMethod === 'Facture' ? 'Montant TTC à encaisser' : 'Montant TTC encaissé'} valueTTC={saleAmount} onChange={setSaleAmount} tvaRate={StorageService.getConfig().fiscal.tvaNormalRate} isTvaRegistered={isTvaRegistered}/>
+                <Field label="Client (facultatif)" htmlFor="qa-sale-client"><TextInput id="qa-sale-client" value={saleClient} onChange={setSaleClient} placeholder="Client comptoir" className={inputClass}/></Field>
+                <Field label="Bière / conditionnement (facultatif)" htmlFor="qa-sale-beer"><TextInput id="qa-sale-beer" value={saleBeer} onChange={setSaleBeer} placeholder="Carton, fût, bière…" className={inputClass}/></Field>
+                <div role="group" aria-label="Mode de règlement" className="space-y-1">
+                  <p className="text-xs text-cave-400">Règlement</p>
+                  <div className="grid grid-cols-4 gap-1">
+                    {(['TWINT', 'Espèces', 'Virement', 'Facture'] as const).map(method => <button key={method} type="button" aria-pressed={salePaymentMethod === method} onClick={() => setSalePaymentMethod(method)} className={'min-h-7 px-1 rounded-control text-[13px] border ' + (salePaymentMethod === method ? 'border-area-finances bg-area-finances/10 text-cave-50' : 'border-cave-700 text-cave-200')}>{method}</button>)}
                   </div>
-                ) : (
-                  <div>
-                    <label className="flex items-center justify-center p-2.5 rounded-xl border border-dashed border-cave-700 hover:border-ebc-gold bg-cave-900/60 cursor-pointer transition text-sm text-cave-400 hover:text-cave-200">
-                      <UploadCloud className="w-4 h-4 mr-2 text-ebc-straw" />
-                      <span>Joindre une capture TWINT ou photo</span>
-                      <input
-                        type="file"
-                        accept="image/*,application/pdf"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const f = e.target.files?.[0];
-                          if (f) {
-                            const data = await GeminiScannerService.fileToDataUrl(f);
-                            setSaleProofUrl(data);
-                            setSaleProofFileName(f.name);
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                )}
-              </div>
-
+                  {salePaymentMethod === 'Facture' && <p className="text-xs text-cave-400">La vente restera à encaisser jusqu’au paiement.</p>}
+                </div>
+                <div className="border-t border-cave-800 pt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <input hidden ref={saleFileInputRef} type="file" aria-label="Justificatif de paiement" accept="image/*,application/pdf" className="hidden" onChange={async e => {
+                    const file = e.target.files?.[0]; e.target.value = '';
+                    if (file) { try { const data = await GeminiScannerService.fileToDataUrl(file); setSaleProofUrl(data); setSaleProofFileName(file.name); } catch { setSaleError('Ce fichier ne peut pas être lu. Choisis un autre justificatif.'); } }
+                  }}/>
+                  <button type="button" onClick={() => saleFileInputRef.current?.click()} className="min-h-7 inline-flex items-center gap-1.5 text-[13px] text-cave-200"><UploadCloud size={14}/>{saleProofUrl ? 'Changer le justificatif' : 'Joindre un justificatif (facultatif)'}</button>
+                  {saleProofUrl && <><span className="min-w-0 truncate text-xs text-cave-400">{saleProofFileName}</span><button type="button" onClick={() => { setSaleProofUrl(null); setSaleProofFileName(''); }} className="min-h-7 px-1 text-xs text-alert-strong">Retirer</button></>}
+                </div>
               </fieldset>
-              {saleError && <p role="alert" className="text-sm text-amber-200">{saleError}</p>}
-              {/* Boutons d'action : Quittance PDF officielle ou Validation */}
-              <div className="flex space-x-2 pt-1">
-                <button
-                  type="button"
-                  onClick={handleDownloadSaleReceipt}
-                  disabled={saleAmount <= 0 || saleSaving}
-                  className="py-3 px-3 bg-cave-850 hover:bg-cave-800 text-ebc-straw font-bold text-sm rounded-xl border border-cave-700 transition flex items-center justify-center space-x-1.5 disabled:opacity-50"
-                  title="Télécharger une quittance officielle suisse pour le client"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>🧾 Quittance PDF</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => void handleSaveSale()}
-                  disabled={saleAmount <= 0 || saleSaving}
-                  className="flex-1 py-3 bg-gradient-to-r from-hop to-hop hover:from-hop text-cave-950 font-black rounded-xl shadow-lg transition flex items-center justify-center space-x-1 disabled:opacity-50"
-                >
-                  <Check className="w-4 h-4 mr-1" />
-                  <span>{saleSaving ? 'Enregistrement…' : pendingSale.current ? 'Reprendre la confirmation' : salePaymentMethod === 'Facture' ? 'Enregistrer à encaisser' : 'Valider l’encaissement'}</span>
-                </button>
+              <div className="space-y-1 [&_button]:min-h-7 [&_button]:py-0.5 [&_button]:text-[13px]">
+                <p className="text-xs text-cave-400">Une quittance sera conservée dans ton Drive privé.</p>
+                <DriveConnection compact always={Boolean(saleError)}/>
+              </div>
+              {saleError && <p role="alert" className="text-sm text-alert-strong">{saleError}</p>}
+              <div className="sticky bottom-0 flex flex-wrap justify-end items-center gap-2 min-h-9 border-t border-cave-800 bg-cave-900 py-0.5">
+                <button type="button" onClick={handleDownloadSaleReceipt} disabled={saleAmount <= 0 || saleSaving} className="min-h-7 px-2 border border-cave-700 rounded-control text-[13px] text-cave-200 inline-flex items-center gap-1 disabled:opacity-50"><FileText size={14}/>Quittance PDF</button>
+                <button type="button" onClick={() => void handleSaveSale()} disabled={saleAmount <= 0 || saleSaving} className="min-h-8 px-2 bg-ebc-straw text-cave-950 font-semibold rounded-control text-[13px] inline-flex items-center gap-1 disabled:opacity-50"><Check size={14}/>{saleSaving ? 'Enregistrement…' : pendingSale.current ? 'Reprendre la confirmation' : salePaymentMethod === 'Facture' ? 'Enregistrer à encaisser' : 'Valider l’encaissement'}</button>
               </div>
             </div>
           )}

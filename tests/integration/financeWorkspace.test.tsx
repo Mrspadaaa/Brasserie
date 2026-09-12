@@ -10,6 +10,7 @@ import { FinanceService } from '../../src/services/financeService';
 import { useStorageValue } from '../../src/hooks/useLiveData';
 import { FinancesTab } from '../../src/components/tabs/FinancesTab';
 import { MovementSheet } from '../../src/ui/finance/MovementSheet';
+import { PaymentSheet } from '../../src/ui/finance/FinanceForms';
 import { TransactionDetails } from '../../src/ui/finance/TransactionDetails';
 import { todayISO, summarizeLedger } from '../../src/domain/finance/ledger';
 import type { Transaction } from '../../src/types';
@@ -19,9 +20,87 @@ function Workspace(){const transactions=useStorageValue(read);return <FinancesTa
 beforeEach(()=>{window.history.replaceState({},'', '/?dev-local');FirestoreRepo.startSync();StorageService.setUiState('finances_workspace','costs');});
 afterEach(()=>{cleanup();FirestoreRepo.stopSync();vi.restoreAllMocks();});
 describe('Comptabilité quotidienne intégrée',()=>{
+  it('arrive sur une synthèse commune, distingue les montants connus et conserve la recherche entre les vues',()=>{
+    StorageService.addTransaction(tx());
+    StorageService.addTransaction(tx({id:'VENTE',description:'Vente festival',amountTTC:50,finance:{version:1,kind:'income',amountCents:5000,paymentStatus:'unpaid',lines:[]}}));
+    StorageService.addTransaction(tx({id:'HIST',description:'Achat historique',finance:undefined}));
+    render(<Workspace/>);
+    expect(screen.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
+    const position=within(screen.getByLabelText('Situation financière actuelle'));
+    expect(position.getByText('Trésorerie').parentElement).toHaveTextContent('À compléter');
+    expect(position.getByText('À payer',{exact:true}).parentElement).toHaveTextContent('150,00');
+    expect(position.getByText('À encaisser',{exact:true}).parentElement).toHaveTextContent('50,00');
+    expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'Voir les factures à payer'}));
+    expect(screen.getByRole('button',{name:/^Achat mixte/})).toBeVisible();
+    expect(screen.queryByRole('button',{name:/^Vente festival/})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button',{name:/^Achat historique/})).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox',{name:'Rechercher une opération'}),{target:{value:'mixte'}});
+    fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    fireEvent.click(screen.getByRole('tab',{name:'Opérations'}));
+    expect(screen.getByRole('textbox',{name:'Rechercher une opération'})).toHaveValue('mixte');
+    expect(screen.getByRole('button',{name:'À payer',exact:true})).toHaveAttribute('aria-pressed','true');
+  });
+  it('annonce les limites de la prévision avant ses chiffres et ouvre les paiements à confirmer',()=>{
+    StorageService.addTransaction(tx({finance:undefined}));
+    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    expect(screen.getByText('Prévision incomplète')).toBeVisible();
+    expect(screen.getByText('Sorties renseignées')).toBeVisible();
+    expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent('À compléter');
+    fireEvent.click(screen.getByRole('button',{name:/Confirmer les paiements/}));
+    expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
+    expect(screen.getByRole('button',{name:/^Achat mixte/})).toHaveTextContent('Paiement à confirmer');
+  });
+  it('fait varier les sorties et les soldes mensuels du même montant lorsque le projet de matériel est exclu',async()=>{
+    FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
+    StorageService.addTransaction(tx());
+    FinanceService.savePlan({id:'POMPE',title:'Pompe prévue',date:todayISO(),amountCents:20000,direction:'out',category:'materiel',source:'equipment',status:'active',createdAt:new Date().toISOString()});
+    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    const outgoing=()=>screen.getByText(/Sorties (prévues|renseignées)/).parentElement;
+    expect(outgoing()).toHaveTextContent('350,00');
+    fireEvent.click(screen.getByText('Comparer les mois',{exact:true}));
+    const table=within(await screen.findByRole('table',{name:'Prévision mensuelle selon le scénario sélectionné'}));
+    expect(table.getAllByRole('row')[1]).toHaveTextContent('350,00 CHF650,00 CHF');
+    fireEvent.click(screen.getByRole('checkbox',{name:/Inclure mes projets de matériel/}));
+    expect(outgoing()).toHaveTextContent('150,00');
+    expect(table.getAllByRole('row')[1]).toHaveTextContent('150,00 CHF850,00 CHF');
+    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
+  });
+  it('ne redemande pas le solde déjà confirmé lorsque les paiements empêchent de calculer la trésorerie',()=>{
+    FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
+    StorageService.addTransaction(tx({finance:undefined}));
+    render(<Workspace/>);
+    expect(screen.getByText('Trésorerie').parentElement).toHaveTextContent('À compléter');
+    expect(screen.queryByRole('button',{name:/Vérifier le solde de départ/})).not.toBeInTheDocument();
+    expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
+    fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    expect(screen.getByText('Prévision incomplète')).toBeVisible();
+    expect(screen.queryByRole('button',{name:'Renseigner le solde de départ'})).not.toBeInTheDocument();
+    expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
+  });
+  it('demande une date réelle au paiement historique et propose la date du jour pour une facture suivie',()=>{
+    const unknown=tx({finance:undefined});
+    const {unmount}=render(<PaymentSheet transaction={unknown} payments={[]} transactions={[unknown]} onClose={()=>{}}/>);
+    expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue('');
+    expect(screen.getByLabelText('Date réelle du paiement')).toBeRequired();
+    unmount();
+    render(<PaymentSheet transaction={tx()} payments={[]} transactions={[tx()]} onClose={()=>{}}/>);
+    expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue(todayISO());
+  });
+  it('guide la préparation annuelle du solde vers les opérations de l’exercice',()=>{
+    StorageService.addTransaction(tx());
+    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Annuel'}));
+    fireEvent.click(screen.getByRole('button',{name:'Renseigner le solde',exact:true}));
+    expect(screen.getByRole('dialog',{name:'Solde et paramètres financiers'})).toBeVisible();
+    fireEvent.click(screen.getByRole('button',{name:'Annuler',exact:true}));
+    act(()=>FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:10000,confirmed:true}}));
+    fireEvent.click(screen.getByRole('button',{name:'Ouvrir les opérations',exact:true}));
+    expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
+    expect(screen.getByRole('button',{name:/^Achat mixte/})).toBeVisible();
+  });
   it('montre le solde réellement dû dans le journal puis dans le détail de la facture',()=>{
     FinanceService.stageNewTransactionPayment(tx(),{id:'ACOMPTE',transactionId:'T1',amountCents:5000,direction:'out',method:'bank',date:todayISO(),recordedAt:new Date().toISOString()});
-    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Journal'}));
+    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Opérations'}));
     fireEvent.click(screen.getByRole('button',{name:/Achat mixte.*150.*Reste 100/}));
     const dialog=within(screen.getByRole('dialog',{name:'Achat mixte'}));
     expect(dialog.getByText(/Reste à payer : 100/)).toBeVisible();
@@ -33,9 +112,9 @@ describe('Comptabilité quotidienne intégrée',()=>{
   it('sépare les factures des budgets et donne accès aux échéances au-delà des six premières',()=>{
     StorageService.addTransaction(tx());
     for(let i=1;i<=8;i++)FinanceService.savePlan({id:`PLAN-${i}`,title:`Achat prévu ${i}`,date:todayISO(),amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
-    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévoir'}));
-    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150.00');
-    expect(screen.getByText('Budgets et estimations').parentElement).toHaveTextContent('80.00');
+    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
+    expect(screen.getByText('Budgets et estimations').parentElement).toHaveTextContent('80,00');
     const due=within(screen.getByRole('heading',{name:'Prochaines échéances'}).closest('section')!);
     expect(due.queryByRole('button',{name:/^Achat prévu 8/})).not.toBeInTheDocument();
     fireEvent.click(due.getByRole('button',{name:'Voir les 3 échéances suivantes'}));
@@ -56,7 +135,7 @@ describe('Comptabilité quotidienne intégrée',()=>{
     vi.useFakeTimers();vi.setSystemTime(new Date('2026-09-09T10:00:00Z'));
     try {
       for(const [id,date] of [['Dans 29 jours','2026-10-08'],['Dans 30 jours','2026-10-09'],['Dernier jour inclus','2027-09-08'],['Anniversaire exclu','2027-09-09']]) FinanceService.savePlan({id,title:id,date,amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
-      render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévoir'}));
+      render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
       const due=()=>within(screen.getByRole('heading',{name:'Prochaines échéances'}).closest('section')!);
       fireEvent.click(screen.getByRole('button',{name:'30 jours',exact:true}));
       expect(due().getByRole('button',{name:/^Dans 29 jours/})).toBeInTheDocument();
@@ -70,20 +149,23 @@ describe('Comptabilité quotidienne intégrée',()=>{
     StorageService.addTransaction(tx({finance:undefined}));
     StorageService.addTransaction(tx({id:'CREDIT',description:'Remise fournisseur',amountHT:20,amountTTC:20,finance:{version:1,kind:'refund',amountCents:2000,refundOfId:'T1',refundDirection:'in',refundApplication:'cash',paymentStatus:'unpaid',lines:[]}}));
     render(<Workspace/>);
+    fireEvent.click(screen.getByRole('button',{name:'Coûts',exact:true}));
     expect(screen.getByRole('button',{name:/Autres frais\s*130/})).toBeInTheDocument();
-    fireEvent.keyDown(screen.getByRole('tab',{name:'Coûts'}),{key:'ArrowRight'});
-    expect(screen.getByRole('tab',{name:'Journal'})).toHaveFocus();
-    expect(screen.getByRole('tab',{name:'Journal'})).toHaveAttribute('aria-selected','true');
+    fireEvent.keyDown(screen.getByRole('tab',{name:'Synthèse'}),{key:'ArrowRight'});
+    expect(screen.getByRole('tab',{name:'Opérations'})).toHaveFocus();
+    expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
   });
   it('ouvre les coûts puis retrouve une facture mixte depuis sa ligne matériel',()=>{
     StorageService.addTransaction(tx());render(<Workspace/>);
-    expect(screen.getByRole('tab',{name:'Coûts'})).toHaveAttribute('aria-selected','true');
+    expect(screen.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
+    fireEvent.click(screen.getByRole('button',{name:'Coûts',exact:true}));
     fireEvent.click(screen.getByRole('button',{name:/^Matériel\s*100/}));
-    expect(screen.getByRole('tab',{name:'Journal'})).toHaveAttribute('aria-selected','true');
+    expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
     expect(screen.getByRole('button',{name:/Achat mixte/})).toBeInTheDocument();
   });
   it('conserve une pièce sans date dans l’historique et signale son exclusion du mois',()=>{
     StorageService.addTransaction(tx({date:'inconnue',finance:undefined}));render(<Workspace/>);
+    fireEvent.click(screen.getByRole('button',{name:'Coûts',exact:true}));
     // Une seule pièce : le français met le singulier jusqu'à 2 exclu, donc
     // « 1 pièce », jamais « 1 pièce(s) ». Voir `src/services/plural.ts`.
     expect(screen.getByText(/1 pièce avec une date à corriger/)).toBeInTheDocument();

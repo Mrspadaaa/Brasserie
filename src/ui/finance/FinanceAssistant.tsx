@@ -26,7 +26,7 @@ export function FinanceAssistant({ view, month, allDates, year, horizon, include
   return <>
     <button type="button" className="finance-assistant" onClick={() => setQuestion(selected.question)}>
       <Sparkles size={19} aria-hidden="true" />
-      <span><strong>{selected.label}</strong><small>Avec Gemini</small></span>
+      <span><strong>{selected.label}</strong><small>Compagnon brasseur</small></span>
       <ChevronRight size={18} aria-hidden="true" />
     </button>
     {question !== undefined && <BrewerChat scope={{ kind: 'app', id: 'finances' }} label="Mes finances" phase="Finances de la brasserie" initialOpen hideLauncher initialQuestion={question} suggestedPrompts={suggestions} onClose={() => setQuestion(undefined)} />}

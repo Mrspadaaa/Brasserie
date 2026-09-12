@@ -3,7 +3,8 @@ import { compte } from '../../services/plural';
 
 export const toCents = (value: number): number => Number.isFinite(value) ? Math.round((value + Number.EPSILON) * 100) : 0;
 export const fromCents = (value: number): number => value / 100;
-export const formatCHF = (value: number): string => new Intl.NumberFormat('fr-CH', { style: 'currency', currency: 'CHF' }).format(value / 100);
+const chfFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'CHF' });
+export const formatCHF = (value: number): string => chfFormatter.format(value / 100);
 export function isoDate(value?: string): string | null {
   if (!value) return null;
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);

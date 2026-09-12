@@ -44,7 +44,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     const original = structuredClone(recipe);
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[recipe]} onClose={close} />);
-    fireEvent.click(screen.getByText('Lancer un Brassin'));
+    fireEvent.click(screen.getByText('Préparer un brassin'));
     fireEvent.click(screen.getByRole('button', { name: '50 L' }));
     expect(screen.queryByText('Déduction automatique des stocks')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
@@ -67,7 +67,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     vi.mocked(StorageService.getConfig).mockReturnValue({ ...config, brewhouses: [] });
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[{ ...recipe, volumeL: 30, brewhouse: undefined }]} onClose={close} />);
-    fireEvent.click(screen.getByText('Lancer un Brassin'));
+    fireEvent.click(screen.getByText('Préparer un brassin'));
     fireEvent.click(screen.getByRole('button', { name: '50 L' }));
     fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
     expect(screen.getByRole('alert')).toHaveTextContent('Configure une cuverie');

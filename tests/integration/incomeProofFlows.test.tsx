@@ -44,7 +44,7 @@ describe('Factures et quittances avec originaux privés', () => {
     const close = vi.fn(); state.save.mockRejectedValueOnce(Error('Confirmation en attente')).mockResolvedValueOnce(undefined);
     vi.spyOn(ReceiptService, 'createSaleTransactionWithReceipt').mockReturnValue({ id: 'temporary', date: '09.09.2026', description: 'Carton', amountHT: 50, amountTTC: 50, tvaRate: 0, tvaAmount: 0, category: 'recettes', subcategory: 'Vente', proofUrl: 'data:application/pdf;filename=test.pdf;base64,JVBERg==', proofFileName: 'Quittance.pdf' });
     render(<QuickActionModal isOpen recipes={[]} onClose={close} />);
-    fireEvent.click(screen.getByText('Encaisser une Vente'));
+    fireEvent.click(screen.getByText('Encaisser une vente'));
     fireEvent.change(screen.getByLabelText('Montant TTC encaissé'), { target: { value: '50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Valider l’encaissement' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Confirmation en attente'); expect(close).not.toHaveBeenCalled();

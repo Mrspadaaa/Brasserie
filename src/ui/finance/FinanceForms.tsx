@@ -17,19 +17,21 @@ export function Field({label,children}:{label:string;children:React.ReactNode}) 
 function FormSheet({title,onClose,onSave,children,saveLabel='Enregistrer'}:{title:string;onClose:()=>void;onSave:()=>void|Promise<void>;children:React.ReactNode;saveLabel?:string}) {
   const [error,setError]=useState(''), [busy,setBusy]=useState(false);
   const submit=async(e?:React.FormEvent)=>{e?.preventDefault(); if(busy)return; setBusy(true); setError(''); try {await onSave();onClose();}catch(err){setError(err instanceof Error?err.message:'Enregistrement impossible.');}finally{setBusy(false);}};
-  return <Sheet open title={title} onClose={onClose} dismissible={false} className="finance-sheet" footer={<div className="finance-actions"><button className="finance-action secondary" type="button" onClick={onClose}>Annuler</button><button type="submit" form="finance-form" className="finance-action" disabled={busy}>{busy?'Enregistrement…':saveLabel}</button></div>}><form id="finance-form" onSubmit={submit} className="finance-form">{error&&<p role="alert" className="finance-error">{error}</p>}{children}</form></Sheet>;
+  return <Sheet open title={title} onClose={onClose} dismissible={!busy} className="finance-sheet" footer={<div className="finance-actions"><button className="finance-action secondary" type="button" onClick={onClose} disabled={busy}>Annuler</button><button type="submit" form="finance-form" className="finance-action" disabled={busy}>{busy?'Enregistrement…':saveLabel}</button></div>}><form id="finance-form" onSubmit={submit} className="finance-form">{error&&<p role="alert" className="finance-error">{error}</p>}{children}</form></Sheet>;
 }
 export function ProfileSheet({profile,onClose}:{profile:FinancialProfile;onClose:()=>void}) {
   const [draft,setDraft]=useState(profile), [cash,setCash]=useState(profile.openingCash?.amountCents), [date,setDate]=useState(profile.openingCash?.date??todayISO()), [confirmed,setConfirmed]=useState(profile.openingCash?.confirmed??false);
-  return <FormSheet title="Mes repères financiers" onClose={onClose} onSave={()=>{if(cash!=null&&!isoDate(date))throw Error('Choisis la date du solde.'); FinanceService.saveProfile({...draft,openingCash:cash!=null?{date,amountCents:cash,confirmed}:undefined});}}>
-    <p className="finance-muted">Indépendant à Fribourg · Comptabilité simplifiée · Sans TVA</p>
-    <MoneyInput signed label="Argent disponible au début de la journée (CHF)" value={cash} onChange={setCash}/>
-    <Field label="Date du solde"><input type="date" value={date} onChange={e=>setDate(e.target.value)} required/></Field>
+  return <FormSheet title="Solde et paramètres financiers" onClose={onClose} onSave={()=>{if(cash!=null&&!isoDate(date))throw Error('Choisis la date du solde.'); FinanceService.saveProfile({...draft,openingCash:cash!=null?{date,amountCents:cash,confirmed}:undefined});}}>
+    <p className="finance-muted">Le solde de départ sert à calculer l’argent disponible après les paiements enregistrés.</p>
+    <div className="finance-form-grid"><MoneyInput signed label="Solde de départ (CHF)" value={cash} onChange={value=>{setCash(value);setConfirmed(false);}}/>
+    <Field label="Date du solde"><input type="date" value={date} max={todayISO()} onChange={e=>{setDate(e.target.value);setConfirmed(false);}} required/></Field></div>
     <label className="finance-check"><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/>J’ai vérifié ce solde, avant les paiements de cette journée.</label>
+    <details className="finance-disclosure"><summary>Paramètres des prévisions et des brassins</summary><div className="finance-form">
     <Field label="Historique des dépenses complet depuis"><input type="month" value={draft.historyCompleteFrom?.slice(0,7)??''} onChange={e=>setDraft({...draft,historyCompleteFrom:e.target.value?`${e.target.value}-01`:undefined})}/></Field>
     <p className="finance-muted">La tendance n’est calculée qu’avec au moins trois mois complets. Les anciens paiements inconnus restent à confirmer.</p>
     <Field label="Production annuelle prévue (litres conditionnés)"><NumberInput value={draft.annualProductionL} onValue={v=>setDraft({...draft,annualProductionL:v??undefined})} emptyValue={undefined} min={1}/></Field>
     <p className="finance-muted">Cette production permet de répartir les charges fixes entre les brassins. Ton temps personnel n’est pas compté.</p>
+    </div></details>
   </FormSheet>;
 }
 export function PlanSheet({plan,onClose}:{plan?:FinancialPlan;onClose:()=>void}) {
@@ -92,7 +94,7 @@ export function ClosingSheet({closing,year,onClose,stockItems}:{closing?:Financi
   </FormSheet>;
 }
 export function PaymentSheet({transaction,payments,transactions,onClose}:{transaction:Transaction;payments:FinancialPayment[];transactions:Transaction[];onClose:()=>void}) {
-  const state=paymentState(transaction,payments,transactions), [amount,setAmount]=useState<number|undefined>(state.remainingCents), [date,setDate]=useState(todayISO()), [method,setMethod]=useState<FinancialPayment['method']>('bank');
+  const state=paymentState(transaction,payments,transactions), [amount,setAmount]=useState<number|undefined>(state.remainingCents), [date,setDate]=useState(()=>state.state==='unknown'?'':todayISO()), [method,setMethod]=useState<FinancialPayment['method']>('bank');
   const [paymentId]=useState(()=>idFor('PAI'));
   return <FormSheet title={transactionDirection(transaction,transactions)==='in'?'Enregistrer un encaissement':'Enregistrer un paiement'} onClose={onClose} onSave={()=>{if(!amount||amount>state.remainingCents)throw Error('Le paiement doit être positif et ne pas dépasser le restant dû.');FinanceService.recordPayment({id:paymentId,transactionId:transaction.id,date,amountCents:amount,direction:transactionDirection(transaction,transactions),method,recordedAt:new Date().toISOString()});}}>
     <p>{transaction.description}</p><p className="finance-muted">Montant de la pièce : {formatCHF(transactionAmount(transaction))}. Restant : {formatCHF(state.remainingCents)}.</p>

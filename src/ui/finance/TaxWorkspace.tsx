@@ -7,12 +7,14 @@ import { FinanceService } from '../../services/financeService';
 import { TaxClosingSheet, type TaxSection } from './TaxClosingSheet';
 import type { TaxArchiveResult } from '../../services/taxArchive';
 import { DriveConnection } from './DriveConnection';
+import { compte } from '../../services/plural';
 import './tax.css';
 
-export function TaxWorkspace({ report, closing, transactions, assets, profile, companyName, onProfile, onInventories, onAsset, onVersion }: {
+export function TaxWorkspace({ report, closing, transactions, assets, profile, companyName, onProfile, onInventories, onAsset, onVersion, onOperations }: {
   report: AnnualReport; closing?: FinancialClosing; transactions: FinanceTransaction[]; assets: FinancialAsset[];
   profile: FinancialProfile; companyName: string; onProfile: () => void; onInventories: () => void;
   onAsset: (asset: FinancialAsset | null) => void; onVersion: (id: string) => void;
+  onOperations?: () => void;
 }) {
   const [step, setStep] = useState<'prepare' | 'copy' | 'documents'>('prepare');
   const [edit, setEdit] = useState<TaxSection | null>(null), [notice, setNotice] = useState(''), [copied, setCopied] = useState('');
@@ -59,25 +61,37 @@ export function TaxWorkspace({ report, closing, transactions, assets, profile, c
   };
   const checked = TAX_REVIEWS.filter(r => tax.reviews[r.key]).length;
   const showAssets = () => { if (assetRegister.current) { assetRegister.current.open = true; assetRegister.current.scrollIntoView?.({ block: 'start', behavior: 'smooth' }); assetRegister.current.querySelector('summary')?.focus({ preventScroll: true }); } };
+  const assetsToReview = assets.filter(asset => !asset.openingConfirmed || report.depreciation.some(row => row.assetId === asset.id && row.missing.length > 0)).length;
+  const nextTask = !profile.openingCash?.confirmed
+    ? { title: 'Renseigner le solde de départ', reason: 'Il permet de vérifier la trésorerie de la brasserie.', action: 'Renseigner le solde', run: onProfile }
+    : !tax.reviews.journal && onOperations
+      ? { title: 'Vérifier les opérations de l’année', reason: 'Confirme les paiements et complète les pièces avant de relire les comptes.', action: 'Ouvrir les opérations', run: onOperations }
+      : !closing?.inventoriesConfirmed
+        ? { title: 'Compléter les inventaires', reason: 'Le résultat attend les stocks de début et de fin d’année.', action: 'Renseigner les stocks', run: onInventories }
+        : assetsToReview > 0
+          ? { title: 'Vérifier le matériel à amortir', reason: `${compte(assetsToReview, 'fiche')} attend${assetsToReview > 1 ? 'ent' : ''} une valeur ou une méthode confirmée.`, action: 'Voir le matériel', run: showAssets }
+          : { title: 'Relire les vérifications de l’année', reason: 'Confirme les contrôles avant de préparer le report et le dossier.', action: 'Ouvrir les vérifications', run: () => setEdit('checks') };
   return <div className="tax-workspace">
     <div className="tax-intro"><div><h3>Les impôts de ta brasserie</h3><p className="finance-muted">Comptes, reports et justificatifs de {report.year}.</p></div><span className={`finance-status ${tax.ready ? 'paid' : 'unknown'}`}>{closing?.report ? 'Version figée' : 'Brouillon'}</span></div>
     <div className="tax-steps" role="tablist" aria-label="Préparation des impôts">{([['prepare', 'Préparer'], ['copy', 'Reporter'], ['documents', 'Dossier']] as const).map(([key, label], i, steps) => <button type="button" role="tab" aria-selected={step === key} tabIndex={step === key ? 0 : -1} aria-controls={`tax-panel-${key}`} id={`tax-tab-${key}`} key={key} onClick={() => setStep(key)} onKeyDown={e => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return; e.preventDefault(); const next = e.key === 'Home' ? 0 : e.key === 'End' ? 2 : (i + (e.key === 'ArrowRight' ? 1 : 2)) % 3; setStep(steps[next][0]); (e.currentTarget.parentElement?.children[next] as HTMLButtonElement)?.focus(); }}><span aria-hidden="true">{i + 1}</span>{label}</button>)}</div>
-    <div role="status" className="tax-status"><span>{tax.ready ? <Check size={18}/> : <AlertCircle size={18}/>}</span><p>{tax.ready ? 'Vérifications renseignées. Relis les comptes et les originaux avant le dépôt.' : `${tax.missing.length} point(s) à compléter. Les montants restent provisoires.`}</p></div>
+    <div role="status" className="tax-status"><span>{tax.ready ? <Check size={16}/> : <AlertCircle size={16}/>}</span><p>{tax.ready ? 'Vérifications renseignées. Relis les comptes et les originaux avant le dépôt.' : 'Comptes provisoires : des informations restent à confirmer.'}</p></div>
     {notice && <p className="finance-notice" role="status">{notice}</p>}
     {driveAuthError && <DriveConnection always onConnected={() => { setDriveAuthError(false); setNotice('Drive connecté. Tu peux reprendre le téléchargement ou figer la version.'); }}/>}
     <div role="tabpanel" id={`tax-panel-${step}`} aria-labelledby={`tax-tab-${step}`}>
       {step === 'prepare' && <>
+        {!tax.ready && <div className="tax-next-task"><div><strong>{nextTask.title}</strong><p className="finance-muted">{nextTask.reason}</p></div><button type="button" className="finance-action" onClick={nextTask.run}>{nextTask.action}<ChevronRight size={14}/></button>{onOperations && nextTask.run===onOperations && <button type="button" className="finance-link" onClick={()=>setEdit('checks')}>Confirmer la relecture</button>}</div>}
         <div className="finance-list">
+          {onOperations && <button type="button" className="finance-row" onClick={onOperations}><span className="finance-row-main"><strong>Opérations et justificatifs</strong><span className="finance-muted">Paiements, classement et pièces de {report.year}</span></span><span className="finance-muted">{tax.reviews.journal ? 'Vérifiés' : 'À vérifier'}</span><ChevronRight size={16}/></button>}
           <button type="button" className="finance-row" onClick={onProfile}><span className="finance-row-main"><strong>Solde d’ouverture</strong><span className="finance-muted">Point de départ de la trésorerie</span></span><span className="finance-muted">{profile.openingCash?.confirmed ? 'Renseigné' : 'À confirmer'}</span><ChevronRight size={16}/></button>
           <button type="button" className="finance-row" onClick={onInventories}><span className="finance-row-main"><strong>Inventaires et ajustements</strong><span className="finance-muted">Matières, bière en cours et conditionnée</span></span><span className="finance-muted">{closing?.inventoriesConfirmed ? 'Vérifiés' : 'À compléter'}</span><ChevronRight size={16}/></button>
-          <button type="button" className="finance-row" aria-controls="finance-asset-register" onClick={showAssets}><span className="finance-row-main"><strong>Matériel à amortir</strong><span className="finance-muted">Valeurs comptables des équipements</span></span><span className="finance-muted">{assets.length} fiche(s)</span><ChevronRight size={16}/></button>
+          <button type="button" className="finance-row" aria-controls="finance-asset-register" onClick={showAssets}><span className="finance-row-main"><strong>Matériel à amortir</strong><span className="finance-muted">Valeurs comptables des équipements</span></span><span className="finance-muted">{assetsToReview ? `${assetsToReview} à vérifier` : compte(assets.length, 'fiche')}</span><ChevronRight size={16}/></button>
           <button type="button" className="finance-row" onClick={() => setEdit('balance')}><span className="finance-row-main"><strong>Comptes et dettes</strong><span className="finance-muted">Soldes du 31 décembre et identité des tiers</span></span><ChevronRight size={16}/></button>
           <button type="button" className="finance-row" onClick={() => setEdit('corrections')}><span className="finance-row-main"><strong>Cotisations et parts privées</strong><span className="finance-muted">Vérifier leur effet sur le résultat</span></span><ChevronRight size={16}/></button>
           <button type="button" className="finance-row" onClick={() => setEdit('checks')}><span className="finance-row-main"><strong>Vérifications de l’année</strong><span className="finance-muted">Activité principale ou accessoire et contrôles</span></span><span className="finance-muted">{checked} / {TAX_REVIEWS.length}</span><ChevronRight size={16}/></button>
         </div>
         {!!tax.missing.length && <details className="finance-disclosure"><summary>Voir les points à compléter ({tax.missing.length})</summary><ul className="tax-issues">{tax.missing.map((m, i) => <li key={i}>{m}</li>)}</ul></details>}
-        <details ref={assetRegister} id="finance-asset-register" className="finance-disclosure finance-section"><summary>Matériel et amortissements · {assets.length} fiche(s)</summary><p className="finance-muted mb-3">Amortissement de l’exercice {report.year}. Ouvre un matériel pour vérifier ses valeurs.</p><div className="finance-list">{assets.map(a => { const d = report.depreciation.find(r => r.assetId === a.id); return <button type="button" key={a.id} className="finance-row" onClick={() => onAsset(a)}><Wrench size={19}/><span className="finance-row-main"><strong>{a.name}</strong><span className="finance-muted">{a.openingConfirmed ? `${a.method === 'linear' ? 'Linéaire' : 'Dégressif'} · ${a.ratePct}%` : 'Valeurs à confirmer'}</span></span><span className="finance-money">{!d || d.missing.length ? 'À compléter' : formatCHF(d.depreciationCents)}</span><ChevronRight size={16}/></button>; })}</div>{!assets.length && <p className="finance-muted">Ajoute les équipements à amortir, par exemple une cuve ou un groupe froid.</p>}<button type="button" className="finance-link" onClick={() => onAsset(null)}><Plus size={17}/>Ajouter un amortissement</button></details>
-        <button type="button" className="finance-action tax-next" onClick={() => setStep('copy')}>Voir les montants à reporter<ChevronRight size={18}/></button>
+        <details ref={assetRegister} id="finance-asset-register" className="finance-disclosure finance-section"><summary>Matériel et amortissements · {compte(assets.length, 'fiche')}</summary><p className="finance-muted mb-3">Amortissement de l’exercice {report.year}. Ouvre un matériel pour vérifier ses valeurs.</p><div className="finance-list">{assets.map(a => { const d = report.depreciation.find(r => r.assetId === a.id); return <button type="button" key={a.id} className="finance-row" onClick={() => onAsset(a)}><Wrench size={19}/><span className="finance-row-main"><strong>{a.name}</strong><span className="finance-muted">{a.openingConfirmed ? `${a.method === 'linear' ? 'Linéaire' : 'Dégressif'} · ${a.ratePct}%` : 'Valeurs à confirmer'}</span></span><span className="finance-money">{!d || d.missing.length ? 'À compléter' : formatCHF(d.depreciationCents)}</span><ChevronRight size={16}/></button>; })}</div>{!assets.length && <p className="finance-muted">Ajoute les équipements à amortir, par exemple une cuve ou un groupe froid.</p>}<button type="button" className="finance-link" onClick={() => onAsset(null)}><Plus size={17}/>Ajouter un amortissement</button></details>
+        <button type="button" className="finance-action secondary tax-next" onClick={() => setStep('copy')}>Voir les montants à reporter<ChevronRight size={16}/></button>
       </>}
       {step === 'copy' && <>
         {!tax.mappingVerified && <p className="finance-notice">Les instructions vérifiées concernent {tax.sourceYear}. Tu peux préparer {report.year}, mais ses codes FriTax devront être vérifiés avant le report.</p>}

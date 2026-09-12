@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { compte } from '../../services/plural';
-import { Plus, ChevronRight, Settings2, FileDown, CalendarDays, Wheat, Wrench, AlertCircle, Check } from 'lucide-react';
+import { Plus, ChevronRight, Settings2, CalendarDays, Wheat, Wrench, Check } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { Transaction, BudgetLine, AppConfig, TimeFilterPeriod, Recipe, Batch, StockItem } from '../../types';
 import type { FinancialAsset, FinancialPlan } from '../../domain/finance/types';
@@ -20,14 +20,15 @@ import { BrewBudgetDialog } from '../../ui/finance/BrewBudgetDialog';
 import { TransactionDetails } from '../../ui/finance/TransactionDetails';
 import { MovementSheet } from '../../ui/finance/MovementSheet';
 import { ArchiveManagerSheet } from '../../ui/finance/ArchiveManagerSheet';
-import { TransactionJournal, type JournalRequest, type JournalScope } from '../../ui/finance/TransactionJournal';
+import { TransactionJournal, createJournalState, type JournalRequest } from '../../ui/finance/TransactionJournal';
+import { FinanceOverview } from '../../ui/finance/FinanceOverview';
+import { FinanceForecastSummary } from '../../ui/finance/FinanceForecastSummary';
 import { FinanceAssistant } from '../../ui/finance/FinanceAssistant';
 import { UpgradeWorkspace, UpgradeAnalytics, upgradeDateLabel } from '../../ui/finance/UpgradeWorkspace';
 import { UpgradeSheet } from '../../ui/finance/UpgradeSheet';
 import { isUpgradePlan } from '../../domain/finance/upgrades';
 import { EditTransactionModal } from '../EditTransactionModal';
-import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
-import { useMobileLayout } from '../../ui/useViewport';
+import { QuickActionModal } from '../QuickActionModal';
 import '../../ui/finance/finance.css';
 
 interface FinancesTabProps {
@@ -36,20 +37,28 @@ interface FinancesTabProps {
   openTransactionRequest?:{id:string;at:number}|null;
 }
 const readFinance=()=>FinanceService.snapshot();
-const views=[['costs','Coûts'],['journal','Journal'],['forecast','Prévoir'],['projects','Projets'],['annual','Annuel']] as const;
+const views=[['overview','Synthèse'],['journal','Opérations'],['forecast','Prévisions'],['annual','Annuel']] as const;
+type FinanceView = typeof views[number][0];
+const initialView = (): FinanceView => {
+  const saved = StorageService.getUiState<string>('finances_workspace', 'overview');
+  if (saved === 'projects') return 'forecast';
+  return views.some(([key]) => key === saved) ? saved as FinanceView : 'overview';
+};
 const labels={paid:'Payé',partial:'Partiellement payé',unpaid:'À payer',unknown:'Paiement à confirmer'};
 const shortDate=(date?:string)=>{const d=isoDate(date);return d?new Date(`${d}T12:00:00`).toLocaleDateString('fr-CH',{day:'numeric',month:'short',year:d.slice(0,4)===todayISO().slice(0,4)?undefined:'numeric'}):'Date à vérifier';};
 const monthLabel=(month:string)=>new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH',{month:'long',year:'numeric'});
 const EMPTY: never[]=[];
 
-export function FinancesTab({transactions,config,onOpenQuickAction,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest}:FinancesTabProps) {
-  const mobile=useMobileLayout();
+export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest}:FinancesTabProps) {
   const data=useStorageValue(readFinance);
   const archives=useStorageValue(FinancialArchiveService.getArchives);
   const [archiveOpen,setArchiveOpen]=useState(false),[journalRequest,setJournalRequest]=useState<JournalRequest>();
-  const [journalScope,setJournalScope]=useState<JournalScope>('current');
+  const [journalState,setJournalState]=useState(createJournalState);
   const handledOpenRequest=useRef<string>('');
-  const [view,setView]=useState<typeof views[number][0]>(()=>StorageService.getUiState('finances_workspace',mobile?'journal':'costs'));
+  const [view,setView]=useState<FinanceView>(initialView);
+  const [overviewPart,setOverviewPart]=useState<'situation'|'costs'>('situation');
+  const [forecastPart,setForecastPart]=useState<'timeline'|'projects'>(()=>StorageService.getUiState<string>('finances_workspace','overview')==='projects'?'projects':'timeline');
+  const [saleOpen,setSaleOpen]=useState(false);
   const [month,setMonth]=useState(todayISO().slice(0,7)),[allDates,setAllDates]=useState(false);
   const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);
   const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
@@ -61,6 +70,7 @@ export function FinancesTab({transactions,config,onOpenQuickAction,recipes=EMPTY
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile),[transactions,data.payments,data.profile]);
+  const openingCashReady=!!(data.profile.openingCash?.confirmed && isoDate(data.profile.openingCash.date) && isoDate(data.profile.openingCash.date)!<=todayISO() && Number.isSafeInteger(data.profile.openingCash.amountCents));
   const active=useMemo(()=>transactions.filter(isActiveTransaction),[transactions]);
   const undated=active.filter(t=>!isoDate(t.date));
   const period=useMemo(()=>active.filter(t=>allDates||isoDate(t.date)?.startsWith(month)),[active,allDates,month]);
@@ -86,7 +96,8 @@ export function FinancesTab({transactions,config,onOpenQuickAction,recipes=EMPTY
   const latestClosing=yearClosings.find(c=>c.id===closingId)??yearClosings[0];
   const annual=useMemo(()=>latestClosing?.report??buildAnnualReport({year,transactions,payments:data.payments,assets:data.assets,profile:{...data.profile,vatRegistered:data.profile.vatRegistered||config.fiscal.isTvaRegistered},closing:latestClosing}),[year,transactions,data,latestClosing,config.fiscal.isTvaRegistered]);
   const snapshots=useMemo(()=>{const seen=new Set<string>();return data.plans.filter(p=>p.brewEstimate).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).filter(p=>{const s=p.brewEstimate as BrewBudgetSnapshot,key=s.batchId??s.recipeId??p.id;if(seen.has(key))return false;seen.add(key);return true;});},[data.plans]);
-  const selectView=(v:typeof view)=>{setView(v);StorageService.setUiState('finances_workspace',v);};
+  const selectView=(v:FinanceView)=>{setView(v);StorageService.setUiState('finances_workspace',v);};
+  const showProjects=()=>{setForecastPart('projects');selectView('forecast');};
   const openJournal=(request:Omit<JournalRequest,'key'>)=>{setJournalRequest({...request,key:crypto.randomUUID()});selectView('journal');};
   useEffect(()=>{
     if(!openTransactionRequest)return;
@@ -99,8 +110,9 @@ export function FinancesTab({transactions,config,onOpenQuickAction,recipes=EMPTY
     setView('journal');StorageService.setUiState('finances_workspace','journal');
     setJournalRequest({key,scope:'all',query:transaction.id,allDates:true});
   },[openTransactionRequest,transactions]);
-  const financeAssistant=<FinanceAssistant view={view} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
-  const row=(t:Transaction)=>{const state=paymentState(t,data.payments,transactions),incoming=transactionDirection(t,transactions)==='in';return <button key={t.id} className="finance-row" onClick={()=>setSelected(t)}><div className="finance-row-main"><strong>{t.description}</strong><span className="finance-muted">{shortDate(t.date)} · {transactionVendor(t)||CATEGORY_LABELS[t.category]}</span></div><div className="finance-row-tail"><span className="finance-money">{incoming?'+ ':''}{formatCHF(transactionAmount(t))}</span><br/><span className={`finance-status ${state.overpaidCents>0?'alert':state.state}`}>{t.finance?.voidedAt?'Annulé':t.finance?.refundApplication==='offset'?'Imputé':state.overpaidCents>0?'Paiement à vérifier':state.state==='paid'&&state.appliedCreditCents>0?'Soldé':state.state==='partial'?<>Reste {formatCHF(state.remainingCents)}<br/>à {incoming?'encaisser':'payer'}</>:incoming&&state.state==='unpaid'?'À encaisser':incoming&&state.state==='paid'?'Encaissé':labels[state.state]}</span></div><ChevronRight size={16} className="shrink-0 text-cave-400"/></button>;};
+  const assistantView=view==='overview'?'costs':view==='forecast'&&forecastPart==='projects'?'projects':view;
+  const financeAssistant=<FinanceAssistant view={assistantView} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
+  const row=(t:Transaction)=>{const state=paymentState(t,data.payments,transactions,todayISO()),incoming=transactionDirection(t,transactions)==='in';return <button key={t.id} className="finance-row" onClick={()=>setSelected(t)}><div className="finance-row-main"><strong>{t.description}</strong><span className="finance-muted">{shortDate(t.date)} · {transactionVendor(t)||CATEGORY_LABELS[t.category]}</span></div><div className="finance-row-tail"><span className="finance-money">{incoming?'+ ':''}{formatCHF(transactionAmount(t))}</span><br/><span className={`finance-status ${state.overpaidCents>0?'alert':state.state}`}>{t.finance?.voidedAt?'Annulé':t.finance?.refundApplication==='offset'?'Imputé':state.overpaidCents>0?'Paiement à vérifier':state.state==='paid'&&state.appliedCreditCents>0?'Soldé':state.state==='partial'?<>Reste {formatCHF(state.remainingCents)}<br/>à {incoming?'encaisser':'payer'}</>:incoming&&state.state==='unpaid'?'À encaisser':incoming&&state.state==='paid'?'Encaissé':labels[state.state]}</span></div><ChevronRight size={16} className="shrink-0 text-cave-400"/></button>;};
   const forecastRow=(item:ForecastItem)=>{
     const invoice=item.source==='invoice'?transactions.find(t=>`invoice:${t.id}`===item.id):undefined;
     const linkedPlan=item.planId?data.plans.find(p=>p.id===item.planId):undefined;
@@ -115,50 +127,56 @@ export function FinancesTab({transactions,config,onOpenQuickAction,recipes=EMPTY
     }}><div className="finance-row-main"><strong>{title}</strong><span className="finance-muted">{item.source==='equipment'&&linkedPlan?upgradeDateLabel(linkedPlan):when} · {origin}</span></div><span className="finance-money">{item.direction==='in'?'+ ':''}{formatCHF(item.amountCents)}</span><ChevronRight size={16}/></button>;
   };
   return <div className="finance">
-    <div className="mb-2 sm:mb-0">
-    <ViewNavigation label="Vue des finances" value={view} onChange={selectView} panelIdPrefix="finance-" options={views.map(([value,label])=>({value,label}))}>
-    <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button key={key} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
-    </ViewNavigation></div>
+    <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button type="button" key={key} id={`finance-tab-${key}`} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
+    <div className="finance-page-heading">
+      <h2>{view==='overview'?'Situation financière':view==='journal'?'Mes opérations':view==='forecast'?'Anticiper les dépenses':'Bilan et impôts'}</h2>
+      {(view==='overview'||view==='journal')&&<div className="finance-entry-actions"><button type="button" className="finance-action" aria-label="Ajouter une dépense" onClick={()=>setExpenseOpen(true)}><Plus size={15}/>Achat</button><button type="button" className="finance-action secondary" aria-label="Enregistrer une vente" onClick={()=>setSaleOpen(true)}>Vente</button></div>}
+      <button type="button" className="finance-icon-action" aria-label="Solde et paramètres financiers" onClick={()=>setProfileOpen(true)}><Settings2 size={16}/></button>
+    </div>
     {notice&&<div className="finance-notice" role="status">{notice}<button className="finance-link" onClick={()=>setNotice('')}>Fermer</button></div>}
-    {undated.length>0&&<p className="finance-notice">{compte(undated.length, 'pièce')} avec une date à corriger. <button className="finance-link" onClick={()=>openJournal({scope:'all',allDates:true,filter:'review'})}>Retrouver ces pièces dans l’historique</button></p>}
-    <section role="tabpanel" id={`finance-${view}`} aria-label={views.find(v=>v[0]===view)?.[1]}>
-      {!mobile&&<div className="finance-heading"><h2>{view==='costs'?'Comprendre mes coûts':view==='journal'?'Mes opérations':view==='forecast'?'Les prochains mois':view==='projects'?'Faire évoluer la brasserie':'Préparer mon année'}</h2><button className="min-h-touch min-w-touch flex items-center justify-center" aria-label="Mes repères financiers" onClick={()=>setProfileOpen(true)}><Settings2 size={21}/></button></div>}
-      {view==='costs'&&<MobileDetails title="Choisir la période" summary={allDates?'Tout l’historique':monthLabel(month)}><div className="finance-actions finance-period"><Field label="Période"><input type="month" value={month} onChange={e=>{if(e.target.value){setMonth(e.target.value);setAllDates(false);}}}/></Field><button className="finance-link self-end" aria-pressed={allDates} onClick={()=>setAllDates(!allDates)}>{allDates?<Check size={16}/>:<CalendarDays size={16}/>}Tout l’historique</button></div></MobileDetails>}
-      {view==='costs'&&<>
-        <div className="finance-summary"><span className="finance-label">Dépenses nettes enregistrées · {allDates?'Tout l’historique':monthLabel(month)}</span><div className="reading finance-money">{formatCHF(sum)}</div>{!allDates&&previousTotal>0&&<p className="finance-muted">{sum>=previousTotal?'+':'−'}{formatCHF(Math.abs(sum-previousTotal))} par rapport à {monthLabel(previousKey)}{month===todayISO().slice(0,7)?' · mois en cours':''}</p>}<MobileDetails title="Détail du total" className="mt-2"><div className="finance-split"><div><span className="finance-label">Matières et brassage</span><span className="finance-money">{formatCHF(totals.find(([k])=>k==='brassage')?.[1]??0)}</span></div><div><span className="finance-label">Matériel</span><span className="finance-money">{formatCHF(totals.find(([k])=>k==='materiel')?.[1]??0)}</span></div></div></MobileDetails></div>
+    <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
+      {view==='overview'&&<div className="finance-subnav" role="group" aria-label="Lecture de la synthèse"><button type="button" aria-pressed={overviewPart==='situation'} onClick={()=>setOverviewPart('situation')}>Situation</button><button type="button" aria-pressed={overviewPart==='costs'} onClick={()=>setOverviewPart('costs')}>Coûts</button></div>}
+      {view==='overview'&&overviewPart==='situation'&&<><FinanceOverview ledger={ledger} openingCashReady={openingCashReady} undatedCount={undated.length} onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}/>{financeAssistant}</>}
+      {view==='overview'&&overviewPart==='costs'&&<>
+        <div className="finance-period-toolbar"><Field label="Période des coûts"><input type="month" value={month} onChange={e=>{if(e.target.value){setMonth(e.target.value);setAllDates(false);}}}/></Field><button type="button" className="finance-link" aria-pressed={allDates} onClick={()=>setAllDates(!allDates)}>{allDates?<Check size={14}/>:<CalendarDays size={14}/>}Tout l’historique</button></div>
+        {undated.length>0&&<p className="finance-notice">{compte(undated.length, 'pièce')} avec une date à corriger. <button className="finance-link" onClick={()=>openJournal({scope:'all',allDates:true,filter:'review'})}>Retrouver ces pièces dans l’historique</button></p>}
+        <div className="finance-cost-total"><div><span className="finance-label">Dépenses nettes enregistrées</span><small className="finance-muted">{allDates?'Tout l’historique':monthLabel(month)}</small></div><strong className="finance-money">{formatCHF(sum)}</strong></div>
+        {!allDates&&previousTotal>0&&<p className="finance-muted">{sum>=previousTotal?'+':'−'}{formatCHF(Math.abs(sum-previousTotal))} par rapport à {monthLabel(previousKey)}{month===todayISO().slice(0,7)?' · mois en cours':''}</p>}
         <div className="finance-columns"><section className="finance-section"><div className="finance-heading"><h3>Répartition des dépenses</h3></div>{totals.length?<div className="finance-bars">{totals.map(([cat,amount])=><button className="finance-bar" key={cat} onClick={()=>openJournal({scope:'all',category:cat,month,allDates})}><span>{CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]??cat}</span><span className="finance-bar-track"><span className="finance-bar-fill" style={{display:'block',width:`${Math.min(100,Math.max(0,amount/Math.max(1,sum)*100))}%`}}/></span><span className="finance-money">{formatCHF(amount)}</span></button>)}</div>:<div className="finance-empty"><Wheat className="mx-auto"/><h3>Aucune dépense sur cette période</h3><p>Ajoute un achat pour retrouver ici les coûts de ta brasserie.</p><button className="finance-link mx-auto" onClick={()=>setExpenseOpen(true)}>Ajouter une dépense</button></div>}</section>
         <section className="finance-section"><div className="finance-heading"><h3>Coût des brassins</h3></div>{snapshots.length?<div className="finance-list">{snapshots.slice(0,6).map(p=>{const s=p.brewEstimate as BrewBudgetSnapshot;return <button className="finance-row" key={p.id} onClick={()=>{const batch=batches.find(b=>b.id===s.batchId),recipe=recipes.find(r=>r.id===s.recipeId);if(batch||recipe)setBudget({batch,recipe});else setNotice('La recette de ce budget est absente. Le budget enregistré reste conservé.');}}><div className="finance-row-main"><strong>{s.title}</strong><span className="finance-muted">{s.netVolumeL} L · {s.complete?'Estimation enregistrée':'Estimation partielle'}</span></div><span className="finance-money">{s.costPerL!=null?`${formatCHF(Math.round(s.costPerL*100))}/L`:'À compléter'}</span><ChevronRight size={16}/></button>;})}</div>:<p className="finance-muted">Estime un brassin pour connaître son coût par litre et les achats nécessaires.</p>}<button className="finance-link" onClick={()=>setBudgetPicker(true)}><Plus size={18}/>Estimer un brassin</button></section></div>
         {!!vendors.length&&<section className="finance-section"><h3>Principaux fournisseurs</h3><div className="finance-list">{vendors.slice(0,5).map(([name,amount])=><button key={name} className="finance-row" onClick={()=>openJournal({scope:'all',query:name==='Fournisseur à compléter'?'':name,month,allDates})}><span className="finance-row-main">{name}</span><span className="finance-money">{formatCHF(amount)}</span><ChevronRight size={16}/></button>)}</div></section>}
-        <MobileDetails title="Évolution de la brasserie" className="mt-4"><UpgradeAnalytics plans={data.plans} transactions={transactions} payments={data.payments} onOpen={setUpgrade} onBrowse={()=>selectView('projects')}/></MobileDetails>
+        <details className="finance-disclosure"><summary>Investissements et matériel</summary><UpgradeAnalytics plans={data.plans} transactions={transactions} payments={data.payments} onOpen={setUpgrade} onBrowse={showProjects}/><button type="button" className="finance-link" onClick={()=>{setNewEquipment(true);setExpenseOpen(true);}}><Wrench size={15}/>Enregistrer un achat de matériel</button></details>
         {financeAssistant}
       </>}
-      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onSale={onOpenQuickAction} onPrivateMovement={()=>setMovement(null)} onScopeChange={setJournalScope}/>{financeAssistant}</>}
-      {view==='forecast'&&<>
+      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onSale={()=>setSaleOpen(true)} onPrivateMovement={()=>setMovement(null)}/>{financeAssistant}</>}
+      {view==='forecast'&&<div className="finance-subnav" role="group" aria-label="Prévisions et projets"><button type="button" aria-pressed={forecastPart==='timeline'} onClick={()=>setForecastPart('timeline')}>Échéances</button><button type="button" aria-pressed={forecastPart==='projects'} onClick={()=>setForecastPart('projects')}>Projets de matériel</button></div>}
+      {view==='forecast'&&forecastPart==='timeline'&&<>
         <div className="finance-filter" role="group" aria-label="Horizon de prévision">{[[30,'30 jours'],[90,'90 jours'],[365,'12 mois']].map(([value,label])=><button key={value} aria-pressed={horizon===value} onClick={()=>{setHorizon(Number(value) as 30|90|365);setUpcomingLimit(6);}}>{label}</button>)}</div>
-        <div className="finance-summary"><span className="finance-label">Sorties prévues · {horizon===365?'12 mois':`${horizon} jours`}</span><div className="reading finance-money">{formatCHF(invoiceOut+estimatedOut)}</div><MobileDetails title="Factures, budgets et trésorerie" className="mt-2"><div className="finance-split"><div><span className="finance-label">Factures à régler</span><span className="finance-money">{formatCHF(invoiceOut)}</span></div><div><span className="finance-label">Budgets et estimations</span><span className="finance-money">{formatCHF(estimatedOut)}</span></div></div><p className="finance-muted mt-4">Trésorerie connue : {ledger.cashCents==null?'solde à renseigner':formatCHF(ledger.cashCents)}{ledger.cashCents!=null&&!ledger.cashComplete?' · à compléter':''}</p><p className="finance-muted mt-2"><span>Solde estimé en fin de période</span> : <strong className={projectedCash!=null&&projectedCash<0?'text-amber-200':'text-cave-50'}>{projectedCash==null?'À compléter':formatCHF(projectedCash)}</strong></p></MobileDetails></div>
-        {mobile&&projectedCash!=null&&projectedCash<0&&<p className="finance-notice" role="status">Trésorerie estimée en fin de période : {formatCHF(projectedCash)}.</p>}
+        <FinanceForecastSummary ledger={ledger} openingCashReady={openingCashReady} warnings={forecast.warnings} invoiceOut={invoiceOut} estimatedOut={estimatedOut} incoming={upcoming.filter(item=>item.direction==='in').reduce((total,item)=>total+item.amountCents,0)} projectedCash={projectedCash} horizonLabel={horizon===365?'12 mois':`${horizon} jours`} onProfile={()=>setProfileOpen(true)} onPayments={()=>openJournal({scope:'all',allDates:true,filter:'unknown'})}/>
         {projectOut>0&&<div className="upgrade-forecast-impact"><label className="finance-check"><input type="checkbox" checked={includeEquipmentProjects} onChange={e=>setIncludeEquipmentProjects(e.target.checked)}/>Inclure mes projets de matériel · {formatCHF(projectOut)}</label><p className="finance-muted">Les factures restent incluses, même sans les projets.</p></div>}
 
-        <section className="finance-section"><h3>Prochaines échéances</h3><div className="finance-list">{upcoming.slice(0,upcomingLimit).map(forecastRow)}</div>{upcoming.length>upcomingLimit&&<button className="finance-link" onClick={()=>setUpcomingLimit(limit=>limit+6)}>Voir les {Math.min(6,upcoming.length-upcomingLimit)} échéances suivantes<ChevronRight size={16}/></button>}{!upcoming.length&&<div className="finance-empty"><h3>Aucune échéance prévue</h3><p>Ajoute tes charges récurrentes et les achats de tes prochains brassins.</p></div>}</section>
-        <MobileDetails title="Ajouter une prévision" className="mt-3"><div className="finance-actions finance-section"><button className="finance-action" onClick={()=>setBudgetPicker(true)}><Wheat size={20}/>Prévoir un brassin</button><button className="finance-action secondary" onClick={()=>setPlan(null)}><Plus size={20}/>Autre prévision</button></div></MobileDetails>
-        <details className="finance-disclosure finance-section" onToggle={e=>setChartOpen(e.currentTarget.open)}><summary>Voir l’évolution mois par mois</summary>{chartOpen&&<><p className="finance-muted">Trait doré : sorties prévues{ledger.cashComplete&&ledger.cashCents!=null?' · Pointillé vert : trésorerie':''}.</p><div className="finance-chart" aria-label="Évolution mensuelle des dépenses prévues"><ResponsiveContainer width="100%" height="100%"><AreaChart data={forecastChart} margin={{top:8,right:12,left:0,bottom:0}}><CartesianGrid stroke="#3D342E" vertical={false}/><XAxis dataKey="label" tick={{fill:'#B3A397',fontSize:14}} tickFormatter={v=>v.split(' ')[0].slice(0,4)} minTickGap={28}/><YAxis width={48} tick={{fill:'#B3A397',fontSize:14}}/><Tooltip contentStyle={{background:'#221D19',border:'1px solid #574A42',borderRadius:8}} formatter={(v:number,name:string)=>[formatCHF(Math.round(v*100)),name==='expense'?'Sorties prévues':'Trésorerie']}/><Area type="monotone" dataKey="expense" stroke="#F2C14E" fill="#F2C14E" fillOpacity={.09} isAnimationActive={false}/>{ledger.cashComplete&&ledger.cashCents!=null&&<Area type="monotone" dataKey="balance" stroke="#89B378" strokeDasharray="5 4" fill="transparent" isAnimationActive={false}/>}</AreaChart></ResponsiveContainer></div></>}</details>
-        {forecast.warnings.length>0&&<details className="finance-notice"><summary>{forecast.warnings.length} point{forecast.warnings.length>1?'s':''} à compléter pour affiner la prévision</summary><ul className="list-disc pl-5 mt-2 space-y-1">{forecast.warnings.map((w,i)=><li key={i}>{w}</li>)}</ul><button className="finance-link" onClick={()=>setProfileOpen(true)}>Renseigner mes repères</button></details>}
+        <div className="finance-actions finance-section"><button type="button" className="finance-action" onClick={()=>setPlan(null)}><Plus size={15}/>Ajouter une prévision</button><button type="button" className="finance-action secondary" onClick={()=>setBudgetPicker(true)}><Wheat size={15}/>Budget d’un brassin</button></div>
+        <details className="finance-disclosure" onToggle={e=>setChartOpen(e.currentTarget.open)}><summary>Comparer les mois</summary>{chartOpen&&<>
+          <p className="finance-muted">Sorties en bleu · solde en pointillé, en CHF. {forecast.warnings.length>0?'Scénario limité aux données renseignées.':''}</p>
+          <div className="finance-chart" role="img" aria-label="Évolution mensuelle, montants exacts dans le tableau suivant"><ResponsiveContainer width="100%" height="100%"><AreaChart data={forecastChart} margin={{top:8,right:12,left:0,bottom:0}}><CartesianGrid stroke="#3D342E" vertical={false}/><XAxis dataKey="label" tick={{fill:'#D8CEC5',fontSize:12}} tickFormatter={v=>v.split(' ')[0].slice(0,4)} minTickGap={28}/><YAxis width={48} tick={{fill:'#D8CEC5',fontSize:12}}/><Tooltip contentStyle={{background:'#221D19',border:'1px solid #574A42',borderRadius:8}} formatter={(v:number,name:string)=>[formatCHF(Math.round(v*100)),name==='expense'?'Sorties prévues':'Trésorerie']}/><Area type="linear" dataKey="expense" stroke="#86B9E6" fill="#86B9E6" fillOpacity={.08} isAnimationActive={false}/>{ledger.cashComplete&&ledger.cashCents!=null&&<Area type="linear" dataKey="balance" stroke="#D8CEC5" strokeDasharray="5 4" fill="transparent" isAnimationActive={false}/>}</AreaChart></ResponsiveContainer></div>
+          <table className="finance-table"><caption className="sr-only">Prévision mensuelle selon le scénario sélectionné</caption><thead><tr><th scope="col">Mois</th><th scope="col">Sorties</th><th scope="col">Solde estimé</th></tr></thead><tbody>{forecastChart.map(item=><tr key={item.label}><th scope="row">{item.label}</th><td className="finance-money">{formatCHF(Math.round(item.expense*100))}</td><td className="finance-money">{item.balance==null?'À compléter':formatCHF(Math.round(item.balance*100))}</td></tr>)}</tbody></table>
+        </>}</details>
+        <section className="finance-section"><h3>Prochaines échéances</h3><div className="finance-list">{upcoming.slice(0,upcomingLimit).map(forecastRow)}</div>{upcoming.length>upcomingLimit&&<button className="finance-link" onClick={()=>setUpcomingLimit(limit=>limit+6)}>Voir les {Math.min(6,upcoming.length-upcomingLimit)} échéances suivantes<ChevronRight size={16}/></button>}{!upcoming.length&&<p className="finance-empty-inline">Aucune échéance renseignée sur cette période. Ajoute une prévision ou le budget d’un brassin.</p>}</section>
         <details className="finance-section"><summary className="finance-link">Toutes mes prévisions ({data.plans.filter(p=>p.status!=='draft'&&!isUpgradePlan(p)).length})</summary>{data.plans.filter(p=>p.status!=='draft'&&!isUpgradePlan(p)).map(p=><button key={p.id} className="finance-row" onClick={()=>setPlan(p)}><span className="finance-row-main">{p.title}<br/><span className="finance-muted">{p.status==='active'?'À venir':p.status==='cancelled'?'Annulée':'Terminée'}</span></span><span>{formatCHF(p.amountCents)}</span><ChevronRight size={16}/></button>)}</details>
         {financeAssistant}
       </>}
-      {view==='projects'&&<><UpgradeWorkspace onOpenProject={setUpgrade}/>{financeAssistant}</>}
+      {view==='forecast'&&forecastPart==='projects'&&<><UpgradeWorkspace onOpenProject={setUpgrade}/>{financeAssistant}</>}
       {view==='annual'&&<>
-        <Field label="Exercice"><input type="number" min="1900" max="2200" value={year} onChange={e=>{setYear(Number(e.target.value)||new Date().getFullYear());setClosingId('');}}/></Field>
+        <div className="finance-period-toolbar"><Field label="Exercice"><input type="number" min="1900" max="2200" value={year} onChange={e=>{setYear(Number(e.target.value)||new Date().getFullYear());setClosingId('');}}/></Field></div>
         {!!yearClosings.length&&<Field label="Version de l’année"><select value={latestClosing?.id??''} onChange={e=>setClosingId(e.target.value)}>{yearClosings.map(c=><option key={c.id} value={c.id}>{c.report?'Version figée':'Brouillon'} · {new Date(c.createdAt).toLocaleString('fr-CH')}</option>)}</select></Field>}
-        <TaxWorkspace key={year} report={annual} closing={latestClosing} transactions={transactions} assets={data.assets} profile={data.profile} companyName={config.company.name} onProfile={()=>setProfileOpen(true)} onInventories={()=>setClosingOpen(true)} onAsset={setAsset} onVersion={setClosingId}/>
+        <TaxWorkspace key={year} report={annual} closing={latestClosing} transactions={transactions} assets={data.assets} profile={data.profile} companyName={config.company.name} onProfile={()=>setProfileOpen(true)} onInventories={()=>setClosingOpen(true)} onAsset={setAsset} onVersion={setClosingId} onOperations={()=>openJournal({scope:'all',year:String(year),allDates:true,filter:'review'})}/>
         <button className="finance-link" onClick={()=>setArchiveOpen(true)}>Gérer les archives par année<ChevronRight size={16}/></button>
         {financeAssistant}
       </>}
     </section>
-    {!mobile&&(view==='costs'||view==='journal'&&journalScope!=='archives')&&<div className="finance-quick-entry"><button className="finance-action" onClick={()=>setExpenseOpen(true)}><Plus size={20}/>Ajouter une dépense</button><button className="finance-action secondary" onClick={()=>{setNewEquipment(true);setExpenseOpen(true);}} aria-label="Acheter du matériel"><Wrench size={20}/><span>Matériel</span></button></div>}
     {archiveOpen&&<ArchiveManagerSheet transactions={transactions} payments={data.payments} archives={archives} closings={data.closings} onClose={()=>setArchiveOpen(false)} onSaved={setNotice} onBrowse={(year,archived)=>{setArchiveOpen(false);openJournal(archived?{scope:'archives',archiveYear:String(year),allDates:true}:{scope:'all',year:String(year),allDates:true});}}/>}
-    {mobile&&<button type="button" className="finance-link mt-3" onClick={()=>setProfileOpen(true)}><Settings2 size={18}/>Mes repères financiers</button>}
     {profileOpen&&<ProfileSheet profile={data.profile} onClose={()=>setProfileOpen(false)}/>}
+    {saleOpen&&<QuickActionModal isOpen initialScreen="quick-sale" recipes={recipes} onClose={()=>setSaleOpen(false)} onSuccessMessage={setNotice}/>}
     {expenseOpen&&<ExpenseSheet initialIntent={newEquipment?'equipment':'expense'} onClose={()=>{setExpenseOpen(false);setNewEquipment(false);}} onSaved={()=>setNotice('Dépense enregistrée.')}/>}
     {upgrade!==undefined&&<UpgradeSheet plan={upgrade??undefined} onClose={()=>setUpgrade(undefined)} onOpenTransaction={tx=>{setUpgrade(undefined);setSelected(tx);}}/>}
     {plan!==undefined&&<PlanSheet plan={plan??undefined} onClose={()=>setPlan(undefined)}/>}
