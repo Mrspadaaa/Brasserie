@@ -30,6 +30,7 @@ import { LoginPage } from './components/LoginPage';
 import { DashboardTab } from './components/tabs/DashboardTab';
 import { FinancesTab } from './components/tabs/FinancesTab';
 import { ProductionTab } from './components/tabs/ProductionTab';
+import type { CreativeLabSectionRequest } from './components/CreativeLabTab';
 import { StocksTab } from './components/tabs/StocksTab';
 import { ClientsTab } from './components/tabs/ClientsTab';
 import { 
@@ -135,9 +136,17 @@ export const App: React.FC = () => {
   const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   useEffect(() => {
     if (activeTab !== 'finances') setFinanceOpenRequest(null);
   }, [activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'production') setBatchOpenRequest(null);
+  }, [activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'production' || productionSubTab !== 'lab') setLabSectionRequest(null);
+  }, [activeTab, productionSubTab]);
   const [wizardSeed, setWizardSeed] = useState<WizardSeed | undefined>(undefined);
   /** Sous-onglet courant, remonté par l'onglet actif. */
   const [subTab, setSubTab] = useState<AnySubTab>(null);
@@ -658,6 +667,7 @@ export const App: React.FC = () => {
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
       <PersistenceStatus />
       <Header
+        compactLayout={activeTab === 'dashboard'}
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
         config={config}
         globalTimeFilter={globalTimeFilter}
@@ -684,7 +694,15 @@ export const App: React.FC = () => {
             config={config}
             globalTimeFilter={globalTimeFilter}
             onNavigateTab={(tab) => { if(tab==='production') setProductionSubTab('batches'); setActiveTab(tab); }}
-            onNavigateToCreativeLab={navigateToCreativeLab}
+            onOpenBatch={(batchId) => {
+              setProductionSubTab('batches');
+              setBatchOpenRequest({ id: batchId, at: Date.now() });
+              setActiveTab('production');
+            }}
+            onNavigateToCreativeLab={() => {
+              setLabSectionRequest({ section: 'event', at: Date.now() });
+              navigateToCreativeLab();
+            }}
             onOpenCreateBatch={() => openWizard()}
             onOpenQuickAction={() => setIsQuickActionOpen(true)}
           />
@@ -719,6 +737,10 @@ export const App: React.FC = () => {
             onOpenBrewDay={openBrewDay}
             onSubTabChange={handleProductionSubTabChange}
             createRequest={createRequest}
+            openBatchRequest={batchOpenRequest}
+            onOpenBatchRequestHandled={() => setBatchOpenRequest(null)}
+            openLabSectionRequest={labSectionRequest}
+            onOpenLabSectionRequestHandled={() => setLabSectionRequest(null)}
             onDraftRecipe={(seed) => openWizard(seed)}
             onCreateRequestHandled={() => setCreateRequest(null)}
             onSuccessMessage={showToast}
@@ -761,6 +783,7 @@ export const App: React.FC = () => {
           setActiveTab(tab);
         }}
         action={fabAction}
+        hideAction={activeTab === 'dashboard' || activeTab === 'finances'}
         onAction={runFabAction}
         onOpenQuickAction={() => setIsQuickActionOpen(true)}
         criticalStockCount={criticalStockCount}

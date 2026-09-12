@@ -17,6 +17,12 @@ colors:
   ebc-copper: "#A0522D"
   ebc-brown: "#6B3A1E"
   ebc-stout: "#3B1F14"
+  area-production: "#E7A070"
+  area-finances: "#86B9E6"
+  area-stocks: "#A3C97A"
+  area-agenda: "#BCA5E8"
+  attention: "#E3B55D"
+  alert-strong: "#F29289"
   alert: "#D6453D"
   hop: "#6E9B5B"
   water: "#5B8AA6"
@@ -91,19 +97,24 @@ découle de cette scène — pas d'un goût.
 Le fond est un charbon **chaud**, dérivé du malt torréfié, jamais le bleu-noir
 des tableaux de bord. Une cave n'est pas bleue.
 
-Quatre lois portent le système. Elles se vérifient, elles ne se discutent pas :
+Cinq lois portent le système :
 
-1. **Trois tons de texte, pas un de plus** — `cave-50`, `cave-200`, `cave-400`.
-   Tout ce qui est plus sombre est de la structure, jamais du texte.
+1. **Trois tons neutres pour la lecture** — `cave-50`, `cave-200`, `cave-400`.
+   Les accents de rubrique et d'état sont autorisés avec un contraste suffisant.
+   Les tons `cave` plus sombres restent de la structure, jamais du texte.
 2. **L'échelle EBC appartient à la bière** — `ebc-*` décrit un moût, un malt, un
-   brassin. Elle ne décrit jamais une action, un lien ni un état d'interface.
+   brassin. Seul `ebc-straw` sert aussi à l'action principale ; les rubriques
+   et les états d'interface utilisent leurs propres jetons.
 3. **Un instrument ne ment pas sur sa position** — un curseur, une jauge ou une
    barre place ses repères à leur valeur réelle, ou ne les place pas.
 4. **14 px plancher, 36 px dessinés, 44 px au doigt** — rien en dessous, jamais, sur aucun écran.
+5. **Des couleurs stables pour se repérer** — une rubrique garde son identité
+   sur téléphone et ordinateur, même quand tout va bien. La couleur accompagne
+   toujours un libellé ; les alertes restent distinctes de ces repères.
 
 ## Colors
 
-### Les trois tons de texte
+### Les trois tons neutres de texte
 
 Mesuré sur `cave-900`, la surface la plus courante :
 
@@ -120,9 +131,11 @@ d'intention faible comme les marques de curseur ou les placeholders : un
 placeholder est du texte et doit tenir 4.5:1, donc `cave-400`.
 
 **Les degrés 100, 300, 500 et 750 n'existent pas** et ne doivent pas être
-réintroduits. Trois tons suffisent à la hiérarchie ; un quatrième se paie en
-contraste et ne se distingue pas à bout de bras. Un test refuse toute classe de
-couleur hors palette (`tests/unit/designTokens.test.ts`).
+réintroduits. Ces trois tons constituent l'échelle neutre de lecture. Les
+couleurs de rubrique, de statut et de style décrites ci-dessous complètent
+cette échelle pour aider au repérage. Les jetons ajoutés au thème doivent être
+déclarés dans la palette et pris en compte par ses contrôles
+(`tests/unit/designTokens.test.ts`).
 
 ### Les surfaces
 
@@ -158,13 +171,67 @@ pénombre. Cette exception est bornée par la règle suivante.
 Ces trois-là sont volontairement **hors** de l'échelle bière : une alerte ne doit
 jamais pouvoir se confondre avec une couleur de bière.
 
-**On colorie l'exception, pas le cas courant.** Si neuf lignes sur dix portent la
-même pastille colorée, la couleur ne distingue plus rien — repasser le cas
-courant en neutre et n'allumer que ce qui sort de l'ordinaire.
+**La couleur sert aussi à se repérer.** Les rubriques et les étapes métier
+gardent des repères colorés visibles dans leur état courant. On doit pouvoir
+retrouver les cuves, les stocks, les finances et l'agenda sans relire tous les
+intitulés. La répétition d'un repère stable est utile ; elle ne justifie pas de
+le supprimer au nom de la sobriété.
 
-### La palette catégorielle — familles de styles UNIQUEMENT
+### Les repères permanents de rubrique
 
-Une quatrième famille de couleurs existe, et son usage est strictement borné :
+| Rubrique | Repère de couleur |
+|---|---|
+| Brassins / production | Cuivre |
+| Finances | Bleu |
+| Stocks | Vert |
+| Agenda et démarches | Violet |
+
+Cette correspondance s'applique aux mêmes rubriques dans toute l'application,
+sur téléphone comme sur ordinateur. Elle s'exprime par les **icônes, les titres,
+les marqueurs de navigation et les fonds légèrement teintés**. Un panneau fermé
+conserve son repère ; le passage au mobile ne doit pas effacer les couleurs.
+Le libellé et la forme distinguent toujours une destination active des autres.
+
+Les surfaces charbon restent majoritaires. Les textes courants et les grandes
+valeurs gardent les tons neutres de lecture ; un titre de rubrique peut prendre
+son accent si son contraste est suffisant. Une couleur de rubrique ne transforme
+pas toutes ses commandes en actions principales : l'aplat paille reste réservé
+à l'action principale de l'écran.
+
+À l'implémentation, déclarer des **jetons de rubrique dédiés** dans le thème et
+reporter leurs valeurs vérifiées dans le frontmatter de ce document. Le cuivre
+de Production n'est pas une mesure EBC ; le bleu de Finances n'est pas le jeton
+`water` ; le vert de Stocks n'est pas un indicateur de disponibilité. Ne pas
+détourner les jetons de bière, d'état ou de style pour ces usages.
+
+### Les états et les alertes restent distincts
+
+Les badges de statut associent une couleur à un libellé explicite : fermentation,
+garde froide, planifié, conditionné. Un même statut conserve le même sens et la
+même teinte sur les deux formats, d'après l'état enregistré du brassin.
+
+**L'alerte, elle, signale une exception.** Un besoin de réapprovisionnement
+s'affiche en ambre avec « À commander » ; une rupture ou une erreur s'affiche en
+rouge avec un libellé précis. L'ambre d'attention utilise un jeton d'état dédié,
+distinct de l'échelle EBC et de la couleur paille de l'action principale.
+
+Le repère vert de la rubrique Stocks identifie l'inventaire ; il ne signifie pas
+« stock suffisant ». Si une alerte existe, son badge et son résumé restent
+visibles quand le panneau est fermé et prennent la priorité visuelle. Un état
+normal peut conserver une pastille discrète ; réserver les accents les plus
+forts aux situations qui demandent une action.
+
+**Une couleur ne porte jamais seule l'information.** Associer les états à du
+texte et, lorsque c'est utile, à une icône. Vérifier au moins 4.5:1 pour les
+textes colorés sur leur fond réellement composé, y compris les badges et les
+panneaux teintés. Un jeton d'accent n'est pas automatiquement une couleur de
+texte accessible : éclaircir le texte ou garder `cave-50` / `cave-200` et porter
+la couleur sur l'icône ou le fond. Appliquer les rôles typographiques et les
+dimensions compactes définis dans les sections Typography et Layout.
+
+### La palette des styles de bière — réservée aux pastilles
+
+La palette qui distingue les familles de styles reste réservée à
 **la pastille de style d'une bière** (`src/ui/BeerStyleTag.tsx`).
 
 Elle ne sert pas à dire de quelle couleur est la bière — c'est le travail de
@@ -175,8 +242,9 @@ que ce soit.
 
 > **Ces teintes ne sortent jamais de cette pastille.**
 > Aucune autre partie de l'interface n'utilise la palette par défaut de
-> Tailwind. Un état, une action ou une alerte passent par `alert`, `hop`,
-> `water` ou `ebc-straw`.
+> Tailwind. Les repères de rubrique utilisent leurs jetons dédiés. Les états
+> et les alertes passent par les jetons sémantiques, dont `alert`, `hop`,
+> `water` et l'ambre d'attention ; `ebc-straw` reste l'action principale.
 
 Le jeu n'est pas choisi à l'œil. Pour chaque nombre de paliers, un glouton a
 cherché celui qui **maximise le plus petit écart perceptuel** (ΔE, CIE-Lab)

@@ -50,7 +50,7 @@ export default {
          * doit jamais pouvoir se confondre avec une couleur de bière.
          */
         ebc: {
-          straw: '#F2C14E', // paille — action principale, attention
+          straw: '#F2C14E', // paille — action principale
           gold: '#E0A02E',
           amber: '#C87A2C',
           copper: '#A0522D',
@@ -58,7 +58,17 @@ export default {
           stout: '#3B1F14'
         },
 
+        // Repères de rubrique : stables, même en l'absence d'une alerte.
+        area: {
+          production: '#E7A070', // cuivre
+          finances: '#86B9E6', // bleu
+          stocks: '#A3C97A', // vert
+          agenda: '#BCA5E8' // violet
+        },
+
         // Sémantique — volontairement HORS de l'échelle bière.
+        attention: '#E3B55D', // réapprovisionnement, action à prévoir
+        'alert-strong': '#F29289', // texte d'erreur lisible sur les surfaces cave
         alert: '#D6453D', // rupture, erreur
         hop: '#6E9B5B', // disponible, validé (vert houblon sourd, pas un vert acide)
         water: '#5B8AA6' // eau, chimie, information
@@ -71,29 +81,12 @@ export default {
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace']
       },
 
-      /**
-       * Échelle modulaire (base 16, ratio ~1.25) au lieu des 10/11/12 px
-       * empilés au hasard. 14 px est le PLANCHER : en dessous, illisible à bout
-       * de bras dans une cave.
-       */
+      // 12/13 px pour les métadonnées et commandes, 14 px pour le contenu.
+      // Les champs conservent leurs 16 px dans index.css pour la saisie mobile.
       fontSize: {
-        footnote: ['0.75rem', { lineHeight: '1.1rem' }], // 12 — mentions légales uniquement
-        /**
-         * 13 — EXPÉRIMENTAL, à la demande de Gaëtan (04.09.2026) pour gagner de
-         * la densité clavier ouvert. Descend sous le plancher de 14 px posé par
-         * le système de design ; réservé au CHROME (étiquettes, indications,
-         * légendes) d'un écran de saisie mobile — jamais à une valeur qu'on
-         * saisit ou qu'on relève. À valider sur téléphone : si ça se révèle
-         * illisible à bout de bras, remonter à `sm`.
-         *
-         * ⚠️ NE JAMAIS poser cette classe sur un `<input>`/`<select>`/
-         * `<textarea>` : ils sont protégés à 16 px ailleurs (`index.css`) contre
-         * le zoom automatique de Safari, et une classe `text-2xs` l'emporterait
-         * sur cette protection — Tailwind place les utilitaires après la base
-         * dans la cascade, à spécificité égale.
-         */
+        footnote: ['0.75rem', { lineHeight: '1.1rem' }],
         '2xs': ['0.8125rem', { lineHeight: '1.05rem' }],
-        sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14 — plancher du système de design
+        sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14 — texte courant et données
         base: ['1rem', { lineHeight: '1.5rem' }], // 16 — texte courant
         lg: ['1.25rem', { lineHeight: '1.6rem' }], // 20 — titre de carte
         xl: ['1.5625rem', { lineHeight: '1.9rem' }], // 25 — titre de section
@@ -102,43 +95,12 @@ export default {
         '4xl': ['3.052rem', { lineHeight: '3.2rem' }] // 49
       },
 
-      spacing: {
-        /**
-         * ÉCHELLE RÉVISÉE LE 12.09.2026, à la demande explicite de Gaëtan :
-         * « les boutons sont toujours beaucoup trop grands, larges et imposants ».
-         *
-         * L'échelle précédente — 48 px de base, 56 px pour les steppers — était
-         * calquée sur Material Design. Elle rendait chaque écran de l'assistant
-         * plus haut que nécessaire : un formulaire de six champs perdait près de
-         * 50 px en hauteur de contrôles, et les aplats pleine largeur écrasaient
-         * le contenu qu'ils devaient servir.
-         *
-         * La base est descendue à 48, puis 44, puis **36 px**, sur trois demandes
-         * successives. La règle a changé de NATURE : le dessin fait 36 px, la
-         * zone d'attrape 44. Les deux ne sont plus le même nombre.
-         *
-         * Un `::before` en `-inset-*` ou `p-2 -m-2` porte les 44 px sans occuper
-         * la moindre place. WCAG 2.2 AA (2.5.8) exige 24 px : même le dessin
-         * seul reste au-dessus.
-         *
-         * ⚠️ CE QUI NE CHANGE PAS : le plancher typographique de 14 px.
-         */
-        touch: '2.25rem',
-        /** 44 px — steppers manipulés avec des gants ou les mains mouillées. */
-        'touch-lg': '2.75rem',
-        /**
-         * 32 px — contrôles RÉPÉTÉS uniquement : ± d'un stepper, corbeille d'une
-         * carte, puce d'une liste de dix. Jamais une validation finale
-         * (Enregistrer, Lancer le brassin), dont l'erreur coûte un brassin.
-         */
-        'touch-sm': '2rem'
-      },
-
-      // minHeight et minWidth n'héritent pas de l'échelle spacing dans
-      // Tailwind v3 : sans ces trois entrées, les classes min-h-touch-* n'existent pas.
-      minHeight: { touch: '2.25rem', 'touch-lg': '2.75rem', 'touch-sm': '2rem' },
-      minWidth: { touch: '2.25rem', 'touch-lg': '2.75rem', 'touch-sm': '2rem' },
-
+      // DESIGN.md : actions répétées 24 px, commandes 28 px, saisie/primaire 32 px.
+      // Les minimas laissent grandir les libellés, erreurs et préférences de texte.
+      spacing: { touch: '1.75rem', 'touch-lg': '2rem', 'touch-sm': '1.5rem' },
+      // Tailwind v3 exige aussi leur déclaration pour min-h-* et min-w-*.
+      minHeight: { touch: '1.75rem', 'touch-lg': '2rem', 'touch-sm': '1.5rem' },
+      minWidth: { touch: '1.75rem', 'touch-lg': '2rem', 'touch-sm': '1.5rem' },
       borderRadius: {
         // Trois rayons seulement, chacun porteur d'un niveau de hiérarchie.
         control: '0.625rem', // champs, boutons

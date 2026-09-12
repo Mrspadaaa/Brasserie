@@ -19,6 +19,8 @@ import { IconButton } from './ui/Button';
 import { useDensity, useMobileLayout } from '../ui/useViewport';
 
 interface HeaderProps {
+  /** Barre compacte du dashboard, extensible avec le texte. */
+  compactLayout?: boolean;
   hidePeriod?: boolean;
   config: AppConfig;
   globalTimeFilter: TimeFilterPeriod;
@@ -77,6 +79,7 @@ function useDismiss(onDismiss: () => void) {
  * et un menu unique pour le reste. Trois cibles, toutes à 48 px.
  */
 export const Header: React.FC<HeaderProps> = ({
+  compactLayout = false,
   hidePeriod = false,
   config,
   globalTimeFilter,
@@ -118,8 +121,8 @@ export const Header: React.FC<HeaderProps> = ({
         design. On rend la marge morte, pas la surface utile.
       */}
       <div
-        className={`max-w-4xl mx-auto px-3 flex items-center gap-2 ${
-          compact || mobile ? 'h-12' : 'h-16'
+        className={`max-w-4xl mx-auto px-3 flex items-center ${
+          compactLayout ? 'min-h-9 flex-wrap gap-1 py-0.5' : compact || mobile ? 'h-12 gap-2' : 'h-16 gap-2'
         }`}
       >
         {/* Identité — ramène à l'accueil */}
@@ -133,21 +136,21 @@ export const Header: React.FC<HeaderProps> = ({
         */}
         <button
           onClick={onGoHome}
-          className="flex items-center gap-2.5 min-h-touch pr-2 text-left group min-w-0"
+          className={`flex items-center text-left group min-w-0 ${compactLayout ? 'min-h-7 shrink-0 gap-1 pr-1' : 'gap-2.5 min-h-touch pr-2'}`}
           aria-label="Retour au tableau de bord"
         >
           <span
             className={`rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center shrink-0 ${
-              compact ? 'w-9 h-9 text-base' : 'w-10 h-10 text-lg'
+              compactLayout ? 'w-7 h-7 text-sm' : compact ? 'w-9 h-9 text-base' : 'w-10 h-10 text-lg'
             }`}
           >
             🍺
           </span>
           <span className="min-w-0 hidden xs:block">
-            <span className="block text-base font-semibold text-cave-50 leading-tight truncate group-hover:text-ebc-straw transition-colors">
+            <span className={`block font-semibold text-cave-50 leading-tight truncate group-hover:text-ebc-straw transition-colors ${compactLayout ? 'text-sm' : 'text-base'}`}>
               L'Affinée
             </span>
-            <span className="hidden sm:block text-sm text-cave-400 leading-tight truncate">
+            <span className={`${compactLayout ? 'hidden' : 'hidden sm:block'} text-sm text-cave-400 leading-tight truncate`}>
               Villars-sur-Glâne
             </span>
           </span>
@@ -160,8 +163,8 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => setPeriodOpen((o) => !o)}
             aria-expanded={periodOpen}
-            className="min-h-touch px-3 rounded-control border border-cave-700 bg-cave-900
-                       text-cave-50 flex items-center gap-1.5 hover:border-cave-600 transition-colors"
+            className={`${compactLayout ? 'min-h-7 px-2' : 'min-h-touch px-3'} rounded-control border border-cave-700 bg-cave-900
+                       text-cave-50 flex items-center gap-1.5 hover:border-cave-600 transition-colors`}
           >
             <span className="text-sm max-w-[7.5rem] truncate">{activePeriod.label}</span>
             <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
@@ -190,20 +193,21 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Recherche universelle. Au clavier c'est ⌘K / Ctrl+K ; au doigt,
             cette loupe est le seul chemin — d'où sa place en clair, hors menu. */}
-        <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary">
-          <Search className="w-5 h-5" />
+        <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary" className={compactLayout ? 'min-h-7 min-w-7' : ''}>
+          <Search className={compactLayout ? 'w-4 h-4' : 'w-5 h-5'} />
         </IconButton>
-        <div id="brewer-mobile-header" className="sm:hidden empty:hidden"/>
+        <div id="brewer-mobile-header" className={`sm:hidden empty:hidden ${compactLayout ? '[&_button]:h-7 [&_button]:w-7 [&_button]:min-h-7 [&_button]:min-w-7 [&_button]:p-0 [&_svg]:h-4 [&_svg]:w-4' : ''}`}/>
 
         {/* Tout le reste vit derrière un seul bouton */}
         <div className="relative" ref={menuRef}>
           <IconButton
             label="Menu"
+            className={compactLayout ? 'min-h-7 min-w-7' : ''}
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
             intent="secondary"
           >
-            <MoreVertical className="w-5 h-5" />
+            <MoreVertical className={compactLayout ? 'w-4 h-4' : 'w-5 h-5'} />
             {pendingTodosCount > 0 && (
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-ebc-straw" />
             )}

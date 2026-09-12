@@ -5,7 +5,7 @@ import { StorageService } from '../../services/storage';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import { scaleBrewRecipeScenario } from '../../domain/finance/brewBudgetScaling';
-import { CreativeLabTab } from '../CreativeLabTab';
+import { CreativeLabTab, type CreativeLabSectionRequest } from '../CreativeLabTab';
 import { describeMoment } from '../../domain/hopStage';
 import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
@@ -26,6 +26,11 @@ interface ProductionTabProps {
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
   onCreateRequestHandled?: () => void;
+  /** Ouvre un brassin précis, même hors de la période du catalogue. */
+  openBatchRequest?: { id: string; at: number } | null;
+  onOpenBatchRequestHandled?: () => void;
+  openLabSectionRequest?: CreativeLabSectionRequest | null;
+  onOpenLabSectionRequestHandled?: () => void;
   /** Ouvre la fiche recette en plein écran. */
   onOpenRecipe: (recipe: Recipe) => void;
   onEditRecipe?: (recipe: Recipe) => void;
@@ -48,6 +53,10 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onSubTabChange,
   createRequest,
   onCreateRequestHandled,
+  openBatchRequest,
+  onOpenBatchRequestHandled,
+  openLabSectionRequest,
+  onOpenLabSectionRequestHandled,
   onOpenRecipe,
   onEditRecipe,
   onOpenBrewDay,
@@ -74,6 +83,7 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   const [targetVolumeL, setTargetVolumeL] = useState<number>(30); // Default 30L
   const [detailBatch, setDetailBatch] = useLiveSelection(batches, 'id');
   const [detailSection, setDetailSection] = useState<BatchDetailSection>('measurements');
+  const handledOpenBatchRequest = React.useRef<{ id: string; at: number } | null>(null);
 
   useEffect(() => {
     if (targetSubTab) {
@@ -94,6 +104,20 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       onCreateRequestHandled?.();
     }
   }, [createRequest?.at]);
+
+  useEffect(() => {
+    if (!openBatchRequest) return;
+    const handled = handledOpenBatchRequest.current;
+    if (handled?.id === openBatchRequest.id && handled.at === openBatchRequest.at) return;
+    // Le filtre reste celui du catalogue. La fiche suit toujours le brassin vivant.
+    const batch = batches.find((item) => item.id === openBatchRequest.id);
+    if (!batch) return;
+    handledOpenBatchRequest.current = openBatchRequest;
+    setSubTab('batches');
+    setDetailSection('measurements');
+    setDetailBatch(batch);
+    onOpenBatchRequestHandled?.();
+  }, [openBatchRequest, batches, setDetailBatch, onOpenBatchRequestHandled]);
 
   useEffect(() => {
     StorageService.setUiState('production_subtab', subTab);
@@ -175,6 +199,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
           onDraftRecipe={onDraftRecipe}
           createRequest={createRequest}
           onCreateRequestHandled={onCreateRequestHandled}
+          openSectionRequest={openLabSectionRequest}
+          onOpenSectionRequestHandled={onOpenLabSectionRequestHandled}
         />
       )}
 

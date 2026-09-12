@@ -33,6 +33,11 @@ import { useLiveSelection, useStorageValue } from '../hooks/useLiveData';
 import { ViewNavigation } from '../ui/ViewNavigation';
 import { useMobileLayout } from '../ui/useViewport';
 
+export interface CreativeLabSectionRequest {
+  section: CreativeItem['type'];
+  at: number;
+}
+
 interface CreativeLabTabProps {
   onSuccessMessage?: (msg: string) => void;
   /**
@@ -43,19 +48,34 @@ interface CreativeLabTabProps {
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
   onCreateRequestHandled?: () => void;
+  /** Ouvre une rubrique existante sans créer de note ni d'événement. */
+  openSectionRequest?: CreativeLabSectionRequest | null;
+  onOpenSectionRequestHandled?: () => void;
 }
 
 export const CreativeLabTab: React.FC<CreativeLabTabProps> = ({
   onSuccessMessage,
   onDraftRecipe,
   createRequest,
-  onCreateRequestHandled
+  onCreateRequestHandled,
+  openSectionRequest,
+  onOpenSectionRequestHandled
 }) => {
   const mobile = useMobileLayout();
-  const [activeSection, setActiveSection] = useState<'equipment' | 'recipe-idea' | 'pricing-test' | 'prospect' | 'event'>('equipment');
+  const [activeSection, setActiveSection] = useState<CreativeItem['type']>(() => openSectionRequest?.section ?? 'equipment');
+  const handledSectionRequest = React.useRef<CreativeLabSectionRequest | null>(null);
   const [assistantOpen,setAssistantOpen] = useState(false);
 
   const items = useStorageValue(StorageService.getCreativeItems);
+
+  React.useEffect(() => {
+    if (!openSectionRequest) return;
+    const handled = handledSectionRequest.current;
+    if (handled?.section === openSectionRequest.section && handled.at === openSectionRequest.at) return;
+    handledSectionRequest.current = openSectionRequest;
+    setActiveSection(openSectionRequest.section);
+    onOpenSectionRequestHandled?.();
+  }, [openSectionRequest, onOpenSectionRequestHandled]);
 
   // Quick addition state
   const [isAdding, setIsAdding] = useState(false);
