@@ -16,6 +16,7 @@ import type { Recipe } from '../types';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { YEAST_RECIPE_GOAL_LABELS } from '../domain/yeastRecipeDesign';
+import { normalizedYeastText } from '../domain/yeastCatalogue';
 
 /**
  * Coller une recette, et qu'elle se remplisse.
@@ -45,6 +46,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
   const [error, setError] = useState<string | null>(null);
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const fileRef = useRef<HTMLInputElement>(null);
+  const yeastNameIncludes = (part: string) => ` ${normalizedYeastText(result?.yeast?.name ?? '')} `.includes(` ${normalizedYeastText(part)} `);
 
   const request = useRef(0);
   useEffect(() => {
@@ -345,9 +347,9 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             <section>
               <h3 className="text-base font-semibold text-cave-50 mb-1">Levure</h3>
               <p className="text-base text-cave-200">
-                {result.yeast.lab && <span className="text-cave-400">{result.yeast.lab} </span>}
+                {result.yeast.lab && !yeastNameIncludes(result.yeast.lab) && <span className="text-cave-400">{result.yeast.lab} </span>}
                 {result.yeast.name}
-                {result.yeast.strain && (
+                {result.yeast.strain && !yeastNameIncludes(result.yeast.strain) && (
                   <span className="text-cave-400"> · {result.yeast.strain}</span>
                 )}
               </p>

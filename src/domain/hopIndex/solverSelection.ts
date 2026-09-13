@@ -17,6 +17,7 @@ export function selectHopSearchDomain(input: {
   mode: HopSearchMode; varieties: HopVariety[]; yeasts: HopYeast[]; valid: HopKnowledge[];
   policy: HopSolverPolicy; intent: HopSolverIntent; wanted: string[]; conditions: number; trials: number;
   currentYeast?: string; recipeVarieties: Set<string>; primaryTemperature?: number;
+  styleVarieties?: ReadonlySet<string>;
   descriptorFamilies: (varietyId: string) => Set<string>;
 }) {
   const {varieties,yeasts,conditions,trials,mode,policy,intent,valid}=input;
@@ -45,7 +46,7 @@ export function selectHopSearchDomain(input: {
     };
     const varietyRank=(v:HopVariety)=>{
       const families=input.descriptorFamilies(v.id);
-      return [intent.avoid.filter(id=>families.has(id)).length,Number(!input.recipeVarieties.has(v.id)),
+      return [intent.avoid.filter(id=>families.has(id)).length,Number(!!input.styleVarieties?.size&&!input.styleVarieties.has(v.id)),Number(!input.recipeVarieties.has(v.id)),
         -input.wanted.filter(id=>families.has(id)).length,Number(!trainedVarieties.has(v.id))];
     };
     const compare=(a:number[],b:number[])=>{for(let i=0;i<a.length;i++)if(a[i]!==b[i])return a[i]-b[i];return 0;};

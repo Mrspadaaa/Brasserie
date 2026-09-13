@@ -151,7 +151,9 @@ export function createBrewerJobStore() {
         });
     } finally {
       if (pollVersion === version) pollVersion = -1;
-      if (started && version === epoch) {
+      // An activity request may settle while jsdom or the browser page is being
+      // torn down. Do not recreate the polling timer once its document is gone.
+      if (started && version === epoch && typeof document !== 'undefined') {
         clearTimeout(timer);
         timer = setTimeout(
           () => void refresh(),

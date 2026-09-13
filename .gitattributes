@@ -1,2 +1,5 @@
 # Preserve generated reports byte-for-byte, including PDF offset tables.
 *.pdf binary
+# Source receipts bind exact catalogue bytes; keep generated-library checks portable.
+src/data/yeastCatalogueBootstrap.json text eol=lf
+src/data/yeastCatalogueLibrary.json text eol=lf

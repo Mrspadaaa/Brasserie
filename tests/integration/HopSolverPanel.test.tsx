@@ -41,8 +41,8 @@ const initial: Recipe = { id:'solver-ui',name:'Recette existante',style:'Libre',
   hopSolverIntent:{styleId:'free',avoid:[],chemistry:{},keepYeast:true,timings:['postFermentation']} };
 beforeEach(()=>{memory.docs.clear();memory.listeners.clear();memory.writes.mockClear();memory.attempts.mockClear();memory.delay=null;memory.failure=null});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();});
-function mount(onBusyChange?:(busy:boolean)=>void) {
-  let current=structuredClone(initial);const changes=vi.fn();
+function mount(onBusyChange?:(busy:boolean)=>void, seed: Recipe = initial) {
+  let current=structuredClone(seed);const changes=vi.fn();
   function Host(){const[r,setR]=useState(current);current=r;return <HopSolverPanel recipe={r} target={r.hopAromaTarget??{}} onBusyChange={onBusyChange} onTargetChange={t=>setR({...r,hopAromaTarget:t})} onChange={next=>{changes(next);setR(next as Recipe)}}/>}
   render(<Host/>);return{current:()=>current,changes};
 }
@@ -51,7 +51,53 @@ const runSearch=async()=>{
   fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
   await screen.findByLabelText('Programme proposé par le solver',{}, {timeout:15000});
 };
+const chooseHop=async(name:string)=>{
+  const field=screen.getByRole('combobox',{name:'Ajouter un houblon à comparer'});
+  await waitFor(()=>expect(field).toBeEnabled());
+  fireEvent.focus(field);fireEvent.change(field,{target:{value:name}});
+  const options=await screen.findAllByRole('option');
+  const option=options.find(element=>element.getAttribute('aria-label')?.startsWith(name+' · '));
+  expect(option,`Le catalogue doit proposer ${name}`).toBeDefined();
+  fireEvent.click(option!);
+};
 describe('Solver dans une recette existante',()=>{
+  it('propose le catalogue par usage de style, transmet les choix et invalide une recherche après changement',async()=>{
+    const workers:any[]=[];
+    class LocalWorker {onmessage:any=null;onerror:any=null;onmessageerror:any=null;postMessage=vi.fn();terminate=vi.fn();constructor(){workers.push(this);}}
+    vi.stubGlobal('Worker',LocalWorker);
+    const host=mount(undefined,{...initial,style:'Double IPA',hopSolverIntent:undefined});
+    const picker=await screen.findByRole('group',{name:'Houblons à comparer'});
+    await chooseHop('Lotus');await chooseHop('Galaxy');
+    fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
+    const namesOf=(input:any)=>input.varietyIds.map((id:string)=>input.data.varieties.find((v:any)=>v.id===id).name);
+    expect(namesOf(workers[0].postMessage.mock.calls[0][0])).toEqual(['Lotus','Galaxy']);
+    expect(workers[0].postMessage.mock.calls[0][0].intent.keepYeast).toBe(true);
+    const old=workers[0].onmessage;
+    await chooseHop('Idaho 7');
+    expect(workers[0].terminate).toHaveBeenCalledOnce();
+    act(()=>old({data:{kind:'error',message:'Ancienne sélection'}}));
+    expect(screen.queryByText('Ancienne sélection')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button',{name:'Trouver mes combinaisons'}));
+    expect(namesOf(workers[1].postMessage.mock.calls[0][0])).toEqual(['Lotus','Galaxy','Idaho 7']);
+    fireEvent.change(screen.getByLabelText('Point de départ par style'),{target:{value:'free'}});
+    expect(workers[1].terminate).toHaveBeenCalledOnce();
+    expect(within(picker).getByRole('button',{name:'Automatique'})).toHaveAttribute('aria-pressed','true');
+    expect(within(picker).queryByRole('button',{name:'Galaxy'})).not.toBeInTheDocument();
+    expect(memory.writes).not.toHaveBeenCalled();expect(host.changes).not.toHaveBeenCalled();
+  });
+  it('compare Citra puis applique seulement cet ajout en conservant la recette et la levure',async()=>{
+    const host=mount(undefined,{...initial,style:'Double IPA',hopSolverIntent:undefined});
+    await chooseHop('Citra');
+    await runSearch();
+    const programme=screen.getByLabelText('Programme proposé par le solver');
+    expect(programme).toHaveTextContent('Citra');expect(programme).not.toHaveTextContent('Idaho 7');
+    expect(memory.writes).not.toHaveBeenCalled();expect(host.changes).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button',{name:'Ajouter ce programme à ma recette'}));
+    await waitFor(()=>expect(host.current().hops).toHaveLength(2));
+    expect(host.current().hops[0]).toEqual(initial.hops[0]);
+    expect(host.current().hops[1]).toMatchObject({name:'Citra',hopVarietyId:'ych-citra'});
+    expect(host.current().yeast.name).toContain('Verdant');expect(host.current().yeast.qty).toBe(initial.yeast.qty);
+  },20000);
   it('garde les critères et la navigation libres, annule et rejette les réponses périmées',async()=>{
     const workers:any[]=[];
     class LocalWorker {onmessage:any=null;onerror:any=null;onmessageerror:any=null;postMessage=vi.fn();terminate=vi.fn();constructor(){workers.push(this);}}

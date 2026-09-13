@@ -70,7 +70,19 @@
 .yeast-candidates label { display: flex; align-items: center; gap: 5px; cursor: pointer; min-height: 28px; }
 .yeast-candidates .yeast-candidate-name { display: block; font-weight: 600; color: theme('colors.cave.50'); }
 .yeast-candidates .yeast-candidate-meta { display: block; color: theme('colors.cave.400'); font-size: 0.75rem; }
-/* Reflow when enlarged text leaves too little room for three useful columns. */
+.yeast-picker > * + * { margin-top: 6px; }
+.yeast-picker > .yeast-picker-search { width: 100%; min-width: 0; }
+.yeast-picker-filters { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 6px; }
+.yeast-picker-filters select { width: 100%; min-width: 0; }
+.yeast-picker .yeast-candidates th:first-child { width: 70%; }
+.yeast-picker .yeast-candidates th:last-child { width: 30%; }
+.yeast-candidate-aroma { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin-top: 3px; }
+.yeast-picker-pages { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.yeast-picker .yeast-catalogue-scope { gap: 2px; }
+.yeast-picker .yeast-catalogue-scope button { white-space: normal; }
+.yeast-picker .yeast-catalogue-scope button span { white-space: normal; overflow: visible; }
+.yeast-picker .yeast-catalogue-scope button[aria-checked='true'] { background: theme('colors.cave.800'); color: theme('colors.cave.50'); border-color: theme('colors.cave.400'); }
+/* Reflow when enlarged text leaves too little room for the comparison columns. */
 @container yeast-list (max-width: 20em) {
   .yeast-candidates thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
   .yeast-candidates tbody { display: block; }

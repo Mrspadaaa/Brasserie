@@ -10,7 +10,7 @@ export const YEAST_FACT_LABELS: Record<YeastFactKey, string> = {
 export const normalizedYeastText = (s: string) => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const translations: Record<string,string> = { banane:'banana', girofle:'clove', phenols:'phenolic', epices:'spice', seche:'dry', liquide:'liquid', levure:'yeast' };
 export function catalogueMatches(yeast: HopYeast, query: string) {
-  const hay = normalizedYeastText([yeast.name, yeast.id, yeast.form, ...(yeast.catalogue?.aliases ?? []), ...(yeast.catalogue?.categories ?? []), ...(yeast.catalogue?.facts ?? []).map(f=>f.reported)].join(' '));
+  const hay = normalizedYeastText([yeast.name, yeast.id, yeast.form, yeast.catalogue?.manufacturer, yeast.catalogue?.productCode, ...(yeast.catalogue?.aliases ?? []), ...(yeast.catalogue?.categories ?? []), ...(yeast.catalogue?.facts ?? []).map(f=>f.reported)].join(' '));
   return normalizedYeastText(query).split(' ').filter(Boolean).every(term => hay.includes(term) || hay.includes(translations[term] ?? term));
 }
 /** Conflicting or qualified values remain separate; no midpoint or merged envelope is invented. */

@@ -65,7 +65,7 @@ describe('Références proposées dans le guide de recette', () => {
       item: { id: 'fermentis-us05', betaLyase: 'unknown' }, via: 'alias', matchedName: 'Fermentis Levure SafAle US-05'
     }]);
     for (const name of ['WLP001', 'Wyeast 1056', 'Chico']) {
-      expect(findRecipeYeastMatches(name, yeasts)).toEqual([]);
+      expect(findRecipeYeastMatches(name, yeasts).some(match => match.item.id === 'fermentis-us05')).toBe(false);
     }
     expect(memory.importPack).not.toHaveBeenCalled();
   });

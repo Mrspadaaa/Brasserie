@@ -3857,6 +3857,60 @@
             "reference": "https://www.whitelabs.com/yeast-single?id=362&type=YEAST"
           },
           "context": "Description qualitative du fabricant ; intensité non mesurée dans ce catalogue."
+        },
+        {
+          "key": "styles",
+          "label": "Styles de bière",
+          "reported": "Lagers",
+          "source": {
+            "title": "LalBrew NovaLager — Technical Data Sheet",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://files.scottlab.com/uploads/NOVALAGER%20TDS.pdf",
+            "locator": "Page 1 — Quick Facts / Beer Styles"
+          }
+        },
+        {
+          "key": "pof",
+          "label": "POF",
+          "reported": "Negative",
+          "source": {
+            "title": "LalBrew NovaLager — Technical Data Sheet",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://files.scottlab.com/uploads/NOVALAGER%20TDS.pdf",
+            "locator": "Page 1 — Microbiological Properties"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Ensemencement direct",
+          "reported": "Ensemencement direct privilégié : répartir la levure sur la surface du moût pendant le remplissage du fermenteur. Réhydratation facultative si le matériel ne permet pas cette méthode.",
+          "source": {
+            "title": "LalBrew NovaLager — Technical Data Sheet",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://files.scottlab.com/uploads/NOVALAGER%20TDS.pdf",
+            "locator": "Page 2 — Best Practices"
+          },
+          "context": "Synthèse en français du protocole de cette levure sèche ; suivre la fiche fabricant pour le lot utilisé."
+        },
+        {
+          "key": "application",
+          "label": "Sachet ouvert",
+          "reported": "Conserver au-dessous de 4 °C. Après ouverture, refermer et utiliser sous trois jours, ou remettre immédiatement sous vide jusqu’à la date limite imprimée.",
+          "source": {
+            "title": "LalBrew NovaLager — Technical Data Sheet",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://files.scottlab.com/uploads/NOVALAGER%20TDS.pdf",
+            "locator": "Page 2 — Storage"
+          },
+          "context": "Synthèse en français. Ne pas utiliser un emballage ayant perdu son vide ni un produit périmé."
         }
       ],
       "documents": [
@@ -3908,16 +3962,21 @@
           "sha256": "2c7134f2548582b9857743093718ce1f78c148e1c981f97c78859a693de7f887",
           "etag": null,
           "lastModified": null
+        },
+        {
+          "url": "https://files.scottlab.com/uploads/NOVALAGER%20TDS.pdf",
+          "retrievedAt": "2026-09-12T21:54:27.947Z",
+          "sha256": "79194c5678b8ed53576b91dd916a3d591d9abcc9dae3b7b6a7782f123f5726fa",
+          "etag": null,
+          "lastModified": null
         }
       ],
       "publishedAt": null,
       "pageUpdatedAt": null,
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "4c230b10515d216211150d2d7a72b057a4203b4efcb62541cced10618144783e",
+      "contentSha256": "7ca0d05512bafa3a0da5584c975368e953852febc000962f702394169fdce5ae",
       "gaps": [
-        "Rendement de libération des thiols et intensités sensorielles non calibrés.",
-        "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
-        "Statut POF non documenté dans les champs extraits."
+        "Rendement de libération des thiols et intensités sensorielles non calibrés."
       ]
     },
     "form": "sèche"

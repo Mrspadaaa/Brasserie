@@ -1,4 +1,5 @@
 import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction } from '../domain/finance/ledger';
+import { recipeYeastReferencesToSave } from '../domain/recipeYeastReferences';
 import type { FinancialPayment } from '../domain/finance/types';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
 import {
@@ -907,6 +908,7 @@ export const StorageService = {
    * onglets ouverts pouvaient s'écraser mutuellement.
    */
   updateRecipe(recipe: Recipe) {
+    for (const reference of recipeYeastReferencesToSave([recipe], this.getHopKnowledge())) this.saveHopKnowledge(reference);
     if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     const old = this.getRecipes().find((r) => r.id === recipe.id);
     FirestoreRepo.put('recipes', recipe.id, recipe);
@@ -926,11 +928,13 @@ export const StorageService = {
   },
 
   saveRecipes(recipes: Recipe[]) {
+    for (const reference of recipeYeastReferencesToSave(recipes, this.getHopKnowledge())) this.saveHopKnowledge(reference);
     recipes=recipes.map(recipe=>{if(!recipe.nolo)return recipe;assertNoloConfig(recipe.nolo);return {...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};});
     syncCollection('recipes', recipes, (r) => r.id);
   },
 
   addRecipe(recipe: Recipe) {
+    for (const reference of recipeYeastReferencesToSave([recipe], this.getHopKnowledge())) this.saveHopKnowledge(reference);
     if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     FirestoreRepo.put('recipes', recipe.id, recipe);
     this.logAction(

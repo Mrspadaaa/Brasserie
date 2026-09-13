@@ -6,7 +6,7 @@ const LABELS = {
   temperature: 'Fermentation', attenuation: 'Atténuation apparente', alcoholTolerance: 'Tolérance à l’alcool',
   flocculation: 'Floculation', pof: 'Statut POF', sta1: 'Gène STA1', diastatic: 'Caractère diastatique', pitchRate: 'Dose fabricant',
 } as const;
-const NOTE_LABELS: Partial<Record<YeastFactKey, string>> = { aroma: 'Arômes décrits', esters: 'Esters décrits', higherAlcohols: 'Alcools supérieurs', betaLyase: 'Activité β-lyase', biotransformation: 'Interactions aromatiques', application: 'Usage et conduite', foam: 'Mousse', nutrientNeed: 'Nutrition', h2s: 'Soufre', fermentationRate: 'Déroulement', fermentationTime: 'Durée documentée' };
+const NOTE_LABELS: Partial<Record<YeastFactKey, string>> = { aroma: 'Arômes décrits', esters: 'Esters décrits', higherAlcohols: 'Alcools supérieurs', betaLyase: 'Activité β-lyase', biotransformation: 'Interactions aromatiques', styles: 'Styles cités', species: 'Espèce / culture', application: 'Usage et conduite', foam: 'Mousse', nutrientNeed: 'Nutrition', h2s: 'Soufre', fermentationRate: 'Déroulement', fermentationTime: 'Durée documentée' };
 // Presentation grouping for the named, source-checked catalogue observations. No process inference.
 const PRACTICAL_PHASES: Partial<Record<string, YeastPracticalNote['phase']>> = {
   'Ensemencement direct': 'preparation', 'Réhydratation facultative': 'preparation',
@@ -44,8 +44,11 @@ export function yeastStrainInformation(reference: HopYeast | undefined, actualFo
   const practical = formConfirmed ? productProtocols.map(n => ({ ...n })) : [];
   // Documentary behaviour does not become an instruction to dose or package.
   const behaviour = formConfirmed ? catalogueNotes.filter(n => n.phase === 'fermentation') : [];
+  // A missing package form withholds product protocols, not the manufacturer's
+  // descriptive observations about identity, styles or aromatic character.
+  const documentary = !formConfirmed ? observations.filter(f => ['aroma', 'esters', 'styles', 'species', 'betaLyase', 'biotransformation'].includes(f.key)) : [];
   const sources = [...new Map([...observations.map(f => f.source), ...practical.map(n => n.source), reference.source].map(s => [JSON.stringify(s), s])).values()];
-  return { yeastId: reference.id, name: reference.name, form: reference.form, formConfirmed, facts, observations, practical, behaviour, sources,
+  return { yeastId: reference.id, name: reference.name, form: reference.form, formConfirmed, facts, observations, practical, behaviour, documentary, sources,
     preparationWithheld: productProtocols.some(n => n.phase === 'preparation') && !formConfirmed,
     preparationDocumented: practical.some(n => n.phase === 'preparation'),
     retrievedAt: reference.catalogue?.retrievals.map(r => r.retrievedAt).sort().at(-1) ?? null,

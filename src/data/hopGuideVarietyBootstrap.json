@@ -61,6 +61,26 @@
         }
       ],
       "analysis": []
+    },
+    {
+      "id": "hpa-galaxy",
+      "name": "Galaxy",
+      "aliases": ["Galaxy®", "94-203-008"],
+      "origin": "Australie",
+      "form": "unknown",
+      "descriptions": [{
+        "text": "HPA décrit le fruit de la passion, la pêche et les agrumes, notamment orange et citron, et recommande cette variété pour les IPA et NEIPA. Ce profil variétal ne mesure pas l’intensité dans ta bière. Plusieurs formes sont commercialisées : identifier le produit et l’alpha du lot avant un calcul d’amertume.",
+        "context": "unspecified",
+        "source": {
+          "title": "Galaxy® — fiche variétale HPA",
+          "author": "Hop Products Australia",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.hops.com.au/media-kit/data-sheets/HPA-Galaxy-Data-Sheet.pdf",
+          "locator": "Présentation, Aroma & flavour et Recommended beer styles, pages 1–2 ; consulté le 12 septembre 2026. Aucune analyse de lot ou valeur des radars sensoriels importée."
+        }
+      }],
+      "analysis": []
     }
   ]
 }

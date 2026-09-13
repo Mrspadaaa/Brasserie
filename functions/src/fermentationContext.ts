@@ -2,11 +2,14 @@ import type { HopRange, HopSource } from './hopIndexSchema.js';
 import type { HopYeast } from './hopPredictionSchema.js';
 
 export type FermentationRange = { range: HopRange; source: HopSource };
+const brewingContext = (context: string | undefined, key: string) => !context || context === 'Beer' ||
+  // This collector annotation records a unit conversion, not a special process.
+  key === 'temperature' && context === 'Conversion exacte Fahrenheit → Celsius, arrondie au dixième.';
 /** A qualified bound or a non-beer application is not a brewing operating range. */
 export function agreedFermentationFact(yeast: HopYeast | undefined, key: 'temperature' | 'attenuation' | 'pitchRate', unit: string): FermentationRange | undefined {
   const facts = yeast?.catalogue?.facts.filter(f => f.key === key) ?? [], first = facts[0];
   if (!first?.range || !facts.every(f => f.qualifier === 'range' && f.unit === unit &&
-    f.range?.min === first.range!.min && f.range?.max === first.range!.max && (!f.context || f.context === 'Beer'))) return undefined;
+    f.range?.min === first.range!.min && f.range?.max === first.range!.max && brewingContext(f.context, key))) return undefined;
   return { range: first.range, source: first.source };
 }
 

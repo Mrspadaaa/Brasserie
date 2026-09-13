@@ -32,6 +32,7 @@ vi.mock('../../src/services/firestoreRepo', () => ({ FirestoreRepo: {
 import { StorageService } from '../../src/services/storage';
 import { HopExtrapolationPanel } from '../../src/ui/hopIndex/HopExtrapolationPanel';
 import { HopIngredientPicker } from '../../src/ui/hopIndex/HopIngredientPicker';
+import { guidePredictionKnowledge, guideYeasts } from '../../src/ui/hopIndex/guideData';
 
 const recipe = (patch: Partial<Recipe> = {}): Recipe => ({
   id: 'guide-test', name: 'Recette témoin', style: 'IPA', volumeL: 20,
@@ -117,4 +118,21 @@ describe('Atelier expérimental utilisé pendant la formulation', () => {
     expect(host.changes).not.toHaveBeenCalled(); expect(memory.writes).not.toHaveBeenCalled();
     expect(screen.getByLabelText('Dose (g/L)')).toHaveValue('4');
   }, 20000);
+  it('charge une souche choisie dans le catalogue complet et conserve son identité dans la prédiction figée', async () => {
+    const loaded = new Set(guidePredictionKnowledge([]).filter(k => k.kind === 'yeast').map(k => k.id));
+    const selected = guideYeasts([]).find(y => !loaded.has(y.id) && y.catalogue?.manufacturer === 'Imperial Yeast')!;
+    expect(selected).toBeDefined();
+    mount();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Appliquer ce scénario à la recette' })).toBeEnabled());
+    fireEvent.change(screen.getByLabelText('Levure à simuler'), { target: { value: selected.id } });
+    expect(screen.getByText(`Cascade × ${selected.name}`)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Garder ce graphe pour comparer' })).toBeInTheDocument();
+    expect(memory.writes).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Conserver pour une dégustation' }));
+    await waitFor(() => expect(StorageService.getHopPredictions()).toHaveLength(1));
+    const snapshot = StorageService.getHopPredictions()[0];
+    expect(snapshot.prediction.triplet.yeastId).toBe(selected.id);
+    expect(snapshot.evidence.knowledge.find(k => k.id === selected.id)).toMatchObject({ id: selected.id, source: selected.source, catalogue: selected.catalogue });
+    expect(snapshot.evidence.knowledge.filter(k => k.kind === 'yeast').length).toBeLessThan(guideYeasts([]).length);
+  });
 });

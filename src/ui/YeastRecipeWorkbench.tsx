@@ -19,6 +19,7 @@ import { YeastRangeComparison } from './YeastRangeComparison';
 import { FermentationTemperatureChart } from './FermentationTemperatureChart';
 import { NoloFermentationWorkshop } from './NoloFermentationWorkshop';
 import { YeastStrainDetails } from './YeastStrainDetails';
+import { YeastCandidatePicker } from './YeastCandidatePicker';
 import { yeastStrainInformation } from '../domain/yeastStrainInformation';
 import './yeast-recipe.css';
 
@@ -58,8 +59,6 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     const goals = YEAST_STYLE_FAMILIES.find(style => style.id === draft.styleId)?.goals ?? [];
     return { key, draft: { ...draft, ...(initialGoal && goals.includes(initialGoal) ? { goal: initialGoal } : {}) } };
   });
-  const [form, setForm] = useState('all');
-  const [expanded, setExpanded] = useState(false);
   const [compareOpen, setCompareOpen] = useState(!recipe.yeast?.hopIndexId || !!initialYeastId);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -69,12 +68,10 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const draft = local.draft;
   const style = YEAST_STYLE_FAMILIES.find(s => s.id === draft.styleId);
   const recipeStyle = inferYeastRecipeStyle(recipe);
-  const candidates = useMemo(() => yeastRecipeCandidates(draft.styleId, draft.goal, refs, recipe.volumeL), [draft.styleId, draft.goal, refs, recipe.volumeL]);
-  const filtered = candidates.filter(c => form === 'all' || c.reference.form === form);
-  const visible = expanded ? filtered : filtered.slice(0, 3);
-  const selected = candidates.find(c => c.yeastId === draft.yeastId);
-  const selectedNotShown = selected && !visible.some(c => c.yeastId === selected.yeastId);
+  const candidates = useMemo(() => yeastRecipeCandidates(draft.styleId, draft.goal, refs, recipe.volumeL, { includeOtherStyles: true }), [draft.styleId, draft.goal, refs, recipe.volumeL]);
+  const styleCount = candidates.filter(c => c.styleMatch === 'documented').length;
   const result = useMemo(() => evaluateYeastRecipeDesign(recipe, draft, refs), [recipe, draft, refs]);
+  const selected = result.candidate;
   const proposedSettings = proposeYeastGoalSettings(recipe, draft, refs);
   const suggestion = proposedSettings && Object.entries(proposedSettings.patch).some(([key, value]) => draft[key] !== value) ? proposedSettings : undefined;
   const mainEffects = new Set(['temperature', 'ferulic', 'pressure']);
@@ -87,10 +84,10 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     setLocal(value => ({ ...value, draft: { ...value.draft, ...updates } })); setNotice(''); setError('');
   };
   const reset = () => {
-    setLocal({ key, draft: createYeastRecipeDraft(recipe, refs) }); setNotice('Scénario repris depuis la recette.'); setError(''); setForm('all');
+    setLocal({ key, draft: createYeastRecipeDraft(recipe, refs) }); setNotice('Scénario repris depuis la recette.'); setError('');
   };
   const chooseStyle = (styleId: YeastStyleId) => {
-    setLocal({ key, draft: createYeastRecipeDraft(recipe, refs, styleId) }); setExpanded(false); setForm('all'); setNotice(''); setError('');
+    setLocal({ key, draft: createYeastRecipeDraft(recipe, refs, styleId) }); setNotice(''); setError('');
     setCompareOpen(true);
   };
   const chooseStrain = (yeastId: string) => {
@@ -120,7 +117,7 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     <div className="yeast-filter">
       <label htmlFor={`${uid}-style`}>Style</label>
       <select id={`${uid}-style`} aria-label="Filtrer les levures par style" value={draft.styleId} onChange={e => chooseStyle(e.target.value as YeastStyleId)}>
-        <option value="unknown">Choisir le style de bière</option>
+        <option value="unknown">Autre style · choix libre</option>
         {YEAST_STYLE_FAMILIES.filter(s => s.id !== 'unknown').map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
       </select>
       {onNavigate && <button type="button" className="yeast-link" onClick={() => onNavigate('identite')}>Recette</button>}
@@ -128,34 +125,33 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     {draft.styleId !== recipeStyle && <p className="yeast-notice">Comparaison pour un autre style. Recette : {recipe.style || 'style à définir'}.</p>}
     {currentFormWarning && <p className="yeast-notice">{currentFormWarning}</p>}
     {stale && <div role="alert" className="yeast-notice">La recette a changé pendant la comparaison. <button type="button" onClick={reset}>Reprendre les données actuelles</button></div>}
-    {draft.styleId === 'unknown' ? <p>Choisis d’abord un style pour comparer des souches adaptées. La saisie libre et le stock restent accessibles plus bas.</p> : <>
-      <SegmentedControl className="yeast-goals" label="Caractère recherché" value={draft.goal} onChange={goal => patch({ goal })}
-        options={(style?.goals ?? []).map(goal => ({ value: goal as YeastRecipeGoal, label: YEAST_RECIPE_GOAL_LABELS[goal] }))} />
+    {draft.styleId === 'unknown' && <p className="yeast-small">Style non reconnu : explore le catalogue et vérifie les usages de la souche. Tu peux préciser la famille à tout moment.</p>}
+      {draft.styleId === 'unknown' ? <div className="yeast-filter"><label htmlFor={`${uid}-goal`}>Caractère recherché</label>
+        <select id={`${uid}-goal`} value={draft.goal} onChange={e => patch({ goal: e.target.value as YeastRecipeGoal })}>
+          {(style?.goals ?? []).map(goal => <option key={goal} value={goal}>{YEAST_RECIPE_GOAL_LABELS[goal]}</option>)}
+        </select></div> : <SegmentedControl className="yeast-goals" label="Caractère recherché" value={draft.goal} onChange={goal => patch({ goal })}
+        options={(style?.goals ?? []).map(goal => ({ value: goal as YeastRecipeGoal, label: YEAST_RECIPE_GOAL_LABELS[goal] }))} />}
       <details open={compareOpen} onToggle={e => setCompareOpen(e.currentTarget.open)} className="yeast-strain-comparison">
-        <summary>Comparer les souches du style · {candidates.length}<ChevronDown size={14} aria-hidden="true" /></summary>
-        <div><div className="yeast-filter">
-        <span className="yeast-small">{filtered.length} souche{filtered.length > 1 ? 's' : ''} documentée{filtered.length > 1 ? 's' : ''}</span>
-        <label htmlFor={`${uid}-form`} className="sr-only">Forme à comparer</label>
-        <select id={`${uid}-form`} aria-label="Forme à comparer" value={form} onChange={e => { setForm(e.target.value); setExpanded(false); }}>
-          <option value="all">Toutes formes</option><option value="sèche">Sèches</option><option value="liquide">Liquides</option>
-        </select>
-      </div>
-      {filtered.length ? <div className="yeast-candidate-list"><table className="yeast-candidates">
-        <caption>Potentiel décrit par le fabricant · les conditions font varier le résultat</caption>
-        <thead><tr><th scope="col">Souche</th><th scope="col">Caractère</th><th scope="col">Plage</th></tr></thead>
-        <tbody>{visible.map(c => <tr key={c.yeastId} data-selected={c.yeastId === draft.yeastId}>
-          <td><label><input type="radio" name={`${uid}-strain`} value={c.yeastId} aria-label={`Comparer ${c.label}`} checked={c.yeastId === draft.yeastId} onChange={() => chooseStrain(c.yeastId)} />
-            <span><span className="yeast-candidate-name">{c.label}</span><span className="yeast-candidate-meta">{c.lab} · {c.reference.form ?? 'forme à préciser'}</span></span></label></td>
-          <td>{c.descriptor}</td><td className="font-mono tabular-nums">{c.temperature ? range(c.temperature, '°C') : <abbr title="Fenêtre de fermentation absente ou contradictoire">—</abbr>}</td>
-        </tr>)}</tbody>
-      </table></div> : <p role="status">Aucune souche de cette forme dans cette sélection documentée. Essaie toutes les formes ou la saisie libre.</p>}
-      {filtered.length > 3 && <button type="button" className="yeast-link" onClick={() => setExpanded(!expanded)}>{expanded ? 'Réduire le comparatif' : `Voir les ${filtered.length} souches du style`}</button>}
-      {selectedNotShown && <p className="yeast-small">Scénario conservé : {selected.label}, hors des lignes affichées. <button className="yeast-link" type="button" onClick={() => { setForm('all'); setExpanded(true); }}>Afficher</button></p>}
-        </div>
+        <summary>Comparer les souches du style · {draft.styleId === 'unknown' ? 'catalogue entier' : styleCount}<ChevronDown size={14} aria-hidden="true" /></summary>
+        <YeastCandidatePicker key={draft.styleId} candidates={candidates} styleId={draft.styleId} selectedId={draft.yeastId} onSelect={chooseStrain} />
       </details>
       {selected ? <section className="yeast-scenario" aria-label="Scénario de levure">
         <div className="flex items-baseline justify-between gap-2"><h3 className="font-semibold text-cave-50">{selected.label}</h3><span className="yeast-small">Scénario à comparer</span></div>
-        <p className="yeast-small">{selected.lab} · {selected.reference.form ?? 'forme à préciser'}</p>
+        <p className="yeast-small">{selected.lab} · {selected.form ?? 'forme à préciser'}</p>
+        {(!selected.reference.form || selected.form !== selected.reference.form) && <div className="yeast-setting-line">
+          <label htmlFor={`${uid}-product-form`}>Forme du produit utilisé</label>
+          <select id={`${uid}-product-form`} value={draft.form ?? ''} onChange={e => patch({ form: e.target.value as YeastRecipeDraft['form'] || undefined, formYeastId: draft.yeastId, quantityG: undefined })}>
+            <option value="">À confirmer</option><option value="sèche">Sèche</option><option value="liquide">Liquide</option><option value="levain">Levain</option>
+          </select>
+        </div>}
+        <Disclosure title={`Usages et caractère · ${selected.styleMatch === 'documented' ? 'style documenté' : 'style à confirmer'}`}>
+          <p className="text-[13px]">{selected.descriptor}</p><p className="yeast-small">{selected.reason}</p>
+          {selected.evidence.styleMatches.length ? <dl className="yeast-strain-notes">{selected.evidence.styleMatches.map((match, i) => <div key={i}>
+            <dt>{YEAST_STYLE_FAMILIES.find(f => f.id === match.styleId)?.label}</dt>
+            <dd>{match.reported}{match.context ? ` · ${match.context}` : ''}<span className="block yeast-small"><Source source={match.source} /></span></dd>
+          </div>)}</dl> : <p className="yeast-small">Aucun usage de bière reconnu dans les faits disponibles. Le nom ou l’arôme seul ne suffit pas à valider un style.</p>}
+          {selected.evidence.exclusions.map((match, i) => <p key={i} className="yeast-notice">{match.reported} <Source source={match.source} /></p>)}
+        </Disclosure>
         {suggestion && <div className="yeast-suggestion">
           <button type="button" onClick={() => { patch(suggestion.patch); setNotice(suggestion.rationale); }}>{suggestion.label}</button>
           <span className="yeast-small"> Proposition à comparer avant application.</span>
@@ -194,11 +190,11 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
         </div>
         <div className="yeast-figures">
           <YeastRangeComparison label="Densité finale documentaire" unit="SG" digits={3} current={current.fg.range} proposed={result.fg.range} />
-          {selected.reference.form === 'sèche' ? <YeastRangeComparison label={`Dose fabricant pour ${number(recipe.volumeL)} L`} unit="g" current={recipe.yeast.form === 'sèche' ? current.doseG?.range : undefined} proposed={result.doseG?.range} quantity={draft.quantityG} />
+          {selected.form === 'sèche' ? <YeastRangeComparison label={`Dose fabricant pour ${number(recipe.volumeL)} L`} unit="g" current={recipe.yeast.form === 'sèche' ? current.doseG?.range : undefined} proposed={result.doseG?.range} quantity={draft.quantityG} />
             : <dl className="text-[13px]"><dt className="text-cave-400">Alcool documentaire</dt><dd className="font-mono">{result.abv.range ? `${number(result.abv.range.min)}–${number(result.abv.range.max)} % vol` : 'Non quantifiable'}</dd></dl>}
         </div>
         <p className="yeast-small">Enveloppes documentaires · confiance faible. Intensité des arômes non chiffrée.</p>
-        <YeastStrainDetails key={selected.yeastId} information={yeastStrainInformation(selected.reference, selected.reference.form)} />
+        <YeastStrainDetails key={selected.yeastId} information={yeastStrainInformation(selected.reference, selected.form)} />
         <Disclosure title="Comprendre les effets des réglages">
           <p className="text-[13px]">{selected.reason}</p>
           <dl className="yeast-effects">{result.effects.filter(e => mainEffects.has(e.id)).map(e => <div className="yeast-effect" key={e.id}><dt>{e.label}</dt><dd>{e.detail}<span className="block yeast-small">{e.state === 'documented' ? 'Description documentée' : e.state === 'unknown' ? 'Donnée manquante' : e.state === 'warning' ? 'À vérifier' : 'Tendance conditionnelle'}</span></dd></div>)}</dl>
@@ -208,10 +204,10 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
             <div className="yeast-setting-line"><label htmlFor={`${uid}-pitch`}>Température d’ensemencement</label><NumberInput id={`${uid}-pitch`} aria-label="Température d’ensemencement du scénario" value={draft.pitchTempC} emptyValue={undefined} onValue={pitchTempC => patch({ pitchTempC })} /><span>°C</span></div>
             <div className="yeast-setting-line"><label htmlFor={`${uid}-days`}>Durée principale à planifier</label><NumberInput id={`${uid}-days`} aria-label="Durée principale du scénario en jours" value={draft.days} emptyValue={undefined} onValue={days => patch({ days })} /><span>j</span></div>
             <p className="yeast-small">Les jours servent au calendrier. La fin de fermentation se vérifie par des mesures, après le dernier houblonnage à cru.</p>
-            {selected.reference.form === 'sèche' ? <>
-              <div className="yeast-setting-line"><label htmlFor={`${uid}-grams`}>Levure sèche prévue</label><NumberInput id={`${uid}-grams`} aria-label="Masse de levure du scénario en grammes" value={draft.quantityG} emptyValue={undefined} onValue={quantityG => patch({ quantityG })} /><span>g</span></div>
+            {selected.form === 'sèche' ? <>
+              <div className="yeast-setting-line"><label htmlFor={`${uid}-grams`}>Levure sèche prévue</label><NumberInput id={`${uid}-grams`} aria-label="Masse de levure du scénario en grammes" min={0} value={draft.quantityG} emptyValue={undefined} onValue={quantityG => patch({ quantityG })} /><span>g</span></div>
               <p className="yeast-small">Repère fabricant : {range(result.doseG, 'g')}. Aucune masse de sachet ni viabilité supposée ; la quantité reste à choisir.</p>
-            </> : <>
+            </> : selected.evidence.culture === 'bacteria' || selected.evidence.culture === 'other-fermentation' ? <p className="yeast-small">Cette culture demande son protocole spécifique. Le taux d’ensemencement d’une levure de bière ne lui est pas transféré.</p> : <>
               <div className="yeast-setting-line"><label htmlFor={`${uid}-rate`}>Taux visé · M cellules/mL/°P</label><NumberInput id={`${uid}-rate`} aria-label="Taux de cellules visé par mL et degré Plato" value={cellRate} emptyValue={undefined} onValue={setCellRate} /></div>
               <div className="yeast-setting-line"><label htmlFor={`${uid}-cells`}>Cellules viables disponibles</label><NumberInput id={`${uid}-cells`} aria-label="Cellules viables disponibles en milliards" value={viableCells} emptyValue={undefined} onValue={setViableCells} /><span>Md</span></div>
               <output className="block text-[13px]" aria-live="polite">{cell.requiredBillion != null ? `${number(cell.requiredBillion)} milliards de cellules nécessaires${cell.balanceBillion != null ? ` · écart disponible ${number(cell.balanceBillion)} Md` : ''}.` : 'Renseigne volume, densité et taux d’ensemencement pour calculer le besoin.'}</output>
@@ -258,7 +254,6 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
           </div>
         </Disclosure>
       </section> : <p>Choisis une souche du comparatif pour préparer le scénario.</p>}
-    </>}
   </section>;
 }
 

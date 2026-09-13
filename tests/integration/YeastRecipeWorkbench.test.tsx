@@ -39,7 +39,7 @@ describe('Levure : style, comparaison et application', () => {
     render(<BrewWizard seed={{ recipe: initial }} stockItems={[]} config={defaultConfig} knownStyles={[]}
       onClose={vi.fn()} onSave={onSave} onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
     allerEtape(/^Levure/);
-    fireEvent.click(screen.getByRole('button', { name: /Voir les .* souches du style/ }));
+    fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'US-05' } });
     fireEvent.click(screen.getByRole('radio', { name: /Comparer .*US-05/ }));
     open(/Ensemencement et durée à préparer/);
     change('Température d’ensemencement du scénario', '19');
@@ -77,23 +77,29 @@ describe('Levure : style, comparaison et application', () => {
     const rows = screen.getByRole('table', { name: /Potentiel décrit/ });
     expect(rows).toHaveTextContent('3068'); expect(rows).not.toHaveTextContent('US-05'); expect(rows).not.toHaveTextContent('3944');
     fireEvent.click(screen.getByRole('radio', { name: 'Girofle · épices' }));
+    fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'WLP380' } });
     expect(screen.getByRole('radio', { name: 'Comparer WLP380 · Hefeweizen IV' })).toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
   });
   it('offers an explicit free choice when the style is unknown, without guessing clean ale', () => {
     render(<YeastRecipeWorkbench recipe={{ ...wheat(), style: 'Expérimentation', name: 'Lot 1' }} onChange={vi.fn()} />);
     expect(screen.getByLabelText('Filtrer les levures par style')).toHaveValue('unknown');
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
-    expect(screen.getByText(/Choisis d’abord un style/)).toBeInTheDocument();
+    expect(screen.getByText(/Style non reconnu : explore le catalogue/)).toBeInTheDocument();
+    open(/Comparer les souches du style/);
+    fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'Dieter' } });
+    expect(screen.getByRole('radio', { name: /Comparer .*Dieter/ })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Scénario de levure' })).toHaveTextContent('3068');
   });
   it('explores a cross-laboratory strain without changing the recipe and can reset', () => {
     const original = wheat(), onChange = vi.fn(); render(<YeastRecipeWorkbench recipe={original} onChange={onChange} />);
     open(/Comparer les souches du style/);
     fireEvent.click(screen.getByRole('radio', { name: 'Girofle · épices' }));
+    fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'WLP380' } });
     fireEvent.click(screen.getByRole('radio', { name: 'Comparer WLP380 · Hefeweizen IV' }));
-    expect(screen.getByRole('region', { name: 'Scénario de levure' })).toHaveTextContent(/girofle|muscade/i);
+    expect(screen.getByRole('region', { name: 'Scénario de levure' })).toHaveTextContent(/phenolics|girofle|muscade/i);
     expect(onChange).not.toHaveBeenCalled(); expect(original.yeast.hopIndexId).toBe('wyeast-3068');
     fireEvent.click(screen.getByRole('button', { name: 'Réinitialiser' }));
+    fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: '3068' } });
     expect(screen.getByRole('radio', { name: /Comparer 3068/ })).toBeChecked();
   });
   it('shows an out-of-window error and allows correction before applying', () => {

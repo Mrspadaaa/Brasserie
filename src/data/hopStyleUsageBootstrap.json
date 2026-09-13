@@ -1,0 +1,2136 @@
+{
+  "reviewedAt": "2026-09-12",
+  "scope": "Usages attestés par des producteurs, fournisseurs ou brasseurs ; absence d’usage documenté ≠ incompatibilité. Aucun coefficient sensoriel, classement de noms ou mesure de lot.",
+  "varieties": [
+    {
+      "name": "Amarillo",
+      "aliases": [
+        "Amarillo®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "Double IPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite IPA, Double IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Amarillo — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/amarillo",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Hazy IPA"
+          ],
+          "roles": [],
+          "note": "Sierra Nevada utilise cette variété dans Tropical Little Thing, une Hazy IPA. La liste ne précise pas le rôle individuel de chaque houblon.",
+          "source": {
+            "title": "Tropical Little Thing",
+            "author": "Sierra Nevada Brewing Co.",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://sierranevada.com/brews/tropical-little-thing",
+            "locator": "Style Hazy IPA et liste Hops. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Azacca",
+      "aliases": [
+        "Azacca®",
+        "ADHA 483"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA",
+            "Double IPA",
+            "Session IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite IPA, NEIPA, Double IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Azacca — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/azacca",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Belma",
+      "aliases": [
+        "Belma®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "Hazy IPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite Hazy IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Belma — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/belma",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cascade",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA",
+            "Session IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Cascade — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/cascade",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Hazy IPA"
+          ],
+          "roles": [],
+          "note": "Sierra Nevada utilise cette variété dans Tropical Little Thing, une Hazy IPA. La liste ne précise pas le rôle individuel de chaque houblon.",
+          "source": {
+            "title": "Tropical Little Thing",
+            "author": "Sierra Nevada Brewing Co.",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://sierranevada.com/brews/tropical-little-thing",
+            "locator": "Style Hazy IPA et liste Hops. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cashmere",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "Hazy IPA",
+            "American IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite Hazy IPA, American IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Cashmere — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/cashmere",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Centennial",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "american-ipa"
+          ],
+          "styles": [
+            "West Coast IPA"
+          ],
+          "roles": [
+            "Amertume",
+            "Arôme"
+          ],
+          "note": "Le fournisseur cite West Coast IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Centennial — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/centennial",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chinook",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "american-ipa"
+          ],
+          "styles": [
+            "West Coast IPA"
+          ],
+          "roles": [
+            "Amertume",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite West Coast IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Chinook — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/chinook",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Citra",
+      "aliases": [
+        "Citra® Brand",
+        "HBC 394"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA",
+            "Double IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Whirlpool",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite IPA, NEIPA, Double IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Citra — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/citra",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Columbus",
+      "aliases": [
+        "Columbus/ Tomahawk",
+        "Columbus/Tomahawk",
+        "Tomahawk",
+        "CTZ",
+        "Columbus/Tomahawk/Zeus"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "Double IPA"
+          ],
+          "roles": [
+            "Amertume",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite IPA, Double IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Columbus — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/columbus",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comet",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "american-ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "West Coast IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite West Coast IPA, NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Comet — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/comet",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "El Dorado",
+      "aliases": [
+        "El Dorado®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "West Coast IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, West Coast IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "El Dorado — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/eldorado",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Hazy IPA"
+          ],
+          "roles": [],
+          "note": "Sierra Nevada utilise cette variété dans Tropical Little Thing, une Hazy IPA. La liste ne précise pas le rôle individuel de chaque houblon.",
+          "source": {
+            "title": "Tropical Little Thing",
+            "author": "Sierra Nevada Brewing Co.",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://sierranevada.com/brews/tropical-little-thing",
+            "locator": "Style Hazy IPA et liste Hops. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hallertau Blanc",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite IPA, NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Hallertau Blanc — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/hallertaublanc",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Hüll Melon",
+      "aliases": [
+        "Hull Melon",
+        "Huell Melon"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Hüll Melon — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/hullmelon",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Idaho 7",
+      "aliases": [
+        "Idaho 7® Brand",
+        "J-007"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "West Coast IPA",
+            "Double IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, West Coast IPA, Double IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Idaho 7 — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/idaho7",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mandarina Bavaria",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite NEIPA, IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Mandarina Bavaria — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/mandarinabavaria",
+            "locator": "Beer Styles : NEIPA ; présentation : modern IPAs, late additions et dry hopping. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mosaic",
+      "aliases": [
+        "Mosaic® Brand",
+        "HBC 369"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "West Coast IPA",
+            "Double IPA",
+            "Session IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Le fournisseur cite NEIPA, West Coast IPA, Double IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Mosaic — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/mosaic",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nugget",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "american-ipa",
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "West Coast IPA",
+            "NEIPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite West Coast IPA, NEIPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Nugget — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/nugget",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Simcoe",
+      "aliases": [
+        "Simcoe®",
+        "YCR 14"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "american-ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "Double IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite IPA, Double IPA, NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Simcoe — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/simcoe",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dolcita",
+      "aliases": [
+        "Dolcita®",
+        "HBC 1019"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "WCIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, WCIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Dolcita — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/dolcita",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Elani",
+      "aliases": [
+        "Elani®",
+        "YQH 1320"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Elani — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/elani",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Krush",
+      "aliases": [
+        "Krush®",
+        "HBC 586"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "West Coast IPA",
+            "Double IPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, West Coast IPA, Double IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Krush — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/krush",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Motueka",
+      "aliases": [
+        "Motueka™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "american-ipa",
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "West Coast IPA",
+            "NEIPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite West Coast IPA, NEIPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Motueka — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/motueka",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Moutere",
+      "aliases": [
+        "Moutere™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "american-ipa",
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "West Coast IPA",
+            "NEIPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite West Coast IPA, NEIPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Moutere — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/moutere",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nelson Sauvin",
+      "aliases": [
+        "Nelson Sauvin™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "american-ipa",
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "West Coast IPA",
+            "NEIPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite West Coast IPA, NEIPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Nelson Sauvin — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/nelsonsauvin",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pacific Sunrise",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Pacific Sunrise — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/pacificsunrise",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rakau",
+      "aliases": [
+        "Rākau",
+        "Rakau™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "West Coast IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, West Coast IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Rakau — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/rakau",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Riwaka",
+      "aliases": [
+        "Riwaka™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "NEIPA",
+            "West Coast IPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA, West Coast IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Riwaka — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/riwaka",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Triumph",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Triumph — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/triumph",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vista",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Session IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite Session IPA, NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Vista — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/vista",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vera",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite IPA, NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Vera — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/vera",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wai-iti",
+      "aliases": [
+        "Wai iti",
+        "Wai-iti™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "american-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "West Coast IPA",
+            "Session IPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite West Coast IPA, Session IPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Wai-iti — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/wai-iti",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Waimea",
+      "aliases": [
+        "Waimea™",
+        "HORT 3953"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "american-ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "Double IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite IPA, Double IPA, NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Waimea — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/waimea",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Zappa",
+      "aliases": [
+        "Zappa®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Le fournisseur cite NEIPA parmi les usages de cette variété. Ce conseil variétal ne mesure pas son résultat dans une recette.",
+          "source": {
+            "title": "Zappa — Crosby Hops",
+            "author": "Crosby Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.crosbyhops.com/hops/varieties/zappa",
+            "locator": "Présentation et Beer Styles ; consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Galaxy",
+      "aliases": [
+        "Galaxy®",
+        "94-203-008"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "HPA cite IPA et NEIPA dans les styles recommandés.",
+          "source": {
+            "title": "Galaxy — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.hops.com.au/media-kit/data-sheets/HPA-Galaxy-Data-Sheet.pdf",
+            "locator": "Pages 1–2, Recommended beer styles et brewing. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eclipse",
+      "aliases": [
+        "Eclipse®",
+        "04-337-016"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "HPA recommande IPA et NEIPA et cite des bières commerciales brassées avec Eclipse.",
+          "source": {
+            "title": "Eclipse — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.hops.com.au/media-kit/data-sheets/HPA-Eclipse-Data-Sheet.pdf",
+            "locator": "Pages 1–2, Recommended beer styles. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vic Secret",
+      "aliases": [
+        "Vic Secret™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "WCIPA"
+          ],
+          "roles": [],
+          "note": "HPA recommande notamment IPA et West Coast IPA.",
+          "source": {
+            "title": "Vic Secret — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://hops.com.au/hop-navigator-vic-secret/",
+            "locator": "Recommended beer styles. Consulté le 12 septembre 2026."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Hazy IPA / NEIPA"
+          ],
+          "roles": [],
+          "note": "Mountain Culture décrit Be Kind Rewind, une Hazy / NEIPA utilisant Vic Secret. Il s’agit d’un exemple de brasserie, sans garantie pour une autre recette.",
+          "source": {
+            "title": "Mountain Culture named among best beers of 2021",
+            "author": "Hop Products Australia / Mountain Culture",
+            "year": 2021,
+            "kind": "manufacturer",
+            "reference": "https://hops.com.au/mountain-culture-named-among-best-beers-of-2021/",
+            "locator": "Be Kind Rewind Hazy / NEIPA et entretien du brasseur. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Strata",
+      "aliases": [
+        "Strata®",
+        "X-331"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "american-ipa"
+          ],
+          "styles": [
+            "New England / Hazy IPA",
+            "American IPA / West Coast IPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Le sélectionneur publie des notes de brassage distinctes pour les Hazy et les American / West Coast IPA.",
+          "source": {
+            "title": "Strata — Indie Hops",
+            "author": "Indie Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://indiehops.com/hops/strata",
+            "locator": "Brewing notes by beer style : New England / Hazy IPA et American / West Coast IPA. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nectaron",
+      "aliases": [
+        "Nectaron®",
+        "HORT 4337"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "NEIPA"
+          ],
+          "roles": [
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "NZ Hops cite explicitement IPA et NEIPA dans les applications de Nectaron.",
+          "source": {
+            "title": "Nectaron — NZ Hops",
+            "author": "NZ Hops",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://nzhops.co.nz/products/nectaron",
+            "locator": "Brewing et Applications. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lotus",
+      "aliases": [
+        "Lotus™",
+        "X06297",
+        "06297"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite des utilisations réelles de Lotus dans Surly 60 Below Rye IPA et Stone Delicious IPA Cask.",
+          "source": {
+            "title": "Lotus — Hopsteiner",
+            "author": "Hopsteiner",
+            "year": 2019,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/we-are-excited-to-announce-the-official-release-of-lotus",
+            "locator": "Looking for a beer that uses Lotus ; annonce du 6 février 2019."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner recommande X06297 pour les NEIPA dans son article de 2018 ; le lancement de Lotus établit ensuite que Lotus est le nom commercial de X06297.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Liste des variétés pour NEIPA, dont X06297 et X07270 ; 10 avril 2018. Identités commerciales documentées séparément."
+          }
+        }
+      ],
+      "identitySources": [
+        {
+          "title": "Lotus — Hopsteiner",
+          "author": "Hopsteiner",
+          "year": 2019,
+          "kind": "manufacturer",
+          "reference": "https://hopsteiner.us/blog/we-are-excited-to-announce-the-official-release-of-lotus",
+          "locator": "Formerly known as X06297 (paragraphe de présentation) ; 6 février 2019."
+        }
+      ]
+    },
+    {
+      "name": "Trident",
+      "aliases": [
+        "Trident™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "Hazy IPA",
+            "IPA"
+          ],
+          "roles": [
+            "Amertume",
+            "Arôme"
+          ],
+          "note": "Hopsteiner recommande son assemblage Trident pour les IPA et Hazy IPA. Trident reste un assemblage, pas une variété unique.",
+          "source": {
+            "title": "Trident — Hopsteiner",
+            "author": "Hopsteiner",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/trident/",
+            "locator": "Beer styles et Brewing usage (Dual). Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Luna",
+      "aliases": [
+        "Luna™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA"
+          ],
+          "roles": [
+            "Whirlpool",
+            "Houblonnage à cru"
+          ],
+          "note": "HPA présente Luna pour les bières houblonnées, notamment les IPA. Le texte ne permet pas d’affirmer un sous-style Hazy.",
+          "source": {
+            "title": "Luna — Hop Products Australia",
+            "author": "Hop Products Australia",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://hops.com.au/introducing-luna/",
+            "locator": "Présentation du 6 février 2026 : IPA, whirlpool et dry hopping."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Golding (UK)",
+      "aliases": [
+        "Golding",
+        "Goldings",
+        "UK Goldings"
+      ],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [
+            "Ajouts à chaud",
+            "Houblonnage à cru"
+          ],
+          "note": "La brasserie décrit Mirrors, une English IPA : Goldings et Fuggle côté chaud, Golding et Target côté froid. Les doses ne sont pas publiées.",
+          "source": {
+            "title": "Golding (UK) — Alter Ego Brewing",
+            "author": "Alter Ego Brewing",
+            "year": 2025,
+            "kind": "observation",
+            "reference": "https://alteregobrewing.co/blogs/news/mirrors-looking-backwards-for-our-latest-cask-special",
+            "locator": "Mirrors, cask special, 23 mars 2025 ; ne pas assimiler Goldings à East Kent Goldings."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fuggle",
+      "aliases": [
+        "Fuggles"
+      ],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [
+            "Ajouts à chaud"
+          ],
+          "note": "La brasserie décrit Mirrors, une English IPA : Goldings et Fuggle côté chaud, Golding et Target côté froid. Les doses ne sont pas publiées.",
+          "source": {
+            "title": "Fuggle — Alter Ego Brewing",
+            "author": "Alter Ego Brewing",
+            "year": 2025,
+            "kind": "observation",
+            "reference": "https://alteregobrewing.co/blogs/news/mirrors-looking-backwards-for-our-latest-cask-special",
+            "locator": "Mirrors, cask special, 23 mars 2025 ; ne pas assimiler Goldings à East Kent Goldings."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Target",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [
+            "Houblonnage à cru"
+          ],
+          "note": "La brasserie décrit Mirrors, une English IPA : Goldings et Fuggle côté chaud, Golding et Target côté froid. Les doses ne sont pas publiées.",
+          "source": {
+            "title": "Target — Alter Ego Brewing",
+            "author": "Alter Ego Brewing",
+            "year": 2025,
+            "kind": "observation",
+            "reference": "https://alteregobrewing.co/blogs/news/mirrors-looking-backwards-for-our-latest-cask-special",
+            "locator": "Mirrors, cask special, 23 mars 2025 ; ne pas assimiler Goldings à East Kent Goldings."
+          }
+        },
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "British IPA"
+          ],
+          "roles": [
+            "Houblonnage à cru"
+          ],
+          "note": "BarthHaas cite Target pour les IPA britanniques.",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bramling Cross",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [],
+          "note": "La brasserie cite Bramling Cross, Fuggles et Challenger dans son IPA de tradition anglaise « The Famous Original ». Aucun rôle individuel n’est précisé.",
+          "source": {
+            "title": "Bramling Cross — Allsopp’s",
+            "author": "Allsopp’s",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://www.allsopps.com/",
+            "locator": "The Famous Original IPA, 5,0 %. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Challenger",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [],
+          "note": "La brasserie cite Bramling Cross, Fuggles et Challenger dans son IPA de tradition anglaise « The Famous Original ». Aucun rôle individuel n’est précisé.",
+          "source": {
+            "title": "Challenger — Allsopp’s",
+            "author": "Allsopp’s",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://www.allsopps.com/",
+            "locator": "The Famous Original IPA, 5,0 %. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sovereign",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [
+            "Début d’ébullition"
+          ],
+          "note": "Recette présentée comme English India Pale Ale : Sovereign, East Kent Goldings et Ernest. À 4,7 % et 25 IBU, cet exemple ne constitue pas un modèle strict BJCP 12C.",
+          "source": {
+            "title": "Sovereign — Crisp Malt",
+            "author": "Crisp Malt",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://crispmalt.com/en-us/recipes/ipa/",
+            "locator": "Recipe et Hops ; début, milieu et extinction selon le tableau de recette. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "East Kent Goldings",
+      "aliases": [
+        "East Kent Golding",
+        "EKG"
+      ],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [
+            "Milieu d’ébullition"
+          ],
+          "note": "Recette présentée comme English India Pale Ale : Sovereign, East Kent Goldings et Ernest. À 4,7 % et 25 IBU, cet exemple ne constitue pas un modèle strict BJCP 12C.",
+          "source": {
+            "title": "East Kent Goldings — Crisp Malt",
+            "author": "Crisp Malt",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://crispmalt.com/en-us/recipes/ipa/",
+            "locator": "Recipe et Hops ; début, milieu et extinction selon le tableau de recette. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ernest",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "English IPA"
+          ],
+          "roles": [
+            "Extinction de la chauffe"
+          ],
+          "note": "Recette présentée comme English India Pale Ale : Sovereign, East Kent Goldings et Ernest. À 4,7 % et 25 IBU, cet exemple ne constitue pas un modèle strict BJCP 12C.",
+          "source": {
+            "title": "Ernest — Crisp Malt",
+            "author": "Crisp Malt",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://crispmalt.com/en-us/recipes/ipa/",
+            "locator": "Recipe et Hops ; début, milieu et extinction selon le tableau de recette. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admiral",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "Full English IPA"
+          ],
+          "roles": [],
+          "note": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90.",
+          "source": {
+            "title": "Admiral — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Olicana",
+      "aliases": [
+        "Olicana®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "Full English IPA"
+          ],
+          "roles": [],
+          "note": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90.",
+          "source": {
+            "title": "Olicana — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Harlequin",
+      "aliases": [
+        "Harlequin®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "Full English IPA"
+          ],
+          "roles": [
+            "Houblonnage à cru"
+          ],
+          "note": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90.",
+          "source": {
+            "title": "Harlequin — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jester",
+      "aliases": [
+        "Jester®"
+      ],
+      "uses": [
+        {
+          "families": [
+            "english-ipa"
+          ],
+          "styles": [
+            "Full English IPA"
+          ],
+          "roles": [
+            "Houblonnage à cru"
+          ],
+          "note": "Recette Full English IPA : Admiral, Olicana, Harlequin et Jester T45. Interprétation moderne à levure US-05 ; la forme T45 du Jester n’est pas assimilée à du T90.",
+          "source": {
+            "title": "Jester — Charles Faram",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/wp-content/uploads/2025/12/Charles-Faram-Recipe-cards-PRINT-FRIENDLY.pdf",
+            "locator": "Full English IPA, 5,56 % et 45 IBU ; Harlequin et Jester T45 en dry hop. PDF consulté le 12 septembre 2026, lien ensuite intermittent."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calypso",
+      "aliases": [
+        "Calypso™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Calypso parmi les houblons à employer pour une NEIPA.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Paragraphes sur les variétés Calypso, X06277, Eureka!, Lemondrop et X09326 ; 10 avril 2018."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sultana",
+      "aliases": [
+        "Sultana™",
+        "Denali",
+        "X06277",
+        "06277"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Sultana parmi les houblons à employer pour une NEIPA.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Paragraphes sur les variétés Calypso, X06277, Eureka!, Lemondrop et X09326 ; 10 avril 2018."
+          }
+        },
+        {
+          "families": [
+            "american-ipa",
+            "ipa"
+          ],
+          "styles": [
+            "DIPA",
+            "IPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Golden Thing DIPA et Don’t Worry IPA utilisant Sultana, anciennement X06277.",
+          "source": {
+            "title": "Sultana is here",
+            "author": "Hopsteiner",
+            "year": 2019,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/one-of-hopsteiners-most-popular-experimental-hops-gets-a-name-sultana-is-here/",
+            "locator": "Looking for a beer that uses Sultana (X06277) ; 12 août 2019."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Hazy IPA"
+          ],
+          "roles": [],
+          "note": "Sierra Nevada utilise cette variété dans Tropical Little Thing, une Hazy IPA. La liste ne précise pas le rôle individuel de chaque houblon.",
+          "source": {
+            "title": "Tropical Little Thing",
+            "author": "Sierra Nevada Brewing Co.",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://sierranevada.com/brews/tropical-little-thing",
+            "locator": "Style Hazy IPA et liste Hops. Consulté le 12 septembre 2026."
+          }
+        }
+      ],
+      "identitySources": [
+        {
+          "title": "Sultana is here",
+          "author": "Hopsteiner",
+          "year": 2019,
+          "kind": "manufacturer",
+          "reference": "https://hopsteiner.us/blog/one-of-hopsteiners-most-popular-experimental-hops-gets-a-name-sultana-is-here/",
+          "locator": "Présentation : Sultana formerly experimental #06277 ; 12 août 2019."
+        }
+      ]
+    },
+    {
+      "name": "Eureka!",
+      "aliases": [
+        "Eureka"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Eureka! parmi les houblons à employer pour une NEIPA.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Paragraphes sur les variétés Calypso, X06277, Eureka!, Lemondrop et X09326 ; 10 avril 2018."
+          }
+        },
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Eureka! dans Axis IPA de Real Ale Brewing.",
+          "source": {
+            "title": "Cooking with Craft Beer — bières citées",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/cooking-with-craft-beer/",
+            "locator": "Golden Thing et Axis IPA ; 16 novembre 2018."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lemondrop",
+      "aliases": [
+        "Lemondrop™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Lemondrop parmi les houblons à employer pour une NEIPA.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Paragraphes sur les variétés Calypso, X06277, Eureka!, Lemondrop et X09326 ; 10 avril 2018."
+          }
+        },
+        {
+          "families": [
+            "american-ipa"
+          ],
+          "styles": [
+            "Double IPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite Lemondrop dans Golden Thing, une Double IPA de Tröegs.",
+          "source": {
+            "title": "Cooking with Craft Beer — bières citées",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/cooking-with-craft-beer/",
+            "locator": "Golden Thing et Axis IPA ; 16 novembre 2018."
+          }
+        }
+      ]
+    },
+    {
+      "name": "HS09326",
+      "aliases": [
+        "X09326",
+        "09326"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite X09326 parmi les houblons à employer pour une NEIPA.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Paragraphes sur les variétés Calypso, X06277, Eureka!, Lemondrop et X09326 ; 10 avril 2018."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Alora",
+      "aliases": [
+        "Alora™",
+        "HS17701"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA"
+          ],
+          "roles": [],
+          "note": "Le sélectionneur recommande Alora pour un éventail de styles comprenant les IPA ; aucun sous-style Hazy n’est précisé.",
+          "source": {
+            "title": "Introducing Alora",
+            "author": "Hopsteiner",
+            "year": 2023,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/introducing-alora/",
+            "locator": "Key Features / Flavor and Aroma Profile ; 30 novembre 2023."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Erebus",
+      "aliases": [
+        "Erebus™",
+        "HS16660"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa",
+            "american-ipa",
+            "hazy-ipa"
+          ],
+          "styles": [
+            "IPA",
+            "West Coast IPA",
+            "Hazy IPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner cite des bières à Erebus : Hero In Training IPA, Ripe For Harvest West Coast IPA et Steam Driver Hazy IPA.",
+          "source": {
+            "title": "Introducing Erebus",
+            "author": "Hopsteiner",
+            "year": 2024,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/introducing-erebus/",
+            "locator": "Beers with Erebus ; 30 octobre 2024."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ariana",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "Euro IPA"
+          ],
+          "roles": [],
+          "note": "BarthHaas recommande Ariana pour une Euro IPA. Ce libellé source ne prétend pas un usage spécifique Hazy ou anglais.",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Callista",
+      "aliases": [],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "Euro IPA"
+          ],
+          "roles": [],
+          "note": "BarthHaas recommande Callista pour une Euro IPA. Ce libellé source ne prétend pas un usage spécifique Hazy ou anglais.",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sabro",
+      "aliases": [
+        "Sabro®",
+        "HBC 438"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "BarthHaas cite Sabro pour les NEIPA.",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        },
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "Hazy IPA"
+          ],
+          "roles": [],
+          "note": "Sierra Nevada utilise cette variété dans Tropical Little Thing, une Hazy IPA. La liste ne précise pas le rôle individuel de chaque houblon.",
+          "source": {
+            "title": "Tropical Little Thing",
+            "author": "Sierra Nevada Brewing Co.",
+            "year": null,
+            "kind": "observation",
+            "reference": "https://sierranevada.com/brews/tropical-little-thing",
+            "locator": "Style Hazy IPA et liste Hops. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "BRU-1",
+      "aliases": [
+        "BRU 1",
+        "BRU-1™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "BarthHaas cite BRU-1 pour les NEIPA.",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Talus",
+      "aliases": [
+        "Talus®",
+        "HBC 692"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA"
+          ],
+          "roles": [
+            "Houblonnage à cru"
+          ],
+          "note": "BarthHaas recommande Talus en houblonnage à cru pour IPA.",
+          "source": {
+            "title": "Product Guide — Global Hop Portfolio",
+            "author": "BarthHaas",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.barthhaas.com/fileadmin/user_upload/01-barthhaas-2022/Downloads/Reports_Broschures/Other/English/barthhaas-product-guide.pdf",
+            "locator": "Tableau Great for Brewing : pages PDF 4–5 (pagination imprimée 6–9). Consulté le 12 septembre 2026 ; fiche non datée."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Styrian Wolf",
+      "aliases": [
+        "Styrian Wolf™"
+      ],
+      "uses": [
+        {
+          "families": [
+            "ipa"
+          ],
+          "styles": [
+            "IPA"
+          ],
+          "roles": [
+            "Amertume",
+            "Ajouts tardifs",
+            "Houblonnage à cru"
+          ],
+          "note": "Charles Faram recommande Styrian Wolf pour les IPA, avec des emplois amers précoces ou aromatiques tardifs.",
+          "source": {
+            "title": "Styrian Wolf — Hop Oracle",
+            "author": "Charles Faram",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://charlesfaram.com/eu/hop-oracle/styrian-wolf/",
+            "locator": "Hop Variety Description et Brewing with Styrian Wolf. Consulté le 12 septembre 2026."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Altus",
+      "aliases": [
+        "Altus™",
+        "X07270",
+        "07270"
+      ],
+      "identitySources": [
+        {
+          "title": "Altus — Experimental #07270",
+          "author": "Hopsteiner",
+          "year": 2022,
+          "kind": "manufacturer",
+          "reference": "https://hopsteiner.us/variety-data-sheets/altus/",
+          "locator": "Titre Altus Experimental #07270 ; Last Changed 4 avril 2022."
+        }
+      ],
+      "uses": [
+        {
+          "families": [
+            "hazy-ipa"
+          ],
+          "styles": [
+            "NEIPA"
+          ],
+          "roles": [],
+          "note": "Hopsteiner recommande X07270 pour les NEIPA. La fiche variétale actuelle identifie X07270 comme Altus.",
+          "source": {
+            "title": "When “Juicy” Meets “Fruity”",
+            "author": "Hopsteiner",
+            "year": 2018,
+            "kind": "manufacturer",
+            "reference": "https://hopsteiner.us/blog/when-juicy-meets-fruity/",
+            "locator": "Liste des variétés pour NEIPA, dont X06297 et X07270 ; 10 avril 2018. Identités commerciales documentées séparément."
+          }
+        }
+      ]
+    }
+  ]
+}

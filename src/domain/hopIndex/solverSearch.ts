@@ -18,7 +18,10 @@ export async function runHopSolverSearch(input: HopSolverSearchOptions, publish:
   const keys=new WeakMap<HopSolverCandidate,string>();
   const key=(c:HopSolverCandidate)=>{
     let k=keys.get(c);
-    if(k===undefined){k=c.trial?.id??JSON.stringify(c.triplets.map(t=>[names.get(t.varietyId??''),t.yeastId,t.timing]));keys.set(c,k);}
+    // Keep the best evaluated timing / dose for each variety–yeast pairing,
+    // leaving room for other varieties in the comparison. Published programmes
+    // retain their identity even when they use the same hops and yeast.
+    if(k===undefined){k=c.trial?.id??JSON.stringify(c.triplets.map(t=>[names.get(t.varietyId??''),t.yeastId]));keys.set(c,k);}
     return k;
   };
   let examined=0,nextPublish=0;

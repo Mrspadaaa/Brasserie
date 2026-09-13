@@ -27,6 +27,8 @@ type DocumentaryRange = NonNullable<YeastRecipeCandidate['temperature']>;
 type CompanionCandidate = {
   yeastId: string; label: string; lab: string; form: string | null; descriptor: string; reason: string;
   preferred: boolean; temperatureC: DocumentaryRange | null; attenuationPct: DocumentaryRange | null;
+  styleMatch: YeastRecipeCandidate['styleMatch']; styleEvidence: YeastRecipeCandidate['evidence']['styleMatches'];
+  culture: YeastRecipeCandidate['evidence']['culture'];
   dryDoseG: DocumentaryRange | null; observations: YeastCatalogueFact[]; observationsLimited: boolean; sources: HopSource[];
   practicalNotes: YeastPracticalNote[]; practicalNotesLimited: boolean;
   preparationStatus: 'documented' | 'confirm-form' | 'not-documented';
@@ -82,12 +84,13 @@ const familyLabel = (id: YeastStyleId) => YEAST_STYLE_FAMILIES.find(f => f.id ==
 const distinctSources = (rows: HopSource[]) => [...new Map(rows.map(s => [s.reference, s])).values()];
 const candidateData = (c: YeastRecipeCandidate, actualForm: YeastRecipeCandidate['reference']['form']): CompanionCandidate => {
   const information = yeastStrainInformation(c.reference, actualForm);
-  const facts = information?.observations.filter(f => ['temperature', 'attenuation', 'pitchRate', 'pof', 'sta1', 'diastatic', 'flocculation', 'alcoholTolerance', 'aroma', 'esters', 'higherAlcohols', 'betaLyase', 'biotransformation', 'application', 'foam', 'nutrientNeed', 'h2s', 'fermentationRate', 'fermentationTime'].includes(f.key)) ?? [];
+  const facts = information?.observations.filter(f => ['temperature', 'attenuation', 'pitchRate', 'pof', 'sta1', 'diastatic', 'flocculation', 'alcoholTolerance', 'aroma', 'esters', 'higherAlcohols', 'betaLyase', 'biotransformation', 'styles', 'application', 'foam', 'nutrientNeed', 'h2s', 'fermentationRate', 'fermentationTime'].includes(f.key)) ?? [];
   const observations = facts.slice(0, 24);
   const allNotes = [...information?.practical ?? [], ...information?.behaviour ?? []];
   const practicalNotes = allNotes.slice(0, 8);
   return { yeastId: c.yeastId, label: c.label, lab: c.lab, form: c.reference.form ?? null,
     descriptor: c.descriptor, reason: c.reason, preferred: c.preferred,
+    styleMatch: c.styleMatch, styleEvidence: c.evidence.styleMatches, culture: c.evidence.culture,
     temperatureC: c.temperature ?? null, attenuationPct: c.attenuation ?? null, dryDoseG: c.doseG ?? null,
     observations, observationsLimited: observations.length < facts.length,
     practicalNotes, practicalNotesLimited: practicalNotes.length < allNotes.length,
@@ -102,6 +105,7 @@ const requestStatus = <T>(v: T | undefined): RequestStatus<T> => ({ value: v ?? 
 const baseLimits = [
   'Les consignes, quantités, jours et objectifs décrivent une recette prévue, pas des mesures du brassin.',
   'Les alternatives restent dans la famille de comparaison retenue. Un descripteur fabricant ne classe pas toutes les levures par goût.',
+  'L’aperçu des alternatives diversifie les laboratoires parmi les usages documentés ; ce n’est pas un classement des meilleures levures.',
   'Le statut ancien/courant compare les champs enregistrés du scénario (style, souche, volume, fermentation et empâtage). Houblons et DI sont toujours relus dans la recette actuelle.',
   'Aucune intensité de banane, girofle ou fruité n’est calculée. Plages documentaires et effets qualitatifs ne garantissent ni le goût ni la fin de fermentation.',
   'Cet aperçu ne modifie aucune recette. Un autre objectif, une autre souche ou un réglage proposé doit être prévisualisé et adopté explicitement.'
@@ -238,7 +242,14 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
   if (!evaluation.candidate?.attenuation) missing('yeast.attenuation', 'yeast', 'Plage d’atténuation absente ou contradictoire ; DF documentaire inconnue.');
   const alternateRows = eligible.filter(c => c.yeastId !== currentDraft.yeastId && c.yeastId !== selectedId);
   const limit = finite(options.maxAlternatives) ? Math.min(8, Math.max(0, Math.floor(options.maxAlternatives))) : 5;
-  data.alternatives = alternateRows.slice(0, limit).map(c => candidateData(c, c.reference.form)); data.alternativeCount = alternateRows.length; data.alternativesLimited = alternateRows.length > limit;
+  const laboratories = new Set<string>();
+  const representatives = alternateRows.filter(c => {
+    if (laboratories.has(c.lab)) return false;
+    laboratories.add(c.lab); return true;
+  });
+  const representativeIds = new Set(representatives.map(c => c.yeastId));
+  data.alternatives = [...representatives, ...alternateRows.filter(c => !representativeIds.has(c.yeastId))].slice(0, limit).map(c => candidateData(c, c.reference.form));
+  data.alternativeCount = alternateRows.length; data.alternativesLimited = alternateRows.length > limit;
   const selectedCandidate = evaluation.candidate ? candidateData(evaluation.candidate, selectedId === currentDraft.yeastId ? recipe.yeast.form : evaluation.candidate.reference.form) : null;
   data.analysis = { yeastId: selectedId || null, goal: comparisonFamily === 'unknown' ? null : effectiveGoal, goalOrigin,
     scenario: selectedId !== currentDraft.yeastId || goalOrigin === 'explicit-request' || explicitGravity,

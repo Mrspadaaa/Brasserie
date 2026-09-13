@@ -4,8 +4,11 @@ import { ChevronDown } from 'lucide-react';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import type { HopStage } from '../../types';
 import { analyseHopRecipe, applyHopRecipeAdjustment, createHopRecipeAdjustment, evaluateHopRecipeAdjustment,
-  hopFitsStyle, hopMatchesName, hopRecipeKey, HOP_RECIPE_SOURCES, type HopAdjustmentMode, type HopRecipeAdjustment } from '../../domain/hopRecipeDesign';
+  hopFitsStyle, hopRecipeKey, HOP_RECIPE_SOURCES, type HopAdjustmentMode, type HopRecipeAdjustment } from '../../domain/hopRecipeDesign';
 import { yeastRecipeCandidates, type YeastRecipeGoal } from '../../domain/yeastRecipeDesign';
+import { hopStyleFamily } from '../../domain/hopIndex/styleSelection';
+import { rankDocumentaryHopLeads } from '../../domain/hopIndex/recipeGuide';
+import aromaFamilies from '../../data/hopRecipeGuideBootstrap.json';
 import { yeastReferences } from '../../domain/yeastReferences';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
@@ -26,7 +29,6 @@ export interface HopRecipeWorkbenchSession {
   view: 'balance' | 'adjust' | 'flavor'; goal: SensoryGoal; allVarieties: boolean;
 }
 const sensoryNames: Record<SensoryGoal, string> = { banana: 'Banane', clove: 'Girofle', balanced: 'Équilibre', citrus: 'Agrumes', tropical: 'Fruits tropicaux', floral: 'Floral · épices' };
-const hopGoals: Partial<Record<SensoryGoal, string[]>> = { citrus: ['Cascade', 'Centennial', 'Citra', 'Amarillo'], tropical: ['Citra', 'Mosaic', 'El Dorado', 'Simcoe'], floral: ['Saaz', 'Hallertauer Mittelfrüh', 'Tettnanger', 'East Kent Goldings'] };
 function Detail({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return <details><summary>{title}<ChevronDown size={14} aria-hidden="true" /></summary><div className="hop-detail-body">{children}</div></details>;
 }
@@ -68,6 +70,7 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
   const draft = local.draft, stale = local.key !== key;
   const result = evaluateHopRecipeAdjustment(recipe, draft, varieties);
   const family = analysis.style.family;
+  const ipaFamily = hopStyleFamily(recipe.style ?? '');
   const wheat = family === 'weissbier';
   const hoppy = family === 'clean-ale' || family === 'hazy-ipa' || family === 'american-wheat';
   const goals: SensoryGoal[] = wheat ? ['balanced', 'banana', 'clove'] : hoppy ? ['citrus', 'tropical', 'floral'] : ['balanced', 'floral'];
@@ -77,8 +80,13 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
   const currentYeast = candidates.find(c => c.yeastId === recipe.yeast?.hopIndexId);
   const comparisons = candidates.filter(c => c.yeastId !== recipe.yeast?.hopIndexId).slice(0, 3);
   const catalogue = useMemo(() => varieties.filter(v => !v.archived && ['unknown', 'pelletT90', 'cone'].includes(v.form))
-    .map(v => ({ ...v, fits: hopFitsStyle(v.name, family, v.aliases) }))
-    .sort((a, b) => Number(b.fits) - Number(a.fits) || a.name.localeCompare(b.name, 'fr')), [varieties, family]);
+    .map(v => ({ ...v, fits: hopFitsStyle(v.name, family, v.aliases, recipe.style) }))
+    .sort((a, b) => Number(b.fits) - Number(a.fits) || a.name.localeCompare(b.name, 'fr')), [varieties, family, recipe.style]);
+  const flavorVarieties = useMemo(() => {
+    const inStyle = catalogue.filter(v => v.fits);
+    return activeGoal === 'balanced' ? inStyle : rankDocumentaryHopLeads(inStyle,
+      [activeGoal], aromaFamilies as Parameters<typeof rankDocumentaryHopLeads>[2]).map(lead => lead.variety);
+  }, [catalogue, activeGoal]);
   const visibleVarieties = catalogue.filter(v => allVarieties || family === 'unknown' || v.fits || v.id === draft.varietyId);
   const patch = (next: Partial<HopRecipeAdjustment>) => { setLocal(v => ({ ...v, draft: { ...v.draft, ...next } })); setNotice(''); setError(''); };
   const reset = () => { setLocal({ key, draft: createHopRecipeAdjustment(recipe) }); setError(''); setNotice('Scénario repris depuis la recette.'); };
@@ -86,6 +94,12 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
     const index = mode === 'dryHop' ? recipe.hops.findIndex(h => h.stage === 'dryHop') : recipe.hops.findIndex(h => h.stage === 'boil');
     setLocal({ key, draft: createHopRecipeAdjustment(recipe, index, mode) }); setError(''); setNotice(''); setView('adjust');
   };
+  const flavorRows = (rows: typeof flavorVarieties) => rows.map(v => <li key={v.id}>
+    <strong>{v.name}</strong><button type="button" aria-label={`Préparer un ajout de ${v.name}`} onClick={() => {
+      setLocal({ key, draft: { ...createHopRecipeAdjustment(recipe, -1, hoppy ? 'dryHop' : 'move'), name: v.name, varietyId: v.id } });
+      setNotice(''); setError(''); setView('adjust');
+    }}>Préparer un ajout</button>
+  </li>);
   const apply = async () => {
     if (pending.current || !onChange) return;
     pending.current = true; setBusy(true); onBusyChange?.(true); setError('');
@@ -137,8 +151,9 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
       {!recipe.hops.length && <p>Aucun ajout. Prépare une masse selon l’IBU visé ou la dose à cru.</p>}
       <div className="hop-actions"><button type="button" onClick={() => chooseTool('ibu')}>Calculer ma dose amère</button>{hoppy && <button type="button" onClick={() => chooseTool('dryHop')}>Préparer le dry hop</button>}</div>
       <Detail title="Variétés à comparer dans ce style">
-        <p>{analysis.style.examples.length ? analysis.style.examples.join(' · ') : 'Aucune présélection tant que le style n’est pas identifié.'}</p>
-        <p className="hop-small">Repères d’usage L’Affinée, non exclusifs. Le catalogue privilégie ce style ; les autres variétés restent accessibles. L’alpha vient du lot utilisé.</p>
+        <p>{catalogue.filter(v => v.fits).length} références à comparer dans le catalogue pour ce style.</p>
+        <p className="hop-small">{ipaFamily ? 'Usages issus de fiches fabricant et de recettes publiées.' : 'Repères d’usage L’Affinée, non exclusifs.'} Les autres variétés restent accessibles. L’alpha vient du lot utilisé.</p>
+        <button type="button" onClick={() => chooseTool(hoppy ? 'dryHop' : 'ibu')}>Ouvrir le catalogue par style</button>
       </Detail>
       {analysis.warnings.length > 0 && <div className="hop-warning"><p>{analysis.warnings[0]}</p>{analysis.warnings.length > 1 && <Detail title={`${analysis.warnings.length - 1} consigne${analysis.warnings.length > 2 ? 's' : ''} de conduite`}><ul>{analysis.warnings.slice(1).map(w => <li key={w}>{w}</li>)}</ul></Detail>}</div>}
       {analysis.dry.additions.length > 0 && <Detail title="Planning du houblonnage à cru"><ol className="hop-instructions">{analysis.dry.additions.map((h, i) => <li key={i}><strong>{h.name} · {Units.format(h.weightG, 'g')} · {fmt(h.doseGL)} g/L</strong><span>{h.phase === 'active' ? 'Fermentation active constatée' : h.phase === 'post' ? 'Après fermentation principale constatée' : 'Phase biologique à préciser'} · {fmt(h.temperatureC)} °C · {fmt(h.contactHours)} h{h.dayOffset != null ? ` · J${fmt(h.dayOffset)} indicatif` : ''}</span></li>)}</ol>
@@ -191,11 +206,15 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
           <ol className="hop-instructions"><li><strong>1. Souche</strong><span>{activeGoal === 'clove' ? 'Comparer le profil épicé de WLP380 à la souche actuelle.' : 'Comparer 3068 et WLP300, puis les alternatives sèches.'}</span></li><li><strong>2. Conduite</strong><span>{activeGoal === 'clove' ? 'Examiner le précurseur au brassage et les esters qui peuvent masquer le girofle.' : 'La réponse à la température dépend de la souche. Dose viable et pression précoce comptent aussi.'}</span></li><li><strong>3. Essai</strong><span>Changer un levier, garder un témoin et comparer à dégustation. Aucun pourcentage de goût prédit.</span></li></ol>
         </> : <>
           <p>{hoppy ? 'Choisis une variété compatible avec le style, puis compare un ajout tardif ou à cru. Le lot, la souche et le contact déterminent le résultat.' : 'Compare une finition florale ou épicée au caractère de fermentation et au malt du style.'}</p>
-          <ul className="hop-sensory-varieties">{(hopGoals[activeGoal] ?? analysis.style.examples).filter(name => hopFitsStyle(name, family)).map(name => {
-            const v = catalogue.find(v => hopMatchesName(v.name, name, v.aliases));
-            return <li key={name}><strong>{name}</strong><button type="button" aria-label={`Préparer un ajout de ${name}`} onClick={() => { setLocal({ key, draft: { ...createHopRecipeAdjustment(recipe, -1, hoppy ? 'dryHop' : 'move'), name: v?.name ?? name, varietyId: v?.id } }); setNotice(''); setError(''); setView('adjust'); }}>Préparer un ajout</button></li>;
-          })}</ul>
-          <p className="hop-small">Présélection éditoriale à comparer aux descriptions des lots. Ni alpha-acides ni huiles totales ne donnent un score d’agrumes ou de fruits tropicaux.</p>
+          <p className="hop-small">{activeGoal === 'balanced'
+            ? `${flavorVarieties.length} références à comparer pour l’équilibre du style.`
+            : `${flavorVarieties.length} références de ce style mentionnent cet arôme dans leurs descriptions.`}</p>
+          <ul className="hop-sensory-varieties">{flavorRows(flavorVarieties.slice(0, 6))}</ul>
+          {flavorVarieties.length > 6 && <Detail title={`Voir les ${flavorVarieties.length - 6} autres références`}>
+            <ul className="hop-sensory-varieties">{flavorRows(flavorVarieties.slice(6))}</ul>
+          </Detail>}
+          <p className="hop-small">Les descriptions affinent le choix après le style. Une mention aromatique ne prédit pas son intensité dans la bière.</p>
+          <button type="button" onClick={()=>chooseTool(hoppy?'dryHop':'ibu')}>Explorer le catalogue du style</button>
         </>}
         <Detail title={`Alternatives de levure · ${comparisons.length} à comparer`}><ul className="hop-yeast-alternatives">{comparisons.map(c => <li key={c.yeastId}><strong>{c.label} · {c.lab}</strong><span>{c.descriptor}</span><span className="hop-small">{c.reason}</span>{onPlanYeast && <button type="button" onClick={() => onPlanYeast(yeastGoal, c.yeastId)}>Comparer cette souche</button>}</li>)}</ul><p className="hop-small">Descriptions fabricant, pas un classement universel ni des souches réputées équivalentes.</p></Detail>
         <div className="hop-actions">{onPlanYeast ? <button type="button" onClick={() => onPlanYeast(yeastGoal)}>{wheat ? `Simuler ${sensoryNames[activeGoal].toLowerCase()} avec la levure` : 'Comparer la conduite de levure'}</button> : onNavigate && <button type="button" onClick={() => onNavigate('levure')}>Comparer les levures</button>}

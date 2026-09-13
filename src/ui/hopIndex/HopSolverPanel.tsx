@@ -5,6 +5,7 @@ import { HOP_TIMINGS, type HopAxis, type HopTriplet } from '../../../functions/s
 import { HOP_CHEMISTRY_GOALS, type HopSolverIntent } from '../../../functions/src/hopSolverSchema';
 import { applyHopSolverCandidate, createHopSolverSearch, initialHopSolverIntent, type HopSolverCandidate, type HopSolverSearchOptions, type SolverCheck } from '../../domain/hopIndex/solver';
 import type { HopSearchMode } from '../../domain/hopIndex/solverSelection';
+import { hopStyleGuidance } from '../../domain/hopIndex/styleSelection';
 import type { HopSearchUpdate } from '../../domain/hopIndex/solverSearch';
 import { startHopSolverSearch } from './hopSolverTransport';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
@@ -15,6 +16,7 @@ import { Units } from '../../services/units';
 import { ensureGuideReferences, guideAxes, guidePredictionKnowledge, guideSolverPolicy, guideYeasts } from './guideData';
 import { useHopCatalogue } from './useHopCatalogue';
 import { HopAromaTargetPicker } from './HopAromaTargetPicker';
+import { HopSolverVarietyPicker } from './HopSolverVarietyPicker';
 import { HopExplorationChart } from './HopAromaChart';
 import { HopTrialResult, HopTrialComparison } from './HopTrialEvidence';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
@@ -51,6 +53,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
   const [intent,setIntent]=useState<HopSolverIntent>(()=>policy?initialHopSolverIntent(recipe,policy):{styleId:'free',avoid:[],chemistry:{},keepYeast:true,timings:['postFermentation']});
   const [replacing,setReplacing]=useState<number>();
   const [fixed,setFixed]=useState<{doseGL?:number;temperatureC?:number;contactHours?:number}>({});
+  const [varietyIds,setVarietyIds]=useState<string[]>([]);
   const [results,setResults]=useState<HopSolverCandidate[]>(),[selected,setSelected]=useState<HopSolverCandidate>();
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
   const [mode,setMode]=useState<HopSearchMode>('quick'),[searching,setSearching]=useState(false),[stopped,setStopped]=useState(false);
@@ -59,7 +62,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
   const [showRejected,setShowRejected]=useState(false),[chartAddition,setChartAddition]=useState(0);
   const [targetEdited,setTargetEdited]=useState(false);
   const evaluator=useRef<ReturnType<typeof createHopSolverSearch> | undefined>(undefined);
-  const signature=JSON.stringify([intent,target,recipe,replacing,fixed,mode,targetEdited]);
+  const signature=JSON.stringify([intent,target,recipe,replacing,fixed,mode,targetEdited,varietyIds]);
   const searchContext=useRef<{signature:string;dataRevision:string}|undefined>(undefined);
   const latest=useRef({signature,dataRevision,recipe});latest.current={signature,dataRevision,recipe};
   const mounted=useRef(true),pending=useRef(false),busyCallback=useRef(onBusyChange);busyCallback.current=onBusyChange;
@@ -84,7 +87,7 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
   const search=()=>{
     if(!policy||busy||loading)return;
     searchJob.current?.cancel();evaluator.current=undefined;selectionPinned.current=false;
-    const input:HopSolverSearchOptions={data,policy,intent,target:effectiveTarget,recipe,replacing,mode,...fixed};searchInput.current=input;
+    const input:HopSolverSearchOptions={data,policy,intent,target:effectiveTarget,recipe,replacing,mode,varietyIds,...fixed};searchInput.current=input;
     searchContext.current={signature,dataRevision};
     setResults(undefined);setSelected(undefined);setChartAddition(0);setSearchUpdate(undefined);setStopped(false);setSearching(true);setError('');setNotice('');
     const current=()=>mounted.current&&latest.current.signature===signature&&latest.current.dataRevision===dataRevision;
@@ -118,7 +121,8 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
   const documented=(showRejected?results??[]:compatible).filter(c=>c.trial).slice(0,4);
   const explorations=(showRejected?results??[]:compatible).filter(c=>!c.trial).slice(0,6);
   const candidateCard=(c:HopSolverCandidate)=><button type="button" key={c.id} disabled={busy} aria-pressed={selected?.id===c.id} className={`w-full text-left p-3 rounded-control border space-y-2 ${selected?.id===c.id?'border-ebc-straw bg-ebc-straw/5':'border-cave-700 bg-cave-850'}`} onClick={()=>preview(c)}>
-    <span className="block font-semibold text-cave-50">{c.triplets.map(t=>varieties.find(v=>v.id===t.varietyId)?.name??t.varietyId).join(' + ')}</span>
+    <span className="flex flex-wrap items-baseline gap-x-2"><span className="font-semibold text-cave-50">{c.triplets.map(t=>varieties.find(v=>v.id===t.varietyId)?.name??t.varietyId).join(' + ')}</span>
+      {c.styleSuggested&&<span className="text-xs text-hop">Usage documenté</span>}</span>
     <span className="block text-sm text-cave-200">{yeasts.find(y=>y.id===c.triplets[0].yeastId)?.name}</span>
     <span className="block text-xs text-cave-400">{[...new Set(c.triplets.map(t=>HOP_TIMING_LABELS[t.timing!]))].join(' / ')} · {c.triplets.map(t=>hopDoseLabel(t.doseGL)).join(' + ')}</span>
     <span className={`block text-xs ${hasConflict(c)?'text-alert':'text-water'}`}>{hasConflict(c)?'Conflit avec tes contraintes':c.trial?'Essai publié · adaptation à vérifier':'Extrapolation · confiance faible'}</span>
@@ -129,8 +133,10 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     <div className="space-y-2"><h3 className="font-sans text-lg font-semibold text-cave-50">Du goût au programme de houblonnage</h3></div>
     {recipe&&<div className="flex gap-3 rounded-control bg-cave-850 p-3 text-sm"><Wheat className="shrink-0 text-ebc-straw" size={20}/><div><p className="text-cave-50">Dans ta recette : {recipe.volumeL} L · {recipe.style||'style libre'}</p><p className="text-cave-200">{recipe.yeast?.name||'Levure à choisir'} · {recipe.hops.length?recipe.hops.map(h=>`${h.name} ${Units.format(h.weightG, 'g')}`).join(' + '):'Aucun houblon ajouté'}</p></div></div>}
     <fieldset disabled={busy} className="space-y-4 min-w-0">
-      <div className="grid sm:grid-cols-2 gap-3"><HopField label="Point de départ par style"><select className={inputClass} value={intent.styleId} onChange={e=>{const s=policy.styles.find(s=>s.id===e.target.value)!;updateIntent({styleId:s.id,avoid:s.avoid,chemistry:s.chemistry,timings:s.timings});onTargetChange(targetsOfStyle(s,axes))}}>{!policy.styles.some(s=>s.id===intent.styleId)&&<option value={intent.styleId}>Réglages personnels conservés</option>}{policy.styles.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></HopField>
+      <div className="grid sm:grid-cols-2 gap-3"><HopField label="Point de départ par style"><select className={inputClass} value={intent.styleId} onChange={e=>{const s=policy.styles.find(s=>s.id===e.target.value)!;updateIntent({styleId:s.id,avoid:s.avoid,chemistry:s.chemistry,timings:s.timings});setVarietyIds([]);onTargetChange(targetsOfStyle(s,axes))}}>{!policy.styles.some(s=>s.id===intent.styleId)&&<option value={intent.styleId}>Réglages personnels conservés</option>}{policy.styles.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select></HopField>
       {recipe&&<HopField label="Place dans la recette"><select className={inputClass} value={replacing??'append'} onChange={e=>setReplacing(e.target.value==='append'?undefined:Number(e.target.value))}><option value="append">Compléter en conservant mes ajouts</option>{recipe.hops.map((h,i)=><option value={i} key={i}>Remplacer l’ajout {i+1} · {h.name}</option>)}</select></HopField>}</div>
+      <HopSolverVarietyPicker varieties={varieties} styleName={style?.id==='free'?'':style?.name??''} selected={varietyIds}
+        onChange={ids=>{setVarietyIds(ids);setNotice('')}} disabled={busy||loading}/>
       <HopAromaTargetPicker axes={axes} target={effectiveTarget} avoid={intent.avoid} onAvoidChange={avoid=>updateIntent({avoid})} onChange={next=>{setTargetEdited(true);onTargetChange(next)}} disabled={busy}/>
 
       <div className="space-y-2 border-t border-cave-700 pt-3"><p className="font-semibold text-cave-50 flex items-center gap-2"><FlaskConical size={18} className="text-water"/>Orientations chimiques</p><div className="grid md:grid-cols-3 gap-3">{HOP_CHEMISTRY_GOALS.map(g=><HopField label={chemistryNames[g]} key={g}><select className={inputClass} value={intent.chemistry[g]??''} onChange={e=>{const chemistry={...intent.chemistry};if(e.target.value)chemistry[g]=e.target.value as 'seek'|'avoid';else delete chemistry[g];updateIntent({chemistry})}}><option value="">Libre</option><option value="seek">Favoriser cette voie</option><option value="avoid">Éviter cette voie</option></select></HopField>)}</div><p className="text-xs text-cave-400">Il s’agit de voies documentées et de potentiel. Une quantité finale de thiols ou de terpènes n’est pas déduite du profil de goût.</p></div>
@@ -148,12 +154,17 @@ export function HopSolverPanel({recipe,onChange,onBusyChange,target,onTargetChan
     {results&&<div className="grid lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] gap-5 items-start">
       <div className="space-y-4"><p className="text-sm text-cave-400">Meilleures pistes parmi les scénarios évalués : {compatible.length} sans conflit établi · {rejected.length} écartées. {searching?'Le classement évolue pendant le calcul.':searchUpdate?.done&&!searchUpdate.coverage.limited?'Tous les scénarios du domaine ont été examinés.':'La recherche ne certifie pas le meilleur résultat du domaine complet.'} Les incertitudes restent visibles.</p>
         {documented.length>0&&<div className="space-y-2"><h4 className="font-semibold text-water">Partir d’un essai publié</h4>{documented.map(candidateCard)}</div>}
-        <div className="space-y-2"><h4 className="font-semibold text-cave-50">Explorer d’autres combinaisons</h4>{explorations.map(candidateCard)}</div>
+        <div role="group" aria-label="Pistes de houblonnage" className="space-y-2"><h4 className="font-semibold text-cave-50">Explorer d’autres combinaisons</h4><p className="text-xs text-cave-400">La meilleure condition évaluée pour chaque couple houblon / levure.</p>{explorations.map(candidateCard)}</div>
         {!compatible.length&&!searching&&<p className="text-sm text-ebc-straw">Aucune piste évaluée ne respecte les exclusions connues. Examine les conflits, élargis la recherche ou ajuste tes contraintes.</p>}
         {!!rejected.length&&<Button onClick={()=>setShowRejected(v=>!v)}>{showRejected?'Masquer les pistes en conflit':'Comprendre les pistes écartées'}</Button>}
       </div>
       {selected&&<article aria-label="Programme proposé par le solver" className="min-w-0 space-y-4 lg:border-l lg:border-cave-700 lg:pl-5">
         <div><h4 className="font-sans text-base font-semibold text-cave-50">Ton programme proposé</h4><p className="text-hop">{yeasts.find(y=>y.id===selected.triplets[0].yeastId)?.name}</p><p className="text-xs text-cave-400">Prévisualisation du programme.</p></div>
+        <details><summary className="cursor-pointer min-h-touch text-sm text-cave-200">Style, usage et sources</summary><div className="space-y-2 text-xs text-cave-400">{[...new Set(selected.triplets.map(t=>t.varietyId))].map(id=>{
+          const variety=varieties.find(v=>v.id===id);if(!variety)return null;
+          const use=hopStyleGuidance(variety,style?.name??'');
+          return <div key={id}><p className="font-semibold text-cave-50">{variety.name} · {use.styleLabel}</p><p>{use.reason}</p>{use.roles.length>0&&<p>{use.roles.join(' · ')}</p>}{use.sources.map((source,i)=><HopSourceLink key={i} source={source}/>)}</div>;
+        })}</div></details>
         <div className="space-y-4">{selected.triplets.map((t,i)=><div key={i} className="border-l-2 border-water pl-3 space-y-2"><p className="font-semibold text-cave-50">{varieties.find(v=>v.id===t.varietyId)?.name} · {HOP_TIMING_LABELS[t.timing!]}</p><p className="text-sm text-cave-200">{recipe&&t.doseGL!==null?`${Units.format(t.doseGL*recipe.volumeL, 'g')} pour ${recipe.volumeL} L` : hopDoseLabel(t.doseGL)}</p><div className="grid grid-cols-3 gap-2">{([{key:'doseGL',label:'Dose (g/L)'},{key:'temperatureC',label:'Contact (°C)'},{key:'contactHours',label:contactFactor(t)===60?'Durée (min)':'Durée (h)'}]as const).map(f=><HopField label={`${f.label} · ajout ${i+1}`} key={f.key}><NumberInput className={inputClass} value={t[f.key]===null?undefined:t[f.key]*(f.key==='contactHours'?contactFactor(t):1)} emptyValue={undefined} disabled={busy} onValue={n=>editCondition(i,f.key,n===undefined?null:n/(f.key==='contactHours'?contactFactor(t):1))}/></HopField>)}</div>
           <details className="text-xs text-cave-400"><summary className="cursor-pointer min-h-touch">Origine des conditions préremplies</summary>{selected.conditions[i].length?selected.conditions[i].map((c,j)=><div className="space-y-1 mb-2" key={j}><p>{c.field==='doseGL'?hopDoseLabel(c.value):c.field==='temperatureC'?hopTemperatureLabel(c.value):hopDurationLabel(c.value)} : {c.origin==='trial'?`choix dans la plage publiée ${hopRangeLabel(c.range)}`:c.origin==='recipe'?'valeur planifiée dans la recette':'point de départ proposé, pas optimum mesuré'}.</p><HopSourceLink source={c.source}/></div>):<p>Conditions choisies pour cette simulation.</p>}</details></div>)}</div>
         {selected.trial&&<details><summary className="cursor-pointer min-h-touch text-sm text-water">Ce que l’essai a montré</summary><div className="space-y-4 py-3"><HopTrialResult trial={selected.trial}/>{recipe&&<HopTrialComparison recipe={recipe} trial={selected.trial}/>}</div></details>}
