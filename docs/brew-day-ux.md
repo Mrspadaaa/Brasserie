@@ -147,3 +147,50 @@ le port ou le dossier de sortie. Les comparaisons sont conservées dans
 Ce banc utilise uniquement la recette de démonstration existante. Les alarmes
 Android en arrière-plan restent à valider sur le téléphone réel, comme décrit
 dans [la documentation du compagnon](brew-day-helper.md).
+
+## Remise en ordre de la conduite (13.09.2026)
+
+Des guides de procédé ajoutés après coup — levure, NOLO, vigilances houblon —
+s'étaient intercalés entre l'horloge et les doses, et une passe de compactage
+avait ramené la consigne, les titres de section et le minuteur au même rang
+typographique que leurs métadonnées. Les deux effets se cumulaient : la première
+dose tombait à 619 px du haut de l'écran, contre 418 px mesurés à la refonte.
+
+Trois décisions, vérifiées sur le banc `?preview=brew&view=brassage` :
+
+- **Les doses remontent.** Sur téléphone, chaque bloc de `.brew-layout` porte un
+  `order` explicite : étape, alerte échue, mesure à prendre, **ingrédients**,
+  relevés, bilan, préparatifs, aides, feuilles, options. Un bloc sans valeur
+  valait 0 et passait devant tout le reste ; c'était la cause.
+- **Les aides se replient.** Les trois guides et l'aide d'étape forment le groupe
+  « Aides et repères », sous les ingrédients, fermés, avec un résumé qui dit de
+  quoi ils parlent. [`BrewAide`](../src/ui/BrewAide.tsx) ouvre une section dès
+  qu'elle contient un `data-notice` : replier ne masque jamais un avertissement.
+- **La hiérarchie revient.** Le bloc « Échelle » de `brew-day.css` garde ses
+  tailles compactes pour le chrome et rend leur poids à la consigne (14/15 px,
+  `cave-50`), aux titres de section (15 px) et au minuteur (32 px, 40 px au
+  bureau). Il redonne aussi les paliers responsives qu'il écrasait, dont la
+  ligne « Ensuite : … » du pied sur ordinateur.
+
+Deux informations cessent de disparaître : la consigne reste affichée pendant
+le palier, en retrait (`.brew-instruction.is-running`) et jusqu'en paysage ;
+« Ensuite : \<étape\> » réapparaît, dans le pied au-dessus de 901 px et dans la
+ligne « Étape n sur N » sur téléphone. Le bandeau du prochain ajout de l'en-tête
+passe en lecture prioritaire : compte à rebours de 20 px, doses en `cave-50`.
+
+| Mesure, 375 × 812 px, phase préparation | Avant | Après |
+| --- | ---: | ---: |
+| Titre « Ingrédients » | 503 px | 294 px |
+| Première dose | 619 px | 410 px |
+| Doses entièrement visibles | 2 | 4 |
+
+Contrôlé à 320, 375, 430 et 1280 px, en paysage 844 × 390 et avec `?keyboard=300` :
+aucun débordement horizontal, deux colonnes et gouttière de 32 px au-dessus de
+901 px. La case « ajout effectué » est la seule cible agrandie, à 36 px, au titre
+de l'exception de `DESIGN.md` pour une commande manipulée gantée pendant une
+ébullition minutée.
+
+Limite connue : sur téléphone, les panneaux de la colonne latérale — relevés,
+préparatifs — sont replacés visuellement par `order` mais restent après la
+colonne principale dans l'ordre du clavier. C'est une conséquence de
+`display: contents`, antérieure à cette passe et inchangée.

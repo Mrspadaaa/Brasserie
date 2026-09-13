@@ -978,17 +978,40 @@
   .brew-side-column {
     display: contents;
   }
+  /* Les colonnes viennent de passer en `display: contents` : chaque bloc devient
+     un élément de la grille et `order` décide seul de ce que le brasseur voit en
+     premier. Un bloc sans valeur vaut 0 et passe devant les alertes — c'est ce qui
+     avait envoyé les doses en bas d'écran. Chaque bloc porte donc son rang. */
+  .brew-station,
+  .brew-recipe-summary {
+    order: 0;
+  }
   .brew-due-alert {
+    order: 1;
+  }
+  .brew-reading-prompt {
     order: 2;
   }
   .brew-ingredients {
-    order: 5;
+    order: 3;
+  }
+  .brew-readings-summary {
+    order: 4;
   }
   .brew-finish-summary {
-    order: 6;
+    order: 5;
   }
   .brew-preparations {
+    order: 6;
+  }
+  .brew-aides {
     order: 7;
+  }
+  .brew-measure-capture {
+    order: 8;
+  }
+  .brew-note-capture {
+    order: 9;
   }
   .brew-side-column > details {
     order: 10;
@@ -1279,17 +1302,21 @@
   font-size: 14px;
   color: var(--brew-muted);
 }
+/* Le seul endroit de l'écran qui répond à la fois à « dans combien de temps »
+   et « avec quoi » — le corps de l'alarme porte les doses. Il vit dans la barre
+   fixe, donc il reste lisible sans défiler : le compte à rebours prend la taille
+   d'une lecture, les doses celle d'une donnée, l'heure celle d'une métadonnée. */
 .brew-next-alarm {
   display: flex;
   width: 100%;
   align-items: center;
   gap: 8px;
   text-align: left;
-  padding: 8px 10px;
+  padding: 6px 10px;
   background: #2c2521;
   border-radius: 8px;
   margin-top: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 .brew-next-alarm > span:first-of-type {
   flex: 1;
@@ -1299,12 +1326,15 @@
 .brew-next-alarm strong {
   display: block;
   color: #f5f0ea;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1.25;
   font-weight: 600;
 }
 .brew-next-alarm > .brew-digits {
   color: var(--brew-gold);
   flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1.1;
 }
 .brew-next-alarm svg {
   flex-shrink: 0;
@@ -1498,13 +1528,16 @@
 .brew-amount[aria-expanded='true'] {
   border-color: var(--brew-gold);
 }
+/* Exception assumée à l'échelle compacte (DESIGN.md, « Cibles et accessibilité
+   web ») : ce carré se coche mains mouillées, souvent gantées, pendant que
+   l'ébullition tourne, et une erreur coûte un houblonnage. 36 px, et lui seul. */
 .brew-add-check {
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  width: 28px;
-  min-height: 32px;
+  width: 36px;
+  min-height: 36px;
   border: 1px solid var(--brew-line);
   border-radius: 8px;
   cursor: pointer;
@@ -1886,18 +1919,6 @@
   }
   .brew-layout {
     gap: 8px;
-  }
-  .brew-readings-summary {
-    order: 4;
-  }
-  .brew-layout[data-area='boil'] .brew-ingredients {
-    order: 3;
-  }
-  .brew-note-capture {
-    order: 9;
-  }
-  .brew-measure-capture {
-    order: 3;
   }
   .brew-capture.is-inline {
     display: none;
@@ -2397,8 +2418,116 @@
   }
 }
 
-/* Échelle commune : la conduite garde les mesures, ingrédients et actions dans
-   le même écran. Les hauteurs minimales laissent grandir le texte. */
+/* ---------------------------------------------------------------------------
+   Aides de la conduite
+
+   Les guides de procédé — levure, NOLO, houblons — viennent après les doses, dans
+   un groupe fermé. Fermé ne veut pas dire muet : le résumé dit de quoi la section
+   parle, et BrewAide l'ouvre d'elle-même dès qu'elle contient un avertissement.
+   --------------------------------------------------------------------------- */
+.brew-aides {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--brew-line);
+  padding-top: 8px;
+}
+.brew-page .brew-aides-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brew-muted);
+}
+.brew-aide {
+  min-width: 0;
+  border: 1px solid var(--brew-line);
+  border-radius: 10px;
+  background: var(--brew-surface);
+}
+.brew-aide > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  color: #d8cec5;
+  cursor: pointer;
+  list-style: none;
+}
+.brew-aide > summary::-webkit-details-marker {
+  display: none;
+}
+.brew-aide > summary:focus-visible {
+  outline: 2px solid var(--brew-gold);
+  outline-offset: 2px;
+}
+.brew-aide-title {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f5f0ea;
+  overflow-wrap: anywhere;
+}
+.brew-aide-summary {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--brew-muted);
+  overflow-wrap: anywhere;
+}
+.brew-aide > summary .brew-tag {
+  flex-shrink: 0;
+}
+.brew-aide > summary > svg {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--brew-muted);
+  transition: transform 120ms ease-out;
+}
+.brew-aide[open] > summary {
+  border-bottom: 1px solid var(--brew-line);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+.brew-aide[open] > summary > svg {
+  transform: rotate(180deg);
+}
+.brew-aide-body {
+  min-width: 0;
+  padding: 8px;
+  font-size: 13px;
+}
+.brew-aide-body > * + * {
+  margin-top: 8px;
+}
+.brew-aide-note {
+  color: var(--brew-muted);
+}
+.brew-aides > .brew-assist {
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brew-aide > summary > svg {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Échelle de la conduite
+
+   Ce bloc ferme la feuille : il gagne donc sur tout ce qui précède, media queries
+   comprises. Les paliers responsives qu'il doit conserver sont redonnés à la fin
+   de cette même section, jamais avant.
+
+   La compacité appartient au chrome : en-tête, onglets, pied, pastilles,
+   rembourrages. Elle ne s'applique pas aux quatre choses qu'on lit à la cuve —
+   l'étape, la consigne à exécuter, l'horloge et la température, les doses.
+   Les ramener au rang de leurs métadonnées supprime la hiérarchie sans libérer
+   d'espace utile (DESIGN.md, « Typography » et « Layout »).
+   --------------------------------------------------------------------------- */
+
+/* Chrome : compact. */
 .brew-page > header h1 { font-size: .875rem; }
 .brew-page > header [data-page-titlebar] { min-height: 2.25rem; padding: .125rem .5rem; }
 .brew-page > header [data-page-progress] { padding: 0 .5rem .125rem; }
@@ -2408,12 +2537,8 @@
 .brew-view-tabs button, .brew-phase { min-height: 1.75rem; padding: .125rem .5rem; font-size: .8125rem; }
 .brew-navigation { margin-bottom: .5rem; }
 .brew-station { padding: .5rem; }
-.brew-station-heading h2 { font-size: 1rem; }
-.brew-instruction { margin-block: .375rem; font-size: .8125rem; }
-.brew-clock output, .brew-temperature strong { font-size: 1.75rem; }
-.brew-clock-meta { font-size: .75rem; }
 .brew-step-meta { margin-bottom: .375rem; }
-.brew-section-heading h2, .brew-section-heading h3, .brew-measure-panel h3 { font-size: .875rem; }
+.brew-clock-meta { font-size: .75rem; }
 .brew-assist > summary, .brew-options > summary, .brew-sound-settings > summary { min-height: 1.75rem; padding: .25rem .5rem; font-size: .8125rem; }
 .brew-primary, .brew-footer-actions button { min-height: 2rem; padding-block: .25rem; font-size: .8125rem; }
 .brew-footer-actions { gap: .25rem; }
@@ -2436,6 +2561,40 @@
 .brew-page .brew-primary { flex: 1 1 14ch; min-width: min-content; }
 .brew-page .brew-quick-entry > span { font-size: .75rem; }
 .brew-page .brew-quick-entry > svg { width: 1rem; height: 1rem; }
-.brew-page .brew-context-details { margin-block: .25rem; padding: .125rem .5rem; }
-.brew-page .brew-context-details > summary { font-size: .8125rem; }
 .brew-page :is(:is(input, textarea:where([data-single-line])), select, textarea):not([type='checkbox']):not([type='radio']):not([type='range']) { min-height: 2rem; font-size: 1rem; }
+
+/* Contenu prioritaire : lisible avant d'être petit. */
+.brew-station-heading h2 { font-size: 1rem; }
+.brew-instruction { margin-block: .375rem; font-size: .875rem; line-height: 1.4; font-weight: 500; color: #f5f0ea; }
+.brew-instruction.is-running { font-size: .8125rem; font-weight: 400; color: var(--brew-muted); }
+.brew-step-next { color: var(--brew-muted); }
+.brew-clock output { font-size: 2rem; }
+.brew-temperature strong { font-size: 1.75rem; }
+.brew-section-heading h2, .brew-section-heading h3, .brew-measure-panel h3 { font-size: .9375rem; font-weight: 600; }
+
+/* Des groupes séparables : 8 px à l'intérieur d'un bloc, 12 px entre deux blocs. */
+.brew-layout { gap: .75rem; }
+.brew-main-column, .brew-side-column { gap: .75rem; }
+
+/* Paliers conservés. */
+@media (min-width: 901px) {
+  .brew-layout { column-gap: 2rem; row-gap: .75rem; }
+  .brew-station-heading h2 { font-size: 1.25rem; }
+  .brew-instruction { font-size: .9375rem; }
+  .brew-clock output { font-size: 2.5rem; }
+  .brew-temperature strong { font-size: 2rem; }
+  .brew-footer-context { display: flex; }
+  /* Le pied reprend la suite du parcours : inutile de la redire dans la station. */
+  .brew-step-next { display: none; }
+  .brew-footer { justify-content: space-between; }
+}
+@media (max-width: 359px) {
+  .brew-clock output { font-size: 1.75rem; }
+  .brew-temperature strong { font-size: 1.5rem; }
+}
+@media (max-height: 500px) {
+  .brew-clock output, .brew-temperature strong { font-size: 1.75rem; }
+  /* Le paysage retirait la consigne de l’écran. Un téléphone posé près de la
+     cuve doit encore dire quoi faire : elle rétrécit, elle ne disparaît pas. */
+  .brew-instruction { display: block; margin-block: .25rem; font-size: .75rem; line-height: 1.3; }
+}
