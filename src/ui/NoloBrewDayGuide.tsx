@@ -4,6 +4,7 @@ import type { BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import { READING, type ReadingKind } from '../domain/brewDay';
 import { noloBrewDayPlan, noloStepReadings } from '../domain/noloBrewDay';
 import { RecipeDisclosure } from './RecipeDisclosure';
+import { BrewAide } from './BrewAide';
 
 const control = 'min-h-touch rounded-control border border-cave-700 bg-cave-850 px-2 py-1 text-xs text-cave-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water disabled:opacity-40';
 const number = (value: number, kind: ReadingKind) => value.toLocaleString('fr-CH', {
@@ -12,13 +13,15 @@ const number = (value: number, kind: ReadingKind) => value.toLocaleString('fr-CH
 const compactLabel: Record<ReadingKind, string> = { densite: 'SG', volume: 'Vol.', temperature: 'Temp.', ph: 'pH' };
 
 /** Guidance uses the captured recipe. Shortcuts only read or write the live brew journal. */
-export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeasure, onNote }: {
+export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeasure, onNote, collapsible }: {
   recipe: RecipeSnapshot;
   state: BrewDayState;
   step: BrewDayStep;
   overview?: boolean;
   onMeasure: (kind: ReadingKind) => void;
   onNote: (subject: string) => void;
+  /** Dans la conduite, l’aide passe sous les ingrédients et s’ouvre à la demande. */
+  collapsible?: boolean;
 }) {
   const id = useId();
   const plan = useMemo(() => noloBrewDayPlan(recipe), [recipe]);
@@ -26,12 +29,8 @@ export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeas
   const readings = noloStepReadings(state, step);
   const finish = ['refroidissement', 'ensemencement'].includes(step.id);
   const missingStabilization = !plan.stabilization.method.trim() || !plan.stabilization.validationReference.trim();
-  return <section aria-labelledby={id} className="min-w-0 space-y-2 border-b border-cave-700 py-2">
-    <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
-      <h3 id={id} className="text-sm font-semibold text-area-production">NOLO · {plan.name}</h3>
-      <span className="text-xs text-cave-200">Cible ≤ <span className="font-mono tabular-nums">{plan.target}</span></span>
-    </div>
-    {plan.simulationStale && <p role="status" className="text-xs text-attention">La recette diffère de la simulation enregistrée. Recalculer le plan avant de suivre ses anciennes consignes.</p>}
+  const body = <>
+    {plan.simulationStale && <p role="status" data-notice className="text-xs text-attention">La recette diffère de la simulation enregistrée. Recalculer le plan avant de suivre ses anciennes consignes.</p>}
     {plan.executionHint && (finish || step.id.startsWith('nolo-')) && <p className="text-xs text-cave-200">{plan.executionHint}</p>}
     {!overview && <>
       {readings.length > 0 && <div aria-label="Relevés NOLO de cette étape" className={readings.length > 3 ? 'grid grid-cols-2 gap-1 sm:grid-cols-4' : 'flex flex-wrap gap-1'}>
@@ -42,7 +41,7 @@ export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeas
           <span className="font-mono tabular-nums text-sm text-cave-50">{reading ? number(reading.value, kind) : '—'}{kind !== 'densite' && READING[kind].unit ? ` ${READING[kind].unit}` : ''}</span>
         </button>)}
       </div>}
-      {finish && missingStabilization && <p className="text-xs text-attention">Stabilisation et analyses finales à documenter avant conditionnement.</p>}
+      {finish && missingStabilization && <p data-notice className="text-xs text-attention">Stabilisation et analyses finales à documenter avant conditionnement.</p>}
     </>}
     <RecipeDisclosure title="Plan NOLO figé" summary={`${plan.operations.length} ${plan.operations.length === 1 ? 'opération' : 'opérations'} · ${plan.trials.length} ${plan.trials.length === 1 ? 'essai' : 'essais'}`}>
       <p className="text-sm text-cave-200">{plan.focus}</p>
@@ -88,5 +87,14 @@ export function NoloBrewDayGuide({ recipe, state, step, overview = false, onMeas
         <p className="mt-1 text-xs text-cave-400">Le journal de densité ne certifie ni l’alcool au conditionnement ni la stabilité. Reporter les analyses finales dans le suivi NOLO du brassin.</p>
       </div>
     </RecipeDisclosure>
+  </>;
+  if (collapsible)
+    return <BrewAide title={`NOLO · ${plan.name}`} summary={`cible ≤ ${plan.target}`}>{body}</BrewAide>;
+  return <section aria-labelledby={id} className="min-w-0 space-y-2 border-b border-cave-700 py-2">
+    <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+      <h3 id={id} className="text-sm font-semibold text-area-production">NOLO · {plan.name}</h3>
+      <span className="text-xs text-cave-200">Cible ≤ <span className="font-mono tabular-nums">{plan.target}</span></span>
+    </div>
+    {body}
   </section>;
 }

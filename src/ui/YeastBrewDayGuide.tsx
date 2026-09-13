@@ -8,22 +8,24 @@ import { StorageService } from '../services/storage';
 import { useStorageValue } from '../hooks/useLiveData';
 import { FermentationTemperatureChart } from './FermentationTemperatureChart';
 import { YeastStrainDetails } from './YeastStrainDetails';
+import { BrewAide } from './BrewAide';
 import './yeast-recipe.css';
 
 const fmt = (n?: number, digits = 1) => Number.isFinite(n) ? n!.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
-export function YeastBrewDayGuide({ recipe, state, phase, onMeasure }: {
+export function YeastBrewDayGuide({ recipe, state, phase, onMeasure, collapsible }: {
   recipe: TrialRecipe; state: BrewDayState; phase: YeastBrewPhase; onMeasure?: (kind: 'temperature' | 'volume' | 'densite') => void;
+  /** Dans la conduite, l'aide passe sous les ingrédients et s'ouvre à la demande. */
+  collapsible?: boolean;
 }) {
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const refs = useMemo(() => yeastReferences(saved), [saved]);
   const guide = useMemo(() => buildYeastBrewDay(recipe, state, phase, refs), [recipe, state, phase, refs]);
   if (!guide || !guide.instructions.length) return null;
-  return <aside className="yeast-workbench yeast-brew-guide" aria-label="Conduite de levure du brassin">
-    <div><h3 className="font-semibold text-cave-50">Levure · {guide.goal ?? 'conduite prévue'}</h3><p className="yeast-small">{guide.name} · recette du brassin</p></div>
-    {guide.stale && <p className="yeast-notice">L’objectif et les réglages actuels diffèrent. Suivre les consignes du brassin ci-dessous et vérifier l’écart.</p>}
-    {guide.formWarning && <p className="yeast-notice">{guide.formWarning}</p>}
+  const body = <>
+    {guide.stale && <p className="yeast-notice" data-notice>L’objectif et les réglages actuels diffèrent. Suivre les consignes du brassin ci-dessous et vérifier l’écart.</p>}
+    {guide.formWarning && <p className="yeast-notice" data-notice>{guide.formWarning}</p>}
     <dl className="yeast-brew-instructions">{guide.instructions.map(item => <div key={item.id} data-instruction={item.id}>
-      <dt className={item.warning ? 'yeast-notice' : 'font-medium text-cave-50'}>{item.title}</dt><dd>{item.detail}</dd>
+      <dt className={item.warning ? 'yeast-notice' : 'font-medium text-cave-50'} data-notice={item.warning || undefined}>{item.title}</dt><dd>{item.detail}</dd>
     </div>)}</dl>
     {phase === 'finish' && <>
       <dl className="yeast-brew-readings" aria-label="Relevés du moût refroidi">
@@ -42,5 +44,10 @@ export function YeastBrewDayGuide({ recipe, state, phase, onMeasure }: {
       {guide.sources.map((s, i) => <p key={i} className="yeast-small">{/^https?:\/\//.test(s.reference) ? <a className="yeast-source" href={s.reference} target="_blank" rel="noreferrer">{s.author} · {s.title}</a> : `${s.author} · ${s.title}`}</p>)}
     </div></details>
     {(phase === 'preparation' || phase === 'finish' || phase === 'recipe') && <YeastStrainDetails information={guide.strainInformation} />}
+  </>;
+  if (collapsible) return <BrewAide title={`Levure · ${guide.name}`} summary={guide.goal ?? 'conduite prévue'}>{body}</BrewAide>;
+  return <aside className="yeast-workbench yeast-brew-guide" aria-label="Conduite de levure du brassin">
+    <div><h3 className="font-semibold text-cave-50">Levure · {guide.goal ?? 'conduite prévue'}</h3><p className="yeast-small">{guide.name} · recette du brassin</p></div>
+    {body}
   </aside>;
 }

@@ -1,5 +1,5 @@
 import { Textarea } from '../ui/Input';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import {
   Pause,
   Play,
@@ -50,6 +50,7 @@ import {
 } from '../services/brewTimer';
 import { AiClient } from '../services/aiClient';
 import { Units } from '../services/units';
+import { formatDecimal } from '../ui/numericInput';
 import { PageShell } from './PageShell';
 import { ConfirmSheet } from '../ui/Sheet';
 import {
@@ -71,6 +72,7 @@ import { useBrewSession } from '../ui/useBrewSession';
 import { brewNow } from '../services/brewClock';
 import { BrewAssist } from '../ui/BrewAssist';
 import { YeastBrewDayGuide } from '../ui/YeastBrewDayGuide';
+import { BrewAide } from '../ui/BrewAide';
 import { buildYeastCompanion } from '../domain/yeastCompanion';
 import { StorageService } from '../services/storage';
 import { BrewerChat } from '../ui/BrewerChat';
@@ -173,6 +175,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       : !boiled && isUsefulTimer(current) && current.doneAt == null
         ? remainingMs(current, now)
         : null;
+  const stepStarted = boiled ? state.boilStartedAt != null : current.startedAt != null;
   const running = boiled
     ? state.boilStartedAt != null && state.boilFinishedAt == null
     : current.startedAt != null && current.pausedAt == null && current.doneAt == null;
@@ -241,6 +244,19 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     setDurationOpen(false);
     setRequestedReading(undefined);
     contentRef.current?.closest('main')?.scrollTo?.({ top: 0 });
+  };
+  /**
+   * Amener le groupe d'ajouts dû sous les yeux, sinon la liste elle-même.
+   * Le mouvement suit la préférence système de réduction des animations.
+   */
+  const aidesLabelId = useId();
+  const revealAdditions = () => {
+    const target =
+      document.querySelector('.brew-ingredient-group.is-due') ??
+      document.querySelector('.brew-ingredients');
+    if (!target) return;
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'center' });
   };
   const navigate = (next: typeof view) => {
     setNotice('');
@@ -423,6 +439,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   };
   const currentTag = stepTag(current);
   const nextStep = route[routeIndex + 1];
+  /** Nom de l'étape suivante, « Ébullition » plutôt que son libellé technique. */
+  const nextStepName = nextStep ? (isBoilStep(nextStep) ? 'Ébullition' : nextStep.label) : null;
   const doneCount = route.filter((s) =>
     isBoilStep(s) ? state.boilFinishedAt != null : s.doneAt != null
   ).length;
@@ -637,7 +655,13 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             <button
               type="button"
               className={`brew-next-alarm ${headerAlarm.at <= now ? 'is-due' : ''}`}
-              onClick={() => choose(state.steps.findIndex((s) => s.id === headerAlarm.stepId))}
+              onClick={() => {
+                choose(state.steps.findIndex((s) => s.id === headerAlarm.stepId));
+                // Le bandeau annonce une dose : amener la ligne correspondante
+                // sous les yeux plutôt que de laisser chercher dans la liste.
+                if (headerAlarm.title === 'Ajout en cuve')
+                  requestAnimationFrame(revealAdditions);
+              }}
             >
               <BellRing size={16} />
               <span>
@@ -661,8 +685,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             <strong>
               {isConsulting
                 ? current.label
-                : nextStep
-                  ? `Ensuite : ${isBoilStep(nextStep) ? 'Ébullition' : nextStep.label}`
+                : nextStepName
+                  ? `Ensuite : ${nextStepName}`
                   : 'Passage en fermentation'}
             </strong>
           </div>
@@ -712,7 +736,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
       <div ref={contentRef} className="brew-workspace">
-        <details className="brew-context-details rounded-control border border-cave-700"><summary className="cursor-pointer min-h-touch text-cave-200">Vigilances et potentiel des houblons</summary><p className="text-sm text-cave-400">Quantités du journal si renseignées, au volume prévu de la recette. Les temps de contact à l’ébullition suivent les ajouts terminés.</p><HopRecipePanel recipe={recipeForHopAnalysis(actualRecipe, state)} batchId={batch.id} /></details>
         {notice && !capture && (
           <div className="brew-toast" role="status">
             {notice}
@@ -822,7 +845,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <div>
                         <span>Grain</span>
                         <strong>
-                          {recipe.totalGristKg ?? '—'} <small>kg</small>
+                          {formatDecimal(recipe.totalGristKg) || '—'} <small>kg</small>
                         </strong>
                       </div>
                       <div>
@@ -832,8 +855,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </strong>
                       </div>
                     </div>
-                    <NoloBrewDayGuide recipe={recipe} state={state} step={current} overview onMeasure={requestMeasure} onNote={noteNolo} />
-                    <YeastBrewDayGuide recipe={recipe} state={state} phase="recipe" />
                     <details className="brew-disclosure">
                       <summary>Programme et notes de recette</summary>
                       <p className="brew-muted">
@@ -908,14 +929,20 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     >
                       <div className="brew-station-heading">
                         <div>
-                          {showTimer && (
-                            <div className="brew-step-meta">
-                              <span className="brew-muted">
-                                Étape {Math.max(1, routeIndex + 1)} sur {route.length}
-                              </span>
-                              <BrewTag tone={currentTag.tone}>{currentTag.label}</BrewTag>
-                            </div>
-                          )}
+                          <div className="brew-step-meta">
+                            <span className="brew-muted">
+                              Étape {Math.max(1, routeIndex + 1)} sur {route.length}
+                            </span>
+                            {showTimer && <BrewTag tone={currentTag.tone}>{currentTag.label}</BrewTag>}
+                            {/*
+                              « Ensuite » vivait dans un pied de page que la feuille
+                              masquait à toutes les largeurs. Il coûte moins cher ici,
+                              sur une ligne qui existe déjà, et ne prend rien à la barre fixe.
+                            */}
+                            <span className="brew-step-next">
+                              Ensuite : {nextStepName ?? 'passage en fermentation'}
+                            </span>
+                          </div>
                           <div className="brew-step-select">
                             {stepsHere.length > 1 ? (
                               <BrewChoice
@@ -960,8 +987,17 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </button>
                         )}
                       </div>
-                      {!(boiled ? state.boilStartedAt != null : current.startedAt != null) && (
-                        <p className="brew-instruction">{instructions}</p>
+                      {/*
+                        La consigne ne disparaît plus au démarrage du palier : on
+                        recircule, on écume ou on surveille pendant que l'horloge
+                        tourne. Elle passe au second plan, elle ne quitte pas l'écran.
+                      */}
+                      {instructions && (
+                        <p
+                          className={`brew-instruction ${stepStarted ? 'is-running' : ''}`}
+                        >
+                          {instructions}
+                        </p>
                       )}
                       {(showTimer || current.tempC != null) && (
                         <div className="brew-instruments">
@@ -1162,7 +1198,19 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           </details>
                         )}
                     </section>
-                    <NoloBrewDayGuide recipe={recipe} state={state} step={current} onMeasure={requestMeasure} onNote={noteNolo} />
+                    {due.length > 0 && !staleTimer && (
+                      <aside role="status" className="brew-due-alert">
+                        <BellRing size={20} />
+                        <div>
+                          {due.map((a) => (
+                            <p key={a.id}>
+                              <strong>{a.title}</strong>
+                              <span>{a.body}</span>
+                            </p>
+                          ))}
+                        </div>
+                      </aside>
+                    )}
                     {prompt && current.doneAt == null && (
                       <button
                         type="button"
@@ -1176,31 +1224,6 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         </span>
                         <ChevronRight size={18} />
                       </button>
-                    )}
-                    <YeastBrewDayGuide recipe={recipe} state={state} phase={area} onMeasure={requestMeasure} />
-                    {(!specialExtraction || area === 'boil' || area === 'finish') && <BrewAssist
-                      key={current.id}
-                      recipe={executionRecipe}
-                      state={state}
-                      step={current}
-                      now={now}
-                      update={update}
-                      onMeasure={requestMeasure}
-                      stock={stockItems}
-                      brewhouse={config.brewhouses.find(b=>b.id===config.activeBrewhouseId)??recipe.brewhouse}
-                    />}
-                    {due.length > 0 && !staleTimer && (
-                      <aside role="status" className="brew-due-alert">
-                        <BellRing size={20} />
-                        <div>
-                          {due.map((a) => (
-                            <p key={a.id}>
-                              <strong>{a.title}</strong>
-                              <span>{a.body}</span>
-                            </p>
-                          ))}
-                        </div>
-                      </aside>
                     )}
                   </>
                 )}
@@ -1240,6 +1263,59 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     )}
                   </section>
                 )}
+                {/*
+                  Les aides viennent après les doses, fermées, avec un résumé qui dit
+                  de quoi elles parlent. Un avertissement ouvre sa section tout seul
+                  (voir BrewAide), donc replier ne revient jamais à masquer une alerte.
+                */}
+                <section className="brew-aides" aria-labelledby={aidesLabelId}>
+                  <h2 className="brew-aides-label" id={aidesLabelId}>
+                    Aides et repères
+                  </h2>
+                  {!displayRecipe &&
+                    (!specialExtraction || area === 'boil' || area === 'finish') && (
+                      <BrewAssist
+                        key={current.id}
+                        recipe={executionRecipe}
+                        state={state}
+                        step={current}
+                        now={now}
+                        update={update}
+                        onMeasure={requestMeasure}
+                        stock={stockItems}
+                        brewhouse={
+                          config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ??
+                          recipe.brewhouse
+                        }
+                      />
+                    )}
+                  <NoloBrewDayGuide
+                    collapsible
+                    overview={displayRecipe}
+                    recipe={recipe}
+                    state={state}
+                    step={current}
+                    onMeasure={requestMeasure}
+                    onNote={noteNolo}
+                  />
+                  <YeastBrewDayGuide
+                    collapsible
+                    recipe={recipe}
+                    state={state}
+                    phase={displayRecipe ? 'recipe' : area}
+                    onMeasure={displayRecipe ? undefined : requestMeasure}
+                  />
+                  <BrewAide title="Houblons" summary="vigilances et potentiel">
+                    <p className="brew-aide-note">
+                      Quantités du journal si renseignées, au volume prévu de la recette. Les
+                      temps de contact à l’ébullition suivent les ajouts terminés.
+                    </p>
+                    <HopRecipePanel
+                      recipe={recipeForHopAnalysis(actualRecipe, state)}
+                      batchId={batch.id}
+                    />
+                  </BrewAide>
+                </section>
               </>
             )}
           </div>

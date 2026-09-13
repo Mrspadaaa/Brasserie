@@ -55,7 +55,7 @@ describe('Parcours levure entre les écrans', () => {
     const recipe = yeastFlowRecipe(), save = vi.fn(), finish = vi.fn();
     const batch = { id: 'B-YEAST', name: 'Brassin figé', style: 'Lager changé au catalogue', status: 'planifie', recipeSnapshot: { ...recipe, capturedAt: '2026-09-12' }, brewDay: state() } as unknown as Batch;
     render(<BrewDayPage batch={batch} config={defaultConfig} onSave={save} onFinish={finish} onClose={vi.fn()} />);
-    const guide = screen.getByRole('complementary', { name: 'Conduite de levure du brassin' });
+    const guide = screen.getByText(/^Levure ·/).closest('details')!;
     expect(guide).toHaveTextContent('Girofle'); expect(guide).not.toHaveTextContent('Lager');
     fireEvent.click(within(guide).getByRole('button', { name: 'Relever température' }));
     expect(screen.getByRole('region', { name: 'Mesures de cette étape' })).toBeInTheDocument();

@@ -71,7 +71,7 @@ describe('Aide NOLO du jour de brassage', () => {
     const before = JSON.stringify(batch), save = vi.fn();
     render(<BrewDayPage batch={batch} config={defaultConfig} onSave={save} onClose={vi.fn()} onFinish={vi.fn()} />);
     expect(screen.getByRole('heading', { name: 'Palier historique conservé' })).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'NOLO · Extraction à froid' })).toBeInTheDocument();
+    expect(screen.getByText('NOLO · Extraction à froid').closest('details')).toBeInTheDocument();
     fireEvent.click(screen.getByText('Plan NOLO figé').closest('summary')!);
     expect(JSON.stringify(batch)).toBe(before);
     expect(save).not.toHaveBeenCalled();
