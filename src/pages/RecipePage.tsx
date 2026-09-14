@@ -35,7 +35,6 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  */
 
 import { BrewerChat } from '../ui/BrewerChat';
-import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
 import { YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
@@ -217,7 +216,6 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <FlaskConical className="w-5 h-5" />
           Lancer un brassin
         </button>
-        <BrewerPageShortcut />
         </div>
       }
     >

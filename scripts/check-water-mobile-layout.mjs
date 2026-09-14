@@ -67,7 +67,7 @@ try {
     stages.push(await check(page, width, height, 'constrained ratio'));
     // Exercise the existing notification pill's layout without creating an AI job.
     await page.evaluate(() => {
-      const companion = document.querySelector('.brewer-global-companion');
+      const companion = document.querySelector('.floating-actions');
       if (companion && !document.querySelector('.brewer-activity-pill')) {
         const pill = companion.cloneNode(true);
         pill.className = 'brewer-activity-pill has-answer';

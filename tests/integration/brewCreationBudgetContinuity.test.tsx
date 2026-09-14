@@ -45,7 +45,9 @@ describe('brew budget to doubled-volume batch creation', () => {
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[recipe]} onClose={close} />);
     fireEvent.click(screen.getByText('Préparer un brassin'));
-    fireEvent.click(screen.getByRole('button', { name: '50 L' }));
+    const volume = screen.getByLabelText('Volume du brassin');
+    fireEvent.change(volume, { target: { value: '50' } });
+    fireEvent.blur(volume);
     expect(screen.queryByText('Déduction automatique des stocks')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
     expect(created).toHaveLength(1);
@@ -68,12 +70,15 @@ describe('brew budget to doubled-volume batch creation', () => {
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[{ ...recipe, volumeL: 30, brewhouse: undefined }]} onClose={close} />);
     fireEvent.click(screen.getByText('Préparer un brassin'));
-    fireEvent.click(screen.getByRole('button', { name: '50 L' }));
+    const volume = screen.getByLabelText('Volume du brassin');
+    fireEvent.change(volume, { target: { value: '50' } });
+    fireEvent.blur(volume);
     fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
     expect(screen.getByRole('alert')).toHaveTextContent('Configure une cuverie');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: /30 L/ }));
+    fireEvent.change(volume, { target: { value: '30' } });
+    fireEvent.blur(volume);
     fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
     expect(created).toHaveLength(1);
     expect(created[0].recipeSnapshot.sourceRecipeId).toBe('R');

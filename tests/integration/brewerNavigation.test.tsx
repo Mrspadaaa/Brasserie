@@ -2,12 +2,11 @@ import React from 'react';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { BrewerActivity } from '../../src/ui/BrewerActivity';
-import { BrewerPageShortcut } from '../../src/ui/BrewerPageShortcut';
+import { FloatingActions } from '../../src/ui/FloatingActions';
 import { BrewerChat } from '../../src/ui/BrewerChat';
 import { BrewerChat as api } from '../../src/services/brewerChat';
 import { brewerJobs } from '../../src/services/brewerJobs';
 import { brewerAppScreen } from '../../functions/src/brewerAppScreens';
-import { BottomNav } from '../../src/components/BottomNav';
 import type { BrewerJob } from '../../functions/src/companionTypes';
 
 vi.mock('../../src/services/brewerChat', () => ({
@@ -39,8 +38,25 @@ beforeEach(() => {
   } }));
 });
 afterEach(() => { cleanup(); brewerJobs.stop(); });
+
+/** Le bouton d'action flottant, seul point d'entrée du compagnon. */
+const actions = (props: Partial<React.ComponentProps<typeof FloatingActions>> = {}) =>
+  <FloatingActions action={null} onAction={() => {}} companionLabel="Écran en cours" anchor="nav"
+    onInvoice={() => {}} onSale={() => {}} onRecipe={() => {}} onBrew={() => {}} {...props} />;
+
+/** Un écran complet : la boîte des conversations, et le bouton qui les ouvre. */
+const screenWith = (props?: Partial<React.ComponentProps<typeof FloatingActions>>, context?: ReturnType<typeof brewerAppScreen>) =>
+  <><BrewerActivity context={context} />{actions(props)}</>;
+
+const phoneMatchMedia = () => vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+  matches: query === '(max-width: 639px)', media: query, onchange: null,
+  addEventListener: () => {}, removeEventListener: () => {}, addListener: () => {}, removeListener: () => {},
+  dispatchEvent: () => false
+}));
+
 async function plus() {
-  fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le compagnon brasseur' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+  fireEvent.click(await screen.findByRole('menuitem', { name: /Compagnon brasseur/ }));
   await screen.findByRole('textbox');
   await waitFor(() => expect(screen.queryByText('Chargement des échanges…')).not.toBeInTheDocument());
 }
@@ -49,47 +65,74 @@ async function ask() {
   fireEvent.click(screen.getByRole('button', { name: 'Envoyer la question' }));
   await waitFor(() => expect(api.submit).toHaveBeenCalled());
 }
-describe('Raccourci contextuel et gestion des conversations', () => {
-  it('ouvre le même brouillon depuis la place réservée dans la page mobile', async () => {
-    render(<><BrewerPageShortcut /><BrewerChat hideLauncher scope={{ kind: 'draft', id: 'REC-INLINE' }} label="Brouillon mobile" draft={{ name: 'Brouillon mobile', volumeL: 24 }} /></>);
+describe('Bouton d’action flottant et gestion des conversations', () => {
+  it('ouvre le même brouillon depuis la conversation montée par la page', async () => {
+    render(<>{screenWith()}<BrewerChat hideLauncher scope={{ kind: 'draft', id: 'REC-INLINE' }} label="Brouillon mobile" draft={{ name: 'Brouillon mobile', volumeL: 24 }} /></>);
     await plus();
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
     expect(api.history).toHaveBeenLastCalledWith({ kind: 'draft', id: 'REC-INLINE' });
     expect(api.submit).not.toHaveBeenCalled();
   });
-  it('conserve toutes les actions du bouton + et sépare clairement le compagnon', async () => {
-    const create = vi.fn(), quick = vi.fn();
-    render(<><BrewerActivity context={brewerAppScreen('stocks', 'materiel')} />
-      <BottomNav activeTab="stocks" onChangeTab={() => {}}
-        action={{ intent: 'newEquipment', label: 'Nouveau matériel' }}
-        onAction={create} onOpenQuickAction={quick} criticalStockCount={0} /></>);
-    const add = screen.getByRole('button', { name: 'Nouveau matériel' });
-    expect(add).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Ouvrir le compagnon brasseur' })).toBeVisible();
-    fireEvent.click(add);
+  it('réunit les actions dans un seul menu et sépare clairement le compagnon', async () => {
+    const create = vi.fn();
+    render(screenWith({ action: { intent: 'newEquipment', label: 'Nouveau matériel' }, onAction: create, companionLabel: 'Matériel' },
+      brewerAppScreen('stocks', 'materiel')));
+    fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+    expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual([
+      'Nouveau matérielSur cet écran',
+      'Compagnon brasseurMatériel',
+      'Entrer une factureDocument, puis vérification',
+      'Encaisser une vente',
+      'Créer une recette',
+      'Lancer un brassinÀ partir d’une recette existante'
+    ]);
+    fireEvent.click(screen.getByRole('menuitem', { name: /Nouveau matériel/ }));
     expect(create).toHaveBeenCalledOnce();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    fireEvent.contextMenu(add);
-    expect(quick).toHaveBeenCalledOnce();
     await plus();
     expect(screen.getByRole('dialog')).toHaveTextContent('Matériel');
     expect(create).toHaveBeenCalledOnce();
   });
+  it('ouvre chaque saisie à son écran, sans repasser par un sommaire', () => {
+    const calls = { invoice: vi.fn(), sale: vi.fn(), recipe: vi.fn(), brew: vi.fn() };
+    render(screenWith({ onInvoice: calls.invoice, onSale: calls.sale, onRecipe: calls.recipe, onBrew: calls.brew }));
+    for (const name of [/Entrer une facture/, /Encaisser une vente/, /Créer une recette/, /Lancer un brassin/]) {
+      fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+      fireEvent.click(screen.getByRole('menuitem', { name }));
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    }
+    expect(calls.invoice).toHaveBeenCalledOnce();
+    expect(calls.sale).toHaveBeenCalledOnce();
+    expect(calls.recipe).toHaveBeenCalledOnce();
+    expect(calls.brew).toHaveBeenCalledOnce();
+  });
+  it('garde le bouton sur les finances, téléphone comme ordinateur', () => {
+    const create = vi.fn();
+    for (const phone of [true, false]) {
+      const match = phone ? phoneMatchMedia() : null;
+      try {
+        render(actions({ action: { intent: 'newTransaction', label: 'Nouvelle écriture' }, onAction: create }));
+        fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: /Nouvelle écriture/ }));
+      } finally { cleanup(); match?.mockRestore(); }
+    }
+    expect(create).toHaveBeenCalledTimes(2);
+  });
   it('ouvre le contexte de l’écran courant et le change après navigation', async () => {
-    const view = render(<BrewerActivity context={brewerAppScreen('stocks', 'materiel')} />);
+    const view = render(screenWith({ companionLabel: 'Matériel' }, brewerAppScreen('stocks', 'materiel')));
     await plus();
     expect(screen.getByRole('dialog')).toHaveTextContent('Matériel');
     await ask();
     expect(api.submit).toHaveBeenCalledWith(expect.objectContaining({ scope: { kind: 'app', id: 'stocks-materiel' }, editableTargets: [] }));
     fireEvent.click(screen.getByRole('button', { name: 'Fermer Compagnon brasseur' }));
-    view.rerender(<BrewerActivity context={brewerAppScreen('finances')} />);
+    view.rerender(screenWith({ companionLabel: 'Finances' }, brewerAppScreen('finances')));
     await plus();
     expect(screen.getByRole('dialog')).toHaveTextContent('Finances');
     expect(api.history).toHaveBeenLastCalledWith({ kind: 'app', id: 'finances' });
   });
   it('garde le brouillon actuel et ses callbacks en ouvrant le chat de la page', async () => {
     const draftApply = vi.fn();
-    const renderPage = (name: string) => <><BrewerActivity /><BrewerChat scope={{ kind: 'draft', id: 'REC-DRAFT' }} label={name}
+    const renderPage = (name: string) => <>{screenWith()}<BrewerChat scope={{ kind: 'draft', id: 'REC-DRAFT' }} label={name}
       draft={{ name, volumeL: 24 }} phase="Eau et sels" onDraftApply={draftApply} /></>;
     const view = render(renderPage('Avant'));
     view.rerender(renderPage('Brouillon actuel'));
@@ -102,7 +145,7 @@ describe('Raccourci contextuel et gestion des conversations', () => {
     expect(draftApply).not.toHaveBeenCalled();
   });
   it('prend la fiche la plus récente, puis retrouve le contexte dessous après fermeture', async () => {
-    const renderPage = (overlay: boolean) => <><BrewerActivity />
+    const renderPage = (overlay: boolean) => <>{screenWith()}
       <BrewerChat scope={{ kind: 'recipe', id: 'REC-A' }} label="Recette ouverte" />
       {overlay && <BrewerChat scope={{ kind: 'batch', id: 'LOT-A' }} label="Brassin ouvert" localJournal={{ currentIndex: 2 }} />}
     </>;
@@ -150,47 +193,21 @@ describe('Raccourci contextuel et gestion des conversations', () => {
   it('permet de gérer les conversations depuis le chat même après lecture des réponses', async () => {
     const done = { ...job('1'), status: 'done' as const, readAt: 1 };
     vi.mocked(api.activity).mockResolvedValue([done]);
-    render(<BrewerActivity />);
+    render(screenWith());
     await waitFor(()=>expect(api.activity).toHaveBeenCalled());
     expect(screen.queryByRole('button', { name: 'Compagnon : Mes conversations' })).not.toBeInTheDocument();
     await plus();
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Mes conversations' })); });
     expect(screen.getByRole('dialog', { name: 'Mes conversations' })).toBeVisible();
   });
-  it('garde le + des finances sur mobile et distingue un appui long du clic qui le suit', () => {
-    vi.useFakeTimers();
-    const match = vi.spyOn(window, 'matchMedia').mockImplementation(query => ({matches:query==='(max-width: 639px)',media:query,onchange:null,addEventListener:()=>{},removeEventListener:()=>{},addListener:()=>{},removeListener:()=>{},dispatchEvent:()=>false}));
+  it('atteint le compagnon depuis le bouton flottant sur téléphone, finances comprises', async () => {
+    const match = phoneMatchMedia();
     try {
-      const create = vi.fn(), quick = vi.fn();
-      render(<BottomNav activeTab="finances" onChangeTab={()=>{}} action={{intent:'newTransaction',label:'Nouvelle écriture'}} onAction={create} onOpenQuickAction={quick} criticalStockCount={0}/>);
-      const add = screen.getByRole('button', {name:'Nouvelle écriture'});
-      expect(add).toBeVisible();
-      fireEvent.pointerDown(add, {pointerType:'touch',button:0,clientX:20,clientY:20});
-      act(()=>vi.advanceTimersByTime(600));
-      fireEvent.contextMenu(add);
-      fireEvent.pointerUp(add);
-      fireEvent.click(add, {detail:1});
-      expect(quick).toHaveBeenCalledOnce();
-      expect(create).not.toHaveBeenCalled();
-      fireEvent.pointerDown(add, {pointerType:'touch',button:0,clientX:20,clientY:20});
-      fireEvent.pointerMove(add, {pointerType:'touch',clientX:20,clientY:45});
-      act(()=>vi.advanceTimersByTime(600));
-      fireEvent.pointerCancel(add);
-      expect(quick).toHaveBeenCalledOnce();
-      fireEvent.click(add);
-      expect(create).toHaveBeenCalledOnce();
-    } finally { cleanup(); match.mockRestore(); vi.useRealTimers(); }
-  });
-  it('réunit l’accès au compagnon dans l’en-tête mobile, y compris sur les finances',async()=>{
-    const match=vi.spyOn(window,'matchMedia').mockImplementation(query=>({matches:query==='(max-width: 639px)',media:query,onchange:null,addEventListener:()=>{},removeEventListener:()=>{},addListener:()=>{},removeListener:()=>{},dispatchEvent:()=>false}));
-    try {
-      render(<><div id="brewer-mobile-header"/><BrewerActivity hideLauncher context={brewerAppScreen('finances')}/></>);
-      const launcher=await screen.findByRole('button',{name:'Ouvrir le compagnon brasseur'});
-      expect(document.getElementById('brewer-mobile-header')).toContainElement(launcher);
-      expect(screen.getAllByRole('button',{name:'Ouvrir le compagnon brasseur'})).toHaveLength(1);
+      render(screenWith({ companionLabel: 'Finances' }, brewerAppScreen('finances')));
+      expect(screen.getAllByRole('button', { name: 'Actions rapides' })).toHaveLength(1);
       await plus();
-      expect(api.history).toHaveBeenLastCalledWith({kind:'app',id:'finances'});
+      expect(api.history).toHaveBeenLastCalledWith({ kind: 'app', id: 'finances' });
       expect(screen.getByRole('dialog')).toHaveTextContent('Finances');
-    } finally {cleanup();match.mockRestore();}
+    } finally { cleanup(); match.mockRestore(); }
   });
 });

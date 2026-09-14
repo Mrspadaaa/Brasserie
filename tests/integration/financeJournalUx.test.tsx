@@ -163,17 +163,17 @@ describe('Journal financier compact', () => {
     voided.finance = { ...voided.finance!, voidedAt: `${today}T12:00:00Z` };
     const onSale = vi.fn(), onPrivateMovement = vi.fn(), onManageArchives = vi.fn(), onScopeChange = vi.fn();
     render(<TransactionJournal {...defaults} transactions={[voided]} archives={[archive]} request={{ key: 'annual', year: String(previousYear), allDates: true }}
-      onSale={onSale} onPrivateMovement={onPrivateMovement} onManageArchives={onManageArchives} onScopeChange={onScopeChange}/>);
+      onPrivateMovement={onPrivateMovement} onManageArchives={onManageArchives} onScopeChange={onScopeChange}/>);
     expect(screen.getByText(`Exercice ${previousYear}`)).toBeVisible();
     expect(screen.getByRole('button', { name: 'Opération ANNULÉE' })).toBeInTheDocument();
     fireEvent.click(screen.getByText('Autres filtres', { exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Écritures annulées uniquement' }));
     expect(screen.getByRole('button', { name: 'Retirer le filtre : Écritures annulées' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Gérer les archives' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer une vente' }));
+    // La vente s'encaisse depuis le bouton d'action, plus depuis le journal.
+    expect(screen.queryByRole('button', { name: 'Enregistrer une vente' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Apport ou prélèvement privé' }));
     expect(onManageArchives).toHaveBeenCalledOnce();
-    expect(onSale).toHaveBeenCalledOnce();
     expect(onPrivateMovement).toHaveBeenCalledOnce();
     expect(onScopeChange).toHaveBeenLastCalledWith('all');
   });

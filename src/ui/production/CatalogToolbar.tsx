@@ -48,8 +48,7 @@ export function CatalogToolbar({
   work,
   onWorkChange,
   comparing,
-  onCompare,
-  onCreate
+  onCompare
 }: {
   kind: CatalogKind;
   entries: CatalogEntry[];
@@ -64,7 +63,6 @@ export function CatalogToolbar({
   onWorkChange: (work: WorkFilter) => void;
   comparing: boolean;
   onCompare: () => void;
-  onCreate?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const mobile = useMobileLayout();
@@ -217,15 +215,6 @@ export function CatalogToolbar({
           <ChartNoAxesCombined className="h-4 w-4" />
           Bilan
         </button>
-        {onCreate && (
-          <button
-            type="button"
-            onClick={onCreate}
-            className="min-h-touch shrink-0 rounded-control bg-ebc-straw px-3 mb-1 ml-2 text-sm font-semibold text-cave-950"
-          >
-            {kind === 'recipes' ? '+ Recette' : '+ Brassin'}
-          </button>
-        )}
       </div>
       <div className="flex gap-2">
         <label className="relative min-w-0 flex-1">

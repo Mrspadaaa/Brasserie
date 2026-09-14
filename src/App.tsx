@@ -5,6 +5,7 @@ import { PersistenceStatus } from './ui/PersistenceStatus';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
+import { FloatingActions } from './ui/FloatingActions';
 
 import type { WizardSeed } from './pages/BrewWizard';
 
@@ -26,6 +27,7 @@ import { Beaker, FlaskConical, Package, Users, Receipt } from 'lucide-react';
 import { LoginPage } from './components/LoginPage';
 
 import type { CreativeLabSectionRequest } from './components/CreativeLabTab';
+import type { QuickActionScreen } from './components/QuickActionModal';
 
 import { 
   AppConfig, 
@@ -144,7 +146,15 @@ export const App: React.FC = () => {
   // SubTab targeting for Production (e.g. from 💡 or 🧰 in Header)
   const [productionSubTab, setProductionSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() => StorageService.getUiState('production_subtab', 'batches'));
 
-  const [isQuickActionOpen, setIsQuickActionOpen] = useState(false);
+  /**
+   * Écran de saisie rapide demandé, `null` quand la feuille est fermée.
+   *
+   * ⚠️ Le bouton d'action ouvre désormais chaque saisie à son écran — facture,
+   * vente, brassin — plutôt qu'au sommaire. Un booléen ne pouvait pas dire
+   * lequel, et le brasseur repassait par un menu pour la seule action qu'il
+   * venait de choisir.
+   */
+  const [quickAction, setQuickAction] = useState<QuickActionScreen | null>(null);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
@@ -380,7 +390,7 @@ export const App: React.FC = () => {
       case 'newTransaction':
       case 'quickAction':
       default:
-        setIsQuickActionOpen(true);
+        setQuickAction('menu');
     }
   };
 
@@ -394,6 +404,20 @@ export const App: React.FC = () => {
     view.view === 'recipe' ? recipes.find((r) => r.id === view.recipeId) : undefined;
   const routedBatch =
     view.view === 'brewday' ? batches.find((b) => b.id === view.batchId) : undefined;
+
+  /**
+   * Ce dont le compagnon parle ici, affiché sous son entrée dans le menu.
+   *
+   * Les pages plein écran montent leur propre conversation — recette, brouillon
+   * d'assistant, brassin du jour — et `brewerLauncher` la retrouve avant le
+   * repli sur l'écran d'onglet. Le libellé doit donc nommer la page, pas
+   * l'onglet qu'on a quitté pour l'ouvrir.
+   */
+  const companionLabel =
+    view.view === 'recipe' ? routedRecipe?.name ?? 'Cette recette'
+    : view.view === 'brewday' ? routedBatch?.name ?? 'Ce brassin'
+    : view.view === 'wizard' ? 'Recette en cours d’écriture'
+    : brewerAppScreen(activeTab, subTab).label;
 
   const allStockItems = [...stocks.rawMaterials, ...stocks.cleaning];
 
@@ -611,7 +635,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
-      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} hideLauncher={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'} />
+      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} hideActivityPill={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'} />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
@@ -655,7 +679,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
+      <main data-floating-actions-gap className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -675,8 +699,6 @@ export const App: React.FC = () => {
               setLabSectionRequest({ section: 'event', at: Date.now() });
               navigateToCreativeLab();
             }}
-            onOpenCreateBatch={() => openWizard()}
-            onOpenQuickAction={() => setIsQuickActionOpen(true)}
           />
         )}
 
@@ -690,7 +712,6 @@ export const App: React.FC = () => {
             budgetLines={budgetLines}
             config={config}
             globalTimeFilter={globalTimeFilter}
-            onOpenQuickAction={() => setIsQuickActionOpen(true)}
           />
         )}
 
@@ -703,7 +724,6 @@ export const App: React.FC = () => {
             globalTimeFilter={globalTimeFilter}
             targetSubTab={productionSubTab}
             onOpenCreateBatch={() => openWizard()}
-            onOpenQuickAction={() => setIsQuickActionOpen(true)}
             onOpenRecipe={openRecipe}
             onEditRecipe={(recipe) => openWizard({ recipe })}
             onOpenBrewDay={openBrewDay}
@@ -724,7 +744,6 @@ export const App: React.FC = () => {
             stocks={stocks}
             batches={batches}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
-            onOpenQuickAction={() => setIsQuickActionOpen(true)}
             onSubTabChange={(sub) => setSubTab(sub as never)}
             createRequest={createRequest}
             onSuccessMessage={showToast}
@@ -737,7 +756,6 @@ export const App: React.FC = () => {
             batches={batches}
             tarifs={tarifs}
             config={config}
-            onOpenQuickAction={() => setIsQuickActionOpen(true)}
             onSubTabChange={(sub) => setSubTab(sub as never)}
             createRequest={createRequest}
             onSuccessMessage={showToast}
@@ -755,17 +773,28 @@ export const App: React.FC = () => {
           setSubTab(null);
           setActiveTab(tab);
         }}
-        action={fabAction}
-        hideAction={activeTab === 'dashboard' || activeTab === 'finances'}
-        onAction={runFabAction}
-        onOpenQuickAction={() => setIsQuickActionOpen(true)}
         criticalStockCount={criticalStockCount}
       />
 
+      {/* Le geste flottant : présent sur les onglets ET sur les pages plein écran. */}
+      <FloatingActions
+        // `quickAction` et `newTransaction` ne créent rien de propre à l'écran :
+        // ils rouvraient le sommaire des saisies que le menu liste déjà en clair.
+        action={view.view === 'tabs' && !['quickAction', 'newTransaction'].includes(fabAction.intent) ? fabAction : null}
+        onAction={runFabAction}
+        companionLabel={companionLabel}
+        anchor={view.view === 'tabs' ? 'nav' : 'page'}
+        onInvoice={() => setQuickAction('scan')}
+        onSale={() => setQuickAction('quick-sale')}
+        onRecipe={() => openWizard()}
+        onBrew={() => setQuickAction('brew-batch')}
+      />
+
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
-      <DeferredSurface active={isQuickActionOpen} fallback={<Sheet open={isQuickActionOpen} title="Chargement…" onClose={() => setIsQuickActionOpen(false)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
-        isOpen={isQuickActionOpen}
-        onClose={() => setIsQuickActionOpen(false)}
+      <DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
+        isOpen={quickAction !== null}
+        initialScreen={quickAction ?? 'menu'}
+        onClose={() => setQuickAction(null)}
         recipes={recipes}
         geminiApiKey={config.geminiApiKey}
         onSuccessMessage={showToast}

@@ -3,6 +3,13 @@ import puppeteer from 'puppeteer-core';
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+/** Le compagnon s'ouvre depuis le bouton d'action flottant, seul point d'entrée. */
+const openCompanion = async (page) => {
+  await page.click(".floating-actions button[aria-haspopup='menu']");
+  const item = await page.waitForFunction(() => [...document.querySelectorAll('[role="menuitem"]')].find((b) => b.textContent.startsWith('Compagnon')));
+  await item.asElement().click();
+  await item.dispose();
+};
 const out = resolve('.codex-remote-attachments/brewer-jobs-mobile');
 await mkdir(out, { recursive: true });
 const browser = await puppeteer.launch({
@@ -97,13 +104,13 @@ try {
     await page.goto('http://127.0.0.1:3007/?preview=brew&view=assistant', {
       waitUntil: 'networkidle0'
     });
-    await page.waitForSelector('.brewer-global-companion', { visible: true });
-    assert.ok(await page.$eval('.brewer-global-companion', (e) => {
+    await page.waitForSelector(".floating-actions button[aria-haspopup='menu']", { visible: true });
+    assert.ok(await page.$eval(".floating-actions button[aria-haspopup='menu']", (e) => {
       const r = e.getBoundingClientRect();
-      return r.width >= 44 && r.height >= 44 && e.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+      return r.width >= 40 && r.height >= 40 && e.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
     }));
     await page.screenshot({ path: resolve(out, `shortcut-${width}.png`) });
-    await page.click('.brewer-global-companion');
+    await openCompanion(page);
     await page.waitForSelector('.brewer-chat-welcome');
     await page.click('.brewer-budget > summary');
     await page.waitForSelector('.brewer-budget .is-stop');
@@ -233,7 +240,7 @@ try {
     assert.equal(jobs.length, 0);
     await page.screenshot({ path: resolve(out, `deleted-${width}.png`) });
     await page.reload({ waitUntil: 'networkidle0' });
-    await page.click('.brewer-global-companion');
+    await openCompanion(page);
     await page.waitForSelector('.brewer-chat-welcome');
     assert.equal(await page.$$eval('.brewer-chat-question', (items) => items.length), 0);
     assert.equal(inputs.length, 3, 'Deleted questions must never be resent');

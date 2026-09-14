@@ -1,6 +1,6 @@
 import { Input, type InputElement } from '../Input';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Archive, ArrowUpRight, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { Archive, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import type { Transaction } from '../../types';
 import type { FinancialArchive, FinancialPayment } from '../../domain/finance/types';
 import { archiveIndex, isTransactionArchived } from '../../domain/finance/archive';
@@ -46,7 +46,7 @@ const FILTER_LABELS: Record<string, string> = {
 };
 
 export function TransactionJournal({ transactions, payments, archives, request, state: controlledState, onStateChange,
-  renderRow, onManageArchives, onSale, onPrivateMovement, onScopeChange }: {
+  renderRow, onManageArchives, onPrivateMovement, onScopeChange }: {
   transactions: Transaction[];
   payments: FinancialPayment[];
   archives: FinancialArchive[];
@@ -55,7 +55,6 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   onStateChange?: (next: JournalState) => void;
   renderRow: (transaction: Transaction) => React.ReactNode;
   onManageArchives: () => void;
-  onSale: () => void;
   onPrivateMovement: () => void;
   onScopeChange?: (scope: JournalScope) => void;
 }) {
@@ -189,6 +188,6 @@ export function TransactionJournal({ transactions, payments, archives, request, 
         {transactions.length > 0 && <button type="button" className="journal-text-action" onClick={showEverything}>Voir toutes les opérations</button>}
       </div>
     </div>}
-    {scope !== 'archives' && <div className="journal-actions"><button type="button" className="journal-text-action" onClick={onSale}><ArrowUpRight size={15} aria-hidden="true"/>Enregistrer une vente</button><button type="button" className="journal-text-action" onClick={onPrivateMovement}>Apport ou prélèvement privé</button></div>}
+    {scope !== 'archives' && <div className="journal-actions"><button type="button" className="journal-text-action" onClick={onPrivateMovement}>Apport ou prélèvement privé</button></div>}
   </div>;
 }

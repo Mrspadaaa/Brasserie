@@ -189,8 +189,6 @@ export const Header: React.FC<HeaderProps> = ({
         <IconButton label="Rechercher (⌘K)" onClick={onOpenSearch} intent="secondary" className={compactLayout ? 'min-h-7 min-w-7' : ''}>
           <Search className={compactLayout ? 'w-4 h-4' : 'w-5 h-5'} />
         </IconButton>
-        <div id="brewer-mobile-header" className={`sm:hidden empty:hidden ${compactLayout ? '[&_button]:h-7 [&_button]:w-7 [&_button]:min-h-7 [&_button]:min-w-7 [&_button]:p-0 [&_svg]:h-4 [&_svg]:w-4' : ''}`}/>
-
         {/* Tout le reste vit derrière un seul bouton */}
         <div className="relative" ref={menuRef}>
           <IconButton

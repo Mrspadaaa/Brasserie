@@ -91,7 +91,6 @@ import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
 import { AiAssist } from '../ui/AiAssist';
 import { BrewerChat } from '../ui/BrewerChat';
-import { BrewerPageShortcut } from '../ui/BrewerPageShortcut';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
 import { RecipeImportSheet, ImportedRecipe } from '../ui/RecipeImportSheet';
 import { BrewSheet } from '../ui/BrewSheet';
@@ -1366,7 +1365,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       >
         <ClipboardPaste className="w-3.5 h-3.5" />
       </button>
-      <BrewerPageShortcut />
       </div>
 
       {/* Le fil seul sur son rang : chaque segment passe de 30 px de large à ~50. */}
@@ -1389,7 +1387,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       mobileHeader={mobileHeader}
       className="recipe-wizard"
       scrollKey={step}
-      actions={<BrewerPageShortcut />}
       /*
        * Le fil d'étapes vit dans l'en-tête. Sur ordinateur, `PageShell` affiche
        * déjà le nom de l'étape en sous-titre : la piste seule suffit ici, et

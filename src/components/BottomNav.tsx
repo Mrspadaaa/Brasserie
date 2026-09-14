@@ -1,20 +1,12 @@
 import React from 'react';
-import { LayoutDashboard, Wallet, Beer, Boxes, Users, Plus, ClipboardList } from 'lucide-react';
-import { FabAction } from '../domain/fabActions';
-import { useMobileLayout } from '../ui/useViewport';
+import { LayoutDashboard, Wallet, Beer, Boxes, Users } from 'lucide-react';
 
 export type TabType = 'dashboard' | 'finances' | 'production' | 'stocks' | 'clients';
 
 interface BottomNavProps {
   activeTab: TabType;
   onChangeTab: (tab: TabType) => void;
-  /** Ce que crée le bouton ici — dépend de l'onglet ET du sous-onglet. */
-  action: FabAction;
-  onAction: () => void;
-  /** Appui long : la saisie rapide, quel que soit l'écran. */
-  onOpenQuickAction: () => void;
   criticalStockCount: number;
-  hideAction?: boolean;
 }
 
 /**
@@ -23,6 +15,10 @@ interface BottomNavProps {
  * Une barre de 40 px hors zone sûre, extensible quand le texte grandit.
  * Les repères de rubrique restent visibles ; le trait et le fond identifient
  * la destination active. Les cibles restent dans leur propre colonne.
+ *
+ * ⚠️ La barre ne porte plus le bouton d'action : il vit dans
+ * `FloatingActions`, présent sur les onglets ET sur les pages plein écran.
+ * Elle continue de publier sa hauteur — c'est l'ancrage de ce bouton.
  */
 
 const TABS: Array<{
@@ -43,13 +39,8 @@ const TABS: Array<{
 export const BottomNav: React.FC<BottomNavProps> = ({
   activeTab,
   onChangeTab,
-  action,
-  onAction,
-  onOpenQuickAction,
-  criticalStockCount,
-  hideAction = false
+  criticalStockCount
 }) => {
-  const mobile = useMobileLayout();
   const navigationRef = React.useRef<HTMLElement | null>(null);
   React.useLayoutEffect(() => {
     const navigation = navigationRef.current;
@@ -72,66 +63,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       else root.style.removeProperty(property);
     };
   }, []);
-  const pressTimer = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const longPressed = React.useRef(false);
-  const pressOrigin = React.useRef({ x: 0, y: 0 });
-  const cancelPress = () => { clearTimeout(pressTimer.current); pressTimer.current = undefined; };
-  React.useEffect(() => cancelPress, [action.intent, hideAction]);
-  const openQuickActions = () => {
-    cancelPress();
-    if (longPressed.current) return;
-    longPressed.current = true;
-    onOpenQuickAction();
-  };
   return (
-  <>
-    <div
-      className="fixed right-3 z-40 flex items-center gap-2"
-      style={{ bottom: 'calc(var(--main-navigation-height, 2.5rem) + .5rem)', ...(activeTab === 'finances' && !mobile || hideAction ? { display: 'none' } : {}) }}
-    >
-      <span
-        className="hidden sm:block px-2 py-1 rounded-control bg-cave-850
-                   border border-cave-700 text-2xs text-cave-200 shadow-lift"
-        aria-hidden
-      >
-        {action.label}
-      </span>
-      <button
-        type="button"
-        onClick={(event) => { if (event.detail === 0 || !longPressed.current) onAction(); longPressed.current = false; }}
-        onPointerDown={(event) => {
-          cancelPress(); longPressed.current = false;
-          if (event.button !== 0 || event.isPrimary === false) return;
-          pressOrigin.current = { x: event.clientX, y: event.clientY };
-          pressTimer.current = setTimeout(openQuickActions, 550);
-        }}
-        onPointerMove={(event) => {
-          if (Math.hypot(event.clientX - pressOrigin.current.x, event.clientY - pressOrigin.current.y) > 10) cancelPress();
-        }}
-        onPointerUp={cancelPress}
-        onPointerCancel={cancelPress}
-        onPointerLeave={cancelPress}
-        onContextMenu={(event) => {
-          event.preventDefault();
-          openQuickActions();
-        }}
-        aria-label={action.label}
-        aria-description="Appui long pour ouvrir les autres saisies rapides."
-        aria-haspopup={action.intent === 'copyShoppingList' ? undefined : 'dialog'}
-        title={`${action.label} · Appui long : saisie rapide`}
-        className="w-8 h-8 rounded-control shrink-0
-                   bg-ebc-straw text-cave-950 shadow-lift
-                   flex items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
-                   motion-safe:transition-transform motion-safe:active:scale-95
-                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50"
-      >
-        {action.intent === 'copyShoppingList' ? (
-          <ClipboardList className="w-4 h-4" strokeWidth={2.5} aria-hidden="true" />
-        ) : (
-          <Plus className="w-4 h-4" strokeWidth={2.5} aria-hidden="true" />
-        )}
-      </button>
-    </div>
     <nav
       ref={navigationRef}
       aria-label="Navigation principale"
@@ -179,6 +111,5 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         })}
       </div>
     </nav>
-  </>
-);
+  );
 };
