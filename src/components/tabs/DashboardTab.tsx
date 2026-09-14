@@ -194,13 +194,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       brassins et aux stocks. La saisie rapide et la création de brassin, elles,
       vivent dans le bouton d'action flottant, présent sur tous les écrans.
     */}
-    <h2 className="sr-only">À la brasserie</h2>
+    <h1 className="sr-only">À la brasserie</h1>
 
     <div className="grid gap-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="dashboard-production" className="order-1 min-w-0 rounded-panel border border-area-production/30 bg-cave-900">
           <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-production/10 px-2">
             <Beer size={16} className="shrink-0 text-area-production" aria-hidden="true" />
-            <h3 id="dashboard-production" className="flex-1 font-semibold text-area-production">Brassins</h3>
+            <h2 id="dashboard-production" className="flex-1 font-semibold text-area-production">Brassins</h2>
             <span className="text-xs text-cave-200">{activeBatches.length} en cuve</span>
             <button type="button" onClick={() => onNavigateTab('production')} className={`${smallAction} text-area-production`}>Tous<ChevronRight size={12} aria-hidden="true" /></button>
           </div>
@@ -233,7 +233,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <section aria-labelledby="dashboard-stocks" className="order-2 min-w-0 rounded-panel border border-area-stocks/30 bg-cave-900">
           <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-stocks/10 px-2">
             <Boxes size={16} className="shrink-0 text-area-stocks" aria-hidden="true" />
-            <h3 id="dashboard-stocks" className="flex-1 font-semibold text-area-stocks">Stocks</h3>
+            <h2 id="dashboard-stocks" className="flex-1 font-semibold text-area-stocks">Stocks</h2>
             <button type="button" onClick={() => onNavigateTab('stocks')} className={`${smallAction} text-area-stocks`}>Voir<ChevronRight size={12} aria-hidden="true" /></button>
           </div>
           {itemsToOrder.length === 0
@@ -310,7 +310,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <section aria-labelledby="dashboard-agenda" className="order-4 min-w-0 rounded-panel border border-area-agenda/30 bg-cave-900">
           <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-agenda/10 px-2">
             <Calendar size={16} className="shrink-0 text-area-agenda" aria-hidden="true" />
-            <h3 id="dashboard-agenda" className="flex-1 font-semibold text-area-agenda">Agenda</h3>
+            <h2 id="dashboard-agenda" className="flex-1 font-semibold text-area-agenda">Agenda</h2>
             <span className="text-xs text-cave-200">{pendingEvents.length} à faire</span>
             <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Gérer<ChevronRight size={12} aria-hidden="true" /></button>
           </div>

@@ -51,6 +51,17 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.getByRole('tab',{name:'Opérations'})).toHaveAttribute('aria-selected','true');
     expect(screen.getByRole('button',{name:/^Achat mixte/})).toHaveTextContent('Paiement à confirmer');
   });
+  it('ne charge le graphique qu’à l’ouverture et garde le tableau accessible pendant le chargement',async()=>{
+    FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
+    StorageService.addTransaction(tx());
+    render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
+    expect(screen.queryByRole('img',{name:'Évolution mensuelle, montants exacts dans le tableau suivant'})).not.toBeInTheDocument();
+    const summary=screen.getByText('Comparer les mois',{exact:true});
+    summary.focus();fireEvent.click(summary);
+    expect(summary).toHaveFocus();
+    expect(await screen.findByRole('table',{name:'Prévision mensuelle selon le scénario sélectionné'})).toBeVisible();
+    await waitFor(()=>expect(screen.getByRole('img',{name:'Évolution mensuelle, montants exacts dans le tableau suivant'})).toBeVisible());
+  });
   it('fait varier les sorties et les soldes mensuels du même montant lorsque le projet de matériel est exclu',async()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());

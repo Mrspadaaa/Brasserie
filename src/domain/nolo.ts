@@ -11,6 +11,7 @@ import type { TrialRecipe } from './hopIndex/trials';
 import { normalizeHop } from './hopStage';
 import type { Batch, RecipeSnapshot } from '../types';
 export { noloScience } from './noloScience';
+export { noloWaterModelIssue } from './noloWaterModelIssue';
 import { noloScience } from './noloScience';
 import { noloYeastCandidates } from './noloYeastSelection';
 export const noloPlanningSource = {
@@ -18,13 +19,6 @@ export const noloPlanningSource = {
   reference:'functions/reports/nolo-scenarios-2026.md',
   locator:'Valeurs de préparation éditables. Ni mesure ni intervalle statistique.'
 };
-export function noloWaterModelIssue(config:NoloConfig|undefined,ratio:number):string|undefined {
-  if(!config?.enabled)return;
-  if(config.process==='secondRunnings')return 'Drêches : mesurer le moût récupéré. Aucun nouveau rendement, absorption de grain sec ou pouvoir tampon de malt neuf n’est appliqué.';
-  if(config.process==='coldExtraction')return 'Extraction à froid : mesurer ou titrer le moût filtré. Le modèle de pH et les doses d’acide d’un empâtage à chaud ne sont pas validés dans ce contexte.';
-  const science=config.scienceSnapshot??noloScience();
-  if(science&&ratio>science.waterMashMaxLKg.value)return 'Empâtage très dilué : pH à mesurer ou à titrer, sans estimation ni marge standard du modèle.';
-}
 export function newNoloConfig(): NoloConfig {
   return {version:1,enabled:true,targetAbvPct:.5,process:'restricted',orientation:'free',
     wort:{ogPlato:null,sugarsGL:{},sugarsComplete:false},operations:[],measurements:[],equipment:[],

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useMemo } from 'react';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { Batch, Recipe, BrewhouseProfile, TimeFilterPeriod } from '../../types';
 import { StorageService } from '../../services/storage';
 import { BatchDetailSheet } from '../../ui/BatchDetailSheet';
 import { useLiveSelection } from '../../hooks/useLiveData';
 import { scaleBrewRecipeScenario } from '../../domain/finance/brewBudgetScaling';
-import { CreativeLabTab, type CreativeLabSectionRequest } from '../CreativeLabTab';
+import type { CreativeLabSectionRequest } from '../CreativeLabTab';
 import { describeMoment } from '../../domain/hopStage';
 import { Units } from '../../services/units';
 import { ProductionCatalog } from '../../ui/production/ProductionCatalog';
@@ -14,6 +14,12 @@ import { QuantityStepper } from '../../ui/QuantityStepper';
 import { parseDecimal } from '../../ui/numericInput';
 import '../../ui/production/compact.css';
 import { ViewNavigation } from '../../ui/ViewNavigation';
+
+const CreativeLabTab = lazy(() =>
+  import('../CreativeLabTab').then(({ CreativeLabTab: CreativeLab }) => ({
+    default: CreativeLab,
+  })),
+);
 
 interface ProductionTabProps {
   batches: Batch[];
@@ -198,14 +204,16 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
 
       {/* 4. SUBTAB: CREATIVE LAB (ATELIER R&D DE LA BRASSERIE) */}
       {subTab === 'lab' && (
-        <CreativeLabTab
-          onSuccessMessage={onSuccessMessage}
-          onDraftRecipe={onDraftRecipe}
-          createRequest={createRequest}
-          onCreateRequestHandled={onCreateRequestHandled}
-          openSectionRequest={openLabSectionRequest}
-          onOpenSectionRequestHandled={onOpenLabSectionRequestHandled}
-        />
+        <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’atelier R&amp;D…</div>}>
+          <CreativeLabTab
+            onSuccessMessage={onSuccessMessage}
+            onDraftRecipe={onDraftRecipe}
+            createRequest={createRequest}
+            onCreateRequestHandled={onCreateRequestHandled}
+            openSectionRequest={openLabSectionRequest}
+            onOpenSectionRequestHandled={onOpenLabSectionRequestHandled}
+          />
+        </Suspense>
       )}
 
       {subTab === 'scaler' && !selectedRecipeToScale && (

@@ -9,7 +9,7 @@ import type { Batch, CreativeItem } from '../../src/types';
 vi.mock('../../src/services/firebase', () => ({ db: {}, functions: {}, app: {}, auth: { currentUser: null } }));
 vi.mock('../../src/services/migration', () => ({ runMigrationIfNeeded: async () => ({ ran: false }) }));
 vi.mock('../../src/ui/BrewerChat', () => ({ BrewerChat: () => null }));
-vi.mock('../../src/ui/BrewerActivity', () => ({ BrewerActivity: () => null }));
+vi.mock('../../src/ui/BrewerActivity', () => ({ BrewerActivity: ({ localOnly }: { localOnly?: boolean }) => localOnly ? <div role="status">Compagnon hors connexion · mode local</div> : null }));
 vi.mock('../../src/ui/PersistenceStatus', () => ({ PersistenceStatus: () => null }));
 vi.mock('../../src/ui/CommandPalette', () => ({ CommandPalette: () => null }));
 vi.mock('../../src/components/SettingsModal', () => ({ SettingsModal: () => null }));
@@ -66,6 +66,14 @@ afterEach(() => {
 });
 
 describe('Dashboard agenda navigation', () => {
+  it('garde l’initialisation dev-local et laisse le compagnon hors connexion', async () => {
+    const startSync = vi.spyOn(StorageService, 'startSync');
+    vi.spyOn(StorageService, 'isReady').mockReturnValue(true);
+    const { App } = await import('../../src/App');
+    render(<App />);
+    expect(await screen.findByRole('status')).toHaveTextContent('Compagnon hors connexion · mode local');
+    expect(startSync).toHaveBeenCalledOnce();
+  });
   it('consumes an agenda section request once and lets a new request reopen it after a manual section change', () => {
     vi.spyOn(StorageService, 'getCreativeItems').mockReturnValue(creativeItems);
     const create = vi.spyOn(StorageService, 'addCreativeItem');

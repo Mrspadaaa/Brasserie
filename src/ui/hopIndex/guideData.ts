@@ -143,17 +143,7 @@ export function guideRiskPolicies(knowledge: HopKnowledge[]): HopRiskPolicy[] {
   return [...new Map(policies.map(policy => [policy.id, policy])).values()];
 }
 
-export async function loadGuideVarieties(): Promise<HopVariety[]> {
-  const [manufacturer, guide, styleReferences] = await Promise.all([
-    import('../../data/hopManufacturerBootstrap.json'),
-    import('../../data/hopGuideVarietyBootstrap.json'),
-    import('../../data/hopStyleVarietyBootstrap.json')
-  ]);
-  return [...manufacturer.default.hopVarieties, ...guide.default.hopVarieties, ...styleReferences.default.hopVarieties, ...studyPack.hopVarieties, ...trialPack.hopVarieties].map(row => {
-    assertHopDocument('hopVarieties', row);
-    return row as HopVariety;
-  });
-}
+export { loadGuideVarieties } from './guideVarieties';
 
 export interface GuideReferences {
   varieties?: HopVariety[];

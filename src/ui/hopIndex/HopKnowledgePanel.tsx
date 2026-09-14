@@ -1,6 +1,6 @@
 import { Input, Textarea } from '../Input';
 import bitternessPack from '../../data/hopBitternessBootstrap.json';
-import React, { useState } from 'react';
+import React, { lazy, Suspense, useState } from 'react';
 import { MobileDetails } from '../ViewNavigation';
 import { HopKnowledge, HopModel, assertHopKnowledge } from '../../../functions/src/hopPredictionSchema';
 import { HopSource } from '../../../functions/src/hopIndexSchema';
@@ -16,8 +16,7 @@ import fermentationSciencePack from '../../data/fermentationScienceBootstrap.jso
 import noloPack from '../../data/noloBootstrap.json';
 import stylePack from '../../data/brewingStylesBootstrap.json';
 import { FermentationScienceLibrary } from '../FermentationSciencePanel';
-import { guideFermentationScience } from './guideData';
-import { ensureGuideReferences, guideYeasts } from './guideData';
+import { activeFermentationScience } from '../../../functions/src/fermentationScienceCore';
 import catalogueLicenses from '../../data/hop-catalogue-LICENSES.txt?url';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -31,7 +30,18 @@ import { NumberInput } from '../NumberInput';
 import { usableHopKnowledge } from '../../domain/hopIndex/engine';
 import { BrewTag } from '../BrewTag';
 import { hopReferenceLabel } from '../../domain/hopIndex/labels';
-import { YeastCataloguePanel } from '../YeastCataloguePanel';
+
+const YeastCataloguePanel = lazy(() =>
+  import('../YeastCataloguePanel').then(({ YeastCataloguePanel: Catalogue }) => ({
+    default: Catalogue,
+  })),
+);
+
+function localGuideFermentationScience(knowledge: HopKnowledge[]) {
+  return activeFermentationScience(
+    [...new Map([...fermentationSciencePack, ...knowledge].map((row, index) => [row?.id ?? `invalid-${index}`, row])).values()],
+  );
+}
 
 const localSource = (): HopSource => ({ title: '', author: 'L’Affinée', year: new Date().getFullYear(), reference: '', kind: 'observation' });
 const blankRange = () => ({ min: undefined as number, max: undefined as number });
@@ -45,6 +55,7 @@ export function HopKnowledgePanel() {
   const knowledge = useStorageValue(StorageService.getHopKnowledge), varieties = useStorageValue(StorageService.getHopVarieties);
   const [draft, setDraft] = useState<HopKnowledge | null>(null), [json, setJson] = useState<string | null>(null), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [loadingCatalogue, setLoadingCatalogue] = useState(false);
+  const [catalogueOpen, setCatalogueOpen] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [recordQuery,setRecordQuery] = useState('');
   const usable = usableHopKnowledge(knowledge);
@@ -91,7 +102,7 @@ export function HopKnowledgePanel() {
   const edit = (value: HopKnowledge, raw = false) => { setDraft(structuredClone(value)); setJson(raw ? JSON.stringify(value, null, 2) : null); setError(''); };
   return <section className="space-y-4" aria-label="Connaissances du houblon">
     <h2 className="text-lg text-cave-50 font-semibold">Sources et modèles</h2>
-    <details className="border border-cave-700 rounded-control p-3"><summary className="cursor-pointer min-h-touch text-ebc-straw">Catalogue complet des levures · fiches et sources</summary><div className="pt-3"><YeastCataloguePanel/></div></details>
+    <details className="border border-cave-700 rounded-control p-3" onToggle={event => setCatalogueOpen(event.currentTarget.open)}><summary className="cursor-pointer min-h-touch text-ebc-straw">Catalogue complet des levures · fiches et sources</summary><div className="pt-3">{catalogueOpen && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du catalogue des levures…</p>}><YeastCataloguePanel/></Suspense>}</div></details>
     <MobileDetails title="Gérer les sources et les modèles">
     <p className="text-cave-200">Les axes, plages, seuils et pondérations sont enregistrés dans l’index. Une révision prend effet au prochain calcul ; les prédictions figées restent consultables.</p>
     <div className="flex flex-wrap gap-2">
@@ -120,6 +131,7 @@ export function HopKnowledgePanel() {
       <Button disabled={installing} onClick={async () => {
         setInstalling(true); setError('');
         try {
+          const { ensureGuideReferences, guideYeasts } = await import('./guideData');
           const pack = [...fermentationPack, ...fermentationSciencePack];
           const ids = new Set(pack.filter(k => k.kind === 'fermentation').map(k => (k as any).yeastId));
           const yeasts = guideYeasts([]).filter(y => ids.has(y.id)).map(({ aliases: _, ...y }) => y);
@@ -127,7 +139,7 @@ export function HopKnowledgePanel() {
           setNotice('Guides de fermentation enregistrés. Les révisions déjà présentes sont conservées.');
         } catch (e) { setError((e as Error).message); } finally { setInstalling(false); }
       }}>Enregistrer les guides de fermentation modifiables</Button>
-      <FermentationScienceLibrary science={guideFermentationScience(knowledge)[0]} />
+      <FermentationScienceLibrary science={localGuideFermentationScience(knowledge)[0]} />
     </details>
     <details className="border border-cave-700 rounded-control p-3"><summary className="min-h-touch cursor-pointer text-water">Styles étendus et NOLO</summary><p className="text-sm text-cave-400">Référentiels datés et procédés modifiables. Les corrections personnelles sont conservées.</p><Button disabled={installing} onClick={()=>installPack({hopKnowledge:[...stylePack,...noloPack]})}>Enregistrer les références styles et NOLO</Button></details>
     {installing && <p role="status" className="text-cave-200">Import en cours…</p>}

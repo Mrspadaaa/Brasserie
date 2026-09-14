@@ -30,9 +30,10 @@ export function brewerConversations(jobs: ClientBrewerJob[]) {
  * ce que le bouton ne peut pas porter — la boîte des conversations, et la
  * pastille d'activité qui suit une question en cours sur ordinateur.
  */
-export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideActivityPill = false }: {
+export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideActivityPill = false, localOnly = false }: {
   context?: Focus;
   hideActivityPill?: boolean;
+  localOnly?: boolean;
 }) {
   const state = useBrewerJobs(), dialogOpen = useBrewerDialogOpen();
   const mobile = useMobileLayout();
@@ -48,6 +49,10 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
   const contextRef = useRef(context);
   contextRef.current = context;
   useEffect(() => {
+    if (localOnly) {
+      brewerJobs.stop();
+      return;
+    }
     void brewerJobs.start();
     const refresh = () => { if (document.visibilityState !== 'hidden') void brewerJobs.refresh(); };
     const showInbox = () => { setFocus(null); setInbox(true); void brewerJobs.refresh(); };
@@ -73,7 +78,7 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
       navigator.serviceWorker?.removeEventListener('message', open);
       brewerJobs.stop();
     };
-  }, []);
+  }, [localOnly]);
   const pending = state.jobs.filter(isBrewerWorking),
     unread = state.jobs.filter((j) => !j.readAt && ['done', 'error'].includes(j.status)),
     unconfirmed = state.jobs.filter((j) => j.sendError);
@@ -82,6 +87,8 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     : unconfirmed.length ? `${unconfirmed.length} envois à confirmer`
     : pending.length ? `${pending.length} ${pending.length > 1 ? 'questions en cours' : 'question en cours'}`
     : 'Mes conversations';
+  if (localOnly)
+    return <p role="status" className="pointer-events-none fixed top-1 left-1/2 z-40 -translate-x-1/2 rounded-control bg-cave-850 px-2 py-1 text-2xs text-cave-400">Compagnon hors connexion · mode local</p>;
   const remove = async () => {
     if (!removal || deleting) return;
     setDeleting(true);

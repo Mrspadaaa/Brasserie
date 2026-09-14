@@ -62,6 +62,17 @@ afterEach(() => {
 });
 
 describe('dashboard daily overview', () => {
+  it('exposes one page heading and consistently named dashboard sections', () => {
+    mount({ batches: [] });
+
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    expect(screen.getByRole('heading', { level: 1, name: 'À la brasserie' })).toHaveClass('sr-only');
+    expect(screen.getAllByRole('heading', { level: 2 }).map(heading => heading.textContent))
+      .toEqual(['Brassins', 'Stocks', 'Agenda']);
+    expect(screen.getByRole('region', { name: 'Finances' })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Échéances et démarches' })).toBeInTheDocument();
+  });
+
   it('shows the saved phase and latest real gravity, including older active batches', () => {
     const { props } = mount({ batches: [porter, { ...porter, id: 'COLD', name: 'Saison en garde', status: 'garde' }] });
     const row = screen.getByRole('button', { name: /Ancienne Porter/ });

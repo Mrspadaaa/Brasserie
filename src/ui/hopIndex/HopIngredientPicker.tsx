@@ -4,7 +4,6 @@ import type { HopVariety } from '../../../functions/src/hopIndexSchema';
 import { Units } from '../../services/units';
 import { Combobox } from '../Combobox';
 import { useHopCatalogue } from './useHopCatalogue';
-import { ensureGuideReferences } from './guideData';
 import { HOP_FORM_LABELS, hopReferenceSource } from '../../domain/hopIndex/labels';
 import { hopFitsStyle, hopRecipeStyle } from '../../domain/hopRecipeDesign';
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
@@ -34,7 +33,7 @@ export function HopIngredientPicker({ items, onChange, onReference, onCreate, pl
       const variety = varieties.find(v => `ref:${v.id}` === value);
       if (!variety || busy) return;
       setBusy(true); onBusyChange?.(true); setError('');
-      ensureGuideReferences({ varieties: [variety] }).then(() => onReference(variety)).catch(e => setError(e instanceof Error ? e.message : 'Référence indisponible.'))
+      import('./guideData').then(({ ensureGuideReferences }) => ensureGuideReferences({ varieties: [variety] })).then(() => onReference(variety)).catch(e => setError(e instanceof Error ? e.message : 'Référence indisponible.'))
         .finally(() => { setBusy(false); onBusyChange?.(false); });
     }} />
     <p className="text-xs text-cave-400">L’alpha du lot reste à saisir.</p>

@@ -5,10 +5,7 @@ import type { WaterAnalysisInput, WaterAnalysisResult } from './waterAnalysisPro
 
 /** Shared by the worker and its compatibility fallback: no alternate maths. */
 export function computeWaterAnalysis(input: WaterAnalysisInput): WaterAnalysisResult {
-  return {
-    solution: solveSalts(input.solve),
-    justEnough: minimalDilution(input.dilution)
-  };
+  return fallbackComputer(input);
 }
 
 /** One cache entry per independent calculation, owned by a single worker. Moving
@@ -24,3 +21,8 @@ export function createWaterAnalysisComputer(): (input: WaterAnalysisInput) => Wa
     return { solution: solve.result, justEnough: dilution.result };
   };
 }
+
+// The compatibility path can be hit repeatedly while a worker is unavailable.
+// Keep its two independent calculations warm without sharing state with the
+// worker instance.
+const fallbackComputer = createWaterAnalysisComputer();
