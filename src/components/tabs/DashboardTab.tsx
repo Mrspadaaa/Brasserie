@@ -188,12 +188,13 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   }
 
   return <div className="space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+0.5rem)] text-sm">
-    {/* Saisie rapide et création de brassin vivent dans le bouton d'action
-        flottant, présent sur tous les écrans : les répéter ici coûtait une
-        rangée sans rien ajouter. */}
-    <header className="flex min-h-9 flex-wrap items-center justify-between gap-1">
-      <h2 className="text-[1.125rem] font-semibold text-cave-50">À la brasserie</h2>
-    </header>
+    {/*
+      Le titre reste pour les lecteurs d'écran, pas à l'écran : « À la brasserie »
+      ne disait rien que l'onglet actif ne dise déjà, et coûtait une rangée aux
+      brassins et aux stocks. La saisie rapide et la création de brassin, elles,
+      vivent dans le bouton d'action flottant, présent sur tous les écrans.
+    */}
+    <h2 className="sr-only">À la brasserie</h2>
 
     <div className="grid gap-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="dashboard-production" className="order-1 min-w-0 rounded-panel border border-area-production/30 bg-cave-900">

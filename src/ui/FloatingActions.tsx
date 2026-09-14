@@ -194,6 +194,13 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
         </div>
       )}
 
+      {/*
+        64 px, sur téléphone comme sur ordinateur. C'est la seule commande de
+        l'application qu'on vise ganté, en pénombre, une main sur la cuve : elle
+        mérite sa dérogation à l'échelle compacte, que les listes et les champs
+        conservent autour d'elle. Dockée dans l'atelier de l'eau, elle revient
+        à 40 px pour ne pas manger les champs de pesée.
+      */}
       <button
         ref={buttonRef}
         type="button"
@@ -211,13 +218,13 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           setPlacement(rect && rect.top < window.innerHeight / 2 ? 'bottom' : 'top');
           setOpen(true);
         }}
-        className="relative w-12 h-12 rounded-full bg-ebc-straw text-cave-950 shadow-lift
+        className="relative w-16 h-16 rounded-full bg-ebc-straw text-cave-950 shadow-lift
                    flex items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
                    motion-safe:transition-transform motion-safe:active:scale-95
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50"
       >
-        <Plus size={24} strokeWidth={2.5} aria-hidden="true"
-          className={`motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
+        <Plus strokeWidth={2.5} aria-hidden="true"
+          className={`w-8 h-8 motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
         {waiting > 0 && (
           <span aria-hidden="true"
             className="absolute -top-1 -right-1 min-w-4 min-h-4 px-1 rounded-full

@@ -10,7 +10,7 @@
    dernière ligne d'une liste — une échéance, un article au seuil — et la rendait
    inactivable. La réserve disparaît avec le bouton, clavier ouvert par exemple. */
 body:has(.floating-actions) [data-floating-actions-gap] {
-  padding-bottom: 3rem;
+  padding-bottom: 4.5rem;
 }
 
 /* Une feuille ou une modale possède l'interaction : le bouton s'efface plutôt

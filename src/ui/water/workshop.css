@@ -171,6 +171,13 @@
     bottom: auto;
   }
 
+  /* Docké dans la rangée d'onglets, le bouton reprend une taille de barre :
+     sa taille de pouce déborderait sur les champs de pesée. */
+  body:has([data-water-step="sels"]) .floating-actions > button {
+    width: 40px;
+    height: 40px;
+  }
+
   body:has([data-water-step="sels"]) .brewer-activity-pill {
     top: var(--water-navigation-top, 51px);
     bottom: auto;
