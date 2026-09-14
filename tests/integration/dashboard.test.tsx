@@ -45,7 +45,7 @@ function mount(overrides: Partial<React.ComponentProps<typeof DashboardTab>> = {
     batches: [porter], transactions: [], stocks: { rawMaterials: [], cleaning: [] },
     planning: [], config: { fiscal: { isTvaRegistered: false } } as AppConfig,
     globalTimeFilter: 'this-month', onOpenBatch: vi.fn(), onNavigateTab: vi.fn(),
-    onNavigateToCreativeLab: vi.fn(), onOpenCreateBatch: vi.fn(), onOpenQuickAction: vi.fn(),
+    onNavigateToCreativeLab: vi.fn(),
     ...overrides
   };
   return { ...render(<DashboardTab {...props} />), props };
@@ -155,14 +155,12 @@ describe('dashboard daily overview', () => {
     expect(data.saved.dashboard_completed_deadlines).toEqual({ saav: false });
   });
 
-  it('keeps useful empty states and primary/quick actions available', () => {
-    const { props } = mount({ batches: [] });
+  it('keeps useful empty states; creation lives in the floating action button', () => {
+    mount({ batches: [] });
     expect(screen.getByText('Aucun brassin en cuve.')).toBeVisible();
     expect(screen.getByText('Stocks suffisants')).toBeVisible();
     expect(screen.getByText('Aucune tâche prévue.')).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Brassin', exact: true }));
-    fireEvent.click(screen.getByRole('button', { name: 'Saisie rapide' }));
-    expect(props.onOpenCreateBatch).toHaveBeenCalledOnce();
-    expect(props.onOpenQuickAction).toHaveBeenCalledOnce();
+    expect(screen.queryByRole('button', { name: 'Brassin', exact: true })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Saisie rapide' })).toBeNull();
   });
 });

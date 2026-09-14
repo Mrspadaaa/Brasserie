@@ -37,7 +37,6 @@ interface ClientsTabProps {
   batches: Batch[];
   tarifs: PricingItem[];
   config: AppConfig;
-  onOpenQuickAction: () => void;
   /** Remonte le sous-onglet courant : le bouton d'action en dépend. */
   onSubTabChange?: (sub: string) => void;
   /** Demande de création émise par le bouton d'action. */

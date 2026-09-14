@@ -17,7 +17,7 @@ import { DriveConnection } from './DriveConnection';
 import { InvoiceScanReview } from './InvoiceScanReview';
 import { invoiceTotalProposal,invoiceFieldHints,invoicePurchaseDescription,patchPurchaseDraft,scannedPayment } from '../../services/purchasePrefill';
 import { formatCHF } from '../../domain/finance/ledger';
-import { useKeyboardInset } from '../useViewport';
+import { useCoarsePointer,useKeyboardInset } from '../useViewport';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:()=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;startWithScan?:boolean;initialPlanId?:string }
 const kinds:Array<{value:PurchaseLineDraft['kind'];label:string}>=[{value:'ingredient',label:'Ingrédients'},{value:'packaging',label:'Emballages'},{value:'cleaning',label:'Nettoyage'},{value:'equipment',label:'Matériel durable'},{value:'maintenance',label:'Entretien / réparation'},{value:'service',label:'Service'},{value:'shipping',label:'Livraison'},{value:'discount',label:'Remise'},{value:'other',label:'Autre'}];
@@ -40,6 +40,9 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   });
   const [scan,setScan]=useState<ScanOutcome|null>(null),[busy,setBusy]=useState(false),[saving,setSaving]=useState(false),[error,setError]=useState(''),[attachment,setAttachment]=useState<File|null>(null),[pendingId,setPendingId]=useState<string|null>(null);
   const [showForm,setShowForm]=useState(!startWithScan);
+  /* Le survol d’un fichier au-dessus de la zone, sur ordinateur. */
+  const [dropping,setDropping]=useState(false);
+  const coarse=useCoarsePointer();
   const [attempted,setAttempted]=useState(false);
   const keyboardInset=useKeyboardInset();
   const titleId=useId(),validationId=useId();
@@ -50,6 +53,19 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const hints=scan?.ok&&scan.result?Object.fromEntries(Object.entries(invoiceFieldHints(scan.result)).filter(([field])=>!reviewedFields.includes(field))):{};
   const reviewed=(field:string)=>setReviewedFields(previous=>previous.includes(field)?previous:[...previous,field]);
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
+  /*
+   * ⚠️ Une facture est d'abord un DOCUMENT, pas une photo. Arriver ici depuis le
+   * bouton d'action ouvre donc le sélecteur de fichiers — l'explorateur sur
+   * Android, la fenêtre d'ouverture sur ordinateur — et jamais l'appareil photo.
+   * Si le navigateur refuse cette ouverture automatique, la zone de dépôt et son
+   * bouton restent en place : on ne perd aucun chemin.
+   */
+  const pickedOnOpen=useRef(false);
+  useEffect(()=>{
+    if(!startWithScan||pickedOnOpen.current)return;
+    pickedOnOpen.current=true;
+    fileInput.current?.click();
+  },[startWithScan]);
   useEffect(()=>{if(error)errorBox.current?.scrollIntoView?.({block:'nearest'});},[error]);
   const stocks=StorageService.getStocks(),transactions=StorageService.getTransactions();
   const plans=FinanceService.getPlans().filter(plan=>(plan.status==='active'||plan.source==='equipment'&&plan.status==='draft')&&plan.direction==='out'),selectedPlan=plans.find(plan=>plan.id===draft.planId);
@@ -155,10 +171,16 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
     <div className="space-y-2 pb-1" ref={form}>
       <input hidden ref={fileInput} aria-label="Importer un justificatif" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
       <input hidden ref={cameraInput} aria-label="Photographier un justificatif" type="file" accept="image/*" capture="environment" className="hidden" onChange={e=>{const file=e.target.files?.[0];if(file)void attach(file);e.target.value='';}}/>
-      {!attachment&&!busy?showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:<section className="py-1 space-y-2">
-        <button data-primary type="button" onClick={()=>cameraInput.current?.click()} className="w-full min-h-8 rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center gap-2 text-[13px] font-semibold"><Camera size={16}/>Prendre une photo</button>
-        <button type="button" onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><FileText size={18}/>Importer un fichier</button>
-        <p className="text-xs text-center text-cave-400">Photo ou PDF · lecture automatique · 4 Mo max.</p>
+      {!attachment&&!busy?showForm?<button type="button" disabled={saving||Boolean(pendingId)} onClick={()=>fileInput.current?.click()} className={`${button} w-full border-cave-700 text-cave-200 flex items-center justify-center gap-2`}><FileText size={18}/>Joindre un justificatif</button>:<section
+        aria-label="Justificatif de la dépense"
+        className={`py-2 px-2 space-y-2 rounded-panel border border-dashed transition-colors ${dropping?'border-ebc-straw bg-ebc-straw/10':'border-cave-700'}`}
+        onDragOver={e=>{if(e.dataTransfer.types.includes('Files')){e.preventDefault();setDropping(true);}}}
+        onDragLeave={()=>setDropping(false)}
+        onDrop={e=>{e.preventDefault();setDropping(false);const file=e.dataTransfer.files?.[0];if(file)void attach(file);}}
+      >
+        <button data-primary type="button" onClick={()=>fileInput.current?.click()} className="w-full min-h-8 rounded-control bg-ebc-straw text-cave-950 flex items-center justify-center gap-2 text-[13px] font-semibold"><FileText size={16}/>Choisir le document</button>
+        {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
+        <p className="text-xs text-center text-cave-400">PDF ou image{coarse?'':', ou dépose le fichier ici'} · lecture automatique · 4 Mo max.</p>
         {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
       </section>:busy||!scan?.ok?<div className="border-t border-cave-700 py-2 flex gap-3 items-center">
         {busy?<Loader2 size={20} className="animate-spin text-ebc-straw shrink-0"/>:<FileText size={20} className="text-hop shrink-0"/>}

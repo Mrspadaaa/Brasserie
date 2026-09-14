@@ -452,8 +452,8 @@
 .brewer-chat-answer .brewer-chat-action {
   padding: 11px 12px;
   background: #a6cb9210;
-  border-left: 3px solid #97b383;
-  border-radius: 0 9px 9px 0;
+  border-left: 1px solid #97b383;
+  border-radius: 9px;
   color: #eee9dd;
 }
 .brewer-chat-answer.is-attention .brewer-chat-action {
@@ -863,7 +863,6 @@
   }
 }
 
-body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill,
-body:has([data-vaul-drawer][data-state='open']) .brewer-global-companion {
+body:has([data-vaul-drawer][data-state='open']) .brewer-activity-pill {
   display: none;
 }

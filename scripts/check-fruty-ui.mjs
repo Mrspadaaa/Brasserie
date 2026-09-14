@@ -39,8 +39,8 @@ try{
   assert.match(await page.$eval('[aria-label="Atelier des arômes de levure"]',e=>e.innerText),/Potentiel PPG.*Flocons/);
   assert(!await page.evaluate(()=>document.body.innerText.includes('Banane · objectif')));
   await capture(page,'incomplet-'+width);
-  // Opening the reserved button must open this draft, not an app-wide conversation.
-  stage='companion';const shortcut=await page.waitForFunction(()=>[...document.querySelectorAll('[data-inline-companion]')].find(e=>e.getClientRects().length));await shortcut.asElement().click();await shortcut.dispose();
+  // Le bouton d'action doit ouvrir CE brouillon, pas une conversation d'écran.
+  stage='companion';await page.click(".floating-actions button[aria-haspopup='menu']");const shortcut=await page.waitForFunction(()=>[...document.querySelectorAll('[role="menuitem"]')].find(e=>e.textContent.startsWith('Compagnon')&&e.getClientRects().length));await shortcut.asElement().click();await shortcut.dispose();
   await page.waitForFunction(()=>document.querySelector('[role="dialog"]')?.textContent.includes('Compagnon'));
   await page.waitForFunction(()=>window.__hopQa.nolo.inputs.some(c=>c.name==='getBrewerConversation'));
   const chat=await page.evaluate(()=>window.__hopQa.nolo.inputs.filter(c=>c.name==='getBrewerConversation').at(-1));assert.equal(chat.input.scope.kind,'draft');

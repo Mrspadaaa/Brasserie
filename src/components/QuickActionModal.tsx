@@ -58,8 +58,11 @@ interface QuickActionModalProps {
   geminiApiKey?: string;
   onSuccessMessage?: (msg: string) => void;
   onOpenCreateBatch?: () => void;
-  initialScreen?: 'menu' | 'quick-sale' | 'quick-expense' | 'scan';
+  initialScreen?: QuickActionScreen;
 }
+
+/** Points d'entrée directs, ouverts depuis le bouton d'action. */
+export type QuickActionScreen = 'menu' | 'quick-sale' | 'quick-expense' | 'scan' | 'brew-batch';
 
 type ModalScreen = 'menu' | 'scan' | 'matching' | 'quick-expense' | 'quick-sale' | 'brew-batch';
 
@@ -149,7 +152,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   useEffect(() => {
     if (!recipes.some(r => r.id === selectedRecipeId)) setSelectedRecipeId(recipes[0]?.id || '');
   }, [recipes, selectedRecipeId]);
-  const [batchVolumeL, setBatchVolumeL] = useState<number>(30);
+  /* Le volume part de celui de la recette : c'est le brassin qu'on refait le plus souvent. */
+  const [batchVolumeL, setBatchVolumeL] = useState<number>(() => recipes[0]?.volumeL ?? 30);
   const [brewError, setBrewError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1176,64 +1180,71 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             </div>
           )}
 
-          {/* SCREEN 6: BREW BATCH */}
-          {screen === 'brew-batch' && (
-            <div className="space-y-3.5 text-sm">
-              <div>
-                <label className="text-cave-200 font-semibold block mb-1">Choisir la recette</label>
+          {/* SCREEN 6: BREW BATCH — brasser une recette déjà au carnet. */}
+          {screen === 'brew-batch' && !recipes.length && (
+            <div className="space-y-2 text-2xs text-cave-200">
+              <p>Aucune recette au carnet. Un brassin part toujours d’une recette enregistrée.</p>
+              <button
+                type="button"
+                onClick={() => { if (onOpenCreateBatch) { onClose(); onOpenCreateBatch(); } }}
+                className="min-h-touch-lg px-2 rounded-control bg-ebc-straw text-cave-950 font-semibold"
+              >
+                Créer une recette
+              </button>
+            </div>
+          )}
+          {screen === 'brew-batch' && !!recipes.length && (
+            <div className="space-y-2 text-2xs">
+              <label className="block space-y-1 text-footnote text-cave-400">
+                Recette à brasser
                 <select
                   name="qa_brew_recipe_select"
-                  aria-label="Choisir la recette"
+                  aria-label="Recette à brasser"
                   autoComplete="off"
                   data-form-type="other"
                   value={selectedRecipeId}
-                  onChange={(e) => { setSelectedRecipeId(e.target.value); setBrewError(''); }}
-                  className="w-full bg-cave-850 border border-cave-700 rounded-xl p-2.5 text-cave-50 font-bold"
+                  onChange={(e) => {
+                    setSelectedRecipeId(e.target.value);
+                    // Le volume suit la recette choisie : c'est la valeur juste
+                    // neuf fois sur dix, et elle reste modifiable juste dessous.
+                    const found = recipes.find((r) => r.id === e.target.value);
+                    if (found) setBatchVolumeL(found.volumeL);
+                    setBrewError('');
+                  }}
+                  className="w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50"
                 >
                   {recipes.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.name} ({r.volumeL}L - {r.style})
+                      {r.name} · {r.volumeL} L · {r.style}
                     </option>
                   ))}
                 </select>
-              </div>
+              </label>
 
-              <div>
-                <label className="text-cave-200 font-semibold block mb-1">Volume du brassin</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[30, 50, 100].map((vol) => (
-                    <button
-                      key={vol}
-                      type="button"
-                      onClick={() => { setBatchVolumeL(vol); setBrewError(''); }}
-                      className={`py-2 rounded-xl font-bold border transition ${
-                        batchVolumeL === vol
-                          ? 'bg-ebc-straw text-cave-950 border-ebc-gold'
-                          : 'bg-cave-850 text-cave-400 border-cave-700'
-                      }`}
-                    >
-                      {vol} L {vol === 30 && '🍺'}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <QuantityStepper
+                compact
+                label="Volume du brassin"
+                unit="L"
+                min={1}
+                customLadder={[1, 5, 10]}
+                value={batchVolumeL}
+                onChange={(next) => { setBatchVolumeL(next); setBrewError(''); }}
+              />
 
-              <div className="p-3 bg-ebc-straw/10 border border-ebc-straw/20 rounded-2xl">
-                <div>
-                  <span className="font-bold text-ebc-gold block">Ingrédients réservés pour ce brassin</span>
-                  <p className="text-sm text-cave-200 mt-1">Le stock sera retiré à la validation des étapes de production, selon les quantités confirmées.</p>
-                </div>
-              </div>
+              <p className="text-footnote text-cave-400">
+                Le stock sera retiré à la validation des étapes de production, selon les quantités confirmées.
+              </p>
 
-              {brewError && <p role="alert" className="text-sm text-ebc-straw">{brewError}</p>}
+              {brewError && <p role="alert" className="text-2xs text-alert-strong">{brewError}</p>}
 
               <button
                 type="button"
                 onClick={handleLaunchBrew}
-                className="w-full py-3 bg-gradient-to-r from-ebc-straw to-ebc-amber hover:from-ebc-gold text-cave-950 font-black rounded-xl shadow-lg transition flex items-center justify-center space-x-1"
+                className="w-full min-h-touch-lg rounded-control bg-ebc-straw text-cave-950 font-semibold
+                           flex items-center justify-center gap-1"
               >
-                <Beer className="w-4 h-4 mr-1" />
-                <span>Démarrer le brassin</span>
+                <Beer className="w-4 h-4" aria-hidden="true" />
+                Démarrer le brassin
               </button>
             </div>
           )}

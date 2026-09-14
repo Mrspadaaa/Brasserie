@@ -1,5 +1,4 @@
-import React, { useEffect, useState, lazy } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useEffect, useRef, useState, lazy } from 'react';
 import { useMobileLayout } from './useViewport';
 import { MessageCircle, LoaderCircle, Trash2 } from 'lucide-react';
 import { brewerJobs, useBrewerJobs, isBrewerWorking, brewerJobStatus, sameBrewerScope, type ClientBrewerJob } from '../services/brewerJobs';
@@ -23,15 +22,20 @@ export function brewerConversations(jobs: ClientBrewerJob[]) {
   return groups;
 }
 
-/** Root inbox and contextual shortcut survive page navigation. */
-export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideLauncher = false }: {
+/**
+ * Root inbox and conversations survive page navigation.
+ *
+ * ⚠️ Le compagnon n'a plus de bouton à lui : `FloatingActions` l'ouvre pour
+ * tous les écrans, par l'événement `brewer-companion-open`. Ce composant garde
+ * ce que le bouton ne peut pas porter — la boîte des conversations, et la
+ * pastille d'activité qui suit une question en cours sur ordinateur.
+ */
+export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideActivityPill = false }: {
   context?: Focus;
-  hideLauncher?: boolean;
+  hideActivityPill?: boolean;
 }) {
   const state = useBrewerJobs(), dialogOpen = useBrewerDialogOpen();
   const mobile = useMobileLayout();
-  const [headerSlot, setHeaderSlot] = useState<HTMLElement | null>(null);
-  useEffect(() => { setHeaderSlot(document.getElementById('brewer-mobile-header')); }, [mobile]);
   const [inbox, setInbox] = useState(false);
   const [deleting, setDeleting] = useState(false), [notice, setNotice] = useState('');
   const [removal, setRemoval] = useState<{ job: ClientBrewerJob; operationId: string } | null>(null);
@@ -40,11 +44,18 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideLau
     const match = /^(recipe|draft|batch|app):([\w-]{1,100})$/.exec(value ?? '');
     return match ? { scope: { kind: match[1] as BrewerScope['kind'], id: match[2] }, label: 'Ta conversation' } : null;
   });
+  /* L'événement traverse l'arbre ; la portée, elle, doit rester celle de l'écran affiché. */
+  const contextRef = useRef(context);
+  contextRef.current = context;
   useEffect(() => {
     void brewerJobs.start();
     const refresh = () => { if (document.visibilityState !== 'hidden') void brewerJobs.refresh(); };
     const showInbox = () => { setFocus(null); setInbox(true); void brewerJobs.refresh(); };
+    // La fiche, l'assistant ou la feuille de brassin ouverts gardent la main sur
+    // leur propre conversation : leurs brouillons et leurs retours y vivent.
+    const showCompanion = () => { if (!brewerLauncher.open()) setFocus(contextRef.current); };
     window.addEventListener('brewer-inbox-open', showInbox);
+    window.addEventListener('brewer-companion-open', showCompanion);
     window.addEventListener('online', refresh);
     document.addEventListener('visibilitychange', refresh);
     const open = (e: MessageEvent) => {
@@ -56,6 +67,7 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideLau
     navigator.serviceWorker?.addEventListener('message', open);
     return () => {
       window.removeEventListener('brewer-inbox-open', showInbox);
+      window.removeEventListener('brewer-companion-open', showCompanion);
       window.removeEventListener('online', refresh);
       document.removeEventListener('visibilitychange', refresh);
       navigator.serviceWorker?.removeEventListener('message', open);
@@ -84,30 +96,19 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideLau
     } finally { setDeleting(false); }
   };
   return <>
-    {mobile && headerSlot && !dialogOpen && !inbox && !focus && createPortal(
-      <button type="button" className="relative touch-target rounded-control text-hop" aria-label={pending.length || unread.length || unconfirmed.length ? `Compagnon : ${badge}` : 'Ouvrir le compagnon brasseur'}
-        onClick={() => { if (pending.length || unread.length || unconfirmed.length) { setInbox(true); void brewerJobs.refresh(); } else if (!brewerLauncher.open()) setFocus(context); }}>
-        {pending.length && !unread.length ? <LoaderCircle size={21} className="brewer-chat-spin"/> : <MessageCircle size={21}/>}
-        {unread.length + unconfirmed.length > 0 && <span className="absolute top-0 right-0 bg-hop text-cave-950 rounded-full px-1 text-xs">{unread.length + unconfirmed.length}</span>}
-      </button>, headerSlot)}
-    {!mobile && !hideLauncher && !dialogOpen && !inbox && !focus && <>
-      <button type="button" className="brewer-global-companion" aria-label="Ouvrir le compagnon brasseur" title="Compagnon brasseur"
-        onClick={() => { if (!brewerLauncher.open()) setFocus(context); }}>
-        <MessageCircle size={23} strokeWidth={2.2} />
-      </button>
-      {(pending.length > 0 || unread.length > 0 || unconfirmed.length > 0) && <button type="button"
+    {!mobile && !hideActivityPill && !dialogOpen && !inbox && !focus &&
+      (pending.length > 0 || unread.length > 0 || unconfirmed.length > 0) && <button type="button"
         className={`brewer-activity-pill${unread.length || unconfirmed.length ? ' has-answer' : ''}`}
         onClick={() => { setInbox(true); void brewerJobs.refresh(); }} aria-label={`Compagnon : ${badge}`}>
         {pending.length && !unread.length ? <LoaderCircle size={17} className="brewer-chat-spin" /> : <MessageCircle size={18} />}
         <span role="status">{badge}</span>
       </button>}
-    </>}
     <Sheet open={inbox} onClose={() => { if (!deleting) { setInbox(false); setRemoval(null); } }} dismissible={!deleting}
       title="Mes conversations" subtitle="Tes questions continuent pendant que tu brasses">
       <div className="brewer-activity-list">
         {state.connectionError && <p role="status">{state.connectionError}</p>}
         {notice && <p role="status">{notice}</p>}
-        {!state.jobs.length && <p className="brewer-inbox-empty">Aucune conversation. L’icône de conversation en haut ouvre le compagnon sur l’écran en cours.</p>}
+        {!state.jobs.length && <p className="brewer-inbox-empty">Aucune conversation. Le bouton + ouvre le compagnon sur l’écran en cours.</p>}
         {brewerConversations(state.jobs).map(({ latest: j, jobs }) => {
           const selected = removal && sameBrewerScope(removal.job.scope, j.scope);
           const working = jobs.filter(isBrewerWorking).length;

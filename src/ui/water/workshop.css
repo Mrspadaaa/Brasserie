@@ -148,29 +148,27 @@
     margin-left: auto;
   }
 
-  /* Dock the existing companion beside the tabs, away from the weighing fields. */
-  body:has(.brewer-global-companion) [data-water-step="sels"] .water-mobile-nav {
-    padding-right: 44px;
+  /* Dock the action button beside the tabs, away from the weighing fields. */
+  body:has(.floating-actions) [data-water-step="sels"] .water-mobile-nav {
+    padding-right: 48px;
   }
 
-  body:has(.brewer-global-companion):has([data-water-step="sels"]) .brewer-chat-launch {
+  body:has(.floating-actions):has([data-water-step="sels"]) .brewer-chat-launch {
     display: none;
   }
 
   body:has(.brewer-activity-pill) [data-water-step="sels"] .water-mobile-nav {
-    padding-right: 88px;
+    padding-right: 92px;
   }
 
-  body:has(.brewer-activity-pill):has([data-water-step="sels"]) .brewer-global-companion {
+  body:has(.brewer-activity-pill):has([data-water-step="sels"]) .floating-actions {
     right: 58px;
   }
 
-  body:has([data-water-step="sels"]) .brewer-global-companion {
+  body:has([data-water-step="sels"]) .floating-actions {
     top: var(--water-navigation-top, 51px);
     right: 14px;
     bottom: auto;
-    width: 36px;
-    height: 36px;
   }
 
   body:has([data-water-step="sels"]) .brewer-activity-pill {
@@ -260,9 +258,3 @@
   .water-salt-dose > :is(input, textarea:where([data-single-line])) { height: 36px; min-height: 36px; }
 }
 
-body:has([data-inline-companion]) [data-water-step="sels"] .water-mobile-nav {
-  padding-right: 0;
-}
-body:has([data-inline-companion]):has(.brewer-activity-pill) [data-water-step="sels"] .water-mobile-nav {
-  padding-right: 44px;
-}

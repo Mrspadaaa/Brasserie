@@ -28,7 +28,7 @@ const reports = [];
 let active;
 const click = async (page, label, partial = false) => {
   const h = await page.waitForFunction((label, partial) => {
-    const labels = label === '+ Recette' ? [label, 'Nouvelle recette'] : [label];
+    const labels = [label];
     return [...document.querySelectorAll('button')].find(b => {
       if (!b.getClientRects().length || b.disabled) return false;
       const values = [b.textContent.trim(), b.getAttribute('aria-label') || ''];
@@ -158,7 +158,9 @@ try {
     }
     // Extended assertions are kept in this single compiled-browser flow below.
     await click(page, 'Recettes', true);
-    await click(page, '+ Recette', true);
+    // La création passe par le bouton d'action flottant, seul point d'entrée.
+    await click(page, 'Actions rapides');
+    await click(page, 'Créer une recette', true);
     await page.locator('#wz-title').fill(`QA recette ${width}`);
     await capture(page, `creation-${width}`, '#wz-title');
     await click(page, 'Houblons', true);
@@ -269,7 +271,22 @@ try {
     const comparisonRequests = requests.length;
     await click(page, 'Garder ce graphe pour comparer');
     await fillVisibleInput(page, '[aria-label="Simulateur aromatique expérimental"] [aria-label="Dose (g/L)"]', '2');
-    if (width < 640) assert.equal(await page.$$eval('.brewer-global-companion', elements => elements.filter(element => element.getClientRects().length).length), 0, 'Typing must not restore a floating control over the graph');
+    // Le bouton d'action reste là — il porte le compagnon. Il flotte au-dessus
+    // du contenu : une rangée pleine largeur peut passer sous son coin droit.
+    // Ce qui n'est pas acceptable, c'est une commande devenue inatteignable :
+    // on exige donc qu'il reste au moins 44 px de sa surface à gauche du bouton.
+    if (width < 640) assert.deepEqual(await page.evaluate(() => {
+      const floating = document.querySelector('.floating-actions');
+      if (!floating) return ['bouton d’action absent'];
+      const box = floating.getBoundingClientRect();
+      const panel = document.querySelector('[aria-label="Simulateur aromatique expérimental"]');
+      return [...panel.querySelectorAll('button, input, select, textarea, summary')].filter((element) => {
+        const rect = element.getBoundingClientRect();
+        const covered = rect.width && rect.height &&
+          !(rect.right < box.left || rect.left > box.right || rect.bottom < box.top || rect.top > box.bottom);
+        return covered && box.left - rect.left < 44;
+      }).map((element) => (element.getAttribute('aria-label') || element.textContent || element.tagName).trim().slice(0, 40));
+    }), [], 'The floating action button must leave every aroma simulator control usable');
     await page.keyboard.press('Tab');
     const comparisonProof = await page.evaluate(scientific => {
       const qa = window.__hopQa, old = qa.raw(scientific, false).additions[0];
@@ -299,8 +316,8 @@ try {
     await capture(page, `comparaison-radar-${width}`, '[aria-label="Simulateur aromatique expérimental"] [aria-label="Graphe de la prédiction expérimentale"]');
     await click(page, 'Effacer la comparaison');
     if (width < 640) {
-      await page.waitForFunction(() => !!document.querySelector('[data-inline-companion]')?.getClientRects().length);
-      assert.equal(await page.$$eval('.brewer-global-companion', elements => elements.filter(element => element.getClientRects().length).length), 0, 'Reserved companion restored after typing');
+      await page.waitForFunction(() => !!document.querySelector('.floating-actions')?.getClientRects().length);
+      assert.equal(await page.$$eval('.brewer-chat-launch', elements => elements.filter(element => element.getClientRects().length).length), 0, 'A single companion entry point after typing');
     }
     assert.equal(await page.$$eval('[aria-label="Simulateur aromatique expérimental"] [data-aroma-baseline]', e => e.length), 0);
     assert.deepEqual(await page.evaluate(() => ({ writes: window.__hopQa.metrics.writes, calls: window.__hopQa.calls.length })), comparisonBefore);

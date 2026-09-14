@@ -33,8 +33,7 @@ export function ProductionCatalog({
   onOpenRecipe,
   onEditRecipe,
   onOpenBatch,
-  onOpenBrewDay,
-  onCreate
+  onOpenBrewDay
 }: {
   kind: CatalogKind;
   recipes: Recipe[];
@@ -44,7 +43,6 @@ export function ProductionCatalog({
   onEditRecipe: (recipe: Recipe) => void;
   onOpenBatch: (batch: Batch, section?: BatchDetailSection) => void;
   onOpenBrewDay: (batch: Batch) => void;
-  onCreate?: () => void;
 }) {
   const mobile = useMobileLayout();
   const [filters, setFilters] = useState<CatalogFilters>(() =>
@@ -187,7 +185,6 @@ export function ProductionCatalog({
           setSelectedIds([]);
           setView('list');
         }}
-        onCreate={onCreate}
       />
       {notice && (
         <div

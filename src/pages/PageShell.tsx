@@ -145,6 +145,7 @@ export const PageShell: React.FC<PageShellProps> = ({
   const frame = wide ? 'max-w-6xl' : 'max-w-3xl';
   const pageRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
   const [opener] = useState(() => document.activeElement instanceof HTMLElement ? document.activeElement : null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -244,6 +245,39 @@ export const PageShell: React.FC<PageShellProps> = ({
   }, [coarse]);
 
   const isTypingOnMobile = coarse && isFieldFocused;
+  const footerShown = !!footer && !isTypingOnMobile;
+
+  /*
+   * Hauteur du pied, publiée pour ce qui flotte au-dessus de la page —
+   * aujourd'hui le bouton d'action. Sans pied, on publie la zone sûre : le
+   * bouton doit dégager la barre de gestes du téléphone, pas s'y coller.
+   */
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const property = '--page-footer-height';
+    const previousValue = root.style.getPropertyValue(property);
+    const previousPriority = root.style.getPropertyPriority(property);
+    const restore = () => {
+      if (previousValue) root.style.setProperty(property, previousValue, previousPriority);
+      else root.style.removeProperty(property);
+    };
+    const element = footerRef.current;
+    if (!element) {
+      root.style.setProperty(property, 'env(safe-area-inset-bottom, 0px)');
+      return restore;
+    }
+    const publishHeight = () => {
+      const height = `${element.getBoundingClientRect().height}px`;
+      if (root.style.getPropertyValue(property) !== height) root.style.setProperty(property, height);
+    };
+    publishHeight();
+    const observer = new ResizeObserver(publishHeight);
+    observer.observe(element, { box: 'border-box' });
+    return () => {
+      observer.disconnect();
+      restore();
+    };
+  }, [footerShown]);
 
   return (
     <div
@@ -352,6 +386,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw focus-visible:-outline-offset-2">
         <div
+          data-floating-actions-gap
           className={`${frame} mx-auto pb-3 ${
             tight
               ? 'px-2.5 py-1.5 space-y-1.5'
@@ -364,8 +399,9 @@ export const PageShell: React.FC<PageShellProps> = ({
         </div>
       </main>
 
-      {footer && !isTypingOnMobile && (
+      {footerShown && (
         <footer
+          ref={footerRef}
           className={`shrink-0 border-t border-cave-800 bg-cave-950/95 backdrop-blur-sm ${
             // Clavier ouvert, le clavier couvre déjà la zone sûre du bas.
             tight ? '' : 'pb-safe'

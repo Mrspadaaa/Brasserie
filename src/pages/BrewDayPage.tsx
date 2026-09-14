@@ -731,7 +731,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         </div>
       }
     >
-      <BrewerChat scope={{kind:'batch',id:batch.id}} label={recipe.name} phase={state.finishedAt?'fermentation':current?.label} localJournal={state}
+      {/* Le bouton d'action flottant ouvre cette conversation : la carte de
+          lancement reprenait une rangée entière du déroulé pour le même geste. */}
+      <BrewerChat hideLauncher scope={{kind:'batch',id:batch.id}} label={recipe.name} phase={state.finishedAt?'fermentation':current?.label} localJournal={state}
         editableTargets={session.canStart ? ['journal','batch'] : []} beforeApply={session.flush}
         onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />

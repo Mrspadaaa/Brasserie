@@ -46,7 +46,6 @@ function productionProps(): React.ComponentProps<typeof ProductionTab> {
     batches: [oldBatch, currentBatch], recipes: [],
     brewhouses: defaultConfig.brewhouses, activeBrewhouseId: defaultConfig.activeBrewhouseId,
     globalTimeFilter: 'this-month', targetSubTab: 'batches',
-    onOpenCreateBatch: vi.fn(), onOpenQuickAction: vi.fn(),
     onOpenRecipe: vi.fn(), onOpenBrewDay: vi.fn(), onDraftRecipe: vi.fn()
   };
 }
@@ -189,7 +188,7 @@ describe('Direct batch navigation from the dashboard', () => {
     expect(handled).not.toHaveBeenCalled();
   });
 
-  it('wires App to the live detail, consumes navigation across tab changes and hides only the dashboard floating action', async () => {
+  it('wires App to the live detail, consumes navigation across tab changes and keeps the floating action on every tab', async () => {
     vi.spyOn(StorageService, 'startSync').mockImplementation(() => {});
     vi.spyOn(StorageService, 'isReady').mockReturnValue(true);
     vi.spyOn(StorageService, 'getBatches').mockReturnValue([oldBatch, currentBatch]);
@@ -197,15 +196,20 @@ describe('Direct batch navigation from the dashboard', () => {
     render(<App />);
 
     const open = await screen.findByRole('button', { name: new RegExp(oldBatch.name) });
-    expect(screen.queryByRole('button', { name: 'Saisir un achat, une vente ou un brassin' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Saisie rapide', exact: true }));
+    // Le tableau de bord n'a plus ses propres raccourcis : tout passe par le bouton flottant.
+    expect(screen.queryByRole('button', { name: 'Saisie rapide', exact: true })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Entrer une facture/ }));
     expect(await screen.findByRole('dialog', { name: 'Saisie rapide' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer la saisie rapide' }));
     fireEvent.click(open);
     let dialog = await screen.findByRole('dialog', { name: oldBatch.name });
     expect(within(dialog).getByLabelText('Densité initiale')).toHaveValue('1.050');
     fireEvent.click(within(dialog).getAllByRole('button', { name: 'Fermer', exact: true })[0]);
-    expect(screen.getByRole('button', { name: 'Nouveau brassin', exact: true })).toBeVisible();
+    // L'action de l'écran reste la première du menu du bouton flottant.
+    fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
+    expect(screen.getByRole('menuitem', { name: /Nouveau brassin/ })).toBeVisible();
+    fireEvent.click(screen.getByRole('button', { name: 'Actions rapides' }));
     expect(screen.getByLabelText('Liste des brassins')).not.toHaveTextContent(oldBatch.name);
 
     const navigation = screen.getByRole('navigation', { name: 'Navigation principale' });

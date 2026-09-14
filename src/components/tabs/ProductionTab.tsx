@@ -23,7 +23,6 @@ interface ProductionTabProps {
   globalTimeFilter: TimeFilterPeriod;
   targetSubTab?: 'batches' | 'recipes' | 'lab' | 'scaler';
   onOpenCreateBatch: () => void;
-  onOpenQuickAction: () => void;
   /** Remonte le sous-onglet courant : le bouton d'action en dépend. */
   onSubTabChange?: (sub: string) => void;
   /** Demande de création émise par le bouton d'action. */
@@ -52,7 +51,6 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   globalTimeFilter,
   targetSubTab,
   onOpenCreateBatch,
-  onOpenQuickAction,
   onSubTabChange,
   createRequest,
   onCreateRequestHandled,
@@ -195,7 +193,6 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {(subTab === 'batches' || subTab === 'recipes') && <>
         <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>
         <ProductionCatalog key={subTab} kind={subTab} recipes={recipes} batches={batches} globalTimeFilter={globalTimeFilter}
-          onCreate={onOpenCreateBatch}
           onOpenRecipe={onOpenRecipe} onEditRecipe={onEditRecipe ?? onOpenRecipe} onOpenBatch={(batch, section = 'measurements') => { setDetailSection(section); setDetailBatch(batch); }} onOpenBrewDay={onOpenBrewDay} />
       </>}
 
@@ -214,8 +211,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       {subTab === 'scaler' && !selectedRecipeToScale && (
         <div className="panel p-2 space-y-2">
           <h3 className="font-semibold text-sm text-cave-50">Aucune recette à adapter</h3>
-          <p className="text-sm text-cave-400">Crée une recette pour adapter ses ingrédients et son eau au volume voulu.</p>
-          <button type="button" onClick={onOpenCreateBatch} className="min-h-touch-lg px-2 rounded-control bg-ebc-straw text-cave-950 text-sm">Créer une recette</button>
+          {/* « Créer une recette » est dans le bouton d'action, en bas à droite. */}
+          <p className="text-sm text-cave-400">Le bouton + crée une recette ; ses ingrédients et son eau s’adapteront ensuite au volume voulu.</p>
         </div>
       )}
       {subTab === 'scaler' && selectedRecipeToScale && (

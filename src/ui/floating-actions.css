@@ -1,0 +1,21 @@
+/* La hauteur passe par une variable, pas par le style en ligne : un écran peut
+   avoir besoin de docker le bouton ailleurs — l'atelier de l'eau le remonte
+   près des onglets pour dégager les champs de pesée — et un style en ligne
+   gagnerait contre cette règle. */
+.floating-actions {
+  bottom: var(--floating-actions-bottom, 0.5rem);
+}
+
+/* Le bouton flotte AU-DESSUS du contenu : sans cette réserve, il masquait la
+   dernière ligne d'une liste — une échéance, un article au seuil — et la rendait
+   inactivable. La réserve disparaît avec le bouton, clavier ouvert par exemple. */
+body:has(.floating-actions) [data-floating-actions-gap] {
+  padding-bottom: 3rem;
+}
+
+/* Une feuille ou une modale possède l'interaction : le bouton s'efface plutôt
+   que de flotter au-dessus d'un formulaire qu'il ne peut pas servir. */
+body:has([role="dialog"][aria-modal="true"]) .floating-actions,
+body:has([data-vaul-drawer][data-state='open']) .floating-actions {
+  display: none;
+}

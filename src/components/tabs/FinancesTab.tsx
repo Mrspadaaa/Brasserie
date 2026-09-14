@@ -16,7 +16,6 @@ import { TaxWorkspace } from '../../ui/finance/TaxWorkspace';
 import type { BrewBudgetSnapshot } from '../../domain/finance/brewBudget';
 import { Sheet } from '../../ui/Sheet';
 import { ProfileSheet, PlanSheet, AssetSheet, ClosingSheet, PaymentSheet, Field, CATEGORY_LABELS, idFor } from '../../ui/finance/FinanceForms';
-import { ExpenseSheet } from '../../ui/finance/ExpenseSheet';
 import { BrewBudgetDialog } from '../../ui/finance/BrewBudgetDialog';
 import { TransactionDetails } from '../../ui/finance/TransactionDetails';
 import { MovementSheet } from '../../ui/finance/MovementSheet';
@@ -29,12 +28,11 @@ import { UpgradeWorkspace, UpgradeAnalytics, upgradeDateLabel } from '../../ui/f
 import { UpgradeSheet } from '../../ui/finance/UpgradeSheet';
 import { isUpgradePlan } from '../../domain/finance/upgrades';
 import { EditTransactionModal } from '../EditTransactionModal';
-import { QuickActionModal } from '../QuickActionModal';
 import '../../ui/finance/finance.css';
 
 interface FinancesTabProps {
   transactions:Transaction[]; budgetLines:BudgetLine[]; config:AppConfig; globalTimeFilter:TimeFilterPeriod;
-  onOpenQuickAction:()=>void; recipes?:Recipe[]; batches?:Batch[]; stockItems?:StockItem[];
+  recipes?:Recipe[]; batches?:Batch[]; stockItems?:StockItem[];
   openTransactionRequest?:{id:string;at:number}|null;
 }
 const readFinance=()=>FinanceService.snapshot();
@@ -59,14 +57,13 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [view,setView]=useState<FinanceView>(initialView);
   const [overviewPart,setOverviewPart]=useState<'situation'|'costs'>('situation');
   const [forecastPart,setForecastPart]=useState<'timeline'|'projects'>(()=>StorageService.getUiState<string>('finances_workspace','overview')==='projects'?'projects':'timeline');
-  const [saleOpen,setSaleOpen]=useState(false);
   const [month,setMonth]=useState(todayISO().slice(0,7)),[allDates,setAllDates]=useState(false);
   const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);
   const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
   const [includeEquipmentProjects,setIncludeEquipmentProjects]=useState(true);
   const [upcomingLimit,setUpcomingLimit]=useState(6),[chartOpen,setChartOpen]=useState(false);
   const [movement,setMovement]=useState<Transaction|null|undefined>(undefined),[closingId,setClosingId]=useState('');
-  const [profileOpen,setProfileOpen]=useState(false),[expenseOpen,setExpenseOpen]=useState(false),[newEquipment,setNewEquipment]=useState(false);
+  const [profileOpen,setProfileOpen]=useState(false);
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
   const [selected,setSelected]=useLiveSelection(transactions,'id'),[paying,setPaying]=useState<Transaction|null>(null),[editing,setEditing]=useState<Transaction|null>(null);
   const [budgetPicker,setBudgetPicker]=useState(false),[budget,setBudget]=useState<{recipe?:Recipe;batch?:Batch}|null>(null),[notice,setNotice]=useState('');
@@ -131,7 +128,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button type="button" key={key} id={`finance-tab-${key}`} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
     <div className="finance-page-heading">
       <h2>{view==='overview'?'Situation financière':view==='journal'?'Mes opérations':view==='forecast'?'Anticiper les dépenses':'Bilan et impôts'}</h2>
-      {(view==='overview'||view==='journal')&&<div className="finance-entry-actions"><button type="button" className="finance-action" aria-label="Ajouter une dépense" onClick={()=>setExpenseOpen(true)}><Plus size={15}/>Achat</button><button type="button" className="finance-action secondary" aria-label="Enregistrer une vente" onClick={()=>setSaleOpen(true)}>Vente</button></div>}
+      {/* Achat et vente vivent dans le bouton d'action flottant, sur tous les écrans. */}
       <button type="button" className="finance-icon-action" aria-label="Solde et paramètres financiers" onClick={()=>setProfileOpen(true)}><Settings2 size={16}/></button>
     </div>
     {notice&&<div className="finance-notice" role="status">{notice}<button className="finance-link" onClick={()=>setNotice('')}>Fermer</button></div>}
@@ -143,13 +140,13 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
         {undated.length>0&&<p className="finance-notice">{compte(undated.length, 'pièce')} avec une date à corriger. <button className="finance-link" onClick={()=>openJournal({scope:'all',allDates:true,filter:'review'})}>Retrouver ces pièces dans l’historique</button></p>}
         <div className="finance-cost-total"><div><span className="finance-label">Dépenses nettes enregistrées</span><small className="finance-muted">{allDates?'Tout l’historique':monthLabel(month)}</small></div><strong className="finance-money">{formatCHF(sum)}</strong></div>
         {!allDates&&previousTotal>0&&<p className="finance-muted">{sum>=previousTotal?'+':'−'}{formatCHF(Math.abs(sum-previousTotal))} par rapport à {monthLabel(previousKey)}{month===todayISO().slice(0,7)?' · mois en cours':''}</p>}
-        <div className="finance-columns"><section className="finance-section"><div className="finance-heading"><h3>Répartition des dépenses</h3></div>{totals.length?<div className="finance-bars">{totals.map(([cat,amount])=><button className="finance-bar" key={cat} onClick={()=>openJournal({scope:'all',category:cat,month,allDates})}><span>{CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]??cat}</span><span className="finance-bar-track"><span className="finance-bar-fill" style={{display:'block',width:`${Math.min(100,Math.max(0,amount/Math.max(1,sum)*100))}%`}}/></span><span className="finance-money">{formatCHF(amount)}</span></button>)}</div>:<div className="finance-empty"><Wheat className="mx-auto"/><h3>Aucune dépense sur cette période</h3><p>Ajoute un achat pour retrouver ici les coûts de ta brasserie.</p><button className="finance-link mx-auto" onClick={()=>setExpenseOpen(true)}>Ajouter une dépense</button></div>}</section>
+        <div className="finance-columns"><section className="finance-section"><div className="finance-heading"><h3>Répartition des dépenses</h3></div>{totals.length?<div className="finance-bars">{totals.map(([cat,amount])=><button className="finance-bar" key={cat} onClick={()=>openJournal({scope:'all',category:cat,month,allDates})}><span>{CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]??cat}</span><span className="finance-bar-track"><span className="finance-bar-fill" style={{display:'block',width:`${Math.min(100,Math.max(0,amount/Math.max(1,sum)*100))}%`}}/></span><span className="finance-money">{formatCHF(amount)}</span></button>)}</div>:<div className="finance-empty"><Wheat className="mx-auto"/><h3>Aucune dépense sur cette période</h3><p>Le bouton + enregistre un achat ; ses coûts apparaîtront ici.</p></div>}</section>
         <section className="finance-section"><div className="finance-heading"><h3>Coût des brassins</h3></div>{snapshots.length?<div className="finance-list">{snapshots.slice(0,6).map(p=>{const s=p.brewEstimate as BrewBudgetSnapshot;return <button className="finance-row" key={p.id} onClick={()=>{const batch=batches.find(b=>b.id===s.batchId),recipe=recipes.find(r=>r.id===s.recipeId);if(batch||recipe)setBudget({batch,recipe});else setNotice('La recette de ce budget est absente. Le budget enregistré reste conservé.');}}><div className="finance-row-main"><strong>{s.title}</strong><span className="finance-muted">{s.netVolumeL} L · {s.complete?'Estimation enregistrée':'Estimation partielle'}</span></div><span className="finance-money">{s.costPerL!=null?`${formatCHF(Math.round(s.costPerL*100))}/L`:'À compléter'}</span><ChevronRight size={16}/></button>;})}</div>:<p className="finance-muted">Estime un brassin pour connaître son coût par litre et les achats nécessaires.</p>}<button className="finance-link" onClick={()=>setBudgetPicker(true)}><Plus size={18}/>Estimer un brassin</button></section></div>
         {!!vendors.length&&<section className="finance-section"><h3>Principaux fournisseurs</h3><div className="finance-list">{vendors.slice(0,5).map(([name,amount])=><button key={name} className="finance-row" onClick={()=>openJournal({scope:'all',query:name==='Fournisseur à compléter'?'':name,month,allDates})}><span className="finance-row-main">{name}</span><span className="finance-money">{formatCHF(amount)}</span><ChevronRight size={16}/></button>)}</div></section>}
-        <details className="finance-disclosure"><summary>Investissements et matériel</summary><UpgradeAnalytics plans={data.plans} transactions={transactions} payments={data.payments} onOpen={setUpgrade} onBrowse={showProjects}/><button type="button" className="finance-link" onClick={()=>{setNewEquipment(true);setExpenseOpen(true);}}><Wrench size={15}/>Enregistrer un achat de matériel</button></details>
+        <details className="finance-disclosure"><summary>Investissements et matériel</summary><UpgradeAnalytics plans={data.plans} transactions={transactions} payments={data.payments} onOpen={setUpgrade} onBrowse={showProjects}/><p className="finance-muted"><Wrench size={15} className="inline align-text-bottom mr-1"/>Un achat de matériel s’enregistre comme une facture, depuis le bouton +.</p></details>
         {financeAssistant}
       </>}
-      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onSale={()=>setSaleOpen(true)} onPrivateMovement={()=>setMovement(null)}/>{financeAssistant}</>}
+      {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onPrivateMovement={()=>setMovement(null)}/>{financeAssistant}</>}
       {view==='forecast'&&<div className="finance-subnav" role="group" aria-label="Prévisions et projets"><button type="button" aria-pressed={forecastPart==='timeline'} onClick={()=>setForecastPart('timeline')}>Échéances</button><button type="button" aria-pressed={forecastPart==='projects'} onClick={()=>setForecastPart('projects')}>Projets de matériel</button></div>}
       {view==='forecast'&&forecastPart==='timeline'&&<>
         <div className="finance-filter" role="group" aria-label="Horizon de prévision">{[[30,'30 jours'],[90,'90 jours'],[365,'12 mois']].map(([value,label])=><button key={value} aria-pressed={horizon===value} onClick={()=>{setHorizon(Number(value) as 30|90|365);setUpcomingLimit(6);}}>{label}</button>)}</div>
@@ -177,8 +174,6 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     </section>
     {archiveOpen&&<ArchiveManagerSheet transactions={transactions} payments={data.payments} archives={archives} closings={data.closings} onClose={()=>setArchiveOpen(false)} onSaved={setNotice} onBrowse={(year,archived)=>{setArchiveOpen(false);openJournal(archived?{scope:'archives',archiveYear:String(year),allDates:true}:{scope:'all',year:String(year),allDates:true});}}/>}
     {profileOpen&&<ProfileSheet profile={data.profile} onClose={()=>setProfileOpen(false)}/>}
-    {saleOpen&&<QuickActionModal isOpen initialScreen="quick-sale" recipes={recipes} onClose={()=>setSaleOpen(false)} onSuccessMessage={setNotice}/>}
-    {expenseOpen&&<ExpenseSheet initialIntent={newEquipment?'equipment':'expense'} onClose={()=>{setExpenseOpen(false);setNewEquipment(false);}} onSaved={()=>setNotice('Dépense enregistrée.')}/>}
     {upgrade!==undefined&&<UpgradeSheet plan={upgrade??undefined} onClose={()=>setUpgrade(undefined)} onOpenTransaction={tx=>{setUpgrade(undefined);setSelected(tx);}}/>}
     {plan!==undefined&&<PlanSheet plan={plan??undefined} onClose={()=>setPlan(undefined)}/>}
     {asset!==undefined&&<AssetSheet asset={asset??undefined} onClose={()=>setAsset(undefined)}/>}

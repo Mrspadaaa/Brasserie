@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle, Beer, Boxes, Calendar, Check, ChevronDown, ChevronRight,
-  Copy, Plus, ReceiptText, ShieldCheck, Wallet
+  Copy, ShieldCheck, Wallet
 } from 'lucide-react';
 import type { AppConfig, Batch, CreativeItem, GanttTask, StockItem, TimeFilterPeriod, Transaction } from '../../types';
 import { compte } from '../../services/plural';
@@ -25,8 +25,6 @@ interface DashboardTabProps {
   onNavigateTab: (tab: 'finances' | 'production' | 'stocks' | 'clients') => void;
   onOpenBatch: (batchId: string) => void;
   onNavigateToCreativeLab: () => void;
-  onOpenCreateBatch: () => void;
-  onOpenQuickAction: () => void;
 }
 
 const quantity = new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 });
@@ -119,7 +117,7 @@ function administrativeReminders(config: AppConfig) {
 
 export const DashboardTab: React.FC<DashboardTabProps> = ({
   transactions, batches, stocks, config, globalTimeFilter, onNavigateTab, onOpenBatch,
-  onNavigateToCreativeLab, onOpenCreateBatch, onOpenQuickAction
+  onNavigateToCreativeLab
 }) => {
   const creativeItems = useStorageValue(StorageService.getCreativeItems);
   const financeProfile = useStorageValue(FinanceService.getProfile);
@@ -190,18 +188,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   }
 
   return <div className="space-y-2 pt-1 pb-[calc(var(--main-navigation-height,2.5rem)+0.5rem)] text-sm">
+    {/* Saisie rapide et création de brassin vivent dans le bouton d'action
+        flottant, présent sur tous les écrans : les répéter ici coûtait une
+        rangée sans rien ajouter. */}
     <header className="flex min-h-9 flex-wrap items-center justify-between gap-1">
       <h2 className="text-[1.125rem] font-semibold text-cave-50">À la brasserie</h2>
-      <div className="flex items-center gap-1">
-        <button type="button" onClick={onOpenQuickAction} aria-label="Saisie rapide" title="Saisie rapide"
-          className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-control border border-cave-700 text-cave-200 hover:bg-cave-850">
-          <ReceiptText size={16} aria-hidden="true" />
-        </button>
-        <button type="button" onClick={onOpenCreateBatch}
-          className="inline-flex min-h-8 items-center gap-1 rounded-control bg-ebc-straw px-2 text-2xs font-semibold text-cave-950 hover:bg-ebc-gold">
-          <Plus size={16} aria-hidden="true" />Brassin
-        </button>
-      </div>
     </header>
 
     <div className="grid gap-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
