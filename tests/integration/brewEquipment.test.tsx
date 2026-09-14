@@ -10,6 +10,7 @@ import { SettingsModal } from '../../src/components/SettingsModal';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { Recipe } from '../../src/types';
 import { brewerJobs } from '../../src/services/brewerJobs';
+import { BrewerChat as brewerApi } from '../../src/services/brewerChat';
 const rig = { ...defaultConfig.brewhouses[0], volumeL: 24, equipment: { ...practicalEquipment } };
 afterEach(() => {
   cleanup();
@@ -41,6 +42,30 @@ describe('Réglages matériels discrets', () => {
     expect(
       screen.queryByRole('button', { name: 'Adapter la recette à 24 L' })
     ).not.toBeInTheDocument();
+  });
+  it('garde le wizard utilisable en dev-local sans appeler le compagnon distant', async () => {
+    const history = vi.spyOn(brewerApi, 'history');
+    const activity = vi.spyOn(brewerApi, 'activity');
+    const userKey = vi.spyOn(brewerApi, 'userKey');
+    render(
+      <BrewWizard
+        localOnly
+        config={defaultConfig}
+        stockItems={[]}
+        knownStyles={[]}
+        onClose={vi.fn()}
+        onSave={vi.fn()}
+        onCreateStockItem={vi.fn()}
+        onLearnIngredient={vi.fn()}
+        onSaveWaterSource={vi.fn()}
+      />
+    );
+    fireEvent.change(screen.getByLabelText('Nom de la bière'), { target: { value: 'Test local' } });
+    await act(async () => {});
+    expect(screen.getByLabelText('Nom de la bière')).toHaveValue('Test local');
+    expect(history).not.toHaveBeenCalled();
+    expect(activity).not.toHaveBeenCalled();
+    expect(userKey).not.toHaveBeenCalled();
   });
   it('reste replié et recalcule le volume utile lorsque la place pour la mousse change', () => {
     const change = vi.fn();

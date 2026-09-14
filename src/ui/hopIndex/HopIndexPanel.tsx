@@ -13,7 +13,6 @@ import { HopField as Field, HopFactsEditor, HopSourceEditor, blankHopSource } fr
 import { BrewTag } from '../BrewTag';
 import { ChevronRight } from 'lucide-react';
 import { useHopCatalogue } from './useHopCatalogue';
-import { ensureGuideReferences } from './guideData';
 import { HopTechnicalPanel } from './HopTechnicalPanel';
 import { MobileDetails } from '../ViewNavigation';
 import { useMobileLayout } from '../useViewport';
@@ -93,7 +92,10 @@ export function HopIndexPanel({ createRequest, onNotice }: { createRequest?: { k
       if (editor.kind === 'variety') StorageService.saveHopVariety(item as HopVariety);
       else {
         const parent = varieties.find(v => v.id === (item as HopLot).varietyId);
-        if (parent) await ensureGuideReferences({ varieties: [parent] });
+        if (parent) {
+          const { ensureGuideReferences } = await import('./guideData');
+          await ensureGuideReferences({ varieties: [parent] });
+        }
         StorageService.saveHopLot(item as HopLot);
       }
       setSelected(editor.kind === 'variety' ? item.id : (item as HopLot).varietyId);

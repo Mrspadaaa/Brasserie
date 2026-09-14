@@ -619,4 +619,4 @@ export function useWaterWorkshop({
 }
 export type WaterWorkshopModel = ReturnType<typeof useWaterWorkshop>;
 
-import { noloWaterModelIssue } from '../../domain/nolo';
+import { noloWaterModelIssue } from '../../domain/noloWaterModelIssue';

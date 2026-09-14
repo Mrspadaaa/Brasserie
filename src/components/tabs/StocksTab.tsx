@@ -1,6 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useState, useMemo, useEffect, useRef } from 'react';
 import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
-import { HopIndexWorkspace as HopIndexPanel } from '../../ui/hopIndex/HopIndexWorkspace';
 import { StockItem, EquipmentItem, KegItem, Batch } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
@@ -26,6 +25,12 @@ import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
 import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
 import '../../ui/stocks.css';
+
+const HopIndexPanel = lazy(() =>
+  import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
+    default: HopIndexWorkspace,
+  })),
+);
 
 interface StocksTabProps {
   stocks: {
@@ -313,7 +318,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </ViewNavigation>
       </div>
 
-      {subTab === 'hops' && <HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} />}
+      {subTab === 'hops' && <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>}
 
       {subTab === 'stock' && (
         <EntityList

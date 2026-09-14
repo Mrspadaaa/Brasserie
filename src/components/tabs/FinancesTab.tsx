@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../../ui/NumberInput';
 import { compte } from '../../services/plural';
 import { Plus, ChevronRight, Settings2, CalendarDays, Wheat, Wrench, Check } from 'lucide-react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import type { Transaction, BudgetLine, AppConfig, TimeFilterPeriod, Recipe, Batch, StockItem } from '../../types';
 import type { FinancialAsset, FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
@@ -47,6 +46,7 @@ const labels={paid:'Payé',partial:'Partiellement payé',unpaid:'À payer',unkno
 const shortDate=(date?:string)=>{const d=isoDate(date);return d?new Date(`${d}T12:00:00`).toLocaleDateString('fr-CH',{day:'numeric',month:'short',year:d.slice(0,4)===todayISO().slice(0,4)?undefined:'numeric'}):'Date à vérifier';};
 const monthLabel=(month:string)=>new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH',{month:'long',year:'numeric'});
 const EMPTY: never[]=[];
+const FinanceComparisonChart=React.lazy(()=>import('../../ui/finance/FinanceComparisonChart').then(({FinanceComparisonChart:Chart})=>({default:Chart})));
 
 export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest}:FinancesTabProps) {
   const data=useStorageValue(readFinance);
@@ -156,7 +156,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
         <div className="finance-actions finance-section"><button type="button" className="finance-action" onClick={()=>setPlan(null)}><Plus size={15}/>Ajouter une prévision</button><button type="button" className="finance-action secondary" onClick={()=>setBudgetPicker(true)}><Wheat size={15}/>Budget d’un brassin</button></div>
         <details className="finance-disclosure" onToggle={e=>setChartOpen(e.currentTarget.open)}><summary>Comparer les mois</summary>{chartOpen&&<>
           <p className="finance-muted">Sorties en bleu · solde en pointillé, en CHF. {forecast.warnings.length>0?'Scénario limité aux données renseignées.':''}</p>
-          <div className="finance-chart" role="img" aria-label="Évolution mensuelle, montants exacts dans le tableau suivant"><ResponsiveContainer width="100%" height="100%"><AreaChart data={forecastChart} margin={{top:8,right:12,left:0,bottom:0}}><CartesianGrid stroke="#3D342E" vertical={false}/><XAxis dataKey="label" tick={{fill:'#D8CEC5',fontSize:12}} tickFormatter={v=>v.split(' ')[0].slice(0,4)} minTickGap={28}/><YAxis width={48} tick={{fill:'#D8CEC5',fontSize:12}}/><Tooltip contentStyle={{background:'#221D19',border:'1px solid #574A42',borderRadius:8}} formatter={(v:number,name:string)=>[formatCHF(Math.round(v*100)),name==='expense'?'Sorties prévues':'Trésorerie']}/><Area type="linear" dataKey="expense" stroke="#86B9E6" fill="#86B9E6" fillOpacity={.08} isAnimationActive={false}/>{ledger.cashComplete&&ledger.cashCents!=null&&<Area type="linear" dataKey="balance" stroke="#D8CEC5" strokeDasharray="5 4" fill="transparent" isAnimationActive={false}/>}</AreaChart></ResponsiveContainer></div>
+          <React.Suspense fallback={<div className="finance-chart flex items-center justify-center text-2xs text-cave-400" role="status">Chargement du graphique…</div>}><FinanceComparisonChart data={forecastChart} cashComplete={ledger.cashComplete} cashCents={ledger.cashCents}/></React.Suspense>
           <table className="finance-table"><caption className="sr-only">Prévision mensuelle selon le scénario sélectionné</caption><thead><tr><th scope="col">Mois</th><th scope="col">Sorties</th><th scope="col">Solde estimé</th></tr></thead><tbody>{forecastChart.map(item=><tr key={item.label}><th scope="row">{item.label}</th><td className="finance-money">{formatCHF(Math.round(item.expense*100))}</td><td className="finance-money">{item.balance==null?'À compléter':formatCHF(Math.round(item.balance*100))}</td></tr>)}</tbody></table>
         </>}</details>
         <section className="finance-section"><h3>Prochaines échéances</h3><div className="finance-list">{upcoming.slice(0,upcomingLimit).map(forecastRow)}</div>{upcoming.length>upcomingLimit&&<button className="finance-link" onClick={()=>setUpcomingLimit(limit=>limit+6)}>Voir les {Math.min(6,upcoming.length-upcomingLimit)} échéances suivantes<ChevronRight size={16}/></button>}{!upcoming.length&&<p className="finance-empty-inline">Aucune échéance renseignée sur cette période. Ajoute une prévision ou le budget d’un brassin.</p>}</section>

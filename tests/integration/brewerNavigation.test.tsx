@@ -200,6 +200,14 @@ describe('Bouton d’action flottant et gestion des conversations', () => {
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Mes conversations' })); });
     expect(screen.getByRole('dialog', { name: 'Mes conversations' })).toBeVisible();
   });
+  it('n’interroge pas le compagnon en mode dev-local et affiche son état hors connexion', async () => {
+    window.history.replaceState({}, '', '/?dev-local');
+    render(<BrewerActivity localOnly />);
+    expect(screen.getByRole('status')).toHaveTextContent('Compagnon hors connexion · mode local');
+    await act(async () => {});
+    expect(api.activity).not.toHaveBeenCalled();
+    expect(api.userKey).not.toHaveBeenCalled();
+  });
   it('atteint le compagnon depuis le bouton flottant sur téléphone, finances comprises', async () => {
     const match = phoneMatchMedia();
     try {

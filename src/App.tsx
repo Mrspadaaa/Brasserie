@@ -191,6 +191,7 @@ export const App: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [writeError, setWriteError] = useState<string | null>(null);
   const [isDataReady, setIsDataReady] = useState(false);
+  const isDevLocal = import.meta.env.DEV && currentUser?.email === 'dev-local@localhost';
 
   // Reactive state from StorageService (STRICTLY ISOLATED: Empty by default until Google auth validates!)
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -326,6 +327,12 @@ export const App: React.FC = () => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
+
+  // Un message informatif ne doit pas recouvrir la commande qui suit une
+  // navigation ; les erreurs de sauvegarde restent, elles, persistantes.
+  useEffect(() => {
+    setToastMessage(null);
+  }, [activeTab, route.route]);
 
   // Critical stock count
   const criticalStockCount = [
@@ -635,7 +642,11 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
-      <BrewerActivity context={brewerAppScreen(activeTab, subTab)} hideActivityPill={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'} />
+      <BrewerActivity
+        context={brewerAppScreen(activeTab, subTab)}
+        localOnly={isDevLocal}
+        hideActivityPill={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
+      />
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
@@ -654,7 +665,7 @@ export const App: React.FC = () => {
 
       {/* Toast notification */}
       {toastMessage && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-ebc-straw text-cave-950 px-4 py-2.5 rounded-2xl shadow-2xl font-bold text-sm flex items-center space-x-2 animate-in fade-in slide-in-from-top-4 border border-ebc-gold max-w-sm text-center">
+        <div role="status" className="pointer-events-none fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-ebc-straw text-cave-950 px-4 py-2.5 rounded-2xl shadow-2xl font-bold text-sm flex items-center space-x-2 animate-in fade-in slide-in-from-top-4 border border-ebc-gold max-w-sm text-center">
           <span>{toastMessage}</span>
         </div>
       )}
@@ -879,6 +890,7 @@ export const App: React.FC = () => {
         <BrewWizard
           key={`${currentUser.uid}:${wizardDraftId}`}
           draftKey={`${currentUser.uid}:${wizardDraftId}`}
+          localOnly={isDevLocal}
           seed={wizardSeed}
           stockItems={allStockItems}
           config={config}

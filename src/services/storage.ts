@@ -1,5 +1,4 @@
 import { transactionAmount, transactionKind, paidForTransaction, validateFinanceTransaction } from '../domain/finance/ledger';
-import { recipeYeastReferencesToSave } from '../domain/recipeYeastReferences';
 import type { FinancialPayment } from '../domain/finance/types';
 import { prepareBrewStockConsumption } from '../domain/finance/brewStockConsumption';
 import {
@@ -50,6 +49,75 @@ const LOCAL_KEYS = {
   UI_STATE: 'laffinee_ui_state',
   CURRENT_USER: 'laffinee_current_user'
 };
+
+/**
+ * The full yeast catalogue is useful when a recipe is saved, but it is not
+ * needed to open the application. Enrich recipe references after the primary
+ * recipe write so the first screen does not pay for the 1.9 MB catalogue.
+ *
+ * A recipe can be saved while the first Firestore snapshots are still arriving.
+ * Keep that auxiliary work pending until the repository announces a change and
+ * `isReady()` becomes true; the recipe write itself remains fire-and-forget.
+ */
+let pendingRecipeYeastReferences: Recipe[] = [];
+let recipeYeastReferencesListener: (() => void) | undefined;
+let recipeYeastReferencesFlush: Promise<void> | undefined;
+let recipeYeastReferencesEpoch = 0;
+let recipeYeastReferencesRetryOnNotification = false;
+
+function stopRecipeYeastReferencesQueue(): void {
+  recipeYeastReferencesEpoch += 1;
+  pendingRecipeYeastReferences = [];
+  recipeYeastReferencesRetryOnNotification = false;
+  recipeYeastReferencesListener?.();
+  recipeYeastReferencesListener = undefined;
+}
+
+function flushRecipeYeastReferences(): void {
+  if (recipeYeastReferencesFlush || !pendingRecipeYeastReferences.length || !StorageService.isReady()) return;
+  const epoch = recipeYeastReferencesEpoch;
+  const recipes = pendingRecipeYeastReferences;
+  pendingRecipeYeastReferences = [];
+  recipeYeastReferencesFlush = (async () => {
+    try {
+      // Import only after a ready repository exists; this keeps the catalogue
+      // out of the initial application module graph.
+      const { recipeYeastReferencesToSave } = await import('../domain/recipeYeastReferences');
+      if (epoch !== recipeYeastReferencesEpoch) return;
+      if (!StorageService.isReady()) {
+        pendingRecipeYeastReferences = [...recipes, ...pendingRecipeYeastReferences];
+        return;
+      }
+      for (const reference of recipeYeastReferencesToSave(recipes, StorageService.getHopKnowledge())) {
+        try { StorageService.saveHopKnowledge(reference); }
+        catch { /* Auxiliary enrichment must never reject the recipe save. */ }
+      }
+    } catch {
+      if (epoch === recipeYeastReferencesEpoch) {
+        // Keep a failed import available for a later repository notification;
+        // a missing chunk or transient module failure must not lose the intent.
+        pendingRecipeYeastReferences = [...recipes, ...pendingRecipeYeastReferences];
+        recipeYeastReferencesRetryOnNotification = true;
+      }
+    }
+  })().finally(() => {
+    recipeYeastReferencesFlush = undefined;
+    if (pendingRecipeYeastReferences.length && StorageService.isReady() && !recipeYeastReferencesRetryOnNotification) flushRecipeYeastReferences();
+    else if (!pendingRecipeYeastReferences.length) stopRecipeYeastReferencesQueue();
+  });
+}
+
+function queueRecipeYeastReferences(recipes: Recipe[]): void {
+  pendingRecipeYeastReferences.push(...recipes.map(recipe => ({
+    ...recipe,
+    yeast: recipe.yeast ? { ...recipe.yeast } : recipe.yeast,
+  })));
+  recipeYeastReferencesListener ??= FirestoreRepo.subscribe(() => {
+    recipeYeastReferencesRetryOnNotification = false;
+    flushRecipeYeastReferences();
+  });
+  if (!recipeYeastReferencesRetryOnNotification) flushRecipeYeastReferences();
+}
 
 export const defaultExpenseTemplates: ExpenseTemplate[] = [
   {
@@ -310,6 +378,7 @@ export const StorageService = {
 
   /** Coupe la synchronisation Firestore (déconnexion). */
   clearMemoryCache(): void {
+    stopRecipeYeastReferencesQueue();
     FirestoreRepo.stopSync();
     Object.keys(localCache).forEach((k) => delete localCache[k]);
   },
@@ -908,7 +977,7 @@ export const StorageService = {
    * onglets ouverts pouvaient s'écraser mutuellement.
    */
   updateRecipe(recipe: Recipe) {
-    for (const reference of recipeYeastReferencesToSave([recipe], this.getHopKnowledge())) this.saveHopKnowledge(reference);
+    queueRecipeYeastReferences([recipe]);
     if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     const old = this.getRecipes().find((r) => r.id === recipe.id);
     FirestoreRepo.put('recipes', recipe.id, recipe);
@@ -928,13 +997,13 @@ export const StorageService = {
   },
 
   saveRecipes(recipes: Recipe[]) {
-    for (const reference of recipeYeastReferencesToSave(recipes, this.getHopKnowledge())) this.saveHopKnowledge(reference);
+    queueRecipeYeastReferences(recipes);
     recipes=recipes.map(recipe=>{if(!recipe.nolo)return recipe;assertNoloConfig(recipe.nolo);return {...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};});
     syncCollection('recipes', recipes, (r) => r.id);
   },
 
   addRecipe(recipe: Recipe) {
-    for (const reference of recipeYeastReferencesToSave([recipe], this.getHopKnowledge())) this.saveHopKnowledge(reference);
+    queueRecipeYeastReferences([recipe]);
     if(recipe.nolo){assertNoloConfig(recipe.nolo);recipe={...recipe,nolo:{...recipe.nolo,scienceSnapshot:recipe.nolo.scienceSnapshot??noloScience(this.getHopKnowledge())}};}
     FirestoreRepo.put('recipes', recipe.id, recipe);
     this.logAction(

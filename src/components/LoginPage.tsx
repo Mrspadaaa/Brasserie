@@ -58,7 +58,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
         {error && (
           <div
             role="alert"
-            className="p-4 rounded-panel bg-alert/10 border border-alert/40 text-alert
+            className="p-4 rounded-panel bg-alert/10 border border-alert/40 text-alert-strong
                        text-base flex items-start gap-3"
           >
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />

@@ -28,9 +28,21 @@ const number = (n?: number | null, digits = 1) => Number.isFinite(n)
   ? n!.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
 const range = (r?: { range: { min: number; max: number } } | null, unit = '') => r
   ? `${number(r.range.min)}${r.range.min === r.range.max ? '' : `–${number(r.range.max)}`} ${unit}`.trim() : 'Non documenté';
+/**
+ * The workbench guards a comparison against edits to brewing inputs, not
+ * against derived metrics or catalogue hydration. `RecipeAutoComplete` can
+ * enrich a selected yeast after this panel mounts (lab, documentary window,
+ * and fermentation facts); those facts do not invalidate the scenario the
+ * brewer is editing. OG is also recalculated when that enrichment supplies
+ * attenuation data, so it is deliberately not part of this identity.
+ */
+const comparisonYeast = (yeast: TrialRecipe['yeast']) => ({
+  name: yeast.name, hopIndexId: yeast.hopIndexId, form: yeast.form, qty: yeast.qty, unit: yeast.unit,
+  pitchTempC: yeast.pitchTempC, fermentDays: yeast.fermentDays,
+});
 const baseKey = (recipe: TrialRecipe) => fermentationStateKey({
-  style: recipe.style, styleRef: recipe.styleRef, volumeL: recipe.volumeL, og: recipe.ogTarget,
-  yeast: recipe.yeast, yeastDesign: recipe.yeastDesign, hops: recipe.hops,
+  style: recipe.style, styleRef: recipe.styleRef, volumeL: recipe.volumeL,
+  yeast: comparisonYeast(recipe.yeast), yeastDesign: recipe.yeastDesign, hops: recipe.hops,
   fermentation: recipe.fermentation, mash: recipe.mash, fermentables: recipe.fermentables,
 });
 

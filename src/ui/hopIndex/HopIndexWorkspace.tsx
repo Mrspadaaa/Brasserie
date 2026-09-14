@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { BookOpen, FlaskConical, SlidersHorizontal, Target } from 'lucide-react';
-import { HopIndexPanel } from './HopIndexPanel';
-import { HopKnowledgePanel } from './HopKnowledgePanel';
-import { HopSearchPanel } from './HopSearchPanel';
-import { HopTastingsPanel } from './HopTastingsPanel';
+import type { HopIndexPanel } from './HopIndexPanel';
 import { ViewNavigation } from '../ViewNavigation';
+
+const HopIndexPanelView = lazy(() => import('./HopIndexPanel').then(({ HopIndexPanel: Panel }) => ({ default: Panel })));
+const HopKnowledgePanelView = lazy(() => import('./HopKnowledgePanel').then(({ HopKnowledgePanel: Panel }) => ({ default: Panel })));
+const HopSearchPanelView = lazy(() => import('./HopSearchPanel').then(({ HopSearchPanel: Panel }) => ({ default: Panel })));
+const HopTastingsPanelView = lazy(() => import('./HopTastingsPanel').then(({ HopTastingsPanel: Panel }) => ({ default: Panel })));
 export function HopIndexWorkspace(props: React.ComponentProps<typeof HopIndexPanel>) {
   const [view, setView] = useState('index');
   useEffect(() => { if (props.createRequest?.kind === 'newHopVariety') setView('index'); }, [props.createRequest?.at]);
@@ -23,6 +25,8 @@ export function HopIndexWorkspace(props: React.ComponentProps<typeof HopIndexPan
       </button>)}
     </nav>
     </ViewNavigation>
-    {view === 'index' && <HopIndexPanel {...props} />}{view === 'search' && <HopSearchPanel />}{view === 'tastings' && <HopTastingsPanel />}{view === 'knowledge' && <HopKnowledgePanel />}
+    <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de cet atelier…</div>}>
+      {view === 'index' && <HopIndexPanelView {...props} />}{view === 'search' && <HopSearchPanelView />}{view === 'tastings' && <HopTastingsPanelView />}{view === 'knowledge' && <HopKnowledgePanelView />}
+    </Suspense>
   </div>;
 }

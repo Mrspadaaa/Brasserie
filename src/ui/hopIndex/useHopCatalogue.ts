@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { HopVariety } from '../../../functions/src/hopIndexSchema';
 import { useStorageValue } from '../../hooks/useLiveData';
 import { StorageService } from '../../services/storage';
-import { loadGuideVarieties } from './guideData';
+import { loadGuideVarieties } from './guideVarieties';
 
 /** Same read-only catalogue in the index, recipe picker and workshop. Saved IDs win. */
 export function useHopCatalogue() {

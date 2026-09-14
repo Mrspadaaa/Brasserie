@@ -23,7 +23,7 @@ import { assessWaterProfile, PROFILE_IONS } from './water/profileAssessment';
 import { computeBeerColor } from './beerColor';
 import { hopBalanceHint } from './hopBalance';
 import { BrewingMath } from '../services/brewingMath';
-import { noloScience } from './nolo';
+import { noloScience } from './noloScience';
 type WaterRecipe = Pick<
   Recipe,
   | 'style'

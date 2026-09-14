@@ -16,6 +16,21 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 /** Dépôt en mémoire : mêmes signatures que `FirestoreRepo`, aucun réseau. */
 const store = new Map<string, Map<string, Record<string, unknown>>>();
+let repoReady = true;
+const repoListeners = new Set<() => void>();
+const enrichment = vi.hoisted(() => ({ fail: false, calls: 0 }));
+
+vi.mock('../../src/domain/recipeYeastReferences', async () => {
+  const actual = await vi.importActual<typeof import('../../src/domain/recipeYeastReferences')>('../../src/domain/recipeYeastReferences');
+  return {
+    ...actual,
+    recipeYeastReferencesToSave: (...args: Parameters<typeof actual.recipeYeastReferencesToSave>) => {
+      enrichment.calls += 1;
+      if (enrichment.fail) throw new Error('Catalogue temporairement indisponible');
+      return actual.recipeYeastReferencesToSave(...args);
+    }
+  };
+});
 
 const fakeRepo = {
   all: <T>(name: string): T[] =>
@@ -35,8 +50,8 @@ const fakeRepo = {
     store.get(name)?.delete(id);
   },
   startSync: () => {},
-  isReady: () => true,
-  subscribe: () => () => {},
+  isReady: () => repoReady,
+  subscribe: (cb: () => void) => { repoListeners.add(cb); return () => repoListeners.delete(cb); },
   consumeWriteError: () => null,
   clearMemoryCache: () => store.clear()
 };
@@ -64,6 +79,10 @@ const stockItem = (over: Partial<import('../../src/types').StockItem> = {}) => (
 
 beforeEach(() => {
   store.clear();
+  repoReady = true;
+  repoListeners.clear();
+  enrichment.fail = false;
+  enrichment.calls = 0;
 });
 
 describe('Stock', () => {
@@ -294,6 +313,40 @@ describe('Recettes et brassins', () => {
     expect(all).toHaveLength(2);
     expect(all.find((r) => r.id === 'REC-1')!.name).toBe('NEIPA v2');
     expect(all.find((r) => r.id === 'REC-2')!.name).toBe('Stout');
+  });
+
+  it('conserve l’enrichissement levure demandé avant la fin de la synchronisation', async () => {
+    repoReady = false;
+    StorageService.addRecipe({ ...recipe, yeast: { ...recipe.yeast, hopIndexId: 'fermentis-us05' } });
+
+    // L’écriture principale est bien durable, mais l’enrichissement attend la
+    // fin des premiers snapshots au lieu d’être perdu silencieusement.
+    expect(StorageService.getRecipes()).toHaveLength(1);
+    await Promise.resolve();
+    expect(store.get('hopKnowledge')).toBeUndefined();
+
+    repoReady = true;
+    repoListeners.forEach(listener => listener());
+    await vi.waitFor(() => {
+      expect(StorageService.getHopKnowledge().some(row => row.id === 'fermentis-us05')).toBe(true);
+    });
+  });
+
+  it('ne boucle pas après un échec d’import et réessaie sur notification', async () => {
+    enrichment.fail = true;
+    StorageService.addRecipe({ ...recipe, yeast: { ...recipe.yeast, hopIndexId: 'fermentis-us05' } });
+    await vi.waitFor(() => expect(enrichment.calls).toBe(1));
+
+    // L’intention reste en file, mais l’échec ne déclenche pas une boucle de
+    // micro-tâches tant qu’aucun nouvel événement du dépôt n’est arrivé.
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(enrichment.calls).toBe(1);
+
+    enrichment.fail = false;
+    repoListeners.forEach(listener => listener());
+    await vi.waitFor(() => expect(enrichment.calls).toBe(2));
+    expect(StorageService.getHopKnowledge().some(row => row.id === 'fermentis-us05')).toBe(true);
   });
 
   it('un brassin, une recette et un client se suppriment', () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { hopTestLot, hopTestVariety } from '../fixtures/hopIndex';
 const state = vi.hoisted(() => ({ varieties: [] as any[], lots: [] as any[], listeners: new Set<() => void>(), ai: vi.fn() }));
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: state.ai } }));
@@ -8,7 +8,7 @@ vi.mock('../../src/services/storage', async () => {
   const { assertHopDocument } = await import('../../functions/src/hopIndexSchema');
   return { StorageService: {
     getHopVarieties: () => state.varieties, getHopLots: () => state.lots,
-    getHopKnowledge: () => [], isReady: () => true, importHopIndex: vi.fn(),
+    getHopKnowledge: () => [], isReady: () => true, importHopIndex: vi.fn(async () => 0),
     subscribe: (cb: () => void) => { state.listeners.add(cb); return () => state.listeners.delete(cb); },
     saveHopVariety: (v: any) => { assertHopDocument('hopVarieties', v); state.varieties = [...state.varieties.filter(x => x.id !== v.id), v]; state.listeners.forEach(cb => cb()); },
     saveHopLot: (v: any) => { assertHopDocument('hopLots', v); state.lots = [...state.lots.filter(x => x.id !== v.id), v]; state.listeners.forEach(cb => cb()); }
@@ -75,10 +75,11 @@ describe('Parcours index houblon sans appel IA réel', () => {
     fireEvent.change(screen.getByLabelText('Lot à consulter'), { target: { value: 'test-lot' } });
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le lot' }));
     await act(async () => fireEvent.change(screen.getByLabelText('COA à lire'), { target: { files: [new File(['fixture'], 'coa.pdf', { type: 'application/pdf' })] } }));
+    await screen.findByRole('button', { name: 'Compléter les champs absents avec la transcription' });
     expect(state.lots[0].analysis).toHaveLength(1);
     fireEvent.click(screen.getByRole('button', { name: 'Compléter les champs absents avec la transcription' }));
-    await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la fiche' })));
-    expect(state.lots[0].analysis).toHaveLength(2);
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la fiche' }));
+    await waitFor(() => expect(state.lots[0].analysis).toHaveLength(2));
     expect(state.lots[0].analysis[0].value).toBe(7);
   });
 });

@@ -19,7 +19,16 @@ export function catalogueFacts(yeast: HopYeast, key?: YeastFactKey): YeastCatalo
   return [...new Map(facts.map(f=>[JSON.stringify([f.key,f.reported,f.context,f.range]),f])).values()];
 }
 export function catalogueYeasts(knowledge: HopKnowledge[]): HopYeast[] {
-  return knowledge.filter((k): k is HopYeast => { try { assertHopKnowledge(k); return k.kind==='yeast' && !!k.catalogue; } catch { return false; } });
+  return knowledge.filter((k): k is HopYeast => {
+    try {
+      // `yeastReferences` adds an internal aliases index to its HopYeast
+      // rows. Validate the persisted HopKnowledge shape without rejecting
+      // that non-persisted helper field.
+      const { aliases: _aliases, ...persisted } = k as HopYeast & { aliases?: string[] };
+      assertHopKnowledge(persisted);
+      return persisted.kind === 'yeast' && !!persisted.catalogue;
+    } catch { return false; }
+  });
 }
 /** Feed documented conditions to the triplet guide only when the sources agree. */
 export function catalogueSolverFacts(knowledge: HopKnowledge[]) {
