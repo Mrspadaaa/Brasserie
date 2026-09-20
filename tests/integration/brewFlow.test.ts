@@ -106,6 +106,16 @@ const finish = (r: T['Recipe'], id: string) => {
 };
 
 describe('Planifier puis brasser consomme le stock une seule fois', () => {
+  it.each(['', '  ', undefined])('date le nouveau brassin lorsque la recette importée n’a pas de date (%j)', brewDate => {
+    const source = recipe({ brewDate });
+    const batch = StorageService.brewRecipeAndDeductStocks(source, 'LOT-DATE');
+    expect(batch.brewDate).toBe(new Date().toLocaleDateString('fr-CH'));
+    expect(StorageService.getBatches().find(b => b.id === batch.id)?.brewDate).toBe(batch.brewDate);
+    expect(source.brewDate).toBe(brewDate);
+  });
+  it('conserve la date de brassage explicitement planifiée', () => {
+    expect(StorageService.brewRecipeAndDeductStocks(recipe({ brewDate: '27.09.2026' }), 'LOT-DATE').brewDate).toBe('27.09.2026');
+  });
   it('ne débite pas le malt neuf une deuxième fois pour la seconde extraction',async()=>{
     const {newNoloConfig}=await import('../../src/domain/nolo');
     const nolo=newNoloConfig();nolo.process='secondRunnings';

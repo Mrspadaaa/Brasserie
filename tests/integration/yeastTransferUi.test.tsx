@@ -15,6 +15,14 @@ function mount(recipe = yeastFlowRecipe(), save = vi.fn()) {
   return render(<BrewWizard seed={{ recipe }} config={defaultConfig} stockItems={[]} knownStyles={['Hefeweizen']} onSave={save} onClose={vi.fn()} onSaveWaterSource={vi.fn()} onLearnIngredient={vi.fn()} onCreateStockItem={vi.fn()} />);
 }
 describe('Copie, import et relecture de la conduite levure', () => {
+  it('affiche la quantité liquide exacte dans le récapitulatif et la conserve à l’enregistrement', () => {
+    const initial = yeastFlowRecipe(), save = vi.fn();
+    initial.yeast = { ...initial.yeast, form: 'liquide', qty: .125, unit: 'L' };
+    mount(initial, save); allerEtape('Récapitulatif');
+    expect(screen.getByText(/0,125 L/, { selector: 'span' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
+    expect(save.mock.calls[0][0].yeast).toMatchObject({ qty: .125, unit: 'L' });
+  });
   it('copies the real wizard text, imports that exact text locally, and saves the same intent and hop contacts', async () => {
     const copy = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: copy } });

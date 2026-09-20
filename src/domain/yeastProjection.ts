@@ -1,7 +1,7 @@
 import type { HopRange, HopSource } from '../../functions/src/hopIndexSchema';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { YeastFactKey } from '../../functions/src/yeastCatalogueSchema';
-import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
+import { alcoholPercentUnit, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import type { Fermentable, YeastSpec } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
 import { yeastAcidifyingProductSource, yeastCultureComposition, yeastStyleEvidence } from './yeastStyleEvidence';
@@ -45,9 +45,6 @@ export interface YeastRecipeProjection {
 }
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
-// These labels all express volume percent. Keep the original fact untouched;
-// mass percent and other unfamiliar units are not silently converted.
-const alcoholPercentUnit = (unit: string | undefined) => typeof unit === 'string' && /^%(?:vol\.?|v\/v)?$/i.test(unit.replace(/\s/g, ''));
 const uniqueSources = (sources: HopSource[]) => [...new Map(sources.map(s => [s.reference, s])).values()];
 const brewingContext = (context: string | undefined) => !context || /^(beer|bière|biere|wort|moût|mout)$/i.test(context) || context === 'Conversion exacte Fahrenheit → Celsius, arrondie au dixième.';
 const point = (value: number, basis?: YeastAttenuationBasis, sources: HopSource[] = []): YeastDossierMeasurement => ({ range: { min: value, max: value }, qualifier: 'reportedPoint', sources, ...(basis ? { basis } : {}) });

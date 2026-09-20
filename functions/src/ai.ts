@@ -2,7 +2,8 @@ import { onCall, HttpsError, CallableRequest } from 'firebase-functions/v2/https
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
 import { AiTier, TIERS, modelChain } from './models.js';
-import { TASKS, TaskId } from './prompts.js';
+import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
+import { yeastLookupResultError } from './yeastLookupResult.js';
 import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
 import { reconcileInvoiceVision, type InvoiceScanResult } from './invoiceVisionReview.js';
 import { runBudgetedInvoiceScan } from './invoiceScanBudget.js';
@@ -225,7 +226,7 @@ export const aiTask = onCall(
     const email = assertAuthorized(request);
     const { task, tier: requestedTier, context, instruction, file } = request.data ?? {};
 
-    const def = TASKS[task];
+    const def = task === 'lookupIngredient' ? ingredientLookupDefinition((context as { kind?: unknown } | undefined)?.kind) : TASKS[task];
     if (!def) {
       throw new HttpsError('invalid-argument', `Tâche inconnue : ${task}`);
     }
@@ -286,6 +287,10 @@ export const aiTask = onCall(
           def.grounded
         );
         const elapsedMs = Date.now() - started;
+        if (task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure') {
+          const error = yeastLookupResultError(data);
+          if (error) return { ok: false, error, model, tier, elapsedMs };
+        }
         logger.info('Tâche IA exécutée', { task, tier, model, elapsedMs, email });
         return { ok: true, data, model, tier, elapsedMs };
       } catch (err: any) {

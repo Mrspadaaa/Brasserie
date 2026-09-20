@@ -905,7 +905,7 @@ export const StorageService = {
     const existing = this.getBatches().find(b => b.id === batchId);
     if (existing) return existing;
     const batch: Batch = {
-      id: batchId, brewDate: recipe.brewDate ?? new Date().toLocaleDateString('fr-CH'),
+      id: batchId, brewDate: recipe.brewDate?.trim() || new Date().toLocaleDateString('fr-CH'),
       name: recipe.name, style: recipe.style, volumeL: recipe.volumeL,
       status: 'planifie', stockAccountingVersion: 1,
       recipeRef: recipe.id, recipeSnapshot: captureSnapshot(recipe), gravityLog: []

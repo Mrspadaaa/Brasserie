@@ -949,3 +949,37 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
     )
   }
 };
+
+/** Yeast lookup must produce fields the recipe can actually retain, rather than
+ * using the hop-only `usage` field as an unstructured substitute for its dossier. */
+export function ingredientLookupDefinition(kind: unknown): TaskDef {
+  const base = TASKS.lookupIngredient;
+  if (kind !== 'levure') return base;
+  const fields = base.schema.properties as Record<string, unknown>;
+  const keys = ['found', 'name', 'source', 'sourceUrl', 'retrievedAt', 'note', 'lab', 'strain', 'form',
+    'attenuationPct', 'tempMinC', 'tempMaxC', 'flocculation', 'alcoholTolerancePct', 'technicalFacts', 'fermentation'];
+  return { ...base, system: `${base.system}
+
+SORTIE LEVURE. Consulte la fiche complète, y compris le tableau technique ou
+l’onglet Description/Brewing info, pas seulement le résumé commercial. Chaque
+valeur publiée va dans son champ ou dans technicalFacts ; ne la cache jamais
+uniquement dans note. technicalFacts est toujours un tableau (vide si rien de
+documenté), sans doublons. Une observation par caractéristique, reported court
+(120 caractères visés), contexte bref avec les réserves utiles. source est un
+titre court, sourceUrl l’URL directe. note se limite aux incertitudes ou à une
+différence d’identité, en deux phrases au plus. Ni publicité ni livraison.
+Privilégie la page du fabricant. Chaque sourceUrl pointe vers la page ou le PDF
+qui contient réellement cette observation, jamais son image, logo ou og:image.
+Ne recopie pas un code fourni dans la demande s’il contredit la fiche : conserve
+le code publié dans strain et signale la différence dans note. Pour un mélange,
+conserve sa composition publiée dans technicalFacts (species), notamment les
+bactéries et Brettanomyces ; ne le réduis pas à une seule levure de bière.
+Une plage d’atténuation reste dans technicalFacts, jamais une moyenne scalaire.
+Une plage de température réellement recommandée conserve ses deux bornes dans
+tempMinC/tempMaxC et sa forme publiée dans technicalFacts. Des températures
+illustrant des profils distincts ne prouvent pas les limites de fonctionnement.
+Si la fiche n’a pas été consultée, ne présente pas une valeur mémorisée comme
+retrouvée. found=false et note expliquent l’absence de source exploitable.`,
+    schema: { ...base.schema, properties: Object.fromEntries(keys.map(key => [key, fields[key]])),
+      required: ['found', 'name', 'source', 'sourceUrl', 'technicalFacts'] } };
+}
