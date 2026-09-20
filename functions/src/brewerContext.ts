@@ -54,7 +54,7 @@ export const RECIPE_FIELDS =
     ' '
   );
 export const BATCH_FIELDS =
-  'id name style nolo status brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
+  'id name style nolo status plannedBrewDate brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
     ' '
   );
 export const STOCK_FIELDS = 'id name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC yeastTechnicalFacts yeastFermentationFacts yeastFlocculation yeastAlcoholTolerancePct yeastNotes'.split(' ');

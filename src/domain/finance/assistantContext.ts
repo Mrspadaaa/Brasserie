@@ -1,3 +1,4 @@
+import { batchDisplayDate } from '../batchSchedule';
 import type { Batch, CreativeItem, EquipmentItem, Recipe, StockItem } from '../../types';
 import type { FinanceTransaction, FinancialArchive, FinancialAsset, FinancialClosing, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
 import { isoDate, isActiveTransaction, paymentState, refundLinkIssue, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind, validPayment } from './ledger';
@@ -133,7 +134,7 @@ export function buildFinanceAssistantContext(input: FinanceAssistantInput) {
   });
   const prices = latestBrewPrices(transactions, asOf);
   const knownPrices = input.stock.filter(stock => !!prices[stock.ref]);
-  const plannedBatches = input.batches.filter(batch => batch.status === 'planifie' && !batch.archivedAt).sort((a, b) => (isoDate(a.brewDate) ?? '').localeCompare(isoDate(b.brewDate) ?? ''));
+  const plannedBatches = input.batches.filter(batch => batch.status === 'planifie' && !batch.archivedAt).sort((a, b) => (isoDate(batchDisplayDate(a) ?? '') ?? '').localeCompare(isoDate(batchDisplayDate(b) ?? '') ?? ''));
   const selections: Array<{ recipe: Recipe; batch?: Batch }> = plannedBatches.slice(0, 3).flatMap(batch => {
     const recipe = batch.recipeSnapshot ? { ...batch.recipeSnapshot, id: batch.recipeRef ?? batch.id, name: batch.name } as Recipe : input.recipes.find(recipe => recipe.id === batch.recipeRef);
     return recipe ? [{ recipe, batch }] : [];
@@ -146,11 +147,12 @@ export function buildFinanceAssistantContext(input: FinanceAssistantInput) {
     try {
       if (batch && batch.volumeL !== recipe.volumeL) return { recipeId: recipe.id, batchId: batch.id, complete: false, kind: 'simulation', error: 'Volume du brassin différent de la recette : ouvrir son budget pour recalculer toutes les quantités avec la cuverie. Aucun coût repris au mauvais volume.' };
       const previous = [...saved].filter(estimate => batch ? estimate.batchId === batch.id : estimate.recipeId === recipe.id && !estimate.batchId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
-      const budgetYear = Number((isoDate(batch?.brewDate) ?? asOf).slice(0, 4));
+      const scenarioDate = batch ? batchDisplayDate(batch) ?? '' : asOf;
+      const budgetYear = Number((isoDate(scenarioDate) ?? asOf).slice(0, 4));
       const assetRows = input.assets.map(asset => depreciationForYear(asset, budgetYear));
       const assetIssues = assetRows.flatMap(row => row.missing);
       const annualDepreciationCHF = complete('financialAssets') && assetRows.length && !assetIssues.length ? assetRows.reduce((n, row) => n + row.depreciationCents / 100, 0) : undefined;
-      const estimate = estimateBrewBudget({ recipe, batches: input.batches, stockItems: input.stock, transactions, brewDate: batch?.brewDate ?? asOf, batchId: batch?.id, isTvaRegistered: profile.vatRegistered, now: `${asOf}T12:00:00Z`, savedEstimates: saved,
+      const estimate = estimateBrewBudget({ recipe, batches: input.batches, stockItems: input.stock, transactions, brewDate: scenarioDate, batchId: batch?.id, isTvaRegistered: profile.vatRegistered, now: `${asOf}T12:00:00Z`, savedEstimates: saved,
         ...(previous ? { bindings: previous.bindings, prices: previous.prices, cashTreatments: previous.cashTreatments, netVolumeL: previous.netVolumeL } : {}),
         settings: { ...previous?.settings, annualVolumeL: profile.annualProductionL, annualFixedCHF: complete('financialPlans') ? fixed.amountCHF : undefined, annualDepreciationCHF } });
       const dataComplete = complete('transactions', 'stockItems', 'batches', 'recipes', 'financialPlans', 'financialAssets');

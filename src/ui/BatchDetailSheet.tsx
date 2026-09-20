@@ -2,7 +2,7 @@ import { Input, Textarea } from './Input';
 import React, { useState, useEffect } from 'react';
 import { Trash2, ArrowRight, AlertTriangle, PackageCheck } from 'lucide-react';
 import { Batch } from '../types';
-import { BATCH_STATUS, BATCH_STATUSES, nextStatus, statusOf } from '../domain/batchStatus';
+import { BATCH_STATUS, BATCH_STATUSES, nextStatus, statusOfBatch } from '../domain/batchStatus';
 import { StorageService } from '../services/storage';
 import { BrewingMath } from '../services/brewingMath';
 import { Sheet, ConfirmSheet } from './Sheet';
@@ -19,6 +19,9 @@ import { noloRecipeForBatch } from '../domain/nolo';
 import { BrewBudgetButton } from './finance/BrewBudgetDialog';
 import { DateField } from './DateField';
 import { Units } from '../services/units';
+import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates } from '../domain/batchSchedule';
+import { BatchSchedule } from './production/BatchSchedule';
+import { saveBatchSchedule } from '../services/batchSchedule';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -60,7 +63,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
 
   if (!batch || !draft) return null;
 
-  const style = statusOf(draft.status);
+  const style = statusOfBatch(draft);
   const suivant = nextStatus(draft.status);
 
   const og = parseDecimal(draft.og || '');
@@ -94,13 +97,13 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   };
   const changeStatus = (status: Batch['status']) => {
     if (status === draft.status) return;
-    const updated = { ...draft, status };
-    if (status === 'annule' || status === 'planifie') { save({ status }); return; }
+    const updated = { ...draft, ...preserveBrewDates(draft), status };
+    if (status === 'annule' || status === 'planifie') { save(updated); return; }
     if (status === 'conditionne' || status === 'termine') {
       synchronizeStock(updated, draft.stockConsumption?.appliedAt ? 'remaining' : 'brewday');
     } else if (!draft.stockConsumption?.appliedAt && (draft.status === 'planifie' || draft.stockAccountingVersion === 1)) {
       synchronizeStock(updated, 'brewday');
-    } else save({ status });
+    } else save(updated);
   };
 
   return (
@@ -118,6 +121,10 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
         }
       >
         <div className="space-y-2">
+          <BatchSchedule batch={draft} onSave={async updated => {
+            const saved = await saveBatchSchedule(draft, updated.plannedBrewDate ?? '', value => StorageService.updateBatch(value));
+            setDraft(saved);
+          }} />
           {noloRecipeForBatch(draft)&&<details><summary className="min-h-touch cursor-pointer text-water">Pilote NOLO · mesures et conditionnement</summary><NoloPanel measurementOnly recipe={noloRecipeForBatch(draft)!} onChange={r=>setDraft({...draft,nolo:r.nolo})}/><Button onClick={async()=>{try{save({nolo:draft.nolo??draft.recipeSnapshot?.nolo});await StorageService.confirmPendingWrites();setNoloNotice('Mesures NOLO enregistrées sur ce brassin.');}catch(e){setNoloNotice('Enregistrement non confirmé : '+(e instanceof Error?e.message:'réessayer'));}}}>Enregistrer le suivi NOLO du brassin</Button>{noloNotice&&<p role="status" className="text-sm text-water">{noloNotice}</p>}</details>}
           <nav
             className="grid grid-cols-3 border-b border-cave-700"
@@ -179,7 +186,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
 
               <label className="block space-y-1 text-xs text-cave-400">Étape du brassin
                 <select className={field} value={draft.status} onChange={event => changeStatus(event.target.value as Batch['status'])}>
-                  {BATCH_STATUSES.map(status => <option key={status} value={status}>{BATCH_STATUS[status].label}</option>)}
+                  {BATCH_STATUSES.map(status => <option key={status} value={status}>{status === draft.status ? style.label : BATCH_STATUS[status].label}</option>)}
                 </select>
               </label>
             </>
@@ -257,7 +264,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                   </p>
                 )}
 
-                <DateField label="Date de brassage" value={draft.brewDate ?? ''} onChange={brewDate => save({brewDate})} shortcuts={[]} />
+                {hasBrewStarted(draft) && <DateField label="Jour réellement brassé" value={actualBrewDate(draft) ?? ''} onChange={brewDate => save({ brewDate, plannedBrewDate: plannedBrewDate(draft) ?? '' })} shortcuts={[]} />}
               </section>
 
               {(draft.status === 'fermentation' || draft.status === 'garde') && (

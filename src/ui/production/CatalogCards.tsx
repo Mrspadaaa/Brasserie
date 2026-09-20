@@ -1,3 +1,4 @@
+import { hasBrewStarted } from '../../domain/batchSchedule';
 import React from 'react';
 import { Check, Pencil, ChevronRight, Archive } from 'lucide-react';
 import { FavoriteToggle } from '../EntityList';
@@ -5,7 +6,7 @@ import { BeerStyleTag } from '../BeerStyleTag';
 import { CatalogItemMenu } from './CatalogItemMenu';
 import type { Batch, Recipe } from '../../types';
 import { catalogNumber, type CatalogEntry } from '../../domain/productionCatalog';
-import { statusOf } from '../../domain/batchStatus';
+import { statusOfBatch } from '../../domain/batchStatus';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import {
   batchNextAction,
@@ -214,7 +215,7 @@ export function BatchCard({
   compact?: boolean;
 }) {
   const batch = entry.batch!,
-    status = statusOf(batch.status),
+    status = statusOfBatch(batch),
     action = batchNextAction(batch);
   const readings = fermentationReadings(batch),
     latest = readings.points.at(-1),
@@ -227,12 +228,12 @@ export function BatchCard({
   const dayLabel =
     days !== undefined && days >= 0 && active
       ? `J+${days} depuis brassage`
-      : entry.date || 'Date à renseigner';
+      : planned && !hasBrewStarted(batch) ? entry.date ? `Prévu le ${entry.date}` : 'Date à définir' : entry.date || 'Date à renseigner';
   const context = missing.length
     ? `${missing.join(' et ')} à renseigner`
     : planned
-      ? batch.brewDay?.startedAt && !batch.brewDay.finishedAt
-        ? 'Brassage en cours'
+      ? hasBrewStarted(batch)
+        ? batch.brewDay?.finishedAt ? 'Brassage à clôturer' : 'Brassage en cours'
         : `Brassage prévu ${entry.date ? `le ${entry.date}` : 'sans date'}`
       : active
         ? latest

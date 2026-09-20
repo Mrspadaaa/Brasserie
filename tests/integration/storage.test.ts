@@ -241,7 +241,7 @@ describe('Recettes et brassins', () => {
     StorageService.addStockItem('rawMaterials', stockItem({ name: 'Pale' }));
     StorageService.addStockItem('rawMaterials', stockItem({ ref: 'H', name: 'Citra', category: 'Houblon', unit: 'g', currentStock: 100 }));
     StorageService.addStockItem('rawMaterials', stockItem({ ref: 'Y', name: 'US-05', category: 'Levure', unit: 'sachet', currentStock: 4 }));
-    const planned = StorageService.brewRecipeAndDeductStocks(recipe, 'LOT-NEW');
+    const planned = StorageService.planRecipeBatch(recipe, 'LOT-NEW');
     expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'MP-001')?.currentStock).toBe(25);
     expect(planned.stockAccountingVersion).toBe(1);
     expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);

@@ -31,6 +31,7 @@ import { HopKnowledge, HopPredictionSnapshot, HopTasting, assertHopKnowledge, as
 import { assertHopPredictionSnapshot } from '../../functions/src/hopPredictionValidation';
 import { mergeYeastTechnicalFacts } from '../domain/ingredientFacts';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
+import { normalizeBrewDate } from '../domain/batchSchedule';
 
 /**
  * Façade de données de l'application.
@@ -892,20 +893,14 @@ export const StorageService = {
     );
   },
 
-  /**
-   * Lance un brassin depuis une recette et déduit les ingrédients.
-   *
-   * Le rapprochement se fait sur le nom complet, catégorie par catégorie, et la
-   * conversion d'unités passe par `Units` : la version précédente cherchait le
-   * premier article contenant le premier mot du nom (« Malt Pale Ale » ➔ jeton
-   * « malt »), ce qui pouvait débiter silencieusement le mauvais malt.
-   */
-  /** Compatibility name: planning never consumes ingredients. */
-  brewRecipeAndDeductStocks(recipe: Recipe, batchId: string): Batch {
+  /** Prepare a frozen batch without starting brewing or consuming ingredients. */
+  planRecipeBatch(recipe: Recipe, batchId: string, plannedDate = ''): Batch {
+    const date = normalizeBrewDate(plannedDate);
+    if (plannedDate.trim() && !date) throw new Error('Choisis une date de brassage valide.');
     const existing = this.getBatches().find(b => b.id === batchId);
     if (existing) return existing;
     const batch: Batch = {
-      id: batchId, brewDate: recipe.brewDate?.trim() || new Date().toLocaleDateString('fr-CH'),
+      id: batchId, brewDate: '', plannedBrewDate: date ?? '',
       name: recipe.name, style: recipe.style, volumeL: recipe.volumeL,
       status: 'planifie', stockAccountingVersion: 1,
       recipeRef: recipe.id, recipeSnapshot: captureSnapshot(recipe), gravityLog: []

@@ -22,6 +22,9 @@ import {
 import './brew-day.css';
 import { AppConfig, Batch, BrewDayState, RecipeSnapshot, StockItem } from '../types';
 import { ingredientsOf } from '../domain/recipeSnapshot';
+import { breweryDay, brewSessionDatePatch, hasBrewStarted } from '../domain/batchSchedule';
+import { BatchSchedule } from '../ui/production/BatchSchedule';
+import { saveBatchSchedule } from '../services/batchSchedule';
 import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep } from '../domain/brewDay';
 import {
   actualAmount,
@@ -126,6 +129,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const specialExtraction = noloProcess === 'secondRunnings' || noloProcess === 'coldExtraction';
   const areaLabels = specialExtraction ? { ...AREA, mash: 'Extraire' } : AREA;
   const { state, latest, update } = session;
+  const datedBatch = { ...batch, ...brewSessionDatePatch(batch, state), brewDay: state };
+  const brewingStarted = hasBrewStarted(datedBatch);
   const batchRef = useRef(batch);
   batchRef.current = batch;
   const [view, setView] = useState<BrewArea | 'recipe' | 'journal'>(() =>
@@ -484,7 +489,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ? upcoming
       : undefined;
   const lastStep = !nextStep;
-  const primaryLabel = isConsulting
+  const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
     ? 'Revenir au brassage'
     : lastStep
       ? 'Clôturer le brassage'
@@ -503,6 +508,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               : 'Terminer et continuer';
   const primaryAction = () => {
     if (isConsulting) navigate(areaOf(current.id));
+    else if (!brewingStarted) update(s => ({ ...s, startedAt: brewNow() }));
     else if (lastStep) setConfirmFinish(true);
     else if (showTimer && !running && !completed) start();
     else if (!completed && showTimer && left != null && left > 0) setConfirmAdvance(true);
@@ -573,7 +579,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       subtitle={
         session.error
           ? 'Journal à synchroniser · brouillon conservé'
-          : `Jour de brassage · ${batch.id} · ${recipe.volumeL ?? batch.volumeL ?? '—'} L`
+          : `${brewingStarted ? 'Jour de brassage' : 'Brassin à préparer'} · ${batch.id} · ${recipe.volumeL ?? batch.volumeL ?? '—'} L`
       }
       onClose={() =>
         capture
@@ -680,10 +686,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         <div className="brew-footer">
           <div className="brew-footer-context">
             <span>
-              {isConsulting ? 'Étape en cours' : completed ? 'Étape terminée' : 'À la cuve'}
+              {!brewingStarted ? 'Pas encore commencé' : isConsulting ? 'Étape en cours' : completed ? 'Étape terminée' : 'À la cuve'}
             </span>
             <strong>
-              {isConsulting
+              {!brewingStarted ? `Aujourd’hui : ${breweryDay(now)}` : isConsulting
                 ? current.label
                 : nextStepName
                   ? `Ensuite : ${nextStepName}`
@@ -737,6 +743,11 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         editableTargets={session.canStart ? ['journal','batch'] : []} beforeApply={session.flush}
         onApplied={()=>session.live ? session.reload() : undefined}
         onKeep={session.canStart ? text=>update(s=>({...s,notes:[...(s.notes??[]),{id:crypto.randomUUID(),at:brewNow(),stepId:current?.id??'notes',text}]})) : undefined} />
+      <div className="mb-2">
+        <BatchSchedule batch={datedBatch} onSave={async updated => {
+          await saveBatchSchedule(batchRef.current, updated.plannedBrewDate ?? '', onSave);
+        }} />
+      </div>
       <div ref={contentRef} className="brew-workspace">
         {notice && !capture && (
           <div className="brew-toast" role="status">
@@ -1576,6 +1587,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           }
           onFinish({
             ...batchRef.current,
+            ...brewSessionDatePatch(batchRef.current, latest.current),
             brewDay: latest.current,
             ...(f.gravity ? { og: f.gravity.value.toFixed(3) } : {}),
             ...(f.volume ? { volumeBrewedL: f.volume.value } : {}),

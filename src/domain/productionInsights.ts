@@ -1,6 +1,7 @@
 import type { Batch, Recipe, RecipeSnapshot } from '../types';
 import { catalogDate, catalogNumber, catalogText, type CatalogEntry } from './productionCatalog';
 import { normalizeHop } from './hopStage';
+import { actualBrewDate, hasBrewStarted } from './batchSchedule';
 
 const dayMs = 86_400_000;
 export type BatchDetailSection = 'measurements' | 'tasting' | 'overview';
@@ -30,7 +31,7 @@ export function matchesWorkFilter(entry: CatalogEntry, filter: WorkFilter): bool
 }
 /** Calendar days since brewing, never an inferred fermentation stage or readiness date. */
 export function daysSinceBrew(batch: Batch, now = Date.now()): number | undefined {
-  const date = catalogDate(batch.brewDate);
+  const date = catalogDate(actualBrewDate(batch));
   if (date === undefined) return undefined;
   const local = new Date(now);
   const today = Date.UTC(local.getFullYear(), local.getMonth(), local.getDate());
@@ -44,9 +45,9 @@ export function batchNextAction(batch: Batch): {
   if (batch.status === 'planifie') {
     return {
       label:
-        batch.brewDay?.startedAt && !batch.brewDay.finishedAt
-          ? 'Reprendre le brassage'
-          : 'Jour de brassage',
+        hasBrewStarted(batch)
+          ? batch.brewDay?.finishedAt ? 'Clôturer le brassage' : 'Reprendre le brassage'
+          : 'Préparer le brassage',
       brew: true
     };
   }

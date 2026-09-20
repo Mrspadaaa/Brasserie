@@ -10,28 +10,53 @@ const recipe = { id: 'R1', name: 'Pale Ale', style: 'Pale Ale', volumeL: 30, bre
 const stock = { id: 'M', ref: 'M', name: 'Pils', unit: 'kg', currentStock: 2, category: 'Malt', minStock: 0, reorder: false } as StockItem;
 const config = { fiscal: { isTvaRegistered: false }, brewhouses: [] } as unknown as AppConfig;
 const settings: BrewBudgetSettings = { costs: { energy: { enabled: false }, cleaning: { enabled: false }, packaging: { enabled: false }, beerTax: { enabled: false } }, includeFixed: false, includeDepreciation: false };
+// Other budget tests start after the brewer explicitly chooses a scenario day.
+function renderBudgetWithChosenDate(ui: React.ReactElement) {
+  const view = render(ui);
+  const date = screen.getByLabelText('Date du scénario budgétaire') as HTMLInputElement;
+  if (!date.value) fireEvent.change(date, { target: { value: '2026-09-15' } });
+  return view;
+}
 afterEach(cleanup);
 describe('daily brew budget sheet', () => {
+  it('does not invent a scenario day from a reusable recipe or save an undated budget', () => {
+    const save = vi.fn();
+    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    expect(screen.getByLabelText('Date du scénario budgétaire')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Enregistrer', exact: true })).toBeDisabled();
+    expect(screen.getByText('Choisis un jour pour enregistrer cette estimation.')).toBeInTheDocument();
+    expect(save).not.toHaveBeenCalled();
+  });
+  it('prefills the batch plan and keeps a changed budget scenario independent of it', async () => {
+    const batch = { id: 'B-NEW', status: 'planifie', volumeL: 30, brewDate: '', plannedBrewDate: '22.09.2026', recipeSnapshot: recipe } as unknown as Batch;
+    const save = vi.fn();
+    render(<BrewBudgetSheet open batch={batch} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    expect(screen.getByLabelText('Date du scénario budgétaire')).toHaveValue('2026-09-22');
+    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2026-10-01' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
+    await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ brewDate: '01.10.2026' }), false));
+    expect(batch.plannedBrewDate).toBe('22.09.2026'); expect(batch.brewDate).toBe('');
+  });
   it.each(['2026-09-15','15.09.2026'])('shows and edits the date of a saved budget using %s',async(brewDate)=>{
     const save=vi.fn();
     const saved=estimateBrewBudget({recipe,stockItems:[stock],batches:[],brewDate,settings});
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} savedEstimate={saved} onSave={save} onClose={vi.fn()}/>);
-    expect(screen.getByLabelText('Date du brassin')).toHaveValue('2026-09-15');
-    fireEvent.change(screen.getByLabelText('Date du brassin'),{target:{value:'2026-09-22'}});
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} savedEstimate={saved} onSave={save} onClose={vi.fn()}/>);
+    expect(screen.getByLabelText('Date du scénario budgétaire')).toHaveValue('2026-09-15');
+    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'),{target:{value:'2026-09-22'}});
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer',exact:true}));
     await waitFor(()=>expect(save).toHaveBeenCalledWith(expect.objectContaining({brewDate:'22.09.2026',volumeL:30}),false));
     expect(saved.brewDate).toBe(brewDate);
   });
   it('keeps an incomplete estimate saveable while disabling expense planning', async () => {
     const save = vi.fn();
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     expect(screen.getByRole('button', { name: 'Prévoir cette dépense' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ complete: false, title: 'Pale Ale' }), false));
   });
   it('accepts a comma price and plans only the missing ingredients', async () => {
     const save = vi.fn();
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '2,50' } });
     expect(screen.getByRole('button', { name: 'Prévoir cette dépense' })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: 'Prévoir cette dépense' }));
@@ -39,14 +64,14 @@ describe('daily brew budget sheet', () => {
   });
   it('retains the draft and exposes save errors', async () => {
     const close = vi.fn();
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn().mockRejectedValue(new Error('Connexion interrompue'))} onClose={close} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn().mockRejectedValue(new Error('Connexion interrompue'))} onClose={close} />);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Connexion interrompue');
     expect(close).not.toHaveBeenCalled();
   });
   it('compares a saved snapshot with live stock without overwriting its amount', () => {
     const saved = estimateBrewBudget({ recipe, stockItems: [stock], batches: [], brewDate: recipe.brewDate!, settings, prices: { [demandKey('Pils', 'kg')]: { amount: 3, quantity: 1, unit: 'kg', basis: 'TTC', tvaRate: 0, source: 'manual', date: '09.09.2026' } } });
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[{ ...stock, currentStock: 5 }]} batches={[]} config={config} savedEstimate={saved} onSave={vi.fn()} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[{ ...stock, currentStock: 5 }]} batches={[]} config={config} savedEstimate={saved} onSave={vi.fn()} onClose={vi.fn()} />);
     expect(screen.getByText(/^9[,.]00 CHF$/)).toBeInTheDocument();
     expect(screen.getByText(/Écart actuel : -9[,.]00 CHF/)).toBeInTheDocument();
     expect(saved.cashRequiredTTC).toBe(9);
@@ -54,7 +79,7 @@ describe('daily brew budget sheet', () => {
 
   it.each(['60', '0', '-3', ''])('does not save ingredients for 30 L as a budget for %s L without scaling', value => {
     const save = vi.fn();
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '3' } });
     expect(screen.getByRole('button', { name: 'Prévoir cette dépense' })).toBeEnabled();
     fireEvent.change(screen.getByLabelText('Volume à brasser'), { target: { value } });
@@ -71,7 +96,7 @@ describe('daily brew budget sheet', () => {
   it('retains the historical invoice for stock valuation but identifies a changed purchase price as an estimate', async () => {
     const invoice = { id: 'F1', date: '01.09.2026', tvaRate: 0, finance: { version: 1, kind: 'expense', amountCents: 1000, vendor: 'Malterie', invoiceNumber: 'M-123', lines: [{ id: 'L', kind: 'ingredient', description: 'Pils', amountCents: 1000, quantity: 5, unit: 'kg', stockItemRef: 'M' }] } } as FinanceTransaction;
     const save = vi.fn();
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} transactions={[invoice]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} transactions={[invoice]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     expect(screen.getByLabelText('Origine du prix de Pils')).toHaveValue('invoice');
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '15' } });
     expect(screen.getByLabelText('Origine du prix de Pils')).toHaveValue('manual');
@@ -83,7 +108,7 @@ describe('daily brew budget sheet', () => {
   it('keeps purchases of whole bags separate from consumed stock, recurring bills and annual allocations', async () => {
     const save = vi.fn();
     const allCosts: BrewBudgetSettings = { ...settings, costs: { ...settings.costs, energy: { enabled: true, amountTTC: 4, cashTreatment: 'included-in-recurring' }, cleaning: { enabled: true, amountTTC: 2 } }, includeFixed: true, includeDepreciation: true, annualVolumeL: 300, annualFixedCHF: 120, annualDepreciationCHF: 300 };
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={allCosts} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={allCosts} onSave={save} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '60' } });
     fireEvent.change(screen.getByLabelText('Quantité du prix de Pils'), { target: { value: '25' } });
     fireEvent.change(screen.getByLabelText('Lot minimum de Pils'), { target: { value: '25' } });
@@ -97,7 +122,7 @@ describe('daily brew budget sheet', () => {
 
   it('treats a batch whose stock was consumed as a reproduction even if its status was moved back to planned', () => {
     const consumed = { id: 'B', status: 'planifie', brewDate: recipe.brewDate, stockConsumption: { appliedAt: '2026-09-01', eventId: 'STOCK-B' } } as Batch;
-    render(<BrewBudgetSheet open recipe={recipe} batch={consumed} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn()} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} batch={consumed} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn()} onClose={vi.fn()} />);
     expect(screen.queryByRole('button', { name: 'Prévoir cette dépense' })).not.toBeInTheDocument();
     expect(screen.getByText(/Cette simulation utilise le stock et les prix actuels/)).toBeInTheDocument();
   });
@@ -107,7 +132,7 @@ describe('daily brew budget sheet', () => {
     const frozen = structuredClone(source);
     const withRig: AppConfig = { ...config, brewhouses: [{ id: 'rig', name: 'Cuverie', volumeL: 100, efficiencyPct: 75, boilOffRatePct: 0, deadSpaceL: 0, mashRatioLPerKg: 3 }] };
     const save = vi.fn();
-    render(<BrewBudgetSheet open recipe={source} stockItems={[stock]} batches={[]} config={withRig} settings={settings} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={source} stockItems={[stock]} batches={[]} config={withRig} settings={settings} onSave={save} onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
     expect(save.mock.calls[0][0].recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: recipe.id, volumeL: 30, adjuncts: frozen.adjuncts, waterPlan: frozen.waterPlan }));
@@ -124,7 +149,7 @@ describe('daily brew budget sheet', () => {
   });
 
   it('keeps a newly completed price editable until focus leaves its row', () => {
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn()} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn()} onClose={vi.fn()} />);
     fireEvent.click(screen.getByRole('button', { name: 'À compléter 1' }));
     const price = screen.getByLabelText('Prix de Pils');
     fireEvent.focus(price);
@@ -142,7 +167,7 @@ describe('daily brew budget sheet', () => {
     const saved = estimateBrewBudget({ recipe, stockItems: [stock], batches: [], brewDate: recipe.brewDate, netVolumeL: 27, settings: costs, prices: { [demandKey('Pils', 'kg')]: { amount: 3, quantity: 1, unit: 'kg', basis: 'TTC', tvaRate: 0, source: 'manual', date: '09.09.2026' } } });
     const save = vi.fn();
     const rig = { id: 'rig', name: 'Cuverie', volumeL: 100, efficiencyPct: 75, boilOffRatePct: 0, deadSpaceL: 0, mashRatioLPerKg: 3 };
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={{ ...config, brewhouses: [rig] }} savedEstimate={saved} onSave={save} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={{ ...config, brewhouses: [rig] }} savedEstimate={saved} onSave={save} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Volume à brasser'), { target: { value: '' } });
     fireEvent.blur(screen.getByLabelText('Volume à brasser'));
     expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeDisabled();
@@ -161,7 +186,7 @@ describe('daily brew budget sheet', () => {
   });
 
   it.each(['0', ''])('keeps an invalid net volume %s after blur and blocks both saving actions', value => {
-    render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn()} onClose={vi.fn()} />);
+    renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={vi.fn()} onClose={vi.fn()} />);
     fireEvent.change(screen.getByLabelText('Prix de Pils'), { target: { value: '3' } });
     fireEvent.change(screen.getByLabelText('Volume net attendu'), { target: { value } });
     fireEvent.blur(screen.getByLabelText('Volume net attendu'));

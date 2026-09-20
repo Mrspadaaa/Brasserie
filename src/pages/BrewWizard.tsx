@@ -79,7 +79,6 @@ import { PageShell, Section } from './PageShell';
 import { useDensity, useCoarsePointer } from '../ui/useViewport';
 import { FormNav, Field, InlineNum, TextInput, inputClass } from '../ui/FormNav';
 import { SegmentedControl } from '../ui/SegmentedControl';
-import { DateField, swissToday } from '../ui/DateField';
 import { QuantityStepper } from '../ui/QuantityStepper';
 import { CycleTag } from '../ui/CycleTag';
 import { PresetChips } from '../ui/PresetChips';
@@ -458,7 +457,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * chiffrée du procédé, qui se perdait dans le texte libre.
    */
   const [carboTarget, setCarboTarget] = useState<string>(base?.carboTarget ?? '');
-  const [brewDate, setBrewDate] = useState(base?.brewDate ?? swissToday());
+  const [brewDate, setBrewDate] = useState(base?.brewDate ?? '');
   const [boilMin, setBoilMin] = useState(base?.boilMin ?? 60);
 
   // --- Étape 2 : fermentescibles -------------------------------------------
@@ -1448,7 +1447,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               disabled={saving}
               className="min-h-touch px-3 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
             >
-              Lancer le brassin
+              Enregistrer et préparer un brassin
             </button>
           </div>
         ) : undefined
@@ -1595,7 +1594,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               <BrewEquipmentSummary recipe={build()} profile={brewhouse}/>
             </div>}
 
-            <DateField label="Date de brassage prévue" value={brewDate} onChange={setBrewDate} />
           </FormNav>
           </Section>
         </>

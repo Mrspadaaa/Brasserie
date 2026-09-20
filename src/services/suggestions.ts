@@ -1,6 +1,7 @@
 import { FinanceCategory, StockItem, Transaction, Batch } from '../types';
 import { StorageService } from './storage';
 import { brewingStyles } from '../domain/brewingStyles';
+import { actualBrewDate, hasBrewStarted } from '../domain/batchSchedule';
 
 /**
  * Préremplissage des formulaires, DÉRIVÉ DES DONNÉES RÉELLES.
@@ -209,8 +210,8 @@ export const Suggestions = {
     const s = style.trim().toLowerCase();
     if (!s) return undefined;
     return StorageService.getBatches()
-      .filter((b) => b.status !== 'annule' && b.style?.toLowerCase().includes(s))
-      .sort((a, b) => (isAfter(a.brewDate, b.brewDate) ? -1 : 1))[0];
+      .filter((b) => b.status !== 'annule' && hasBrewStarted(b) && b.style?.toLowerCase().includes(s))
+      .sort((a, b) => (isAfter(actualBrewDate(a) ?? '', actualBrewDate(b) ?? '') ? -1 : 1))[0];
   },
 
   /** Styles déjà brassés, pour proposer sans rien inventer. */

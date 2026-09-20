@@ -1,3 +1,4 @@
+import { batchDisplayDate } from '../batchSchedule';
 import type { Batch, Recipe, RecipeSnapshot, StockItem } from '../../types';
 import { Units } from '../../services/units';
 import { normalizeRecipe, ingredientsOf } from '../recipeSnapshot';
@@ -246,10 +247,10 @@ export function estimateBrewBudget(input: EstimateBrewBudgetInput): BrewBudgetSn
     }
   }
   const earlier = input.batches.filter(b => b.status === 'planifie' && b.id !== batchId).filter(b => {
-    const key = brewBudgetDateKey(b.brewDate);
+    const key = brewBudgetDateKey(batchDisplayDate(b) ?? '');
     if (!key) { issues.push(`${b.name} : date inconnue, stock réservé en priorité`); return true; }
     return !dateKey || key < dateKey || (key === dateKey && (!batchId || b.id < batchId));
-  }).sort((a, b) => (brewBudgetDateKey(a.brewDate) ?? '').localeCompare(brewBudgetDateKey(b.brewDate) ?? '') || a.id.localeCompare(b.id));
+  }).sort((a, b) => (brewBudgetDateKey(batchDisplayDate(a) ?? '') ?? '').localeCompare(brewBudgetDateKey(batchDisplayDate(b) ?? '') ?? '') || a.id.localeCompare(b.id));
   for (const batch of earlier) {
     // Some legacy quick actions deducted at planning. Explicit markers prevent reserving them twice.
     if ((batch as Batch & { stockConsumption?: { appliedAt: string } }).stockConsumption?.appliedAt) continue;

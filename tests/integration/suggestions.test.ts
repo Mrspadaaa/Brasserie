@@ -205,6 +205,12 @@ describe('Ce qui a déjà été brassé', () => {
     StorageService.addBatch(batch({ status: 'annule' }));
     expect(Suggestions.lastBatchOfStyle('neipa')).toBeUndefined();
   });
+  it('ne confond pas un brassin futur avec le dernier brassin réellement commencé', () => {
+    StorageService.addBatch(batch());
+    StorageService.addBatch(batch({ id: 'FUTURE', status: 'planifie', brewDate: '20.10.2026' }));
+    StorageService.addBatch(batch({ id: 'STARTED', status: 'planifie', plannedBrewDate: '25.09.2026', brewDate: '20.09.2026' }));
+    expect(Suggestions.lastBatchOfStyle('neipa')?.id).toBe('STARTED');
+  });
 
   it('ne devine pas un style à partir de rien', () => {
     expect(Suggestions.lastBatchOfStyle('')).toBeUndefined();

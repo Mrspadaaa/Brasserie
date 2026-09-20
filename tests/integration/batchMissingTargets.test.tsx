@@ -15,7 +15,7 @@ it('keeps a planned batch readable with unknown targets and distinguishes an exp
   const view = render(<BatchCard entry={batchEntries([batch])[0]} {...props}/>);
   const alcohol = () => within(screen.getByText('Alcool cible').parentElement!);
   expect(alcohol().getByText('— %')).toBeVisible();
-  expect(screen.getByRole('button', { name: 'Jour de brassage · missing-targets' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Préparer le brassage · missing-targets' })).toBeEnabled();
   view.rerender(<BatchCard entry={batchEntries([{ ...batch, recipeSnapshot: { ...batch.recipeSnapshot!, abvTarget: 0 } }])[0]} {...props}/>);
   expect(alcohol().getByText('0 %')).toBeVisible();
 });

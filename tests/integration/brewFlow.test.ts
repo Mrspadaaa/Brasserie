@@ -12,8 +12,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
  *   • Le brassin fige sa recette. Corriger la recette demain ne doit pas
  *     réécrire ce qu'on a brassé aujourd'hui.
  *
- * Le nom historique `brewRecipeAndDeductStocks` reste compatible, mais suit
- * désormais la même planification sans déstockage que l'assistant principal.
+ * `planRecipeBatch` prépare le lot sans dater son brassage réel ni déstocker.
  */
 
 const store = new Map<string, Map<string, Record<string, unknown>>>();
@@ -101,20 +100,21 @@ beforeEach(() => {
 });
 
 const finish = (r: T['Recipe'], id: string) => {
-  const batch = StorageService.brewRecipeAndDeductStocks(r, id);
+  const batch = StorageService.planRecipeBatch(r, id);
   return StorageService.completeBrewStock({ ...batch, status: 'fermentation' });
 };
 
 describe('Planifier puis brasser consomme le stock une seule fois', () => {
-  it.each(['', '  ', undefined])('date le nouveau brassin lorsque la recette importée n’a pas de date (%j)', brewDate => {
+  it.each(['', '  ', undefined, '12.04.2020'])('ne planifie pas un nouveau brassin depuis la date de sa recette (%j)', brewDate => {
     const source = recipe({ brewDate });
-    const batch = StorageService.brewRecipeAndDeductStocks(source, 'LOT-DATE');
-    expect(batch.brewDate).toBe(new Date().toLocaleDateString('fr-CH'));
+    const batch = StorageService.planRecipeBatch(source, 'LOT-DATE');
+    expect(batch.brewDate).toBe('');
+    expect(batch.plannedBrewDate).toBe('');
     expect(StorageService.getBatches().find(b => b.id === batch.id)?.brewDate).toBe(batch.brewDate);
     expect(source.brewDate).toBe(brewDate);
   });
   it('conserve la date de brassage explicitement planifiée', () => {
-    expect(StorageService.brewRecipeAndDeductStocks(recipe({ brewDate: '27.09.2026' }), 'LOT-DATE').brewDate).toBe('27.09.2026');
+    expect(StorageService.planRecipeBatch(recipe({ brewDate: '12.04.2020' }), 'LOT-DATE', '27.09.2026')).toMatchObject({ brewDate: '', plannedBrewDate: '27.09.2026' });
   });
   it('ne débite pas le malt neuf une deuxième fois pour la seconde extraction',async()=>{
     const {newNoloConfig}=await import('../../src/domain/nolo');
@@ -124,15 +124,15 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
     expect(StorageService.getStocks().rawMaterials.find(s=>s.ref==='MP-002')!.currentStock).toBe(300);
   });
   it('ne remplace pas une quantité de levure inconnue ou nulle par un sachet inventé',()=>{
-    StorageService.brewRecipeAndDeductStocks(recipe({yeast:{name:'SafAle US-05',form:'sèche',qty:0,unit:'sachet'}}),'NOLO-0');
+    StorageService.planRecipeBatch(recipe({yeast:{name:'SafAle US-05',form:'sèche',qty:0,unit:'sachet'}}),'NOLO-0');
     expect(StorageService.getStocks().rawMaterials.find(s=>s.ref==='MP-004')!.currentStock).toBe(6);
   });
   it('ne jette pas sur une recette du modèle actuel', () => {
-    expect(() => StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1')).not.toThrow();
+    expect(() => StorageService.planRecipeBatch(recipe(), 'LOT-1')).not.toThrow();
   });
 
   it('la planification ne déduit aucun ingrédient', () => {
-    StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1');
+    StorageService.planRecipeBatch(recipe(), 'LOT-1');
     expect(refStock('MP-001')).toBe(25);
     expect(refStock('MP-002')).toBe(400);
     expect(refStock('MP-003')).toBe(2);
@@ -182,7 +182,7 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
   });
 
   it('un double clic avec un ancien brouillon ne déstocke jamais deux fois', () => {
-    const planned = StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1');
+    const planned = StorageService.planRecipeBatch(recipe(), 'LOT-1');
     expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
     expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
     expect(refStock('MP-001')).toBe(19);
@@ -202,7 +202,7 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
   });
 
   it('fige la recette dans le brassin', () => {
-    StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1');
+    StorageService.planRecipeBatch(recipe(), 'LOT-1');
     const batch = StorageService.getBatches().find((b) => b.id === 'LOT-1')!;
     expect(batch.recipeSnapshot?.fermentables).toHaveLength(2);
     expect(batch.recipeSnapshot?.yeast?.name).toBe('SafAle US-05');
@@ -214,7 +214,7 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
 
   it('modifier la recette ensuite ne réécrit pas le brassin', () => {
     StorageService.saveRecipes([recipe()]);
-    StorageService.brewRecipeAndDeductStocks(recipe(), 'LOT-1');
+    StorageService.planRecipeBatch(recipe(), 'LOT-1');
 
     StorageService.updateRecipe(
       recipe({
@@ -230,7 +230,7 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
 
   it('accepte une recette sans densité visée sans afficher NaN', () => {
     const r = recipe({ ogTarget: undefined, fgTarget: undefined, abvTarget: undefined } as Partial<T['Recipe']>);
-    const batch = StorageService.brewRecipeAndDeductStocks(r, 'LOT-1');
+    const batch = StorageService.planRecipeBatch(r, 'LOT-1');
     expect(batch.og).toBeUndefined();
     expect(batch.abv).toBeUndefined();
     expect(batch.gravityLog).toEqual([]);

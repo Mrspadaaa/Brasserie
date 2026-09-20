@@ -12,7 +12,7 @@ export const FINANCE_CONTEXT_COLLECTIONS: Record<string, { limit: number; fields
   stockItems: { limit: 500, fields: 'ref name category unit currentStock minStock pricePerUnit inventoryValuation purchasePrice'.split(' ') },
   equipment: { limit: 200, fields: 'ref name category state purchaseDate purchasePrice'.split(' ') },
   recipes: { limit: 100, fields: 'name archivedAt volumeL style malts fermentables hops adjuncts yeast waterPlan efficiencyPct'.split(' ') },
-  batches: { limit: 250, fields: 'name archivedAt style status brewDate volumeL volumeBrewedL packaging recipeRef recipeSnapshot stockConsumption'.split(' ') }
+  batches: { limit: 250, fields: 'name archivedAt style status plannedBrewDate brewDate volumeL volumeBrewedL packaging recipeRef recipeSnapshot stockConsumption'.split(' ') }
 };
 const iso = (value: unknown) => {
   if (typeof value !== 'string') return undefined;

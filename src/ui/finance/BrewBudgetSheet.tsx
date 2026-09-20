@@ -1,3 +1,4 @@
+import { batchDisplayDate } from '../../domain/batchSchedule';
 import { Input } from '../Input';
 import React, { useMemo, useRef, useState } from 'react';
 import { AlertCircle, ArrowDownRight, CalendarPlus, Check, ChevronRight, Package, Save } from 'lucide-react';
@@ -55,7 +56,7 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
     }
     setVolume(next);
   };
-  const [date, setDate] = useState(savedEstimate?.brewDate ?? batch?.brewDate ?? recipe.brewDate ?? swissToday(7));
+  const [date, setDate] = useState(savedEstimate?.brewDate ?? (batch ? batchDisplayDate(batch) : undefined) ?? '');
   const [settings, setSettings] = useState<BrewBudgetSettings>(() => structuredClone(savedEstimate?.settings ?? defaultSettings ?? {}));
   const [prices, setPrices] = useState<Record<string, BrewPrice>>(() => structuredClone(savedEstimate?.prices ?? {}));
   const [bindings, setBindings] = useState<Record<string, string>>(() => ({ ...savedEstimate?.bindings }));
@@ -131,7 +132,8 @@ function BrewBudgetDraft({ recipe, batch, stockItems, batches, config, savedEsti
         {volumeIssue && <div role="alert" className="brew-budget-warning"><p>{volumeIssue}</p>{recipe.volumeL > 0 && Number.isFinite(recipe.volumeL) && <button type="button" className="brew-budget-text-action" onClick={() => changeVolume(recipe.volumeL)}>Reprendre les {Units.format(recipe.volumeL, 'L')} de la recette</button>}</div>}
         {invalidNetVolume && <p role="alert" className="brew-budget-warning">Renseigne un volume net supérieur à zéro pour calculer le coût par litre.</p>}
         {!volumeIssue && volume !== recipe.volumeL && recipe.waterPlan && <p className="brew-budget-hint">Le budget ajuste les volumes d’eau et les doses conservées de la recette. Le plan d’eau du nouveau brassin reste à vérifier avant de brasser.</p>}
-        <DateField label="Date du brassin" value={toSwissDate(brewBudgetDateKey(date)??'')} onChange={setDate} shortcuts={[{ label: 'Demain', offsetDays: 1 }, { label: 'Dans 7 jours', offsetDays: 7 }, { label: 'Dans 14 jours', offsetDays: 14 }]} hint="Les brassins prévus avant cette date utilisent le stock en priorité." />
+        <DateField label="Date du scénario budgétaire" value={toSwissDate(brewBudgetDateKey(date)??'')} onChange={setDate} shortcuts={[{ label: 'Aujourd’hui', offsetDays: 0 }, { label: 'Demain', offsetDays: 1 }, { label: 'Dans 7 jours', offsetDays: 7 }]} hint="Les brassins prévus avant ce jour utilisent le stock en priorité. Ce scénario ne change pas le planning du brassin." />
+        {!brewBudgetDateKey(date) && <p className="brew-budget-hint">Choisis un jour pour enregistrer cette estimation.</p>}
       </section>
       <section className="brew-budget-section">
         <div className="brew-budget-section-heading"><h3>Ingrédients et eau</h3><span>{knownLines}/{estimate.lines.length} prix connus</span></div>

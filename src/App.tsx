@@ -17,9 +17,9 @@ import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
 import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
-import { captureSnapshot } from './domain/recipeSnapshot';
+import { batchDisplayDate } from './domain/batchSchedule';
 import { isCurrent } from './domain/catalogOrganization';
-import { nextUniqueRef, nextBatchId } from './services/refs';
+import { nextUniqueRef } from './services/refs';
 
 import { Units } from './services/units';
 import { saveRecipeConfirmed } from './services/recipeSave';
@@ -155,6 +155,7 @@ export const App: React.FC = () => {
    * venait de choisir.
    */
   const [quickAction, setQuickAction] = useState<QuickActionScreen | null>(null);
+  const [brewRecipeId, setBrewRecipeId] = useState<string>();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
@@ -480,26 +481,12 @@ export const App: React.FC = () => {
       return;
     }
 
-    // Le brassin FIGE la recette : la modifier plus tard ne réécrira pas ce
-    // qui a réellement été mis dans la cuve.
-    const batch: Batch = {
-      id: nextBatchId(batches.map((b) => b.id)),
-      name: recipe.name,
-      style: recipe.style,
-      volumeL: recipe.volumeL,
-      brewDate: recipe.brewDate?.trim() || new Date().toLocaleDateString('fr-CH'),
-      status: 'planifie',
-      stockAccountingVersion: 1,
-      recipeRef: recipe.id,
-      recipeSnapshot: captureSnapshot(recipe),
-      malts: recipe.malts,
-      hops: recipe.hops,
-      adjuncts: recipe.adjuncts,
-      yeast: recipe.yeast
-    };
-    StorageService.addBatch(batch);
-    showToast(`Brassin ${batch.id} planifié depuis « ${recipe.name} ».`);
-    if (currentRoute.current === sourceRoute) route.open({ view: 'brewday', batchId: batch.id });
+    showToast(`Recette « ${recipe.name} » enregistrée.`);
+    if (currentRoute.current === sourceRoute) {
+      route.open({ view: 'recipe', recipeId: recipe.id });
+      setBrewRecipeId(recipe.id);
+      setQuickAction('brew-batch');
+    }
   };
 
   /**
@@ -544,7 +531,7 @@ export const App: React.FC = () => {
       items: batches.filter(isCurrent).map((b) => ({
         id: `bat-${b.id}`,
         label: `${b.id} — ${b.name}`,
-        detail: [b.style, b.brewDate, b.status].filter(Boolean).join(' · '),
+        detail: [b.style, batchDisplayDate(b), b.status].filter(Boolean).join(' · '),
         icon: <FlaskConical className="w-4 h-4" />,
         keywords: [b.style, b.status],
         onSelect: () => openBrewDay(b)
@@ -817,7 +804,9 @@ export const App: React.FC = () => {
       <DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}
         initialScreen={quickAction ?? 'menu'}
-        onClose={() => setQuickAction(null)}
+        onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); }}
+        initialRecipeId={brewRecipeId}
+        onBatchCreated={batch => route.open({ view: 'brewday', batchId: batch.id })}
         recipes={recipes}
         geminiApiKey={config.geminiApiKey}
         onSuccessMessage={showToast}
@@ -881,7 +870,7 @@ export const App: React.FC = () => {
             showToast(`Recette « ${routedRecipe.name} » supprimée.`);
             route.close();
           }}
-          onBrew={() => { void saveFromWizard(routedRecipe, true).catch(error => setWriteError(error instanceof Error ? error.message : 'La recette n’a pas pu être enregistrée.')); }}
+          onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
           onOpenBatch={openBrewDay}
         />
       )}

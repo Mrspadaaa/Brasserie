@@ -12,6 +12,7 @@ export interface SessionStep {
   boilElapsedMin?: number;
 }
 export interface SessionState {
+  startedAt?: number;
   restoredFromBackup?: boolean;
   steps: SessionStep[];
   currentIndex: number;
@@ -142,7 +143,7 @@ export function validateSession(input: unknown): SessionState {
     if (step.pausedAt != null && (step.startedAt == null || step.pausedAt < step.startedAt))
       throw new Error('Pause sans départ valide.');
   }
-  for (const key of ['boilStartedAt', 'boilFinishedAt', 'finishedAt'] as const)
+  for (const key of ['startedAt', 'boilStartedAt', 'boilFinishedAt', 'finishedAt'] as const)
     if (s[key] != null && (!Number.isFinite(s[key]) || s[key]! < 0))
       throw new Error('Horodatage invalide.');
   if (

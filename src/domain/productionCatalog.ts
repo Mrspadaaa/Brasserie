@@ -1,3 +1,4 @@
+import { batchDisplayDate } from './batchSchedule';
 import type { Batch, Recipe, TimeFilterPeriod } from '../types';
 import { bandForEbc, computeBeerColor } from './beerColor';
 import { statusOf } from './batchStatus';
@@ -181,8 +182,8 @@ export function batchEntries(batches: Batch[]): CatalogEntry[] {
       name: batch.name,
       style: batch.style,
       volumeL: batch.volumeL,
-      date: batch.brewDate,
-      timestamp: catalogDate(batch.brewDate),
+      date: batchDisplayDate(batch),
+      timestamp: catalogDate(batchDisplayDate(batch)),
       // NOLO alcohol is an analysis with its own context and uncertainty.
       // Neither an old scalar nor OG–FG can replace that reading in charts.
       abv: (batch.nolo ?? recipe?.nolo)?.enabled ? undefined :

@@ -60,11 +60,12 @@ describe('budget intention becomes a concrete batch', () => {
   it('uses the brew year for declining depreciation and preserves an explicit manual amount until reset', () => {
     vi.mocked(FinanceService.snapshot).mockReturnValue({ ...FinanceService.snapshot(), assets: [tank], plans: [] });
     render(<BrewBudgetDialog recipe={{ ...recipe, brewDate: '15.09.2026' }} onClose={vi.fn()} />);
+    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2026-09-15' } });
     expect(screen.getByLabelText('Amortissement annuel', { selector: 'input[type=text]' })).toHaveValue('200');
-    fireEvent.change(screen.getByLabelText('Date du brassin'), { target: { value: '2027-09-15' } });
+    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2027-09-15' } });
     expect(screen.getByLabelText('Amortissement annuel', { selector: 'input[type=text]' })).toHaveValue('160');
     fireEvent.change(screen.getByLabelText('Amortissement annuel', { selector: 'input[type=text]' }), { target: { value: '75' } });
-    fireEvent.change(screen.getByLabelText('Date du brassin'), { target: { value: '2028-09-15' } });
+    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2028-09-15' } });
     expect(screen.getByLabelText('Amortissement annuel', { selector: 'input[type=text]' })).toHaveValue('75');
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre le registre 2028', hidden: true }));
     expect(screen.getByLabelText('Amortissement annuel', { selector: 'input[type=text]' })).toHaveValue('128');

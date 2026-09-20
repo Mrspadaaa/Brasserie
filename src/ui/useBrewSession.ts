@@ -6,6 +6,7 @@ import { restoreBrewDay } from '../domain/brewDay';
 import { brewNow, setBrewClock } from '../services/brewClock';
 import { mergeBrewTimestamps } from '../domain/brewSessionMerge';
 import { FirestoreRepo } from '../services/firestoreRepo';
+import { brewSessionDatePatch } from '../domain/batchSchedule';
 
 type Queued = {
   operationId: string;
@@ -240,7 +241,7 @@ export function useBrewSession(
       latest.current = next;
       setState(next);
       if (!live) {
-        onSave({ ...batchRef.current, brewDay: next });
+        onSave({ ...batchRef.current, ...brewSessionDatePatch(batchRef.current, next), brewDay: next });
         return;
       }
       queue.current.push({
