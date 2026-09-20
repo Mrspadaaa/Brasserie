@@ -158,6 +158,8 @@ export const App: React.FC = () => {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
   const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
+  const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
   const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
   useEffect(() => {
     if (activeTab !== 'finances') setFinanceOpenRequest(null);
@@ -723,6 +725,14 @@ export const App: React.FC = () => {
             budgetLines={budgetLines}
             config={config}
             globalTimeFilter={globalTimeFilter}
+            onOpenStockItem={(ref) => {
+              setStockOpenRequest({ ref, at: Date.now() });
+              setActiveTab('stocks');
+            }}
+            onOpenRecipe={(recipeId) => {
+              const recipe = recipes.find((r) => r.id === recipeId);
+              if (recipe) openRecipe(recipe);
+            }}
           />
         )}
 
@@ -756,6 +766,8 @@ export const App: React.FC = () => {
             batches={batches}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
             onSubTabChange={(sub) => setSubTab(sub as never)}
+            openItemRequest={stockOpenRequest}
+            onOpenItemRequestHandled={() => setStockOpenRequest(null)}
             createRequest={createRequest}
             onSuccessMessage={showToast}
           />

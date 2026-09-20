@@ -4,26 +4,36 @@ import type { Transaction } from '../../types';
 import type { FinancialPayment } from '../../domain/finance/types';
 import { formatCHF, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
 import { CATEGORY_LABELS } from './FinanceForms';
+import { CategoryTag } from './CategoryTag';
 import { amountOnly } from './financeFormat';
 
 const STATE_LABELS: Record<string, string> = {
   paid: 'Payé', partial: 'Partiellement payé', unpaid: 'À payer', unknown: 'Paiement à confirmer',
 };
 
-/** État de règlement : un mot court à l'écran, la phrase entière dans le nom accessible. */
+/**
+ * État de règlement : un mot court à l'écran, la phrase entière dans le nom
+ * accessible.
+ *
+ * `settled` marque le cas ORDINAIRE — la pièce est réglée, rien à faire. Dans
+ * l'usage réel la quasi-totalité des écritures est dans cet état : afficher
+ * « Payé » sur chaque ligne revenait à répéter la normalité vingt fois et à
+ * noyer les trois lignes qui, elles, demandent quelque chose. La pastille est
+ * donc réservée aux exceptions ; le nom accessible, lui, dit toujours l'état.
+ */
 function settlementLabel(
   transaction: Transaction, state: ReturnType<typeof paymentState>, incoming: boolean,
-): { text: string; tone: string } {
-  if (transaction.finance?.voidedAt) return { text: 'Annulé', tone: 'unknown' };
-  if (transaction.finance?.refundApplication === 'offset') return { text: 'Imputé', tone: 'unknown' };
-  if (state.overpaidCents > 0) return { text: 'Paiement à vérifier', tone: 'alert' };
-  if (state.state === 'paid' && state.appliedCreditCents > 0) return { text: 'Soldé', tone: 'paid' };
+): { text: string; tone: string; settled: boolean } {
+  if (transaction.finance?.voidedAt) return { text: 'Annulé', tone: 'unknown', settled: false };
+  if (transaction.finance?.refundApplication === 'offset') return { text: 'Imputé', tone: 'unknown', settled: false };
+  if (state.overpaidCents > 0) return { text: 'Paiement à vérifier', tone: 'alert', settled: false };
+  if (state.state === 'paid' && state.appliedCreditCents > 0) return { text: 'Soldé', tone: 'paid', settled: false };
   if (state.state === 'partial') {
-    return { text: `Reste ${formatCHF(state.remainingCents)} à ${incoming ? 'encaisser' : 'payer'}`, tone: 'partial' };
+    return { text: `Reste ${formatCHF(state.remainingCents)} à ${incoming ? 'encaisser' : 'payer'}`, tone: 'partial', settled: false };
   }
-  if (incoming && state.state === 'unpaid') return { text: 'À encaisser', tone: 'unpaid' };
-  if (incoming && state.state === 'paid') return { text: 'Encaissé', tone: 'paid' };
-  return { text: STATE_LABELS[state.state] ?? state.state, tone: state.state };
+  if (incoming && state.state === 'unpaid') return { text: 'À encaisser', tone: 'unpaid', settled: false };
+  if (state.state === 'paid') return { text: incoming ? 'Encaissé' : 'Payé', tone: 'paid', settled: true };
+  return { text: STATE_LABELS[state.state] ?? state.state, tone: state.state, settled: false };
 }
 
 /**
@@ -58,8 +68,8 @@ export function TransactionRow({ transaction, transactions, payments, onOpen }: 
     aria-label={`${transaction.description} · ${category}${vendor ? ` · ${vendor}` : ''} · ${money} · ${settlement.text}`}>
     <span className="finance-op-label">{transaction.description}</span>
     <span className={`finance-op-amount finance-money${incoming ? ' finance-in' : ''}`} aria-hidden="true">{shown}</span>
-    <span className="finance-op-meta">{category}{vendor ? ` · ${vendor}` : ''}</span>
-    <span className={`finance-status ${settlement.tone}`} aria-hidden="true">{settlement.text}</span>
+    <span className="finance-op-meta"><CategoryTag category={transaction.category}/>{vendor && <span className="finance-op-vendor">{vendor}</span>}</span>
+    {!settlement.settled && <span className={`finance-status ${settlement.tone}`} aria-hidden="true">{settlement.text}</span>}
     <ChevronRight size={15} className="finance-op-go" aria-hidden="true"/>
   </button>;
 }

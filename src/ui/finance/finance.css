@@ -56,18 +56,46 @@
 .finance-op-label { grid-area:label; min-width:0; font-size:14px; line-height:1.3; font-weight:600; overflow-wrap:anywhere; }
 .finance-op-amount { grid-area:amount; font-size:14px; line-height:1.3; text-align:right; }
 .finance-op-amount.finance-in { color:#A3C97A; }
-.finance-op-meta { grid-area:meta; min-width:0; font-size:12px; line-height:1.3; color:#D8CEC5; overflow-wrap:anywhere; }
+.finance-op-meta { grid-area:meta; min-width:0; display:flex; align-items:center; gap:5px; font-size:12px; line-height:1.3; color:#D8CEC5; }
+/* La catégorie ne se tronque pas : c'est elle qu'on lit en parcourant.
+   Le tiers, plus long et plus variable, cède la place en premier. */
+.finance-op-meta .finance-tag { flex:0 0 auto; }
+.finance-op-vendor { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .finance-op .finance-status { grid-area:state; justify-self:end; line-height:1.25; padding:0 4px; }
 .finance-op-go { grid-area:go; align-self:center; color:#9A8A7E; }
 
+/* Pastilles de catégorie — famille propre aux finances, jamais l'échelle bière
+   ni les jetons d'état. Contraste texte/fond minimum mesuré : 6.86:1.
+   Voir src/ui/finance/CategoryTag.tsx et DESIGN.md. */
+.finance-tag { display:inline-block; max-width:100%; border-radius:4px; padding:0 5px;
+  font-size:12px; line-height:17px; font-weight:500; white-space:nowrap; overflow:hidden;
+  text-overflow:ellipsis; vertical-align:baseline; }
+.finance-tag-brassage { background:#564925; color:#F4E5B9; }
+.finance-tag-materiel { background:#253356; color:#B9CAF4; }
+.finance-tag-nettoyage { background:#254F56; color:#B9ECF4; }
+.finance-tag-chargesFixes { background:#3F2556; color:#D8B9F4; }
+.finance-tag-renovation { background:#563325; color:#F4CAB9; }
+.finance-tag-recettes { background:#255633; color:#B9F4CA; }
+.finance-tag-apports { background:#562544; color:#F4B9DE; }
+.finance-tag-divers { background:#2C2521; color:#D8CEC5; }
+
 /* Composition d'un total : une seule barre segmentée, puis les valeurs exactes. */
-.finance-composition { display:flex; height:8px; border-radius:3px; overflow:hidden; background:#2C2521; margin:2px 0 6px; }
-.finance-composition > span { display:block; min-width:2px; }
+.finance-composition { display:flex; height:9px; border-radius:3px; overflow:hidden; background:#2C2521; margin:2px 0 6px; }
+/* Les segments portent la couleur de leur catégorie, la même que la pastille
+   du journal : la barre se lit sans passer par la légende. */
+.finance-seg { display:block; min-width:2px; background:#9A8A7E; }
+.finance-seg-brassage { background:#D2B356; }
+.finance-seg-materiel { background:#567BD2; }
+.finance-seg-nettoyage { background:#56C1D2; }
+.finance-seg-chargesFixes { background:#9856D2; }
+.finance-seg-renovation { background:#D27B56; }
+.finance-seg-recettes { background:#56D27B; }
+.finance-seg-apports { background:#D256A4; }
+.finance-seg-divers { background:#9A8A7E; }
 .finance-legend { display:grid; border-top:1px solid #3D342E; }
-.finance-legend button { display:grid; grid-template-columns:8px minmax(0,1fr) auto 46px; align-items:center;
+.finance-legend button { display:grid; grid-template-columns:minmax(0,1fr) auto 46px; align-items:center;
   gap:8px; width:100%; min-height:30px; padding:3px 0; text-align:left; font-size:13px; border-bottom:1px solid #3D342E; }
-.finance-legend-dot { width:8px; height:8px; border-radius:2px; }
-.finance-legend-label { min-width:0; overflow-wrap:anywhere; }
+.finance-legend button .finance-tag { justify-self:start; }
 .finance-legend-share { text-align:right; font-size:12px; color:#D8CEC5; font-variant-numeric:tabular-nums; }
 .finance-filter { display:flex; gap:4px; margin:8px 0; flex-wrap:wrap; }
 .finance-filter button { border:1px solid #574A42; border-radius:6px; padding:3px 8px; min-height:28px; font-size:13px; }
@@ -143,20 +171,26 @@
 /* Les trois indicateurs sur une bande, pas trois rangées pleine largeur.
    La cellule entière est la cible : le bouton la recouvre et dessine son
    chevron dans l'angle, sans casser la structure dt/dd de la liste. */
-.finance-position { margin:0 0 4px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+/* Autant de colonnes égales que de cellules réellement affichées : une seule
+   valeur prend toute la largeur, trois se partagent la bande. */
+.finance-position { margin:0 0 4px; display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr);
   border-block:1px solid #3D342E; }
-.finance-position > div { position:relative; display:grid; align-content:start; gap:1px;
-  padding:5px 20px 5px 0; min-width:0; }
-.finance-position > div + div { border-left:1px solid #3D342E; padding-left:8px; }
-.finance-position dt { font-size:12px; color:#D8CEC5; }
-.finance-position dd { margin:0; font-size:15px; color:#F5F0EA; }
-.finance-position .finance-position-note { font-size:11px; line-height:1.25; color:#9A8A7E; }
+.finance-position > div { position:relative; display:grid; grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:"label value" "note value"; align-items:center; column-gap:8px;
+  padding:4px 20px 4px 0; min-width:0; }
+.finance-position dt { grid-area:label; font-size:12px; color:#D8CEC5; }
+.finance-position dd { margin:0; color:#F5F0EA; }
+.finance-position dd.finance-money { grid-area:value; font-size:18px; }
+.finance-position .finance-position .finance-position-note { grid-area:note; font-size:11px; line-height:1.25; color:#9A8A7E; }
+.finance-due { color:#E3B55D; }
+/* Totaux des règlements : ils résument la liste qu’ils coiffent, sans lui voler
+   la vedette — un lien chiffré, pas un indicateur de tête d’écran. */
+.finance-settlement-totals { display:flex; flex-wrap:wrap; gap:4px 12px; padding:2px 0 4px; font-size:12px; color:#D8CEC5; }
+.finance-settlement-totals button { display:inline-flex; align-items:baseline; gap:4px; min-height:24px; color:#D8CEC5; }
+.finance-settlement-totals strong { font-size:14px; color:#F5F0EA; }
+.finance-settled { padding:4px 0 2px; font-size:12px; color:#9A8A7E; }
 .finance-position-open { position:absolute; inset:0; display:flex; align-items:flex-start; justify-content:flex-end;
   padding-top:4px; color:#9A8A7E; border-radius:6px; }
-@media (max-width:359px) {
-  .finance-position { grid-template-columns:minmax(0,1fr); }
-  .finance-position > div + div { border-left:0; border-top:1px solid #3D342E; padding-left:0; }
-}
 .finance-completion h3 { margin-bottom:4px; }
 .finance-task { width:100%; display:flex; gap:6px; align-items:center; text-align:left; padding:4px 0; min-height:36px; border-bottom:1px solid #3D342E; }
 .finance-task > span:first-child { flex:1; min-width:0; }
@@ -201,3 +235,5 @@
 @media (max-width:430px) { .finance-entry-actions .finance-action { padding:4px 6px; font-size:12px; } }
 @media (max-width:359px) { .finance-nav button { font-size:12px; } .finance-position dd { font-size:14px; } .finance-legend button { grid-template-columns:8px minmax(0,1fr) auto 40px; gap:6px; } .finance-op-label, .finance-op-amount { font-size:13px; } .finance-table .finance-money { white-space:normal; } }
 @media (prefers-reduced-motion:reduce) { .finance *, .finance-sheet * { animation:none!important; transition:none!important; } }
+.finance-summary-head { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:2px; }
+.finance-summary-head .finance-label { display:inline; }

@@ -42,11 +42,24 @@ export function createJournalState(overrides: Partial<JournalState> = {}): Journ
     allDates: false, archiveYear: '', year: '', page: 1, ...overrides };
 }
 const PAGE_SIZE = 50;
-const FOLLOW_UP_FILTERS = new Set(['due', 'payable', 'receivable', 'review', 'unknown']);
+const FOLLOW_UP_FILTERS = new Set(['due', 'payable', 'receivable', 'review', 'unknown', 'proof']);
 const FILTER_LABELS: Record<string, string> = {
   all: 'Toutes', due: 'À payer et encaisser', payable: 'À payer', receivable: 'À encaisser',
-  review: 'À compléter', unknown: 'Paiements à confirmer', void: 'Écritures annulées',
+  review: 'À compléter', proof: 'Sans justificatif', unknown: 'Paiements à confirmer', void: 'Écritures annulées',
 };
+/**
+ * Les états proposés en permanence, dans l'ordre où le brasseur les traite.
+ *
+ * ⚠️ Chacun porte son compte. Un filtre qui n'annonce pas ce qu'il contient
+ * oblige à l'essayer pour savoir s'il y a du travail derrière : on l'ouvre,
+ * on trouve zéro, on revient. Le compte transforme la rangée de puces en
+ * relevé de ce qui reste à faire, lisible sans toucher à rien.
+ *
+ * `review` (« À compléter ») reste le sur-ensemble : date manquante, paiement
+ * inconnu, trop-perçu OU justificatif absent. `proof` en isole la part la plus
+ * demandée — retrouver une pièce pour la comptabilité.
+ */
+const STATE_FILTERS = ['all', 'payable', 'receivable', 'review', 'proof'] as const;
 
 export function TransactionJournal({ transactions, payments, archives, request, state: controlledState, onStateChange,
   renderRow, onManageArchives, onPrivateMovement, onScopeChange }: {
@@ -98,25 +111,43 @@ export function TransactionJournal({ transactions, payments, archives, request, 
 
   // Archiving never settles a bill. Follow-up includes earlier and archived years.
   const followingUp = scope === 'current' && FOLLOW_UP_FILTERS.has(filter);
-  const filtered = useMemo(() => {
+  /**
+   * Un seul prédicat, paramétré par l'état demandé.
+   *
+   * Il était écrit une fois pour la liste affichée ; le compte annoncé sur
+   * chaque puce doit répondre exactement à « qu'est-ce que ce filtre me
+   * montrerait ? », y compris son élargissement à tous les exercices. Le
+   * dupliquer aurait fait diverger les deux réponses au premier ajustement.
+   */
+  const select = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase('fr').replace(/(\d),(\d)/g, '$1.$2');
-    return classified.filter(({ transaction: t, payment, date, direction, open, search, archived }) => {
-      if (scope === 'archives' && (!archived || selectedYear !== 'all' && date?.slice(0, 4) !== selectedYear)) return false;
-      if (scope === 'current' && !followingUp && archived && !open) return false;
-      if (scope !== 'archives' && !followingUp && year && date?.slice(0, 4) !== year) return false;
-      if (scope !== 'archives' && !year && !allDates && !followingUp && !(scope === 'current' && open) && !date?.startsWith(month)) return false;
-      if (filter === 'void') { if (isActiveTransaction(t)) return false; }
-      else if (!isActiveTransaction(t) && (scope === 'current' || filter !== 'all')) return false;
-      if (needle && !search.includes(needle)) return false;
-      if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
-        (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
-      if (['due', 'payable', 'receivable'].includes(filter) && !['unpaid', 'partial'].includes(payment.state)) return false;
-      if (filter === 'payable' && direction !== 'out' || filter === 'receivable' && direction !== 'in') return false;
-      if (filter === 'unknown' && payment.state !== 'unknown') return false;
-      if (filter === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && (t.proofUrl || t.finance?.proofDocumentId)) return false;
-      return true;
-    }).sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '') || b.recordedAt - a.recordedAt || a.transaction.id.localeCompare(b.transaction.id));
-  }, [classified, scope, selectedYear, followingUp, query, category, filter, allDates, month, year]);
+    return (wanted: string) => {
+      const chasing = scope === 'current' && FOLLOW_UP_FILTERS.has(wanted);
+      return classified.filter(({ transaction: t, payment, date, direction, open, search, archived }) => {
+        if (scope === 'archives' && (!archived || selectedYear !== 'all' && date?.slice(0, 4) !== selectedYear)) return false;
+        if (scope === 'current' && !chasing && archived && !open) return false;
+        if (scope !== 'archives' && !chasing && year && date?.slice(0, 4) !== year) return false;
+        if (scope !== 'archives' && !year && !allDates && !chasing && !(scope === 'current' && open) && !date?.startsWith(month)) return false;
+        if (wanted === 'void') { if (isActiveTransaction(t)) return false; }
+        else if (!isActiveTransaction(t) && (scope === 'current' || wanted !== 'all')) return false;
+        if (needle && !search.includes(needle)) return false;
+        if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
+          (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
+        if (['due', 'payable', 'receivable'].includes(wanted) && !['unpaid', 'partial'].includes(payment.state)) return false;
+        if (wanted === 'payable' && direction !== 'out' || wanted === 'receivable' && direction !== 'in') return false;
+        if (wanted === 'unknown' && payment.state !== 'unknown') return false;
+        if (wanted === 'proof' && (t.proofUrl || t.finance?.proofDocumentId)) return false;
+        if (wanted === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && (t.proofUrl || t.finance?.proofDocumentId)) return false;
+        return true;
+      });
+    };
+  }, [classified, scope, selectedYear, query, category, allDates, month, year]);
+  const filtered = useMemo(() => [...select(filter)].sort((a, b) =>
+    (b.date ?? '').localeCompare(a.date ?? '') || b.recordedAt - a.recordedAt || a.transaction.id.localeCompare(b.transaction.id)),
+  [select, filter]);
+  const counts = useMemo(() => Object.fromEntries(STATE_FILTERS.map(value =>
+    [value, value === filter ? filtered.length : select(value).length])) as Record<string, number>,
+  [select, filter, filtered.length]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const page = Math.max(1, Math.min(journal.page, pageCount));
   const offset = (page - 1) * PAGE_SIZE;
@@ -185,9 +216,18 @@ export function TransactionJournal({ transactions, payments, archives, request, 
         </div>
         <span className="journal-rail-split" aria-hidden="true"/>
         <div className="journal-filters" role="group" aria-label="État des opérations">
-          {(['all', 'payable', 'receivable', 'review'] as const).map(value => <button type="button" className="journal-chip" key={value}
-            aria-pressed={filter === value} onClick={() => change({ filter: value })}>{FILTER_LABELS[value]}</button>)}
+          {STATE_FILTERS.map(value => <button type="button" className="journal-chip" key={value}
+            aria-pressed={filter === value} aria-describedby={`${searchId}-${value}`} onClick={() => change({ filter: value })}>
+            {FILTER_LABELS[value]}
+            <span className="journal-chip-count" aria-hidden="true" data-empty={counts[value] === 0 || undefined}>{counts[value]}</span>
+          </button>)}
         </div>
+        {/* Le compte DÉCRIT la puce, il n'entre pas dans son nom : « À payer »
+            reste « À payer » au clavier, et le lecteur d'écran entend en plus
+            combien d'opérations attendent derrière. Ces libellés vivent hors
+            des boutons, sans quoi ils s'ajouteraient à leur nom accessible. */}
+        <div hidden>{STATE_FILTERS.map(value =>
+          <span key={value} id={`${searchId}-${value}`}>{compte(counts[value], 'opération')}</span>)}</div>
         {specialFilter && <div className="journal-active-filter"><button type="button" className="journal-chip" aria-label={`Retirer le filtre : ${FILTER_LABELS[filter]}`}
           onClick={() => change({ filter: 'all' })}>{FILTER_LABELS[filter]}<X size={13} aria-hidden="true"/></button></div>}
       </div>

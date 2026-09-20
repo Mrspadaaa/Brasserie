@@ -42,6 +42,11 @@
 .journal-search-control button:focus-visible { outline-offset:0; }
 .journal-filters, .journal-active-filter { display:flex; flex-wrap:wrap; gap:4px; }
 .journal-filters .journal-chip { padding-inline:6px; }
+/* Le compte de chaque état : lisible, jamais plus fort que le libellé. */
+.journal-chip-count { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;
+  font-size:12px; line-height:16px; color:#F5F0EA; }
+.journal-chip[aria-pressed=true] .journal-chip-count { color:var(--finance-accent,#86B9E6); }
+.journal-chip-count[data-empty] { color:#9A8A7E; }
 .journal-active-filter .journal-chip { display:flex; align-items:center; gap:6px; }
 .journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 0; color:#D8CEC5; font-size:13px; line-height:20px; }
 .journal-extra > div { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:4px 0 6px; }

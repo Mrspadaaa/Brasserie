@@ -47,3 +47,10 @@ const amountFormatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 
  * l'en-tête du jour ; le nom accessible de la ligne, lui, garde `formatCHF`.
  */
 export const amountOnly = (cents: number): string => amountFormatter.format(cents / 100);
+
+/** Date écrite en toutes lettres, pour une fiche qu'on lit posément. */
+export const longDate = (date?: string): string => {
+  const iso = isoDate(date);
+  if (!iso) return 'Date à vérifier';
+  return new Date(`${iso}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'long', year: 'numeric' });
+};
