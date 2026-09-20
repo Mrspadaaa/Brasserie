@@ -1,7 +1,7 @@
 import { Fermentable, HopIngredient, StockItem, YeastSpec } from '../types';
 
 import { readIngredientFermentationFacts, type IngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
-import { readYeastTechnicalFacts, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
+import { alcoholPercentUnit, readYeastTechnicalFacts, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 
 export type IngredientKind = 'levure' | 'malt' | 'houblon';
 
@@ -82,7 +82,8 @@ export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
   // A model sometimes duplicates a published range as its midpoint. The range
   // is the evidence; never retain that unsupported pseudo-exact scalar.
   for (const [field, key] of [['attenuationPct', 'attenuation'], ['alcoholTolerancePct', 'alcoholTolerance']] as const) {
-    const documented = out.technicalFacts?.filter(f => f.key === key && f.range && f.unit === '%') ?? [];
+    const documented = out.technicalFacts?.filter(f => f.key === key && f.range &&
+      (key === 'alcoholTolerance' ? alcoholPercentUnit(f.unit) : f.unit === '%')) ?? [];
     if (documented.length && !documented.every(f => f.qualifier === 'reportedPoint' && f.range!.min === out[field])) delete out[field];
   }
   return out;

@@ -57,6 +57,7 @@ export const BATCH_FIELDS =
   'id name style nolo status brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
     ' '
   );
+export const STOCK_FIELDS = 'id name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC yeastTechnicalFacts yeastFermentationFacts yeastFlocculation yeastAlcoholTolerancePct yeastNotes'.split(' ');
 export function validateChatInput(raw: any): BrewerChatInput {
   const scope = validateScope(raw?.scope);
   if (typeof raw.operationId !== 'string' || !/^[\w-]{16,100}$/.test(raw.operationId))

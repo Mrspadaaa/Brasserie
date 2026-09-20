@@ -17,6 +17,10 @@ export interface YeastTechnicalFact {
 const text = (value: unknown, max = 2000): value is string =>
   typeof value === 'string' && !!value.trim() && value.length <= max;
 
+/** Equivalent volume-percent labels; retain the original unit in the dossier. */
+export const alcoholPercentUnit = (unit: string | undefined) => typeof unit === 'string' &&
+  /^%(?:vol\.?|v\/v|abv)?$/i.test(unit.replace(/\s/g, ''));
+
 /** Validate the whole transport so an invalid bound is never silently narrowed. */
 export function readYeastTechnicalFacts(value: unknown): YeastTechnicalFact[] | undefined {
   if (!Array.isArray(value)) return undefined;
@@ -37,7 +41,7 @@ export function readYeastTechnicalFacts(value: unknown): YeastTechnicalFact[] | 
       if (!Number.isFinite(min) || !Number.isFinite(max) || min > max ||
         !text(fact.unit, 40) || !['range', 'reportedPoint', 'atLeast', 'upTo'].includes(fact.qualifier) ||
         (fact.qualifier !== 'range' && min !== max) ||
-        (fact.unit === '%' && (min < 0 || max > 100))) return undefined;
+        ((fact.unit === '%' || fact.key === 'alcoholTolerance' && alcoholPercentUnit(fact.unit)) && (min < 0 || max > 100))) return undefined;
     } else if (fact.unit !== undefined || fact.qualifier !== undefined) return undefined;
     result.push({
       key: fact.key, reported: fact.reported, origin: fact.origin,

@@ -6,6 +6,7 @@ import { normalizeRecipe, refreshCompanionRecipe } from './brewerTools.js';
 import {
   BATCH_FIELDS,
   RECIPE_FIELDS,
+  STOCK_FIELDS,
   cleanContext,
   pick,
   scopeKey,
@@ -120,9 +121,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     inventory: stock.docs.map((d) =>
       pick(
         { ...d.data(), id: d.id },
-        'id name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC'.split(
-          ' '
-        )
+        STOCK_FIELDS
       )
     ),
     material: material.docs.map((d) =>

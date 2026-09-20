@@ -487,7 +487,7 @@ export const App: React.FC = () => {
       name: recipe.name,
       style: recipe.style,
       volumeL: recipe.volumeL,
-      brewDate: recipe.brewDate ?? new Date().toLocaleDateString('fr-CH'),
+      brewDate: recipe.brewDate?.trim() || new Date().toLocaleDateString('fr-CH'),
       status: 'planifie',
       stockAccountingVersion: 1,
       recipeRef: recipe.id,

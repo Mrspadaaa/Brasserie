@@ -58,6 +58,7 @@ const yeast = {
   fermTempMinC: n('Fermentation minimum', 0, 45, '°C'),
   fermTempMaxC: n('Fermentation maximum', 0, 45, '°C'),
   attenuationPct: n('Atténuation', 0, 100, '%'),
+  attenuationBasis: choice('Base de l’atténuation : déclarée par le fabricant, hypothèse de recette ou mesure confirmée', ['declared', 'recipe', 'measured']),
   fermentDays: n('Durée', 1, 365, 'j'),
   notes: t('Notes', 2000)
 };

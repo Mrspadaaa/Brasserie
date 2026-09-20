@@ -25,7 +25,7 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
     r.unit === (kind === 'temperature' ? '°C' : kind === 'volume' ? 'L' : 'SG'));
   const measured = { temperature: final('temperature'), volume: final('volume'), gravity: final('densite') };
   const quantityKnown = known(recipe.yeast.qty) && recipe.yeast.qty > 0 && !!recipe.yeast.unit;
-  const quantity = quantityKnown ? `${fmt(recipe.yeast.qty)} ${recipe.yeast.unit}` : 'Quantité à préciser';
+  const quantity = quantityKnown ? `${recipe.yeast.qty!.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${recipe.yeast.unit}` : 'Quantité à préciser';
   const pressure = draft.pressureBar;
   const formWarning = yeastRecipeFormWarning(recipe, analysis.candidate?.reference);
   const confirmedDry = recipe.yeast.form === 'sèche' && analysis.candidate?.reference.form === 'sèche';
