@@ -47,6 +47,11 @@
   font-size:12px; line-height:16px; color:#F5F0EA; }
 .journal-chip[aria-pressed=true] .journal-chip-count { color:var(--finance-accent,#86B9E6); }
 .journal-chip-count[data-empty] { color:#9A8A7E; }
+/* Une échéance dépassée est la seule chasse qui coûte de l’argent : elle se
+   signale, sans devenir une alerte rouge tant que rien n’est cassé. */
+.journal-chip[data-urgent] { border-color:#E3B55D; color:#E3B55D; }
+.journal-chip[data-urgent] .journal-chip-count { color:#E3B55D; }
+.journal-chip[data-urgent][aria-pressed=true] { background:#302719; }
 .journal-active-filter .journal-chip { display:flex; align-items:center; gap:6px; }
 .journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 0; color:#D8CEC5; font-size:13px; line-height:20px; }
 .journal-extra > div { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:4px 0 6px; }

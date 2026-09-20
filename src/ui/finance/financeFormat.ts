@@ -6,21 +6,37 @@ import { formatCHF, isoDate, todayISO } from '../../domain/finance/ledger';
  * Ils vivaient en double dans `FinancesTab` et dans le journal. Les regrouper
  * ici garde une seule écriture d'une date et d'un montant : deux colonnes ne se
  * comparent que si elles sont formatées de la même façon.
+ *
+ * ⚠️ Les formateurs `Intl` sont construits UNE FOIS, au chargement du module.
+ * `toLocaleDateString` en fabrique un neuf à chaque appel — c'est la partie
+ * coûteuse d'`Intl`, pas le formatage lui-même. Le journal appelle ces
+ * fonctions une fois par jour affiché et une fois par échéance, à chaque
+ * frappe dans la recherche.
  */
+
+const dayMonth = new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short' });
+const dayMonthYear = new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'short', year: 'numeric' });
+const monthYear = new Intl.DateTimeFormat('fr-CH', { month: 'long', year: 'numeric' });
+const fullDate = new Intl.DateTimeFormat('fr-CH', { day: 'numeric', month: 'long', year: 'numeric' });
+const amountFormatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/** Midi : une date lue à minuit bascule d'un jour selon le fuseau. */
+const noon = (iso: string) => new Date(`${iso}T12:00:00`);
 
 /** Date de ligne : l'année n'apparaît que lorsqu'elle n'est pas l'année courante. */
 export const shortDate = (date?: string): string => {
   const iso = isoDate(date);
   if (!iso) return 'Date à vérifier';
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('fr-CH', {
-    day: 'numeric',
-    month: 'short',
-    year: iso.slice(0, 4) === todayISO().slice(0, 4) ? undefined : 'numeric',
-  });
+  return (iso.slice(0, 4) === todayISO().slice(0, 4) ? dayMonth : dayMonthYear).format(noon(iso));
 };
 
-export const monthLabel = (month: string): string =>
-  new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH', { month: 'long', year: 'numeric' });
+/** Date écrite en toutes lettres, pour une fiche qu'on lit posément. */
+export const longDate = (date?: string): string => {
+  const iso = isoDate(date);
+  return iso ? fullDate.format(noon(iso)) : 'Date à vérifier';
+};
+
+export const monthLabel = (month: string): string => monthYear.format(noon(`${month}-01`));
 
 /**
  * Solde net d'une période.
@@ -31,14 +47,6 @@ export const monthLabel = (month: string): string =>
 export const signedCHF = (cents: number): string =>
   `${cents < 0 ? '− ' : cents > 0 ? '+ ' : ''}${formatCHF(Math.abs(cents))}`;
 
-/** Mois voisin, sans passer par le sélecteur natif. */
-export const shiftMonth = (month: string, step: number): string => {
-  const date = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + step, 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-};
-
-const amountFormatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
 /**
  * Montant sans son unité.
  *
@@ -48,9 +56,8 @@ const amountFormatter = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 
  */
 export const amountOnly = (cents: number): string => amountFormatter.format(cents / 100);
 
-/** Date écrite en toutes lettres, pour une fiche qu'on lit posément. */
-export const longDate = (date?: string): string => {
-  const iso = isoDate(date);
-  if (!iso) return 'Date à vérifier';
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'long', year: 'numeric' });
+/** Mois voisin, sans passer par le sélecteur natif. */
+export const shiftMonth = (month: string, step: number): string => {
+  const date = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + step, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 };

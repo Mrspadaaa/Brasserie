@@ -80,10 +80,38 @@ describe('Journal financier compact', () => {
       request={{ key: 'confirm-payments', scope: 'current', filter: 'unknown' }}/>);
     expect(screen.getByRole('button', { name: 'Opération PAIEMENT-INCONNU' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Opération SANS-PIÈCE' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Retirer le filtre : Paiements à confirmer' })).toBeVisible();
+    // « Paiements à confirmer » a sa propre puce de suivi : elle apparaît dès
+    // qu'il reste un paiement inconnu, et porte l'état courant.
+    expect(filterButton('Paiements à confirmer')).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(filterButton('À compléter'));
     expect(screen.getByRole('button', { name: 'Opération SANS-PIÈCE' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Opération PAIEMENT-INCONNU' })).toBeInTheDocument();
+  });
+
+  it('annonce le compte de chaque suivi et n’affiche une chasse que si elle contient quelque chose', () => {
+    const late = purchase('EN-RETARD', { finance: { version: 1, kind: 'expense', amountCents: 10000,
+      paymentStatus: 'unpaid', dueDate: `${previousYear}-03-01`, recordedAt: `${today}T12:00:00Z`, lines: [] } });
+    const soon = purchase('À-ÉCHOIR', { finance: { version: 1, kind: 'expense', amountCents: 10000,
+      paymentStatus: 'unpaid', dueDate: `${Number(today.slice(0, 4)) + 1}-03-01`, recordedAt: `${today}T12:00:00Z`, lines: [] } });
+    const undated = purchase('SANS-DATE', { date: '' });
+    render(<TransactionJournal {...defaults} transactions={[late, soon, undated]}/>);
+
+    // Les trois pièces restent à payer ; une seule a son échéance dépassée.
+    expect(filterButton('À payer')).toHaveTextContent('3');
+    expect(filterButton('En retard')).toHaveTextContent('1');
+    expect(filterButton('En retard')).toHaveAttribute('data-urgent');
+    expect(filterButton('Sans date')).toHaveTextContent('1');
+    // Rien à confirmer : la puce ne prend pas de place pour annoncer zéro.
+    expect(within(screen.getByRole('group', { name: 'État des opérations' }))
+      .queryByRole('button', { name: 'Paiements à confirmer' })).not.toBeInTheDocument();
+
+    fireEvent.click(filterButton('En retard'));
+    expect(screen.getByRole('button', { name: 'Opération EN-RETARD' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Opération À-ÉCHOIR' })).not.toBeInTheDocument();
+
+    fireEvent.click(filterButton('Sans date'));
+    expect(screen.getByRole('button', { name: 'Opération SANS-DATE' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Opération EN-RETARD' })).not.toBeInTheDocument();
   });
 
   it('cherche un tiers, une facture ou un montant décimal et filtre les lignes mixtes', () => {

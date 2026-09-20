@@ -7,9 +7,8 @@ import { CATEGORY_LABELS } from './FinanceForms';
 import { CategoryTag } from './CategoryTag';
 import { amountOnly } from './financeFormat';
 
-const STATE_LABELS: Record<string, string> = {
-  paid: 'Payé', partial: 'Partiellement payé', unpaid: 'À payer', unknown: 'Paiement à confirmer',
-};
+/** Les deux seuls états que la cascade ci-dessous n'a pas déjà nommés. */
+const STATE_LABELS: Record<string, string> = { unpaid: 'À payer', unknown: 'Paiement à confirmer' };
 
 /**
  * État de règlement : un mot court à l'écran, la phrase entière dans le nom
@@ -48,13 +47,15 @@ function settlementLabel(
  * Le montant et l'état gardent leur écriture complète dans le nom accessible :
  * on compacte le dessin, pas l'information.
  */
-export function TransactionRow({ transaction, transactions, payments, onOpen }: {
+export function TransactionRow({ transaction, transactions, payments, state: given, onOpen }: {
   transaction: Transaction;
   transactions: Transaction[];
   payments: FinancialPayment[];
+  /** État déjà calculé par la liste, pour ne pas le refaire une fois par ligne. */
+  state?: ReturnType<typeof paymentState>;
   onOpen: () => void;
 }) {
-  const state = paymentState(transaction, payments, transactions, todayISO());
+  const state = given ?? paymentState(transaction, payments, transactions, todayISO());
   const incoming = transactionDirection(transaction, transactions) === 'in';
   const amount = transactionAmount(transaction);
   const category = CATEGORY_LABELS[transaction.category] ?? transaction.category;

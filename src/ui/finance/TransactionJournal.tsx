@@ -12,7 +12,7 @@ import { compte } from '../../services/plural';
 import './journal.css';
 
 export type JournalScope = 'current' | 'archives' | 'all';
-export type JournalFilter = 'all' | 'due' | 'payable' | 'receivable' | 'review' | 'unknown' | 'void';
+export type JournalFilter = 'all' | 'due' | 'late' | 'payable' | 'receivable' | 'review' | 'proof' | 'undated' | 'unknown' | 'void';
 export interface JournalRequest {
   key: string;
   scope?: JournalScope;
@@ -42,24 +42,43 @@ export function createJournalState(overrides: Partial<JournalState> = {}): Journ
     allDates: false, archiveYear: '', year: '', page: 1, ...overrides };
 }
 const PAGE_SIZE = 50;
-const FOLLOW_UP_FILTERS = new Set(['due', 'payable', 'receivable', 'review', 'unknown', 'proof']);
+const FOLLOW_UP_FILTERS = new Set(['due', 'late', 'payable', 'receivable', 'review', 'unknown', 'proof', 'undated']);
 const FILTER_LABELS: Record<string, string> = {
-  all: 'Toutes', due: 'À payer et encaisser', payable: 'À payer', receivable: 'À encaisser',
-  review: 'À compléter', proof: 'Sans justificatif', unknown: 'Paiements à confirmer', void: 'Écritures annulées',
+  all: 'Toutes', due: 'À payer et encaisser', late: 'En retard', payable: 'À payer', receivable: 'À encaisser',
+  review: 'À compléter', proof: 'Sans justificatif', undated: 'Sans date',
+  unknown: 'Paiements à confirmer', void: 'Écritures annulées',
 };
 /**
- * Les états proposés en permanence, dans l'ordre où le brasseur les traite.
+ * Les états de suivi, dans l'ordre où le brasseur les traite.
  *
  * ⚠️ Chacun porte son compte. Un filtre qui n'annonce pas ce qu'il contient
  * oblige à l'essayer pour savoir s'il y a du travail derrière : on l'ouvre,
  * on trouve zéro, on revient. Le compte transforme la rangée de puces en
  * relevé de ce qui reste à faire, lisible sans toucher à rien.
  *
- * `review` (« À compléter ») reste le sur-ensemble : date manquante, paiement
- * inconnu, trop-perçu OU justificatif absent. `proof` en isole la part la plus
- * demandée — retrouver une pièce pour la comptabilité.
+ * ⚠️ `always: false` ne s'affiche QUE s'il contient quelque chose (ou s'il est
+ * sélectionné). Ce sont les chasses ponctuelles : une facture en retard, une
+ * pièce sans date, un paiement d'avant l'application. Les garder en
+ * permanence à zéro allongerait la glissière pour annoncer, huit fois, qu'il
+ * n'y a rien à faire — exactement ce qu'on vient d'enlever de la synthèse.
+ * Les quatre premiers restent, eux : ce sont les lectures du quotidien.
+ *
+ * `review` (« À compléter ») est le sur-ensemble : date manquante, paiement
+ * inconnu, trop-perçu OU justificatif absent. `proof` et `undated` en isolent
+ * les deux parts qu'on chasse réellement, pièce par pièce.
  */
-const STATE_FILTERS = ['all', 'payable', 'receivable', 'review', 'proof'] as const;
+const STATE_FILTERS: Array<{ value: string; always: boolean; urgent?: boolean }> = [
+  { value: 'all', always: true },
+  { value: 'payable', always: true },
+  // « En retard » est un sous-ensemble de « À payer » : il se lit juste après,
+  // comme une aggravation, et non avant comme une rubrique de plus.
+  { value: 'late', always: false, urgent: true },
+  { value: 'receivable', always: true },
+  { value: 'review', always: true },
+  { value: 'proof', always: false },
+  { value: 'undated', always: false },
+  { value: 'unknown', always: false },
+];
 
 export function TransactionJournal({ transactions, payments, archives, request, state: controlledState, onStateChange,
   renderRow, onManageArchives, onPrivateMovement, onScopeChange }: {
@@ -69,7 +88,15 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   request?: JournalRequest;
   state?: JournalState;
   onStateChange?: (next: JournalState) => void;
-  renderRow: (transaction: Transaction) => React.ReactNode;
+  /**
+   * L'état de paiement est passé à la ligne, déjà calculé.
+   *
+   * `paymentState` parcourt tous les paiements et toutes les écritures pour
+   * une seule pièce. Le journal le calcule déjà une fois par écriture, dans
+   * un memo ; laisser chaque ligne le refaire ajoutait cinquante parcours
+   * complets à CHAQUE frappe dans la recherche.
+   */
+  renderRow: (transaction: Transaction, payment: ReturnType<typeof paymentState>) => React.ReactNode;
   onManageArchives: () => void;
   onPrivateMovement: () => void;
   onScopeChange?: (scope: JournalScope) => void;
@@ -95,9 +122,21 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     };
   }), [transactions, payments]);
   const classified = useMemo(() => entries.map(entry => ({ ...entry, archived: isTransactionArchived(entry.transaction, index) })), [entries, index]);
-  const archivedCount = classified.filter(entry => entry.archived).length;
+  const archivedCount = useMemo(() => classified.reduce((n, entry) => entry.archived ? n + 1 : n, 0), [classified]);
 
   useEffect(() => { onScopeChange?.(scope); }, [scope, onScopeChange]);
+  /**
+   * La glissière des états déborde dès qu'il y a plusieurs chasses en cours.
+   * Un autre écran peut activer un filtre qui se trouve hors du champ de vue —
+   * « Confirmer les paiements » depuis la synthèse, par exemple. On amène
+   * alors la puce sélectionnée à l'écran : sans ça, la liste change sans que
+   * rien ne dise pourquoi.
+   */
+  const railRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    railRef.current?.querySelector('[aria-pressed="true"].journal-chip')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [filter]);
   useEffect(() => {
     if (!request || request.key === journal.requestKey) return;
     const next = createJournalState({
@@ -112,42 +151,65 @@ export function TransactionJournal({ transactions, payments, archives, request, 
   // Archiving never settles a bill. Follow-up includes earlier and archived years.
   const followingUp = scope === 'current' && FOLLOW_UP_FILTERS.has(filter);
   /**
-   * Un seul prédicat, paramétré par l'état demandé.
+   * Le tri se fait en deux temps, et c'est une question de coût.
    *
-   * Il était écrit une fois pour la liste affichée ; le compte annoncé sur
-   * chaque puce doit répondre exactement à « qu'est-ce que ce filtre me
-   * montrerait ? », y compris son élargissement à tous les exercices. Le
-   * dupliquer aurait fait diverger les deux réponses au premier ajustement.
+   * Le SOCLE — périmètre, période, recherche, catégorie — est le travail
+   * lourd : il lit une chaîne de recherche et les lignes de chaque pièce. Il
+   * ne dépend de l'état demandé que par un booléen (un suivi élargit la
+   * période à tous les exercices), donc deux passes suffisent pour toutes les
+   * puces, au lieu d'une passe complète par puce.
+   *
+   * L'ÉTAT ne regarde ensuite que des valeurs déjà calculées, sur un ensemble
+   * déjà réduit. Un seul prédicat pour la liste et pour les comptes : deux
+   * copies auraient divergé au premier ajustement, et une puce aurait annoncé
+   * un nombre que son propre filtre ne montre pas.
    */
-  const select = useMemo(() => {
+  const bases = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase('fr').replace(/(\d),(\d)/g, '$1.$2');
-    return (wanted: string) => {
-      const chasing = scope === 'current' && FOLLOW_UP_FILTERS.has(wanted);
-      return classified.filter(({ transaction: t, payment, date, direction, open, search, archived }) => {
-        if (scope === 'archives' && (!archived || selectedYear !== 'all' && date?.slice(0, 4) !== selectedYear)) return false;
-        if (scope === 'current' && !chasing && archived && !open) return false;
-        if (scope !== 'archives' && !chasing && year && date?.slice(0, 4) !== year) return false;
-        if (scope !== 'archives' && !year && !allDates && !chasing && !(scope === 'current' && open) && !date?.startsWith(month)) return false;
-        if (wanted === 'void') { if (isActiveTransaction(t)) return false; }
-        else if (!isActiveTransaction(t) && (scope === 'current' || wanted !== 'all')) return false;
-        if (needle && !search.includes(needle)) return false;
-        if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
-          (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
-        if (['due', 'payable', 'receivable'].includes(wanted) && !['unpaid', 'partial'].includes(payment.state)) return false;
-        if (wanted === 'payable' && direction !== 'out' || wanted === 'receivable' && direction !== 'in') return false;
-        if (wanted === 'unknown' && payment.state !== 'unknown') return false;
-        if (wanted === 'proof' && (t.proofUrl || t.finance?.proofDocumentId)) return false;
-        if (wanted === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && (t.proofUrl || t.finance?.proofDocumentId)) return false;
-        return true;
-      });
+    const keep = (entry: typeof classified[number], chasing: boolean) => {
+      const { transaction: t, date, open, search, archived } = entry;
+      if (scope === 'archives' && (!archived || selectedYear !== 'all' && date?.slice(0, 4) !== selectedYear)) return false;
+      if (scope === 'current' && !chasing && archived && !open) return false;
+      if (scope !== 'archives' && !chasing && year && date?.slice(0, 4) !== year) return false;
+      if (scope !== 'archives' && !year && !allDates && !chasing && !(scope === 'current' && open) && !date?.startsWith(month)) return false;
+      if (needle && !search.includes(needle)) return false;
+      if (category !== 'all' && t.category !== category && !t.finance?.lines.some(line =>
+        (line.category ?? (line.kind === 'equipment' ? 'materiel' : line.kind === 'cleaning' ? 'nettoyage' : ['ingredient', 'packaging'].includes(line.kind) ? 'brassage' : t.category)) === category)) return false;
+      return true;
     };
+    const scoped = classified.filter(entry => keep(entry, false));
+    // Hors périmètre « courantes », un suivi ne change rien à la période.
+    return { scoped, chasing: scope === 'current' ? classified.filter(entry => keep(entry, true)) : scoped };
   }, [classified, scope, selectedYear, query, category, allDates, month, year]);
-  const filtered = useMemo(() => [...select(filter)].sort((a, b) =>
+  const matchesState = useMemo(() => {
+    const today = todayISO();
+    return ({ transaction: t, payment, date, direction }: typeof classified[number], wanted: string) => {
+      if (wanted === 'void') { if (isActiveTransaction(t)) return false; }
+      else if (!isActiveTransaction(t) && (scope === 'current' || wanted !== 'all')) return false;
+      if (['due', 'late', 'payable', 'receivable'].includes(wanted) && !['unpaid', 'partial'].includes(payment.state)) return false;
+      if (wanted === 'payable' && direction !== 'out' || wanted === 'receivable' && direction !== 'in') return false;
+      if (wanted === 'late') { const due = isoDate(t.finance?.dueDate); if (!due || due >= today) return false; }
+      if (wanted === 'undated' && date) return false;
+      if (wanted === 'unknown' && payment.state !== 'unknown') return false;
+      if (wanted === 'proof' && (t.proofUrl || t.finance?.proofDocumentId)) return false;
+      if (wanted === 'review' && date && payment.state !== 'unknown' && payment.overpaidCents === 0 && (t.proofUrl || t.finance?.proofDocumentId)) return false;
+      return true;
+    };
+  }, [scope]);
+  const baseFor = (wanted: string) => scope === 'current' && FOLLOW_UP_FILTERS.has(wanted) ? bases.chasing : bases.scoped;
+  const filtered = useMemo(() => baseFor(filter).filter(entry => matchesState(entry, filter)).sort((a, b) =>
     (b.date ?? '').localeCompare(a.date ?? '') || b.recordedAt - a.recordedAt || a.transaction.id.localeCompare(b.transaction.id)),
-  [select, filter]);
-  const counts = useMemo(() => Object.fromEntries(STATE_FILTERS.map(value =>
-    [value, value === filter ? filtered.length : select(value).length])) as Record<string, number>,
-  [select, filter, filtered.length]);
+  [bases, matchesState, filter, scope]);
+  /** Les comptes n'allouent rien : on ne garde que le nombre. */
+  const counts = useMemo(() => {
+    const total: Record<string, number> = {};
+    for (const { value } of STATE_FILTERS) {
+      let n = 0;
+      for (const entry of baseFor(value)) if (matchesState(entry, value)) n += 1;
+      total[value] = n;
+    }
+    return total;
+  }, [bases, matchesState, scope]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const page = Math.max(1, Math.min(journal.page, pageCount));
   const offset = (page - 1) * PAGE_SIZE;
@@ -157,7 +219,9 @@ export function TransactionJournal({ transactions, payments, archives, request, 
     : year ? `Exercice ${year}` : allDates ? 'Toutes les dates'
       : new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH', { month: 'long', year: 'numeric' });
   const hasFilters = !!query || category !== 'all' || filter !== 'all';
-  const specialFilter = ['due', 'unknown', 'void'].includes(filter);
+  const specialFilter = ['due', 'void'].includes(filter);
+  /** Une chasse vide ne prend pas de place ; celle qu'on regarde reste toujours là. */
+  const shownFilters = STATE_FILTERS.filter(({ value, always }) => always || counts[value] > 0 || filter === value);
   /**
    * Solde net des écritures affichées : les entrées comptent en plus, les
    * sorties en moins. Les écritures annulées restent hors du total — les
@@ -209,15 +273,16 @@ export function TransactionJournal({ transactions, payments, archives, request, 
           {Object.entries(CATEGORY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
       </div>
-      <div className="journal-rail">
+      <div className="journal-rail" ref={railRef}>
         <div className="journal-scopes" role="group" aria-label="Périmètre du journal">
           {([['current', 'Courantes'], ['archives', 'Archives'], ['all', 'Tout']] as const).map(([value, label]) =>
             <button type="button" key={value} aria-pressed={scope === value} onClick={() => changeScope(value)}>{label}</button>)}
         </div>
         <span className="journal-rail-split" aria-hidden="true"/>
         <div className="journal-filters" role="group" aria-label="État des opérations">
-          {STATE_FILTERS.map(value => <button type="button" className="journal-chip" key={value}
-            aria-pressed={filter === value} aria-describedby={`${searchId}-${value}`} onClick={() => change({ filter: value })}>
+          {shownFilters.map(({ value, urgent }) => <button type="button" className="journal-chip" key={value}
+            aria-pressed={filter === value} aria-describedby={`${searchId}-${value}`} onClick={() => change({ filter: value })}
+            data-urgent={urgent && counts[value] > 0 || undefined}>
             {FILTER_LABELS[value]}
             <span className="journal-chip-count" aria-hidden="true" data-empty={counts[value] === 0 || undefined}>{counts[value]}</span>
           </button>)}
@@ -226,7 +291,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
             reste « À payer » au clavier, et le lecteur d'écran entend en plus
             combien d'opérations attendent derrière. Ces libellés vivent hors
             des boutons, sans quoi ils s'ajouteraient à leur nom accessible. */}
-        <div hidden>{STATE_FILTERS.map(value =>
+        <div hidden>{shownFilters.map(({ value }) =>
           <span key={value} id={`${searchId}-${value}`}>{compte(counts[value], 'opération')}</span>)}</div>
         {specialFilter && <div className="journal-active-filter"><button type="button" className="journal-chip" aria-label={`Retirer le filtre : ${FILTER_LABELS[filter]}`}
           onClick={() => change({ filter: 'all' })}>{FILTER_LABELS[filter]}<X size={13} aria-hidden="true"/></button></div>}
@@ -244,7 +309,7 @@ export function TransactionJournal({ transactions, payments, archives, request, 
         <span>{compte(day.rows.length, 'opération')}<span className="finance-money">{signedCHF(netCents(day.rows))}</span></span></p>
       {day.rows.map(entry => <React.Fragment key={entry.transaction.id}>
         {entry.archived && entry.open && <p className="finance-archive-followup">Exercice {entry.date?.slice(0, 4)} archivé · facture encore ouverte</p>}
-        {renderRow(entry.transaction)}
+        {renderRow(entry.transaction, entry.payment)}
       </React.Fragment>)}
     </section>;
     })}</div>

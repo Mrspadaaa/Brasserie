@@ -8,7 +8,7 @@ import { FinanceService } from '../../services/financeService';
 import { FinancialArchiveService } from '../../services/financialArchiveService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue, useLiveSelection } from '../../hooks/useLiveData';
-import { formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionDirection, transactionVendor, isActiveTransaction, summarizeLedger } from '../../domain/finance/ledger';
+import { formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionDirection, transactionVendor, isActiveTransaction, paymentState, summarizeLedger } from '../../domain/finance/ledger';
 import { buildForecast, forecastHorizonEnd, type ForecastItem } from '../../domain/finance/forecast';
 import { buildAnnualReport } from '../../domain/finance/annual';
 import { TaxWorkspace } from '../../ui/finance/TaxWorkspace';
@@ -75,16 +75,16 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile),[transactions,data.payments,data.profile]);
   const openingCashReady=!!(data.profile.openingCash?.confirmed && isoDate(data.profile.openingCash.date) && isoDate(data.profile.openingCash.date)!<=todayISO() && Number.isSafeInteger(data.profile.openingCash.amountCents));
   const active=useMemo(()=>transactions.filter(isActiveTransaction),[transactions]);
-  const undated=active.filter(t=>!isoDate(t.date));
+  const undated=useMemo(()=>active.filter(t=>!isoDate(t.date)),[active]);
   const period=useMemo(()=>active.filter(t=>allDates||isoDate(t.date)?.startsWith(month)),[active,allDates,month]);
   const isCost=(t:Transaction)=>transactionKind(t)==='expense'||transactionKind(t)==='refund'&&transactionDirection(t,transactions)==='in';
   const costSign=(t:Transaction)=>transactionKind(t)==='refund'?-1:1;
   const expenses=useMemo(()=>period.filter(isCost),[period]);
   const totals=useMemo(()=>{const sums=new Map<string,number>();for(const t of expenses){if(t.finance?.lines.length){for(const l of t.finance.lines){const cat=l.category??(l.kind==='equipment'?'materiel':l.kind==='cleaning'?'nettoyage':['ingredient','packaging'].includes(l.kind)?'brassage':t.category);sums.set(cat,(sums.get(cat)??0)+costSign(t)*l.amountCents);}}else sums.set(t.category,(sums.get(t.category)??0)+costSign(t)*transactionAmount(t));}return [...sums.entries()].sort((a,b)=>b[1]-a[1]);},[expenses]);
-  const sum=expenses.reduce((n,t)=>n+costSign(t)*transactionAmount(t),0);
+  const sum=useMemo(()=>expenses.reduce((n,t)=>n+costSign(t)*transactionAmount(t),0),[expenses]);
   const vendors=useMemo(()=>{const sums=new Map<string,number>();expenses.forEach(t=>{const v=transactionVendor(t)||'Fournisseur à compléter';sums.set(v,(sums.get(v)??0)+costSign(t)*transactionAmount(t));});return [...sums.entries()].sort((a,b)=>b[1]-a[1]);},[expenses]);
   const previousMonth=new Date(Number(month.slice(0,4)),Number(month.slice(5))-2,1);const previousKey=`${previousMonth.getFullYear()}-${String(previousMonth.getMonth()+1).padStart(2,'0')}`;
-  const previousTotal=active.filter(t=>isCost(t)&&isoDate(t.date)?.startsWith(previousKey)).reduce((n,t)=>n+costSign(t)*transactionAmount(t),0);
+  const previousTotal=useMemo(()=>active.reduce((n,t)=>isCost(t)&&isoDate(t.date)?.startsWith(previousKey)?n+costSign(t)*transactionAmount(t):n,0),[active,previousKey]);
   const forecastWithProjects=useMemo(()=>buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13}),[transactions,data]);
   const forecast=useMemo(()=>includeEquipmentProjects?forecastWithProjects:buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13,includeEquipmentProjects:false}),[transactions,data,forecastWithProjects,includeEquipmentProjects]);
   const endKey=forecastHorizonEnd(todayISO(),horizon);
@@ -115,7 +115,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   },[openTransactionRequest,transactions]);
   const assistantView=view==='overview'?'costs':view==='forecast'&&forecastPart==='projects'?'projects':view;
   const financeAssistant=<FinanceAssistant view={assistantView} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
-  const row=(t:Transaction)=><TransactionRow key={t.id} transaction={t} transactions={transactions} payments={data.payments} onOpen={()=>setSelected(t)}/>;
+  const row=(t:Transaction,state?:ReturnType<typeof paymentState>)=><TransactionRow key={t.id} transaction={t} transactions={transactions} payments={data.payments} state={state} onOpen={()=>setSelected(t)}/>;
   const forecastRow=(item:ForecastItem)=>{
     const invoice=item.source==='invoice'?transactions.find(t=>`invoice:${t.id}`===item.id):undefined;
     const linkedPlan=item.planId?data.plans.find(p=>p.id===item.planId):undefined;
