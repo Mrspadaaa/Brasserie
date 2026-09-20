@@ -12,6 +12,7 @@ import type { YeastRecipeDestination } from './YeastRecipeWorkbench';
 import { NumberInput } from './NumberInput';
 import { Input } from './Input';
 import { useNumericDraft } from './numericInput';
+import { Units } from '../services/units';
 
 const identityVariation = (): YeastBeerVariation => ({ fermentableScale: 1, hotHopScale: 1 });
 const unchangedVariation = identityVariation();
@@ -72,7 +73,7 @@ function SensoryLevers({ target, recipe, onNavigate, saveTarget }: { target: Yea
   const chocolate = (recipe.fermentables ?? []).filter(f => /chocolat|chocolate|cacao|cocoa|carafa/i.test(f.name));
   const nonfermentables = (recipe.fermentables ?? []).filter(f => f.kind === 'lactose' || f.fermentabilityPct === 0);
   const sugars = (recipe.fermentables ?? []).filter(f => f.kind === 'sucre');
-  const ingredientQuantity = (f: NonNullable<TrialRecipe['fermentables']>[number]) => `${f.name} (${numeric(f.weightKg) && f.weightKg >= 0 ? `${format(f.weightKg, 3)} kg` : 'quantité à préciser'})`;
+  const ingredientQuantity = (f: NonNullable<TrialRecipe['fermentables']>[number]) => `${f.name} (${numeric(f.weightKg) && f.weightKg >= 0 ? Units.format(f.weightKg, 'kg') : 'quantité à préciser'})`;
   const dry = recipe.hops.filter(h => h.stage === 'dryHop');
   const dryG = dry.every(h => numeric(h.weightG)) ? dry.reduce((sum, h) => sum + h.weightG, 0) : undefined;
   const go = (where: YeastRecipeDestination, label: string) => onNavigate && <button type="button" className="yeast-link" onClick={() => onNavigate(where)}>{saveTarget ? `Conserver la cible et ${label.toLocaleLowerCase('fr')}` : label}</button>;
