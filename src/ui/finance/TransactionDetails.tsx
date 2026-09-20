@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
+import { ChevronRight, Wheat } from 'lucide-react';
 import type { Transaction } from '../../types';
 import type { FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { Sheet } from '../Sheet';
 import { DocumentProofLink } from './DocumentProofLink';
-import { Field, MoneyInput, CATEGORY_LABELS } from './FinanceForms';
+import { Field, MoneyInput } from './FinanceForms';
+import { CategoryTag } from './CategoryTag';
+import { longDate } from './financeFormat';
 import { formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
 
-export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund}: {
+export function TransactionDetails({transaction:tx,transactions,payments,plans,onClose,onEdit,onPay,onRefund,onOpenStockItem,onOpenRecipe}: {
   transaction:Transaction; transactions:Transaction[]; payments:FinancialPayment[]; plans:FinancialPlan[];
   onClose:()=>void; onEdit:()=>void; onPay:()=>void; onRefund:()=>void;
+  /** Renvoi vers l'article acheté, quand la ligne sait de quel article il s'agit. */
+  onOpenStockItem?:(ref:string)=>void;
+  /** Renvoi vers la recette estimée par le budget auquel cette facture se rattache. */
+  onOpenRecipe?:(recipeId:string)=>void;
 }) {
   const [error,setError]=useState(''), [correction,setCorrection]=useState<string|null>(null);
   const state=paymentState(tx,payments,transactions), plan=plans.find(p=>p.id===tx.finance?.planId);
+  const estimate=plan?.brewEstimate as {recipeId?:string;title?:string}|undefined;
+  const brewRecipeId=estimate?.recipeId, brewTitle=estimate?.title;
   const outgoing=transactionDirection(tx,transactions)==='out';
   const paymentLabel=state.state==='unknown'?'Paiement à confirmer':state.state==='paid'?'Soldé':`${state.state==='partial'?'Reste à':'À'} ${outgoing?'payer':'encaisser'} : ${formatCHF(state.remainingCents)}`;
   const year=Number((isoDate(tx.date)??todayISO()).slice(0,4));
@@ -24,7 +33,10 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   return <Sheet open title={tx.description} onClose={onClose} className="finance-sheet" footer={<button className="finance-action secondary w-full" onClick={onClose}>Fermer</button>}>
     <div className="finance-form">
       {error&&<p role="alert" className="finance-error">{error}</p>}
-      <div className="finance-summary"><span className="finance-label">{transactionVendor(tx)||CATEGORY_LABELS[tx.category]} · {isoDate(tx.date)??tx.date}</span><strong className="reading">{formatCHF(transactionAmount(tx))}</strong>{tx.finance?.voidedAt?<p className="finance-notice">Écriture annulée. Justificatif et historique conservés.</p>:<div className="mt-3"><p className={`finance-status ${state.state}`}>{paymentLabel}</p>{state.state==='partial'&&state.paidCents>0&&<p className="finance-muted mt-2">{outgoing?'Déjà payé':'Déjà encaissé'} : {formatCHF(state.paidCents)}</p>}{tx.finance?.dueDate&&state.remainingCents>0&&<p className="finance-muted mt-2">Échéance : {new Date(`${tx.finance.dueDate}T12:00:00`).toLocaleDateString('fr-CH')}</p>}</div>}</div>
+      {/* La catégorie s'affiche ici comme dans la liste, et la date s'écrit en
+          français : la fiche montrait « 2026-09-20 », une date de base de
+          données que personne ne lit à voix haute. */}
+      <div className="finance-summary"><span className="finance-summary-head"><CategoryTag category={tx.category}/><span className="finance-label">{[transactionVendor(tx), longDate(tx.date)].filter(Boolean).join(' · ')}</span></span><strong className="reading">{formatCHF(transactionAmount(tx))}</strong>{tx.finance?.voidedAt?<p className="finance-notice">Écriture annulée. Justificatif et historique conservés.</p>:<div className="mt-3"><p className={`finance-status ${state.state}`}>{paymentLabel}</p>{state.state==='partial'&&state.paidCents>0&&<p className="finance-muted mt-2">{outgoing?'Déjà payé':'Déjà encaissé'} : {formatCHF(state.paidCents)}</p>}{tx.finance?.dueDate&&state.remainingCents>0&&<p className="finance-muted mt-2">Échéance : {new Date(`${tx.finance.dueDate}T12:00:00`).toLocaleDateString('fr-CH')}</p>}</div>}</div>
       {tx.finance?.refundApplication==='offset'?<p className="finance-notice">Cet avoir est imputé sur la facture d’origine. Aucun mouvement d’argent n’est enregistré.</p>:state.appliedCreditCents>0?<p className="finance-notice">Avoirs imputés : {formatCHF(state.appliedCreditCents)}. Reste à régler : {formatCHF(state.remainingCents)}.</p>:null}
       {!tx.finance?.voidedAt&&<>
         {state.overpaidCents>0&&<p className="finance-notice">Paiement en trop : {formatCHF(state.overpaidCents)}. Vérifie l’historique des paiements.</p>}
@@ -32,7 +44,21 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         {state.state==='unknown'&&<button className="finance-action secondary" onClick={()=>update({paymentStatus:'unpaid'})}>Confirmer que cette pièce reste à régler</button>}
       </>}
       <DocumentProofLink transaction={tx} className="finance-action secondary"/>
-      {tx.finance?.lines.map(line=><div className="finance-row" key={line.id}><span className="finance-row-main">{line.description}<br/><span className="finance-muted">{line.quantity??''} {line.unit??''}{line.kind==='equipment'?' · Matériel':''}</span></span><span>{formatCHF(line.amountCents)}</span></div>)}
+      {/* ⚠️ Le détail d'un achat est l'endroit où le brasseur se demande « il
+          m'en reste combien ? ». La ligne qui sait de quel article elle parle
+          y renvoie directement : sans ce lien il fallait retenir le nom,
+          changer d'onglet et le rechercher dans l'inventaire. */}
+      {!!tx.finance?.lines.length&&<div className="finance-list">{tx.finance.lines.map(line=>{
+        const meta=[line.quantity!=null?`${line.quantity} ${line.unit??''}`.trim():'',line.kind==='equipment'?'Matériel':''].filter(Boolean).join(' · ');
+        const openStock=line.stockItemRef&&onOpenStockItem?()=>onOpenStockItem(line.stockItemRef!):undefined;
+        const body=<><span className="finance-row-main"><strong>{line.description}</strong>{meta&&<span className="finance-muted">{meta}</span>}</span><span className="finance-money">{formatCHF(line.amountCents)}</span>{openStock&&<ChevronRight size={15} className="shrink-0 text-cave-400"/>}</>;
+        return openStock
+          ? <button type="button" className="finance-row finance-row-tight" key={line.id} onClick={openStock}
+              aria-label={`${line.description} · ${formatCHF(line.amountCents)} · voir cet article dans les stocks`}>{body}</button>
+          : <div className="finance-row finance-row-tight" key={line.id}>{body}</div>;
+      })}</div>}
+      {brewRecipeId&&onOpenRecipe&&<button type="button" className="finance-link" onClick={()=>onOpenRecipe(brewRecipeId)}>
+        <Wheat size={15} aria-hidden="true"/>Voir la recette{brewTitle?` · ${brewTitle}`:''}<ChevronRight size={14} aria-hidden="true"/></button>}
       {!tx.finance?.voidedAt&&tx.finance?.lines.some(l=>l.kind==='equipment')&&<details><summary>Traitement annuel du matériel</summary><p className="finance-muted">Confirme le traitement de chaque achat avec tes règles comptables. Aucun seuil d’immobilisation n’est imposé.</p>{tx.finance.lines.filter(l=>l.kind==='equipment').map(line=><Field key={line.id} label={line.description}><select value={line.capitalTreatment??''} onChange={e=>update({lines:tx.finance!.lines.map(l=>l.id===line.id?{...l,capitalTreatment:e.target.value as 'expense'|'asset'||undefined}:l)})}><option value="">À confirmer</option><option value="expense">Passer en charge (petit matériel)</option><option value="asset">Immobiliser et amortir</option></select></Field>)}</details>}
       {!tx.finance?.voidedAt&&<>
         <details><summary>Échéance et prévision{plan?` · ${plan.title}`:''}</summary><div className="finance-form">

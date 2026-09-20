@@ -1,16 +1,34 @@
 .finance-journal { min-width:0; }
-.journal-toolbar { display:grid; gap:6px; margin-bottom:6px; }
+.journal-toolbar { display:grid; gap:4px; margin-bottom:4px; }
 .journal-scopes { display:flex; gap:4px; }
-.journal-scopes button, .journal-chip { min-width:28px; min-height:28px; padding:3px 7px; border:1px solid #574A42; border-radius:10px; color:#D8CEC5; font-size:13px; line-height:18px; background:transparent; }
+.journal-scopes button, .journal-chip { display:inline-flex; align-items:center; gap:4px; white-space:nowrap; min-width:28px; min-height:28px; padding:3px 7px; border:1px solid #574A42; border-radius:10px; color:#D8CEC5; font-size:13px; line-height:18px; background:transparent; }
 .journal-scopes button[aria-pressed=true], .journal-chip[aria-pressed=true], .journal-active-filter .journal-chip { color:var(--finance-accent,#86B9E6); border-color:var(--finance-accent,#86B9E6); background:#1D2933; font-weight:600; }
 .journal-scopes button:hover, .journal-chip:hover { border-color:#D8CEC5; }
 .journal-chip:disabled { opacity:.45; cursor:not-allowed; }
-.journal-period { display:flex; align-items:flex-end; gap:6px; min-width:0; }
-.journal-period > .finance-field { width:178px; max-width:62%; }
-.journal-period .journal-date-toggle { flex-shrink:0; margin-bottom:2px; }
-.journal-period-reading { display:grid; gap:2px; min-height:32px; font-size:12px; color:#D8CEC5; }
+.journal-period-reading { display:grid; gap:1px; font-size:12px; color:#D8CEC5; }
 .journal-period-reading strong { font-size:13px; color:#F5F0EA; font-weight:600; }
-.journal-search-category { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); align-items:start; gap:6px; }
+.journal-search-category { display:flex; align-items:center; gap:6px; min-width:0; }
+.journal-search-category > .journal-search { flex:1 1 auto; min-width:0; }
+/* Le filtre de catégorie garde son étiquette accessible et perd son bloc :
+   une commande occasionnelle n'a pas à occuper une demi-largeur permanente. */
+.journal-select { flex:0 1 auto; max-width:46%; min-width:0; min-height:32px; padding:3px 6px; border:1px solid #574A42;
+  border-radius:10px; background:#221D19; color:#F5F0EA; font-size:16px; line-height:1.4; }
+.journal-select:focus-visible { outline:2px solid #86B9E6; outline-offset:1px; }
+/* Périmètre et état sur une seule glissière : deux rangées de puces
+   repoussaient la première écriture sous la moitié de l'écran. */
+.journal-rail { display:flex; align-items:center; gap:4px; min-width:0; overflow-x:auto; overscroll-behavior-x:contain;
+  scrollbar-width:none; padding:1px 0; }
+.journal-rail::-webkit-scrollbar { display:none; }
+.journal-rail > * { flex:0 0 auto; }
+.journal-rail .journal-scopes, .journal-rail .journal-filters, .journal-rail .journal-active-filter { flex-wrap:nowrap; }
+.journal-rail-split { width:1px; align-self:stretch; background:#3D342E; margin:2px 2px; }
+/* En-tête de jour : la date une fois, avec ce que le jour a coûté ou rapporté. */
+.journal-day-group + .journal-day-group { margin-top:2px; }
+.journal-day { display:flex; align-items:baseline; justify-content:space-between; gap:8px; padding:4px 0 2px;
+  border-bottom:1px solid #3D342E; font-size:12px; color:#9A8A7E; }
+.journal-day strong { color:#D8CEC5; font-size:12px; font-weight:600; }
+.journal-day > span { display:flex; align-items:baseline; gap:6px; white-space:nowrap; }
+.journal-day .finance-money { color:#F5F0EA; font-size:13px; }
 .finance-journal .finance-field { gap:2px; font-size:12px; line-height:16px; }
 .finance-journal .finance-field :is(input, textarea:where([data-single-line])):not([type=checkbox]), .finance-journal .finance-field select { min-height:32px; padding:3px 6px; font-size:16px; line-height:24px; }
 .finance-journal .finance-field input[type=month] { padding-block:2px; }
@@ -24,22 +42,22 @@
 .journal-search-control button:focus-visible { outline-offset:0; }
 .journal-filters, .journal-active-filter { display:flex; flex-wrap:wrap; gap:4px; }
 .journal-filters .journal-chip { padding-inline:6px; }
+/* Le compte de chaque état : lisible, jamais plus fort que le libellé. */
+.journal-chip-count { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums;
+  font-size:12px; line-height:16px; color:#F5F0EA; }
+.journal-chip[aria-pressed=true] .journal-chip-count { color:var(--finance-accent,#86B9E6); }
+.journal-chip-count[data-empty] { color:#9A8A7E; }
+/* Une échéance dépassée est la seule chasse qui coûte de l’argent : elle se
+   signale, sans devenir une alerte rouge tant que rien n’est cassé. */
+.journal-chip[data-urgent] { border-color:#E3B55D; color:#E3B55D; }
+.journal-chip[data-urgent] .journal-chip-count { color:#E3B55D; }
+.journal-chip[data-urgent][aria-pressed=true] { background:#302719; }
 .journal-active-filter .journal-chip { display:flex; align-items:center; gap:6px; }
-.journal-extra > summary { cursor:pointer; width:fit-content; min-height:28px; padding:4px 0; color:#D8CEC5; font-size:13px; line-height:20px; }
+.journal-extra > summary { cursor:pointer; width:fit-content; min-height:24px; padding:2px 0; color:#D8CEC5; font-size:13px; line-height:20px; }
 .journal-extra > div { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; padding:4px 0 6px; }
 .journal-text-action { display:inline-flex; align-items:center; justify-content:flex-start; gap:4px; min-height:28px; color:var(--finance-accent,#86B9E6); font-size:13px; line-height:18px; text-align:left; }
 .journal-text-action:hover { text-decoration:underline; text-underline-offset:3px; }
 .journal-text-action svg { flex-shrink:0; }
-.journal-result-count { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 8px; margin:4px 0; font-size:12px; line-height:16px; color:#D8CEC5; }
-.journal-result-count > span { color:#B3A397; }
-.finance-journal .finance-row { min-height:48px; gap:6px; padding:5px 0; }
-.finance-journal .finance-row-main { line-height:16px; }
-.finance-journal .finance-row-main strong { font-size:14px; line-height:18px; }
-.finance-journal .finance-row .finance-muted { font-size:12px; line-height:16px; }
-.finance-journal .finance-row-tail { max-width:46%; display:grid; justify-items:end; gap:2px; }
-.finance-journal .finance-row-tail > br { display:none; }
-.finance-journal .finance-money { font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:13px; line-height:18px; }
-.finance-journal .finance-status { font-size:12px; line-height:16px; padding:0 4px; margin-top:0; }
 .finance-journal .finance-archive-followup { font-size:12px; line-height:16px; padding-top:6px; color:#D8CEC5; }
 .finance-journal .finance-pagination { margin:8px 0; gap:8px; font-size:13px; }
 .finance-journal .finance-pagination button { display:grid; place-items:center; min-width:28px; }
@@ -49,10 +67,18 @@
 .journal-empty > div, .journal-actions { display:flex; flex-wrap:wrap; gap:4px 12px; }
 .journal-actions { margin-top:6px; }
 @media (min-width:640px) {
-  .journal-toolbar { grid-template-columns:minmax(200px,1fr) minmax(280px,1.25fr); align-items:end; gap:6px 12px; }
-  .journal-search-category { grid-column:2; grid-row:1 / span 2; align-self:start; }
-  .journal-period { grid-column:1; }
-  .journal-filters, .journal-active-filter { grid-column:1; }
-  .journal-extra { grid-column:2; grid-row:3; align-self:start; }
-  .journal-extra[open] { grid-column:1 / -1; grid-row:auto; }
+  .journal-toolbar { grid-template-columns:minmax(260px,1fr) minmax(320px,1fr); align-items:center; gap:4px 12px; }
+  .finance-period { grid-column:1; margin-bottom:0; }
+  .journal-search-category { grid-column:2; grid-row:1; }
+  .journal-rail { grid-column:1 / -1; }
+  .journal-extra { grid-column:1 / -1; }
+}
+/* Ordinateur : la liste devient une vraie table. En pleine largeur, le libellé
+   et son montant se retrouvaient séparés par des centaines de pixels vides. */
+@media (min-width:768px) {
+  .finance-journal .finance-op { grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 120px 150px 16px;
+    grid-template-areas:"label meta amount state go"; min-height:32px; padding:3px 0; column-gap:12px; }
+  .finance-journal .finance-op-meta { font-size:13px; }
+  .finance-journal .finance-op .finance-status { justify-self:start; }
+  .journal-day { padding-top:6px; }
 }

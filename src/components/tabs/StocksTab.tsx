@@ -44,6 +44,9 @@ interface StocksTabProps {
   onSubTabChange?: (sub: string) => void;
   /** Demande de création émise par le bouton d'action. */
   createRequest?: { kind: string; at: number } | null;
+  /** Article à ouvrir directement, demandé depuis un autre écran (une facture). */
+  openItemRequest?: { ref: string; at: number } | null;
+  onOpenItemRequestHandled?: () => void;
   onSuccessMessage?: (msg: string) => void;
   onOpenEquipmentProjects?: () => void;
 }
@@ -83,6 +86,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   batches,
   onSubTabChange,
   createRequest,
+  openItemRequest,
+  onOpenItemRequestHandled,
   onSuccessMessage,
   onOpenEquipmentProjects
 }) => {
@@ -173,6 +178,21 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     }
     // `at` change à chaque appui : deux demandes identiques restent distinctes.
   }, [createRequest?.at]);
+
+  /**
+   * Un autre écran demande d'ouvrir un article précis — typiquement la ligne
+   * d'une facture qui vient d'acheter ce produit. On revient sur la liste des
+   * stocks et on ouvre sa fiche : le renvoi doit aboutir sur la donnée, pas
+   * seulement sur l'onglet.
+   */
+  useEffect(() => {
+    if (!openItemRequest) return;
+    const item = allItems.find((candidate) => candidate.ref === openItemRequest.ref);
+    setSubTab('stock');
+    if (item) setSelected(item);
+    onOpenItemRequestHandled?.();
+    // `at` change à chaque demande : deux renvois vers le même article restent distincts.
+  }, [openItemRequest?.at]);
 
   useEffect(() => {
     StorageService.setUiState('stocks_subtab', subTab);

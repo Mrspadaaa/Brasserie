@@ -28,8 +28,10 @@ describe('Comptabilité quotidienne intégrée',()=>{
     expect(screen.getByRole('tab',{name:'Synthèse'})).toHaveAttribute('aria-selected','true');
     const position=within(screen.getByLabelText('Situation financière actuelle'));
     expect(position.getByText('Trésorerie').parentElement).toHaveTextContent('À compléter');
-    expect(position.getByText('À payer',{exact:true}).parentElement).toHaveTextContent('150,00');
-    expect(position.getByText('À encaisser',{exact:true}).parentElement).toHaveTextContent('50,00');
+    // Les totaux à régler résument la liste des règlements ; ils ne sont plus un
+    // indicateur de tête d'écran, mais restent chiffrés et cliquables.
+    expect(screen.getByRole('button',{name:'Voir les factures à payer'})).toHaveTextContent('150,00');
+    expect(screen.getByRole('button',{name:'Voir les montants à encaisser'})).toHaveTextContent('50,00');
     expect(screen.getByRole('button',{name:/Confirmer les paiements/})).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Voir les factures à payer'}));
     expect(screen.getByRole('button',{name:/^Achat mixte/})).toBeVisible();

@@ -20,6 +20,10 @@ import { TransactionDetails } from '../../ui/finance/TransactionDetails';
 import { MovementSheet } from '../../ui/finance/MovementSheet';
 import { ArchiveManagerSheet } from '../../ui/finance/ArchiveManagerSheet';
 import { TransactionJournal, createJournalState, type JournalRequest } from '../../ui/finance/TransactionJournal';
+import { TransactionRow } from '../../ui/finance/TransactionRow';
+import { CostComposition } from '../../ui/finance/CostComposition';
+import { FinancePeriodBar, MonthStepper } from '../../ui/finance/FinancePeriod';
+import { monthLabel, shortDate } from '../../ui/finance/financeFormat';
 import { FinanceOverview } from '../../ui/finance/FinanceOverview';
 import { FinanceForecastSummary } from '../../ui/finance/FinanceForecastSummary';
 import { FinanceAssistant } from '../../ui/finance/FinanceAssistant';
@@ -33,6 +37,10 @@ interface FinancesTabProps {
   transactions:Transaction[]; budgetLines:BudgetLine[]; config:AppConfig; globalTimeFilter:TimeFilterPeriod;
   recipes?:Recipe[]; batches?:Batch[]; stockItems?:StockItem[];
   openTransactionRequest?:{id:string;at:number}|null;
+  /** Renvoi vers l’article acheté, depuis le détail d’une opération. */
+  onOpenStockItem?:(ref:string)=>void;
+  /** Renvoi vers la recette estimée par un budget de brassin. */
+  onOpenRecipe?:(recipeId:string)=>void;
 }
 const readFinance=()=>FinanceService.snapshot();
 const views=[['overview','Synthèse'],['journal','Opérations'],['forecast','Prévisions'],['annual','Annuel']] as const;
@@ -42,13 +50,10 @@ const initialView = (): FinanceView => {
   if (saved === 'projects') return 'forecast';
   return views.some(([key]) => key === saved) ? saved as FinanceView : 'overview';
 };
-const labels={paid:'Payé',partial:'Partiellement payé',unpaid:'À payer',unknown:'Paiement à confirmer'};
-const shortDate=(date?:string)=>{const d=isoDate(date);return d?new Date(`${d}T12:00:00`).toLocaleDateString('fr-CH',{day:'numeric',month:'short',year:d.slice(0,4)===todayISO().slice(0,4)?undefined:'numeric'}):'Date à vérifier';};
-const monthLabel=(month:string)=>new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH',{month:'long',year:'numeric'});
 const EMPTY: never[]=[];
 const FinanceComparisonChart=React.lazy(()=>import('../../ui/finance/FinanceComparisonChart').then(({FinanceComparisonChart:Chart})=>({default:Chart})));
 
-export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest}:FinancesTabProps) {
+export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,stockItems=EMPTY,openTransactionRequest,onOpenStockItem,onOpenRecipe}:FinancesTabProps) {
   const data=useStorageValue(readFinance);
   const archives=useStorageValue(FinancialArchiveService.getArchives);
   const [archiveOpen,setArchiveOpen]=useState(false),[journalRequest,setJournalRequest]=useState<JournalRequest>();
@@ -70,16 +75,16 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const ledger=useMemo(()=>summarizeLedger(transactions,data.payments,data.profile),[transactions,data.payments,data.profile]);
   const openingCashReady=!!(data.profile.openingCash?.confirmed && isoDate(data.profile.openingCash.date) && isoDate(data.profile.openingCash.date)!<=todayISO() && Number.isSafeInteger(data.profile.openingCash.amountCents));
   const active=useMemo(()=>transactions.filter(isActiveTransaction),[transactions]);
-  const undated=active.filter(t=>!isoDate(t.date));
+  const undated=useMemo(()=>active.filter(t=>!isoDate(t.date)),[active]);
   const period=useMemo(()=>active.filter(t=>allDates||isoDate(t.date)?.startsWith(month)),[active,allDates,month]);
   const isCost=(t:Transaction)=>transactionKind(t)==='expense'||transactionKind(t)==='refund'&&transactionDirection(t,transactions)==='in';
   const costSign=(t:Transaction)=>transactionKind(t)==='refund'?-1:1;
   const expenses=useMemo(()=>period.filter(isCost),[period]);
   const totals=useMemo(()=>{const sums=new Map<string,number>();for(const t of expenses){if(t.finance?.lines.length){for(const l of t.finance.lines){const cat=l.category??(l.kind==='equipment'?'materiel':l.kind==='cleaning'?'nettoyage':['ingredient','packaging'].includes(l.kind)?'brassage':t.category);sums.set(cat,(sums.get(cat)??0)+costSign(t)*l.amountCents);}}else sums.set(t.category,(sums.get(t.category)??0)+costSign(t)*transactionAmount(t));}return [...sums.entries()].sort((a,b)=>b[1]-a[1]);},[expenses]);
-  const sum=expenses.reduce((n,t)=>n+costSign(t)*transactionAmount(t),0);
+  const sum=useMemo(()=>expenses.reduce((n,t)=>n+costSign(t)*transactionAmount(t),0),[expenses]);
   const vendors=useMemo(()=>{const sums=new Map<string,number>();expenses.forEach(t=>{const v=transactionVendor(t)||'Fournisseur à compléter';sums.set(v,(sums.get(v)??0)+costSign(t)*transactionAmount(t));});return [...sums.entries()].sort((a,b)=>b[1]-a[1]);},[expenses]);
   const previousMonth=new Date(Number(month.slice(0,4)),Number(month.slice(5))-2,1);const previousKey=`${previousMonth.getFullYear()}-${String(previousMonth.getMonth()+1).padStart(2,'0')}`;
-  const previousTotal=active.filter(t=>isCost(t)&&isoDate(t.date)?.startsWith(previousKey)).reduce((n,t)=>n+costSign(t)*transactionAmount(t),0);
+  const previousTotal=useMemo(()=>active.reduce((n,t)=>isCost(t)&&isoDate(t.date)?.startsWith(previousKey)?n+costSign(t)*transactionAmount(t):n,0),[active,previousKey]);
   const forecastWithProjects=useMemo(()=>buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13}),[transactions,data]);
   const forecast=useMemo(()=>includeEquipmentProjects?forecastWithProjects:buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13,includeEquipmentProjects:false}),[transactions,data,forecastWithProjects,includeEquipmentProjects]);
   const endKey=forecastHorizonEnd(todayISO(),horizon);
@@ -110,7 +115,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   },[openTransactionRequest,transactions]);
   const assistantView=view==='overview'?'costs':view==='forecast'&&forecastPart==='projects'?'projects':view;
   const financeAssistant=<FinanceAssistant view={assistantView} month={month} allDates={allDates} year={year} horizon={horizon} includeEquipmentProjects={includeEquipmentProjects}/>;
-  const row=(t:Transaction)=>{const state=paymentState(t,data.payments,transactions,todayISO()),incoming=transactionDirection(t,transactions)==='in';return <button key={t.id} className="finance-row" onClick={()=>setSelected(t)}><div className="finance-row-main"><strong>{t.description}</strong><span className="finance-muted">{shortDate(t.date)} · {transactionVendor(t)||CATEGORY_LABELS[t.category]}</span></div><div className="finance-row-tail"><span className="finance-money">{incoming?'+ ':''}{formatCHF(transactionAmount(t))}</span><br/><span className={`finance-status ${state.overpaidCents>0?'alert':state.state}`}>{t.finance?.voidedAt?'Annulé':t.finance?.refundApplication==='offset'?'Imputé':state.overpaidCents>0?'Paiement à vérifier':state.state==='paid'&&state.appliedCreditCents>0?'Soldé':state.state==='partial'?<>Reste {formatCHF(state.remainingCents)}<br/>à {incoming?'encaisser':'payer'}</>:incoming&&state.state==='unpaid'?'À encaisser':incoming&&state.state==='paid'?'Encaissé':labels[state.state]}</span></div><ChevronRight size={16} className="shrink-0 text-cave-400"/></button>;};
+  const row=(t:Transaction,state?:ReturnType<typeof paymentState>)=><TransactionRow key={t.id} transaction={t} transactions={transactions} payments={data.payments} state={state} onOpen={()=>setSelected(t)}/>;
   const forecastRow=(item:ForecastItem)=>{
     const invoice=item.source==='invoice'?transactions.find(t=>`invoice:${t.id}`===item.id):undefined;
     const linkedPlan=item.planId?data.plans.find(p=>p.id===item.planId):undefined;
@@ -126,28 +131,34 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   };
   return <div className="finance">
     <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button type="button" key={key} id={`finance-tab-${key}`} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
-    <div className="finance-page-heading">
+    {/* Titre, sous-vue et réglages sur une seule rangée : trois barres empilées
+        mangeaient un tiers de l'écran avant la première donnée. */}
+    <div className="finance-bar">
       <h2>{view==='overview'?'Situation financière':view==='journal'?'Mes opérations':view==='forecast'?'Anticiper les dépenses':'Bilan et impôts'}</h2>
+      {view==='overview'&&<div className="finance-subnav" role="group" aria-label="Lecture de la synthèse"><button type="button" aria-pressed={overviewPart==='situation'} onClick={()=>setOverviewPart('situation')}>Situation</button><button type="button" aria-pressed={overviewPart==='costs'} onClick={()=>setOverviewPart('costs')}>Coûts</button></div>}
+      {view==='forecast'&&<div className="finance-subnav" role="group" aria-label="Prévisions et projets"><button type="button" aria-pressed={forecastPart==='timeline'} onClick={()=>setForecastPart('timeline')}>Échéances</button><button type="button" aria-pressed={forecastPart==='projects'} onClick={()=>setForecastPart('projects')}>Projets de matériel</button></div>}
       {/* Achat et vente vivent dans le bouton d'action flottant, sur tous les écrans. */}
       <button type="button" className="finance-icon-action" aria-label="Solde et paramètres financiers" onClick={()=>setProfileOpen(true)}><Settings2 size={16}/></button>
     </div>
     {notice&&<div className="finance-notice" role="status">{notice}<button className="finance-link" onClick={()=>setNotice('')}>Fermer</button></div>}
     <section role="tabpanel" id={`finance-${view}`} aria-labelledby={`finance-tab-${view}`}>
-      {view==='overview'&&<div className="finance-subnav" role="group" aria-label="Lecture de la synthèse"><button type="button" aria-pressed={overviewPart==='situation'} onClick={()=>setOverviewPart('situation')}>Situation</button><button type="button" aria-pressed={overviewPart==='costs'} onClick={()=>setOverviewPart('costs')}>Coûts</button></div>}
       {view==='overview'&&overviewPart==='situation'&&<><FinanceOverview ledger={ledger} openingCashReady={openingCashReady} undatedCount={undated.length} onProfile={()=>setProfileOpen(true)} onJournal={openJournal} onTransaction={id=>setSelected(transactions.find(t=>t.id===id)??null)} onPayment={id=>setPaying(transactions.find(t=>t.id===id)??null)}/>{financeAssistant}</>}
       {view==='overview'&&overviewPart==='costs'&&<>
-        <div className="finance-period-toolbar"><Field label="Période des coûts"><input type="month" value={month} onChange={e=>{if(e.target.value){setMonth(e.target.value);setAllDates(false);}}}/></Field><button type="button" className="finance-link" aria-pressed={allDates} onClick={()=>setAllDates(!allDates)}>{allDates?<Check size={14}/>:<CalendarDays size={14}/>}Tout l’historique</button></div>
+        {/* La période commande, son total répond : les deux sur la même rangée. */}
+        <FinancePeriodBar lead total={formatCHF(sum)} totalLabel="Dépenses nettes enregistrées sur la période"
+          count="Dépenses nettes"
+          context={!allDates&&previousTotal>0?`${sum>=previousTotal?'+':'−'}${formatCHF(Math.abs(sum-previousTotal))} sur ${monthLabel(previousKey)}${month===todayISO().slice(0,7)?' · mois en cours':''}`:allDates?'Tout l’historique':undefined}>
+          <MonthStepper label="Période des coûts" month={month} disabled={allDates} onMonth={value=>{setMonth(value);setAllDates(false);}}/>
+          <button type="button" className="journal-chip" aria-pressed={allDates} onClick={()=>setAllDates(!allDates)}>{allDates?<Check size={13} aria-hidden="true"/>:<CalendarDays size={13} aria-hidden="true"/>}Tout l’historique</button>
+        </FinancePeriodBar>
         {undated.length>0&&<p className="finance-notice">{compte(undated.length, 'pièce')} avec une date à corriger. <button className="finance-link" onClick={()=>openJournal({scope:'all',allDates:true,filter:'review'})}>Retrouver ces pièces dans l’historique</button></p>}
-        <div className="finance-cost-total"><div><span className="finance-label">Dépenses nettes enregistrées</span><small className="finance-muted">{allDates?'Tout l’historique':monthLabel(month)}</small></div><strong className="finance-money">{formatCHF(sum)}</strong></div>
-        {!allDates&&previousTotal>0&&<p className="finance-muted">{sum>=previousTotal?'+':'−'}{formatCHF(Math.abs(sum-previousTotal))} par rapport à {monthLabel(previousKey)}{month===todayISO().slice(0,7)?' · mois en cours':''}</p>}
-        <div className="finance-columns"><section className="finance-section"><div className="finance-heading"><h3>Répartition des dépenses</h3></div>{totals.length?<div className="finance-bars">{totals.map(([cat,amount])=><button className="finance-bar" key={cat} onClick={()=>openJournal({scope:'all',category:cat,month,allDates})}><span>{CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]??cat}</span><span className="finance-bar-track"><span className="finance-bar-fill" style={{display:'block',width:`${Math.min(100,Math.max(0,amount/Math.max(1,sum)*100))}%`}}/></span><span className="finance-money">{formatCHF(amount)}</span></button>)}</div>:<div className="finance-empty"><Wheat className="mx-auto"/><h3>Aucune dépense sur cette période</h3><p>Le bouton + enregistre un achat ; ses coûts apparaîtront ici.</p></div>}</section>
+        <div className="finance-columns"><section className="finance-section"><div className="finance-heading"><h3>Répartition des dépenses</h3></div>{totals.length?<CostComposition parts={totals.map(([cat,amount])=>({key:cat,label:CATEGORY_LABELS[cat as keyof typeof CATEGORY_LABELS]??cat,amountCents:amount}))} onSelect={cat=>openJournal({scope:'all',category:cat,month,allDates})}/>:<div className="finance-empty"><Wheat className="mx-auto"/><h3>Aucune dépense sur cette période</h3><p>Le bouton + enregistre un achat ; ses coûts apparaîtront ici.</p></div>}</section>
         <section className="finance-section"><div className="finance-heading"><h3>Coût des brassins</h3></div>{snapshots.length?<div className="finance-list">{snapshots.slice(0,6).map(p=>{const s=p.brewEstimate as BrewBudgetSnapshot;return <button className="finance-row" key={p.id} onClick={()=>{const batch=batches.find(b=>b.id===s.batchId),recipe=recipes.find(r=>r.id===s.recipeId);if(batch||recipe)setBudget({batch,recipe});else setNotice('La recette de ce budget est absente. Le budget enregistré reste conservé.');}}><div className="finance-row-main"><strong>{s.title}</strong><span className="finance-muted">{s.netVolumeL} L · {s.complete?'Estimation enregistrée':'Estimation partielle'}</span></div><span className="finance-money">{s.costPerL!=null?`${formatCHF(Math.round(s.costPerL*100))}/L`:'À compléter'}</span><ChevronRight size={16}/></button>;})}</div>:<p className="finance-muted">Estime un brassin pour connaître son coût par litre et les achats nécessaires.</p>}<button className="finance-link" onClick={()=>setBudgetPicker(true)}><Plus size={18}/>Estimer un brassin</button></section></div>
-        {!!vendors.length&&<section className="finance-section"><h3>Principaux fournisseurs</h3><div className="finance-list">{vendors.slice(0,5).map(([name,amount])=><button key={name} className="finance-row" onClick={()=>openJournal({scope:'all',query:name==='Fournisseur à compléter'?'':name,month,allDates})}><span className="finance-row-main">{name}</span><span className="finance-money">{formatCHF(amount)}</span><ChevronRight size={16}/></button>)}</div></section>}
+        {!!vendors.length&&<section className="finance-section"><h3>Principaux fournisseurs</h3><div className="finance-list">{vendors.slice(0,5).map(([name,amount])=><button key={name} className="finance-row finance-row-tight" onClick={()=>openJournal({scope:'all',query:name==='Fournisseur à compléter'?'':name,month,allDates})}><span className="finance-row-main">{name}</span><span className="finance-money">{formatCHF(amount)}</span><ChevronRight size={15}/></button>)}</div></section>}
         <details className="finance-disclosure"><summary>Investissements et matériel</summary><UpgradeAnalytics plans={data.plans} transactions={transactions} payments={data.payments} onOpen={setUpgrade} onBrowse={showProjects}/><p className="finance-muted"><Wrench size={15} className="inline align-text-bottom mr-1"/>Un achat de matériel s’enregistre comme une facture, depuis le bouton +.</p></details>
         {financeAssistant}
       </>}
       {view==='journal'&&<><TransactionJournal transactions={transactions} payments={data.payments} archives={archives} state={journalState} onStateChange={setJournalState} request={journalRequest} renderRow={row} onManageArchives={()=>setArchiveOpen(true)} onPrivateMovement={()=>setMovement(null)}/>{financeAssistant}</>}
-      {view==='forecast'&&<div className="finance-subnav" role="group" aria-label="Prévisions et projets"><button type="button" aria-pressed={forecastPart==='timeline'} onClick={()=>setForecastPart('timeline')}>Échéances</button><button type="button" aria-pressed={forecastPart==='projects'} onClick={()=>setForecastPart('projects')}>Projets de matériel</button></div>}
       {view==='forecast'&&forecastPart==='timeline'&&<>
         <div className="finance-filter" role="group" aria-label="Horizon de prévision">{[[30,'30 jours'],[90,'90 jours'],[365,'12 mois']].map(([value,label])=><button key={value} aria-pressed={horizon===value} onClick={()=>{setHorizon(Number(value) as 30|90|365);setUpcomingLimit(6);}}>{label}</button>)}</div>
         <FinanceForecastSummary ledger={ledger} openingCashReady={openingCashReady} warnings={forecast.warnings} invoiceOut={invoiceOut} estimatedOut={estimatedOut} incoming={upcoming.filter(item=>item.direction==='in').reduce((total,item)=>total+item.amountCents,0)} projectedCash={projectedCash} horizonLabel={horizon===365?'12 mois':`${horizon} jours`} onProfile={()=>setProfileOpen(true)} onPayments={()=>openJournal({scope:'all',allDates:true,filter:'unknown'})}/>
@@ -181,7 +192,7 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     {paying&&<PaymentSheet transaction={transactions.find(t=>t.id===paying.id)??paying} payments={data.payments} transactions={transactions} onClose={()=>setPaying(null)}/>}
     {editing&&<EditTransactionModal isOpen transaction={transactions.find(t=>t.id===editing.id)??editing} onClose={()=>setEditing(null)} onSave={()=>setNotice('Opération mise à jour.')}/>}
     {movement!==undefined&&<MovementSheet original={movement??undefined} onClose={()=>setMovement(undefined)} onSaved={()=>setNotice('Mouvement enregistré.')}/>}
-    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}}/>}
+    {selected&&<TransactionDetails transaction={selected} transactions={transactions} payments={data.payments} plans={data.plans} onClose={()=>setSelected(null)} onEdit={()=>{setEditing(selected);setSelected(null);}} onPay={()=>{setPaying(selected);setSelected(null);}} onRefund={()=>{setMovement(selected);setSelected(null);}} onOpenStockItem={onOpenStockItem&&(ref=>{setSelected(null);onOpenStockItem(ref);})} onOpenRecipe={onOpenRecipe&&(id=>{setSelected(null);onOpenRecipe(id);})}/>}
     {budgetPicker&&<Sheet open title="Quel brassin veux-tu estimer ?" onClose={()=>setBudgetPicker(false)} className="finance-sheet"><div className="finance-list">{batches.filter(b=>b.status==='planifie').map(b=><button key={b.id} className="finance-row" onClick={()=>{setBudget({batch:b});setBudgetPicker(false);}}><span className="finance-row-main"><strong>{b.name}</strong><span className="finance-muted">{b.id} · {b.volumeL} L</span></span><ChevronRight size={18}/></button>)}{recipes.map(r=><button key={r.id} className="finance-row" onClick={()=>{setBudget({recipe:r});setBudgetPicker(false);}}><span className="finance-row-main"><strong>{r.name}</strong><span className="finance-muted">Recette · {r.volumeL} L</span></span><ChevronRight size={18}/></button>)}{!recipes.length&&!batches.some(b=>b.status==='planifie')&&<p className="finance-notice">Crée d’abord une recette dans Brassins pour calculer ses besoins.</p>}</div></Sheet>}
     {budget&&<BrewBudgetDialog {...budget} onClose={()=>setBudget(null)}/>}
   </div>;

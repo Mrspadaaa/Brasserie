@@ -285,6 +285,49 @@ depuis le nom de la teinte. Tailwind ne génère que les classes qu'il trouve da
 les sources : une classe construite par interpolation serait muette, et la
 pastille prendrait la couleur de son parent — le piège des 380 classes mortes.
 
+### La palette des catégories financières — sa propre famille
+
+Les huit catégories comptables ont besoin de la même chose que les styles de
+bière : se distinguer **d'un coup d'œil** dans une liste. La question posée en
+parcourant le journal du pouce est « qu'est-ce que c'est ? » — du malt, du
+loyer, du nettoyage — et une catégorie écrite en gris au milieu du nom du
+fournisseur se lisait mot à mot.
+
+Ni l'échelle EBC (elle décrit un moût), ni les jetons d'état (`alert`, `hop`,
+`attention` : une catégorie n'est pas une alerte), ni la palette Tailwind
+réservée à la pastille de style ne conviennent. Cette famille est donc déclarée
+pour elle-même, dans `src/ui/finance/finance.css`, et employée par
+[CategoryTag](src/ui/finance/CategoryTag.tsx).
+
+| Catégorie | Fond de pastille | Texte | Segment de barre |
+|---|---|---|---|
+| Brassage | `#564925` | `#F4E5B9` | `#D2B356` |
+| Matériel | `#253356` | `#B9CAF4` | `#567BD2` |
+| Nettoyage | `#254F56` | `#B9ECF4` | `#56C1D2` |
+| Charges fixes | `#3F2556` | `#D8B9F4` | `#9856D2` |
+| Local et travaux | `#563325` | `#F4CAB9` | `#D27B56` |
+| Ventes | `#255633` | `#B9F4CA` | `#56D27B` |
+| Apports privés | `#562544` | `#F4B9DE` | `#D256A4` |
+| Autres frais | `#2C2521` | `#D8CEC5` | `#9A8A7E` |
+
+Mesures du jeu retenu, sur les couleurs réellement rendues :
+
+| Grandeur | Valeur | Seuil |
+|---|---|---|
+| Contraste texte/fond, le pire | **6.86:1** | 4.5:1 (AA) |
+| ΔE minimum entre fonds de pastilles | **16.9** | 10 |
+| ΔE minimum entre textes de pastilles | **13.4** | 10 |
+| ΔE minimum entre segments de barre | **36.8** | 10 |
+
+La troisième colonne est la **même couleur de catégorie en version claire**,
+pour les segments de la barre de composition des dépenses. Barre et pastilles
+partagent ainsi un seul vocabulaire : un poste repéré dans la barre se retrouve
+à l'œil dans la liste des opérations, sans aller-retour par la légende.
+
+« Autres frais » ne reçoit aucune teinte : c'est la catégorie fourre-tout, elle
+n'a rien à signaler et garde le gris chaud du système. Le libellé est toujours
+écrit — la couleur accompagne le mot, elle ne le remplace jamais.
+
 ## Typography
 
 Deux familles, une frontière nette :
