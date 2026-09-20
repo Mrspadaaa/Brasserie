@@ -3,6 +3,7 @@ import { resolveFermentationYeast } from '../domain/fermentationScenario';
 import { yeastReferences } from '../domain/yeastReferences';
 import { agreedFermentationFact } from '../../functions/src/fermentationContext';
 import { guideFermentations } from './hopIndex/guideData';
+import { YEAST_FACT_LABELS } from '../domain/yeastCatalogue';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
@@ -23,7 +24,9 @@ import {
   factsForStock,
   factsFromStock,
   sanitizeFacts,
-  fillsGap
+  fillsGap,
+  yeastFactChanges,
+  type YeastFactField
 } from '../domain/ingredientFacts';
 
 /**
@@ -43,10 +46,9 @@ import {
  *   2. la **source est affichée**, ligne par ligne ;
  *   3. **rien n'est écrit** avant que Gaëtan ait vu ce qui va l'être.
  *
- * ⚠️ On ne remplit QUE les cases vides. Un chiffre saisi à la main gagne toujours
- * contre un chiffre retrouvé : le brasseur a le lot devant lui, le modèle a une
- * fiche produit générique. Un houblon a l'alpha de SON sachet, pas celui de la
- * variété.
+ * Les cases vides se complètent après revue. Une donnée de levure déjà saisie
+ * exige un choix explicite pour être remplacée ; l'alpha d'un lot de houblon
+ * reste protégé contre la fiche générique de sa variété.
  */
 
 const EMPTY_STOCK: StockItem[] = [];
@@ -58,6 +60,10 @@ interface RecipeAutoCompleteProps {
   active?: boolean;
   /** Une recherche dédiée dans une étape ; tous les ingrédients au récapitulatif. */
   scope?: IngredientKind;
+  /** Optional technical-sheet review, even when calculation inputs are present. */
+  yeastEnrichment?: boolean;
+  /** Embed in the yeast step's own disclosure without adding another panel. */
+  embedded?: boolean;
   nolo?: boolean;
   fermentables: Fermentable[];
   onFermentables: (v: Fermentable[]) => void;
@@ -80,12 +86,15 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
   stockItems = EMPTY_STOCK,
   active = true,
   scope,
+  yeastEnrichment = false,
+  embedded = false,
   nolo = false
 }) => {
   const [busy, setBusy] = useState(false);
   const [found, setFound] = useState<Found[] | null>(null);
   const [missed, setMissed] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [conflictChoices, setConflictChoices] = useState<Partial<Record<YeastFactField, 'keep' | 'replace'>>>({});
 
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const documentedAttenuation = useMemo(() => {
@@ -102,13 +111,17 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     })).filter(gap => gap.missing.length),
     [fermentables, hops, yeast, nolo, scope, documentedAttenuation]
   );
+  const searchGaps = useMemo(() => yeastEnrichment && yeast.name?.trim()
+    ? [{ key: ingredientKey('levure', yeast.name), kind: 'levure' as const, name: yeast.name,
+      missing: gaps.find(g => g.kind === 'levure')?.missing ?? [] }]
+    : gaps, [gaps, yeast.name, yeastEnrichment]);
 
   const request = useRef(0);
-  const basis = JSON.stringify([fermentables, hops, yeast, nolo, scope, !!documentedAttenuation]);
+  const basis = JSON.stringify([fermentables, hops, yeast, nolo, scope, yeastEnrichment, !!documentedAttenuation]);
   const latest = useRef(basis); latest.current = basis;
   const cache = useRef(new Map<string, IngredientFacts>());
   useEffect(() => {
-    request.current += 1; setBusy(false); setFound(null); setError(null); setMissed([]);
+    request.current += 1; setBusy(false); setFound(null); setError(null); setMissed([]); setConflictChoices({});
   }, [basis]);
   // Une notification Firestore renouvelle les tableaux même sans changement.
   // Seule une modification effective de la recette invalide sa proposition IA.
@@ -126,9 +139,10 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     setBusy(true);
     setError(null);
     setFound(null);
+    setConflictChoices({});
     setMissed([]);
     // Three requests at most at once; identical names share one lookup.
-    const queue = [...gaps];
+    const queue = [...searchGaps];
     const ok: Found[] = [];
     const ko: string[] = [];
     let failure: string | undefined;
@@ -162,7 +176,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                     : ({ name: '' } as YeastSpec),
                   nolo
                 );
-              if (cached && !remaining?.some(g => g.missing.some(field => gap.missing.includes(field)))) {
+              if (!yeastEnrichment && cached && !remaining?.some(g => g.missing.some(field => gap.missing.includes(field)))) {
                 ok.push({ ...gap, facts: cached });
                 continue;
               }
@@ -170,15 +184,20 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 task: 'lookupIngredient',
                 tier: 'fast',
                 instruction: gap.kind + ' : ' + gap.name.trim(),
-                context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing, nolo, known: gap.kind === 'levure' ? yeast : undefined }
+                context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing, nolo,
+                  reviewTechnicalSheet: yeastEnrichment, known: gap.kind === 'levure' ? yeast : undefined }
               });
               // Une réponse annulée ou périmée ne doit pas non plus peupler le cache.
               if (request.current !== id || latest.current !== started) return;
-              if (res.ok && res.data?.found && res.data.source?.trim() && fillsGap(gap, res.data)) {
+              const hasYeastFacts = gap.kind === 'levure' && (yeastFactChanges(yeast, res.data ?? {} as IngredientFacts).length > 0 ||
+                (sanitizeFacts(res.data ?? {} as IngredientFacts).technicalFacts?.length ?? 0) > 0);
+              if (res.ok && res.data?.found && res.data.source?.trim() && (fillsGap(gap, res.data) || yeastEnrichment && hasYeastFacts)) {
                 const facts = sanitizeFacts(res.data);
                 // Identity belongs to the local catalogue, never to model output.
                 delete facts.hopIndexId;
-                if (gap.kind === 'levure' && !gap.missing.includes('atténuation')) delete facts.attenuationPct;
+                facts.origin = 'ai';
+                if (facts.technicalFacts) facts.technicalFacts = facts.technicalFacts.map(fact => ({ ...fact, origin: 'ai', source: fact.source || facts.source }));
+                if (gap.kind === 'levure' && !yeastEnrichment && !gap.missing.includes('atténuation')) delete facts.attenuationPct;
                 cache.current.set(gap.key, facts);
                 ok.push({ ...gap, facts });
               } else {
@@ -221,7 +240,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     if (yeastResult) accepted.add(yeastResult.key);
     onFermentables(nextFerms);
     onHops(nextHops);
-    onYeast(yeastResult ? applyYeastFacts(yeast, yeastResult.facts) : yeast);
+    onYeast(yeastResult ? applyYeastFacts(yeast, yeastResult.facts,
+      Object.entries(conflictChoices).filter(([, choice]) => choice === 'replace').map(([field]) => field as YeastFactField)) : yeast);
     found
       .filter((f) => accepted.has(f.key))
       .forEach((f) => onLearnIngredient?.(f.name, factsForStock(f.kind, f.facts)));
@@ -229,29 +249,31 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     setError(null);
   };
 
-  // Rien à compléter : le bouton n'a pas lieu d'être. C'est aussi le signal que
-  // la fiche est prête.
-  if (!active || gaps.length === 0 && !found && !error) return null;
+  const yeastResult = found?.find(f => f.kind === 'levure');
+  const changes = yeastResult ? yeastFactChanges(yeast, yeastResult.facts) : [];
+  const unresolved = changes.some(change => change.conflict && !conflictChoices[change.field]);
+  if (!active || searchGaps.length === 0 && !found && !error) return null;
 
   return (
-    <section aria-label="Autocomplétion des ingrédients" aria-busy={busy} className="panel p-2 space-y-2">
+    <section aria-label="Autocomplétion des ingrédients" aria-busy={busy} className={embedded ? 'space-y-2' : 'panel p-2 space-y-2'}>
       {!found && (
         <>
           <div className="flex items-start gap-2">
             <Sparkles className="w-4 h-4 text-ebc-straw shrink-0 mt-0.5" />
             <p className="text-sm text-cave-200 leading-snug">
-              {gaps.length} ingrédient{gaps.length > 1 ? 's' : ''} incomplet
+              {yeastEnrichment ? <>Retrouver les données publiées de <span className="text-cave-50">{yeast.name}</span>, avec leurs sources et leurs limites.</> : <>{gaps.length} ingrédient{gaps.length > 1 ? 's' : ''} incomplet
               {gaps.length > 1 ? 's' : ''} :{' '}
               <span className="text-cave-400">
                 {gaps.map((g) => `${g.name} (${g.missing.join(', ')})`).join(' · ')}
               </span>
+              </>}
             </p>
           </div>
 
           <button
             type="button"
             onClick={search}
-            disabled={busy || gaps.length === 0}
+            disabled={busy || searchGaps.length === 0}
             className="max-w-full min-h-7 rounded-control border border-cave-700 bg-cave-850 text-cave-50
                        text-2xs font-semibold flex items-center justify-center gap-2
                        px-2 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw disabled:opacity-50"
@@ -264,7 +286,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                {scope === 'levure' ? 'Compléter la levure avec l’IA' : 'Compléter les données manquantes avec l’IA'}
+                {yeastEnrichment ? 'Rechercher la fiche de cette levure' : scope === 'levure' ? 'Compléter la levure avec l’IA' : 'Compléter les données manquantes avec l’IA'}
               </>
             )}
           </button>
@@ -283,8 +305,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
         <div className="space-y-2">
           <p role="status" className="text-sm text-cave-200">
             {found.length} fiche{found.length > 1 ? 's' : ''} retrouvée
-            {found.length > 1 ? 's' : ''}. Rien n’est écrit avant validation ; les valeurs déjà
-            saisies ne bougent pas.
+            {found.length > 1 ? 's' : ''}. Rien n’est écrit avant validation.
+            {changes.some(change => change.conflict) ? ' Choisis les valeurs à garder dans cette recette.' : ' Les valeurs déjà saisies sont conservées.'}
           </p>
 
           <ul className="divide-y divide-cave-850">
@@ -307,23 +329,35 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                         .filter(Boolean)
                         .join(' · ')}
                     {f.kind === 'houblon' && f.facts.alphaPct != null && `${f.facts.alphaPct} % AA`}
-                    {f.kind === 'levure' &&
-                      [
-                        f.missing.includes('atténuation') && f.facts.attenuationPct != null
-                          ? `${f.facts.attenuationPct} %`
-                          : null,
-                        f.missing.includes('température minimale') && f.facts.tempMinC != null
-                          ? `mini ${f.facts.tempMinC} °C`
-                          : null,
-                        f.missing.includes('température maximale') && f.facts.tempMaxC != null
-                          ? `maxi ${f.facts.tempMaxC} °C`
-                          : null,
-                        f.missing.includes('laboratoire') ? f.facts.lab : null
-                      ]
-                        .filter(Boolean)
-                        .join(' · ')}
                   </span>
                 </div>
+                {f.kind === 'levure' && <>
+                  <dl className="mt-1 divide-y divide-cave-800 text-xs">
+                    {f.facts.technicalFacts?.filter(fact => fact.range).map((fact, i) => <div key={`fact-${i}`} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] items-start gap-2 py-1">
+                      <dt className="text-cave-400">{YEAST_FACT_LABELS[fact.key]}</dt>
+                      <dd className="min-w-0 text-cave-50 break-words">{fact.reported}</dd>
+                    </div>)}
+                    {changes.map(change => <div key={change.field} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] items-start gap-2 py-1">
+                      <dt className="text-cave-400">{change.label}</dt>
+                      <dd className="min-w-0 text-cave-50 break-words [overflow-wrap:anywhere]">
+                        {change.conflict ? <>
+                          <div className="text-cave-400">Saisie : {typeof change.current === 'object' ? 'fiche déjà présente' : String(change.current)}</div>
+                          <div>Fiche : {typeof change.proposed === 'object' ? 'nouveau document sourcé' : String(change.proposed)}</div>
+                          <select aria-label={`Choisir ${change.label}`} className="mt-1 w-full min-h-8 rounded-control border border-cave-700 bg-cave-850 px-1 text-base"
+                            value={conflictChoices[change.field] ?? ''} onChange={event => setConflictChoices(current => ({ ...current, [change.field]: event.target.value as 'keep' | 'replace' }))}>
+                            <option value="" disabled>Choisir…</option><option value="keep">Garder la saisie</option><option value="replace">Reprendre la fiche</option>
+                          </select>
+                        </> : <>{typeof change.proposed === 'object' ? 'Document sourcé à ajouter' : String(change.proposed)}</>}
+                      </dd>
+                    </div>)}
+                  </dl>
+                  {!!f.facts.technicalFacts?.length && <details className="mt-1"><summary className="min-h-7 cursor-pointer text-xs text-water">{f.facts.technicalFacts.length} observations et sources</summary>
+                    <ul className="divide-y divide-cave-800 text-xs">{f.facts.technicalFacts.map((fact, i) => <li key={i} className="py-1 break-words [overflow-wrap:anywhere]">
+                      <span className="text-cave-400">{YEAST_FACT_LABELS[fact.key]} : </span><span className="text-cave-50">{fact.reported}</span>{fact.context && <span className="text-cave-400"> · {fact.context}</span>}
+                      {fact.sourceUrl ? <a className="block text-water underline" href={fact.sourceUrl} target="_blank" rel="noreferrer">{fact.source || 'Source publiée'}</a> : fact.source && <span className="block text-cave-400">{fact.source}</span>}
+                    </li>)}</ul>
+                  </details>}
+                </>}
                 {/* La source est le cœur du dispositif : sans elle, on ne
                     distinguerait pas une donnée retrouvée d'une inventée. */}
                 {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-sm text-cave-200 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-sm text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
@@ -352,8 +386,9 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
             <button
               type="button"
               onClick={apply}
+              disabled={unresolved}
               className="min-h-7 px-2 py-1 rounded-control border border-cave-700 bg-cave-850 text-cave-50
-                         text-2xs font-semibold flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw"
+                         text-2xs font-semibold flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw disabled:opacity-50"
             >
               <Check className="w-4 h-4" />
               Reprendre ces valeurs

@@ -70,6 +70,10 @@ export interface StockItem {
 
   technicalSource?: string;
   yeastFermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
+  yeastTechnicalFacts?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalFact[];
+  yeastFlocculation?: string;
+  yeastAlcoholTolerancePct?: number;
+  yeastNotes?: string;
 
   /** Levure : laboratoire, souche, forme, atténuation, fourchette de fermentation. */
   yeastLab?: string;
@@ -194,20 +198,26 @@ export interface HopIngredient {
 export interface YeastSpec {
   stockItemRef?: string;
   fermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
+  technicalFacts?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalFact[];
   name: string;
   hopIndexId?: string;
   /** Lallemand, White Labs, Fermentis, GigaYeast, Omega… */
   lab?: string;
   /** Référence de souche : US-05, WLP095, GY054. */
   strain?: string;
-  form: 'sèche' | 'liquide' | 'levain';
-  qty: number;
-  unit: string; // 'sachet', 'mL', 'g'
+  form?: 'sèche' | 'liquide' | 'levain';
+  qty?: number;
+  unit?: string; // 'sachet', 'mL', 'g' — absent means the packaging is unknown.
   pitchTempC?: number;
   fermTempMinC?: number;
   fermTempMaxC?: number;
   /** Atténuation apparente annoncée, en %. Sert à prédire la FG. */
   attenuationPct?: number;
+  /** Absent on old recipes: treat their value as an explicit recipe hypothesis. */
+  attenuationBasis?: 'declared' | 'recipe' | 'measured';
+  flocculation?: string;
+  alcoholTolerancePct?: number;
+  technicalSource?: string;
   fermentDays?: number;
   notes?: string;
 }

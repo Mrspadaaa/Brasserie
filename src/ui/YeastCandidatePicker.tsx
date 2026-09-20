@@ -1,8 +1,9 @@
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import type { YeastRecipeCandidate, YeastStyleId } from '../domain/yeastRecipeDesign';
 import { normalizedYeastText } from '../domain/yeastCatalogue';
 import { SegmentedControl } from './SegmentedControl';
 import { Input } from './Input';
+import { YeastChoiceResults } from './YeastChoiceComparison';
 
 const PAGE_SIZE = 6;
 const format = (range: YeastRecipeCandidate['temperature'], unit: string) => range
@@ -12,8 +13,9 @@ const searchTerms: Record<string, string> = { banane: 'banana', girofle: 'clove'
 const preview = (description: string) => description.replace(/ \((?:Description qualitative du fabricant|Descripteurs qualitatifs du fabricant)[^)]*\)\.?$/, '');
 
 /** The style narrows the documented uses; browsing never replaces the selected scenario. */
-export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect }: {
+export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect, recipeChoice }: {
   candidates: YeastRecipeCandidate[]; styleId: YeastStyleId; selectedId: string; onSelect: (id: string) => void;
+  recipeChoice?: { volumeL: number; onChoose: (id: string, form?: YeastRecipeCandidate['form']) => void };
 }) {
   const uid = useId();
   const [scope, setScope] = useState<'style' | 'catalogue'>('style');
@@ -21,25 +23,30 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
   const [lab, setLab] = useState('');
   const [form, setForm] = useState('');
   const [page, setPage] = useState(0);
+  useEffect(() => { setLab(''); setScope('style'); setPage(0); }, [styleId]);
   const wholeCatalogue = scope === 'catalogue' || styleId === 'unknown';
   const matching = useMemo(() => candidates.filter(c => c.styleMatch === 'documented'), [candidates]);
   const pool = wholeCatalogue ? candidates : matching;
   const labs = useMemo(() => [...new Set(pool.map(c => c.lab))].sort((a, b) => a.localeCompare(b, 'fr')), [pool]);
-  const searchable = useMemo(() => new Map(candidates.map(c => [c.yeastId, normalizedYeastText([
+  const searchable = useMemo(() => new Map(candidates.map(c => [c.yeastId, { text: normalizedYeastText([
     c.label, c.lab, c.reference.name, c.reference.id, c.reference.catalogue?.productCode ?? '', ...(c.reference.aliases ?? []),
     ...(c.reference.catalogue?.aliases ?? []), ...(c.reference.catalogue?.categories ?? []),
     ...(c.reference.catalogue?.facts ?? []).map(f => f.reported),
-  ].join(' '))])), [candidates]);
-  const terms = normalizedYeastText(query).split(' ').filter(Boolean);
+  ].join(' ')), identifiers: [c.label, c.reference.name, c.reference.id, c.reference.catalogue?.productCode ?? '', ...(c.reference.aliases ?? [])].map(normalizedYeastText) }])), [candidates]);
   const normalizedQuery = normalizedYeastText(query);
-  const relevance = (c: YeastRecipeCandidate) => {
-    if (!normalizedQuery) return 0;
-    const identifiers = [c.label, c.reference.name, c.reference.id, c.reference.catalogue?.productCode ?? '', ...(c.reference.aliases ?? [])].map(normalizedYeastText);
-    return identifiers.some(s => s === normalizedQuery) ? 2 : identifiers.some(s => s.includes(normalizedQuery)) ? 1 : 0;
-  };
-  const filtered = pool.filter(c => (!lab || c.lab === lab) && (!form || (form === 'unknown' ? !c.reference.form : c.reference.form === form)) &&
-    terms.every(term => searchable.get(c.yeastId)!.includes(term) || searchable.get(c.yeastId)!.includes(searchTerms[term] ?? term)))
-    .sort((a, b) => relevance(b) - relevance(a));
+  const filtered = useMemo(() => {
+    const terms = normalizedQuery.split(' ').filter(Boolean);
+    const matches = pool.filter(c => (!lab || c.lab === lab) && (!form || (form === 'unknown' ? !c.reference.form : c.reference.form === form)) &&
+      terms.every(term => searchable.get(c.yeastId)!.text.includes(term) || searchable.get(c.yeastId)!.text.includes(searchTerms[term] ?? term)));
+    if (!normalizedQuery) return matches;
+    // Normalize identifiers once per catalogue and score once per matching row,
+    // rather than rebuilding both sides of every sort comparison on each keypress.
+    return matches.map(candidate => {
+      const identifiers = searchable.get(candidate.yeastId)!.identifiers;
+      const relevance = identifiers.some(s => s === normalizedQuery) ? 2 : identifiers.some(s => s.includes(normalizedQuery)) ? 1 : 0;
+      return { candidate, relevance };
+    }).sort((a, b) => b.relevance - a.relevance).map(row => row.candidate);
+  }, [pool, lab, form, normalizedQuery, searchable]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
   const shown = filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
@@ -74,7 +81,8 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
       {wholeCatalogue ? ' · usages à vérifier pour ton style' : ' · usages documentés pour cette famille'}.
       {(query || lab || form) && <> <button type="button" className="yeast-link" onClick={clearFilters}>Effacer les filtres</button></>}
     </p>
-    {filtered.length ? <div className="yeast-candidate-list"><table className="yeast-candidates">
+    {recipeChoice && <YeastChoiceResults candidates={candidates} shown={shown} selectedId={selectedId} volumeL={recipeChoice.volumeL} onChoose={recipeChoice.onChoose} />}
+    {!recipeChoice && filtered.length > 0 && <div className="yeast-candidate-list"><table className="yeast-candidates">
       <caption>Potentiel décrit par le fabricant · aucun classement d’intensité</caption>
       <thead><tr><th scope="col">Souche et caractère</th><th scope="col">Fermentation<br />Atténuation</th></tr></thead>
       <tbody>{shown.map(c => <tr key={c.yeastId} data-selected={c.yeastId === selectedId}>
@@ -85,7 +93,8 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
         </td>
         <td className="font-mono tabular-nums"><span>{format(c.temperature, '°C')}</span><span className="block">{format(c.attenuation, '%')}</span></td>
       </tr>)}</tbody>
-    </table></div> : <p className="yeast-small">Aucune référence avec ces filtres.
+    </table></div>}
+    {!filtered.length && <p className="yeast-small">Aucune référence avec ces filtres.
       {!wholeCatalogue && <> <button type="button" className="yeast-link" onClick={() => { setScope('catalogue'); setLab(''); setPage(0); }}>Chercher dans tout le catalogue</button></>}
     </p>}
     {pageCount > 1 && <nav className="yeast-picker-pages" aria-label="Pages des références de levure">
@@ -93,7 +102,7 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
       <span className="yeast-small">{currentPage * PAGE_SIZE + 1}–{Math.min((currentPage + 1) * PAGE_SIZE, filtered.length)} / {filtered.length}</span>
       <button type="button" disabled={currentPage === pageCount - 1} onClick={() => setPage(currentPage + 1)}>Suivantes</button>
     </nav>}
-    {selected && !shown.some(c => c.yeastId === selectedId) && <p className="yeast-small">Scénario conservé : {selected.label}. <button type="button" className="yeast-link" onClick={showSelected}>Afficher sa ligne</button></p>}
+    {selected && !shown.some(c => c.yeastId === selectedId) && <p className="yeast-small">{recipeChoice ? 'Choix conservé' : 'Scénario conservé'} : {selected.label}. <button type="button" className="yeast-link" onClick={showSelected}>Afficher sa ligne</button></p>}
     {wholeCatalogue && <p className="yeast-small">Le catalogue comprend aussi mélanges, bactéries et autres usages. Leur présence ne valide pas une fermentation de bière.</p>}
   </div>;
 }

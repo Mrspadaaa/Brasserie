@@ -81,7 +81,7 @@ const value = (n: unknown): number | null => finite(n) ? n : null;
 const positive = (n: unknown): n is number => finite(n) && n > 0;
 const text = (s: unknown): string | null => typeof s === 'string' && s.trim() ? s : null;
 const familyLabel = (id: YeastStyleId) => YEAST_STYLE_FAMILIES.find(f => f.id === id)?.label ?? 'Inconnue';
-const distinctSources = (rows: HopSource[]) => [...new Map(rows.map(s => [s.reference, s])).values()];
+const distinctSources = (rows: (HopSource | undefined)[]) => [...new Map(rows.filter((s): s is HopSource => !!s).map(s => [s.reference, s])).values()];
 const candidateData = (c: YeastRecipeCandidate, actualForm: YeastRecipeCandidate['reference']['form']): CompanionCandidate => {
   const information = yeastStrainInformation(c.reference, actualForm);
   const facts = information?.observations.filter(f => ['temperature', 'attenuation', 'pitchRate', 'pof', 'sta1', 'diastatic', 'flocculation', 'alcoholTolerance', 'aroma', 'esters', 'higherAlcohols', 'betaLyase', 'biotransformation', 'styles', 'application', 'foam', 'nutrientNeed', 'h2s', 'fermentationRate', 'fermentationTime'].includes(f.key)) ?? [];
@@ -98,7 +98,7 @@ const candidateData = (c: YeastRecipeCandidate, actualForm: YeastRecipeCandidate
     sources: distinctSources([...c.sources, ...observations.map(f => f.source), ...practicalNotes.map(n => n.source)]) };
 };
 const goalMap: Record<string, YeastRecipeGoal> = {
-  balanced: 'balanced', banana: 'banana', clove: 'clove', fruit: 'fruit', clean: 'clean', dry: 'dry', hops: 'hops',
+  balanced: 'balanced', banana: 'banana', clove: 'clove', fruit: 'fruit', clean: 'clean', dry: 'dry', hops: 'hops', 'low-sulfur': 'low-sulfur',
   phenolic: 'clove', thiols: 'hops'
 };
 const requestStatus = <T>(v: T | undefined): RequestStatus<T> => ({ value: v ?? null, status: 'not-requested', reason: null });

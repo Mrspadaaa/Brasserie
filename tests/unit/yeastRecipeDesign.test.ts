@@ -84,10 +84,11 @@ describe('Simulations bornées par les données réelles', () => {
   it('préserve les inconnues et une référence explicite absente', () => {
     const r = { ...recipe(), yeast: { ...recipe().yeast, hopIndexId: 'missing' }, fermentation: [], ogTarget: null };
     const d = createYeastRecipeDraft(r, refs), result = evaluateYeastRecipeDesign(r, d, refs);
-    expect(d.yeastId).toBe(''); expect(d.temperatureC).toBeUndefined(); expect(d.days).toBeUndefined();
+    expect(d.yeastId).toBe('missing'); expect(d.temperatureC).toBeUndefined(); expect(d.days).toBeUndefined();
     expect(result.candidate).toBeUndefined(); expect(result.fg.range).toBeNull(); expect(result.abv.range).toBeNull();
-    expect(result.errors.join(' ')).toContain('référence');
-    expect(() => applyYeastRecipeDesign(r, d, refs)).toThrow();
+    expect(result.errors).toEqual([]);
+    expect(applyYeastRecipeDesign(r, d, refs).yeast.hopIndexId).toBe('missing');
+    expect(() => applyYeastRecipeDesign(r, { ...d, yeastId: 'another-missing' }, refs)).toThrow();
   });
   it('ne copie pas quantité et température d’ensemencement à une autre souche', () => {
     const r = { ...recipe('fermentis-us05'), yeast: { ...recipe('fermentis-us05').yeast, qty: 15 } };
@@ -110,7 +111,7 @@ describe('Simulations bornées par les données réelles', () => {
     expect(result.abv.range?.min).toBeCloseTo(5.90625, 8); expect(result.abv.range?.max).toBeCloseTo(6.4575, 8);
     const other = evaluateYeastRecipeDesign(r, { ...d, yeastId: 'wyeast-1318', quantityG: undefined }, refs);
     expect(other.fg.range?.min).toBeCloseTo(1.015, 10); expect(other.fg.range?.max).toBeCloseTo(1.0174, 10);
-    expect(result.fg.reasons.join(' ')).toContain('ni DF garantie ni intervalle statistique');
+    expect(result.fg.reasons.join(' ')).toContain('Ni DF garantie ni intervalle statistique');
     expect(r.fgTarget).toBe(fullRecipe.fgTarget);
   });
   it('n’applique pas une plage différente aux sources en conflit, même si un ancien guide existe', () => {
@@ -119,8 +120,8 @@ describe('Simulations bornées par les données réelles', () => {
     conflicting.catalogue!.facts.push({ ...conflicting.catalogue!.facts.find(f => f.key === 'temperature')!, range: { min: 19, max: 22 } });
     const result = evaluateYeastRecipeDesign(r, draft(r), [conflicting]);
     expect(result.candidate?.temperature).toBeUndefined(); expect(result.fg.range).toBeNull();
-    expect(proposeYeastGoalSettings(r, { ...draft(r), goal: 'banana' }, [conflicting])).toBeUndefined();
-    expect(result.warnings.join(' ')).toContain('sources non concordantes');
+    expect(proposeYeastGoalSettings(r, { ...draft(r), goal: 'banana' }, [conflicting])?.patch).toEqual({});
+    expect(result.warnings.join(' ')).toContain('non concordantes');
   });
   it('ne masque pas un conflit POF derrière le profil éditorial et n’assimile pas inconnu à négatif', () => {
     const r = recipe(), y = structuredClone(ref('wyeast-3068'));
@@ -129,7 +130,7 @@ describe('Simulations bornées par les données réelles', () => {
     const d = draft(r, { goal: 'clove', ferulicRest: true }), result = evaluateYeastRecipeDesign(r, d, [y]);
     expect(result.effects.find(e => e.id === 'ferulic')?.state).toBe('unknown');
     expect(result.warnings.join(' ')).toContain('Capacité phénolique non concordante');
-    expect(proposeYeastGoalSettings(r, d, [y])).toBeUndefined();
+    expect(proposeYeastGoalSettings(r, d, [y])?.patch).toEqual({});
     expect(() => applyYeastRecipeDesign(r, d, [y])).toThrow('capacité phénolique');
   });
   it('conserve le conflit Farmhouse et compare les deux atténuations de saison', () => {
@@ -167,16 +168,16 @@ describe('Simulations bornées par les données réelles', () => {
     const r = recipe(), d = draft(r, { goal: 'banana', quantityG: undefined }), before = structuredClone(d);
     const proposal = proposeYeastGoalSettings(r, d, refs)!;
     expect(proposal.patch.temperatureC).toBe(22); expect(proposal.patch.quantityG).toBeUndefined();
-    expect(proposal.patch.pressureBar).toBeUndefined(); expect(proposal.source.kind).toBe('judgment');
+    expect(proposal.patch.pressureBar).toBeUndefined(); expect(proposal.source?.kind).toBe('judgment');
     expect(proposal.rationale).toContain('durée saisie est conservée'); expect(d).toEqual(before);
     const clove = proposeYeastGoalSettings(r, { ...d, goal: 'clove' }, refs)!;
     expect(clove.patch).toEqual({ temperatureC: 18, ferulicRest: true });
     expect(clove.rationale).toContain('Ni durée de repos optimale ni hausse de 4-VG démontrée');
-    expect(proposeYeastGoalSettings(recipe('fermentis-us05'), draft(recipe('fermentis-us05'), { goal: 'banana' }), refs)).toBeUndefined();
+    expect(proposeYeastGoalSettings(recipe('fermentis-us05'), draft(recipe('fermentis-us05'), { goal: 'banana' }), refs)?.patch).toEqual({});
   });
-  it('bloque les valeurs invalides et hors fenêtre lors de l’application des réglages', () => {
+  it('bloque les valeurs invalides et signale les choix explicites hors fenêtre', () => {
     const r = recipe();
-    for (const patch of [{ temperatureC: 25 }, { pitchTempC: 5 }, { days: 0 }, { days: -2 }, { pressureBar: -1 }, { quantityG: 15 }, { temperatureC: NaN }]) {
+    for (const patch of [{ temperatureC: 61 }, { pitchTempC: -1 }, { days: 0 }, { days: -2 }, { pressureBar: -1 }, { quantityG: 15 }, { temperatureC: NaN }]) {
       const d = draft(r, patch); expect(evaluateYeastRecipeDesign(r, d, refs).errors.length).toBeGreaterThan(0);
       expect(() => applyYeastRecipeDesign(r, d, refs)).toThrow();
     }
@@ -186,7 +187,12 @@ describe('Simulations bornées par les données réelles', () => {
       expect(evaluateYeastRecipeDesign(clean, draft(clean, { temperatureC }), refs).effects.find(e => e.id === 'temperature')?.impact).toContain('dans la fenêtre');
     }
     for (const temperatureC of [17, 27]) {
-      expect(evaluateYeastRecipeDesign(clean, draft(clean, { temperatureC }), refs).effects.find(e => e.id === 'temperature')?.impact).toContain('hors fenêtre');
+      const d = draft(clean, { temperatureC }), preview = evaluateYeastRecipeDesign(clean, d, refs);
+      expect(preview.effects.find(e => e.id === 'temperature')?.impact).toContain('hors fenêtre');
+      expect(preview.effects.find(e => e.id === 'temperature')?.state).toBe('warning');
+      expect(preview.errors).toEqual([]);
+      expect(preview.warnings.join(' ')).toContain('hors de la plage de conduite retenue (18–26 °C)');
+      expect(applyYeastRecipeDesign(clean, d, refs).fermentation![0].tempC).toBe(temperatureC);
     }
   });
 });
@@ -232,7 +238,8 @@ describe('Application explicite et traçabilité de l’intention', () => {
       hopPredictionIds: ['old'], hopMatrixId: 'old', hopTrialId: 'old' };
     const before = structuredClone(r), d = draft(r, { yeastId: 'white-labs-wlp380', temperatureC: 20, pitchTempC: undefined, quantityG: undefined, goal: 'clove' });
     const next = applyYeastRecipeDesign(r, d, refs);
-    expect(next.yeast).toMatchObject({ hopIndexId: 'white-labs-wlp380', qty: 0, form: 'liquide' });
+    expect(next.yeast).toMatchObject({ hopIndexId: 'white-labs-wlp380', form: 'liquide' });
+    expect(next.yeast.qty).toBeUndefined(); expect(next.yeast.unit).toBeUndefined();
     for (const key of ['stockItemRef', 'attenuationPct', 'notes', 'fermentDays', 'pitchTempC']) expect(next.yeast).not.toHaveProperty(key);
     expect(next.hopPredictionIds).toBeUndefined(); expect(next.hopMatrixId).toBeUndefined(); expect(next.hopTrialId).toBeUndefined();
     expect(next.fermentation).toEqual(r.fermentation); expect(next.mash).toEqual(r.mash); expect(next.hops).toEqual(r.hops);
@@ -271,7 +278,7 @@ describe('Application explicite et traçabilité de l’intention', () => {
   });
   it('respecte le mode souche seule malgré des réglages de scénario différents', () => {
     const r = recipe(), next = applyYeastRecipeDesign(r, draft(r, { yeastId: 'lallemand-munich-classic', temperatureC: 24, days: 15, quantityG: 18, ferulicRest: true }), refs, 'strain');
-    expect(next.yeast.hopIndexId).toBe('lallemand-munich-classic'); expect(next.yeast.qty).toBe(0);
+    expect(next.yeast.hopIndexId).toBe('lallemand-munich-classic'); expect(next.yeast.qty).toBeUndefined();
     expect(next.fermentation).toEqual(r.fermentation); expect(next.mash).toEqual(r.mash);
   });
   it('rend effectif l’effacement des champs optionnels et l’annonce dans les changements', () => {
@@ -279,7 +286,7 @@ describe('Application explicite et traçabilité de l’intention', () => {
     const changes = evaluateYeastRecipeDesign(r, d, refs).changes;
     expect(changes.find(c => c.id === 'quantity')).toMatchObject({ before: '15 g', after: 'À renseigner' });
     expect(changes.find(c => c.id === 'pitch')?.after).toBe('À renseigner');
-    const next = applyYeastRecipeDesign(r, d, refs); expect(next.yeast.qty).toBe(0); expect(next.yeast.pitchTempC).toBeUndefined();
+    const next = applyYeastRecipeDesign(r, d, refs); expect(next.yeast.qty).toBeUndefined(); expect(next.yeast.pitchTempC).toBeUndefined();
     const strainOnly = applyYeastRecipeDesign(r, d, refs, 'strain'); expect(strainOnly.yeast.qty).toBe(15); expect(strainOnly.yeast.pitchTempC).toBe(20);
   });
   it('enregistre l’intention, la retrouve et détecte une conduite devenue différente', () => {
@@ -304,7 +311,7 @@ describe('Application explicite et traçabilité de l’intention', () => {
     expect(yeastRecipeDesignChanged({ ...proposal, yeast: enriched }, readYeastRecipeDesign(proposal)!)).toBe(true);
     const accepted = completeYeastRecipeDesignApplication(proposal, enriched);
     expect(accepted.yeastDesign!.applied.yeast).toEqual(accepted.yeast);
-    expect(accepted.yeast.qty).toBe(mode === 'settings' ? 20 : 0);
+    expect(accepted.yeast.qty).toBe(mode === 'settings' ? 20 : undefined);
     expect(yeastRecipeDesignChanged(accepted, readYeastRecipeDesign(accepted)!)).toBe(false);
     const restored = JSON.parse(JSON.stringify(accepted));
     expect(yeastRecipeDesignChanged(restored, readYeastRecipeDesign(restored)!)).toBe(false);
@@ -312,7 +319,7 @@ describe('Application explicite et traçabilité de l’intention', () => {
     expect(completeYeastRecipeDesignApplication(accepted, completedAgain)).toEqual(accepted);
     expect(original).toEqual(before);
     accepted.yeast.qty = 25;
-    expect(accepted.yeastDesign!.applied.yeast.qty).toBe(mode === 'settings' ? 20 : 0);
+    expect(accepted.yeastDesign!.applied.yeast.qty).toBe(mode === 'settings' ? 20 : undefined);
     expect(yeastRecipeDesignChanged(accepted, readYeastRecipeDesign(accepted)!)).toBe(true);
   });
   it.each<[string, (r: Recipe) => void]>([

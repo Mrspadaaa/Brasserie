@@ -10,7 +10,7 @@ import { applyHopScenario, recipeHopScenario } from './exploration';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './recipeGuide';
 import type { TrialRecipe } from './trials';
 import { selectHopSearchDomain, type HopSearchMode } from './solverSelection';
-import { fermentationProgramIssues } from '../../../functions/src/fermentationContext';
+import { fermentationProgramIssues, recipeFermentationTemperature } from '../../../functions/src/fermentationContext';
 import { normalizeHop } from '../hopStage';
 import { noloReferencePrediction } from '../../../functions/src/hopRecipePrediction';
 import { hopStyleFamily, suggestedHopVarieties } from './styleSelection';
@@ -118,13 +118,16 @@ function checkHopAdditionProgram(recipe: TrialRecipe | undefined, hasDryHop: boo
   return !hasDryHop && recipe?.fermentation?.some(s => s.kind === 'ajout' && /houblonnage a cru|dry[ -]?hop/.test(fold(`${s.name} ${s.note ?? ''}`)))
     ? [{ status: 'unknown', message: 'Des paliers annoncent un houblonnage à cru, mais aucun ajout de houblon à cru n’est prévu. Revois le programme de fermentation ; ces notes ne créent pas un ajout ni un effet de biotransformation.' }] : [];
 }
-export function checkHopFermentation(recipe: TrialRecipe | undefined, yeastId: string | undefined, policy: HopSolverPolicy, hasDryHop = recipe?.hops.some(h => normalizeHop(h).stage === 'dryHop' && (h.weightG > 0 || !finite(h.weightG))), includeAdditionProgram = true) {
+export function checkHopFermentation(recipe: TrialRecipe | undefined, yeastId: string | undefined, policy: HopSolverPolicy, hasDryHop = recipe?.hops.some(h => normalizeHop(h).stage === 'dryHop' && (h.weightG > 0 || !finite(h.weightG))), includeAdditionProgram = true, useRecipeDossier = true) {
   const checks: SolverCheck[] = [];
   if (!recipe) return checks;
   const rows = (policy.yeastConditions ?? []).filter(p => p.yeastId === yeastId), first = rows[0];
   const agreed = first && rows.every(r => r.temperatureC.min === first.temperatureC.min && r.temperatureC.max === first.temperatureC.max);
-  checks.push(...fermentationProgramIssues(recipe.fermentation ?? [], agreed ? { range: first.temperatureC, source: first.source } : undefined,
-    { pitchTempC: recipe.yeast.pitchTempC, hasDryHop, checkAdditions: includeAdditionProgram }).map(i => ({ status: 'unknown' as const, message: i.message, ...(i.source ? { source: i.source } : {}) })));
+  const personalTemperature = useRecipeDossier && (!recipe.yeast.hopIndexId || recipe.yeast.hopIndexId === yeastId) ? recipeFermentationTemperature(recipe.yeast) : undefined;
+  const temperature = personalTemperature === undefined ? agreed ? { range: first.temperatureC, source: first.source } : undefined : personalTemperature ?? undefined;
+  checks.push(...fermentationProgramIssues(recipe.fermentation ?? [], temperature,
+    { pitchTempC: recipe.yeast.pitchTempC, hasDryHop, checkAdditions: includeAdditionProgram,
+      ...(personalTemperature !== undefined ? { windowLabel: 'plage de conduite retenue' } : {}) }).map(i => ({ status: 'unknown' as const, message: i.message, ...(i.source ? { source: i.source } : {}) })));
   for (const operating of rows) if (operating.warning && !checks.some(c => c.message === operating.warning)) checks.push({ status: 'unknown', message: operating.warning, source: operating.source });
   return checks;
 }
@@ -150,7 +153,8 @@ export function inspectHopSolverRecipe(recipe: TrialRecipe | undefined, triplets
   }
   if (recipe?.yeast?.name && yeast && !(recipe.yeast.hopIndexId ? recipe.yeast.hopIndexId===yeast.id : findRecipeYeastMatches(recipe.yeast.name,[yeast]).length)) checks.push({status:'unknown',message:`La souche proposée remplace ${recipe.yeast.name} pour toute la bière. Quantité de levure et programme de fermentation à revoir ; les autres houblons restent présents.`});
   const hasDryHop = doses.some(t => t.doseGL !== 0);
-  checks.push(...checkHopFermentation(recipe, yeast?.id, policy, hasDryHop, !prepared?.deferAdditionProgram));
+  const sameYeast = !recipe?.yeast?.name || !yeast || (recipe.yeast.hopIndexId ? recipe.yeast.hopIndexId === yeast.id : findRecipeYeastMatches(recipe.yeast.name, [yeast]).length > 0);
+  checks.push(...checkHopFermentation(recipe, yeast?.id, policy, hasDryHop, !prepared?.deferAdditionProgram, sameYeast));
   if (existing.length) checks.push({status:'unknown',message:'Les ajouts existants sont conservés et leurs conflits sont vérifiés. Aucun profil total n’est obtenu en additionnant leurs graphes.'});
   return {checks,totalDryHopGL,hasDryHop};
 }

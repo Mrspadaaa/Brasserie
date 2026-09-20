@@ -29,6 +29,8 @@ import { HopVariety, HopLot, assertHopDocument } from '../../functions/src/hopIn
 import { parseBackup } from '../../functions/src/backupCore';
 import { HopKnowledge, HopPredictionSnapshot, HopTasting, assertHopKnowledge, assertHopTasting } from '../../functions/src/hopPredictionSchema';
 import { assertHopPredictionSnapshot } from '../../functions/src/hopPredictionValidation';
+import { mergeYeastTechnicalFacts } from '../domain/ingredientFacts';
+import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 
 /**
  * Façade de données de l'application.
@@ -690,7 +692,8 @@ export const StorageService = {
       s.name.trim().toLocaleLowerCase('fr').replace(/\s+/g, ' ') === key &&
       (!facts.category || s.category.toLocaleLowerCase('fr') === facts.category.toLocaleLowerCase('fr')));
     const fields: Array<keyof StockItem> = ['colorEbc', 'potentialPpg', 'alphaPct', 'yeastLab',
-      'yeastStrain', 'yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC'];
+      'yeastStrain', 'yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC',
+      'yeastFlocculation', 'yeastAlcoholTolerancePct', 'yeastNotes'];
     const patch: Partial<StockItem> = {};
     for (const field of fields) {
       const value = facts[field];
@@ -700,6 +703,10 @@ export const StorageService = {
       if (!missing) continue;
       (patch as Record<string, unknown>)[field] = value;
     }
+    const fermentation = readIngredientFermentationFacts(facts.yeastFermentationFacts);
+    if (fermentation && !item?.yeastFermentationFacts) patch.yeastFermentationFacts = fermentation;
+    const technical = mergeYeastTechnicalFacts(item?.yeastTechnicalFacts, facts.yeastTechnicalFacts);
+    if (technical && JSON.stringify(technical) !== JSON.stringify(item?.yeastTechnicalFacts)) patch.yeastTechnicalFacts = technical;
     if (!Object.keys(patch).length) return;
     if (facts.technicalSource) patch.technicalSource = facts.technicalSource;
     if (item) {
@@ -708,7 +715,9 @@ export const StorageService = {
       // Stable key prevents duplicate catalogue entries while the Firestore snapshot catches up.
       const ref = `FICHE-${encodeURIComponent(facts.category + ':' + key)}`;
       FirestoreRepo.put('stockItems', ref, { id: ref, ref, name: name.trim(), category: facts.category,
-        unit: facts.category === 'Levure' ? 'sachet' : facts.category === 'Houblon' ? 'g' : 'kg',
+        // A learned technical sheet is not an observed package. Its quantity is
+        // zero; the brewer chooses a stock unit when receiving the product.
+        unit: facts.category === 'Levure' ? '' : facts.category === 'Houblon' ? 'g' : 'kg',
         currentStock: 0, minStock: 0, reorder: false, kind: 'rawMaterials', ...patch }, { merge: true });
     }
   },

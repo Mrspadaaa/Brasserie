@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { StockItem, YeastSpec } from '../types';
 import { yeastReferences, type YeastReference } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
@@ -7,14 +7,17 @@ import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { Units } from '../services/units';
 import { Combobox } from './Combobox';
+import { Input } from './Input';
 
 /** A strain can be chosen before buying it. Stock and reference share one search. */
-export function YeastIngredientPicker({ items, yeast, onStock, onReference, onCreate }: {
+export function YeastIngredientPicker({ items, yeast, onStock, onReference, onCreate, personalChoice = false }: {
   items: StockItem[]; yeast: YeastSpec;
   onStock: (name: string, item?: StockItem) => void;
   onReference: (yeast: YeastReference) => void;
   onCreate: (name: string) => void;
+  personalChoice?: boolean;
 }) {
+  const [manual, setManual] = useState(false), [name, setName] = useState('');
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const references = useMemo(() => yeastReferences(saved), [saved]);
   const stock = useMemo(() => items.filter(i => i.category.toLocaleLowerCase('fr') === 'levure'), [items]);
@@ -28,13 +31,17 @@ export function YeastIngredientPicker({ items, yeast, onStock, onReference, onCr
   const currentStock = stock.find(i => i.name === yeast.name);
   const currentReference = resolveFermentationYeast({ yeast } as TrialRecipe, references);
   const value = currentStock ? `stock:${currentStock.id}` : currentReference ? `reference:${currentReference.id}` : yeast.name;
-  return <Combobox value={value} options={options} maxResults={40}
+  return <><Combobox value={value} options={options} maxResults={40}
     ariaLabel="Souche de levure" placeholder="US-05, Verdant IPA, WLP095…"
-    allowCreate onCreate={onCreate} createLabel={name => `Créer « ${name} » (stock à zéro)`}
+    allowCreate onCreate={onCreate} createLabel={name => personalChoice ? `Utiliser « ${name} » dans la recette` : `Créer « ${name} » (stock à zéro)`}
     onChange={value => {
       const item = stock.find(i => `stock:${i.id}` === value);
       if (item) { onStock(item.name, item); return; }
       const reference = references.find(y => `reference:${y.id}` === value);
       if (reference) onReference(reference);
-    }} />;
+    }} />
+    {personalChoice && <><button type="button" className="yeast-link" aria-expanded={manual} onClick={() => setManual(value => !value)}>Saisir une levure hors catalogue</button>
+      {manual && <div className="yc-personal-entry"><label>Nom de la souche<Input aria-label="Nom de la levure personnelle" value={name} onChange={e => setName(e.target.value)} placeholder="Nom exact, labo ou code…" /></label><button type="button" disabled={!name.trim()} onClick={() => { onCreate(name.trim()); setManual(false); }}>Utiliser cette levure</button></div>}
+    </>}
+  </>;
 }

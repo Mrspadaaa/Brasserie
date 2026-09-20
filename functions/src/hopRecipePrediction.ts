@@ -1,5 +1,5 @@
-import { agreedFermentationFact, fermentationProgramIssues } from './fermentationContext.js';
-import { HOP_ANALYTES, validHopRange, hopSourceError, type HopAnalyte, type HopConfidence, type HopRange, type HopSource, type HopVariety } from './hopIndexSchema.js';
+import { agreedFermentationFact, fermentationProgramIssues, type RecipeFermentationTemperature } from './fermentationContext.js';
+import { HOP_ANALYTES, validHopRange, hopSourceError, type HopAnalyte, type HopConfidence, type HopRange, type HopSource } from './hopIndexSchema.js';
 import { resolveHopFacts } from './hopIndexFacts.js';
 import { createHopPredictor, scoreHopProfile, usableHopKnowledge, weakestHopConfidence, type HopEngineData } from './hopPredictionCore.js';
 import { createHopExtrapolationCache, hopDescriptorEvidence, hopDoseResponse, mixHopDoseShapes } from './hopExtrapolationCore.js';
@@ -14,6 +14,8 @@ export type HopRecipeEngineVersion = 'hop-recipe-experimental-v1' | 'hop-recipe-
 const AGGREGATION_VERSION = 'hop-recipe-experimental-v1';
 export interface HopRecipeInput {
   volumeL: number; yeastId: string | null; pitchTempC?: number;
+  /** Explicit recipe dossier. null preserves a conflict; absent replays legacy context. */
+  yeastTemperature?: RecipeFermentationTemperature | null;
   aromaDomain?: 'nolo';
   aromaContext?: { stage:'mother'|'reference'|'packaged'; transfer?:{axes:Record<string,HopRange>;source:HopSource} };
   additions: { id: string; name: string; triplet: HopTriplet; dayOffset?: number }[];
@@ -26,7 +28,13 @@ export function assertHopRecipeInput(value: unknown): asserts value is HopRecipe
   const keys = (v: Record<string, any>, allowed: string[]) => check(Object.keys(v).every(k => allowed.includes(k)), 'champ inconnu');
   check(object(value), 'entrée invalide');
   const v = value as Record<string, any>;
-  keys(v, ['volumeL', 'yeastId', 'additions', 'fermentation', 'pitchTempC', 'aromaDomain', 'aromaContext']);
+  keys(v, ['volumeL', 'yeastId', 'additions', 'fermentation', 'pitchTempC', 'yeastTemperature', 'aromaDomain', 'aromaContext']);
+  if (v.yeastTemperature !== undefined && v.yeastTemperature !== null) {
+    check(object(v.yeastTemperature), 'plage de conduite invalide');
+    keys(v.yeastTemperature, ['range', 'source']);
+    check(validHopRange(v.yeastTemperature.range) && v.yeastTemperature.range.min >= 0 && v.yeastTemperature.range.max <= 60, 'plage de conduite invalide');
+    check(v.yeastTemperature.source === undefined || !hopSourceError(v.yeastTemperature.source), 'source de conduite invalide');
+  }
   check(v.aromaDomain === undefined || v.aromaDomain === 'nolo', 'domaine aromatique invalide');
   if(v.aromaContext) {
     check(object(v.aromaContext),'contexte aromatique invalide');
@@ -368,8 +376,9 @@ export function predictHopRecipe(input: HopRecipeInput, target: Record<string, H
   const guide = valid.find(v => v.kind === 'fermentation' && v.yeastId === input.yeastId && (!modern || v.enabled));
   const hasDryHop = normalized.additions.some(a => a.triplet.doseGL !== 0 && (a.triplet.timing === 'fermentation' || a.triplet.timing === 'postFermentation'));
   if (modern) {
-    const temperature = (guide?.kind === 'fermentation' ? guide.temperatureC : undefined) ?? agreedFermentationFact(yeast, 'temperature', '°C');
-    warnings.push(...fermentationProgramIssues(normalized.fermentation, temperature, { hasDryHop, pitchTempC: input.pitchTempC }).map(i => i.message));
+    const temperature = input.yeastTemperature === undefined ? (guide?.kind === 'fermentation' ? guide.temperatureC : undefined) ?? agreedFermentationFact(yeast, 'temperature', '°C') : input.yeastTemperature ?? undefined;
+    warnings.push(...fermentationProgramIssues(normalized.fermentation, temperature, { hasDryHop, pitchTempC: input.pitchTempC,
+      ...(input.yeastTemperature !== undefined ? { windowLabel: 'plage de conduite retenue' } : {}) }).map(i => i.message));
   } else {
     // Frozen v1/v2 predictions replay their original diagnostics as well as numbers.
     warnings.push(...recipeFermentationWarnings(normalized, yeast, guide?.kind === 'fermentation' ? guide : undefined));

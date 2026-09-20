@@ -34,6 +34,17 @@ function deepFreeze<T>(item: T): T {
 }
 
 describe('Contexte levure : intention adoptée et recette actuelle', () => {
+  it('accepte la demande Soufre en retrait et relit cette intention Lager sans la confondre avec une prévision', () => {
+    const r = brew('lalbrew-diamond', 'Lager'), before = structuredClone(r);
+    const requested = buildYeastCompanion(r, [], { goal: 'low-sulfur' });
+    expect(requested.request.goal).toMatchObject({ value: 'low-sulfur', mappedGoal: 'low-sulfur', status: 'accepted' });
+    expect(requested.analysis).toMatchObject({ goal: 'low-sulfur', goalOrigin: 'explicit-request', scenario: true });
+    expect(r).toEqual(before);
+    const saved = adopted(r, { goal: 'low-sulfur', temperatureC: 12 });
+    const reopened = buildYeastCompanion(saved);
+    expect(reopened.adoptedIntent).toMatchObject({ goal: 'low-sulfur', applicable: true });
+    expect(reopened.analysis?.finalGravity.range).toEqual(buildYeastCompanion(adopted(r, { goal: 'clean', temperatureC: 12 })).analysis?.finalGravity.range);
+  });
   it('restaure un filtre explicitement adopté avec un style personnel et conserve 0 bar', () => {
     const r = adopted(brew('wyeast-3068', 'Style de la maison'), { styleId: 'weissbier', goal: 'clove', pressureBar: 0, ferulicRest: true });
     const data = buildYeastCompanion(r);
@@ -72,17 +83,23 @@ describe('Contexte levure : intention adoptée et recette actuelle', () => {
     expect(r.yeastDesign!.applied.fermentation[0].tempC).toBe(20);
   });
 
-  it('relit les houblons et la DI sans prétendre les avoir dans l’ancien snapshot', () => {
+  it('relit les houblons et la DI et distingue un snapshot v2 de l’ancien format', () => {
     const r = adopted();
     r.ogTarget = 1.06;
     r.hops = [{ name: 'Mosaic', stage: 'dryHop', weightG: 40, alpha: 12, dayOffset: 4 }];
     const data = buildYeastCompanion(r);
-    expect(data.snapshotStatus).toBe('current');
+    expect(data.snapshotStatus).toBe('stale');
     expect(data.current?.ogTarget).toBe(1.06);
     expect(data.current?.dryHop.totalG).toBe(40);
     expect(data.analysis?.finalGravity.range?.min).toBeCloseTo(1.0138, 10);
     expect(data.analysis?.effects.some(e => e.id === 'hop-creep')).toBe(true);
     expect(data.limits.join(' ')).toContain('Houblons et DI sont toujours relus');
+    const legacy = structuredClone(r);
+    legacy.yeastDesign!.modelVersion = 'yeast-recipe-1';
+    delete legacy.yeastDesign!.applied.hops;
+    const old = buildYeastCompanion(legacy);
+    expect(old.snapshotStatus).toBe('current');
+    expect(old.current?.dryHop.totalG).toBe(40); expect(old.analysis?.finalGravity).toEqual(data.analysis?.finalGravity);
   });
 
   it('révise la famille quand le vrai style change et ne recycle pas la banane adoptée', () => {
@@ -267,8 +284,9 @@ describe('Connaissances personnelles, inconnues et limites de calcul', () => {
     const data = buildYeastCompanion(brew(), [saved], { goal: 'banana' });
     expect(data.analysis?.candidate?.temperatureC).toBeNull();
     expect(data.analysis?.candidate?.observations.filter(f => f.key === 'temperature').map(f => f.range)).toEqual([{ min: 18, max: 24 }, { min: 19, max: 22 }]);
-    expect(data.analysis?.proposedSettings).toBeNull();
-    expect(data.analysis?.warnings.join(' ')).toContain('sources non concordantes');
+    expect(data.analysis?.proposedSettings?.patch).toEqual({});
+    expect(data.analysis?.proposedSettings?.rationale).toContain('Consigne actuelle conservée');
+    expect(data.analysis?.warnings.join(' ')).toContain('non concordantes');
     expect(data.sources.some(s => s.reference === 'Fiche personnelle contradictoire')).toBe(true);
   });
 

@@ -1,8 +1,8 @@
-import { RecipeDisclosure, revealRecipeErrors } from '../ui/RecipeDisclosure';
+import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import { MaltDetails } from '../ui/MaltDetails';
 import './recipe-wizard.css';
-import { applyHopFacts, applyYeastFacts, factsForStock } from '../domain/ingredientFacts';
+import { applyHopFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../ui/NumberInput';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
@@ -20,8 +20,7 @@ import {
   FermentationStep,
   SaltId,
   WaterPlan,
-  WaterSource,
-  WaterIons
+  WaterSource
 } from '../types';
 import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
@@ -39,7 +38,12 @@ import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide as SyncHopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/FermentationWorkshop';
-import { YeastRecipeWorkbench as SyncYeastRecipeWorkbench, YeastRecipeContext as SyncYeastRecipeContext, YeastRecipeHeading as SyncYeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
+import { YeastRecipeContext as SyncYeastRecipeContext, YeastRecipeHeading as SyncYeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
+import { YeastRecipeChoice as SyncYeastRecipeChoice } from '../ui/YeastRecipeChoice';
+import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossier';
+import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
+import { yeastReferences } from '../domain/yeastReferences';
+import { resolveFermentationYeast } from '../domain/fermentationScenario';
 import { NoloPanel as SyncNoloPanel } from '../ui/NoloPanel';
 import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOverview';
 import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
@@ -57,8 +61,7 @@ import {
   FERMENT_PROGRAMS,
   PHASE_LABEL,
   mashProgramForStyle,
-  fermentProgramForStyle,
-  saccharificationTemp
+  fermentProgramForStyle
 } from '../domain/brewPrograms';
 import {
   DEFAULT_WATER_SOURCE,
@@ -75,7 +78,6 @@ import { waterTreatmentTarget } from '../domain/water/profileTarget';
 import { PageShell, Section } from './PageShell';
 import { useDensity, useCoarsePointer } from '../ui/useViewport';
 import { FormNav, Field, InlineNum, TextInput, inputClass } from '../ui/FormNav';
-import { SliderField } from '../ui/SliderField';
 import { SegmentedControl } from '../ui/SegmentedControl';
 import { DateField, swissToday } from '../ui/DateField';
 import { QuantityStepper } from '../ui/QuantityStepper';
@@ -97,7 +99,7 @@ import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoCo
 import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
 import { BrewSheetWithCompanion as SyncBrewSheet } from '../ui/BrewSheetWithCompanion';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
-import { Trash2, Plus, Check, AlertTriangle, ClipboardPaste, ClipboardList, Droplets, ChevronLeft } from 'lucide-react';
+import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
 
 // Vitest exercises the wizard with immediate, cross-step assertions. Keep
 // those assertions deterministic while the production build retains the
@@ -108,7 +110,7 @@ const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import
 const HopWorkshop = syncWizardPanels ? SyncHopWorkshop : lazy(() => import('../ui/hopIndex/HopWorkshop').then(({ HopWorkshop: Panel }) => ({ default: Panel })));
 const HopRecipeWorkbench = syncWizardPanels ? SyncHopRecipeWorkbench : lazy(() => import('../ui/hopIndex/HopRecipeWorkbench').then(({ HopRecipeWorkbench: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
-const YeastRecipeWorkbench = syncWizardPanels ? SyncYeastRecipeWorkbench : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeWorkbench: Panel }) => ({ default: Panel })));
+const YeastRecipeChoice = syncWizardPanels ? SyncYeastRecipeChoice : lazy(() => import('../ui/YeastRecipeChoice').then(({ YeastRecipeChoice: Panel }) => ({ default: Panel })));
 const YeastRecipeContext = syncWizardPanels ? SyncYeastRecipeContext : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeContext: Panel }) => ({ default: Panel })));
 const YeastRecipeHeading = syncWizardPanels ? SyncYeastRecipeHeading : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeHeading: Panel }) => ({ default: Panel })));
 const YeastIngredientPicker = syncWizardPanels ? SyncYeastIngredientPicker : lazy(() => import('../ui/YeastIngredientPicker').then(({ YeastIngredientPicker: Panel }) => ({ default: Panel })));
@@ -440,8 +442,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
   const density = useDensity();
   const tight = density === 'tight';
-  /* Au doigt, le chrome se replie dans l'en-tête : l'écran est la ressource rare. */
-  const compactChrome = density !== 'comfortable';
   const [importing, setImporting] = useState(false);
 
   // --- Étape 1 : identité ---------------------------------------------------
@@ -495,7 +495,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   // --- Étape 4 : levure -----------------------------------------------------
   const [yeast, setYeast] = useState<YeastSpec>(
-    base?.yeast ?? { name: '', form: 'sèche', qty: 1, unit: 'sachet' }
+    base?.yeast ?? { name: '' }
   );
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
@@ -624,16 +624,19 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   const efficiency = details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75;
   // Preserve the author's stated targets until their calculation inputs change.
-  const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency]);
+  const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency, details.yeastDesign?.process ?? 'unspecified']);
   const [targetBasis, setTargetBasis] = useState(restoredDraft?.targetBasis ?? metricKey);
   const keepTargets = metricKey === targetBasis;
-  const points = useMemo(
-    () => BrewingMath.extractPoints(fermentables, volumeL, efficiency),
-    [fermentables, volumeL, efficiency]
-  );
+  // Yeast/process changes can invalidate fermentation estimates, never a supplied OG or IBU.
+  let originalMetricInputs: unknown[] = [];
+  try { const parsed = JSON.parse(targetBasis); if (Array.isArray(parsed)) originalMetricInputs = parsed; } catch { /* Old malformed drafts have no retained targets. */ }
+  const currentMetricInputs = [volumeL, boilMin, fermentables, hops, yeast, efficiency];
+  const sameInputs = (indices: number[]) => indices.every(index => JSON.stringify(originalMetricInputs[index]) === JSON.stringify(currentMetricInputs[index]));
+  const keepOgTarget = sameInputs([0, 2, 5]);
+  const keepIbuTarget = sameInputs([0, 1, 2, 3, 5]);
   const ogPredicted = useMemo(
     () => {
-      if (!details.nolo?.enabled) return BrewingMath.calculateOg(fermentables, volumeL, efficiency);
+      if (!details.nolo?.enabled) return yeastRecipeComputedOg({ fermentables, volumeL, efficiencyPct: efficiency });
       if (details.nolo.process === 'secondRunnings') return details.nolo.secondRunnings?.sg ?? null;
       if (details.nolo.process === 'coldExtraction') return null;
       // Fruit and priming enter later and have their own NOLO operation.
@@ -646,27 +649,24 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     },
     [fermentables, volumeL, efficiency,details.efficiencyPct,brewhouse?.efficiencyPct,details.nolo?.enabled,details.nolo?.process,details.nolo?.secondRunnings?.sg,details.nolo?.planning?.exactExtract]
   );
-  const og = ogPredicted ?? 0;
+  const og = (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? 0;
 
-  const bitterness = useMemo(() => hotBitterness(hops, volumeL, og || null, boilMin), [hops, volumeL, og, boilMin]);
+  const boilOg = useMemo(() => details.nolo?.enabled ? og || null : yeastRecipeBoilOg({ fermentables, volumeL, efficiencyPct: efficiency } as Recipe, { og: og || null }).og,
+    [details.nolo?.enabled, og, fermentables, volumeL, efficiency]);
+  const bitterness = useMemo(() => hotBitterness(hops, volumeL, boilOg, boilMin), [hops, volumeL, boilOg, boilMin]);
   const ibu = bitterness.total == null ? null : Math.round(bitterness.total);
 
-  /** L'atténuation réelle dépend du palier de saccharification, pas seulement de la levure. */
-  const mashTemp = useMemo(() => saccharificationTemp(mashSteps), [mashSteps]);
-  const attenuation = useMemo(() => {
-    if (yeast.attenuationPct == null || details.nolo?.enabled) return null;
-    return mashTemp
-      ? BrewingMath.attenuationForMashTemp(yeast.attenuationPct, mashTemp)
-      : yeast.attenuationPct;
-  }, [yeast.attenuationPct, mashTemp, details.nolo?.enabled]);
-
-  const fgPredicted = useMemo(
-    () =>
-      attenuation != null && og > 1
-        ? BrewingMath.calculateFg(og, attenuation, points?.unfermentable ?? 0)
-        : null,
-    [attenuation, og, points]
-  );
+  // The yeast step, recap and persisted estimates share the same explicit hypotheses.
+  // A documentary interval is never silently collapsed into an invented midpoint.
+  const yeastProjection = useMemo(() => {
+    if (details.nolo?.enabled) return null;
+    const inputs = { yeast, volumeL, fermentables, hops, style, styleRef: details.styleRef, efficiencyPct: efficiency, ogTarget: og,
+      yeastDesign: details.yeastDesign } as Recipe;
+    return projectYeastRecipe(inputs, { reference: resolveFermentationYeast(inputs, yeastReferences(knowledge)) });
+  }, [yeast, volumeL, fermentables, hops, style, details.styleRef, efficiency, og, details.nolo?.enabled, details.yeastDesign, knowledge]);
+  const attenuation = yeastProjection?.attenuation?.range.min === yeastProjection?.attenuation?.range.max ? yeastProjection?.attenuation?.range.min : null;
+  const fgPredicted = yeastProjection?.fg.range?.min === yeastProjection?.fg.range?.max ? yeastProjection?.fg.range?.min ?? null : null;
+  const abvPredicted = yeastProjection?.abv.range?.min === yeastProjection?.abv.range?.max ? yeastProjection?.abv.range?.min ?? null : null;
 
   const gravityWarning = useMemo(
     () => (og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og) : null),
@@ -1081,7 +1081,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setTargetBasis(JSON.stringify([
       r.volumeL ?? volumeL, r.boilMin ?? boilMin,
       has('fermentables') ? r.fermentables : fermentables, has('hops') ? r.hops : hops,
-      r.yeast ?? yeast, r.efficiencyPct ?? (r.complete ? brewhouse?.efficiencyPct ?? 75 : efficiency)
+      r.yeast ?? yeast, r.efficiencyPct ?? (r.complete ? brewhouse?.efficiencyPct ?? 75 : efficiency),
+      (internal?.yeastDesign ?? r.yeastDesign)?.process ?? 'unspecified'
     ]));
     setStep('fermentescibles');
   };
@@ -1116,13 +1117,15 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     }
     setYeast(current => {
       if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr')) return current;
-      const unit = item?.unit ?? 'sachet';
+      const unit = item?.unit;
       return {
         name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
-        form: item?.yeastForm ?? 'sèche', unit, qty: current.unit === unit ? current.qty : 1,
-        attenuationPct: item?.yeastAttenuationPct,
+        form: item?.yeastForm, unit, qty: undefined, stockItemRef: item?.id,
+        attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
         fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
-        notes: undefined, hopIndexId: undefined
+        fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
+        flocculation: item?.yeastFlocculation, alcoholTolerancePct: item?.yeastAlcoholTolerancePct,
+        notes: item?.yeastNotes, hopIndexId: undefined
       };
     });
   };
@@ -1139,14 +1142,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     volumeL,
     brewDate,
     boilMin,
-    ogTarget: (keepTargets ? details.ogTarget : undefined) ?? ogPredicted ?? null,
+    ogTarget: (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? null,
     // La densité finale tient compte de ce que la levure ne peut PAS manger.
     fgTarget: details.nolo?.enabled ? null : (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? null,
     abvTarget: details.nolo?.enabled ? details.nolo.targetAbvPct : keepTargets && details.abvTarget != null ? details.abvTarget :
-      ogPredicted && fgPredicted
-        ? BrewingMath.calculateABV(ogPredicted, fgPredicted)
-        : null,
-    ibuTarget: (keepTargets ? details.ibuTarget : undefined) ?? ibu ?? undefined,
+      abvPredicted,
+    ibuTarget: (keepIbuTarget ? details.ibuTarget : undefined) ?? ibu ?? undefined,
     colorEbc: details.colorEbc,
     efficiencyPct: details.efficiencyPct,
     preBoilL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)*10)/10 : details.preBoilL,
@@ -1243,9 +1244,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     }
     setYeast(next.yeast);
     setStep(destination);
-    const nextMetricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, next.yeast, efficiency]);
     return preparationChanged ? next : { ...next,
-      ogTarget: (nextMetricKey === targetBasis ? details.ogTarget : undefined) ?? ogPredicted ?? null };
+      ogTarget: (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? null };
   };
 
   const hasMetrics = fermentables.length > 0 || hops.length > 0;
@@ -1492,7 +1492,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
             <span className="text-sm text-cave-400">OG</span>
             <span className="reading text-sm sm:text-base text-ebc-straw">
-              {ogPredicted ? ogPredicted.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
+              {(step === 'levure' ? og : ogPredicted) ? (step === 'levure' ? og : ogPredicted)!.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:flex-col sm:gap-0">
@@ -1520,8 +1520,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           setStep(step);
         }} />}
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-        {['fermentescibles', 'houblons', 'levure', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
-          scope={step === 'levure' ? 'levure' : step === 'houblons' ? 'houblon' : step === 'fermentescibles' ? 'malt' : undefined}
+        {['fermentescibles', 'houblons', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
+          scope={step === 'houblons' ? 'houblon' : step === 'fermentescibles' ? 'malt' : undefined}
           onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
           hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast}/></Suspense>}
       {step === 'identite' && (
@@ -2069,52 +2069,29 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
       {/* ---------------------------------------------------- ÉTAPE 4 */}
       {step === 'levure' && (
-        <Section title="Levure" hint="Compare les souches de ton style, puis prépare leur conduite.">
+        <Section title="Levure">
           <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>
-            <YeastRecipeWorkbench key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={next => applyFermentationRecipe(next, 'levure')} onNavigate={setStep} />
-          </Suspense>
-          <details className="border-t border-cave-700 mt-3 pt-2">
-            <summary className="cursor-pointer min-h-touch flex items-center text-cave-200 text-[13px]">Saisie libre et stock · {yeast.name || 'autre souche'}</summary>
-          <FormNav className="space-y-3">
-            <Field label="Souche">
-              <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={selectYeast}
-                onCreate={n => { const item = onCreateStockItem(n, 'Levure', 'sachet'); selectYeast(item.name, item); }}
+            <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={next => applyFermentationRecipe(next, 'levure')} onNavigate={setStep}
+              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={setYeast} invalid={!!fieldError('wz-yeast-qty')} />}
+              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={selectYeast} personalChoice
+                onCreate={n => selectYeast(n)}
                 onReference={reference => {
-                  applyFermentationRecipe(applyCatalogueYeast(build(), reference, reference.form ?? yeast.form), 'levure');
+                  const next = applyCatalogueYeast(build(), reference, reference.form);
+                  if (yeast.hopIndexId !== reference.id) {
+                    delete next.yeast.qty; delete next.yeast.unit;
+                  }
+                  applyFermentationRecipe(next, 'levure');
                   setYeastSelection(n => n + 1);
-                }} /></Suspense>
-            </Field>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <InlineNum id="wz-yeast-qty" label="Quantité" name={'Quantité de levure, en ' + yeast.unit} unit={yeast.unit} min={0} value={yeast.qty} emptyValue={Number.NaN} required aria-invalid={!!fieldError('wz-yeast-qty')} aria-describedby={fieldError('wz-yeast-qty') ? 'wz-validation' : undefined} onValue={qty => setYeast({ ...yeast, qty })} />
-            <InlineNum label="T° départ" name="Température d’ensemencement" unit="°C" value={yeast.pitchTempC} emptyValue={undefined}
-              onValue={pitchTempC => setYeast({ ...yeast, pitchTempC })} missing={yeast.pitchTempC == null} />
-            </div>
-          </FormNav>
-          </details>
-          {!details.nolo?.enabled&&<details className="border-t border-cave-700 mt-2 pt-2">
-            <summary className="cursor-pointer min-h-touch flex items-center text-cave-200 text-[13px]">Programme détaillé et guides enregistrés</summary>
-          <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du programme de fermentation…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => {
-            applyFermentationRecipe(next, 'levure');
-          }} /></Suspense>
-          </details>}
-          <details className="border-t border-cave-700 mt-3 pt-2" aria-label="Fiche technique saisie de la levure">
-            <summary className="cursor-pointer min-h-touch flex items-center text-water">Fiche saisie · forme, atténuation et repères</summary>
-            <FormNav className="space-y-3 py-3">
-              <p className="text-sm text-cave-400">Repères de la fiche ou de ton expérience. Le calendrier des paliers fait foi pour les températures et durées du brassin. L’atténuation saisie alimente l’estimation générale de la recette ; la DF documentaire conserve la plage fabricant.</p>
-              <Field label="Forme de la levure"><SegmentedControl label="Forme de la levure" value={yeast.form}
-                onChange={form => setYeast({ ...yeast, form, unit: form === 'liquide' ? 'flacon' : form === 'levain' ? 'L' : 'sachet' })}
-                options={[{value:'sèche',label:'Sèche'},{value:'liquide',label:'Liquide'},{value:'levain',label:'Levain / Récup'}]} /></Field>
-              <InlineNum label="Atténuation saisie" name="Atténuation de la levure, en pourcent" unit="%" min={0} max={100} value={yeast.attenuationPct} emptyValue={undefined}
-                onValue={attenuationPct => setYeast({ ...yeast, attenuationPct })} missing={yeast.attenuationPct == null} />
-              <InlineNum label="Repère mini" name="Température minimale de la fiche saisie" unit="°C" value={yeast.fermTempMinC} emptyValue={undefined}
-                onValue={fermTempMinC => setYeast({ ...yeast, fermTempMinC })} missing={yeast.fermTempMinC == null} />
-              <InlineNum label="Repère maxi" name="Température maximale de la fiche saisie" unit="°C" value={yeast.fermTempMaxC} emptyValue={undefined}
-                onValue={fermTempMaxC => setYeast({ ...yeast, fermTempMaxC })} missing={yeast.fermTempMaxC == null} />
-              <InlineNum label="Durée indicative" name="Durée indicative de la fiche, en jours" unit="j" min={0} value={yeast.fermentDays} emptyValue={undefined}
-                onValue={fermentDays => setYeast({ ...yeast, fermentDays })} missing={yeast.fermentDays == null} />
-            </FormNav>
-
-          </details>
+                }} /></Suspense>}
+              factsEditor={<>
+                <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure"
+                  onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                  hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} /></Suspense>
+                <YeastRecipeDossier yeast={yeast} onChange={setYeast} />
+              </>}
+              programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyFermentationRecipe(next, 'levure')} /></Suspense>}
+            />
+          </Suspense>
         </Section>
       )}
 
@@ -2255,7 +2232,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
               {attenuation != null && yeast.attenuationPct != null && (
                 <p className="text-sm text-cave-400 leading-relaxed">
-                  À {mashTemp} °C, atténuation attendue :{' '}
+                  Atténuation retenue pour ce moût :{' '}
                   <span className="reading text-ebc-straw">{attenuation} %</span>
                   {fgPredicted ? ` · FG estimée ${fgPredicted.toFixed(3).replace('.', ',')}.` : '.'}
                 </p>
@@ -2466,7 +2443,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         </>}
         <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la fiche de brassage…</p>}><BrewSheet
           onLearnIngredient={onLearnIngredient}
-          yeastSummary={!details.nolo?.enabled ? <Suspense fallback={<span>Souche à préciser</span>}><YeastRecipeHeading recipe={build()} /></Suspense> : undefined}
+          yeastSummary={!details.nolo?.enabled ? <Suspense fallback={<span>{yeast.name || 'Souche à préciser'}</span>}><YeastRecipeHeading recipe={build()} /></Suspense> : undefined}
           reviewData={{
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
@@ -2496,7 +2473,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           hops={hops}
           onHops={setHops}
           hopIbu={(h) =>
-            hotBitterness([h], volumeL, og || null, boilMin).additions[0].ibu
+            hotBitterness([h], volumeL, boilOg, boilMin).additions[0].ibu
           }
           yeast={yeast}
           onYeast={setYeast}
@@ -2536,9 +2513,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               og: ogPredicted,
               fg: fgPredicted,
               abv:
-                ogPredicted && fgPredicted
-                  ? BrewingMath.calculateABV(ogPredicted, fgPredicted)
-                  : null,
+                abvPredicted,
               ibu,
               ebc: color?.ebc ?? null,
               efficiencyPct: efficiency,
@@ -2549,7 +2524,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               fermentables,
               totalGristKg: totalGrist,
               hops,
-              hopIbu: (h) => hotBitterness([h], volumeL, og || null, boilMin).additions[0].ibu,
+              hopIbu: (h) => hotBitterness([h], volumeL, boilOg, boilMin).additions[0].ibu,
               yeast,
               mashSteps,
               fermentation: ferment,

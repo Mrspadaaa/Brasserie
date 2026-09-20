@@ -65,6 +65,8 @@ export function normalizeRecipeImport(
     hopIndexId: 'Référence de levure', form: 'Forme de levure', qty: 'Quantité de levure',
     unit: 'Unité de levure', lab: 'Laboratoire', strain: 'Souche',
     fermentationFacts: 'Données fermentaires sourcées',
+    technicalFacts: 'Faits de levure sourcés', technicalSource: 'Source de la fiche',
+    attenuationBasis: 'Base de l’atténuation', flocculation: 'Floculation', alcoholTolerancePct: 'Tolérance alcoolique',
     pitchTempC: 'Température d’ensemencement', fermTempMinC: 'Température minimale de fermentation',
     fermTempMaxC: 'Température maximale de fermentation', attenuationPct: 'Atténuation', fermentDays: 'Durée de fermentation'
   })) {

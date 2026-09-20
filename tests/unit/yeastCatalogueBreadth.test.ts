@@ -16,6 +16,7 @@ const dieter = 'yeast-imperial-947efa83-687a-4ee2-96ec-b66ffbd54339';
 const hydra = 'yeast-escarpment-6608204923046';
 const recipe = () => ({ ...structuredClone(fullRecipe), style: 'Kölsch', styleRef: undefined, yeastDesign: undefined, nolo: undefined,
   volumeL: 20, ogTarget: 1.05, yeast: { name: 'SafAle US-05', hopIndexId: 'fermentis-us05', form: 'sèche' as const, qty: 12, unit: 'g' },
+  fermentables: [{ name: 'Pils', kind: 'grain' as const, use: 'empatage' as const, weightKg: 5, potentialPpg: 37 }], hops: [],
   fermentation: [{ name: 'Primaire', kind: 'primaire' as const, tempC: 18, days: 10 }],
 });
 
@@ -52,14 +53,17 @@ describe('Catalogue entier, sélection sourcée et outils partagés', () => {
   it('lets a brewer confirm an undocumented package form without manufacturing a dose or inheriting the previous form', () => {
     const r = recipe(), d = createYeastRecipeDraft(r, refs, 'kolsch-alt', dieter);
     expect(d.form).toBeUndefined(); expect(d.quantityG).toBeUndefined();
-    expect(evaluateYeastRecipeDesign(r, d, refs).errors).toContain('Confirme la forme du produit avant de l’appliquer.');
+    expect(evaluateYeastRecipeDesign(r, d, refs).errors).toEqual([]);
+    const unknownForm = applyYeastRecipeDesign(r, d, refs, 'strain');
+    expect(unknownForm.yeast.form).toBeUndefined(); expect(unknownForm.yeast.qty).toBeUndefined(); expect(unknownForm.yeast.unit).toBeUndefined();
     d.form = 'liquide';
     const result = evaluateYeastRecipeDesign(r, d, refs);
     expect(result.errors).toEqual([]); expect(result.doseG).toBeUndefined();
     expect(result.candidate?.descriptor).toContain('Bright, Crisp, Kölsch');
     expect(result.fg.range?.min).toBeCloseTo(1.0115); expect(result.fg.range?.max).toBeCloseTo(1.0135);
     const applied = applyYeastRecipeDesign(r, d, refs);
-    expect(applied.yeast).toMatchObject({ hopIndexId: dieter, form: 'liquide', qty: 0, unit: 'mL' });
+    expect(applied.yeast).toMatchObject({ hopIndexId: dieter, form: 'liquide' });
+    expect(applied.yeast.qty).toBeUndefined(); expect(applied.yeast.unit).toBeUndefined();
     expect(applied.yeast.stockItemRef).toBeUndefined(); expect(refs.find(r => r.id === dieter)?.form).toBeUndefined();
     // A programmatic ID change must not carry the last product's form.
     const switched = evaluateYeastRecipeDesign(r, { ...d, yeastId: 'fermentis-us05' }, refs);
@@ -80,12 +84,16 @@ describe('Catalogue entier, sélection sourcée et outils partagés', () => {
     expect(day.strainInformation?.yeastId).toBe(dieter);
     expect(day.strainInformation?.documentary.some(f => f.key === 'styles' && f.reported.includes('Kölsch'))).toBe(true);
   });
-  it('does not interpret a sour culture as a calibrated alcohol fermentation', () => {
+  it('keeps a sour process unknown while projecting the documented attenuation of an ordinary yeast', () => {
     const r = { ...recipe(), style: 'Gose' }, d = { ...createYeastRecipeDraft(r, refs, 'sour', dieter), form: 'liquide' as const };
     const result = evaluateYeastRecipeDesign(r, d, refs);
     expect(result.candidate?.temperature).toBeDefined();
-    expect(result.fg.range).toBeNull(); expect(result.abv.range).toBeNull();
-    expect(result.fg.reasons[0]).toMatch(/projection/);
+    expect(result.fg.range?.min).toBeCloseTo(1.0115); expect(result.fg.range?.max).toBeCloseTo(1.0135);
+    expect(result.abv.range).toBeNull(); expect(result.abv.reasons[0]).toContain('Procédé acidulé non précisé');
+    expect(evaluateYeastRecipeDesign(r, { ...d, process: 'preacidified' }, refs).abv.range).not.toBeNull();
+    const incomplete = { ...r, fermentables: [...r.fermentables, { name: 'Lactose sans potentiel', kind: 'lactose' as const, use: 'ebullition' as const, weightKg: .2 }] };
+    const blocked = evaluateYeastRecipeDesign(incomplete, d, refs);
+    expect(blocked.fg.range).toBeNull(); expect(blocked.fg.reasons[0]).toContain('Potentiel');
   });
   it('makes a catalogue-only product available to AI lookup even without a loaded hop index', () => {
     const c = { recipe: recipe(), now: 1789214400000, phase: 'Planification', provenance: [], inventory: [], material: [], waterSources: [], editableTargets: ['recipe'] } as BrewerContext;

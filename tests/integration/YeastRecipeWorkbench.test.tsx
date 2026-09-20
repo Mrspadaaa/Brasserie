@@ -22,9 +22,10 @@ const wheat = (): Recipe => ({ ...structuredClone(fullRecipe), style: 'Hefeweize
   hops: [{ name: 'Hallertau', weightG: 20, alpha: 4, stage: 'boil', timeMin: 60 }],
 });
 const change = (label: string, value: string) => {
-  const field = screen.getByLabelText(label); fireEvent.change(field, { target: { value } }); fireEvent.blur(field);
+  const field = screen.getByLabelText(label); expect(field).toBeVisible(); fireEvent.change(field, { target: { value } }); fireEvent.blur(field);
 };
-const open = (text: RegExp) => { const summary = screen.getByText(text); fireEvent.click(summary); summary.closest('details')!.open = true; };
+const open = (text: RegExp) => { const summary = screen.getByText(text); expect(summary).toBeVisible();
+  const details = summary.closest('details')!; if (!details.open) fireEvent.click(summary); expect(details).toHaveAttribute('open'); };
 function Host({ initial, changed }: { initial: Recipe; changed: (r: Recipe) => void }) {
   const [recipe, setRecipe] = useState(initial);
   return <YeastRecipeWorkbench recipe={recipe} onChange={next => { changed(next as Recipe); setRecipe(next as Recipe); }} />;
@@ -40,12 +41,14 @@ describe('Levure : style, comparaison et application', () => {
       onClose={vi.fn()} onSave={onSave} onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
     allerEtape(/^Levure/);
     fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'US-05' } });
-    fireEvent.click(screen.getByRole('radio', { name: /Comparer .*US-05/ }));
-    open(/Ensemencement et durée à préparer/);
+    fireEvent.click(screen.getByRole('button', { name: 'Choisir SafAle US-05 dans la recette' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    open(/Hypothèses et réglages complémentaires/);
+    open(/Ensemencement, durée et pression/);
     change('Température d’ensemencement du scénario', '19');
     change('Masse de levure du scénario en grammes', '20');
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer le scénario' }));
-    expect(screen.getByText(/Scénario repris dans la recette/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
+    expect(screen.getByText(/Conduite appliquée au brouillon/)).toBeInTheDocument();
     expect(screen.queryByText(/La recette a changé pendant la comparaison/)).not.toBeInTheDocument();
     allerEtape(/^Paliers/);
     expect(screen.queryByText(/Des réglages ont changé/)).not.toBeInTheDocument();
@@ -54,10 +57,10 @@ describe('Levure : style, comparaison et application', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved = onSave.mock.calls[0][0] as Recipe;
     expect({ yeast: saved.yeast, volumeL: saved.volumeL, fermentation: saved.fermentation, mashSteps: saved.mash.steps,
-      style: saved.style, ...(saved.styleRef ? { styleRef: saved.styleRef } : {}) }).toEqual(saved.yeastDesign?.applied);
+      hops: saved.hops, style: saved.style, ...(saved.styleRef ? { styleRef: saved.styleRef } : {}) }).toEqual(saved.yeastDesign?.applied);
     expect(yeastRecipeDesignChanged(saved, readYeastRecipeDesign(saved)!)).toBe(false);
     allerEtape(/^Levure/);
-    open(/Saisie libre et stock/);
+    fireEvent.click(screen.getByText('Ensemencement', { exact: false, selector: '.yc-pitch summary > span' }).closest('summary')!);
     change('Quantité de levure, en g', '25');
     allerEtape(/^Paliers/);
     expect(screen.getByText(/Des réglages ont changé/)).toBeInTheDocument();
@@ -119,6 +122,7 @@ describe('Levure : style, comparaison et application', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Préparer un essai girofle' }));
     expect(screen.getByLabelText('Température principale du scénario')).toHaveValue('18');
     expect(changed).not.toHaveBeenCalled();
+    open(/Pression précoce/);
     change('Contre-pression du scénario en bar', '0');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer le scénario' }));
     const next = changed.mock.calls[0][0] as Recipe;
@@ -193,12 +197,14 @@ describe('Levure : style, comparaison et application', () => {
     const view = render(<Host initial={original} changed={changed} />);
     fireEvent.change(screen.getByLabelText('Filtrer les levures par style'), { target: { value: 'weissbier' } });
     fireEvent.click(screen.getByRole('radio', { name: 'Banane' }));
+    open(/Pression précoce/);
     change('Contre-pression du scénario en bar', '0');
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer le scénario' }));
     const saved = changed.mock.calls[0][0]; view.unmount();
     render(<YeastRecipeWorkbench recipe={JSON.parse(JSON.stringify(saved))} onChange={vi.fn()} />);
     expect(screen.getByLabelText('Filtrer les levures par style')).toHaveValue('weissbier');
     expect(screen.getByRole('radio', { name: 'Banane' })).toBeChecked();
+    open(/Pression précoce/);
     expect(screen.getByLabelText('Contre-pression du scénario en bar')).toHaveValue('0');
     expect(saved.style).toBe('Projet personnel');
   });

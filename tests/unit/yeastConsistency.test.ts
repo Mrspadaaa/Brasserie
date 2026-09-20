@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { HopKnowledge, HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { HopVariety } from '../../functions/src/hopIndexSchema';
 import type { BrewerContext } from '../../functions/src/companionTypes';
-import { predictHopRecipe } from '../../functions/src/hopRecipePrediction';
+import { predictHopRecipe, assertHopRecipeInput } from '../../functions/src/hopRecipePrediction';
 import { guideFermentations, guidePredictionKnowledge, guideSolverPolicy, guideYeasts } from '../../src/ui/hopIndex/guideData';
 import { evaluateFermentationScenario } from '../../src/domain/fermentationScenario';
 import { prepareHopRecipeInput } from '../../src/domain/hopIndex/recipePrediction';
@@ -24,8 +24,10 @@ function compare(r: typeof fullRecipe, saved: HopKnowledge[]) {
   const checks = checkHopFermentation(r, scenario.yeast?.id, guideSolverPolicy(saved)!);
   const c: BrewerContext = { recipe: r, now: 1788955200000, phase: 'Planification', provenance: [], inventory: [], material: [], waterSources: [], editableTargets: ['recipe'], hopIndex: { varieties: [], lots: [], knowledge, predictions: [], tastings: [], truncated: [] } };
   const companion = runBrewerTool('fermentation_advice', { goal: 'clean' }, c).data as { programWarnings: string[] };
-  expect(aggregate.warnings).toEqual(scenario.warnings);
-  expect(checks.map(c => c.message)).toEqual(scenario.warnings);
+  // Hop tools only receive the process: grist/OG-dependent warnings belong to
+  // the recipe projection and companion, not to the aroma transport.
+  expect(aggregate.warnings).toEqual(scenario.issues.map(i => i.message));
+  expect(checks.map(c => c.message)).toEqual(scenario.issues.map(i => i.message));
   expect(companion.programWarnings).toEqual(scenario.warnings);
   return scenario;
 }
@@ -76,6 +78,42 @@ describe('Même contexte de levure dans les quatre parcours', () => {
   it('une source contradictoire ne déclenche ni moyenne ni retour à un ancien défaut', () => {
     const y = diamond(); y.catalogue!.facts.push({ ...y.catalogue!.facts.find(f => f.key === 'temperature')!, range: { min: 18, max: 22 } });
     expect(compare(recipe(), [y]).temperature).toBeUndefined();
+  });
+  it('transporte la plage personnelle sans la remplacer par le guide ou le catalogue', () => {
+    const r = recipe();
+    r.yeast = { ...r.yeast, technicalFacts: [{ key: 'temperature', reported: '18–30 °C', range: { min: 18, max: 30 }, unit: '°C', qualifier: 'range', origin: 'personal', source: 'Carnet du lot 42', context: 'Bière' }] } as typeof r.yeast;
+    r.fermentation[0].tempC = 28;
+    const before = structuredClone(r), p = compare(r, [diamond()]);
+    expect(p.temperature?.range).toEqual({ min: 18, max: 30 }); expect(p.issues).toEqual([]);
+    const input = prepareHopRecipeInput(r, [], guideYeasts([diamond()])).input;
+    expect(input.yeastTemperature?.source?.reference).toBe('Carnet du lot 42');
+    expect(() => assertHopRecipeInput(JSON.parse(JSON.stringify(input)))).not.toThrow();
+    r.fermentation[0].tempC = 31;
+    expect(compare(r, [diamond()]).issues.map(i => i.code)).toEqual(['outside']);
+    expect(compare(r, [diamond()]).warnings.join(' ')).toContain('plage de conduite retenue (18–30 °C)');
+    r.fermentation[0].tempC = 28; expect(r).toEqual(before);
+    expect(checkHopFermentation(r, 'wyeast-3068', guideSolverPolicy([diamond()])!).some(c => c.message.includes('18–30'))).toBe(false);
+  });
+  it('un conflit personnel reste inconnu dans les quatre parcours, sans retour au catalogue', () => {
+    const r = recipe(), fact = { key: 'temperature' as const, reported: '18–30 °C', range: { min: 18, max: 30 }, unit: '°C', qualifier: 'range' as const, origin: 'personal' as const };
+    r.yeast = { ...r.yeast, technicalFacts: [fact, { ...fact, reported: '19–22 °C', range: { min: 19, max: 22 } }] } as typeof r.yeast;
+    const p = compare(r, [diamond()]);
+    expect(p.temperature).toBeUndefined(); expect(p.issues.map(i => i.code)).toEqual(['window']);
+    const input = prepareHopRecipeInput(r, [], guideYeasts([diamond()])).input;
+    expect(input.yeastTemperature).toBeNull();
+    expect(() => assertHopRecipeInput({ ...input, yeastTemperature: { range: { min: 30, max: 18 } } })).toThrow('plage de conduite');
+    expect(() => assertHopRecipeInput({ ...input, yeastTemperature: { range: { min: 18, max: 30 }, source: { title: 'Sans référence' } } })).toThrow('source de conduite');
+  });
+  it('une entrée figée sans dossier garde ses diagnostics et nombres d’origine', () => {
+    const r = recipe(), knowledge = guidePredictionKnowledge([diamond()]), input = prepareHopRecipeInput(r, [], guideYeasts([diamond()])).input;
+    expect(input).not.toHaveProperty('yeastTemperature');
+    const frozen = JSON.parse(JSON.stringify(input)), data = { varieties: [], lots: [], knowledge };
+    const old = predictHopRecipe(frozen, {}, data, 'hop-recipe-experimental-v3');
+    expect(old.warnings).toEqual(['Primaire : 19 °C, hors de la fenêtre fabricant (10–15 °C).']);
+    const modern = predictHopRecipe({ ...input, yeastTemperature: { range: { min: 18, max: 30 } } }, {}, data);
+    expect(modern.warnings).toEqual([]); expect(modern.overall).toEqual(old.overall); expect(modern.chemistry).toEqual(old.chemistry);
+    expect(predictHopRecipe(frozen, {}, data, 'hop-recipe-experimental-v3')).toEqual(old);
+    expect(frozen).toEqual(input);
   });
   it('distingue fruits/sucre et houblon annoncé dans une note, et ne compte pas une ligne à zéro', () => {
     const r = { ...recipe(), fermentation: [...recipe().fermentation, { kind: 'ajout' as const, name: 'Fruits et sucre', note: '', tempC: 19, days: 0 }] };

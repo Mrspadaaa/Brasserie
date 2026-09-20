@@ -1,6 +1,7 @@
 import { Fermentable, HopIngredient, StockItem, YeastSpec } from '../types';
 
 import { readIngredientFermentationFacts, type IngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
+import { readYeastTechnicalFacts, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 
 export type IngredientKind = 'levure' | 'malt' | 'houblon';
 
@@ -8,6 +9,10 @@ export interface IngredientFacts {
   found: boolean;
   hopIndexId?: string;
   fermentation?: IngredientFermentationFacts;
+  technicalFacts?: YeastTechnicalFact[];
+  sourceUrl?: string;
+  retrievedAt?: string;
+  origin?: YeastTechnicalFact['origin'];
   name: string;
   source: string;
   note?: string;
@@ -42,6 +47,8 @@ export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
   const out = { ...facts };
   const fermentation = readIngredientFermentationFacts(facts.fermentation);
   if (fermentation) out.fermentation = fermentation; else delete out.fermentation;
+  const technical = readYeastTechnicalFacts(facts.technicalFacts);
+  if (technical) out.technicalFacts = technical; else delete out.technicalFacts;
   const limits: Partial<Record<keyof IngredientFacts, [number, number]>> = {
     colorEbc: [0, 5000],
     potentialPpg: [1, 50],
@@ -61,12 +68,68 @@ export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
     delete out.tempMinC;
     delete out.tempMaxC;
   }
-  for (const key of ['lab', 'strain', 'source', 'note', 'name'] as const) {
+  for (const key of ['lab', 'strain', 'source', 'sourceUrl', 'retrievedAt', 'note', 'name', 'flocculation'] as const) {
     if (typeof out[key] !== 'string') delete out[key];
     else out[key] = out[key].trim();
   }
   if (!['sèche', 'liquide', 'levain'].includes(out.form)) delete out.form;
+  if (!['manufacturer', 'personal', 'ai'].includes(out.origin)) delete out.origin;
+  if (out.sourceUrl) {
+    try { if (!['http:', 'https:'].includes(new URL(out.sourceUrl).protocol)) delete out.sourceUrl; }
+    catch { delete out.sourceUrl; }
+  }
+  if (out.retrievedAt && !Number.isFinite(Date.parse(out.retrievedAt))) delete out.retrievedAt;
+  // A model sometimes duplicates a published range as its midpoint. The range
+  // is the evidence; never retain that unsupported pseudo-exact scalar.
+  for (const [field, key] of [['attenuationPct', 'attenuation'], ['alcoholTolerancePct', 'alcoholTolerance']] as const) {
+    const documented = out.technicalFacts?.filter(f => f.key === key && f.range && f.unit === '%') ?? [];
+    if (documented.length && !documented.every(f => f.qualifier === 'reportedPoint' && f.range!.min === out[field])) delete out[field];
+  }
   return out;
+}
+
+/** Keep independent observations and disagreements, removing only exact repeats. */
+export function mergeYeastTechnicalFacts(...groups: (YeastTechnicalFact[] | undefined)[]): YeastTechnicalFact[] | undefined {
+  const facts = groups.flatMap(group => readYeastTechnicalFacts(group) ?? []);
+  const unique = [...new Map(facts.map(fact => [JSON.stringify(fact), fact])).values()];
+  return unique.length ? unique : undefined;
+}
+
+/** Older scalar responses remain usable without pretending they were ranges. */
+export function yeastTechnicalFactsFromIngredient(facts: IngredientFacts): YeastTechnicalFact[] | undefined {
+  const v = sanitizeFacts(facts), items = [...(v.technicalFacts ?? [])];
+  const provenance = { origin: v.origin ?? 'ai' as const,
+    ...(v.source ? { source: v.source } : {}), ...(v.sourceUrl ? { sourceUrl: v.sourceUrl } : {}),
+    ...(v.retrievedAt ? { retrievedAt: v.retrievedAt } : {}) };
+  const numeric = (key: YeastTechnicalFact['key'], min: number | undefined, max: number | undefined, unit: string) => {
+    if (min == null || max == null || items.some(f => f.key === key)) return;
+    items.push({ key, reported: `${min}${min === max ? '' : `–${max}`} ${unit}`, range: { min, max }, unit,
+      qualifier: min === max ? 'reportedPoint' : 'range', ...provenance });
+  };
+  numeric('attenuation', v.attenuationPct, v.attenuationPct, '%');
+  numeric('temperature', v.tempMinC, v.tempMaxC, '°C');
+  numeric('alcoholTolerance', v.alcoholTolerancePct, v.alcoholTolerancePct, '%');
+  for (const [key, reported] of [['flocculation', v.flocculation], ['form', v.form]] as const)
+    if (reported && !items.some(f => f.key === key)) items.push({ key, reported, ...provenance });
+  return mergeYeastTechnicalFacts(items);
+}
+
+export type YeastFactField = 'lab' | 'strain' | 'form' | 'attenuationPct' | 'fermTempMinC' | 'fermTempMaxC' | 'flocculation' | 'alcoholTolerancePct' | 'notes' | 'fermentationFacts';
+export interface YeastFactChange { field: YeastFactField; label: string; current: unknown; proposed: unknown; conflict: boolean }
+const yeastFactFields: [YeastFactField, keyof IngredientFacts, string][] = [
+  ['lab', 'lab', 'Laboratoire'], ['strain', 'strain', 'Code de souche'], ['form', 'form', 'Forme'],
+  ['attenuationPct', 'attenuationPct', 'Atténuation (%)'], ['fermTempMinC', 'tempMinC', 'Température minimale (°C)'],
+  ['fermTempMaxC', 'tempMaxC', 'Température maximale (°C)'], ['flocculation', 'flocculation', 'Floculation'],
+  ['alcoholTolerancePct', 'alcoholTolerancePct', 'Tolérance alcoolique (%)'], ['notes', 'note', 'Notes documentaires'],
+  ['fermentationFacts', 'fermentation', 'Assimilation et domaine publié']
+];
+export function yeastFactChanges(yeast: YeastSpec, facts: IngredientFacts): YeastFactChange[] {
+  const clean = sanitizeFacts(facts);
+  return yeastFactFields.flatMap(([field, sourceField, label]) => {
+    const proposed = clean[sourceField], current = yeast[field];
+    if (proposed == null || proposed === '' || JSON.stringify(current) === JSON.stringify(proposed)) return [];
+    return [{ field, label, current, proposed, conflict: current != null && current !== '' }];
+  });
 }
 
 export function applyMaltFacts(f: Fermentable, facts: IngredientFacts): Fermentable {
@@ -80,19 +143,20 @@ export function applyMaltFacts(f: Fermentable, facts: IngredientFacts): Fermenta
 export function applyHopFacts(h: HopIngredient, facts: IngredientFacts): HopIngredient {
   return { ...h, alpha: h.alpha || sanitizeFacts(facts).alphaPct };
 }
-export function applyYeastFacts(y: YeastSpec, facts: IngredientFacts): YeastSpec {
+export function applyYeastFacts(y: YeastSpec, facts: IngredientFacts, replaceFields: readonly YeastFactField[] = []): YeastSpec {
   const v = sanitizeFacts(facts);
-  return {
+  const next: YeastSpec = {
     ...y,
     hopIndexId: y.hopIndexId || v.hopIndexId,
-    fermentationFacts: y.fermentationFacts ?? v.fermentation,
-    lab: y.lab || v.lab,
-    strain: y.strain || v.strain,
-    form: y.form || v.form,
-    attenuationPct: y.attenuationPct ?? v.attenuationPct,
-    fermTempMinC: y.fermTempMinC ?? v.tempMinC,
-    fermTempMaxC: y.fermTempMaxC ?? v.tempMaxC
+    technicalFacts: mergeYeastTechnicalFacts(y.technicalFacts, yeastTechnicalFactsFromIngredient(v)),
+    technicalSource: y.technicalSource || v.source
   };
+  for (const change of yeastFactChanges(y, v)) {
+    if (change.conflict && !replaceFields.includes(change.field)) continue;
+    (next as unknown as Record<string, unknown>)[change.field] = change.proposed;
+    if (change.field === 'attenuationPct') next.attenuationBasis = 'declared';
+  }
+  return next;
 }
 
 export function factsForStock(kind: IngredientKind, facts: IngredientFacts): Partial<StockItem> {
@@ -104,6 +168,10 @@ export function factsForStock(kind: IngredientKind, facts: IngredientFacts): Par
         ? { alphaPct: v.alphaPct }
         : {
             yeastFermentationFacts: v.fermentation,
+            yeastTechnicalFacts: yeastTechnicalFactsFromIngredient(v),
+            yeastFlocculation: v.flocculation,
+            yeastAlcoholTolerancePct: v.alcoholTolerancePct,
+            yeastNotes: v.note,
             yeastLab: v.lab,
             yeastStrain: v.strain,
             yeastForm: v.form,
@@ -123,6 +191,11 @@ export function factsFromStock(item: StockItem): IngredientFacts {
     found: true,
     name: item.name,
     fermentation: item.yeastFermentationFacts,
+    technicalFacts: item.yeastTechnicalFacts,
+    origin: 'personal',
+    flocculation: item.yeastFlocculation,
+    alcoholTolerancePct: item.yeastAlcoholTolerancePct,
+    note: item.yeastNotes,
     source: item.technicalSource || 'Catalogue ingrédients',
     colorEbc: item.colorEbc,
     potentialPpg: item.potentialPpg,
@@ -148,6 +221,10 @@ export function ingredientGaps(
   yeast: YeastSpec,
   nolo = false
 ): IngredientGap[] {
+  const technical = readYeastTechnicalFacts(yeast.technicalFacts) ?? [];
+  const documentedAttenuation = technical.some(f => f.key === 'attenuation' && f.unit === '%' && f.range && ['range', 'reportedPoint'].includes(f.qualifier));
+  const documentedMin = technical.some(f => f.key === 'temperature' && f.unit === '°C' && f.range && f.qualifier !== 'upTo');
+  const documentedMax = technical.some(f => f.key === 'temperature' && f.unit === '°C' && f.range && f.qualifier !== 'atLeast');
   const gaps = new Map<string, IngredientGap>();
   const add = (kind: IngredientKind, name: string, missing: string[]) => {
     if (!name?.trim() || !missing.length) return;
@@ -178,10 +255,10 @@ export function ingredientGaps(
     'levure',
     yeast.name,
     [
-      yeast.attenuationPct == null && 'atténuation',
+      yeast.attenuationPct == null && !documentedAttenuation && 'atténuation',
       nolo && !yeast.fermentationFacts && 'assimilation NOLO et ensemencement',
-      yeast.fermTempMinC == null && 'température minimale',
-      yeast.fermTempMaxC == null && 'température maximale',
+      yeast.fermTempMinC == null && !documentedMin && 'température minimale',
+      yeast.fermTempMaxC == null && !documentedMax && 'température maximale',
       !yeast.lab?.trim() && 'laboratoire'
     ].filter(Boolean) as string[]
   );
@@ -201,5 +278,8 @@ export function fillsGap(gap: IngredientGap, facts: IngredientFacts): boolean {
     'température maximale': ['tempMaxC'],
     laboratoire: ['lab']
   };
-  return gap.missing.some((label) => keys[label]?.some((key) => v[key] != null && v[key] !== ''));
+  return gap.missing.some((label) => keys[label]?.some((key) => v[key] != null && v[key] !== '') ||
+    (label === 'atténuation' && v.technicalFacts?.some(f => f.key === 'attenuation' && f.unit === '%' && f.range && ['range', 'reportedPoint'].includes(f.qualifier))) ||
+    (label.startsWith('température') && v.technicalFacts?.some(f => f.key === 'temperature' && f.unit === '°C' && f.range &&
+      (label === 'température minimale' ? f.qualifier !== 'upTo' : f.qualifier !== 'atLeast'))));
 }

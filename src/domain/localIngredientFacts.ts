@@ -6,6 +6,7 @@ import { yeastReferences } from './yeastReferences';
 import { resolveFermentationYeast } from './fermentationScenario';
 import type { TrialRecipe } from './hopIndex/trials';
 import { noloScience } from './nolo';
+import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 
 export function localYeastFacts(yeast: YeastSpec, knowledge: HopKnowledge[]): IngredientFacts | undefined {
   const ref = resolveFermentationYeast({yeast} as TrialRecipe, yeastReferences(knowledge));
@@ -17,7 +18,14 @@ export function localYeastFacts(yeast: YeastSpec, knowledge: HopKnowledge[]): In
   const pof = pofs.length && pofs.every(p=>/^(negative|no|pof\s*−|pof\s*-|non[ -]?phenolic)$/.test(p)) ? 'negative' as const
     : pofs.length && pofs.every(p=>/^(positive|yes|pof\s*\+|phenolic)$/.test(p)) ? 'positive' as const : 'unknown' as const;
   const strain = noloScience(knowledge)?.strains.find(s => s.yeastId === ref.id);
-  return { found:true, name:ref.name, source:ref.source.reference, lab:ref.catalogue?.manufacturer, form:ref.form,
+  const technicalFacts: YeastTechnicalFact[] | undefined = ref.catalogue?.facts.map(f => {
+    const retrieval = ref.catalogue!.retrievals.find(r => r.url === f.source.reference);
+    return { key:f.key, reported:f.reported, origin:'manufacturer', source:`${f.source.title} · ${f.source.reference}`,
+      ...(/^https?:\/\//i.test(f.source.reference) ? { sourceUrl:f.source.reference } : {}), ...(retrieval ? {retrievedAt:retrieval.retrievedAt} : {}),
+      ...(f.range ? {range:{...f.range},unit:f.unit,qualifier:f.qualifier} : {}),
+      ...(f.context ? {context:f.context} : {}) };
+  });
+  return { found:true, name:ref.name, source:ref.source.reference, origin:'manufacturer', technicalFacts, lab:ref.catalogue?.manufacturer, form:ref.form,
     hopIndexId:ref.id, tempMinC:temp?.range.min ?? strain?.temperatureC?.min, tempMaxC:temp?.range.max ?? strain?.temperatureC?.max,
     // A range is not collapsed into a pseudo-exact attenuation.
     ...(attenuation?.range.min === attenuation?.range.max ? {attenuationPct:attenuation?.range.min} : {}),
