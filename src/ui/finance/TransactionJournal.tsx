@@ -6,6 +6,9 @@ import type { FinancialArchive, FinancialPayment } from '../../domain/finance/ty
 import { archiveIndex, isTransactionArchived } from '../../domain/finance/archive';
 import { isoDate, isActiveTransaction, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
 import { CATEGORY_LABELS, Field } from './FinanceForms';
+import { FinancePeriodBar, MonthStepper } from './FinancePeriod';
+import { shortDate, signedCHF } from './financeFormat';
+import { compte } from '../../services/plural';
 import './journal.css';
 
 export type JournalScope = 'current' | 'archives' | 'all';
@@ -124,6 +127,25 @@ export function TransactionJournal({ transactions, payments, archives, request, 
       : new Date(`${month}-01T12:00:00`).toLocaleDateString('fr-CH', { month: 'long', year: 'numeric' });
   const hasFilters = !!query || category !== 'all' || filter !== 'all';
   const specialFilter = ['due', 'unknown', 'void'].includes(filter);
+  /**
+   * Solde net des écritures affichées : les entrées comptent en plus, les
+   * sorties en moins. Les écritures annulées restent hors du total — les
+   * afficher dans une liste est un contrôle, les additionner serait faux.
+   */
+  const netCents = (rows: typeof filtered) => rows.reduce((total, entry) =>
+    isActiveTransaction(entry.transaction)
+      ? total + (entry.direction === 'in' ? 1 : -1) * transactionAmount(entry.transaction)
+      : total, 0);
+  /** Une écriture porte sa date une seule fois, en tête de son jour. */
+  const days = useMemo(() => {
+    const groups: Array<{ key: string; date: string | null; rows: typeof filtered }> = [];
+    for (const entry of filtered.slice(offset, offset + PAGE_SIZE)) {
+      const last = groups[groups.length - 1];
+      if (last && last.date === entry.date) last.rows.push(entry);
+      else groups.push({ key: entry.date ?? 'sans-date', date: entry.date, rows: [entry] });
+    }
+    return groups;
+  }, [filtered, offset]);
   const clearFilters = () => { change({ query: '', category: 'all', filter: 'all' }); searchRef.current?.focus(); };
   const showEverything = () => {
     replaceState(createJournalState({ scope: 'all', allDates: true, requestKey: journal.requestKey }));
@@ -132,49 +154,60 @@ export function TransactionJournal({ transactions, payments, archives, request, 
 
   return <div className="finance-journal">
     <div className="journal-toolbar" aria-label="Filtres du journal">
-      <div className="journal-scopes" role="group" aria-label="Périmètre du journal">
-        {([['current', 'Courantes'], ['archives', 'Archives'], ['all', 'Tout']] as const).map(([value, label]) =>
-          <button type="button" key={value} aria-pressed={scope === value} onClick={() => changeScope(value)}>{label}</button>)}
-      </div>
-      <div className="journal-period">
+      <FinancePeriodBar
+        count={`${compte(filtered.length, 'opération')}${filtered.length > PAGE_SIZE ? ` · ${offset + 1}–${Math.min(offset + PAGE_SIZE, filtered.length)} affichées` : ''}`}
+        context={followingUp ? 'Suivi sur tous les exercices, archives comprises.' : scope === 'current' ? 'Factures ouvertes incluses' : scope === 'all' ? 'Archives comprises' : `${archivedCount} pièce(s) conservée(s) · ${periodLabel}`}
+        total={filtered.length ? signedCHF(netCents(filtered)) : undefined} totalLabel="Solde net des opérations affichées">
         {scope === 'archives' ? <Field label="Année archivée"><select aria-label="Année archivée" value={selectedYear} onChange={e => change({ archiveYear: e.target.value })}>
           {!years.length && <option value="">Aucune année archivée</option>}
           {years.map(value => <option key={value} value={value}>{value}</option>)}
           {years.length > 1 && <option value="all">Toutes les années archivées</option>}
         </select></Field> : followingUp ? <div className="journal-period-reading"><span>Période du suivi</span><strong>{periodLabel}</strong></div>
           : year ? <div className="journal-period-reading"><span>Période du journal</span><strong>{periodLabel}</strong></div>
-            : <Field label="Période du journal"><input type="month" aria-label="Période du journal" value={month} disabled={allDates}
-              onChange={e => { if (e.target.value) change({ month: e.target.value, allDates: false }); }}/></Field>}
+            : <MonthStepper label="Période du journal" month={month} disabled={allDates}
+              onMonth={value => change({ month: value, allDates: false })}/>}
         {scope !== 'archives' && !followingUp && <button type="button" className="journal-chip journal-date-toggle" aria-pressed={allDates && !year}
           onClick={() => change({ year: '', allDates: year ? true : !allDates })}>Toutes les dates</button>}
-      </div>
+      </FinancePeriodBar>
       <div className="journal-search-category">
-        <div className="finance-field journal-search"><label htmlFor={searchId}>Rechercher une opération</label><span className="journal-search-control"><Search size={15} aria-hidden="true"/>
+        <div className="finance-field journal-search"><label className="sr-only" htmlFor={searchId}>Rechercher une opération</label><span className="journal-search-control"><Search size={15} aria-hidden="true"/>
           <Input id={searchId} ref={searchRef} aria-label="Rechercher une opération" placeholder="Libellé, tiers, montant…" value={query} onChange={e => change({ query: e.target.value })}/>
           {query && <button type="button" aria-label="Effacer la recherche" onClick={() => { change({ query: '' }); searchRef.current?.focus(); }}><X size={14} aria-hidden="true"/></button>}
         </span></div>
-        <Field label="Catégorie"><select aria-label="Catégorie" value={category} onChange={e => change({ category: e.target.value })}><option value="all">Toutes</option>
+        <select className="journal-select" aria-label="Catégorie" value={category} onChange={e => change({ category: e.target.value })}><option value="all">Toutes catégories</option>
           {Object.entries(CATEGORY_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-        </select></Field>
+        </select>
       </div>
-      <div className="journal-filters" role="group" aria-label="État des opérations">
-        {(['all', 'payable', 'receivable', 'review'] as const).map(value => <button type="button" className="journal-chip" key={value}
-          aria-pressed={filter === value} onClick={() => change({ filter: value })}>{FILTER_LABELS[value]}</button>)}
+      <div className="journal-rail">
+        <div className="journal-scopes" role="group" aria-label="Périmètre du journal">
+          {([['current', 'Courantes'], ['archives', 'Archives'], ['all', 'Tout']] as const).map(([value, label]) =>
+            <button type="button" key={value} aria-pressed={scope === value} onClick={() => changeScope(value)}>{label}</button>)}
+        </div>
+        <span className="journal-rail-split" aria-hidden="true"/>
+        <div className="journal-filters" role="group" aria-label="État des opérations">
+          {(['all', 'payable', 'receivable', 'review'] as const).map(value => <button type="button" className="journal-chip" key={value}
+            aria-pressed={filter === value} onClick={() => change({ filter: value })}>{FILTER_LABELS[value]}</button>)}
+        </div>
+        {specialFilter && <div className="journal-active-filter"><button type="button" className="journal-chip" aria-label={`Retirer le filtre : ${FILTER_LABELS[filter]}`}
+          onClick={() => change({ filter: 'all' })}>{FILTER_LABELS[filter]}<X size={13} aria-hidden="true"/></button></div>}
       </div>
-      {specialFilter && <div className="journal-active-filter"><button type="button" className="journal-chip" aria-label={`Retirer le filtre : ${FILTER_LABELS[filter]}`}
-        onClick={() => change({ filter: 'all' })}>{FILTER_LABELS[filter]}<X size={13} aria-hidden="true"/></button></div>}
       <details className="journal-extra"><summary>Autres filtres</summary><div>
         <button type="button" className="journal-chip" aria-pressed={filter === 'void'} onClick={() => change({ filter: filter === 'void' ? 'all' : 'void' })}>Écritures annulées uniquement</button>
         {hasFilters && filtered.length > 0 && <button type="button" className="journal-text-action" onClick={clearFilters}>Retirer les filtres</button>}
         <button type="button" className="journal-text-action" onClick={onManageArchives}><Archive size={15} aria-hidden="true"/>Gérer les archives</button>
       </div></details>
     </div>
-    <p className="journal-result-count" role="status">{filtered.length} opération{filtered.length > 1 ? 's' : ''}{filtered.length > PAGE_SIZE ? ` · ${offset + 1}–${Math.min(offset + PAGE_SIZE, filtered.length)} affichées` : ''}
-      <span>{followingUp ? 'Suivi sur tous les exercices, archives comprises.' : scope === 'current' ? 'Factures ouvertes incluses' : scope === 'all' ? 'Archives comprises' : `${archivedCount} pièce(s) conservée(s) · ${periodLabel}`}</span></p>
-    <div className="finance-list">{filtered.slice(offset, offset + PAGE_SIZE).map(entry => <React.Fragment key={entry.transaction.id}>
-      {entry.archived && entry.open && <p className="finance-archive-followup">Exercice {entry.date?.slice(0, 4)} archivé · facture encore ouverte</p>}
-      {renderRow(entry.transaction)}
-    </React.Fragment>)}</div>
+    <div className="finance-list">{days.map(day => {
+      const label = day.date ? shortDate(day.date) : 'Date à vérifier';
+      return <section key={day.key} className="journal-day-group" aria-label={`${label} · ${compte(day.rows.length, 'opération')} · ${signedCHF(netCents(day.rows))}`}>
+      <p className="journal-day" aria-hidden="true"><strong>{label}</strong>
+        <span>{compte(day.rows.length, 'opération')}<span className="finance-money">{signedCHF(netCents(day.rows))}</span></span></p>
+      {day.rows.map(entry => <React.Fragment key={entry.transaction.id}>
+        {entry.archived && entry.open && <p className="finance-archive-followup">Exercice {entry.date?.slice(0, 4)} archivé · facture encore ouverte</p>}
+        {renderRow(entry.transaction)}
+      </React.Fragment>)}
+    </section>;
+    })}</div>
     {pageCount > 1 && <nav className="finance-pagination" aria-label="Pages du journal">
       <button type="button" className="journal-chip" aria-label="Page précédente" disabled={page === 1} onClick={() => replaceState({ ...journal, page: page - 1 })}><ChevronLeft size={16} aria-hidden="true"/></button>
       <span aria-live="polite">Page {page} sur {pageCount}</span>

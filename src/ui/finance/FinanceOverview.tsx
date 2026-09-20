@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Settings2 } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { formatCHF, todayISO, type LedgerSummary } from '../../domain/finance/ledger';
 import type { JournalRequest } from './TransactionJournal';
 import { compte } from '../../services/plural';
@@ -20,21 +20,30 @@ export function FinanceOverview({ ledger, openingCashReady, undatedCount, onProf
     : `${date < todayISO() ? 'En retard · ' : ''}${new Date(`${date}T12:00:00`).toLocaleDateString('fr-CH', { day: 'numeric', month: 'short' })}`;
 
   return <>
+    {/* Trois chiffres tiennent sur une bande. En trois rangées pleine largeur
+        ils occupaient la moitié de l'écran, et les règlements à suivre — la
+        raison d'ouvrir cet onglet — passaient sous la ligne de flottaison.
+        La précision reste sous chaque valeur : elle dit ce qu'elle compte. */}
     <dl className="finance-position" aria-label="Situation financière actuelle">
       <div>
-        <dt>Trésorerie <small>{ledger.cashComplete ? 'Paiements enregistrés inclus' : openingCashReady ? 'Des données restent à vérifier' : 'Solde de départ à renseigner'}</small></dt>
+        <dt>Trésorerie</dt>
         <dd className="finance-money">{ledger.cashComplete && ledger.cashCents != null ? formatCHF(ledger.cashCents) : 'À compléter'}</dd>
-        <button type="button" className="finance-icon-action" aria-label="Renseigner le solde de trésorerie" onClick={onProfile}><Settings2 size={16}/></button>
+        <dd className="finance-position-note">{ledger.cashComplete ? 'Paiements enregistrés inclus' : openingCashReady ? 'Des données restent à vérifier' : 'Solde de départ à renseigner'}</dd>
+        {/* Chevron et non engrenage : l'engrenage de la barre d'écran est à
+            quelques pixels, et trois cellules qui s'ouvrent se signalent pareil. */}
+        <button type="button" className="finance-position-open" aria-label="Renseigner le solde de trésorerie" onClick={onProfile}><ChevronRight size={15}/></button>
       </div>
       <div>
-        <dt>À payer <small>Factures suivies, tous exercices</small></dt>
+        <dt>À payer</dt>
         <dd className="finance-money">{formatCHF(ledger.payablesCents)}</dd>
-        <button type="button" className="finance-icon-action" aria-label="Voir les factures à payer" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'payable' })}><ChevronRight size={16}/></button>
+        <dd className="finance-position-note">Factures suivies, tous exercices</dd>
+        <button type="button" className="finance-position-open" aria-label="Voir les factures à payer" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'payable' })}><ChevronRight size={15}/></button>
       </div>
       <div>
-        <dt>À encaisser <small>Ventes et remboursements suivis</small></dt>
+        <dt>À encaisser</dt>
         <dd className="finance-money">{formatCHF(ledger.receivablesCents)}</dd>
-        <button type="button" className="finance-icon-action" aria-label="Voir les montants à encaisser" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'receivable' })}><ChevronRight size={16}/></button>
+        <dd className="finance-position-note">Ventes et remboursements suivis</dd>
+        <button type="button" className="finance-position-open" aria-label="Voir les montants à encaisser" onClick={() => onJournal({ scope: 'all', allDates: true, filter: 'receivable' })}><ChevronRight size={15}/></button>
       </div>
     </dl>
 
