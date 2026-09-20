@@ -6,10 +6,14 @@ import { BrewWizard } from '../../src/pages/BrewWizard';
 import { StorageService, defaultConfig } from '../../src/services/storage';
 import type { Fermentable, Recipe, StockItem, YeastSpec } from '../../src/types';
 import { allerEtape } from '../helpers/wizard';
+import { FirestoreRepo } from '../../src/services/firestoreRepo';
+import { factsFromStock, applyYeastFacts } from '../../src/domain/ingredientFacts';
+import { normalizeRecipe } from '../../src/domain/recipeSnapshot';
+import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 
 const run = vi.fn();
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: (...args: unknown[]) => run(...args) } }));
-afterEach(() => { cleanup(); run.mockReset(); });
+afterEach(() => { cleanup(); run.mockReset(); vi.restoreAllMocks(); });
 
 const malt: Fermentable = { name: 'Malt témoin sans fiche', kind: 'grain', use: 'empatage', weightKg: 5 };
 const yeast: YeastSpec = { name: 'Levure témoin sans fiche', form: 'sèche', qty: 12, unit: 'g' };
@@ -83,6 +87,105 @@ describe('Autocomplétion pendant la synchronisation du catalogue', () => {
   });
 });
 
+describe('Révision de fiche des levures rares', () => {
+  const rare: YeastSpec = { name: 'Culture rare R-125', qty: 125, unit: 'mL', lab: 'Micro labo',
+    attenuationPct: 78, attenuationBasis: 'recipe', fermTempMinC: 18, fermTempMaxC: 24 };
+  const technicalFacts: YeastTechnicalFact[] = [{ key: 'attenuation', reported: '77,25–82,75 %', range: { min: 77.25, max: 82.75 },
+    unit: '%', qualifier: 'range', origin: 'ai', source: 'Fiche R-125', sourceUrl: 'https://example.com/r-125', retrievedAt: '2026-09-20' }];
+  const response = (values = {}) => facts({ name: rare.name, form: 'liquide', flocculation: 'Moyenne',
+    alcoholTolerancePct: 12.5, source: 'Fiche R-125', technicalFacts, ...values });
+  function mountYeast(initial = rare) {
+    let current: YeastSpec = initial;
+    const learn = vi.fn();
+    function Host() {
+      const [y, setY] = useState(initial);
+      current = y;
+      return <><RecipeAutoComplete scope="levure" yeastEnrichment embedded fermentables={[]} onFermentables={() => {}}
+        hops={[]} onHops={() => {}} yeast={y} onYeast={setY} onLearnIngredient={learn} />
+        <button onClick={() => setY({ ...y, name: 'Autre culture rare' })}>Changer de culture test</button>
+        <button onClick={() => setY({ ...y, attenuationPct: 75 })}>Modifier l’hypothèse test</button></>;
+    }
+    render(<Host />);
+    return { current: () => current, learn };
+  }
+  const enrich = () => fireEvent.click(screen.getByRole('button', { name: 'Rechercher la fiche de cette levure' }));
+
+  it('reste accessible même avec les entrées du calcul remplies et conserve les plages après validation', async () => {
+    run.mockResolvedValue(response());
+    const view = mountYeast();
+    enrich();
+    fireEvent.click(await screen.findByRole('button', { name: 'Reprendre ces valeurs' }));
+    expect(view.current()).toMatchObject({ ...rare, form: 'liquide', flocculation: 'Moyenne', alcoholTolerancePct: 12.5 });
+    expect(view.current().technicalFacts).toEqual(expect.arrayContaining(technicalFacts));
+    expect(normalizeRecipe({ yeast: JSON.parse(JSON.stringify(view.current())) } as Recipe).yeast).toEqual(view.current());
+    expect(view.learn).toHaveBeenCalledWith(rare.name, expect.objectContaining({ yeastForm: 'liquide', yeastTechnicalFacts: expect.arrayContaining(technicalFacts) }));
+  });
+  it('demande un choix pour les conflits, conserve la valeur manuelle par défaut et corrige la forme choisie', async () => {
+    run.mockResolvedValue(response({ attenuationPct: 81, technicalFacts: [] }));
+    const view = mountYeast({ ...rare, form: 'sèche' });
+    enrich();
+    const apply = await screen.findByRole('button', { name: 'Reprendre ces valeurs' });
+    expect(apply).toBeDisabled();
+    expect(view.current()).toMatchObject({ form: 'sèche', attenuationPct: 78 });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Choisir Forme' }), { target: { value: 'replace' } });
+    expect(apply).toBeDisabled();
+    fireEvent.change(screen.getByRole('combobox', { name: 'Choisir Atténuation (%)' }), { target: { value: 'keep' } });
+    fireEvent.click(apply);
+    expect(view.current()).toMatchObject({ form: 'liquide', attenuationPct: 78, attenuationBasis: 'recipe', qty: 125, unit: 'mL' });
+  });
+  it('rejette la réponse d’une souche précédente sans apprendre de données au stock', async () => {
+    let resolve!: (value: unknown) => void;
+    run.mockReturnValue(new Promise(r => { resolve = r; }));
+    const view = mountYeast();
+    enrich();
+    fireEvent.click(screen.getByRole('button', { name: 'Changer de culture test' }));
+    await act(async () => resolve(response()));
+    expect(screen.queryByRole('button', { name: 'Reprendre ces valeurs' })).not.toBeInTheDocument();
+    expect(view.current().technicalFacts).toBeUndefined();
+    expect(view.learn).not.toHaveBeenCalled();
+  });
+  it('invalide aussi une proposition quand une hypothèse est modifiée avant validation', async () => {
+    run.mockResolvedValue(response());
+    const view = mountYeast();
+    enrich();
+    await screen.findByRole('button', { name: 'Reprendre ces valeurs' });
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier l’hypothèse test' }));
+    expect(screen.queryByRole('button', { name: 'Reprendre ces valeurs' })).not.toBeInTheDocument();
+    expect(view.current().attenuationPct).toBe(75);
+    expect(view.learn).not.toHaveBeenCalled();
+  });
+  it('accepte une fiche partielle sans inventer les autres données', async () => {
+    run.mockResolvedValue(response({ technicalFacts: [], flocculation: undefined, alcoholTolerancePct: undefined }));
+    const view = mountYeast({ name: rare.name });
+    enrich();
+    fireEvent.click(await screen.findByRole('button', { name: 'Reprendre ces valeurs' }));
+    expect(view.current()).toMatchObject({ name: rare.name, form: 'liquide' });
+    expect(view.current().qty).toBeUndefined();
+    expect(view.current().attenuationPct).toBeUndefined();
+    expect(view.current().alcoholTolerancePct).toBeUndefined();
+  });
+  it('sauvegarde et réutilise les faits riches acceptés sans changer le conditionnement du stock', () => {
+    let rows: StockItem[] = [{ id: 'rare', ref: 'rare', name: rare.name, category: 'Levure', unit: 'mL',
+      currentStock: 500, minStock: 0, reorder: false }];
+    vi.spyOn(StorageService, 'getStocks').mockImplementation(() => ({ rawMaterials: rows, cleaning: [], equipment: [], kegs: [] }));
+    const put = vi.spyOn(FirestoreRepo, 'put').mockImplementation((collection, id, patch) => {
+      if (collection === 'stockItems') rows = rows.map(row => row.ref === id ? JSON.parse(JSON.stringify({ ...row, ...patch })) : row);
+      return undefined;
+    });
+    const fermentation = { version: 1 as const, strainName: rare.name, source: { title: 'Fiche R-125', author: 'Micro labo',
+      reference: 'https://example.com/r-125', year: null, kind: 'manufacturer' as const, locator: 'Fiche technique' }, retrievedAt: '2026-09-20',
+      conditions: 'Moût de contrôle', sugars: { glucose: 'yes' as const }, pof: 'unknown' as const, hydrolysis: 'unknown' as const };
+    StorageService.learnIngredient(rare.name, { category: 'Levure', yeastTechnicalFacts: technicalFacts,
+      yeastFermentationFacts: fermentation, yeastForm: 'liquide', yeastFlocculation: 'Moyenne', yeastAlcoholTolerancePct: 12.5, technicalSource: 'Fiche R-125' });
+    expect(put).toHaveBeenCalledTimes(1);
+    expect(rows[0]).toMatchObject({ currentStock: 500, unit: 'mL', yeastFermentationFacts: fermentation, yeastTechnicalFacts: technicalFacts });
+    const reused = applyYeastFacts({ name: rare.name, qty: 125, unit: 'mL' }, factsFromStock(rows[0]));
+    expect(reused).toMatchObject({ form: 'liquide', fermentationFacts: fermentation, technicalFacts: expect.arrayContaining(technicalFacts) });
+    StorageService.learnIngredient(rare.name, { category: 'Levure', yeastTechnicalFacts: technicalFacts, yeastFermentationFacts: fermentation });
+    expect(put).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('IA dans les étapes d’une recette enregistrée', () => {
   it('complète la levure seule puis tous les ingrédients au récapitulatif, et enregistre les valeurs acceptées', async () => {
     const recipe: Recipe = { id: 'recipe-ai-workflow', name: 'Recette à compléter', style: 'Pale Ale', volumeL: 20,
@@ -100,7 +203,8 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     render(<BrewWizard seed={{ recipe }} config={defaultConfig} stockItems={[]} knownStyles={[]} onClose={() => {}}
       onSave={save} onLearnIngredient={learn} onCreateStockItem={vi.fn()} onSaveWaterSource={() => {}} />);
     allerEtape('Levure');
-    fireEvent.click(screen.getByRole('button', { name: 'Compléter la levure avec l’IA' }));
+    fireEvent.click(screen.getByText('Fiche, sources et données de la souche'));
+    fireEvent.click(screen.getByRole('button', { name: 'Rechercher la fiche de cette levure' }));
     await screen.findByRole('button', { name: 'Reprendre ces valeurs' });
     expect(run).toHaveBeenCalledTimes(1);
     expect(run.mock.calls[0][0].context).toMatchObject({ kind: 'levure', name: yeast.name });

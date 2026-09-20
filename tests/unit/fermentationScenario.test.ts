@@ -6,7 +6,7 @@ import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 import { fullRecipe } from '../fixtures/fullRecipe';
 import { fermentationRangeLabel } from '../../src/ui/fermentationPresentation';
 const guides=guideFermentations([]), yeasts=guideYeasts(catalogue as HopKnowledge[]);
-const recipe=()=>({...structuredClone(fullRecipe),ogTarget:1.046,yeast:{name:'LalBrew Diamond',form:'sèche' as const,qty:0,unit:'g'},fermentation:[{name:'Principale',kind:'primaire' as const,tempC:19,days:4},{name:'Froid',kind:'garde' as const,tempC:4,days:2}]});
+const recipe=()=>({...structuredClone(fullRecipe),ogTarget:1.046,fermentables:[{name:'Pils',kind:'grain' as const,use:'empatage' as const,weightKg:4,potentialPpg:37}],yeast:{name:'LalBrew Diamond',form:'sèche' as const,qty:0,unit:'g'},fermentation:[{name:'Principale',kind:'primaire' as const,tempC:19,days:4},{name:'Froid',kind:'garde' as const,tempC:4,days:2}]});
 describe('Scénario levure : identité et données effectivement applicables',()=>{
  it('reconnaît Diamond sans guide et calcule ses bornes fabricant sans inventer un plan',()=>{
   const r=recipe(),before=structuredClone(r),p=evaluateFermentationScenario(r,yeasts,guides);
@@ -36,6 +36,12 @@ describe('Scénario levure : identité et données effectivement applicables',()
   const r=recipe();r.hops=[];r.fermentation.push({name:'Premier houblonnage à cru',kind:'ajout',tempC:19,days:3} as any);
   expect(evaluateFermentationScenario(r,yeasts,guides).warnings.join(' ')).toContain('aucun ajout à cru');
   expect(r.hops).toEqual([]);
+ });
+ it('refuse maintenant d’ignorer le lactose et les fruits incomplets de la recette',()=>{
+  const r={...recipe(),fermentables:structuredClone(fullRecipe.fermentables)};
+  const p=evaluateFermentationScenario(r,yeasts,guides);
+  expect(p.fg.range).toBeNull();expect(p.abv.range).toBeNull();
+  expect(p.fg.reasons.join(' ')).toContain('manquant');
  });
  it('arrondit les bornes à l’extérieur, y compris un intervalle traversant zéro',()=>{
   expect(fermentationRangeLabel({min:1.00782,max:1.01058},'SG',3)).toBe('1,007–1,011 SG');

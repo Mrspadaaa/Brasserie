@@ -4,6 +4,7 @@ import type { HopRecipeInput } from '../../../functions/src/hopRecipePrediction'
 import { hopTripletsOfRecipe } from './engine';
 import { findRecipeHopMatches, findRecipeYeastMatches, withDocumentedYeastNames } from './recipeGuide';
 import type { TrialRecipe } from './trials';
+import { recipeFermentationTemperature } from '../../../functions/src/fermentationContext';
 
 /** Resolve documented identities at read time. A name/AA annotation never becomes
  * a COA; a day number or fermentation note never creates an unrecorded hop event. */
@@ -27,7 +28,9 @@ export function prepareHopRecipeInput(recipe: TrialRecipe, varieties: HopVariety
     return { id: `hop-${i}`, name: hop.name, triplet: { ...triplet, yeastId },
       ...(Number.isFinite(hop.dayOffset) ? { dayOffset: hop.dayOffset } : {}) };
   });
+  const yeastTemperature = recipeFermentationTemperature(recipe.yeast);
   return { input: { volumeL: Number.isFinite(recipe.volumeL) && recipe.volumeL > 0 ? recipe.volumeL : 0, yeastId, additions,
+    ...(yeastTemperature !== undefined ? { yeastTemperature } : {}),
     ...(recipe.nolo?.enabled?{aromaDomain:'nolo' as const,aromaContext:{
       stage:recipe.nolo.process==='dealcoholized'?'mother' as const:'reference' as const,
       ...(recipe.nolo.planning?.aromaTransfer?{transfer:recipe.nolo.planning.aromaTransfer}:{})

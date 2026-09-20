@@ -1,6 +1,7 @@
 import { Recipe } from '../types';
 import { recipeWaterExport } from './recipeWaterExport';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
+import { readYeastTechnicalFacts } from '../../functions/src/yeastTechnicalFacts';
 import { assertNoloConfig } from '../../functions/src/noloSchema';
 import { readYeastRecipeDesign } from './yeastRecipeDesign';
 import { sameField } from '../../functions/src/brewerFields';
@@ -17,7 +18,7 @@ type Field = {
   label: string;
   /** Older labels remain readable when wording is clarified within format v1. */
   aliases?: readonly string[];
-  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'yeastDesign';
+  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'technicalFacts' | 'yeastDesign';
   fields?: Fields;
   item?: Field;
   values?: readonly string[];
@@ -136,6 +137,11 @@ export const recipeFields = {
     lab: t('Laboratoire'),
     strain: t('Souche'),
     fermentationFacts: {label:'Données fermentaires sourcées',type:'fermentationFacts'} as Field,
+    technicalFacts: {label:'Faits de levure sourcés',type:'technicalFacts'} as Field,
+    technicalSource: t('Source de la fiche'),
+    attenuationBasis: t('Base de l’atténuation', ['declared', 'recipe', 'measured']),
+    flocculation: t('Floculation'),
+    alcoholTolerancePct: pct('Tolérance alcoolique (%)'),
     form: t('Forme', ['sèche', 'liquide', 'levain']),
     qty: { ...n('Quantité'), nullable: true },
     unit: t('Unité'),
@@ -346,12 +352,14 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
       : fail();
   if (field.type === 'boolean') return typeof value === 'boolean' ? value : fail();
   if (field.type === 'fermentationFacts') return readIngredientFermentationFacts(value) ?? fail();
+  if (field.type === 'technicalFacts') return readYeastTechnicalFacts(value) ?? fail();
   if (field.type === 'nolo') return fail();
   if (field.type === 'yeastDesign') {
     const snapshot = readYeastRecipeDesign({ yeastDesign: value } as Recipe);
     if (!snapshot) return fail();
     const portable = structuredClone(snapshot);
     delete portable.applied.yeast.stockItemRef;
+    if (portable.applied.hops) portable.applied.hops = readField(recipeFields.hops, portable.applied.hops, false, `${path} / Houblons appliqués`) as Recipe['hops'];
     return portable;
   }
   return typeof value === 'string' && (!field.values || field.values.includes(value))

@@ -82,7 +82,16 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const recipeStyle = inferYeastRecipeStyle(recipe);
   const candidates = useMemo(() => yeastRecipeCandidates(draft.styleId, draft.goal, refs, recipe.volumeL, { includeOtherStyles: true }), [draft.styleId, draft.goal, refs, recipe.volumeL]);
   const styleCount = candidates.filter(c => c.styleMatch === 'documented').length;
-  const result = useMemo(() => evaluateYeastRecipeDesign(recipe, draft, refs), [recipe, draft, refs]);
+  const result = useMemo(() => {
+    const value = evaluateYeastRecipeDesign(recipe, draft, refs);
+    // The legacy workshop keeps its existing validation; the creation step has
+    // its own proposal interface and permits an explicit out-of-range target.
+    const window = value.projection?.dossier.temperature?.range;
+    if (window && draft.temperatureC != null && (draft.temperatureC < window.min || draft.temperatureC > window.max)) {
+      return { ...value, errors: [...value.errors, `Température principale hors de la fenêtre documentée (${window.min}–${window.max} °C).`] };
+    }
+    return value;
+  }, [recipe, draft, refs]);
   const selected = result.candidate;
   const proposedSettings = proposeYeastGoalSettings(recipe, draft, refs);
   const suggestion = proposedSettings && Object.entries(proposedSettings.patch).some(([key, value]) => draft[key] !== value) ? proposedSettings : undefined;
@@ -110,6 +119,7 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const apply = (mode: 'strain' | 'settings') => {
     try {
       if (stale) throw Error('Reprends les données actuelles avant d’appliquer ce scénario.');
+      if (mode === 'settings' && result.errors.length) throw Error(result.errors[0]);
       const next = applyYeastRecipeDesign(recipe, draft, refs, mode);
       // The wizard completes local ingredient facts before accepting the proposal.
       // Compare future edits with that accepted recipe, including its snapshot.

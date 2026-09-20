@@ -99,26 +99,56 @@ function usageMatches(f: YeastCatalogueFact): { matches: YeastStyleMatch[]; excl
 }
 
 function positiveComposition(text: string, pattern: RegExp): boolean {
+  text = text.replace(/\bnot\s+only\b|\bpas\s+seulement\b/g, '');
   return [...text.matchAll(new RegExp(pattern.source, 'g'))].some(m => {
-    const prefix = text.slice(Math.max(0, m.index! - 65), m.index!);
+    const prefix = text.slice(Math.max(0, m.index! - 65), m.index!).split(/[;\n]|\b(?:but|however|mais|cependant)\b/).at(-1)!;
     return !/\b(?:not|no|without|sans|pas|aucun)\s+(?:\w+\s+){0,4}$/.test(prefix) && !/^\s+free\b/.test(text.slice(m.index! + m[0].length));
   });
 }
+type CultureFact = Pick<YeastCatalogueFact, 'key' | 'reported'> & Partial<Pick<YeastCatalogueFact, 'label'>>;
+/** The same documentary composition rules apply to catalogue and personal facts.
+ * No commercial name is used to infer an organism or acid production. */
+export function yeastCultureComposition(facts: readonly CultureFact[], categories: readonly string[] = []): {
+  culture: 'yeast' | 'mixed' | 'bacteria' | 'unknown'; acidifying: boolean; uninterpretedSpecies: boolean;
+} {
+  const species = normalize(facts.filter(f => f.key === 'species' || f.key === 'application' && /strain\s+type|culture|type/i.test(f.label ?? '')).map(f => f.reported).join(' ; '));
+  const categoryText = normalize(categories.join(' '));
+  const composition = normalize(facts.filter(f => ['species', 'application', 'aroma'].includes(f.key)).map(f => f.reported).join(' ; '));
+  const mixed = positiveComposition(composition, /\b(?:blend|mixture|mix|melange)\s+of\s+(?:.{0,45}\s)?(?:yeasts?|strains?|saccharomyces|brettanomyces|bacteria)\b|\bmixed\s+(?:culture|yeast|fermentation)\b|\bmelange\s+de\s+(?:levures?|souches?|cultures?)\b/) || positiveComposition(categoryText, /\b(?:blends?|mixed\s+cultures?)\b/);
+  const bacteria = positiveComposition(species, /\b(?:lactobacill\w*|lact[io]plantibacill\w*|lacticaseibacill\w*|pediococcus|oenococcus|acetobacter|bacteri\w*|lab)\b/) || positiveComposition(categoryText, /\bbacteria\b/);
+  const yeast = positiveComposition(species, /\b(?:saccharomyces|saccharomycodes|brettanomyces|lachancea|lachanacea|torulaspora|hanseniaspora|pichia|metschnikowia|yeasts?|levures?)\b|\bs\.\s*(?:cerevisiae|pastorianus)\b/);
+  const acidifying = bacteria || positiveComposition(species, /\blachancea\s+thermotolerans\b/) || positiveComposition(composition,
+    /\b(?:acidifying|acid\s+producing|lactic\s+(?:acid\s+)?producing)\s+(?:yeasts?|strains?|cultures?)\b|\b(?:levure|culture)s?\s+acidifiante?s?\b|\b(?:produces?|producing|produit|produisent)\s+(?:(?!(?:no|not|without|sans|pas|aucun)\b)[a-z']+\s+){0,6}(?:lactic\s+acid|acide\s+lactique)\b/);
+  const culture = bacteria ? yeast ? 'mixed' : 'bacteria' : mixed ? 'mixed' : yeast ? 'yeast' : 'unknown';
+  return { culture, acidifying, uninterpretedSpecies: !!species.trim() && culture === 'unknown' };
+}
+
+const acidifyingProducts: { ids: readonly string[]; references: readonly string[]; source: HopSource; slug: string }[] = [
+  { ids: ['yeast-escarpment-8269802537126', 'yeast-lallemand-brewing-18445-37-mb', 'yeast-lallemand-brewing-1844606-mb', 'yeast-white-labs-yeast-single-id-361-type-yeast'],
+    references: ['https://escarpmentlabs.com/products/lalbrew-sourvisiae', 'https://www.whitelabs.com/yeast-single?id=361&type=YEAST'], slug: 'sourvisiae',
+    source: { author: 'Lallemand Brewing', title: 'Sourvisiae® — levure produisant de l’acide lactique', kind: 'manufacturer', year: null, reference: 'https://www.lallemandbrewing.com/en/global/products/sourvisiae' } },
+  { ids: ['yeast-escarpment-7927710974118', 'yeast-lallemand-brewing-18460-06-74', 'yeast-lallemand-brewing-18460-77-74', 'yeast-white-labs-yeast-single-id-356-type-yeast'],
+    references: ['https://escarpmentlabs.com/products/wildbrew-philly-sour', 'https://www.whitelabs.com/yeast-single?id=356&type=YEAST'], slug: 'wildbrew-philly-sour',
+    source: { author: 'Lallemand Brewing', title: 'WildBrew™ Philly Sour — production d’acide lactique et d’alcool', kind: 'manufacturer', year: null, reference: 'https://www.lallemandbrewing.com/en/united-states/products/wildbrew-philly-sour/' } }
+];
+/** Explicit product identities and documentary URLs, including frozen dossiers.
+ * The word “sour” in a personal name is deliberately insufficient. */
+export function yeastAcidifyingProductSource(ids: readonly string[], references: readonly string[]): HopSource | undefined {
+  const product = acidifyingProducts.find(p => ids.some(id => p.ids.includes(id)) || references.some(reference => {
+    if (p.references.includes(reference.replace(/\/$/, ''))) return true;
+    try { const url = new URL(reference); return /(^|\.)lallemandbrewing\.com$/i.test(url.hostname) && new RegExp(`/(?:lalbrew-)?${p.slug}(?:[-/]|$)`, 'i').test(url.pathname); } catch { return false; }
+  }));
+  return product && { ...product.source };
+}
 function cultureType(reference: YeastReference): YeastStyleEvidence['culture'] {
   const facts = reference.catalogue?.facts ?? [];
-  const species = normalize(facts.filter(f => f.key === 'species' || f.key === 'application' && /strain\s+type|culture|type/i.test(f.label)).map(f => f.reported).join(' '));
   const categories = normalize(reference.catalogue?.categories.join(' ') ?? '');
-  const composition = normalize(facts.filter(f => ['species', 'application', 'aroma'].includes(f.key)).map(f => f.reported).join(' '));
-  const mixed = positiveComposition(composition, /\b(?:blend|mixture|mix|melange)\s+of\s+(?:.{0,45}\s)?(?:yeasts?|strains?|saccharomyces|brettanomyces|bacteria)\b|\bmixed\s+(?:culture|yeast|fermentation)\b|\bmelange\s+de\s+(?:levures?|souches?|cultures?)\b/) || positiveComposition(categories, /\b(?:blends?|mixed\s+cultures?)\b/);
-  const bacteria = positiveComposition(species, /\b(?:lactobacill\w*|lactiplantibacill\w*|lacticaseibacill\w*|pediococcus|oenococcus|bacteri\w*|lab)\b/) || positiveComposition(categories, /\bbacteria\b/);
-  const yeast = positiveComposition(species, /\b(?:saccharomyces|saccharomycodes|brettanomyces|lachancea|torulaspora|hanseniaspora|pichia|metschnikowia|yeasts?|levures?)\b|\bs\.\s*(?:cerevisiae|pastorianus)\b/);
+  const composition = yeastCultureComposition(facts, reference.catalogue?.categories);
   const uses = normalize(facts.filter(f => f.key === 'styles' || f.key === 'application').map(f => f.reported).join(' ')).replace(/\bbarley\s+wine\b/g, 'barleywine');
   const nonBeer = /\b(?:wines?|vinification|white\s+wines?|red\s+wines?|vins?\s+(?:blanc|rouge)|distilling|distillation|cider|cidre|mead|hydromel|seltzer)\b/;
   const beerUse = positiveComposition(uses, /\b(?:beers?|bieres?|ales?|lagers?|ipa|weizen|witbier|saison|kolsch)\b/) || facts.some(f => ['styles', 'application'].includes(f.key) && usageMatches(f).matches.length > 0);
   if (!beerUse && (nonBeer.test(uses) || /\b(?:wine|distilling|oenolog\w*|winemaking)\b/.test(categories))) return 'other-fermentation';
-  if (bacteria) return yeast ? 'mixed' : 'bacteria';
-  if (mixed) return 'mixed';
-  return yeast ? 'yeast' : 'unknown';
+  return composition.culture;
 }
 
 const goalPatterns: [YeastRecipeGoal, RegExp][] = [

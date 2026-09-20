@@ -1,5 +1,6 @@
 import { AiTier } from './models.js';
 import { HOP_ANALYTES, HOP_FORMS, HOP_UNITS } from './hopIndexSchema.js';
+import { YEAST_FACT_KEYS } from './yeastCatalogueSchema.js';
 
 /**
  * Catalogue des tâches IA.
@@ -89,6 +90,12 @@ const S = (properties: Record<string, unknown>, required: string[]) => ({
 const str = { type: 'STRING' };
 const num = { type: 'NUMBER' };
 const arr = (items: unknown) => ({ type: 'ARRAY', items });
+const yeastTechnicalFactProperties = {
+  key: {type:'STRING',enum:[...YEAST_FACT_KEYS]}, reported:str,
+  range:S({min:num,max:num},['min','max']), unit:str,
+  qualifier:{type:'STRING',enum:['range','reportedPoint','atLeast','upTo']},
+  origin:{type:'STRING',enum:['ai']}, source:str, sourceUrl:str, retrievedAt:str, context:str
+};
 
 const hopSourceSchema = S({ title: str, author: str, reference: str, locator: str,
   year: { type: 'INTEGER', nullable: true },
@@ -335,6 +342,13 @@ SOURCES. Quand tu COMPLÈTES une valeur absente de la recette — l'alpha d'un
 houblon, la couleur ou le potentiel d'un malt, l'atténuation d'une levure — va
 la chercher sur la fiche du producteur et nomme cette source dans « source ».
 Une valeur que tu n'as pas trouvée reste ABSENTE : ne la devine jamais.
+Pour la levure, conserve les plages et bornes exactes dans technicalFacts
+(key, reported, range {min,max}, unit, qualifier range/reportedPoint/atLeast/upTo,
+origin ai, source et sourceUrl si publiées, contexte). Une plage ne devient
+jamais son milieu dans attenuationPct. attenuationBasis vaut recipe pour une
+hypothèse déjà écrite dans la recette, measured pour une mesure explicitement
+signalée et declared pour un point publié retrouvé. Omettre forme, quantité et
+unité si elles sont absentes ; aucune levure sèche ou dose par défaut.
 
 LE PROCÉDÉ, qui n'est JAMAIS dans la liste d'ingrédients. Relis le déroulé et remplis :
   • « mashWaterL »   — l'eau d'empâtage (« mash in … in 5 gallons (19 L) of water »)
@@ -421,10 +435,15 @@ propage jusque dans l'amertume calculée.`,
             fermTempMinC: num,
             fermTempMaxC: num,
             attenuationPct: num,
+            attenuationBasis: {type:'STRING',enum:['declared','recipe','measured']},
+            technicalFacts: arr(S(yeastTechnicalFactProperties, ['key','reported','origin'])),
+            technicalSource: str,
+            flocculation: str,
+            alcoholTolerancePct: num,
             fermentDays: num,
             notes: str
           },
-          ['name', 'form', 'qty', 'unit']
+          ['name']
         ),
         mashSteps: arr(
           S({ name: str, tempC: num, durationMin: num }, ['name', 'tempC', 'durationMin'])
@@ -859,7 +878,22 @@ tout, renvoie "found": false et explique dans "note".
 
 IDENTITÉ. Un nom générique (par exemple flocons d'avoine sans malteur) ne permet
 pas d'attribuer la fiche d'un produit précis : demander le fabricant dans note,
-laisser les chiffres absents. N'écrase jamais un fait connu en contexte.
+laisser les chiffres absents. Les faits connus en contexte servent à identifier
+le produit ; renvoyer aussi une divergence documentaire trouvée, sans décider
+de remplacer la saisie du brasseur.
+
+LEVURE. La forme (sèche, liquide, levain) doit être documentée ; le nom du
+laboratoire ne la prouve pas. technicalFacts conserve chaque observation exacte,
+sa source directe, sa date de consultation et ses conditions. Une plage reste
+une plage : aucune moyenne inventée dans attenuationPct ou alcoholTolerancePct.
+Les champs scalaires ne contiennent que des valeurs ponctuelles publiées.
+range={min,max}, unit et qualifier sont indissociables : range pour une plage,
+reportedPoint pour un point, atLeast pour une borne minimale, upTo pour un
+maximum (dans ces trois derniers cas min=max). origin vaut ai pour cette
+extraction ; source est le titre de la fiche et sourceUrl son URL directe.
+Les observations textuelles (flocculation, arômes, espèce, conduite, etc.) ont
+reported mais pas de range/unit/qualifier. Omettre ce qui n'a pas été trouvé,
+conserver les limites et divergences dans context/note. Aucun score sensoriel.
 
 NOLO. Si demandé, rechercher fermentation pour la SOUCHE exacte : assimilation
 glucose/fructose/saccharose/maltose/maltotriose, POF, hydrolyse, dose en g/L,
@@ -876,6 +910,8 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
         name: str,
         source: str,
         note: str,
+        sourceUrl: str,
+        retrievedAt: str,
 
         // Strain-specific, optional, documentary NOLO facts. No new callable.
         fermentation: S({
@@ -886,6 +922,7 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
           pitchGL:S({min:num,max:num},['min','max']), temperatureC:S({min:num,max:num},['min','max']), durationDays:S({min:num,max:num},['min','max'])
         }, ['version','strainName','source','retrievedAt','conditions','sugars','pof','hydrolysis']),
         // Levure
+        technicalFacts: arr(S(yeastTechnicalFactProperties, ['key','reported','origin','source','sourceUrl','retrievedAt'])),
         lab: str,
         strain: str,
         form: { type: 'STRING', enum: ['sèche', 'liquide', 'levain'] },

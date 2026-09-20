@@ -38,6 +38,9 @@ import { BrewerChat } from '../ui/BrewerChat';
 import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
 import { YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
+import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
+import { yeastReferences } from '../domain/yeastReferences';
+import { resolveFermentationYeast } from '../domain/fermentationScenario';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { NoloPanel } from '../ui/NoloPanel';
 import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
@@ -144,24 +147,28 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct]
   );
   const ogPredicted = useMemo(
-    () => BrewingMath.calculateOg(fermentables, recipe.volumeL, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75),
-    [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct]
+    () => recipe.nolo?.enabled ? BrewingMath.calculateOg(fermentables, recipe.volumeL, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75)
+      : yeastRecipeComputedOg({ fermentables, volumeL: recipe.volumeL, efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }),
+    [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct, recipe.nolo?.enabled]
   );
 
   const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : recipe.ogTarget || ogPredicted || 0;
 
-  const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, og || null, recipe.boilMin ?? 60), [hops, recipe.volumeL, og, recipe.boilMin]);
-  const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, og || null, recipe.boilMin ?? 60).additions[0].ibu;
+  const boilOg = useMemo(() => recipe.nolo?.enabled ? og || null : yeastRecipeBoilOg({ ...recipe, efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og: og || null }).og, [recipe, og, brewhouse?.efficiencyPct]);
+  const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, boilOg, recipe.boilMin ?? 60), [hops, recipe.volumeL, boilOg, recipe.boilMin]);
+  const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, boilOg, recipe.boilMin ?? 60).additions[0].ibu;
   const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
 
-  const fgPredicted = !recipe.nolo?.enabled && recipe.yeast?.attenuationPct != null
-    ? BrewingMath.calculateFg(og, recipe.yeast.attenuationPct, points?.unfermentable ?? 0)
-    : null;
+  const projection = useMemo(() => recipe.nolo?.enabled ? null : projectYeastRecipe({ ...recipe,
+    efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og,
+    reference: resolveFermentationYeast(recipe, yeastReferences(knowledge)) }), [recipe, brewhouse?.efficiencyPct, knowledge, og]);
+  const fgPredicted = projection?.fg.range?.min === projection?.fg.range?.max ? projection?.fg.range?.min ?? null : null;
   const fg = recipe.nolo?.enabled ? null : recipe.fgTarget || fgPredicted;
 
-  const abv = og > 1 && fg ? BrewingMath.calculateABV(og, fg) : null;
+  const projectedAbv = projection?.abv.range?.min === projection?.abv.range?.max ? projection?.abv.range?.min ?? null : null;
+  const abv = recipe.nolo?.enabled ? null : recipe.abvTarget ?? projectedAbv;
 
   const relatedBatches = batches.filter(
     (b) => b.recipeRef === recipe.id || b.recipeSnapshot?.sourceRecipeId === recipe.id
@@ -230,7 +237,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             hint={recipe.nolo?.enabled ? 'moût à caractériser' : 'renseigne le potentiel des malts'}
             tone="text-ebc-straw"
           />
-          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint="renseigne l’atténuation" />}
+          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'} />}
           {/*
             L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un
             houblon. Quand la recette d'origine en annonce un autre, on montre
@@ -259,7 +266,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           {!recipe.nolo?.enabled&&<Metric
             label="ABV"
             value={abv ? `${abv.toFixed(1)} %` : null}
-            hint="dépend de l’OG et de la FG"
+            hint={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}
+            note={!projection?.abv.range && recipe.abvTarget != null ? 'Cible conservée · projection indisponible' : undefined}
             tone="text-ebc-amber"
           />}
         </dl>
@@ -457,7 +465,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <dt className="text-sm text-cave-400">Quantité</dt>
                 <dd className="reading text-sm">
-                  {recipe.yeast.qty > 0 ? Units.format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner'}
+                  {recipe.yeast.qty > 0 ? `${recipe.yeast.qty.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${recipe.yeast.unit ?? ''}`.trim() : 'À renseigner'}
                 </dd>
               </div>
               <div>

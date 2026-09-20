@@ -25,8 +25,8 @@ import { AppConfig, Recipe, StockItem } from '../../src/types';
  *
  *   1. **Jamais NaN, undefined ou Infinity à l'écran.** Un « NaN g » sur une
  *      fiche de pesée, c'est un brassin perdu.
- *   2. **Jamais de valeur négative** là où la physique l'interdit — une dose,
- *      un volume, une masse.
+   *   2. **Jamais de valeur négative acceptée** là où la physique l'interdit —
+   *      une saisie invalide peut rester visible pour être corrigée, avec erreur.
  *   3. **La virgule vaut le point.** Le clavier d'un téléphone français envoie
  *      une virgule : c'est la saisie NORMALE ici, pas un cas limite.
  *   4. **Un champ n'écrit jamais dans un autre.** C'est la panne qui a déjà
@@ -322,7 +322,7 @@ describe('Fuzz — l’assistant de recette', () => {
    * grain, où il retranche du malt. C'est la classe de faute la plus discrète :
    * l'OG baisse, et rien ne dit pourquoi.
    */
-  it('⚠️ aucune masse ni aucun poids ne devient négatif', () => {
+  it('⚠️ aucune masse ni aucun poids négatif ne passe sans erreur', () => {
     const { container } = monterAssistant();
 
     etapes.forEach((etape) => {
@@ -337,6 +337,13 @@ describe('Fuzz — l’assistant de recette', () => {
           HOSTILES.forEach((v) => {
             saisir(champ, v);
             if (champ.value === '') return;
+            // Keep the entered yeast dose visible instead of silently saving zero.
+            // recipeEditing covers save rejection and focus on this exact field.
+            if (/^Quantité de levure,/.test(champ.getAttribute('aria-label') ?? '') && Number(champ.value.replace(',', '.')) < 0) {
+              expect(champ).toHaveAttribute('aria-invalid', 'true');
+              expect(screen.getByRole('alert')).toHaveTextContent('quantité');
+              return;
+            }
             expect(
               Number(champ.value.replace(',', '.')),
               `${etape} / ${champ.getAttribute('aria-label') || champ.id || '?'} après « ${v} »`

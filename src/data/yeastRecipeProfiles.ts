@@ -3,9 +3,9 @@ import belgian from './yeastEnrichmentBelgian.json';
 import lager from './yeastEnrichmentLager.json';
 
 export type YeastStyleId = 'weissbier' | 'witbier' | 'american-wheat' | 'hazy-ipa' | 'clean-ale' | 'english-ale' | 'lager' | 'saison' | 'belgian-ale' | 'stout-porter' | 'kolsch-alt' | 'sour' | 'unknown';
-export type YeastRecipeGoal = 'balanced' | 'banana' | 'clove' | 'fruit' | 'clean' | 'dry' | 'hops';
+export type YeastRecipeGoal = 'balanced' | 'banana' | 'clove' | 'fruit' | 'clean' | 'dry' | 'hops' | 'low-sulfur';
 export const YEAST_RECIPE_GOAL_LABELS: Record<YeastRecipeGoal, string> = {
-  balanced: 'Équilibre', banana: 'Banane', clove: 'Girofle · épices', fruit: 'Fruits · esters', clean: 'Profil discret', dry: 'Finale sèche', hops: 'Expression du houblon'
+  balanced: 'Équilibre', banana: 'Banane', clove: 'Girofle · épices', fruit: 'Fruits · esters', clean: 'Profil discret', dry: 'Finale sèche', hops: 'Expression du houblon', 'low-sulfur': 'Soufre en retrait'
 };
 export const YEAST_STYLE_FAMILIES: { id: YeastStyleId; label: string; goals: YeastRecipeGoal[] }[] = [
   { id: 'weissbier', label: 'Weissbier · Hefeweizen', goals: ['balanced', 'banana', 'clove', 'fruit', 'dry'] },
@@ -14,7 +14,7 @@ export const YEAST_STYLE_FAMILIES: { id: YeastStyleId; label: string; goals: Yea
   { id: 'hazy-ipa', label: 'Hazy · NEIPA', goals: ['hops', 'fruit', 'dry'] },
   { id: 'clean-ale', label: 'Ale nette · Pale / IPA', goals: ['clean', 'hops', 'dry'] },
   { id: 'english-ale', label: 'Ale anglaise', goals: ['balanced', 'fruit', 'dry'] },
-  { id: 'lager', label: 'Lager', goals: ['clean', 'hops', 'dry'] },
+  { id: 'lager', label: 'Lager', goals: ['clean', 'low-sulfur', 'hops', 'dry'] },
   { id: 'saison', label: 'Saison', goals: ['balanced', 'clove', 'dry'] },
   { id: 'belgian-ale', label: 'Ale belge · abbaye', goals: ['balanced', 'fruit', 'clove'] },
   { id: 'stout-porter', label: 'Stout · Porter', goals: ['balanced', 'clean', 'fruit', 'dry', 'hops'] },
@@ -45,6 +45,8 @@ const lal = (name: string, page: string) => manufacturer('Lallemand Brewing', na
 const fer = (name: string, page: string) => manufacturer('Fermentis', name, `https://fermentis.com/en/product/${page}/`);
 
 export const YEAST_RECIPE_SOURCES = {
+  lagerCleanup: { ...manufacturer('Lallemand Brewing', 'Lagering Made Easy', 'https://connect.lallemandbrewing.com/wp-content/uploads/2023/08/Lallemand-Brewing_TechPaper-Lagering-Made-Easy-8-23.pdf'), year: 2023, locator: 'p. 14–15 : repos +2–4 °C vers 65–75 % de l’atténuation complète, contrôle du diacétyle avant refroidissement ; contact avec la levure et température pour le H₂S.' },
+  lagering: { ...manufacturer('Wyeast', 'Home Enthusiast — Lager Brewing', 'https://wyeastlab.com/resource/home-enthusiast-lager-brewing/'), locator: 'Garde généralement 1–4 semaines à 1–2 °C, à adapter à la bière ; aucune date de fin garantie.' },
   ferulic: manufacturer('Lallemand Brewing', 'Best Practices — Wheat Beer Solutions', 'https://admin.lallemandbrewing.com/wp-content/uploads/2023/10/Wheat-Beer-Solutions-BP-ENG-digital-LalBrew.pdf'),
   pressure: { author: 'Souffriau et al.', title: 'CO₂ inhibition of isoamyl acetate production', year: 2022, kind: 'research', reference: 'https://journals.asm.org/doi/10.1128/aem.00814-22' } as HopSource,
   hopCreep: { author: 'Stokholm et Shellhammer', title: 'Hop Creep — Technical Brief', year: 2020, kind: 'research', reference: 'https://cdn.brewersassociation.org/wp-content/uploads/2020/05/Hop-Creep-%E2%80%93-Technical-Brief.pdf' } as HopSource,

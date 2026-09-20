@@ -1,7 +1,7 @@
 import type { FermentationGuide, FermentationGoal } from '../../functions/src/fermentationGuideSchema';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
-import { agreedFermentationFact, fermentationProgramIssues } from '../../functions/src/fermentationContext';
-import { fermentationGravityFromAttenuation } from '../../functions/src/fermentationScienceCore';
+import { agreedFermentationFact, fermentationProgramIssues, recipeFermentationTemperature } from '../../functions/src/fermentationContext';
+import { projectYeastRecipe } from './yeastProjection';
 import type { TrialRecipe } from './hopIndex/trials';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './hopIndex/recipeGuide';
 import { normalizeHop } from './hopStage';
@@ -22,16 +22,22 @@ export function fermentationDefaultGoal(guide?: FermentationGuide): Fermentation
 export function evaluateFermentationScenario(recipe: TrialRecipe, yeasts: (HopYeast & { aliases?: readonly string[] })[], guides: FermentationGuide[]) {
   const yeast = resolveFermentationYeast(recipe, yeasts);
   const guide = guides.find(g => g.enabled && g.yeastId === yeast?.id);
-  const temperature = guide?.temperatureC ?? agreedFermentationFact(yeast, 'temperature', '°C');
-  const attenuation = guide?.attenuationPct ?? agreedFermentationFact(yeast, 'attenuation', '%');
+  const personalTemperature = recipeFermentationTemperature(recipe.yeast);
+  const temperature = personalTemperature === undefined ? guide?.temperatureC ?? agreedFermentationFact(yeast, 'temperature', '°C') : personalTemperature ?? undefined;
+  const attenuation = agreedFermentationFact(yeast, 'attenuation', '%') ?? (!yeast?.catalogue?.facts.some(f => f.key === 'attenuation') ? guide?.attenuationPct : undefined);
+  const projection = projectYeastRecipe(recipe, { reference: yeast });
   const warnings: string[] = [];
-  if (!yeast) warnings.push('Souche non identifiée avec certitude : choisis sa référence pour préciser ce scénario.');
+  if (!yeast && !recipe.yeast.name.trim()) warnings.push('Levure à renseigner pour préciser ce scénario.');
   const issues = fermentationProgramIssues(recipe.fermentation ?? [], temperature, {
     pitchTempC: recipe.yeast.pitchTempC,
+    ...(personalTemperature !== undefined ? { windowLabel: 'plage de conduite retenue' } : {}),
     hasDryHop: recipe.hops.some(h => normalizeHop(h).stage === 'dryHop' && (h.weightG > 0 || !Number.isFinite(h.weightG)))
   });
   warnings.push(...issues.map(i => i.message));
-  const fg = fermentationGravityFromAttenuation(recipe.nolo?.enabled?undefined:attenuation, recipe.ogTarget);
+  const fg = projection.fg;
+  // Process warnings are shared with hop tools. Projection warnings additionally
+  // need the grist/OG, which those tools do not receive. Avoid duplicate windows.
+  warnings.push(...projection.warnings.filter(w => !w.startsWith('Température :')));
   if(recipe.nolo?.enabled)warnings.push('NOLO : l’atténuation documentaire ne prédit pas l’alcool au conditionnement. Utiliser le bilan des sucres et les analyses du panneau NOLO.');
-  return { version: 'yeast-scenario-2', yeast, guide, temperature, attenuation, fg, warnings, issues };
+  return { version: 'yeast-scenario-3', yeast, guide, temperature, attenuation, fg, abv: projection.abv, projection, warnings, issues };
 }

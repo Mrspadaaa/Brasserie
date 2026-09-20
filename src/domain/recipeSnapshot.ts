@@ -30,39 +30,32 @@ export function yeastFromLegacy(name: string | undefined): YeastSpec | undefined
   if (!name) return undefined;
 
   // « LALLEMAND Verdant IPA (2 sachets) » ➔ nom, quantité, unité.
-  const qtyMatch = /\((\d+)\s*(sachets?|flacons?|g|mL)\)/i.exec(name);
+  const qtyMatch = /\((\d+(?:[.,]\d+)?)\s*(sachets?|flacons?|g|mL|L)\)/i.exec(name);
   const lab = /\b(Lallemand|Fermentis|White Labs|Wyeast|Omega|GigaYeast|Imperial)\b/i.exec(name)?.[1];
 
   return {
-    name: name.replace(/\s*\([^)]*\)\s*$/, '').trim(),
+    name: (qtyMatch ? name.replace(qtyMatch[0], '') : name).trim(),
     lab,
-    // Sans indication contraire, la brasserie ensemence en levure sèche —
-    // c'est ce que dit son stock, pas une supposition sur la levure.
-    form: 'sèche',
-    qty: qtyMatch ? Number(qtyMatch[1]) : 1,
-    unit: qtyMatch ? qtyMatch[2].replace(/s$/i, '').toLowerCase() : 'sachet'
+    ...(qtyMatch ? { qty: Number(qtyMatch[1].replace(',', '.')), unit: /^ml$/i.test(qtyMatch[2]) ? 'mL' : /^l$/i.test(qtyMatch[2]) ? 'L' : qtyMatch[2].replace(/s$/i, '').toLowerCase() } : {})
   };
 }
 
 /** Recette relue : houblons typés, levure structurée. Aucun champ inventé. */
 export function normalizeRecipe(recipe: Recipe): Recipe {
-  const yeast: YeastSpec =
-    recipe.yeast && typeof (recipe.yeast as YeastSpec).form === 'string'
-      ? (recipe.yeast as YeastSpec)
-      : // Anciennes recettes : `{ name, qty: '2 sachets', pitchTemp }`.
-        (() => {
-          const legacy = recipe.yeast as unknown as
-            | { name?: string; qty?: string | number; pitchTemp?: number; notes?: string }
-            | undefined;
-          const parsed = yeastFromLegacy(
-            legacy?.name ? `${legacy.name}${legacy.qty ? ` (${legacy.qty})` : ''}` : undefined
-          );
-          return {
-            ...(parsed ?? { name: '', form: 'sèche' as const, qty: 1, unit: 'sachet' }),
-            pitchTempC: legacy?.pitchTemp,
-            notes: legacy?.notes
-          };
-        })();
+  const input = recipe.yeast as Omit<YeastSpec, 'qty'> & { qty?: number | string; pitchTemp?: number };
+  // Form is optional documentary data, not a version discriminator. Modern
+  // partial objects must survive exactly, including an unknown product form.
+  const yeast: YeastSpec = !input ? { name: '' }
+    : typeof input === 'string' ? yeastFromLegacy(input) ?? { name: '' }
+    : typeof input.qty === 'string' || 'pitchTemp' in input ? (() => {
+      const { pitchTemp, qty, ...rest } = input;
+      const parsed = typeof qty === 'string' ? yeastFromLegacy(`${input.name} (${qty})`) : undefined;
+      return { ...rest,
+        ...(typeof qty === 'number' ? { qty } : parsed?.qty !== undefined ? { qty: parsed.qty } : {}),
+        ...(input.unit ? {} : parsed?.unit ? { unit: parsed.unit } : {}),
+        ...(input.pitchTempC !== undefined ? {} : pitchTemp !== undefined ? { pitchTempC: pitchTemp } : {}),
+        ...(typeof qty === 'string' && parsed?.qty === undefined ? { notes: [input.notes, `Quantité d’origine : ${qty}`].filter(Boolean).join('\n') } : {}) };
+    })() : input as YeastSpec;
 
   return {
     ...recipe,

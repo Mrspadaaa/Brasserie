@@ -1,5 +1,6 @@
 import type { Recipe, SaltId } from '../types';
 import { addIons, dilute, ionsFromSalts, ionsAfterAcid, averageWater } from './water';
+import { projectYeastRecipe } from './yeastProjection';
 
 /** Refresh derived displays, keeping all physical doses exactly as approved. */
 export function refreshCompanionRecipe(recipe: Recipe): Recipe {
@@ -52,6 +53,13 @@ export function refreshCompanionRecipe(recipe: Recipe): Recipe {
   } else if (p) {
     delete p.startIons;
     delete p.wortIons;
+  }
+  // Only the new recipe projection adopts this engine. Existing and frozen
+  // recipes keep their recorded targets until explicitly redesigned.
+  if (next.yeastDesign?.modelVersion === 'yeast-recipe-2' && !next.nolo?.enabled) {
+    const projection = projectYeastRecipe(next);
+    next.fgTarget = projection.fg.range && projection.fg.range.min === projection.fg.range.max ? projection.fg.range.min : null;
+    next.abvTarget = projection.abv.range && projection.abv.range.min === projection.abv.range.max ? projection.abv.range.min : null;
   }
   return next;
 }

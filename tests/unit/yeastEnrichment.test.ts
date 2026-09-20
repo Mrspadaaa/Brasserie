@@ -93,8 +93,11 @@ describe('Useful strain information', () => {
     expect(evaluateYeastRecipeDesign(r, draft, refs).errors).toEqual([]);
     expect(evaluateYeastRecipeDesign(r, draft, refs).warnings.join(' ')).toContain('Vérifier la méthode prévue');
     expect(evaluateYeastRecipeDesign(r, { ...draft, pitchTempC: 18 }, refs).errors).toEqual([]);
-    expect(evaluateYeastRecipeDesign(r, { ...draft, temperatureC: 30 }, refs).errors.join(' ')).toContain('hors de la fenêtre');
-    expect(evaluateYeastRecipeDesign(r, { ...draft, pitchTempC: 33 }, refs).errors.join(' ')).toContain('plage d’ensemencement direct');
+    const warm = evaluateYeastRecipeDesign(r, { ...draft, temperatureC: 30 }, refs);
+    expect(warm.errors).toEqual([]); expect(warm.warnings.join(' ')).toContain('hors de la plage de conduite retenue');
+    const outsidePitch = evaluateYeastRecipeDesign(r, { ...draft, pitchTempC: 33 }, refs);
+    expect(outsidePitch.errors).toEqual([]); expect(outsidePitch.warnings.join(' ')).toContain('Ensemencement hors de la');
+    expect(outsidePitch.effects.some(e => e.id === 'direct-pitch')).toBe(false);
   });
   it('keeps conflicting, missing and qualified documentary values visible', () => {
     const row = reference(), s = row.source;
