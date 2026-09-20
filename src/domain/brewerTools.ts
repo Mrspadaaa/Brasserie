@@ -25,6 +25,7 @@ import { refreshCompanionRecipe } from './brewerRecipeRefresh';
 export { reconcileRecipeWater, waterRelatedPath } from './recipeWater';
 import { replanRecipeWater, recipeWaterSummary } from './recipeWater';
 import { equipmentCheck, roPackages } from './brewEquipment';
+import { fermenterRecommendation } from './fermenterPlanning';
 import { acidCorrectionFromMeasuredPh, ACIDS, MASH_PH_BAND } from './water';
 import type { BrewerContext, BrewerEvidence } from '../../functions/src/companionTypes';
 import type { Recipe, RecipeSnapshot, BrewDayState, AcidId } from '../types';
@@ -575,7 +576,9 @@ export function runBrewerTool(
           grainKg: recipe.totalGristKg,
           mashL: water.mashWaterL,
           spargeL: water.spargeWaterL,
-          preBoilHotL
+          preBoilHotL,
+          preferences: rig?.preferences,
+          fermenterHeadspacePct: fermenterRecommendation(recipe,rig?.equipment)?.headspacePct
         })
       : null;
     return result(

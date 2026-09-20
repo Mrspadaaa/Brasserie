@@ -19,10 +19,17 @@ export interface SessionState {
   revision?: number;
   savedAt?: number;
   finishedAt?: number;
+  transferredAt?: number;
+  pitchedAt?: number;
+  pitchTemperatureC?: number;
+  phase?: 'brewing' | 'awaiting-pitch';
+  thermalSegments?: Array<{ id: string; stepId: string; method: 'heating' | 'immersion' | 'chamber'; startedAt: number; endedAt?: number; targetC: number; volumeL?: number; coolantC?: number; vesselRef?: string; note?: string }>;
+  thermalChoices?: { coolingMethod?: 'immersion' | 'chamber'; pitchTargetC?: number; pitchingMode?: 'at-target' | 'chamber-before-pitch' | 'documented-warm'; changedAt?: number; reason?: string; protocolSource?: string; protocolConditions?: string };
   boilStartedAt?: number;
   boilFinishedAt?: number;
   boilDurationMin?: number;
-  additions?: Record<string, { amount: number; doneAt?: number }>;
+  additions?: Record<string, { amount: number; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number }>;
+  lauterRetainedL?: number;
   hopElapsedMin?: Record<string, number>;
   waterMix?: Record<string, { roL: number }>;
   coolingWaterC?: number;
@@ -32,6 +39,12 @@ export interface SessionState {
     kind: string;
     value: number;
     stepId?: string;
+    pairId?: string;
+    thermalSegmentId?: string;
+    temperatureC?: number;
+    volumeBasis?: 'cold' | 'hot';
+    medium?: 'wort' | 'water' | 'coolant' | 'chamber';
+    measurementStage?: 'preboil' | 'postboil' | 'fermenter' | 'kettle-cold';
   }>;
 }
 export interface SessionRecipe {
@@ -143,9 +156,45 @@ export function validateSession(input: unknown): SessionState {
     if (step.pausedAt != null && (step.startedAt == null || step.pausedAt < step.startedAt))
       throw new Error('Pause sans départ valide.');
   }
-  for (const key of ['startedAt', 'boilStartedAt', 'boilFinishedAt', 'finishedAt'] as const)
+  for (const key of ['startedAt', 'boilStartedAt', 'boilFinishedAt', 'finishedAt', 'transferredAt', 'pitchedAt'] as const)
     if (s[key] != null && (!Number.isFinite(s[key]) || s[key]! < 0))
       throw new Error('Horodatage invalide.');
+  if (s.phase != null && !['brewing', 'awaiting-pitch'].includes(s.phase)) throw new Error('Phase de brassage invalide.');
+  if (s.phase === 'awaiting-pitch' && (s.transferredAt == null || s.pitchedAt != null || s.finishedAt != null))
+    throw new Error('Attente de levure incohérente avec les événements consignés.');
+  if (s.transferredAt != null && s.pitchedAt != null && s.pitchedAt < s.transferredAt)
+    throw new Error('Ensemencement avant transfert.');
+  const validTemperature = (v: unknown) => typeof v === 'number' && Number.isFinite(v) && v >= -10 && v <= 120;
+  if (s.pitchTemperatureC != null && (!validTemperature(s.pitchTemperatureC) || s.pitchedAt == null))
+    throw new Error('Température d’ensemencement invalide.');
+  if (s.thermalChoices != null) {
+    const c = s.thermalChoices;
+    if (typeof c !== 'object' || Array.isArray(c) || c.coolingMethod != null && !['immersion', 'chamber'].includes(c.coolingMethod) ||
+      c.pitchingMode != null && !['at-target', 'chamber-before-pitch', 'documented-warm'].includes(c.pitchingMode) ||
+      c.pitchTargetC != null && !validTemperature(c.pitchTargetC) ||
+      c.changedAt != null && (!Number.isFinite(c.changedAt) || c.changedAt < 0) ||
+      [c.reason, c.protocolSource, c.protocolConditions].some(x => x != null && (typeof x !== 'string' || x.length > 6000)))
+      throw new Error('Conduite thermique invalide.');
+  }
+  if (s.thermalSegments != null && (!Array.isArray(s.thermalSegments) || s.thermalSegments.length > 256))
+    throw new Error('Segments thermiques invalides.');
+  const segmentIds = new Set<string>();
+  let activeSegments = 0;
+  for (const segment of s.thermalSegments ?? []) {
+    if (!segment || typeof segment.id !== 'string' || !segment.id || segmentIds.has(segment.id) || !ids.has(segment.stepId) ||
+      !['heating', 'immersion', 'chamber'].includes(segment.method) || !validTemperature(segment.targetC) ||
+      !Number.isFinite(segment.startedAt) || segment.startedAt < 0 ||
+      segment.endedAt != null && (!Number.isFinite(segment.endedAt) || segment.endedAt < segment.startedAt) ||
+      segment.coolantC != null && !validTemperature(segment.coolantC) ||
+      segment.volumeL != null && (!Number.isFinite(segment.volumeL) || segment.volumeL <= 0 || segment.volumeL > 100000) ||
+      [segment.note, segment.vesselRef].some(x => x != null && (typeof x !== 'string' || x.length > 6000)))
+      throw new Error('Segment thermique invalide.');
+    segmentIds.add(segment.id);
+    if (segment.endedAt == null) activeSegments++;
+  }
+  if (activeSegments > 1) throw new Error('Plusieurs méthodes thermiques actives.');
+  if (s.lauterRetainedL != null && (!Number.isFinite(s.lauterRetainedL) || s.lauterRetainedL < 0 || s.lauterRetainedL > 100000))
+    throw new Error('Volume retenu après filtration invalide.');
   if (
     s.boilDurationMin != null &&
     (!Number.isFinite(s.boilDurationMin) || s.boilDurationMin < 1 || s.boilDurationMin > 480)
@@ -159,6 +208,9 @@ export function validateSession(input: unknown): SessionState {
   for (const x of Object.values(s.additions ?? {}))
     if (x.doneAt != null && (!Number.isFinite(x.doneAt) || x.doneAt < 0))
       throw new Error('Heure d’ajout invalide.');
+  for (const x of Object.values(s.additions ?? {}))
+    if (x.volumeBasis != null && !['cold', 'hot'].includes(x.volumeBasis) || x.temperatureC != null && !validTemperature(x.temperatureC))
+      throw new Error('Base de mesure d’ajout invalide.');
   for (const x of Object.values(s.hopElapsedMin ?? {}))
     if (!Number.isFinite(x) || x < 0 || x > 480) throw new Error('Horaire houblon invalide.');
   for (const x of Object.values(s.waterMix ?? {}))
@@ -176,7 +228,7 @@ export function validateSession(input: unknown): SessionState {
     throw new Error('Évaporation invalide.');
   if (s.readings != null && (!Array.isArray(s.readings) || s.readings.length > 2000))
     throw new Error('Relevés invalides.');
-  for (const x of s.readings ?? [])
+  for (const x of s.readings ?? []) {
     if (
       !x ||
       !Number.isFinite(x.at) ||
@@ -185,6 +237,14 @@ export function validateSession(input: unknown): SessionState {
       !['temperature', 'volume', 'densite', 'ph'].includes(x.kind)
     )
       throw new Error('Relevé invalide.');
+    if (x.thermalSegmentId != null && (typeof x.thermalSegmentId !== 'string' || !segmentIds.has(x.thermalSegmentId)) ||
+      x.pairId != null && (typeof x.pairId !== 'string' || !x.pairId || x.pairId.length > 160) ||
+      x.medium != null && !['wort', 'water', 'coolant', 'chamber'].includes(x.medium) ||
+      x.volumeBasis != null && !['cold', 'hot'].includes(x.volumeBasis) ||
+      x.temperatureC != null && !validTemperature(x.temperatureC) ||
+      x.measurementStage != null && !['preboil', 'postboil', 'fermenter', 'kettle-cold'].includes(x.measurementStage))
+      throw new Error('Contexte de relevé invalide.');
+  }
   return JSON.parse(JSON.stringify(s));
 }
 
@@ -200,7 +260,7 @@ export function stampSession(
     for (const [key, value] of Object.entries(obj)) {
       if (
         typeof value === 'number' &&
-        /^(at|startedAt|pausedAt|doneAt|rampStartedAt|holdStartedAt|boilStartedAt|boilFinishedAt|finishedAt)$/.test(
+        /^(at|startedAt|endedAt|changedAt|pausedAt|doneAt|rampStartedAt|holdStartedAt|boilStartedAt|boilFinishedAt|finishedAt|transferredAt|pitchedAt)$/.test(
           key
         ) &&
         value !== old?.[key] &&

@@ -1,17 +1,22 @@
 import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { FermentationGuide, FermentationGoal, FermentationGuidePlan } from '../../functions/src/fermentationGuideSchema';
 import type { HopRange, HopSource } from '../../functions/src/hopIndexSchema';
+import { hopSourceError, validHopRange } from '../../functions/src/hopIndexSchema';
+import { documentedDirectPitchProtocol, type DirectPitchProtocol } from '../../functions/src/yeastPitchingProtocol';
 import type { FermentationStep, YeastSpec } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './hopIndex/recipeGuide';
 
 export interface FermentationDraft {
   goal: FermentationGoal; pitchTempC: number | undefined;
+  pitchMethod?: 'direct';
+  pitchForm?: 'sèche';
   phases: { tempC: number | undefined; days: number | undefined }[];
   quantityG?: number;
 }
 export interface FermentationGuideSnapshot {
   guide: FermentationGuide; yeast: HopYeast; goal: FermentationGoal; programApplied: boolean;
+  pitchingProtocol?: DirectPitchProtocol;
   /** The knowledge and the actual adopted settings are frozen independently. */
   applied: { yeast: YeastSpec; volumeL: number; program: FermentationStep[] };
 }
@@ -29,7 +34,9 @@ export function fermentationPlan(guide: FermentationGuide, goal: FermentationGoa
 }
 export function createFermentationDraft(guide: FermentationGuide, goal: FermentationGoal): FermentationDraft | undefined {
   const p = fermentationPlan(guide, goal);
-  return p && { goal, pitchTempC: p.pitchTemperatureC.central, phases: p.phases.map(s => ({ tempC: s.temperatureC.central, days: s.days.central })) };
+  return p && { goal, pitchTempC: p.pitchTemperatureC.central,
+    ...(p.pitchMethod ? { pitchMethod: p.pitchMethod, pitchForm: p.pitchForm } : {}),
+    phases: p.phases.map(s => ({ tempC: s.temperatureC.central, days: s.days.central })) };
 }
 /** Unit conversion only: grams = g/hL × litres / 100. Never infer packet weight or viability. */
 export function fermentationDose(guide: FermentationGuide, volumeL: number): { range: HopRange; confidence: 'low' | 'medium'; source: HopSource } | undefined {
@@ -47,7 +54,12 @@ export function fermentationDraftErrors(guide: FermentationGuide, draft: Ferment
   if (!guide.enabled || !plan) return ['Ce programme n’est plus disponible.'];
   if (draft.quantityG !== undefined && (!finite(draft.quantityG) || draft.quantityG <= 0 || !guide.dryPitchGHL)) errors.push('La quantité de levure sèche doit être positive, ou laissée à renseigner.');
   if (!withProgram) return errors;
-  if (!within(draft.pitchTempC, guide.temperatureC.range)) errors.push('L’ensemencement proposé doit rester dans la fenêtre de fermentation de cette souche.');
+  const declaresProtocol = draft.pitchMethod !== undefined || draft.pitchForm !== undefined;
+  const protocol = declaresProtocol && draft.pitchMethod === 'direct' ? documentedDirectPitchProtocol(guide.yeastId, draft.pitchForm) : undefined;
+  if (declaresProtocol && !protocol) errors.push('Aucun protocole chiffré d’ajout direct n’est documenté pour ce produit et cette forme.');
+  if (!within(draft.pitchTempC, protocol?.temperatureC ?? guide.temperatureC.range)) errors.push(protocol
+    ? `L’ajout direct doit respecter la notice de ce produit (${protocol.temperatureC.min}–${protocol.temperatureC.max} °C), distincte de la fermentation.`
+    : 'Cette proposition d’ensemencement sort de la fenêtre de fermentation. Choisis un protocole d’ajout documenté pour cette forme avant de retenir une autre température.');
   if (draft.phases.length !== plan.phases.length) errors.push('Le programme a changé : reprends ses paliers.');
   draft.phases.forEach((s, i) => {
     if (!within(s.tempC, guide.temperatureC.range) || !finite(s.days) || s.days <= 0) errors.push(`Palier ${i + 1} : renseigne une température dans la fenêtre fabricant et une durée positive.`);
@@ -57,8 +69,9 @@ export function fermentationDraftErrors(guide: FermentationGuide, draft: Ferment
 export function proposedFermentationSteps(guide: FermentationGuide, draft: FermentationDraft): FermentationStep[] {
   if (fermentationDraftErrors(guide, draft).length) return [];
   const plan = fermentationPlan(guide, draft.goal)!;
+  const protocol = draft.pitchMethod === 'direct' ? documentedDirectPitchProtocol(guide.yeastId, draft.pitchForm) : undefined;
   return plan.phases.map((s, i) => ({ name: s.name, kind: s.kind, tempC: draft.phases[i].tempC!, days: draft.phases[i].days!,
-    note: `${s.completeWhen} Durée indicative, à ajuster aux mesures. Proposition L’Affinée (${guide.version}) ; ${guide.source.reference}.` }));
+    note: `${s.completeWhen} Durée indicative, à ajuster aux mesures. Proposition L’Affinée (${guide.version}) ; ${guide.source.reference}.${i === 0 && protocol ? ` Ajout direct à ${draft.pitchTempC} °C : ${protocol.conditions} Délai de descente vers ce palier non précisé. ${protocol.source.reference}` : ''}` }));
 }
 /** Preserve conditioning and ingredient events. The complete new order is previewed before adoption. */
 export function replacePrimaryFermentation(previous: FermentationStep[], phases: FermentationStep[]): FermentationStep[] {
@@ -79,6 +92,9 @@ export function applyFermentationGuide<T extends TrialRecipe>(recipe: T, guide: 
   const sameYeast = recipe.yeast.hopIndexId ? recipe.yeast.hopIndexId === yeast.id
     : recipe.yeast.form === yeast.form && findRecipeYeastMatches(recipe.yeast.name, withDocumentedYeastNames([{ ...yeast, aliases: guide.aliases }])).length === 1;
   const nextYeast = sameYeast ? { ...recipe.yeast, hopIndexId: yeast.id } : { name: yeast.name, hopIndexId: yeast.id, form: yeast.form ?? 'liquide', qty: 0, unit: yeast.form === 'sèche' ? 'g' : 'flacon' };
+  const protocol = withProgram && draft.pitchMethod === 'direct' ? documentedDirectPitchProtocol(guide.yeastId, draft.pitchForm) : undefined;
+  if (protocol && (yeast.form !== protocol.form || nextYeast.form !== protocol.form))
+    throw Error('La forme réelle de la levure ne correspond pas au protocole d’ajout direct. Une culture repiquée ne reçoit pas les conditions du produit sec.');
   // A different strain does not inherit attenuation, quantity, temperature or stock facts.
   if (draft.quantityG !== undefined && yeast.form === 'sèche') { nextYeast.qty = draft.quantityG; nextYeast.unit = 'g'; }
   if (withProgram) {
@@ -91,6 +107,7 @@ export function applyFermentationGuide<T extends TrialRecipe>(recipe: T, guide: 
   return { ...recipe, yeast: nextYeast, fermentation,
     hopPredictionIds: undefined, hopMatrixId: undefined, hopTrialId: undefined,
     yeastGuide: structuredClone({ guide, yeast, goal: draft.goal, programApplied: withProgram,
+      ...(protocol ? { pitchingProtocol: protocol } : {}),
       applied: { yeast: nextYeast, volumeL: recipe.volumeL, program: fermentation ?? [] } }) };
 }
 export function readFermentationGuide(recipe: TrialRecipe): FermentationGuideSnapshot | undefined {
@@ -99,6 +116,11 @@ export function readFermentationGuide(recipe: TrialRecipe): FermentationGuideSna
     if (!s) return undefined;
     assertHopKnowledge(s.guide); assertHopKnowledge(s.yeast);
     if (s.guide.kind !== 'fermentation' || s.yeast.kind !== 'yeast' || s.guide.yeastId !== s.yeast.id || !fermentationPlan(s.guide, s.goal) || typeof s.programApplied !== 'boolean' || !Array.isArray(s.applied?.program) || !s.applied?.yeast || typeof s.applied.yeast.name !== 'string') return undefined;
+    const protocol = s.pitchingProtocol;
+    if (protocol && (protocol.yeastId !== s.guide.yeastId || protocol.method !== 'direct' || protocol.form !== s.applied.yeast.form ||
+      typeof protocol.id !== 'string' || !protocol.id || typeof protocol.conditions !== 'string' || !protocol.conditions.trim() ||
+      protocol.source?.kind !== 'manufacturer' || !!hopSourceError(protocol.source) || !validHopRange(protocol.temperatureC) ||
+      !within(s.applied.yeast.pitchTempC, protocol.temperatureC))) return undefined;
     return s;
   } catch { return undefined; }
 }

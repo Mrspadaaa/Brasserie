@@ -3,11 +3,11 @@ import { BrewingMath } from '../services/brewingMath';
 import { boilMinutes, brewBitterness, effectiveFermentables } from './brewCompanion';
 import { ionsFromSalts, addIons, ionsAfterAcid, waterSourceFromPlan } from './water';
 import { equipmentErrors } from './brewEquipment';
-import { readFermentationGuide } from './fermentationGuide';
+import { pitchTemperatureFeedback } from './pitchingPlan';
+import { activeThermalSegment, thermalSamples, thermalWindow } from './brewThermal';
+export { thermalEstimate, rampExposure } from './brewThermal';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
-const median = (values: number[]) =>
-  [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
 export const round = (n: number, digits = 1) => Number(n.toFixed(digits));
 
 export function actualWater(recipe: Pick<RecipeSnapshot,'waterPlan'>, state: BrewDayState, side: 'mash' | 'sparge') {
@@ -124,179 +124,6 @@ export function waterScenario(
         ? 'Plus d’alcalinité et de minéraux de la source. Sans osmosée, reste sur ce volume, contrôle le pH refroidi et adapte le traitement à la mesure ; l’acide ne retire ni sulfates ni chlorures.'
         : 'La coupe correspond au plan. Vérifie les doses et garde empâtage et rinçage séparés.'
   };
-}
-
-/** Latest observations of the same vessel/step; never mix mash and cooling probes. */
-export function thermalEstimate(
-  state: BrewDayState,
-  step: BrewDayStep,
-  target: number,
-  now: number,
-  coolantC?: number,
-  fallbackRate?: number
-) {
-  const samples = (state.readings ?? [])
-    .filter(
-      (r) =>
-        r.kind === 'temperature' &&
-        r.stepId === step.id &&
-        finite(r.value) &&
-        finite(r.at) &&
-        r.at <= now + 1000 &&
-        (step.rampStartedAt == null || r.at >= step.rampStartedAt)
-    )
-    .sort((a, b) => a.at - b.at);
-  const points = samples.filter((r, i) => i === 0 || r.at > samples[i - 1].at).slice(-6);
-  const last = points.at(-1);
-  const cooling = ['refroidissement', 'ensemencement', 'whirlpool'].includes(step.id);
-  const basis = { points, last, cooling, target };
-  if (!last)
-    return {
-      ...basis,
-      status: 'measure' as const,
-      message: 'Relève la température du moût pour établir le point de départ.'
-    };
-  if (now - last.at > 15 * 60000)
-    return {
-      ...basis,
-      status: 'stale' as const,
-      message: 'Le dernier relevé a plus de 15 min : remesure avant de projeter l’arrivée.'
-    };
-  if (cooling && last.value < target - 0.5)
-    return {
-      ...basis,
-      status: 'below' as const,
-      message:
-        step.id === 'whirlpool'
-          ? 'Le moût est sous la consigne de whirlpool : consigne la température réelle de contact. L’extraction des houblons change ; prolonger automatiquement ne reproduit pas le programme prévu.'
-          : 'Le moût est sous la consigne. Vérifie la plage de la levure et homogénéise avant de décider d’ensemencer ; la température cible n’est pas confirmée.'
-    };
-  if (Math.abs(last.value - target) <= 0.5)
-    return {
-      ...basis,
-      status: 'reached' as const,
-      minutes: 0,
-      message:
-        'Consigne atteinte sur le dernier relevé. Homogénéise et confirme avant de poursuivre.'
-    };
-  if (!cooling && last.value > target + 0.5)
-    return {
-      ...basis,
-      status: 'overshoot' as const,
-      message: `Le dernier relevé dépasse la consigne de ${round(last.value - target)} °C. Réduis ou coupe la chauffe, homogénéise et remesure. Si le maintien a déjà commencé, consigne l’écart ; ne rallonge pas automatiquement le palier.`
-    };
-  if (cooling && finite(coolantC) && target <= coolantC + 0.5)
-    return {
-      ...basis,
-      status: 'unreachable' as const,
-      message: `L’eau de refroidissement à ${coolantC} °C ne permet pas d’atteindre ${target} °C avec une marge utile. Passe à un circuit plus froid ou termine dans une enceinte adaptée.`
-    };
-  const slopes: number[] = [];
-  const rates: number[] = [];
-  for (let i = 1; i < points.length; i++) {
-    const a = points[i - 1],
-      b = points[i],
-      dt = (b.at - a.at) / 60000;
-    if (dt < 0.5 || dt > 30) continue;
-    slopes.push((b.value - a.value) / dt);
-    if (
-      cooling &&
-      finite(coolantC) &&
-      a.value > coolantC &&
-      b.value > coolantC &&
-      b.value < a.value
-    )
-      rates.push(Math.log((a.value - coolantC) / (b.value - coolantC)) / dt);
-  }
-  const slope = slopes.length ? median(slopes) : undefined;
-  const previous = points.at(-2);
-  const recentDt = previous ? (last.at - previous.at) / 60000 : 0;
-  const recentSlope =
-    recentDt >= 2 && recentDt <= 30 ? (last.value - previous!.value) / recentDt : undefined;
-  const stalled = (v: number | undefined) => v != null && (cooling ? v >= -0.05 : v <= 0.05);
-  if (stalled(slope) || stalled(recentSlope))
-    return {
-      ...basis,
-      status: 'stalled' as const,
-      message: cooling
-        ? 'La baisse ralentit fortement ou s’arrête. Vérifie débit, température du fluide et circulation du moût ; remesure dans 5 min.'
-        : 'La chauffe progresse peu. Vérifie la puissance, la circulation et la position de la sonde. Le palier ne démarre pas tant que la maische n’est pas à la consigne.'
-    };
-  let minutes: number | undefined;
-  let model: string;
-  if (cooling) {
-    model = 'Refroidissement exponentiel';
-    if (!finite(coolantC))
-      return {
-        ...basis,
-        status: 'measure' as const,
-        message:
-          'Renseigne la température de l’eau de refroidissement. Une extrapolation linéaire devient trop optimiste près de la consigne.'
-      };
-    if (rates.length)
-      minutes = Math.log((last.value - coolantC) / (target - coolantC)) / median(rates);
-  } else {
-    model = slopes.length ? 'Vitesse observée' : 'Repère du matériel';
-    const rate = slope ?? fallbackRate;
-    if (rate && rate > 0) minutes = (target - last.value) / rate;
-  }
-  if (!finite(minutes) || minutes < 0 || minutes > 240)
-    return {
-      ...basis,
-      status: 'measure' as const,
-      message:
-        'Deux relevés espacés sont nécessaires ; au-delà de 4 h la projection est trop incertaine. Reprends une mesure dans 5 min.'
-    };
-  const elapsed = (now - last.at) / 60000;
-  if (elapsed > minutes)
-    return {
-      ...basis,
-      status: 'measure' as const,
-      message:
-        'La fenêtre estimée est passée : relève la température, la consigne n’est pas confirmée automatiquement.'
-    };
-  const remaining = Math.max(0, minutes - elapsed);
-  return {
-    ...basis,
-    status: 'estimate' as const,
-    minutes: remaining,
-    low: Math.max(1, Math.floor(remaining * 0.75)),
-    high: Math.ceil(remaining * 1.35 + 1),
-    model,
-    message:
-      'Fenêtre indicative si débit, puissance et brassage restent identiques. Confirme toujours par un relevé.'
-  };
-}
-
-export function rampExposure(state: BrewDayState, step: BrewDayStep) {
-  if (step.rampStartedAt == null) return 0;
-  const points = (state.readings ?? [])
-    .filter(
-      (r) =>
-        r.stepId === step.id &&
-        r.kind === 'temperature' &&
-        r.at >= step.rampStartedAt! &&
-        ((step.holdStartedAt ?? step.startedAt) == null ||
-          r.at <= (step.holdStartedAt ?? step.startedAt)!)
-    )
-    .sort((a, b) => a.at - b.at);
-  let enzymeMinutes = 0;
-  for (let i = 1; i < points.length; i++) {
-    const a = points[i - 1],
-      b = points[i],
-      dt = (b.at - a.at) / 60000;
-    if (dt <= 0 || dt > 30) continue;
-    const low = Math.min(a.value, b.value),
-      high = Math.max(a.value, b.value);
-    const fraction =
-      high === low
-        ? low >= 58 && low <= 72
-          ? 1
-          : 0
-        : Math.max(0, Math.min(72, high) - Math.max(58, low)) / (high - low);
-    enzymeMinutes += dt * fraction;
-  }
-  return round(enzymeMinutes);
 }
 
 /** Extract added after the sampled wort. No mash efficiency applies to dissolved sugars. */
@@ -490,37 +317,19 @@ export function readingPrompt(step: BrewDayStep, state: BrewDayState, now: numbe
       detail: 'Prélève un échantillon refroidi à 20–25 °C avant toute correction.'
     };
   if (step.rampStartedAt != null || ['refroidissement', 'whirlpool', 'sparge'].includes(step.id)) {
-    const last = rs.filter((r) => r.kind === 'temperature').sort((a, b) => b.at - a.at)[0];
-    if (!last || now - last.at >= 5 * 60000)
+    const last = thermalSamples(state, step, now).at(-1);
+    const interval = thermalWindow(activeThermalSegment(state, step.id)?.method ?? 'heating').nextReadingMin;
+    if (!last || now - last.at >= interval * 60000)
       return {
         kind: 'temperature',
         title: 'Relevé de température',
         detail:
           step.id === 'sparge'
             ? 'Contrôle l’eau de rinçage à sa consigne avant de la verser.'
-            : 'Une mesure toutes les 5 min rend la progression et l’arrivée estimée plus utiles.'
+            : `Une mesure du moût toutes les ${interval} min rend la progression et l’arrivée estimée plus utiles.`
       };
   }
   return null;
 }
 
-export function pitchFeedback(recipe: RecipeSnapshot, temp: number) {
-  const y = recipe.yeast,
-    target = y?.pitchTempC ?? recipe.fermentation?.[0]?.tempC;
-  const conserved = readFermentationGuide(recipe);
-  // Old saved guides copied setpoint extrema into these fields. Use their
-  // conserved manufacturer window unless the brewer explicitly edited it.
-  const window = conserved?.yeast.id === y?.hopIndexId && y?.fermTempMinC === conserved?.applied.yeast.fermTempMinC && y?.fermTempMaxC === conserved?.applied.yeast.fermTempMaxC
-    ? conserved?.guide.temperatureC.range : undefined;
-  const min = window?.min ?? y?.fermTempMinC, max = window?.max ?? y?.fermTempMaxC;
-  if (!finite(target)) return 'Consigne de levure absente : consulte sa fiche avant d’ensemencer.';
-  if (max != null && temp > max)
-    return 'Au-dessus de la plage renseignée de la levure : continue le refroidissement avant d’ensemencer. Un départ trop chaud peut favoriser des arômes indésirables.';
-  if (temp > target + 1)
-    return 'Encore au-dessus de la consigne. Ce n’est pas une preuve de brassin perdu : termine le refroidissement, garde le matériel désinfecté et confirme la température avant la levure.';
-  if (min != null && temp < min)
-    return 'En dessous de la plage renseignée : le démarrage peut être ralenti. Ramène progressivement le moût à la consigne.';
-  if (min == null && temp < target - 2)
-    return 'Sous la consigne du brassin : vérifie la fiche levure avant d’ensemencer. Sa plage de travail n’est pas renseignée ici.';
-  return 'Température proche de la consigne ou dans la plage renseignée. Vérifie homogénéité et conditions de la fiche levure.';
-}
+export const pitchFeedback = pitchTemperatureFeedback;

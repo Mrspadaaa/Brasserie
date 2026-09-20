@@ -168,7 +168,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   });
 
   if (
-    !specialExtraction && mash?.mashoutTempC &&
+    !specialExtraction && mash?.mashoutEnabled !== false && mash?.mashoutTempC &&
     !mash.steps?.some(
       (s) => Math.abs(s.tempC - mash.mashoutTempC!) < 0.5 && /mash.?out/i.test(s.name)
     )

@@ -70,8 +70,14 @@ describe('Gestes à la cuve', () => {
     const v = mount();
     expect(screen.queryByLabelText('Temps restant')).not.toBeInTheDocument();
     phase('Empâter');
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Commencer la montée' }));
+    expect(v.latest().steps.find((x) => x.id === 'mash-0')).toMatchObject({
+      rampStartedAt: expect.any(Number)
+    });
+    expect(v.latest().steps.find((x) => x.id === 'mash-0')!.startedAt).toBeUndefined();
+    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le maintien' }));
     const at = v.latest().steps.find((x) => x.id === 'mash-0')!.startedAt;
+    expect(at).toEqual(expect.any(Number));
     phase('Préparer');
     fireEvent.click(screen.getByLabelText('Vérifier la balance et peser les ajouts'));
     expect(v.latest().preparations?.balance).toBe(true);
@@ -159,19 +165,34 @@ describe('Gestes à la cuve', () => {
   });
   it('volume et densité à froid produisent un rendement, persisté après navigation', () => {
     const v = mount();
+    chooseStep('Concassage');
+    fireEvent.click(screen.getByLabelText('Ajouté : Pale'));
+    expect(v.latest().additions?.['grain-0']).toMatchObject({
+      amount: 5,
+      doneAt: expect.any(Number)
+    });
     phase('Empâter');
     chooseStep('Contrôle avant ébullition');
     const region = within(screen.getByRole('region', { name: 'Mesures de cette étape' }));
     fireEvent.change(screen.getByLabelText('Densité (SG)'), { target: { value: '1040' } });
     fireEvent.click(screen.getByLabelText('Densité refroidie ou corrigée à l’étalonnage'));
     fireEvent.click(region.getByRole('button', { name: 'Noter' }));
+    const observedYield = () => within(
+      screen.getByRole('row', { name: /Rendement avant ébullition/ })
+    ).getAllByRole('cell')[1];
+    expect(within(observedYield()).getByLabelText('Pas encore mesuré')).toBeInTheDocument();
     fireEvent.click(region.getByRole('button', { name: 'Volume', exact: true }));
     expect(screen.getByLabelText('Volume ramené à 20 °C')).not.toBeChecked();
     fireEvent.change(screen.getByLabelText('Volume (L)'), { target: { value: '25' } });
     fireEvent.click(screen.getByLabelText('Volume ramené à 20 °C'));
     fireEvent.click(region.getByRole('button', { name: 'Noter' }));
-    expect(screen.getByLabelText('Rendement mesuré')).toHaveTextContent('66.6 %');
+    expect(observedYield()).toHaveTextContent('66,6');
     expect(v.latest().readings!.every((r) => r.roomTemp)).toBe(true);
+    const readings = v.latest().readings;
+    phase('Recette');
+    phase('Conduite');
+    expect(observedYield()).toHaveTextContent('66,6');
+    expect(v.latest().readings).toEqual(readings);
   });
   it('fuzz de quantité : les saisies hostiles ne cassent ni l’écran ni les doses des autres lignes', () => {
     const v = mount();

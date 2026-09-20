@@ -1,4 +1,5 @@
 import { Input } from '../ui/Input';
+import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
 import React, { useState, useRef, useMemo, useEffect, useLayoutEffect, useId } from 'react';
 import { isCurrent } from '../domain/catalogOrganization';
 import { 
@@ -563,12 +564,24 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
       return;
     }
     const cfg = StorageService.getConfig();
-    const profile = selected.brewhouse ?? cfg.brewhouses.find(b => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
+    const activeProfile = cfg.brewhouses.find(b => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
+    const adoptionIssue = recipeInstallationAdoptionIssue(selected, activeProfile);
+    if (adoptionIssue) {
+      setBrewError(adoptionIssue);
+      return;
+    }
+    const profile = selected.brewhouse ?? activeProfile;
     let recipe: Recipe;
     try {
       recipe = scaleBrewBudgetRecipe(selected, batchVolumeL, profile);
     } catch (error) {
       setBrewError(error instanceof Error ? error.message : 'La recette ne peut pas être adaptée à ce volume.');
+      return;
+    }
+
+    const installationIssues = recipeInstallationIssues(recipe, activeProfile);
+    if (installationIssues.length) {
+      setBrewError(`${installationIssues.join(' ')} Ouvre la recette pour ajuster ces choix.`);
       return;
     }
 

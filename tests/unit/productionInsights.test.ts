@@ -11,10 +11,13 @@ import {
   batchNextAction,
   batchOutcome,
   daysSinceBrew,
+  daysSincePitch,
+  fermentationStartedAt,
   missingBatchMeasurements,
   packagingBalance,
   recipeSignature
 } from '../../src/domain/productionInsights';
+import { statusOfBatch } from '../../src/domain/batchStatus';
 
 const recipe: Recipe = {
   ...fullRecipe,
@@ -103,6 +106,37 @@ describe('Brewer outcomes and useful actions', () => {
     expect(daysSinceBrew(batch(), now)).toBe(3);
     expect(daysSinceBrew(batch({ brewDate: '09.09.2026' }), now)).toBe(-1);
     expect(daysSinceBrew(batch({ brewDate: '31.02.2026' }), now)).toBeUndefined();
+  });
+  it('keeps preparation, real brewing and closure distinct even without a global start timestamp', () => {
+    const planned = batch({ status: 'planifie', plannedBrewDate: '27.09.2026', brewDate: '' });
+    expect(statusOfBatch(planned).label).toBe('Planifié');
+    expect(batchNextAction(planned).label).toBe('Préparer le brassage');
+    const started = { ...planned, brewDate: '20.09.2026' };
+    expect(statusOfBatch(started).label).toBe('Brassage en cours');
+    expect(batchNextAction(started).label).toBe('Reprendre le brassage');
+    const finished = { ...started, brewDay: { steps: [], currentIndex: 0, finishedAt: 0 } };
+    expect(statusOfBatch(finished).label).toBe('Brassage à clôturer');
+    expect(batchNextAction(finished).label).toBe('Clôturer le brassage');
+  });
+  it('a transferred wort retains its actual brewing date without starting the fermentation clock', () => {
+    const transferredAt = Date.parse('2026-09-20T16:00:00Z');
+    const pending = batch({ status: 'planifie', plannedBrewDate: '27.09.2026', brewDate: '20.09.2026',
+      brewDay: { steps: [], currentIndex: 0, phase: 'awaiting-pitch', transferredAt } });
+    expect(statusOfBatch(pending).label).toBe('En attente d’ensemencement');
+    expect(batchNextAction(pending)).toEqual({ label: 'Reprendre le refroidissement et ajouter la levure', brew: true });
+    expect(daysSinceBrew(pending, new Date(2026, 8, 23, 12).getTime())).toBe(3);
+    expect(fermentationStartedAt(pending)).toBeUndefined();
+    expect(daysSincePitch(pending)).toBeUndefined();
+    const pitchedAt = transferredAt + 16 * 3600000;
+    const pitched: Batch = { ...pending, status: 'fermentation', brewDay: { ...pending.brewDay!, phase: 'brewing', pitchedAt, finishedAt: pitchedAt } };
+    expect(fermentationStartedAt(pitched)).toEqual({ at: pitchedAt, measured: true });
+    expect(daysSincePitch(pitched, pitchedAt + 86400000)).toBe(1);
+    expect(pending).toMatchObject({ status: 'planifie', plannedBrewDate: '27.09.2026', brewDate: '20.09.2026' });
+  });
+  it('uses a documented actual day for the legacy estimate when the stored brewing day is missing', () => {
+    const legacy = batch({ plannedBrewDate: '27.09.2026', brewDate: '',
+      brewDay: { steps: [], currentIndex: 0, startedAt: Date.parse('2026-09-20T12:00:00Z') } });
+    expect(fermentationStartedAt(legacy)).toEqual({ at: Date.UTC(2026, 8, 20), measured: false });
   });
   it('puts ongoing work first and schedules upcoming planned batches chronologically', () => {
     const entries = batchEntries([

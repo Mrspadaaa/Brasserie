@@ -10,7 +10,11 @@ export const brewAdviceKey = (s: BrewDayState) =>
     s.mashContext,
     s.boilDurationMin,
     s.boilStartedAt,
-    s.boilFinishedAt
+    s.boilFinishedAt,
+    s.thermalChoices,
+    s.thermalSegments,
+    s.transferredAt,
+    s.pitchedAt
   ]);
 export const READING = {
   ph: { label: 'pH', unit: '', min: 0.1, max: 14, placeholder: '5,4' },
@@ -224,6 +228,8 @@ export function startBrewStep(state: BrewDayState, now: number): BrewDayState {
     ...state,
     startedAt: state.startedAt ?? now,
     ...(boilStartedAt != null ? { boilStartedAt } : {}),
+    thermalSegments: state.thermalSegments?.map(segment => segment.stepId === s.id && segment.method === 'heating' && segment.endedAt == null
+      ? { ...segment, endedAt: now } : segment),
     steps: state.steps.map((x, i) => (i === state.currentIndex ? next : x))
   };
 }
@@ -241,7 +247,9 @@ export function completeBrewStep(state: BrewDayState, now: number): BrewDayState
   return {
     ...started,
     currentIndex: nextIndex,
-    ...(last ? { finishedAt: now } : {}),
+    ...(last && current.id !== 'ensemencement' ? { finishedAt: now } : {}),
+    ...(current.id === 'ensemencement' ? { pitchedAt: state.pitchedAt ?? now, finishedAt: state.finishedAt ?? now, phase: 'brewing' as const } : {}),
+    thermalSegments: started.thermalSegments?.map(segment => segment.stepId === current.id && segment.endedAt == null ? { ...segment, endedAt: now } : segment),
     steps: started.steps.map((s, i) => {
       if (i === state.currentIndex) return { ...s, doneAt: now };
       // Les paliers démarrent à température atteinte. Seule l'ébullition continue.
@@ -255,11 +263,84 @@ export function completeBrewStep(state: BrewDayState, now: number): BrewDayState
   };
 }
 
-/** Des relevés pré-ébullition ne deviennent jamais l'OG ni le volume en fermenteur. */
-export function finalBrewReadings(state: BrewDayState) {
-  const readings = [...(state.readings ?? [])].reverse();
-  return {
-    gravity: readings.find((r) => r.kind === 'densite' && isFinalWort(r.stepId)),
-    volume: readings.find((r) => r.kind === 'volume' && r.stepId === 'ensemencement')
-  };
+/** Transfer is a physical event, not the start of fermentation. Safe to retry offline. */
+export function markTransferred(state: BrewDayState, now: number): BrewDayState {
+  if (state.finishedAt != null || state.pitchedAt != null || state.transferredAt != null) return state;
+  const pitchIndex = state.steps.findIndex(s => s.id === 'ensemencement');
+  return { ...state, phase: 'awaiting-pitch', transferredAt: now,
+    currentIndex: pitchIndex >= 0 ? pitchIndex : state.currentIndex,
+    thermalSegments: state.thermalSegments?.map(s => s.endedAt == null ? { ...s, endedAt: now } : s),
+    notes: [...state.notes ?? [], { id: crypto.randomUUID(), at: now, stepId: 'ensemencement',
+      text: 'Transfert en fermenteur consigné. En attente d’ensemencement ; la fermentation n’a pas encore commencé.' }] };
+}
+
+/** Confirm the actual yeast addition. No OG, volume or pitch temperature is invented. */
+export function recordPitch(state: BrewDayState, now: number, temperatureC?: number): BrewDayState {
+  if (state.pitchedAt != null || state.finishedAt != null) return state;
+  const temperature = typeof temperatureC === 'number' && Number.isFinite(temperatureC) ? temperatureC : undefined;
+  return { ...state, phase: 'brewing', pitchedAt: now, finishedAt: now,
+    ...(temperature == null ? {} : { pitchTemperatureC: temperature }),
+    steps: state.steps.map(s => s.id === 'ensemencement' ? { ...s, doneAt: now } : s),
+    thermalSegments: state.thermalSegments?.map(s => s.endedAt == null ? { ...s, endedAt: now } : s),
+    notes: [...state.notes ?? [], { id: crypto.randomUUID(), at: now, stepId: 'ensemencement',
+      text: `Levure ajoutée${temperature == null ? ' · température non relevée' : ` · moût à ${temperature} °C`}. Début de fermentation consigné.` }] };
+}
+
+export interface QualifiedFinalBrewReading {
+  value: number;
+  reading: BrewDayReading;
+  approximate: boolean;
+}
+
+/** Qualify the latest observation before promoting it to the batch. Raw journal values stay intact. */
+export function finalBrewReadings(state: BrewDayState, recipe?: Pick<RecipeSnapshot, 'brewhouse'>) {
+  const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
+  const isFinalGravity = (r: BrewDayReading) => r.kind === 'densite' && (r.measurementStage
+    ? ['fermenter', 'kettle-cold'].includes(r.measurementStage) : isFinalWort(r.stepId));
+  const isFermenterVolume = (r: BrewDayReading) => r.kind === 'volume' && (r.measurementStage
+    ? r.measurementStage === 'fermenter' : r.stepId === 'ensemencement');
+  const readings = (state.readings ?? []).filter(r => isFinalGravity(r) || isFermenterVolume(r))
+    .map((reading, order) => ({ reading, order }))
+    .sort((a, b) => (finite(b.reading.at) ? b.reading.at : Infinity) - (finite(a.reading.at) ? a.reading.at : Infinity) || b.order - a.order)
+    .map(({ reading }) => reading);
+  // An explicitly paired new capture cannot borrow the missing half from an older pair.
+  const candidates = readings[0]?.pairId ? readings.filter(r => r.pairId === readings[0].pairId) : readings;
+  const rawGravity = candidates.find(isFinalGravity), rawVolume = candidates.find(isFermenterVolume);
+  let gravity: QualifiedFinalBrewReading | undefined, volume: QualifiedFinalBrewReading | undefined;
+  const reasons = { gravity: 'Densité initiale inconnue : relève le moût refroidi à température de référence.',
+    volume: 'Volume en fermenteur inconnu : relève le volume et sa référence de température.' };
+  const beforePitch = (r: BrewDayReading) => finite(r.at) && r.at >= 0 && (state.pitchedAt == null || r.at <= state.pitchedAt);
+  const wortChangedSince = (r: BrewDayReading) => Object.entries(state.additions ?? {}).some(([id, addition]) =>
+    /^(water-|grain-)/.test(id) && addition.amount > 0 && finite(addition.doneAt) &&
+    addition.doneAt > r.at && addition.doneAt <= (state.pitchedAt ?? state.finishedAt ?? Infinity),
+  );
+  if (rawGravity) {
+    if (wortChangedSince(rawGravity)) {
+      reasons.gravity = 'Le moût a changé depuis cette densité : reprends une mesure après le dernier ajout d’eau ou de fermentescible. Le relevé brut reste au journal.';
+    } else if (beforePitch(rawGravity) && rawGravity.unit === 'SG' && finite(rawGravity.value) &&
+      rawGravity.value >= READING.densite.min && rawGravity.value <= READING.densite.max && rawGravity.roomTemp === true) {
+      gravity = { value: rawGravity.value, reading: rawGravity, approximate: false };
+      reasons.gravity = '';
+    } else reasons.gravity = 'Dernière densité non qualifiée comme OG : confirme sa référence de température et son prélèvement avant levure. Le relevé brut reste au journal.';
+  }
+  if (rawVolume) {
+    const valid = beforePitch(rawVolume) && rawVolume.unit === 'L' && finite(rawVolume.value) && rawVolume.value > 0;
+    const cold = rawVolume.volumeBasis === 'cold' || !rawVolume.volumeBasis && rawVolume.roomTemp === true;
+    if (valid && cold && (!finite(rawVolume.temperatureC) || rawVolume.temperatureC <= 30)) {
+      volume = { value: rawVolume.value, reading: rawVolume, approximate: false };
+      reasons.volume = '';
+    } else if (valid && rawVolume.volumeBasis === 'hot' && (!finite(rawVolume.temperatureC) || rawVolume.temperatureC >= 90)) {
+      const shrink = recipe?.brewhouse?.equipment?.coolingShrinkagePct;
+      if (finite(shrink) && shrink >= 0 && shrink < 20) {
+        volume = { value: Number((rawVolume.value * (1 - shrink / 100)).toFixed(3)), reading: rawVolume, approximate: true };
+        reasons.volume = '';
+      }
+    }
+    if (!volume) reasons.volume = 'Dernier volume non qualifié à froid : précise sa référence. Un volume à ébullition demande le retrait du profil figé ; le relevé brut reste au journal.';
+    if (wortChangedSince(rawVolume)) {
+      volume = undefined;
+      reasons.volume = 'Le moût a changé depuis ce volume : mesure à nouveau le volume final après les ajouts. Le relevé brut reste au journal.';
+    }
+  }
+  return { gravity, volume, rawGravity, rawVolume, reasons };
 }

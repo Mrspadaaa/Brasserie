@@ -1,14 +1,12 @@
 import { Units } from '../services/units';
 import React, { useEffect, useState } from 'react';
-import { Calculator, ChevronDown, Thermometer } from 'lucide-react';
+import { Calculator, ChevronDown } from 'lucide-react';
 import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem, BrewhouseProfile } from '../types';
 import { BrewEquipmentSummary } from './BrewEquipmentSummary';
 import { ReadingKind } from '../domain/brewDay';
 import {
   actualWater,
   boilScenario,
-  pitchFeedback,
-  rampExposure,
   round,
   thermalEstimate,
   waterScenario,
@@ -22,6 +20,8 @@ import {
 } from '../domain/brewCompanion';
 import { brewNow } from '../services/brewClock';
 import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
+import { BrewThermalControl } from './BrewThermalControl';
+import { effectiveThermalTarget } from '../domain/brewThermal';
 import { BrewChoice } from './BrewChoice';
 import { BrewTag } from './BrewTag';
 import { NumberInput } from './NumberInput';
@@ -78,7 +78,8 @@ export function BrewAssist({
   update,
   onMeasure,
   stock = [],
-  brewhouse
+  brewhouse,
+  thermalHandled = false
 }: {
   recipe: RecipeSnapshot;
   state: BrewDayState;
@@ -88,6 +89,7 @@ export function BrewAssist({
   onMeasure: (kind: ReadingKind) => void;
   stock?: StockItem[];
   brewhouse?: BrewhouseProfile;
+  thermalHandled?: boolean;
 }) {
   const boil = isBoilStep(step) || step.id === 'preboil' || step.id === 'fwh';
   const cooling = ['refroidissement', 'whirlpool', 'ensemencement'].includes(step.id);
@@ -118,16 +120,14 @@ export function BrewAssist({
   const [evap, setEvap] = useScenarioValue<number | undefined>(
     state.boilOffLPerHour ?? recipe.brewhouse?.equipment?.boilOffLPerHour
   );
-  const [coolant, setCoolant] = useScenarioValue<number | undefined>(state.coolingWaterC);
   const [notice, setNotice] = useState('');
   const w = waterScenario(recipe, state, side, ro!);
   const simulation = boilScenario(recipe, state, minutes!, hopId || undefined, elapsed, evap);
-  const target = step.tempC ?? recipe.fermentation?.[0]?.tempC ?? recipe.yeast?.pitchTempC;
+  const target = effectiveThermalTarget(recipe, state, step);
   const thermal =
     (heating || cooling || step.id === 'sparge') && target != null
-      ? thermalEstimate(state, step, target, now, coolant, recipe.mash?.heatingRateCPerMin)
+      ? thermalEstimate(state, step, target, now, state.coolingWaterC, recipe.mash?.heatingRateCPerMin)
       : null;
-  const exposure = heating ? rampExposure(state, step) : 0;
   const thermalAttention =
     thermal && ['overshoot', 'below', 'stalled', 'unreachable'].includes(thermal.status);
   const rescue = wortRescue(state, step.id, recipe.ogTarget, recipe);
@@ -260,152 +260,7 @@ export function BrewAssist({
             )}
           </section>
         )}
-        {(heating || cooling || step.id === 'sparge') && (
-          <section aria-label="Aide température">
-            <h3>
-              <Thermometer size={17} />{' '}
-              {cooling
-                ? 'Estimer l’arrivée à la consigne'
-                : heating
-                  ? 'Montée, puis maintien'
-                  : 'Chauffer l’eau de rinçage'}
-            </h3>
-            {cooling && (
-              <NumberField
-                label="Eau de refroidissement (°C)"
-                value={coolant}
-                set={setCoolant}
-                min={0}
-                max={60}
-              />
-            )}
-            {['refroidissement', 'ensemencement'].includes(step.id) &&
-              recipe.fermentation?.[0]?.tempC != null &&
-              target != null &&
-              target > recipe.fermentation[0].tempC + 2 && (
-                <div className="brew-feedback">
-                  <p>
-                    La fermentation est prévue à {recipe.fermentation[0].tempC} °C, mais cette étape
-                    vise {target} °C. Pour un départ maîtrisé, termine le refroidissement à la
-                    température de fermentation en vérifiant la fiche levure.
-                  </p>
-                  <button
-                    type="button"
-                    className={brewControl}
-                    onClick={() =>
-                      save(
-                        (s) => ({
-                          ...s,
-                          steps: s.steps.map((x) =>
-                            x.id === step.id ? { ...x, tempC: recipe.fermentation![0].tempC } : x
-                          ),
-                          notes: [
-                            ...(s.notes ?? []),
-                            {
-                              id: crypto.randomUUID(),
-                              at: brewNow(),
-                              stepId: step.id,
-                              text: `Consigne du jour ajustée de ${target} à ${recipe.fermentation![0].tempC} °C pour correspondre à la fermentation.`
-                            }
-                          ]
-                        }),
-                        'Consigne du jour ajustée ; recette originale conservée.'
-                      )
-                    }
-                  >
-                    Viser {recipe.fermentation[0].tempC} °C
-                  </button>
-                </div>
-              )}
-            {thermal && (
-              <div
-                className={`brew-assist-result ${thermalAttention ? 'is-attention' : thermal.status === 'reached' ? '' : 'is-info'}`}
-              >
-                <strong>
-                  {thermal.status === 'estimate'
-                    ? `Encore ≈ ${thermal.low}–${thermal.high} min vers ${target} °C`
-                    : `${target} °C · ${thermal.status === 'reached' ? 'relevé conforme' : thermal.status === 'below' ? 'sous la consigne' : 'à confirmer'}`}
-                </strong>
-                <p>{thermal.message}</p>
-                {thermal.status === 'estimate' && (
-                  <small>
-                    {thermal.model} · {thermal.points.length} relevé
-                    {thermal.points.length > 1 ? 's' : ''}
-                  </small>
-                )}
-              </div>
-            )}
-            {step.rampStartedAt == null && step.startedAt == null && (
-              <button
-                type="button"
-                className={brewControl}
-                onClick={() => {
-                  save(
-                    (s) => ({
-                      ...s,
-                      steps: s.steps.map((x) =>
-                        x.id === step.id ? { ...x, rampStartedAt: brewNow() } : x
-                      )
-                    }),
-                    cooling
-                      ? 'Suivi commencé. Relève la température de départ.'
-                      : 'Montée commencée. Le maintien reste à démarrer à la consigne.'
-                  );
-                  onMeasure('temperature');
-                }}
-              >
-                {cooling ? 'Commencer le suivi' : 'Commencer la montée'}
-              </button>
-            )}
-            <button
-              type="button"
-              className={brewControl}
-              onClick={() => {
-                if (cooling && coolant != null && coolant >= 0 && coolant <= 60)
-                  update((s) => ({ ...s, coolingWaterC: coolant }));
-                onMeasure('temperature');
-              }}
-            >
-              Relever la température
-            </button>
-            {heating && (
-              <>
-                <p>
-                  Le maintien de {step.durationMin} min commence quand la maische homogène atteint{' '}
-                  {target} °C. Une montée lente prolonge l’activité de certaines enzymes et peut
-                  changer la fermentescibilité ; on ne retranche pas ces minutes du palier
-                  automatiquement.
-                </p>
-                {step.rampStartedAt != null &&
-                  (step.holdStartedAt ?? step.startedAt ?? now) - step.rampStartedAt >=
-                    20 * 60000 && (
-                    <p className="brew-feedback">
-                      Montée de plus de 20 min : vérifie la chauffe et confirme la conversion avant
-                      le mash-out. Si la consigne reste inaccessible, consigne la température
-                      réellement tenue et demande un conseil sur ce profil.
-                    </p>
-                  )}
-                {exposure > 0 && (
-                  <p className="brew-muted">
-                    ≈ {exposure} min observées entre 58 et 72 °C pendant la montée. Ce repère ne
-                    prédit pas l’atténuation.
-                  </p>
-                )}
-              </>
-            )}
-            {cooling && step.id !== 'whirlpool' && thermal?.last && (
-              <p>{pitchFeedback(recipe, thermal.last.value)}</p>
-            )}
-            {cooling && (
-              <p className="brew-muted">
-                Le refroidissement ralentit près de la température de l’eau. Mesure au même endroit,
-                mélange doucement et reprends un relevé après 5–10 min. En dessous de la consigne de
-                whirlpool, le contact extrait différemment ; attends la consigne de levure avant
-                d’ensemencer.
-              </p>
-            )}
-          </section>
-        )}
+        {!thermalHandled && (heating || cooling || step.id === 'sparge') && <BrewThermalControl recipe={recipe} state={state} step={step} now={now} update={update} onMeasure={onMeasure} />}
         {boil && (
           <section aria-label="Simulateur d’ébullition">
             <h3>Et si je change le programme ?</h3>

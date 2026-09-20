@@ -34,7 +34,8 @@ describe('Matériel réel : capacités, conservation et paquets', () => {
       .toBeCloseTo(24, 1);
     const check = equipmentCheck(profile.equipment, { volumeL: 24, grainKg: 3,
       mashL: w.mashWaterL, spargeL: w.spargeWaterL, preBoilHotL: w.preBoilHotL })!;
-    expect(check.loads).toEqual([17.4, 6.1]);
+    expect(check.spargeMainHotL).toBe(18);
+    expect(check.spargeAuxiliaryHotL).toBeCloseTo(6.205, 6);
     expect(check.mashTooFull).toBe(false);
     expect(check.boilTooFull).toBe(false);
     const thinner = BrewingMath.waterVolumes(3, 24, { ...profile, mashRatioLPerKg: 6 }, 'batch', 115, 14);
@@ -93,15 +94,16 @@ describe('Matériel réel : capacités, conservation et paquets', () => {
       })!.mashTooFull
     ).toBe(true);
   });
-  it('répartit 25 L de rinçage en plusieurs charges et réserve la dilatation du sparger 18 L', () => {
+  it('distingue le principal de l’appoint sans inventer plusieurs chauffes', () => {
     const check = equipmentCheck(rig.equipment, {
       volumeL: 24,
       grainKg: 5,
       mashL: 20,
       spargeL: 25
     })!;
-    expect(check.loads).toEqual([17.4, 7.6]);
-    for (const charge of check.loads) expect(charge * 1.03).toBeLessThanOrEqual(18);
+    expect(check.spargeMainHotL).toBe(18);
+    expect(check.spargeAuxiliaryHotL).toBeCloseTo(7.75, 6);
+    expect(check.spargeStatus).toBe('exception');
   });
   it('achète par packs entiers mais dose au litre exact', () => {
     expect(roPackages(7.3, 5)).toEqual({
@@ -128,7 +130,10 @@ describe('Matériel réel : capacités, conservation et paquets', () => {
     expect(adapted.volumeL).toBe(24);
     expect(adapted.fermentables![0].weightKg).toBe(4);
     expect(adapted.hops![0].weightG).toBe(16);
-    expect(adapted.waterPlan!.mash.cacl2! / adapted.waterPlan!.mashWaterL).toBeCloseTo(0.1, 2);
+    // Historical plans group salts in the mash unless explicitly disabled:
+    // preserve their concentration over all brewing water, not just mash water.
+    expect(adapted.waterPlan!.mash.cacl2! / (adapted.waterPlan!.mashWaterL + adapted.waterPlan!.spargeWaterL))
+      .toBeCloseTo(r.waterPlan!.mash.cacl2! / (r.waterPlan!.mashWaterL + r.waterPlan!.spargeWaterL), 6);
     expect(adapted.waterPlan!.acid!.mash / adapted.waterPlan!.mashWaterL).toBeCloseTo(0.05, 2);
     expect(adapted.waterPlan!.diRatioPct).toBe(20);
     expect(JSON.stringify(r)).toBe(before);

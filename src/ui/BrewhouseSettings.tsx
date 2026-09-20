@@ -1,28 +1,33 @@
 import React from 'react';
 import { ChevronDown, SlidersHorizontal } from 'lucide-react';
-import { BrewhouseProfile, BrewingEquipment } from '../types';
+import { BrewhouseProfile, BrewingEquipment, EquipmentItem } from '../types';
 import { equipmentErrors, fermenterLimit, practicalEquipment, r1 } from '../domain/brewEquipment';
+import { personalBrewingPreferences, brewingPreferenceErrors } from '../domain/brewPreferences';
 import { NumberInput } from './NumberInput';
 import { inputClass } from './FormNav';
 import './brew-equipment.css';
 
 export function BrewhouseSettings({
   profile,
-  onChange
+  onChange,
+  inventory = []
 }: {
   profile: BrewhouseProfile;
   onChange: (p: BrewhouseProfile) => void;
+  inventory?: EquipmentItem[];
 }) {
   const e = profile.equipment;
   const change = (patch: Partial<BrewingEquipment>) => {
     const next = { ...e, ...patch };
-    const max = fermenterLimit(next);
     onChange({
       ...profile,
-      equipment: next,
-      volumeL: Math.min(profile.volumeL, max ?? profile.volumeL)
+      equipment: next
     });
   };
+  const preferences = profile.preferences ?? personalBrewingPreferences;
+  const preference = (key: 'preferredMashRatioLPerKg' | 'preferredSpargeHotL' | 'maximumSpargeHotL', label: string) => <label className="equipment-field">
+    <span>{label}</span><NumberInput aria-label={label} value={preferences[key]} min={0} className={inputClass} onValue={value => onChange({ ...profile, preferences: { ...preferences, [key]: value } })} />
+  </label>;
   const field = (
     key: keyof BrewingEquipment,
     label: string,
@@ -45,10 +50,10 @@ export function BrewhouseSettings({
     </label>
   );
   return (
-    <details className="equipment-settings">
+    <details className="equipment-settings" open>
       <summary>
         <span>
-          <SlidersHorizontal size={18} /> Matériel, capacités et eau
+          <SlidersHorizontal size={18} /> Mon installation
         </span>
         <ChevronDown size={18} />
       </summary>
@@ -62,7 +67,8 @@ export function BrewhouseSettings({
                 ...profile,
                 name: 'Royal Catering · cuve 45 L',
                 volumeL: 24,
-                equipment: { ...practicalEquipment }
+                equipment: { ...practicalEquipment },
+                preferences: { ...personalBrewingPreferences }
               })
             }
           >
@@ -71,12 +77,24 @@ export function BrewhouseSettings({
         ) : (
           <>
             <p className="equipment-target">
-              <strong>{fermenterLimit(e) ?? '—'} L de moût par fermenteur</strong>
+              <strong>Fermenteur {e.fermenterCapacityL} L · repère {fermenterLimit(e) ?? '—'} L de moût</strong>
               <span>
-                {r1((e.fermenterCapacityL * e.fermenterHeadspacePct) / 100)} L réservés à la mousse
-                · capacité totale {e.fermenterCapacityL} L
+                Repère ajustable dans chaque recette selon la levure et le style.
               </span>
             </p>
+            <div className="equipment-grid">
+              <label className="equipment-field"><span>Volume habituel en fermenteur (L)</span><NumberInput aria-label="Volume habituel en fermenteur (L)" min={1} value={profile.volumeL} onValue={value => onChange({...profile,volumeL:value})} className={inputClass}/></label>
+              {preference('preferredMashRatioLPerKg', 'Empâtage préféré (L/kg)')}
+              {preference('preferredSpargeHotL', 'Rinçage habituel à chaud (L)')}
+              {preference('maximumSpargeHotL', 'Rinçage exceptionnel maximum à chaud (L)')}
+            </div>
+            <label className="equipment-check"><input type="checkbox" checked={preferences.increaseMashToLimitSparge} onChange={e => onChange({...profile, preferences:{...preferences,increaseMashToLimitSparge:e.target.checked}})}/><span>Augmenter l’eau d’empâtage pour limiter le rinçage, si la cuve le permet</span></label>
+            <p className="text-xs text-cave-400">Récipient principal puis bouilloire annexe si nécessaire. La capacité de l’auxiliaire reste à vérifier.</p>
+            <label className="equipment-check"><input type="checkbox" checked={!!preferences.regulatedCoolingAvailable} onChange={e => onChange({...profile,preferences:{...preferences,regulatedCoolingAvailable:e.target.checked}})}/><span>Froid régulé disponible après le serpentin</span></label>
+            <details className="equipment-calibration"><summary>Matériel déjà dans l’inventaire <ChevronDown size={17}/></summary>
+              <div className="equipment-grid">{([['kettle','Cuve'],['sparger','Récipient de rinçage'],['fermenter','Fermenteur'],['auxiliary','Bouilloire annexe']] as const).map(([key,label])=><label className="equipment-field" key={key}><span>{label}</span><select className={inputClass} aria-label={`${label} dans l’inventaire`} value={profile.equipmentRefs?.[key] ?? ''} onChange={e=>onChange({...profile,equipmentRefs:{...profile.equipmentRefs,[key]:e.target.value||undefined}})}><option value="">Référence non liée</option>{inventory.map(item=><option key={item.id} value={item.id}>{item.name} · {item.ref}</option>)}</select></label>)}</div>
+              <p className="text-xs text-cave-400">Ces liens réutilisent les fiches existantes. Les capacités chiffrées ci-dessous restent à renseigner ou confirmer.</p>
+            </details>
             <div className="equipment-grid">
               {field('kettleCapacityL', 'Cuve · capacité totale (L)', 1, 10000)}
               {field(
@@ -91,15 +109,15 @@ export function BrewhouseSettings({
                 'Sparger · capacité à chaud (L)',
                 1,
                 10000,
-                'Le remplissage à froid est réduit pour la dilatation. Plusieurs chauffes si nécessaire.'
+                'Capacité du récipient principal à température de rinçage. Le complément vient de la bouilloire annexe.'
               )}
               {field('fermenterCapacityL', 'Fermenteur · capacité totale (L)', 1, 10000)}
               {field(
                 'fermenterHeadspacePct',
                 'Place pour la mousse (%)',
-                10,
-                50,
-                'Part du volume total. 20 % est un point de départ ; augmente pour une levure très expansive.'
+                0,
+                99,
+                'Repère provisoire, remplacé par le conseil de la levure ou ton choix dans la recette.'
               )}
               {field(
                 'roPackL',
@@ -132,6 +150,7 @@ export function BrewhouseSettings({
                 ébullition, en L/h, indépendamment du volume de la recette.
               </p>
               <div className="equipment-grid">
+                <label className="equipment-field"><span>Rendement d’extraction des grains (%)</span><NumberInput aria-label="Rendement d’extraction des grains (%)" value={profile.efficiencyPct} min={1} max={100} onValue={value=>onChange({...profile,efficiencyPct:value})} className={inputClass}/></label>
                 {field('boilOffLPerHour', 'Évaporation à chaud (L/h)', 0, 100)}
                 <label className="equipment-field">
                   <span>Pertes en fond de cuve (L froids)</span>
@@ -150,9 +169,9 @@ export function BrewhouseSettings({
                 {field('heatingRateCPerMin', 'Vitesse de chauffe observée (°C/min)', 0.01, 10)}
               </div>
             </details>
-            {equipmentErrors(e).length > 0 && (
+            {[...equipmentErrors(e), ...brewingPreferenceErrors(profile)].length > 0 && (
               <p role="alert" className="equipment-warning">
-                {equipmentErrors(e).join(' ')}
+                {[...equipmentErrors(e), ...brewingPreferenceErrors(profile)].join(' ')}
               </p>
             )}
           </>

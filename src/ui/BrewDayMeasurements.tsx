@@ -15,9 +15,10 @@ import {
 import { acidCorrectionFromMeasuredPh, ACIDS } from '../domain/water';
 import { NumberInput } from './NumberInput';
 import { useHoldRepeat } from './numericInput';
+import { BrewWortPair, type WortPairDraft } from './BrewWortPair';
 
 export const brewControl =
-  'min-h-10 whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-3 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
+  'min-h-touch-lg whitespace-nowrap rounded-control border border-cave-700 bg-cave-850 px-2 text-sm text-cave-200 hover:bg-cave-800 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw';
 export const brewInput =
   'w-full min-w-0 min-h-touch-lg rounded-control border border-cave-600 bg-cave-950 px-2 text-base text-cave-50 reading outline-none focus:border-ebc-straw';
 export type BrewUpdate = (update: (state: BrewDayState) => BrewDayState) => void;
@@ -26,6 +27,7 @@ export interface BrewReadingDraft {
   raw: string;
   roomTemp: boolean;
   editing: string | null;
+  pair?: WortPairDraft;
 }
 
 /** Départ volontairement fractionné : cette estimation de tampon n'est pas une titration. */
@@ -251,7 +253,8 @@ export function BrewDayMeasurements({
   recipe,
   update,
   drafts,
-  requestedKind
+  requestedKind,
+  requestedPair
 }: {
   step: BrewDayStep;
   state: BrewDayState;
@@ -259,6 +262,7 @@ export function BrewDayMeasurements({
   update: BrewUpdate;
   drafts?: Map<string, BrewReadingDraft>;
   requestedKind?: {kind: ReadingKind; token: number};
+  requestedPair?: {stage: WortPairDraft['stage']; token: number};
 }) {
   const [kind, setKind] = useState<ReadingKind>(
     () => drafts?.get(step.id)?.kind ?? defaultReading(step)
@@ -275,9 +279,11 @@ export function BrewDayMeasurements({
     () => drafts?.get(step.id)?.editing ?? null
   );
   const [notice, setNotice] = useState('');
+  const [pairMode, setPairMode] = useState(false);
   useEffect(() => {
-    if (requestedKind) { setKind(requestedKind.kind); setRaw(''); setEditing(null); setNotice(''); }
+    if (requestedKind) { setKind(requestedKind.kind); setRaw(''); setEditing(null); setNotice(''); setPairMode(false); }
   }, [requestedKind?.token]);
+  useEffect(() => { if (requestedPair) setPairMode(true); }, [requestedPair?.token]);
   useEffect(() => {
     drafts?.set(step.id, { kind, raw, roomTemp, editing });
   }, [drafts, step.id, kind, raw, roomTemp, editing]);
@@ -309,15 +315,22 @@ export function BrewDayMeasurements({
       kind,
       value,
       unit: READING[kind].unit,
-      ...(kind !== 'temperature' ? { roomTemp } : {})
+      ...(kind !== 'temperature' ? { roomTemp } : !editing ? {
+        medium: step.id === 'sparge' ? 'water' as const : 'wort' as const,
+        thermalSegmentId: [...(state.thermalSegments ?? [])].reverse().find(s => s.stepId === step.id && s.endedAt == null)?.id
+      } : {}),
+      ...(kind === 'volume' ? { volumeBasis: roomTemp ? 'cold' as const : undefined } : {})
     };
     update((s) => {
       const old = editing ? s.readings?.find((x) => readingKey(x) === editing) : undefined;
+      const corrected = old ? { ...old, ...r, id: old.id ?? r.id, at: old.at } : undefined;
+      if (corrected?.kind === 'volume' && old?.volumeBasis !== corrected.volumeBasis)
+        delete corrected.temperatureC;
       return {
         ...s,
         readings: old
           ? s.readings!.map((x) =>
-              readingKey(x) === editing ? { ...r, id: old.id ?? r.id, at: old.at } : x
+              readingKey(x) === editing ? corrected! : x
             )
           : [...(s.readings ?? []), r]
       };
@@ -332,7 +345,9 @@ export function BrewDayMeasurements({
     <section aria-label="Mesures de cette étape" className="space-y-2">
       <div className="flex justify-between items-center">
         <h3 className="font-semibold text-cave-50">Mesurer à la cuve</h3>
+        <button type="button" aria-pressed={pairMode} className="min-h-touch px-2 text-xs text-water underline" onClick={() => setPairMode(p => !p)}>{pairMode ? 'Mesure seule' : 'Volume + densité'}</button>
       </div>
+      {pairMode ? <BrewWortPair step={step} state={state} update={update} drafts={drafts} requestedStage={requestedPair} /> : <>
       <div className="flex gap-1" role="group" aria-label="Type de mesure">
         {(Object.keys(READING) as ReadingKind[]).map((k) => (
           <button
@@ -480,6 +495,7 @@ export function BrewDayMeasurements({
           </button>
         </div>
       )}
+      </>}
     </section>
   );
 }

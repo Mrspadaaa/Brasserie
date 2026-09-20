@@ -2,6 +2,7 @@ import type { BrewDayReading, BrewDayState } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
 import type { YeastReference } from './yeastReferences';
 import { READING } from './brewDay';
+import { pitchingPlan } from './pitchingPlan';
 import { yeastStrainInformation } from './yeastStrainInformation';
 import { createYeastRecipeDraft, evaluateYeastRecipeDesign, readYeastRecipeDesign, yeastRecipeDesignChanged, yeastRecipeFormWarning, YEAST_RECIPE_GOAL_LABELS } from './yeastRecipeDesign';
 
@@ -39,9 +40,10 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
     else if (intent?.ferulicRest) instructions.push({ id: 'ferulic-missing', title: 'Repos férulique demandé, absent du programme actuel', detail: 'Vérifier les paliers du brassin avant de chauffer. Le réglage adopté ne remplace pas le programme réel.', warning: true });
   }
   if (phase === 'finish' || phase === 'recipe') {
-    const pitched = known(state.steps.find(s => s.id === 'ensemencement')?.doneAt);
-    instructions.push({ id: 'pitch', title: pitched ? `Ensemencement consigné · prévu ${quantity}` : known(recipe.yeast.pitchTempC) ? `Ensemencer à ${fmt(recipe.yeast.pitchTempC)} °C · ${quantity}` : `Température d’ensemencement à préciser · ${quantity}`,
-      detail: pitched ? `Relire l’ajout réel dans le journal. Consigne principale prévue : ${fmt(draft.temperatureC)} °C.` : known(recipe.yeast.pitchTempC) ? `Vérifier la température du moût et la notice de ${recipe.yeast.name}. Consigne principale : ${fmt(draft.temperatureC)} °C.` : 'La consigne principale ne remplace pas une température d’ensemencement choisie.', warning: !known(recipe.yeast.pitchTempC) || !quantityKnown });
+    const pitchPlan = pitchingPlan(recipe as import('../types').RecipeSnapshot, state);
+    const pitched = known(state.pitchedAt) || known(state.steps.find(s => s.id === 'ensemencement')?.doneAt);
+    instructions.push({ id: 'pitch', title: pitched ? `Ensemencement consigné · prévu ${quantity}` : state.phase === 'awaiting-pitch' ? `En attente de levure · cible ${fmt(pitchPlan.targetC)} °C · ${quantity}` : known(pitchPlan.targetC) ? `Ensemencer à ${fmt(pitchPlan.targetC)} °C · ${quantity}` : `Température d’ensemencement à préciser · ${quantity}`,
+      detail: pitched ? `Relire l’ajout réel dans le journal. Consigne principale prévue : ${fmt(pitchPlan.primaryC)} °C.` : pitchPlan.warning ?? `Vérifier la température du moût et la méthode choisie pour ${recipe.yeast.name}. Consigne principale : ${fmt(pitchPlan.primaryC)} °C. Le transfert seul ne commence pas la fermentation.`, warning: !known(pitchPlan.targetC) || !quantityKnown || !!pitchPlan.warning });
     instructions.push({ id: 'pressure', title: pressure === undefined ? 'Pression précoce à préciser' : pressure === 0 ? 'Départ sans contre-pression · 0 bar rel.' : `Pression précoce prévue · ${fmt(pressure)} bar rel.`,
       detail: pressure === undefined ? 'Aucune valeur n’est déduite de la carbonatation finale.' : 'Réglage prévu pour le début de fermentation, distinct de la carbonatation finale. La pression peut modifier l’expression des esters.' });
     if (analysis.hops.additions.length) instructions.push({ id: 'dry-hop', title: `À cru prévu · ${fmt(analysis.hops.doseGL)} g/L`,

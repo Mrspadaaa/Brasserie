@@ -1,5 +1,6 @@
 import type { HopSource } from '../../functions/src/hopIndexSchema';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
+import { documentedDirectPitchProtocol } from '../../functions/src/yeastPitchingProtocol';
 
 export interface YeastPracticalNote {
   id: string;
@@ -11,7 +12,8 @@ export interface YeastPracticalNote {
 interface YeastPracticalGuide { form: HopYeast['form']; notes: YeastPracticalNote[]; directPitchTemperatureC?: { min: number; max: number } }
 const source = (author: string, title: string, reference: string): HopSource => ({ kind: 'manufacturer', author, title, reference, year: null, locator: 'Fiche produit consultée le 12 septembre 2026' });
 const us05 = source('Fermentis', 'SafAle US-05 — usage et conservation', 'https://fermentis.com/en/product/safale-us-05/');
-const w68 = source('Fermentis', 'SafAle W-68 — usage et conservation', 'https://fermentis.com/en/product/safale-w-68/');
+const w68Direct = documentedDirectPitchProtocol('fermentis-w68', 'sèche')!;
+const w68 = { ...w68Direct.source, locator: 'Fiche produit consultée le 12 septembre 2026' };
 const weizen = source('Wyeast', '3068 — Weihenstephan Weizen', 'https://wyeastlab.com/product/weihenstephan-weizen/');
 const bavarian = source('Wyeast', '3638 — Bavarian Wheat', 'https://wyeastlab.com/product/bavarian-wheat/');
 const wit = source('Wyeast', '3944 — Belgian Witbier', 'https://wyeastlab.com/product/belgian-witbier/');
@@ -29,8 +31,8 @@ export const YEAST_PRACTICAL_GUIDES: Record<string, YeastPracticalGuide> = {
     { id: 'rehydrate', title: 'Réhydratation possible', phase: 'preparation', detail: 'Autre méthode fabricant : au moins 10 fois le poids de levure en eau stérile ou moût houblonné bouilli, à 25–29 °C. Attendre 15–30 min, remuer doucement puis ensemencer.', source: us05 },
     { id: 'storage', title: 'Stockage et sachet ouvert', phase: 'storage', detail: 'Moins de 6 mois : sous 24 °C ; au-delà : sous 15 °C. Une fois ouvert, refermer, conserver à 4 °C et utiliser sous 7 jours. Vérifier la date du lot ; écarter un sachet mou ou endommagé.', source: us05 },
   ] },
-  'fermentis-w68': { form: 'sèche', directPitchTemperatureC: { min: 20, max: 32 }, notes: [
-    { id: 'direct-pitch', title: 'Ensemencement direct', phase: 'preparation', detail: 'La notice indique 20–32 °C pour l’ajout direct à la surface du moût, sans amas. Cette plage de préparation est distincte des 18–26 °C de fermentation.', source: w68 },
+  'fermentis-w68': { form: 'sèche', directPitchTemperatureC: w68Direct.temperatureC, notes: [
+    { id: 'direct-pitch', title: 'Ensemencement direct', phase: 'preparation', detail: w68Direct.conditions, source: w68Direct.source },
     { id: 'rehydrate', title: 'Réhydratation possible', phase: 'preparation', detail: 'Autre méthode fabricant : au moins 10 fois le volume de levure en eau ou moût, à 20–28 °C ; attendre 15–30 min, remuer doucement puis ensemencer. La notice exprime ici un volume, sans conversion en poids.', source: w68 },
     { id: 'storage', title: 'Stockage et sachet ouvert', phase: 'storage', detail: 'Moins de 6 mois : sous 25 °C ; au-delà : sous 15 °C. Une fois ouvert, refermer, conserver à 4 °C et utiliser sous 7 jours. Vérifier la date du lot ; écarter un sachet mou ou endommagé.', source: w68 },
   ] },

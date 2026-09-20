@@ -22,6 +22,7 @@ import { Units } from '../services/units';
 import { hasBrewStarted, actualBrewDate, plannedBrewDate, preserveBrewDates } from '../domain/batchSchedule';
 import { BatchSchedule } from './production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
+import { BrewSystemFeedback } from './BrewSystemFeedback';
 
 /**
  * Fiche d'un brassin : changer d'étape, corriger les mesures, supprimer.
@@ -64,7 +65,8 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   if (!batch || !draft) return null;
 
   const style = statusOfBatch(draft);
-  const suivant = nextStatus(draft.status);
+  const awaitingPitch = draft.brewDay?.phase === 'awaiting-pitch' && draft.brewDay.pitchedAt == null;
+  const suivant = awaitingPitch ? null : nextStatus(draft.status);
 
   const og = parseDecimal(draft.og || '');
   const fg = parseDecimal(draft.fg || '');
@@ -97,6 +99,7 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
   };
   const changeStatus = (status: Batch['status']) => {
     if (status === draft.status) return;
+    if (awaitingPitch && status !== 'planifie' && status !== 'annule') { setStockMessage('Reprends le jour de brassage pour consigner l’ajout réel de levure avant de passer en fermentation.'); return; }
     const updated = { ...draft, ...preserveBrewDates(draft), status };
     if (status === 'annule' || status === 'planifie') { save(updated); return; }
     if (status === 'conditionne' || status === 'termine') {
@@ -289,6 +292,9 @@ export const BatchDetailSheet: React.FC<BatchDetailSheetProps> = ({
                 </p>
               </div>
               <FermentationCurveChart batch={draft} />
+              {draft.brewDay?.pitchedAt != null && <p className="text-xs text-cave-200">Levure ajoutée le {new Date(draft.brewDay.pitchedAt).toLocaleString('fr-CH')}{draft.brewDay.pitchTemperatureC != null ? ` à ${draft.brewDay.pitchTemperatureC} °C` : ' · température non relevée'}.</p>}
+              {awaitingPitch && <p role="status" className="text-sm text-water">En attente d’ensemencement. Reprends le jour de brassage depuis le carnet des brassins.</p>}
+              {draft.recipeSnapshot && draft.brewDay && <BrewSystemFeedback recipe={draft.recipeSnapshot} state={draft.brewDay}/>}
             </>
           )}
           {section === 'tasting' && (

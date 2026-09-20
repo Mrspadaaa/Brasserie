@@ -119,7 +119,9 @@ export function statusOf(status: BatchStatus | undefined): StatusStyle {
 /** Starting the journal precedes the stock-confirmed transition to fermentation. */
 export function statusOfBatch(batch: Batch): StatusStyle {
   const status = statusOf(batch.status);
+  if (batch.status === 'planifie' && batch.brewDay?.phase === 'awaiting-pitch' && batch.brewDay.pitchedAt == null)
+    return { ...status, label: 'En attente d’ensemencement', hint: 'Moût transféré, levure pas encore ajoutée', chip: 'bg-water/15 text-water border-water/40' };
   return batch.status === 'planifie' && hasBrewStarted(batch)
-    ? { ...status, label: batch.brewDay?.finishedAt ? 'Brassage à clôturer' : 'Brassage en cours', hint: 'Brassage commencé, passage en fermentation à confirmer' }
+    ? { ...status, label: batch.brewDay?.finishedAt != null ? 'Brassage à clôturer' : 'Brassage en cours', hint: 'Brassage commencé, passage en fermentation à confirmer' }
     : status;
 }

@@ -84,10 +84,16 @@ export const recipeFields = {
   preBoilHotL: n('Volume avant ébullition à chaud (L)'),
   brewhouse: o('Matériel du plan', {
     id:t('Identifiant matériel'),name:t('Nom matériel'),volumeL:n('Volume visé (L)'),efficiencyPct:pct('Rendement matériel (%)'),boilOffRatePct:pct('Ancien débit (%/h)'),deadSpaceL:n('Pertes fond de cuve (L)'),mashRatioLPerKg:n('Épaisseur de maische (L/kg)'),
+    preferences:o('Préférences de brassage',{
+      preferredMashRatioLPerKg:n('Empâtage préféré (L/kg)'),preferredSpargeHotL:n('Rinçage habituel à chaud (L)'),maximumSpargeHotL:n('Rinçage maximum exceptionnel à chaud (L)'),increaseMashToLimitSparge:b('Augmenter l’empâtage pour limiter le rinçage'),coolingMethod:t('Refroidissement',['immersion']),regulatedCoolingAvailable:b('Froid régulé disponible')
+    }),
+    equipmentRefs:o('Références de l’inventaire',{kettle:t('Cuve'),sparger:t('Récipient de rinçage'),fermenter:t('Fermenteur'),auxiliary:t('Bouilloire annexe')}),
+    calibrationEventIds:a('Références des calibrations',t('Identifiant')),
     equipment:o('Capacités et calibration',{
       kettleCapacityL:n('Cuve totale (L)'),kettleWorkingL:n('Cuve utile à chaud (L)'),workingVolumeConfirmed:b('Limite vérifiée'),spargeCapacityL:n('Sparger (L)'),fermenterCapacityL:n('Fermenteur total (L)'),fermenterHeadspacePct:pct('Marge de mousse (%)'),roPackL:n('Pack osmosée (L)'),boilOffLPerHour:n('Évaporation à chaud (L/h)'),grainAbsorptionLPerKg:n('Absorption (L/kg)'),grainDisplacementLPerKg:n('Déplacement grain (L/kg)'),coolingShrinkagePct:pct('Rétraction (%)'),heatingRateCPerMin:n('Chauffe (°C/min)')
     })
   }),
+  installation:o('Choix de matériel pour la recette',{fermenterHeadspacePct:pct('Espace libre choisi (%)'),headspaceReason:t('Motif du choix'),spargeExceptionAccepted:b('Rinçage exceptionnel accepté'),manualWaterSplit:b('Répartition manuelle de l’eau')}),
   carboTarget: t('Carbonatation'),
   boilMin: n('Ébullition (min)'),
   totalGristKg: n('Grain total (kg)'),
@@ -156,6 +162,7 @@ export const recipeFields = {
     ratioLPerKg: n('Épaisseur (L/kg)'),
     mashoutTempC: temp('Mash-out (°C)'),
     mashoutDurationMin: n('Maintien mash-out (min)'),
+    mashoutEnabled: b('Mash-out prévu'),
     heatingRateCPerMin: n('Vitesse de chauffe (°C/min)'),
     spargeTempC: temp('Rinçage (°C)'),
     spargeType: t('Méthode de rinçage', ['fly', 'batch', 'none']),

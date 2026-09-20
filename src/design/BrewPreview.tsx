@@ -12,7 +12,9 @@ import { defaultConfig } from '../services/storage';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { practicalEquipment } from '../domain/brewEquipment';
 import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
-import { SettingsModal } from '../components/SettingsModal';
+import { BrewSystemPreview } from './BrewSystemPreview';
+import { withCurrentInstallation } from '../domain/brewPreferences';
+import { buildTimeline } from '../services/brewTimer';
 
 /**
  * Banc d'essai du brassage, sans connexion.
@@ -24,7 +26,7 @@ import { SettingsModal } from '../components/SettingsModal';
  */
 
 const hardwarePreview=new URLSearchParams(location.search).has('hardware');
-const CONFIG: AppConfig = hardwarePreview ? {...defaultConfig,brewhouses:defaultConfig.brewhouses.map((b,i)=>i===0?{...b,name:'Royal Catering · cuve 45 L',volumeL:24,equipment:{...practicalEquipment}}:b),activeBrewhouseId:defaultConfig.brewhouses[0].id} : defaultConfig;
+const CONFIG: AppConfig = hardwarePreview ? withCurrentInstallation({...defaultConfig,brewhouses:defaultConfig.brewhouses.map((b,i)=>i===0?{...b,name:'Royal Catering · cuve 45 L',volumeL:24,equipment:{...practicalEquipment}}:b),activeBrewhouseId:defaultConfig.brewhouses[0].id}) : defaultConfig;
 
 const NEIPA: Recipe = {
   id: 'REC-DEMO',
@@ -157,8 +159,15 @@ type View = 'recette' | 'assistant' | 'brassage' | 'eau' | 'materiel';
 export const BrewPreview: React.FC = () => {
   const initialView = (new URLSearchParams(location.search).get('view') as View) || 'recette';
   const [view, setView] = useState<View>(initialView);
-  const [previewRecipe, setPreviewRecipe] = useState(()=>hardwarePreview?adaptRecipeEquipment(NEIPA,CONFIG.brewhouses[0],24):NEIPA);
-  const [batch, setBatch] = useState(()=>hardwarePreview?{...BATCH,volumeL:24,recipeSnapshot:captureSnapshot(previewRecipe)}:BATCH);
+  const [previewRecipe, setPreviewRecipe] = useState(()=>hardwarePreview && !new URLSearchParams(location.search).has('legacy')?adaptRecipeEquipment(NEIPA,CONFIG.brewhouses[0],24):NEIPA);
+  const [batch, setBatch] = useState<Batch>(()=>{
+    const fixture = hardwarePreview?{...BATCH,volumeL:previewRecipe.volumeL,recipeSnapshot:captureSnapshot(previewRecipe)}:BATCH;
+    const stage = new URLSearchParams(location.search).get('stage');
+    if(!stage) return fixture;
+    const steps=buildTimeline(fixture.recipeSnapshot!);
+    const currentIndex=steps.findIndex(s=>s.id===stage);
+    return currentIndex<0 ? fixture : {...fixture,brewDay:{steps,currentIndex,readings:[]}};
+  });
   const [waterSource, setWaterSource] = useState<WaterSource>(SAMPLE_WATER);
   const [waterState, setWaterState] = useState<WaterState>({
     diRatioPct: 70,
@@ -230,12 +239,12 @@ export const BrewPreview: React.FC = () => {
         )}
       </div>
 
-      {view === 'materiel' && <SettingsModal isOpen config={CONFIG} onClose={()=>setView('recette')} onConfigUpdated={()=>log('Réglages enregistrés')} onOpenAuditLogs={()=>{}}/>}
+      {view === 'materiel' && <BrewSystemPreview profile={CONFIG.brewhouses[0]} recipe={previewRecipe}/>}
 
       {view === 'recette' && (
         <RecipePage
           recipe={previewRecipe}
-          batches={[{ ...batch, og: '1.058', status: 'fermentation' }]}
+          batches={[batch]}
           config={CONFIG}
           onClose={() => log('Fermeture demandée')}
           onEdit={() => setView('assistant')}
@@ -283,6 +292,7 @@ export const BrewPreview: React.FC = () => {
           onSaveWaterSource={(w) => log(`Analyse « ${w.name} » enregistrée.`)}
           onSave={(r, brew) => {
             setPreviewRecipe(r);
+            if(brew) setBatch({...BATCH,volumeL:r.volumeL,recipeSnapshot:captureSnapshot(r)});
             log(`Enregistré : ${r.name} · ${r.hops.length} houblons · ${brew ? 'brassin lancé' : 'recette seule'}`);
             setView(brew ? 'brassage' : 'recette');
           }}

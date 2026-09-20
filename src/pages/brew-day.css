@@ -1828,7 +1828,7 @@
   border: 0;
   padding: 0;
 }
-.brew-capture.is-mobile .brew-measure-panel > section > div:first-child,
+.brew-capture.is-mobile .brew-measure-panel > section > div:first-child > h3,
 .brew-capture.is-mobile .brew-notes > .brew-section-heading {
   display: none;
 }

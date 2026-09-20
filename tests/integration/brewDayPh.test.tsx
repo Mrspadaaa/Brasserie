@@ -76,7 +76,7 @@ describe('pH de maische, le jour du brassage', () => {
         /Au-dessus de la fenêtre/
       )
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /J’ai ajouté/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /J’ai ajouté.*mL/ })).toBeInTheDocument();
     expect(screen.getByText(/Moitié de l’estimation totale.*acide lactique/i)).toBeInTheDocument();
   });
 

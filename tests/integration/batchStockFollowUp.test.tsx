@@ -61,4 +61,24 @@ describe('production stock reconciliation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Passer en « Fermentation »' }));
     expect(StorageService.completeBrewStock).toHaveBeenCalledWith(expect.objectContaining({ status: 'fermentation' }), 'brewday', false);
   });
+  it('blocks fermentation before pitching and preserves both legacy dates when cancelling the transferred batch', () => {
+    const pending = base({ status: 'planifie', stockAccountingVersion: 1, brewDate: '27.09.2026',
+      brewDay: { steps: [], currentIndex: 0, phase: 'awaiting-pitch', startedAt: Date.parse('2026-09-20T10:00:00Z'), transferredAt: Date.parse('2026-09-20T16:00:00Z') } });
+    render(<BatchDetailSheet batch={pending} initialSection="overview" onClose={vi.fn()} />);
+    expect(screen.getByRole('option', { name: 'En attente d’ensemencement' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Passer en « Fermentation »' })).not.toBeInTheDocument();
+    const status = screen.getByRole('combobox', { name: 'Étape du brassin' });
+    fireEvent.change(status, { target: { value: 'fermentation' } });
+    expect(screen.getByRole('status')).toHaveTextContent('consigner l’ajout réel de levure');
+    expect(status).toHaveValue('planifie');
+    expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
+    expect(StorageService.updateBatch).not.toHaveBeenCalled();
+    fireEvent.change(status, { target: { value: 'annule' } });
+    expect(StorageService.updateBatch).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+      status: 'annule', plannedBrewDate: '27.09.2026', brewDate: '20.09.2026', brewDay: pending.brewDay
+    }));
+    expect(StorageService.completeBrewStock).not.toHaveBeenCalled();
+    expect(pending.plannedBrewDate).toBeUndefined();
+    expect(pending.brewDate).toBe('27.09.2026');
+  });
 });

@@ -21,7 +21,10 @@ import { BrewhouseSettings } from '../ui/BrewhouseSettings';
 import { equipmentErrors } from '../domain/brewEquipment';
 import { BackupPanel } from '../ui/BackupPanel';
 import { DriveStoragePanel } from '../ui/DriveStoragePanel';
-import { useSyncedDraft } from '../hooks/useLiveData';
+import { useStorageValue, useSyncedDraft } from '../hooks/useLiveData';
+import { brewingPreferenceErrors } from '../domain/brewPreferences';
+import { BrewSystemCalibration } from '../ui/BrewSystemCalibration';
+import { BrewSystemSource } from '../ui/BrewSystemSource';
 import '../ui/settings-compact.css';
 
 interface SettingsModalProps {
@@ -48,12 +51,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const backupBusy = backupRunning || migrationBusy;
   const [dataMessage, setDataMessage] = useState('');
   const [dataError, setDataError] = useState(false);
+  const systemBatches = useStorageValue(StorageService.getBatches);
+  const systemInventory = useStorageValue(StorageService.getStocks);
+  const [sourceBatchId,setSourceBatchId] = useState<string>();
   useEffect(()=>{if(isOpen) setSavedSuccess(false);},[isOpen]);
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    if (formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)) return;
+    if (formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length)) return;
     setBusy(true); setSavedSuccess(false); setDataError(false); setDataMessage('Enregistrement…');
     try {
     StorageService.saveConfig(formData);
@@ -277,7 +283,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </div>
                 </dl>
 
-                {bh.id===formData.activeBrewhouseId&&<BrewhouseSettings profile={bh} onChange={next=>setFormData(f=>({...f,brewhouses:f.brewhouses.map(b=>b.id===next.id?next:b)}))}/>}
+                {bh.id===formData.activeBrewhouseId&&<>
+                  <BrewhouseSettings profile={bh} inventory={systemInventory.equipment} onChange={next=>setFormData(f=>({...f,brewhouses:f.brewhouses.map(b=>b.id===next.id?next:b)}))}/>
+                  <BrewSystemCalibration profile={bh} batches={systemBatches} onOpenBatch={setSourceBatchId} onChange={next=>{setFormData(f=>({...f,brewhouses:f.brewhouses.map(b=>b.id===next.id?next:b)}));setDataMessage('Calibration choisie : enregistre les paramètres pour la conserver.');}}/>
+                  {sourceBatchId && systemBatches.find(b=>b.id===sourceBatchId) && <BrewSystemSource batch={systemBatches.find(b=>b.id===sourceBatchId)!} onClose={()=>setSourceBatchId(undefined)}/>}
+                </>}
               </div>
             ))}
           </div>
@@ -362,7 +372,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <button
           type="button"
           onClick={handleSave}
-          disabled={busy || formData.brewhouses.some(b=>b.equipment&&equipmentErrors(b.equipment).length)}
+          disabled={busy || formData.brewhouses.some(b=>(b.equipment&&equipmentErrors(b.equipment).length) || brewingPreferenceErrors(b).length)}
           className="min-h-touch-lg px-3 py-1 bg-ebc-straw text-cave-950 font-bold text-sm rounded-xl shadow-lg transition flex items-center ml-auto"
         >
           {savedSuccess ? <Check className="w-4 h-4 mr-1.5" /> : <Save className="w-4 h-4 mr-1.5" />}

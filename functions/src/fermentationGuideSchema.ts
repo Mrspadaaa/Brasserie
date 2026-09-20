@@ -1,5 +1,6 @@
 import { hopSourceError, validHopRange, type HopSource, type HopRange } from './hopIndexSchema.js';
 import type { HopExperimentalParameter } from './hopExtrapolationSchema.js';
+import { documentedDirectPitchProtocol } from './yeastPitchingProtocol.js';
 
 export const FERMENTATION_GOALS = ['banana', 'balanced', 'fruit', 'clean', 'phenolic', 'thiols'] as const;
 export type FermentationGoal = typeof FERMENTATION_GOALS[number];
@@ -7,6 +8,9 @@ export interface FermentationFact { range: HopRange; source: HopSource }
 export interface FermentationGuidePlan {
   goal: FermentationGoal; name: string; rationale: string; source: HopSource;
   pitchTemperatureC: HopExperimentalParameter;
+  /** Optional explicit preparation context; old plans keep their fermentation-window behaviour. */
+  pitchMethod?: 'direct';
+  pitchForm?: 'sèche';
   phases: {
     id: string; name: string; kind: 'primaire' | 'reposDiacetyle';
     temperatureC: HopExperimentalParameter; days: HopExperimentalParameter; completeWhen: string;
@@ -46,9 +50,13 @@ export function assertFermentationGuide(v: any): asserts v is FermentationGuide 
   if (v.dryPitchGHL !== undefined) { fact(v.dryPitchGHL, 0); check(v.dryPitchGHL.range.min > 0, 'dose strictement positive requise'); }
   check(Array.isArray(v.plans) && v.plans.length > 0 && new Set(v.plans.map((p: any) => p.goal)).size === v.plans.length, 'objectifs absents ou dupliqués');
   for (const p of v.plans) {
-    keys(p, ['goal', 'name', 'rationale', 'source', 'pitchTemperatureC', 'phases', 'notes']);
+    keys(p, ['goal', 'name', 'rationale', 'source', 'pitchTemperatureC', 'pitchMethod', 'pitchForm', 'phases', 'notes']);
     check(FERMENTATION_GOALS.includes(p.goal) && text(p.name) && text(p.rationale), 'objectif invalide'); source(p.source, true);
-    parameter(p.pitchTemperatureC, v.temperatureC.range.min, v.temperatureC.range.max);
+    const declaresProtocol = p.pitchMethod !== undefined || p.pitchForm !== undefined;
+    const protocol = declaresProtocol && p.pitchMethod === 'direct' ? documentedDirectPitchProtocol(v.yeastId, p.pitchForm) : undefined;
+    check(!declaresProtocol || !!protocol, 'méthode d’ajout direct non documentée pour ce produit et cette forme');
+    const pitchRange = protocol?.temperatureC ?? v.temperatureC.range;
+    parameter(p.pitchTemperatureC, pitchRange.min, pitchRange.max);
     check(Array.isArray(p.phases) && p.phases.length > 0 && new Set(p.phases.map((s: any) => s.id)).size === p.phases.length, 'paliers absents ou dupliqués');
     for (const s of p.phases) {
       keys(s, ['id', 'name', 'kind', 'temperatureC', 'days', 'completeWhen']);

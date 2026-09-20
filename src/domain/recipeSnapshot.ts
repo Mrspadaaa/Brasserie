@@ -8,6 +8,7 @@ import {
   HopIngredient
 } from '../types';
 import { normalizeHop } from './hopStage';
+import { snapshotBrewhouse } from './brewPreferences';
 
 /**
  * Normalisation à la LECTURE, et copie figée d'une recette.
@@ -98,6 +99,7 @@ export function captureSnapshot(recipe: Recipe): RecipeSnapshot {
   const { id, favorite, batchRef, archivedAt, ...rest } = normalizeRecipe(recipe);
   return {
     ...structuredClone(rest),
+    ...(rest.brewhouse ? { brewhouse: snapshotBrewhouse(rest.brewhouse) } : {}),
     sourceRecipeId: id,
     capturedAt: new Date().toISOString()
   };

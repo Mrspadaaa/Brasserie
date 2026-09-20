@@ -134,7 +134,9 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
   it('demande confirmation avant de terminer un minuteur encore actif', () => {
     const v = mount();
     phase('Empâter');
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Commencer la montée' }));
+    expect(v.latest().steps.find((s) => s.id === 'mash-0')?.startedAt).toBeUndefined();
+    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le maintien' }));
     const started = v.latest().steps.find((s) => s.id === 'mash-0')!;
     fireEvent.click(screen.getByRole('button', { name: 'Terminer le palier' }));
     expect(screen.getByRole('dialog')).toHaveTextContent('Il reste');
@@ -191,8 +193,9 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     expect(v.latest().steps[1].doneAt).toBeUndefined();
     fireEvent.click(screen.getByRole('button', { name: 'Terminer et continuer' }));
     expect(v.latest().steps[2].id).toBe('mash-0');
+    expect(v.latest().steps[2].rampStartedAt).toBeUndefined();
     expect(v.latest().steps[2].startedAt).toBeUndefined();
-    expect(screen.getByRole('button', { name: 'Démarrer' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Commencer la montée' })).toBeEnabled();
     expect(v.latest().additions).toBeUndefined();
   });
 
@@ -200,7 +203,8 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     const v = mount();
     phase('Empâter');
     chooseStep('Mashout');
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Commencer la montée' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le maintien' }));
     const before = v.latest();
     phase('Journal');
     expect(screen.queryByLabelText('Temps restant')).not.toBeInTheDocument();
@@ -261,7 +265,10 @@ describe('Poste de brassage : les bons gestes au bon moment', () => {
     chooseStep('Ensemencement');
     expect(ingredients().getByLabelText('Ajouté : US-05')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Bilan du brassage' })).toHaveTextContent(
-      'Relève les valeurs manquantes'
+      'Densité initiale inconnue : relève le moût refroidi à température de référence.'
+    );
+    expect(screen.getByRole('region', { name: 'Bilan du brassage' })).toHaveTextContent(
+      'Volume en fermenteur inconnu : relève le volume et sa référence de température.'
     );
   });
 

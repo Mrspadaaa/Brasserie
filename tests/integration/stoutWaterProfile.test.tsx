@@ -107,7 +107,7 @@ describe('Mon super stout — recipe profile, manual acid and Doser', () => {
     // Resetting acid preserves weighed salts, including the alkali that
     // compensated the manual dose. Doser below then removes that compensation.
     expect(acid()).toHaveValue('7,5');
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByRole('status', { name: 'Acide manuel à l’empâtage' })).not.toBeInTheDocument();
     expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
     // A new plan no longer needs to compensate for the removed manual acid.
     click('Proposer les doses');

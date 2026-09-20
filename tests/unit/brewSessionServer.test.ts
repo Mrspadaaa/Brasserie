@@ -140,6 +140,33 @@ describe('Enregistrement du journal côté serveur', () => {
     );
     expect(res.state.steps[0].startedAt).toBe(now - 3600000);
   });
+  it('date le transfert hors ligne sans démarrer la fermentation et garde ce jour au pitch du lendemain', async () => {
+    mock.docs.set('batches/LOT', { status: 'planifie', brewDate: '', plannedBrewDate: '10.09.2026' });
+    const pending = {
+      steps: [{ id: 'ensemencement', label: 'Ensemencement', durationMin: 0 }],
+      currentIndex: 0,
+      phase: 'awaiting-pitch',
+      transferredAt: now - 86400000
+    };
+    const saved = await (saveBrewSession as any).run(request({
+      batchId: 'LOT', operationId: 'offline-transfer', baseRevision: 0, clientNow: now, state: pending
+    }));
+    expect(mock.docs.get('batches/LOT')).toMatchObject({
+      status: 'planifie', brewDate: '06.09.2026', plannedBrewDate: '10.09.2026',
+      brewDay: { phase: 'awaiting-pitch', transferredAt: pending.transferredAt }
+    });
+    expect(saved.state.finishedAt).toBeUndefined();
+    const pitchAt = now + 86400000;
+    vi.mocked(Date.now).mockReturnValue(pitchAt);
+    const data = {
+      batchId: 'LOT', operationId: 'actual-pitch', baseRevision: 1, clientNow: pitchAt,
+      state: { ...saved.state, phase: 'brewing', pitchedAt: pitchAt, finishedAt: pitchAt }
+    };
+    const pitched = await (saveBrewSession as any).run(request(data));
+    expect(pitched.state).toMatchObject({ revision: 2, transferredAt: pending.transferredAt, pitchedAt: pitchAt });
+    expect(mock.docs.get('batches/LOT')).toMatchObject({ brewDate: '06.09.2026', plannedBrewDate: '10.09.2026' });
+    expect((await (saveBrewSession as any).run(request(data))).state.revision).toBe(2);
+  });
 });
 describe('Web Push natif : clé stable, programmation canonique et livraisons périmées', () => {
   it('ne divulgue jamais la clé privée et refuse les endpoints externes arbitraires', async () => {
