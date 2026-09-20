@@ -138,7 +138,7 @@ export const proposalValueSchemas: Record<
   recipeSteps: { fields: recipeStep, required: ['step', 'tempC', 'durationMin'], array: true },
   fermentables: { fields: grain, required: ['name', 'weightKg', 'kind', 'use'], array: true },
   hops: { fields: hop, required: ['name', 'weightG', 'alpha', 'stage'], array: true },
-  yeast: { fields: yeast, required: ['name', 'form', 'qty', 'unit'] },
+  yeast: { fields: yeast, required: ['name'] },
   mash: { fields: mashStep, required: ['name', 'tempC', 'durationMin'], array: true },
   fermentation: {
     fields: fermentationStep,
@@ -540,6 +540,9 @@ export function prepareProposal(c: BrewerContext, args: any): BrewerProposal {
     });
   }
   for (const ch of changes) if (ch.path.startsWith('hopAromaTarget.')) ch.group = ch.path.split('.').slice(0, 2).join('.');
+  // A value and its interpretation form one decision (hypothesis ≠ manufacturer ≠ measurement).
+  if (changes.some(ch => ch.path === 'yeast.attenuationPct') && changes.some(ch => ch.path === 'yeast.attenuationBasis'))
+    for (const ch of changes) if (['yeast.attenuationPct', 'yeast.attenuationBasis'].includes(ch.path)) ch.group = 'yeast-attenuation';
   if (!changes.length) throw Error('Ces champs ont déjà les valeurs proposées.');
   for (const change of changes) {
     if (change.path === 'waterPlan.acid') {
@@ -583,7 +586,7 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
     next = structuredClone(c[proposal.target]);
   for (const ch of proposal.changes.filter((ch) => ch.group && ids.includes(ch.id))) {
     if (proposal.changes.some((other) => other.group === ch.group && !ids.includes(other.id)))
-      throw Error('Les champs liés doivent être validés ensemble (eau, doses ou bornes aromatiques).');
+      throw Error('Les champs liés doivent être validés ensemble (eau, doses, atténuation ou bornes aromatiques).');
   }
   for (const change of proposal.changes.filter((ch) => ids.includes(ch.id))) {
     if (!own(fields, change.path) || !sameField(readField(next, change.path), change.before))
@@ -598,6 +601,14 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
       }
     }
     const y = next.yeast;
+    const priorYeast = c.recipe?.yeast;
+    const sameYeast = y && priorYeast && y.name.trim().toLocaleLowerCase('fr') === priorYeast.name.trim().toLocaleLowerCase('fr') &&
+      !(y.hopIndexId && priorYeast.hopIndexId && y.hopIndexId !== priorYeast.hopIndexId);
+    const dossierKeys = ['technicalFacts', 'fermentationFacts', 'technicalSource', 'flocculation', 'alcoholTolerancePct', 'stockItemRef'];
+    if (sameYeast && dossierKeys.some(key => priorYeast[key] != null && !sameField(y[key], priorYeast[key])))
+      throw Error('Le dossier de cette levure doit être conservé. Modifier ses champs individuellement (yeast.qty, yeast.attenuationPct…) plutôt que remplacer sa fiche.');
+    if (!sameYeast && priorYeast && dossierKeys.some(key => y?.[key] != null && sameField(y[key], priorYeast[key])))
+      throw Error('La levure change : remplacer sa fiche complète sans transférer le dossier de la souche précédente.');
     if (y?.hopIndexId && y.hopIndexId !== c.recipe?.yeast?.hopIndexId && !c.hopIndex?.knowledge.some(k => k.kind === 'yeast' && k.id === y.hopIndexId)) throw Error('Souche de l’index inconnue.');
     if (y?.hopIndexId && y.hopIndexId === c.recipe?.yeast?.hopIndexId && y.name !== c.recipe?.yeast?.name) throw Error('La souche change : retirer ou actualiser aussi son association à l’index.');
     for (const [i, h] of (next.hops ?? []).entries()) {
@@ -629,7 +640,7 @@ export function applyProposal(c: BrewerContext, proposal: BrewerProposal, ids: s
     )
       throw Error('Des sels sont prévus au rinçage : adapte aussi leur répartition.');
     if (next.style !== c.recipe.style) delete next.styleRef;
-    return refreshCompanionRecipe(next);
+    return refreshCompanionRecipe(next, { changedPaths: proposal.changes.filter(ch => ids.includes(ch.id)).map(ch => ch.path), knowledge: c.hopIndex?.knowledge });
   }
   if (proposal.target === 'journal') {
     const duration = next.boilDurationMin ?? c.recipe?.boilMin ?? 60;

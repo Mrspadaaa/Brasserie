@@ -24,6 +24,7 @@ const names: Record<string, string> = {
   fermTempMaxC: 'Maximum (°C)',
   pitchTempC: 'Ensemencement (°C)',
   attenuationPct: 'Atténuation (%)',
+  attenuationBasis: 'Base de l’atténuation',
   qty: 'Quantité',
   unit: 'Unité',
   form: 'Forme',
@@ -33,6 +34,9 @@ const names: Record<string, string> = {
   fermentDays: 'Durée (j)'
 };
 const words: Record<string, string> = {
+  declared: 'Valeur déclarée',
+  recipe: 'Hypothèse de recette',
+  measured: 'Mesure confirmée',
   temperature: 'Température',
   densite: 'Densité',
   ph: 'pH',

@@ -1,4 +1,4 @@
-import { brewerToolDeclarations, runBrewerTool, refreshCompanionRecipe } from './brewerTools.js';
+import { brewerToolDeclarations, runBrewerTool } from './brewerTools.js';
 import { brewerContextForPrompt } from './hopCompanionContext.js';
 import { BREWER_PLAYBOOK, BREWER_SOURCES } from './brewerKnowledge.js';
 import { FINANCE_ADVICE_GUIDANCE } from './prompts.js';
@@ -511,7 +511,7 @@ Cherche une source fabricant pour une spécification absente, et pour une inform
                     {},
                     {
                       ...context,
-                      recipe: refreshCompanionRecipe(next)
+                      recipe: next
                     }
                   ).data
                 : undefined;
