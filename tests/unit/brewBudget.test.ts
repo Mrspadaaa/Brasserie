@@ -155,6 +155,15 @@ describe('stock allocation is chronological and exact', () => {
     expect(result.lines[0].reserved).toBe(5);
     expect(result.purchasesTTC).toBe(9);
   });
+  it('uses the explicit plan for stock priority, including a changed day and an undated batch', () => {
+    const lot = batch({ stockAccountingVersion: 1, brewDate: '', plannedBrewDate: '10.09.2026' });
+    const budget = (plannedBrewDate: string) => estimateBrewBudget(input({ stockItems: [stock({ currentStock: 7 })], batches: [{ ...lot, plannedBrewDate }] }));
+    expect(budget('10.09.2026').lines[0].reserved).toBe(5);
+    expect(budget('20.09.2026').lines[0].reserved).toBe(0);
+    expect(budget('').lines[0].reserved).toBe(5);
+    expect(budget('').issues.some(issue => issue.includes('date inconnue'))).toBe(true);
+    expect(lot.brewDate).toBe('');
+  });
   it('does not reserve the edited batch twice or reserve cancelled batches', () => {
     const result = estimateBrewBudget(input({ batchId: 'B1', stockItems: [stock({ currentStock: 7 })], batches: [batch(), batch({ id: 'B2', status: 'annule' })] }));
     expect(result.lines[0].available).toBe(7);

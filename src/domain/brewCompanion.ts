@@ -1,4 +1,5 @@
 import { recipeIbu } from './hopBitterness';
+import { yeastRecipeBoilOg } from './yeastProjection';
 import {
   AcidId,
   BrewDayState,
@@ -51,8 +52,9 @@ export function brewBitterness(recipe: RecipeSnapshot, state: BrewDayState) {
     state.boilFinishedAt != null && state.boilStartedAt != null
       ? (state.boilFinishedAt - state.boilStartedAt) / 60000
       : duration;
-  const planned = recipeIbu(recipe.hops ?? [], recipe.volumeL, recipe.ogTarget, recipe.boilMin);
-  const projected = recipeIbu(hops, recipe.volumeL, recipe.ogTarget, actualMinutes);
+  const boilOg = recipe.nolo?.enabled ? recipe.ogTarget : yeastRecipeBoilOg(recipe, { og: recipe.ogTarget }).og;
+  const planned = recipeIbu(recipe.hops ?? [], recipe.volumeL, boilOg, recipe.boilMin);
+  const projected = recipeIbu(hops, recipe.volumeL, boilOg, actualMinutes);
   return planned == null || projected == null ? null : { planned, projected };
 }
 

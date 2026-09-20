@@ -1,3 +1,4 @@
+import { actualBrewDate, plannedBrewDate } from '../domain/batchSchedule';
 import * as XLSX from 'xlsx';
 import { StorageService } from './storage';
 import { ClientStatsService } from './clientStats';
@@ -27,7 +28,8 @@ export const ExcelService = {
     const batches = StorageService.getBatches();
     const prodRows = batches.map((b) => ({
       'N° Lot': b.id,
-      'Date brassage': b.brewDate,
+      'Date prévue': plannedBrewDate(b) ?? '',
+      'Date brassage': actualBrewDate(b) ?? '',
       'Nom de la bière': b.name,
       Style: b.style,
       'Volume (L)': b.volumeL,

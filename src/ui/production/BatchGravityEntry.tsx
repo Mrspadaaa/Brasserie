@@ -1,3 +1,4 @@
+import { actualBrewDate } from '../../domain/batchSchedule';
 import { Input } from '../Input';
 import React, { useState } from 'react';
 import type { Batch } from '../../types';
@@ -31,7 +32,7 @@ export function BatchGravityEntry({
     const value = parseDecimal(sg),
       temp = parseDecimal(temperature),
       timestamp = catalogDate(date),
-      brewed = catalogDate(batch.brewDate);
+      brewed = catalogDate(actualBrewDate(batch));
     if (value === null || value < 0.9 || value > 1.3) {
       setError('Saisis une densité entre 0,900 et 1,300, par exemple 1,024.');
       return;

@@ -10,6 +10,6 @@ export declare function runBrewerTool(
   context: BrewerContext
 ): Omit<BrewerEvidence, 'id'>;
 export declare function normalizeRecipe(recipe: any): any;
-export declare function refreshCompanionRecipe(recipe: any): any;
+export declare function refreshCompanionRecipe(recipe: any, options?: { changedPaths?: string[]; knowledge?: any[] }): any;
 export declare function reconcileRecipeWater(recipe: any, paths: string[], sources?: any[]): any;
 export declare function waterRelatedPath(path: string): boolean;

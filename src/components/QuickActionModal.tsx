@@ -32,7 +32,7 @@ import { DriveService } from '../services/driveService';
 import { GoogleDriveService } from '../services/googleDriveService';
 import { ReceiptService } from '../services/receiptService';
 import { CloudConfigModal } from './CloudConfigModal';
-import { FinanceCategory, Transaction, Recipe, StockItem } from '../types';
+import { Batch, FinanceCategory, Transaction, Recipe, StockItem } from '../types';
 import { Units } from '../services/units';
 import { nextBatchId } from '../services/refs';
 import { scaleBrewBudgetRecipe } from '../domain/finance/brewBudgetScaling';
@@ -46,10 +46,12 @@ import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
 import { saveIncomeEntry, type IncomeEntry } from '../services/incomeEntry';
 import { prepareFinanceDocument } from '../services/financeDocuments';
 import { DriveConnection } from '../ui/finance/DriveConnection';
-import { FirestoreRepo } from '../services/firestoreRepo';
+import { FirestoreRepo, isConfirmedWriteRejection } from '../services/firestoreRepo';
 import { purchaseIsoDate } from '../services/purchaseEntry';
 import { TextInput } from '../ui/TextInput';
 import { Field, inputClass } from '../ui/FormNav';
+import { BrewScheduleField } from '../ui/production/BrewScheduleField';
+import { normalizeBrewDate } from '../domain/batchSchedule';
 
 interface QuickActionModalProps {
   isOpen: boolean;
@@ -59,6 +61,8 @@ interface QuickActionModalProps {
   onSuccessMessage?: (msg: string) => void;
   onOpenCreateBatch?: () => void;
   initialScreen?: QuickActionScreen;
+  initialRecipeId?: string;
+  onBatchCreated?: (batch: Batch) => void;
 }
 
 /** Points d'entrée directs, ouverts depuis le bouton d'action. */
@@ -83,7 +87,9 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   geminiApiKey,
   onSuccessMessage,
   onOpenCreateBatch,
-  initialScreen = 'menu'
+  initialScreen = 'menu',
+  initialRecipeId,
+  onBatchCreated
 }) => {
   const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
   const [screen, setScreen] = useState<ModalScreen>(initialScreen);
@@ -155,6 +161,19 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   /* Le volume part de celui de la recette : c'est le brassin qu'on refait le plus souvent. */
   const [batchVolumeL, setBatchVolumeL] = useState<number>(() => recipes[0]?.volumeL ?? 30);
   const [brewError, setBrewError] = useState('');
+  const [plannedDate, setPlannedDate] = useState<string | undefined>();
+  const [brewSaving, setBrewSaving] = useState(false);
+  const brewBusy = useRef(false);
+  const pendingBatch = useRef<Batch | undefined>(undefined);
+  useEffect(() => {
+    if (!isOpen) return;
+    const selected = recipes.find(recipe => recipe.id === initialRecipeId) ?? recipes[0];
+    setSelectedRecipeId(selected?.id ?? '');
+    setBatchVolumeL(selected?.volumeL ?? 30);
+    setPlannedDate(undefined);
+    setBrewError('');
+    pendingBatch.current = undefined;
+  }, [isOpen, initialRecipeId]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const saleFileInputRef = useRef<HTMLInputElement>(null);
@@ -213,7 +232,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   if (!isOpen) return null;
 
   const resetAndClose = () => {
-    if (saleBusy.current) return;
+    if (saleBusy.current || brewBusy.current) return;
     setExpenseMode(null);
     setScreen('menu');
     setIsScanning(false);
@@ -535,9 +554,14 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   };
 
   // Launch Brew Batch
-  const handleLaunchBrew = () => {
+  const handleLaunchBrew = async () => {
+    if (brewBusy.current) return;
     const selected = recipes.find((r) => r.id === selectedRecipeId);
     if (!selected || !(batchVolumeL > 0)) return;
+    if (plannedDate !== undefined && !normalizeBrewDate(plannedDate)) {
+      setBrewError('Choisis un jour valide ou « À définir ».');
+      return;
+    }
     const cfg = StorageService.getConfig();
     const profile = selected.brewhouse ?? cfg.brewhouses.find(b => b.id === cfg.activeBrewhouseId) ?? cfg.brewhouses[0];
     let recipe: Recipe;
@@ -548,16 +572,19 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
       return;
     }
 
-    const newBatchId = nextBatchId(StorageService.getBatches().map(b => b.id));
-
-    // Compatibility method name: this plans the batch; it never consumes stock.
-    StorageService.brewRecipeAndDeductStocks(recipe, newBatchId);
-
-    triggerConfetti();
-    if (onSuccessMessage) {
-      onSuccessMessage(`Brassin ${newBatchId} (${recipe.name} ${batchVolumeL}L) lancé avec succès ! 🍺`);
-    }
-    resetAndClose();
+    brewBusy.current = true; setBrewSaving(true); setBrewError('');
+    try {
+      const batch = pendingBatch.current ?? StorageService.planRecipeBatch(recipe, nextBatchId(StorageService.getBatches().map(b => b.id)), plannedDate ?? '');
+      pendingBatch.current = batch;
+      await FirestoreRepo.waitForDocument<Batch>('batches', batch.id, 15000, value => value.recipeRef === batch.recipeRef && value.volumeL === batch.volumeL && value.plannedBrewDate === batch.plannedBrewDate);
+      onSuccessMessage?.(`${batch.id} préparé${batch.plannedBrewDate ? ` pour le ${batch.plannedBrewDate}` : ' · date à définir'}.`);
+      brewBusy.current = false;
+      resetAndClose();
+      onBatchCreated?.(batch);
+    } catch (error) {
+      if (isConfirmedWriteRejection(error)) pendingBatch.current = undefined;
+      setBrewError(error instanceof Error ? error.message : 'Enregistrement non confirmé. Réessaie.');
+    } finally { brewBusy.current = false; setBrewSaving(false); }
   };
 
   if (!isOpen) return null;
@@ -565,7 +592,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 
   return (
     <>
-      <ModalShell open={isOpen} onClose={resetAndClose} size="lg" labelledBy={titleId} dismissible={!saleSaving}>
+      <ModalShell open={isOpen} onClose={resetAndClose} size="lg" labelledBy={titleId} abovePage={screen === 'brew-batch'} dismissible={!saleSaving && !brewSaving}>
         {/* En-tête : réduit au titre et aux deux boutons quand le clavier
             occupe l'écran — c'est 28 px rendus à la saisie. */}
         <div
@@ -576,7 +603,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
           <div className="flex items-center space-x-2">
             {screen !== 'menu' && initialScreen === 'menu' && (
               <button
-                disabled={saleSaving}
+                disabled={saleSaving || brewSaving}
                 type="button"
                 aria-label="Toutes les actions"
                 onClick={() => setScreen('menu')}
@@ -585,20 +612,20 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
                 <ArrowLeft className="w-4 h-4" />
               </button>
             )}
-            <Sparkles className="w-4 h-4 text-area-finances" />
+            {screen === 'brew-batch' ? <Beer className="w-4 h-4 shrink-0 text-area-production" aria-hidden="true" /> : <Sparkles className="w-4 h-4 text-area-finances" />}
             <h2 id={titleId} className="font-semibold text-lg text-cave-50">
               {screen === 'menu' && 'Nouvelle action'}
               {screen === 'scan' && 'Lire un justificatif'}
               {screen === 'matching' && 'Matching & Contrôle Stocks'}
               {screen === 'quick-expense' && 'Saisie Dépense'}
               {screen === 'quick-sale' && 'Enregistrer une vente'}
-              {screen === 'brew-batch' && 'Lancer un Brassin'}
+              {screen === 'brew-batch' && 'Préparer un brassin'}
             </h2>
           </div>
           <button
             type="button"
             aria-label="Fermer"
-            disabled={saleSaving}
+            disabled={saleSaving || brewSaving}
             onClick={resetAndClose}
             className="min-h-7 min-w-7 flex items-center justify-center text-cave-400 hover:text-cave-200 rounded-control transition"
           >
@@ -1194,7 +1221,7 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
             </div>
           )}
           {screen === 'brew-batch' && !!recipes.length && (
-            <div className="space-y-2 text-2xs">
+            <fieldset disabled={brewSaving || !!pendingBatch.current} className="min-w-0 space-y-2 text-2xs">
               <label className="block space-y-1 text-footnote text-cave-400">
                 Recette à brasser
                 <select
@@ -1232,22 +1259,29 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
               />
 
               <p className="text-footnote text-cave-400">
-                Le stock sera retiré à la validation des étapes de production, selon les quantités confirmées.
+                Stock déduit après validation des ajouts en production.
               </p>
+
+              <BrewScheduleField value={plannedDate} onChange={setPlannedDate} disabled={brewSaving || !!pendingBatch.current} />
+
+            </fieldset>
+          )}
+          {screen === 'brew-batch' && !!recipes.length && <div className="mt-2 space-y-2">
 
               {brewError && <p role="alert" className="text-2xs text-alert-strong">{brewError}</p>}
 
               <button
                 type="button"
-                onClick={handleLaunchBrew}
+                disabled={brewSaving || !selectedRecipeId || !Number.isFinite(batchVolumeL) || batchVolumeL <= 0 || plannedDate !== undefined && !normalizeBrewDate(plannedDate)}
+                onClick={() => void handleLaunchBrew()}
                 className="w-full min-h-touch-lg rounded-control bg-ebc-straw text-cave-950 font-semibold
-                           flex items-center justify-center gap-1"
+                           flex items-center justify-center gap-1 disabled:bg-cave-800 disabled:text-cave-400"
               >
                 <Beer className="w-4 h-4" aria-hidden="true" />
-                Démarrer le brassin
+                {brewSaving ? 'Enregistrement…' : pendingBatch.current ? 'Confirmer l’enregistrement' : 'Créer le brassin à brasser'}
               </button>
             </div>
-          )}
+          }
         </div>
       </ModalShell>
 

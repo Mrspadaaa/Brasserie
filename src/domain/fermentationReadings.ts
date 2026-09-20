@@ -1,3 +1,4 @@
+import { actualBrewDate } from './batchSchedule';
 import type { Batch } from '../types';
 import { catalogDate, catalogNumber } from './productionCatalog';
 
@@ -7,7 +8,7 @@ export function fermentationReadings(batch: Batch) {
   const og = catalogNumber(batch.og),
     fg = catalogNumber(batch.fg);
   if (og !== undefined && og > 0)
-    points.push({ name: 'OG mesurée', date: batch.brewDate || 'Date non renseignée', sg: og });
+    points.push({ name: 'OG mesurée', date: actualBrewDate(batch) || 'Date non renseignée', sg: og });
   const logs = [...(batch.gravityLog ?? [])]
     .filter((log) => Number.isFinite(log.sg) && log.sg > 0)
     .sort((a, b) => (catalogDate(a.date) ?? Infinity) - (catalogDate(b.date) ?? Infinity));

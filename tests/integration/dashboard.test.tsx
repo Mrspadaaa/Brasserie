@@ -62,6 +62,19 @@ afterEach(() => {
 });
 
 describe('dashboard daily overview', () => {
+  it('separates a started brew from future plans without calling it fermentation', () => {
+    const { props } = mount({ batches: [
+      { ...porter, id: 'STARTED', name: 'En brassage', status: 'planifie', plannedBrewDate: '27.09.2026', brewDate: '20.09.2026', brewDay: { startedAt: Date.parse('2026-09-20T10:00:00Z'), currentIndex: 0, steps: [], readings: [] } },
+      { ...porter, id: 'PLANNED', name: 'À préparer', status: 'planifie', plannedBrewDate: '', brewDate: '' }
+    ] });
+    const started = screen.getByRole('button', { name: /En brassage/ });
+    expect(within(started).getByText('Brassage en cours')).toBeVisible();
+    expect(within(started).queryByText('Planifié')).not.toBeInTheDocument();
+    expect(screen.getByText('1 en brassage · 0 en cuve')).toBeVisible();
+    expect(screen.getByText('À brasser · 1')).toBeVisible();
+    fireEvent.click(started); expect(props.onOpenBatch).toHaveBeenCalledWith('STARTED');
+  });
+
   it('exposes one page heading and consistently named dashboard sections', () => {
     mount({ batches: [] });
 

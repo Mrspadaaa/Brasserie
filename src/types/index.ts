@@ -420,6 +420,7 @@ export interface Recipe {
   name: string;
   style: string;
   volumeL: number;
+  /** Date d’origine conservée à l’import ; ne planifie aucun brassin. */
   brewDate?: string;
   ogTarget: number | null;
   fgTarget: number | null;
@@ -578,7 +579,10 @@ export interface Batch {
   favorite?: boolean;
   /** Masqué du carnet courant, disponible dans Archives et les analyses. */
   archivedAt?: string | null;
+  /** Jour réellement brassé. Vide tant que le brassage n’a pas commencé. */
   brewDate: string;
+  /** Jour prévu ; chaîne vide = à définir. Absent sur les anciens brassins. */
+  plannedBrewDate?: string;
   name: string;
   style: string;
   volumeL: number; // Volume VISÉ à la planification

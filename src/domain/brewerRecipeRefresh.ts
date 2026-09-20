@@ -1,9 +1,13 @@
 import type { Recipe, SaltId } from '../types';
 import { addIons, dilute, ionsFromSalts, ionsAfterAcid, averageWater } from './water';
-import { projectYeastRecipe } from './yeastProjection';
+import { projectYeastRecipe, yeastRecipeComputedOg, yeastRecipeBoilOg } from './yeastProjection';
+import { hotBitterness } from './hopBitterness';
+import { yeastReferences } from './yeastReferences';
+import { resolveFermentationYeast } from './fermentationScenario';
+import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 
 /** Refresh derived displays, keeping all physical doses exactly as approved. */
-export function refreshCompanionRecipe(recipe: Recipe): Recipe {
+export function refreshCompanionRecipe(recipe: Recipe, options: { changedPaths?: string[]; knowledge?: HopKnowledge[] } = {}): Recipe {
   const next = structuredClone(recipe),
     p = next.waterPlan,
     rig = next.brewhouse?.equipment;
@@ -54,12 +58,23 @@ export function refreshCompanionRecipe(recipe: Recipe): Recipe {
     delete p.startIons;
     delete p.wortIons;
   }
-  // Only the new recipe projection adopts this engine. Existing and frozen
-  // recipes keep their recorded targets until explicitly redesigned.
-  if (next.yeastDesign?.modelVersion === 'yeast-recipe-2' && !next.nolo?.enabled) {
-    const projection = projectYeastRecipe(next);
-    next.fgTarget = projection.fg.range && projection.fg.range.min === projection.fg.range.max ? projection.fg.range.min : null;
-    next.abvTarget = projection.abv.range && projection.abv.range.min === projection.abv.range.max ? projection.abv.range.min : null;
+  // Match the editor: retain supplied targets until their calculation inputs
+  // change. Explicit target edits remain targets, never invented measurements.
+  const paths = options.changedPaths ?? [], roots = paths.map(path => path.split('.')[0]);
+  const ogChanged = roots.some(root => ['volumeL', 'fermentables', 'efficiencyPct'].includes(root));
+  const ibuChanged = ogChanged || roots.some(root => ['hops', 'boilMin', 'ogTarget'].includes(root));
+  const fermentationChanged = ibuChanged || roots.includes('yeast');
+  if (!next.nolo?.enabled && (fermentationChanged || next.yeastDesign?.modelVersion === 'yeast-recipe-2')) {
+    if (ogChanged && !paths.includes('ogTarget')) next.ogTarget = yeastRecipeComputedOg(next);
+    const projection = projectYeastRecipe(next, { reference: resolveFermentationYeast(next, yeastReferences(options.knowledge)) });
+    if (ibuChanged && !paths.includes('ibuTarget')) {
+      const ibu = hotBitterness(next.hops, next.volumeL, yeastRecipeBoilOg(next, projection).og, next.boilMin).total;
+      next.ibuTarget = ibu == null ? undefined : Math.round(ibu);
+    }
+    if (fermentationChanged || next.yeastDesign?.modelVersion === 'yeast-recipe-2') {
+      if (!paths.includes('fgTarget')) next.fgTarget = projection.fg.range && projection.fg.range.min === projection.fg.range.max ? projection.fg.range.min : null;
+      if (!paths.includes('abvTarget')) next.abvTarget = projection.abv.range && projection.abv.range.min === projection.abv.range.max ? projection.abv.range.min : null;
+    }
   }
   return next;
 }

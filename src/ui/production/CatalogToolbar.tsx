@@ -422,7 +422,7 @@ export function CatalogToolbar({
           )}
           <label className="block space-y-1.5">
             <span className="text-sm text-cave-200">
-              Date de brassage{kind === 'recipes' ? ' prévue' : ''}
+              {kind === 'recipes' ? 'Date conservée dans la recette' : 'Date prévue ou brassée'}
             </span>
             <select
               aria-label="Filtrer par période"

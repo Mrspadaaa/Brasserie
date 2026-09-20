@@ -77,7 +77,7 @@ async function erase(field: HTMLElement) {
 describe('Recipe wizard submission safeguards', () => {
   it.each([
     ['Enregistrer la recette', false],
-    ['Lancer le brassin', true]
+    ['Enregistrer et préparer un brassin', true]
   ] as const)('refuses %s after jumping to recap with no name, then accepts a corrected recipe', async (action, thenBrew) => {
     const recipe = { ...structuredClone(fullRecipe), name: '' };
     const { onSave } = wizard({ recipe });

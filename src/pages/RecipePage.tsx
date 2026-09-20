@@ -1,3 +1,4 @@
+import { batchDisplayDate } from '../domain/batchSchedule';
 import { hotBitterness } from '../domain/hopBitterness';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { mashPhDiagnostic } from '../domain/water/readiness';
@@ -182,7 +183,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     <PageShell
       className="recipe-reference"
       title={recipe.name}
-      subtitle={[recipe.style, `${recipe.volumeL} L`, recipe.brewDate].filter(Boolean).join(' · ')}
+      subtitle={[recipe.style, `${recipe.volumeL} L`].filter(Boolean).join(' · ')}
       onClose={onClose}
       actions={
         <>
@@ -221,7 +222,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                      font-semibold flex items-center justify-center gap-2 active:scale-[0.99] transition-transform"
         >
           <FlaskConical className="w-5 h-5" />
-          Lancer un brassin
+          Préparer un brassin
         </button>
         </div>
       }
@@ -812,7 +813,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                         {b.id} — {b.name}
                       </span>
                       <span className="block text-sm text-cave-400">
-                        {b.brewDate}
+                        {batchDisplayDate(b) ?? 'Date à définir'}
                         {gap ? ` · ${gap.realEfficiencyPct} % d’efficacité réelle` : ''}
                       </span>
                     </span>

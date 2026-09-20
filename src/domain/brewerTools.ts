@@ -18,7 +18,7 @@ import {
   boilMinutes
 } from './brewCompanion';
 import { computeBeerColor } from './beerColor';
-import { saccharificationTemp } from './brewPrograms';
+import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from './yeastProjection';
 export { normalizeRecipe } from './recipeSnapshot';
 export { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { refreshCompanionRecipe } from './brewerRecipeRefresh';
@@ -41,7 +41,7 @@ import { FERMENTATION_GOALS, type FermentationGoal } from '../../functions/src/f
 import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
 import { catalogueMatches } from './yeastCatalogue';
 import { fermentationDose } from './fermentationGuide';
-import { evaluateFermentationScenario } from './fermentationScenario';
+import { evaluateFermentationScenario, resolveFermentationYeast } from './fermentationScenario';
 import { buildYeastCompanion, type YeastCompanionOptions } from './yeastCompanion';
 import { YEAST_RECIPE_GOAL_LABELS } from './yeastRecipeDesign';
 import { evaluateNoloRecipe, noloScience, noloRecipeForBatch, rankNoloStrains, noloWaterModelIssue, noloInput, noloScenarioInput } from './nolo';
@@ -536,25 +536,17 @@ export function runBrewerTool(
           spargeWaterL: sizing.spargeWaterL
         };
     }
-    const recipe = refreshCompanionRecipe(scenario);
-    const efficiency = recipe.efficiencyPct ?? rig?.efficiencyPct;
-    const og =
-      efficiency != null ? BrewingMath.calculateOg(recipe.fermentables, volumeL, efficiency) : null;
-    const extract =
-      efficiency != null
-        ? BrewingMath.extractPoints(recipe.fermentables, volumeL, efficiency)
-        : null;
-    const mashTemp = saccharificationTemp(recipe.mash?.steps ?? []);
-    const attenuation = recipe.yeast?.attenuationPct;
-    const predictedAttenuation =
-      attenuation && mashTemp
-        ? BrewingMath.attenuationForMashTemp(attenuation, mashTemp)
-        : attenuation;
-    const fg =
-      og != null && predictedAttenuation != null
-        ? BrewingMath.calculateFg(og, predictedAttenuation, extract?.unfermentable)
-        : null;
-    const ibu = recipeIbu(recipe.hops, volumeL, og, recipe.boilMin);
+    const recipe = refreshCompanionRecipe({ ...scenario, efficiencyPct: scenario.efficiencyPct ?? rig?.efficiencyPct });
+    // Use the editor's projection, including documented ranges and unknowns.
+    // Mash temperature must not silently apply a second attenuation correction.
+    const fermentationProjection = projectYeastRecipe(recipe, {
+      reference: resolveFermentationYeast(recipe, yeastReferences(c.hopIndex?.knowledge))
+    });
+    const og = fermentationProjection.og;
+    const point = (range: HopRange | null) => range && range.min === range.max ? range.min : null;
+    const fg = point(fermentationProjection.fg.range), abv = point(fermentationProjection.abv.range);
+    const boil = yeastRecipeBoilOg(recipe, fermentationProjection);
+    const ibu = recipeIbu(recipe.hops, volumeL, boil.og, recipe.boilMin);
     const color = computeBeerColor(recipe.fermentables, volumeL);
     const water = recipe.waterPlan;
     const recommendedWater = rig
@@ -593,6 +585,10 @@ export function runBrewerTool(
         volumeL,
         og,
         fg,
+        abv,
+        computedOg: yeastRecipeComputedOg(recipe),
+        fermentationProjection,
+        boilOg: boil.og,
         ibu,
         color,
         water,
@@ -613,6 +609,11 @@ export function runBrewerTool(
       ],
       [
         'Valeurs prévisionnelles, pas des relevés. Limite utile de cuve provisoire si workingVolumeConfirmed=false.',
+        'Une plage de fermentationProjection reste une plage : fg/abv sont null quand aucune valeur ponctuelle n’est connue. La DF ne mesure pas la douceur.',
+        ...fermentationProjection.warnings,
+        ...(!fermentationProjection.fg.range ? fermentationProjection.fg.reasons : []),
+        ...(!fermentationProjection.abv.range ? fermentationProjection.abv.reasons : []),
+        ...boil.reasons,
         'recommendedWater est un calcul de besoin, pas une quantité déjà saisie ou versée. Le preview reflète les doses proposées ; propose_changes recalcule le traitement si les entrées d’eau changent ou si autoTreatment est actif.',
         ...(scaled
           ? [

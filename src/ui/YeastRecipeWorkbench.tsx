@@ -300,7 +300,7 @@ export function YeastRecipeContext({ recipe, onChooseYeast }: { recipe: TrialRec
 export function YeastRecipeHeading({ recipe }: { recipe: TrialRecipe }) {
   const intent = readYeastRecipeDesign(recipe);
   const primary = recipe.fermentation?.find(s => s.kind === 'primaire');
-  return <span>{recipe.yeast.name || 'Souche à préciser'} · {recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty)} ${recipe.yeast.unit}` : 'quantité à préciser'}{intent && <span className="block">Objectif : {YEAST_RECIPE_GOAL_LABELS[intent.goal]} · primaire {number(primary?.tempC)} °C{yeastRecipeDesignChanged(recipe, intent) ? ' · réglages modifiés' : ''}</span>}</span>;
+  return <span>{recipe.yeast.name || 'Souche à préciser'} · {recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty, 20)} ${recipe.yeast.unit}` : 'quantité à préciser'}{intent && <span className="block">Objectif : {YEAST_RECIPE_GOAL_LABELS[intent.goal]} · primaire {number(primary?.tempC)} °C{yeastRecipeDesignChanged(recipe, intent) ? ' · réglages modifiés' : ''}</span>}</span>;
 }
 
 export function YeastRecipeSummary({ recipe, onEdit }: { recipe: TrialRecipe; onEdit?: () => void }) {
@@ -321,7 +321,7 @@ export function YeastRecipeSummary({ recipe, onEdit }: { recipe: TrialRecipe; on
       <dl className="grid grid-cols-2 gap-2 text-[13px]">
         <div><dt className="text-cave-400">Primaire</dt><dd>{number(draft.temperatureC)} °C · {number(draft.days)} j prévus</dd></div>
         <div><dt className="text-cave-400">Pression prévue au départ</dt><dd>{draft.pressureBar == null ? 'À préciser' : `${number(draft.pressureBar)} bar rel.`}</dd></div>
-        <div><dt className="text-cave-400">Levure à préparer</dt><dd>{recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty)} ${recipe.yeast.unit}` : 'Quantité à préciser'} · {recipe.yeast.form || 'forme à préciser'}</dd></div>
+        <div><dt className="text-cave-400">Levure à préparer</dt><dd>{recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty, 20)} ${recipe.yeast.unit}` : 'Quantité à préciser'} · {recipe.yeast.form || 'forme à préciser'}</dd></div>
         <div><dt className="text-cave-400">Ensemencement</dt><dd>{number(recipe.yeast.pitchTempC)} °C</dd></div>
       </dl>
       <FermentationTemperatureChart compact steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />

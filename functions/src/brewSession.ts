@@ -1,6 +1,7 @@
 import { onCall, HttpsError, CallableRequest } from 'firebase-functions/v2/https';
 import { getFirestore } from 'firebase-admin/firestore';
 import { stampSession } from './brewSessionCore.js';
+import { brewSessionDatePatch } from './batchSchedule.js';
 
 export function requireBrewer(request: CallableRequest) {
   const allowed = (process.env.AUTHORIZED_ACCOUNTS ?? '')
@@ -74,7 +75,7 @@ export const saveBrewSession = onCall(
           e instanceof Error ? e.message : 'Journal invalide.'
         );
       }
-      tx.update(ref, { brewDay: next });
+      tx.update(ref, { brewDay: next, ...brewSessionDatePatch(batch.data() as { status: string; brewDate?: string; plannedBrewDate?: string }, next) });
       tx.create(receipt, {
         batchId: id,
         revision: next.revision,

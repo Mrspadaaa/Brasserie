@@ -64,6 +64,8 @@ interface DateFieldProps {
   error?: string;
   /** Raccourcis proposés. Par défaut : aujourd'hui, hier, il y a une semaine. */
   shortcuts?: Array<{ label: string; offsetDays: number }>;
+  /** Optional calendar for this usage; other fields keep the device's local day. */
+  shortcutDate?: (offsetDays: number) => string;
   monthShortcuts?: boolean;
   disabled?: boolean;
 }
@@ -81,6 +83,7 @@ export const DateField: React.FC<DateFieldProps> = ({
   hint,
   error,
   shortcuts = DEFAULT_SHORTCUTS,
+  shortcutDate,
   monthShortcuts = false,
   disabled = false
 }) => {
@@ -115,7 +118,7 @@ export const DateField: React.FC<DateFieldProps> = ({
         </div> : null}
         <div className="flex flex-wrap gap-1">
           {shortcuts.map((s) => {
-            const target = swissToday(s.offsetDays);
+            const target = shortcutDate ? shortcutDate(s.offsetDays) : swissToday(s.offsetDays);
             const active = value === target;
             return (
               <button

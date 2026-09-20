@@ -1,11 +1,12 @@
 import { createHash } from 'node:crypto';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { requireBrewer } from './brewSession.js';
-import { normalizeRecipe, refreshCompanionRecipe } from './brewerTools.js';
+import { normalizeRecipe } from './brewerTools.js';
 import {
   BATCH_FIELDS,
   RECIPE_FIELDS,
+  STOCK_FIELDS,
   cleanContext,
   pick,
   scopeKey,
@@ -120,9 +121,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     inventory: stock.docs.map((d) =>
       pick(
         { ...d.data(), id: d.id },
-        'id name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC'.split(
-          ' '
-        )
+        STOCK_FIELDS
       )
     ),
     material: material.docs.map((d) =>
@@ -383,7 +382,6 @@ export const applyBrewerProposal = onCall(
             reason: 'proposal-stale'
           });
         }
-        if (proposal.target === 'recipe') next = refreshCompanionRecipe(next);
       } else if (selectedIds.length)
         throw new HttpsError('invalid-argument', 'Une proposition écartée ne modifie aucun champ.');
       const now = Date.now();
@@ -424,7 +422,14 @@ export const applyBrewerProposal = onCall(
             roots.some((root) => ['fermentables', 'waterPlan'].includes(root))
           )
             roots.push('preBoilL', 'preBoilHotL', 'waterPlan', 'mash');
-          tx.update(entity!.ref, pick(next, roots));
+          // Persist the same derived targets as the approved preview and draft.
+          // A root-only patch otherwise saves the attenuation but leaves stale FG/ABV.
+          if (proposal.target === 'recipe') roots.push('ogTarget', 'fgTarget', 'abvTarget', 'ibuTarget');
+          if (proposal.target === 'recipe' && roots.includes('style')) roots.push('styleRef');
+          const patch = pick(next, roots);
+          for (const root of roots) if (next[root] === undefined && entity!.data()?.[root] !== undefined)
+            patch[root] = FieldValue.delete();
+          tx.update(entity!.ref, patch);
         }
         const auditId = `LOG-${String(now).padStart(14, '0')}-companion-${turnId.slice(0, 16)}`;
         const accepted = proposal.changes.filter((ch: any) => selectedIds.includes(ch.id));

@@ -29,9 +29,29 @@ describe('Autres tâches IA derrière le même contrôle, fournisseur simulé', 
     expect(await aiTask.run(payload() as any)).toMatchObject({ ok: false, error: 'Budget mensuel atteint.' });
     expect(gate).toHaveBeenCalledOnce(); expect(fetchMock).not.toHaveBeenCalled();
   });
+  it('demande un dossier structuré pour la levure sans déplacer ses faits dans les champs houblon', async () => {
+    const input = payload('lookupIngredient'); input.data.context = { kind: 'levure', name: 'Culture personnelle' } as any;
+    await aiTask.run(input as any);
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body), schema = body.generationConfig.responseSchema;
+    expect(schema.required).toContain('technicalFacts');
+    expect(schema.properties).toHaveProperty('tempMaxC');
+    expect(schema.properties).not.toHaveProperty('usage');
+    expect(body.tools).toEqual([{ googleSearch: {} }]);
+    fetchMock.mockClear(); input.data.context = { kind: 'houblon', name: 'Citra' } as any;
+    await aiTask.run(input as any);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).generationConfig.responseSchema.properties).toHaveProperty('usage');
+  });
   it('chaque repli est lui-même réservé, y compris après une réponse JSON invalide', async () => {
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: 'broken' }] } }], usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 2, totalTokenCount: 3 } }) });
     expect(await aiTask.run(payload() as any)).toMatchObject({ ok: true });
     expect(gate).toHaveBeenCalledTimes(2); expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it('ne présente pas comme réussi un autocomplete de levure sans source exploitable et ne dépense pas de repli', async () => {
+    const input = payload('lookupIngredient'); input.data.context = { kind: 'levure', name: 'Culture de test' } as any;
+    fetchMock.mockResolvedValue({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({
+      found: true, name: 'Culture de test', source: 'Fiche', sourceUrl: 'https://example.invalid/ogimage.png', technicalFacts: []
+    }) }] } }] }) });
+    expect(await aiTask.run(input as any)).toMatchObject({ ok: false, error: expect.stringContaining('Aucune donnée appliquée') });
+    expect(gate).toHaveBeenCalledOnce();
   });
 });

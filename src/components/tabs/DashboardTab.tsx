@@ -1,3 +1,4 @@
+import { batchDisplayDate, hasBrewStarted, plannedBrewDate } from '../../domain/batchSchedule';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle, Beer, Boxes, Calendar, Check, ChevronDown, ChevronRight,
@@ -11,7 +12,7 @@ import { DateUtils } from '../../services/dateUtils';
 import { FinanceService } from '../../services/financeService';
 import { formatCHF, summarizeLedger } from '../../domain/finance/ledger';
 import { isCurrent } from '../../domain/catalogOrganization';
-import { statusOf } from '../../domain/batchStatus';
+import { statusOfBatch } from '../../domain/batchStatus';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { daysSinceBrew } from '../../domain/productionInsights';
 
@@ -51,7 +52,7 @@ function StockThreshold({ item }: { item: StockItem }) {
 
 /** A batch row always uses saved observations, at every viewport width. */
 function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => void }) {
-  const status = statusOf(batch.status);
+  const status = statusOfBatch(batch);
   const reading = fermentationReadings(batch);
   const days = daysSinceBrew(batch);
   const planned = batch.status === 'planifie';
@@ -66,7 +67,7 @@ function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => voi
           <span className="text-cave-50">{status.label}</span>
         </span>
         {planned
-          ? <span className="text-cave-200">{displayDate(batch.brewDate)} · {quantity.format(batch.volumeL)} L</span>
+          ? <span className="text-cave-200">{batchDisplayDate(batch) ? displayDate(batchDisplayDate(batch)) : 'Date à définir'} · {quantity.format(batch.volumeL)} L</span>
           : <>
             <span className="text-cave-400">{days === undefined ? 'Date à préciser' : days < 0 ? 'Date future à vérifier' : `J+${days}`}</span>
             <span className="font-mono text-2xs text-cave-200">
@@ -134,8 +135,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
     isCurrent(batch) && (batch.status === 'fermentation' || batch.status === 'garde')
   ), [batches]);
   const plannedBatches = useMemo(() => batches.filter(batch =>
-    isCurrent(batch) && batch.status === 'planifie'
-  ).sort((a, b) => dateOrder(a.brewDate) - dateOrder(b.brewDate)), [batches]);
+    isCurrent(batch) && batch.status === 'planifie' && !hasBrewStarted(batch)
+  ).sort((a, b) => dateOrder(batchDisplayDate(a)) - dateOrder(batchDisplayDate(b))), [batches]);
+  const brewingBatches = useMemo(() => batches.filter(batch =>
+    isCurrent(batch) && batch.status === 'planifie' && hasBrewStarted(batch)
+  ), [batches]);
   const itemsToOrder = useMemo(() => [...stocks.rawMaterials, ...stocks.cleaning]
     .filter(item => item.currentStock <= item.minStock)
     .sort((a, b) => Number(b.currentStock <= 0) - Number(a.currentStock <= 0))
@@ -201,10 +205,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-production/10 px-2">
             <Beer size={16} className="shrink-0 text-area-production" aria-hidden="true" />
             <h2 id="dashboard-production" className="flex-1 font-semibold text-area-production">Brassins</h2>
-            <span className="text-xs text-cave-200">{activeBatches.length} en cuve</span>
+            <span className="text-xs text-cave-200">{brewingBatches.length > 0 && `${brewingBatches.length} en brassage · `}{activeBatches.length} en cuve</span>
             <button type="button" onClick={() => onNavigateTab('production')} className={`${smallAction} text-area-production`}>Tous<ChevronRight size={12} aria-hidden="true" /></button>
           </div>
           <div className="divide-y divide-cave-800">
+            {brewingBatches.map(batch => <BatchRow key={batch.id} batch={batch} onOpen={onOpenBatch} />)}
             {(showAllBatches ? activeBatches : activeBatches.slice(0, 4)).map(batch =>
               <BatchRow key={batch.id} batch={batch} onOpen={onOpenBatch} />)}
           </div>
@@ -220,7 +225,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
               <span className="min-w-0 flex-1">
                 <span className="font-semibold text-area-production">À brasser · {plannedBatches.length}</span>
                 <span className="ml-2 text-cave-200">{plannedBatches[0].name}</span>
-                <span className="block text-xs text-cave-400">Prochain : {displayDate(plannedBatches[0].brewDate)}</span>
+                <span className="block text-xs text-cave-400">{plannedBrewDate(plannedBatches[0]) ? `Prévu le ${displayDate(plannedBrewDate(plannedBatches[0]))}` : 'Date à définir'}</span>
               </span>
               <ChevronDown size={14} className="shrink-0 text-area-production group-open/planned:rotate-180" aria-hidden="true" />
             </summary>

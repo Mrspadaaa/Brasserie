@@ -5,7 +5,7 @@ import { loadBrewerFinanceContext } from './brewerFinanceContext.js';
 
 const fields: Record<string, string[]> = {
   recipes: 'name style volumeL malts hops yeast efficiencyPct'.split(' '),
-  batches: 'name style status brewDate volumeL volumeBrewedL og fg recipeRef'.split(' '),
+  batches: 'name style status plannedBrewDate brewDate volumeL volumeBrewedL og fg recipeRef'.split(' '),
   planning: 'category description cost startDate endDate isMilestone completed'.split(' '),
   transactions: 'date category subcategory description amountTTC amountHT tvaRate tvaAmount'.split(' '),
   budgetLines: 'line category row months totalPrevu realiseYTD'.split(' '),

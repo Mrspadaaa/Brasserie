@@ -1,4 +1,5 @@
-import { BatchStatus } from '../types';
+import type { Batch, BatchStatus } from '../types';
+import { hasBrewStarted } from './batchSchedule';
 
 /**
  * Le cycle de vie d'un brassin, déclaré UNE seule fois.
@@ -113,4 +114,12 @@ export function statusOf(status: BatchStatus | undefined): StatusStyle {
       order: 99
     }
   );
+}
+
+/** Starting the journal precedes the stock-confirmed transition to fermentation. */
+export function statusOfBatch(batch: Batch): StatusStyle {
+  const status = statusOf(batch.status);
+  return batch.status === 'planifie' && hasBrewStarted(batch)
+    ? { ...status, label: batch.brewDay?.finishedAt ? 'Brassage à clôturer' : 'Brassage en cours', hint: 'Brassage commencé, passage en fermentation à confirmer' }
+    : status;
 }

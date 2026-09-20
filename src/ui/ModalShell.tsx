@@ -54,6 +54,8 @@ interface ModalShellProps {
    */
   dismissible?: boolean;
   labelledBy?: string;
+  /** A local action opened from a full-screen page must sit above that page. */
+  abovePage?: boolean;
 }
 
 export const ModalShell: React.FC<ModalShellProps> = ({
@@ -62,7 +64,8 @@ export const ModalShell: React.FC<ModalShellProps> = ({
   children,
   size = 'lg',
   dismissible = true,
-  labelledBy
+  labelledBy,
+  abovePage = false
 }) => {
   const coarse = useCoarsePointer();
   const keyboardInset = useKeyboardInset();
@@ -138,7 +141,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+      className={`fixed inset-0 ${abovePage ? 'z-[60]' : 'z-50'} flex justify-center bg-cave-950/80 backdrop-blur-sm
                   animate-in fade-in
                   ${bottomAligned ? 'items-end' : 'items-center p-3 sm:p-4'}`}
       onPointerDown={(e) => {

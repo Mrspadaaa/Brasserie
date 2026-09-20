@@ -1,6 +1,7 @@
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within, waitFor } from '@testing-library/react';
+import { FirestoreRepo } from '../../src/services/firestoreRepo';
 import { QuickActionModal } from '../../src/components/QuickActionModal';
 import { ProductionTab } from '../../src/components/tabs/ProductionTab';
 import { StorageService } from '../../src/services/storage';
@@ -32,6 +33,7 @@ beforeEach(() => {
   vi.spyOn(StorageService, 'getStocks').mockReturnValue({ rawMaterials: [stock], cleaning: [], equipment: [] });
   vi.spyOn(StorageService, 'getBatches').mockImplementation(() => created);
   vi.spyOn(StorageService, 'addBatch').mockImplementation(batch => { created.push(structuredClone(batch)); });
+  vi.spyOn(FirestoreRepo, 'waitForDocument').mockImplementation(async (_name, id) => created.find(batch => batch.id === id));
   vi.spyOn(StorageService, 'getUiState').mockImplementation((_key, fallback) => fallback);
   vi.spyOn(StorageService, 'setUiState').mockImplementation(() => {});
   vi.spyOn(StorageService, 'subscribe').mockReturnValue(() => {});
@@ -40,7 +42,7 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('brew budget to doubled-volume batch creation', () => {
-  it('creates the full scaled snapshot with its source identity and production metadata, while reserving stock', () => {
+  it('creates the full scaled snapshot with its source identity and production metadata, while reserving stock', async () => {
     const original = structuredClone(recipe);
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[recipe]} onClose={close} />);
@@ -49,10 +51,10 @@ describe('brew budget to doubled-volume batch creation', () => {
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
     expect(screen.queryByText('Déduction automatique des stocks')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
     expect(created).toHaveLength(1);
     const batch = created[0];
-    expect(batch).toEqual(expect.objectContaining({ name: recipe.name, style: recipe.style, volumeL: 50, brewDate: recipe.brewDate, status: 'planifie', recipeRef: 'R', stockAccountingVersion: 1, gravityLog: [] }));
+    expect(batch).toEqual(expect.objectContaining({ name: recipe.name, style: recipe.style, volumeL: 50, brewDate: '', plannedBrewDate: '', status: 'planifie', recipeRef: 'R', stockAccountingVersion: 1, gravityLog: [] }));
     expect(batch.recipeSnapshot).toEqual(expect.objectContaining({ sourceRecipeId: 'R', parentRecipeId: 'R-base', version: 2, volumeL: 50, ogTarget: 1.05, fgTarget: 1.01, abvTarget: 5.2, preBoilL: 52, brewhouse: rig, notes: recipe.notes }));
     expect(batch.recipeSnapshot.waterPlan).toEqual(expect.objectContaining({ sourceId: 'tap', mashWaterL: 30, spargeWaterL: 31.6, mash: { gypse: 2 }, sparge: { gypse: 4 }, acid: { id: 'lactique', mash: 4, sparge: 6 } }));
     expect(batch.recipeSnapshot.fermentables.map(item => item.weightKg)).toEqual([10, 1]);
@@ -62,10 +64,10 @@ describe('brew budget to doubled-volume batch creation', () => {
     expect(StorageService.getStocks().rawMaterials[0].currentStock).toBe(30);
     expect(batch.stockConsumption).toBeUndefined();
     expect(recipe).toEqual(original);
-    expect(close).toHaveBeenCalledOnce();
+    await waitFor(() => expect(close).toHaveBeenCalledOnce());
   });
 
-  it('keeps creation open with a useful error when the new volume has no cuverie', () => {
+  it('keeps creation open with a useful error when the new volume has no cuverie', async () => {
     vi.mocked(StorageService.getConfig).mockReturnValue({ ...config, brewhouses: [] });
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[{ ...recipe, volumeL: 30, brewhouse: undefined }]} onClose={close} />);
@@ -73,15 +75,16 @@ describe('brew budget to doubled-volume batch creation', () => {
     const volume = screen.getByLabelText('Volume du brassin');
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
     expect(screen.getByRole('alert')).toHaveTextContent('Configure une cuverie');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
     fireEvent.change(volume, { target: { value: '30' } });
     fireEvent.blur(volume);
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le brassin' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
     expect(created).toHaveLength(1);
     expect(created[0].recipeSnapshot.sourceRecipeId).toBe('R');
+    await waitFor(() => expect(close).toHaveBeenCalledOnce());
   });
 
   it('shows doubled adjuncts in the calculator and preserves the scientific results for a different target cuverie', () => {
