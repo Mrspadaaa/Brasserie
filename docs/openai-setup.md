@@ -21,7 +21,7 @@ reste en mémoire, sans interrompre une autre tâche active.
 | Pilote | GPT-6 Astra Max | 272000 bruts, ~258400 utiles | Au plus 2 Sol et 9 Luna directs |
 | Profil `sol-full` | GPT-6 Sol Max | 872000 bruts, 828400 utiles | Au plus 9 Luna |
 | Profil `luna-full` | GPT-6 Luna Max | 872000 bruts, 828400 utiles | Sous-tâche terminale |
-| Frontend Claude | Claude Opus 5.5 Max | CLI natif | Un Claude ; jusqu'à 9 Luna via relais |
+| Frontend Claude | Claude Opus 5.5 xhigh | CLI natif | Un Claude ; jusqu'à 9 Luna via relais |
 
 Les fenêtres Sol/Luna correspondent au maximum du catalogue Codex local vérifié
 le 24 septembre 2026. La compaction conserve le comportement natif ; aucun seuil
@@ -93,7 +93,7 @@ tests et la revue métier/UX nécessaires ; ne les rejouer que si les changement
 ou les incertitudes le justifient.
 
 Une fenêtre de 828400 tokens utiles n'oblige pas à la remplir. Les contextes
-maximaux et l'effort Max restent inchangés. La brièveté de Caveman lite concerne
+maximaux et l'effort Max des modèles OpenAI restent inchangés. La brièveté de Caveman lite concerne
 la communication ; elle ne plafonne pas les tokens de raisonnement.
 
 Les processus natifs résolvent ici l'héritage de fenêtre ; ils ne créent pas de
@@ -107,7 +107,10 @@ tâches tournent. Aucun gain en pourcentage n'est annoncé sans comparaison fiab
 
 `scripts/claude-frontend.mjs` utilise le CLI officiel (version >= 2.1.280) et
 son authentification `claude.ai` **Pro**. Les arguments fixent
-`--model claude-opus-5-5 --effort max`.
+`--model claude-opus-5-5 --effort xhigh`, avec la même valeur dans
+`CLAUDE_CODE_EFFORT_LEVEL` pour le processus enfant. Ce choix remplace Max à la
+demande de l'utilisateur du 24 septembre 2026 ; il ne modifie pas les réglages
+globaux d'une session Claude ouverte séparément.
 `--safe-mode` écarte les personnalisations Claude hors politique administrée ;
 `--restricted` borne les
 outils de fichiers au dossier temporaire de la mission. Aucun jeton n'est extrait

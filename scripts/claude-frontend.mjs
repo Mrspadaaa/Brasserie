@@ -19,7 +19,7 @@ export function subscriptionEnvironment(source = process.env) {
       || /^CLAUDE_CODE_(USE_(BEDROCK|VERTEX|FOUNDRY|ANTHROPIC_AWS|MANTLE)|SIMPLE|PROVIDER_MANAGED_BY_HOST)$/i.test(key)
       || /^CLAUDECODE$/i.test(key)) delete env[key];
   }
-  env.CLAUDE_CODE_EFFORT_LEVEL = 'max';
+  env.CLAUDE_CODE_EFFORT_LEVEL = 'xhigh';
   return env;
 }
 
@@ -175,7 +175,7 @@ export function claudeArguments({ mode = 'review', files = [], luna = false, max
   // In dontAsk mode, listing Read in --tools does not approve its use.
   // --restricted confines it to the isolated mission directory.
   if (tools.includes('Read')) allowed.unshift('Read');
-  const args = ['--print', '--safe-mode', '--restricted', '--model', 'claude-opus-5-5', '--effort', 'max',
+  const args = ['--print', '--safe-mode', '--restricted', '--model', 'claude-opus-5-5', '--effort', 'xhigh',
     '--output-format', 'json', '--no-session-persistence', '--permission-mode', 'dontAsk',
     '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
     '--disallowedTools', 'mcp__*', '--max-turns', String(maxTurns), '--tools', tools.join(',')];
@@ -218,7 +218,7 @@ function cliStatus(exe, env) {
   }
   const auth = spawnSync(exe, ['auth', 'status', '--json'], { encoding: 'utf8', windowsHide: true, env });
   if (auth.status !== 0) throw new Error('Connexion Claude indisponible. Utiliser claude auth login --claudeai.');
-  return { version: numbers.join('.'), ...subscriptionStatus(JSON.parse(auth.stdout)), model: 'claude-opus-5-5', effort: 'max' };
+  return { version: numbers.join('.'), ...subscriptionStatus(JSON.parse(auth.stdout)), model: 'claude-opus-5-5', effort: 'xhigh' };
 }
 
 function acquireClaudeLock() {

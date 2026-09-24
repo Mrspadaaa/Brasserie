@@ -14,7 +14,7 @@ Claude ou écriture en DB réelle. L'intégration Git est consignée en fin de r
 | Modèle de départ | Localiser UI, données, snapshots et limites actuelles de Gemini sans prétendre que les nouvelles capacités existent. | `docs/research/yeast-code-map-2026-09-24.md`, issu de la cartographie Luna en lecture seule. |
 | Ensemencement et starter | Formules/unités, sources primaires, limites sec/liquide, lacunes code et liaison avant/J/snapshot explicites. | `docs/research/yeast-pitch-rate-2026-09-24.md`, audit ciblé Luna et vérification des pages fabricant. |
 | Mission future autonome | Recherche → effet sur ma bière → réglage → comparaison/application, packs/starter, Gemini qui contrôle/corrige/sauve, offline et régression. | `docs/prompts/refonte-levure.md` ; revue indépendante Luna et corrections consignées ci-dessous. |
-| Claude parcimonieux | Opus 5.5 Max avec auth Pro, safe/restricted, brief ciblé sans troncature, tours par mission, permissions, un Claude, Luna max 9, quota distinct. | `scripts/claude-frontend.mjs`, tests et `docs/openai-setup.md` ; CLI officiel/help et dry-run sans appel modèle. |
+| Claude parcimonieux | Opus 5.5 xhigh avec auth Pro, safe/restricted, brief ciblé sans troncature, tours par mission, permissions, un Claude, Luna max 9, quota distinct. | `scripts/claude-frontend.mjs`, tests et `docs/openai-setup.md` ; CLI officiel/help et dry-run sans appel modèle. |
 
 ## Responsabilités et intégration
 
@@ -91,3 +91,17 @@ Levure et le lanceur ; la fusion dans `main` reste à la validation utilisateur.
 Les fichiers de recherche parallèle `docs/research/ux-mobile-*` et `work/`
 restent préservés hors de cette livraison. Aucune modification de l'application
 ni authentification globale n'est incluse.
+
+## Ajustement Claude xhigh — 24 septembre 2026
+
+À la demande de l'utilisateur après analyse des deux anciennes consultations,
+le lanceur et la mission passent de Max à **xhigh** pour Claude uniquement.
+La documentation officielle d'Opus 5.5 inclut ce niveau. Le paramètre CLI,
+l'environnement enfant et le diagnostic utilisent la même valeur ; les réglages
+globaux d'autres sessions et les efforts OpenAI restent inchangés.
+
+Après modification : **13/13 tests réussis**, diagnostic Pro/CLI 2.1.280 avec
+effort configuré `xhigh`, dry-run à 4 tours avec `--effort xhigh`, et
+`git diff --check` réussi. Aucun appel modèle n'a été effectué. Les observations
+Max plus haut décrivent les vérifications initiales ; aucune économie de quota
+ni équivalence de qualité n'est encore mesurée pour le nouveau réglage.

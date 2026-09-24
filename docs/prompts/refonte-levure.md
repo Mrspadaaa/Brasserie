@@ -16,7 +16,7 @@ Astra arbitre les choix et intègre les résultats. Sol possède l'implémentati
 et ses preuves ; les Luna reçoivent seulement recherches, tests ou revues ciblés,
 avec fichiers et limites attribués. Respecter les plafonds de concurrence :
 Astra au plus 2 Sol et 9 Luna directs, chaque Sol au plus 9 Luna. Un seul Claude
-Opus 5.5 Max participe : d'abord une contribution de conception à partir d'un
+Opus 5.5 xhigh participe : d'abord une contribution de conception à partir d'un
 brief et de captures ciblés, puis une revue sur rendu et parcours observés avec
 corrections utiles. Une nouvelle mission Claude exige un problème précis ; ne
 pas entretenir une boucle de consultations ni lui confier l'exploration générale

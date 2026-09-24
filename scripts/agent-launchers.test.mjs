@@ -8,14 +8,15 @@ import { applyStagedEdits, checkedOutputPath, claudeArguments, classifyClaudeOut
   subscriptionEnvironment, subscriptionStatus } from './claude-frontend.mjs';
 import { acquireLunaBatch, lunaArguments, validateTasks } from './luna-review.mjs';
 
-test('Claude uses native subscription credentials, with Max effort isolated to child', () => {
+test('Claude uses native subscription credentials, with xhigh effort isolated to child', () => {
   const original = { PATH: 'native', ANTHROPIC_API_KEY: 'test-key', ANTHROPIC_AUTH_TOKEN: 'test-token',
     ANTHROPIC_BASE_URL: 'https://example.invalid', ANTHROPIC_AWS_API_KEY: 'test-aws-key',
     CLAUDE_CODE_USE_VERTEX: '1', CLAUDE_CODE_USE_ANTHROPIC_AWS: '1', CLAUDE_CODE_SIMPLE: '1',
     anthropic_api_key: 'lower-case-key',
-    CLAUDE_CODE_EFFORT_LEVEL: 'low' };
+    CLAUDE_CODE_EFFORT_LEVEL: 'max' };
   const env = subscriptionEnvironment(original);
-  assert.equal(env.PATH, 'native'); assert.equal(env.CLAUDE_CODE_EFFORT_LEVEL, 'max');
+  assert.equal(env.PATH, 'native'); assert.equal(env.CLAUDE_CODE_EFFORT_LEVEL, 'xhigh');
+  assert.equal(original.CLAUDE_CODE_EFFORT_LEVEL, 'max');
   assert.equal(env.ANTHROPIC_API_KEY, undefined); assert.equal(env.ANTHROPIC_AUTH_TOKEN, undefined);
   assert.equal(env.ANTHROPIC_BASE_URL, undefined); assert.equal(env.CLAUDE_CODE_USE_VERTEX, undefined);
   assert.equal(env.ANTHROPIC_AWS_API_KEY, undefined);
@@ -39,7 +40,7 @@ test('review defaults to four turns and no tools when the brief is self-containe
   assert(args.includes('--safe-mode'));
   assert(args.includes('--restricted'));
   assert(args.includes('claude-opus-5-5'));
-  assert.equal(args[args.indexOf('--effort') + 1], 'max');
+  assert.equal(args[args.indexOf('--effort') + 1], 'xhigh');
   assert.equal(args[args.indexOf('--tools') + 1], '');
   assert.equal(args[args.indexOf('--max-turns') + 1], '4');
   assert.equal(args[args.indexOf('--permission-mode') + 1], 'dontAsk');
