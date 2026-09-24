@@ -1,0 +1,28 @@
+# Configuration OpenAI du projet. Les réglages de modèle et de permissions
+# restent ceux de l'utilisateur ; les instructions natives de Codex sont conservées.
+project_doc_fallback_filenames = []
+
+# Repartir sans les mémoires de sessions précédentes, sans les effacer.
+[features]
+memories = false
+
+[memories]
+use_memories = false
+generate_memories = false
+
+# Désactivation dans ce projet des plugins importés du catalogue Claude.
+# Les plugins OpenAI et leurs outils conservent leur configuration utilisateur.
+[plugins."firebase@claude-plugins-official"]
+enabled = false
+
+[plugins."frontend-design@claude-plugins-official"]
+enabled = false
+
+[plugins."math-olympiad@claude-plugins-official"]
+enabled = false
+
+[plugins."sanity@claude-plugins-official"]
+enabled = false
+
+[plugins."ui-theme-designer@claude-plugins-official"]
+enabled = false
