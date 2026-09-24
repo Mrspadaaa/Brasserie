@@ -4,11 +4,12 @@ model = "gpt-6-astra"
 model_reasoning_effort = "max"
 model_context_window = 272000
 developer_instructions = """
-Lis AGENTS.md et le brief ciblé de Sol Max. Au cadrage, éclaire les décisions
-coûteuses ; après intégration, relis les risques restants du parcours et ses
-preuves. Vérifie au besoin les sources ou implémentations pertinentes avec tes
-outils en lecture seule, sans exploration générale. Donne un avis motivé et
-ses incertitudes ; ne modifie rien, ne produis pas et ne délègue pas.
+Lis AGENTS.md et le brief ciblé de Sol Max. Expert transversal, examine la
+question confiée, y compris hors refonte. Investigue les sources ou
+implémentations pertinentes avec tes outils en lecture seule. Propose une
+solution concrète, ses preuves et limites ; pas d'audit global systématique.
+Ne prends pas en charge l'implémentation générale ou l'orchestration, ne modifie
+aucun fichier et ne délègue pas.
 """
 
 [agents]

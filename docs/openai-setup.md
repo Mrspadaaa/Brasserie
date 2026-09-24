@@ -62,6 +62,16 @@ Prompt exact à donner à Sol Max :
 
 > Exécute la mission `docs/prompts/refonte-levure.md` après la fusion de la PR14, depuis `main` synchronisé.
 
+Option si l'utilisateur demande explicitement un [Goal](https://learn.chatgpt.com/docs/long-running-work) pour cette mission longue et bornée :
+
+> Crée un goal pour exécuter `docs/prompts/refonte-levure.md` jusqu'aux critères de livraison vérifiés, sans déploiement ni modification des données réelles.
+
+Le mode `/goal`, disponible en desktop/CLI selon cette documentation, suit
+résultat, contraintes, vérification et pause/reprise. Il ne garantit ni qualité
+ni économie et ne change pas modèle ou effort. Ne créer un goal que sur demande
+explicite ; aucun goal dans les consultations Astra ou tâches ponctuelles par
+défaut, et aucune limite de tokens inventée. Le prompt normal reste valide.
+
 `AGENTS.md` est le point d'entrée automatique ; le prompt désigne la mission à
 lire explicitement. Les autres markdown ne sont consultés que si cette mission
 ou les consignes applicables les rendent pertinents. La reprise se fait dans le
@@ -69,9 +79,9 @@ registre de la mission indiqué par ce prompt.
 
 Depuis Sol avec sa fenêtre complète, le rôle `luna` garde cette fenêtre et
 désactive toute délégation supplémentaire. Astra reçoit un brief et les preuves
-pertinentes dans un processus `astra-review` distinct ; il peut vérifier les
-sources et implémentations ciblées en lecture seule, sans reprendre production
-ni orchestration. Le serveur natif `app-server`
+pertinentes dans un processus `astra-review` distinct ; il peut investiguer les
+sources et implémentations pertinentes en lecture seule, sans reprendre
+l'implémentation générale ni l'orchestration. Le serveur natif `app-server`
 refuse `--profile` dans cette version : un `thread/start` avec des valeurs
 explicites ne prouve donc pas à lui seul le chargement d'un profil. Les fichiers
 de rôle gardent l'intention de fenêtre, sans résoudre ce défaut du runtime à
@@ -96,15 +106,17 @@ UX/UI, richesse métier et densité lisible. Ne pas recopier l'historique entier
 
 ### Économie de travail sans réduire les exigences
 
-Sol pilote un bloc cohérent jusqu'aux corrections et vérifications. Pour une
-refonte ou un travail à risque, il demande à Astra Max un avis de cadrage avant
-les contrats, choix UX ou d'architecture coûteux, puis une revue ciblée des
-risques restants à partir du parcours intégré et de ses preuves. Astra peut
-contrôler en lecture seule les sources et implémentations pertinentes ; Sol
-tranche et motive un avis écarté. Un nouvel avis exige un arbitrage ouvert,
-une contradiction ou des échecs répétés. Une petite modification n'impose pas
-ces consultations. Luna prend des lectures, reproductions, tests, revues ou une
-petite correction avec fichiers attribués. Adapter le nombre aux places utiles.
+Sol pilote un bloc cohérent jusqu'aux corrections et vérifications. Astra Max
+peut éclairer toute mission si l'incertitude, le coût d'une erreur ou le besoin
+de recul le justifie : architecture, données, métier/UX, diagnostic, performance
+ou options. Pour un travail à risque, l'avis de cadrage avant les choix coûteux
+et la revue des risques restants du parcours intégré sont deux jalons utiles,
+sans limiter d'autres consultations motivées. Astra enquête en lecture seule et
+propose une solution avec preuves et limites ; Sol tranche, réalise et intègre.
+Luna peut posséder un livrable borné de recherche, réalisation, test ou
+vérification, avec contrats clairs, fichiers attribués et preuve. Escalader les
+ambiguïtés structurantes ; ne pas confondre la revue de l'auteur avec une
+vérification indépendante. Adapter le nombre de Luna aux places et besoins.
 
 Le délégué retourne résultat, fichiers, preuves consultables, limites et décisions
 attendues. Sol contrôle les contrats à risque sans refaire l'exploration.
@@ -114,6 +126,20 @@ regrouper les lectures indépendantes et garder les gros journaux en artefacts.
 Réutiliser les agents pour les suites liées, vérifier leur état avant d'en créer
 d'autres et ne rejouer un contrôle que pour un changement ou une incertitude.
 Les résultats et les appels d'outils ne sont pas supposés gratuits.
+
+### Recherche approfondie et Deep Research
+
+Une recherche approfondie peut combiner `web__run` et des agents quand plusieurs
+sources ou hypothèses doivent être confrontées pour décider. Elle se termine
+quand les preuves et leurs limites suffisent, pas après un nombre de pages fixé.
+Conserver un rapport sourcé avec dates et inconnues, réutiliser les recherches
+datées et ne réactualiser que les faits qui l'exigent ; résumer la décision à Sol.
+
+Le produit [Deep Research](https://learn.chatgpt.com/docs/web-search) est décrit
+côté Work/plugin et sa disponibilité dépend du compte. Constat de cette tâche :
+`web__run` est disponible, mais aucun outil Deep Research dédié ne figure dans
+`ALL_TOOLS`. Ne pas supposer un appel natif dans chaque sous-agent ni installer
+un plugin ou une API pour cette discipline.
 
 Une fenêtre de 828400 tokens utiles n'oblige pas à la remplir. La brièveté de
 Caveman lite concerne la communication ; elle ne plafonne pas le raisonnement.

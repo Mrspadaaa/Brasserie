@@ -39,27 +39,32 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   travail, responsabilités de fichiers, vérification indépendante et preuves.
   Sol pilote en Max avec son contexte complet. Caveman lite garde les bilans
   concis sans limiter le travail utile.
-- Pour une refonte ou un travail à risque, Sol consulte Astra Max dans un
-  processus `astra-review` séparé : au cadrage, avant les choix coûteux de
-  contrat, d'UX ou d'architecture ; puis sur les risques restants d'un parcours
-  intégré et de ses preuves, avant livraison. Ce sont deux angles ciblés, pas
-  deux audits complets. Une autre consultation répond à un arbitrage non résolu,
-  une contradiction ou des échecs répétés. Pas de consultation systématique
-  pour une petite retouche. Astra peut vérifier les sources et implémentations
-  pertinentes avec ses outils en lecture seule, sans exploration générale,
-  édition ni orchestration. Sol décide et motive tout avis écarté.
-- Luna Max reçoit recherches, tests, reproductions ou revues ciblés ; une petite
-  correction cohérente est possible avec des fichiers attribués. Transmettre
-  objectif, contraintes, faits acquis et preuves attendues. Éviter les doublons
-  d'exploration et ne pas confier une refonte sans périmètre net. Réutiliser un
-  agent et ses faits vérifiés pour la suite liée. La grande fenêtre de contexte
-  est une capacité, pas une cible à remplir.
-- Pour les faits vérifiables, choisir `rg` ciblé, calculs ou scripts pour les
-  opérations déterministes, puis tests, typage et build selon le risque ; jouer
-  les parcours et examiner l'UX dans un vrai navigateur. Préférer le connecteur
-  ou CLI existant pertinent et regrouper les lectures indépendantes. Garder les
-  gros journaux en artefacts ; remonter faits, écarts et références. Ni le nombre
-  d'appels ni la gratuité supposée des outils ou résultats ne sont des objectifs.
+- Astra Max est un expert transversal : Sol le consulte par processus
+  `astra-review` séparé quand l'incertitude, le coût d'une erreur ou le besoin
+  de recul le justifie, même avant un échec et hors refonte. Architecture,
+  données, cohérence métier/UX, diagnostic complexe, performance, comparaison
+  et contre-expertise sont des motifs possibles. Pour un travail à risque,
+  demander un avis au cadrage avant les choix coûteux, puis sur les risques
+  restants du parcours intégré et ses preuves ; d'autres avis ciblés restent
+  possibles. Ni audit global systématique ni consultation mécanique de chaque
+  champ. Astra peut mener l'investigation pertinente avec ses outils en lecture
+  seule et proposer solution concrète, preuves et limites. Sol garde réalisation,
+  intégration, délégation et décision ; il motive tout avis écarté.
+- Luna Max peut posséder un livrable autonome de recherche, réalisation, test ou
+  vérification quand contrats et critères sont clairs. Attribuer fichiers,
+  contraintes, faits acquis et preuves attendues ; remonter les ambiguïtés
+  structurantes à Sol/Astra. Éviter les doublons, réutiliser les faits vérifiés
+  pour une suite liée et ne pas présenter la revue de l'auteur comme
+  indépendante. La grande fenêtre de contexte est une capacité, pas une cible.
+- Choisir les outils selon la question, sans liste fermée : outils locaux/CLI
+  et documentation officielle pour les faits techniques, navigateur réel et
+  mesures pour l'UX ou la performance, recherche externe approfondie si la
+  confrontation de plusieurs sources ou hypothèses peut changer la décision.
+  Arrêter la recherche quand preuves et limites permettent cette décision ;
+  réutiliser les recherches datées, actualiser seulement ce qui l'exige.
+  Regrouper les lectures indépendantes, garder les gros journaux en artefacts
+  et remonter faits, écarts et références. Ni nombre d'appels ni gratuité
+  supposée des outils ou résultats ne sont des objectifs.
 - Garder l'« État de reprise » dans le registre propre à la mission : objectif
   et dernières corrections utilisateur, branche et commit de référence,
   décisions et invariants, agents actifs avec identifiants et fichiers confiés,

@@ -18,19 +18,21 @@ Sol Max pilote les choix, l'implémentation et ses preuves dans son contexte
 complet. Il consulte Astra Max dans un processus `astra-review` séparé au
 cadrage, avant les choix coûteux de contrat, d'UX et d'architecture, puis lui
 fait relire les risques restants du parcours intégré et ses preuves avant
-livraison. Chaque avis porte sur un angle précis ; Astra peut vérifier en lecture
-seule les sources et implémentations pertinentes, sans exploration générale,
-production ou orchestration. Sol décide et motive un avis écarté ; une autre
-consultation répond seulement à un arbitrage ouvert, une contradiction ou des
-échecs répétés. Les Luna Max reçoivent recherches, tests, reproductions, revues
-ciblées ou une petite correction cohérente, avec fichiers attribués ; Sol en
-délègue jusqu'à 9 utiles selon les places disponibles, sans doublonner les
-recherches ni leur confier une refonte mal bornée. Un seul Claude Opus 5.5 xhigh
-participe : d'abord une contribution de conception à partir d'un
-brief et de captures ciblés, puis une revue sur rendu et parcours observés avec
-corrections utiles. Une nouvelle mission Claude exige un problème précis ; ne
-pas entretenir une boucle de consultations ni lui confier l'exploration générale
-du dépôt. Le relais Claude peut mobiliser au plus 9 Luna, sans doublonner le
+livraison. D'autres avis ciblés sont possibles dès que l'incertitude ou le coût
+d'une erreur le justifie. Astra mène l'investigation pertinente en lecture seule
+et propose une solution, ses preuves et limites, sans prendre en charge
+l'implémentation générale ni l'orchestration. Sol décide et motive un avis
+écarté. Les Luna Max peuvent posséder des livrables bornés de recherche,
+réalisation, test ou vérification si contrats et critères sont clairs, avec
+fichiers attribués et preuves ; elles remontent les ambiguïtés structurantes.
+Sol en délègue jusqu'à 9 utiles selon les places disponibles, sans doublonner
+les recherches ni confondre revue par l'auteur et vérification indépendante.
+Un seul Claude Opus 5.5 xhigh participe : d'abord une contribution de conception
+à partir d'un brief et de captures ciblés, puis une revue sur rendu et parcours
+observés avec corrections utiles. Une nouvelle mission Claude exige un problème
+précis ; ne pas entretenir une boucle de consultations ni lui confier
+l'exploration générale du dépôt. Le relais Claude peut mobiliser au plus 9 Luna,
+sans doublonner le
 travail des Sol. Voir `docs/openai-setup.md` pour lancer et diagnostiquer le CLI
 sur abonnement sans repli API. Les profils natifs Sol/Luna complets restent
 872000 tokens configurés, 828400 utiles vérifiés précédemment. Astra reste à

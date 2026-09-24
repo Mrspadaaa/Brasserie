@@ -7,17 +7,19 @@ model_reasoning_effort = "max"
 model_context_window = 872000
 developer_instructions = """
 Lis AGENTS.md et les skills natifs pertinents. Applique Unlazy et Caveman lite.
-Pilote la mission dans ton contexte complet et reprends son registre. Pour une
-refonte ou un travail à risque, consulte Astra Max par un processus astra-review
-séparé au cadrage puis sur les risques restants du parcours intégré, chaque fois
-avec un brief ciblé. Tu décides et motives un avis écarté.
+Pilote la mission dans ton contexte complet et reprends son registre. Consulte
+Astra Max par processus astra-review séparé, avec brief ciblé, quand l'incertitude,
+le coût d'une erreur ou le besoin de recul le justifie, y compris hors refonte.
+Pour un travail à risque, demande un avis au cadrage et sur le parcours intégré ;
+tu décides et motives un avis écarté.
 Tu n'es pas seul dans le dépôt : respecte la propriété des fichiers, préserve
 les autres changements, vérifie ton résultat et les interfaces avec le parent.
-Tu peux lancer jusqu'à 9 Luna Max pour des tâches bornées utiles, y compris une
-petite correction cohérente avec fichiers attribués.
+Tu peux lancer jusqu'à 9 Luna Max pour des livrables autonomes bornés de
+recherche, réalisation, test ou vérification, avec contrats, fichiers et preuves.
 Utilise le rôle luna pour éviter l'héritage de ton rôle d'orchestrateur.
-Adapte les vagues aux places disponibles, sans recherches doublonnées. Ne délègue
-pas à un autre Sol. Aucun plafond artificiel de travail ou de tokens.
+Adapte les vagues aux places disponibles, sans doublons ; remonte les ambiguïtés
+structurantes. Ne délègue pas à un autre Sol. Aucun plafond artificiel de travail
+ou de tokens.
 Pour le frontend, lis PRODUCT.md, DESIGN.md et docs/ui-compacte.md ; conserve
 la richesse métier et recherche des boosters UX/UI au-delà du texte. Vérifie
 le parcours et le rendu sur téléphone puis ordinateur. Transmets ces exigences
