@@ -5,7 +5,9 @@
 Cette mission est destinée à une **future session**, après fusion de la
 préparation. Partir de `main` synchronisé, constater l'état du dépôt, préserver
 tout travail présent et créer `codex/yeast-ui-refactor` si une branche dédiée
-convient. Lire `AGENTS.md`, les skills natifs `unlazy`, `caveman-lite` et
+convient. `AGENTS.md` est chargé automatiquement ; ce fichier est la mission
+explicitement pointée au démarrage, pas une invitation à lire tous les markdown.
+Lire les skills natifs `unlazy`, `caveman-lite` et
 `brasserie-frontend`, puis les sections pertinentes de `PRODUCT.md`, `DESIGN.md`
 et `docs/ui-compacte.md`. Ne pas charger `CLAUDE.md` ou `.claude/` dans les
 modèles OpenAI. Aucun déploiement ni écriture de vérification sur une DB réelle :
@@ -13,11 +15,17 @@ utiliser des fixtures et les émulateurs adaptés. Ne pas écraser les modificat
 d'autrui. Cette préparation n'a modifié aucun écran de l'application.
 
 Sol Max pilote les choix, l'implémentation et ses preuves dans son contexte
-complet. Il consulte Astra Max dans un processus `astra-review` séparé pour les
-décisions structurantes, avec un brief limité aux options et preuves pertinentes ;
-Astra donne un avis sans reprendre la mission. Les Luna Max reçoivent seulement
-recherches, tests ou revues ciblés, avec fichiers et limites attribués ; Sol peut
-en déléguer jusqu'à 9 si le travail le justifie. Un seul Claude Opus 5.5 xhigh
+complet. Il consulte Astra Max dans un processus `astra-review` séparé au
+cadrage, avant les choix coûteux de contrat, d'UX et d'architecture, puis lui
+fait relire les risques restants du parcours intégré et ses preuves avant
+livraison. Chaque avis porte sur un angle précis ; Astra peut vérifier en lecture
+seule les sources et implémentations pertinentes, sans exploration générale,
+production ou orchestration. Sol décide et motive un avis écarté ; une autre
+consultation répond seulement à un arbitrage ouvert, une contradiction ou des
+échecs répétés. Les Luna Max reçoivent recherches, tests, reproductions, revues
+ciblées ou une petite correction cohérente, avec fichiers attribués ; Sol en
+délègue jusqu'à 9 utiles selon les places disponibles, sans doublonner les
+recherches ni leur confier une refonte mal bornée. Un seul Claude Opus 5.5 xhigh
 participe : d'abord une contribution de conception à partir d'un
 brief et de captures ciblés, puis une revue sur rendu et parcours observés avec
 corrections utiles. Une nouvelle mission Claude exige un problème précis ; ne
@@ -28,8 +36,17 @@ sur abonnement sans repli API. Les profils natifs Sol/Luna complets restent
 872000 tokens configurés, 828400 utiles vérifiés précédemment. Astra reste à
 272000 tokens configurés, 258400 utiles.
 
-Écrire avant les changements un registre court de critères, responsabilités de
-fichiers et contrôles dans `docs/validation/yeast-refactor-implementation.md`.
+Écrire avant les changements les critères, responsabilités de fichiers et
+contrôles dans `docs/validation/yeast-refactor-implementation.md`. Y garder
+un petit « État de reprise » vivant : objectif et dernières corrections de
+l'utilisateur ; branche et commit de référence ; décisions et invariants ;
+agents actifs, identifiants et fichiers confiés ; terminé et prouvé versus
+ouvert ; prochaine action et liens aux preuves. Actualiser aux jalons et avant
+une pause ou un relais prévisible, pas à chaque outil. Au démarrage, à la
+reprise, après une compaction détectée ou un changement de périmètre, relire
+les consignes applicables et cet état, vérifier diff et agents, puis poursuivre
+sans répéter les recherches ni créer de doublons. Ne pas créer de registre
+global partagé entre tâches ou promettre un hook avant toute compaction.
 Rester dans le périmètre Levure et les liaisons nécessaires avec recette, stock,
 catalogue, Gemini et brassage ; préserver les étapes Eau/sels et leur calcul.
 
@@ -218,5 +235,9 @@ affectés. Ne prétendre à une validation utilisateur que si elle a eu lieu.
 
 Renseigner le registre avec fichiers changés, décisions visuelles et métier,
 sources/formules, captures examinées, scénarios joués, commandes exécutées,
-résultats, mesures et limites. La livraison future est une refonte utilisable
-et prouvée, sans déploiement ou mutation de production automatiques.
+résultats, mesures et limites. À chaque jalon, vérifier critères, contrats à
+risque, avis reçus et suites, tests capables d'échouer et contrôle UX utile.
+Distinguer contrôles exécutables et décisions humaines : les consignes seules
+ne prouvent pas l'absence de dérive ni une baisse du quota. La livraison future
+est une refonte utilisable et prouvée, sans déploiement ou mutation de production
+automatiques.

@@ -55,10 +55,23 @@ codex exec --profile astra-review --sandbox read-only --cd C:/chemin/Brasserie "
 codex exec --profile luna-full --cd C:/chemin/Brasserie "Vérification indépendante et bornée"
 ```
 
+### Nouvelle session pour Levure
+
+Après la fusion de la PR14, ouvrir une nouvelle session sur `main` synchronisé.
+Prompt exact à donner à Sol Max :
+
+> Exécute la mission `docs/prompts/refonte-levure.md` après la fusion de la PR14, depuis `main` synchronisé.
+
+`AGENTS.md` est le point d'entrée automatique ; le prompt désigne la mission à
+lire explicitement. Les autres markdown ne sont consultés que si cette mission
+ou les consignes applicables les rendent pertinents. La reprise se fait dans le
+registre de la mission indiqué par ce prompt.
+
 Depuis Sol avec sa fenêtre complète, le rôle `luna` garde cette fenêtre et
-désactive toute délégation supplémentaire. Astra reçoit seulement le brief de
-décision et les preuves pertinentes dans un processus `astra-review` distinct ;
-il ne reprend ni production ni orchestration. Le serveur natif `app-server`
+désactive toute délégation supplémentaire. Astra reçoit un brief et les preuves
+pertinentes dans un processus `astra-review` distinct ; il peut vérifier les
+sources et implémentations ciblées en lecture seule, sans reprendre production
+ni orchestration. Le serveur natif `app-server`
 refuse `--profile` dans cette version : un `thread/start` avec des valeurs
 explicites ne prouve donc pas à lui seul le chargement d'un profil. Les fichiers
 de rôle gardent l'intention de fenêtre, sans résoudre ce défaut du runtime à
@@ -83,20 +96,24 @@ UX/UI, richesse métier et densité lisible. Ne pas recopier l'historique entier
 
 ### Économie de travail sans réduire les exigences
 
-Sol pilote un bloc cohérent jusqu'aux corrections et vérifications. Il consulte
-Astra Max pour les décisions structurantes et confie à Luna les lectures, tests
-ou revues indépendants utiles. Les plafonds d'agents ne sont jamais un effectif
-à atteindre. Une petite retouche directe peut coûter moins qu'une délégation,
-son initialisation et sa reprise par le parent.
+Sol pilote un bloc cohérent jusqu'aux corrections et vérifications. Pour une
+refonte ou un travail à risque, il demande à Astra Max un avis de cadrage avant
+les contrats, choix UX ou d'architecture coûteux, puis une revue ciblée des
+risques restants à partir du parcours intégré et de ses preuves. Astra peut
+contrôler en lecture seule les sources et implémentations pertinentes ; Sol
+tranche et motive un avis écarté. Un nouvel avis exige un arbitrage ouvert,
+une contradiction ou des échecs répétés. Une petite modification n'impose pas
+ces consultations. Luna prend des lectures, reproductions, tests, revues ou une
+petite correction avec fichiers attribués. Adapter le nombre aux places utiles.
 
 Le délégué retourne résultat, fichiers, preuves consultables, limites et décisions
-attendues. Sol lit les écarts et contrôle les contrats à risque au lieu
-de refaire toute l'exploration. Réutiliser les agents pour les suites du même
-livrable ; ouvrir un contexte neuf pour une mission indépendante. Attendre les
-résultats par les outils de statut disponibles ; les journaux complets servent
-au diagnostic d'un problème identifié, pas au suivi ordinaire. Préserver les
-tests et la revue métier/UX nécessaires ; ne les rejouer que si les changements
-ou les incertitudes le justifient.
+attendues. Sol contrôle les contrats à risque sans refaire l'exploration.
+Privilégier `rg` ciblé, scripts déterministes, tests/typage/build adaptés et
+navigateur réel pour l'UX ; utiliser le connecteur ou CLI déjà pertinent,
+regrouper les lectures indépendantes et garder les gros journaux en artefacts.
+Réutiliser les agents pour les suites liées, vérifier leur état avant d'en créer
+d'autres et ne rejouer un contrôle que pour un changement ou une incertitude.
+Les résultats et les appels d'outils ne sont pas supposés gratuits.
 
 Une fenêtre de 828400 tokens utiles n'oblige pas à la remplir. La brièveté de
 Caveman lite concerne la communication ; elle ne plafonne pas le raisonnement.

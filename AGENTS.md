@@ -10,6 +10,8 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   et `.claude/` appartiennent exclusivement à Claude : ne les charge pas comme
   instructions, skills, agents, hooks ou mémoire ; aucun repli vers ces chemins.
   Leur inspection n'est utile que si l'utilisateur demande de travailler dessus.
+- `AGENTS.md` est le point d'entrée automatique. Lire en plus la mission
+  explicitement demandée, pas chaque markdown du dépôt.
 - Les documents métier sont communs : `PRODUCT.md` pour le comportement produit ;
   `DESIGN.md` et `docs/ui-compacte.md` pour l'interface. Lis les parties pertinentes
   pour le travail demandé. Les anciens prompts et comptes rendus sont des
@@ -35,23 +37,44 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   Vérifie l'intégration avant de conclure.
 - Pour les travaux substantiels, applique Unlazy : critères écrits avant le
   travail, responsabilités de fichiers, vérification indépendante et preuves.
-  Sol pilote en Max avec son contexte complet. Astra Max donne un avis ciblé sur
-  les décisions dans un processus séparé ; Luna Max soutient Sol dans son
-  contexte complet. Caveman lite garde les comptes rendus concis sans limiter
-  le travail utile.
-- Répartition effective : Sol cadre, réalise et vérifie l'intégration ; il
-  consulte Astra sur les décisions structurantes avec un brief et des preuves
-  ciblés. Astra ne reprend ni production ni orchestration. Luna reçoit des
-  recherches, tests et revues ciblés. Une retouche simple reste directe si
-  déléguer coûte davantage.
-- Transmettre objectif, fichiers, contraintes, faits établis et preuves attendues,
-  sans recopier tout l'historique. Réutiliser l'agent pour les suites liées et
-  les recherches déjà vérifiées ; ne les rouvrir qu'en cas de changement ou doute.
-  La grande fenêtre de contexte est une capacité disponible, pas une cible à remplir.
-- Vérifier les livrables sur leurs preuves et les risques d'intégration. Une revue
-  indépendante vise un risque distinct ; ne pas répéter tout l'audit ou tous les
-  tests sans changement, échec ou incertitude. Garder les sorties détaillées dans
-  les artefacts et remonter résultats, écarts et décisions nécessaires.
+  Sol pilote en Max avec son contexte complet. Caveman lite garde les bilans
+  concis sans limiter le travail utile.
+- Pour une refonte ou un travail à risque, Sol consulte Astra Max dans un
+  processus `astra-review` séparé : au cadrage, avant les choix coûteux de
+  contrat, d'UX ou d'architecture ; puis sur les risques restants d'un parcours
+  intégré et de ses preuves, avant livraison. Ce sont deux angles ciblés, pas
+  deux audits complets. Une autre consultation répond à un arbitrage non résolu,
+  une contradiction ou des échecs répétés. Pas de consultation systématique
+  pour une petite retouche. Astra peut vérifier les sources et implémentations
+  pertinentes avec ses outils en lecture seule, sans exploration générale,
+  édition ni orchestration. Sol décide et motive tout avis écarté.
+- Luna Max reçoit recherches, tests, reproductions ou revues ciblés ; une petite
+  correction cohérente est possible avec des fichiers attribués. Transmettre
+  objectif, contraintes, faits acquis et preuves attendues. Éviter les doublons
+  d'exploration et ne pas confier une refonte sans périmètre net. Réutiliser un
+  agent et ses faits vérifiés pour la suite liée. La grande fenêtre de contexte
+  est une capacité, pas une cible à remplir.
+- Pour les faits vérifiables, choisir `rg` ciblé, calculs ou scripts pour les
+  opérations déterministes, puis tests, typage et build selon le risque ; jouer
+  les parcours et examiner l'UX dans un vrai navigateur. Préférer le connecteur
+  ou CLI existant pertinent et regrouper les lectures indépendantes. Garder les
+  gros journaux en artefacts ; remonter faits, écarts et références. Ni le nombre
+  d'appels ni la gratuité supposée des outils ou résultats ne sont des objectifs.
+- Garder l'« État de reprise » dans le registre propre à la mission : objectif
+  et dernières corrections utilisateur, branche et commit de référence,
+  décisions et invariants, agents actifs avec identifiants et fichiers confiés,
+  terminé et prouvé versus ouvert, prochaine action et liens aux preuves.
+  Actualiser aux jalons et avant une pause ou un relais prévisible, pas à chaque
+  outil. Au démarrage, à la reprise, après une compaction détectée ou un
+  changement de périmètre, relire les consignes applicables et cet état, vérifier
+  diff et agents avant d'agir, puis poursuivre sans recherches ni agents doublons.
+  Ne pas créer de fichier global partagé entre tâches ni promettre un hook avant
+  toute compaction.
+- À chaque jalon, rapprocher critères, contrats à risque, avis et actions, tests
+  capables d'échouer et contrôle UX utile. Distinguer contrôles exécutables et
+  décisions humaines ; les instructions seules ne garantissent pas l'absence
+  de dérive. Rejouer une vérification pour un changement, un échec ou un doute
+  concret. Ne pas promettre de baisse chiffrée du quota sans mesure fiable.
 - Sol peut lancer jusqu'à 9 Luna utiles. Le défaut du PC et le profil natif
   `sol-full` lui donnent la fenêtre complète ; ses enfants de rôle `luna` en
   héritent. Pour consulter Astra avec environ 258400 tokens utiles, lancer

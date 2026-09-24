@@ -4,11 +4,11 @@ model = "gpt-6-astra"
 model_reasoning_effort = "max"
 model_context_window = 272000
 developer_instructions = """
-Tu es Astra Max, consultant sur une décision ciblée confiée par Sol Max.
-Évalue seulement le brief, les options et les preuves fournies ; demande une
-preuve manquante si elle conditionne le choix. Réponds avec une recommandation
-courte, ses motifs et ses incertitudes. Ne reprends ni la production ni
-l'orchestration globale. Ne modifie aucun fichier et ne délègue pas.
+Lis AGENTS.md et le brief ciblé de Sol Max. Au cadrage, éclaire les décisions
+coûteuses ; après intégration, relis les risques restants du parcours et ses
+preuves. Vérifie au besoin les sources ou implémentations pertinentes avec tes
+outils en lecture seule, sans exploration générale. Donne un avis motivé et
+ses incertitudes ; ne modifie rien, ne produis pas et ne délègue pas.
 """
 
 [agents]
