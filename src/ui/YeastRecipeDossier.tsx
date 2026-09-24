@@ -41,14 +41,22 @@ export function YeastRecipeQuantity({ yeast, onChange, invalid }: { yeast: Yeast
   const [notice, setNotice] = useState('');
   const invalidNumber = yeast.qty != null && (!Number.isFinite(yeast.qty) || yeast.qty < 0);
   const changeUnit = (unit: string) => {
-    const converted = yeast.unit && yeast.qty != null ? Units.convert(yeast.qty, yeast.unit, unit) : null;
-    setNotice(converted === null && yeast.qty != null ? `Quantité à ressaisir en ${unit} : aucune conversion depuis ${yeast.unit || 'une unité inconnue'}.` : '');
-    onChange({ ...yeast, unit: unit || undefined, qty: converted ?? undefined });
+    // The first unit qualifies the number already entered; there is no source
+    // unit from which to convert it. Only a change between two known units may
+    // require a conversion or a deliberate new quantity.
+    if (!yeast.unit || !unit || yeast.qty == null) {
+      setNotice('');
+      onChange({ ...yeast, unit: unit || undefined });
+      return;
+    }
+    const converted = Units.convert(yeast.qty, yeast.unit, unit);
+    setNotice(converted === null ? `Quantité à ressaisir en ${unit} : aucune conversion depuis ${yeast.unit}.` : '');
+    onChange({ ...yeast, unit, qty: converted ?? undefined });
   };
   return <div className="yc-quantity-editor">
     <div className="yc-dose-input"><label htmlFor="wz-yeast-qty">Quantité prévue</label>
       <NumberInput id="wz-yeast-qty" aria-label={`Quantité de levure${yeast.unit ? `, en ${yeast.unit}` : ''}`} value={yeast.qty} emptyValue={undefined} required aria-invalid={invalid || invalidNumber} onValue={qty => { if (qty != null && qty > 0) setNotice(''); onChange({ ...yeast, qty }); }} />
-      <select aria-label="Unité de la quantité de levure" value={yeast.unit ?? ''} onChange={e => changeUnit(e.target.value)}>
+      <select id="wz-yeast-unit" aria-label="Unité de la quantité de levure" value={yeast.unit ?? ''} onChange={e => changeUnit(e.target.value)}>
         <option value="">Unité…</option>{[...new Set([...units, ...yeast.unit ? [yeast.unit] : []])].map(unit => <option key={unit}>{unit}</option>)}
       </select>
     </div>
@@ -78,7 +86,7 @@ export function YeastRecipeDossier({ yeast, onChange }: { yeast: YeastSpec; onCh
       <option value="recipe">Hypothèse de cette recette</option><option value="declared">Valeur annoncée</option><option value="measured">Retour mesuré d’un brassin</option>
     </select></label>
     <AttenuationRangeEditor key={JSON.stringify([yeast.name, yeast.technicalFacts])} yeast={yeast} onChange={onChange} />
-    <div className="yc-input-pair">
+    <div id="wz-yeast-range" tabIndex={-1} className="yc-input-pair">
       <label>Fermentation mini · °C<NumberInput aria-label="Température minimale de la fiche saisie" value={yeast.fermTempMinC} emptyValue={undefined} onValue={fermTempMinC => patch({ fermTempMinC })} /></label>
       <label>Fermentation maxi · °C<NumberInput aria-label="Température maximale de la fiche saisie" value={yeast.fermTempMaxC} emptyValue={undefined} onValue={fermTempMaxC => patch({ fermTempMaxC })} /></label>
     </div>

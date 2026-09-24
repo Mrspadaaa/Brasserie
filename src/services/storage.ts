@@ -690,9 +690,15 @@ export const StorageService = {
   learnIngredient(name: string, facts: Partial<StockItem>) {
     const key = name.trim().toLocaleLowerCase('fr').replace(/\s+/g, ' ');
     if (!key) return;
-    const item = this.getStocks().rawMaterials.find(s =>
+    const stock = this.getStocks().rawMaterials;
+    const candidates = stock.filter(s =>
       s.name.trim().toLocaleLowerCase('fr').replace(/\s+/g, ' ') === key &&
       (!facts.category || s.category.toLocaleLowerCase('fr') === facts.category.toLocaleLowerCase('fr')));
+    const matches = facts.ref ? stock.filter(s => s.ref === facts.ref &&
+      (!facts.category || s.category.toLocaleLowerCase('fr') === facts.category.toLocaleLowerCase('fr'))) : candidates;
+    // A stale/deleted ref or ambiguous legacy name must never update a random lot.
+    if (matches.length > 1 || facts.ref && matches.length !== 1) return;
+    const item = matches[0];
     const fields: Array<keyof StockItem> = ['colorEbc', 'potentialPpg', 'alphaPct', 'yeastLab',
       'yeastStrain', 'yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC',
       'yeastFlocculation', 'yeastAlcoholTolerancePct', 'yeastNotes'];

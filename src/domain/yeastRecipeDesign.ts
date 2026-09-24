@@ -13,7 +13,7 @@ import { hotBitterness } from './hopBitterness';
 import { resolveBrewingStyle } from './brewingStyles';
 import { BrewingMath } from '../services/brewingMath';
 import { yeastStyleEvidence } from './yeastStyleEvidence';
-import { projectYeastRecipe, resolveYeastDossier, yeastRecipeStyleText, type YeastRecipeProjection, type YeastFermentationProcess, type YeastCultureRole, type YeastAttenuationBasis } from './yeastProjection';
+import { projectYeastRecipe, resolveYeastDossier, yeastRecipeStyleText, type YeastRecipeProjection, type YeastDossierMeasurement, type YeastFermentationProcess, type YeastCultureRole, type YeastAttenuationBasis } from './yeastProjection';
 import guides from '../data/fermentationGuideBootstrap.json';
 import { YEAST_RECIPE_PROFILES, YEAST_RECIPE_SOURCES, YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS, type YeastRecipeGoal, type YeastStyleId } from '../data/yeastRecipeProfiles';
 import type { YeastBeerTarget } from './yeastBeerTarget';
@@ -168,12 +168,18 @@ export function inferYeastRecipeStyle(recipe: TrialRecipe): YeastStyleId {
   return infer(yeastRecipeStyleText(recipe));
 }
 
+const sourcedRange = (measurement?: YeastDossierMeasurement): FermentationRange | undefined =>
+  measurement?.sources[0] ? { range: measurement.range, source: measurement.sources[0] } : undefined;
+
 function candidateFor(reference: YeastReference, goal: YeastRecipeGoal, volumeL?: number, styleId: YeastStyleId = 'unknown', form = reference.form): YeastRecipeCandidate {
   const profile = profileFor(reference.id), evidence = yeastStyleEvidence(reference), pitch = agreedFermentationFact(reference, 'pitchRate', 'g/hL');
   const doseG = form === 'sèche' && reference.form === 'sèche' && pitch && positive(volumeL) ? {
     range: { min: pitch.range.min * volumeL / 100, max: pitch.range.max * volumeL / 100 }, source: pitch.source
   } : undefined;
-  const temperature = agreedFermentationFact(reference, 'temperature', '°C'), attenuation = agreedFermentationFact(reference, 'attenuation', '%');
+  // Candidate cards and the chosen recipe must resolve the same beer-only
+  // observations. Other fermentation contexts stay in the detailed sheet.
+  const dossier = resolveYeastDossier({ name: reference.name }, reference);
+  const temperature = sourcedRange(dossier.temperature), attenuation = sourcedRange(dossier.documentedAttenuation);
   const styleMatch = evidence.exclusions.some(e => e.styleId === styleId) ? 'excluded'
     : evidence.styles.includes(styleId) ? 'documented' : evidence.styles.length ? 'other-style' : 'unclassified';
   const goalReason = evidence.goalReasons[goal];

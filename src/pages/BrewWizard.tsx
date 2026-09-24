@@ -2,7 +2,6 @@ import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import { MaltDetails } from '../ui/MaltDetails';
 import './recipe-wizard.css';
-import { applyHopFacts, factsForStock } from '../domain/ingredientFacts';
 import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../ui/NumberInput';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
@@ -24,7 +23,7 @@ import {
 } from '../types';
 import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
-import { recipeFieldIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
+import { recipeFieldIssues, recipeReadiness, recipeSaveIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
 import { clearRecipeDraft, readRecipeDraft, serializeRecipeDraft, writeRecipeDraft } from '../services/recipeDraft';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { defaultBrewVolume } from '../domain/brewEquipment';
@@ -56,6 +55,7 @@ import { StorageService } from '../services/storage';
 import type { HopRecipeWorkbenchSession } from '../ui/hopIndex/HopRecipeWorkbench';
 import { HopWorkshop as SyncHopWorkshop } from '../ui/hopIndex/HopWorkshop';
 import { HopRecipeWorkbench as SyncHopRecipeWorkbench } from '../ui/hopIndex/HopRecipeWorkbench';
+import { HopRecipeSnapshot } from '../ui/hopIndex/HopRecipeSnapshot';
 import { YeastIngredientPicker as SyncYeastIngredientPicker } from '../ui/YeastIngredientPicker';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
@@ -94,7 +94,6 @@ import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesig
 import { useStorageValue } from '../hooks/useLiveData';
 import { Combobox } from '../ui/Combobox';
 import { SaltSolver, WaterState } from '../ui/SaltSolver';
-import { AiAssist } from '../ui/AiAssist';
 import { BrewerChat } from '../ui/BrewerChat';
 import { RECIPE_FIELDS } from '../../functions/src/brewerContext';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
@@ -441,6 +440,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const [hopWorkshopOpen, setHopWorkshopOpen] = useState(false);
   const [hopRecipeToolsOpen, setHopRecipeToolsOpen] = useState(false);
   const hopWorkbenchSession = useRef<HopRecipeWorkbenchSession | undefined>(undefined);
+  const hopSimulationRevision = useRef(0);
+  const [hopSimulationRequest, setHopSimulationRequest] = useState<{ index: number; revision: number }>();
+  const simulateHop = (index: number) => {
+    setHopRecipeToolsOpen(true);
+    setHopSimulationRequest({ index, revision: ++hopSimulationRevision.current });
+    requestAnimationFrame(() => document.getElementById('recipe-hop-simulation')?.scrollIntoView({ block: 'start' }));
+  };
   const [yeastFocus, setYeastFocus] = useState<{ goal: import('../domain/yeastRecipeDesign').YeastRecipeGoal; yeastId?: string }>();
   useEffect(() => { if (step !== 'levure') setYeastFocus(undefined); }, [step]);
   const [yeastSelection, setYeastSelection] = useState(0);
@@ -904,31 +910,42 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * disponible », et il manque 30 g qu'on découvre le jour du houblonnage à
    * cru. C'est le besoin TOTAL qui doit tenir dans le stock.
    *
-   * La clé de cumul porte le nom ET l'unité : deux ingrédients homonymes qui
-   * ne se comptent pas pareil ne s'additionnent pas.
+   * La clé de cumul porte la référence de stock ET l'unité. Un ancien
+   * ingrédient sans référence ne reprend un stock par nom que s'il est unique.
    */
   const shortages = useMemo(() => {
-    const besoins = new Map<string, { name: string; needed: number; unit: string }>();
-    const add = (ingName: string, qty: number, unit: string) => {
-      if (!ingName) return;
-      const cle = `${ingName.trim().toLowerCase()}|${unit}`;
+    const besoins = new Map<string, { name: string; stockItemRef?: string; categories: string[]; needed: number; unit: string }>();
+    const add = (ingName: string, qty: number | undefined, unit: string | undefined, categories: string[], stockItemRef?: string) => {
+      if (!ingName || !unit || qty == null || !Number.isFinite(qty) || qty <= 0) return;
+      const cle = `${stockItemRef ? `ref:${stockItemRef}` : `name:${categories.join(',')}:${ingName.trim().toLocaleLowerCase('fr')}`}|${unit}`;
       const deja = besoins.get(cle);
       if (deja) deja.needed += qty;
-      else besoins.set(cle, { name: ingName.trim(), needed: qty, unit });
+      else besoins.set(cle, { name: ingName.trim(), stockItemRef, categories, needed: qty, unit });
     };
 
-    fermentables.forEach((f) => add(f.name, f.weightKg, 'kg'));
-    hops.forEach((h) => add(h.name, h.weightG, 'g'));
+    fermentables.forEach((f) => add(f.name, f.weightKg, 'kg', KIND_DEF[f.kind]?.stock ?? KIND_DEF.grain.stock, f.stockItemRef));
+    hops.forEach((h) => add(h.name, h.weightG, 'g', ['Houblon'], h.stockItemRef));
     // Stock follows the actual planned dose, without assuming cells per packet.
     if (yeast.name) {
-      add(yeast.name, yeast.qty, yeast.unit);
+      add(yeast.name, yeast.qty, yeast.unit, ['Levure'], yeast.stockItemRef);
     }
 
-    const need: Array<{ name: string; needed: number; unit: string; have: number }> = [];
+    const need: Array<{ name: string; needed: number; unit: string; have?: number; haveUnit?: string; status: 'shortage' | 'unverified'; reason?: string }> = [];
     besoins.forEach((b) => {
-      const item = stockItems.find((s) => s.name.toLowerCase() === b.name.toLowerCase());
-      const have = item ? Units.convertOrSame(item.currentStock, item.unit, b.unit) : 0;
-      if (have < b.needed) need.push({ ...b, have });
+      const matches = stockItems.filter(s => b.stockItemRef ? s.ref === b.stockItemRef :
+        b.categories.some(category => s.category.toLocaleLowerCase('fr') === category.toLocaleLowerCase('fr')) &&
+        s.name.trim().toLocaleLowerCase('fr') === b.name.toLocaleLowerCase('fr'));
+      const name = b.stockItemRef && stockItems.some(s => s.ref !== b.stockItemRef && s.name === b.name) ? `${b.name} · ${b.stockItemRef}` : b.name;
+      if (matches.length > 1) { need.push({ name, needed: b.needed, unit: b.unit, status: 'unverified', reason: 'Plusieurs articles : associer la référence du stock' }); return; }
+      const item = matches.length === 1 ? matches[0] : undefined;
+      if (!item) { need.push({ name, needed: b.needed, unit: b.unit, have: 0, status: 'shortage' }); return; }
+      const converted = Units.convert(item.currentStock, item.unit, b.unit);
+      if (converted === null || !Number.isFinite(converted)) {
+        need.push({ name, needed: b.needed, unit: b.unit, have: Number.isFinite(item.currentStock) ? item.currentStock : undefined,
+          haveUnit: item.unit, status: 'unverified', reason: converted === null ? 'Conditionnement à vérifier avant comparaison' : 'Quantité de stock à vérifier' });
+        return;
+      }
+      if (converted < b.needed) need.push({ name, needed: b.needed, unit: b.unit, have: converted, status: 'shortage' });
     });
     return need;
   }, [fermentables, hops, yeast, stockItems]);
@@ -962,7 +979,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   // --- Actions --------------------------------------------------------------
   const addFermentable = (ingName: string, item?: StockItem) => {
-    if (!ingName || fermentables.some((f) => f.name === ingName && f.kind === addKind)) return;
+    if (!ingName || fermentables.some((f) => f.kind === addKind && (item?.ref ? f.stockItemRef === item.ref : !f.stockItemRef && f.name === ingName))) return;
     /*
      * ⚠️ AU CLAVIER, LE CURSEUR SUIT.
      *
@@ -982,6 +999,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ...fermentables,
       {
         name: ingName,
+        stockItemRef: item?.ref,
         // Zéro, pas une quantité plausible : c'est au brasseur de la poser.
         weightKg: 0,
         kind: addKind,
@@ -1102,8 +1120,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       ...current,
       {
         name: ingName,
+        stockItemRef: item?.ref,
         // L'alpha vient de l'article de stock — c'est celui du lot acheté.
-        alpha: item?.alphaPct ?? Number.NaN,
+        alpha: item?.alphaPct ?? 0,
         ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
         stage: hopStage,
@@ -1118,21 +1137,23 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
-    if (yeast.name.trim().toLocaleLowerCase('fr') !== selectedName.trim().toLocaleLowerCase('fr')) {
+    const sameIdentity = yeast.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr') &&
+      yeast.stockItemRef === item?.ref;
+    if (!sameIdentity) {
       setDetails(previous => ({ ...previous, yeastGuide: undefined, yeastDesign: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
       setYeastSelection(n => n + 1);
     }
     setYeast(current => {
-      if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr')) return current;
+      if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr') && current.stockItemRef === item?.ref) return current;
       const unit = item?.unit;
       return {
         name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
-        form: item?.yeastForm, unit, qty: undefined, stockItemRef: item?.id,
+        form: item?.yeastForm, unit, qty: undefined, stockItemRef: item?.ref,
         attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
         fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
         fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
         flocculation: item?.yeastFlocculation, alcoholTolerancePct: item?.yeastAlcoholTolerancePct,
-        notes: item?.yeastNotes, hopIndexId: undefined
+        technicalSource: item?.technicalSource, notes: item?.yeastNotes, hopIndexId: undefined
       };
     });
   };
@@ -1294,7 +1315,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       setEquipmentNotice(`Recette adaptée à ${formatDecimal(resized.volumeL)} L : ingrédients, eaux, sels et acide recalculés.`);
     }catch(e){setEquipmentNotice(e instanceof Error?e.message:'Adaptation impossible.');}
   };
-  const fieldIssues = recipeFieldIssues(build());
+  const readiness = recipeReadiness(build());
+  const fieldIssues = [...readiness.invalid, ...readiness.missing];
   const visibleIssues = validationRequested ? fieldIssues : [];
   const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
 
@@ -1358,7 +1380,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const submitRecipe = (thenBrew: boolean) => {
     if (saving) return;
     const recipe = build();
-    const issues = recipeFieldIssues(recipe);
+    const issues = thenBrew ? recipeFieldIssues(recipe) : recipeSaveIssues(recipe);
     if (issues.length) { requestCorrection(issues); return; }
     if (saveError && saveError === writeError) onDismissWriteError?.();
     setSaveError('');
@@ -1386,7 +1408,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const go = (delta: 1 | -1) => {
     if (hopGuideBusy || saving) return;
     if (delta === 1) {
-      const issues = fieldIssues.filter(issue => issue.step === step);
+      const issues = readiness.invalid.filter(issue => issue.step === step);
       if (issues.length) { requestCorrection(issues); return; }
     }
     const next = STEPS[stepIndex + delta];
@@ -1544,8 +1566,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           setStep(step);
         }} />}
       {/* ---------------------------------------------------- ÉTAPE 1 */}
-        {['fermentescibles', 'houblons', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
-          scope={step === 'houblons' ? 'houblon' : step === 'fermentescibles' ? 'malt' : undefined}
+        {['fermentescibles', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
+          scope={step === 'fermentescibles' ? 'malt' : undefined}
           onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
           hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast}/></Suspense>}
       {step === 'identite' && (
@@ -1722,7 +1744,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                           <div className="w-32 sm:w-36">
                             <QuantityStepper
                               id={`wz-fermentable-${i}`}
-                              emptyValue={Number.NaN}
+                              emptyValue={0}
                               aria-invalid={!!fieldError(`wz-fermentable-${i}`)}
                               aria-describedby={fieldError(`wz-fermentable-${i}`) ? 'wz-validation' : undefined}
                               label=""
@@ -1795,6 +1817,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           title="Houblons"
         >
           <div className="space-y-2 sm:space-y-3">
+            <HopRecipeSnapshot recipe={{ ...build(), ogTarget: boilOg ?? undefined }} />
             <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
@@ -1816,11 +1839,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 const created = onCreateStockItem(n, 'Houblon', 'g');
                 addHop(created.name, created);
               }}
-              placeholder={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
+              // « en houblonnage à cru… » passait sous le chevron à 320 px.
+              placeholder={hopStage === 'dryHop' ? 'Ajouter un houblon à cru…' : `Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
               ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
             />
 
-            {hops.some(h => h.stage === 'dryHop') && <details><summary className="cursor-pointer min-h-touch text-[13px] text-cave-200">Amertume à cru · hypothèses et analyse</summary><HopBitternessPanel hops={hops} volumeL={volumeL} og={og || null} boilMin={boilMin} hot={bitterness}/></details>}
             {hops.length === 0 ? (
               <p className="text-sm text-cave-400 py-1">Aucun houblon.</p>
             ) : (
@@ -1857,6 +1880,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               label={(st) => HOP_STAGE[st].label}
                               tone={(st) => HOP_STAGE[st].tone}
                             />
+                            <button type="button" className="text-xs text-cave-50 underline underline-offset-2" onClick={() => simulateHop(i)} aria-label={`Simuler l’ajout ${i + 1} de ${h.name}`}>Simuler</button>
                             {!style.ask && (
                               <span className="text-sm text-cave-400 truncate">
                                 {describeMoment(h)}
@@ -1874,7 +1898,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                           <div className="w-32 sm:w-36">
                             <QuantityStepper
                               id={`wz-hop-${i}`}
-                              emptyValue={Number.NaN}
+                              emptyValue={0}
                               aria-invalid={!!fieldError(`wz-hop-${i}`)}
                               aria-describedby={fieldError(`wz-hop-${i}`) ? 'wz-validation' : undefined}
                               label=""
@@ -1930,15 +1954,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                           {(
                             <div>
                               <InlineNum
-                                label="α"
-                                name={`Alpha de ${h.name} en pourcent`}
+                                id={`wz-hop-alpha-${i}`}
+                                aria-invalid={!!fieldError(`wz-hop-alpha-${i}`)}
+                                aria-describedby={fieldError(`wz-hop-alpha-${i}`) ? 'wz-validation' : undefined}
+                                label={style.bitters ? 'α' : 'α facult.'}
+                                name={`${style.bitters ? 'Alpha' : 'Alpha facultatif, hors du calcul IBU à cru'} de ${h.name} en pourcent`}
                                 unit="%"
-                                emptyValue={Number.NaN}
+                                emptyValue={0}
                                 min={0}
                                 max={100}
                                 value={h.alpha}
                                 onValue={(v) => patchHop(i, { alpha: v })}
-                                missing={!h.alpha}
+                                missing={style.bitters && !h.alpha}
                               />
                             </div>
                           )}
@@ -1947,7 +1974,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             <div>
                               <InlineNum
                                 id={`wz-hop-time-${i}`}
-                                emptyValue={Number.NaN}
+                                emptyValue={undefined}
                                 required
                                 aria-invalid={!!fieldError(`wz-hop-time-${i}`)}
                                 aria-describedby={fieldError(`wz-hop-time-${i}`) ? 'wz-validation' : undefined}
@@ -1967,7 +1994,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               <div>
                                 <InlineNum
                                   id={`wz-hop-time-${i}`}
-                                  emptyValue={Number.NaN}
+                                  emptyValue={undefined}
                                   required
                                   aria-invalid={!!fieldError(`wz-hop-time-${i}`)}
                                   aria-describedby={fieldError(`wz-hop-time-${i}`) ? 'wz-validation' : undefined}
@@ -1983,7 +2010,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               <div>
                                 <InlineNum
                                   id={`wz-hop-temp-${i}`}
-                                  emptyValue={Number.NaN}
+                                  emptyValue={undefined}
                                   required
                                   aria-invalid={!!fieldError(`wz-hop-temp-${i}`)}
                                   aria-describedby={fieldError(`wz-hop-temp-${i}`) ? 'wz-validation' : undefined}
@@ -2004,6 +2031,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                             <div className="flex items-center gap-1.5 min-w-0">
                               <div>
                                 <InlineNum
+                                  id={`wz-hop-day-${i}`}
+                                  emptyValue={undefined}
+                                  aria-invalid={!!fieldError(`wz-hop-day-${i}`)}
+                                  aria-describedby={fieldError(`wz-hop-day-${i}`) ? 'wz-validation' : undefined}
                                   label="jour"
                                   name={`Jour en cuve pour ${h.name}`}
                                   min={0}
@@ -2020,39 +2051,32 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                         </div>
                       )}
 
-                      <p className="text-sm text-ebc-amber">{bitterness.additions[i].missing.length > 0 && `À préciser : ${bitterness.additions[i].missing.join(' · ')}.`}</p>
                       {h.stage === 'dryHop' && <div className="space-y-2 border-t border-cave-800 pt-2">
                         <label className="block text-sm text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
                           <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
                         </select></label>
-                        <div className="flex flex-wrap gap-3"><InlineNum label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
+                        <div className="flex flex-wrap gap-3"><InlineNum id={`wz-hop-contact-${i}`} emptyValue={undefined} aria-invalid={!!fieldError(`wz-hop-contact-${i}`)} aria-describedby={fieldError(`wz-hop-contact-${i}`) ? 'wz-validation' : undefined} label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum emptyValue={undefined} label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
                       </div>}
-                      <AiAssist
-                        kind="houblon"
-                        name={h.name}
-                        missing={!h.alpha ? ['acides alpha'] : []}
-                        onApply={(facts) => {
-                          patchHop(i, applyHopFacts(h, facts));
-                          onLearnIngredient(h.name, factsForStock('houblon', facts));
-                        }}
-                      />
-
-
                     </li>
                   );
                 })}
               </ul>
             )}
+            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des fiches de houblon…</p>}>
+              <RecipeAutoComplete active nolo={details.nolo?.enabled} scope="houblon"
+                onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} />
+            </Suspense>
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
               <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
             </Suspense>
-            <details className="recipe-hop-tools border-t border-cave-700" open={hopRecipeToolsOpen} onToggle={e => setHopRecipeToolsOpen(e.currentTarget.open)}>
+            <details id="recipe-hop-simulation" className="recipe-hop-tools border-t border-cave-700 scroll-mt-20" open={hopRecipeToolsOpen} onToggle={e => setHopRecipeToolsOpen(e.currentTarget.open)}>
               <summary className="flex items-center justify-between gap-2 text-cave-200">
                 <span>Comparer et simuler les houblons</span>
                 <span className="font-mono tabular-nums text-cave-50">{ibu ?? '—'} IBU</span>
               </summary>
               {hopRecipeToolsOpen && <Suspense fallback={<p role="status" className="px-2 py-3 text-sm text-cave-400">Chargement du simulateur houblon…</p>}>
-                <HopRecipeWorkbench recipe={build()} session={hopWorkbenchSession} onNavigate={setStep} onBusyChange={setHopGuideBusy}
+                <HopRecipeWorkbench recipe={{ ...build(), ogTarget: boilOg ?? undefined }} session={hopWorkbenchSession} focusRequest={hopSimulationRequest} onFocusHandled={() => setHopSimulationRequest(undefined)} onNavigate={setStep} onBusyChange={setHopGuideBusy}
                   onPlanYeast={(goal, yeastId) => { setYeastFocus({ goal, yeastId }); setStep('levure'); }}
                   onChange={next => { setHops(next.hops); setDetails(previous => ({ ...previous, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds })); }} />
               </Suspense>}
@@ -2110,10 +2134,10 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                   setYeastSelection(n => n + 1);
                 }} /></Suspense>}
               factsEditor={<>
+                <YeastRecipeDossier yeast={yeast} onChange={setYeast} />
                 <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure"
                   onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
                   hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} /></Suspense>
-                <YeastRecipeDossier yeast={yeast} onChange={setYeast} />
               </>}
               programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyFermentationRecipe(next, 'levure')} /></Suspense>}
             />
@@ -2459,6 +2483,11 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       */}
       {step === 'recap' && (
         <>
+        <div role="status" aria-label="État de la recette" className={`px-2 py-1 text-xs border rounded-control ${readiness.status === 'invalid' ? 'border-alert-strong/50 text-alert-strong' : readiness.status === 'incomplete' ? 'border-attention/50 text-attention' : 'border-hop/50 text-cave-200'}`}>
+          {readiness.status === 'invalid' ? `${readiness.invalid.length} valeur${readiness.invalid.length > 1 ? 's' : ''} à corriger avant enregistrement`
+            : readiness.status === 'incomplete' ? `À compléter · ${readiness.missing.length} repère${readiness.missing.length > 1 ? 's' : ''} avant brassin · enregistrement possible`
+            : 'Données prêtes pour le brassin'}
+        </div>
         {/*
           Un seul geste pour aller chercher tout ce qui manque encore — couleurs,
           potentiels, alphas, atténuation. Le bouton disparaît de lui-même quand

@@ -1,0 +1,13 @@
+# Profil natif à installer sous $CODEX_HOME/luna-full.config.toml.
+# Ne modifie ni authentification ni permissions ; le projet conserve ses restrictions.
+model = "gpt-6-luna"
+model_reasoning_effort = "max"
+model_context_window = 872000
+developer_instructions = """
+Lis AGENTS.md et les skills natifs pertinents ; applique Unlazy et Caveman lite.
+Rôle terminal : ne délègue pas. Reste dans les fichiers attribués, préserve
+les modifications des autres agents et rapporte les preuves de vérification.
+"""
+
+[agents]
+enabled = false

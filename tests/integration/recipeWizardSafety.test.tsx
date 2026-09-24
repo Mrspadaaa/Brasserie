@@ -141,8 +141,7 @@ describe('Recipe wizard submission safeguards', () => {
 
   it.each([
     { title: 'mash temperature', step: /^Paliers$/, label: /^Température du palier 1/, issue: 'Température du palier 1', correction: '65,5', value: (r: Recipe) => r.mash!.steps[0].tempC, expected: 65.5 },
-    { title: 'mash duration', step: /^Paliers$/, label: /^Durée du palier 1/, issue: 'Durée du palier 1', correction: '60', value: (r: Recipe) => r.mash!.steps[0].durationMin, expected: 60 },
-    { title: 'ingredient quantity', step: /^Fermentescibles$/, label: /^Quantité en kg$/, issue: 'Quantité de Pilsner', correction: '4,5', value: (r: Recipe) => r.fermentables![0].weightKg, expected: 4.5 }
+    { title: 'mash duration', step: /^Paliers$/, label: /^Durée du palier 1/, issue: 'Durée du palier 1', correction: '60', value: (r: Recipe) => r.mash!.steps[0].durationMin, expected: 60 }
   ])('refuses an erased $title and returns to the missing field for correction', async scenario => {
     const draftKey = `safety:${scenario.title}`;
     const { onSave } = wizard({ draftKey });
@@ -163,6 +162,38 @@ describe('Recipe wizard submission safeguards', () => {
     fireEvent.click(saveButton());
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(scenario.value(onSave.mock.calls[0][0])).toBe(scenario.expected);
+  });
+
+  it('enregistre une dose effacée comme plan incomplet et revient au champ avant le brassin', async () => {
+    const draftKey = 'safety:ingredient-quantity';
+    const { onSave } = wizard({ draftKey });
+    allerEtape(/^Fermentescibles$/);
+    const quantity = () => screen.getAllByRole('textbox', { name: /^Quantité en kg$/ })[0];
+    await userEvent.clear(quantity());
+    fireEvent.blur(quantity());
+    expect(quantity()).toHaveValue('0');
+    expect(readRecipeDraft(draftKey)?.recipe.fermentables?.[0].weightKg).toBe(0);
+
+    recap();
+    expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('À compléter');
+    fireEvent.click(saveButton());
+    expect(onSave).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+      fermentables: expect.arrayContaining([expect.objectContaining({ weightKg: 0 })])
+    }), false);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et préparer un brassin' }));
+    expect(onSave).toHaveBeenCalledTimes(1);
+    expect(validationAlert()).toHaveTextContent('Quantité de Pilsner');
+    expect(quantity()).toHaveAttribute('aria-invalid', 'true');
+    expect(quantity()).toHaveAccessibleDescription(/Quantité de Pilsner/);
+    await waitFor(() => expect(quantity()).toHaveFocus());
+
+    replace(quantity(), '4,5');
+    recap();
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et préparer un brassin' }));
+    expect(onSave).toHaveBeenCalledTimes(2);
+    expect(onSave.mock.calls[1][0].fermentables?.[0].weightKg).toBe(4.5);
+    expect(onSave.mock.calls[1][1]).toBe(true);
   });
 
   it('preserves explicit zero durations for instant transitions instead of treating them as missing', () => {

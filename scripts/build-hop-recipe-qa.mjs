@@ -18,6 +18,9 @@ export async function buildHopRecipeQa(out = resolve(tmpdir(), 'laffinee-hop-qa-
   await build({ configFile: false, root, plugins: [
     { name: 'isolated-hop-qa-adapters', enforce: 'pre', resolveId(source) {
       if (source === 'firebase/functions') return resolve(root, 'tests/qa/hop-recipe/functions.ts').replaceAll('\\', '/');
+      // Match the production Vite alias: private seed data is absent from this
+      // checkout, so QA must compile only against the public example fixture.
+      if (source === '../data/seedData') return resolve(root, 'src/data/seedData.example.ts').replaceAll('\\', '/');
       const name = source.replaceAll('\\', '/').match(/(?:^|\/)(firestoreRepo|firebaseAuth|migration)(?:\.ts)?$/)?.[1];
       return name ? resolve(root, 'tests/qa/hop-recipe', adapters[name]).replaceAll('\\', '/') : null;
     } }, react()

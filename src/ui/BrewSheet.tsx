@@ -222,8 +222,8 @@ export interface BrewSheetProps {
   notes: string;
   onNotes: (v: string) => void;
 
-  /** Ce qui manque au stock, calculé par l'appelant. */
-  shortages: Array<{ name: string; have: number; needed: number; unit: string }>;
+  /** Besoins insuffisants ou non comparables, calculés par l'appelant. */
+  shortages: Array<{ name: string; needed: number; unit: string; have?: number; haveUnit?: string; status?: 'shortage' | 'unverified'; reason?: string }>;
 
   /**
    * Rend la recette entière en texte brut, prête à coller.
@@ -287,10 +287,12 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
   const incompleteStockNeeds = fermentables.some(f => !f.name.trim() || !Number.isFinite(f.weightKg) || f.weightKg <= 0)
     || hops.some(h => !h.name.trim() || !Number.isFinite(h.weightG) || h.weightG <= 0)
     || Boolean(yeast.name.trim() && (!Number.isFinite(yeast.qty) || yeast.qty <= 0 || !yeast.unit));
+  const stockShortages = shortages.filter(item => item.status !== 'unverified').length;
+  const stockToVerify = shortages.length - stockShortages;
   const stockSummary = shortages.length > 0
     ? <span role="status" className="inline-flex max-w-full items-center gap-1 rounded-full border border-attention/40 bg-attention/10 px-1.5 py-px text-xs leading-tight text-attention">
         <AlertTriangle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-        <span>{shortages.length} ingrédient{shortages.length > 1 ? 's' : ''} à commander</span>
+        <span>{[stockShortages ? `${stockShortages} ingrédient${stockShortages > 1 ? 's' : ''} à commander` : '', stockToVerify ? `${stockToVerify} à vérifier` : ''].filter(Boolean).join(' · ')}</span>
       </span>
     : <span role="status" className="inline-flex max-w-full items-center gap-1 text-xs leading-tight text-cave-200">
         {hasStockNeeds && !incompleteStockNeeds && <Check className="w-3.5 h-3.5 shrink-0 text-hop" aria-hidden="true" />}
@@ -522,7 +524,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           <Cell
             label="Atténuation"
             value={yeast.attenuationPct}
-            onValue={(v) => onYeast({ ...yeast, attenuationPct: v })}
+            onValue={(v) => onYeast({ ...yeast, attenuationPct: v, attenuationBasis: v == null ? undefined : 'recipe' })}
             emptyValue={undefined}
             unit="%"
             width="w-16"
@@ -833,7 +835,7 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
           </p>
         ) : (
           <table className="w-full table-fixed text-[13px] leading-snug">
-            <caption className="sr-only">Disponibilités pour les ingrédients à commander</caption>
+            <caption className="sr-only">Disponibilités et vérifications pour les ingrédients de la recette</caption>
             <thead>
               <tr className="text-cave-400">
                 <th scope="col" className="w-2/5 pb-1 pr-1 text-left font-normal break-words">Ingrédient</th>
@@ -845,8 +847,8 @@ export const BrewSheet: React.FC<BrewSheetProps> = ({
               {shortages.map(s => (
                 // Nom + unité identifient le besoin cumulé par l’assistant.
                 <tr key={`${s.name}-${s.unit}`} className="align-top">
-                  <th scope="row" className="py-1.5 pr-1 text-left font-normal text-cave-50 [overflow-wrap:anywhere]">{s.name}</th>
-                  <td className="py-1.5 px-1 text-right font-mono tabular-nums text-cave-200 [overflow-wrap:anywhere]">{formatQuantity(s.have, s.unit)}</td>
+                  <th scope="row" className="py-1.5 pr-1 text-left font-normal text-cave-50 [overflow-wrap:anywhere]">{s.name}{s.status === 'unverified' && <span className="block font-sans text-xs text-attention">{s.reason || 'Conditionnement à vérifier'}</span>}</th>
+                  <td className="py-1.5 px-1 text-right font-mono tabular-nums text-cave-200 [overflow-wrap:anywhere]">{s.have == null ? 'À vérifier' : formatQuantity(s.have, s.haveUnit ?? s.unit)}</td>
                   <td className="py-1.5 pl-1 text-right font-mono tabular-nums text-cave-50 [overflow-wrap:anywhere]">{formatQuantity(s.needed, s.unit)}</td>
                 </tr>
               ))}

@@ -125,6 +125,19 @@ Cinq lois portent le système :
    sur téléphone et ordinateur, même quand tout va bien. La couleur accompagne
    toujours un libellé ; les alertes restent distinctes de ces repères.
 
+## Concevoir pour comprendre
+
+La compacité reste un moyen au service du brasseur. Conserver la richesse métier,
+des regroupements lisibles et les rappels utiles ; éviter la réduction uniforme
+des tailles et le masquage systématique. Une mise en page plus courte n'est pas
+une preuve de meilleure UX. Les contrôles peuvent grandir pour un besoin réel
+de lecture, de texte agrandi ou d'interaction, vérifié sur l'écran concerné.
+
+Rechercher et valoriser les « boosters UX/UI » qui aident à comprendre et agir
+au-delà du texte. Aucune liste de représentations ne ferme les choix possibles.
+Réutiliser, composer ou créer selon le besoin, en vérifiant fidélité des valeurs,
+clavier, unités, légendes, incertitudes, maintenance et performances.
+
 ## Colors
 
 ### Les trois tons neutres de texte

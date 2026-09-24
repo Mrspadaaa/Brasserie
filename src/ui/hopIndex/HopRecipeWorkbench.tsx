@@ -18,6 +18,8 @@ import { hopReferenceSource, HOP_FORM_LABELS } from '../../domain/hopIndex/label
 import { NumberInput } from '../NumberInput';
 import { Combobox } from '../Combobox';
 import { SegmentedControl } from '../SegmentedControl';
+import { HopIbuRange } from './HopIbuRange';
+export { HopIbuRange } from './HopIbuRange';
 import './hop-recipe.css';
 
 const fmt = (value?: number | null, digits = 1) => value != null && Number.isFinite(value) ? value.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
@@ -33,31 +35,19 @@ function Detail({ title, children }: { title: React.ReactNode; children: React.R
   return <details><summary>{title}<ChevronDown size={14} aria-hidden="true" /></summary><div className="hop-detail-body">{children}</div></details>;
 }
 
-export function HopIbuRange({ current, proposed, range }: { current: number | null; proposed?: number | null; range?: { min: number; max: number } }) {
-  const max = Math.max(1, (range?.max ?? 0) * 1.2, (current ?? 0) * 1.1, (proposed ?? 0) * 1.1);
-  return <figure className="hop-ibu-range" aria-label="Amertume calculée et repère du style">
-    <figcaption><span>IBU à chaud · Tinseth</span><strong>{fmt(current)}{proposed != null ? ` → ${fmt(proposed)}` : ''}</strong></figcaption>
-    <div className="hop-ibu-track" aria-hidden="true">
-      {range && <span className="hop-style-band" style={{ left: `${range.min / max * 100}%`, width: `${(range.max - range.min) / max * 100}%` }} />}
-      {current != null && <i className="hop-current-mark" style={{ left: `${current / max * 100}%` }} />}
-      {proposed != null && <i className="hop-proposed-mark" style={{ left: `${proposed / max * 100}%` }} />}
-    </div>
-    <div className="hop-scale"><span>0</span><span>{range ? `Repère du style : ${fmt(range.min)}–${fmt(range.max)} IBU` : 'Plage du style non identifiée'}</span><span>{fmt(max)}</span></div>
-    {proposed != null && <p className="hop-small">Repère clair : actuel · jaune : scénario</p>}
-  </figure>;
-}
-
 /** Brewing decisions first. Local previews do not save references or touch the recipe. */
-export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, onBusyChange, session }: {
+export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, onBusyChange, session, focusRequest, onFocusHandled }: {
   recipe: TrialRecipe; onChange?: (recipe: TrialRecipe) => void;
   onNavigate?: (step: 'identite' | 'levure' | 'paliers' | 'eau') => void;
   onPlanYeast?: (goal: YeastRecipeGoal, yeastId?: string) => void; onBusyChange?: (busy: boolean) => void;
   /** Wizard-only draft cache: survives step navigation, never stored with the recipe. */
   session?: { current: HopRecipeWorkbenchSession | undefined };
+  /** An explicit card action opens a fresh local scenario for one real addition. */
+  focusRequest?: { index: number; revision: number };
+  onFocusHandled?: () => void;
 }) {
   const uid = useId(), { varieties, loading, error: catalogueError } = useHopCatalogue();
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
-  const refs = useMemo(() => yeastReferences(knowledge), [knowledge]);
   const analysis = analyseHopRecipe(recipe), key = hopRecipeKey(recipe);
   const [view, setView] = useState<'balance' | 'adjust' | 'flavor'>(() => session?.current?.view ?? 'balance');
   const [local, setLocal] = useState(() => session?.current?.local ?? ({ key, draft: createHopRecipeAdjustment(recipe) }));
@@ -76,7 +66,12 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
   const goals: SensoryGoal[] = wheat ? ['balanced', 'banana', 'clove'] : hoppy ? ['citrus', 'tropical', 'floral'] : ['balanced', 'floral'];
   const activeGoal = goals.includes(goal) ? goal : goals[0];
   const yeastGoal: YeastRecipeGoal = activeGoal === 'banana' || activeGoal === 'clove' ? activeGoal : hoppy ? 'hops' : 'balanced';
-  const candidates = yeastRecipeCandidates(family, yeastGoal, refs, recipe.volumeL);
+  // The yeast comparison is only rendered on the flavor tab. Computing every
+  // candidate also checks its documentary style evidence, so doing it while
+  // returning to the hop simulation needlessly delays the whole step.
+  const candidates = useMemo(() => view === 'flavor'
+    ? yeastRecipeCandidates(family, yeastGoal, yeastReferences(knowledge), recipe.volumeL)
+    : [], [view, family, yeastGoal, knowledge, recipe.volumeL]);
   const currentYeast = candidates.find(c => c.yeastId === recipe.yeast?.hopIndexId);
   const comparisons = candidates.filter(c => c.yeastId !== recipe.yeast?.hopIndexId).slice(0, 3);
   const catalogue = useMemo(() => varieties.filter(v => !v.archived && ['unknown', 'pelletT90', 'cone'].includes(v.form))
@@ -94,6 +89,15 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
     const index = mode === 'dryHop' ? recipe.hops.findIndex(h => h.stage === 'dryHop') : recipe.hops.findIndex(h => h.stage === 'boil');
     setLocal({ key, draft: createHopRecipeAdjustment(recipe, index, mode) }); setError(''); setNotice(''); setView('adjust');
   };
+  const focusAddition = (index: number) => {
+    const hop = recipe.hops[index];
+    if (!hop) return;
+    const mode: HopAdjustmentMode = hop.stage === 'dryHop' ? 'dryHop' : hop.stage === 'boil' ? 'ibu' : 'move';
+    setLocal({ key, draft: createHopRecipeAdjustment(recipe, index, mode) });
+    setError(''); setNotice(''); setView('adjust');
+    requestAnimationFrame(() => document.getElementById(`${uid}-addition`)?.focus());
+  };
+  React.useEffect(() => { if (focusRequest) { focusAddition(focusRequest.index); onFocusHandled?.(); } }, [focusRequest?.revision]);
   const flavorRows = (rows: typeof flavorVarieties) => rows.map(v => <li key={v.id}>
     <strong>{v.name}</strong><button type="button" aria-label={`Préparer un ajout de ${v.name}`} onClick={() => {
       setLocal({ key, draft: { ...createHopRecipeAdjustment(recipe, -1, hoppy ? 'dryHop' : 'move'), name: v.name, varietyId: v.id } });
@@ -148,6 +152,9 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
       <dl className="hop-phase-list" aria-label="Répartition des houblons par phase">{analysis.phases.filter(p => p.count).map(p => <div key={p.stage}>
         <dt>{stageNames[p.stage]}</dt><dd>{p.grams !== undefined && <span className="hop-mass-track" aria-hidden="true"><i style={{ width: `${p.grams / maxMass * 100}%` }} /></span>}<span>{fmt(p.grams)} g · {fmt(p.doseGL)} g/L</span></dd>
       </div>)}</dl>
+      {recipe.hops.length > 0 && <ol className="hop-addition-bridges" aria-label="Ajouts à simuler">
+        {recipe.hops.map((hop, index) => <li key={index}><span><strong>{hop.name}</strong><small>{stageNames[hop.stage]} · {fmt(hop.weightG)} g{hop.stage === 'dryHop' ? ` · ${fmt(recipe.volumeL > 0 ? hop.weightG / recipe.volumeL : undefined)} g/L` : ''}</small></span><button type="button" onClick={() => focusAddition(index)} aria-label={`Simuler l’ajout ${index + 1} de ${hop.name}`}>Simuler</button></li>)}
+      </ol>}
       {!recipe.hops.length && <p>Aucun ajout. Prépare une masse selon l’IBU visé ou la dose à cru.</p>}
       <div className="hop-actions"><button type="button" onClick={() => chooseTool('ibu')}>Calculer ma dose amère</button>{hoppy && <button type="button" onClick={() => chooseTool('dryHop')}>Préparer le dry hop</button>}</div>
       <Detail title="Variétés à comparer dans ce style">
@@ -160,6 +167,15 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
         {onNavigate && <button type="button" onClick={() => onNavigate('paliers')}>Vérifier le programme de fermentation</button>}</Detail>}
     </>}
     {view === 'adjust' && <fieldset disabled={busy} className="hop-adjustment" aria-label="Simulation de houblonnage">
+      <div className="hop-preview">
+        <div className="hop-preview-heading"><strong>{draft.index === -1 ? 'Nouvel ajout' : `${draft.index + 1}. ${recipe.hops[draft.index]?.name ?? draft.name}`} · scénario</strong><span>Non appliqué</span></div>
+        {result.errors.length > 0 ? <div id={`${uid}-errors`} className="hop-missing" role="status"><strong>À compléter pour calculer</strong><ul>{result.errors.map(e => <li key={e}>{e}</li>)}</ul></div> : <>
+          <HopIbuRange current={result.beforeIbu} proposed={result.afterIbu} range={analysis.style.ibu} />
+          <dl className="hop-comparison" aria-label="Comparaison actuel et scénario"><div><dt>Masse de l’ajout</dt><dd>{draft.index === -1 ? 'Nouvel ajout' : `${fmt(result.beforeGrams)} g`} → <strong>{fmt(result.afterGrams)} g</strong></dd></div>
+            {draft.mode === 'dryHop' && <div><dt>Total à cru · tous les ajouts</dt><dd>{fmt(analysis.dry.doseGL)} → <strong>{fmt(result.afterDryGL)} g/L</strong></dd></div>}</dl>
+          <p className="hop-small">Estimations, pas des IBU mesurés. L’amertume finale à cru reste à évaluer.</p>
+        </>}
+      </div>
       <div className="hop-select-line"><label htmlFor={`${uid}-tool`}>Outil</label><select id={`${uid}-tool`} aria-label="Outil de simulation houblon" value={draft.mode} onChange={e => chooseTool(e.target.value as HopAdjustmentMode)}>{Object.entries(toolNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></div>
       <div className="hop-select-line"><label htmlFor={`${uid}-addition`}>Ajout</label><select id={`${uid}-addition`} aria-label="Ajout à simuler" value={draft.index} onChange={e => { setLocal({ key, draft: createHopRecipeAdjustment(recipe, Number(e.target.value), draft.mode) }); setNotice(''); setError(''); }}>
         <option value={-1}>Nouvel ajout</option>{recipe.hops.map((h, i) => <option key={i} value={i}>{i + 1}. {h.name} · {stageNames[h.stage]}</option>)}</select></div>
@@ -187,12 +203,6 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
         <Detail title={`Jour au calendrier · ${draft.dayOffset == null ? 'non fixé' : `J${fmt(draft.dayOffset)}`}`}>{numeric('Jour indicatif depuis ensemencement', 'dayOffset', 'j')}<p className="hop-small">Jour de planification seulement. Les mesures de fermentation décident du moment réel.</p></Detail>
       </>}
       {stale && <p role="alert" className="hop-warning">La recette a changé. <button type="button" onClick={reset}>Reprendre les données actuelles</button></p>}
-      {result.errors.length > 0 ? <div id={`${uid}-errors`} className="hop-missing" role="status"><strong>À compléter pour calculer</strong><ul>{result.errors.map(e => <li key={e}>{e}</li>)}</ul></div> : <>
-        <HopIbuRange current={result.beforeIbu} proposed={result.afterIbu} range={analysis.style.ibu} />
-        <dl className="hop-comparison" aria-label="Comparaison actuel et scénario"><div><dt>Masse de l’ajout</dt><dd>{draft.index === -1 ? 'Nouvel ajout' : `${fmt(result.beforeGrams)} g`} → <strong>{fmt(result.afterGrams)} g</strong></dd></div>
-          {draft.mode === 'dryHop' && <div><dt>Total à cru · tous les ajouts</dt><dd>{fmt(analysis.dry.doseGL)} → <strong>{fmt(result.afterDryGL)} g/L</strong></dd></div>}</dl>
-        <p className="hop-small">Estimations, pas des IBU mesurés. L’amertume finale à cru reste à évaluer.</p>
-      </>}
       {result.notes.map(note => <p key={note} className="hop-small">{note}</p>)}
       <div className="hop-actions">{onChange && <button type="button" className="hop-apply" disabled={busy || stale || !!result.errors.length || !result.changed} onClick={() => void apply()}>{busy ? 'Application…' : 'Appliquer cet ajout'}</button>}<button type="button" disabled={busy} onClick={reset}>Réinitialiser</button></div>
       {!onChange && <p className="hop-small">Simulation locale. Pour conserver un changement, ouvre la modification de recette.</p>}

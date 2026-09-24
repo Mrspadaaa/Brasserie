@@ -79,6 +79,52 @@ const GRAIN_SANS_COULEUR: Fermentable = {
 };
 
 describe('Compléter les données manquantes avec l’IA', () => {
+  it('isole deux malts homonymes par référence et ne réutilise pas la fiche du premier lot', async () => {
+    const learn = vi.fn();
+    run.mockImplementation(({ context }) => Promise.resolve(FICHE({
+      colorEbc: context.stockItemRef === 'M-A' ? 6 : 9, potentialPpg: 38
+    })));
+    const vu = monter({ fermentables: [
+      { ...GRAIN_SANS_COULEUR, stockItemRef: 'M-A' },
+      { ...GRAIN_SANS_COULEUR, stockItemRef: 'M-B' }
+    ], stockItems: [
+      { id: 'doc-a', ref: 'M-A', name: 'Maris Otter', category: 'Malt', unit: 'kg', currentStock: 2, minStock: 0, reorder: false, supplier: 'A' },
+      { id: 'doc-b', ref: 'M-B', name: 'Maris Otter', category: 'Malt', unit: 'kg', currentStock: 3, minStock: 0, reorder: false, supplier: 'B' }
+    ], onLearnIngredient: learn });
+    fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Reprendre ces valeurs' }));
+    expect(run).toHaveBeenCalledTimes(2);
+    expect(run.mock.calls.map(([request]) => request.context.stockItemRef).sort()).toEqual(['M-A', 'M-B']);
+    expect(vu.f.map(item => item.colorEbc)).toEqual([6, 9]);
+    expect(learn.mock.calls.map(([, facts]) => facts.ref).sort()).toEqual(['M-A', 'M-B']);
+  });
+
+  it('ne reprend pas l’alpha d’un autre lot homonyme et laisse le lot inconnu à saisir', async () => {
+    const vu = monter({ hops: [
+      { name: 'Cascade', stockItemRef: 'H-A', weightG: 10, alpha: 0, stage: 'boil', timeMin: 15 },
+      { name: 'Cascade', stockItemRef: 'H-B', weightG: 10, alpha: 0, stage: 'boil', timeMin: 15 }
+    ], stockItems: [
+      { id: 'doc-a', ref: 'H-A', name: 'Cascade', category: 'Houblon', unit: 'g', currentStock: 30, minStock: 0, reorder: false, alphaPct: 6 },
+      { id: 'doc-b', ref: 'H-B', name: 'Cascade', category: 'Houblon', unit: 'g', currentStock: 30, minStock: 0, reorder: false }
+    ] });
+    await waitFor(() => expect(vu.h.map(item => item.alpha)).toEqual([6, 0]));
+    expect(screen.queryByRole('button', { name: /Compléter les données/ })).not.toBeInTheDocument();
+    expect(run).not.toHaveBeenCalled();
+  });
+
+  it('ne réutilise pas le premier stock homonyme quand une ancienne recette n’a pas de référence', async () => {
+    run.mockResolvedValue(FICHE({ alphaPct: 14 }));
+    const vu = monter({ hops: [{ name: 'Cascade', weightG: 20, alpha: 0, stage: 'boil', timeMin: 15 }], stockItems: [
+      { id: 'doc-a', ref: 'H-A', name: 'Cascade', category: 'Houblon', unit: 'g', currentStock: 30, minStock: 0, reorder: false, alphaPct: 6, technicalSource: 'Étiquette A' },
+      { id: 'doc-b', ref: 'H-B', name: 'Cascade', category: 'Houblon', unit: 'g', currentStock: 30, minStock: 0, reorder: false, alphaPct: 8, technicalSource: 'Étiquette B' }
+    ] });
+    await waitFor(() => expect(vu.h[0].alpha).toBe(0));
+    fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Reprendre ces valeurs' }));
+    expect(run).toHaveBeenCalledOnce();
+    expect(vu.h[0].alpha).toBe(14);
+  });
+
   it('conserve une atténuation fabricant en plage sans demander une valeur exacte à l’IA', async () => {
     const vu = monter({ yeast: { name: 'SafAle US-05', hopIndexId: 'fermentis-us05', form: 'sèche', qty: 11.5, unit: 'g', lab: 'Fermentis', fermTempMinC: 18, fermTempMaxC: 26 } });
     await waitFor(() => expect(screen.queryByRole('button', { name: /Compléter les données/ })).not.toBeInTheDocument());
@@ -190,6 +236,40 @@ describe('Compléter les données manquantes avec l’IA', () => {
     expect(onF).not.toHaveBeenCalled();
     expect(learn).not.toHaveBeenCalled();
   });
+  it('ignore une réponse si la fiche du même article change pendant la recherche', async () => {
+    let resolve!: (value: any) => void;
+    run.mockReturnValue(new Promise(r => { resolve = r; }));
+    const onF = vi.fn();
+    const stock = { id: 'doc-a', ref: 'M-A', name: 'Maris Otter', category: 'Malt', unit: 'kg',
+      currentStock: 2, minStock: 0, reorder: false, supplier: 'Malterie A' };
+    const props = { fermentables: [{ ...GRAIN_SANS_COULEUR, stockItemRef: 'M-A' }], onFermentables: onF,
+      hops: [], onHops: vi.fn(), yeast: { name: '' } as YeastSpec, onYeast: vi.fn() };
+    const view = render(<RecipeAutoComplete {...props} stockItems={[stock]} />);
+    fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+    view.rerender(<RecipeAutoComplete {...props} stockItems={[{ ...stock, supplier: 'Malterie B' }]} />);
+    resolve(FICHE({ colorEbc: 6, potentialPpg: 38 }));
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Reprendre ces valeurs' })).not.toBeInTheDocument());
+    expect(onF).not.toHaveBeenCalled();
+  });
+  it('oublie une ancienne fiche en cache si le fournisseur change avant validation', async () => {
+    run.mockResolvedValueOnce(FICHE({ colorEbc: 6, potentialPpg: 38 }))
+      .mockResolvedValueOnce(FICHE({ colorEbc: 9, potentialPpg: 38 }));
+    const onF = vi.fn();
+    const stock = { id: 'doc-a', ref: 'M-A', name: 'Maris Otter', category: 'Malt', unit: 'kg',
+      currentStock: 2, minStock: 0, reorder: false, supplier: 'Malterie A' };
+    const props = { fermentables: [{ ...GRAIN_SANS_COULEUR, stockItemRef: 'M-A' }], onFermentables: onF,
+      hops: [], onHops: vi.fn(), yeast: { name: '' } as YeastSpec, onYeast: vi.fn() };
+    const view = render(<RecipeAutoComplete {...props} stockItems={[stock]} />);
+    fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+    await screen.findByRole('button', { name: 'Reprendre ces valeurs' });
+    expect(onF).not.toHaveBeenCalled();
+    view.rerender(<RecipeAutoComplete {...props} stockItems={[{ ...stock, supplier: 'Malterie B' }]} />);
+    expect(screen.queryByRole('button', { name: 'Reprendre ces valeurs' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Reprendre ces valeurs' }));
+    expect(run).toHaveBeenCalledTimes(2);
+    expect(onF.mock.lastCall![0][0].colorEbc).toBe(9);
+  });
   it('annule les recherches en attente et ignore leur réponse sans écrire', async () => {
     const pending: Array<(v:any)=>void> = [];
     run.mockImplementation(()=>new Promise(resolve=>pending.push(resolve)));
@@ -223,17 +303,32 @@ describe('Compléter les données manquantes avec l’IA', () => {
 
   it('annonce ce qui manque, ingrédient par ingrédient', () => {
     monter({ fermentables: [GRAIN_SANS_COULEUR] });
-    expect(screen.getByText(/1 ingrédient incomplet/)).toBeInTheDocument();
+    expect(screen.getByText(/Données de fiche à compléter/)).toBeInTheDocument();
     expect(screen.getByText(/Maris Otter \(couleur EBC, potentiel PPG\)/)).toBeInTheDocument();
   });
 
   it('complète aussi la fiche à cru et conserve son contexte sans fabriquer une utilisation Tinseth', async () => {
     run.mockResolvedValue(FICHE({alphaPct:12}));
     const vu = monter({ hops: [{ name: 'Citra', alpha:0, weightG:85, stage:'dryHop', dayOffset:3, aromaContactHours:48, aromaTiming:'fermentation' }] });
+    expect(screen.getByText(/À cru · alpha de fiche facultatif, hors du calcul IBU à chaud/)).toHaveTextContent('Citra');
+    expect(screen.queryByText(/ingrédient incomplet/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     fireEvent.click(await screen.findByText(/Reprendre ces valeurs/));
     expect(run).toHaveBeenCalledTimes(1);
     expect(vu.h[0]).toMatchObject({alpha:12,weightG:85,stage:'dryHop',dayOffset:3,aromaContactHours:48,aromaTiming:'fermentation'});
+  });
+  it('présente l’alpha à chaud avant la fiche facultative à cru sans retirer la recherche groupée', () => {
+    monter({ hops: [
+      { name: 'Amérisant', alpha: 0, weightG: 20, stage: 'boil', timeMin: 20 },
+      { name: 'Aromatique', alpha: 0, weightG: 40, stage: 'dryHop', dayOffset: 4 }
+    ] });
+    const panel = screen.getByRole('region', { name: 'Autocomplétion des ingrédients' });
+    const hot = 'Pour calculer les IBU à chaud, documenter l’alpha du lot : Amérisant.';
+    const dry = 'À cru · alpha de fiche facultatif, hors du calcul IBU à chaud : Aromatique.';
+    expect(panel).toHaveTextContent(hot);
+    expect(panel).toHaveTextContent(dry);
+    expect(panel.textContent!.indexOf(hot)).toBeLessThan(panel.textContent!.indexOf(dry));
+    expect(screen.getAllByRole('button', { name: /Compléter les données manquantes/ })).toHaveLength(1);
   });
 
   it('⚠️ montre la source et n’écrit rien avant validation', async () => {

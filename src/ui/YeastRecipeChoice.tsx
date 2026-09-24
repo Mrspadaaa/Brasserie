@@ -14,6 +14,7 @@ import { YeastRecipeWorkbench, type YeastRecipeDestination } from './YeastRecipe
 import { YeastStrainDetails } from './YeastStrainDetails';
 import { YeastRecipePlan, YeastProjectionReading, projectionRange, yeastWarningsForReading } from './YeastRecipePlan';
 import { YeastBeerTargetPanel } from './YeastBeerTargetPanel';
+import { YeastEvidenceSummary } from './YeastEvidenceSummary';
 import './yeast-choice.css';
 
 /** Creation-only composition. Browsing and local proposals never mutate saved recipes. */
@@ -35,10 +36,23 @@ export function YeastRecipeChoice({ recipe, onChange, onNavigate, quantityEditor
   const [error, setError] = useState('');
   const [consumedInitial, setConsumedInitial] = useState(false);
   const invalidQuantity = recipe.yeast.qty != null && (!Number.isFinite(recipe.yeast.qty) || recipe.yeast.qty <= 0);
-  const [pitchOpen, setPitchOpen] = useState(invalidQuantity);
-  useEffect(() => { if (invalidQuantity) setPitchOpen(true); }, [invalidQuantity]);
+  const missingQuantityUnit = recipe.yeast.qty != null && !recipe.yeast.unit;
+  const [pitchOpen, setPitchOpen] = useState(invalidQuantity || missingQuantityUnit);
+  useEffect(() => { if (invalidQuantity || missingQuantityUnit) setPitchOpen(true); }, [invalidQuantity, missingQuantityUnit]);
+  const invalidDocumentaryRange = recipe.yeast.fermTempMinC != null && recipe.yeast.fermTempMaxC != null && recipe.yeast.fermTempMinC > recipe.yeast.fermTempMaxC;
+  const [dossierOpen, setDossierOpen] = useState(invalidDocumentaryRange);
+  const [editorOpen, setEditorOpen] = useState(invalidDocumentaryRange);
+  // The detailed program does not affect the immediate strain evidence. Mount
+  // it on first use, then retain a local scenario when the detail is closed.
+  const [programVisited, setProgramVisited] = useState(false);
+  useEffect(() => { if (invalidDocumentaryRange) { setDossierOpen(true); setEditorOpen(true); } }, [invalidDocumentaryRange]);
   const heading = useRef<HTMLHeadingElement>(null);
   const catalogue = useRef<HTMLElement>(null);
+  const dossierSummary = useRef<HTMLElement>(null);
+  const openDossierEditor = () => {
+    setDossierOpen(true); setEditorOpen(true);
+    requestAnimationFrame(() => { dossierSummary.current?.focus({ preventScroll: true }); dossierSummary.current?.scrollIntoView({ block: 'start' }); });
+  };
   const showCatalogue = () => {
     setCatalogueVisited(true);
     setCatalogueOpen(true);
@@ -58,13 +72,10 @@ export function YeastRecipeChoice({ recipe, onChange, onNavigate, quantityEditor
     } catch (e) { setError(e instanceof Error ? e.message : 'Le choix n’a pas pu être appliqué.'); }
   };
   const selected = current.candidate, dossier = current.projection?.dossier;
-  const temperature = dossier?.temperature;
-  const attenuation = dossier?.documentedAttenuation ?? (recipe.yeast.attenuationBasis === 'declared' ? dossier?.attenuation : undefined);
   const recipeStyle = inferYeastRecipeStyle(recipe);
   const warnings = yeastWarningsForReading(current).filter(text => !text.startsWith('Quantité de levure sèche à renseigner') && !text.startsWith('Style non reconnu'));
   const quantityKnown = !invalidQuantity && recipe.yeast.qty != null && !!recipe.yeast.unit;
   if (recipe.nolo?.enabled) return <><YeastRecipeWorkbench recipe={recipe} onChange={onChange} onNavigate={onNavigate} />{quantityEditor}{identityEditor}{factsEditor}</>;
-  const fieldRange = (value: typeof temperature, unit: string) => value ? `${value.qualifier === 'atLeast' ? '≥ ' : value.qualifier === 'upTo' ? '≤ ' : ''}${value.range.min.toLocaleString('fr-FR', { maximumFractionDigits: 20 })}${value.range.min === value.range.max ? '' : `–${value.range.max.toLocaleString('fr-FR', { maximumFractionDigits: 20 })}`} ${unit}` : 'Non documenté';
   return <div className="yeast-workbench yeast-choice" aria-label="Choisir la levure de la recette">
     <section className="yc-current" aria-label="Levure choisie dans la recette">
       <div className="yc-current-heading"><h3 tabIndex={-1} ref={heading}>{recipe.yeast.name || 'Choisir une levure'}</h3>
@@ -72,6 +83,7 @@ export function YeastRecipeChoice({ recipe, onChange, onNavigate, quantityEditor
       {recipe.yeast.name && <p className="yeast-small">{selected?.lab || recipe.yeast.lab || 'Laboratoire à préciser'}{recipe.yeast.strain ? ` · ${recipe.yeast.strain}` : ''} · {recipe.yeast.form || 'forme à préciser'}</p>}
       <div className="yc-actions"><button type="button" aria-expanded={catalogueOpen} aria-controls={`${id}-catalogue`} onClick={() => catalogueOpen ? setCatalogueOpen(false) : showCatalogue()}>{catalogueOpen ? 'Fermer le choix' : recipe.yeast.name ? 'Changer / comparer' : 'Catalogue, stock ou saisie libre'}</button></div>
       {recipe.yeast.name && <>
+        {dossier && <YeastEvidenceSummary dossier={dossier} recipe={recipe} onOpenDossier={openDossierEditor} />}
         <YeastProjectionReading result={current} />
         {warnings.length > 0 && <ul className="yc-alerts" aria-label="Points à vérifier pour la levure choisie">{warnings.map(text => <li key={text}>{text}</li>)}</ul>}
         {current.errors.map(text => <p className="yeast-error" role="alert" key={text}>{text} Ouvre « Régler / simuler » pour corriger.</p>)}
@@ -96,13 +108,12 @@ export function YeastRecipeChoice({ recipe, onChange, onNavigate, quantityEditor
         {recipe.yeast.form === 'sèche' && current.doseG && <p className="yeast-small">Repère pour {recipe.volumeL.toLocaleString('fr-FR')} L : <span className="yc-number">{projectionRange(current.doseG.range, 1)} g</span>{recipe.yeast.unit !== 'g' ? ' · masse du conditionnement à vérifier.' : '.'}</p>}
       </details>
     </>}
-    <details className="yc-dossier" aria-label="Dossier de la levure"><summary>Fiche, sources et données de la souche<ChevronDown size={14} aria-hidden="true" /></summary><div>
+    <details className="yc-dossier" aria-label="Dossier de la levure" open={dossierOpen} onToggle={e => setDossierOpen(e.currentTarget.open)}><summary ref={dossierSummary}>Fiche, sources et données de la souche<ChevronDown size={14} aria-hidden="true" /></summary><div>
       {selected && <p className="yc-selected-profile">{selected.descriptor}</p>}
       {recipeStyle === 'unknown' && <p className="yeast-small">Style libre : {recipe.style || 'non précisé'}. Le catalogue permet une comparaison toutes familles.</p>}
-      <dl className="yc-facts"><div><dt>Fermentation · fiche</dt><dd>{fieldRange(temperature, '°C')}</dd></div><div><dt>Atténuation · fiche</dt><dd>{fieldRange(attenuation, '%')}</dd></div></dl>
-      {factsEditor}
       <YeastStrainDetails information={yeastStrainInformation(selected?.reference, recipe.yeast.form)} />
-      {programEditor && <details><summary>Programme détaillé et guides enregistrés<ChevronDown size={14} aria-hidden="true" /></summary><div>{programEditor}</div></details>}
+      {factsEditor && <details className="yc-data-editor" open={editorOpen} onToggle={e => setEditorOpen(e.currentTarget.open)}><summary>Corriger ou compléter les données<ChevronDown size={14} aria-hidden="true" /></summary><div>{factsEditor}</div></details>}
+      {programEditor && <details onToggle={e => { if (e.currentTarget.open) setProgramVisited(true); }}><summary onClick={() => setProgramVisited(true)}>Programme détaillé et guides enregistrés<ChevronDown size={14} aria-hidden="true" /></summary><div>{programVisited && programEditor}</div></details>}
     </div></details>
   </div>;
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { yeastReferences } from '../../src/domain/yeastReferences';
+import { resolveFermentationYeast } from '../../src/domain/fermentationScenario';
 import { yeastRecipeCandidates } from '../../src/domain/yeastRecipeDesign';
 import documented from '../../src/data/yeastRecipeReferences.json';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
@@ -7,6 +8,10 @@ import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 describe('existing recipe yeast references', () => {
   const stored = () => structuredClone(documented.find(y => y.id === 'wyeast-3068')!);
   const candidate = (row: unknown) => yeastRecipeCandidates('weissbier', 'balanced', yeastReferences([row as HopKnowledge]), 20).find(y => y.yeastId === 'wyeast-3068');
+  it('relie le laboratoire et le code exact Wyeast 1056 à son seul produit documenté', () => {
+    const recipe = { yeast: { name: 'Wyeast 1056' } } as Parameters<typeof resolveFermentationYeast>[0];
+    expect(resolveFermentationYeast(recipe, yeastReferences([]))?.id).toBe('wyeast-1056');
+  });
   it('enriches a valid earlier bootstrap of the exact product, preserving personal identity fields', () => {
     const row = stored(); delete row.catalogue; row.name = 'Ma 3068';
     const result = candidate(row)!;

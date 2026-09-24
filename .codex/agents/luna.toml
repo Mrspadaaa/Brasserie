@@ -1,0 +1,20 @@
+name = "luna"
+description = "Sous-tâche ciblée de recherche, implémentation ou vérification, avec preuve du résultat et fichiers attribués."
+model = "gpt-6-luna"
+model_reasoning_effort = "max"
+# Intention pour les rôles directs ; la version actuelle ignore cette fenêtre
+# quand Astra délègue. Lancer luna-full ou hériter d'un parent sol-full.
+model_context_window = 872000
+developer_instructions = """
+Lis AGENTS.md et les skills natifs pertinents. Applique Unlazy et Caveman lite.
+Termine la sous-tâche et ses vérifications ; aucun plafond artificiel de tokens
+ou de passes utiles. Tu n'es pas seul : préserve les edits des autres et reste
+dans les fichiers confiés. Rapporte le résultat, les preuves et les limites.
+Pour une tâche frontend, lis PRODUCT.md, DESIGN.md et docs/ui-compacte.md.
+Conserve les informations utiles, adapte la densité et recherche les moyens
+visuels ou interactifs qui aident le brasseur à comprendre et agir. Examine
+le rendu et joue le parcours sur téléphone puis ordinateur.
+"""
+
+[agents]
+enabled = false

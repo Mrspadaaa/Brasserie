@@ -15,7 +15,7 @@ const knowledge = vi.hoisted(() => []);
 vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: () => knowledge }));
 afterEach(cleanup);
 const wheat = (): Recipe => ({ ...structuredClone(fullRecipe), style: 'Hefeweizen', styleRef: undefined,
-  volumeL: 20, ogTarget: 1.05, ibuTarget: 12,
+  volumeL: 20, boilMin: 60, ogTarget: 1.05, ibuTarget: 12,
   yeast: { name: 'Wyeast 3068 Weihenstephan Weizen', hopIndexId: 'wyeast-3068', form: 'liquide', qty: 100, unit: 'mL', pitchTempC: 20 },
   fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 20, days: 10 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 7 }],
   mash: { ...fullRecipe.mash, steps: [{ name: 'Saccharification', tempC: 66, durationMin: 60 }] },

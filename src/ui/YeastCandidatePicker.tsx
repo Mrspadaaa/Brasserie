@@ -23,6 +23,7 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
   const [lab, setLab] = useState('');
   const [form, setForm] = useState('');
   const [page, setPage] = useState(0);
+  const [browseAll, setBrowseAll] = useState(false);
   useEffect(() => { setLab(''); setScope('style'); setPage(0); }, [styleId]);
   const wholeCatalogue = scope === 'catalogue' || styleId === 'unknown';
   const matching = useMemo(() => candidates.filter(c => c.styleMatch === 'documented'), [candidates]);
@@ -49,11 +50,15 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
   }, [pool, lab, form, normalizedQuery, searchable]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount - 1);
-  const shown = filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+  // With no identified style or query, the first alphabetical page is not a
+  // useful recommendation among the whole catalogue. Let the brewer search or
+  // explicitly browse it; neither action changes the recipe.
+  const searchFirst = styleId === 'unknown' && !browseAll && !normalizedQuery && !lab && !form;
+  const shown = searchFirst ? [] : filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   const selected = candidates.find(c => c.yeastId === selectedId);
   const showSelected = () => {
     const inStyle = selected?.styleMatch === 'documented';
-    setQuery(''); setLab(''); setForm(''); setScope(inStyle ? 'style' : 'catalogue');
+    setQuery(''); setLab(''); setForm(''); setScope(inStyle ? 'style' : 'catalogue'); setBrowseAll(true);
     const rows = inStyle ? matching : candidates;
     setPage(Math.max(0, Math.floor(rows.findIndex(c => c.yeastId === selectedId) / PAGE_SIZE)));
   };
@@ -81,6 +86,7 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
       {wholeCatalogue ? ' · usages à vérifier pour ton style' : ' · usages documentés pour cette famille'}.
       {(query || lab || form) && <> <button type="button" className="yeast-link" onClick={clearFilters}>Effacer les filtres</button></>}
     </p>
+    {searchFirst && <p className="yc-search-first">Cherche une souche par nom, code, laboratoire ou caractère décrit. <button type="button" className="yeast-link" onClick={() => setBrowseAll(true)}>Parcourir les {filtered.length.toLocaleString('fr-FR')} références</button></p>}
     {recipeChoice && <YeastChoiceResults candidates={candidates} shown={shown} selectedId={selectedId} volumeL={recipeChoice.volumeL} onChoose={recipeChoice.onChoose} />}
     {!recipeChoice && filtered.length > 0 && <div className="yeast-candidate-list"><table className="yeast-candidates">
       <caption>Potentiel décrit par le fabricant · aucun classement d’intensité</caption>
@@ -97,7 +103,7 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
     {!filtered.length && <p className="yeast-small">Aucune référence avec ces filtres.
       {!wholeCatalogue && <> <button type="button" className="yeast-link" onClick={() => { setScope('catalogue'); setLab(''); setPage(0); }}>Chercher dans tout le catalogue</button></>}
     </p>}
-    {pageCount > 1 && <nav className="yeast-picker-pages" aria-label="Pages des références de levure">
+    {!searchFirst && pageCount > 1 && <nav className="yeast-picker-pages" aria-label="Pages des références de levure">
       <button type="button" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>Précédentes</button>
       <span className="yeast-small">{currentPage * PAGE_SIZE + 1}–{Math.min((currentPage + 1) * PAGE_SIZE, filtered.length)} / {filtered.length}</span>
       <button type="button" disabled={currentPage === pageCount - 1} onClick={() => setPage(currentPage + 1)}>Suivantes</button>

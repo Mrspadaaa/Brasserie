@@ -41,6 +41,9 @@ export interface IngredientFacts {
 export type LearnIngredient = (name: string, facts: Partial<StockItem>) => void;
 export const ingredientKey = (kind: IngredientKind, name: string) =>
   `${kind}:${name.trim().toLocaleLowerCase('fr').replace(/\s+/g, ' ')}`;
+/** A selected stock article has its own facts, even when another lot shares its name. */
+export const recipeIngredientKey = (kind: IngredientKind, ingredient: { name: string; stockItemRef?: string }) =>
+  ingredient.stockItemRef ? `${kind}:ref:${ingredient.stockItemRef}` : ingredientKey(kind, ingredient.name);
 
 /** Only usable published values may reach calculations or the ingredient catalogue. */
 export function sanitizeFacts(facts: IngredientFacts): IngredientFacts {
@@ -197,7 +200,7 @@ export function factsFromStock(item: StockItem): IngredientFacts {
     flocculation: item.yeastFlocculation,
     alcoholTolerancePct: item.yeastAlcoholTolerancePct,
     note: item.yeastNotes,
-    source: item.technicalSource || 'Catalogue ingrédients',
+    source: item.technicalSource || `Article de stock ${item.ref}`,
     colorEbc: item.colorEbc,
     potentialPpg: item.potentialPpg,
     alphaPct: item.alphaPct,
@@ -210,10 +213,26 @@ export function factsFromStock(item: StockItem): IngredientFacts {
   });
 }
 
+/** An explicit stock reference wins; a legacy name is usable only when unique. */
+export function factsForRecipeStockItem(kind: IngredientKind, ingredient: { name: string; stockItemRef?: string }, stock: StockItem[]): IngredientFacts | undefined {
+  const rows = stock.filter(item => item.category.toLocaleLowerCase('fr') === kind &&
+    (ingredient.stockItemRef ? item.ref === ingredient.stockItemRef : ingredientKey(kind, item.name) === ingredientKey(kind, ingredient.name)));
+  if (rows.length !== 1) return undefined;
+  const facts = factsFromStock(rows[0]);
+  const usable = kind === 'malt' ? facts.colorEbc != null || facts.potentialPpg != null :
+    kind === 'houblon' ? facts.alphaPct != null :
+      !!(facts.lab || facts.strain || facts.form || facts.attenuationPct != null ||
+        facts.tempMinC != null || facts.tempMaxC != null || facts.technicalFacts?.length || facts.fermentation);
+  // A known stock ref may carry a brewer's own label values without a linked
+  // document. The legacy name fallback still requires a recorded source.
+  return rows[0].technicalSource?.trim() || ingredient.stockItemRef && usable ? facts : undefined;
+}
+
 export interface IngredientGap {
   key: string;
   kind: IngredientKind;
   name: string;
+  stockItemRef?: string;
   missing: string[];
 }
 export function ingredientGaps(
@@ -227,14 +246,16 @@ export function ingredientGaps(
   const documentedMin = technical.some(f => f.key === 'temperature' && f.unit === '°C' && f.range && f.qualifier !== 'upTo');
   const documentedMax = technical.some(f => f.key === 'temperature' && f.unit === '°C' && f.range && f.qualifier !== 'atLeast');
   const gaps = new Map<string, IngredientGap>();
-  const add = (kind: IngredientKind, name: string, missing: string[]) => {
+  const add = (kind: IngredientKind, ingredient: { name: string; stockItemRef?: string }, missing: string[]) => {
+    const { name, stockItemRef } = ingredient;
     if (!name?.trim() || !missing.length) return;
-    const key = ingredientKey(kind, name);
+    const key = recipeIngredientKey(kind, ingredient);
     const old = gaps.get(key);
     gaps.set(key, {
       key,
       kind,
       name,
+      stockItemRef,
       missing: [...new Set([...(old?.missing ?? []), ...missing])]
     });
   };
@@ -243,7 +264,7 @@ export function ingredientGaps(
     .forEach((f) =>
       add(
         'malt',
-        f.name,
+        f,
         [f.colorEbc == null && 'couleur EBC', !f.potentialPpg && 'potentiel PPG'].filter(
           Boolean
         ) as string[]
@@ -251,10 +272,10 @@ export function ingredientGaps(
     );
   // The technical sheet remains useful at every stage. Alpha is never used as
   // a dry-hop utilization, but must survive moving the same lot to the kettle.
-  hops.forEach((h) => add('houblon', h.name, h.alpha ? [] : ['acides alpha']));
+  hops.forEach((h) => add('houblon', h, h.alpha ? [] : ['acides alpha']));
   add(
     'levure',
-    yeast.name,
+    yeast,
     [
       yeast.attenuationPct == null && !documentedAttenuation && 'atténuation',
       nolo && !yeast.fermentationFacts && 'assimilation NOLO et ensemencement',

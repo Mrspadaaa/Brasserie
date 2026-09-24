@@ -61,7 +61,7 @@ export function MaltDetails({
           onApply={(facts) => {
             const next = applyMaltFacts(malt, facts);
             onChange({ colorEbc: next.colorEbc, potentialPpg: next.potentialPpg });
-            onLearnIngredient?.(malt.name, factsForStock('malt', facts));
+            onLearnIngredient?.(malt.name, { ...factsForStock('malt', facts), ...(malt.stockItemRef ? { ref: malt.stockItemRef } : {}) });
           }}
         />
       </div>

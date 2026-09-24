@@ -1,0 +1,36 @@
+# Configuration native OpenAI ; permissions et instructions système conservées.
+# Aucun modèle ni fenêtre ici : ces clés projet masqueraient les profils natifs.
+# La configuration utilisateur garde Astra Max ; sol-full/luna-full fixent leurs fenêtres.
+project_doc_fallback_filenames = []
+
+[agents]
+# Astra pilote au plus deux Sol ; chaque profil Sol fixe son plafond de neuf Luna.
+# Le défaut natif active Astra ; le profil luna-full désactive la délégation.
+max_depth = 2
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "max"
+
+# Repartir sans les mémoires de sessions précédentes, sans les effacer.
+[features]
+memories = false
+
+[memories]
+use_memories = false
+generate_memories = false
+
+# Désactivation dans ce projet des plugins importés du catalogue Claude.
+# Les plugins OpenAI et leurs outils conservent leur configuration utilisateur.
+[plugins."firebase@claude-plugins-official"]
+enabled = false
+
+[plugins."frontend-design@claude-plugins-official"]
+enabled = false
+
+[plugins."math-olympiad@claude-plugins-official"]
+enabled = false
+
+[plugins."sanity@claude-plugins-official"]
+enabled = false
+
+[plugins."ui-theme-designer@claude-plugins-official"]
+enabled = false

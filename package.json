@@ -12,6 +12,7 @@
     "test:inputs": "node scripts/audit_inputs.mjs && vitest run tests/integration/inputProtection.test.tsx tests/integration/textInput.test.tsx tests/unit/numericInput.test.ts",
     "test:science": "node scripts/check-hop-science.mjs",
     "test:smoke:hop": "node scripts/check-test-boundary.mjs && node scripts/check-hop-recipe-ui.mjs",
+    "test:smoke:recipe": "node scripts/check-test-boundary.mjs && node scripts/check-recipe-journey-ui.mjs",
     "test:smoke:stout": "node scripts/check-test-boundary.mjs && vitest run tests/unit/stoutAlkalinity.test.ts tests/unit/stoutEdgeCases.test.ts tests/integration/stoutWaterProfile.test.tsx tests/integration/stoutSmoke.test.tsx",
     "test:watch": "node scripts/check-test-boundary.mjs && vitest",
     "test:coverage": "node scripts/check-test-boundary.mjs && vitest run --coverage",

@@ -37,6 +37,54 @@ const personal = (): Recipe => ({ ...recipe(), name: 'Essai personnel', style: '
     form: 'liquide', qty: 125, unit: 'mL', attenuationPct: 78, attenuationBasis: 'recipe', fermTempMinC: 18, fermTempMaxC: 24 } });
 
 describe('Choix de levure réservé à la création de recette', () => {
+  it('place les faits brassicoles Wyeast 1056 et la consigne de la recette avant les estimations', () => {
+    const initial = { ...recipe(), yeast: { name: 'Wyeast 1056', lab: 'Wyeast', strain: '1056',
+      hopIndexId: 'wyeast-1056', form: 'liquide' as const, qty: 100, unit: 'mL' } };
+    render(<Host initial={initial} />);
+    const selected = screen.getByRole('region', { name: 'Levure choisie dans la recette' });
+    const facts = within(selected).getByRole('region', { name: 'Repères documentés de la souche' });
+    expect(facts).toHaveTextContent('16–22 °C');
+    expect(facts).toHaveTextContent('73–77 %');
+    expect(facts).toHaveTextContent('11 % vol');
+    expect(facts).toHaveTextContent('19 °C · dans la plage');
+    expect(within(facts).getByRole('link', { name: /Wyeast/ })).toHaveAttribute('href', 'https://wyeastlab.com/product/american-ale/');
+    expect(within(selected).getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('Estimation');
+  });
+
+  it('guide vers la correction des données manquantes sans exposer tout le formulaire dans la lecture', () => {
+    const initial = { ...recipe(), yeast: { name: 'Culture sans fiche', form: 'liquide' as const, qty: 100, unit: 'mL' } };
+    render(<YeastRecipeChoice recipe={initial} onChange={vi.fn()} quantityEditor={null} factsEditor={<span>Édition témoin</span>} />);
+    const dossier = screen.getByRole('group', { name: 'Dossier de la levure' });
+    expect(dossier).not.toHaveAttribute('open');
+    fireEvent.click(screen.getByRole('button', { name: 'Vérifier ou compléter les données' }));
+    expect(dossier).toHaveAttribute('open');
+    expect(screen.getByText('Corriger ou compléter les données', { selector: 'summary' }).closest('details')).toHaveAttribute('open');
+    expect(screen.getByText('Édition témoin')).toBeVisible();
+  });
+
+  it('garde les faits immédiats et un programme modifié après fermeture puis réouverture', () => {
+    render(<YeastRecipeChoice recipe={recipe()} onChange={vi.fn()} quantityEditor={null}
+      programEditor={<input aria-label="Essai de programme détaillé" defaultValue="" />} />);
+    expect(screen.getByRole('region', { name: 'Levure choisie dans la recette' })).toHaveTextContent('SafAle US-05');
+    expect(screen.queryByRole('textbox', { name: 'Essai de programme détaillé' })).not.toBeInTheDocument();
+    openDisclosure('Fiche, sources et données de la souche');
+    const summary = screen.getByText('Programme détaillé et guides enregistrés', { selector: 'summary' });
+    fireEvent.click(summary);
+    const program = screen.getByRole('textbox', { name: 'Essai de programme détaillé' });
+    fireEvent.change(program, { target: { value: 'essai à 19 °C' } });
+    fireEvent.click(summary);
+    fireEvent.click(summary);
+    expect(screen.getByRole('textbox', { name: 'Essai de programme détaillé' })).toHaveValue('essai à 19 °C');
+  });
+
+  it('guide une recherche sans présenter les premières lignes du catalogue comme des recommandations', () => {
+    const initial = { ...recipe(), name: 'Création libre', style: 'Style personnel inédit', yeast: { name: '' } };
+    render(<Host initial={initial} />);
+    expect(screen.getByText(/Parcourir les .* références/)).toBeVisible();
+    expect(within(screen.getByRole('list', { name: 'Levures à consulter' })).queryAllByRole('listitem')).toHaveLength(0);
+    search('1056');
+    expect(screen.getByRole('button', { name: 'Choisir 1056 American Ale® dans la recette' })).toBeVisible();
+  });
   it('montre le choix réel puis compare deux références sans modifier la recette ni les valeurs absentes', () => {
     const changed = vi.fn(); render(<Host changed={changed} />);
     expect(screen.queryByLabelText('Rechercher une levure')).not.toBeInTheDocument();
@@ -209,6 +257,9 @@ describe('Choix de levure réservé à la création de recette', () => {
     const changed = vi.fn(), user = userEvent.setup(); render(<Host initial={initial} changed={changed} />);
     expect(screen.getByLabelText('Profil recherché')).toHaveValue('clean');
     await user.selectOptions(screen.getByLabelText('Profil recherché'), 'low-sulfur');
+    expect(screen.queryByRole('region', { name: 'Programme proposé' })).not.toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Proposer une conduite' }));
     expect(screen.getByRole('region', { name: 'Programme proposé' })).toBeVisible();
     expect(screen.getByLabelText('Température du palier 2')).toHaveValue('14');
     await user.click(screen.getByRole('button', { name: 'Annuler l’essai' }));
@@ -266,6 +317,25 @@ describe('Choix de levure réservé à la création de recette', () => {
     expect(screen.getByText(/aucune conversion depuis L/)).toBeVisible();
     changeNumber('Quantité de levure, en flacon', '2');
     expect(changed.mock.lastCall![0].yeast).toMatchObject({ qty: 2, unit: 'flacon' });
+    expect(screen.queryByText(/Quantité à ressaisir/)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'sachet' } });
+    changeNumber('Quantité de levure, en sachet', '2');
+    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'g' } });
+    expect(screen.getByLabelText('Quantité de levure, en g')).toHaveValue('');
+    expect(changed.mock.lastCall![0].yeast.qty).toBeUndefined();
+    expect(screen.getByText(/aucune conversion depuis sachet/)).toBeVisible();
+  });
+
+  it('qualifie la quantité saisie avant le premier choix d’unité sans l’effacer ni inventer une conversion', () => {
+    const changed = vi.fn();
+    const initial = { ...personal(), yeast: { ...personal().yeast, qty: undefined, unit: undefined } };
+    render(<Host initial={initial} changed={changed} editableQuantity />);
+    fireEvent.click(screen.getByText('Ensemencement', { exact: false, selector: '.yc-pitch summary > span' }).closest('summary')!);
+    changeNumber('Quantité de levure', '0,2');
+    expect(changed.mock.lastCall![0].yeast.qty).toBe(0.2);
+    fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'L' } });
+    expect(screen.getByLabelText('Quantité de levure, en L')).toHaveValue('0,2');
+    expect(changed.mock.lastCall![0].yeast).toMatchObject({ qty: 0.2, unit: 'L' });
     expect(screen.queryByText(/Quantité à ressaisir/)).not.toBeInTheDocument();
   });
 

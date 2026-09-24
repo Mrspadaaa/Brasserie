@@ -60,7 +60,7 @@ describe('récapitulatif : décider des achats sans ouvrir le stock', () => {
 
     await userEvent.click(stock.summary);
     expect(stock.node).toHaveAttribute('open');
-    const table = within(stock.node).getByRole('table', { name: 'Disponibilités pour les ingrédients à commander' });
+    const table = within(stock.node).getByRole('table', { name: 'Disponibilités et vérifications pour les ingrédients de la recette' });
     expect(within(table).getByRole('columnheader', { name: 'Disponible' })).toBeVisible();
     expect(within(table).getByRole('columnheader', { name: 'Nécessaire' })).toBeVisible();
     const pale = within(table).getByRole('rowheader', { name: 'Pale Ale' }).closest('tr')!;
@@ -117,6 +117,17 @@ describe('récapitulatif : décider des achats sans ouvrir le stock', () => {
 });
 
 describe('récapitulatif : mesures françaises et contenu préservé', () => {
+  it('traite l’atténuation modifiée dans la fiche comme une hypothèse de recette', () => {
+    const onYeast = vi.fn();
+    const recipe = props({ yeast: { name: 'Souche documentée', attenuationPct: 77, attenuationBasis: 'declared', qty: 1, unit: 'sachet' }, onYeast });
+    const { container } = render(<BrewSheet {...recipe} />);
+    fireEvent.click(section(container, 'Levure').summary);
+    const attenuation = screen.getByRole('textbox', { name: 'Atténuation' });
+    fireEvent.change(attenuation, { target: { value: '81,5' } });
+    fireEvent.blur(attenuation);
+    expect(onYeast).toHaveBeenLastCalledWith(expect.objectContaining({ attenuationPct: 81.5, attenuationBasis: 'recipe' }));
+  });
+
   it('localise quantités, IBU, ratios et chimie sans muter les données de calcul', () => {
     const recipe = props();
     const original = JSON.stringify({ water: recipe.water, fermentables: recipe.fermentables, hops: recipe.hops });

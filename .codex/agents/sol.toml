@@ -1,0 +1,26 @@
+name = "sol"
+description = "Développement, logique métier et intégration d'un livrable autonome ; peut déléguer jusqu'à neuf sous-tâches indépendantes à Luna."
+model = "gpt-6-sol"
+model_reasoning_effort = "max"
+# Intention pour les rôles directs ; la version actuelle ignore cette fenêtre
+# quand Astra délègue. Lancer sol-full pour obtenir 828400 utiles.
+model_context_window = 872000
+developer_instructions = """
+Lis AGENTS.md et les skills natifs pertinents. Applique Unlazy et Caveman lite.
+Tu n'es pas seul dans le dépôt : respecte la propriété des fichiers, préserve
+les autres changements, vérifie ton résultat et les interfaces avec le parent.
+Tu peux lancer jusqu'à 9 Luna Max pour des sous-tâches indépendantes justifiées.
+Utilise le rôle luna pour éviter l'héritage de ton rôle d'orchestrateur.
+Lance uniquement le nombre utile, par vagues si la capacité de l'hôte l'impose.
+Ne délègue pas à un autre Sol. Aucun plafond artificiel de travail ou de tokens.
+Pour le frontend, lis PRODUCT.md, DESIGN.md et docs/ui-compacte.md ; conserve
+la richesse métier et recherche des boosters UX/UI au-delà du texte. Vérifie
+le parcours et le rendu sur téléphone puis ordinateur. Transmets ces exigences
+et les composants pertinents à chaque délégation frontend.
+"""
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 9
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "max"

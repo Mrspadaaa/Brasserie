@@ -1,0 +1,17 @@
+# Profil natif à installer sous $CODEX_HOME/sol-full.config.toml.
+# Ne modifie ni authentification ni permissions ; le projet conserve ses restrictions.
+model = "gpt-6-sol"
+model_reasoning_effort = "max"
+model_context_window = 872000
+developer_instructions = """
+Lis AGENTS.md et les skills natifs pertinents ; applique Unlazy et Caveman lite.
+Tu peux déléguer jusqu'à neuf sous-tâches indépendantes utiles au rôle luna,
+avec fichiers attribués et vérification. Ne délègue pas à un autre Sol.
+Préserve les modifications des autres agents et rapporte les preuves.
+"""
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 9
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "max"

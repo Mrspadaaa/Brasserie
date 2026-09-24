@@ -37,6 +37,24 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('Parcours du sélecteur de candidats levure', () => {
+  it('affiche les repères Beer de 1056 avant Choisir, sans lui attribuer le style IPA', async () => {
+    const wyeast = yeastRecipeCandidates('clean-ale', 'balanced', yeastReferences().filter(row => row.id === 'wyeast-1056'), 20,
+      { includeOtherStyles: true })[0];
+    const onChoose = vi.fn(), user = userEvent.setup();
+    render(<YeastCandidatePicker candidates={[us05, wyeast]} styleId="clean-ale" selectedId="" onSelect={vi.fn()}
+      recipeChoice={{ volumeL: 20, onChoose }} />);
+    await user.type(search(), '1056');
+    expect(screen.getByText(/Aucune référence avec ces filtres/)).toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: /Tout le catalogue/ }));
+    const row = within(screen.getByRole('list', { name: 'Levures à consulter' })).getByRole('listitem');
+    expect(row).toHaveTextContent('16–22 °C');
+    expect(row).toHaveTextContent('73–77 %');
+    expect(row).toHaveTextContent('forme à préciser');
+    expect(row).toHaveTextContent('Style à confirmer');
+    await user.click(within(row).getByRole('button', { name: /Choisir 1056 American Ale® dans la recette/ }));
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith('wyeast-1056', undefined);
+  });
+
   it('place US-05 avant les occurrences dans des faits et des identifiants techniques', async () => {
     const decoys = Array.from({ length: 7 }, (_, index) => candidate(index + 1));
     for (const decoy of decoys) decoy.reference.catalogue!.facts = [{

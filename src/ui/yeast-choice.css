@@ -1,5 +1,4 @@
 /* Creation-step only. Shared catalogue, recipe sheet and brew-day styles stay intact. */
-body:has(.recipe-wizard .yeast-choice) button[aria-label='Actions rapides'] { display: none; }
 .yeast-choice { line-height: 1.3; }
 .yeast-choice [hidden] { display: none; }
 .yeast-choice :is(h3, strong, td, th, button, summary) { overflow-wrap: anywhere; }
@@ -69,6 +68,22 @@ body:has(.recipe-wizard .yeast-choice) button[aria-label='Actions rapides'] { di
 }
 .yeast-choice h4 { font-size: .8125rem; font-weight: 600; color: theme('colors.cave.50'); }
 .yeast-choice .yc-projection { border-block: 1px solid theme('colors.cave.700'); padding-block: 6px; }
+.yeast-choice .yc-evidence { border-top: 1px solid theme('colors.cave.700'); padding-top: 6px; }
+.yeast-choice .yc-evidence > * + * { margin-top: 5px; }
+.yeast-choice .yc-evidence-values { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+.yeast-choice .yc-evidence-values > div { min-width: 0; border-left: 2px solid theme('colors.area.production'); padding-left: 5px; }
+.yeast-choice .yc-evidence-values dt { color: theme('colors.cave.200'); font-size: .75rem; }
+.yeast-choice .yc-evidence-values dd { color: theme('colors.cave.50'); font-size: .8125rem; font-family: 'IBM Plex Mono',monospace; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.yeast-choice .yc-evidence-comparison > div:first-child { display: flex; justify-content: space-between; gap: 6px; font-size: .75rem; }
+.yeast-choice .yc-evidence-comparison strong { color: theme('colors.cave.200'); font-weight: 400; }
+.yeast-choice .yc-evidence-in { color: theme('colors.cave.50'); }
+.yeast-choice .yc-evidence-out { color: theme('colors.attention'); }
+.yeast-choice .yc-evidence-track { display: block; position: relative; height: 8px; margin-top: 4px; background: theme('colors.cave.800'); }
+.yeast-choice .yc-evidence-track i { position: absolute; top: 1px; height: 6px; background: theme('colors.area.production'); }
+.yeast-choice .yc-evidence-track b { position: absolute; top: -2px; width: 3px; height: 12px; background: theme('colors.ebc.straw'); transform: translateX(-50%); }
+.yeast-choice .yc-evidence-axis { display: flex; justify-content: space-between; color: theme('colors.cave.400'); font-size: .6875rem; font-family: 'IBM Plex Mono',monospace; }
+.yeast-choice .yc-evidence-source { overflow-wrap: anywhere; }
+.yeast-choice .yc-evidence-source a { color: theme('colors.ebc.straw'); text-decoration: underline; text-underline-offset: 2px; }
 .yeast-choice .yc-projection-title { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
 .yeast-choice .yc-projection-values { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin-block: 4px; }
 .yeast-choice .yc-projection-values dt { color: theme('colors.cave.200'); font-size: .75rem; }
@@ -83,6 +98,11 @@ body:has(.recipe-wizard .yeast-choice) button[aria-label='Actions rapides'] { di
 .yeast-choice .yc-personal > * + * { margin-top: 5px; }
 .yeast-choice .yc-personal-entry { display: grid; gap: 5px; }
 .yeast-choice .yc-personal-entry input { width: 100%; min-width: 0; }
+.yeast-choice .yc-stock-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 6px; }
+.yeast-choice .yc-stock-quick > span { color: theme('colors.cave.400'); font-size: .75rem; }
+.yeast-choice .yc-stock-quick button { display: inline-flex; align-items: baseline; gap: 5px; min-height: 28px; max-width: 100%; padding: 2px 6px; background: theme('colors.cave.850'); border: 1px solid theme('colors.cave.700'); border-radius: 6px; color: theme('colors.cave.50'); font-size: .75rem; }
+.yeast-choice .yc-stock-quick small { flex-shrink: 0; color: theme('colors.cave.400'); font-size: .75rem; }
+.yeast-choice .yc-search-first { color: theme('colors.cave.200'); font-size: .8125rem; }
 .yeast-choice .yc-goal-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
 .yeast-choice .yc-goal-row label { font-size: .8125rem; }
 .yeast-choice .yc-goal-row select { flex: 1; min-width: min(205px, 100%); max-width: 100%; }
@@ -110,6 +130,7 @@ body:has(.recipe-wizard .yeast-choice) button[aria-label='Actions rapides'] { di
 .yeast-choice .yc-input-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
 .yeast-choice .yc-input-pair label { font-size: .75rem; }
 .yeast-choice .yc-dossier > div > * + * { margin-top: 8px; }
+.yeast-choice .yc-data-editor > div { padding-top: 7px; }
 .yeast-choice .yc-contact-sequence { list-style: none; display: grid; grid-template-columns: .8fr 1.3fr 1fr; margin-block: 5px; }
 .yeast-choice .yc-contact-sequence li { border-top: 2px solid theme('colors.area.production'); padding: 5px 5px 0 0; font-size: .75rem; }
 .yeast-choice .yc-contact-sequence li + li { border-left: 1px solid theme('colors.cave.700'); padding-left: 5px; }
@@ -184,6 +205,19 @@ body:has(.recipe-wizard .yeast-choice) button[aria-label='Actions rapides'] { di
 .yeast-choice .yc-target-reasons { list-style: disc; padding-left: 16px; font-size: .8125rem; }
 .yeast-choice .yc-pitch > * + * { margin-top: 5px; }
 .yeast-choice .yc-pitch > .yc-quantity { border-top: 0; }
+@media (max-width: 360px) {
+  .yeast-choice .yc-evidence-values { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .yeast-choice .yc-evidence-values > div:last-child:nth-child(3) { grid-column: 1 / -1; }
+  .yeast-choice .yc-dose-input { grid-template-columns: minmax(0,1fr) minmax(60px,1fr); }
+  .yeast-choice .yc-dose-input label { grid-column: 1 / -1; }
+  .yeast-choice .yc-dose-input input { width: 100%; }
+  .yeast-choice .yc-phase-row { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .yeast-choice .yc-phase-row strong { grid-column: 1 / -1; }
+  .yeast-choice .yc-phase-row label { min-width: 0; }
+  .yeast-choice .yc-phase-row input { flex: 1; min-width: 0; }
+  .yeast-choice .yc-target-bound-row { grid-template-columns: minmax(0,1fr) 12px minmax(0,1fr) auto; }
+  .yeast-choice .yc-target-bound-row > :first-child { grid-column: 1 / -1; }
+}
 @media (min-width: 640px) {
   .yeast-choice .yc-target-gauges { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .yeast-choice .yc-target-numbers { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }

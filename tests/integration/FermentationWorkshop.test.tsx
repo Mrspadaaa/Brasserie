@@ -157,4 +157,17 @@ describe('Atelier de levure dans une recette', () => {
     expect(host.container.querySelectorAll('[data-setpoint]')).toHaveLength(1);
     expect(screen.getByRole('status')).toHaveTextContent('Calendrier partiel');
   });
+  it('place les contacts à cru selon leur jour et durée sans placer un jour absent',()=>{
+    const host=render(<FermentationTemperatureChart compact steps={[{name:'Primaire',kind:'primaire',tempC:19,days:6}]}
+      bands={[{min:16,max:22}]} bandLabel="fenêtre de la fiche" contacts={[
+        {name:'Citra',dayOffset:4,contactHours:48,temperatureC:18,phase:'fermentation'},
+        {name:'Mosaic',contactHours:72,temperatureC:15,phase:'postFermentation'},
+      ]}/>);
+    expect(host.container.querySelectorAll('[data-contact]')).toHaveLength(1);
+    expect(host.container.querySelector('[data-contact="0"]')).toHaveAttribute('data-day','4');
+    expect(host.container.querySelector('[data-contact="0"]')).toHaveAttribute('data-hours','48');
+    expect(screen.getByRole('list',{name:'Contacts de houblon à cru'})).toHaveTextContent('Mosaic · jour non fixé');
+    expect(screen.getByRole('list',{name:'Contacts de houblon à cru'})).toHaveTextContent('non placé sur la frise');
+    expect(screen.getByText(/bande : fenêtre de la fiche/)).toBeVisible();
+  });
 });

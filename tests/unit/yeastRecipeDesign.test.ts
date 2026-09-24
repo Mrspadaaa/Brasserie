@@ -78,6 +78,30 @@ describe('Choisir une levure par le style, puis par une raison documentée', () 
     expect(bavarian.reason).toMatch(/fruit|ester|banan/i);
     expect(bavarian.evidence.goalMatches.some(m => m.goal === 'fruit')).toBe(true);
   });
+  it('montre sur la candidate 1056 les mêmes faits Beer que le dossier, sans inventer IPA ni forme', () => {
+    const reference = yeastReferences([]).find(y => y.id === 'wyeast-1056')!;
+    const beerTemperature = reference.catalogue!.facts.find(f => f.key === 'temperature' && f.context === 'Beer')!;
+    const beerAttenuation = reference.catalogue!.facts.find(f => f.key === 'attenuation' && f.context === 'Beer')!;
+    const candidate = yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20, { includeOtherStyles: true })[0];
+    expect(candidate.temperature).toEqual({ range: { min: 16, max: 22 }, source: beerTemperature.source });
+    expect(candidate.attenuation).toEqual({ range: { min: 73, max: 77 }, source: beerAttenuation.source });
+    expect(candidate.styleMatch).not.toBe('documented');
+    expect(candidate.form).toBeUndefined();
+    expect(yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20)).toEqual([]);
+  });
+  it('ne transfère pas Mead et laisse les plages Beer contradictoires inconnues avant le choix', () => {
+    const reference = structuredClone(yeastReferences([]).find(y => y.id === 'wyeast-1056')!);
+    const temperature = reference.catalogue!.facts.find(f => f.key === 'temperature' && f.context === 'Beer')!;
+    const attenuation = reference.catalogue!.facts.find(f => f.key === 'attenuation' && f.context === 'Beer')!;
+    const candidate = () => yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20, { includeOtherStyles: true })[0];
+    reference.catalogue!.facts.push({ ...temperature, range: { min: 18, max: 24 } });
+    reference.catalogue!.facts.push({ ...attenuation, range: { min: 70, max: 75 } });
+    expect(candidate().temperature).toBeUndefined();
+    expect(candidate().attenuation).toBeUndefined();
+    reference.catalogue!.facts = reference.catalogue!.facts.filter(f => f.context === 'Mead');
+    expect(candidate().temperature).toBeUndefined();
+    expect(candidate().attenuation).toBeUndefined();
+  });
 });
 
 describe('Simulations bornées par les données réelles', () => {
