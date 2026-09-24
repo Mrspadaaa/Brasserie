@@ -1,5 +1,10 @@
 # Remise à zéro OpenAI — critères de réussite
 
+Ce document conserve la preuve de la première passe de remise à zéro.
+La mise en place des nouveaux rôles, skills et écrans est suivie dans
+[le contrat Houblons/Levure](recipe-ux-gates.md). Les résultats ci-dessous
+décrivent le commit initial, avant cette seconde passe.
+
 Demande : disposer d'une branche utilisable par Codex / GPT / Astra avec des
 consignes propres à OpenAI, sans réimporter la configuration Claude.
 

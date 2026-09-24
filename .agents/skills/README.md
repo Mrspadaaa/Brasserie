@@ -1,8 +1,9 @@
 # Skills du projet pour OpenAI
 
-Base volontairement vide : aucun `SKILL.md` local n'est chargé par cette branche.
-Les capacités natives de Codex et les plugins OpenAI disponibles suffisent au
-point de départ. Les règles du dépôt se trouvent dans `../../AGENTS.md`.
+Trois skills écrits pour Codex : `unlazy` (achèvement vérifiable),
+`caveman-lite` (communication concise), `brasserie-frontend` (compréhension,
+boosters UX/UI et vérification du rendu). Les règles communes sont dans
+`../../AGENTS.md`. Aucun hook ni moteur d'orchestration supplémentaire.
 
 Ajouter un skill seulement pour un besoin récurrent et précis du projet, en
 l'écrivant pour les outils OpenAI réellement disponibles. Aucune copie, jonction,

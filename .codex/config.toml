@@ -1,6 +1,14 @@
-# Configuration OpenAI du projet. Les réglages de modèle et de permissions
-# restent ceux de l'utilisateur ; les instructions natives de Codex sont conservées.
+# Configuration native OpenAI ; permissions et instructions système conservées.
+# Aucun modèle ni fenêtre ici : ces clés projet masqueraient les profils natifs.
+# La configuration utilisateur garde Astra Max ; sol-full/luna-full fixent leurs fenêtres.
 project_doc_fallback_filenames = []
+
+[agents]
+# Astra pilote au plus deux Sol ; chaque profil Sol fixe son plafond de neuf Luna.
+# Le défaut natif active Astra ; le profil luna-full désactive la délégation.
+max_depth = 2
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "max"
 
 # Repartir sans les mémoires de sessions précédentes, sans les effacer.
 [features]
