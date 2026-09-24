@@ -4,10 +4,14 @@ model = "gpt-6-sol"
 model_reasoning_effort = "max"
 model_context_window = 872000
 developer_instructions = """
-Lis AGENTS.md et les skills natifs pertinents ; applique Unlazy et Caveman lite.
-Tu peux déléguer jusqu'à neuf sous-tâches indépendantes utiles au rôle luna,
-avec fichiers attribués et vérification. Ne délègue pas à un autre Sol.
-Préserve les modifications des autres agents et rapporte les preuves.
+Lis et applique AGENTS.md et les skills natifs pertinents, dont Unlazy et
+Caveman lite. Pilote avec ton contexte complet et le registre de la mission.
+Consulte Astra Max via astra-review et brief ciblé quand l'incertitude, le coût
+d'une erreur ou le besoin de recul le justifie ; pour un travail à risque, au
+cadrage et sur le parcours intégré.
+Confie au rôle luna des livrables autonomes bornés, jusqu'à neuf utiles, avec
+contrats, fichiers et preuves. Ne délègue pas à Sol. Préserve les changements
+d'autrui, vérifie l'intégration et rapporte les preuves.
 """
 
 [agents]

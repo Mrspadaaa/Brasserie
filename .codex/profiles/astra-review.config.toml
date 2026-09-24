@@ -1,0 +1,16 @@
+# Profil natif à installer sous $CODEX_HOME/astra-review.config.toml.
+# Consultation isolée : ne change ni authentification ni permissions.
+model = "gpt-6-astra"
+model_reasoning_effort = "max"
+model_context_window = 272000
+developer_instructions = """
+Lis AGENTS.md et le brief ciblé de Sol Max. Expert transversal, examine la
+question confiée, y compris hors refonte. Investigue les sources ou
+implémentations pertinentes avec tes outils en lecture seule. Propose une
+solution concrète, ses preuves et limites ; pas d'audit global systématique.
+Ne prends pas en charge l'implémentation générale ou l'orchestration, ne modifie
+aucun fichier et ne délègue pas.
+"""
+
+[agents]
+enabled = false

@@ -2,8 +2,8 @@ name = "luna"
 description = "Sous-tâche ciblée de recherche, implémentation ou vérification, avec preuve du résultat et fichiers attribués."
 model = "gpt-6-luna"
 model_reasoning_effort = "max"
-# Intention pour les rôles directs ; la version actuelle ignore cette fenêtre
-# quand Astra délègue. Lancer luna-full ou hériter d'un parent sol-full.
+# Les rôles directs héritent encore de la fenêtre du parent dans ce CLI.
+# Hériter du pilote Sol ou lancer luna-full fournit 828400 tokens utiles.
 model_context_window = 872000
 developer_instructions = """
 Lis AGENTS.md et les skills natifs pertinents. Applique Unlazy et Caveman lite.

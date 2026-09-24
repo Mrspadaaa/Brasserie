@@ -36,6 +36,31 @@ Ni le nombre de widgets ni la réduction de la hauteur de page ne sont des
 critères de réussite. Les détails à la demande servent les besoins secondaires,
 sans cacher ce qui décide l'action courante.
 
+## Revue de chaque donnée et commande
+
+Dans le périmètre d'une refonte, tenir une matrice courte : **donnée/action →
+décision du brasseur → utile à quel moment → emplacement et visibilité →
+contrôle/représentation → alternative évaluée → constat dans le parcours**.
+Elle couvre aussi les champs conditionnels, résultats calculés, sources et erreurs.
+Un élément existant peut être déplacé, regroupé, remplacé ou supprimé si sa
+fonction ne justifie plus sa présence ; ne pas supprimer sa donnée persistée
+simplement parce qu'elle quitte l'écran principal.
+
+Mettre le brasseur en situation : retrouve-t-il sa levure sans explorer plusieurs
+panneaux, comprend-il ce qui change dans sa bière, voit-il la différence d'une
+alternative, retrouve-t-il une valeur après sauvegarde ? Une taille conforme,
+une capture agréable ou l'absence de débordement ne répondent pas à ces questions.
+La critique doit nommer les éléments concernés, expliquer le défaut puis faire
+rejouer l'action après correction. Ne pas annoncer une validation par l'utilisateur
+quand seul un agent a parcouru l'écran.
+
+Séparer le choix de représentation du choix de bibliothèque. Examiner les
+alternatives plausibles dans leur documentation actuelle, puis prototyper les
+points incertains avec les vraies unités et des données manquantes. L'existant
+n'est ni une obligation ni une excuse pour arrêter la recherche. Pour Levure,
+voir [les outils étudiés](research/yeast-visualization-options.md) ; ces pistes
+restent ouvertes et ne remplacent pas l'essai dans l'écran.
+
 ## Interagir : le contrôle selon le besoin
 
 | Besoin du brasseur | Outil à privilégier | Usage et limite |
@@ -256,11 +281,16 @@ Inclure dans chaque délégation frontend :
 > puis ordinateur, avec captures examinées. Rapporte le besoin traité, le contrôle
 > et la représentation effectivement utilisés, ainsi que le résultat observé.
 > Une proposition documentaire seule ne termine pas une tâche d'implémentation.
+> Pour chaque champ et sortie : utilité à ce moment, emplacement, visibilité,
+> contrôle et représentation ; rechercher une meilleure alternative lorsque
+> le choix reste faible. Aucun composant n'est conservé par ancienneté.
 
 Si l'agent ne peut pas lire les fichiers, lui fournir les extraits pertinents
 et les chemins des composants de son périmètre.
 
-La validation compare à 320 / 375 / 430 px puis 1280 px : espace occupé par les
+La validation compare un mobile et un desktop représentatifs (390 / 1280 px
+par défaut), avec une largeur supplémentaire seulement pour un problème constaté :
+utilité et emplacement de chaque donnée au moment de la décision, espace occupé par les
 barres, données utiles visibles, gestes pour finir l'action, lecture des unités,
 débordements, cibles réellement activables sans chevauchement, clavier et focus.
 Ouvrir et fermer les détails, tester sélection et correction, vérifier la liste
