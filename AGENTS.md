@@ -35,12 +35,15 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   Vérifie l'intégration avant de conclure.
 - Pour les travaux substantiels, applique Unlazy : critères écrits avant le
   travail, responsabilités de fichiers, vérification indépendante et preuves.
-  Astra pilote en Max ; Sol et Luna travaillent en Max dans leur propre contexte.
-  Caveman lite garde les comptes rendus concis sans limiter le travail utile.
-- Répartition effective : Astra cadre, arbitre et vérifie l'intégration ; Sol
-  possède un bloc complet d'investigation, réalisation et validation ; Luna
-  reçoit des recherches, tests et revues ciblés. Astra ne refait pas en parallèle
-  le travail confié. Une retouche simple reste directe si déléguer coûte davantage.
+  Sol pilote en Max avec son contexte complet. Astra Max donne un avis ciblé sur
+  les décisions dans un processus séparé ; Luna Max soutient Sol dans son
+  contexte complet. Caveman lite garde les comptes rendus concis sans limiter
+  le travail utile.
+- Répartition effective : Sol cadre, réalise et vérifie l'intégration ; il
+  consulte Astra sur les décisions structurantes avec un brief et des preuves
+  ciblés. Astra ne reprend ni production ni orchestration. Luna reçoit des
+  recherches, tests et revues ciblés. Une retouche simple reste directe si
+  déléguer coûte davantage.
 - Transmettre objectif, fichiers, contraintes, faits établis et preuves attendues,
   sans recopier tout l'historique. Réutiliser l'agent pour les suites liées et
   les recherches déjà vérifiées ; ne les rouvrir qu'en cas de changement ou doute.
@@ -49,13 +52,14 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   indépendante vise un risque distinct ; ne pas répéter tout l'audit ou tous les
   tests sans changement, échec ou incertitude. Garder les sorties détaillées dans
   les artefacts et remonter résultats, écarts et décisions nécessaires.
-- Astra peut lancer au plus 2 Sol et 9 Luna directs ; chaque Sol peut lancer
-  jusqu'à 9 Luna. Sur le runtime actuel, lancer les processus natifs avec
-  `codex exec --profile sol-full` ou `codex exec --profile luna-full` : les rôles
-  seuls n'élargissent pas la fenêtre héritée d'Astra. Depuis un Sol lancé avec
-  sa fenêtre complète, employer le rôle `luna` pour ses enfants. Voir
-  `docs/openai-setup.md` pour les réglages et les preuves. Un seul Claude participe ; il peut demander jusqu'à
-  9 Luna via le relais natif Codex. Adapter les vagues aux places disponibles.
+- Sol peut lancer jusqu'à 9 Luna utiles. Le défaut du PC et le profil natif
+  `sol-full` lui donnent la fenêtre complète ; ses enfants de rôle `luna` en
+  héritent. Pour consulter Astra avec environ 258400 tokens utiles, lancer
+  `codex exec --profile astra-review` dans un processus distinct : les rôles
+  directs héritent de la fenêtre du parent dans ce runtime. Voir
+  `docs/openai-setup.md` pour les réglages et les preuves. Un seul Claude
+  participe ; il peut demander jusqu'à 9 Luna via le relais natif Codex.
+  Adapter les vagues aux places disponibles sans viser le plafond.
 
 ## Particularités du produit
 

@@ -2,11 +2,13 @@ name = "sol"
 description = "Développement, logique métier et intégration d'un livrable autonome ; peut déléguer jusqu'à neuf sous-tâches indépendantes à Luna."
 model = "gpt-6-sol"
 model_reasoning_effort = "max"
-# Intention pour les rôles directs ; la version actuelle ignore cette fenêtre
-# quand Astra délègue. Lancer sol-full pour obtenir 828400 utiles.
+# Les rôles directs héritent encore de la fenêtre du parent dans ce CLI.
+# Le défaut Sol ou sol-full fournit 828400 tokens utiles.
 model_context_window = 872000
 developer_instructions = """
 Lis AGENTS.md et les skills natifs pertinents. Applique Unlazy et Caveman lite.
+Pilote la mission dans ton contexte complet. Pour les décisions structurantes,
+consulte Astra Max par un processus astra-review avec un brief ciblé.
 Tu n'es pas seul dans le dépôt : respecte la propriété des fichiers, préserve
 les autres changements, vérifie ton résultat et les interfaces avec le parent.
 Tu peux lancer jusqu'à 9 Luna Max pour des sous-tâches indépendantes justifiées.

@@ -12,18 +12,21 @@ modèles OpenAI. Aucun déploiement ni écriture de vérification sur une DB ré
 utiliser des fixtures et les émulateurs adaptés. Ne pas écraser les modifications
 d'autrui. Cette préparation n'a modifié aucun écran de l'application.
 
-Astra arbitre les choix et intègre les résultats. Sol possède l'implémentation
-et ses preuves ; les Luna reçoivent seulement recherches, tests ou revues ciblés,
-avec fichiers et limites attribués. Respecter les plafonds de concurrence :
-Astra au plus 2 Sol et 9 Luna directs, chaque Sol au plus 9 Luna. Un seul Claude
-Opus 5.5 xhigh participe : d'abord une contribution de conception à partir d'un
+Sol Max pilote les choix, l'implémentation et ses preuves dans son contexte
+complet. Il consulte Astra Max dans un processus `astra-review` séparé pour les
+décisions structurantes, avec un brief limité aux options et preuves pertinentes ;
+Astra donne un avis sans reprendre la mission. Les Luna Max reçoivent seulement
+recherches, tests ou revues ciblés, avec fichiers et limites attribués ; Sol peut
+en déléguer jusqu'à 9 si le travail le justifie. Un seul Claude Opus 5.5 xhigh
+participe : d'abord une contribution de conception à partir d'un
 brief et de captures ciblés, puis une revue sur rendu et parcours observés avec
 corrections utiles. Une nouvelle mission Claude exige un problème précis ; ne
 pas entretenir une boucle de consultations ni lui confier l'exploration générale
 du dépôt. Le relais Claude peut mobiliser au plus 9 Luna, sans doublonner le
 travail des Sol. Voir `docs/openai-setup.md` pour lancer et diagnostiquer le CLI
 sur abonnement sans repli API. Les profils natifs Sol/Luna complets restent
-872000 tokens configurés, 828400 utiles vérifiés précédemment.
+872000 tokens configurés, 828400 utiles vérifiés précédemment. Astra reste à
+272000 tokens configurés, 258400 utiles.
 
 Écrire avant les changements un registre court de critères, responsabilités de
 fichiers et contrôles dans `docs/validation/yeast-refactor-implementation.md`.

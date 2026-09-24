@@ -11,63 +11,70 @@ préservés. Les consignes et mémoires des fournisseurs ne sont pas échangées
 Les besoins métier, documents produit, code, captures et résultats sont communs.
 
 Une conversation ancienne conserve son contexte. Une nouvelle tâche dans le
-worktree propre charge les nouveaux réglages ; redémarrer Codex si l'import
-reste en mémoire, sans interrompre une autre tâche active.
+worktree propre charge les nouveaux réglages ; si l'interface conserve un choix
+manuel de modèle, sélectionner Sol Max. Redémarrer Codex si l'import reste en
+mémoire, sans interrompre une autre tâche active.
 
 ## Modèles et délégation
 
 | Rôle | Modèle / effort | Contexte configuré | Délégation |
 | --- | --- | --- | --- |
-| Pilote | GPT-6 Astra Max | 272000 bruts, ~258400 utiles | Au plus 2 Sol et 9 Luna directs |
-| Profil `sol-full` | GPT-6 Sol Max | 872000 bruts, 828400 utiles | Au plus 9 Luna |
+| Défaut du PC et pilote | GPT-6 Sol Max | 872000 bruts, 828400 utiles | Au plus 9 Luna utiles |
+| Profil `sol-full` | GPT-6 Sol Max | 872000 bruts, 828400 utiles | Au plus 9 Luna utiles |
+| Profil `astra-review` | GPT-6 Astra Max | 272000 bruts, 258400 utiles | Aucun enfant ; avis ciblé |
 | Profil `luna-full` | GPT-6 Luna Max | 872000 bruts, 828400 utiles | Sous-tâche terminale |
 | Frontend Claude | Claude Opus 5.5 xhigh | CLI natif | Un Claude ; jusqu'à 9 Luna via relais |
 
 Les fenêtres Sol/Luna correspondent au maximum du catalogue Codex local vérifié
-le 24 septembre 2026. La compaction conserve le comportement natif ; aucun seuil
-Astra n'est copié. Recontrôler ces valeurs lors d'un changement du runtime.
-Le maximum API annoncé ailleurs ne prouve pas sa disponibilité dans Codex.
-Deux tours natifs éphémères ont confirmé ces modèles, l'effort Max et
-`modelContextWindow = 828400` avec les valeurs de rôle passées explicitement.
-Ce contrôle de configuration ne constitue pas un essai de charge à 828400 tokens.
+le 24 septembre 2026 : 872000 tokens bruts, dont 95 % utiles (828400). Astra
+reste à 272000 bruts, soit 258400 utiles. La compaction conserve le comportement
+natif ; aucun seuil Astra n'est copié à Sol ou Luna. Recontrôler ces valeurs lors
+d'un changement du runtime. Le maximum API annoncé ailleurs ne prouve pas sa
+disponibilité dans Codex. Les métadonnées `modelContextWindow` observées avant
+ce réglage corroborent ces valeurs, sans constituer un essai de charge de la
+fenêtre entière ni une mesure du nouveau profil Astra.
 
 **Limite constatée du CLI 0.155.0-alpha.16.4 :** les rôles changent bien le modèle
 et l'effort, mais leur `model_context_window` ne remplace pas la fenêtre du
-parent. Un vrai essai Astra → Sol → Luna a conservé 258400 tokens utiles.
+parent. Un essai antérieur Astra → Sol → Luna a conservé 258400 tokens utiles.
 Ne pas confondre une valeur écrite dans le TOML avec une valeur appliquée.
 
-Les profils natifs `sol-full.config.toml` et `luna-full.config.toml`, installés
-à la racine de `$CODEX_HOME` (habituellement `~/.codex`), démarrent leur propre
-processus avec la grande fenêtre. Les gabarits versionnés sont dans
+Les profils natifs `sol-full.config.toml`, `astra-review.config.toml` et
+`luna-full.config.toml`, installés à la racine de `$CODEX_HOME`
+(habituellement `~/.codex`), démarrent leur propre
+processus avec leur propre fenêtre. Les gabarits versionnés sont dans
 `.codex/profiles/`. Le projet ne redéfinit pas modèle, fenêtre ou plafond total,
-car sa priorité masquerait le profil ; le fichier utilisateur conserve Astra
-Max avec 272000 tokens bruts et 11 enfants. Les profils ne copient aucun secret,
+car sa priorité masquerait le profil ; le fichier utilisateur choisit Sol Max,
+872000 tokens bruts et au plus 9 enfants. Les profils ne copient aucun secret,
 catalogue système ou réglage de permission.
 
 ```powershell
-codex exec --profile sol-full --cd C:/chemin/Brasserie "Mission précise, fichiers attribués et vérifications attendues"
+codex exec --cd C:/chemin/Brasserie "Mission précise, fichiers attribués et vérifications attendues"
+codex exec --profile sol-full --cd C:/chemin/Brasserie "Mission Sol explicite"
+codex exec --profile astra-review --sandbox read-only --cd C:/chemin/Brasserie "Décision ciblée, options et preuves pertinentes"
 codex exec --profile luna-full --cd C:/chemin/Brasserie "Vérification indépendante et bornée"
 ```
 
 Depuis Sol avec sa fenêtre complète, le rôle `luna` garde cette fenêtre et
-désactive toute délégation supplémentaire. Le serveur natif `app-server`
-refuse `--profile` dans cette version : passer les mêmes valeurs avec `-c`
-si cet outil est utilisé. La chaîne Sol → Luna ainsi lancée a été vérifiée à
-828400 tokens utiles pour les deux modèles. Les fichiers de rôle gardent
-l'intention de fenêtre, sans prétendre résoudre le défaut du runtime à eux seuls.
+désactive toute délégation supplémentaire. Astra reçoit seulement le brief de
+décision et les preuves pertinentes dans un processus `astra-review` distinct ;
+il ne reprend ni production ni orchestration. Le serveur natif `app-server`
+refuse `--profile` dans cette version : un `thread/start` avec des valeurs
+explicites ne prouve donc pas à lui seul le chargement d'un profil. Les fichiers
+de rôle gardent l'intention de fenêtre, sans résoudre ce défaut du runtime à
+eux seuls.
 
-Le profil CLI a aussi été vérifié directement : un Sol Max a lancé une Luna Max
+Un contrôle antérieur du profil CLI a montré qu'un Sol Max lance une Luna Max
 pour une lecture indépendante, tous deux à 828400 tokens utiles. Luna a terminé ;
 le contrôleur du diagnostic a ensuite arrêté le parent à 120 s, sans attendre
 son bilan. Ce délai appartient au diagnostic, pas aux profils de travail.
 Un lancement direct `luna-full` a terminé normalement. Les instructions propres
 aux profils et au rôle enfant figurent dans les métadonnées de ces sessions.
 
-Les plafonds natifs sont 11 enfants pour Astra et 9 pour Sol ; la répartition
-2 Sol / 9 Luna est inscrite aux consignes : le runtime ne fournit pas de quota
-distinct par modèle, le pilote doit donc respecter cette répartition. Deux niveaux permettent
-Astra → Sol → Luna. La capacité du client déjà lancé peut rester inférieure :
-procéder par vagues, sans réduire le travail utile ni lancer le maximum par défaut.
+Le plafond natif du pilote Sol est de 9 enfants, sans quota par modèle ; ses
+consignes n'autorisent que des Luna utiles. Le profil Astra désactive les
+sous-agents. La capacité d'un client déjà lancé peut rester inférieure :
+procéder par vagues, sans lancer le maximum par défaut.
 
 Chaque délégation précise résultat, fichiers, dépendances, faits déjà établis et
 preuves attendues. Pour le frontend, pointer les parties pertinentes des trois
@@ -76,15 +83,14 @@ UX/UI, richesse métier et densité lisible. Ne pas recopier l'historique entier
 
 ### Économie de travail sans réduire les exigences
 
-La répartition Astra → Sol → Luna est une règle de travail, pas seulement une
-liste de modèles. Astra garde les arbitrages et l'intégration ciblée. Sol prend
-un bloc cohérent jusqu'aux corrections et vérifications ; il confie à Luna les
-lectures, tests ou revues indépendants utiles. Les plafonds d'agents ne sont
-jamais un effectif à atteindre. Une petite retouche directe peut coûter moins
-qu'une délégation, son initialisation et sa reprise par le parent.
+Sol pilote un bloc cohérent jusqu'aux corrections et vérifications. Il consulte
+Astra Max pour les décisions structurantes et confie à Luna les lectures, tests
+ou revues indépendants utiles. Les plafonds d'agents ne sont jamais un effectif
+à atteindre. Une petite retouche directe peut coûter moins qu'une délégation,
+son initialisation et sa reprise par le parent.
 
 Le délégué retourne résultat, fichiers, preuves consultables, limites et décisions
-attendues. L'intégrateur lit les écarts et contrôle les contrats à risque au lieu
+attendues. Sol lit les écarts et contrôle les contrats à risque au lieu
 de refaire toute l'exploration. Réutiliser les agents pour les suites du même
 livrable ; ouvrir un contexte neuf pour une mission indépendante. Attendre les
 résultats par les outils de statut disponibles ; les journaux complets servent
@@ -92,9 +98,8 @@ au diagnostic d'un problème identifié, pas au suivi ordinaire. Préserver les
 tests et la revue métier/UX nécessaires ; ne les rejouer que si les changements
 ou les incertitudes le justifient.
 
-Une fenêtre de 828400 tokens utiles n'oblige pas à la remplir. Les contextes
-maximaux et l'effort Max des modèles OpenAI restent inchangés. La brièveté de Caveman lite concerne
-la communication ; elle ne plafonne pas les tokens de raisonnement.
+Une fenêtre de 828400 tokens utiles n'oblige pas à la remplir. La brièveté de
+Caveman lite concerne la communication ; elle ne plafonne pas le raisonnement.
 
 Les processus natifs résolvent ici l'héritage de fenêtre ; ils ne créent pas de
 quota distinct. Selon la [documentation Codex](https://learn.chatgpt.com/docs/pricing),

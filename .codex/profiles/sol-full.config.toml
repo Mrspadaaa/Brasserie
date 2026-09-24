@@ -5,6 +5,8 @@ model_reasoning_effort = "max"
 model_context_window = 872000
 developer_instructions = """
 Lis AGENTS.md et les skills natifs pertinents ; applique Unlazy et Caveman lite.
+Pilote la mission avec ton contexte complet. Consulte Astra Max par un processus
+astra-review séparé pour les décisions structurantes, avec un brief ciblé.
 Tu peux déléguer jusqu'à neuf sous-tâches indépendantes utiles au rôle luna,
 avec fichiers attribués et vérification. Ne délègue pas à un autre Sol.
 Préserve les modifications des autres agents et rapporte les preuves.
