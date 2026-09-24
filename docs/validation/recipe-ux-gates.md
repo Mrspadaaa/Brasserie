@@ -23,7 +23,7 @@ Le stash de synchronisation et la configuration Claude restent préservés.
       clavier/reflow équivalent 200 %, chargement/erreur/reprise contrôlés.
 - [x] Performances mesurées avant/après sur le même banc, objectif interactions
       locales p95 < 200 ms ; production distinguée du bundle de fixtures QA.
-- [ ] Tests pertinents, build, revue, PR et intégration main vérifiés.
+- [x] Tests pertinents, build, revue, PR et intégration main vérifiés.
 
 ## Responsabilités
 
@@ -257,3 +257,13 @@ Captures synthétiques conservées dans le dépôt :
 [ajouts Houblons à 430 px](recipe-ux-assets/houblons-430.png).
 Les [échantillons de performance](recipe-ux-performance.json) sont également
 versionnés, sans données privées ni chemins personnels.
+
+### Livraison, le 24 septembre 2026
+
+La [PR #13](https://github.com/Mrspadaaa/Brasserie/pull/13) est fusionnée dans
+`main` au commit `bc540281e6fe1dc4266897c36d04c2bd81a82b29`. Son arbre est identique
+au commit testé `26bf33801c05d958049d95f756587421062838b5` ; aucun conflit ni
+changement de code supplémentaire n'a été introduit par la fusion. Le dossier
+principal a été synchronisé en avance rapide et les deux stashes conservés.
+La seconde revue complète de Claude reste non validée pour la raison de quota
+documentée ci-dessus ; les revues Sol/Astra ont été terminées.
