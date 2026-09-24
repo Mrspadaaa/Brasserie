@@ -37,6 +37,18 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   travail, responsabilités de fichiers, vérification indépendante et preuves.
   Astra pilote en Max ; Sol et Luna travaillent en Max dans leur propre contexte.
   Caveman lite garde les comptes rendus concis sans limiter le travail utile.
+- Répartition effective : Astra cadre, arbitre et vérifie l'intégration ; Sol
+  possède un bloc complet d'investigation, réalisation et validation ; Luna
+  reçoit des recherches, tests et revues ciblés. Astra ne refait pas en parallèle
+  le travail confié. Une retouche simple reste directe si déléguer coûte davantage.
+- Transmettre objectif, fichiers, contraintes, faits établis et preuves attendues,
+  sans recopier tout l'historique. Réutiliser l'agent pour les suites liées et
+  les recherches déjà vérifiées ; ne les rouvrir qu'en cas de changement ou doute.
+  La grande fenêtre de contexte est une capacité disponible, pas une cible à remplir.
+- Vérifier les livrables sur leurs preuves et les risques d'intégration. Une revue
+  indépendante vise un risque distinct ; ne pas répéter tout l'audit ou tous les
+  tests sans changement, échec ou incertitude. Garder les sorties détaillées dans
+  les artefacts et remonter résultats, écarts et décisions nécessaires.
 - Astra peut lancer au plus 2 Sol et 9 Luna directs ; chaque Sol peut lancer
   jusqu'à 9 Luna. Sur le runtime actuel, lancer les processus natifs avec
   `codex exec --profile sol-full` ou `codex exec --profile luna-full` : les rôles

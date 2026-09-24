@@ -5,7 +5,8 @@ description: Concevoir, modifier ou examiner les interfaces de L'Affinée avec l
 
 # Frontend de L'Affinée
 
-Lire PRODUCT.md, DESIGN.md et docs/ui-compacte.md depuis la racine du dépôt.
+Lire les sections pertinentes de PRODUCT.md, DESIGN.md et docs/ui-compacte.md
+depuis la racine du dépôt.
 Partir de la décision, du réglage ou du constat que le brasseur doit effectuer.
 Inventorier l'information utile et ses sources avant de la réorganiser.
 En refonte, aucune position ni aucun composant existant n'est acquis. Pour chaque
@@ -37,8 +38,8 @@ les tailles, tout déplier ou tout masquer ne prouve pas une amélioration.
 La représentation choisie doit préserver clavier, zoom, libellés et accès aux
 valeurs exactes ; la couleur seule ne porte pas une information.
 
-Pour une délégation, transmettre ces exigences, les trois documents et les
-composants concernés. Attribuer la propriété des fichiers. Les consignes de
+Pour une délégation, transmettre ces exigences et pointer les sections métier,
+design et composants concernés. Attribuer la propriété des fichiers. Les consignes de
 l'autre fournisseur ne sont pas une entrée : partager seulement le besoin,
 le code, les références produit et les preuves.
 

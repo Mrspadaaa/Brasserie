@@ -69,9 +69,39 @@ distinct par modèle, le pilote doit donc respecter cette répartition. Deux niv
 Astra → Sol → Luna. La capacité du client déjà lancé peut rester inférieure :
 procéder par vagues, sans réduire le travail utile ni lancer le maximum par défaut.
 
-Chaque délégation précise résultat, fichiers, dépendances et preuves. Pour le
-frontend, joindre les trois documents produit/design et les composants concernés,
-avec l'objectif de boosters UX/UI, richesse métier et densité lisible.
+Chaque délégation précise résultat, fichiers, dépendances, faits déjà établis et
+preuves attendues. Pour le frontend, pointer les parties pertinentes des trois
+documents produit/design et les composants concernés, avec l'objectif de boosters
+UX/UI, richesse métier et densité lisible. Ne pas recopier l'historique entier.
+
+### Économie de travail sans réduire les exigences
+
+La répartition Astra → Sol → Luna est une règle de travail, pas seulement une
+liste de modèles. Astra garde les arbitrages et l'intégration ciblée. Sol prend
+un bloc cohérent jusqu'aux corrections et vérifications ; il confie à Luna les
+lectures, tests ou revues indépendants utiles. Les plafonds d'agents ne sont
+jamais un effectif à atteindre. Une petite retouche directe peut coûter moins
+qu'une délégation, son initialisation et sa reprise par le parent.
+
+Le délégué retourne résultat, fichiers, preuves consultables, limites et décisions
+attendues. L'intégrateur lit les écarts et contrôle les contrats à risque au lieu
+de refaire toute l'exploration. Réutiliser les agents pour les suites du même
+livrable ; ouvrir un contexte neuf pour une mission indépendante. Attendre les
+résultats par les outils de statut disponibles ; les journaux complets servent
+au diagnostic d'un problème identifié, pas au suivi ordinaire. Préserver les
+tests et la revue métier/UX nécessaires ; ne les rejouer que si les changements
+ou les incertitudes le justifient.
+
+Une fenêtre de 828400 tokens utiles n'oblige pas à la remplir. Les contextes
+maximaux et l'effort Max restent inchangés. La brièveté de Caveman lite concerne
+la communication ; elle ne plafonne pas les tokens de raisonnement.
+
+Les processus natifs résolvent ici l'héritage de fenêtre ; ils ne créent pas de
+quota distinct. Selon la [documentation Codex](https://learn.chatgpt.com/docs/pricing),
+modèle, contexte, raisonnement, outils et cache influencent l'usage ; le tarif
+des crédits ne se convertit pas directement en consommation de l'abonnement.
+Ne pas attribuer une variation du quota global à un seul agent lorsque d'autres
+tâches tournent. Aucun gain en pourcentage n'est annoncé sans comparaison fiable.
 
 ## Claude natif sur abonnement
 
