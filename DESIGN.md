@@ -138,6 +138,12 @@ au-delà du texte. Aucune liste de représentations ne ferme les choix possibles
 Réutiliser, composer ou créer selon le besoin, en vérifiant fidélité des valeurs,
 clavier, unités, légendes, incertitudes, maintenance et performances.
 
+Lors d'une refonte, l'existant ne justifie ni sa place ni sa forme. Examiner chaque
+donnée et commande selon le besoin présent du brasseur : utile maintenant ou plus
+tard, au bon endroit, correctement actionnable, avec la meilleure représentation
+parmi les options plausibles. Rechercher et éprouver les outils adaptés ; la revue
+juge ces décisions dans le parcours, au-delà du respect des dimensions.
+
 ## Colors
 
 ### Les trois tons neutres de texte
@@ -385,7 +391,9 @@ cohérente ; le bureau conserve une densité utile sans grossissement automatiqu
 
 ## Layout
 
-Vérifier tout rendu à **320 / 375 / 430 / 1280 px**. Rien ne doit dépasser
+Vérifier le parcours sur **un mobile et un desktop** représentatifs (390 et
+1280 px par défaut). Étendre seulement pour un défaut ou une incertitude réelle.
+Rien ne doit dépasser
 `innerWidth`, sauf à l'intérieur d'un conteneur `overflow-x-auto` assumé.
 
 - **`min-w-0` sur tout élément flex qui doit rétrécir.** Par défaut

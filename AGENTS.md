@@ -54,10 +54,17 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   représentations et interactions reste ouvert ; valorise leur bénéfice observé
   pour comprendre et agir. Conserve les informations métier pertinentes. La
   réduction des tailles ou le masquage systématique ne sont pas des objectifs.
+- Dans une refonte, aucun élément ne conserve sa place par ancienneté. Pour
+  chaque donnée et commande, vérifier son utilité pour le brasseur à ce moment,
+  sa place, sa visibilité immédiate ou à la demande, son contrôle et sa
+  représentation. Comparer les alternatives pertinentes, y compris les outils
+  externes maintenus ; une simple vérification de débordement ne valide pas l'UX.
 - Mesure, estimation, cible et donnée manquante restent distinctes. N'invente pas
   une valeur pour compléter un affichage. Une simulation ne modifie pas la
   recette enregistrée ; une recette modifiée ne réécrit pas un brassin lancé.
 - Préserve le fonctionnement hors ligne. Pour un changement visible, ouvre et
-  examine les vues avant/après à 320, 375, 430 puis 1280 px ; joue le parcours
+  examine les vues avant/après sur un mobile et un desktop représentatifs
+  (par défaut 390 et 1280 px) ; une autre largeur répond à un défaut constaté,
+  pas à une matrice systématique. Joue le parcours
   modifié avec sauvegarde, retour et correction selon le cas. Regarde les captures
   et rapporte les vérifications réellement effectuées.

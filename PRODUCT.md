@@ -79,6 +79,52 @@ choisir ou régler, avec précision, unités, incertitudes et accessibilité.
   déduction automatique des stocks.
 - **Stocks, finances, clients** — inventaire, TVA suisse, factures QR.
 
+## Orientation Levure — décision du 24 septembre 2026
+
+La prochaine refonte graphique part des décisions du brasseur ; aucun élément
+de l'écran actuel n'a de droit acquis à sa place. La richesse documentaire reste
+accessible, mais l'entrée sert à trouver une levure, comprendre son effet dans
+la recette, ajuster le procédé et comparer une alternative avant de l'appliquer.
+Le détail de réalisation est dans [la mission Levure](docs/prompts/refonte-levure.md).
+
+Privilégier les petits sachets secs (environ 11–12 g, sans imposer un poids unique)
+et petits packs liquides. Classer l'approvisionnement par distribution effective :
+Suisse d'abord, France et Allemagne au même rang ensuite, puis reste de l'Europe.
+Le pays du laboratoire ne détermine pas la disponibilité. Séparer stock personnel,
+référencement fournisseur, stock annoncé, conditionnement et livraison possible.
+Les références étrangères restent recherchables pour identifier la levure d'une
+recette et trouver des alternatives ; elles n'encombrent pas la sélection usuelle.
+Une alternative fonctionnelle n'est pas une preuve d'identité de souche.
+
+Au choix, montrer la quantité d'ensemencement nécessaire et le nombre entier
+de sachets ou petits packs, selon la dose fabricant ou une estimation cellulaire
+applicable. La quantité théorique, les unités (g, mL, cellules), la viabilité,
+la date et la conservation connues ou inconnues restent explicites. Un starter
+n'est proposé que si le produit et le contexte le justifient ; ne pas l'imposer
+aux levures sèches. Son plan et ses étapes se préparent et s'enregistrent avant
+le brassage si nécessaire, puis sont retrouvés au jour J. Le prévu figé dans
+le brassin et l'ensemencement réellement effectué sont deux faits distincts.
+La quantité choisie (par exemple un sachet du conditionnement documenté) reste
+distincte du conseil calculé ; une action explicite applique le nombre conseillé.
+Le conseil suit volume, densité et données du produit, sans écraser une quantité
+manuelle. Ni le style de bière ni la seule masse de grains ne fixent la dose.
+Distinguer la contribution des ajouts à la densité, leur fermentescibilité
+documentée et le milieu approprié au starter, notamment extrait de malt versus
+maltodextrine. Le parcours doit rester lisible sans déplier tout le calcul.
+
+Gemini doit pouvoir rechercher, comparer, compléter, contrôler et corriger les
+données persistées sur demande explicite. Une valeur provenant de la DB n'est
+pas immuable. La correction montre ancien/nouveau, source, portée et justification,
+puis passe par les outils de validation et de sauvegarde de l'application.
+Une correction demandée n'autorise pas une réponse obsolète à écraser une saisie
+ultérieure. Les simulations, faits du catalogue, lots et recettes gardent leurs
+portées distinctes ; aucun brassin lancé n'est réécrit.
+
+Pour chaque donnée : pourquoi le brasseur en a-t-il besoin, à quel moment, où,
+et avec quel contrôle ou visualisation ? Les effets chiffrés exigent un modèle
+documenté ; les tendances sensorielles qualitatives restent identifiées comme
+telles. Une inconnue reste visible, sans précision inventée ni dossier opaque.
+
 ## Installation et conduite de Gaëtan
 
 Le profil actif privilégie un empâtage fluide (4,2 L/kg), augmenté si la cuve le
@@ -128,4 +174,6 @@ Pas de `react-router` : les pages plein écran passent par `useFullScreenRoute`.
 
 ## Plateforme
 
-`web`, mobile d'abord. Vérifier tout rendu à **320 / 375 / 430 / 1280 px**.
+`web`, mobile d'abord. Vérifier le parcours sur **un mobile et un desktop**
+représentatifs (390 et 1280 px par défaut). Ajouter une largeur seulement si un
+défaut ou une incertitude le justifie ; conserver clavier, zoom et accessibilité.

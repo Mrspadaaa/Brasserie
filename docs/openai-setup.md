@@ -75,11 +75,18 @@ avec l'objectif de boosters UX/UI, richesse métier et densité lisible.
 
 ## Claude natif sur abonnement
 
-`scripts/claude-frontend.mjs` utilise le CLI officiel et son authentification
-`claude.ai`, avec `--model claude-opus-5-5 --effort max`. `--safe-mode` écarte
-les anciens prompts, skills, hooks et MCP. Aucun jeton n'est extrait ou transmis
-à un SDK. Les variables d'API/fournisseur tiers sont retirées seulement de
-l'environnement enfant. Ne pas employer `--bare`, qui désactive l'abonnement.
+`scripts/claude-frontend.mjs` utilise le CLI officiel (version >= 2.1.280) et
+son authentification `claude.ai` **Pro**. Les arguments fixent
+`--model claude-opus-5-5 --effort max`.
+`--safe-mode` écarte les personnalisations Claude hors politique administrée ;
+`--restricted` borne les
+outils de fichiers au dossier temporaire de la mission. Aucun jeton n'est extrait
+ou transmis à un SDK. Les variables d'API/fournisseur tiers sont retirées
+seulement de l'environnement enfant. Ne pas employer `--bare`, qui modifie le
+mode d'authentification. Le diagnostic contrôle `authMethod`, `apiProvider`,
+`apiKeySource` et la version ; il n'appelle pas le modèle.
+Il affiche le modèle et l'effort **configurés**, sans démontrer que le compte
+peut terminer une consultation sur ce modèle.
 
 Avant une session, vérifier dans Claude → Usage que les crédits supplémentaires
 sont désactivés. Le diagnostic CLI confirme l'abonnement, pas ce réglage de
@@ -87,13 +94,41 @@ facturation. Un échec de quota reste un échec, sans basculement API.
 
 ```powershell
 node scripts/claude-frontend.mjs --diagnose
-node scripts/claude-frontend.mjs --brief C:/temp/mission.txt --output C:/temp/revue.json
+node scripts/claude-frontend.mjs --brief C:/temp/mission.txt --output C:/temp/revue.json --dry-run
+node scripts/claude-frontend.mjs --brief C:/temp/mission.txt --output C:/temp/revue.json --allow-file docs/validation/vue-390.png --max-turns 6
 ```
 
-La revue dispose uniquement de lecture/recherche. Pour une correction, utiliser
-un checkout isolé et `--mode edit --allow-file src/ui/Fichier.tsx` pour chaque
-fichier confié. Relire les changements, les intégrer puis les retester. Le
-lanceur impose un seul processus de travail Claude à la fois.
+`--cwd` choisit la racine des fichiers relatifs. Chaque `--allow-file` fournit
+une **copie** ciblée, y compris une capture PNG/JPEG/WebP/GIF/AVIF. En revue,
+Claude peut lire ces copies ; sans fichier, aucun outil n'est disponible. Pour
+une correction, passer `--mode edit --allow-file src/ui/Fichier.tsx` pour chaque
+fichier confié. Claude ne peut éditer que les copies nommées. Le lanceur ne
+reporte les fichiers modifiés qu'après avoir vérifié que les originaux n'ont pas
+changé depuis leur copie ; une collision conserve les copies et signale un conflit.
+Relire ces changements et les retester. Il impose un seul processus de travail
+Claude à la fois. En mode édition, il n'ajoute pas de nouveaux fichiers au dépôt.
+
+Le brief est limité à **24 Kio UTF-8** : un dépassement produit une erreur,
+sans troncature. Au plus 12 fichiers par mission, chacun limité à 128 Kio de
+texte ou 8 Mio d'image, pour 32 Mio au total. Fournir des extraits pertinents
+plutôt qu'un gros fichier. `--max-turns` est un budget de **tours de la mission**,
+4 en revue et 12 en édition par défaut ; choisir un entier positif adapté à la
+mission. L'atteinte de ce budget et l'atteinte du quota Claude sont rapportées
+séparément. Une autre mission n'est lancée que pour un besoin identifié.
+
+Le CLI reçoit `--tools` (aucun, `Read`, ou `Read,Edit,Write` selon la mission),
+`--allowedTools` pour approuver la lecture des copies et les chemins d'édition
+nommés, `--permission-mode dontAsk --permission-prompts none`, et
+`--disallowedTools mcp__*`. `--with-luna` ajoute seulement l'écriture du fichier
+de missions et la commande exacte du relais. `--safe-mode` et `--restricted`
+réduisent le contexte et les capacités CLI ; ils ne constituent pas une isolation
+du système d'exploitation pour la commande relayée. `--dry-run` affiche les
+arguments, fichiers, tailles et statut d'authentification sans appeler Opus.
+
+Le CLI ne fournit pas de plafond du quota Pro ou des tokens par cette commande.
+`--max-budget-usd` plafonne les dépenses **API** en mode print, pas l'abonnement ;
+le lanceur ne l'emploie pas. Contrôler les crédits supplémentaires dans Claude →
+Usage. Aucun repli vers une clé/API n'est prévu.
 Il fournit aussi une consigne Caveman lite propre à cette session : compte rendu
 concis, profondeur et preuves conservées, sans importer les skills OpenAI.
 
@@ -110,7 +145,9 @@ ce relais comme unique commande shell autorisée puis lire ses résultats Markdo
 Il peut demander une autre vague justifiée ; un verrou de processus impose
 d'attendre la précédente et conserve au plus neuf Luna dans ce relais Claude.
 Chaque Sol utilise ses propres sous-agents natifs, avec son plafond de neuf.
-Aucun plafond artificiel de tokens, de temps ou de passes utiles.
+Les contextes natifs Sol/Luna restent ceux vérifiés plus haut (872000 configurés,
+828400 effectifs) ; les bornes de brief et de tours concernent le seul lanceur
+Claude et ses missions, pas le travail global de l'équipe.
 
 ```powershell
 node scripts/luna-review.mjs --tasks C:/temp/missions.json --output-dir C:/temp/luna --dry-run
@@ -127,4 +164,6 @@ parcours réels de l'application.
 Références : [sous-agents Codex](https://learn.chatgpt.com/docs/agent-configuration/subagents),
 [configuration Codex](https://learn.chatgpt.com/docs/config-file/config-reference),
 [CLI Claude](https://code.claude.com/docs/en/cli-reference),
+[permissions Claude](https://code.claude.com/docs/en/permissions#read-and-edit),
+[variables d'environnement Claude](https://code.claude.com/docs/en/env-vars),
 [effort Claude](https://code.claude.com/docs/en/model-config#adjust-effort-level).
