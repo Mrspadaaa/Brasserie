@@ -17,7 +17,7 @@ import {
   IngredientKind,
   LearnIngredient,
   ingredientGaps,
-  ingredientKey,
+  recipeIngredientKey,
   applyMaltFacts,
   applyHopFacts,
   applyYeastFacts,
@@ -98,11 +98,14 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
 
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const documentedAttenuation = useMemo(() => {
+    // Scoped malt and hop searches never inspect yeast gaps. Resolving the
+    // whole yeast catalogue here would delay every return to the hop step.
+    if (scope === 'malt' || scope === 'houblon') return undefined;
     const reference = resolveFermentationYeast({ yeast } as TrialRecipe, yeastReferences(saved));
     if (!reference) return undefined;
     return guideFermentations(saved).find(g => g.yeastId === reference.id)?.attenuationPct
       ?? agreedFermentationFact(reference, 'attenuation', '%');
-  }, [yeast.name, yeast.hopIndexId, saved]);
+  }, [scope, yeast.name, yeast.hopIndexId, saved]);
   const gaps = useMemo(
     () => ingredientGaps(fermentables, hops, yeast, nolo).filter(gap => !scope || gap.kind === scope).map(gap => ({ ...gap,
       // A published interval is already documented. Do not ask AI for a
@@ -112,14 +115,36 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     [fermentables, hops, yeast, nolo, scope, documentedAttenuation]
   );
   const searchGaps = useMemo(() => yeastEnrichment && yeast.name?.trim()
-    ? [{ key: ingredientKey('levure', yeast.name), kind: 'levure' as const, name: yeast.name,
+    ? [{ key: recipeIngredientKey('levure', yeast), kind: 'levure' as const, name: yeast.name, stockItemRef: yeast.stockItemRef,
       missing: gaps.find(g => g.kind === 'levure')?.missing ?? [] }]
-    : gaps, [gaps, yeast.name, yeastEnrichment]);
+    // Alpha belongs to the actual hop lot. A generic variety lookup must not
+    // fill an explicitly selected stock article whose lot has no alpha data.
+    : gaps.filter(gap => gap.kind !== 'houblon' || !gap.stockItemRef), [gaps, yeast.name, yeast.stockItemRef, yeastEnrichment]);
+  // The lookup still covers every useful technical sheet. Its introduction
+  // distinguishes alpha needed by a positive hot addition from an optional
+  // dry-hop sheet, whose alpha does not contribute to hot IBU.
+  const hotKeys = new Set(hops.filter(h => h.stage !== 'dryHop').map(h => recipeIngredientKey('houblon', h)));
+  const activeHotKeys = new Set(hops.filter(h => h.stage !== 'dryHop' && h.weightG > 0).map(h => recipeIngredientKey('houblon', h)));
+  const hotHopGaps = searchGaps.filter(gap => gap.kind === 'houblon' && activeHotKeys.has(gap.key));
+  const undosedHotGaps = searchGaps.filter(gap => gap.kind === 'houblon' && hotKeys.has(gap.key) && !activeHotKeys.has(gap.key));
+  const dryOnlyHopGaps = searchGaps.filter(gap => gap.kind === 'houblon' && !hotKeys.has(gap.key));
+  const otherGaps = searchGaps.filter(gap => gap.kind !== 'houblon');
+  const gapName = (gap: (typeof searchGaps)[number]) => `${gap.name}${gap.stockItemRef ? ` · ${gap.stockItemRef}` : ''}`;
+  const gapNames = (rows: typeof searchGaps) => rows.map(gapName).join(' · ');
 
   const request = useRef(0);
-  const basis = JSON.stringify([fermentables, hops, yeast, nolo, scope, yeastEnrichment, !!documentedAttenuation]);
+  // A Firestore refresh with identical facts keeps the proposal. A changed
+  // selected article/source invalidates an in-flight answer for the old lot.
+  const stockBasis = JSON.stringify(searchGaps.map(gap => stockItems.filter(item =>
+    item.category.toLocaleLowerCase('fr') === gap.kind &&
+    (gap.stockItemRef ? item.ref === gap.stockItemRef : recipeIngredientKey(gap.kind, item) === gap.key))
+    .map(item => [item.ref, item.name, item.supplier, item.technicalSource,
+      item.colorEbc, item.potentialPpg, item.alphaPct, item.yeastTechnicalFacts,
+      item.yeastAttenuationPct, item.yeastTempMinC, item.yeastTempMaxC])));
+  const basis = JSON.stringify([fermentables, hops, yeast, nolo, scope, yeastEnrichment, !!documentedAttenuation, stockBasis]);
   const latest = useRef(basis); latest.current = basis;
   const cache = useRef(new Map<string, IngredientFacts>());
+  useEffect(() => { cache.current.clear(); }, [stockBasis]);
   useEffect(() => {
     request.current += 1; setBusy(false); setFound(null); setError(null); setMissed([]); setConflictChoices({});
   }, [basis]);
@@ -141,7 +166,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     setFound(null);
     setConflictChoices({});
     setMissed([]);
-    // Three requests at most at once; identical names share one lookup.
+    // Three requests at most at once; only identical recipe identities share a lookup.
     const queue = [...searchGaps];
     const ok: Found[] = [];
     const ko: string[] = [];
@@ -152,23 +177,21 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
           while (queue.length && request.current === id) {
             const gap = queue.shift()!;
             try {
-              const item = stockItems.find(
-                (s) =>
-                  ingredientKey(gap.kind, s.name) === gap.key &&
-                  s.category.toLocaleLowerCase('fr') === gap.kind
-              );
+              const matching = stockItems.filter(s => s.category.toLocaleLowerCase('fr') === gap.kind &&
+                (gap.stockItemRef ? s.ref === gap.stockItemRef : recipeIngredientKey(gap.kind, s) === gap.key));
+              const item = matching.length === 1 ? matching[0] : undefined;
               const cached = cache.current.get(gap.key) ?? (item && factsFromStock(item));
               const remaining =
                 cached &&
                 ingredientGaps(
                   gap.kind === 'malt'
                     ? fermentables
-                        .filter((f) => ingredientKey('malt', f.name) === gap.key)
+                        .filter((f) => recipeIngredientKey('malt', f) === gap.key)
                         .map((f) => applyMaltFacts(f, cached))
                     : [],
                   gap.kind === 'houblon'
                     ? hops
-                        .filter((h) => ingredientKey('houblon', h.name) === gap.key)
+                        .filter((h) => recipeIngredientKey('houblon', h) === gap.key)
                         .map((h) => applyHopFacts(h, cached))
                     : [],
                   gap.kind === 'levure'
@@ -184,7 +207,8 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
                 task: 'lookupIngredient',
                 tier: 'fast',
                 instruction: gap.kind + ' : ' + gap.name.trim(),
-                context: { kind: gap.kind, name: gap.name.trim(), manquant: gap.missing, nolo,
+                context: { kind: gap.kind, name: gap.name.trim(), stockItemRef: gap.stockItemRef,
+                  supplier: item?.supplier, manquant: gap.missing, nolo,
                   reviewTechnicalSheet: yeastEnrichment, known: gap.kind === 'levure' ? yeast : undefined }
               });
               // Une réponse annulée ou périmée ne doit pas non plus peupler le cache.
@@ -225,18 +249,18 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
     const byKey = new Map(found.map((f) => [f.key, f]));
     const accepted = new Set<string>();
     const nextFerms = fermentables.map((f) => {
-      const result = byKey.get(ingredientKey('malt', f.name));
+      const result = byKey.get(recipeIngredientKey('malt', f));
       if (!result || f.kind !== 'grain') return f;
       accepted.add(result.key);
       return applyMaltFacts(f, result.facts);
     });
     const nextHops = hops.map((h) => {
-      const result = byKey.get(ingredientKey('houblon', h.name));
+      const result = byKey.get(recipeIngredientKey('houblon', h));
       if (!result) return h;
       accepted.add(result.key);
       return applyHopFacts(h, result.facts);
     });
-    const yeastResult = byKey.get(ingredientKey('levure', yeast.name));
+    const yeastResult = byKey.get(recipeIngredientKey('levure', yeast));
     if (yeastResult) accepted.add(yeastResult.key);
     onFermentables(nextFerms);
     onHops(nextHops);
@@ -244,7 +268,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
       Object.entries(conflictChoices).filter(([, choice]) => choice === 'replace').map(([field]) => field as YeastFactField)) : yeast);
     found
       .filter((f) => accepted.has(f.key))
-      .forEach((f) => onLearnIngredient?.(f.name, factsForStock(f.kind, f.facts)));
+      .forEach((f) => onLearnIngredient?.(f.name, { ...factsForStock(f.kind, f.facts), ...(f.stockItemRef ? { ref: f.stockItemRef } : {}) }));
     setFound(null);
     setError(null);
   };
@@ -260,14 +284,14 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
         <>
           <div className="flex items-start gap-2">
             <Sparkles className="w-4 h-4 text-ebc-straw shrink-0 mt-0.5" />
-            <p className="text-sm text-cave-200 leading-snug">
-              {yeastEnrichment ? <>Retrouver les données publiées de <span className="text-cave-50">{yeast.name}</span>, avec leurs sources et leurs limites.</> : <>{gaps.length} ingrédient{gaps.length > 1 ? 's' : ''} incomplet
-              {gaps.length > 1 ? 's' : ''} :{' '}
-              <span className="text-cave-400">
-                {gaps.map((g) => `${g.name} (${g.missing.join(', ')})`).join(' · ')}
-              </span>
-              </>}
-            </p>
+            {yeastEnrichment
+              ? <p className="text-sm text-cave-200 leading-snug">Retrouver les données publiées de <span className="text-cave-50">{yeast.name}</span>, avec leurs sources et leurs limites.</p>
+              : <div className="space-y-0.5 text-sm text-cave-200 leading-snug">
+                {hotHopGaps.length > 0 && <p>Pour calculer les IBU à chaud, documenter l’alpha du lot : <span className="text-cave-50">{gapNames(hotHopGaps)}</span>.</p>}
+                {otherGaps.length > 0 && <p>Données de fiche à compléter : <span className="text-cave-50">{otherGaps.map(gap => `${gapName(gap)} (${gap.missing.join(', ')})`).join(' · ')}</span>.</p>}
+                {undosedHotGaps.length > 0 && <p>Ajout à chaud sans dose · alpha facultatif tant que la dose reste nulle : <span className="text-cave-50">{gapNames(undosedHotGaps)}</span>.</p>}
+                {dryOnlyHopGaps.length > 0 && <p>À cru · alpha de fiche facultatif, hors du calcul IBU à chaud : <span className="text-cave-50">{gapNames(dryOnlyHopGaps)}</span>.</p>}
+              </div>}
           </div>
 
           <button
@@ -314,7 +338,7 @@ export const RecipeAutoComplete: React.FC<RecipeAutoCompleteProps> = ({
               <li key={f.key} className="py-1.5">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
                   <span className="min-w-0 text-sm text-cave-50 break-words [overflow-wrap:anywhere]">
-                    {f.facts.name}
+                    {f.name}{f.stockItemRef && <span className="text-cave-400"> · {f.stockItemRef}</span>}
                   </span>
                   <span className="max-w-full reading text-sm text-ebc-straw break-words">
                     {f.kind === 'malt' &&

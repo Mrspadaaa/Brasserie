@@ -1,7 +1,7 @@
 import type { Fermentable, HopIngredient, StockItem, YeastSpec } from '../types';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
 import { agreedFermentationFact } from '../../functions/src/fermentationContext';
-import { applyMaltFacts, applyHopFacts, applyYeastFacts, factsFromStock, ingredientKey, type IngredientFacts } from './ingredientFacts';
+import { applyMaltFacts, applyHopFacts, applyYeastFacts, factsForRecipeStockItem, type IngredientFacts } from './ingredientFacts';
 import { yeastReferences } from './yeastReferences';
 import { resolveFermentationYeast } from './fermentationScenario';
 import type { TrialRecipe } from './hopIndex/trials';
@@ -40,13 +40,9 @@ export function localYeastFacts(yeast: YeastSpec, knowledge: HopKnowledge[]): In
 /** Exact product + unique local record only. A generic oat name never becomes
  * another manufacturer's analysed malt. Reading references performs no writes. */
 export function completeFromLocalReferences(fermentables: Fermentable[], hops: HopIngredient[], yeast: YeastSpec, stock: StockItem[], knowledge: HopKnowledge[]) {
-  const cached = (kind: 'malt'|'houblon'|'levure', name: string) => {
-    const rows = stock.filter(s => ingredientKey(kind, s.name) === ingredientKey(kind, name) && s.category.toLocaleLowerCase('fr') === kind && s.technicalSource?.trim());
-    return rows.length === 1 ? factsFromStock(rows[0]) : undefined;
-  };
-  const malt = fermentables.map(f => { const facts = cached('malt',f.name); return facts ? applyMaltFacts(f,facts) : f; });
-  const hop = hops.map(h => { const facts = cached('houblon',h.name); return facts ? applyHopFacts(h,facts) : h; });
-  const stockYeast = cached('levure',yeast.name), reference = localYeastFacts(yeast,knowledge);
+  const malt = fermentables.map(f => { const facts = factsForRecipeStockItem('malt',f,stock); return facts ? applyMaltFacts(f,facts) : f; });
+  const hop = hops.map(h => { const facts = factsForRecipeStockItem('houblon',h,stock); return facts ? applyHopFacts(h,facts) : h; });
+  const stockYeast = factsForRecipeStockItem('levure',yeast,stock), reference = localYeastFacts(yeast,knowledge);
   let y = stockYeast ? applyYeastFacts(yeast,stockYeast) : yeast;
   if (reference) y = applyYeastFacts(y,reference);
   return { fermentables:malt, hops:hop, yeast:y };

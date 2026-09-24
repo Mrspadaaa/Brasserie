@@ -4,7 +4,7 @@ import { applyYeastRecipeDesign, createYeastRecipeDraft } from '../../src/domain
 import { yeastReferences } from '../../src/domain/yeastReferences';
 export const yeastFlowRecipe = (): Recipe => {
   const recipe: Recipe = { ...structuredClone(fullRecipe), name: 'Weissbier essai girofle', style: 'Hefeweizen', styleRef: undefined,
-    nolo: undefined, yeastDesign: undefined, yeastGuide: undefined, waterPlan: undefined, volumeL: 20, ogTarget: 1.05,
+    nolo: undefined, yeastDesign: undefined, yeastGuide: undefined, waterPlan: undefined, volumeL: 20, boilMin: 60, ogTarget: 1.05,
     yeast: { name: 'Wyeast 3068', hopIndexId: 'wyeast-3068', form: 'liquide', qty: 125, unit: 'mL', pitchTempC: 18 },
     fermentation: [{ name: 'Primaire', kind: 'primaire', tempC: 18, days: 10 }, { name: 'Garde', kind: 'garde', tempC: 4, days: 7 }],
     mash: { steps: [{ name: 'Saccharification', tempC: 66, durationMin: 60 }] },

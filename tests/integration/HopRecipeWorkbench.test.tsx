@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { HopRecipeWorkbench, type HopRecipeWorkbenchSession } from '../../src/ui/hopIndex/HopRecipeWorkbench';
+import { HopRecipeSnapshot } from '../../src/ui/hopIndex/HopRecipeSnapshot';
 import { HopIngredientPicker } from '../../src/ui/hopIndex/HopIngredientPicker';
 import { YeastRecipeWorkbench } from '../../src/ui/YeastRecipeWorkbench';
 import { fullRecipe } from '../fixtures/fullRecipe';
@@ -33,6 +34,30 @@ function Host({changed}:{changed:(r:Recipe)=>void}){
  const [r,setR]=useState(wheat());return <HopRecipeWorkbench recipe={r} onChange={next=>{setR(next as Recipe);changed(next as Recipe);}} />;
 }
 describe('Atelier houblons : décisions et application',()=>{
+ it.each([false,true])('ne dessine pas une échelle IBU arbitraire sans style ni masse prévue (ajout présent : %s)',hasAddition=>{
+  render(<HopRecipeSnapshot recipe={{...wheat(),style:undefined,hops:hasAddition?[{...wheat().hops[0],weightG:0}]:[]}}/>);
+  const snapshot=screen.getByRole('region',{name:'Bilan de houblonnage de la recette'});
+  expect(snapshot).toHaveTextContent('IBU à chaud · Tinseth');expect(snapshot).toHaveTextContent('0');
+  expect(within(snapshot).queryByRole('figure',{name:'Amertume calculée et repère du style'})).not.toBeInTheDocument();
+ });
+ it('montre avant les ajouts les IBU, la plage du style et les masses par phase',()=>{
+  const r={...wheat(),hops:[...wheat().hops,{name:'Mosaic',weightG:40,alpha:12,stage:'dryHop' as const,dayOffset:4,aromaTiming:'fermentation' as const,aromaContactHours:48,aromaTemperatureC:18}]};
+  render(<HopRecipeSnapshot recipe={r}/>);
+  const snapshot=screen.getByRole('region',{name:'Bilan de houblonnage de la recette'});
+  expect(within(snapshot).getByRole('figure',{name:'Amertume calculée et repère du style'})).toHaveTextContent('Repère du style : 8–15 IBU');
+  expect(within(snapshot).getByText('À cru · 1 ajout').parentElement).toHaveTextContent('40 g');
+  expect(snapshot).toHaveTextContent('2 g/L');
+ });
+ it('ouvre depuis un ajout réel un scénario local de la bonne phase',()=>{
+  const r={...wheat(),hops:[...wheat().hops,{name:'Mosaic',weightG:40,alpha:12,stage:'dryHop' as const,dayOffset:4,aromaTiming:'fermentation' as const,aromaContactHours:48,aromaTemperatureC:18}]};
+  const onChange=vi.fn(), handled=vi.fn();
+  render(<HopRecipeWorkbench recipe={r} onChange={onChange} focusRequest={{index:1,revision:1}} onFocusHandled={handled}/>);
+  expect(screen.getByRole('tab',{name:'Simuler'})).toHaveAttribute('aria-selected','true');
+  expect(screen.getByRole('combobox',{name:'Ajout à simuler'})).toHaveValue('1');
+  expect(screen.getByLabelText('Phase du dry hop')).toHaveValue('fermentation');
+  expect(screen.getByLabelText('Dose de cet ajout à cru')).toHaveValue('2');
+  expect(handled).toHaveBeenCalledOnce();expect(onChange).not.toHaveBeenCalled();
+ });
  it('affine tout le catalogue du style par descriptions et prépare une variété hors des anciens exemples',async()=>{
   const original=mocks.varieties;
   try{
@@ -81,6 +106,18 @@ describe('Atelier houblons : décisions et application',()=>{
   rerender(<HopRecipeWorkbench recipe={{...legacy,style:'Hefeweizen'}}/>);
   expect(screen.getByText(/Actuelle : à choisir/)).toBeInTheDocument();
   expect(screen.queryByRole('button',{name:'Appliquer cet ajout'})).not.toBeInTheDocument();
+ });
+ it('recalcule les choix Goût / levure après un changement de style sans rouvrir l’atelier',()=>{
+  const initial=wheat();
+  const navigate=vi.fn();
+  const {rerender}=render(<HopRecipeWorkbench recipe={initial} onNavigate={navigate}/>);
+  tab('Goût / levure');
+  expect(screen.getByRole('radio',{name:'Girofle'})).toBeInTheDocument();
+  rerender(<HopRecipeWorkbench recipe={{...initial,style:'Double IPA'}} onNavigate={navigate}/>);
+  expect(screen.getByRole('radio',{name:'Fruits tropicaux'})).toBeInTheDocument();
+  expect(screen.queryByRole('radio',{name:'Girofle'})).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText(/Alternatives de levure/));
+  expect(screen.getByRole('button',{name:'Comparer les levures'})).toBeInTheDocument();
  });
  it('leads with actual style, useful metrics and a keyboard-accessible view choice',()=>{
   render(<HopRecipeWorkbench recipe={wheat()} />);

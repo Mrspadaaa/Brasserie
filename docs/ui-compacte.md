@@ -10,14 +10,31 @@ définies dans DESIGN ; ce guide explique quel outil employer et pourquoi.
 
 Pour chaque donnée, décider si le brasseur doit **lire, comparer, choisir,
 ajuster, suivre ou déclencher une action**. Choisir ensuite la représentation
-et le contrôle qui demandent le moins d'espace, de saisie et de gestes pour
-ce besoin. Un bouton classique, un champ texte et un paragraphe ne sont pas
+et le contrôle qui facilitent le mieux sa compréhension et son action, avec
+une densité lisible. Un bouton classique, un champ texte et un paragraphe ne sont pas
 des réponses automatiques.
 
 Il faut employer les outils appropriés, pas simplement les citer dans un plan.
 À la revue d'un écran, remplacer les contrôles ou affichages mal adaptés dans
-le périmètre de la tâche. Ne pas multiplier les nouveautés : le vocabulaire
-reste cohérent d'un écran à l'autre et l'état courant se comprend immédiatement.
+le périmètre de la tâche. Le vocabulaire reste cohérent d'un écran à l'autre et
+l'état courant se comprend immédiatement.
+
+## Rechercher les boosters UX/UI
+
+Encourager activement les moyens de compréhension autres que le texte. Chaque
+conception examine ce qui peut rendre les relations, conséquences et choix plus
+immédiats pour le brasseur. Le vocabulaire présenté plus bas est une ressource,
+pas une liste fermée de solutions. Réutiliser, composer, créer ou intégrer un
+outil selon son bénéfice et ses contraintes réelles.
+
+La revue valorise explicitement les boosters utiles effectivement réalisés.
+Comparer avant/après la compréhension, la précision des gestes, le repérage et
+l'effort pour terminer l'action. Conserver la richesse métier, les unités,
+valeurs exactes et incertitudes, le clavier, le zoom et une lecture accessible.
+Documenter le bénéfice observé ; mesurer si l'on annonce un gain chiffré.
+Ni le nombre de widgets ni la réduction de la hauteur de page ne sont des
+critères de réussite. Les détails à la demande servent les besoins secondaires,
+sans cacher ce qui décide l'action courante.
 
 ## Interagir : le contrôle selon le besoin
 

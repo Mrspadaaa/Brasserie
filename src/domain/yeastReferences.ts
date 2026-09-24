@@ -59,6 +59,9 @@ export function yeastReferences(saved: HopKnowledge[] = empty, options: { includ
   const result = valid.filter((r): r is HopYeast => r.kind === 'yeast').map(y => {
     const names = [...aliases.get(y.id) ?? []];
     if (y.id === 'fermentis-us05') names.push('SafAle US-05', 'Fermentis SafAle US-05', 'Fermentis Levure SafAle US-05', 'US-05');
+    // Manufacturer + printed product code is an exact product presentation,
+    // not an equivalence inferred between strains (e.g. "Wyeast 1056").
+    if (y.catalogue?.manufacturer && y.catalogue.productCode) names.push(`${y.catalogue.manufacturer} ${y.catalogue.productCode}`);
     const form = y.form ?? knownForms.get(y.id);
     return { ...y, ...(form ? { form: form as HopYeast['form'] } : {}), aliases: [...new Set([...names, ...(y.catalogue?.aliases ?? [])])] };
   });

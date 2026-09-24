@@ -2,10 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { HopRange } from '../../functions/src/hopIndexSchema';
 import type { FermentationStep } from '../types';
 const number = (n: number) => n.toLocaleString('fr-FR', { maximumSignificantDigits: 4 });
+export interface FermentationChartContact {
+  name: string; dayOffset?: number; contactHours?: number; temperatureC?: number;
+  phase?: 'fermentation' | 'postFermentation';
+}
+const contactText = (contact: FermentationChartContact) => `${contact.name} · ${Number.isFinite(contact.dayOffset) ? `J+${number(contact.dayOffset!)}` : 'jour non fixé'} · ${Number.isFinite(contact.contactHours) ? `${number(contact.contactHours!)} h` : 'durée à préciser'} · ${Number.isFinite(contact.temperatureC) ? `${number(contact.temperatureC!)} °C` : 'température à préciser'} · ${contact.phase === 'fermentation' ? 'fermentation active' : contact.phase === 'postFermentation' ? 'après fermentation' : 'phase à préciser'}`;
 
 /** A programme of setpoints, not a growth curve. An unknown duration interrupts
  * the timeline; an unknown temperature leaves a gap without hiding other steps. */
-export function FermentationTemperatureChart({ steps, bands = [], pitchTempC, compact = false }: { steps: FermentationStep[]; bands?: HopRange[]; pitchTempC?: number; compact?: boolean }) {
+export function FermentationTemperatureChart({ steps, bands = [], pitchTempC, compact = false, contacts = [], bandLabel = 'plage proposée, confiance faible (non statistique)' }: {
+  steps: FermentationStep[]; bands?: (HopRange | undefined)[]; pitchTempC?: number; compact?: boolean;
+  contacts?: FermentationChartContact[]; bandLabel?: string;
+}) {
   const box = useRef<HTMLDivElement>(null), [width, setWidth] = useState(400);
   let elapsed: number | null = 0;
   const segments = steps.map((s, i) => {
@@ -17,20 +25,24 @@ export function FermentationTemperatureChart({ steps, bands = [], pitchTempC, co
   const placed = segments.filter(s => s.start !== null && s.end !== null);
   const total = placed.at(-1)?.end ?? 0;
   const known = placed.filter(s => Number.isFinite(s.tempC));
-  const drawable = total > 0 && known.length > 0;
+  const placedContacts = contacts.map((contact, index) => ({ ...contact, index })).filter(contact => Number.isFinite(contact.dayOffset) && contact.dayOffset! >= 0 && Number.isFinite(contact.contactHours) && contact.contactHours! > 0);
+  const calendarEnd = Math.max(total, ...placedContacts.map(contact => contact.dayOffset! + contact.contactHours! / 24));
+  const drawable = calendarEnd > 0 && known.length > 0;
   useEffect(() => {
     if (!box.current || typeof ResizeObserver === 'undefined') return;
     const observer = new ResizeObserver(([entry]) => { if (entry.contentRect.width > 0) setWidth(Math.max(200, entry.contentRect.width)); });
     observer.observe(box.current); return () => observer.disconnect();
   }, [drawable]);
-  if (!drawable) return <p className="text-sm text-cave-400">Calendrier non positionnable : renseigne la durée et la température du premier palier.</p>;
+  if (!drawable) return <div><p className="text-sm text-cave-400">Calendrier non positionnable : renseigne la durée et la température du premier palier.</p>{contacts.length > 0 && <ul className="text-xs text-cave-200">{contacts.map((contact, index) => <li key={index}>{contactText(contact)}</li>)}</ul>}</div>;
   const temperatures = [...known.map(s => s.tempC), ...known.flatMap(s => s.band ? [s.band.min, s.band.max] : []), ...(Number.isFinite(pitchTempC) ? [pitchTempC!] : [])];
   const min = Math.floor(Math.min(...temperatures)) - 1, max = Math.ceil(Math.max(...temperatures)) + 1;
-  const left = 42, right = width - 18, top = 20, bottom = compact ? 106 : 166;
-  const x = (day: number) => left + day / total * (right - left), y = (temp: number) => bottom - (temp - min) / (max - min) * (bottom - top);
+  const left = 42, right = width - 18, top = 20, bottom = compact ? 82 : 166;
+  const axisY = bottom + (placedContacts.length ? 13 + placedContacts.length * 9 : 0);
+  const chartHeight = axisY + 39;
+  const x = (day: number) => left + day / calendarEnd * (right - left), y = (temp: number) => bottom - (temp - min) / (max - min) * (bottom - top);
   return <figure aria-label="Calendrier des températures de fermentation" className="space-y-2" data-total-days={total} data-temp-min={min} data-temp-max={max}>
-    <figcaption className="text-sm text-cave-200">Température de la bière · jours indicatifs</figcaption>
-    <div ref={box} className="w-full min-w-0"><svg className="w-full" height={bottom + 39} viewBox={`0 0 ${width} ${bottom + 39}`} role="img" aria-label="Consignes de température en fonction des jours de fermentation">
+    <figcaption className="text-sm text-cave-200">Température de la bière · jours indicatifs{contacts.length > 0 ? ' · contacts à cru' : ''}</figcaption>
+    <div ref={box} className="w-full min-w-0"><svg className="w-full" height={chartHeight} viewBox={`0 0 ${width} ${chartHeight}`} role="img" aria-label="Consignes de température et contacts à cru positionnés en fonction des jours">
       <title>Calendrier de consignes, à ajuster à la densité et à la dégustation</title>
       {[...new Set([0, 1, 2, 3].map(i => Math.round(min + (max - min) * i / 3)))].map(t => <g key={t}><line x1={left} x2={right} y1={y(t)} y2={y(t)} stroke="currentColor" className="text-cave-700" /><text x={left - 6} y={y(t) + 4} textAnchor="end" fill="currentColor" className="text-cave-400" fontSize="12">{number(t)}</text></g>)}
       {known.map(s => <g key={s.index} data-step={s.index} data-start={s.start} data-end={s.end} data-temp={s.tempC}>
@@ -40,10 +52,12 @@ export function FermentationTemperatureChart({ steps, bands = [], pitchTempC, co
         <line data-setpoint="true" x1={x(s.start!)} x2={x(s.end!)} y1={y(s.tempC)} y2={y(s.tempC)} stroke="currentColor" className="text-ebc-straw" strokeWidth="3" />
       </g>)}
       {Number.isFinite(pitchTempC) && <circle cx={x(0)} cy={y(pitchTempC!)} r="4" fill="currentColor" className="text-water" />}
-      {[0, total / 2, total].map((day, i) => <text key={i} x={x(day)} y={bottom + 24} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fill="currentColor" className="text-cave-200" fontSize="12">J{number(day)}</text>)}
+      {placedContacts.map((contact, index) => <rect key={contact.index} data-contact={contact.index} data-day={contact.dayOffset} data-hours={contact.contactHours} x={x(contact.dayOffset!)} y={bottom + 8 + index * 9} width={Math.max(2, x(contact.dayOffset! + contact.contactHours! / 24) - x(contact.dayOffset!))} height="5" fill="currentColor" className="text-cave-200"><title>{contactText(contact)}</title></rect>)}
+      {[0, calendarEnd / 2, calendarEnd].map((day, i) => <text key={i} x={x(day)} y={axisY + 24} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fill="currentColor" className="text-cave-200" fontSize="12">J{number(day)}</text>)}
       <text x="3" y="12" fill="currentColor" className="text-cave-400" fontSize="12">°C</text>
     </svg></div>
-    <p className="text-xs text-cave-400">Trait : consigne · bleu : ensemencement{bands.length > 0 ? ' · bande : plage proposée, confiance faible (non statistique).' : '.'}</p>
+    <p className="text-xs text-cave-400">Trait : consigne · bleu : ensemencement{bands.some(Boolean) ? ` · bande : ${bandLabel}` : ''}{placedContacts.length > 0 ? ' · barres : contacts à cru positionnés.' : '.'}</p>
+    {contacts.length > 0 && <ul className="text-xs text-cave-200" aria-label="Contacts de houblon à cru">{contacts.map((contact, index) => <li key={index}>{contactText(contact)}{!placedContacts.some(placed => placed.index === index) ? ' · non placé sur la frise' : ''}</li>)}</ul>}
     {known.length < segments.length && <p role="status" className="text-xs text-ebc-straw">Calendrier partiel : les températures inconnues restent vides ; après une durée inconnue, les paliers ne sont pas positionnés.</p>}
   </figure>;
 }

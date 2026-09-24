@@ -50,11 +50,14 @@ export const IngredientPicker: React.FC<IngredientPickerProps> = ({
   );
 
   const options: ComboOption[] = useMemo(
-    () =>
-      pool.map((i) => ({
-        value: i.name,
+    () => {
+      const nameCounts = new Map<string, number>();
+      pool.forEach(i => { const name = i.name.trim().toLocaleLowerCase('fr'); nameCounts.set(name, (nameCounts.get(name) ?? 0) + 1); });
+      return pool.map((i) => ({
+        value: i.ref,
         label: i.name,
         detail: [
+          (nameCounts.get(i.name.trim().toLocaleLowerCase('fr')) ?? 0) > 1 ? `Réf. ${i.ref}` : null,
           i.currentStock > 0
             ? `${Units.format(i.currentStock, i.unit)} en stock`
             : 'stock épuisé',
@@ -65,7 +68,8 @@ export const IngredientPicker: React.FC<IngredientPickerProps> = ({
           .filter(Boolean)
           .join(' · '),
         favorite: i.favorite
-      })),
+      }));
+    },
     [pool]
   );
 
@@ -73,7 +77,10 @@ export const IngredientPicker: React.FC<IngredientPickerProps> = ({
     <Combobox
       id={id}
       value={value}
-      onChange={(name) => onChange(name, pool.find((i) => i.name === name))}
+      onChange={(ref) => {
+        const selected = pool.find((i) => i.ref === ref);
+        if (selected) onChange(selected.name, selected);
+      }}
       options={options}
       placeholder={placeholder}
       ariaLabel={ariaLabel}

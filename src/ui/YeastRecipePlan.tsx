@@ -12,6 +12,7 @@ import { NumberInput } from './NumberInput';
 import { Input } from './Input';
 import { YeastRangeComparison } from './YeastRangeComparison';
 import { proposeYeastFermentationStrategy, type YeastFermentationStrategy } from '../domain/yeastFermentationStrategy';
+import { FermentationTemperatureChart, type FermentationChartContact } from './FermentationTemperatureChart';
 
 const number = (value?: number | null, digits = 1) => Number.isFinite(value) ? value!.toLocaleString('fr-FR', { maximumFractionDigits: digits }) : '—';
 export const projectionRange = (value: { min: number; max: number } | null | undefined, digits: number) => value
@@ -20,6 +21,10 @@ const processLabels = {
   unspecified: 'Fermentation alcoolique · procédé à confirmer', preacidified: 'Moût déjà acidifié',
   'acidifying-yeast': 'Levure acidifiante', 'mixed-culture': 'Cultures mixtes / successives',
 };
+const chartContacts = (recipe: TrialRecipe): FermentationChartContact[] => recipe.hops.filter(hop => hop.stage === 'dryHop').map(hop => ({
+  name: hop.name, dayOffset: hop.dayOffset, contactHours: hop.aromaContactHours, temperatureC: hop.aromaTemperatureC,
+  phase: hop.aromaTiming === 'fermentation' || hop.aromaTiming === 'postFermentation' ? hop.aromaTiming : undefined,
+}));
 const recipeKey = (recipe: TrialRecipe) => JSON.stringify({ yeast: recipe.yeast, yeastDesign: recipe.yeastDesign,
   fermentation: recipe.fermentation, fermentables: recipe.fermentables, hops: recipe.hops, mash: recipe.mash,
   style: recipe.style, styleRef: recipe.styleRef, volumeL: recipe.volumeL, ogTarget: recipe.ogTarget, efficiencyPct: recipe.efficiencyPct });
@@ -78,6 +83,7 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
     return { key, draft: { ...draft, ...(initialGoal ? { goal: initialGoal } : {}) } };
   });
   const [open, setOpen] = useState(!!initialGoal || !!initialYeastId);
+  const [goalChoice, setGoalChoice] = useState<YeastRecipeGoal>(local.draft.goal);
   const [edited, setEdited] = useState(!!initialGoal || !!initialYeastId);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -93,23 +99,24 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
   const result = useMemo(() => evaluateYeastRecipeDesign(recipe, draft, refs), [recipe, draft, refs]);
   const goals = YEAST_STYLE_FAMILIES.find(style => style.id === draft.styleId)?.goals ?? ['balanced' as const];
   const patch = (value: Partial<YeastRecipeDraft>) => { setLocal({ key: edited ? local.key : key, draft: { ...draft, ...value } }); setEdited(true); setNotice(''); setError(''); };
-  const propose = (goal = draft.goal) => {
+  const propose = (goal = goalChoice) => {
     const base = { ...(stale ? currentDraft : draft), goal };
     const suggestion = proposeYeastFermentationStrategy(recipe, base, refs);
     setLocal({ key, draft: { ...base, ...suggestion.patch } });
     setEdited(true);
-    setRationale(suggestion.rationale); setStrategy(suggestion); onGoal(goal);
+    setRationale(suggestion.rationale); setStrategy(suggestion); onGoal(goal); setGoalChoice(goal);
     setOpen(true); setNotice(''); setError(''); setEmptyPhaseFields([]);
     requestAnimationFrame(() => goalControl.current?.scrollIntoView({ block: 'start' }));
   };
-  const reset = () => { setLocal({ key, draft: currentDraft }); setEdited(false); setOpen(false); setNotice('Essai annulé. La recette reste inchangée.'); setError(''); setRationale(''); setStrategy(undefined); setEmptyPhaseFields([]); onGoal(currentDraft.goal); requestAnimationFrame(() => launcher.current?.focus()); };
+  const reset = () => { setLocal({ key, draft: currentDraft }); setGoalChoice(currentDraft.goal); setEdited(false); setOpen(false); setNotice('Essai annulé. La recette reste inchangée.'); setError(''); setRationale(''); setStrategy(undefined); setEmptyPhaseFields([]); onGoal(currentDraft.goal); requestAnimationFrame(() => launcher.current?.focus()); };
   const apply = () => {
     try {
       if (stale) throw Error('La recette ou les données de la souche ont changé. Reprends leur état actuel avant d’appliquer.');
       if (emptyPhaseFields.length) throw Error('Complète les températures et durées du programme avant de l’appliquer.');
       const next = applyYeastRecipeDesign(recipe, draft, refs, 'settings');
       const accepted = onChange(next) || next;
-      setLocal({ key: recipeKey(accepted), draft: createYeastRecipeDraft(accepted, refs) });
+      const acceptedDraft = createYeastRecipeDraft(accepted, refs);
+      setLocal({ key: recipeKey(accepted), draft: acceptedDraft }); setGoalChoice(acceptedDraft.goal);
       setEdited(false);
       setStrategy(undefined); setRationale('');
       setOpen(false); setNotice('Conduite appliquée au brouillon. Elle sera conservée avec la recette.'); setError('');
@@ -133,14 +140,28 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
     patch({ programme: next, ...(index === primaryIndex ? { temperatureC: next[index].tempC, days: next[index].days } : {}) });
   };
   return <section className="yc-plan" aria-label="Préparer une conduite de fermentation">
+    <div className="yc-current-programme"><div className="yc-projection-title"><h4>Conduite de cette recette</h4><span className="yc-tag">Recette</span></div>
+      <FermentationTemperatureChart compact steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC}
+        bands={(recipe.fermentation ?? []).map(step => step.kind === 'primaire' ? current.projection.dossier.temperature?.range : undefined)}
+        bandLabel="fenêtre documentée de la souche pour la primaire" contacts={chartContacts(recipe)} />
+    </div>
     <div className="yc-goal-row"><label htmlFor={`${id}-goal`}>Profil recherché</label>
-      <select ref={goalControl} id={`${id}-goal`} value={draft.goal} onChange={e => propose(e.target.value as YeastRecipeGoal)}>
+      <select ref={goalControl} id={`${id}-goal`} value={goalChoice} onChange={e => setGoalChoice(e.target.value as YeastRecipeGoal)}>
         {goals.map(goal => <option key={goal} value={goal}>{YEAST_RECIPE_GOAL_LABELS[goal]}</option>)}
       </select><button type="button" onClick={() => propose()}>Proposer une conduite</button>
     </div>
     <p className="yeast-small">{(draft.styleId === 'sour' || currentDraft.process !== 'unspecified') && <>{processLabels[currentDraft.process ?? 'unspecified']} · </>}<button ref={launcher} type="button" className="yeast-link" onClick={() => { setOpen(value => !value); if (!open) setStrategy(undefined); }} aria-expanded={open} aria-controls={`${id}-proposal`}>{open ? 'Replier l’essai' : 'Régler / simuler'}</button></p>
     <div id={`${id}-proposal`} hidden={!open} className="yc-proposal" aria-label="Scénario de levure">
       <div className="yc-projection-title"><h4>{result.candidate?.label || recipe.yeast.name} · {edited ? 'essai' : 'conduite actuelle'}</h4><span className="yc-tag">{edited ? 'Non appliqué' : 'Recette'}</span></div>
+      <FermentationTemperatureChart compact steps={programme} pitchTempC={draft.pitchTempC}
+        bands={programme.map(phase => phase.kind === 'primaire' ? result.projection.dossier.temperature?.range : undefined)}
+        bandLabel="fenêtre documentée de la souche pour la primaire" contacts={chartContacts(preview)} />
+      <div className="yc-preview-pair">
+        <YeastRangeComparison label="Densité finale" unit="SG" digits={3} current={current.fg.range} proposed={result.fg.range} />
+        <YeastRangeComparison label="Alcool estimé" unit="% vol" current={current.abv.range} proposed={result.abv.range} />
+      </div>
+      {!result.fg.range && <p className="yeast-notice">{result.fg.reasons[0]}</p>}
+      {!result.abv.range && <p className="yeast-notice">{result.abv.reasons[0]}</p>}
       {strategy && <section className="yc-strategy-effects" aria-label="Effets attendus de la stratégie"><h4>{strategy.title}</h4>{strategy.effects.map(effect => <p key={effect.label}><strong>{effect.label}</strong> · {effect.expected}{effect.limit && <span className="yeast-small block">{effect.limit}</span>}</p>)}</section>}
       {stale && <div className="yeast-notice" role="alert">La recette ou la fiche de la souche a changé. <button type="button" onClick={() => { setLocal({ key, draft: currentDraft }); setEdited(false); setRationale(''); setStrategy(undefined); setEmptyPhaseFields([]); onGoal(currentDraft.goal); }}>Reprendre les données actuelles</button></div>}
       {programme.length > 0 && <section className="yc-programme" aria-label="Programme proposé"><div className="yc-projection-title"><h4>Conduite prévue</h4><span className="yc-number">{number(totalDays)} j indicatifs</span></div>
@@ -156,12 +177,6 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
         <div className="yeast-setting-line"><label htmlFor={`${id}-temp`}>Consigne de fermentation<span className="yeast-small block">Température de la bière</span></label><NumberInput id={`${id}-temp`} aria-label="Température principale du scénario" value={draft.temperatureC} emptyValue={undefined} onValue={temperatureC => patch({ temperatureC })} /><span>°C</span></div>
       </div>
       {result.candidate?.temperature && <p className="yeast-small">Plage fabricant : {projectionRange(result.candidate.temperature.range, 1)} °C. La température ne modifie pas numériquement l’atténuation dans ce modèle.</p>}
-      <div className="yc-preview-pair">
-        <YeastRangeComparison label="Densité finale" unit="SG" digits={3} current={current.fg.range} proposed={result.fg.range} />
-        <YeastRangeComparison label="Alcool estimé" unit="% vol" current={current.abv.range} proposed={result.abv.range} />
-      </div>
-      {!result.fg.range && <p className="yeast-notice">{result.fg.reasons[0]}</p>}
-      {!result.abv.range && <p className="yeast-notice">{result.abv.reasons[0]}</p>}
       <label className="yc-process-label" htmlFor={`${id}-process`}>Procédé de fermentation<select id={`${id}-process`} value={draft.process ?? 'unspecified'} onChange={e => patch({ process: e.target.value as YeastRecipeDraft['process'] })}>{Object.entries(processLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
       {(draft.process === 'mixed-culture' || draft.process === 'acidifying-yeast') && <div className="yc-cultures"><p className="yeast-small">Décris les rôles. Le pH et la production d’alcool des cultures ne sont pas déduits d’un nom.</p>
         {(draft.cultureRoles ?? []).map((culture, index) => <div key={index} className="yc-culture-row"><Input aria-label={`Culture ${index + 1}`} value={culture.name} onChange={e => patch({ cultureRoles: draft.cultureRoles!.map((value, i) => i === index ? { ...value, name: e.target.value } : value) })} />

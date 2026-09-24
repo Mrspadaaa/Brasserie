@@ -1,5 +1,5 @@
 import type { Recipe } from '../types';
-import { assertRecipeFields } from '../domain/recipeValidation';
+import { assertRecipeSaveFields } from '../domain/recipeValidation';
 import { FirestoreRepo, stripUndefined } from './firestoreRepo';
 import { StorageService } from './storage';
 
@@ -23,7 +23,7 @@ function sameValue(actual: unknown, submitted: unknown): boolean {
 
 /** Resolves only for the submitted document, so callers can then clear the draft. */
 export async function saveRecipeConfirmed(recipe: Recipe): Promise<Recipe> {
-  assertRecipeFields(recipe);
+  assertRecipeSaveFields(recipe);
   if (!recipe.id?.trim()) throw new Error('Identifiant de recette manquant.');
   // Freeze the intended values before callbacks, edits or server completion can alter them.
   const submitted = structuredClone(recipe);

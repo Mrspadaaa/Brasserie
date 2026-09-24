@@ -74,6 +74,22 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('Guide aromatique dans la recette', () => {
+  it('édite chaque phase avec ses unités sans convertir un contact chaud en contact à cru', () => {
+    const host = mount(recipe({ boilMin: 60, hops: [
+      { name: 'Magnum', weightG: 20, alpha: 12, stage: 'boil', timeMin: 60 },
+      { name: 'Citra', weightG: 40, alpha: 12, stage: 'whirlpool', timeMin: 20, tempC: 80 },
+      { name: 'Mosaic', weightG: 60, alpha: 12, stage: 'dryHop', aromaTiming: 'fermentation', aromaContactHours: 48, aromaTemperatureC: 18 },
+    ] }));
+    const boil = screen.getByLabelText('Minutes avant la fin pour l’ajout 1');
+    fireEvent.change(boil, { target: { value: '30' } }); fireEvent.blur(boil);
+    const whirl = screen.getByLabelText('Durée au whirlpool de l’ajout 2 (min)');
+    fireEvent.change(whirl, { target: { value: '15' } }); fireEvent.blur(whirl);
+    const dry = screen.getByLabelText('Durée à cru de l’ajout 3 (h)');
+    fireEvent.change(dry, { target: { value: '72' } }); fireEvent.blur(dry);
+    expect(host.read().hops[0].timeMin).toBe(30); expect(host.read().hops[0].aromaContactHours).toBeUndefined();
+    expect(host.read().hops[1]).toMatchObject({ timeMin: 15, tempC: 80 }); expect(host.read().hops[1].aromaContactHours).toBeUndefined();
+    expect(host.read().hops[2]).toMatchObject({ aromaContactHours: 72, aromaTemperatureC: 18 });
+  });
   it('propose un objectif sur une base vide et conserve distinctement présence moyenne et forte', async () => {
     const host = mount(recipe());
     expect(screen.getByRole('region', { name: 'Guide aromatique de la recette' })).toBeInTheDocument();

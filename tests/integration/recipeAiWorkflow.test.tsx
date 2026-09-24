@@ -184,6 +184,19 @@ describe('Révision de fiche des levures rares', () => {
     StorageService.learnIngredient(rare.name, { category: 'Levure', yeastTechnicalFacts: technicalFacts, yeastFermentationFacts: fermentation });
     expect(put).toHaveBeenCalledTimes(1);
   });
+
+  it('n’écrit aucun lot homonyme au hasard et n’utilise qu’une référence encore présente', () => {
+    const rows: StockItem[] = ['A', 'B'].map(ref => ({ id: ref, ref, name: rare.name, category: 'Levure', unit: 'mL',
+      currentStock: 100, minStock: 0, reorder: false }));
+    vi.spyOn(StorageService, 'getStocks').mockImplementation(() => ({ rawMaterials: rows, cleaning: [], equipment: [], kegs: [] }));
+    const put = vi.spyOn(FirestoreRepo, 'put').mockImplementation(() => undefined);
+    StorageService.learnIngredient(rare.name, { category: 'Levure', yeastLab: 'Labo B' });
+    expect(put).not.toHaveBeenCalled();
+    StorageService.learnIngredient(rare.name, { category: 'Levure', ref: 'B', yeastLab: 'Labo B' });
+    expect(put).toHaveBeenCalledExactlyOnceWith('stockItems', 'B', { yeastLab: 'Labo B' }, { merge: true });
+    StorageService.learnIngredient(rare.name, { category: 'Levure', ref: 'supprimée', yeastLab: 'Labo C' });
+    expect(put).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('IA dans les étapes d’une recette enregistrée', () => {

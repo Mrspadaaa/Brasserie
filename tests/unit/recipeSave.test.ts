@@ -47,6 +47,20 @@ beforeEach(() => {
 afterEach(() => { FirestoreRepo.stopSync(); vi.restoreAllMocks(); });
 
 describe('Sauvegarde de la version réellement soumise', () => {
+  it('conserve une recette identifiable dont les doses restent à compléter', async () => {
+    const original = recipe();
+    original.fermentables![0].weightKg = 0;
+    original.hops[0].weightG = 0;
+    original.hops[0].stage = 'whirlpool';
+    delete original.hops[0].timeMin;
+    delete original.hops[0].tempC;
+    delete original.yeast.qty;
+    delete original.yeast.unit;
+    await expect(saveRecipeConfirmed(original)).resolves.toEqual(stripUndefined(original));
+    expect(state.add).toHaveBeenCalledExactlyOnceWith(original);
+    expect(state.submitted?.yeast.qty).toBeUndefined();
+    expect(state.submitted?.yeast.unit).toBeUndefined();
+  });
   it('attend l’écriture et la lecture serveur de la recette avant de résoudre', async () => {
     const commit = deferred(); state.commit.mockReturnValueOnce(commit.promise);
     const original = recipe(), resolved = vi.fn();
@@ -159,6 +173,9 @@ describe('Sauvegarde de la version réellement soumise', () => {
     ['volume absent', r => { r.volumeL = undefined as any; }],
     ['quantité négative', r => { r.hops[0].weightG = -1; }],
     ['température invalide', r => { r.mash.steps[0].tempC = NaN; }],
+    ['alpha non fini', r => { r.hops[0].alpha = NaN; }],
+    ['alpha hors bornes', r => { r.hops[0].alpha = 101; }],
+    ['contact à cru négatif', r => { r.hops[0].stage = 'dryHop'; r.hops[0].aromaContactHours = -1; }],
     ['identifiant absent', r => { r.id = ''; }],
   ])('ne produit aucune écriture pour une recette invalide : %s', async (_label, invalidate) => {
     const original = recipe(); invalidate(original);

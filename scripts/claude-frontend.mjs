@@ -95,7 +95,13 @@ async function main() {
   let result = '', errorText = '';
   child.stdout.setEncoding('utf8'); child.stdout.on('data', chunk => { result += chunk; });
   child.stderr.setEncoding('utf8'); child.stderr.on('data', chunk => { errorText += chunk; });
-  child.stdin.end(readFileSync(resolve(briefFile), 'utf8'));
+  child.stdin.end([
+    'Style de cette mission : Caveman lite. Réponses courtes, claires et concrètes en français ; travail approfondi et preuves conservés.',
+    'Termine les vérifications utiles dans le périmètre confié. Distingue ce qui est constaté, supposé ou non vérifié.',
+    'Ces consignes sont propres à cette session Claude. Ne charge pas les instructions, skills ou mémoires OpenAI ; partage seulement les documents métier et les résultats nécessaires.',
+    '',
+    readFileSync(resolve(briefFile), 'utf8'),
+  ].join('\n'));
   const code = await new Promise((done, reject) => { child.on('error', reject); child.on('close', done); });
   writeFileSync(resolve(output), result, 'utf8');
   // Quota errors may arrive as a valid JSON result with empty stderr. Keep the

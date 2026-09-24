@@ -1,5 +1,6 @@
 /* Recipe views adopt DESIGN.md's compact scale without changing other pages.
    Minimum heights grow with text/zoom. Targets stay inside their own rows. */
+body:has(.recipe-wizard) button[aria-label='Actions rapides'] { display: none; }
 .recipe-wizard {
   font-size: 14px;
   line-height: 1.4;

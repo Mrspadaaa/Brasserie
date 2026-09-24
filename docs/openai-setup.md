@@ -94,6 +94,8 @@ La revue dispose uniquement de lecture/recherche. Pour une correction, utiliser
 un checkout isolé et `--mode edit --allow-file src/ui/Fichier.tsx` pour chaque
 fichier confié. Relire les changements, les intégrer puis les retester. Le
 lanceur impose un seul processus de travail Claude à la fois.
+Il fournit aussi une consigne Caveman lite propre à cette session : compte rendu
+concis, profondeur et preuves conservées, sans importer les skills OpenAI.
 
 ## Assistance Luna depuis Claude
 

@@ -128,18 +128,25 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
   const read = (key: YeastFactKey, unit: string): YeastDossierMeasurement | undefined => {
     // A personal dossier describes the selected product. It is not overwritten by a catalogue refresh.
     const local = yeast.technicalFacts?.filter(f => f.key === key) ?? [];
-    const candidates = local.length ? local : catalogue.filter(f => f.key === key);
+    // A product sheet may list the same figure for beer and mead. Only beer
+    // observations enter the calculation; the complete sheet remains in facts.
+    const localCandidates = local.filter(f => brewingContext(f.context));
+    const catalogueCandidates = catalogue.filter(f => f.key === key && brewingContext(f.context));
+    // A personal beer observation wins. A mead-only note is retained in the
+    // sheet but cannot hide a separate beer observation from the catalogue.
+    const fromLocal = localCandidates.length > 0;
+    const candidates = fromLocal ? localCandidates : catalogueCandidates;
     if (!candidates.length) return undefined;
     const first = candidates[0];
     const valid = first.range && finite(first.range.min) && finite(first.range.max) && first.range.min <= first.range.max &&
       (unit !== '%' || first.range.min >= 0 && first.range.max <= 100) &&
       candidates.every(f => f.range && (key === 'alcoholTolerance' ? alcoholPercentUnit(f.unit) : f.unit === unit) && f.qualifier === first.qualifier &&
-        f.range.min === first.range!.min && f.range.max === first.range!.max && brewingContext(f.context));
+        f.range.min === first.range!.min && f.range.max === first.range!.max);
     if (!valid || !first.qualifier) {
       warnings.push(`${key === 'attenuation' ? 'Atténuation' : key === 'temperature' ? 'Température' : 'Tolérance à l’alcool'} : données absentes, conditionnelles ou non concordantes ; aucune plage n’est inventée.`);
       return undefined;
     }
-    return { range: { ...first.range! }, qualifier: first.qualifier, sources: uniqueSources(local.length ? local.flatMap(suppliedSource) : catalogue.filter(f => f.key === key).map(f => f.source)), ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
+    return { range: { ...first.range! }, qualifier: first.qualifier, sources: uniqueSources(fromLocal ? localCandidates.flatMap(suppliedSource) : catalogueCandidates.map(f => f.source)), ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
   };
   const documentedAttenuation = read('attenuation', '%');
   const hasAttenuationFacts = facts.some(f => f.key === 'attenuation');
@@ -236,7 +243,9 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   const documentaryContext = dossier.facts.filter(f => ['styles', 'application', 'attenuation'].includes(f.key)).map(f => `${f.reported} ${f.context ?? ''}`).join(' ');
   const nonWortUse = /\b(wine|vin|cidre|cider|mead|hydromel|seltzer|distill\w*|conditioning|conditionnement|refermentation|re-fermentation)\b/i.test(documentaryContext) ||
     /\b(champagne|ec[ -]?1118|cbc[ -]?1)\b/i.test(`${recipe.yeast.name} ${recipe.yeast.strain ?? ''} ${options.reference?.name ?? ''}`) || options.reference && yeastStyleEvidence(options.reference).culture === 'other-fermentation';
-  const localAttenuation = recipe.yeast.technicalFacts?.filter(f => f.key === 'attenuation') ?? [];
+  // Match the dossier's source selection: a personal mead observation cannot
+  // hide the compatible beer observation that supplies this projection.
+  const localAttenuation = recipe.yeast.technicalFacts?.filter(f => f.key === 'attenuation' && brewingContext(f.context)) ?? [];
   const explicitWortAttenuation = (localAttenuation.length ? localAttenuation : dossier.facts.filter(f => f.key === 'attenuation')).some(f => /^(beer|bière|biere|wort|moût|mout)$/i.test(f.context ?? ''));
   const restrictedMalt = capabilities?.sugars.maltose === 'no' || capabilities?.sugars.maltotriose === 'no';
   if (wort > 1e-8 && (nonWortUse && !explicitWortAttenuation || restrictedMalt)) {

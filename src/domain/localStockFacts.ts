@@ -1,5 +1,5 @@
 import type { Fermentable, HopIngredient, StockItem, YeastSpec } from '../types';
-import { applyMaltFacts, applyHopFacts, applyYeastFacts, factsFromStock, ingredientKey } from './ingredientFacts';
+import { applyMaltFacts, applyHopFacts, applyYeastFacts, factsForRecipeStockItem } from './ingredientFacts';
 
 /**
  * Complete facts that are already present in the brewer's stock. This path is
@@ -12,20 +12,15 @@ export function completeFromStockReferences(
   yeast: YeastSpec,
   stock: StockItem[]
 ) {
-  const cached = (kind: 'malt' | 'houblon' | 'levure', name: string) => {
-    const rows = stock.filter(s => ingredientKey(kind, s.name) === ingredientKey(kind, name) &&
-      s.category.toLocaleLowerCase('fr') === kind && s.technicalSource?.trim());
-    return rows.length === 1 ? factsFromStock(rows[0]) : undefined;
-  };
   const malt = fermentables.map(f => {
-    const facts = cached('malt', f.name);
+    const facts = factsForRecipeStockItem('malt', f, stock);
     return facts ? applyMaltFacts(f, facts) : f;
   });
   const hop = hops.map(h => {
-    const facts = cached('houblon', h.name);
+    const facts = factsForRecipeStockItem('houblon', h, stock);
     return facts ? applyHopFacts(h, facts) : h;
   });
-  const stockYeast = cached('levure', yeast.name);
+  const stockYeast = factsForRecipeStockItem('levure', yeast, stock);
   return {
     fermentables: malt,
     hops: hop,

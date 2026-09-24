@@ -56,6 +56,18 @@ l'application. [DESIGN.md](DESIGN.md) fixe l'échelle ; le
 [guide UI](docs/ui-compacte.md) relie les besoins aux composants disponibles.
 Toute tâche frontend, y compris déléguée, prend ces documents en entrée.
 
+## Compréhension et boosters UX/UI
+
+Les informations métier sont en grande majorité utiles. La densité doit servir
+la compréhension et le geste : diminuer toutes les tailles, retirer du contenu
+ou tout replier ne sont pas des objectifs. Les rappels utiles partagent une
+source commune ; les informations nécessaires à la décision restent visibles.
+
+Rechercher activement des moyens de compréhension autres que le texte, les
+« boosters UX/UI ». Le choix des représentations et interactions reste ouvert.
+Les revues valorisent leur bénéfice constaté pour comprendre une relation,
+choisir ou régler, avec précision, unités, incertitudes et accessibilité.
+
 ## Travaux
 
 - **Recettes** — assistant en sept étapes, import d'une recette collée, fiche de

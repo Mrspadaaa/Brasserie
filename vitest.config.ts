@@ -27,11 +27,22 @@ export default defineConfig({
   plugins: [react()],
   // Server deployment bundles this exact domain entry; tests use its TypeScript source.
   resolve: { alias: [
+    { find: '../data/seedData', replacement: fileURLToPath(new URL('./src/data/seedData.example.ts', import.meta.url)) },
     { find: './yeastCompanion.js', replacement: fileURLToPath(new URL('./src/domain/yeastCompanion.ts', import.meta.url)) },
     { find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) },
     { find: './financeContext.js', replacement: fileURLToPath(new URL('./src/domain/finance/assistantContext.ts', import.meta.url)) }
   ] },
   test: {
+    // Collection must not depend on a developer's real Firebase project or data.
+    env: {
+      VITE_FIREBASE_API_KEY: 'demo-laffinee-tests',
+      VITE_FIREBASE_PROJECT_ID: 'demo-laffinee-tests',
+      VITE_FIREBASE_APP_ID: '1:123:web:test',
+      VITE_FIREBASE_AUTH_DOMAIN: 'localhost',
+      VITE_USE_FIREBASE_EMULATORS: 'true',
+      VITE_RECAPTCHA_SITE_KEY: '',
+      VITE_APPCHECK_DEBUG_TOKEN: ''
+    },
     globals: true,
     environment: 'node',
     testTimeout: 15000,

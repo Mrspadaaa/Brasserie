@@ -27,6 +27,64 @@ const sugarFacts = (sugars: IngredientFermentationFacts['sugars'], hydrolysis: I
   source: { author: 'Laboratoire', title: 'Assimilation publiée', reference: 'https://example.org/sucres', kind: 'manufacturer', year: 2026 }
 });
 
+describe('Plages fabricant selon le contexte de fermentation', () => {
+  it('projette la référence bière malgré une observation personnelle réservée à l’hydromel', () => {
+    const reference = structuredClone(refs.find(row => row.id === 'wyeast-1056')!);
+    const mead: YeastTechnicalFact = { ...attenuation(90, 95), origin: 'personal', context: 'Mead', source: 'Mon hydromel' };
+    const value = base({ yeast: { name: 'Wyeast 1056', technicalFacts: [mead] } });
+    const expected = projectYeastRecipe(base({ yeast: { name: 'Wyeast 1056' } }), { reference });
+    const actual = projectYeastRecipe(value, { reference });
+    expect(actual.dossier.documentedAttenuation?.range).toEqual({ min: 73, max: 77 });
+    expect(actual.fg.range).not.toBeNull();
+    expect(actual.fg).toEqual(expected.fg);
+    expect(actual.abv).toEqual(expected.abv);
+    expect(actual.dossier.facts).toContainEqual(mead);
+    reference.catalogue!.facts = reference.catalogue!.facts.filter(fact => fact.context === 'Mead');
+    expect(projectYeastRecipe(value, { reference }).fg.range).toBeNull();
+  });
+
+  it('utilise les observations Beer de Wyeast 1056 et garde les observations Mead visibles', () => {
+    const reference = structuredClone(refs.find(row => row.id === 'wyeast-1056')!);
+    reference.catalogue!.facts.filter(fact => fact.context === 'Mead').forEach(fact => {
+      fact.source = { ...fact.source, reference: 'https://example.test/mead-only' };
+    });
+    const dossier = resolveYeastDossier({ name: 'Wyeast 1056' }, reference);
+    expect(dossier.temperature?.range).toEqual({ min: 16, max: 22 });
+    expect(dossier.documentedAttenuation?.range).toEqual({ min: 73, max: 77 });
+    expect(dossier.attenuation?.range).toEqual({ min: 73, max: 77 });
+    expect(dossier.facts.filter(fact => fact.key === 'temperature')).toHaveLength(2);
+    expect(dossier.facts.some(fact => fact.context === 'Mead')).toBe(true);
+    expect(dossier.temperature?.sources.some(source => source.reference.includes('mead-only'))).toBe(false);
+    expect(dossier.documentedAttenuation?.sources.some(source => source.reference.includes('mead-only'))).toBe(false);
+    expect(dossier.attenuation?.range.min).not.toBe(dossier.attenuation?.range.max);
+  });
+
+  it('ne résout pas des valeurs Beer contradictoires et ne transfère pas Mead seul', () => {
+    const reference = structuredClone(refs.find(row => row.id === 'wyeast-1056')!);
+    const beer = reference.catalogue!.facts.find(fact => fact.key === 'temperature' && fact.context === 'Beer')!;
+    reference.catalogue!.facts.push({ ...beer, reported: '18–24 °C', range: { min: 18, max: 24 } });
+    expect(resolveYeastDossier({ name: reference.name }, reference).temperature).toBeUndefined();
+    reference.catalogue!.facts = reference.catalogue!.facts.filter(fact => fact.context === 'Mead');
+    const dossier = resolveYeastDossier({ name: reference.name }, reference);
+    expect(dossier.temperature).toBeUndefined();
+    expect(dossier.attenuation).toBeUndefined();
+    expect(dossier.facts.length).toBeGreaterThan(0);
+  });
+
+  it('garde la priorité d’une observation personnelle Beer sans laisser Mead masquer la fiche Beer', () => {
+    const reference = refs.find(row => row.id === 'wyeast-1056')!;
+    const local: YeastTechnicalFact = { key: 'temperature', reported: '18–24 °C', range: { min: 18, max: 24 },
+      qualifier: 'range', unit: '°C', origin: 'personal', source: 'Mon lot', context: 'Beer' };
+    expect(resolveYeastDossier({ name: 'Wyeast 1056', technicalFacts: [local] }, reference).temperature?.range)
+      .toEqual({ min: 18, max: 24 });
+    const meadOnly = { ...local, context: 'Mead', source: 'Mon hydromel' };
+    const dossier = resolveYeastDossier({ name: 'Wyeast 1056', technicalFacts: [meadOnly] }, reference);
+    expect(dossier.temperature?.range).toEqual({ min: 16, max: 22 });
+    expect(dossier.temperature?.sources.some(source => source.title === 'Mon hydromel')).toBe(false);
+    expect(dossier.facts.some(fact => fact.source === 'Mon hydromel')).toBe(true);
+  });
+});
+
 describe('Prévision unique du moût, indépendante du catalogue', () => {
   it.each([0, .01])('garde la DI dérivée complète avec %s kg de malt et un kilo de sucre tardif', kg => {
     const sugar: Fermentable = { name: 'Saccharose', kind: 'sucre', use: 'fermentation', weightKg: 1, potentialPpg: 46, fermentabilityPct: 100, dayOffset: 4 };
