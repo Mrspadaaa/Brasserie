@@ -138,7 +138,7 @@ describe('Cible de bière, levure personnelle et variantes explicites', () => {
   it('conserve explicitement la cible chocolat avant navigation sans appliquer une variante de quantités', () => {
     const initial = initialRecipe(); initial.fermentables!.push({ name: 'Chocolate malt', kind: 'grain', use: 'empatage', weightKg: .4, potentialPpg: 30, colorEbc: 900 });
     const changed = vi.fn(), navigate = vi.fn(); render(<Host initial={initial} changed={changed} navigate={navigate} />); example('stout');
-    expect(screen.getByRole('region', { name: 'Cible de la bière' })).toHaveTextContent('Chocolate malt (0,4 kg)');
+    expect(screen.getByRole('region', { name: 'Cible de la bière' })).toHaveTextContent('Chocolate malt (400 g)');
     click('Conserver la cible et choisir les malts / ajouts');
     expect(navigate).toHaveBeenCalledWith('fermentescibles');
     expect(changed.mock.lastCall![0].fermentables).toEqual(initial.fermentables);
