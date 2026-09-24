@@ -57,12 +57,15 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     expect(explanation).toHaveTextContent('31,1 L de moût');
     expect(explanation).toHaveTextContent('34 L d’eau');
     expect(explanation).toHaveTextContent('115 min : 5,5 L évaporés');
-    expect(screen.getByText(/17,4 \+ 6,1 L à froid/)).toBeInTheDocument();
+    // The vessels are filled hot: 23.5 L prepared cold expands to 24.2 L.
+    const hotSparge = screen.getByText(/Rinçage à chaud :/).closest('[role="status"]')!;
+    expect(hotSparge).toHaveTextContent('24,2 L. 18 L dans le récipient principal + 6,2 L avec la bouilloire annexe');
 
     fireEvent.change(screen.getByRole('slider', { name: 'Épaisseur de maische' }), { target: { value: '6' } });
     expect(mashInput()).toHaveValue('18');
     expect(spargeInput()).toHaveValue('16');
-    expect(screen.queryByText(/Rinçage : 2 chauffes/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Rinçage à chaud :/).closest('[role="status"]')).toHaveTextContent('16,5 L. 16,5 L dans le récipient principal.');
+    expect(screen.queryByText(/avec la bouilloire annexe/)).not.toBeInTheDocument();
     expect(screen.queryByText('Pourquoi plus d’eau au rinçage ?')).not.toBeInTheDocument();
     expect(screen.getByText('Comprendre les volumes')).toBeInTheDocument();
     allerEtape('Récapitulatif');
@@ -83,9 +86,23 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     expect(screen.getByText('Pourquoi plus d’eau au rinçage ?').closest('details')).toHaveTextContent('115 min : 5,5 L évaporés');
     allerEtape('Identité');
     fireEvent.click(screen.getByRole('button', { name: 'Adapter à mon matériel actuel · Autre installation', exact: true }));
+    expect(screen.getByText(/Ce volume ne tient pas dans le matériel/)).toBeInTheDocument();
+    expect(screen.getByText('Matériel du plan : Royal Catering · cuve 45 L')).toBeInTheDocument();
+    // The preserved imported split requires 24.2 L hot, above the new 24 L
+    // maximum. Resolve that choice explicitly before retrying the adaptation.
+    allerEtape('Eau et sels');
+    fireEvent.change(screen.getByRole('slider', { name: 'Épaisseur de maische' }), { target: { value: '6' } });
+    allerEtape('Identité');
+    fireEvent.click(screen.getByRole('button', { name: 'Adapter à mon matériel actuel · Autre installation', exact: true }));
+    expect(screen.getByText(/Recette adaptée à 24 L/)).toBeInTheDocument();
     allerEtape('Récapitulatif');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette', exact: true }));
-    expect(save.mock.calls[0][0]).toMatchObject({ brewhouse: { id: 'other', equipment: { boilOffLPerHour: 1 } } });
+    expect(save).toHaveBeenCalledOnce();
+    const adapted = save.mock.calls[0][0] as Recipe;
+    expect(adapted).toMatchObject({ brewhouse: { id: 'other', equipment: { boilOffLPerHour: 1 } }, installation: { manualWaterSplit: false } });
+    expect(adapted.waterPlan!.spargeWaterL * 1.03).toBeLessThanOrEqual(18);
+    // Lower evaporation removes 3.68 L from the old 34 L requirement.
+    expect(adapted.waterPlan!.mashWaterL + adapted.waterPlan!.spargeWaterL).toBeCloseTo(34 - 2 * 115 / 60 * 0.96, 1);
   });
 
   it('signale que le plein volume ne tient pas et restaure le rinçage sans perdre de litres', () => {
@@ -95,7 +112,7 @@ describe('Comprendre et ajuster le partage d’eau sans changer de matériel en 
     expect(mashInput()).toHaveValue('34');
     expect(screen.queryByRole('textbox', { name: 'Volume d’eau de rinçage, en litres' })).not.toBeInTheDocument();
     expect(screen.getByText(/Empâtage trop volumineux/)).toBeInTheDocument();
-    expect(screen.queryByText(/Rinçage : 2 chauffes/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Rinçage à chaud :/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('switch', { name: /Eau de rinçage/ }));
     expect(mashInput()).toHaveValue('10,5');
     expect(spargeInput()).toHaveValue('23,5');

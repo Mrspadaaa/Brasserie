@@ -14,7 +14,7 @@ import { formatCHF, summarizeLedger } from '../../domain/finance/ledger';
 import { isCurrent } from '../../domain/catalogOrganization';
 import { statusOfBatch } from '../../domain/batchStatus';
 import { fermentationReadings } from '../../domain/fermentationReadings';
-import { daysSinceBrew } from '../../domain/productionInsights';
+import { daysSincePitch } from '../../domain/productionInsights';
 
 interface DashboardTabProps {
   transactions: Transaction[];
@@ -54,7 +54,7 @@ function StockThreshold({ item }: { item: StockItem }) {
 function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => void }) {
   const status = statusOfBatch(batch);
   const reading = fermentationReadings(batch);
-  const days = daysSinceBrew(batch);
+  const days = daysSincePitch(batch);
   const planned = batch.status === 'planifie';
   return <button type="button" onClick={() => onOpen(batch.id)} className={rowAction}>
     <span className="min-w-0 flex-1">

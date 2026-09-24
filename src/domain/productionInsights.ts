@@ -37,6 +37,18 @@ export function daysSinceBrew(batch: Batch, now = Date.now()): number | undefine
   const today = Date.UTC(local.getFullYear(), local.getMonth(), local.getDate());
   return Math.round((today - date) / dayMs);
 }
+
+export function fermentationStartedAt(batch: Batch): { at: number; measured: boolean } | undefined {
+  if (batch.brewDay?.pitchedAt != null) return { at: batch.brewDay.pitchedAt, measured: true };
+  if (batch.status === 'planifie' || batch.status === 'annule' || batch.brewDay?.phase === 'awaiting-pitch') return undefined;
+  const legacy = catalogDate(actualBrewDate(batch));
+  return legacy == null ? undefined : { at: legacy, measured: false };
+}
+
+export function daysSincePitch(batch: Batch, now = Date.now()): number | undefined {
+  const start = fermentationStartedAt(batch);
+  return start ? Math.floor((now - start.at) / dayMs) : undefined;
+}
 export function batchNextAction(batch: Batch): {
   label: string;
   section?: BatchDetailSection;
@@ -45,9 +57,11 @@ export function batchNextAction(batch: Batch): {
   if (batch.status === 'planifie') {
     return {
       label:
-        hasBrewStarted(batch)
-          ? batch.brewDay?.finishedAt ? 'Clôturer le brassage' : 'Reprendre le brassage'
-          : 'Préparer le brassage',
+        batch.brewDay?.phase === 'awaiting-pitch' && batch.brewDay.pitchedAt == null
+          ? 'Reprendre le refroidissement et ajouter la levure'
+          : hasBrewStarted(batch)
+            ? batch.brewDay?.finishedAt != null ? 'Clôturer le brassage' : 'Reprendre le brassage'
+            : 'Préparer le brassage',
       brew: true
     };
   }

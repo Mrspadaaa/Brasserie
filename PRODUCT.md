@@ -67,6 +67,34 @@ Toute tâche frontend, y compris déléguée, prend ces documents en entrée.
   déduction automatique des stocks.
 - **Stocks, finances, clients** — inventaire, TVA suisse, factures QR.
 
+## Installation et conduite de Gaëtan
+
+Le profil actif privilégie un empâtage fluide (4,2 L/kg), augmenté si la cuve le
+permet pour tenir **18 L de rinçage à chaud**. Jusqu’à **24 L à chaud** reste une
+exception explicite, avec le récipient principal et une bouilloire annexe ; le
+volume à préparer à froid est distinct. La cuve fait 45 L, avec une limite utile
+provisoire de 35 L à vérifier. Le fermenteur fait 30 L : 24 L est un repère,
+pas son plafond physique. La place pour la mousse dépend du style, de la levure
+et du choix expliqué du brasseur.
+
+Les recettes et brassins conservent leur profil matériel figé. Une nouvelle
+calibration concerne les prochaines recettes ; adapter une recette existante
+est une action explicite qui recalcule aussi l’eau et son traitement.
+
+Une montée en température et un maintien sont deux durées distinctes. Les
+estimations de chauffe et de refroidissement restent identifiées, avec leurs
+conditions et leurs données manquantes. Le serpentin puis le froid régulé sont
+suivis séparément. Transférer sans levure laisse le brassin en attente : seul
+l’ajout réel démarre la fermentation. Une température d’ensemencement plus
+haute exige un protocole sourcé pour le produit et la forme de levure exacts.
+
+Le rendement exige un couple volume/densité du même moût, sa référence de
+température et les ajouts réels. Les sucres et extraits ne calibrent pas le
+rendement des grains. Les coefficients changent uniquement après application
+explicite d’une proposition issue d’au moins trois brassins comparables
+(médiane des cinq derniers au maximum), avec sources, exclusions et historique.
+Une correction de mesure signale les calibrations à revoir sans les réappliquer.
+
 ## Contraintes durables
 
 - **Langue : français.** Vouvoiement jamais ; l'application tutoie ou reste

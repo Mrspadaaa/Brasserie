@@ -9,8 +9,11 @@ export interface BatchDates {
 export interface BrewDateSession {
   startedAt?: number;
   finishedAt?: number;
+  transferredAt?: number;
+  pitchedAt?: number;
   boilStartedAt?: number;
-  steps?: Array<{ startedAt?: number; doneAt?: number }>;
+  steps?: Array<{ startedAt?: number; doneAt?: number; rampStartedAt?: number; holdStartedAt?: number }>;
+  thermalSegments?: Array<{ startedAt: number }>;
   additions?: Record<string, { doneAt?: number }>;
   readings?: Array<{ at: number }>;
 }
@@ -38,8 +41,9 @@ export function breweryDay(at: number, offsetDays = 0): string {
 }
 
 export function brewStartedAt(session?: BrewDateSession): number | undefined {
-  const times = [session?.startedAt, session?.boilStartedAt, session?.finishedAt,
-    ...(session?.steps ?? []).flatMap(step => [step.startedAt, step.doneAt]),
+  const times = [session?.startedAt, session?.boilStartedAt, session?.finishedAt, session?.transferredAt, session?.pitchedAt,
+    ...(session?.steps ?? []).flatMap(step => [step.startedAt, step.doneAt, step.rampStartedAt, step.holdStartedAt]),
+    ...(session?.thermalSegments ?? []).map(segment => segment.startedAt),
     ...Object.values(session?.additions ?? {}).map(item => item.doneAt),
     ...(session?.readings ?? []).map(reading => reading.at)]
     .filter((time): time is number => typeof time === 'number' && Number.isFinite(time) && time >= 0);

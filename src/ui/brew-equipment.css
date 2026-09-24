@@ -136,3 +136,37 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Quantities and exceptions stay visible; only references fold. */
+.equipment-summary.equipment-plan {
+  padding: 8px;
+  border-color: #3d342e;
+  border-radius: 16px;
+  font-size: 12px;
+  line-height: 1.333;
+}
+.equipment-plan-heading,
+.equipment-plan-heading > span,
+.equipment-plan-details > summary { display: flex; align-items: center; gap: 6px; }
+.equipment-plan-heading { justify-content: space-between; flex-wrap: wrap; margin-bottom: 6px; }
+.equipment-plan-heading > span:first-child { color: #e7a070; font-weight: 600; }
+.equipment-plan-values { margin: 0; display: grid; gap: 3px; }
+.equipment-plan-values > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: baseline; }
+.equipment-plan-values dt { color: #d8cec5; }
+.equipment-plan-values dd { margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #f5f0ea; text-align: right; }
+.equipment-plan-values .equipment-plan-secondary dt { color: #9a8a7e; }
+.equipment-plan .equipment-plan-warning { color: #e3b55d; margin-top: 6px; padding-left: 6px; border-left: 2px solid currentColor; }
+.equipment-plan .equipment-plan-warning[role='alert'] { color: #f29289; }
+.equipment-plan .equipment-plan-warning p + p,
+.equipment-plan .equipment-plan-warning button { margin-top: 4px; }
+.equipment-plan .equipment-plan-note { margin-top: 5px; color: #9a8a7e; }
+.equipment-plan-details { margin-top: 6px; border-top: 1px solid #3d342e; }
+.equipment-plan-details > summary { min-height: 28px; justify-content: space-between; cursor: pointer; list-style: none; color: #d8cec5; }
+.equipment-plan-details > summary:focus-visible { outline: 2px solid #f2c14e; outline-offset: 2px; border-radius: 4px; }
+.equipment-plan-details[open] > summary svg { transform: rotate(180deg); }
+.equipment-plan-details > div { display: grid; gap: 6px; color: #d8cec5; }
+.equipment-plan-details a { text-decoration: underline; text-underline-offset: 2px; color: #f5f0ea; }
+.equipment-plan-details strong { color: #f5f0ea; }
+@media (max-width: 350px) {
+  .equipment-plan-values > div { gap: 5px; }
+}

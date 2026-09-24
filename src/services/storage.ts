@@ -20,6 +20,7 @@ import {
 } from '../types';
 
 import { initialCompany, initialBrewhouses } from '../data/seedData';
+import { withCurrentInstallation } from '../domain/brewPreferences';
 import { FirestoreRepo, CollectionName } from './firestoreRepo';
 import { writeCatalogOrganization } from './catalogOrganization';
 import { deviceBackup, restoreBackup } from './dataBackup';
@@ -1151,15 +1152,15 @@ export const StorageService = {
   getConfig(): AppConfig {
     const docs = FirestoreRepo.all<any>('config');
     const stored = docs.find((d) => d.__docId === 'app');
-    if (!stored) return defaultConfig;
+    if (!stored) return withCurrentInstallation(defaultConfig);
     const { __docId, ...rest } = stored;
-    return {
+    return withCurrentInstallation({
       ...defaultConfig,
       ...rest,
       company: { ...defaultConfig.company, ...(rest.company || {}) },
       fiscal: { ...defaultConfig.fiscal, ...(rest.fiscal || {}) },
       security: { ...defaultConfig.security, ...(rest.security || {}) }
-    };
+    });
   },
 
   saveConfig(config: AppConfig) {

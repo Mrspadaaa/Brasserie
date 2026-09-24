@@ -67,7 +67,7 @@ describe('brew budget to doubled-volume batch creation', () => {
     await waitFor(() => expect(close).toHaveBeenCalledOnce());
   });
 
-  it('keeps creation open with a useful error when the new volume has no cuverie', async () => {
+  it('requires explicit installation adoption for an old recipe, including the unchanged volume', () => {
     vi.mocked(StorageService.getConfig).mockReturnValue({ ...config, brewhouses: [] });
     const close = vi.fn();
     render(<QuickActionModal isOpen recipes={[{ ...recipe, volumeL: 30, brewhouse: undefined }]} onClose={close} />);
@@ -76,15 +76,15 @@ describe('brew budget to doubled-volume batch creation', () => {
     fireEvent.change(volume, { target: { value: '50' } });
     fireEvent.blur(volume);
     fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Configure une cuverie');
+    expect(screen.getByRole('alert')).toHaveTextContent('Paramètres → Brasserie');
     expect(created).toEqual([]);
     expect(close).not.toHaveBeenCalled();
     fireEvent.change(volume, { target: { value: '30' } });
     fireEvent.blur(volume);
     fireEvent.click(screen.getByRole('button', { name: 'Créer le brassin à brasser' }));
-    expect(created).toHaveLength(1);
-    expect(created[0].recipeSnapshot.sourceRecipeId).toBe('R');
-    await waitFor(() => expect(close).toHaveBeenCalledOnce());
+    expect(screen.getByRole('alert')).toHaveTextContent('Modifier la recette');
+    expect(created).toEqual([]);
+    expect(close).not.toHaveBeenCalled();
   });
 
   it('shows doubled adjuncts in the calculator and preserves the scientific results for a different target cuverie', () => {

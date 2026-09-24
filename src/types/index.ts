@@ -235,6 +235,8 @@ export interface MashProfile {
   ratioLPerKg?: number;
   mashoutTempC?: number;
   mashoutDurationMin?: number;
+  /** False deliberately skips mash-out; missing keeps the historical recipe behavior. */
+  mashoutEnabled?: boolean;
   /** Vitesse indicative du système, distincte des durées de maintien. */
   heatingRateCPerMin?: number;
   spargeTempC?: number;
@@ -435,6 +437,7 @@ export interface Recipe {
   preBoilHotL?: number;
   /** Frozen physical assumptions used to build this recipe. */
   brewhouse?: BrewhouseProfile;
+  installation?: import('./brewSystem').RecipeInstallationChoice;
   /**
    * Tout ce qui apporte du sucre : grains, sucres, lactose, fruits, extraits.
    * Le nom a changé de `malts` parce qu'un malt n'est pas un sucre — et que
@@ -525,6 +528,13 @@ export interface BrewDayReading {
   note?: string;
   /** pH mesuré sur un échantillon refroidi, pas dans le moût chaud. */
   roomTemp?: boolean;
+  /** Explicitly paired measurements of the same wort, not just nearby timestamps. */
+  pairId?: string;
+  temperatureC?: number;
+  volumeBasis?: 'cold' | 'hot';
+  thermalSegmentId?: string;
+  medium?: 'wort' | 'water' | 'coolant' | 'chamber';
+  measurementStage?: 'preboil' | 'postboil' | 'fermenter' | 'kettle-cold';
 }
 
 export interface BrewDayState {
@@ -533,6 +543,12 @@ export interface BrewDayState {
   currentIndex: number;
   startedAt?: number;
   finishedAt?: number;
+  transferredAt?: number;
+  pitchedAt?: number;
+  pitchTemperatureC?: number;
+  phase?: 'brewing' | 'awaiting-pitch';
+  thermalSegments?: import('./brewSystem').BrewThermalSegment[];
+  thermalChoices?: import('./brewSystem').BrewThermalChoices;
   revision?: number;
   savedAt?: number;
   /** Dernière version confirmée par le serveur, sans déduire les gestes manquants. */
@@ -546,7 +562,9 @@ export interface BrewDayState {
   /** Ajustement du jour, sans réécrire la recette. */
   boilDurationMin?: number;
   boilFinishedAt?: number;
-  additions?: Record<string, { amount: number; doneAt?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
+  additions?: Record<string, { amount: number; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
+  /** Measured free wort left after lautering; zero must also be explicitly confirmed. */
+  lauterRetainedL?: number;
   preparations?: Record<string, boolean>;
   notes?: Array<{ id: string; at: number; stepId: string; text: string }>;
   acidCorrections?: Array<{ id: string; at: number; stepId: string; readingAt: number; acid: AcidId; amount: number }>;
@@ -725,6 +743,12 @@ export interface BrewhouseProfile {
   deadSpaceL: number;
   mashRatioLPerKg: number; // e.g. 3.0 L/kg
   equipment?: BrewingEquipment;
+  preferences?: import('./brewSystem').BrewingPreferences;
+  /** Links to existing inventory; never duplicate equipment records. */
+  equipmentRefs?: { kettle?: string; sparger?: string; fermenter?: string; auxiliary?: string };
+  calibrationHistory?: import('./brewSystem').SystemCalibrationEvent[];
+  /** Provenance links only in frozen recipes; the audit events remain in installation settings. */
+  calibrationEventIds?: string[];
 }
 
 export interface AppConfig {

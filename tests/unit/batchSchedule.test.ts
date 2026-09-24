@@ -44,11 +44,28 @@ describe('intention and actual brewing day', () => {
     expect(batchDisplayDate(started)).toBe('21.09.2026');
     expect(() => rescheduleBatchPatch(started, '29.09.2026')).toThrow('commencé');
   });
-  it.each([{ startedAt: time }, { boilStartedAt: time }, { steps: [{ doneAt: time }] }, { additions: { malt: { doneAt: time } } }, { readings: [{ at: time }] }, { finishedAt: time }])('recognizes actual work even without an explicit global start', session => {
+  it.each([
+    { startedAt: time }, { boilStartedAt: time }, { steps: [{ doneAt: time }] },
+    { steps: [{ rampStartedAt: time }] }, { steps: [{ holdStartedAt: time }] },
+    { thermalSegments: [{ startedAt: time }] }, { transferredAt: time }, { pitchedAt: time },
+    { additions: { malt: { doneAt: time } } }, { readings: [{ at: time }] }, { finishedAt: time }
+  ])('recognizes actual work even without an explicit global start', session => {
     expect(brewSessionDatePatch(batch({ plannedBrewDate: '' }), session)).toEqual({ plannedBrewDate: '', brewDate: '21.09.2026' });
   });
   it('uses the earliest actual event, not a later resumed timer', () => {
     expect(brewSessionDatePatch(batch(), { startedAt: time + 86400000, steps: [{ doneAt: time }] }).brewDate).toBe('21.09.2026');
+  });
+  it('keeps the brewing day when yeast is added the next day, including legacy thermal journals', () => {
+    const session = {
+      startedAt: time + 86400000,
+      transferredAt: time + 3600000,
+      pitchedAt: time + 86400000,
+      steps: [{ rampStartedAt: time - 3600000, holdStartedAt: time }],
+      thermalSegments: [{ startedAt: time - 7200000 }]
+    };
+    expect(brewSessionDatePatch(batch(), session)).toEqual({ plannedBrewDate: '25.09.2026', brewDate: '20.09.2026' });
+    expect(brewSessionDatePatch(batch({ brewDate: '19.09.2026' }), session)).toEqual({});
+    expect(brewSessionDatePatch(batch(), { transferredAt: time, pitchedAt: time + 86400000 }).brewDate).toBe('21.09.2026');
   });
   it('does not overwrite historical or manually corrected real dates', () => {
     expect(brewSessionDatePatch(batch({ status: 'termine', plannedBrewDate: undefined, brewDate: '18.09.2026' }), { startedAt: time })).toEqual({});

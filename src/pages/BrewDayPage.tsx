@@ -25,7 +25,9 @@ import { ingredientsOf } from '../domain/recipeSnapshot';
 import { breweryDay, brewSessionDatePatch, hasBrewStarted } from '../domain/batchSchedule';
 import { BatchSchedule } from '../ui/production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
-import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep } from '../domain/brewDay';
+import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep, recordPitch } from '../domain/brewDay';
+import { effectiveThermalTarget, startThermalSegment } from '../domain/brewThermal';
+import { pitchTemperatureFeedback } from '../domain/pitchingPlan';
 import {
   actualAmount,
   areaOf,
@@ -38,7 +40,6 @@ import {
   effectiveFermentables,
   isBoilStep,
   isUsefulTimer,
-  measuredEfficiency,
   mineralFeedback,
   PREPARATIONS
 } from '../domain/brewCompanion';
@@ -74,6 +75,8 @@ import { NumberInput } from '../ui/NumberInput';
 import { useBrewSession } from '../ui/useBrewSession';
 import { brewNow } from '../services/brewClock';
 import { BrewAssist } from '../ui/BrewAssist';
+import { BrewThermalControl } from '../ui/BrewThermalControl';
+import { BrewSystemFeedback } from '../ui/BrewSystemFeedback';
 import { YeastBrewDayGuide } from '../ui/YeastBrewDayGuide';
 import { BrewAide } from '../ui/BrewAide';
 import { buildYeastCompanion } from '../domain/yeastCompanion';
@@ -146,6 +149,8 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     return () => window.clearTimeout(timer);
   }, [notice]);
   const [confirmFinish, setConfirmFinish] = useState(false);
+  const [pitchTemperature, setPitchTemperature] = useState<number>();
+  const finalizing = useRef(false);
   const [confirmAdvance, setConfirmAdvance] = useState(false);
   const [note, setNote] = useState('');
   const [noteStepId, setNoteStepId] = useState<string>();
@@ -155,6 +160,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     kind: ReadingKind;
     token: number;
   }>();
+  const [requestedPair, setRequestedPair] = useState<{stage: 'preboil' | 'postboil' | 'fermenter' | 'kettle-cold'; token: number}>();
   const [durationOpen, setDurationOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [advice, setAdvice] = useState<{
@@ -170,6 +176,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     label: 'Préparation',
     durationMin: 0
   };
+  const thermalTarget = effectiveThermalTarget(recipe, state, current);
+  const measuredStep = thermalTarget == null ? current : { ...current, tempC: thermalTarget };
+  const rampBeforeHold = (isMash(current.id) || current.id === 'whirlpool') && current.tempC != null && current.durationMin > 0;
   const alarms = useMemo(() => brewAlarms(state, recipe), [state, recipe]);
   const area = view === 'recipe' || view === 'journal' ? areaOf(current.id) : view;
   const boiled = isBoilStep(current);
@@ -213,7 +222,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const showReadingSummary = !recipe.nolo?.enabled || Object.keys(READING).some(kind => {
     const reading = [...(state.readings ?? [])].reverse().find(r => r.kind === kind && r.stepId === current.id);
     if (!reading) return false;
-    const feedback = measuredReadingFeedback(reading, state, current, actualRecipe);
+    const feedback = measuredReadingFeedback(reading, state, measuredStep, actualRecipe);
     return feedback.tone === 'watch' || (kind === 'ph' && isMash(current.id) && feedback.tone === 'neutral');
   });
   const ingredients = brewIngredients(executionRecipe);
@@ -248,6 +257,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     update((s) => ({ ...s, currentIndex: index }));
     setDurationOpen(false);
     setRequestedReading(undefined);
+    setRequestedPair(undefined);
     contentRef.current?.closest('main')?.scrollTo?.({ top: 0 });
   };
   /**
@@ -286,7 +296,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         delete n.boilFinishedAt;
         return n;
       });
-    else update((s) => startBrewStep(s, brewNow()));
+    else if (rampBeforeHold && current.rampStartedAt == null && current.startedAt == null) {
+      update(s => startThermalSegment(s, current, current.id === 'whirlpool' ? 'immersion' : 'heating', thermalTarget!, brewNow()));
+      requestMeasure('temperature');
+    } else update((s) => startBrewStep(s, brewNow()));
   };
   const setDuration = (minutes: number) => {
     if (!Number.isFinite(minutes)) return;
@@ -310,6 +323,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       }
       return {
         ...s,
+        thermalSegments: s.thermalSegments?.map(segment => segment.stepId === s.steps[s.currentIndex]?.id && segment.endedAt == null && s.steps[s.currentIndex]?.doneAt == null ? { ...segment, endedAt: brewNow() } : segment),
         steps: s.steps.map((x, i) => {
           if (i !== s.currentIndex) return x;
           const n = { ...x };
@@ -399,10 +413,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     }
     aiLock.current = false;
   };
-  const rig = config.brewhouses?.find((b) => b.id === config.activeBrewhouseId);
-  const efficiency = !specialExtraction && ['preboil', 'ensemencement'].includes(current.id)
-    ? measuredEfficiency(actualRecipe, state, current.id)
-    : null;
+  const rig = recipe.brewhouse ?? config.brewhouses?.find((b) => b.id === config.activeBrewhouseId);
   const stepsHere = state.steps
     .map((s, i) => ({ s, i }))
     .filter(
@@ -413,7 +424,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const activeTimers = state.steps.filter(
     (s) => isUsefulTimer(s) && s.startedAt != null && s.doneAt == null
   );
-  const finishedReadings = finalBrewReadings(state);
+  const finishedReadings = finalBrewReadings(state, recipe);
   const confirmed = ingredients.filter(
     (i) => i.planned > 0 && state.additions?.[i.id]?.doneAt != null
   ).length;
@@ -492,13 +503,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
     ? 'Revenir au brassage'
     : lastStep
-      ? 'Clôturer le brassage'
+      ? state.pitchedAt != null ? 'Synchroniser et clôturer' : 'J’ai ajouté la levure'
       : showTimer && !running && !completed
         ? current.pausedAt != null
           ? 'Reprendre'
           : boiled
             ? 'Ébullition atteinte'
-            : 'Démarrer'
+            : rampBeforeHold
+              ? current.rampStartedAt == null ? current.id === 'whirlpool' ? 'Commencer le refroidissement' : 'Commencer la montée' : 'Démarrer le maintien'
+              : 'Démarrer'
         : completed
           ? 'Étape suivante'
           : boiled
@@ -529,7 +542,14 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       });
   };
   const requestMeasure = (kind: ReadingKind) => {
+    setRequestedPair(undefined);
     setRequestedReading({ kind, token: performance.now() });
+    openCapture('measure');
+  };
+  const requestWortPair = (stepId: string) => {
+    const stage = stepId === 'ensemencement' ? 'fermenter' : stepId === 'kettle-cold' ? 'kettle-cold' : stepId === 'postboil' ? 'postboil' : 'preboil';
+    setRequestedReading(undefined);
+    setRequestedPair({stage, token: performance.now()});
     openCapture('measure');
   };
   const noteNolo = (subject: string) => {
@@ -1012,16 +1032,16 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                           {instructions}
                         </p>
                       )}
-                      {(showTimer || current.tempC != null) && (
+                      {(showTimer || thermalTarget != null) && (
                         <div className="brew-instruments">
-                          {current.tempC != null && (
+                          {thermalTarget != null && (
                             <div className="brew-temperature">
                               <span>
                                 <Thermometer size={16} />
                                 Consigne
                               </span>
                               <strong className="brew-digits">
-                                {current.tempC}
+                                {thermalTarget}
                                 <small>°C</small>
                               </strong>
                             </div>
@@ -1073,6 +1093,12 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                             </div>
                           )}
                         </div>
+                      )}
+                      <BrewThermalControl recipe={recipe} state={state} step={measuredStep} now={now} update={update} onMeasure={requestMeasure} />
+                      {current.id === 'ensemencement' && state.pitchedAt == null && (
+                        <label className="brew-thermal-coolant">Moût à l’ajout de levure (facultatif)
+                          <span><NumberInput aria-label="Température du moût à l’ajout de levure" value={pitchTemperature} min={-10} max={120} onValue={setPitchTemperature} /> °C</span>
+                        </label>
                       )}
                       {showTimer && (
                         <>
@@ -1228,7 +1254,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <button
                         type="button"
                         className="brew-reading-prompt"
-                        onClick={() => requestMeasure(prompt.kind as ReadingKind)}
+                        onClick={() => prompt.title === 'Volume + densité' ? requestWortPair(current.id) : requestMeasure(prompt.kind as ReadingKind)}
                       >
                         <Thermometer size={18} />
                         <span>
@@ -1264,18 +1290,19 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       <div>
                         <span>Volume en fermenteur</span>
                         <strong>
-                          {finishedReadings.volume?.value ?? '—'} <small>L</small>
+                          {finishedReadings.volume?.approximate ? '≈ ' : ''}{finishedReadings.volume?.value ?? '—'} <small>L à froid</small>
                         </strong>
                         <span>Cible {recipe.volumeL ?? '—'} L</span>
                       </div>
                     </div>
                     {(!finishedReadings.gravity || !finishedReadings.volume) && (
                       <p className="brew-muted">
-                        Relève les valeurs manquantes avec « Mesurer » pour compléter le bilan.
+                        {[finishedReadings.reasons.gravity, finishedReadings.reasons.volume].filter(Boolean).join(' ')}
                       </p>
                     )}
                   </section>
                 )}
+                {!displayRecipe && ['preboil', 'ensemencement'].includes(current.id) && <BrewSystemFeedback recipe={recipe} state={state} onMeasure={requestWortPair} onIngredients={()=>{const index=state.steps.findIndex(s=>isMash(s.id));if(index>=0){choose(index);requestAnimationFrame(revealAdditions);}}} compact />}
                 {/*
                   Les aides viennent après les doses, fermées, avec un résumé qui dit
                   de quoi elles parlent. Un avertissement ouvre sa section tout seul
@@ -1295,11 +1322,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                         now={now}
                         update={update}
                         onMeasure={requestMeasure}
+                        thermalHandled
                         stock={stockItems}
-                        brewhouse={
-                          config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ??
-                          recipe.brewhouse
-                        }
+                        brewhouse={rig}
                       />
                     )}
                   <NoloBrewDayGuide
@@ -1337,7 +1362,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             {!isConsulting && showReadingSummary && (
               <BrewReadingsSummary
                 state={state}
-                step={current}
+                step={measuredStep}
                 recipe={actualRecipe}
                 onMeasure={() => openCapture('measure')}
               />
@@ -1352,53 +1377,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
               <div className="brew-measure-panel">
                 <BrewDayMeasurements
                   key={current.id}
-                  step={current}
+                  step={measuredStep}
                   recipe={actualRecipe}
                   requestedKind={requestedReading}
+                  requestedPair={requestedPair}
                   state={state}
                   update={update}
                   drafts={readingDrafts.current}
                 />
               </div>
-              {efficiency && (
-                <section aria-label="Rendement mesuré" className="brew-efficiency">
-                  <h3>
-                    {current.id === 'preboil'
-                      ? 'Rendement d’empâtage + filtration'
-                      : 'Rendement global en fermenteur'}
-                  </h3>
-                  {efficiency.known ? (
-                    <>
-                      <p className="brew-efficiency-value">
-                        {efficiency.approximate ? '≈ ' : ''}
-                        {efficiency.pct} %
-                      </p>
-                      <p>
-                        {efficiency.volumeL} L × densité {efficiency.sg.toFixed(3).replace('.', ',')} / potentiel des
-                        ingrédients.
-                        {efficiency.direct && ' Sucres et extraits pris en compte.'}
-                      </p>
-                      <p className="brew-muted">
-                        {efficiency.questionable
-                          ? 'Résultat impossible : vérifie unités, volume, densité et potentiels.'
-                          : efficiency.approximate
-                            ? 'Estimation : confirme densité corrigée et volume ramené à 20 °C.'
-                            : rig && current.id === 'ensemencement'
-                              ? `Repère matériel : ${rig.efficiencyPct} %. Compare aussi les pertes de transfert.`
-                              : 'Volume et densité doivent correspondre au même moût.'}
-                      </p>
-                      {efficiency.spreadMin > 30 && (
-                        <p className="brew-feedback">
-                          Les deux relevés sont espacés de plus de 30 minutes : confirme qu’ils
-                          décrivent le même volume.
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="brew-muted">{efficiency.reason}</p>
-                  )}
-                </section>
-              )}
             </BrewCapturePanel>
             {!isConsulting && (
               <section aria-label="Préparations" className="brew-preparations">
@@ -1572,25 +1559,28 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         open={confirmFinish}
         className="brew-confirm"
         onClose={() => setConfirmFinish(false)}
-        title="Clôturer le brassage ?"
-        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'non relevée'} · ${finishedReadings.volume?.value ?? '—'} L en fermenteur.`}
-        consequence={`${confirmed}/${ingredients.filter((i) => i.planned > 0).length} ajouts cochés. Le journal et les écarts resteront consultables. Le brassin passera en fermentation.`}
-        confirmLabel="Clôturer"
+        title={state.pitchedAt != null ? 'Finaliser la synchronisation ?' : 'Confirmer l’ajout de levure ?'}
+        what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${finishedReadings.volume.value} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
+        consequence={`${confirmed}/${ingredients.filter((i) => i.planned > 0).length} ajouts cochés. ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${pitchTemperature} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
+        confirmLabel={state.pitchedAt != null ? 'Synchroniser et clôturer' : 'Confirmer la levure ajoutée'}
         onConfirm={async () => {
-          const f = finalBrewReadings(latest.current);
-          update((s) => ({ ...s, finishedAt: brewNow() }));
+          if (finalizing.current) return;
+          finalizing.current = true;
+          update((s) => recordPitch(s, brewNow(), pitchTemperature));
           if (!(await session.flush())) {
+            finalizing.current = false;
             setNotice(
-              'Clôture conservée sur cet appareil. Réessaie après synchronisation du journal.'
+              'Ajout de levure conservé sur cet appareil. Réessaie la clôture après synchronisation du journal.'
             );
             return;
           }
+          const f = finalBrewReadings(latest.current, recipe);
           onFinish({
             ...batchRef.current,
             ...brewSessionDatePatch(batchRef.current, latest.current),
             brewDay: latest.current,
-            ...(f.gravity ? { og: f.gravity.value.toFixed(3) } : {}),
-            ...(f.volume ? { volumeBrewedL: f.volume.value } : {}),
+            og: f.gravity?.value.toFixed(3),
+            volumeBrewedL: f.volume?.value,
             status: 'fermentation'
           });
         }}

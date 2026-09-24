@@ -96,6 +96,8 @@ const Metric: React.FC<{
 );
 
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
+import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
+import { measuredWortYield } from '../domain/brewSystemInsights';
 
 export const RecipePage: React.FC<RecipePageProps> = ({
   recipe,
@@ -122,7 +124,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
   const waterReadings = useMemo(() => describeSavedRecipeWater(recipe), [recipe]);
 
-  const brewhouse =
+  const brewhouse = recipe.brewhouse ??
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
 
   const hops = useMemo(() => (recipe.hops ?? []).map(normalizeHop), [recipe.hops]);
@@ -529,7 +531,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             {coldPilot ? <p className="text-xs text-cave-200">Volumes estimés pour l’extraction froide et la préparation du pilote. Confirmer l’eau ajoutée, le volume récupéré et le pH ; aucune dose d’acide chaude n’est reprise.</p> : measuredExtraction && <p className="text-sm text-cave-200">Plan d’empâtage chaud conservé comme référence. Les volumes, acides et paliers d’extraction à froid restent à établir et à mesurer.</p>}
             {!measuredExtraction&&waterReadings&&<p data-mash-diagnostic={mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).status} className="text-sm text-ebc-straw">{mashPhDiagnostic(waterReadings.phEstimate,recipe.waterPlan.targetPh??5.4).message}</p>}
             {recipe.waterPlan.sourceSnapshot?.note&&<p className="text-xs text-cave-400">{recipe.waterPlan.sourceSnapshot.note}</p>}
-            <details><summary className="min-h-touch cursor-pointer text-sm text-cave-200">Matériel et volumes de cuve</summary><BrewEquipmentSummary recipe={recipe} profile={brewhouse}/></details>
+            <BrewEquipmentSummary recipe={recipe} profile={brewhouse}/>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-400">{coldPilot ? 'Extraction' : 'Empâtage'}</div>
@@ -710,6 +712,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       )}
 
       {/* --- Empâtage et fermentation ------------------------------------ */}
+      {!measuredExtraction && <RecipeThermalPlan recipe={recipe}/>}
       {(recipe.mash?.steps?.length || recipe.fermentation?.length) && (
         <>
             {recipe.mash?.steps?.length > 0 && (coldPilot ? <Section title="Extraction à froid prévue" hint={`${coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C · ${coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h`}>
@@ -728,7 +731,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       : ''}
                 </h3>
                 <ul className="divide-y divide-cave-850">
-                  {[...recipe.mash.steps, ...(recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
+                  {[...recipe.mash.steps, ...(recipe.mash.mashoutEnabled !== false && recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
                     <li key={i} className="py-1.5 flex items-baseline gap-2">
                       <span className="flex-1 text-base text-cave-50">{s.name}</span>
                       <span className="reading text-sm text-water">{s.tempC} °C</span>
@@ -797,10 +800,9 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           <ul className="divide-y divide-cave-850">
             {relatedBatches.map((b) => {
               const measured = b.og ? parseFloat(b.og) : null;
-              const gap =
-                measured && og > 1
-                  ? BrewingMath.brewEfficiency(og, measured, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75)
-                  : null;
+              const observed = b.recipeSnapshot && b.brewDay ? measuredWortYield(b.recipeSnapshot,b.brewDay,'ensemencement') : null;
+              const expectedOg = b.recipeSnapshot?.ogTarget;
+              const gap = measured && expectedOg != null ? {deltaPoints:Math.round((measured-expectedOg)*1000)} : null;
               return (
                 <li key={b.id}>
                   <button
@@ -814,7 +816,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       </span>
                       <span className="block text-sm text-cave-400">
                         {batchDisplayDate(b) ?? 'Date à définir'}
-                        {gap ? ` · ${gap.realEfficiencyPct} % d’efficacité réelle` : ''}
+                        {observed?.value != null ? ` · ${observed.value.toFixed(1)} % ${observed.scope === 'grain' ? 'de rendement mesuré' : 'd’extrait global'}` : ' · rendement : mesures à compléter'}
                       </span>
                     </span>
                     <span className="text-right shrink-0">

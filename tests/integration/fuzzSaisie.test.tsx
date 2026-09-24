@@ -293,6 +293,24 @@ describe('Fuzz — l’assistant de recette', () => {
   /** Parcourt les étapes et malmène chaque champ qu'elles portent. */
   const etapes = ['Identité', 'Fermentescibles', 'Houblons', 'Levure', 'Paliers'];
 
+  it('un palier vidé demande ses valeurs et ne présente pas un total de maintien partiel', () => {
+    monterAssistant();
+    allerEtape('Paliers');
+    const temp = screen.getByRole('textbox', { name: 'Température du palier 1 — Saccharification, en degrés' });
+    const duration = screen.getByRole('textbox', { name: 'Durée du palier 1 — Saccharification, en minutes' });
+    saisir(temp as HTMLInputElement, '');
+    saisir(duration as HTMLInputElement, '');
+    const plan = screen.getByRole('region', { name: 'Temps et conduite du brassage' });
+    expect(plan).toHaveTextContent('Température à renseigner');
+    expect(plan).toHaveTextContent('Durées de maintien à renseigner');
+    expect(plan).not.toHaveTextContent(/NaN|Infinity|undefined|10 min de maintien/);
+    expect(screen.queryByText('Comparer sans mash-out')).not.toBeInTheDocument();
+    saisir(temp as HTMLInputElement, '67');
+    saisir(duration as HTMLInputElement, '60');
+    expect(plan).toHaveTextContent('70 min de maintien');
+    expect(plan).not.toHaveTextContent('Durées de maintien à renseigner');
+  });
+
   it('⚠️ aucune étape ne fait apparaître NaN, undefined ou Infinity', () => {
     const { container } = monterAssistant();
     const fautes: string[] = [];

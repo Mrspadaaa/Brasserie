@@ -150,7 +150,7 @@ describe('Saisie et contexte des mesures', () => {
         { at: 3, kind: 'ph', value: 5.7, unit: '' }
       ]
     };
-    expect(finalBrewReadings(s)).toEqual({
+    expect(finalBrewReadings(s)).toMatchObject({
       gravity: undefined,
       volume: undefined
     });
@@ -160,12 +160,52 @@ describe('Saisie et contexte des mesures', () => {
         kind: 'densite',
         value: 1.056,
         unit: 'SG',
+        roomTemp: true,
         stepId: 'refroidissement'
       },
-      { at: 5, kind: 'volume', value: 25, unit: 'L', stepId: 'ensemencement' }
+      { at: 5, kind: 'volume', value: 25, unit: 'L', roomTemp: true, stepId: 'ensemencement' }
     );
     expect(finalBrewReadings(s).gravity?.value).toBe(1.056);
     expect(finalBrewReadings(s).volume?.value).toBe(25);
+  });
+  it('ne promeut pas une nouvelle mesure sans référence et ne revient pas aux anciennes valeurs valides', () => {
+    const old = [
+      { id: 'old-og', at: 10, kind: 'densite' as const, value: 1.055, unit: 'SG', roomTemp: true, stepId: 'ensemencement' },
+      { id: 'old-volume', at: 11, kind: 'volume' as const, value: 25, unit: 'L', volumeBasis: 'cold' as const, stepId: 'ensemencement' },
+    ];
+    const s: BrewDayState = { currentIndex: 0, steps: [], readings: [
+      { ...old[0], id: 'new-og', at: 30, value: 1.044, roomTemp: false },
+      { ...old[1], id: 'new-volume', at: 31, value: 27, volumeBasis: undefined }, ...old,
+    ] };
+    const before = JSON.stringify(s), final = finalBrewReadings(s);
+    expect(final.gravity).toBeUndefined(); expect(final.volume).toBeUndefined();
+    expect(final.rawGravity?.id).toBe('new-og'); expect(final.rawVolume?.id).toBe('new-volume');
+    expect(final.reasons.gravity).toContain('non qualifiée');
+    expect(JSON.stringify(s)).toBe(before);
+  });
+  it('ramène un volume à ébullition à froid uniquement avec le retrait du profil figé', () => {
+    const s: BrewDayState = { currentIndex: 0, steps: [], readings: [
+      { id: 'og', at: 10, kind: 'densite', value: 1.055, unit: 'SG', roomTemp: true, stepId: 'ensemencement' },
+      { id: 'hot', at: 11, kind: 'volume', value: 26, unit: 'L', volumeBasis: 'hot', temperatureC: 100, stepId: 'ensemencement' },
+    ] };
+    expect(finalBrewReadings(s).volume).toBeUndefined();
+    const profile = { brewhouse: { equipment: { coolingShrinkagePct: 4 } } } as unknown as Recipe;
+    const final = finalBrewReadings(s, profile);
+    expect(final.volume).toMatchObject({ value: 24.96, approximate: true });
+    expect(final.rawVolume).toMatchObject({ value: 26, volumeBasis: 'hot', temperatureC: 100 });
+    expect(s.readings![1].value).toBe(26);
+    s.readings![1].temperatureC = 50;
+    expect(finalBrewReadings(s, profile).volume).toBeUndefined();
+  });
+  it('un nouveau couple incomplet ou une densité après levure ne reprend pas une ancienne OG', () => {
+    const s: BrewDayState = { currentIndex: 0, steps: [], pitchedAt: 100, readings: [
+      { at: 10, pairId: 'old', kind: 'densite', value: 1.055, unit: 'SG', roomTemp: true, stepId: 'ensemencement' },
+      { at: 10, pairId: 'old', kind: 'volume', value: 24, unit: 'L', volumeBasis: 'cold', stepId: 'ensemencement' },
+      { at: 20, pairId: 'new', kind: 'volume', value: 25, unit: 'L', volumeBasis: 'cold', stepId: 'ensemencement' },
+    ] };
+    expect(finalBrewReadings(s)).toMatchObject({ gravity: undefined, volume: { value: 25 } });
+    s.readings!.push({ at: 110, pairId: 'new', kind: 'densite', value: 1.035, unit: 'SG', roomTemp: true, stepId: 'ensemencement' });
+    expect(finalBrewReadings(s).gravity).toBeUndefined();
   });
   it('pas de comparaison OG avant ébullition ni d’acide proposé au rinçage', () => {
     expect(
@@ -176,5 +216,31 @@ describe('Saisie et contexte des mesures', () => {
     expect(readingFeedback('ph', 6, { id: 'sparge', label: 'x', durationMin: 0 }).detail).toMatch(
       /aucune dose/
     );
+  });
+  it.each(['water-topup', 'grain-1'])('écarte une OG prise avant un ajout réel de %s, sans inventer sa dilution', (id) => {
+    const s: BrewDayState = { currentIndex: 0, steps: [], additions: { [id]: { amount: 2, doneAt: 20 } }, readings: [
+      { id: 'og-before', at: 10, kind: 'densite', value: 1.050, unit: 'SG', roomTemp: true, stepId: 'ensemencement' },
+      { id: 'volume-after', at: 30, kind: 'volume', value: 22, unit: 'L', volumeBasis: 'cold', stepId: 'ensemencement' },
+    ] };
+    const before = JSON.stringify(s), final = finalBrewReadings(s);
+    expect(final.gravity).toBeUndefined();
+    expect(final.rawGravity?.value).toBe(1.050);
+    expect(final.reasons.gravity).toContain('Le moût a changé');
+    expect(final.volume?.value).toBe(22);
+    expect(JSON.stringify(s)).toBe(before);
+    s.readings!.push({ id: 'og-after', at: 31, kind: 'densite', value: 1.045, unit: 'SG', roomTemp: true, stepId: 'ensemencement' });
+    expect(finalBrewReadings(s).gravity?.value).toBe(1.045);
+  });
+  it('demande un nouveau volume après appoint mais préserve les mesures prises avant une addition en fermentation', () => {
+    const s: BrewDayState = { currentIndex: 0, steps: [], additions: { 'water-topup': { amount: 2, doneAt: 20 } }, readings: [
+      { at: 10, kind: 'densite', value: 1.050, unit: 'SG', roomTemp: true, stepId: 'ensemencement' },
+      { at: 10, kind: 'volume', value: 20, unit: 'L', volumeBasis: 'cold', stepId: 'ensemencement' },
+    ] };
+    expect(finalBrewReadings(s).volume).toBeUndefined();
+    s.pitchedAt = 15;
+    expect(finalBrewReadings(s)).toMatchObject({ gravity: { value: 1.050 }, volume: { value: 20 } });
+    delete s.pitchedAt;
+    s.additions!['water-topup'].amount = 0;
+    expect(finalBrewReadings(s)).toMatchObject({ gravity: { value: 1.050 }, volume: { value: 20 } });
   });
 });

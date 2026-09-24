@@ -67,6 +67,7 @@ export interface WaterBrewContext {
     mashRatioLPerKg: number;
   };
   equipment?: import('../../types').BrewingEquipment;
+  preferences?: import('../../types/brewSystem').BrewingPreferences;
   boilMin?: number;
 }
 

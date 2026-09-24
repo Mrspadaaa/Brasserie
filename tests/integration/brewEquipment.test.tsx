@@ -3,7 +3,7 @@ import { render, screen, fireEvent, cleanup, act } from '@testing-library/react'
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { BrewhouseSettings } from '../../src/ui/BrewhouseSettings';
 import { BrewEquipmentSummary } from '../../src/ui/BrewEquipmentSummary';
-import { practicalEquipment } from '../../src/domain/brewEquipment';
+import { practicalEquipment, practicalBrewingPreferences } from '../../src/domain/brewEquipment';
 import { recipe, brewState } from '../fixtures/brewCompanion';
 import { defaultConfig, StorageService } from '../../src/services/storage';
 import { SettingsModal } from '../../src/components/SettingsModal';
@@ -67,16 +67,16 @@ describe('Réglages matériels discrets', () => {
     expect(activity).not.toHaveBeenCalled();
     expect(userKey).not.toHaveBeenCalled();
   });
-  it('reste replié et recalcule le volume utile lorsque la place pour la mousse change', () => {
+  it('conserve le volume habituel quand le repère de mousse change', () => {
     const change = vi.fn();
     render(<BrewhouseSettings profile={rig} onChange={change} />);
-    const title = screen.getByText('Matériel, capacités et eau');
-    expect(title.closest('details')).not.toHaveAttribute('open');
-    fireEvent.click(title);
+    const title = screen.getByText('Mon installation');
+    expect(title.closest('details')).toHaveAttribute('open');
     fireEvent.change(screen.getByLabelText('Place pour la mousse (%)'), {
       target: { value: '25' }
     });
-    expect(change.mock.calls[0][0].volumeL).toBe(22.5);
+    expect(change.mock.calls[0][0].volumeL).toBe(24);
+    expect(change.mock.calls[0][0].equipment.fermenterHeadspacePct).toBe(25);
   });
   it('enregistre le profil de l’onglet Brasserie et empêche une limite utile supérieure à la cuve', async () => {
     vi.spyOn(StorageService, 'confirmPendingWrites').mockResolvedValue();
@@ -92,12 +92,12 @@ describe('Réglages matériels discrets', () => {
       />
     );
     fireEvent.click(screen.getByRole('button', { name: /Brasserie/ }));
-    fireEvent.click(screen.getByText('Matériel, capacités et eau'));
     fireEvent.change(screen.getByLabelText('Place pour la mousse (%)'), {
       target: { value: '25' }
     });
     await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Sauvegarder' })));
-    expect(saved.mock.calls[0][0].brewhouses[0].volumeL).toBe(22.5);
+    expect(saved.mock.calls[0][0].brewhouses[0].volumeL).toBe(24);
+    expect(saved.mock.calls[0][0].brewhouses[0].equipment.fermenterHeadspacePct).toBe(25);
     fireEvent.change(screen.getByLabelText('Cuve · limite utile à chaud (L)'), {
       target: { value: '50' }
     });
@@ -107,10 +107,48 @@ describe('Réglages matériels discrets', () => {
     const r = recipe({ volumeL: 30 }),
       s = brewState(r, { waterMix: { mash: { roL: 5 }, sparge: { roL: 2.3 } } });
     render(<BrewEquipmentSummary recipe={r} state={s} profile={rig} />);
-    fireEvent.click(screen.getByText('Mon matériel'));
-    expect(screen.getByText('Volume à revoir')).toBeInTheDocument();
+    expect(screen.getByText('À revoir')).toBeVisible();
+    expect(screen.getByText(/Répartis le surplus/)).toBeVisible();
+    expect(screen.getByText(/Répartis le surplus/).closest('details')).toBeNull();
+    fireEvent.click(screen.getByText('Repères et osmosée'));
     expect(screen.getByText('2 packs de 5 L d’osmosée')).toBeInTheDocument();
-    expect(screen.getByText(/Garder 2.7 L/)).toBeInTheDocument();
+    expect(screen.getByText(/Garder 2,7 L/)).toBeInTheDocument();
     expect(screen.getByText(/Répartis le surplus/)).toBeInTheDocument();
+  });
+  it('montre l’appoint et permet de l’accepter sans ouvrir les détails', () => {
+    const accept = vi.fn();
+    const r = recipe();
+    r.waterPlan!.spargeWaterL = 20;
+    render(<BrewEquipmentSummary recipe={r} profile={{ ...rig, preferences: practicalBrewingPreferences }} onAcceptSpargeException={accept} />);
+    expect(screen.getByText('Appoint nécessaire')).toBeVisible();
+    expect(screen.getByRole('status')).toHaveTextContent('Bouilloire annexe : 2,6 L à chaud');
+    expect(screen.getByRole('status').closest('details')).toBeNull();
+    expect(screen.queryByText(/chauffes/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Prévoir cet appoint' }));
+    expect(accept).toHaveBeenCalledOnce();
+  });
+  it('distingue un remplissage au-dessus du conseil de la capacité totale', () => {
+    render(<BrewEquipmentSummary recipe={recipe({ volumeL: 26 })} profile={rig} />);
+    expect(screen.getByText(/Remplissage au-dessus du repère de 24 L/)).toBeVisible();
+    expect(screen.queryByText(/Le volume atteint la capacité totale/)).not.toBeInTheDocument();
+    expect(screen.getByText('26 / 30 L')).toBeVisible();
+  });
+  it('conserve l’acceptation de l’appoint du brassin tant que le volume ne change pas', () => {
+    const r = recipe({ installation: { spargeExceptionAccepted: true } });
+    r.waterPlan!.spargeWaterL = 20;
+    const { rerender } = render(<BrewEquipmentSummary recipe={r} state={brewState(r)} profile={{ ...rig, preferences: practicalBrewingPreferences }} />);
+    expect(screen.getByText('Exception acceptée pour cette recette.')).toBeVisible();
+    expect(screen.queryByText(/Confirme cet appoint/)).not.toBeInTheDocument();
+    rerender(<BrewEquipmentSummary recipe={r} state={brewState(r, { additions: { 'water-sparge': { amount: 21 } } })} profile={{ ...rig, preferences: practicalBrewingPreferences }} />);
+    expect(screen.queryByText('Exception acceptée pour cette recette.')).not.toBeInTheDocument();
+    expect(screen.getByText(/Confirme cet appoint/)).toBeVisible();
+  });
+  it('garde le matériel du brassin figé et ne remplace pas l’eau absente par zéro', () => {
+    const r = recipe({ volumeL: 26, waterPlan: undefined, brewhouse: { ...rig, equipment: { ...practicalEquipment, fermenterCapacityL: 40 } } });
+    render(<BrewEquipmentSummary recipe={r} state={brewState(r)} profile={rig} />);
+    expect(screen.getByText('26 / 40 L')).toBeVisible();
+    expect(screen.getAllByText('À renseigner')).toHaveLength(2);
+    expect(screen.queryByText('0 L')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Maische sous/)).not.toBeInTheDocument();
   });
 });

@@ -2,7 +2,35 @@ import { estimateSwissBeerTax } from '../domain/finance/swissBeerTax';
 import { Recipe, BrewhouseProfile, Batch, HopStage, FermentableKind,
   Fermentable
 } from '../types';
-import { equipmentErrors } from '../domain/brewEquipment';
+import { equipmentErrors, brewingPreferenceErrors, equipmentCheck, MASH_WATER_EXPANSION } from '../domain/brewEquipment';
+import { resizeWaterPlan } from '../domain/resizeWaterPlan';
+import { snapshotBrewhouse } from '../domain/brewPreferences';
+import { replanRecipeWater } from '../domain/recipeWater';
+
+export interface WaterVolumeOptions {
+  /** Cold preparation quantities explicitly chosen by the brewer. */
+  manualWaterSplit?: { mashWaterL: number; spargeWaterL: number };
+}
+export interface WaterVolumePlan {
+  mashWaterL: number;
+  spargeWaterL: number;
+  preBoilVolumeL: number;
+  preBoilHotL?: number;
+  grainAbsorptionL: number;
+  boilOffL: number;
+  hopLossL: number;
+  mashRatioLPerKg: number;
+  planningStatus: 'ready' | 'exception' | 'impossible' | 'invalid';
+  issues: string[];
+  spargeHotL?: number;
+  spargeMainHotL?: number;
+  spargeAuxiliaryHotL?: number;
+  spargePreferredHotL?: number;
+  spargeMaximumHotL?: number;
+  preferredMashRatioLPerKg?: number;
+  mashIncreasedForSparge?: boolean;
+  waterBalanceErrorL?: number;
+}
 
 /**
  * Les grammes de houblon qui RESTENT dans la cuve d'ébullition.
@@ -437,27 +465,20 @@ export const BrewingMath = {
     /** Durée d'ébullition réelle. L'évaporation est un débit, pas un forfait. */
     boilMin: number = 60,
     /** Houblons qui restent dans la cuve (tout sauf le houblonnage à cru). */
-    kettleHopG: number = 0
-  ): {
-    mashWaterL: number;
-    spargeWaterL: number;
-    preBoilVolumeL: number;
-    preBoilHotL?: number;
-    grainAbsorptionL: number;
-    boilOffL: number;
-    hopLossL: number;
-    /** L'épaisseur réellement appliquée, en L/kg — c'est elle qu'on affiche. */
-    mashRatioLPerKg: number;
-  } {
+    kettleHopG: number = 0,
+    options: WaterVolumeOptions = {}
+  ): WaterVolumePlan {
     const round1 = (n: number) => Math.round(n * 10) / 10;
-    const vide = {
+    const vide: WaterVolumePlan = {
       mashWaterL: 0,
       spargeWaterL: 0,
       preBoilVolumeL: 0,
       grainAbsorptionL: 0,
       boilOffL: 0,
       hopLossL: 0,
-      mashRatioLPerKg: 0
+      mashRatioLPerKg: 0,
+      planningStatus: 'invalid',
+      issues: ['Renseigne une masse de grain et un volume final positifs pour calculer l’eau.']
     };
     if (!Number.isFinite(totalGristKg) || totalGristKg <= 0 || !Number.isFinite(volumeL) || volumeL <= 0) {
       return vide;
@@ -477,36 +498,89 @@ export const BrewingMath = {
     const hopLossL = round1(safeHopG * 0.006);
     const deadSpaceL = Number.isFinite(brewhouse?.deadSpaceL) ? Math.max(0, brewhouse!.deadSpaceL!) : 2.0;
     const e = brewhouse?.equipment;
-    if (e && !equipmentErrors(e).length) {
-      const coldFactor = 1-e.coolingShrinkagePct/100;
-      const evaporationHot = e.boilOffLPerHour*safeBoilMin/60;
-      const preHot = (volumeL+deadSpaceL+hopLossL)/coldFactor+evaporationHot;
-      const preCold = preHot*coldFactor;
-      const absorption = totalGristKg*e.grainAbsorptionLPerKg;
-      const totalWater = round1(preCold+absorption);
-      const preferred = totalGristKg*(brewhouse?.mashRatioLPerKg || 3);
-      const maxMash = Math.max(0,Math.floor(((e.kettleWorkingL-totalGristKg*e.grainDisplacementLPerKg)/1.03)*10)/10);
-      // Move water to the sparge, never discard water required for the final volume.
-      // No-sparge remains full-volume: the capacity check must show if it cannot fit.
-      const mash = spargeType==='none' ? totalWater : Math.min(totalWater,maxMash,round1(preferred));
-      return {mashWaterL:mash,spargeWaterL:round1(totalWater-mash),preBoilVolumeL:round1(preCold),preBoilHotL:round1(preHot),grainAbsorptionL:round1(absorption),boilOffL:round1(evaporationHot*coldFactor),hopLossL,mashRatioLPerKg:round1(mash/totalGristKg)};
+    const preferenceErrors = brewingPreferenceErrors(brewhouse?.preferences);
+    if (brewhouse?.preferences && !e) preferenceErrors.push('Renseigne les capacités du matériel pour appliquer les préférences d’eau.');
+    if (preferenceErrors.length || e && equipmentErrors(e).length) {
+      return { ...vide, issues: [...preferenceErrors, ...(e ? equipmentErrors(e) : [])] };
+    }
+    if (e) {
+      const preferences = brewhouse?.preferences;
+      const coldFactor = 1 - e.coolingShrinkagePct / 100;
+      const evaporationHot = e.boilOffLPerHour * safeBoilMin / 60;
+      const preHot = (volumeL + deadSpaceL + hopLossL) / coldFactor + evaporationHot;
+      const preCold = preHot * coldFactor;
+      const absorption = totalGristKg * e.grainAbsorptionLPerKg;
+      const totalWater = round1(preCold + absorption);
+      const rawRatio = preferences?.preferredMashRatioLPerKg ?? brewhouse?.mashRatioLPerKg;
+      const ratio = Number.isFinite(rawRatio) && rawRatio! > 0 ? rawRatio! : 4.2;
+      const preferred = round1(totalGristKg * ratio);
+      const maxMash = Math.max(0, Math.floor(((e.kettleWorkingL - totalGristKg * e.grainDisplacementLPerKg) / MASH_WATER_EXPANSION + 1e-8) * 10) / 10);
+      // Water is conserved. Only the split changes. Round the permitted cold
+      // sparge down so a displayed 18 L budget can never conceal 18.03 L hot.
+      const preferredSpargeCold = preferences
+        ? Math.floor((Math.min(preferences.preferredSpargeHotL, e.spargeCapacityL) / MASH_WATER_EXPANSION + 1e-8) * 10) / 10
+        : Infinity;
+      const requiredMash = preferences?.increaseMashToLimitSparge ? Math.max(preferred, round1(totalWater - preferredSpargeCold)) : preferred;
+      const manual = options.manualWaterSplit;
+      if (manual && ![manual.mashWaterL, manual.spargeWaterL].every(n => Number.isFinite(n) && n >= 0))
+        return { ...vide, issues: ['La répartition manuelle de l’eau doit contenir deux volumes positifs ou nuls.'] };
+      const mash = manual?.mashWaterL ?? (spargeType === 'none' ? totalWater : Math.min(totalWater, maxMash, requiredMash));
+      const sparge = manual?.spargeWaterL ?? round1(totalWater - mash);
+      const balanceError = round1(mash + sparge - totalWater);
+      const check = equipmentCheck(e, { volumeL, grainKg: totalGristKg, mashL: mash, spargeL: sparge, preBoilHotL: preHot, preferences })!;
+      const issues: string[] = [];
+      if (check.mashTooFull) issues.push('L’empâtage avec les grains dépasse la limite utile de la cuve.');
+      if (check.boilTooFull) issues.push('Le volume avant ébullition dépasse la limite utile de la cuve.');
+      if (check.fermenterTooFull) issues.push('Le volume final atteint ou dépasse la capacité totale du fermenteur.');
+      if (!check.thinEnough) issues.push('Maische sous 2,5 L/kg : circulation du panier à vérifier ; réduire le brassin si nécessaire.');
+      if (check.spargeTooMuch) issues.push(`Le rinçage dépasse le maximum de ${check.spargeMaximumHotL} L à chaud. Réduis le volume du brassin.`);
+      if (Math.abs(balanceError) > 0.1) issues.push(`La répartition manuelle diffère de ${balanceError} L du besoin calculé ; les volumes saisis sont conservés.`);
+      if (manual && spargeType === 'none' && sparge > 0) issues.push('Un rinçage est saisi alors que la recette est prévue sans rinçage.');
+      const impossible = check.mashTooFull || check.boilTooFull || check.fermenterTooFull || check.spargeTooMuch ||
+        Math.abs(balanceError) > 0.1 || (spargeType === 'none' && sparge > 0);
+      if (check.spargeStatus === 'exception') issues.push(`Prévoir ${round1(check.spargeAuxiliaryHotL)} L à chaud en appoint ; exception à confirmer.`);
+      return {
+        mashWaterL: mash, spargeWaterL: sparge, preBoilVolumeL: round1(preCold), preBoilHotL: round1(preHot),
+        grainAbsorptionL: round1(absorption), boilOffL: round1(evaporationHot * coldFactor), hopLossL,
+        mashRatioLPerKg: round1(mash / totalGristKg),
+        planningStatus: impossible ? 'impossible' : check.spargeStatus,
+        issues, preferredMashRatioLPerKg: ratio,
+        mashIncreasedForSparge: !manual && spargeType !== 'none' && mash > preferred + 0.05,
+        waterBalanceErrorL: balanceError,
+        spargeHotL: check.spargeHotL, spargeMainHotL: check.spargeMainHotL,
+        spargeAuxiliaryHotL: check.spargeAuxiliaryHotL, spargePreferredHotL: check.spargePreferredHotL,
+        ...(check.spargeMaximumHotL != null ? { spargeMaximumHotL: check.spargeMaximumHotL } : {})
+      };
     }
     const coolingShrinkageL = volumeL * 0.04;
     const preBoilVolumeL = round1(
       Math.max(0, volumeL + boilOffL + deadSpaceL + hopLossL + coolingShrinkageL)
     );
 
-    const plein = {
+    const plein: WaterVolumePlan = {
       mashWaterL: round1(preBoilVolumeL + grainAbsorptionL),
       spargeWaterL: 0,
       preBoilVolumeL,
       grainAbsorptionL,
       boilOffL,
       hopLossL,
-      mashRatioLPerKg: round1((preBoilVolumeL + grainAbsorptionL) / totalGristKg)
+      mashRatioLPerKg: round1((preBoilVolumeL + grainAbsorptionL) / totalGristKg),
+      planningStatus: 'ready', issues: []
     };
 
-    if (spargeType === 'none') return plein;
+    const finishLegacy = (calculated: WaterVolumePlan): WaterVolumePlan => {
+      const manual = options.manualWaterSplit;
+      if (!manual) return calculated;
+      if (![manual.mashWaterL, manual.spargeWaterL].every(n => Number.isFinite(n) && n >= 0))
+        return { ...vide, issues: ['La répartition manuelle de l’eau doit contenir deux volumes positifs ou nuls.'] };
+      const waterBalanceErrorL = round1(manual.mashWaterL + manual.spargeWaterL - calculated.mashWaterL - calculated.spargeWaterL);
+      const issues: string[] = [];
+      if (Math.abs(waterBalanceErrorL) > .1) issues.push(`La répartition manuelle diffère de ${waterBalanceErrorL} L du besoin calculé ; les volumes saisis sont conservés.`);
+      if (spargeType === 'none' && manual.spargeWaterL > 0) issues.push('Un rinçage est saisi alors que la recette est prévue sans rinçage.');
+      return { ...calculated, ...manual, mashRatioLPerKg: round1(manual.mashWaterL / totalGristKg),
+        waterBalanceErrorL, planningStatus: issues.length ? 'impossible' : 'ready', issues };
+    };
+    if (spargeType === 'none') return finishLegacy(plein);
 
     /*
      * 4.2 L/kg par défaut : l'épaisseur d'un monocuve où l'on empâte près du
@@ -519,17 +593,18 @@ export const BrewingMath = {
     const firstRunningsL = mashWaterL - grainAbsorptionL;
 
     // L'empâtage porte déjà tout le moût : il n'y a plus rien à rincer.
-    if (firstRunningsL >= preBoilVolumeL) return plein;
+    if (firstRunningsL >= preBoilVolumeL) return finishLegacy(plein);
 
-    return {
+    return finishLegacy({
       mashWaterL,
       spargeWaterL: round1(Math.max(0, preBoilVolumeL - firstRunningsL)),
       preBoilVolumeL: round1(Math.max(0, preBoilVolumeL)),
       grainAbsorptionL: round1(Math.max(0, grainAbsorptionL)),
       boilOffL: round1(Math.max(0, boilOffL)),
       hopLossL: round1(Math.max(0, hopLossL)),
-      mashRatioLPerKg: round1(ratio)
-    };
+      mashRatioLPerKg: round1(ratio),
+      planningStatus: 'ready', issues: []
+    });
   },
 
   // 4. Recipe Scaler (30L -> 50L -> 300L)
@@ -544,7 +619,9 @@ export const BrewingMath = {
     spargeWaterL: number;
     preBoilVolumeL: number;
     grainAbsorptionL: number;
+    waterPlan: WaterVolumePlan;
   } {
+    if (!Number.isFinite(targetVolumeL) || targetVolumeL <= 0) throw Error('Volume cible invalide.');
     const baseVolume = recipe.volumeL || 30;
     const volumeRatio = targetVolumeL / baseVolume;
     const efficiencyRatio = (currentBrewhouse.efficiencyPct || 75) / (targetBrewhouse.efficiencyPct || 75);
@@ -562,7 +639,7 @@ export const BrewingMath = {
 
     const scaledFermentables = sourceFermentables.map((f) => ({
       ...f,
-      weightKg: Math.round(f.weightKg * grainRatio * 100) / 100
+      weightKg: Math.round(f.weightKg * ((f.kind ?? 'grain') === 'grain' ? grainRatio : volumeRatio) * 100) / 100
     }));
 
     // Le ratio d'empâtage se calcule sur le GRAIN seul : le sucre et le lactose
@@ -570,7 +647,7 @@ export const BrewingMath = {
     const totalGristKg =
       Math.round(
         scaledFermentables
-          .filter((f) => f.kind === 'grain')
+          .filter((f) => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage')
           .reduce((sum, f) => sum + f.weightKg, 0) * 100
       ) / 100;
 
@@ -599,27 +676,43 @@ export const BrewingMath = {
       ? {
           ...baseYeast,
           qty:
-            baseYeast.unit === 'sachet'
-              ? sachetCount
-              : Math.round(baseYeast.qty * volumeRatio * 10) / 10
+            baseYeast.qty == null || volumeRatio === 1
+              ? baseYeast.qty
+              : baseYeast.unit === 'sachet'
+                ? sachetCount
+                : Number((baseYeast.qty * volumeRatio).toFixed(6))
         }
       : undefined;
 
     // Volumes d'eau — un seul modèle, partagé avec l'assistant de recette.
-    const { mashWaterL, spargeWaterL, preBoilVolumeL, grainAbsorptionL } = this.waterVolumes(
+    const waterPlan = this.waterVolumes(
       totalGristKg,
       targetVolumeL,
       targetBrewhouse,
       recipe.mash?.spargeType ?? 'batch',
       recipe.boilMin ?? 60,
       // Les houblons mis à l'échelle : ce sont eux qui boiront dans la cuve.
-      kettleHopGrams(scaledHops)
+      kettleHopGrams(scaledHops),
+      recipe.installation?.manualWaterSplit && recipe.waterPlan ? {
+        manualWaterSplit: {
+          mashWaterL: Math.round(recipe.waterPlan.mashWaterL * volumeRatio * 10) / 10,
+          spargeWaterL: Math.round(recipe.waterPlan.spargeWaterL * volumeRatio * 10) / 10
+        }
+      } : undefined
     );
+    const { mashWaterL, spargeWaterL, preBoilVolumeL, grainAbsorptionL } = waterPlan;
 
     const scaledRecipe: Recipe = {
       ...recipe,
       id: `${recipe.id}-scale-${targetVolumeL}L`,
       volumeL: targetVolumeL,
+      brewhouse: snapshotBrewhouse(targetBrewhouse),
+      efficiencyPct: targetBrewhouse.efficiencyPct,
+      installation: { ...recipe.installation, manualWaterSplit: !!recipe.installation?.manualWaterSplit, spargeExceptionAccepted: false },
+      preBoilL: preBoilVolumeL,
+      preBoilHotL: waterPlan.preBoilHotL,
+      waterPlan: waterPlan.planningStatus !== 'invalid' ? resizeWaterPlan(recipe, waterPlan, volumeRatio) : undefined,
+      mash: recipe.mash ? { ...recipe.mash, ratioLPerKg: waterPlan.mashRatioLPerKg } : undefined,
       fermentables: scaledFermentables,
       // `malts` reste renseigné le temps que les anciens écrans migrent, mais
       // `fermentables` fait foi.
@@ -629,12 +722,15 @@ export const BrewingMath = {
       yeast: scaledYeast
     };
 
+    if (scaledRecipe.waterPlan?.autoTreatment)
+      scaledRecipe.waterPlan = replanRecipeWater(scaledRecipe).plan;
     return {
       scaledRecipe,
       mashWaterL,
       spargeWaterL,
       preBoilVolumeL,
-      grainAbsorptionL
+      grainAbsorptionL,
+      waterPlan
     };
   },
 

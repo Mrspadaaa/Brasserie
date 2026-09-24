@@ -30,6 +30,44 @@ import { BrewTag } from './BrewTag';
 import { actualWater } from '../domain/brewAssist';
 
 const f = (n: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 }).format(n);
+
+function localAdditionTime(at?: number) {
+  if (at == null || !Number.isFinite(at)) return '';
+  const date = new Date(at);
+  if (!Number.isFinite(date.getTime())) return '';
+  const pad = (part: number) => String(part).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function AdditionTime({ name, doneAt, onConfirm }: {
+  name: string;
+  doneAt?: number;
+  onConfirm: (at: number) => void;
+}) {
+  const [raw, setRaw] = useState(() => localAdditionTime(doneAt));
+  const at = new Date(raw).getTime();
+  const valid = !!raw && Number.isFinite(at) && localAdditionTime(at) === raw && at <= brewNow();
+  return <div className="flex min-w-0 basis-full flex-wrap items-end gap-1">
+    <label className="min-w-0 basis-full text-xs text-cave-400">
+      Date et heure réelles (facultatif)
+      <input
+        type="datetime-local"
+        className={`${brewInput} mt-1 max-w-full`}
+        aria-label={`Date et heure réelles d’ajout de ${name}`}
+        aria-invalid={!!raw && !valid}
+        value={raw}
+        max={localAdditionTime(brewNow())}
+        onChange={(event) => setRaw(event.currentTarget.value)}
+      />
+    </label>
+    <button type="button" className={brewControl} disabled={!valid || raw === localAdditionTime(doneAt)}
+      onClick={() => { if (valid && at <= brewNow()) onConfirm(at); }}>
+      Consigner à cette heure
+    </button>
+    {!!raw && !valid && <p role="alert" className="basis-full text-xs text-alert-strong">Choisis une date et une heure valides, au plus tard maintenant.</p>}
+  </div>;
+}
+
 function IngredientRow({
   item,
   recipe,
@@ -160,7 +198,7 @@ function IngredientRow({
           onClick={() => setEditingDose((value) => !value)}
         >
           <strong id={`brew-dose-value-${item.id}`}>{f(amount)}</strong>{' '}
-          <span id={`brew-dose-unit-${item.id}`}>{item.unit}</span>
+          <span id={`brew-dose-unit-${item.id}`}>{item.unit}{item.kind === 'water' ? ' à froid' : ''}</span>
         </button>
         <label className="brew-add-check" title="Cocher après l’ajout réel">
           <input
@@ -169,7 +207,7 @@ function IngredientRow({
             checked={actual?.doneAt != null}
             onChange={(e) => {
               onInteract();
-              if (e.target.checked) patch({ doneAt: brewNow() });
+              if (e.target.checked) patch({ doneAt: brewNow(), ...(item.kind === 'water' ? { volumeBasis: 'cold' as const } : {}) });
               else
                 update((s) => {
                   const a = { amount: actualAmount(item, s), ...s.additions?.[item.id] };
@@ -214,15 +252,14 @@ function IngredientRow({
           <button type="button" className="brew-text-button" onClick={() => setEditingDose(false)}>
             Fermer l’ajustement
           </button>
+          <AdditionTime key={actual?.doneAt ?? 'unconfirmed'} name={named} doneAt={actual?.doneAt}
+            onConfirm={(doneAt) => patch({ doneAt, ...(item.kind === 'water' ? { volumeBasis: 'cold' as const } : {}) })} />
         </div>
       )}
       {actual?.doneAt != null && (
         <p className="brew-added-time">
-          Ajout consigné à{' '}
-          {new Date(actual.doneAt).toLocaleTimeString('fr-CH', {
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
+          Ajout consigné le{' '}
+          {new Date(actual.doneAt).toLocaleString('fr-CH', { dateStyle: 'short', timeStyle: 'short' })}
         </p>
       )}
       {shortage && (

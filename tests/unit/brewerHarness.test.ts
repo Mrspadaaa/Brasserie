@@ -263,12 +263,13 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
       generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)
     ).toEqual(['medium', 'low', 'high', 'high']);
   });
-  it('redimensionne aussi l’eau et fournit les ingrédients réellement utilisés par le scénario', () => {
+  it.each([undefined, true, false])('redimensionne l’eau et conserve la concentration des sels (tous à l’empâtage : %s)', (allSaltsInMash) => {
     const c = context();
     c.recipe.volumeL = 30;
     c.recipe.fermentables[0].weightKg = 6;
     c.recipe.waterPlan.mashWaterL = 33.6;
     c.recipe.waterPlan.spargeWaterL = 8.4;
+    c.recipe.waterPlan.allSaltsInMash = allSaltsInMash;
     const before = structuredClone(c);
     const data = runBrewerTool('calculate_recipe', { volumeL: 22 }, c).data as any;
     expect(data.ingredients.fermentables[0].weightKg).toBe(4.4);
@@ -278,8 +279,16 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     expect(data.equipment.mashTooFull).toBe(false);
     expect(data.equipment.fermenterTooFull).toBe(false);
     expect(data.equipment.boilTooFull).toBe(false);
-    expect(data.water.mash).toEqual(before.recipe.waterPlan.mash);
-    expect(data.water.acid).toEqual(before.recipe.waterPlan.acid);
+    // Sels réunis à l’empâtage : concentration finale sur toute l’eau.
+    // Sels par eau : concentration locale. L’acide suit toujours son eau.
+    const mashRatio=data.water.mashWaterL/before.recipe.waterPlan.mashWaterL;
+    const spargeRatio=data.water.spargeWaterL/before.recipe.waterPlan.spargeWaterL;
+    const totalWaterRatio=(data.water.mashWaterL+data.water.spargeWaterL)/42;
+    const saltRatio=allSaltsInMash === false ? mashRatio : totalWaterRatio;
+    expect(data.water.mash.epsom).toBeCloseTo(before.recipe.waterPlan.mash.epsom*saltRatio,2);
+    expect(data.water.mash.cacl2).toBeCloseTo(before.recipe.waterPlan.mash.cacl2*saltRatio,2);
+    expect(data.water.acid.mash).toBeCloseTo(before.recipe.waterPlan.acid.mash*mashRatio,2);
+    expect(data.water.acid.sparge).toBeCloseTo(before.recipe.waterPlan.acid.sparge*spargeRatio,2);
     expect(c).toEqual(before);
   });
   it('distingue la recette saisie du besoin en eau et détecte le débordement à l’ébullition', () => {

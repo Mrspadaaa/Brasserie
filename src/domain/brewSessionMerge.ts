@@ -1,7 +1,7 @@
 import { BrewDayState } from '../types';
 
 const timestamp =
-  /^(at|startedAt|pausedAt|doneAt|rampStartedAt|holdStartedAt|boilStartedAt|boilFinishedAt|finishedAt)$/;
+  /^(at|startedAt|endedAt|changedAt|pausedAt|doneAt|rampStartedAt|holdStartedAt|boilStartedAt|boilFinishedAt|finishedAt|transferredAt|pitchedAt)$/;
 const identity = (v: any) =>
   v?.id ?? (v?.kind && v?.at != null ? `${v.kind}:${v.stepId}:${v.at}` : undefined);
 

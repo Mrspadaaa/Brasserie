@@ -18,6 +18,7 @@ import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
 import { isoDate } from './domain/finance/ledger';
 import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
 import { batchDisplayDate } from './domain/batchSchedule';
+import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
 
@@ -473,7 +474,16 @@ export const App: React.FC = () => {
   /** Enregistre la recette, et lance éventuellement le brassin dans la foulée. */
   const saveFromWizard = async (recipe: Recipe, thenBrew: boolean) => {
     const sourceRoute = route.route;
+    const activeProfile = config.brewhouses.find(b => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
+    if (thenBrew) {
+      const adoptionIssue = recipeInstallationAdoptionIssue(recipe, activeProfile);
+      if (adoptionIssue) throw new Error(adoptionIssue);
+    }
     recipe = await saveRecipeConfirmed(recipe);
+    if (thenBrew) {
+      const installationIssues=recipeInstallationIssues(recipe, activeProfile);
+      if(installationIssues.length) throw new Error(`Recette enregistrée. Avant de lancer : ${installationIssues.join(' ')}`);
+    }
 
     if (!thenBrew) {
       showToast(`Recette « ${recipe.name} » enregistrée.`);

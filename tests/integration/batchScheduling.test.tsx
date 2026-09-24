@@ -8,20 +8,24 @@ import { StorageService, defaultConfig } from '../../src/services/storage';
 import { FirestoreRepo, DocumentWriteError } from '../../src/services/firestoreRepo';
 import { GoogleDriveService } from '../../src/services/googleDriveService';
 import { captureSnapshot } from '../../src/domain/recipeSnapshot';
+import { adaptRecipeEquipment } from '../../src/domain/adaptRecipeEquipment';
+import { currentInstallation } from '../../src/domain/brewPreferences';
 import { companionRecipe } from '../fixtures/companionRecipe';
 import type { Batch } from '../../src/types';
 
 vi.mock('canvas-confetti', () => ({ default: vi.fn() }));
 vi.mock('../../src/services/brewClock', () => ({ brewNow: () => Date.now(), setBrewClock: vi.fn() }));
 let batches: Batch[];
-const recipe = { ...companionRecipe(), brewDate: '15.09.2020' };
+const sourceRecipe = { ...companionRecipe(), brewDate: '15.09.2020' };
+const profile = currentInstallation(defaultConfig.brewhouses.find(value => value.id === defaultConfig.activeBrewhouseId)!);
+const recipe = adaptRecipeEquipment(sourceRecipe, profile, sourceRecipe.volumeL);
 const planned = (): Batch => ({ id: 'LOT-TEST', name: recipe.name, style: recipe.style, volumeL: 20, brewDate: '', plannedBrewDate: '27.09.2026', status: 'planifie', stockAccountingVersion: 1,
   recipeSnapshot: captureSnapshot(recipe), brewDay: { currentIndex: 0, steps: [{ id: 'eau', label: 'Préparer l’eau', durationMin: 0 }, { id: 'ensemencement', label: 'Ensemencement', durationMin: 0 }], readings: [] } });
 
 beforeEach(() => {
   batches = [];
   vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-09-20T12:00:00Z'));
-  vi.spyOn(StorageService, 'getConfig').mockReturnValue(defaultConfig);
+  vi.spyOn(StorageService, 'getConfig').mockReturnValue({ ...defaultConfig, brewhouses: [profile], activeBrewhouseId: profile.id });
   vi.spyOn(StorageService, 'getStocks').mockReturnValue({ rawMaterials: [], cleaning: [], equipment: [] });
   vi.spyOn(StorageService, 'getBatches').mockImplementation(() => batches);
   vi.spyOn(StorageService, 'addBatch').mockImplementation(batch => { batches.push(structuredClone(batch)); });
@@ -36,6 +40,19 @@ const create = () => screen.getByRole('button', { name: 'Créer le brassin à br
 const openCreation = (onBatchCreated = vi.fn(), onClose = vi.fn()) => render(<QuickActionModal isOpen recipes={[recipe]} onClose={onClose} initialScreen="brew-batch" initialRecipeId={recipe.id} onBatchCreated={onBatchCreated} />);
 
 describe('prepare and schedule a reusable recipe', () => {
+  it('keeps a scheduled legacy recipe uncreated until its installation is explicitly adopted', () => {
+    const onCreated = vi.fn(), close = vi.fn();
+    render(<QuickActionModal isOpen recipes={[sourceRecipe]} onClose={close} initialScreen="brew-batch" onBatchCreated={onCreated} />);
+    fireEvent.click(screen.getByRole('radio', { name: 'Aujourd’hui' }));
+    fireEvent.click(create());
+    expect(screen.getByRole('alert')).toHaveTextContent('Adapter à mon matériel actuel');
+    expect(StorageService.addBatch).not.toHaveBeenCalled();
+    expect(FirestoreRepo.waitForDocument).not.toHaveBeenCalled();
+    expect(onCreated).not.toHaveBeenCalled();
+    expect(close).not.toHaveBeenCalled();
+    expect(sourceRecipe).not.toHaveProperty('brewhouse');
+  });
+
   it('defaults to no date, confirms one frozen batch, and leaves its recipe unchanged', async () => {
     const created = vi.fn(); openCreation(created);
     expect(screen.getByRole('radio', { name: 'À définir' })).toHaveAttribute('aria-checked', 'true');

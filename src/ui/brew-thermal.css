@@ -1,0 +1,31 @@
+.brew-thermal { border-top: 1px solid var(--cave-700, #3d342e); margin-top: .5rem; padding-top: .5rem; color: #d8cec5; font-size: .75rem; line-height: 1.35; min-width: 0; }
+.brew-thermal p { margin: .35rem 0; }
+.brew-thermal-readings { display: flex; flex-wrap: wrap; gap: .35rem .8rem; }
+.brew-thermal-readings > span { display: grid; gap: .1rem; flex: 1 1 80px; }
+.brew-thermal-readings strong { font: 600 1rem/1.25 'IBM Plex Mono', monospace; color: #f5f0ea; }
+.brew-thermal small, .brew-thermal-note { font-size: .75rem; color: #9a8a7e; }
+.brew-thermal-estimate { color: #d8cec5; }
+.brew-thermal-estimate.is-attention { color: #e3b55d; }
+.brew-thermal-waiting { display: grid; gap: .15rem; border-left: 2px solid #e3b55d; padding-left: .4rem; }
+.brew-thermal-waiting strong { color: #e3b55d; }
+.brew-thermal-actions { display: flex; flex-wrap: wrap; gap: .25rem; }
+.brew-thermal button { min-height: 28px; padding: .2rem .5rem; background: #221d19; border: 1px solid #574a42; border-radius: .625rem; color: #d8cec5; font: inherit; }
+.brew-thermal button:disabled { opacity: .5; }
+.brew-thermal button:focus-visible, .brew-thermal summary:focus-visible, .brew-thermal input:focus-visible { outline: 2px solid #e3b55d; outline-offset: 2px; }
+.brew-thermal summary { cursor: pointer; padding: .3rem 0; min-height: 24px; }
+.brew-thermal-curve svg { display: block; height: 64px; width: 100%; max-width: 520px; overflow: visible; }
+.brew-thermal-curve circle { fill: #e7a070; }
+.brew-thermal-line { stroke: #e7a070; stroke-width: 1.5; }
+.brew-thermal-target { stroke: #9a8a7e; stroke-width: 1; stroke-dasharray: 3 3; }
+.brew-thermal-curve table { border-collapse: collapse; font-size: .75rem; }
+.brew-thermal-curve th, .brew-thermal-curve td { text-align: right; padding: .1rem .6rem .1rem 0; }
+.brew-thermal-coolant { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; margin-top: .4rem; }
+.brew-thermal-coolant input { width: 4.25rem; min-height: 32px; background: #221d19; border: 1px solid #574a42; border-radius: .625rem; padding: .15rem .35rem; color: #f5f0ea; font-size: 1rem; }
+.brew-thermal a { color: #f5f0ea; text-decoration: underline; }
+.brew-thermal-choices { border-top: 1px solid #3d342e; margin-top: .35rem; }
+.brew-thermal-choices fieldset { border: 0; padding: 0; margin: .25rem 0; min-width: 0; }
+.brew-thermal-choices legend { font-weight: 600; color: #f5f0ea; }
+.brew-thermal-choices fieldset label { display: flex; gap: .4rem; align-items: flex-start; padding: .3rem 0; }
+.brew-thermal-choices fieldset label span { display: grid; gap: .15rem; min-width: 0; }
+.brew-thermal-choices fieldset input { flex: 0 0 auto; margin-top: .15rem; accent-color: #e3b55d; width: 16px; height: 16px; }
+.brew-thermal-transfer { margin-top: .4rem; }

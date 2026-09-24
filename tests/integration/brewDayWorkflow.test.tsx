@@ -14,7 +14,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.clearAllMocks();
 });
-function mount(over: Partial<BrewDayState> = {}) {
+function mount(over: Partial<BrewDayState> = {}, batchOver: Partial<Batch> = {}) {
   const b = {
     id: 'LOT-test',
     name: 'Test',
@@ -35,6 +35,7 @@ function mount(over: Partial<BrewDayState> = {}) {
         acid: { id: 'lactique', mash: 2, sparge: 1 }
       }
     },
+    ...batchOver,
     brewDay: {
       currentIndex: 0,
       steps: [
@@ -190,7 +191,9 @@ describe('Assistant pendant le brassage', () => {
   it('pause et reprise gardent le temps restant, le palier suivant ne démarre pas seul', () => {
     const date = vi.spyOn(Date, 'now').mockReturnValue(1000);
     const v = mount();
-    fireEvent.click(screen.getByRole('button', { name: 'Démarrer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Commencer la montée' }));
+    expect(v.latest().steps[0].startedAt).toBeUndefined();
+    fireEvent.click(screen.getByRole('button', { name: 'Démarrer le maintien' }));
     date.mockReturnValue(601000);
     fireEvent.click(screen.getByRole('button', { name: 'Mettre le minuteur en pause' }));
     date.mockReturnValue(1801000);
@@ -258,15 +261,57 @@ describe('Assistant pendant le brassage', () => {
         { at: 3, stepId: 'preboil', kind: 'volume', value: 35, unit: 'L' }
       ]
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Clôturer le brassage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(v.finish).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Clôturer', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée', exact: true }));
     await waitFor(() => expect(v.finish).toHaveBeenCalledWith(
       expect.objectContaining({
-        og: '1.050',
-        volumeBrewedL: 25,
+        og: undefined,
+        volumeBrewedL: undefined,
         status: 'fermentation'
       })
     ));
+  });
+  it('la clôture annonce les mesures finales inconnues et garde les relevés bruts sans reprendre les anciennes valeurs du lot', async () => {
+    const readings = [
+      { id: 'old-og', at: 2, stepId: 'ensemencement', kind: 'densite' as const, value: 1.050, unit: 'SG', roomTemp: true },
+      { id: 'old-v', at: 2, stepId: 'ensemencement', kind: 'volume' as const, value: 25, unit: 'L', volumeBasis: 'cold' as const },
+      { id: 'new-og', at: 3, stepId: 'ensemencement', kind: 'densite' as const, value: 1.044, unit: 'SG', roomTemp: false },
+      { id: 'new-v', at: 3, stepId: 'ensemencement', kind: 'volume' as const, value: 27, unit: 'L', volumeBasis: 'hot' as const },
+    ];
+    const v = mount({ currentIndex: 1, readings });
+    fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
+    expect(screen.getByText('OG inconnue · volume en fermenteur inconnu.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await waitFor(() => expect(v.finish).toHaveBeenCalledTimes(1));
+    expect(v.finish.mock.calls[0][0]).toMatchObject({ og: undefined, volumeBrewedL: undefined });
+    expect(v.finish.mock.calls[0][0].brewDay.readings).toEqual(readings);
+  });
+  it('le transfert reste en attente après réouverture ; seule la levure confirmée clôture une fois', async () => {
+    const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2026, 8, 20, 18));
+    const evening = mount({ currentIndex: 1 }, { status: 'planifie', brewDate: '', plannedBrewDate: '25.09.2026' });
+    expect(screen.getByRole('button', { name: 'Commencer aujourd’hui' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Transfert effectué · sans levure' }));
+    const pending = evening.latest();
+    const pendingBatch = evening.save.mock.calls.at(-1)![0] as Batch;
+    expect(pending.phase).toBe('awaiting-pitch');
+    expect(pending.finishedAt).toBeUndefined();
+    expect(pendingBatch).toMatchObject({ status: 'planifie', brewDate: '20.09.2026', plannedBrewDate: '25.09.2026' });
+    expect(screen.queryByRole('button', { name: 'Commencer aujourd’hui' })).not.toBeInTheDocument();
+    expect(evening.finish).not.toHaveBeenCalled();
+    evening.unmount();
+    clock.mockReturnValue(Date.UTC(2026, 8, 21, 8));
+    const morning = mount(JSON.parse(JSON.stringify(pending)), pendingBatch);
+    expect(screen.getByText('En attente d’ensemencement')).toBeInTheDocument();
+    expect(screen.getByLabelText('Température du moût à l’ajout de levure')).toHaveValue('');
+    fireEvent.change(screen.getByLabelText('Température du moût à l’ajout de levure'), { target: { value: '19,2' } });
+    fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
+    expect(morning.finish).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
+    await waitFor(() => expect(morning.finish).toHaveBeenCalledTimes(1));
+    expect(morning.finish.mock.calls[0][0]).toMatchObject({ status: 'fermentation', brewDate: '20.09.2026', plannedBrewDate: '25.09.2026' });
+    const completed = morning.finish.mock.calls[0][0].brewDay;
+    expect(completed).toMatchObject({ transferredAt: pending.transferredAt, pitchedAt: Date.UTC(2026, 8, 21, 8), pitchTemperatureC: 19.2 });
+    expect(completed.notes.filter((n: { text: string }) => n.text.startsWith('Levure ajoutée'))).toHaveLength(1);
   });
 });
