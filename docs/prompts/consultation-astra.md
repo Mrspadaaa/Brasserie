@@ -13,6 +13,11 @@ un blocage de fond ou un risque d'intégration si une décision nouvelle le just
 Les corrections simples suivent leur vérification proportionnée. La disponibilité
 du modèle n'impose ni un appel par champ ni une limite arbitraire d'avis utiles.
 
+Si les exemples risquent de dicter les règles produit, appliquer le skill
+`conception-generique`. Un échange ciblé réutilise cette consultation :
+le pilote propose, le contradicteur cherche une limite, Astra arbitre si le
+choix le justifie. Ne pas doubler les agents ou les rapports pour ce dispositif.
+
 ## Brief à remplir pour une décision réelle
 
 > **Décision à éclairer maintenant :** …

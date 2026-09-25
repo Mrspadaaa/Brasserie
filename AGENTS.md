@@ -19,7 +19,8 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   pour le travail demandé. Les anciens prompts et comptes rendus sont des
   archives, pas de nouvelles instructions.
 - Pars des outils réellement disponibles dans Codex. Cette branche fournit
-  trois skills natifs ciblés : `unlazy`, `caveman-lite`, `brasserie-frontend`.
+  des skills ciblés : `unlazy`, `caveman-lite`, `brasserie-frontend` et
+  `conception-generique`.
   Charge ceux qui correspondent au travail. Utilise les agents natifs et les
   skills OpenAI pertinents ; ne copie ni ne synchronise la configuration Claude.
 
@@ -116,28 +117,11 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
 
 ## Généraliser sans suradapter aux exemples
 
-- Distinguer exigence utilisateur, exemple illustratif et fixture de test. Un
-  exemple extrême ne devient ni option produit, ni valeur par défaut, ni règle
-  métier sans justification indépendante. Une fixture ne définit pas le domaine
-  de validité de l'application.
-- Concevoir à partir des propriétés, capacités documentées, contraintes et états
-  utiles. Les noms de styles, souches ou recettes peuvent aider à chercher ou
-  proposer un préréglage explicite ; ils ne prouvent pas une capacité. Garder
-  l'édition générique accessible, les exceptions métier justifiées et les
-  inconnues explicites. Ne pas généraliser une estimation hors de ses conditions
-  ni créer un moteur universel ou une architecture extensive sans besoin.
-- À une décision structurante, préciser les invariants, facteurs qui changent
-  réellement le comportement, domaine couvert et cas non modélisés. Choisir une
-  petite couverture par classes de comportement, limites et interactions à risque,
-  avec un cas extérieur aux fixtures de conception. Réutiliser les tests existants ;
-  ajouter des tests paramétrés ou de propriétés quand ils vérifient un invariant
-  utile. Ni une recette par style ni un produit cartésien des combinaisons.
-- Sol et Astra recherchent les hypothèses spécifiques cachées dans briefs, code
-  et interfaces. Le test de généralité est : à propriétés pertinentes identiques,
-  un nom différent doit-il changer le résultat ? Justifier les différences réelles.
-  Rapporter les limites de la preuve ; quelques scénarios réussis ne démontrent
-  pas une couverture universelle. Corriger la règle responsable, pas accumuler
-  des exceptions aux seuls exemples signalés.
+Distinguer exigences, exemples et fixtures. Une illustration utilisateur ne
+constitue ni option produit ni règle métier. Pour une conception ou correction
+exposée à ce risque, charger le skill `conception-generique` : propriétés,
+exceptions justifiées, domaine de validité et preuves proportionnées. Les
+retouches mécaniques ne déclenchent pas ce travail ni un échange multiagent.
 
 ## Particularités du produit
 
