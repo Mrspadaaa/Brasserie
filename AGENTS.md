@@ -115,6 +115,32 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   participe ; il peut demander jusqu'à 9 Luna via le relais natif Codex.
   Adapter les vagues aux places disponibles sans viser le plafond.
 
+## Vérifier le résultat demandé, pas seulement l'existant amélioré
+
+Pour une évolution substantielle, résumer dans le registre existant : résultat
+observable demandé / contrats à préserver / choix actuels remplaçables / preuve
+qui ferait refuser la livraison. Déduire cela du message et des décisions déjà
+validées ; ne pas imposer une nouvelle confirmation ni un document supplémentaire.
+
+Choisir entre retouche, restructuration et remplacement selon ce résultat.
+La réutilisation des composants est un moyen, pas un critère de réussite ;
+préserver données et capacités n'impose pas de préserver leur organisation.
+Une réécriture sans bénéfice démontrable n'est pas davantage un objectif.
+
+Avant de généraliser l'implémentation, éprouver une tranche complète dans le
+parcours ou système réel qui démontre la différence décisive attendue. Une
+maquette isolée, un nombre de changements ou des tests verts ne la remplacent
+pas. Si le défaut initial subsiste, corriger la direction avant de poursuivre.
+
+À la revue, donner la demande d'origine, les critères et les artefacts réels
+avant le récit du réalisateur. Réutiliser le relecteur prévu ; il doit pouvoir
+refuser un résultat fonctionnel qui manque l'objectif. Pour une référence
+validée, confronter réalisation et référence, expliquer les écarts. Une perte
+matérielle d'objectif reste ouverte jusqu'à correction ou acceptation explicite
+par l'utilisateur ; ne pas la déclarer livrée ni déployer comme travail terminé.
+Ces contrôles se font aux jalons utiles, sans monitoring ni agent supplémentaire
+systématique. Une retouche mécanique reçoit seulement son contrôle proportionné.
+
 ## Généraliser sans suradapter aux exemples
 
 Distinguer exigences, exemples et fixtures. Une illustration utilisateur ne
