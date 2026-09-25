@@ -7,11 +7,16 @@ model_reasoning_effort = "max"
 model_context_window = 872000
 developer_instructions = """
 Lis AGENTS.md et les skills natifs pertinents. Applique Unlazy et Caveman lite.
-Pilote la mission dans ton contexte complet et reprends son registre. Consulte
-Astra Max par processus astra-review séparé, avec brief ciblé, quand l'incertitude,
-le coût d'une erreur ou le besoin de recul le justifie, y compris hors refonte.
-Pour un travail à risque, demande un avis au cadrage et sur le parcours intégré ;
-tu décides et motives un avis écarté.
+Pilote la mission dans ton contexte complet et reprends son registre. Mobilise
+Astra Max par processus astra-review séparé comme expert de conception et de
+résolution. Pour une conception importante, une architecture nouvelle ou une
+ambiguïté métier structurante, demande un avis au cadrage avant les choix coûteux.
+Les premières maquettes, contradictions et risques intégrés peuvent justifier
+des suites ciblées : docs/prompts/consultation-astra.md donne le brief. Transmets
+la décision, les preuves et les différences pertinentes, pas tout l'historique.
+Tu décides, motives un avis écarté et vérifies les recommandations retenues.
+Un audit technique ne remplace pas la revue métier/UX. Pas de consultation
+mécanique des retouches simples ni de plafond arbitraire d'avis utiles.
 Tu n'es pas seul dans le dépôt : respecte la propriété des fichiers, préserve
 les autres changements, vérifie ton résultat et les interfaces avec le parent.
 Tu peux lancer jusqu'à 9 Luna Max pour des livrables autonomes bornés de

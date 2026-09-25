@@ -36,6 +36,99 @@ Ni le nombre de widgets ni la réduction de la hauteur de page ne sont des
 critères de réussite. Les détails à la demande servent les besoins secondaires,
 sans cacher ce qui décide l'action courante.
 
+## Explorer une refonte et reconnaître la prise de risque
+
+Pour une refonte majeure ou un essai explicitement demandé, consacrer une phase
+de conception à remettre en question la solution actuelle. Cette phase ne
+s'applique pas automatiquement à une correction ponctuelle.
+
+Avant l'intégration, produire deux directions visuelles réellement distinctes
+avec les mêmes données représentatives. Au moins une reconstruit le parcours
+depuis les décisions du brasseur sans reprendre l'organisation de l'écran.
+La différence concerne l'ordre des décisions, l'interaction principale ou la
+représentation ; couleurs, espacements et renommages seuls ne suffisent pas.
+Conserver les contraintes métier, les inconnues et les exigences d'usage
+explicitement validées. Le risque recherché concerne la conception, pas la
+perte de données ou une réécriture technique sans bénéfice.
+
+Dans le registre de la mission, évaluer séparément l'exploration et la qualité
+à livrer. Chaque critère vaut un acquis seulement avec une preuve consultable :
+
+| Critère d'exploration | Preuve attendue |
+| --- | --- |
+| E1 — Remise en question | Hypothèse de l'écran actuel contestée, tâche gênée et bénéfice attendu, reliés à un constat précis. |
+| E2 — Divergence visible | Deux maquettes comparables ; expliquer et montrer ce qui change dans la manière de comprendre ou agir. |
+| E3 — Risque éprouvé | Essai interactif de la piste prometteuse, scénario, observation et limite ; un abandon justifié par l'essai compte aussi. |
+
+Un critère manquant maintient la conception ouverte et déclenche seulement le
+travail nécessaire pour le vérifier. Une piste audacieuse pertinente reçoit
+ainsi un essai, même si elle nécessite plus de changements que des retouches.
+Un essai infructueux documenté n'est pas pénalisé ; la piste n'est pas imposée
+au produit. Retenir la direction au bénéfice observé et protéger ses qualités
+pendant l'intégration. Aucun bonus pour le nombre de widgets, d'appels, d'agents
+ou de lignes modifiées. Ces critères guident les décisions, pas l'entraînement
+des poids du modèle, et ne forment pas une note globale de qualité.
+
+Choisir l'outil de conception selon le besoin : maquette éditable pour explorer
+une composition, image pour une direction visuelle, prototype local isolé
+pour éprouver une interaction. Employer les outils disponibles, vérifier un
+connecteur avant de le supposer utilisable ; une installation ne valide pas
+une conception. Ne pas ajouter un service obligatoire à toutes les missions.
+
+Un prototype HTML/React exécutable est un support de conception à part entière.
+Il facilite le partage entre agents, les variantes et les essais navigateur ;
+l'absence d'un éditeur visuel dédié ne constitue pas un défaut. Garder la
+recherche de parcours distincte de l'implémentation produit : mêmes données et
+contraintes pour les variantes, sans imposer les composants ni l'ordre actuel.
+Un outil supplémentaire doit résoudre une difficulté identifiée.
+
+Avant l'essai, écrire les tâches communes et ce qui pourrait faire rejeter chaque
+direction. Comparer les variantes avec une profondeur d'interaction comparable ;
+un écran de sélection ne prouve pas un parcours jusqu'à l'application. Déclarer
+les étapes absentes, simulées ou réellement reliées. Examiner les états vides,
+inconnus, incompatibles et corrigés, pas seulement le cas qui avantage la maquette.
+Les consignes d'un essai ne sont pas des restrictions du produit : demander au
+testeur de nommer des différences n'impose pas des cases à cocher avant d'agir ;
+tester la modification d'un palier n'interdit pas d'en régler plusieurs. Séparer
+le protocole d'évaluation des règles métier et des commandes du brasseur.
+Pour chaque donnée décisive, vérifier où le brasseur la trouve, ce qu'il peut en
+déduire et comment il agit. Une manipulation automatisée prouve un fonctionnement,
+pas la compréhension d'un utilisateur ; distinguer ces preuves.
+
+Conserver les variantes témoins et leur scénario. Faire examiner les artefacts
+avant le récit de leur auteur pour limiter l'ancrage sur sa préférence. Une
+contre-expertise métier peut commencer sur les hypothèses et tâches, avant les
+maquettes, puis confronter les concepts dès qu'ils sont évaluables, pendant que
+leur organisation peut encore changer. Relier chaque constat à une décision
+retenue ou rejetée, une correction éventuelle et une preuve. Un assemblage de
+plusieurs concepts est une nouvelle proposition à rejouer, pas un gagnant acquis.
+Transférer avec la direction retenue les interactions et critères qui expliquent
+son intérêt ; vérifier leur conservation dans l'écran intégré.
+
+Faire relire les artefacts par une personne ou un agent distinct du réalisateur
+lorsque la décision le justifie. Distinguer avis d'agent, essai observé et
+validation utilisateur. Réutiliser captures, données et avis ciblés ; réaliser
+une nouvelle variante ou revue seulement si une incertitude peut changer la
+décision. Garder les constats réutilisables, avec leurs limites, dans la mission.
+
+## Protéger les exigences d'usage de l'interface
+
+Une liberté de conception ne révoque pas une exigence d'usage explicite. Pour
+Eau et sels, à la vue Sels mobile de référence de 390 × 844 px, le radar,
+le slider SO₄/Cl et les commandes de sels et d'acides sont simultanément
+visibles et utilisables, sans défiler ni ouvrir un panneau supplémentaire.
+Les détails secondaires ne doivent pas les repousser ou forcer des textes et
+commandes illisibles. Vérifier aussi la vue desktop de référence.
+
+Tester ces exigences sur le rendu intégré, avec navigation et en-tête : même
+état et même position de défilement pour les éléments qui doivent coexister.
+La présence d'un titre d'accordéon ou d'un élément dans le DOM ne démontre pas
+sa visibilité. Jouer les réglages et leurs conséquences, examiner la capture,
+et vérifier qu'une régression ciblée fait réellement échouer le contrôle.
+Conserver la référence examinée ; toute modification d'un critère ou d'une
+référence doit être expliquée en revue, sans assouplissement silencieux pour
+faire passer un écran. Une comparaison de pixels complète les tests d'usage.
+
 ## Revue de chaque donnée et commande
 
 Dans le périmètre d'une refonte, tenir une matrice courte : **donnée/action →

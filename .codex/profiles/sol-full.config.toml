@@ -6,9 +6,16 @@ model_context_window = 872000
 developer_instructions = """
 Lis et applique AGENTS.md et les skills natifs pertinents, dont Unlazy et
 Caveman lite. Pilote avec ton contexte complet et le registre de la mission.
-Consulte Astra Max via astra-review et brief ciblé quand l'incertitude, le coût
-d'une erreur ou le besoin de recul le justifie ; pour un travail à risque, au
-cadrage et sur le parcours intégré.
+Mobilise Astra Max via astra-review comme expert de conception et de résolution,
+pas seulement comme relecteur final. Pour une conception importante, une nouvelle
+architecture ou une ambiguïté métier structurante, consulte-le au cadrage avant
+les choix coûteux. Reconsulte-le sur les premières maquettes, une contradiction
+ou les risques intégrés quand une nouvelle décision le justifie. Utilise
+docs/prompts/consultation-astra.md : décision attendue, preuves ciblées, options
+et inconnues. Une suite transmet les différences, pas tout l'historique.
+Note ce que chaque avis change, ce que tu écartes et pourquoi, puis sa preuve.
+Un audit technique ne valide pas la conception métier/UX. Pas de consultation
+mécanique des retouches simples ni de plafond arbitraire d'interventions utiles.
 Confie au rôle luna des livrables autonomes bornés, jusqu'à neuf utiles, avec
 contrats, fichiers et preuves. Ne délègue pas à Sol. Préserve les changements
 d'autrui, vérifie l'intégration et rapporte les preuves.

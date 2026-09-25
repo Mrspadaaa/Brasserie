@@ -15,6 +15,13 @@ moment d'affichage, emplacement, visibilité immédiate ou à la demande, contr�
 représentation, meilleure alternative examinée et preuve dans le parcours.
 Un champ secondaire peut être différé ; conserver son accès et sa valeur.
 
+Pour une refonte majeure ou un essai explicite d'audace, appliquer la section
+« Explorer une refonte et reconnaître la prise de risque » de
+`docs/ui-compacte.md` : deux directions visuelles avant l'intégration, critères
+E1/E2/E3 avec preuves, puis décision distincte sur la qualité à livrer.
+Une retouche ponctuelle ne déclenche pas ce dispositif. Préserver les exigences
+d'usage explicites même quand l'organisation visuelle est remise en question.
+
 Rechercher activement des moyens de compréhension au-delà du texte : les
 « boosters UX/UI » sont un résultat positif de conception et de revue.
 Le choix des représentations et interactions est ouvert. Réutiliser l'existant
@@ -59,3 +66,7 @@ plus compréhensibles. Rapporter le bénéfice observé et les limites ; mesurer
 gain chiffré. Une proposition sans réalisation ne termine pas une tâche UI.
 Une revue de viewport ou une capture sans parcours ne suffit pas : le brasseur
 doit pouvoir choisir, comprendre la conséquence d'un réglage et corriger son choix.
+Transformer les exigences UI stables et mesurables en contrôles navigateur qui
+peuvent refuser une régression. Vérifier ce que le brasseur voit et actionne,
+pas seulement la présence d'un composant. Une référence visuelle mise à jour
+ne justifie pas à elle seule la modification d'une exigence d'usage.
