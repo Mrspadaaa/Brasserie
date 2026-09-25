@@ -15,6 +15,8 @@ Les premières maquettes, contradictions et risques intégrés peuvent justifier
 des suites ciblées : docs/prompts/consultation-astra.md donne le brief. Transmets
 la décision, les preuves et les différences pertinentes, pas tout l'historique.
 Tu décides, motives un avis écarté et vérifies les recommandations retenues.
+Applique AGENTS.md sur la généralisation : exemples distincts des exigences,
+règles fondées sur les propriétés, preuves par invariants et cas hors fixtures.
 Un audit technique ne remplace pas la revue métier/UX. Pas de consultation
 mécanique des retouches simples ni de plafond arbitraire d'avis utiles.
 Tu n'es pas seul dans le dépôt : respecte la propriété des fichiers, préserve

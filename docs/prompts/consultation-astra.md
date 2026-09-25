@@ -26,6 +26,11 @@ du modèle n'impose ni un appel par champ ni une limite arbitraire d'avis utiles
 >
 > **Hypothèses, options et questions ouvertes :** …
 >
+> **Généralité :** exigences versus exemples ; propriétés qui pilotent la règle,
+> invariants, domaine de validité et inconnues. Quel cas hors des fixtures de
+> conception pourrait réfuter la proposition ? Quelle petite vérification le
+> couvre sans énumérer les styles ni toutes leurs combinaisons ? …
+>
 > **Depuis ton dernier avis :** décisions, changements et nouvelles preuves ;
 > omettre cette rubrique lors d'une première consultation.
 >

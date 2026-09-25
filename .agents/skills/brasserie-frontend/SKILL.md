@@ -14,6 +14,10 @@ champ, sortie et action, préciser : décision du brasseur, utilité maintenant,
 moment d'affichage, emplacement, visibilité immédiate ou à la demande, contrôle,
 représentation, meilleure alternative examinée et preuve dans le parcours.
 Un champ secondaire peut être différé ; conserver son accès et sa valeur.
+Appliquer la section « Généraliser sans suradapter aux exemples » d'AGENTS.md :
+une fixture ne devient pas une option produit ou une référence fixe. Concevoir
+les commandes selon les propriétés et décisions utiles ; éprouver le parcours
+avec un cas hors fixtures, sans ajouter une interface par style ou recette.
 
 Pour une refonte majeure ou un essai explicite d'audace, appliquer la section
 « Explorer une refonte et reconnaître la prise de risque » de

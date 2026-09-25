@@ -114,6 +114,31 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   participe ; il peut demander jusqu'à 9 Luna via le relais natif Codex.
   Adapter les vagues aux places disponibles sans viser le plafond.
 
+## Généraliser sans suradapter aux exemples
+
+- Distinguer exigence utilisateur, exemple illustratif et fixture de test. Un
+  exemple extrême ne devient ni option produit, ni valeur par défaut, ni règle
+  métier sans justification indépendante. Une fixture ne définit pas le domaine
+  de validité de l'application.
+- Concevoir à partir des propriétés, capacités documentées, contraintes et états
+  utiles. Les noms de styles, souches ou recettes peuvent aider à chercher ou
+  proposer un préréglage explicite ; ils ne prouvent pas une capacité. Garder
+  l'édition générique accessible, les exceptions métier justifiées et les
+  inconnues explicites. Ne pas généraliser une estimation hors de ses conditions
+  ni créer un moteur universel ou une architecture extensive sans besoin.
+- À une décision structurante, préciser les invariants, facteurs qui changent
+  réellement le comportement, domaine couvert et cas non modélisés. Choisir une
+  petite couverture par classes de comportement, limites et interactions à risque,
+  avec un cas extérieur aux fixtures de conception. Réutiliser les tests existants ;
+  ajouter des tests paramétrés ou de propriétés quand ils vérifient un invariant
+  utile. Ni une recette par style ni un produit cartésien des combinaisons.
+- Sol et Astra recherchent les hypothèses spécifiques cachées dans briefs, code
+  et interfaces. Le test de généralité est : à propriétés pertinentes identiques,
+  un nom différent doit-il changer le résultat ? Justifier les différences réelles.
+  Rapporter les limites de la preuve ; quelques scénarios réussis ne démontrent
+  pas une couverture universelle. Corriger la règle responsable, pas accumuler
+  des exceptions aux seuls exemples signalés.
+
 ## Particularités du produit
 
 - Le brasseur doit trouver ce qui compte, comprendre l'état réel et terminer
