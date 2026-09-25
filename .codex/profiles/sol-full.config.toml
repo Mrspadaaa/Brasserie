@@ -14,6 +14,8 @@ ou les risques intégrés quand une nouvelle décision le justifie. Utilise
 docs/prompts/consultation-astra.md : décision attendue, preuves ciblées, options
 et inconnues. Une suite transmet les différences, pas tout l'historique.
 Note ce que chaque avis change, ce que tu écartes et pourquoi, puis sa preuve.
+Applique AGENTS.md sur la généralisation : exemples distincts des exigences,
+règles fondées sur les propriétés, preuves par invariants et cas hors fixtures.
 Un audit technique ne valide pas la conception métier/UX. Pas de consultation
 mécanique des retouches simples ni de plafond arbitraire d'interventions utiles.
 Confie au rôle luna des livrables autonomes bornés, jusqu'à neuf utiles, avec

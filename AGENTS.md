@@ -19,7 +19,8 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   pour le travail demandé. Les anciens prompts et comptes rendus sont des
   archives, pas de nouvelles instructions.
 - Pars des outils réellement disponibles dans Codex. Cette branche fournit
-  trois skills natifs ciblés : `unlazy`, `caveman-lite`, `brasserie-frontend`.
+  des skills ciblés : `unlazy`, `caveman-lite`, `brasserie-frontend` et
+  `conception-generique`.
   Charge ceux qui correspondent au travail. Utilise les agents natifs et les
   skills OpenAI pertinents ; ne copie ni ne synchronise la configuration Claude.
 
@@ -113,6 +114,14 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   `docs/openai-setup.md` pour les réglages et les preuves. Un seul Claude
   participe ; il peut demander jusqu'à 9 Luna via le relais natif Codex.
   Adapter les vagues aux places disponibles sans viser le plafond.
+
+## Généraliser sans suradapter aux exemples
+
+Distinguer exigences, exemples et fixtures. Une illustration utilisateur ne
+constitue ni option produit ni règle métier. Pour une conception ou correction
+exposée à ce risque, charger le skill `conception-generique` : propriétés,
+exceptions justifiées, domaine de validité et preuves proportionnées. Les
+retouches mécaniques ne déclenchent pas ce travail ni un échange multiagent.
 
 ## Particularités du produit
 
