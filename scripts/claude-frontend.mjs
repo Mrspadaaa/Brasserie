@@ -1,16 +1,31 @@
 // Native Claude Code subscription bridge. No SDK, token extraction or API proxy.
 import { spawn, spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
-import { existsSync, openSync, closeSync, unlinkSync, readdirSync, readFileSync, writeFileSync, realpathSync, statSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
+import { createHash, randomUUID } from 'node:crypto';
+import { existsSync, openSync, closeSync, unlinkSync, renameSync, readdirSync, readFileSync, writeFileSync, realpathSync, statSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 export const MAX_BRIEF_BYTES = 24 * 1024;
+const DEFAULT_MAX_TURNS = 30;
 const MAX_FILES = 12;
 const MAX_TEXT_BYTES = 128 * 1024;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_TOTAL_SOURCE_BYTES = 32 * 1024 * 1024;
+const MAX_STREAM_EVENT_BYTES = 64 * 1024 * 1024;
+const MAX_STDERR_CHARS = 8 * 1024;
+const MAX_ACTIVE_TOOLS = 32;
+const PROGRESS_SCHEMA = 'laffinee.claude-progress.v1';
+const RECOVERY_SCHEMA = 'laffinee.claude-recovery.v1';
+const PROGRESS_TOOL_NAMES = new Set(['Read', 'Edit', 'Write', 'Bash']);
+const PROGRESS_COUNTERS = new Set(['reads', 'editWriteAttempts', 'toolErrors', 'permissionRefusals', 'retries']);
+const PROGRESS_CATEGORIES = new Set([
+  'permission_refused', 'tool_error', 'allowed', 'allowed_warning', 'rejected', 'unknown', 'conflict', 'report_error', 'result_write_error',
+]);
+const PROGRESS_STATUSES = new Set(['not_requested', 'pending', 'completed', 'failed', 'not_attempted']);
+const PROGRESS_DELIVERY_OUTCOMES = new Set(['completed', 'conflict', 'error', 'not_attempted']);
+const RECOVERY_SOURCE_STATUSES = new Set(['unchanged', 'changed', 'missing', 'unreadable']);
+const RECOVERY_COPY_STATUSES = new Set(['missing', 'unreadable']);
 
 export function subscriptionEnvironment(source = process.env) {
   const env = { ...source };
@@ -53,7 +68,7 @@ export function parseLauncherOptions(input) {
   }
   const mode = values.get('--mode') || 'review';
   if (!['review', 'edit'].includes(mode)) throw new Error('Mode attendu : review ou edit.');
-  const rawTurns = values.get('--max-turns') || String(mode === 'edit' ? 12 : 4);
+  const rawTurns = values.get('--max-turns') || String(DEFAULT_MAX_TURNS);
   if (!/^[1-9]\d*$/.test(rawTurns) || !Number.isSafeInteger(Number(rawTurns))) throw new Error('--max-turns doit être un entier positif sûr.');
   if (files.length > MAX_FILES) throw new Error(`Au plus ${MAX_FILES} fichiers explicites par mission.`);
   if (values.has('--diagnose') && values.has('--dry-run')) throw new Error('Choisir --diagnose ou --dry-run.');
@@ -132,14 +147,101 @@ export function applyStagedEdits(directory, sources) {
   return changed.map(file => file.source);
 }
 
+export function applyStagedEditsWithProgress(directory, sources, tracker, recoveryManifestPath) {
+  try {
+    const changedFiles = applyStagedEdits(directory, sources);
+    tracker.record('résultat', 'report_fichiers_termine', {
+      outcome: 'completed', modelOutcome: 'completed', resultStatus: 'completed',
+      deliveryStatus: 'completed', deliveryOutcome: 'completed',
+    });
+    return changedFiles;
+  } catch (error) {
+    const conflict = /^Conflit\s*:/i.test(String(error?.message || ''));
+    const recovery = writeClaudeRecoveryManifest(recoveryManifestPath || join(directory, 'recovery.json'), directory, sources,
+      { reportMayBePartial: !conflict });
+    tracker.record('erreur', 'report_fichiers_en_erreur', {
+      outcome: 'delivery_error', modelOutcome: 'completed', resultStatus: 'completed',
+      deliveryStatus: 'failed', deliveryOutcome: conflict ? 'conflict' : 'error',
+      category: conflict ? 'conflict' : 'report_error',
+      recovery,
+    });
+    try { error.recovery = recovery; } catch { /* Keep the first report error intact. */ }
+    throw error;
+  }
+}
+
+export function claudeProgressPath(output) { return `${resolve(output)}.progress.json`; }
+export function claudeRecoveryPath(output) { return `${resolve(output)}.recovery.json`; }
+
+export function inspectStagedChanges(directory, sources) {
+  const root = resolve(directory);
+  const files = [];
+  const unavailable = [];
+  for (const file of sources.slice(0, MAX_FILES)) {
+    const path = typeof file?.staged === 'string' ? file.staged : '';
+    try {
+      const stagedPath = resolve(root, path);
+      if (!path || !inside(root, stagedPath)) throw Object.assign(new Error(), { code: 'EINVAL' });
+      const info = statSync(stagedPath);
+      if (!info.isFile()) throw Object.assign(new Error(), { code: 'EINVAL' });
+      const digest = hashFile(stagedPath);
+      if (digest === file.digest) continue;
+
+      let sourceStatus = 'unreadable';
+      let sourceDiffers = null;
+      try {
+        sourceDiffers = hashFile(file.source) !== file.digest;
+        sourceStatus = sourceDiffers ? 'changed' : 'unchanged';
+      } catch (error) { sourceStatus = error?.code === 'ENOENT' ? 'missing' : 'unreadable'; }
+      files.push({ path, size: info.size, sha256: digest, sourceDiffers, sourceStatus });
+    } catch (error) {
+      unavailable.push({ path, status: error?.code === 'ENOENT' ? 'missing' : 'unreadable' });
+    }
+  }
+  return { files, unavailable };
+}
+
+export function writeClaudeRecoveryManifest(manifestPath, directory, sources, { reportMayBePartial = false } = {}) {
+  const inventory = inspectStagedChanges(directory, sources);
+  const manifest = {
+    schema: RECOVERY_SCHEMA,
+    status: 'unreviewed',
+    createdAt: new Date().toISOString(),
+    directory: resolve(directory),
+    manifestPath: resolve(manifestPath),
+    validated: false,
+    // An I/O failure during report can happen after another copy succeeded.
+    autoApplied: reportMayBePartial ? null : false,
+    reportMayBePartial,
+    ...inventory,
+  };
+  const manifestWritten = writeJsonAtomically(manifest.manifestPath, manifest);
+  return { ...manifest, manifestStatus: manifestWritten ? 'written' : 'write_failed' };
+}
+
+export function recordClaudeFailureRecovery({ manifestPath, directory, sources, tracker, outcome,
+  receivedFinalResult, deliveryRequested = false }) {
+  const recovery = writeClaudeRecoveryManifest(manifestPath, directory, sources);
+  tracker.record('erreur', receivedFinalResult ? 'résultat_final' : 'résultat_absent', {
+    outcome, modelOutcome: outcome, resultStatus: 'completed',
+    deliveryStatus: deliveryRequested ? 'not_attempted' : 'not_requested',
+    deliveryOutcome: deliveryRequested ? 'not_attempted' : undefined,
+    recovery,
+  });
+  return recovery;
+}
+
 export function checkedOutputPath(output, brief, sources) {
   const destination = resolve(output);
+  const progress = claudeProgressPath(destination);
+  const recovery = claudeRecoveryPath(destination);
   const key = path => {
     const canonical = existsSync(path) ? realpathSync(path) : resolve(path);
     return process.platform === 'win32' ? canonical.toLowerCase() : canonical;
   };
-  if ([resolve(brief), ...sources.map(file => file.source)].some(path => key(path) === key(destination))) {
-    throw new Error('Le fichier de sortie ne peut pas écraser le brief ou un fichier fourni.');
+  const protectedPaths = [resolve(brief), ...sources.map(file => file.source)];
+  if ([destination, progress, recovery].some(target => protectedPaths.some(path => key(path) === key(target)))) {
+    throw new Error('Le résultat, son état de progression ou son manifeste de récupération ne peut pas écraser le brief ou un fichier fourni.');
   }
   return destination;
 }
@@ -151,7 +253,7 @@ export function lunaRelayCommand(cwd, directory) {
   return `node ${shellQuote(relay)} --tasks ${shellQuote(join(directory, 'luna-tasks.json'))} --output-dir ${shellQuote(join(directory, 'luna'))} --cwd ${shellQuote(cwd)}`;
 }
 
-export function claudeArguments({ mode = 'review', files = [], luna = false, maxTurns = mode === 'edit' ? 12 : 4, relayCommand } = {}) {
+export function claudeArguments({ mode = 'review', files = [], luna = false, maxTurns = DEFAULT_MAX_TURNS, relayCommand } = {}) {
   if (!['review', 'edit'].includes(mode)) throw new Error('Mode attendu : review ou edit.');
   if (!Number.isSafeInteger(maxTurns) || maxTurns < 1) throw new Error('--max-turns doit être un entier positif sûr.');
   if (mode === 'edit' && !files.length) throw new Error('Une liste explicite de fichiers est requise pour modifier.');
@@ -176,7 +278,8 @@ export function claudeArguments({ mode = 'review', files = [], luna = false, max
   // --restricted confines it to the isolated mission directory.
   if (tools.includes('Read')) allowed.unshift('Read');
   const args = ['--print', '--safe-mode', '--restricted', '--model', 'claude-opus-5-5', '--effort', 'xhigh',
-    '--output-format', 'json', '--no-session-persistence', '--permission-mode', 'dontAsk',
+    '--output-format', 'stream-json', '--verbose', '--include-partial-messages',
+    '--no-session-persistence', '--permission-mode', 'dontAsk',
     '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
     '--disallowedTools', 'mcp__*', '--max-turns', String(maxTurns), '--tools', tools.join(',')];
   if (allowed.length) args.push('--allowedTools', ...allowed);
@@ -191,6 +294,307 @@ export function classifyClaudeOutcome({ code, response, errorText = '' }) {
   if (/max[_ -]?turns|maximum (?:number of )?(?:agentic )?turns|turn limit|tour[s]? maximum|budget de tours/.test(detail)) return 'turn_budget_reached';
   if (/usage limit|quota|rate limit|you.ve (?:hit|reached) (?:your |the )?(?:(?:session|weekly|opus|sonnet|individual) )?limit|spend limit|credit limit|limite d.utilisation/.test(detail)) return 'quota_reached';
   return 'claude_error';
+}
+
+const CLAUDE_OUTCOMES = new Set(['completed', 'turn_budget_reached', 'quota_reached', 'claude_error']);
+const PROGRESS_OUTCOMES = new Set([...CLAUDE_OUTCOMES, 'delivery_error']);
+
+function writeJsonAtomically(path, value) {
+  const temporary = join(dirname(path), `.${basename(path)}.${process.pid}.${randomUUID()}.tmp`);
+  try {
+    writeFileSync(temporary, JSON.stringify(value), { encoding: 'utf8', flag: 'wx' });
+    renameSync(temporary, path);
+    return true;
+  } catch {
+    try { if (existsSync(temporary)) unlinkSync(temporary); } catch { /* Preserve the original operation error. */ }
+    return false;
+  }
+}
+
+function sanitizeRecoverySnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return null;
+  const shortPath = value => typeof value === 'string' ? value.slice(0, 1024) : '';
+  return {
+    schema: RECOVERY_SCHEMA,
+    status: 'unreviewed',
+    createdAt: typeof snapshot.createdAt === 'string' ? snapshot.createdAt.slice(0, 40) : '',
+    directory: shortPath(snapshot.directory),
+    manifestPath: shortPath(snapshot.manifestPath),
+    manifestStatus: snapshot.manifestStatus === 'written' ? 'written' : 'write_failed',
+    validated: false,
+    autoApplied: snapshot.reportMayBePartial === true ? null : false,
+    reportMayBePartial: snapshot.reportMayBePartial === true,
+    files: (Array.isArray(snapshot.files) ? snapshot.files : []).slice(0, MAX_FILES).flatMap(file => {
+      if (!file || typeof file.path !== 'string' || !Number.isSafeInteger(file.size) || file.size < 0
+        || !/^[a-f\d]{64}$/i.test(file.sha256 || '') || !RECOVERY_SOURCE_STATUSES.has(file.sourceStatus)) return [];
+      return [{
+        path: file.path.slice(0, 512), size: file.size, sha256: file.sha256.toLowerCase(),
+        sourceDiffers: typeof file.sourceDiffers === 'boolean' ? file.sourceDiffers : null,
+        sourceStatus: file.sourceStatus,
+      }];
+    }),
+    unavailable: (Array.isArray(snapshot.unavailable) ? snapshot.unavailable : []).slice(0, MAX_FILES).flatMap(file => {
+      if (!file || typeof file.path !== 'string' || !RECOVERY_COPY_STATUSES.has(file.status)) return [];
+      return [{ path: file.path.slice(0, 512), status: file.status }];
+    }),
+  };
+}
+
+export function createClaudeProgressTracker(progressFile, { deliveryRequested = false } = {}) {
+  const startedAtMs = Date.now();
+  const startedAt = new Date(startedAtMs).toISOString();
+  const state = {
+    schema: PROGRESS_SCHEMA,
+    status: 'initialisation',
+    startedAt,
+    updatedAt: startedAt,
+    elapsedMs: 0,
+    lastEvent: { type: 'préparation', at: startedAt, elapsedMs: 0 },
+    outcome: null,
+    modelOutcome: null,
+    resultStatus: 'pending',
+    deliveryStatus: deliveryRequested ? 'pending' : 'not_requested',
+    deliveryOutcome: null,
+    counters: { reads: 0, editWriteAttempts: 0, toolErrors: 0, permissionRefusals: 0, retries: 0 },
+    recovery: null,
+  };
+  let enabled = true;
+  let timer;
+
+  const persist = () => {
+    if (!enabled) return;
+    if (!writeJsonAtomically(progressFile, state)) enabled = false;
+  };
+  const refresh = () => {
+    const now = Date.now();
+    state.updatedAt = new Date(now).toISOString();
+    state.elapsedMs = now - startedAtMs;
+    persist();
+  };
+  const update = (status, type, { tool, outcome, modelOutcome, resultStatus, deliveryStatus,
+    deliveryOutcome, category, counters, recovery } = {}, writeImmediately = true) => {
+    const now = Date.now();
+    state.status = status;
+    state.updatedAt = new Date(now).toISOString();
+    state.elapsedMs = now - startedAtMs;
+    state.lastEvent = { type, at: state.updatedAt, elapsedMs: state.elapsedMs };
+    if (PROGRESS_TOOL_NAMES.has(tool)) state.lastEvent.tool = tool;
+    if (PROGRESS_CATEGORIES.has(category)) state.lastEvent.category = category;
+    if (PROGRESS_OUTCOMES.has(outcome)) state.outcome = outcome;
+    if (CLAUDE_OUTCOMES.has(modelOutcome)) state.modelOutcome = modelOutcome;
+    if (PROGRESS_STATUSES.has(resultStatus)) state.resultStatus = resultStatus;
+    if (PROGRESS_STATUSES.has(deliveryStatus)) state.deliveryStatus = deliveryStatus;
+    if (PROGRESS_DELIVERY_OUTCOMES.has(deliveryOutcome)) state.deliveryOutcome = deliveryOutcome;
+    if (recovery) state.recovery = sanitizeRecoverySnapshot(recovery);
+    for (const counter of Array.isArray(counters) ? counters : [counters]) {
+      if (PROGRESS_COUNTERS.has(counter)) state.counters[counter] = Math.min(Number.MAX_SAFE_INTEGER, state.counters[counter] + 1);
+    }
+    if (writeImmediately) persist();
+  };
+  const record = (status, type, details) => update(status, type, details, true);
+
+  persist();
+  if (!enabled) throw new Error('Impossible de créer l’état de progression Claude.');
+  timer = setInterval(refresh, 1000);
+  timer.unref?.();
+  return {
+    startedAtMs,
+    record,
+    updateRecovery(recovery) {
+      const sanitized = sanitizeRecoverySnapshot(recovery);
+      if (!sanitized) return;
+      state.recovery = sanitized;
+      const now = Date.now();
+      state.updatedAt = new Date(now).toISOString();
+      state.elapsedMs = now - startedAtMs;
+      persist();
+    },
+    activity() { update('en_cours', 'fragment_de_réponse', {}, false); },
+    stopHeartbeat() { if (timer) clearInterval(timer); timer = undefined; },
+  };
+}
+
+function claudeEventBlocks(event) {
+  const blocks = [];
+  if (Array.isArray(event?.message?.content)) blocks.push(...event.message.content);
+  if (Array.isArray(event?.content)) blocks.push(...event.content);
+  const streamed = event?.type === 'stream_event' ? event.event : event;
+  if (streamed?.type === 'content_block_start' && streamed.content_block) blocks.push(streamed.content_block);
+  return blocks;
+}
+
+function isPermissionRefusal(block) {
+  const signals = [block?.error_code, block?.error_type];
+  if (typeof block?.error === 'string') signals.push(block.error);
+  else if (block?.error && typeof block.error === 'object') signals.push(block.error.code, block.error.type);
+  if (typeof block?.content === 'string') signals.push(block.content.slice(0, 8192));
+  else if (Array.isArray(block?.content)) {
+    for (const part of block.content.slice(0, 8)) {
+      if (typeof part?.text === 'string') signals.push(part.text.slice(0, 8192));
+      else if (typeof part === 'string') signals.push(part.slice(0, 8192));
+    }
+  }
+  return /permission(?:[_\s]+)(?:was[_\s]+)?(?:denied|refused)|permission\s+to\s+use\b.{0,256}\bdenied|(?:denied|refused)[_\s]+permission|not permitted|approval required/i
+    .test(signals.filter(value => typeof value === 'string').join(' ').slice(0, 8192));
+}
+
+function rateLimitCategory(event) {
+  const status = event?.rate_limit_info?.status ?? event?.status;
+  return ['allowed', 'allowed_warning', 'rejected'].includes(status) ? status : 'unknown';
+}
+
+export async function captureClaudeProcess(child, tracker) {
+  let pending = '';
+  let discardingLargeEvent = false;
+  let response;
+  let responseLine;
+  let errorText = '';
+  let launchError = false;
+  const activeTools = new Map();
+  const countedPermissionRefusals = new Set();
+  let pendingAnonymousPermissionRefusals = 0;
+  let lastTool;
+
+  const rememberPermissionId = toolUseId => {
+    if (typeof toolUseId !== 'string' || countedPermissionRefusals.has(toolUseId)) return;
+    if (countedPermissionRefusals.size >= MAX_ACTIVE_TOOLS) countedPermissionRefusals.delete(countedPermissionRefusals.values().next().value);
+    countedPermissionRefusals.add(toolUseId);
+  };
+  const notePermissionRefusal = (toolUseId, source) => {
+    if (typeof toolUseId === 'string' && countedPermissionRefusals.has(toolUseId)) return false;
+    if (source === 'tool_result' && pendingAnonymousPermissionRefusals > 0) {
+      pendingAnonymousPermissionRefusals--;
+      rememberPermissionId(toolUseId);
+      return false;
+    }
+    if (typeof toolUseId === 'string') rememberPermissionId(toolUseId);
+    else if (source === 'system') pendingAnonymousPermissionRefusals = Math.min(MAX_ACTIVE_TOOLS, pendingAnonymousPermissionRefusals + 1);
+    return true;
+  };
+
+  const observe = (event, rawLine) => {
+    if (!event || typeof event !== 'object') return;
+    if (event.type === 'system' && event.subtype === 'init') {
+      tracker.record('attente', 'initialisation');
+    } else if (event.type === 'system' && event.subtype === 'api_retry') {
+      tracker.record('attente', 'réessai', { counters: 'retries' });
+    } else if (event.type === 'rate_limit_event') {
+      const category = rateLimitCategory(event);
+      const status = category === 'rejected' ? 'erreur' : category === 'unknown' ? 'inconnu' : 'information';
+      tracker.record(status, 'etat_quota', { category });
+    } else if (event.type === 'system' && event.subtype === 'permission_denied') {
+      let toolUseId = typeof event.tool_use_id === 'string' ? event.tool_use_id : event.tool_use?.id;
+      if (typeof toolUseId !== 'string' && PROGRESS_TOOL_NAMES.has(event.tool_name)) {
+        const matchingTools = [...activeTools].filter(([, name]) => name === event.tool_name);
+        if (matchingTools.length === 1) [toolUseId] = matchingTools[0];
+      }
+      const tool = activeTools.get(toolUseId) || (PROGRESS_TOOL_NAMES.has(event.tool_name) ? event.tool_name : undefined);
+      tracker.record('erreur', 'refus_permission', {
+        tool, category: 'permission_refused', counters: notePermissionRefusal(toolUseId, 'system') ? 'permissionRefusals' : undefined,
+      });
+    } else if (event.type === 'error' || (event.type === 'system' && /^(?:error|fatal_error)$/.test(String(event.subtype || '')))) {
+      tracker.record('erreur', 'erreur');
+    }
+
+    if (event.type === 'stream_event' && event.event?.type === 'content_block_delta'
+      && event.event.delta?.type === 'text_delta') tracker.activity();
+
+    for (const block of claudeEventBlocks(event)) {
+      if (block?.type === 'tool_use' && PROGRESS_TOOL_NAMES.has(block.name)) {
+        lastTool = block.name;
+        if (typeof block.id === 'string' && activeTools.size < MAX_ACTIVE_TOOLS) activeTools.set(block.id, block.name);
+        tracker.record('outil', 'outil_démarré', {
+          tool: block.name,
+          counters: block.name === 'Read' ? 'reads' : ['Edit', 'Write'].includes(block.name) ? 'editWriteAttempts' : undefined,
+        });
+      } else if (block?.type === 'tool_result') {
+        const toolUseId = typeof block.tool_use_id === 'string' ? block.tool_use_id : undefined;
+        const tool = toolUseId ? activeTools.get(toolUseId) : lastTool;
+        if (toolUseId) activeTools.delete(toolUseId);
+        if (block.is_error === true) {
+          const permission = isPermissionRefusal(block);
+          const counters = ['toolErrors'];
+          if (permission && notePermissionRefusal(toolUseId, 'tool_result')) counters.push('permissionRefusals');
+          tracker.record('erreur', 'outil_en_erreur', {
+            tool, category: permission ? 'permission_refused' : 'tool_error', counters,
+          });
+        } else tracker.record('attente', 'retour_outil', { tool });
+      }
+    }
+
+    if (event.type === 'result') {
+      response = event;
+      responseLine = rawLine;
+    }
+  };
+
+  const acceptLine = line => {
+    const clean = line.trim();
+    if (!clean) return;
+    if (Buffer.byteLength(clean, 'utf8') > MAX_STREAM_EVENT_BYTES) {
+      tracker.record('erreur', 'événement_trop_volumineux');
+      return;
+    }
+    try { observe(JSON.parse(clean), clean); } catch { /* Ignore non-JSON CLI output without echoing it. */ }
+  };
+
+  const onStdout = chunk => {
+    if (discardingLargeEvent) {
+      const newline = chunk.indexOf('\n');
+      if (newline === -1) return;
+      chunk = chunk.slice(newline + 1);
+      discardingLargeEvent = false;
+    }
+    if (!chunk) return;
+    pending += chunk;
+    let newline;
+    while ((newline = pending.indexOf('\n')) !== -1) {
+      const line = pending.slice(0, newline);
+      pending = pending.slice(newline + 1);
+      acceptLine(line);
+    }
+    if (Buffer.byteLength(pending, 'utf8') > MAX_STREAM_EVENT_BYTES) {
+      discardingLargeEvent = true;
+      pending = '';
+      tracker.record('erreur', 'événement_trop_volumineux');
+    }
+  };
+
+  child.stdout.setEncoding('utf8');
+  child.stderr.setEncoding('utf8');
+  child.stdout.on('data', onStdout);
+  child.stderr.on('data', chunk => { errorText = (errorText + chunk).slice(-MAX_STDERR_CHARS); });
+  tracker.record('attente', 'processus_lancé');
+
+  const { code } = await new Promise(resolveClose => {
+    child.once('error', () => {
+      launchError = true;
+      tracker.record('erreur', 'erreur_lancement');
+    });
+    child.once('close', code => resolveClose({ code }));
+  });
+  if (!discardingLargeEvent && pending.trim()) acceptLine(pending);
+  tracker.stopHeartbeat();
+
+  const outcome = classifyClaudeOutcome({ code: launchError ? null : code, response, errorText });
+  const receivedFinalResult = !!response;
+  if (!response) {
+    response = {
+      type: 'result', subtype: 'error_cli_stream', is_error: true,
+      result: 'Aucun résultat final reçu.', num_turns: 0,
+      duration_ms: Date.now() - tracker.startedAtMs,
+    };
+    responseLine = JSON.stringify(response);
+  }
+  return {
+    code: launchError ? null : code,
+    response,
+    responseLine,
+    errorText,
+    outcome,
+    receivedFinalResult,
+    finalJson: `${responseLine.trim()}\n`,
+  };
 }
 
 function findClaude() {
@@ -245,6 +649,8 @@ async function main() {
     throw new Error('Les fichiers fournis ne doivent pas occuper luna-tasks.json ou luna/.');
   }
   const output = checkedOutputPath(options.output, options.brief, sources);
+  const progressFile = claudeProgressPath(output);
+  const recoveryManifestPath = claudeRecoveryPath(output);
   const exe = findClaude();
   const status = cliStatus(exe, env);
   const previewDirectory = join(tmpdir(), 'laffinee-claude-preview');
@@ -256,15 +662,32 @@ async function main() {
       files: sources.map(({ source, staged, size }) => ({ source, staged, size })),
       args: claudeArguments({ mode: options.mode, files: sources.map(file => file.staged),
         luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay }),
-      output,
+      output, progressFile, recoveryManifestPath,
     }));
     return;
   }
   const release = acquireClaudeLock();
   let directory;
   let keepDirectory = false;
+  let progressTracker;
+  let progressFinalized = false;
+  let modelOutcome;
+  let resultWritten = false;
+  let recoverySnapshot;
+  const ensureRecovery = () => {
+    if (!directory) return undefined;
+    if (!recoverySnapshot) recoverySnapshot = writeClaudeRecoveryManifest(recoveryManifestPath, directory, sources);
+    return recoverySnapshot;
+  };
+  const logRecovery = outcome => {
+    if (!recoverySnapshot) return;
+    console.log(JSON.stringify({
+      diagnostic: 'claude_recovery', outcome, progressFile, recoveryManifestPath, recovery: recoverySnapshot,
+    }));
+  };
   try {
     directory = mkdtempSync(join(tmpdir(), 'laffinee-claude-input-'));
+    progressTracker = createClaudeProgressTracker(progressFile, { deliveryRequested: options.mode === 'edit' });
     stageSources(directory, sources);
     const relay = options.luna ? lunaRelayCommand(options.cwd, directory) : undefined;
     const args = claudeArguments({ mode: options.mode, files: sources.map(file => file.staged),
@@ -285,29 +708,78 @@ async function main() {
     const prompt = lines.join('\n') + '\n\n' + brief;
     console.log(JSON.stringify({ ...status, mode: options.mode, maxTurns: options.maxTurns,
       briefBytes: Buffer.byteLength(brief), providedFiles: sources.map(file => file.staged),
-      output }));
-    const child = spawn(exe, args, { cwd: directory, env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
-    let result = '', errorText = '';
-    child.stdout.setEncoding('utf8'); child.stdout.on('data', chunk => { result += chunk; });
-    child.stderr.setEncoding('utf8'); child.stderr.on('data', chunk => { errorText += chunk; });
+      output, progressFile, recoveryManifestPath }));
+    let child;
+    try {
+      child = spawn(exe, args, { cwd: directory, env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
+    } catch {
+      progressTracker.record('erreur', 'erreur_lancement', { outcome: 'claude_error' });
+      progressFinalized = true;
+      throw new Error('Impossible de démarrer Claude Code.');
+    }
+    const captured = captureClaudeProcess(child, progressTracker);
+    child.stdin.on('error', () => { /* The process close and final result determine the outcome. */ });
     child.stdin.end(prompt);
-    const code = await new Promise((done, reject) => { child.on('error', reject); child.on('close', done); });
-    writeFileSync(output, result, 'utf8');
-    let response;
-    try { response = JSON.parse(result); } catch { /* stderr can contain the quota reason */ }
-    const outcome = classifyClaudeOutcome({ code, response, errorText });
+    const result = await captured;
+    modelOutcome = result.outcome;
+    writeFileSync(output, result.finalJson, 'utf8');
+    resultWritten = true;
+    const outcome = result.outcome;
     if (outcome !== 'completed') {
-      if (options.mode === 'edit') keepDirectory = true;
+      recoverySnapshot = recordClaudeFailureRecovery({
+        manifestPath: recoveryManifestPath, directory, sources, tracker: progressTracker, outcome,
+        receivedFinalResult: result.receivedFinalResult, deliveryRequested: options.mode === 'edit',
+      });
+      progressFinalized = true;
+      keepDirectory = true;
+      logRecovery(outcome);
       const label = outcome === 'turn_budget_reached' ? 'Budget de ' + options.maxTurns + ' tours atteint'
         : outcome === 'quota_reached' ? 'Quota Claude atteint' : 'Claude n’a pas terminé';
       throw new Error('[' + outcome + '] ' + label + '. Résultat : ' + output + '.'
-        + (keepDirectory ? ' Copies : ' + directory + '.' : '') + ' ' + String(response?.result || errorText).slice(-500));
+        + (keepDirectory ? ' Copies : ' + directory + '.' : ''));
     }
-    const changedFiles = options.mode === 'edit' ? applyStagedEdits(directory, sources) : [];
-    console.log(JSON.stringify({ completed: true, output, turns: response.num_turns,
-      maxTurns: options.maxTurns, models: Object.keys(response.modelUsage || {}), changedFiles }));
+    progressTracker.record('résultat', 'résultat_final', {
+      outcome, modelOutcome, resultStatus: 'completed',
+      deliveryStatus: options.mode === 'edit' ? 'pending' : 'not_requested',
+    });
+    let changedFiles = [];
+    if (options.mode === 'edit') {
+      try { changedFiles = applyStagedEditsWithProgress(directory, sources, progressTracker, recoveryManifestPath); }
+      catch (error) {
+        recoverySnapshot = error?.recovery || ensureRecovery();
+        if (!error?.recovery) progressTracker.updateRecovery(recoverySnapshot);
+        progressFinalized = true;
+        keepDirectory = true;
+        logRecovery('delivery_error');
+        throw error;
+      }
+    }
+    progressFinalized = true;
+    console.log(JSON.stringify({ completed: true, output, progressFile, elapsedMs: Date.now() - progressTracker.startedAtMs,
+      turns: result.response.num_turns, maxTurns: options.maxTurns,
+      models: Object.keys(result.response.modelUsage || {}), changedFiles }));
   } catch (error) {
-    if (options.mode === 'edit') keepDirectory = true;
+    if (!recoverySnapshot && directory) {
+      recoverySnapshot = ensureRecovery();
+      progressTracker?.updateRecovery(recoverySnapshot);
+      logRecovery(modelOutcome || 'claude_error');
+    }
+    if (recoverySnapshot || options.mode === 'edit') keepDirectory = true;
+    if (progressTracker && !progressFinalized) {
+      progressTracker.stopHeartbeat();
+      if (modelOutcome) {
+        const resultWriteFailed = !resultWritten;
+        progressTracker.record('erreur', resultWriteFailed ? 'fichier_resultat_en_erreur' : 'erreur', {
+          outcome: resultWriteFailed ? 'delivery_error' : modelOutcome,
+          modelOutcome,
+          resultStatus: resultWriteFailed ? 'failed' : 'completed',
+          deliveryStatus: options.mode === 'edit' ? 'not_attempted' : 'not_requested',
+          deliveryOutcome: options.mode === 'edit' && resultWriteFailed ? 'not_attempted' : undefined,
+          category: resultWriteFailed ? 'result_write_error' : undefined,
+        });
+      } else progressTracker.record('erreur', 'erreur', { outcome: 'claude_error' });
+      progressFinalized = true;
+    }
     throw error;
   } finally {
     try { if (directory && !keepDirectory) rmSync(directory, { recursive: true, force: true }); }

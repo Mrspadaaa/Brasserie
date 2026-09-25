@@ -12,6 +12,8 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   Leur inspection n'est utile que si l'utilisateur demande de travailler dessus.
 - `AGENTS.md` est le point d'entrée automatique. Lire en plus la mission
   explicitement demandée, pas chaque markdown du dépôt.
+  « Lis ton .md » désigne ces consignes et le guide `docs/openai-setup.md` ;
+  cela n'active pas une mission produit donnée en exemple dans ce guide.
 - Les documents métier sont communs : `PRODUCT.md` pour le comportement produit ;
   `DESIGN.md` et `docs/ui-compacte.md` pour l'interface. Lis les parties pertinentes
   pour le travail demandé. Les anciens prompts et comptes rendus sont des
@@ -35,10 +37,26 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
 - Délègue seulement si une tâche indépendante le justifie, avec les outils
   natifs de Codex, un périmètre clair et les contraintes produit pertinentes.
   Vérifie l'intégration avant de conclure.
+- Au démarrage et au premier retour d'un délégué, distinguer paramètres écrits,
+  lancement confirmé et valeurs effectives observées. Vérifier modèle, effort
+  et fenêtre dans les métadonnées disponibles, sans générer un tour de diagnostic
+  si les journaux de travail suffisent. Signaler une valeur non observable.
+  Conserver mode de lancement, identifiant d'agent ou de session native et session
+  de commande. Pour une session CLI active, utiliser `codex queue` avec son profil
+  pour les suites ; une mise en file n'est pas encore un travail reçu ou terminé.
+  Voir `docs/openai-setup.md`. Ne pas recréer un agent pour contourner un message
+  non transmis ; résoudre le canal et vérifier la prise en compte.
 - Pour les travaux substantiels, applique Unlazy : critères écrits avant le
   travail, responsabilités de fichiers, vérification indépendante et preuves.
   Sol pilote en Max avec son contexte complet. Caveman lite garde les bilans
   concis sans limiter le travail utile.
+- Économiser le contexte sans réduire les preuves : exécuter les contrôles
+  déterministes par outils, transmettre aux agents les fichiers et questions
+  utiles, puis les différences lors d'une suite. Attendre les résultats via
+  les outils de suivi, sans tours répétés de surveillance ni agents surveillants.
+  Pour implémenter un concept validé dans une session neuve, fournir un relais
+  court : référence retenue, décisions métier, fichiers, preuves et défauts
+  ouverts. Ne pas relancer la conception sans contradiction nouvelle.
 - Astra Max est un expert transversal : Sol le consulte par processus
   `astra-review` séparé quand l'incertitude, le coût d'une erreur ou le besoin
   de recul le justifie, même avant un échec et hors refonte. Architecture,
@@ -50,6 +68,13 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   champ. Astra peut mener l'investigation pertinente avec ses outils en lecture
   seule et proposer solution concrète, preuves et limites. Sol garde réalisation,
   intégration, délégation et décision ; il motive tout avis écarté.
+- Pour une conception importante, une architecture nouvelle ou une ambiguïté
+  métier structurante, consulter Astra dès les hypothèses, avant les maquettes
+  ou les choix coûteux. Un audit technique initial ne remplit pas ce jalon
+  métier/UX. Utiliser `docs/prompts/consultation-astra.md` ; les suites portent
+  sur les différences et les nouvelles décisions. À chaque jalon concerné,
+  tracer avis reçu, décision/correction et preuve, ou consultation encore ouverte.
+  La fréquence suit les décisions utiles, pas un quota d'appels.
 - Luna Max peut posséder un livrable autonome de recherche, réalisation, test ou
   vérification quand contrats et critères sont clairs. Attribuer fichiers,
   contraintes, faits acquis et preuves attendues ; remonter les ambiguïtés

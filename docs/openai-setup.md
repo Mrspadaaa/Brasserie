@@ -55,7 +55,59 @@ codex exec --profile astra-review --sandbox read-only --cd C:/chemin/Brasserie "
 codex exec --profile luna-full --cd C:/chemin/Brasserie "Vérification indépendante et bornée"
 ```
 
-### Nouvelle session pour Levure
+### Démarrage et suivi d'une session
+
+La demande courante définit le travail. « Lis ton .md » renvoie à `AGENTS.md`
+et à ce guide de fonctionnement ; les missions ci-dessous sont des exemples à
+activer explicitement. Un POC UX ne devient pas une refonte complète de Levure.
+
+Au démarrage et au premier retour de chaque délégué, noter le modèle, l'effort,
+la fenêtre et le mode de lancement réellement observables. Le TOML seul prouve
+une intention. Dans les journaux natifs, `turn_context` expose modèle/effort ;
+`event_msg.token_count.info.model_context_window` expose la fenêtre utile quand
+elle est présente. Extraire ces champs et les résultats nécessaires sans charger
+les journaux entiers dans la conversation. Une valeur absente reste non vérifiée ;
+ne pas multiplier les tours de diagnostic si une session de travail fournit la preuve.
+
+Conserver dans le registre de mission le moyen de suivi correspondant au lancement :
+
+| Lancement | Suivi et suite |
+| --- | --- |
+| Agent natif de collaboration | Identifiant retourné ; outils de statut et de message de cette collaboration. |
+| Processus `codex exec --profile ...` | Session de commande pour attendre sa sortie ; UUID natif pour une suite CLI ; rapport de fin et preuve du résultat. |
+
+Le 24 septembre 2026, l'app a refusé un message vers une session CLI active avec
+`already has an active writer`. Le canal installé `codex queue` a accepté la suite :
+
+```powershell
+codex queue --profile luna-full --sandbox workspace-write --thread <UUID-natif> --message "Suite précise de la mission"
+```
+
+L'exemple conserve le profil et le sandbox de la Luna concernée ; utiliser ceux
+du destinataire réel. Vérifier l'identifiant de message retourné, puis sa lecture
+ou son traitement dans la session/le bilan. Une mise en file ne prouve pas une
+prise en compte immédiate. Ne pas lancer un deuxième processus écrivain ou un
+agent remplaçant pour le même travail. Une session terminée peut être reprise
+avec `codex exec --profile <profil> resume <UUID-natif>` et une mission ciblée.
+
+Ces règles de suivi s'appliquent indépendamment des prototypes et de leurs
+rapports, qui restent dans leurs branches de travail.
+
+Pour passer d'une exploration à une implémentation, ouvrir une session Sol Max
+avec un relais court : concept retenu et chemin des artefacts, décisions métier,
+interactions à conserver, fichiers concernés, tests déjà joués et défauts ouverts.
+La nouvelle session vérifie les sources actuelles sans relire tout l'historique
+ni refaire les variantes validées. Une contradiction nouvelle justifie une
+consultation ciblée. La capacité de contexte complète n'est pas un objectif
+de remplissage et une session neuve ne réinitialise pas le quota du compte.
+
+Exécuter directement tests, builds et captures par outils. Déléguer les travaux
+autonomes qui demandent un jugement, pas une simple attente. Utiliser les
+notifications ou attentes natives plutôt que des tours répétés de surveillance ;
+un changement, un échec ou une décision justifie la reprise. Les rapports courts
+renvoient aux preuves sur disque, sans recopier les journaux volumineux.
+
+### Exemple de nouvelle session pour la refonte Levure
 
 Après la fusion de la PR14, ouvrir une nouvelle session sur `main` synchronisé.
 Prompt exact à donner à Sol Max :
@@ -113,6 +165,22 @@ ou options. Pour un travail à risque, l'avis de cadrage avant les choix coûteu
 et la revue des risques restants du parcours intégré sont deux jalons utiles,
 sans limiter d'autres consultations motivées. Astra enquête en lecture seule et
 propose une solution avec preuves et limites ; Sol tranche, réalise et intègre.
+En conception frontend importante, faire intervenir Astra dès le cadrage :
+objectif du brasseur, données et capacités existantes, défauts observés et
+questions ouvertes suffisent à une première mission. Il peut contester les
+hypothèses et proposer un meilleur parcours avant la réalisation des maquettes.
+Lui transmettre ensuite les concepts évaluables et les différences pertinentes
+pour arbitrer, puis les risques restants dans le parcours intégré. Adapter ces
+interventions aux décisions : ni quota minimal d'appels, ni revue finale unique
+par défaut. Un audit de raccords techniques ne vaut pas revue métier/UX.
+Fournir un dossier court ; tracer les constats, arbitrages et vérifications.
+La présence d'une session Astra ou d'un rapport ne valide pas les critères
+restés sans preuve. Fréquence utile et taille du contexte sont deux choix
+distincts ; ne pas renvoyer tout l'historique pour une nouvelle question ciblée.
+Le [préprompt de consultation](prompts/consultation-astra.md) précise les entrées,
+le rôle d'expert et la preuve de contribution à reporter par Sol. Les profils
+natifs et le rôle Sol renvoient à ce contrat ; les sessions déjà lancées doivent
+recevoir la correction explicitement, une édition du TOML ne les recharge pas.
 Luna peut posséder un livrable borné de recherche, réalisation, test ou
 vérification, avec contrats clairs, fichiers attribués et preuve. Escalader les
 ambiguïtés structurantes ; ne pas confondre la revue de l'auteur avec une
@@ -176,7 +244,7 @@ facturation. Un échec de quota reste un échec, sans basculement API.
 ```powershell
 node scripts/claude-frontend.mjs --diagnose
 node scripts/claude-frontend.mjs --brief C:/temp/mission.txt --output C:/temp/revue.json --dry-run
-node scripts/claude-frontend.mjs --brief C:/temp/mission.txt --output C:/temp/revue.json --allow-file docs/validation/vue-390.png --max-turns 6
+node scripts/claude-frontend.mjs --brief C:/temp/mission.txt --output C:/temp/revue.json --allow-file docs/validation/vue-390.png --max-turns 30
 ```
 
 `--cwd` choisit la racine des fichiers relatifs. Chaque `--allow-file` fournit
@@ -193,9 +261,61 @@ Le brief est limité à **24 Kio UTF-8** : un dépassement produit une erreur,
 sans troncature. Au plus 12 fichiers par mission, chacun limité à 128 Kio de
 texte ou 8 Mio d'image, pour 32 Mio au total. Fournir des extraits pertinents
 plutôt qu'un gros fichier. `--max-turns` est un budget de **tours de la mission**,
-4 en revue et 12 en édition par défaut ; choisir un entier positif adapté à la
-mission. L'atteinte de ce budget et l'atteinte du quota Claude sont rapportées
+30 en revue comme en édition par défaut ; choisir un entier positif adapté à la
+mission. Ce plafond ne demande pas de consommer tous les tours : terminer dès
+que le livrable et les critères confiés sont satisfaits. Les appels qui précisent
+explicitement une limite plus basse la conservent ; revoir ces arguments pour
+les missions substantielles. L'atteinte de ce budget et l'atteinte du quota Claude sont rapportées
 séparément. Une autre mission n'est lancée que pour un besoin identifié.
+
+Le résultat final reste dans le JSON demandé. Pendant l'appel,
+`<output>.progress.json` expose l'activité utile : état, horodatages, lectures,
+tentatives d'édition, erreurs d'outils, refus et reprises. Il ne contient ni le
+raisonnement privé, ni le brief, ni le contenu des fichiers. Distinguer la fin
+du travail du modèle du report effectif de ses modifications.
+
+Un arrêt sur la limite de tours ne signifie pas qu'aucun fichier n'a été
+produit. En cas d'échec, consulter `<output>.recovery.json` et les copies
+conservées avant de relancer une génération. Le manifeste indique les fichiers
+modifiés, leurs empreintes et les conflits éventuels avec les originaux. Une
+copie récupérable reste à examiner et tester ; elle n'est ni validée ni reportée
+automatiquement. Récupérer ensemble l'artefact et ses données de référence pour
+éviter de l'évaluer avec des fixtures différentes de celles utilisées par Claude.
+
+### Contribution frontend et effort proportionné
+
+Quand Claude participe à une conception importante, lui confier un artefact
+réalisable : une direction de maquette interactive ou une correction frontend
+identifiée, avec propriété de fichiers. Ne pas le cantonner par défaut à une
+revue textuelle finale. Pour un essai E1/E2/E3, il peut posséder une des directions
+et corriger une faiblesse observée ; Sol assure l'intégration et une vérification
+distincte. Les critères de conception communs sont dans `docs/ui-compacte.md`.
+
+Utiliser le mode `edit` avec ses outils `Read,Edit,Write` pour cette réalisation.
+Pour une maquette neuve, le pilote crée les fichiers initiaux dans un dossier
+temporaire, passe ce dossier par `--cwd` et nomme les fichiers relatifs autorisés.
+Le brief fournit tâches, données représentatives, contraintes visuelles et
+critères de réussite. Partager ces éléments métier, pas les instructions,
+skills, hooks ou mémoires OpenAI. Les originaux confiés ne doivent pas être
+modifiés en parallèle, sinon le report des copies est refusé.
+
+Le lanceur actuel ne donne pas un navigateur à Claude. Sol/Luna rendent les
+fichiers revenus, jouent le scénario avec les outils navigateur disponibles et
+fournissent des captures et constats ciblés pour une correction justifiée.
+Une future intégration navigateur doit montrer les copies effectivement éditées,
+pas un ancien original. Ne pas annoncer un outil actif avant de l'avoir testé.
+
+Le budget de tours suit le livrable : le défaut de 30 tours laisse de la place
+aux lectures et corrections d'une maquette. Une revue très courte peut recevoir
+un plafond explicite plus bas. Si la limite est atteinte, examiner progression
+et copies récupérables avant de décider d'une suite ciblée ; ne pas régénérer
+automatiquement le travail déjà produit ni relancer en boucle.
+Garder xhigh, des missions ciblées et un seul Claude actif. Réutiliser les avis
+acquis ; une nouvelle consultation doit porter une décision ou une correction
+précise. Aucun objectif de pourcentage de quota consommé, ni de nombre d'appels.
+La première édition et la première revue ne constituent pas un plafond : dans
+le périmètre autorisé, poursuivre les interventions utiles sur les défauts
+observés, les pistes prometteuses et le rendu intégré jusqu'aux critères convenus.
 
 Le CLI reçoit `--tools` (aucun, `Read`, ou `Read,Edit,Write` selon la mission),
 `--allowedTools` pour approuver la lecture des copies et les chemins d'édition
