@@ -2,8 +2,9 @@
 
 ## Socle natif et séparation
 
-`AGENTS.md` contient les consignes OpenAI. Trois skills ciblés : Unlazy,
-Caveman lite et Brasserie frontend, dans `.agents/skills/`. Aucun hook ou
+`AGENTS.md` contient les consignes OpenAI. Les skills de `.agents/skills/`, dont
+Unlazy, Caveman lite, Brasserie frontend et Conception générique, sont choisis
+selon le mandat. Aucun hook ou
 remplacement des instructions système. L'import externe est désactivé ; les
 cinq plugins du catalogue Claude sont désactivés dans Codex, globalement et
 pour ce projet. Leurs caches et la configuration/authentification Claude restent
@@ -21,18 +22,21 @@ mémoire, sans interrompre une autre tâche active.
 | --- | --- | --- | --- |
 | Défaut du PC et pilote | GPT-6 Sol Max | 872000 bruts, 828400 utiles | Au plus 9 Luna utiles |
 | Profil `sol-full` | GPT-6 Sol Max | 872000 bruts, 828400 utiles | Au plus 9 Luna utiles |
-| Profil `astra-review` | GPT-6 Astra Max | 272000 bruts, 258400 utiles | Aucun enfant ; avis ciblé |
+| Profil `astra-review` | GPT-6 Astra Max | 421053 bruts, 400000 utiles | Aucun enfant ; avis ciblé |
 | Profil `luna-full` | GPT-6 Luna Max | 872000 bruts, 828400 utiles | Sous-tâche terminale |
-| Frontend Claude | Claude Opus 5.5 xhigh | CLI natif | Un Claude ; jusqu'à 9 Luna via relais |
+| Claude, tâches précises surtout frontend | Claude Opus 5.5 xhigh | CLI natif | Retour au même Sol ; relais Luna facultatif |
 
 Les fenêtres Sol/Luna correspondent au maximum du catalogue Codex local vérifié
-le 24 septembre 2026 : 872000 tokens bruts, dont 95 % utiles (828400). Astra
-reste à 272000 bruts, soit 258400 utiles. La compaction conserve le comportement
+le 24 septembre 2026 : 872000 tokens bruts, dont 95 % utiles (828400). À la demande
+du 26 septembre, Astra passe à 421053 bruts pour disposer de 400000 tokens utiles.
+Le catalogue local annonce pour Astra un maximum de 872000 bruts et une part
+utile de 95 % ; la valeur utile est arrondie à l'entier inférieur. La compaction conserve le comportement
 natif ; aucun seuil Astra n'est copié à Sol ou Luna. Recontrôler ces valeurs lors
 d'un changement du runtime. Le maximum API annoncé ailleurs ne prouve pas sa
 disponibilité dans Codex. Les métadonnées `modelContextWindow` observées avant
-ce réglage corroborent ces valeurs, sans constituer un essai de charge de la
-fenêtre entière ni une mesure du nouveau profil Astra.
+ce réglage corroborent les valeurs Sol/Luna, sans constituer un essai de charge
+de la fenêtre entière. La confirmation du nouveau profil Astra et les limites
+de l'essai figurent dans le [registre de validation](validation/agent-skills-astra-claude-2026-09-26.md).
 
 **Limite constatée du CLI 0.155.0-alpha.16.4 :** les rôles changent bien le modèle
 et l'effort, mais leur `model_context_window` ne remplace pas la fenêtre du
@@ -170,7 +174,7 @@ objectif du brasseur, données et capacités existantes, défauts observés et
 questions ouvertes suffisent à une première mission. Il peut contester les
 hypothèses et proposer un meilleur parcours avant la réalisation des maquettes.
 Lui transmettre ensuite les concepts évaluables et les différences pertinentes
-pour arbitrer, puis les risques restants dans le parcours intégré. Adapter ces
+pour éclairer l'arbitrage de Sol, puis les risques restants dans le parcours intégré. Adapter ces
 interventions aux décisions : ni quota minimal d'appels, ni revue finale unique
 par défaut. Un audit de raccords techniques ne vaut pas revue métier/UX.
 Fournir un dossier court ; tracer les constats, arbitrages et vérifications.
@@ -181,6 +185,15 @@ Le [préprompt de consultation](prompts/consultation-astra.md) précise les entr
 le rôle d'expert et la preuve de contribution à reporter par Sol. Les profils
 natifs et le rôle Sol renvoient à ce contrat ; les sessions déjà lancées doivent
 recevoir la correction explicitement, une édition du TOML ne les recharge pas.
+Le brief comporte un socle court et des rubriques conditionnelles ; une question
+technique n'impose pas les rubriques de revue visuelle. Un skill apporte ses
+critères sans transférer à Astra l'implémentation, les installations ou la
+délégation. Astra rend un avis concret et poursuit les lectures utiles ; si une
+preuve sort de son mandat, Sol reçoit le contrôle à effectuer et tient le registre.
+Les étapes de réalisation et de vérification restent applicables à Sol/Luna.
+Pour mettre à jour Astra, comparer le gabarit du dépôt et la copie installée à
+la racine de `$CODEX_HOME`, préserver les réglages étrangers à ce profil, puis
+vérifier le contrat chargé et la fenêtre utile dans une session de travail neuve.
 Luna peut posséder un livrable borné de recherche, réalisation, test ou
 vérification, avec contrats clairs, fichiers attribués et preuve. Escalader les
 ambiguïtés structurantes ; ne pas confondre la revue de l'auteur avec une
@@ -221,6 +234,12 @@ tâches tournent. Aucun gain en pourcentage n'est annoncé sans comparaison fiab
 
 ## Claude natif sur abonnement
 
+Le circuit courant est désormais décrit dans [Claude expert](claude-expert.md) :
+Sol orchestre ; Astra reste son collaborateur expert de premier recours.
+Claude reçoit des lots précis surtout frontend, sans passage Astra préalable ni
+double expertise automatiques. Le point d'entrée
+`scripts/claude-expert.mjs` utilise le pont ci-dessous en ajoutant ce contrat.
+
 `scripts/claude-frontend.mjs` utilise le CLI officiel (version >= 2.1.280) et
 son authentification `claude.ai` **Pro**. Les arguments fixent
 `--model claude-opus-5-5 --effort xhigh`, avec la même valeur dans
@@ -229,7 +248,7 @@ demande de l'utilisateur du 24 septembre 2026 ; il ne modifie pas les réglages
 globaux d'une session Claude ouverte séparément.
 `--safe-mode` écarte les personnalisations Claude hors politique administrée ;
 `--restricted` borne les
-outils de fichiers au dossier temporaire de la mission. Aucun jeton n'est extrait
+outils de fichiers au dossier de copies durable de la mission. Aucun jeton n'est extrait
 ou transmis à un SDK. Les variables d'API/fournisseur tiers sont retirées
 seulement de l'environnement enfant. Ne pas employer `--bare`, qui modifie le
 mode d'authentification. Le diagnostic contrôle `authMethod`, `apiProvider`,
@@ -258,7 +277,7 @@ Relire ces changements et les retester. Il impose un seul processus de travail
 Claude à la fois. En mode édition, il n'ajoute pas de nouveaux fichiers au dépôt.
 
 Le brief est limité à **24 Kio UTF-8** : un dépassement produit une erreur,
-sans troncature. Au plus 12 fichiers par mission, chacun limité à 128 Kio de
+sans troncature. Au plus 128 fichiers par mission, chacun limité à 128 Kio de
 texte ou 8 Mio d'image, pour 32 Mio au total. Fournir des extraits pertinents
 plutôt qu'un gros fichier. `--max-turns` est un budget de **tours de la mission**,
 30 en revue comme en édition par défaut ; choisir un entier positif adapté à la
@@ -282,40 +301,30 @@ copie récupérable reste à examiner et tester ; elle n'est ni validée ni repo
 automatiquement. Récupérer ensemble l'artefact et ses données de référence pour
 éviter de l'évaluer avec des fixtures différentes de celles utilisées par Claude.
 
-### Contribution frontend et effort proportionné
+### Lots frontend complets, expertise ciblée et données conservées
 
-Quand Claude participe à une conception importante, lui confier un artefact
-réalisable : une direction de maquette interactive ou une correction frontend
-identifiée, avec propriété de fichiers. Ne pas le cantonner par défaut à une
-revue textuelle finale. Pour un essai E1/E2/E3, il peut posséder une des directions
-et corriger une faiblesse observée ; Sol assure l'intégration et une vérification
-distincte. Les critères de conception communs sont dans `docs/ui-compacte.md`.
+Sol collabore d'abord avec Astra Max. Claude intervient sur des tâches précises,
+surtout frontend, sans attendre un échec, en Opus 5.5 xhigh. Employer
+`scripts/claude-expert.mjs` et le contrat de [retour au même Sol](claude-expert.md).
+Ce lanceur ajoute une sortie structurée et un destinataire existant ; `needs_sol`
+rend la main au pilote, sans créer un autre Sol ni attendre en boucle.
 
-Utiliser le mode `edit` avec ses outils `Read,Edit,Write` pour cette réalisation.
-Pour une maquette neuve, le pilote crée les fichiers initiaux dans un dossier
-temporaire, passe ce dossier par `--cwd` et nomme les fichiers relatifs autorisés.
-Le brief fournit tâches, données représentatives, contraintes visuelles et
-critères de réussite. Partager ces éléments métier, pas les instructions,
-skills, hooks ou mémoires OpenAI. Les originaux confiés ne doivent pas être
-modifiés en parallèle, sinon le report des copies est refusé.
+Le mode `edit` du lanceur expert permet à Claude de concevoir et réaliser un lot
+frontend complet, sur les fichiers explicitement confiés. Sol/Luna préparent les
+faits et prennent en charge le navigateur, les tests et l'intégration.
+Le lanceur ne donne pas de navigateur à Claude : lui fournir les captures réelles
+et les données de référence pertinentes, sans préprompt OpenAI.
 
-Le lanceur actuel ne donne pas un navigateur à Claude. Sol/Luna rendent les
-fichiers revenus, jouent le scénario avec les outils navigateur disponibles et
-fournissent des captures et constats ciblés pour une correction justifiée.
-Une future intégration navigateur doit montrer les copies effectivement éditées,
-pas un ancien original. Ne pas annoncer un outil actif avant de l'avoir testé.
+Toutes les consultations conservent désormais une archive durable à côté de la
+sortie : brief, prompt, sources originales, fichiers de travail, flux partiels,
+résultat et identifiants. La persistance native Claude est active. Aucun nettoyage
+automatique au succès ou à l'échec ; une sortie existante est refusée. Après
+interruption, inspecter les éléments récupérables avant une suite ciblée.
 
-Le budget de tours suit le livrable : le défaut de 30 tours laisse de la place
-aux lectures et corrections d'une maquette. Une revue très courte peut recevoir
-un plafond explicite plus bas. Si la limite est atteinte, examiner progression
-et copies récupérables avant de décider d'une suite ciblée ; ne pas régénérer
-automatiquement le travail déjà produit ni relancer en boucle.
-Garder xhigh, des missions ciblées et un seul Claude actif. Réutiliser les avis
-acquis ; une nouvelle consultation doit porter une décision ou une correction
-précise. Aucun objectif de pourcentage de quota consommé, ni de nombre d'appels.
-La première édition et la première revue ne constituent pas un plafond : dans
-le périmètre autorisé, poursuivre les interventions utiles sur les défauts
-observés, les pistes prometteuses et le rendu intégré jusqu'aux critères convenus.
+Le budget de tours suit la mission (défaut 30). Garder xhigh et un seul Claude
+actif ; les retours ne sont pas des validations produit. Sol/Astra résolvent
+d'abord les points ouverts. Reconsulter Claude seulement pour une décision
+précise qui justifie son coût, jamais par rituel ou pour régénérer des artefacts.
 
 Le CLI reçoit `--tools` (aucun, `Read`, ou `Read,Edit,Write` selon la mission),
 `--allowedTools` pour approuver la lecture des copies et les chemins d'édition
@@ -341,11 +350,17 @@ exprime un besoin de travail ; les préprompts Claude ne sont pas importés.
 L'authentification et les instructions restent celles de Codex.
 
 Le fichier JSON contient une liste d'objets `id` et `prompt`. Le parent prépare
-les missions dans un dossier temporaire. Avec `--with-luna`, Claude peut lancer
+les missions dans son dossier durable. Avec `--with-luna`, Claude peut lancer
 ce relais comme unique commande shell autorisée puis lire ses résultats Markdown.
 Il peut demander une autre vague justifiée ; un verrou de processus impose
 d'attendre la précédente et conserve au plus neuf Luna dans ce relais Claude.
 Chaque Sol utilise ses propres sous-agents natifs, avec son plafond de neuf.
+Chaque vague conserve ses fichiers sous un UUID. `results.json` pointe vers le
+manifeste de la dernière vague ; lire les chemins de ce manifeste. Le statut
+`response_received` exige une session identifiée, un événement de fin de tour,
+une sortie CLI zéro et un résultat frais non vide. Il ne vaut pas validation métier.
+Un verrou existant n'est pas supprimé automatiquement. Une réponse ancienne ne
+peut pas se substituer au résultat d'une vague en échec.
 Les contextes natifs Sol/Luna restent ceux vérifiés plus haut (872000 configurés,
 828400 effectifs) ; les bornes de brief et de tours concernent le seul lanceur
 Claude et ses missions, pas le travail global de l'équipe.

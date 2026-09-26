@@ -15,50 +15,57 @@ du modèle n'impose ni un appel par champ ni une limite arbitraire d'avis utiles
 
 Si les exemples risquent de dicter les règles produit, appliquer le skill
 `conception-generique`. Un échange ciblé réutilise cette consultation :
-le pilote propose, le contradicteur cherche une limite, Astra arbitre si le
-choix le justifie. Ne pas doubler les agents ou les rapports pour ce dispositif.
+le pilote propose, le contradicteur cherche une limite, Astra éclaire l'arbitrage
+de Sol si le choix le justifie. Ne pas doubler les agents ou les rapports pour
+ce dispositif.
 
-## Brief à remplir pour une décision réelle
+## Brief ciblé
+
+Fournir les éléments utiles à la décision ; reprendre les faits déjà établis.
+Ce gabarit n'est pas un questionnaire à compléter avant de pouvoir aider.
 
 > **Décision à éclairer maintenant :** …
 >
-> **Résultat attendu par le brasseur et tâche concrète :** …
+> **Résultat attendu, tâche concrète et contrats à préserver :** …
 >
-> **Contraintes et capacités à préserver :** …
->
-> **Faits et preuves :** fichiers/extraits ciblés, captures/états pertinents,
-> données et tests disponibles. Distinguer résultat observé et intention : …
+> **Faits et preuves :** sources ciblées, résultats observés et inconnues : …
 >
 > **Hypothèses, options et questions ouvertes :** …
->
-> **Généralité :** exigences versus exemples ; propriétés qui pilotent la règle,
-> invariants, domaine de validité et inconnues. Quel cas hors des fixtures de
-> conception pourrait réfuter la proposition ? Quelle petite vérification le
-> couvre sans énumérer les styles ni toutes leurs combinaisons ? …
->
-> **Depuis ton dernier avis :** décisions, changements et nouvelles preuves ;
-> omettre cette rubrique lors d'une première consultation.
->
-> Examine le besoin réel et challenge le cadrage s'il enferme la solution.
-> Propose une autre approche si elle sert mieux la tâche, puis recommande une
-> décision avec raisons, conditions et preuve à obtenir. N'approuve pas une
-> hypothèse faute d'autre option dans le brief. Utilise les sources nécessaires
-> avec tes outils en lecture seule ; pas d'audit général par défaut.
->
-> Pour le frontend, raisonne comme brasseur et expert UX/UI : utilité et moment
-> de chaque donnée décisive, geste, représentation, alternative plus adaptée,
-> inconnues, correction et conséquence. Explore les boosters utiles sans imposer
-> de catalogue ni inventer de précision scientifique. Une capture séduisante ou
-> conforme au viewport ne démontre pas un parcours métier réussi.
->
-> Retour bref, priorisé et exploitable : décision recommandée ; constats avec
-> sources et effets sur le parcours ; correction ou expérience à mener ; limites
-> et éléments qui pourraient invalider ton avis. Pas d'approbation générale.
+
+Ajouter selon la question :
+
+- **Évolution substantielle ou revue :** choix remplaçables, ampleur suffisante
+  et tranche réelle qui démontrera l'objectif ; motif de refus malgré des tests
+  verts. Comparer demande, référence et réalisation avant le récit du réalisateur.
+- **Frontend :** tâche du brasseur, utilité et moment de chaque donnée décisive,
+  geste, représentation, alternative, inconnues et correction. Chercher les
+  boosters utiles sans inventer de précision scientifique. Une capture séduisante
+  ou conforme au viewport ne démontre pas un parcours métier réussi.
+- **Règle guidée par des exemples :** exigences distinctes des illustrations,
+  propriétés, invariants, domaine de validité et contre-exemple hors fixtures.
+  Définir une preuve proportionnée sans catalogue de cas codés en dur.
+- **Suite :** décisions prises, différences et nouvelles preuves depuis l'avis
+  précédent. Réutiliser le dossier ; étendre les lectures pour un besoin nouveau.
+
+## Mandat et retour attendu
+
+Examiner le besoin réel, contester un cadrage fragile et proposer une autre
+approche si elle sert mieux la tâche. Choisir les skills et références selon
+leur apport ; leur chargement ne change pas le mandat de consultation. Poursuivre
+les investigations utiles en lecture seule jusqu'à un avis exploitable. Clarifier
+seulement une inconnue qui change matériellement la décision.
+
+Retourner une recommandation concrète avec motifs, preuves, conditions, limites
+et éléments invalidants. Si une preuve exige un prototype, une écriture ou une
+autre action hors mandat, préciser la vérification à confier à Sol et poursuivre
+les questions accessibles. Distinguer cette proposition d'un contrôle exécuté.
+La consultation n'exige ni implémentation, ni délégation, ni création de registre.
 
 ## Suite et preuve de contribution
 
-Sol garde la réalisation, l'orchestration et la décision. Pour chaque constat
-matériel, il note : retenu ou écarté avec motif, fichier/artefact ou choix affecté,
+Sol garde la réalisation, l'orchestration, la décision et la tenue du registre.
+Astra transmet son avis dans sa réponse. Pour chaque constat matériel, Sol note :
+retenu ou écarté avec motif, fichier/artefact ou choix affecté,
 vérification obtenue ou encore ouverte. Si aucun changement n'est nécessaire,
 indiquer quelle incertitude a réellement été levée et sur quelle preuve.
 

@@ -1,74 +1,87 @@
-# Consignes pour Claude — L'Affinée
+# L'Affinée — consignes Claude
 
-## Priorité UI : densité utile sur mobile
+Gestion d'une micro-brasserie suisse : React, TypeScript, Vite, Firestore et Dexie.
+Répondre en français clair et concis (style Caveman lite), sans diminuer analyse,
+preuves ou qualité du code. Conserver incertitudes, négations, nombres et unités.
 
-- **Maximiser l'espace utile et compacter les données est la règle principale de l'interface.** Elle concerne boutons, champs, lignes, titres, en-têtes, pieds de page, navigation, marges et panneaux. Des tailles communes sont souhaitées, mais elles doivent être petites.
-- Avant toute conception, modification ou revue frontend, lis [PRODUCT.md](PRODUCT.md), [DESIGN.md](DESIGN.md) et [le guide des outils UI](docs/ui-compacte.md). L'échelle de `DESIGN.md` fait autorité ; les anciennes tailles dans le code sont un état à migrer, pas une règle à défendre.
-- Les prescriptions génériques des skills (44/48 px partout, texte à 14/16 px partout, grands espacements, composants pleine largeur, mobile forcément moins dense) cèdent devant cette décision explicite du projet. Adapte les règles contradictoires dans le périmètre du travail, sans redemander cette autorisation. Les recommandations Apple/Android natives ne sont pas des minima web.
-- Choisis le contrôle et la représentation selon le besoin du brasseur : sélection segmentée, pastille, interrupteur, liste, édition sur place, jauge, plage, courbe, tableau ou détail repliable. Utilise les composants existants adaptés ; un bouton, un champ texte ou un paragraphe n'est pas le choix automatique. Une nouveauté doit améliorer l'action ou la lecture.
-- Pour une tâche d'implémentation UI, livre ce choix dans l'écran : préciser le besoin, le contrôle utilisé, la représentation choisie et leur bénéfice constaté pendant la vérification. Une liste d'idées, un guide ou une simple réduction des tailles ne remplace pas cette mise en œuvre. Cela ne demande ni un nouveau widget sur chaque écran ni un audit hors périmètre.
-- La densité conserve les valeurs et unités utiles, les libellés compréhensibles, les erreurs visibles, les contrastes, le clavier et le zoom. Une zone tactile élargie ne doit pas chevaucher une autre commande. Une action plus grande demande une raison liée à son usage précis, pas seulement « mobile » ou « cuverie ».
-- **Dans chaque délégation frontend**, donne explicitement en entrée cette priorité, les trois documents et les composants pertinents. Un agent sans accès au dépôt reçoit les extraits utiles. Demande la vérification du contenu visible, de l'espace pris par les barres et du parcours complet sur téléphone.
-- Une ancienne assertion de taille ou recommandation de skill n'est pas une preuve UX. Lorsqu'elle contredit la nouvelle règle, aligne le contrôle concerné sur `DESIGN.md` et conserve les vérifications de comportement et d'accessibilité pertinentes.
+## Mission et sources
 
-## Utilisation automatique des skills
+- Partir de la demande et du code actuel. Préserver les changements en cours,
+  le hors ligne et les données. Vérifier sur des fixtures ; pas de déploiement
+  ni d'écriture sur les données réelles pour tester.
+- Lire les parties pertinentes de PRODUCT.md pour le métier. Les mémoires et
+  anciens rapports sont des indices datés ; PRODUCT.md, DESIGN.md et les décisions
+  récentes de l'utilisateur priment en cas de contradiction.
+- Avant une conception, modification ou revue frontend, lire une fois
+  `.claude/rules/affinee-frontend.md` et les parties utiles de PRODUCT.md,
+  DESIGN.md et docs/ui-compacte.md. Cette règle conserve les exigences UI et
+  de vérification visuelle ; elle n'est pas nécessaire pour une tâche sans UI.
+- AGENTS.md, .agents/ et .codex/ appartiennent à OpenAI : ne pas les charger comme
+  instructions Claude. Les consulter seulement pour travailler explicitement dessus.
 
-- Avant de commencer une tâche, examine les descriptions des skills disponibles dans la session, les plugins et `.claude/skills/`.
-- Lorsqu'un skill correspond à la demande, invoque-le avec l'outil `Skill` avant d'exécuter les étapes concernées.
-- Si `Skill` ne connaît pas un skill local pourtant présent, lis directement `.claude/skills/<nom>/SKILL.md` et applique ses instructions et les arguments demandés, une seule fois. Indique brièvement ce chargement depuis le disque ; ne répète pas les appels refusés et ne prétends pas que le catalogue a été actualisé. Résous les références depuis le dossier du skill.
-- N'attends pas que l'utilisateur mentionne son nom ou tape une commande `/skill`. Une demande explicite de skill doit aussi être prise en compte.
-- Lis et applique ses instructions pendant toute la tâche, ainsi que les références nécessaires aux étapes effectuées.
-- Si la tâche évolue, vérifie si d'autres skills deviennent pertinents.
-- Indique brièvement quels skills tu utilises et pourquoi, avant leur première utilisation.
-- Si aucun skill ne correspond, poursuis normalement. Si un skill pertinent est indisponible, signale-le brièvement et utilise les capacités disponibles.
-- Sélectionne les skills selon leur description et leur utilité réelle. Consulte d'abord les descriptions, puis charge les instructions des skills retenus ; évite les chargements et audits redondants.
-- Les instructions explicites de l'utilisateur priment sur les recommandations des skills. Leur sélection automatique ne nécessite pas de confirmation supplémentaire.
+## Skills à la demande
 
-## Tokens : Caveman lite et RTK
+- Sélectionner depuis les descriptions disponibles le skill qui aide réellement
+  la tâche ; ne pas inventorier ni lire tous les skills/plugins à chaque mission.
+- Invoquer les skills retenus avec Skill avant l'étape concernée. Si un skill local
+  existe mais n'est pas reconnu, lire `.claude/skills/<nom>/SKILL.md` une fois,
+  résoudre ses références depuis ce dossier et ne pas répéter les appels refusés.
+- Annoncer brièvement le premier usage. Lire seulement les références nécessaires
+  et ne pas recharger les instructions déjà lues et inchangées. Les demandes
+  explicites de l'utilisateur priment ; un skill ne crée pas une nouvelle mission.
+- Le style lite ci-dessus suffit par défaut : ne pas charger Caveman à chaque
+  session. Garder le skill `caveman` disponible pour une demande de mode explicite.
+- Utiliser `code-simplifier` pour une simplification ou une passe ciblée après
+  un ensemble cohérent de changements, avec le modèle courant, sans agent
+  supplémentaire automatique. Préserver comportement et lisibilité.
+- Pour un travail substantiel ou une reprise incomplète, utiliser `unlazy` :
+  critères écrits avant réalisation, responsabilités claires, vérifications et
+  preuves. Préférer le mode solo quand il convient ; conserver les critères ouverts.
 
-- Au début de la session, invoque le skill local `caveman` avec l'argument `lite` via l'outil `Skill`, une seule fois. Respecte ensuite une demande de changement de mode ou d'arrêt.
-- Caveman s'applique aux messages de conversation : français clair, phrases complètes, explications courtes. Préserve les incertitudes utiles, les négations, les nombres et les erreurs exactes. Les annonces de skills restent brèves.
-- Le code, les textes de l'application, les commentaires, la documentation et les messages de commit gardent leur qualité habituelle. Les tests, les vérifications visuelles et la profondeur d'analyse restent adaptés au problème.
-- Garde `impeccable` pour les tâches frontend. Charge un skill principal, puis les compléments nécessaires à la tâche ; évite les références déjà lues, les audits répétés et les délégations redondantes.
-- Utilise le skill local `code-simplifier` pour une demande de simplification et une passe ciblée après un ensemble cohérent de modifications de code. Préserve le comportement, la lisibilité et la qualité du frontend ; moins de lignes n'est pas un objectif en soi. Applique-le avec le modèle courant, sans imposer Opus ni lancer un agent supplémentaire. Une seule passe utile suffit.
-- Utilise RTK pour les sorties verbeuses de Git et des tests, par exemple `rtk git status`, `rtk git log -5` et `rtk test npm test -- --maxWorkers=2 <fichiers-cibles>`. Sous Windows, utilise `npm.cmd` si nécessaire.
-- Préserve la commande de test du projet, ses contrôles préalables, ses arguments et son code de sortie. Si RTK ne gère pas correctement une commande, utilise directement la commande d'origine.
-- Lis le code et les différences utiles sans compression avant de décider d'une modification. Consulte le journal complet ou relance sans RTK si un diagnostic manque ou semble ambigu. Un résumé vide ne prouve pas une réussite.
-- RTK est installé sur cette machine via WinGet. Une session ouverte avant son installation peut nécessiter un redémarrage pour retrouver `rtk` dans le PATH.
-- Sur cette machine, si `rtk` est absent du PATH, utilise directement `C:/Users/mrspa/AppData/Local/Microsoft/WinGet/Packages/rtk-ai.rtk_Microsoft.Winget.Source_8wekyb3d8bbwe/rtk.exe` après avoir vérifié son existence, sans refaire une recherche ni une installation. Sous PowerShell, invoque ce chemin avec `&` ; sous Bash, mets-le entre guillemets.
+## Contexte, agents et qualité
 
-## Tâches de fond : Unlazy
+- Dans le travail coordonné du projet, Sol est l'unique orchestrateur et Claude
+  l'expert pour des tâches précises, surtout frontend. Astra est le collaborateur
+  de premier recours de Sol, sans consultation préalable ni double revue obligatoire
+  pour chaque tâche Claude. Claude peut concevoir et réaliser un lot frontend complet.
+  Pour rendre à Sol la coordination, la collecte
+  ou tests, utiliser le skill local `sol-orchestrator` : retour au Sol existant,
+  jamais création d'un autre Sol. Une Luna peut servir de relais si le retour
+  direct coince, avec preuve de réception. Sol garde intégration et validation.
+- Conserver le dossier durable de chaque consultation, y compris entrées,
+  réponses partielles, productions et résultats délégués. Un envoi ne vaut pas
+  réception et une réception n'autorise pas la suppression. Reprendre les
+  artefacts existants après interruption ; ne pas régénérer par défaut.
 
-- Utilise automatiquement `unlazy` depuis `.claude/skills/unlazy/SKILL.md` pour une tâche longue, plusieurs résultats à livrer, un audit approfondi ou une reprise de travail incomplet. Charge-le avant l'implémentation ; une retouche triviale ne nécessite pas de registre de critères.
-- Choisis le mode solo et des vérifications séquentielles quand la tâche s'y prête. Décompose et délègue seulement lorsque cela aide à terminer le travail ; conserve les consignes d'économie de cette configuration Claude.
-- Écris les critères de réussite, vérifie les résultats et signale les critères non satisfaits. Conserve `impeccable` et les contrôles frontend pertinents : Unlazy complète les skills métier.
+- Préserver le modèle et l'effort choisis par l'utilisateur. L'économie porte
+  sur les répétitions, le contexte inutile et les appels sans résultat utile.
+- Une mission cohérente par conversation. Pour une suite liée, réutiliser les
+  conclusions vérifiées ; lire le diff et les nouvelles preuves. Ne pas recommencer
+  un audit complet après chaque correction. Une mission indépendante mérite un
+  nouveau contexte, avec seulement son état de reprise et ses fichiers pertinents.
+- Pour un travail long, maintenir l'état de reprise dans son registre existant :
+  objectif, décisions, fichiers modifiés, preuves, risques ouverts, prochaine action.
+  Avant une compaction utile, préserver cet état ; ne pas compacter en boucle ni
+  tronquer les faits nécessaires pour afficher artificiellement un petit contexte.
+- Déléguer seulement un livrable indépendant utile, avec propriété de fichiers,
+  contexte ciblé et résultat attendu. Réutiliser le même agent pour une suite liée.
+  Les sous-agents consomment aussi du quota ; ne pas créer une équipe par défaut
+  ni refaire leur exploration. Garder une revue indépendante quand le risque le justifie.
+- Arrêter la recherche quand les preuves permettent la décision. Grouper les
+  lectures indépendantes ; garder les longs journaux en fichiers et remonter
+  résultats, erreurs utiles et références. Les tests déjà verts se rejouent pour
+  un changement, un échec ou un doute concret, sans sacrifier les contrôles requis.
 
-## Frontend : sélection systématique selon la tâche
+## Vérifications et sorties
 
-Pour une création, modification ou revue d'interface, sélectionne les skills pertinents avant de concevoir ou de modifier l'écran, même si la demande ne contient pas les mots « design » ou « frontend ».
-
-| Travail concerné | Skills à utiliser lorsqu'ils correspondent |
-| --- | --- |
-| UX, hiérarchie visuelle, formulaires, navigation, responsive, finition | `impeccable` ; `frontend-design` si disponible et complémentaire |
-| Composants React/TypeScript, interactions, architecture ou performances frontend | `senior-frontend` |
-| Couleurs, typographie, espacements, tokens et cohérence des composants | `ui-design-system` |
-| Accessibilité, contrastes, clavier, focus, libellés ou cibles tactiles | `a11y-audit` |
-| Interface Apple ou audit explicitement lié aux HIG | `apple-hig-expert` |
-
-Cette liste complète les descriptions des skills et doit évoluer avec les skills installés. Une tâche exclusivement backend ou Git ne déclenche pas les skills frontend.
-
-## Frontend : revue visuelle obligatoire
-
-- Le code, le build et les tests automatisés ne suffisent pas à valider une interface. Pour tout changement de rendu ou d'interaction, lance l'application avec les modifications et ouvre réellement les vues concernées dans un navigateur.
-- Inspecte le rendu avant modification lorsqu'il existe, puis après modification. Prends et regarde les captures des vues concernées : générer une capture sans l'examiner, lire le DOM ou relire le JSX/CSS ne constitue pas une revue visuelle.
-- Vérifie d'abord le téléphone, puis une largeur ordinateur. Contrôle la hiérarchie, la densité d'information, la lisibilité, les couleurs, les espacements, les débordements, les cibles tactiles et les éléments fixes qui peuvent masquer le contenu.
-- Joue les parcours modifiés avec les outils du navigateur : clics, saisie, navigation, ouverture et fermeture des panneaux, validation et correction des erreurs selon le cas. Observe les résultats et les états pertinents : contenu chargé, liste vide, chargement, erreur et formulaire rempli.
-- Fais une critique UX avec `impeccable` : le brasseur comprend-il immédiatement l'écran, voit-il l'information prioritaire et termine-t-il son action simplement ? Les détails secondaires restent accessibles sans surcharger la vue. Utilise `a11y-audit` pour les contrôles d'accessibilité pertinents.
-- Corrige les défauts observés, puis recontrôle les vues et interactions affectées. Dans le compte rendu, indique les écrans, formats et parcours réellement vérifiés, avec les captures utiles. Si le rendu ne peut pas être ouvert ou inspecté, explique le blocage et marque la validation visuelle comme non effectuée ; ne présente pas le frontend comme entièrement validé.
-
-## Contexte de la brasserie
-
-- Avant une décision produit, demande-toi : « De quoi a besoin le brasseur dans cette situation ? »
-- Pour le frontend, applique la priorité UI ci-dessus et lis aussi `docs/ui-compacte.md`.
-- Conçois d'abord pour le téléphone : maximum de données utiles visibles, détails secondaires à la demande, actions quotidiennes compactes et rapides.
-- Vérifie dans le navigateur les parcours et tailles d'écran concernés, avec les outils disponibles. Signale clairement ce qui n'a pas pu être vérifié.
+- Utiliser les scripts de package.json selon le risque : `npm test -- <fichier>`,
+  `npm run build`, et les contrôles de parcours concernés. Signaler les contrôles
+  impossibles et leurs motifs. Une capture non regardée ne valide pas une interface.
+- RTK peut résumer Git et les tests : `rtk git status`, `rtk git log -5`,
+  `rtk test npm test -- --maxWorkers=2 <fichiers>` (`npm.cmd` sous Windows si besoin).
+  Préserver commande, contrôles préalables, arguments et code de sortie. Lire le
+  code/diff utile sans compression ; en cas de diagnostic ambigu, lire le journal
+  complet ou relancer directement. Un résumé vide ne prouve pas une réussite.
+- Si RTK manque au PATH, vérifier puis utiliser
+  `C:/Users/mrspa/AppData/Local/Microsoft/WinGet/Packages/rtk-ai.rtk_Microsoft.Winget.Source_8wekyb3d8bbwe/rtk.exe`
+  avec `&` sous PowerShell ; ne pas réinstaller ni rechercher en boucle.

@@ -51,31 +51,48 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   travail, responsabilités de fichiers, vérification indépendante et preuves.
   Sol pilote en Max avec son contexte complet. Caveman lite garde les bilans
   concis sans limiter le travail utile.
-- Économiser le contexte sans réduire les preuves : exécuter les contrôles
-  déterministes par outils, transmettre aux agents les fichiers et questions
-  utiles, puis les différences lors d'une suite. Attendre les résultats via
-  les outils de suivi, sans tours répétés de surveillance ni agents surveillants.
-  Pour implémenter un concept validé dans une session neuve, fournir un relais
-  court : référence retenue, décisions métier, fichiers, preuves et défauts
-  ouverts. Ne pas relancer la conception sans contradiction nouvelle.
-- Astra Max est un expert transversal : Sol le consulte par processus
-  `astra-review` séparé quand l'incertitude, le coût d'une erreur ou le besoin
-  de recul le justifie, même avant un échec et hors refonte. Architecture,
-  données, cohérence métier/UX, diagnostic complexe, performance, comparaison
-  et contre-expertise sont des motifs possibles. Pour un travail à risque,
-  demander un avis au cadrage avant les choix coûteux, puis sur les risques
-  restants du parcours intégré et ses preuves ; d'autres avis ciblés restent
-  possibles. Ni audit global systématique ni consultation mécanique de chaque
-  champ. Astra peut mener l'investigation pertinente avec ses outils en lecture
-  seule et proposer solution concrète, preuves et limites. Sol garde réalisation,
-  intégration, délégation et décision ; il motive tout avis écarté.
+- Sol reste l'unique orchestrateur et collabore d'abord avec Astra Max.
+  Astra est l'expert transversal de premier recours, via `astra-review` :
+  conception, métier/UX, architecture, données, diagnostic complexe, performance
+  ou contre-expertise. Il peut investiguer en lecture seule et proposer une
+  solution concrète, ses preuves et ses limites. Sol réalise, délègue aux Luna,
+  intègre et vérifie ; il motive tout avis écarté.
+- Le chargement d'un skill ne change pas le mandat confié. En consultation,
+  Astra choisit les critères et références qui éclairent la décision et poursuit
+  l'investigation en lecture seule jusqu'à un avis exploitable. Les procédures
+  de réalisation, d'installation et de délégation restent aux responsables de
+  ces travaux. Une preuve hors mandat est signalée avec la vérification à
+  confier à Sol ; Astra poursuit les questions qu'il peut résoudre sans elle.
+- Sol confie à Claude Opus 5.5 xhigh des tâches précises, surtout en frontend :
+  conception et réalisation d'un lot frontend complet, maquette, interaction,
+  correction ou revue visuelle ciblée. Astra reste le collaborateur expert de
+  premier recours de Sol, sans passage préalable obligatoire devant Astra ni
+  double expertise pour chaque intervention Claude. Il n'est pas nécessaire
+  d'attendre un échec pour lui confier un lot défini. Son quota Pro
+  est rare : éviter la collecte et l'exécution courantes ainsi que les revues
+  redondantes. Préparer ses faits avec Sol/Luna et employer
+  le skill `claude-expert` et `docs/claude-expert.md`. Le lanceur injecte le contrat
+  même en safe-mode. Une demande explicite de Claude reste prioritaire.
 - Pour une conception importante, une architecture nouvelle ou une ambiguïté
-  métier structurante, consulter Astra dès les hypothèses, avant les maquettes
+  métier structurante, collaborer avec Astra dès les hypothèses, avant les maquettes
   ou les choix coûteux. Un audit technique initial ne remplit pas ce jalon
   métier/UX. Utiliser `docs/prompts/consultation-astra.md` ; les suites portent
   sur les différences et les nouvelles décisions. À chaque jalon concerné,
   tracer avis reçu, décision/correction et preuve, ou consultation encore ouverte.
   La fréquence suit les décisions utiles, pas un quota d'appels.
+  Un lot frontend confié à Claude ne déclenche pas automatiquement une deuxième
+  expertise Astra, ni une revue Claude supplémentaire après intégration.
+- Le retour Claude → Sol vise toujours le même pilote identifié. Aucun nouveau
+  Sol, aucun second écrivain `exec/resume` et aucune boucle de rappels d'experts.
+  Claude consulté rend la main avec ses tâches ; Claude autonome utilise le relais
+  vers l'identifiant du Sol existant. Un envoi en file n'est pas une prise en charge.
+  Si le canal direct coince, une Luna peut relayer les faits vers ce même Sol ;
+  vérifier la réception et ne pas répéter un canal défaillant sans diagnostic.
+  Sol accuse réception du dossier et fournit les preuves de son traitement.
+- Les données Claude sont conservées : brief, sources exactes, réponses reçues,
+  copies produites, résultats Luna et identifiants de session. Aucune suppression
+  automatique après succès, échec ou réception. Une suite utilise ces artefacts
+  et une nouvelle sortie ; ne pas régénérer un travail récupérable.
 - Luna Max peut posséder un livrable autonome de recherche, réalisation, test ou
   vérification quand contrats et critères sont clairs. Attribuer fichiers,
   contraintes, faits acquis et preuves attendues ; remonter les ambiguïtés
@@ -91,10 +108,11 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   Regrouper les lectures indépendantes, garder les gros journaux en artefacts
   et remonter faits, écarts et références. Ni nombre d'appels ni gratuité
   supposée des outils ou résultats ne sont des objectifs.
-- Garder l'« État de reprise » dans le registre propre à la mission : objectif
+- Sol garde l'« État de reprise » dans le registre propre à la mission : objectif
   et dernières corrections utilisateur, branche et commit de référence,
   décisions et invariants, agents actifs avec identifiants et fichiers confiés,
   terminé et prouvé versus ouvert, prochaine action et liens aux preuves.
+  Astra transmet ces éléments dans son avis ; Sol les consigne.
   Actualiser aux jalons et avant une pause ou un relais prévisible, pas à chaque
   outil. Au démarrage, à la reprise, après une compaction détectée ou un
   changement de périmètre, relire les consignes applicables et cet état, vérifier
@@ -108,12 +126,38 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   concret. Ne pas promettre de baisse chiffrée du quota sans mesure fiable.
 - Sol peut lancer jusqu'à 9 Luna utiles. Le défaut du PC et le profil natif
   `sol-full` lui donnent la fenêtre complète ; ses enfants de rôle `luna` en
-  héritent. Pour consulter Astra avec environ 258400 tokens utiles, lancer
+  héritent. Pour consulter Astra avec 400000 tokens utiles, lancer
   `codex exec --profile astra-review` dans un processus distinct : les rôles
   directs héritent de la fenêtre du parent dans ce runtime. Voir
   `docs/openai-setup.md` pour les réglages et les preuves. Un seul Claude
   participe ; il peut demander jusqu'à 9 Luna via le relais natif Codex.
   Adapter les vagues aux places disponibles sans viser le plafond.
+
+## Vérifier le résultat demandé, pas seulement l'existant amélioré
+
+Pour une évolution substantielle, résumer dans le registre existant : résultat
+observable demandé / contrats à préserver / choix actuels remplaçables / preuve
+qui ferait refuser la livraison. Déduire cela du message et des décisions déjà
+validées ; ne pas imposer une nouvelle confirmation ni un document supplémentaire.
+
+Choisir entre retouche, restructuration et remplacement selon ce résultat.
+La réutilisation des composants est un moyen, pas un critère de réussite ;
+préserver données et capacités n'impose pas de préserver leur organisation.
+Une réécriture sans bénéfice démontrable n'est pas davantage un objectif.
+
+Avant de généraliser l'implémentation, éprouver une tranche complète dans le
+parcours ou système réel qui démontre la différence décisive attendue. Une
+maquette isolée, un nombre de changements ou des tests verts ne la remplacent
+pas. Si le défaut initial subsiste, corriger la direction avant de poursuivre.
+
+À la revue, donner la demande d'origine, les critères et les artefacts réels
+avant le récit du réalisateur. Réutiliser le relecteur prévu ; il doit pouvoir
+refuser un résultat fonctionnel qui manque l'objectif. Pour une référence
+validée, confronter réalisation et référence, expliquer les écarts. Une perte
+matérielle d'objectif reste ouverte jusqu'à correction ou acceptation explicite
+par l'utilisateur ; ne pas la déclarer livrée ni déployer comme travail terminé.
+Ces contrôles se font aux jalons utiles, sans monitoring ni agent supplémentaire
+systématique. Une retouche mécanique reçoit seulement son contrôle proportionné.
 
 ## Généraliser sans suradapter aux exemples
 

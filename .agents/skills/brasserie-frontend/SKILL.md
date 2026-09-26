@@ -1,9 +1,11 @@
 ---
 name: brasserie-frontend
-description: Concevoir, modifier ou examiner les interfaces de L'Affinée avec la compréhension du brasseur, des boosters UX/UI, une densité lisible et une validation réelle sur téléphone. Ne concerne pas les tâches exclusivement backend ou Git.
+description: Concevoir, réaliser ou évaluer les interfaces de L'Affinée selon les usages du brasseur et les contraintes mobiles.
 ---
 
 # Frontend de L'Affinée
+
+## Critères de conception et d'examen
 
 Lire les sections pertinentes de PRODUCT.md, DESIGN.md et docs/ui-compacte.md
 depuis la racine du dépôt.
@@ -33,8 +35,9 @@ s'il convient ; créer ou intégrer un outil quand son bénéfice justifie son c
 de maintenance, sa consommation de ressources et son accessibilité.
 
 Pour un choix important, confronter les approches plausibles et vérifier les
-outils existants ou externes dans leur documentation actuelle. Prototyper ce qui
-reste incertain avec des données représentatives ; choisir après observation.
+outils existants ou externes dans leur documentation actuelle. Éprouver les
+incertitudes par un prototype représentatif avant de valider un choix qui en
+dépend. En consultation, préciser l'essai à confier à Sol s'il exige une réalisation.
 Le catalogue du dépôt est un point de départ, pas une limite de recherche.
 Séparer choix de représentation et choix de bibliothèque. Ne pas quantifier un
 effet qualitatif pour rendre possible un graphique.
@@ -48,6 +51,17 @@ Adapter la densité à la tâche et à l'échelle du projet. Réduire systémati
 les tailles, tout déplier ou tout masquer ne prouve pas une amélioration.
 La représentation choisie doit préserver clavier, zoom, libellés et accès aux
 valeurs exactes ; la couleur seule ne porte pas une information.
+
+## Consultation
+
+Rendre un avis exploitable : décision recommandée, solution concrète, preuves,
+conditions et limites. Examiner les écrans, captures et parcours disponibles
+dans le périmètre autorisé ; distinguer observations et propositions. L'absence
+d'un prototype n'empêche pas le conseil, mais laisse sa validation d'usage ouverte.
+Identifier les vérifications manquantes à confier à Sol. Valoriser les boosters
+qui aident à comprendre et agir, sans prétendre à un bénéfice déjà observé.
+
+## Réalisation et validation du parcours livré
 
 Pour une délégation, transmettre ces exigences et pointer les sections métier,
 design et composants concernés. Attribuer la propriété des fichiers. Les consignes de
@@ -67,7 +81,8 @@ Un build seul ne valide pas l'UX.
 
 La revue valorise les boosters qui rendent les relations, choix ou conséquences
 plus compréhensibles. Rapporter le bénéfice observé et les limites ; mesurer tout
-gain chiffré. Une proposition sans réalisation ne termine pas une tâche UI.
+gain chiffré. Pour une mission de réalisation UI, une proposition seule ne termine
+pas la tâche.
 Une revue de viewport ou une capture sans parcours ne suffit pas : le brasseur
 doit pouvoir choisir, comprendre la conséquence d'un réglage et corriger son choix.
 Transformer les exigences UI stables et mesurables en contrôles navigateur qui
