@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { applyStagedEdits, applyStagedEditsWithProgress, captureClaudeProcess, checkedOutputPath, claudeArguments, claudeProgressPath,
   claudeRecoveryPath, classifyClaudeOutcome, createClaudeProgressTracker, describeSources, inspectStagedChanges,
-  lunaRelayCommand, MAX_BRIEF_BYTES, parseLauncherOptions, readBrief, recordClaudeFailureRecovery,
+  lunaRelayCommand, MAX_BRIEF_BYTES, MAX_FILES, parseLauncherOptions, readBrief, recordClaudeFailureRecovery,
   stageSources, writeClaudeRecoveryManifest,
   subscriptionEnvironment, subscriptionStatus } from './claude-frontend.mjs';
 import { acquireLunaBatch, lunaArguments, validateTasks } from './luna-review.mjs';
@@ -123,7 +123,8 @@ test('edit rules cover only explicitly named copies and Write uses Edit(path) pe
 test('Luna remains opt-in inside one Claude consultation, with one exact relay command', () => {
   const command = lunaRelayCommand(process.cwd(), join(tmpdir(), 'claude-stage'));
   const args = claudeArguments({ files: ['screen.png'], luna: true, relayCommand: command });
-  assert.equal(args[args.indexOf('--tools') + 1], 'Read,Write,Bash');
+  assert.equal(args[args.indexOf('--tools') + 1], 'Read,Write,Bash,TaskOutput');
+  assert(args.includes('TaskOutput'));
   assert(args.includes('Read'));
   assert(args.includes('Edit(./luna-tasks.json)'));
   assert(args.includes('Bash(' + command + ')'));
@@ -149,7 +150,7 @@ test('launcher parses real arguments and refuses malformed turn budgets', () => 
   assert.throws(() => parseLauncherOptions(['--brief', 'b', '--output', 'o', '--unknown']), /inconnue/);
   assert.throws(() => parseLauncherOptions(['--brief', 'b', '--brief', 'c', '--output', 'o']), /répétée/);
   assert.throws(() => parseLauncherOptions(['--brief', 'b', '--output', 'o',
-    ...Array.from({ length: 13 }, (_, i) => ['--allow-file', String(i)]).flat()]), /Au plus 12/);
+    ...Array.from({ length: MAX_FILES + 1 }, (_, i) => ['--allow-file', String(i)]).flat()]), /Au plus 128/);
   assert.throws(() => claudeArguments({ maxTurns: Infinity }), /max-turns/);
 });
 

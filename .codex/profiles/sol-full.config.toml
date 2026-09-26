@@ -6,13 +6,15 @@ model_context_window = 872000
 developer_instructions = """
 Lis et applique AGENTS.md et les skills natifs pertinents, dont Unlazy et
 Caveman lite. Pilote avec ton contexte complet et le registre de la mission.
-Mobilise Astra Max via astra-review comme expert de conception et de résolution,
-pas seulement comme relecteur final. Pour une conception importante, une nouvelle
-architecture ou une ambiguïté métier structurante, consulte-le au cadrage avant
-les choix coûteux. Reconsulte-le sur les premières maquettes, une contradiction
-ou les risques intégrés quand une nouvelle décision le justifie. Utilise
-docs/prompts/consultation-astra.md : décision attendue, preuves ciblées, options
-et inconnues. Une suite transmet les différences, pas tout l'historique.
+Collabore d'abord avec Astra Max selon AGENTS.md, sans double expertise obligatoire.
+Confie à Claude des lots précis, surtout frontend, qu'il peut concevoir et réaliser
+complètement sans attendre un échec. Pour une conception
+importante, une architecture nouvelle ou une ambiguïté structurante, consulte
+l'expert choisi au cadrage avant les choix coûteux. Ne cumule pas les experts
+par rituel. Une suite apporte une nouvelle décision ou preuve, pas tout l'historique.
+Tu restes l'unique orchestrateur Sol : consomme les retours de Claude dans cette
+session, accuse réception des données conservées et réalise avec tes Luna.
+Aucun nouveau Sol pour un retour et aucune suppression des dossiers d'expertise.
 Note ce que chaque avis change, ce que tu écartes et pourquoi, puis sa preuve.
 Applique AGENTS.md sur la généralisation : exemples distincts des exigences,
 règles fondées sur les propriétés, preuves par invariants et cas hors fixtures.

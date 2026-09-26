@@ -1,14 +1,16 @@
 // Native Claude Code subscription bridge. No SDK, token extraction or API proxy.
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
-import { existsSync, openSync, closeSync, unlinkSync, renameSync, readdirSync, readFileSync, writeFileSync, realpathSync, statSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
+import { existsSync, openSync, closeSync, appendFileSync, fsyncSync, unlinkSync, renameSync, readdirSync, readFileSync, writeFileSync, realpathSync, statSync, mkdirSync, copyFileSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import { expertSchema, expertInstructions, validateExpertResponse, resolveSolThread, transferExpertTasks } from './claude-expert-contract.mjs';
+import { assertFreshClaudeOutput, createClaudeArchive } from './claude-artifacts.mjs';
 
 export const MAX_BRIEF_BYTES = 24 * 1024;
 const DEFAULT_MAX_TURNS = 30;
-const MAX_FILES = 12;
+export const MAX_FILES = 128;
 const MAX_TEXT_BYTES = 128 * 1024;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MAX_TOTAL_SOURCE_BYTES = 32 * 1024 * 1024;
@@ -49,8 +51,8 @@ export function subscriptionStatus(status) {
 export function parseLauncherOptions(input) {
   const values = new Map();
   const files = [];
-  const switches = new Set(['--diagnose', '--dry-run', '--with-luna']);
-  const valued = new Set(['--cwd', '--brief', '--output', '--mode', '--allow-file', '--max-turns']);
+  const switches = new Set(['--diagnose', '--dry-run', '--with-luna', '--expert']);
+  const valued = new Set(['--cwd', '--brief', '--output', '--mode', '--allow-file', '--max-turns', '--sol-thread']);
   for (let i = 0; i < input.length; i++) {
     const name = input[i];
     if (switches.has(name)) {
@@ -79,6 +81,7 @@ export function parseLauncherOptions(input) {
     cwd: resolve(values.get('--cwd') || process.cwd()), mode, files,
     maxTurns: Number(rawTurns), brief: values.get('--brief'), output: values.get('--output'),
     luna: !!values.get('--with-luna'), dryRun: !!values.get('--dry-run'), diagnose: !!values.get('--diagnose'),
+    expert: !!values.get('--expert'), solThread: values.get('--sol-thread'),
   };
 }
 
@@ -147,7 +150,15 @@ export function applyStagedEdits(directory, sources) {
   return changed.map(file => file.source);
 }
 
-export function applyStagedEditsWithProgress(directory, sources, tracker, recoveryManifestPath) {
+export function applyStagedEditsWithProgress(directory, sources, tracker, recoveryManifestPath, { expertStatus } = {}) {
+  if (expertStatus === 'blocked') {
+    const recovery = writeClaudeRecoveryManifest(recoveryManifestPath || join(directory, 'recovery.json'), directory, sources);
+    tracker.record('information', 'réalisation_bloquée', {
+      outcome: 'completed', modelOutcome: 'completed', resultStatus: 'completed',
+      deliveryStatus: 'not_attempted', deliveryOutcome: 'not_attempted', recovery,
+    });
+    return [];
+  }
   try {
     const changedFiles = applyStagedEdits(directory, sources);
     tracker.record('résultat', 'report_fichiers_termine', {
@@ -253,7 +264,7 @@ export function lunaRelayCommand(cwd, directory) {
   return `node ${shellQuote(relay)} --tasks ${shellQuote(join(directory, 'luna-tasks.json'))} --output-dir ${shellQuote(join(directory, 'luna'))} --cwd ${shellQuote(cwd)}`;
 }
 
-export function claudeArguments({ mode = 'review', files = [], luna = false, maxTurns = DEFAULT_MAX_TURNS, relayCommand } = {}) {
+export function claudeArguments({ mode = 'review', files = [], luna = false, maxTurns = DEFAULT_MAX_TURNS, relayCommand, expert = false } = {}) {
   if (!['review', 'edit'].includes(mode)) throw new Error('Mode attendu : review ou edit.');
   if (!Number.isSafeInteger(maxTurns) || maxTurns < 1) throw new Error('--max-turns doit être un entier positif sûr.');
   if (mode === 'edit' && !files.length) throw new Error('Une liste explicite de fichiers est requise pour modifier.');
@@ -271,17 +282,18 @@ export function claudeArguments({ mode = 'review', files = [], luna = false, max
   }
   if (luna) {
     if (!tools.includes('Write')) tools.push('Write');
-    tools.push('Bash');
-    allowed.push('Edit(./luna-tasks.json)', `Bash(${relayCommand})`);
+    tools.push('Bash', 'TaskOutput');
+    allowed.push('Edit(./luna-tasks.json)', `Bash(${relayCommand})`, 'TaskOutput');
   }
   // In dontAsk mode, listing Read in --tools does not approve its use.
   // --restricted confines it to the isolated mission directory.
   if (tools.includes('Read')) allowed.unshift('Read');
   const args = ['--print', '--safe-mode', '--restricted', '--model', 'claude-opus-5-5', '--effort', 'xhigh',
     '--output-format', 'stream-json', '--verbose', '--include-partial-messages',
-    '--no-session-persistence', '--permission-mode', 'dontAsk',
+    '--permission-mode', 'dontAsk',
     '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
     '--disallowedTools', 'mcp__*', '--max-turns', String(maxTurns), '--tools', tools.join(',')];
+  if (expert) args.push('--json-schema', JSON.stringify(expertSchema));
   if (allowed.length) args.push('--allowedTools', ...allowed);
   return args;
 }
@@ -443,13 +455,18 @@ function rateLimitCategory(event) {
   return ['allowed', 'allowed_warning', 'rejected'].includes(status) ? status : 'unknown';
 }
 
-export async function captureClaudeProcess(child, tracker) {
+export async function captureClaudeProcess(child, tracker, { transcriptPath } = {}) {
   let pending = '';
   let discardingLargeEvent = false;
   let response;
   let responseLine;
+  let nativeSessionId;
   let errorText = '';
   let launchError = false;
+  let transcriptFd;
+  let transcriptError = false;
+  try { if (transcriptPath) transcriptFd = openSync(transcriptPath, 'wx'); }
+  catch (error) { child.kill(); throw error; }
   const activeTools = new Map();
   const countedPermissionRefusals = new Set();
   let pendingAnonymousPermissionRefusals = 0;
@@ -475,6 +492,7 @@ export async function captureClaudeProcess(child, tracker) {
   const observe = (event, rawLine) => {
     if (!event || typeof event !== 'object') return;
     if (event.type === 'system' && event.subtype === 'init') {
+      nativeSessionId = typeof event.session_id === 'string' ? event.session_id : undefined;
       tracker.record('attente', 'initialisation');
     } else if (event.type === 'system' && event.subtype === 'api_retry') {
       tracker.record('attente', 'réessai', { counters: 'retries' });
@@ -539,6 +557,10 @@ export async function captureClaudeProcess(child, tracker) {
   };
 
   const onStdout = chunk => {
+    if (transcriptFd !== undefined && !transcriptError) {
+      try { appendFileSync(transcriptFd, chunk); }
+      catch { transcriptError = true; child.kill(); tracker.record('erreur', 'archive_indisponible'); }
+    }
     if (discardingLargeEvent) {
       const newline = chunk.indexOf('\n');
       if (newline === -1) return;
@@ -574,14 +596,19 @@ export async function captureClaudeProcess(child, tracker) {
     child.once('close', code => resolveClose({ code }));
   });
   if (!discardingLargeEvent && pending.trim()) acceptLine(pending);
+  if (transcriptFd !== undefined) {
+    try { fsyncSync(transcriptFd); } catch { transcriptError = true; }
+    finally { closeSync(transcriptFd); }
+  }
   tracker.stopHeartbeat();
 
-  const outcome = classifyClaudeOutcome({ code: launchError ? null : code, response, errorText });
+  const outcome = classifyClaudeOutcome({ code: launchError || transcriptError ? null : code, response, errorText });
   const receivedFinalResult = !!response;
   if (!response) {
     response = {
       type: 'result', subtype: 'error_cli_stream', is_error: true,
       result: 'Aucun résultat final reçu.', num_turns: 0,
+      session_id: nativeSessionId,
       duration_ms: Date.now() - tracker.startedAtMs,
     };
     responseLine = JSON.stringify(response);
@@ -593,6 +620,8 @@ export async function captureClaudeProcess(child, tracker) {
     errorText,
     outcome,
     receivedFinalResult,
+    transcriptError,
+    nativeSessionId: response.session_id || nativeSessionId,
     finalJson: `${responseLine.trim()}\n`,
   };
 }
@@ -628,27 +657,34 @@ function cliStatus(exe, env) {
 function acquireClaudeLock() {
   const lock = join(tmpdir(), 'laffinee-claude-frontend.lock');
   if (existsSync(lock)) {
-    const previous = Number(readFileSync(lock, 'utf8'));
-    try { process.kill(previous, 0); throw new Error('Une revue Claude est déjà active.'); }
-    catch (error) { if (error.code !== 'ESRCH') throw error; unlinkSync(lock); }
+    throw new Error(`Verrou Claude présent : ${lock}. Vérifier le processus et ses artefacts avant toute récupération ; aucun lancement concurrent.`);
   }
   const handle = openSync(lock, 'wx'); writeFileSync(handle, String(process.pid)); closeSync(handle);
   return () => unlinkSync(lock);
 }
 
-async function main() {
-  const options = parseLauncherOptions(process.argv.slice(2));
+export async function main(input = process.argv.slice(2)) {
+  const options = parseLauncherOptions(input);
   const env = subscriptionEnvironment();
   if (options.diagnose) {
     console.log(JSON.stringify({ ...cliStatus(findClaude(), env), cwd: options.cwd }));
     return;
   }
+  if (process.env.LAFFINEE_CLAUDE_DELEGATE === '1' && !options.dryRun) {
+    throw new Error('Retour Claude récursif refusé. Transmettre les faits au Sol existant et rendre la main.');
+  }
+  const solThread = options.expert
+    ? resolveSolThread(options.solThread, process.env.CODEX_THREAD_ID)
+    : options.solThread || process.env.CODEX_THREAD_ID;
+  const expertPrompt = options.expert ? expertInstructions(solThread, options.mode) : '';
+  if (options.expert) env.LAFFINEE_CLAUDE_CALLED_BY_SOL = '1';
   const brief = readBrief(options.brief);
   const sources = describeSources(options.cwd, options.files, options.mode);
   if (options.luna && sources.some(file => file.staged === 'luna-tasks.json' || file.staged.startsWith('luna/'))) {
     throw new Error('Les fichiers fournis ne doivent pas occuper luna-tasks.json ou luna/.');
   }
   const output = checkedOutputPath(options.output, options.brief, sources);
+  assertFreshClaudeOutput(output);
   const progressFile = claudeProgressPath(output);
   const recoveryManifestPath = claudeRecoveryPath(output);
   const exe = findClaude();
@@ -658,17 +694,19 @@ async function main() {
     const relay = options.luna ? lunaRelayCommand(options.cwd, previewDirectory) : undefined;
     console.log(JSON.stringify({
       ...status, dryRun: true, cwd: options.cwd, mode: options.mode,
+      expert: options.expert, solThread, archiveRoot: `${output}.artifacts`, sessionPersistence: true,
       maxTurns: options.maxTurns, briefBytes: Buffer.byteLength(brief),
       files: sources.map(({ source, staged, size }) => ({ source, staged, size })),
       args: claudeArguments({ mode: options.mode, files: sources.map(file => file.staged),
-        luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay }),
+        luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay, expert: options.expert }),
       output, progressFile, recoveryManifestPath,
     }));
     return;
   }
   const release = acquireClaudeLock();
   let directory;
-  let keepDirectory = false;
+  let archive;
+  let keepDirectory = true;
   let progressTracker;
   let progressFinalized = false;
   let modelOutcome;
@@ -686,29 +724,33 @@ async function main() {
     }));
   };
   try {
-    directory = mkdtempSync(join(tmpdir(), 'laffinee-claude-input-'));
+    archive = createClaudeArchive({ output, brief, sources, sourceCwd: options.cwd,
+      configured: { ...status, expert: options.expert, solThread, mode: options.mode } });
+    directory = archive.workspace;
     progressTracker = createClaudeProgressTracker(progressFile, { deliveryRequested: options.mode === 'edit' });
     stageSources(directory, sources);
     const relay = options.luna ? lunaRelayCommand(options.cwd, directory) : undefined;
     const args = claudeArguments({ mode: options.mode, files: sources.map(file => file.staged),
-      luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay });
+      luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay, expert: options.expert });
     const lines = [
       'Mission unique. Réponds brièvement et clairement en français, avec les preuves utiles.',
+      ...(options.expert ? [expertPrompt] : []),
       'N’explore pas le dépôt. Les fichiers nommés ci-dessous sont les seules entrées prévues pour cette mission.',
       options.mode === 'edit'
         ? 'Modifie seulement les fichiers nommés. Ce sont des copies ; le lanceur reporte les changements si les originaux sont inchangés.'
         : 'Revue en lecture seule ; ne modifie aucun fichier du projet.',
-      ...sources.map(file => 'Fichier fourni : ' + file.staged + ' (' + file.size + ' octets).'),
+      ...sources.map(file => 'Fichier fourni : ' + file.staged + ' (' + file.size + ' octets, sha256 ' + file.digest + ').'),
     ];
     if (options.luna) {
       lines.push('Relais Luna facultatif : écris 1 à 9 missions {id,prompt} dans luna-tasks.json, puis exécute exactement : '
-        + relay + '. Lis les résultats dans luna/. Une seule consultation Claude.');
+        + relay + '. Exécute cette commande au premier plan (run_in_background=false, timeout=600000). Si le CLI la bascule en arrière-plan, attends son identifiant avec TaskOutput block=true ; ne fais pas de polling Read et ne lis pas le journal JSONL complet. Lis ensuite luna/results.json et uniquement le rapport de synthèse de la vague. Ne conclus pas que le résultat existe avant sa réception. Si une attente bloque, rends les références durables au même Sol avec needs_sol. Les Luna examinent le dépôt courant, toi les copies : signale toute différence de référence. Une réponse reçue n’est pas une preuve de réussite métier. Une seule consultation Claude.');
     }
     if (!sources.length && !options.luna) lines.push('Tout le contexte utile est dans le brief. Aucun outil n’est disponible.');
     const prompt = lines.join('\n') + '\n\n' + brief;
+    writeFileSync(join(archive.root, 'prompt.txt'), prompt, { flag: 'wx' });
     console.log(JSON.stringify({ ...status, mode: options.mode, maxTurns: options.maxTurns,
       briefBytes: Buffer.byteLength(brief), providedFiles: sources.map(file => file.staged),
-      output, progressFile, recoveryManifestPath }));
+      output, progressFile, recoveryManifestPath, archiveRoot: archive.root, solThread }));
     let child;
     try {
       child = spawn(exe, args, { cwd: directory, env, windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'] });
@@ -717,12 +759,18 @@ async function main() {
       progressFinalized = true;
       throw new Error('Impossible de démarrer Claude Code.');
     }
-    const captured = captureClaudeProcess(child, progressTracker);
+    const captured = captureClaudeProcess(child, progressTracker, { transcriptPath: archive.transcriptPath });
     child.stdin.on('error', () => { /* The process close and final result determine the outcome. */ });
     child.stdin.end(prompt);
     const result = await captured;
     modelOutcome = result.outcome;
-    writeFileSync(output, result.finalJson, 'utf8');
+    writeFileSync(join(archive.root, 'result.json'), result.finalJson, { flag: 'wx' });
+    writeFileSync(join(archive.root, 'session.json'), JSON.stringify({
+      claudeSessionId: result.nativeSessionId || null, solThread: solThread || null,
+      configured: status, observedModels: result.response.modelUsage || {},
+      effectiveEffort: null, transportOutcome: result.outcome, transcriptError: result.transcriptError,
+    }, null, 2), { flag: 'wx' });
+    writeFileSync(output, result.finalJson, { encoding: 'utf8', flag: 'wx' });
     resultWritten = true;
     const outcome = result.outcome;
     if (outcome !== 'completed') {
@@ -738,13 +786,32 @@ async function main() {
       throw new Error('[' + outcome + '] ' + label + '. Résultat : ' + output + '.'
         + (keepDirectory ? ' Copies : ' + directory + '.' : ''));
     }
+    let expertResult;
+    let transferIncomplete = false;
+    if (options.expert) {
+      try { expertResult = validateExpertResponse(result.response.structured_output); }
+      catch (error) { modelOutcome = 'claude_error'; throw error; }
+      const expertPath = `${output}.expert.json`;
+      const expertRecord = {
+        solThread, archiveRoot: archive.root, transportCompleted: true,
+        recordedAt: new Date().toISOString(), receiptStateIsSnapshot: true,
+        acceptedBySol: false, workValidated: false, handoffs: [], ...expertResult,
+      };
+      writeFileSync(expertPath, JSON.stringify(expertRecord, null, 2), { flag: 'wx' });
+      await transferExpertTasks({ expertRecord, cwd: options.cwd, outputDir: join(archive.root, 'handoffs'),
+        sourceArtifacts: [expertPath, join(archive.root, 'result.json'), join(archive.root, 'request.json'), archive.transcriptPath],
+        save: record => { if (!writeJsonAtomically(expertPath, record)) throw new Error(`Index non enregistré ; conserver ${archive.root} et ne pas relancer Claude.`); },
+      });
+      transferIncomplete = expertRecord.handoffErrors.length > 0;
+    }
     progressTracker.record('résultat', 'résultat_final', {
       outcome, modelOutcome, resultStatus: 'completed',
       deliveryStatus: options.mode === 'edit' ? 'pending' : 'not_requested',
     });
     let changedFiles = [];
     if (options.mode === 'edit') {
-      try { changedFiles = applyStagedEditsWithProgress(directory, sources, progressTracker, recoveryManifestPath); }
+      try { changedFiles = applyStagedEditsWithProgress(directory, sources, progressTracker, recoveryManifestPath,
+        { expertStatus: expertResult?.status }); }
       catch (error) {
         recoverySnapshot = error?.recovery || ensureRecovery();
         if (!error?.recovery) progressTracker.updateRecovery(recoverySnapshot);
@@ -755,7 +822,16 @@ async function main() {
       }
     }
     progressFinalized = true;
-    console.log(JSON.stringify({ completed: true, output, progressFile, elapsedMs: Date.now() - progressTracker.startedAtMs,
+    if (transferIncomplete) {
+      progressTracker.record('erreur', 'transfert_incomplet', { outcome: 'delivery_error', modelOutcome: 'completed',
+        resultStatus: 'completed', deliveryStatus: 'failed', deliveryOutcome: 'error' });
+      process.exitCode = 1;
+    }
+    console.log(JSON.stringify({ completed: options.expert ? undefined : true,
+      transportCompleted: true, expertStatus: expertResult?.status, solThread,
+      fileDelivery: options.mode === 'edit' ? (expertResult?.status === 'blocked' ? 'blocked' : 'reported') : 'not_requested',
+      transferIncomplete, ...(transferIncomplete ? { nextAction: `Réponse experte conservée, transfert incomplet : ${output}.expert.json. Corriger les demandes localement sans relancer Claude.` } : {}),
+      archiveRoot: archive.root, output, progressFile, elapsedMs: Date.now() - progressTracker.startedAtMs,
       turns: result.response.num_turns, maxTurns: options.maxTurns,
       models: Object.keys(result.response.modelUsage || {}), changedFiles }));
   } catch (error) {
@@ -782,8 +858,9 @@ async function main() {
     }
     throw error;
   } finally {
-    try { if (directory && !keepDirectory) rmSync(directory, { recursive: true, force: true }); }
-    finally { release(); }
+    // Never remove model data, even on success. Receipt is not permission to delete.
+    try { release(); }
+    catch { console.error(`Verrou à vérifier manuellement ; données conservées dans ${archive?.root || output}.`); }
   }
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

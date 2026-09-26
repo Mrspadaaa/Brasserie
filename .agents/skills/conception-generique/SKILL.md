@@ -36,8 +36,9 @@ selon AGENTS.md. Ne pas lancer chacun pour remplir un rôle. Une seconde passe
 répond à un désaccord concret, pas à un rituel de consensus ou de surveillance.
 Arrêter quand la décision et ses limites sont suffisamment étayées.
 
-Dans le registre existant, garder seulement : **règle / exception ou inconnue /
-preuve / limite restante**. Distinguer essai d'agent, test exécuté et validation
+Sol consigne dans le registre existant : **règle / exception ou inconnue /
+preuve / limite restante**. Astra lui transmet ces éléments dans son avis.
+Distinguer essai d'agent, test exécuté et validation
 utilisateur. Évaluer une modification du skill sur un cas inédit ; ne pas
 annoncer de gain mesuré sans comparaison avec le comportement antérieur.
 
