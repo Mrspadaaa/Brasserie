@@ -62,8 +62,9 @@ Le dossier local `work/astra-skills-2026-09-26` relève pour les sessions
 400000 tokens utiles**. Le profil configure 421053 bruts. Les avis examinés
 identifient une estimation présentée comme mesure, puis un double comptage lors
 d'un rejeu hors ligne. Ils distinguent le constat des essais d'intégration restants.
-La suite et la revue comportementale finale de cette autre tâche sont encore en
-cours au moment de cette revue rapide ; elles ne sont pas déclarées validées ici.
+La tâche dédiée confirme aussi la fin du troisième scénario, consacré à la
+purge des identifiants de déduplication. Sa revue indépendante finale est encore
+en cours au moment de cette revue rapide ; elle n'est pas déclarée validée ici.
 
 Aucun nouvel appel génératif n'a été lancé pour préparer cette PR. Aucun gain
 chiffré de quota ni garantie d'absence de dérive n'est revendiqué.
