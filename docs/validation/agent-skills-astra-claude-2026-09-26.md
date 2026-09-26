@@ -28,6 +28,9 @@ mémoires personnelles et journaux volumineux ne sont pas importés dans cette P
    `.claude/skills/impeccable`. Elles ciblent désormais leur copie `.agents/skills/`.
    Le hook local non suivi `.codex/hooks.json`, qui appelle Claude, est exclu de
    cette PR ; il n'est pas une dépendance du fonctionnement décrit ici.
+   Le contrôle local de la tâche Astra relève encore son `trusted_hash` dans
+   la configuration utilisateur. Son exclusion de Git ne démontre donc pas sa
+   désactivation ; l'isolation de tout le checkout local n'est pas certifiée.
 2. Le guide restaurait une ancienne section qui faisait disparaître les conseils
    de reprise et d'économie de quota déjà présents sur main. Ces conseils sont
    conservés : contexte utile, réutilisation des preuves et attentes natives.
@@ -62,9 +65,19 @@ Le dossier local `work/astra-skills-2026-09-26` relève pour les sessions
 400000 tokens utiles**. Le profil configure 421053 bruts. Les avis examinés
 identifient une estimation présentée comme mesure, puis un double comptage lors
 d'un rejeu hors ligne. Ils distinguent le constat des essais d'intégration restants.
-La tâche dédiée confirme aussi la fin du troisième scénario, consacré à la
-purge des identifiants de déduplication. Sa revue indépendante finale est encore
-en cours au moment de cette revue rapide ; elle n'est pas déclarée validée ici.
+Le troisième scénario, consacré à la purge des identifiants de déduplication,
+est également terminé. Les treize contrôles statiques de la tâche dédiée passent.
+La revue indépendante finale (`01a0deb4-718a-7771-bf31-4d53264a7b58`, commande
+85582, sortie 0) **accepte le lot sans défaut matériel dans son périmètre**.
+Le rapport `work/astra-skills-2026-09-26/review-result.md` a été lu lors de cette
+mise à jour. Il rapproche les trois scénarios et leurs traces, les neuf sources
+du patch, les six empreintes à préserver et les profils source/installé.
+
+Limites : contrats Sol/Luna vérifiés statiquement, sans nouvel essai de
+réalisation ; aucun essai de charge de la fenêtre entière ; scénarios non
+aveugles, leur registre étant accessible. La réception par ce relecteur du
+complément sur les douze chemins Impeccable n'est pas démontrée : ces corrections
+restent la vérification propre à la préparation de PR, pas un résultat de son avis.
 
 Aucun nouvel appel génératif n'a été lancé pour préparer cette PR. Aucun gain
 chiffré de quota ni garantie d'absence de dérive n'est revendiqué.
