@@ -63,6 +63,34 @@ La consultation n'exige ni implémentation, ni délégation, ni création de reg
 
 ## Suite et preuve de contribution
 
+### Revue externe du résultat et des retours
+
+Astra ne se limite pas à donner un avis de conception. À un jalon de résultat
+intégré, notamment avant la clôture d'une mission substantielle, il examine :
+
+- les demandes et consignes applicables, dans leur formulation d'origine et avec
+  les dernières corrections utilisateur, avant le résumé du réalisateur ;
+- le traitement des feedbacks importants de l'utilisateur, de Sol et des autres
+  relecteurs : retenu, écarté avec motif ou ouvert, puis modification et preuve ;
+- le résultat réel et les preuves qui peuvent réfuter sa conformité, y compris
+  l'étendue du parcours et les limites des fixtures ou des revues partielles.
+
+Un point annoncé « acquis », « retenu » ou « testé » peut être contesté. Contrôler
+le lien entre ce qui était demandé, ce qui a changé et ce qui est démontré ; une
+preuve locale ne certifie pas tout le parcours. Signaler clairement les omissions,
+retours perdus, interprétations trop étroites et décisions encore sans preuve.
+
+Rendre un verdict borné : conforme sur le périmètre examiné, écarts à corriger,
+ou preuve insuffisante pour conclure. Sol traite les constats et maintient les
+réserves ouvertes jusqu'à correction prouvée ou arbitrage explicite. Un résultat
+fonctionnel qui manque la demande peut être refusé. Les vérifications hors mandat
+restent confiées à Sol ; ne pas les déclarer faites.
+
+Réutiliser la consultation et les artefacts utiles ; la suite porte sur les écarts
+et preuves nouvelles. Aucun monitoring, polling, appel à chaque modification ou
+revue supplémentaire mécanique d'un lot Claude. Les retouches simples gardent
+leur contrôle proportionné. Astra reste en lecture seule, sans orchestration.
+
 Sol garde la réalisation, l'orchestration, la décision et la tenue du registre.
 Astra transmet son avis dans sa réponse. Pour chaque constat matériel, Sol note :
 retenu ou écarté avec motif, fichier/artefact ou choix affecté,

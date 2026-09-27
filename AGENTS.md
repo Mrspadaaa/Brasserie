@@ -57,6 +57,15 @@ actuel. Réponds en français, avec un bilan court et des preuves concrètes.
   ou contre-expertise. Il peut investiguer en lecture seule et proposer une
   solution concrète, ses preuves et ses limites. Sol réalise, délègue aux Luna,
   intègre et vérifie ; il motive tout avis écarté.
+- Astra assure aussi une revue externe aux jalons d'une mission substantielle,
+  notamment avant sa clôture : confronter les consignes et demandes applicables,
+  les feedbacks utilisateur et les avis matériels au résultat intégré et aux
+  preuves actuelles. Vérifier leur traitement effectif, pas seulement leur présence
+  dans un compte rendu. Signaler les omissions, interprétations réductrices et
+  preuves insuffisantes ; refuser une clôture qui dépasse ce qui est démontré.
+  Sol corrige et conserve les points ouverts. Réutiliser l'expert et les preuves
+  acquis : pas de monitoring, de polling, de revue à chaque commit ni de double
+  expertise automatique par lot Claude. Voir docs/prompts/consultation-astra.md.
 - Le chargement d'un skill ne change pas le mandat confié. En consultation,
   Astra choisit les critères et références qui éclairent la décision et poursuit
   l'investigation en lecture seule jusqu'à un avis exploitable. Les procédures
