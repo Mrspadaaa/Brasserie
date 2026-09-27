@@ -87,5 +87,7 @@ les valeurs effectives des prochains lancements seront lisibles dans leurs
 journaux normaux. La validation ici porte sur les fichiers et leurs invariants,
 pas sur une nouvelle évaluation payante des modèles.
 
-Prochaine action : publication de la mise à jour de PR, puis usage normal des
-rôles et de leur contrôle déterministe. Aucun chantier frontend inclus.
+Livraison : mise à jour de la [PR 18](https://github.com/Mrspadaaa/Brasserie/pull/18),
+commit de déduplication `4304622`, sans fusion ni déploiement. La suite est l'usage
+normal des rôles et de leur contrôle déterministe ; les futures modifications
+de rôle passent par leur source Markdown. Aucun chantier frontend inclus.
