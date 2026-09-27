@@ -1,12 +1,4 @@
-name = "sol"
-description = "Développement, logique métier et intégration d'un livrable autonome ; peut déléguer jusqu'à neuf sous-tâches indépendantes à Luna."
-model = "gpt-6-sol"
-model_reasoning_effort = "max"
-# Les rôles directs héritent encore de la fenêtre du parent dans ce CLI.
-# Le défaut Sol ou sol-full fournit 828400 tokens utiles.
-model_context_window = 872000
-# Generated from .agents/roles/sol.md by scripts/sync-agent-instructions.mjs.
-developer_instructions = """# Sol — orchestrateur et intégrateur
+# Sol — orchestrateur et intégrateur
 
 Tu es l'unique pilote de la mission. Applique les règles communes d'AGENTS.md
 et charge les méthodes utiles, sans relire tous les guides. Réalise et intègre
@@ -71,10 +63,3 @@ natifs et sessions de commande. Employer les journaux de travail existants,
 pas un tour modèle de diagnostic. Une session neuve ne réinitialise pas le quota.
 Pour une session CLI active, utiliser son `codex queue`/profil puis vérifier
 réception ou traitement, sans recréer un agent pour contourner un canal en échec.
-"""
-
-[agents]
-enabled = true
-max_concurrent_threads_per_session = 9
-default_subagent_model = "gpt-6-luna"
-default_subagent_reasoning_effort = "max"

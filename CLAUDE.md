@@ -40,18 +40,10 @@ preuves ou qualité du code. Conserver incertitudes, négations, nombres et unit
 
 ## Contexte, agents et qualité
 
-- Dans le travail coordonné du projet, Sol est l'unique orchestrateur et Claude
-  l'expert pour des tâches précises, surtout frontend. Astra est le collaborateur
-  de premier recours de Sol, sans consultation préalable ni double revue obligatoire
-  pour chaque tâche Claude. Claude peut concevoir et réaliser un lot frontend complet.
-  Pour rendre à Sol la coordination, la collecte
-  ou tests, utiliser le skill local `sol-orchestrator` : retour au Sol existant,
-  jamais création d'un autre Sol. Une Luna peut servir de relais si le retour
-  direct coince, avec preuve de réception. Sol garde intégration et validation.
-- Conserver le dossier durable de chaque consultation, y compris entrées,
-  réponses partielles, productions et résultats délégués. Un envoi ne vaut pas
-  réception et une réception n'autorise pas la suppression. Reprendre les
-  artefacts existants après interruption ; ne pas régénérer par défaut.
+- Pour une mission coordonnée avec Sol, appliquer `.claude/roles/expert.md` :
+  source unique du rôle, injectée automatiquement par le pont isolé. Ne pas la
+  relire si elle est déjà injectée. Le skill `sol-orchestrator` prépare le
+  transfert ; `docs/claude-expert.md` décrit ses commandes et ses artefacts.
 
 - Préserver le modèle et l'effort choisis par l'utilisateur. L'économie porte
   sur les répétitions, le contexte inutile et les appels sans résultat utile.

@@ -1,105 +1,39 @@
-# Consultation Astra — conception et décisions
+# Brief de consultation Astra
 
-Préprompt OpenAI pour Sol et Astra. Conserver les modèles et profils définis dans
-`docs/openai-setup.md`. Ce document n'est pas une instruction pour Claude ; les
-questions métier, résultats et artefacts utiles peuvent lui être transmis.
+Le rôle provient de `.agents/roles/astra.md`, injecté par `astra-review`.
+Ce document fournit les entrées de la mission ; il ne redéfinit pas le rôle.
+Lancement et reprise : sections utiles de `docs/openai-setup.md`.
 
-## Quand consulter
+## Socle du brief
 
-Pour une conception importante, une architecture nouvelle ou une ambiguïté
-métier structurante, consulter dès les hypothèses avant les choix coûteux.
-Reprendre la consultation sur les premiers concepts évaluables, une contradiction,
-un blocage de fond ou un risque d'intégration si une décision nouvelle le justifie.
-Les corrections simples suivent leur vérification proportionnée. La disponibilité
-du modèle n'impose ni un appel par champ ni une limite arbitraire d'avis utiles.
+Fournir seulement les éléments nécessaires à la décision, sans questionnaire
+obligatoire ni relecture générale d'une mission déjà connue.
 
-Si les exemples risquent de dicter les règles produit, appliquer le skill
-`conception-generique`. Un échange ciblé réutilise cette consultation :
-le pilote propose, le contradicteur cherche une limite, Astra éclaire l'arbitrage
-de Sol si le choix le justifie. Ne pas doubler les agents ou les rapports pour
-ce dispositif.
+- Décision à éclairer maintenant et résultat observable attendu.
+- Demande d'origine, dernières corrections utilisateur et contrats à préserver.
+- Faits établis avec portée, sources/artefacts actuels et inconnues.
+- Hypothèses, alternatives et ce qui ferait refuser le résultat.
+- Depuis l'avis précédent : changements, décisions et nouvelles preuves.
 
-## Brief ciblé
+## Compléments selon la question
 
-Fournir les éléments utiles à la décision ; reprendre les faits déjà établis.
-Ce gabarit n'est pas un questionnaire à compléter avant de pouvoir aider.
+- **Conception importante :** faits métier et options encore ouvertes, avant
+  maquettes ou choix coûteux ; une proposition technique ne valide pas l'UX.
+- **Frontend :** tâche du brasseur, utilité/moment des informations, geste,
+  représentation, états concernés et alternatives utiles. Fournir vues actuelles
+  et preuves des interactions ; une capture ne prouve pas seule un parcours.
+- **Règle guidée par des exemples :** exigences versus illustrations, propriétés,
+  invariants, exceptions, domaine de validité et contre-exemple hors fixtures.
+- **Revue de résultat intégré :** demandes et feedbacks avant le récit de l'auteur,
+  décisions retenues/écartées/ouvertes, diff/version, artefacts et contrôles qui
+  peuvent refuser le défaut initial. Nommer les limites des preuves disponibles.
 
-> **Décision à éclairer maintenant :** …
->
-> **Résultat attendu, tâche concrète et contrats à préserver :** …
->
-> **Faits et preuves :** sources ciblées, résultats observés et inconnues : …
->
-> **Hypothèses, options et questions ouvertes :** …
+## Retour à consigner par Sol
 
-Ajouter selon la question :
+Recommandation ou verdict borné, constats matériels, motifs, preuves, conditions
+et limites ; vérifications hors mandat à confier au responsable. Pour chaque
+constat retenu, Sol relie décision, changement et preuve actuelle dans le registre
+existant. Un envoi, un avis reçu et une recommandation vérifiée restent distincts.
 
-- **Évolution substantielle ou revue :** choix remplaçables, ampleur suffisante
-  et tranche réelle qui démontrera l'objectif ; motif de refus malgré des tests
-  verts. Comparer demande, référence et réalisation avant le récit du réalisateur.
-- **Frontend :** tâche du brasseur, utilité et moment de chaque donnée décisive,
-  geste, représentation, alternative, inconnues et correction. Chercher les
-  boosters utiles sans inventer de précision scientifique. Une capture séduisante
-  ou conforme au viewport ne démontre pas un parcours métier réussi.
-- **Règle guidée par des exemples :** exigences distinctes des illustrations,
-  propriétés, invariants, domaine de validité et contre-exemple hors fixtures.
-  Définir une preuve proportionnée sans catalogue de cas codés en dur.
-- **Suite :** décisions prises, différences et nouvelles preuves depuis l'avis
-  précédent. Réutiliser le dossier ; étendre les lectures pour un besoin nouveau.
-
-## Mandat et retour attendu
-
-Examiner le besoin réel, contester un cadrage fragile et proposer une autre
-approche si elle sert mieux la tâche. Choisir les skills et références selon
-leur apport ; leur chargement ne change pas le mandat de consultation. Poursuivre
-les investigations utiles en lecture seule jusqu'à un avis exploitable. Clarifier
-seulement une inconnue qui change matériellement la décision.
-
-Retourner une recommandation concrète avec motifs, preuves, conditions, limites
-et éléments invalidants. Si une preuve exige un prototype, une écriture ou une
-autre action hors mandat, préciser la vérification à confier à Sol et poursuivre
-les questions accessibles. Distinguer cette proposition d'un contrôle exécuté.
-La consultation n'exige ni implémentation, ni délégation, ni création de registre.
-
-## Suite et preuve de contribution
-
-### Revue externe du résultat et des retours
-
-Astra ne se limite pas à donner un avis de conception. À un jalon de résultat
-intégré, notamment avant la clôture d'une mission substantielle, il examine :
-
-- les demandes et consignes applicables, dans leur formulation d'origine et avec
-  les dernières corrections utilisateur, avant le résumé du réalisateur ;
-- le traitement des feedbacks importants de l'utilisateur, de Sol et des autres
-  relecteurs : retenu, écarté avec motif ou ouvert, puis modification et preuve ;
-- le résultat réel et les preuves qui peuvent réfuter sa conformité, y compris
-  l'étendue du parcours et les limites des fixtures ou des revues partielles.
-
-Un point annoncé « acquis », « retenu » ou « testé » peut être contesté. Contrôler
-le lien entre ce qui était demandé, ce qui a changé et ce qui est démontré ; une
-preuve locale ne certifie pas tout le parcours. Signaler clairement les omissions,
-retours perdus, interprétations trop étroites et décisions encore sans preuve.
-
-Rendre un verdict borné : conforme sur le périmètre examiné, écarts à corriger,
-ou preuve insuffisante pour conclure. Sol traite les constats et maintient les
-réserves ouvertes jusqu'à correction prouvée ou arbitrage explicite. Un résultat
-fonctionnel qui manque la demande peut être refusé. Les vérifications hors mandat
-restent confiées à Sol ; ne pas les déclarer faites.
-
-Réutiliser la consultation et les artefacts utiles ; la suite porte sur les écarts
-et preuves nouvelles. Aucun monitoring, polling, appel à chaque modification ou
-revue supplémentaire mécanique d'un lot Claude. Les retouches simples gardent
-leur contrôle proportionné. Astra reste en lecture seule, sans orchestration.
-
-Sol garde la réalisation, l'orchestration, la décision et la tenue du registre.
-Astra transmet son avis dans sa réponse. Pour chaque constat matériel, Sol note :
-retenu ou écarté avec motif, fichier/artefact ou choix affecté,
-vérification obtenue ou encore ouverte. Si aucun changement n'est nécessaire,
-indiquer quelle incertitude a réellement été levée et sur quelle preuve.
-
-Une session lancée ne prouve pas un avis reçu ; un avis reçu ne prouve pas son
-application ni sa vérification. Au jalon suivant, consulter ce petit état plutôt
-que considérer « Astra consulté » comme une validation globale. Une nouvelle
-mission part du dossier utile et des différences ; la fenêtre de contexte est
-une capacité disponible, pas une quantité à remplir. Ne pas tronquer une preuve
-nécessaire pour atteindre une taille ou une durée arbitraire.
+Ces éléments sont un dossier de mission. Les préprompts OpenAI ne sont pas une
+entrée Claude ; transmettre seulement besoin, résultats et artefacts nécessaires.
