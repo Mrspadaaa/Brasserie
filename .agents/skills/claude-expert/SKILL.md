@@ -23,6 +23,14 @@ fichiers vides autorisés si nécessaire, les fixtures et contraintes, puis vér
 le rendu et le parcours après report des copies. `review` reste la consultation
 en lecture seule. Aucune relecture experte supplémentaire automatique.
 
+Préparer un dossier ciblé sans perdre demandes, feedbacks ni réserves ; garder
+les sources nécessaires accessibles. Les inventaires, empreintes et mesures
+mécaniques passent par les outils. Sol attribue aux Luna les travaux autonomes
+de tests, d'adaptation ou d'investigation ; Claude garde l'apport frontend difficile.
+Activer `--with-luna` lorsqu'une investigation indépendante peut aider, pas pour
+remplir une équipe. Prévoir une première tranche exploitable avant élargissement,
+sans réduire le goal complet ni traiter une livraison partielle comme terminée.
+
 Le retour est un avis ou une demande de travaux, pas une validation produit.
 Traiter `needs_sol` dans cette même session : accuser réception du dossier durable,
 prendre les tâches autorisées, déléguer aux Luna si utile et vérifier les résultats.

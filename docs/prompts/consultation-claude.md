@@ -9,6 +9,8 @@ Le rôle et le contrat de sortie sont injectés par `scripts/claude-expert.mjs`.
 - Hypothèses, alternatives encore ouvertes ; liberté de proposer une autre direction :
 - Contraintes produit/données/UX et critère qui ferait refuser le résultat :
 - Faits acquis et preuves exactes fournies (fichiers, captures, tests) :
+- Feedbacks et réserves à conserver, périmètre de chaque preuve :
+- Première tranche exploitable, reste du goal et travaux déjà confiés à Sol/Luna :
 - Inconnues et investigations qui changeraient réellement la décision :
 - Depuis l'avis précédent : changements, nouvelles preuves, question restante :
 - Sol destinataire existant et dossier durable de la mission :
@@ -17,6 +19,11 @@ Pour une UI, joindre le parcours utilisateur, les données représentatives, la
 direction visuelle et les vues pertinentes. Sol/Luna préparent les rendus et
 recadrages lisibles ; Claude voit les captures réellement fournies, pas un
 navigateur imaginaire. Une preuve manquante reste une inconnue.
+
+Le dossier cible la décision sans effacer les exigences. Garder les sources
+nécessaires accessibles et réutiliser les artefacts acquis. Préciser les outils
+prévus, leurs limites et l'apport éventuel d'une investigation Luna ; ne pas
+demander à un agent un simple calcul d'empreintes réalisable par un outil.
 
 Claude peut rendre des tâches à Sol. Sol décide de la délégation aux Luna,
 réalise et vérifie ; nouvelle consultation seulement si la condition de retour

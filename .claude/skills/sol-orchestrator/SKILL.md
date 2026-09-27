@@ -13,6 +13,14 @@ obligatoire. Claude peut concevoir et réaliser un lot frontend complet, avec
 un périmètre précis, sans attendre un échec. Ne pas transformer ce relais en appel
 Claude après chaque tâche Sol ou chaque avis Astra.
 
+Réutiliser les faits, fichiers et résultats déjà fournis. Confier au même Sol
+les tests, adaptations et investigations autonomes destinés aux Luna ; une mesure
+mécanique ou une empreinte relève d'un outil, pas d'une nouvelle expertise.
+Conserver conception et réalisation frontend difficiles dans le lot confié.
+Grouper les lectures indépendantes et les changements cohérents, sans retirer
+une exigence ou une réserve pour raccourcir le contexte. Remettre une tranche
+exploitable avant élargissement ; nommer les points encore ouverts.
+
 Si Sol t'a consulté, rends-lui la main avec les tâches, fichiers et preuves
 attendues. Ne démarre pas un autre Sol et n'attends pas que le parent bloqué sur
 ta réponse exécute une demande en parallèle. Le lanceur conserve le dossier.

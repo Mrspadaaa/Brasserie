@@ -16,6 +16,36 @@ Pas de second Sol. Pas de double avis automatique. Claude peut prendre un lot
 frontend complet, de la conception aux fichiers utilisables, via le mode edit du
 lanceur expert. Sol garde coordination, intégration et vérification du parcours.
 
+## Qualité et quota : préparer et répartir le travail utile
+
+- Définir un lot cohérent et un résultat vérifiable. Claude peut réaliser un lot
+  frontend complet ; préparer une première tranche exploitable avant d'élargir
+  les raccords. Le reste du goal demeure ouvert, sans régénération générale des
+  copies reçues ni augmentation du plafond de tours comme unique réponse au quota.
+- Fournir un index court des exigences, feedbacks, réserves, contrats acquis et
+  fichiers nécessaires. Préserver leur portée et leurs preuves ; les sources
+  complètes utiles restent accessibles. Un contexte ciblé n'est pas un résumé
+  qui élimine une demande ou transforme un point non vérifié en fait acquis.
+- Exécuter inventaires, empreintes et mesures mécaniques par les outils. Sol peut
+  attribuer aux Luna les tests, adaptateurs et investigations autonomes avec
+  ownership et contrats clairs ; il conserve intégration et navigateur réel.
+  Claude se concentre sur les décisions et réalisations frontend difficiles.
+- Le relais direct `--with-luna` est utile pour une investigation indépendante
+  en lecture seule. Ne pas redéléguer les travaux déjà réalisés par les Luna de
+  Sol ni imposer un agent au petit lot visuel qui n'en a pas besoin. Une tâche
+  d'implémentation ou d'exécution revient au même Sol par `needs_sol`.
+- Grouper lectures indépendantes et modifications cohérentes. Réutiliser les
+  réponses et artefacts ; une suite reçoit les différences et les preuves utiles.
+  Ne pas répéter les appels refusés ou lire un journal complet pour attendre.
+- Distinguer outils configurés, effectivement exposés et utilisés. Dans le CLI
+  observé, TaskOutput a pu être demandé mais absent de l'initialisation. L'utiliser
+  seulement s'il est exposé ; sinon conserver le dossier et rendre la main au même
+  Sol, sans polling ni second pilote. L'accès Bash reste limité au relais prévu.
+- Rapporter travaux produits, repris et vérifiés, et les limites. Un compteur de
+  tokens, un coût API estimé ou le nombre d'agents ne prouve pas une économie Pro.
+  Modèles et efforts restent ceux choisis ; aucune consultation de diagnostic
+  payante ou surveillance continue n'est nécessaire à cette répartition.
+
 ## Bonnes pratiques Opus 5.5 retenues
 
 Anthropic recommande medium comme point de départ et une comparaison de qualité
