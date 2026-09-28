@@ -1,0 +1,30 @@
+
+> brasserie-laffinee-admin@1.0.0 test
+> node scripts/check-test-boundary.mjs && node scripts/audit_inputs.mjs && vitest run tests/unit/guideVarietiesCache.test.ts tests/unit/recipeDiagnostic.test.ts tests/unit/recipePageLoader.test.ts tests/unit/hopRecipeGuide.test.ts tests/unit/yeastRecipeReferences.test.ts tests/unit/yeastCatalogueLibrary.test.ts tests/integration/pageShellPerformance.test.tsx tests/integration/recipeDisclosureLoading.test.tsx tests/integration/recipeAccessibility.test.tsx tests/integration/HopRecipePanel.test.tsx tests/integration/hopCatalogueLoading.test.tsx tests/integration/hopKnowledgeSnapshot.test.ts tests/integration/hopIndexStorage.test.ts
+
+✓ Suite normale limitée aux tests locaux sans appel Gemini facturable.
+INPUT PROTECTION AUDIT PASSED: 347 protected usages in 222 files; negative controls passed. Android native UI still requires device verification.
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/.codex/worktrees/recipe-open-performance/Brasserie
+
+ ✓ tests/integration/pageShellPerformance.test.tsx (5 tests) 461ms
+ ✓ tests/integration/recipeAccessibility.test.tsx (10 tests) 374ms
+ ✓ tests/integration/hopKnowledgeSnapshot.test.ts (3 tests) 248ms
+ ✓ tests/integration/hopCatalogueLoading.test.tsx (1 test) 18ms
+ ✓ tests/integration/recipeDisclosureLoading.test.tsx (2 tests) 98ms
+ ✓ tests/integration/hopIndexStorage.test.ts (10 tests) 224ms
+ ✓ tests/integration/HopRecipePanel.test.tsx (2 tests) 479ms
+   ✓ Bilan aromatique en lecture seule > affiche la levure et le programme existants sans écrire, et délègue toute modification au parcours de recette  451ms
+ ✓ tests/unit/hopRecipeGuide.test.ts (33 tests) 41ms
+ ✓ tests/unit/recipePageLoader.test.ts (2 tests) 64ms
+ ✓ tests/unit/guideVarietiesCache.test.ts (2 tests) 29ms
+ ✓ tests/unit/recipeDiagnostic.test.ts (5 tests) 140ms
+ ✓ tests/unit/yeastRecipeReferences.test.ts (5 tests) 418ms
+ ✓ tests/unit/yeastCatalogueLibrary.test.ts (8 tests) 968ms
+   ✓ Bibliothèque complète de levures sans import personnel > génère le fichier courant de façon déterministe et lie son empreinte aux octets source  431ms
+
+ Test Files  13 passed (13)
+      Tests  88 passed (88)
+   Start at  22:45:17
+   Duration  4.58s (transform 2.22s, setup 1.33s, collect 5.71s, tests 3.56s, environment 4.73s, prepare 826ms)

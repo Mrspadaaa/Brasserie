@@ -18,6 +18,8 @@ export class DocumentWriteError extends Error {
 export const isConfirmedWriteRejection=(error:unknown):error is DocumentWriteError=>error instanceof DocumentWriteError&&error.status==='rejected';
 const key = '__HOP_RECIPE_QA_ONLY__';
 let rows: Record<string, Record<string, any>> = JSON.parse(localStorage.getItem(key) || '{}');
+const emptyRows = {};
+const readCache = new WeakMap<object, any[]>();
 let ready = false, failure: string | null = null;
 const listeners = new Set<() => void>();
 export const qaMetrics = { writes: 0, reads: 0, confirmations: 0, failNext: false, rejectNextRecipe: false, holdNextRecipe: false };
@@ -36,7 +38,13 @@ export const FirestoreRepo = {
   financialLedgerStatus: () => ({complete:ready,loading:false,fromCache:false,loadedRows:0}),
   documentWriteState: () => ({status:'confirmed'}),
   readyCount: () => ({ loaded: ALL_COLLECTIONS.length, total: ALL_COLLECTIONS.length }),
-  all: <T,>(name: string): T[] => Object.entries(rows[name] ?? {}).map(([id, row]) => ({ ...row, __docId: id })) as T[],
+  // Like FirestoreRepo.all, repeated reads share the current collection rows.
+  all: <T,>(name: string): T[] => {
+    const collection = rows[name] ?? emptyRows;
+    let result = readCache.get(collection);
+    if (!result) { result = Object.entries(collection).map(([id, row]) => ({ ...row, __docId: id })); readCache.set(collection, result); }
+    return result as T[];
+  },
   find: <T,>(name: string, id: string): T | undefined => rows[name]?.[id],
   subscribe(cb: () => void) { listeners.add(cb); return () => { listeners.delete(cb); }; },
   consumeError() { const value = failure; failure = null; return value; },
@@ -63,11 +71,10 @@ export const FirestoreRepo = {
       }
       rejectedRecipes.delete(id);
     }
-    rows[name] ??= {};
-    rows[name][id] = JSON.parse(JSON.stringify(options.merge ? { ...rows[name][id], ...data } : data));
+    rows[name] = { ...rows[name], [id]: JSON.parse(JSON.stringify(options.merge ? { ...rows[name]?.[id], ...data } : data)) };
     persist();
   },
-  remove(name: string, id: string) { qaMetrics.writes++; delete rows[name]?.[id]; persist(); },
+  remove(name: string, id: string) { qaMetrics.writes++; rows[name] = { ...rows[name] }; delete rows[name][id]; persist(); },
   async bulkWrite(entries: any[]) { for (const e of entries) this.put(e.name, e.id, e.data); await this.waitForWrites(); },
   async replaceAll(data: Record<string, any[]>) { seedQa(data); },
   async isEmpty(name: string) { return !Object.keys(rows[name] ?? {}).length; },

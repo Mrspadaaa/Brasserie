@@ -104,7 +104,7 @@ describe('Projets de matériel, du besoin à l’achat', () => {
     expect(StorageService.getStocks().equipment[0]).toMatchObject({ name: 'Hotte de brassage', purchasePrice: 800 });
     fireEvent.click(screen.getByRole('tab', { name: 'Prévisions' }));
     fireEvent.click(screen.getByRole('button', { name: 'Échéances', exact: true }));
-    const due = within(screen.getByRole('heading', { name: 'Prochaines échéances' }).closest('section')!);
+    const due = within(screen.getByRole('heading', { name: 'Échéances et estimations à venir' }).closest('section')!);
     expect(due.getByRole('button', { name: /Hotte de brassage.*Projet de matériel.*400/ })).toBeVisible();
     expect(screen.getByText('Solde estimé en fin de période').parentElement).toHaveTextContent(/2[\s'’]?800,00/);
     fireEvent.click(screen.getByRole('checkbox', { name: /Inclure mes projets de matériel/ }));

@@ -138,9 +138,18 @@ function unTour(racine: HTMLElement, rnd: () => number): string {
 function verifier(racine: HTMLElement, journal: string[]) {
   const fin = () => journal.slice(-12).join('\n  ');
 
-  const faute = (racine.textContent ?? '').match(INTERDIT);
-  if (faute) {
-    throw new Error(`L'écran affiche « ${faute[0]} » après :\n  ${fin()}`);
+  // Check each rendered text node separately. Joining adjacent badges such as
+  // “→Na” and “Na · HCO₃” creates the string “NaN” even though neither node
+  // displays a number or an invalid value.
+  const walker = racine.ownerDocument.createTreeWalker(racine, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const faute = (node.textContent ?? '').match(INTERDIT);
+    if (faute) {
+      const parent = node.parentElement;
+      const role = parent?.getAttribute('role');
+      const label = parent?.getAttribute('aria-label');
+      throw new Error(`L'écran affiche « ${faute[0]} » dans <${parent?.tagName.toLowerCase()}${role ? ` role="${role}"` : ''}${label ? ` aria-label="${label}"` : ''}> après :\n  ${fin()}`);
+    }
   }
 
   /*

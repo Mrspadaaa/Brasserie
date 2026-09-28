@@ -9,6 +9,7 @@ import type { IngredientFermentationFacts } from '../../functions/src/ingredient
 import { noloScience } from '../../src/domain/noloScience';
 import { refreshCompanionRecipe } from '../../src/domain/brewerRecipeRefresh';
 import { yeastCultureComposition } from '../../src/domain/yeastStyleEvidence';
+import { applyReviewedYeastFacts, readYeastDocumentaryView } from '../../src/domain/ingredientFacts';
 import { BrewingMath } from '../../src/services/brewingMath';
 import { fullRecipe } from '../fixtures/fullRecipe';
 
@@ -86,6 +87,23 @@ describe('Plages fabricant selon le contexte de fermentation', () => {
 });
 
 describe('Prévision unique du moût, indépendante du catalogue', () => {
+  it('expose toutes les lignes de fermentescibles incomplètes, y compris sucre tardif et non-fermentescible', () => {
+    const recipe = base({ ogTarget: 1.06, yeast: { name: 'Culture témoin', attenuationPct: 78, attenuationBasis: 'recipe' }, fermentables: [
+      { name: 'Dextrose tardive', kind: 'sucre', use: 'fermentation', weightKg: 1 },
+      { name: 'Lactose à l’ébullition', kind: 'lactose', use: 'ebullition', weightKg: .25 },
+      { name: 'Maltodextrine', kind: 'sucre', use: 'ebullition', weightKg: .2, potentialPpg: 35 },
+      { name: 'Poire', kind: 'fruit', use: 'fermentation', weightKg: .5, potentialPpg: 28 }
+    ] });
+    const projection = projectYeastRecipe(recipe);
+    expect(projection.fg.range).toBeNull();
+    expect(projection.incompleteFermentables).toEqual([
+      { index: 0, name: 'Dextrose tardive', missingFields: ['potentialPpg'] },
+      { index: 1, name: 'Lactose à l’ébullition', missingFields: ['potentialPpg'] },
+      { index: 2, name: 'Maltodextrine', missingFields: ['fermentabilityPct'] },
+      { index: 3, name: 'Poire', missingFields: ['fermentabilityPct'] }
+    ]);
+  });
+
   it.each([0, .01])('garde la DI dérivée complète avec %s kg de malt et un kilo de sucre tardif', kg => {
     const sugar: Fermentable = { name: 'Saccharose', kind: 'sucre', use: 'fermentation', weightKg: 1, potentialPpg: 46, fermentabilityPct: 100, dayOffset: 4 };
     const recipe = base({ fermentables: [...(kg ? [malt(kg)] : []), sugar] });
@@ -354,14 +372,16 @@ describe('Procédé choisi, hypothèses conservées et application explicite', (
   it('le dossier personnel sert aussi aux effets, aux propositions et à l’application', () => {
     const reference = refs.find(y => y.id === 'fermentis-us05')!, catalogue = structuredClone(reference.catalogue);
     const r = base({ yeast: { name: reference.name, hopIndexId: reference.id, form: 'sèche', attenuationPct: 80, technicalFacts: [{ key: 'temperature', reported: '18–30 °C', range: { min: 18, max: 30 }, unit: '°C', qualifier: 'range', origin: 'personal', source: 'Mes essais R-12' }] } });
-    const draft = { ...createYeastRecipeDraft(r, refs), temperatureC: 28 }, preview = evaluateYeastRecipeDesign(r, draft, refs);
+    const draft = { ...createYeastRecipeDraft(r, refs), goalExplicit: true, temperatureC: 28 }, preview = evaluateYeastRecipeDesign(r, draft, refs);
     expect(preview.projection.dossier.temperature!.range).toEqual({ min: 18, max: 30 });
     expect(preview.effects.find(e => e.id === 'temperature')?.impact).toBe('28 °C · dans la fenêtre');
     expect(preview.errors).toEqual([]); expect(preview.warnings.join(' ')).not.toContain('hors de la');
     const applied = applyYeastRecipeDesign(r, draft, refs);
     expect(applied.fermentation![0].tempC).toBe(28); expect(applied.yeast.technicalFacts).toEqual(r.yeast.technicalFacts);
     expect(proposeYeastGoalSettings(r, { ...draft, goal: 'banana', temperatureC: undefined }, refs)?.patch.temperatureC).toBe(24);
-    expect(proposeYeastGoalSettings(r, { ...draft, goal: 'banana' }, refs)?.rationale).toBe('Aucun réglage de température documenté pour cet objectif. Consigne actuelle conservée : 28 °C.');
+    const noGoalEffect = proposeYeastGoalSettings(r, { ...draft, goal: 'banana' }, refs)!;
+    expect(noGoalEffect.patch).toEqual({});
+    expect(noGoalEffect.rationale).toBe('Aucun réglage de température plus précis n’est documenté pour cet objectif. Consigne actuelle conservée dans la plage : 28 °C.');
     const outside = evaluateYeastRecipeDesign(r, { ...draft, temperatureC: 31 }, refs);
     expect(outside.errors).toEqual([]); expect(outside.warnings.join(' ')).toContain('hors de la plage de conduite retenue (18–30 °C)');
     expect(reference.catalogue).toEqual(catalogue);
@@ -425,7 +445,9 @@ describe('Procédé choisi, hypothèses conservées et application explicite', (
     expect(yeastRecipeDesignChanged({ ...aligned, hops: r.hops }, readYeastRecipeDesign(aligned)!)).toBe(true);
   });
   it('un objectif sans relation thermique documentée explique la limite et ne déplace pas la consigne', () => {
-    const r = base(), d = { ...createYeastRecipeDraft(r, refs), goal: 'fruit' as const };
+    const reference = refs.find(row => row.id === 'fermentis-us05')!;
+    const r = base({ yeast: { name: reference.name, hopIndexId: reference.id, form: reference.form } });
+    const d = { ...createYeastRecipeDraft(r, refs), goal: 'fruit' as const, goalExplicit: true };
     const proposal = proposeYeastGoalSettings(r, d, refs)!;
     expect(proposal.patch).toEqual({}); expect(proposal.rationale).toContain('20 °C'); expect(proposal.source).toBeUndefined();
   });
@@ -441,5 +463,202 @@ describe('Procédé choisi, hypothèses conservées et application explicite', (
     expect(readYeastRecipeDesign({ ...r, yeastDesign: { ...s, applied: { ...s.applied, yeast: { ...s.applied.yeast, technicalFacts: [{ ...attenuation(80), range: { min: 90, max: 20 } }] } } } })).toBeUndefined();
     const reference = refs.find(y => y.id === 'lalbrew-verdant-ipa')!, old = applyYeastRecipeDesign(base(), createYeastRecipeDraft(base(), refs, undefined, reference.id), refs, 'strain');
     expect(readYeastRecipeDesign({ ...old, yeastDesign: { ...old.yeastDesign!, modelVersion: 'yeast-recipe-1' } })).toBeDefined();
+  });
+});
+
+describe('Lecture documentaire historique adoptée', () => {
+  it('garde la lecture historique 78 et l’hypothèse 73 séparées, sans fabriquer un fait ou une source pour 73', () => {
+    const yeast = { name: 'Culture A', hopIndexId: 'identity-a', attenuationPct: 73, attenuationBasis: 'recipe' as const,
+      technicalSource: 'DOC78_SOURCE_SENTINEL', adoptedDocumentary: { version: 1 as const, hopIndexId: 'identity-a',
+        documentary: { declaredAttenuationPct: 78, technicalSource: 'DOC78_SOURCE_SENTINEL' }, technicalFacts: [] } };
+    const before = structuredClone(yeast), view = readYeastDocumentaryView(yeast);
+    expect(view.status).toBe('adopted');
+    expect(view.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78, source: 'DOC78_SOURCE_SENTINEL' });
+    expect(view.technicalFacts).toEqual([]);
+    expect(yeast).toEqual(before);
+
+    const dossier = resolveYeastDossier(yeast);
+    expect(dossier.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78, source: 'DOC78_SOURCE_SENTINEL' });
+    expect(dossier.documentedAttenuation).toBeUndefined();
+    expect(dossier.facts.some(fact => fact.key === 'attenuation' || fact.source?.includes('DOC78_SOURCE_SENTINEL'))).toBe(false);
+    expect(dossier.attenuation).toMatchObject({ basis: 'recipe', range: { min: 73, max: 73 }, sources: [] });
+
+    const projected = projectYeastRecipe(base({ ogTarget: 1.06, yeast }));
+    const hypothesisOnly = projectYeastRecipe(base({ ogTarget: 1.06, yeast: { name: 'Culture A', attenuationPct: 73, attenuationBasis: 'recipe' } }));
+    expect(projected.fg).toEqual(hypothesisOnly.fg);
+    expect(projected.dossier.historicalScalarReading?.value).toBe(78);
+    expect(projected.attenuation?.range).toEqual({ min: 73, max: 73 });
+  });
+
+  it('montre le scalaire historique à côté de faits typés concordants ou divergents, sans le substituer', () => {
+    const factory = { ...attenuation(70, 75), source: 'FACTORY_SOURCE_SENTINEL' };
+    const yeast = { name: 'Culture A', hopIndexId: 'identity-a', attenuationPct: 78, attenuationBasis: 'declared' as const,
+      technicalSource: 'DOC78_SOURCE_SENTINEL', adoptedDocumentary: { version: 1 as const, hopIndexId: 'identity-a',
+        documentary: { declaredAttenuationPct: 78, technicalSource: 'DOC78_SOURCE_SENTINEL' }, technicalFacts: [factory] } };
+    const dossier = resolveYeastDossier(yeast);
+    expect(dossier.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78, source: 'DOC78_SOURCE_SENTINEL' });
+    expect(dossier.documentedAttenuation).toMatchObject({ qualifier: 'range', range: { min: 70, max: 75 } });
+    expect(dossier.attenuation).toMatchObject({ qualifier: 'range', range: { min: 70, max: 75 } });
+    expect(dossier.facts).toContainEqual(expect.objectContaining({ key: 'attenuation', source: 'FACTORY_SOURCE_SENTINEL' }));
+  });
+
+  it.each([
+    { documentary: { declaredAttenuationPct: null, technicalSource: null } },
+    { documentary: { declaredAttenuationPct: 78, technicalSource: 'DOC78_SOURCE_SENTINEL' }, technicalSelections: { attenuation: null } },
+  ])('fait respecter une inconnue documentaire explicite sans repli vers le vieux 78', adoptedDocumentary => {
+    const yeast = { name: 'Culture A', hopIndexId: 'identity-a', attenuationPct: 78, attenuationBasis: 'declared' as const,
+      technicalSource: 'DOC78_SOURCE_SENTINEL', adoptedDocumentary: { version: 1 as const, hopIndexId: 'identity-a', ...adoptedDocumentary } };
+    const dossier = resolveYeastDossier(yeast);
+    expect(dossier.historicalScalarReading).toBeUndefined();
+    expect(dossier.documentedAttenuation).toBeUndefined();
+    expect(dossier.attenuation).toBeUndefined();
+    const projection = projectYeastRecipe(base({ ogTarget: 1.06, yeast }));
+    expect(projection.fg.range).toBeNull();
+    expect(projection.fg.sources).not.toContainEqual(expect.objectContaining({ reference: 'DOC78_SOURCE_SENTINEL' }));
+  });
+
+  it('garde le calcul historique déclaré uniquement par compatibilité et sépare un ancien scalaire sans base comme hypothèse', () => {
+    const declared = { name: 'Culture A', attenuationPct: 78, attenuationBasis: 'declared' as const, technicalSource: 'DOC78_SOURCE_SENTINEL' };
+    const compatibility = projectYeastRecipe(base({ ogTarget: 1.06, yeast: declared }));
+    expect(compatibility.dossier.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78, source: 'DOC78_SOURCE_SENTINEL' });
+    expect(compatibility.dossier.documentedAttenuation).toBeUndefined();
+    expect(compatibility.dossier.attenuation).toBeUndefined();
+    expect(compatibility.attenuation).toBeUndefined();
+    expect(compatibility.fg.range).not.toBeNull();
+    expect(compatibility.fg.sources).toEqual([]);
+    expect(compatibility.warnings.join(' ')).toContain('compatibilité numérique');
+
+    const legacyHypothesis = resolveYeastDossier({ name: 'Culture A', attenuationPct: 78, technicalSource: 'DOC78_SOURCE_SENTINEL' });
+    expect(legacyHypothesis.historicalScalarReading).toBeUndefined();
+    expect(legacyHypothesis.attenuation).toMatchObject({ basis: 'recipe', range: { min: 78, max: 78 }, sources: [] });
+  });
+
+  it('ne fabrique pas de source sans chaîne connue et ignore une fiche adoptée liée à une autre identité', () => {
+    const withoutSource = { name: 'Culture A', hopIndexId: 'identity-a', attenuationPct: 78, attenuationBasis: 'declared' as const,
+      adoptedDocumentary: { version: 1 as const, hopIndexId: 'identity-a', documentary: { declaredAttenuationPct: 78 } } };
+    expect(readYeastDocumentaryView(withoutSource).historicalScalarReading)
+      .toEqual({ kind: 'historical-untyped', value: 78 });
+
+    const mismatch = { name: 'Culture A', hopIndexId: 'identity-a', attenuationPct: 73, attenuationBasis: 'recipe' as const,
+      adoptedDocumentary: { version: 1 as const, hopIndexId: 'identity-b',
+        documentary: { declaredAttenuationPct: 78, technicalSource: 'OTHER_ID_SOURCE' },
+        technicalFacts: [attenuation(70, 75)] } };
+    const view = readYeastDocumentaryView(mismatch), dossier = resolveYeastDossier(mismatch);
+    expect(view.status).toBe('invalid');
+    expect(view.effectiveYeast.attenuationPct).toBe(73);
+    expect(view.historicalScalarReading).toBeUndefined();
+    expect(dossier.warnings.join(' ')).toContain('invalide');
+    expect(dossier.facts.some(fact => fact.source?.includes('OTHER_ID_SOURCE'))).toBe(false);
+    expect(dossier.attenuation).toMatchObject({ basis: 'recipe', range: { min: 73, max: 73 }, sources: [] });
+  });
+});
+
+describe('Lecture documentaire locale', () => {
+  it('lit une saisie libre sans ID catalogue et garde son scalaire distinct de l’hypothèse', () => {
+    const localDocumentary = { version: 1 as const, documentary: { declaredAttenuationPct: 78, technicalSource: 'LOCAL_FREE_SOURCE' }, technicalFacts: [] };
+    const yeast = { name: 'Culture libre', attenuationPct: 73, attenuationBasis: 'recipe' as const, localDocumentary };
+    const before = structuredClone(yeast), view = readYeastDocumentaryView(yeast);
+    expect(view.status).toBe('local');
+    expect(view.scope).toBe('local');
+    expect(view.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78, source: 'LOCAL_FREE_SOURCE' });
+    expect(view.effectiveYeast.hopIndexId).toBeUndefined();
+    expect(yeast).toEqual(before);
+    const dossier = resolveYeastDossier(yeast);
+    expect(dossier.historicalScalarReading?.value).toBe(78);
+    expect(dossier.attenuation).toMatchObject({ basis: 'recipe', range: { min: 73, max: 73 }, sources: [] });
+    const projected = projectYeastRecipe(base({ ogTarget: 1.06, yeast }));
+    const hypothesisOnly = projectYeastRecipe(base({ ogTarget: 1.06, yeast: { name: 'Culture libre', attenuationPct: 73, attenuationBasis: 'recipe' } }));
+    expect(projected.fg).toEqual(hypothesisOnly.fg);
+    expect(yeast).toEqual(before);
+
+    const noSource = readYeastDocumentaryView({ name: 'Culture libre', localDocumentary: { version: 1, documentary: { declaredAttenuationPct: 78 } } });
+    expect(noSource.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78 });
+  });
+
+  it('lit la documentation locale du lot courant sans la changer en fiche catalogue', () => {
+    const localDocumentary = { version: 1 as const, documentary: { declaredAttenuationPct: 78, technicalSource: 'LOT_LOCAL_SOURCE' } };
+    const yeast = { name: 'Culture en stock', hopIndexId: 'catalogue-id-known', stockItemRef: 'LOT-A', attenuationPct: 73,
+      attenuationBasis: 'recipe' as const, localDocumentary };
+    const view = readYeastDocumentaryView(yeast);
+    expect(view.status).toBe('local');
+    expect(view.scope).toBe('local');
+    expect(view.historicalScalarReading).toEqual({ kind: 'historical-untyped', value: 78, source: 'LOT_LOCAL_SOURCE' });
+    expect(view.effectiveYeast).toMatchObject({ hopIndexId: 'catalogue-id-known', stockItemRef: 'LOT-A' });
+    expect(view.effectiveYeast.adoptedDocumentary).toBeUndefined();
+  });
+
+  it('respecte le null local explicite et signale deux enveloppes sans fusion', () => {
+    const localUnknown = { version: 1 as const, documentary: { declaredAttenuationPct: null, technicalSource: null },
+      technicalSelections: { attenuation: null } };
+    const unknown = { name: 'Culture libre', attenuationPct: 78, attenuationBasis: 'declared' as const,
+      technicalSource: 'OLD_COMPAT_SOURCE', localDocumentary: localUnknown };
+    const unknownView = readYeastDocumentaryView(unknown);
+    expect(unknownView.status).toBe('local');
+    expect(unknownView.historicalScalarReading).toBeUndefined();
+    expect(resolveYeastDossier(unknown).attenuation).toBeUndefined();
+
+    const adoptedDocumentary = { version: 1 as const, hopIndexId: 'catalogue-id-known',
+      documentary: { declaredAttenuationPct: 70, technicalSource: 'CATALOGUE_SOURCE' } };
+    const localDocumentary = { version: 1 as const, documentary: { declaredAttenuationPct: 78, technicalSource: 'LOCAL_SOURCE' } };
+    const conflict = { name: 'Culture libre', hopIndexId: 'catalogue-id-known', attenuationPct: 73, attenuationBasis: 'recipe' as const,
+      adoptedDocumentary, localDocumentary };
+    const conflictView = readYeastDocumentaryView(conflict), dossier = resolveYeastDossier(conflict);
+    expect(conflictView.status).toBe('invalid');
+    expect(conflictView.historicalScalarReading).toBeUndefined();
+    expect(conflictView.effectiveYeast).toMatchObject({ adoptedDocumentary, localDocumentary });
+    expect(dossier.warnings.join(' ')).toContain('invalide');
+    expect(dossier.facts.some(fact => fact.source === 'LOCAL_SOURCE' || fact.source === 'CATALOGUE_SOURCE')).toBe(false);
+  });
+});
+
+describe('Provenance d’une floculation scalaire ancienne', () => {
+  it('ne prête pas la source IA à un scalaire Low identique avant revue explicite', () => {
+    const fact: YeastTechnicalFact = { key: 'flocculation', reported: 'Low', origin: 'ai',
+      source: '3638 for Bavarian Wheat | Yeast & Cultures by Wyeast Labs',
+      sourceUrl: 'https://wyeastlab.com/3638-bavarian-wheat/', retrievedAt: '2026-09-27',
+      context: 'Floculation faible, levure poudreuse restant longtemps en suspension.' };
+    const recipe = base({ yeast: { name: 'Wyeast 3638', flocculation: 'Low', technicalSource: fact.source, technicalFacts: [fact] } });
+    const dossier = resolveYeastDossier(recipe.yeast);
+    expect(dossier.flocculation).toMatchObject({ value: { kind: 'category', value: 'Low' }, reported: 'Low' });
+    expect(dossier.flocculation.origin).toBeUndefined();
+    expect(dossier.flocculation.source).toBeUndefined();
+
+    const accepted = applyReviewedYeastFacts(recipe.yeast, { found: true, name: fact.source, source: fact.source,
+      sourceUrl: fact.sourceUrl, flocculation: 'Low', technicalFacts: [fact] }, [], {});
+    expect(accepted.technicalSelections?.flocculation).toMatchObject({ origin: 'ai', source: fact.source, sourceUrl: fact.sourceUrl });
+    expect(resolveYeastDossier(accepted).flocculation).toMatchObject({ value: { kind: 'category', value: 'Low' },
+      origin: 'ai', source: fact.source, sourceUrl: fact.sourceUrl });
+  });
+
+  it('garde Rapide sans source empruntée et Fast sedimentation time sans le convertir en High', () => {
+    const fact: YeastTechnicalFact = { key: 'flocculation', reported: 'Fast sedimentation time', origin: 'ai',
+      source: 'SafAle S-04 manufacturer sheet', sourceUrl: 'https://fermentis.com/en/product/safale-s-04/',
+      retrievedAt: '2026-09-27', context: 'Temps de sédimentation rapide' };
+    const recipe = base({ yeast: { name: 'SafAle S-04', flocculation: 'Rapide', technicalSource: fact.source, technicalFacts: [fact] } });
+    const dossier = resolveYeastDossier(recipe.yeast);
+    expect(dossier.flocculation).toMatchObject({ value: { kind: 'category', value: 'Rapide' }, reported: 'Rapide' });
+    expect(dossier.flocculation.value.kind === 'category' ? dossier.flocculation.value.value : undefined).toBe('Rapide');
+    expect(dossier.flocculation.origin).toBeUndefined();
+    expect(dossier.flocculation.source).toBeUndefined();
+    expect(dossier.facts).toContainEqual(expect.objectContaining({ key: 'flocculation', reported: 'Fast sedimentation time',
+      origin: 'ai', source: fact.source, sourceUrl: fact.sourceUrl, context: fact.context }));
+  });
+
+  it('garde le texte et le fait hors contexte sans fabriquer une attribution personnelle ou voisine', () => {
+    const unrelated: YeastTechnicalFact = { key: 'form', reported: 'Liquide', origin: 'ai',
+      source: 'NEIGHBOR_SOURCE', sourceUrl: 'https://example.org/temperature-sheet' };
+    const outside: YeastTechnicalFact = { key: 'flocculation', reported: 'Low', origin: 'ai',
+      source: 'Wyeast product sheet', sourceUrl: 'https://wyeastlab.com/3638-bavarian-wheat/',
+      context: 'Floculation du cidre' };
+    const recipe = base({ yeast: { name: 'Wyeast 3638', flocculation: 'Low', technicalSource: 'NEIGHBOR_SOURCE',
+      technicalFacts: [unrelated, outside] } });
+    const dossier = resolveYeastDossier(recipe.yeast);
+
+    expect(dossier.flocculation).toMatchObject({ value: { kind: 'category', value: 'Low' }, reported: 'Low' });
+    expect(dossier.flocculation.origin).toBeUndefined();
+    expect(dossier.flocculation.source).toBeUndefined();
+    expect(dossier.facts).toContainEqual(expect.objectContaining({ key: 'flocculation', reported: 'Low',
+      origin: 'ai', source: 'Wyeast product sheet', sourceUrl: outside.sourceUrl, context: 'Floculation du cidre' }));
+    expect(dossier.flocculation.source).not.toBe(unrelated.source);
   });
 });

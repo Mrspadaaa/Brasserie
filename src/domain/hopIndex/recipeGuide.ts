@@ -44,6 +44,33 @@ function identityText(text: string): string {
   return text.replace(/[®™℠]/gu, '').normalize('NFKC').toLocaleLowerCase('fr').replace(/\s+/gu, ' ').trim();
 }
 
+const identityNames = new WeakMap<RecipeGuideNamedItem, {
+  name: string; normalized: string; aliases: { name: string; normalized: string }[];
+}>();
+function indexedNames(item: RecipeGuideNamedItem) {
+  const previous = identityNames.get(item);
+  const aliases = item.aliases ?? [];
+  // Validate the name/aliases even for callers editing a catalogue in place.
+  // Documentary facts and archive status are still read from the current item.
+  if (previous?.name === item.name && previous.aliases.length === aliases.length &&
+    previous.aliases.every((alias, index) => alias.name === aliases[index])) return previous;
+  const result = { name: item.name, normalized: identityText(item.name),
+    aliases: aliases.map(name => ({ name, normalized: identityText(name) })) };
+  identityNames.set(item, result);
+  return result;
+}
+/** Optional idle preparation of the same exact-name index used for reading. */
+export function prepareRecipeIngredientNames(catalogue: readonly RecipeGuideNamedItem[], {
+  from = 0, canContinue = () => true,
+}: { from?: number; canContinue?: () => boolean } = {}) {
+  let next = from;
+  while (next < catalogue.length && canContinue()) {
+    const item = catalogue[next++];
+    if (!item.archived) indexedNames(item);
+  }
+  return next;
+}
+
 const decimal = '\\d+(?:[.,]\\d+)?';
 const amount = `${decimal}\\s*(?:kg|mg|g|oz|lb)`;
 const alphaLabel = '(?:aa|alpha(?:\\s+acids?)?|acides?\\s+alpha|α)';
@@ -80,9 +107,10 @@ function findIngredientMatches<T extends RecipeGuideNamedItem>(
   if (!normalizedName) return [];
   return catalogue.flatMap<RecipeIngredientMatch<T>>(item => {
     if (item.archived) return [];
-    if (identityText(item.name) === normalizedName) return [{ item, matchedName: item.name, via: 'name' as const, normalizedName }];
-    const alias = item.aliases?.find(candidate => identityText(candidate) === normalizedName);
-    return alias == null ? [] : [{ item, matchedName: alias, via: 'alias' as const, normalizedName }];
+    const names = indexedNames(item);
+    if (names.normalized === normalizedName) return [{ item, matchedName: item.name, via: 'name' as const, normalizedName }];
+    const alias = names.aliases.find(candidate => candidate.normalized === normalizedName);
+    return alias == null ? [] : [{ item, matchedName: alias.name, via: 'alias' as const, normalizedName }];
   });
 }
 

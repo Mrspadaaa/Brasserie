@@ -1,6 +1,6 @@
-import { Batch, StockItem } from '../types';
+import { Batch, Recipe, StockItem } from '../types';
 import { Units } from '../services/units';
-import { ingredientsOf } from './recipeSnapshot';
+import { ingredientsOf, normalizeRecipe } from './recipeSnapshot';
 
 /**
  * Niveau de stock exprimé en COUVERTURE DE BRASSINS.
@@ -118,6 +118,180 @@ export function pendingStockQuantity(item: StockItem, batch: Batch): number {
     .reduce((sum, line) => sum + (Units.convert(line.quantity, line.unit, item.unit) ?? 0), 0);
 }
 
+export interface PendingStockSummary {
+  /** Total des lignes convertibles dans l'unité de l'article. */
+  knownQuantity: number;
+  /** Toute ligne incompatible ou invalide rend le total inconnu, pas nul. */
+  unknownLines: number;
+  known: boolean;
+}
+
+/** Ajouts restants explicitement réservés par les brassins actifs. */
+export function pendingStockSummary(item: StockItem, batches: Batch[]): PendingStockSummary {
+  let knownQuantity = 0;
+  let unknownLines = 0;
+  for (const batch of batches) {
+    if (batch.status === 'annule' || batch.status === 'termine') continue;
+    for (const line of batch.stockConsumption?.pendingItems ?? []) {
+      if (line.stockItemRef !== item.ref) continue;
+      const converted = Number.isFinite(line.quantity) && line.quantity >= 0
+        ? Units.convert(line.quantity, line.unit, item.unit)
+        : null;
+      if (converted === null || !Number.isFinite(converted)) unknownLines++;
+      else knownQuantity += converted;
+    }
+  }
+  return { knownQuantity, unknownLines, known: unknownLines === 0 };
+}
+
+export interface RecipeStockComparison {
+  key: string;
+  label: string;
+  ingredientNames: string[];
+  stockItem: StockItem | null;
+  match: 'linked' | 'not-found' | 'ambiguous';
+  /** In the article's unit when linked; otherwise in the recipe ingredient's unit. */
+  quantity: number | null;
+  unit: string | null;
+  sourceQuantities: Array<{ quantity: number | null; unit: string | null }>;
+  physical: number | null;
+  reserved: number | null;
+  available: number | null;
+  shortage: number | null;
+  issue?: string;
+  availabilityIssue?: string;
+}
+
+interface RecipeNeedLine {
+  name: string;
+  stockItemRef?: string;
+  quantity: number | null;
+  unit: string | null;
+}
+
+function recipeStockItem(
+  line: RecipeNeedLine,
+  stockItems: StockItem[]
+): { stockItem: StockItem; match: 'linked' } | { stockItem: null; match: 'not-found' | 'ambiguous' } {
+  if (line.stockItemRef) {
+    const stockItem = stockItems.find(item => item.ref === line.stockItemRef);
+    return stockItem ? { stockItem, match: 'linked' as const } : { stockItem: null, match: 'not-found' as const };
+  }
+  const matches = stockItems.filter(item => item.name.trim().toLowerCase() === line.name.trim().toLowerCase());
+  if (matches.length === 1) return { stockItem: matches[0], match: 'linked' as const };
+  return { stockItem: null, match: matches.length ? 'ambiguous' as const : 'not-found' as const };
+}
+
+/**
+ * Compare une recette enregistrée à l'inventaire. Seuls les pendingItems sont
+ * encore réservés physiquement ; les consommations sont déjà reflétées dans
+ * currentStock. Les brassins planifiés et les commandes ne sont pas réservés.
+ */
+export function compareRecipeWithStock(
+  recipe: Recipe,
+  batches: Batch[],
+  stockItems: StockItem[]
+): RecipeStockComparison[] {
+  const normalized = normalizeRecipe(recipe);
+  const needs: RecipeNeedLine[] = [
+    ...(normalized.fermentables ?? []).map(line => ({ name: line.name, stockItemRef: line.stockItemRef, quantity: line.weightKg, unit: 'kg' })),
+    ...(normalized.hops ?? []).map(line => ({ name: line.name, stockItemRef: line.stockItemRef, quantity: line.weightG, unit: 'g' })),
+    ...(normalized.adjuncts ?? []).map(line => ({ name: line.name, stockItemRef: line.stockItemRef, quantity: line.amount, unit: line.unit || null })),
+    ...(normalized.yeast?.name?.trim() ? [{
+      name: normalized.yeast.name,
+      stockItemRef: normalized.yeast.stockItemRef,
+      quantity: normalized.yeast.qty ?? null,
+      // The catalogue deliberately allows an unknown yeast package unit.
+      unit: normalized.yeast.unit?.trim() || null
+    }] : [])
+  ];
+
+  const linked = new Map<string, { item: StockItem; lines: RecipeNeedLine[] }>();
+  const unmatched: Array<{ line: RecipeNeedLine; match: 'not-found' | 'ambiguous'; index: number }> = [];
+  needs.forEach((line, index) => {
+    const resolved = recipeStockItem(line, stockItems);
+    if (resolved.match !== 'linked') {
+      unmatched.push({ line, match: resolved.match, index });
+      return;
+    }
+    const group = linked.get(resolved.stockItem.ref) ?? { item: resolved.stockItem, lines: [] };
+    group.lines.push(line);
+    linked.set(resolved.stockItem.ref, group);
+  });
+
+  const linkedRows = [...linked.values()].map(({ item, lines }): RecipeStockComparison => {
+    let quantity = 0;
+    let issue: string | undefined;
+    for (const line of lines) {
+      if (line.quantity === null || !Number.isFinite(line.quantity) || line.quantity < 0) {
+        issue ??= `Quantité de « ${line.name} » non renseignée ou invalide.`;
+        continue;
+      }
+      if (!line.unit) {
+        issue ??= `Unité de « ${line.name} » non renseignée.`;
+        continue;
+      }
+      const converted = Units.convert(line.quantity, line.unit, item.unit);
+      if (converted === null || !Number.isFinite(converted)) {
+        issue ??= `Unité incompatible : ${line.unit} vers ${item.unit}.`;
+        continue;
+      }
+      quantity += converted;
+    }
+    const required = issue ? null : quantity;
+    const physical = Number.isFinite(item.currentStock) && item.currentStock >= 0 ? item.currentStock : null;
+    const reservation = pendingStockSummary(item, batches);
+    const reserved = reservation.known ? reservation.knownQuantity : null;
+    const available = physical !== null && reserved !== null ? Math.max(0, physical - reserved) : null;
+    const availabilityIssue = physical === null
+      ? 'Stock physique non renseigné ou invalide.'
+      : !reservation.known
+        ? 'Réservation inconnue : une unité ne peut pas être convertie en unité de stock.'
+        : reserved !== null && reserved > physical
+          ? `Réservations supérieures au stock physique de ${Units.format(reserved - physical, item.unit)}.`
+          : undefined;
+    const shortage = required !== null && available !== null ? Math.max(0, required - available) : null;
+    return {
+      key: `stock:${item.ref}`,
+      label: item.name,
+      ingredientNames: [...new Set(lines.map(line => line.name))],
+      stockItem: item,
+      match: 'linked',
+      quantity: required,
+      unit: item.unit,
+      sourceQuantities: lines.map(line => ({ quantity: line.quantity, unit: line.unit })),
+      physical,
+      reserved,
+      available,
+      shortage,
+      issue,
+      availabilityIssue
+    };
+  });
+
+  const unmatchedRows = unmatched.map(({ line, match, index }): RecipeStockComparison => ({
+    key: `ingredient:${index}:${line.name}`,
+    label: line.name,
+    ingredientNames: [line.name],
+    stockItem: null,
+    match,
+    quantity: line.quantity !== null && Number.isFinite(line.quantity) && line.quantity >= 0 ? line.quantity : null,
+    unit: line.unit,
+    sourceQuantities: [{ quantity: line.quantity, unit: line.unit }],
+    physical: null,
+    reserved: null,
+    available: null,
+    shortage: null,
+    issue: match === 'ambiguous'
+      ? 'Plusieurs articles ont ce nom : stock inconnu sans référence explicite.'
+      : line.stockItemRef
+        ? 'La référence liée à la recette est absente du stock.'
+        : 'Aucun article correspondant dans le stock.'
+  }));
+
+  return [...linkedRows, ...unmatchedRows];
+}
+
 function outstandingInBatch(item: StockItem, batch: Batch, stockItems?: StockItem[]): number {
   if (batch.stockConsumption?.appliedAt) return pendingStockQuantity(item, batch);
   return batch.status === 'planifie' ? usageInBatch(item, batch, stockItems) : 0;
@@ -157,8 +331,25 @@ function perBatchNeed(
 }
 
 export function computeStockLevel(item: StockItem, batches: Batch[], stockItems?: StockItem[]): StockLevel {
-  const stock = Math.max(0, (item.currentStock ?? 0) - batches.reduce((sum, b) => sum + pendingStockQuantity(item, b), 0));
+  const physical = Number.isFinite(item.currentStock) && item.currentStock >= 0 ? item.currentStock : null;
+  const reservations = pendingStockSummary(item, batches);
+  const stock = physical !== null && reservations.known
+    ? Math.max(0, physical - reservations.knownQuantity)
+    : null;
   const { need, source } = perBatchNeed(item, batches, stockItems);
+
+  // An incompatible reservation makes free stock unknowable, not zero.
+  if (stock === null) {
+    return {
+      band: 'inconnu',
+      coverage: null,
+      perBatch: null,
+      source: 'aucune',
+      label: BAND_LABEL.inconnu,
+      fillPercent: 0,
+      tone: 'muted'
+    };
+  }
 
   // Rien pour estimer : on le dit, plutôt que de simuler une jauge pleine.
   if (need <= 0) {

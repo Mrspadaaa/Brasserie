@@ -31,6 +31,12 @@ const doser = () => click('Proposer les doses');
 const graph = () => screen.getByRole('img', { name: /Profil ionique/ });
 const zones = () => Array.from(graph().querySelectorAll('[data-ion-target]')).map(e => e.getAttribute('d'));
 const readPh = () => Number(screen.getByText(/^pH estimé — cible/).parentElement!.textContent!.match(/(\d[.,]\d{2})\s*±/)![1].replace(',', '.'));
+const readTrialPh = () => {
+  const text = screen.getByLabelText('Conséquences du réglage de Acide empâtage').textContent ?? '';
+  const values = text.match(/pH estimé : (\d[.,]\d+) → (\d[.,]\d+)/);
+  if (!values) throw new Error(`Impact pH non trouvé : ${text}`);
+  return [Number(values![1].replace(',', '.')), Number(values![2].replace(',', '.'))] as const;
+};
 function acid(amount: string) {
   const field = screen.getByRole('textbox', { name: /Dose d’acide.*à l’empâtage/ });
   fireEvent.change(field, { target: { value: amount } });
@@ -45,6 +51,7 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     expect(screen.getByText(/sels alcalins écartés/)).toBeInTheDocument();
     expect(screen.getByText(/Profil non atteint/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('switch', { name: 'Bicarbonate de soude — écarté' }));
+    expect(state().disabled).not.toContain('nahco3');
     doser();
     expect(state().doses.nahco3).toBeGreaterThan(0);
     expect(screen.queryByText(/sels alcalins écartés/)).not.toBeInTheDocument();
@@ -80,31 +87,42 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     expect(zones()).toEqual(before);
   });
 
-  it('an Epsom addition shows magnesium immediately and removes the zero-magnesium explanation', () => {
-    mount();
+  it('records magnesium in the visible draft without a stale zero-magnesium note', () => {
+    const state = mount();
     expect(screen.getByText(/Mg : 0 ppm dans l’eau/)).toBeInTheDocument();
     const before = zones();
     click('Ajouter 0,5 g de Sel d’Epsom');
     expect(graph()).toHaveAccessibleName(/Magnésium[^)]*\) 1 ppm/);
     expect(screen.queryByText(/Mg : 0 ppm dans l’eau/)).not.toBeInTheDocument();
+    expect(state().doses.epsom).toBe(0.5);
+    expect(screen.queryByText(/Mg : 0 ppm dans l’eau/)).not.toBeInTheDocument();
     expect(zones()).toEqual(before);
   });
 
   it.each(['lactique', 'phosphorique'] as const)('%s: pH feedback must continue below zero bicarbonate when more acid is entered', (acidId) => {
-    mount({ acidId });
+    const state = mount({ acidId });
     // Both doses exceed the initial bicarbonate capacity. The graph must not
-    // invent negative HCO3; the pH estimate must still account for more acid.
+    // invent negative HCO3; the local pH impact must still account for more acid.
+    const initial = readPh();
     acid('6');
     expect(graph()).toHaveAccessibleName(/Alcalinité[^)]*\) 0 ppm/);
-    const before = readPh();
+    const atSix = readTrialPh();
+    expect(atSix[0]).toBeCloseTo(initial, 2);
+    expect(atSix[1]).toBeLessThan(initial);
+    expect(state().acidOverride?.mash).toBe(6);
+    expect(readPh()).toBeCloseTo(atSix[1], 2);
     acid('15');
-    expect(readPh()).toBeLessThan(before);
-    expect(readPh()).toBeLessThan(5.2);
+    const atFifteen = readTrialPh();
+    expect(atFifteen[0]).toBeCloseTo(atSix[1], 2);
+    expect(atFifteen[1]).toBeLessThan(atFifteen[0]);
+    expect(atFifteen[1]).toBeLessThan(5.2);
+    expect(state().acidOverride?.mash).toBe(15);
+    expect(readPh()).toBeCloseTo(atFifteen[1], 2);
     expect(screen.getByText(/^pH estimé — cible/).parentElement!.querySelector('.text-ebc-amber')).not.toBeNull();
     doser();
     expect(screen.getByRole('textbox', { name: /Dose d’acide.*à l’empâtage/ })).toHaveValue('15');
     click('Revenir aux doses d’acide calculées');
-    expect(readPh()).toBeGreaterThan(before);
+    expect(readPh()).toBeGreaterThan(atFifteen[1]);
     // Resetting an acid override preserves weighed salts. Automatic acid must
     // respect HCO3, even when the separate grist pH estimate is above its band.
     expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();

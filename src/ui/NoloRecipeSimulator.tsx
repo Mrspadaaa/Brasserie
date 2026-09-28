@@ -8,6 +8,8 @@ import type { TrialRecipe } from '../domain/hopIndex/trials';
 import { evaluateNoloRecipe } from '../domain/nolo';
 import { noloProcessLabels } from '../domain/noloPresentation';
 import { noloYeastCandidates } from '../domain/noloYeastSelection';
+import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
+import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { prepareNoloRecipe, adjustNoloRecipe, applyNoloRecipeProposal, noloRecipeProposalBasis,
   type NoloRecipeSettings, type NoloRecipeProposal } from '../domain/noloRecipeSolver';
 import { Input } from './Input';
@@ -104,6 +106,23 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
   }, [sourceRecipe, science, selected, process, target]);
   const proposal = edited ?? prepared.proposal;
   const stale = proposal != null && proposal.basis !== recipeInputsKey;
+  const proposedWater = (() => {
+    const next = proposal?.recipe;
+    const plan = next?.waterPlan;
+    if (!next || !plan || next.nolo?.process === 'secondRunnings') return null;
+    const grainKg = next.fermentables.filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage')
+      .reduce((sum, f) => sum + f.weightKg, 0);
+    const ratio = grainKg > 0 ? plan.mashWaterL / grainKg : null;
+    const fit = next.brewhouse?.equipment && ratio !== null && next.nolo?.process !== 'coldExtraction'
+      ? BrewingMath.waterVolumes(grainKg, next.volumeL, next.brewhouse, next.mash?.spargeType,
+          next.boilMin, kettleHopGrams(next.hops), {
+            manualWaterSplit: { mashWaterL: plan.mashWaterL, spargeWaterL: plan.spargeWaterL }
+          }) : null;
+    return { mashL: plan.mashWaterL, spargeL: plan.spargeWaterL, ratio, fit,
+      modelIssue: ratio !== null ? noloWaterModelIssue(next.nolo, ratio) : undefined,
+      acidPlanned: !!plan.acid };
+  })();
+  const waterBlocked = proposedWater?.fit?.planningStatus === 'invalid' || proposedWater?.fit?.planningStatus === 'impossible';
   const current = useMemo(() => { try { return evaluateNoloRecipe(sourceRecipe, saved)?.projection ?? null; } catch { return null; } }, [sourceRecipe, saved]);
   const choose = () => { setEdited(null); setError(''); setNotice(''); };
   const adjust = (patch: Partial<NoloRecipeSettings>) => {
@@ -112,7 +131,7 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
     catch (cause) { setError(cause instanceof Error ? cause.message : 'Vérifier ce réglage.'); }
   };
   const apply = () => {
-    if (!proposal || stale || invalidFields.length) return;
+    if (!proposal || stale || invalidFields.length || waterBlocked) return;
     try {
       const next = applyNoloRecipeProposal(recipe, { ...proposal, basis: noloRecipeProposalBasis(recipe),
         sourceRecipe: recipe, recipe: { ...proposal.recipe, name: recipe.name } });
@@ -161,9 +180,18 @@ export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKn
         {process === 'secondRunnings' && <Setting label="Volume de récupération visé" value={s.recoveredVolumeL} unit="L" max={100000} onChange={recoveredVolumeL => adjust({ recoveredVolumeL })}/>}
       </div>
       <p className="nolo-solver-confidence"><strong>Plage de simulation</strong> · {proposal.confidence.level === 'documented' ? 'atténuation publiée, extrait à confirmer par un pilote.' : 'atténuation et extrait à calibrer sur un pilote.'}</p>
+      {proposedWater && <div role="region" aria-label="Eau proposée pour le scénario NOLO" className="rounded-control border border-cave-700 bg-cave-850/70 px-2 py-1.5 text-xs text-cave-200 space-y-0.5">
+        <p><strong className="text-cave-50">Eau proposée</strong> · Empâtage <span className="reading">{number(proposedWater.mashL, 1)} L</span> + rinçage <span className="reading">{number(proposedWater.spargeL, 1)} L</span>
+          {proposedWater.fit?.spargeHotL != null && <> · {number(proposedWater.fit.spargeHotL, 1)} L à chaud</>}</p>
+        {proposedWater.ratio !== null && <p>Ratio atteint <strong className="reading text-cave-50">{number(proposedWater.ratio)} L/kg</strong>{Math.abs(proposedWater.ratio - s.mashRatioLKg) > 0.05 && <> · consigne {number(s.mashRatioLKg)} L/kg adaptée par le matériel</>}.</p>}
+        {proposedWater.modelIssue && <p className="text-ebc-amber">{proposedWater.modelIssue} {proposedWater.acidPlanned ? 'Vérifier la dose d’acide retenue par mesure.' : 'Aucune dose d’acide calculée ; mesurer ou titrer avant de doser.'}</p>}
+        {!proposedWater.fit && !proposal.recipe.brewhouse?.equipment && <p className="text-ebc-amber">Matériel non figé : vérifier la capacité de cette répartition avant le brassin.</p>}
+        {waterBlocked && <p role="alert" className="text-alert-strong">Plan d’eau incompatible avec le matériel : {proposedWater.fit!.issues.join(' ')}</p>}
+        {proposedWater.fit?.planningStatus === 'exception' && <p className="text-ebc-amber">{proposedWater.fit.issues.join(' ')}</p>}
+      </div>}
       {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{message}</li>)}</ul>}
       <div className="nolo-solver-actions">
-        <button type="button" className="nolo-solver-apply" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
+        <button type="button" className="nolo-solver-apply" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
         <button type="button" className="nolo-solver-reset" onClick={() => { choose(); setResetKey(key => key + 1); }} title="Revenir aux réglages préremplis depuis la recette et la consigne"><RotateCcw size={13} aria-hidden="true"/>Réinitialiser</button>
       </div>
       <details className="nolo-solver-details"><summary>Programme prérempli · {number(s.yeastQty)} {s.yeastUnit} · {number(s.fermentationDays)} j</summary>

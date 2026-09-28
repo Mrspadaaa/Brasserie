@@ -19,7 +19,7 @@ function brew(id = 'wyeast-3068', style = 'Hefeweizen') {
   });
 }
 function adopted(r = brew(), patch: Partial<YeastRecipeDraft> = {}) {
-  return applyYeastRecipeDesign(r, { ...createYeastRecipeDraft(r, refs), ...patch }, refs);
+  return applyYeastRecipeDesign(r, { ...createYeastRecipeDraft(r, refs), ...patch, goalExplicit: patch.goalExplicit ?? true }, refs);
 }
 function personal(id: string): HopYeast {
   const { aliases: _aliases, ...saved } = structuredClone(reference(id));
@@ -34,6 +34,15 @@ function deepFreeze<T>(item: T): T {
 }
 
 describe('Contexte levure : intention adoptée et recette actuelle', () => {
+  it('ne transforme pas l’objectif de tri par défaut en intention adoptée', () => {
+    const current = brew();
+    const saved = applyYeastRecipeDesign(current, createYeastRecipeDraft(current, refs), refs);
+    const data = buildYeastCompanion(saved);
+    expect(saved.yeastDesign?.goalExplicit).toBe(false);
+    expect(data.adoptedIntent).toBeNull();
+    expect(data.analysis?.goalOrigin).toBe('style-default');
+    expect(yeastCompanionSummary(saved).join(' ')).toContain('Intention adoptée : non renseignée');
+  });
   it('accepte la demande Soufre en retrait et relit cette intention Lager sans la confondre avec une prévision', () => {
     const r = brew('lalbrew-diamond', 'Lager'), before = structuredClone(r);
     const requested = buildYeastCompanion(r, [], { goal: 'low-sulfur' });
@@ -138,7 +147,7 @@ describe('Contexte levure : intention adoptée et recette actuelle', () => {
     expect(data.adoptedIntent?.applicable).toBe(false);
   });
 
-  it('ne reconstitue pas une version inconnue ou un objectif enregistré incompatible', () => {
+  it('ne reconstitue pas une version inconnue et signale un objectif hors des repères de famille sans l’effacer', () => {
     const invalid = adopted();
     (invalid.yeastDesign as any).modelVersion = 'yeast-recipe-future';
     const unreadable = buildYeastCompanion(invalid);
@@ -147,9 +156,25 @@ describe('Contexte levure : intention adoptée et recette actuelle', () => {
     expect(unreadable.missingData.some(m => m.id === 'yeastDesign')).toBe(true);
     const incompatible = adopted(brew(), { styleId: 'lager', goal: 'banana' });
     const data = buildYeastCompanion(incompatible);
-    expect(data.adoptedIntent?.applicable).toBe(false);
-    expect(data.analysis?.goal).toBe('clean');
-    expect(data.missingData.some(m => m.id === 'yeastDesign.goal')).toBe(true);
+    expect(data.adoptedIntent?.applicable).toBe(true);
+    expect(data.analysis?.goal).toBe('banana');
+    expect(data.missingData.some(m => m.id === 'yeastDesign.goalContext')).toBe(true);
+  });
+
+  it('transporte les bornes strictes dans le compagnon et ne les emploie pas comme plages de conduite ou taux', () => {
+    const custom = personal('wyeast-3068');
+    const temperature = custom.catalogue!.facts.find(fact => fact.key === 'temperature')!;
+    const attenuation = custom.catalogue!.facts.find(fact => fact.key === 'attenuation')!;
+    custom.catalogue!.facts = custom.catalogue!.facts.filter(fact => !['temperature', 'attenuation'].includes(fact.key));
+    custom.catalogue!.facts.push(
+      { ...temperature, reported: '>20 °C', range: { min: 20, max: 20 }, qualifier: 'greaterThan' },
+      { ...attenuation, reported: '<80 %', range: { min: 80, max: 80 }, qualifier: 'lessThan' }
+    );
+    const data = buildYeastCompanion(brew(), [custom]);
+    expect(data.analysis?.candidate?.temperatureC).toMatchObject({ qualifier: 'greaterThan', range: { min: 20, max: 20 }, source: temperature.source });
+    expect(data.analysis?.candidate?.attenuationPct).toMatchObject({ qualifier: 'lessThan', range: { min: 80, max: 80 }, source: attenuation.source });
+    expect(data.analysis?.finalGravity.range).toBeNull();
+    expect(data.analysis?.abv.range).toBeNull();
   });
 });
 
@@ -174,12 +199,13 @@ describe('Outil de conseil : demande explicite, famille et propositions sourcée
     expect(r).toEqual(before);
   });
 
-  it('refuse banana pour une Lager tout en donnant ses alternatives de Lager', () => {
+  it('accepte banana comme souhait explicite pour une Lager sans le transformer en aptitude documentée', () => {
     const r = brew('lalbrew-diamond', 'German Pils');
     r.fermentation![0].tempC = 12; r.yeast.pitchTempC = 12;
     const data = buildYeastCompanion(r, [], { goal: 'banana' });
-    expect(data.request.goal.status).toBe('rejected');
-    expect(data.analysis).toMatchObject({ goal: 'clean', goalOrigin: 'style-default', scenario: false });
+    expect(data.request.goal.status).toBe('accepted');
+    expect(data.analysis).toMatchObject({ goal: 'banana', goalOrigin: 'explicit-request', scenario: true });
+    expect(data.analysis?.effects.some(effect => /banane.*garanti/i.test(effect.impact))).toBe(false);
     expect(data.alternatives).toHaveLength(5);
     expect(data.alternatives.every(a => a.styleEvidence.some(e => e.styleId === 'lager'))).toBe(true);
     expect(data.alternativeCount).toBeGreaterThan(6); expect(data.alternativesLimited).toBe(true);
@@ -225,12 +251,14 @@ describe('Outil de conseil : demande explicite, famille et propositions sourcée
     expect(data.analysis?.finalGravity.range).toBeNull();
   });
 
-  it('demande une famille pour un style inconnu au lieu d’énumérer tout le catalogue', () => {
-    const data = buildYeastCompanion(brew('wyeast-3068', 'Bière de blé maison'), [], { goal: 'banana', yeastId: 'white-labs-wlp300' });
+  it('examine un souhait et une souche explicites pour un style personnel sans énumérer ni valider tout le catalogue', () => {
+    const data = buildYeastCompanion(brew('wyeast-3068', 'Seigle maison'), [], { goal: 'banana', yeastId: 'white-labs-wlp300' });
     expect(data.style.comparisonFamily).toBe('unknown');
-    expect(data.request.goal.status).toBe('rejected');
-    expect(data.request.yeastId.status).toBe('rejected');
-    expect(data.analysis?.goal).toBeNull();
+    expect(data.request.goal.status).toBe('accepted');
+    expect(data.request.yeastId.status).toBe('accepted');
+    expect(data.request.yeastId.reason).toContain('usage pour cette recette non établi');
+    expect(data.analysis?.goal).toBe('banana');
+    expect(data.analysis?.candidate?.styleMatch).not.toBe('documented');
     expect(data.analysis?.proposedSettings).toBeNull();
     expect(data.alternatives).toEqual([]);
   });
@@ -270,7 +298,7 @@ describe('Connaissances personnelles, inconnues et limites de calcul', () => {
     expect(() => assertHopKnowledge(saved)).not.toThrow();
     const data = buildYeastCompanion(brew(), [saved]);
     expect(data.current?.yeast.referenceName).toBe('3068 du lot cave');
-    expect(data.analysis?.candidate?.temperatureC).toEqual({ range: { min: 19, max: 22 }, source });
+    expect(data.analysis?.candidate?.temperatureC).toMatchObject({ range: { min: 19, max: 22 }, qualifier: 'range', source, sources: [source] });
     expect(data.analysis?.candidate?.attenuationPct?.range).toEqual({ min: 70, max: 72 });
     expect(data.analysis?.finalGravity.range?.min).toBeCloseTo(1.014, 10);
     expect(data.sources).toContainEqual(source);
@@ -282,10 +310,12 @@ describe('Connaissances personnelles, inconnues et limites de calcul', () => {
     const fact = saved.catalogue!.facts.find(f => f.key === 'temperature')!;
     saved.catalogue!.facts.push({ ...fact, range: { min: 19, max: 22 }, reported: '19–22 °C', source: { ...fact.source, reference: 'Fiche personnelle contradictoire' } });
     const data = buildYeastCompanion(brew(), [saved], { goal: 'banana' });
+    expect(data.analysis).toMatchObject({ goal: 'banana', goalOrigin: 'explicit-request', scenario: true });
+    expect(data.current?.fermentation[0].tempC).toBe(20);
     expect(data.analysis?.candidate?.temperatureC).toBeNull();
     expect(data.analysis?.candidate?.observations.filter(f => f.key === 'temperature').map(f => f.range)).toEqual([{ min: 18, max: 24 }, { min: 19, max: 22 }]);
     expect(data.analysis?.proposedSettings?.patch).toEqual({});
-    expect(data.analysis?.proposedSettings?.rationale).toContain('Consigne actuelle conservée');
+    expect(data.analysis?.proposedSettings?.rationale).toContain('plage de conduite documentée est absente ou contradictoire');
     expect(data.analysis?.warnings.join(' ')).toContain('non concordantes');
     expect(data.sources.some(s => s.reference === 'Fiche personnelle contradictoire')).toBe(true);
   });
@@ -329,12 +359,13 @@ describe('Connaissances personnelles, inconnues et limites de calcul', () => {
       { name: 'Ajout prévu', kind: 'ajout', tempC: 20, days: 0 },
       { name: 'Garde froide', kind: 'garde', tempC: 0, days: 5 }
     ] as any;
-    const data = buildYeastCompanion(r);
+    const data = buildYeastCompanion(r, [], { goal: 'banana' });
     expect(data.current?.fermentation[0]).toMatchObject({ tempC: null, days: null });
     expect(data.current?.fermentation[1].days).toBe(0);
     expect(data.current?.fermentation[2].tempC).toBe(0);
     expect(data.missingData.map(m => m.id)).toEqual(expect.arrayContaining(['fermentation.0.temperature', 'fermentation.0.days']));
     expect(data.missingData.some(m => m.id === 'fermentation.1.days')).toBe(false);
+    expect(data.analysis?.goalOrigin).toBe('explicit-request');
     expect(data.analysis?.proposedSettings?.source.kind).toBe('judgment');
     expect(r.fermentation[0].days).toBeUndefined();
   });

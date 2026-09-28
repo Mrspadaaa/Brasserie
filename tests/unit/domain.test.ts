@@ -178,6 +178,8 @@ describe('Moment des houblons', () => {
     expect(describeMoment({ name: 'A', alpha: 8, weightG: 1, stage: 'boil', timeMin: 0 })).toBe('flameout');
     expect(describeMoment({ name: 'A', alpha: 8, weightG: 1, stage: 'firstWort' })).toMatch(/avant/);
     expect(describeMoment({ name: 'A', alpha: 8, weightG: 1, stage: 'dryHop', dayOffset: 3 })).toBe('J+3');
+    expect(describeMoment({ name: 'A', alpha: 8, weightG: 1, stage: 'dryHop', dayOffset: 0 })).toBe('J0 · début prévu');
+    expect(describeMoment({ name: 'A', alpha: 8, weightG: 1, stage: 'dryHop' })).toBe('jour à préciser');
     expect(
       describeMoment({ name: 'A', alpha: 8, weightG: 1, stage: 'whirlpool', timeMin: 20, tempC: 80 })
     ).toContain('80');

@@ -23,6 +23,9 @@ const rangeText = (range?: HopRange | null, digits = 1) => range && numeric(rang
   ? `${format(range.min, digits)}${range.min === range.max ? '' : `–${format(range.max, digits)}`}` : 'À préciser';
 const finishLabels = { unspecified: 'Sans préférence', dry: 'Sèche', round: 'Ronde / douce', sweet: 'Sucrée' };
 const targetSummary = (target?: YeastBeerTarget) => [target?.label, target?.finish && target.finish !== 'unspecified' ? finishLabels[target.finish] : '', target?.accent === 'chocolate' ? 'Chocolat' : '', target?.sparkling ? 'Effervescente' : ''].filter(Boolean).join(' · ');
+/** Short reading of a saved target for folded summaries and draft differences; empty when nothing is set. */
+export const yeastBeerTargetSummary = (target?: YeastBeerTarget) => [targetSummary(target),
+  target?.abv ? `${rangeText(target.abv)} % vol` : '', target?.ibu ? `${rangeText(target.ibu)} IBU à chaud` : ''].filter(Boolean).join(' · ');
 
 /** Keep calculated precision, but do not cram a solver's decimal expansion into a phone field. */
 function PercentInput({ value, label, invalid, onValue }: { value?: number; label: string; invalid: boolean; onValue: (n?: number) => void }) {
@@ -37,13 +40,6 @@ function PercentInput({ value, label, invalid, onValue }: { value?: number; labe
     onFocus={e => { const input = e.currentTarget; setFocused(true); requestAnimationFrame(() => input.select()); }}
     onChange={e => push(e.target.value)} onBlur={() => { settle(); setFocused(false); }} />;
 }
-
-/** The examples record intent only. They do not assign an alcohol/IBU threshold to a taste word. */
-const examples: Record<string, YeastBeerTarget> = {
-  champagne: { label: 'Bière de Champagne assez sucrée', finish: 'sweet', sparkling: true },
-  stout: { label: 'Stout très amère et chocolatée', accent: 'chocolate' },
-  session: { label: 'Session NEIPA douce, peu amère, très légère', finish: 'round' },
-};
 
 /** One real common numeric axis. The target is an intention, the bars conditional estimates. */
 function TargetRange({ label, unit, current, variant, target, showVariant, invalidVariant }: {
@@ -77,7 +73,7 @@ function SensoryLevers({ target, recipe, onNavigate, saveTarget }: { target: Yea
   const dry = recipe.hops.filter(h => h.stage === 'dryHop');
   const dryG = dry.every(h => numeric(h.weightG)) ? dry.reduce((sum, h) => sum + h.weightG, 0) : undefined;
   const go = (where: YeastRecipeDestination, label: string) => onNavigate && <button type="button" className="yeast-link" onClick={() => onNavigate(where)}>{saveTarget ? `Conserver la cible et ${label.toLocaleLowerCase('fr')}` : label}</button>;
-  return <div className="yc-target-levers" aria-label="Leviers pour le profil recherché">
+  return <div className="yc-target-levers" aria-label="Leviers pour la cible de la bière">
     {target.finish && target.finish !== 'unspecified' && <div><strong>Finale {finishLabels[target.finish].toLocaleLowerCase('fr')}</strong>
       <p>{target.finish === 'dry' ? 'L’atténuation et le moût conditionnent la finale. Vérifie la fin de fermentation.' : 'La densité finale ne mesure ni le sucre résiduel ni la douceur perçue.'}</p>
       {nonfermentables.length > 0 && <p className="yeast-small">Apports déclarés non fermentescibles : {nonfermentables.map(ingredientQuantity).join(', ')}. Leur effet sensoriel reste à valider.</p>}
@@ -89,7 +85,7 @@ function SensoryLevers({ target, recipe, onNavigate, saveTarget }: { target: Yea
     </div>}
     {(target.ibu || dry.length > 0 || /am[eè]r/i.test(target.label ?? '')) && <div><strong>Amertume et houblons</strong><p>Les IBU à chaud décrivent le calcul de houblonnage, pas toute l’amertume ressentie.{dry.length > 0 ? ` À cru : ${numeric(dryG) && recipe.volumeL > 0 ? `${format(dryG / recipe.volumeL, 2)} g/L` : 'dose à préciser'}, conservés dans la variante.` : ''}</p>{go('houblons', 'Examiner les houblons')}
     </div>}
-    {target.sparkling && <div><strong>Effervescence et sucre</strong><p>Précise si la culture sert en primaire ou en refermentation. Une levure de Champagne ne garantit pas une bière sèche ou sucrée.</p>
+    {target.sparkling && <div><strong>Effervescence et sucre</strong><p>Précise si la culture sert en primaire ou en refermentation. La souche choisie ne garantit pas une bière sèche ou sucrée.</p>
       <p className="yeast-notice">Garder du sucre fermentescible puis refermenter exige un procédé de stabilisation maîtrisé. Refroidir seul n’atteste pas la stabilité.</p>{go('paliers', 'Examiner la refermentation')}
     </div>}
   </div>;
@@ -163,17 +159,14 @@ export function YeastBeerTargetPanel({ recipe, refs, onChange, onNavigate }: {
   const hasTarget = !!targetSummary(currentDraft.beerTarget) || !!currentDraft.beerTarget?.abv || !!currentDraft.beerTarget?.ibu;
   const warnings = [...new Set(preview.warnings)].filter(warning => !/^(Finale souhaitée|Accent chocolat|Effervescence) :/.test(warning));
   const rangeInvalid = (key: 'abv' | 'ibu') => !!target[key] && (!numeric(target[key]!.min) || !numeric(target[key]!.max) || target[key]!.min < 0 || target[key]!.min > target[key]!.max || key === 'abv' && target[key]!.max > 100);
-  const exampleKey = Object.entries(examples).find(([, sample]) => sample.label === target.label && sample.finish === target.finish && sample.accent === target.accent && sample.sparkling === target.sparkling)?.[0] ?? '';
   return <section className="yc-beer-target" aria-label="Cible de la bière">
-    <div className="yc-projection-title"><h4>Ce que je veux obtenir</h4><button ref={launcher} type="button" aria-expanded={open} aria-controls={`${id}-body`} onClick={() => setOpen(v => !v)}>{open ? 'Replier la cible' : local ? 'Reprendre mon essai' : hasTarget ? 'Ajuster ma cible' : 'Définir ma cible'}</button></div>
+    <div className="yc-projection-title"><div className="yc-objective-head"><h4>Cible de la bière</h4><span className="yc-scope">Toute la recette</span></div><button ref={launcher} type="button" aria-expanded={open} aria-controls={`${id}-body`} onClick={() => setOpen(v => !v)}>{open ? 'Replier la cible' : local ? 'Reprendre mon essai' : hasTarget ? 'Ajuster ma cible' : 'Définir ma cible'}</button></div>
+    <p className="yeast-small">Alcool, amertume, finale ou accent visés. Une variante chiffrée peut ajuster malts, houblons à chaud et hypothèse d’atténuation ; elle ne règle pas les paliers.</p>
     {!open && local && <p className="yeast-small">Essai non appliqué · {targetSummary(local.target) || 'cible personnelle'}</p>}
     {!open && hasTarget && <p className="yc-target-summary">{targetSummary(currentDraft.beerTarget)}{currentDraft.beerTarget?.abv ? ` · ${rangeText(currentDraft.beerTarget.abv)} % vol visés` : ''}{currentDraft.beerTarget?.ibu ? ` · ${rangeText(currentDraft.beerTarget.ibu)} IBU à chaud visés` : ''}</p>}
     <div id={`${id}-body`} hidden={!open}>
       {!editingTarget && <div className="yc-projection-title"><p className="yc-target-summary">{targetSummary(target) || 'Ma cible chiffrée'}</p><button type="button" className="yeast-link" onClick={() => setEditingTarget(true)}>Modifier la cible</button></div>}
       <div hidden={!editingTarget} className="yc-target-editor">
-      <div className="yc-target-example"><label htmlFor={`${id}-example`}>Point de départ</label><select id={`${id}-example`} value={exampleKey} onChange={e => { const selected = examples[e.target.value] ?? {}; setLocal({ key: recipeKey, target: { ...selected }, variation: identityVariation(), baseKey: preview.baseKey }); setVariantOpen(false); setReasons([]); setError(''); }}>
-        <option value="">Cible personnelle</option><option value="champagne">Champagne sucrée</option><option value="stout">Stout amère et chocolatée</option><option value="session">Session NEIPA douce et légère</option>
-      </select></div>
       <label className="yc-target-name" htmlFor={`${id}-label`}>Ma cible<Input id={`${id}-label`} value={target.label ?? ''} onChange={e => patch({ label: e.target.value })} placeholder="Décris la bière que tu veux" /></label>
       <div className="yc-target-numbers">
         {([{ key: 'abv', name: 'Alcool', unit: '% vol' }, { key: 'ibu', name: 'IBU à chaud', unit: 'IBU' }] as const).map(field => <div className="yc-target-bound-row" key={field.key}>

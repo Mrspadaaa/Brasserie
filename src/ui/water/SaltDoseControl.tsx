@@ -14,6 +14,7 @@ export const SaltDoseControl: React.FC<{
   grams: number;
   off: boolean;
   active: boolean;
+  selectedIon?: keyof WaterIons | null;
   ions: Array<keyof WaterIons>;
   onEditStart?: () => void;
   onEditEnd?: () => void;
@@ -27,6 +28,7 @@ export const SaltDoseControl: React.FC<{
   grams,
   off,
   active,
+  selectedIon = null,
   ions,
   onEditStart,
   onEditEnd,
@@ -35,23 +37,29 @@ export const SaltDoseControl: React.FC<{
   onToggle,
   onActivate,
 }) => {
+  const related = selectedIon != null && ions.includes(selectedIon);
   const presse = useHoldRepeat(grams, onDose, (from, delta) =>
     Math.max(0, Math.round((from + delta) * 10) / 10),
   );
   return (
     <li
       key={id}
+      id={`water-salt-${id}`}
+      data-salt-dose={id}
+      data-affects-selected-ion={related || undefined}
       onPointerDown={() => onActivate(id)}
       onFocusCapture={(event) => {
         onActivate(id);
-        if (event.target instanceof HTMLInputElement) onEditStart?.();
+        if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) onEditStart?.();
       }}
-      onBlur={(event) => { if (event.target instanceof HTMLInputElement) onEditEnd?.(); }}
+      onBlur={(event) => { if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) onEditEnd?.(); }}
       className={`water-salt-cell p-1 sm:p-2 rounded-control border transition-colors min-w-0 ${
         off
           ? "bg-cave-950/40 border-cave-800"
           : active
             ? "bg-cave-850 border-ebc-straw/60"
+            : related
+              ? "bg-water/10 border-water/70 ring-1 ring-water/30"
             : grams > 0
               ? "bg-cave-900/80 border-ebc-straw/30"
               : "bg-cave-900/50 border-cave-800"
@@ -68,6 +76,9 @@ export const SaltDoseControl: React.FC<{
             <span className="flex items-center gap-1">
               {SALT_SHORT[id]}{" "}
               <Info size={13} className="h-2.5 w-2.5 sm:h-[13px] sm:w-[13px] text-cave-400 shrink-0" />
+              {related && <span className="whitespace-nowrap text-[9px] font-normal leading-none text-water">
+                →{ION_SYMBOL_SHORT[selectedIon!]}
+              </span>}
             </span>
             <span className="hidden sm:block text-2xs font-normal leading-tight text-cave-400">
               {ions.map((ion) => ION_SYMBOL_SHORT[ion]).join(" · ")}{" "}
@@ -94,7 +105,6 @@ export const SaltDoseControl: React.FC<{
           </span>
         </button>
       </div>
-
       <div className="water-salt-dose flex items-stretch mt-1">
         <button
           type="button"

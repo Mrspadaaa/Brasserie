@@ -19,6 +19,8 @@ type Props = {
   phEstimate?: ReturnType<typeof estimateMashPh>;
   targetPh?: number;
   diagnoses?: ProfileDiagnosis[];
+  waterModelIssue?: string;
+  retainedAcid?: { mash?: number; sparge?: number };
 };
 
 const decimal = (value: number) => formatDecimal(Math.round(value * 10) / 10);
@@ -35,6 +37,8 @@ export function WaterTargetStatus({
   phEstimate,
   targetPh = MASH_PH_BAND.target,
   diagnoses,
+  waterModelIssue,
+  retainedAcid,
 }: Props) {
   if (!Number.isFinite(mashWaterL) || !Number.isFinite(spargeWaterL) ||
     mashWaterL < 0 || spargeWaterL < 0 || mashWaterL + spargeWaterL <= 0) return null;
@@ -60,14 +64,32 @@ export function WaterTargetStatus({
   const raInRange = treatment.raAfter >= raBand.min && treatment.raAfter <= raBand.max;
   const paleWithDarkProfile = beerEbc != null && Number.isFinite(beerEbc) &&
     beerEbc <= 12 && bicarbonateRange.min >= 100;
-  const mashDiagnostic=mashPhDiagnostic(phEstimate,targetPh);
+  const mashDiagnostic = waterModelIssue
+    ? mashPhDiagnostic(null, targetPh)
+    : phEstimate?.known
+      ? mashPhDiagnostic(phEstimate, targetPh)
+      : { status: 'unknown' as const, message: 'pH non estimé : renseigne la couleur EBC des malts pour établir une estimation.' };
+  const retainedMashAcid = Number.isFinite(retainedAcid?.mash) && retainedAcid!.mash! >= 0
+    ? retainedAcid!.mash
+    : undefined;
+  const retainedSpargeAcid = Number.isFinite(retainedAcid?.sparge) && retainedAcid!.sparge! >= 0
+    ? retainedAcid!.sparge
+    : undefined;
 
   return (
     <section aria-label="Bilan des objectifs de l’eau" className="space-y-3 text-sm leading-snug">
       <div className="space-y-2" aria-label="Trois diagnostics de préparation">
         <p className={outside.length?'text-ebc-straw':'text-hop'}>Ions · {outside.length?'plages à ajuster':'plages atteintes'}{personal?' · centres non garantis':''}</p>
         {hasMash&&<p data-mash-diagnostic={mashDiagnostic.status} className={mashDiagnostic.status==='outside'?'text-ebc-straw':'text-cave-200'}>{mashDiagnostic.message}</p>}
-        {hasSparge&&<p className="text-cave-200">Rinçage · {formatDecimal(treatment.spargeAcid.amount)} {treatment.spargeAcid.unit} d’acide calculé ; pH à contrôler séparément.</p>}
+        {hasSparge&&<p className="text-cave-200">
+          {waterModelIssue
+            ? retainedSpargeAcid == null
+              ? 'Rinçage · dose d’acide à déterminer après mesure ou titrage du pH.'
+              : `Rinçage · ${formatDecimal(retainedSpargeAcid)} ${treatment.spargeAcid.unit} d’acide retenu ; pH à mesurer ou titrer.`
+            : retainedSpargeAcid != null
+              ? `Rinçage · ${formatDecimal(retainedSpargeAcid)} ${treatment.spargeAcid.unit} d’acide retenu ; pH à contrôler séparément.`
+              : `Rinçage · ${formatDecimal(treatment.spargeAcid.amount)} ${treatment.spargeAcid.unit} d’acide calculé ; pH à contrôler séparément.`}
+        </p>}
       </div>
       <details><summary className="min-h-touch cursor-pointer text-xs text-water">Détail des diagnostics et hypothèses</summary><div className="space-y-3">
       {minerals.length > 0 && (
@@ -101,7 +123,15 @@ export function WaterTargetStatus({
         </div>
       )}
 
-      <WaterBicarbonateBalance treatment={treatment} mashWaterL={mashWaterL} spargeWaterL={spargeWaterL} />
+      <WaterBicarbonateBalance treatment={treatment} mashWaterL={mashWaterL} spargeWaterL={spargeWaterL}
+        waterModelIssue={waterModelIssue} retainedAcid={retainedAcid} />
+
+      {hasMash && waterModelIssue && (
+        <div aria-label="Bilan du pH estimé" className="space-y-1 text-cave-200">
+          <p><strong className="text-cave-50">pH à mesurer ou à titrer.</strong> {waterModelIssue}</p>
+          <p>Aucune dose automatique n’est estimée dans ce contexte. Détermine l’acidification après mesure ou titrage.</p>
+        </div>
+      )}
 
       {phEstimate && hasMash && (
         <div aria-label="Bilan du pH estimé" className="space-y-1 text-cave-200">
@@ -134,7 +164,9 @@ export function WaterTargetStatus({
             </p>
             <p className="text-cave-200">
               Le profil {style.name} indique {decimal(bicarbonateRange.min)}–{decimal(bicarbonateRange.max)} ppm.
-              {hasMash && " Le dosage automatique cherche cette plage après les deux doses d’acide. Les doses manuelles restent conservées."}
+              {hasMash && (waterModelIssue
+                ? ' Les concentrations affichées intègrent uniquement les doses retenues ; les doses inconnues restent à déterminer après mesure ou titrage du pH.'
+                : ' Le dosage automatique cherche cette plage après les deux doses d’acide. Les doses manuelles restent conservées.')}
               {" "}Le HCO₃ total inclut {hasMash && hasSparge ? "l’empâtage et le rinçage" : hasMash ? "uniquement l’empâtage" : "uniquement le rinçage"}.
             </p>
             {paleWithDarkProfile && (
@@ -154,14 +186,20 @@ export function WaterTargetStatus({
                 <div className="space-y-1">
                   <p className="font-semibold text-cave-200">Objectif d’empâtage : alcalinité résiduelle</p>
                   <p className="text-cave-200">
-                    Après acide : <strong className="tabular-nums text-cave-50">{Math.round(treatment.raAfter)} ppm CaCO₃</strong>.
+                    {waterModelIssue ? 'Après doses retenues : ' : 'Après acide : '}
+                    <strong className="tabular-nums text-cave-50">{Math.round(treatment.raAfter)} ppm CaCO₃</strong>.
                     {" "}Plage calculée pour la recette : {decimal(raBand.min)} à {decimal(raBand.max)} ppm CaCO₃.
                   </p>
                   <p className={raInRange ? "text-hop" : "text-ebc-straw"}>
-                    {raInRange
-                      ? "L’alcalinité de l’empâtage est dans cette plage."
-                      : "L’alcalinité de l’empâtage est hors de cette plage ; vérifie les doses retenues et le pH au brassage."}
+                    {waterModelIssue
+                      ? `${raInRange ? 'Avec les doses retenues, l’alcalinité de l’empâtage est dans cette plage.' : 'Avec les doses retenues, l’alcalinité de l’empâtage est hors de cette plage.'} Le pH reste à mesurer ou à titrer.`
+                      : raInRange
+                        ? "L’alcalinité de l’empâtage est dans cette plage."
+                        : "L’alcalinité de l’empâtage est hors de cette plage ; vérifie les doses retenues et le pH au brassage."}
                   </p>
+                  {waterModelIssue && retainedMashAcid == null && (
+                    <p className="text-ebc-straw">Dose d’acide d’empâtage inconnue : à déterminer après mesure ou titrage.</p>
+                  )}
                 </div>
               )}
             </div>

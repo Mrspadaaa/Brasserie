@@ -3,6 +3,7 @@ import { formatDecimal } from "../numericInput";
 import { formatWaterMessage } from "../waterReadings";
 
 import { ACIDS, MASH_PH_BAND } from "../../domain/water";
+import { noloWaterModelIssue } from "../../domain/noloWaterModelIssue";
 
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
 type Tab = "empatage" | "rincage";
@@ -10,6 +11,8 @@ type Tab = "empatage" | "rincage";
 type Props = Pick<
   WaterWorkshopModel,
   | "state"
+  | "brew"
+  | "mashRatioLPerKg"
   | "setTab"
   | "raBand"
   | "alkaliGoal"
@@ -28,6 +31,8 @@ type Props = Pick<
 >;
 export function WaterAcidity({
   state,
+  brew,
+  mashRatioLPerKg,
   setTab,
   raBand,
   alkaliGoal,
@@ -47,6 +52,18 @@ export function WaterAcidity({
   const id = useId();
   const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
   const tabs: Tab[] = hasSparge ? ["empatage", "rincage"] : ["empatage"];
+  if (phEstimate === null) {
+    const issue = noloWaterModelIssue(brew?.nolo, mashRatioLPerKg);
+    return <div role="status" aria-label="Acidification à mesurer" className="panel p-2.5 space-y-1 text-sm text-cave-200">
+      <p className="text-ebc-amber">{issue ?? 'pH non estimable pour cet empâtage : mesurer ou titrer avant de doser l’acide.'}</p>
+      <p>Empâtage · {state.acidOverride?.mash != null
+        ? `dose manuelle retenue : ${formatDecimal(state.acidOverride.mash)} ${mashAcid.unit} ; pH à mesurer.`
+        : 'dose d’acide non calculée ; mesurer ou titrer.'}</p>
+      {hasSparge && <p>Rinçage · {state.acidOverride?.sparge != null
+        ? `dose manuelle retenue : ${formatDecimal(state.acidOverride.sparge)} ${spargeAcid.unit} ; pH à contrôler.`
+        : 'dose d’acide non calculée ; mesurer ou titrer.'}</p>}
+    </div>;
+  }
   return (
     <>
       {" "}

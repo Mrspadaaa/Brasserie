@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "95fb74cd133962fbc4129408519b108f9f149af0",
+  "pocPublished": "b09af85f57f479b416103fb0f0c18f3a1652f4ab",
+  "project": "brasserie-l-affinee",
+  "authorizedAccountsMatch": true,
+  "authorizedAccountsCount": 1,
+  "configurationCopiedExactly": true,
+  "privateReportPreserved": true,
+  "excludedRefonteBranch": "codex/levure-refonte",
+  "deploymentCommand": "npm run deploy",
+  "note": "Configuration values and private report content are intentionally omitted; copied ignored files are not staged.",
+  "testOnlyCorrectionCommit": "9aa513238298bbdf3be38b267630b9fbf94255c1",
+  "applicationUnchangedByTestCorrection": true,
+  "firstFullSuite": {
+    "files": 320,
+    "tests": 4806,
+    "failed": 1,
+    "passed": 4805,
+    "reason": "Obsolete synchronous assertion after disclosure click. Updated test awaits actual report and checks absence before first disclosure; application not changed."
+  },
+  "privateReportIsServerOnly": true,
+  "depProtocolChecks": "Rules29, Units, Brewing, Water, Prompts16, App and Functions TypeScript/builds, dist exclusions all pass. Full corrected suite pending.",
+  "fullCorrectedSuite": {
+    "files": 320,
+    "passed": 4806,
+    "failed": 0
+  },
+  "readyForDeploy": true
+}

@@ -1,7 +1,8 @@
-import { Recipe } from '../types';
+import { Recipe, YeastSpec } from '../types';
 import { recipeWaterExport } from './recipeWaterExport';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
-import { readYeastTechnicalFacts } from '../../functions/src/yeastTechnicalFacts';
+import { readYeastDocumentaryNotes, readYeastTechnicalFacts, readYeastTechnicalSelections } from '../../functions/src/yeastTechnicalFacts';
+import { readYeastDocumentarySheet, readYeastLocalDocumentary } from '../../functions/src/yeastDocumentarySheet';
 import { assertNoloConfig } from '../../functions/src/noloSchema';
 import { readYeastRecipeDesign } from './yeastRecipeDesign';
 import { sameField } from '../../functions/src/brewerFields';
@@ -18,7 +19,7 @@ type Field = {
   label: string;
   /** Older labels remain readable when wording is clarified within format v1. */
   aliases?: readonly string[];
-  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'technicalFacts' | 'yeastDesign';
+  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'technicalFacts' | 'technicalSelections' | 'documentaryNotes' | 'yeastDocumentarySheet' | 'yeastLocalDocumentary' | 'technicalSelection' | 'yeastDesign';
   fields?: Fields;
   item?: Field;
   values?: readonly string[];
@@ -144,6 +145,10 @@ export const recipeFields = {
     strain: t('Souche'),
     fermentationFacts: {label:'Données fermentaires sourcées',type:'fermentationFacts'} as Field,
     technicalFacts: {label:'Faits de levure sourcés',type:'technicalFacts'} as Field,
+    technicalSelections: { label: 'Sélections documentaires retenues', type: 'technicalSelections' } as Field,
+    documentaryNotes: { label: 'Notes documentaires', type: 'documentaryNotes', nullable: true } as Field,
+    adoptedDocumentary: { label: 'Fiche documentaire adoptée', type: 'yeastDocumentarySheet' } as Field,
+    localDocumentary: { label: 'Fiche documentaire locale', type: 'yeastLocalDocumentary' } as Field,
     technicalSource: t('Source de la fiche'),
     attenuationBasis: t('Base de l’atténuation', ['declared', 'recipe', 'measured']),
     flocculation: t('Floculation'),
@@ -273,6 +278,23 @@ export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
  * Strict mode rejects damaged exports instead of silently dropping their fields. */
 export function readRecipeFields(value: unknown, strict = false): Partial<RecipeContent> {
   const { estimates: _, ...recipe } = (readField(root, value, strict, 'Recette') ?? {}) as Record<string, unknown>;
+  const yeast = recipe.yeast as YeastSpec | undefined;
+  if (yeast?.adoptedDocumentary !== undefined) {
+    const sheet = readYeastDocumentarySheet(yeast.adoptedDocumentary, yeast.hopIndexId);
+    if (!sheet) {
+      if (strict) throw new Error('Fiche documentaire adoptée invalide ou liée à une autre souche.');
+      delete yeast.adoptedDocumentary;
+    } else yeast.adoptedDocumentary = sheet;
+  }
+  if (yeast?.localDocumentary !== undefined) {
+    const sheet = readYeastLocalDocumentary(yeast.localDocumentary);
+    if (!sheet) {
+      if (strict) throw new Error('Fiche documentaire locale invalide.');
+      delete yeast.localDocumentary;
+    } else yeast.localDocumentary = sheet;
+  }
+  if (yeast?.adoptedDocumentary !== undefined && yeast.localDocumentary !== undefined && strict)
+    throw new Error('Fiches locale et catalogue présentes ensemble sans portée choisie.');
   rebindNoloCopy(value, recipe);
   return recipe as Partial<RecipeContent>;
 }
@@ -360,6 +382,14 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
   if (field.type === 'boolean') return typeof value === 'boolean' ? value : fail();
   if (field.type === 'fermentationFacts') return readIngredientFermentationFacts(value) ?? fail();
   if (field.type === 'technicalFacts') return readYeastTechnicalFacts(value) ?? fail();
+  if (field.type === 'technicalSelections') return readYeastTechnicalSelections(value) ?? fail();
+  if (field.type === 'documentaryNotes') {
+    const notes = readYeastDocumentaryNotes(value);
+    return notes === undefined ? fail() : notes;
+  }
+  if (field.type === 'yeastDocumentarySheet') return readYeastDocumentarySheet(value) ?? fail();
+  if (field.type === 'yeastLocalDocumentary') return readYeastLocalDocumentary(value) ?? fail();
+  if (field.type === 'technicalSelection') return readYeastTechnicalFacts([value])?.[0] ?? fail();
   if (field.type === 'nolo') return fail();
   if (field.type === 'yeastDesign') {
     const snapshot = readYeastRecipeDesign({ yeastDesign: value } as Recipe);
@@ -378,6 +408,13 @@ export function writeRecipeText(
   recipe: RecipeContent,
   calculated?: Record<string, unknown>
 ): string {
+  if (recipe.yeast?.localDocumentary !== undefined && recipe.yeast.adoptedDocumentary !== undefined)
+    throw new Error('Les fiches locale et catalogue ne peuvent pas être fusionnées sans choix de portée.');
+  if (recipe.yeast?.adoptedDocumentary !== undefined &&
+      (!recipe.yeast.hopIndexId || !readYeastDocumentarySheet(recipe.yeast.adoptedDocumentary, recipe.yeast.hopIndexId)))
+    throw new Error('La fiche documentaire adoptée est invalide ou liée à une autre souche.');
+  if (recipe.yeast?.localDocumentary !== undefined && !readYeastLocalDocumentary(recipe.yeast.localDocumentary))
+    throw new Error('La fiche documentaire locale est invalide.');
   const clean = readField(root, {
     ...recipe, estimates: { ...calculated, ...recipeWaterExport(recipe) }
   }, false, 'Recette');

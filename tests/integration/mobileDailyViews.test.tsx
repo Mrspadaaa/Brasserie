@@ -116,7 +116,7 @@ describe('Vues quotidiennes sur téléphone',()=>{
     expect(screen.getByRole('button',{name:'Archives',exact:true})).toBeVisible();
     fireEvent.change(screen.getByRole('textbox',{name:'Rechercher une opération'}),{target:{value:'Cascade'}});
     fireEvent.click(navigation.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.getByRole('heading',{name:'Prochaines échéances'})).toBeVisible();
+    expect(screen.getByRole('heading',{name:'Échéances et estimations à venir'})).toBeVisible();
     expect(screen.getByRole('button',{name:'Budget d’un brassin'})).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Ajouter une prévision'}));
     const plan=within(screen.getByRole('dialog',{name:'Prévoir une dépense'}));

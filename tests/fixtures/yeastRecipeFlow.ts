@@ -11,5 +11,5 @@ export const yeastFlowRecipe = (): Recipe => {
     hops: [{ name: 'Hallertau', stage: 'boil', weightG: 20, alpha: 4, timeMin: 60 },
       { name: 'Mandarina Bavaria', stage: 'dryHop', weightG: 20, alpha: 0, dayOffset: 3, aromaTiming: 'fermentation', aromaContactHours: 48, aromaTemperatureC: 18 }] };
   const refs = yeastReferences([]);
-  return applyYeastRecipeDesign(recipe, { ...createYeastRecipeDraft(recipe, refs), goal: 'clove', ferulicRest: true, pressureBar: 0 }, refs);
+  return applyYeastRecipeDesign(recipe, { ...createYeastRecipeDraft(recipe, refs), goal: 'clove', goalExplicit: true, ferulicRest: true, pressureBar: 0 }, refs);
 };

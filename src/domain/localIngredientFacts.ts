@@ -8,7 +8,13 @@ import type { TrialRecipe } from './hopIndex/trials';
 import { noloScience } from './nolo';
 import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 
+/** A unique, compatible documented identity may supply reference facts. Its ID
+ * stays separate from a selected stock article, whose lot-specific facts win. */
 export function localYeastFacts(yeast: YeastSpec, knowledge: HopKnowledge[]): IngredientFacts | undefined {
+  // A local sheet records this YeastSpec's current recipe/lot scope. A matching
+  // display name alone must not promote it into the catalogue candidate book.
+  const hasLocalDocumentary = (yeast as YeastSpec & { localDocumentary?: unknown }).localDocumentary !== undefined;
+  if (hasLocalDocumentary && !yeast.hopIndexId?.trim()) return undefined;
   const ref = resolveFermentationYeast({yeast} as TrialRecipe, yeastReferences(knowledge));
   if (!ref) return;
   const temp = agreedFermentationFact(ref, 'temperature', '°C');
@@ -42,7 +48,10 @@ export function localYeastFacts(yeast: YeastSpec, knowledge: HopKnowledge[]): In
 export function completeFromLocalReferences(fermentables: Fermentable[], hops: HopIngredient[], yeast: YeastSpec, stock: StockItem[], knowledge: HopKnowledge[]) {
   const malt = fermentables.map(f => { const facts = factsForRecipeStockItem('malt',f,stock); return facts ? applyMaltFacts(f,facts) : f; });
   const hop = hops.map(h => { const facts = factsForRecipeStockItem('houblon',h,stock); return facts ? applyHopFacts(h,facts) : h; });
-  const stockYeast = factsForRecipeStockItem('levure',yeast,stock), reference = localYeastFacts(yeast,knowledge);
+  // Catalogue identity and a local stock lot are separate choices. Only an
+  // explicit article ref permits lot-specific facts to enter this recipe.
+  const stockYeast = yeast.stockItemRef ? factsForRecipeStockItem('levure',yeast,stock) : undefined;
+  const reference = localYeastFacts(yeast,knowledge);
   let y = stockYeast ? applyYeastFacts(yeast,stockYeast) : yeast;
   if (reference) y = applyYeastFacts(y,reference);
   return { fermentables:malt, hops:hop, yeast:y };

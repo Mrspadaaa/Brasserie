@@ -53,7 +53,7 @@ export function buildYeastBrewDay(recipe: TrialRecipe, state: BrewDayState, phas
   // but that observation never changes the planned dose or the frozen recipe.
   const observedDose = confirmedDry && measured.volume && measured.volume.value > 0
     ? evaluateYeastRecipeDesign({ ...recipe, volumeL: measured.volume.value }, draft, refs).doseG : undefined;
-  return { name: recipe.yeast.name, goal: intent ? YEAST_RECIPE_GOAL_LABELS[intent.goal] : undefined, stale, phase,
+  return { name: recipe.yeast.name, goal: intent && intent.goalExplicit !== false ? YEAST_RECIPE_GOAL_LABELS[intent.goal] : undefined, stale, phase,
     strainInformation: yeastStrainInformation(analysis.candidate?.reference, recipe.yeast.form),
     quantity, primaryTemperatureC: draft.temperatureC, primaryDays: draft.days, pressureBar: pressure, instructions, measured,
     formWarning, plannedDoseG: confirmedDry ? analysis.doseG : undefined, observedDoseG: observedDose, hops: analysis.hops, sources: analysis.sources };

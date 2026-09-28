@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { NumberInput } from '../../ui/NumberInput';
 import { compte } from '../../services/plural';
-import { Plus, ChevronRight, Settings2, CalendarDays, Wheat, Wrench, Check } from 'lucide-react';
+import { Plus, ChevronRight, Settings2, CalendarDays, Wheat, Wrench, Check, X } from 'lucide-react';
 import type { Transaction, BudgetLine, AppConfig, TimeFilterPeriod, Recipe, Batch, StockItem } from '../../types';
 import type { FinancialAsset, FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
@@ -66,7 +66,8 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const [year,setYear]=useState(new Date().getFullYear()),[horizon,setHorizon]=useState<30|90|365>(90);
   const [upgrade,setUpgrade]=useState<FinancialPlan|null|undefined>();
   const [includeEquipmentProjects,setIncludeEquipmentProjects]=useState(true);
-  const [upcomingLimit,setUpcomingLimit]=useState(6),[chartOpen,setChartOpen]=useState(false);
+  const [upcomingLimit,setUpcomingLimit]=useState(6),[chartOpen,setChartOpen]=useState(false),[selectedForecastMonth,setSelectedForecastMonth]=useState<string|null>(null);
+  const forecastOperationsRef=useRef<HTMLElement|null>(null),forecastPeriodFilterRef=useRef<HTMLButtonElement|null>(null),clearedForecastMonthRef=useRef<string|null>(null);
   const [movement,setMovement]=useState<Transaction|null|undefined>(undefined),[closingId,setClosingId]=useState('');
   const [profileOpen,setProfileOpen]=useState(false);
   const [plan,setPlan]=useState<FinancialPlan|null|undefined>(undefined),[asset,setAsset]=useState<FinancialAsset|null|undefined>(undefined),[closingOpen,setClosingOpen]=useState(false);
@@ -88,13 +89,31 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
   const forecastWithProjects=useMemo(()=>buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13}),[transactions,data]);
   const forecast=useMemo(()=>includeEquipmentProjects?forecastWithProjects:buildForecast({transactions,payments:data.payments,plans:data.plans,profile:data.profile,months:13,includeEquipmentProjects:false}),[transactions,data,forecastWithProjects,includeEquipmentProjects]);
   const endKey=forecastHorizonEnd(todayISO(),horizon);
-  const upcoming=forecast.items.filter(i=>i.date<endKey);
+  const upcoming=useMemo(()=>forecast.items.filter(i=>i.date<endKey),[forecast.items,endKey]);
   const projectOut=forecastWithProjects.items.filter(i=>i.source==='equipment'&&i.date<endKey).reduce((sum,item)=>sum+item.amountCents,0);
   const openPlan=(p:FinancialPlan)=>{if(isUpgradePlan(p))setUpgrade(p);else setPlan(p);};
   const invoiceOut=upcoming.filter(i=>i.direction==='out'&&i.source==='invoice').reduce((s,i)=>s+i.amountCents,0);
   const estimatedOut=upcoming.filter(i=>i.direction==='out'&&i.source!=='invoice').reduce((s,i)=>s+i.amountCents,0);
-  let projectedCash=ledger.cashComplete?ledger.cashCents:null;
-  const forecastChart=forecast.months.filter(m=>m.month<endKey.slice(0,7)||(m.month===endKey.slice(0,7)&&endKey.slice(8)!=='01')).map(m=>{const rows=upcoming.filter(i=>i.date.startsWith(m.month));const out=rows.filter(i=>i.direction==='out').reduce((sum,i)=>sum+i.amountCents,0),income=rows.filter(i=>i.direction==='in').reduce((sum,i)=>sum+i.amountCents,0);if(projectedCash!=null)projectedCash+=income-out;return {label:monthLabel(m.month),expense:out/100,balance:projectedCash==null?null:projectedCash/100};});
+  const forecastChart=useMemo(()=>{
+    let projectedCash=ledger.cashComplete?ledger.cashCents:null;
+    return forecast.months.filter(m=>m.month<endKey.slice(0,7)||(m.month===endKey.slice(0,7)&&endKey.slice(8)!=='01')).map(m=>{
+      const items=upcoming.filter(item=>item.date.startsWith(m.month));
+      const expenseCents=items.filter(item=>item.direction==='out').reduce((sum,item)=>sum+item.amountCents,0);
+      const incomeCents=items.filter(item=>item.direction==='in').reduce((sum,item)=>sum+item.amountCents,0);
+      if(projectedCash!=null)projectedCash+=incomeCents-expenseCents;
+      return {month:m.month,label:monthLabel(m.month),expenseCents,incomeCents,expense:expenseCents/100,income:incomeCents/100,balanceCents:projectedCash,balance:projectedCash==null?null:projectedCash/100,items};
+    });
+  },[forecast.months,upcoming,endKey,ledger.cashComplete,ledger.cashCents]);
+  const projectedCash=forecastChart.at(-1)?.balanceCents??null;
+  const selectedForecastPeriod=forecastChart.find(item=>item.month===selectedForecastMonth);
+  useEffect(()=>{if(selectedForecastMonth&&!selectedForecastPeriod)setSelectedForecastMonth(null);},[selectedForecastMonth,selectedForecastPeriod]);
+  useEffect(()=>{
+    if(!chartOpen)return;
+    if(selectedForecastPeriod){forecastOperationsRef.current?.scrollIntoView({block:'nearest'});forecastPeriodFilterRef.current?.focus({preventScroll:true});return;}
+    const clearedMonth=clearedForecastMonthRef.current;
+    if(clearedMonth){document.querySelector<HTMLButtonElement>(`[data-finance-period="${clearedMonth}"]`)?.focus({preventScroll:true});clearedForecastMonthRef.current=null;}
+  },[selectedForecastPeriod,chartOpen]);
+  const clearForecastPeriod=()=>{clearedForecastMonthRef.current=selectedForecastMonth;setSelectedForecastMonth(null);};
   const yearClosings=data.closings.filter(c=>c.year===year);
   const latestClosing=yearClosings.find(c=>c.id===closingId)??yearClosings[0];
   const annual=useMemo(()=>latestClosing?.report??buildAnnualReport({year,transactions,payments:data.payments,assets:data.assets,profile:{...data.profile,vatRegistered:data.profile.vatRegistered||config.fiscal.isTvaRegistered},closing:latestClosing}),[year,transactions,data,latestClosing,config.fiscal.isTvaRegistered]);
@@ -121,13 +140,13 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
     const linkedPlan=item.planId?data.plans.find(p=>p.id===item.planId):undefined;
     const due=isoDate(invoice?.finance?.dueDate);
     const when=invoice?!due?'Date à préciser':due<todayISO()?`En retard · ${shortDate(due)}`:shortDate(due):shortDate(item.date);
-    const origin=item.source==='equipment'?'Projet de matériel':item.source==='trend'?'Estimation historique':item.source==='invoice'?'Facture':item.source==='brew'?(linkedPlan?.brewEstimate as BrewBudgetSnapshot|undefined)?.complete===false?'Brassin · à compléter':'Brassin':'Planifié';
+    const origin=item.source==='equipment'?'Projet de matériel · estimation':item.source==='trend'?'Tendance historique · estimation':item.source==='invoice'?item.direction==='in'?'Facture enregistrée · reste à encaisser':'Facture enregistrée · reste à payer':item.source==='brew'?(linkedPlan?.brewEstimate as BrewBudgetSnapshot|undefined)?.complete===false?'Budget de brassin · estimation partielle':'Budget de brassin · estimation':item.source==='recurring'?'Plan récurrent · montant prévu':item.source==='plan'?'Plan enregistré · montant prévu':'Montant prévu';
     const title=item.source==='trend'?`Dépenses courantes · ${CATEGORY_LABELS[item.category as keyof typeof CATEGORY_LABELS]??item.category}`:item.label;
     return <button className="finance-row" key={item.id} onClick={()=>{
       if(invoice)setSelected(invoice);
       else if(linkedPlan)openPlan(linkedPlan);
       else setNotice('Tendance calculée sur les dépenses courantes des mois complets, hors investissements et dépenses déjà planifiées.');
-    }}><div className="finance-row-main"><strong>{title}</strong><span className="finance-muted">{item.source==='equipment'&&linkedPlan?upgradeDateLabel(linkedPlan):when} · {origin}</span></div><span className="finance-money">{item.direction==='in'?'+ ':''}{formatCHF(item.amountCents)}</span><ChevronRight size={16}/></button>;
+    }}><div className="finance-row-main"><strong>{title}</strong><span className="finance-muted">{item.source==='equipment'&&linkedPlan?upgradeDateLabel(linkedPlan):when} · {origin}</span></div><span className="finance-money">{item.direction==='in'?'+ ':'− '}{formatCHF(item.amountCents)}</span><ChevronRight size={16}/></button>;
   };
   return <div className="finance">
     <nav className="finance-nav" role="tablist" aria-label="Finances">{views.map(([key,label])=><button type="button" key={key} id={`finance-tab-${key}`} role="tab" tabIndex={view===key?0:-1} aria-selected={view===key} aria-controls={`finance-${key}`} onClick={()=>selectView(key)} onKeyDown={e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const index=views.findIndex(v=>v[0]===key);const next=e.key==='Home'?0:e.key==='End'?views.length-1:(index+(e.key==='ArrowRight'?1:views.length-1))%views.length;selectView(views[next][0]);(e.currentTarget.parentElement?.querySelectorAll('button')[next] as HTMLButtonElement|undefined)?.focus();}}>{label}</button>)}</nav>
@@ -166,11 +185,38 @@ export function FinancesTab({transactions,config,recipes=EMPTY,batches=EMPTY,sto
 
         <div className="finance-actions finance-section"><button type="button" className="finance-action" onClick={()=>setPlan(null)}><Plus size={15}/>Ajouter une prévision</button><button type="button" className="finance-action secondary" onClick={()=>setBudgetPicker(true)}><Wheat size={15}/>Budget d’un brassin</button></div>
         <details className="finance-disclosure" onToggle={e=>setChartOpen(e.currentTarget.open)}><summary>Comparer les mois</summary>{chartOpen&&<>
-          <p className="finance-muted">Sorties en bleu · solde en pointillé, en CHF. {forecast.warnings.length>0?'Scénario limité aux données renseignées.':''}</p>
-          <React.Suspense fallback={<div className="finance-chart flex items-center justify-center text-2xs text-cave-400" role="status">Chargement du graphique…</div>}><FinanceComparisonChart data={forecastChart} cashComplete={ledger.cashComplete} cashCents={ledger.cashCents}/></React.Suspense>
-          <table className="finance-table"><caption className="sr-only">Prévision mensuelle selon le scénario sélectionné</caption><thead><tr><th scope="col">Mois</th><th scope="col">Sorties</th><th scope="col">Solde estimé</th></tr></thead><tbody>{forecastChart.map(item=><tr key={item.label}><th scope="row">{item.label}</th><td className="finance-money">{formatCHF(Math.round(item.expense*100))}</td><td className="finance-money">{item.balance==null?'À compléter':formatCHF(Math.round(item.balance*100))}</td></tr>)}</tbody></table>
+          <p className="finance-muted">Scénario mensuel à venir, pas un historique des dépenses : les courbes agrègent le reste à payer ou encaisser des factures à leur échéance et les plans, budgets et tendances estimés. Les lignes gardent leur origine ; choisis un mois pour les retrouver. Sorties en bleu, entrées en vert, solde estimé en pointillés sur une seconde échelle, montants en CHF. {forecast.warnings.length>0?'Scénario limité aux données renseignées.':''}</p>
+          <React.Suspense fallback={<div className="finance-chart flex items-center justify-center text-2xs text-cave-400" role="status">Chargement du graphique…</div>}><FinanceComparisonChart data={forecastChart} cashComplete={ledger.cashComplete} cashCents={ledger.cashCents} selectedMonth={selectedForecastMonth} onSelectMonth={setSelectedForecastMonth}/></React.Suspense>
+          <table className="finance-table"><caption className="sr-only">Scénario mensuel à venir en francs suisses : restes dus sur factures, plans et estimations, avec solde estimé. Choisis un mois pour afficher les montants par origine.</caption><thead><tr><th scope="col">Mois</th><th scope="col">Sorties prévues</th><th scope="col">Entrées prévues</th><th scope="col">Solde estimé</th></tr></thead><tbody>{forecastChart.map(item=><tr key={item.month}><th scope="row"><button type="button" data-finance-period={item.month} aria-label={`Afficher les opérations prévues de ${item.label}`} aria-pressed={selectedForecastMonth===item.month} onClick={()=>setSelectedForecastMonth(item.month)} style={{minHeight:24,color:'#D8CEC5',textAlign:'left',textDecoration:'underline dotted',textUnderlineOffset:2}}>{item.label}</button></th><td className="finance-money">{formatCHF(item.expenseCents)}</td><td className="finance-money">{formatCHF(item.incomeCents)}</td><td className="finance-money">{item.balanceCents==null?'À compléter':formatCHF(item.balanceCents)}</td></tr>)}</tbody></table>
+          {selectedForecastPeriod&&<section ref={forecastOperationsRef} className="finance-section" data-finance-period-operations aria-label={`Opérations prévues en ${selectedForecastPeriod.label}`}>
+            <div className="finance-heading"><h3>Opérations · {selectedForecastPeriod.label}</h3></div>
+            <div className="finance-filter" role="group" aria-label="Filtre de période actif" aria-live="polite">
+              <button ref={forecastPeriodFilterRef} type="button" className="journal-chip" aria-pressed="true" aria-label={`Retirer le filtre de période ${selectedForecastPeriod.label}`} data-finance-period-filter={selectedForecastPeriod.month} data-clear-finance-period onClick={clearForecastPeriod}>
+                Période · {selectedForecastPeriod.label}<X size={13} aria-hidden="true"/>Retirer
+              </button>
+            </div>
+            <p className="finance-muted">Factures enregistrées : montants restant à régler ou encaisser. Les plans, budgets et tendances sont des prévisions ou estimations.</p>
+            <dl style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:'4px 12px',margin:'4px 0 8px'}}>
+              <div><dt className="finance-muted">Sorties prévues</dt><dd className="finance-money" style={{margin:0}}>{formatCHF(selectedForecastPeriod.expenseCents)}</dd></div>
+              <div><dt className="finance-muted">Entrées prévues</dt><dd className="finance-money" style={{margin:0}}>{formatCHF(selectedForecastPeriod.incomeCents)}</dd></div>
+            </dl>
+            {(['out','in'] as const).map(direction=>{
+              const items=selectedForecastPeriod.items.filter(item=>item.direction===direction);
+              const invoices=items.filter(item=>item.source==='invoice');
+              const estimates=items.filter(item=>item.source!=='invoice');
+              const invoiceTotal=invoices.reduce((total,item)=>total+item.amountCents,0);
+              const estimateTotal=estimates.reduce((total,item)=>total+item.amountCents,0);
+              return <section key={direction} className="finance-section"><h4>{direction==='out'?'Sorties prévues':'Entrées prévues'}</h4>{items.length?<>
+                <dl style={{display:'grid',gridTemplateColumns:'repeat(2,minmax(0,1fr))',gap:'4px 12px',margin:'4px 0 8px'}}>
+                  <div><dt className="finance-muted">{direction==='out'?'Factures · reste à régler':'Factures · reste à encaisser'}</dt><dd className="finance-money" style={{margin:0}}>{formatCHF(invoiceTotal)}</dd></div>
+                  <div><dt className="finance-muted">Plans, budgets et estimations</dt><dd className="finance-money" style={{margin:0}}>{formatCHF(estimateTotal)}</dd></div>
+                </dl>
+                <div className="finance-list">{items.map(forecastRow)}</div>
+              </>:<p className="finance-empty-inline">Aucune {direction==='out'?'sortie':'entrée'} prévue ce mois.</p>}</section>;
+            })}
+          </section>}
         </>}</details>
-        <section className="finance-section"><h3>Prochaines échéances</h3><div className="finance-list">{upcoming.slice(0,upcomingLimit).map(forecastRow)}</div>{upcoming.length>upcomingLimit&&<button className="finance-link" onClick={()=>setUpcomingLimit(limit=>limit+6)}>Voir les {Math.min(6,upcoming.length-upcomingLimit)} échéances suivantes<ChevronRight size={16}/></button>}{!upcoming.length&&<p className="finance-empty-inline">Aucune échéance renseignée sur cette période. Ajoute une prévision ou le budget d’un brassin.</p>}</section>
+        <section className="finance-section"><h3>Échéances et estimations à venir</h3><div className="finance-list">{upcoming.slice(0,upcomingLimit).map(forecastRow)}</div>{upcoming.length>upcomingLimit&&<button className="finance-link" onClick={()=>setUpcomingLimit(limit=>limit+6)}>Voir les {Math.min(6,upcoming.length-upcomingLimit)} échéances suivantes<ChevronRight size={16}/></button>}{!upcoming.length&&<p className="finance-empty-inline">Aucune échéance renseignée sur cette période. Ajoute une prévision ou le budget d’un brassin.</p>}</section>
         <details className="finance-section"><summary className="finance-link">Toutes mes prévisions ({data.plans.filter(p=>p.status!=='draft'&&!isUpgradePlan(p)).length})</summary>{data.plans.filter(p=>p.status!=='draft'&&!isUpgradePlan(p)).map(p=><button key={p.id} className="finance-row" onClick={()=>setPlan(p)}><span className="finance-row-main">{p.title}<br/><span className="finance-muted">{p.status==='active'?'À venir':p.status==='cancelled'?'Annulée':'Terminée'}</span></span><span>{formatCHF(p.amountCents)}</span><ChevronRight size={16}/></button>)}</details>
         {financeAssistant}
       </>}

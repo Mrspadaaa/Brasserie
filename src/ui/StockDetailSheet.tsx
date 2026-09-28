@@ -3,7 +3,7 @@ import { NumberInput } from './NumberInput';
 import { Trash2, Star } from 'lucide-react';
 import { Batch, StockItem } from '../types';
 import { Units } from '../services/units';
-import { computeStockLevel, pendingStockQuantity, allocatedBatches } from '../domain/stockLevel';
+import { computeStockLevel, pendingStockSummary, allocatedBatches, type RecipeStockComparison } from '../domain/stockLevel';
 import { Suggestions } from '../services/suggestions';
 import { Sheet, ConfirmSheet } from './Sheet';
 import { LevelGauge } from './LevelGauge';
@@ -17,6 +17,7 @@ interface StockDetailSheetProps {
   item: StockItem | null;
   batches: Batch[];
   stockItems?: StockItem[];
+  recipeCheck?: { recipeName: string; comparison: RecipeStockComparison } | null;
   onClose: () => void;
   onSave: (item: StockItem) => void;
   onDelete: (item: StockItem) => void;
@@ -26,7 +27,7 @@ interface StockDetailSheetProps {
 
 /** Quantité et couverture d'abord ; propriétés techniques accessibles à la demande. */
 export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
-  item, batches, stockItems, onClose, onSave, onDelete, onCorrectInventory, onToggleFavorite
+  item, batches, stockItems, recipeCheck, onClose, onSave, onDelete, onCorrectInventory, onToggleFavorite
 }) => {
   const [draft, setDraft] = useSyncedDraft(item, item?.ref);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -34,7 +35,9 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
 
   const level = computeStockLevel(draft, batches, stockItems);
   const allocated = allocatedBatches(item, batches, stockItems);
-  const pending = batches.reduce((sum, batch) => sum + pendingStockQuantity(item, batch), 0);
+  const pending = pendingStockSummary(item, batches);
+  const physical = Number.isFinite(item.currentStock) && item.currentStock >= 0 ? item.currentStock : null;
+  const available = physical !== null && pending.known ? Math.max(0, physical - pending.knownQuantity) : null;
   const canSave = !!draft.name.trim() && Number.isFinite(draft.minStock) && draft.minStock >= 0;
   const save = () => {
     if (!canSave) return;
@@ -63,10 +66,25 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
             <Button onClick={() => onCorrectInventory(item)}>Corriger l’inventaire</Button>
           </div>
           <LevelGauge level={level}/>
-          {pending > 0 && <dl className="grid grid-cols-2 gap-2 text-xs">
-            <div><dt className="text-cave-400">Réservé en fermentation</dt><dd className="font-mono text-water">{Units.format(pending, item.unit)}</dd></div>
-            <div><dt className="text-cave-400">Disponible hors réserve</dt><dd className="font-mono text-cave-50">{Units.format(Math.max(0, item.currentStock - pending), item.unit)}</dd></div>
+          {pending.known && pending.knownQuantity > 0 && <dl className="grid grid-cols-2 gap-2 text-xs">
+            <div><dt className="text-cave-400">Réservé en fermentation</dt><dd className="font-mono text-water">{Units.format(pending.knownQuantity, item.unit)}</dd></div>
+            <div><dt className="text-cave-400">Libre hors réserve</dt><dd className="font-mono text-cave-50">{available === null ? 'Inconnu' : Units.format(available, item.unit)}</dd></div>
           </dl>}
+          {!pending.known && <dl className="grid grid-cols-2 gap-2 text-xs">
+            <div><dt className="text-cave-400">Réservé en fermentation</dt><dd className="text-attention">{pending.knownQuantity > 0 ? `Au moins ${Units.format(pending.knownQuantity, item.unit)} · total inconnu` : 'Quantité inconnue'}</dd></div>
+            <div><dt className="text-cave-400">Libre hors réserve</dt><dd className="text-attention">Inconnu · unité incompatible</dd></div>
+          </dl>}
+          {recipeCheck && recipeCheck.comparison.stockItem?.ref === item.ref && <div className="border-t border-cave-800 pt-2 space-y-1">
+            <p className="text-xs text-cave-400">Besoin prévu · {recipeCheck.recipeName}</p>
+            <dl className="grid grid-cols-3 gap-2 text-xs">
+              <div><dt className="text-cave-400">Besoin</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.quantity === null || !recipeCheck.comparison.unit ? 'Inconnu' : Units.format(recipeCheck.comparison.quantity, recipeCheck.comparison.unit)}</dd></div>
+              <div><dt className="text-cave-400">Libre</dt><dd className="font-mono text-cave-50">{recipeCheck.comparison.available === null ? 'Inconnu' : Units.format(recipeCheck.comparison.available, recipeCheck.comparison.unit!)}</dd></div>
+              <div><dt className="text-cave-400">Manque</dt><dd className={`font-mono ${recipeCheck.comparison.shortage === null ? 'text-cave-200' : recipeCheck.comparison.shortage > 0 ? 'text-alert-strong' : 'text-hop'}`}>{recipeCheck.comparison.shortage === null || !recipeCheck.comparison.unit ? 'Inconnu' : Units.format(recipeCheck.comparison.shortage, recipeCheck.comparison.unit)}</dd></div>
+            </dl>
+            {recipeCheck.comparison.issue && <p className="text-xs text-attention">{recipeCheck.comparison.issue}</p>}
+            {recipeCheck.comparison.availabilityIssue && <p className="text-xs text-attention">{recipeCheck.comparison.availabilityIssue}</p>}
+            <p className="text-xs text-cave-400">Cette prévision ne réserve pas le stock.</p>
+          </div>}
           {level.perBatch !== null && level.source !== 'minStock' && <p className="text-xs text-cave-400">
             Besoin moyen : <span className="font-mono text-cave-200">{Units.format(level.perBatch, item.unit)}</span> par brassin
             {level.source === 'planifie' ? ' planifié.' : ', selon l’historique.'}

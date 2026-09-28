@@ -1,9 +1,18 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+const validation = vi.hoisted(() => ({ rows: [] as unknown[] }));
+vi.mock('../../functions/src/hopPredictionSchema', async () => {
+  const actual = await vi.importActual<typeof import('../../functions/src/hopPredictionSchema')>('../../functions/src/hopPredictionSchema');
+  return { ...actual, assertHopKnowledge: (...args: Parameters<typeof actual.assertHopKnowledge>) => {
+    validation.rows.push(args[0]);
+    return actual.assertHopKnowledge(...args);
+  } };
+});
 import { yeastReferences } from '../../src/domain/yeastReferences';
 import { resolveFermentationYeast } from '../../src/domain/fermentationScenario';
 import { yeastRecipeCandidates } from '../../src/domain/yeastRecipeDesign';
 import documented from '../../src/data/yeastRecipeReferences.json';
 import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
+import { yeastCatalogueLibrary } from '../../src/domain/yeastCatalogueLibrary';
 
 describe('existing recipe yeast references', () => {
   const stored = () => structuredClone(documented.find(y => y.id === 'wyeast-3068')!);
@@ -29,5 +38,19 @@ describe('existing recipe yeast references', () => {
     expect(candidate({ ...stored(), catalogue: null })).toBeUndefined();
     const row = stored(); row.catalogue.facts = [];
     expect(candidate(row)!.temperature).toBeUndefined();
+  });
+  it('does not revalidate the exact immutable library rows, while changed personal documentary records still validate', () => {
+    const library = yeastCatalogueLibrary();
+    yeastReferences([]);
+    validation.rows = [];
+    const personal = stored(); personal.name = 'Référence personnelle corrigée';
+    yeastReferences([personal]);
+    const libraryRows = new Set(library);
+    expect(validation.rows.some(row => libraryRows.has(row as any))).toBe(false);
+    expect(validation.rows.some((row: any) => row?.id === personal.id && row?.name === personal.name)).toBe(true);
+    const invalid = { ...personal, catalogue: { ...personal.catalogue } };
+    // An invalid field uses the normal validator rather than the immutable cache.
+    invalid.catalogue.facts = [{ ...personal.catalogue.facts[0], reported: '' }];
+    expect(yeastReferences([invalid as HopKnowledge]).some(row => row.id === invalid.id)).toBe(false);
   });
 });

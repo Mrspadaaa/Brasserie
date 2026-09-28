@@ -16,13 +16,17 @@ import {
   type BatchDetailSection
 } from '../../domain/productionInsights';
 
-const number = (value: number | null | undefined, digits = 1) =>
-  value == null || !Number.isFinite(value)
-    ? '—'
-    : value.toLocaleString('fr-CH', {
-        minimumFractionDigits: digits === 3 ? 3 : 0,
-        maximumFractionDigits: digits === 3 ? 5 : digits
-      });
+const numberFormats = new Map<number, Intl.NumberFormat>();
+const number = (value: number | null | undefined, digits = 1) => {
+  if (value == null || !Number.isFinite(value)) return '—';
+  let format = numberFormats.get(digits);
+  if (!format) {
+    format = new Intl.NumberFormat('fr-CH', { minimumFractionDigits: digits === 3 ? 3 : 0,
+      maximumFractionDigits: digits === 3 ? 5 : digits });
+    numberFormats.set(digits, format);
+  }
+  return format.format(value);
+};
 function Measure({
   label,
   value,

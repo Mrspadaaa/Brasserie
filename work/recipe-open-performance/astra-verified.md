@@ -1,0 +1,13 @@
+**Avis favorable à la livraison locale c289 sur e04. Le P2 identité/focus est levé ; aucun nouveau P1/P2 applicatif identifié sur les corrections examinées.**
+
+- **Navigation retenue et vérifiée.** La clé par recette réinitialise B, tandis que les notifications du même ID conservent l’état. La chaîne des sources d’overlays restitue le bouton original. Le parcours direct **A → Ctrl+K → B → Échap**, hors ligne à 390/1280, couvre maintenant le contre-exemple signalé. [Preuve](C:/Users/mrspa/.codex/worktrees/recipe-open-performance/Brasserie/work/recipe-open-performance/evidence/reading-final-verified/results.json).
+- **Correction documentaire retenue.** Le WeakSet reconnaît uniquement les objets exacts du décodeur, entièrement validés et profondément figés. Copies personnelles, enrichissements et corruptions restent contrôlés. Cela traite bien la revalidation révélée par Android, en complément des snapshots stables et des montages différés. [Source](C:/Users/mrspa/.codex/worktrees/recipe-open-performance/Brasserie/src/domain/yeastReferences.ts:34).
+- **Bénéfice local confirmé.** Les six échantillons utilisent les mêmes fixtures, avec zéro connaissance personnelle : première fiche **1262→280 ms**, maximum après **296 ms** ; premiers arôme/analyses, maxima **137/206 ms**. C’est une bonne tranche locale, sans blocage d’une seconde reporté aux premiers rapports observés. Ce comparatif mesure **l’ensemble du correctif contre la base**, pas le gain isolé du WeakSet.
+
+Les journaux confirment **88 tests**, **sept refus discriminants de la base**, build réussi et **23/22 contrôles fonctionnels** sur le complément.
+
+Le rapport actualisé distingue correctement série standard e04, sonde c289 et Android avant correction. Deux précisions finales : expliciter que la sonde n’isole pas le gain du WeakSet ; qualifier le commit QA/documentation de **prévu** tant que ces fichiers restent non commités. La réserve sur `getBrewerActivity` est exacte : son code peut effectivement modifier les jobs expirés.
+
+Restent ouverts : construction initiale synchrone, adaptation ciblée à l’API d’en-tête Levure, vérifications après intégration et mesure physique après publication autorisée. Les **2018 ms Android** confirment le défaut déployé ; ils ne prouvent aucun résultat après correctif.
+
+Revue limitée aux sources, tests et preuves existants ; aucune exécution supplémentaire ni lecture de trace brute.

@@ -4,39 +4,84 @@ import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewpor
 import './page-shell.css';
 
 const PAGE_OVERLAYS = [
-  'dialog[open]', '[role="dialog"]', '[role="alertdialog"]',
+  'dialog[open]:not([role="presentation"]):not([role="none"])', '[role="dialog"]', '[role="alertdialog"]',
   '[role="menu"]', '[role="listbox"]', '[data-page-overlay]',
   '[data-vaul-overlay]', '[data-radix-popper-content-wrapper]',
   '[role="alert"]', '[role="status"]', '[aria-live]:not([aria-live="off"])'
 ].join(',');
 // A drawer's focus scope can still run during its closing transition. Defer to
 // the mounted, visible dialog until its trap cleans up, even with data-state=closed.
-const PAGE_DIALOGS = 'dialog[open], [role="dialog"], [role="alertdialog"]';
+// Desktop capture panels use an open dialog as a non-modal inline container.
+// Their presentation role does not own a focus trap or consume the page's Escape.
+const PAGE_DIALOGS = 'dialog[open]:not([role="presentation"]):not([role="none"]), [role="dialog"], [role="alertdialog"]';
 const pageScopes: HTMLElement[] = [];
 const pageInert = new Map<HTMLElement, string | null>();
+const pageOpenerSources = new WeakMap<HTMLElement, HTMLElement | null>();
+const pageOverlaySources = new WeakMap<HTMLElement, HTMLElement | null>();
 let isolationObserver: MutationObserver | undefined;
 
-/** Layout visibility, independent of inert that this scope temporarily owns. */
-function pageElementShown(element: HTMLElement) {
-  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
-    const style = getComputedStyle(node);
-    if (node.hidden || node.getAttribute('aria-hidden') === 'true' || style.display === 'none' || style.visibility === 'hidden') return false;
-    if (node instanceof HTMLDetailsElement && !node.open && !node.querySelector('summary')?.contains(element)) return false;
+function connectedPageOpener(opener: HTMLElement | null) {
+  let target = opener;
+  const seen = new Set<HTMLElement>();
+  // A real lazy page can capture the fallback's focused main during render.
+  // Follow that removed page's source rather than losing the return target.
+  while (target && !target.isConnected) {
+    let scope = target.closest<HTMLElement>(`[data-page-shell],${PAGE_OVERLAYS}`);
+    while (scope && !pageOpenerSources.has(scope) && !pageOverlaySources.has(scope)) {
+      scope = scope.parentElement?.closest<HTMLElement>(`[data-page-shell],${PAGE_OVERLAYS}`) ?? null;
+    }
+    if (!scope || seen.has(scope)) return null;
+    seen.add(scope);
+    target = pageOpenerSources.get(scope) ?? pageOverlaySources.get(scope) ?? null;
   }
-  return true;
+  return target;
 }
 
+/** One synchronous visibility pass. Never retain styles across a DOM/CSS change. */
+function pageVisibilityCheck() {
+  const visibleAncestors = new Map<HTMLElement, boolean>();
+  const ancestorsShown = (node: HTMLElement): boolean => {
+    const cached = visibleAncestors.get(node);
+    if (cached !== undefined) return cached;
+    const style = getComputedStyle(node);
+    const shown = style.display !== 'none' && style.visibility !== 'hidden' &&
+      (!node.parentElement || ancestorsShown(node.parentElement));
+    visibleAncestors.set(node, shown);
+    return shown;
+  };
+  return (element: HTMLElement) => {
+    // Closed documentary sections often contain many status/live nodes. Reject
+    // them without forcing style/layout reads, preserving their summary's access.
+    for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+      if (node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
+      if (node instanceof HTMLDetailsElement && !node.open && !node.querySelector('summary')?.contains(element)) return false;
+    }
+    return ancestorsShown(element);
+  };
+}
+/** Layout visibility, independent of inert that this scope temporarily owns. */
+const pageElementShown = (element: HTMLElement) => pageVisibilityCheck()(element);
+
 const foregroundPage = () => pageScopes.at(-1);
-function pageOverlayShown(element: HTMLElement) {
-  if (!pageElementShown(element)) return false;
+function pageOverlayShown(element: HTMLElement, shown: (element: HTMLElement) => boolean) {
   for (let node: HTMLElement | null = element; node; node = node.parentElement) {
     // Ignore only inert introduced here; a pre-existing inert surface stays disabled.
     if (node.hasAttribute('inert') && !(pageInert.has(node) && pageInert.get(node) === null)) return false;
   }
-  return true;
+  return shown(element);
 }
-const pageOverlays = () => [...document.querySelectorAll<HTMLElement>(PAGE_OVERLAYS)].filter(pageOverlayShown);
-const hasPageDialog = () => [...document.querySelectorAll<HTMLElement>(PAGE_DIALOGS)].some(pageOverlayShown);
+const pageOverlays = () => {
+  const page = foregroundPage();
+  const shown = pageVisibilityCheck();
+  // Internal announcements/dialogs are already permitted by the page branch.
+  // Only external portals can add a branch or receive focus outside that page.
+  return [...document.querySelectorAll<HTMLElement>(PAGE_OVERLAYS)].filter(element =>
+    !page?.contains(element) && pageOverlayShown(element, shown));
+};
+const hasPageDialog = () => {
+  const shown = pageVisibilityCheck();
+  return [...document.querySelectorAll<HTMLElement>(PAGE_DIALOGS)].some(element => pageOverlayShown(element, shown));
+};
 
 /** Keep the active page, portals and announcements; isolate only their sibling branches. */
 function refreshPageIsolation() {
@@ -67,11 +112,12 @@ function refreshPageIsolation() {
 
 function pageFocusTargets(page: HTMLElement) {
   const surfaces = [page, ...pageOverlays()];
+  const shown = pageVisibilityCheck();
   return [...document.querySelectorAll<HTMLElement>(
     'button, a[href], input, select, textarea, summary, [tabindex], [contenteditable="true"], [contenteditable="plaintext-only"]'
   )].filter(element => surfaces.some(surface => surface.contains(element)) &&
     element.tabIndex >= 0 && !element.matches(':disabled, input[type="hidden"]') &&
-    !element.closest('[inert]') && pageElementShown(element));
+    !element.closest('[inert]') && shown(element));
 }
 
 /**
@@ -160,6 +206,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       target?.focus({ preventScroll: true });
     };
     pageScopes.push(page);
+    pageOpenerSources.set(page, opener);
     refreshPageIsolation();
     if (!isolationObserver) {
       isolationObserver = new MutationObserver(refreshPageIsolation);
@@ -174,10 +221,16 @@ export const PageShell: React.FC<PageShellProps> = ({
       const target = event.target as HTMLElement;
       if (page.contains(target)) { lastFocus = target; return; }
       // Portaled dialogs own their focus; live alerts may carry a retry action.
-      if (hasPageDialog() || pageOverlays().some(overlay => overlay.contains(target))) return;
+      const overlay = pageOverlays().find(surface => surface.contains(target));
+      if (overlay) {
+        pageOverlaySources.set(overlay, lastFocus ?? scrollRef.current);
+        return;
+      }
+      if (hasPageDialog()) return;
       focusPage();
     };
     const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' && event.key !== 'Escape') return;
       if (event.defaultPrevented || foregroundPage() !== page || hasPageDialog()) return;
       const target = event.target as HTMLElement;
       if (event.key === 'Escape') {
@@ -202,8 +255,9 @@ export const PageShell: React.FC<PageShellProps> = ({
       if (!pageScopes.length) { isolationObserver?.disconnect(); isolationObserver = undefined; }
       refreshPageIsolation();
       const remaining = foregroundPage();
-      if (opener?.isConnected && !opener.closest('[inert]') && pageElementShown(opener) &&
-        (!remaining || remaining.contains(opener)) && !hasPageDialog()) opener.focus({ preventScroll: true });
+      const target = connectedPageOpener(opener);
+      if (target?.isConnected && !target.closest('[inert]') && pageElementShown(target) &&
+        (!remaining || remaining.contains(target)) && !hasPageDialog()) target.focus({ preventScroll: true });
     };
   }, [opener]);
 

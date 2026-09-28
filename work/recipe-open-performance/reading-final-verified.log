@@ -1,0 +1,39 @@
+{
+  "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-final-check",
+  "viewports": [
+    {
+      "width": 390,
+      "offline": {
+        "online": false,
+        "errors": [],
+        "catalogueUnavailable": false,
+        "primary": true
+      },
+      "stateRetainedAfterDisclosureAndSnapshots": true,
+      "changedRecipeDetected": true,
+      "freshStateForDirectCommandRecipe": true,
+      "directCommandReturnFocus": "Ouvrir la recette Lecture actualisée",
+      "primaryAndUnvisitedNoloAvailableOffline": true,
+      "initialReadWrites": 0,
+      "fixtureUpdatesOnly": true
+    },
+    {
+      "width": 1280,
+      "offline": {
+        "online": false,
+        "errors": [],
+        "catalogueUnavailable": false,
+        "primary": true
+      },
+      "stateRetainedAfterDisclosureAndSnapshots": true,
+      "changedRecipeDetected": true,
+      "freshStateForDirectCommandRecipe": true,
+      "directCommandReturnFocus": "Ouvrir la recette Lecture actualisée",
+      "primaryAndUnvisitedNoloAvailableOffline": true,
+      "initialReadWrites": 0,
+      "fixtureUpdatesOnly": true
+    }
+  ],
+  "external": [],
+  "errors": []
+}

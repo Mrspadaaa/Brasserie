@@ -149,7 +149,7 @@ export interface Fermentable {
    * **0 % pour le lactose**. C'est ce champ qui répare la densité finale.
    */
   fermentabilityPct?: number;
-  /** Jour d'ajout quand `use === 'fermentation'` : candi étagé, purée de fruits. */
+  /** Jour relatif au début prévu du programme (J0), si `use === 'fermentation'`. */
   dayOffset?: number;
 }
 
@@ -178,7 +178,7 @@ export interface HopIngredient {
   timeMin?: number;
   /** Whirlpool / hop stand : température de contact, qui pilote l'isomérisation. */
   tempC?: number;
-  /** Houblonnage à cru : jour depuis la mise en fermenteur (0 = à l'ensemencement). */
+  /** Houblonnage à cru : repère J0 du programme prévu ; la date réelle d'ajout est suivie ailleurs. */
   dayOffset?: number;
   /** Ancien champ libre. Conservé en lecture pour les brassins déjà enregistrés. */
   step?: string;
@@ -198,7 +198,15 @@ export interface HopIngredient {
 export interface YeastSpec {
   stockItemRef?: string;
   fermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
+  /** Durable documentary sheet explicitly adopted for this catalogue identity. */
+  adoptedDocumentary?: import('../../functions/src/yeastDocumentarySheet').YeastDocumentarySheet;
+  /** Documentary values scoped to this recipe/lot ingredient, without catalogue identity. */
+  localDocumentary?: import('../../functions/src/yeastDocumentarySheet').YeastLocalDocumentary;
   technicalFacts?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalFact[];
+  /** Product narrative with response provenance; separate from this recipe/lot's legacy notes. */
+  documentaryNotes?: import('../../functions/src/yeastTechnicalFacts').YeastDocumentaryNotes;
+  /** Explicitly retained observation for recipe calculations; null means the reviewed range is still unknown. Other observations remain in technicalFacts. */
+  technicalSelections?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalSelections;
   name: string;
   hopIndexId?: string;
   /** Lallemand, White Labs, Fermentis, GigaYeast, Omega… */

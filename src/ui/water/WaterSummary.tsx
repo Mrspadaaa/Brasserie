@@ -18,6 +18,7 @@ type Props = Pick<
   | "spargeAcid"
   | "lactate"
   | "hasSparge"
+  | "waterModelIssue"
 >;
 export function WaterSummary({
   state,
@@ -31,6 +32,7 @@ export function WaterSummary({
   spargeAcid,
   lactate,
   hasSparge,
+  waterModelIssue,
 }: Props) {
   return (
     <>
@@ -67,7 +69,9 @@ export function WaterSummary({
             </div>
             <span className="block text-2xs sm:text-sm text-cave-400 leading-snug mt-0.5">
               {allSaltsInMash
-                ? "100 % des sels sont versés dans la cuve d’empâtage. L’eau de rinçage est ajustée uniquement à l’acide."
+                ? waterModelIssue
+                  ? "100 % des sels sont versés dans la cuve d’empâtage. L’acide du rinçage reste à mesurer ou titrer."
+                  : "100 % des sels sont versés dans la cuve d’empâtage. L’eau de rinçage est ajustée uniquement à l’acide."
                 : "Répartition proportionnelle des sels entre empâtage et rinçage."}
             </span>
           </div>
@@ -75,7 +79,7 @@ export function WaterSummary({
       )}
       <section className="space-y-2">
         <h2 className="text-sm font-semibold text-cave-200">
-          Total des additifs nécessaires
+          {waterModelIssue ? "Additifs retenus à préparer" : "Total des additifs nécessaires"}
         </h2>
         <WaterAdditivesTable
           doses={state.doses}
@@ -90,9 +94,11 @@ export function WaterSummary({
         />
 
         <p className="text-2xs sm:text-sm text-cave-400 leading-snug px-1">
-          Chaque dose se verse dans son eau. L’acide calculé à l’empâtage
-          respecte le HCO₃ total du profil ; le rinçage vise pH {formatDecimal(spargeAcid.targetPh)}.
-          {" "}Le pH d’empâtage reste à mesurer avant une correction.
+          {waterModelIssue
+            ? <>{waterModelIssue} Seules les doses d’acide saisies manuellement figurent dans ce tableau ; les autres restent à mesurer ou titrer.</>
+            : <>Chaque dose se verse dans son eau. L’acide calculé à l’empâtage
+              respecte le HCO₃ total du profil ; le rinçage vise pH {formatDecimal(spargeAcid.targetPh)}.
+              {" "}Le pH d’empâtage reste à mesurer avant une correction.</>}
           {lactate > 0 && state.acidId === "lactique" && (
             <> Dans la bière finie, cela fait {formatDecimal(lactate)} g/L d’acide lactique.</>
           )}

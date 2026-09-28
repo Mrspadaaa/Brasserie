@@ -146,6 +146,7 @@ export function describeMoment(hop: HopIngredient): string {
         ? `${hop.timeMin ?? 20} min à ${hop.tempC} °C`
         : `${hop.timeMin ?? 20} min`;
     case 'dryHop':
-      return hop.dayOffset ? `J+${hop.dayOffset}` : 'dès la mise en cuve';
+      return hop.dayOffset === undefined || !Number.isFinite(hop.dayOffset) || hop.dayOffset < 0 ? 'jour à préciser'
+        : hop.dayOffset === 0 ? 'J0 · début prévu' : `J+${hop.dayOffset}`;
   }
 }

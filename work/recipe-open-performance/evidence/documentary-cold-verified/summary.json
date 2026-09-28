@@ -1,0 +1,59 @@
+{
+  "environment": {
+    "browserVersion": "Chrome/153.0.8010.53",
+    "width": 390,
+    "cpuRate": 6,
+    "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-final-check",
+    "sampleCount": 3,
+    "profiling": false,
+    "directOpening": true,
+    "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+    "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+  },
+  "phases": {
+    "open-cold": {
+      "n": 3,
+      "medianMs": 280.29999999981374,
+      "minMs": 279,
+      "maxMs": 296.1999999997206
+    },
+    "first-grain": {
+      "n": 3,
+      "medianMs": 40.09999999962747,
+      "minMs": 36.3000000002794,
+      "maxMs": 40.10000000009313
+    },
+    "first-aroma": {
+      "n": 3,
+      "medianMs": 136.39999999990687,
+      "minMs": 120.6999999997206,
+      "maxMs": 136.60000000009313
+    },
+    "first-advanced": {
+      "n": 3,
+      "medianMs": 200.60000000009313,
+      "minMs": 194.6999999997206,
+      "maxMs": 205.70000000018626
+    },
+    "edit-cold": {
+      "n": 3,
+      "medianMs": 797.7999999998137,
+      "minMs": 793.3000000002794,
+      "maxMs": 810.3999999999069
+    },
+    "open-warm": {
+      "n": 3,
+      "medianMs": 190.10000000009313,
+      "minMs": 183.20000000018626,
+      "maxMs": 303.89999999990687
+    },
+    "edit-warm": {
+      "n": 3,
+      "medianMs": 271.3000000002794,
+      "minMs": 269.60000000009313,
+      "maxMs": 345.20000000018626
+    }
+  },
+  "errors": [],
+  "remote": []
+}

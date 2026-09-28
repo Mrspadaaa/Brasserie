@@ -108,7 +108,10 @@ describe('Atelier de levure dans une recette', () => {
     fireEvent.blur(screen.getByLabelText('Durée du palier 1 (jours)'));
     expect(screen.getByRole('button', { name: 'Appliquer cette levure et ces paliers' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Choisir la levure seulement' })).toBeEnabled();
-    expect(screen.queryByRole('figure')).not.toBeInTheDocument();
+    const timeline = screen.getByRole('figure', { name: 'Calendrier des températures de fermentation' });
+    expect(timeline).toHaveAttribute('data-total-days', 'inconnu');
+    expect(timeline).toHaveTextContent('Fin de consigne inconnue');
+    expect(timeline.querySelector('svg')).toBeNull();
     expect(memory.writes).not.toHaveBeenCalled();
   });
   it('relit le programme figé sans écriture et expose les changements de température', async () => {
@@ -166,7 +169,7 @@ describe('Atelier de levure dans une recette', () => {
     expect(host.container.querySelectorAll('[data-contact]')).toHaveLength(1);
     expect(host.container.querySelector('[data-contact="0"]')).toHaveAttribute('data-day','4');
     expect(host.container.querySelector('[data-contact="0"]')).toHaveAttribute('data-hours','48');
-    expect(screen.getByRole('list',{name:'Contacts de houblon à cru'})).toHaveTextContent('Mosaic · jour non fixé');
+    expect(screen.getByRole('list',{name:'Contacts de houblon à cru'})).toHaveTextContent('Contact à cru : jour inconnu · Mosaic');
     expect(screen.getByRole('list',{name:'Contacts de houblon à cru'})).toHaveTextContent('non placé sur la frise');
     expect(screen.getByText(/bande : fenêtre de la fiche/)).toBeVisible();
   });

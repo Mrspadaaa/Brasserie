@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readYeastTechnicalFacts, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
+import { readYeastTechnicalFacts, type YeastDocumentaryNote, type YeastDocumentaryNotes, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import { applyYeastFacts, factsForStock, factsFromStock, ingredientGaps, sanitizeFacts, yeastFactChanges } from '../../src/domain/ingredientFacts';
 import { normalizeRecipe, captureSnapshot, yeastFromLegacy } from '../../src/domain/recipeSnapshot';
 import { readRecipeText, writeRecipeText } from '../../src/domain/recipeTransfer';
@@ -47,6 +47,41 @@ describe('Faits de levure transportables et données partielles', () => {
   });
   it('conserve aussi l’absence de forme dans le transfert', () => {
     expect(readRecipeText(writeRecipeText({ ...fullRecipe, yeast: liquid }))?.yeast).toEqual(liquid);
+  });
+  it('conserve les notes documentaires absentes, inconnues, effacées et sourcées dans recette et snapshots', () => {
+    const note: YeastDocumentaryNote = { text: 'Vérifier l’identité du lot avant d’interpréter ce repère.', origin: 'ai',
+      source: 'Réponse de recherche', sourceUrl: 'https://example.org/candidate-a', retrievedAt: '2026-09-26' };
+    const states: Array<YeastDocumentaryNotes | undefined> = [undefined, null, [], [note]];
+    for (const documentaryNotes of states) {
+      const yeast: YeastSpec = { ...liquid, notes: 'Note propre à ce brassin',
+        ...(documentaryNotes === undefined ? {} : { documentaryNotes }) };
+      const recipe = { ...fullRecipe, yeast };
+      const portable = readRecipeText(writeRecipeText(recipe))!;
+      const imported = normalizeRecipeImport(portable, 'local', true);
+      const frozen = captureSnapshot(recipe);
+      if (documentaryNotes === undefined) {
+        expect(Object.prototype.hasOwnProperty.call(portable.yeast, 'documentaryNotes')).toBe(false);
+        expect(imported.yeast?.documentaryNotes).toBeUndefined();
+        expect(frozen.yeast?.documentaryNotes).toBeUndefined();
+      } else {
+        expect(portable.yeast?.documentaryNotes).toEqual(documentaryNotes);
+        expect(imported.yeast?.documentaryNotes).toEqual(documentaryNotes);
+        expect(frozen.yeast?.documentaryNotes).toEqual(documentaryNotes);
+      }
+      expect(portable.yeast?.notes).toBe('Note propre à ce brassin');
+      expect(frozen.yeast?.notes).toBe('Note propre à ce brassin');
+    }
+
+    const yeast = { ...liquid, documentaryNotes: [note] };
+    const scenario = { modelVersion: 'yeast-recipe-2' as const, yeastId: '', styleId: 'unknown' as const,
+      goal: 'balanced' as const, ferulicRest: false,
+      applied: { yeast, volumeL: 20, fermentation: [], mashSteps: [] } };
+    const baseline = { ...fullRecipe, yeast, yeastDesign: scenario };
+    const reopened = readRecipeText(writeRecipeText(baseline))!;
+    expect(readYeastRecipeDesign(reopened)?.applied.yeast.documentaryNotes).toEqual([note]);
+    const changedNote = { ...note, sourceUrl: 'https://example.org/candidate-a-revised' };
+    expect(yeastRecipeDesignChanged({ ...baseline, yeast: { ...yeast, documentaryNotes: [changedNote] } }, readYeastRecipeDesign(baseline)!)).toBe(true);
+    expect(baseline.yeastDesign.applied.yeast.documentaryNotes).toEqual([note]);
   });
   it('conserve la conduite v2, les cultures et les hypothèses cellulaires dans la copie', () => {
     const recipe = { ...fullRecipe, yeast: { ...liquid, stockItemRef: 'local-yeast' },
@@ -110,7 +145,7 @@ describe('Acceptation et réutilisation des faits de levure', () => {
     const stock = { id: 'rare', ref: 'rare', name: liquid.name, category: 'Levure', unit: 'mL', currentStock: 250,
       minStock: 0, reorder: false, ...fields } satisfies StockItem;
     const stored = factsFromStock(JSON.parse(JSON.stringify(stock)));
-    const reused = completeFromStockReferences([], [], { name: liquid.name, qty: 125, unit: 'mL' }, [stock]).yeast;
+    const reused = completeFromStockReferences([], [], { name: liquid.name, qty: 125, unit: 'mL', stockItemRef: stock.ref }, [stock]).yeast;
     expect(stored).toMatchObject({ technicalFacts: expect.arrayContaining([range]), form: 'liquide', flocculation: 'Moyenne', alcoholTolerancePct: 12.5, note: found.note });
     expect(reused).toMatchObject({ form: 'liquide', qty: 125, unit: 'mL', technicalFacts: expect.arrayContaining([range]) });
     expect(applyYeastFacts(reused, stored).technicalFacts).toEqual(reused.technicalFacts);

@@ -9,6 +9,7 @@ import { estimateMashPh, targetRaForGrist, raSaltCeilingForGrist, raForGrist } f
 import { waterProfileTarget, waterTreatmentTarget } from './water/profileTarget';
 import { SALT_IDS } from './water/substances';
 import { calculateWaterTreatment } from './water/treatment';
+import { noloWaterModelIssue } from './noloWaterModelIssue';
 
 export type WaterReadingsRecipe = Pick<Recipe,
   'waterPlan' | 'fermentables' | 'hops' | 'style' | 'volumeL' | 'boilMin' | 'efficiencyPct' | 'brewhouse' | 'nolo'>;
@@ -43,7 +44,10 @@ export function describeSavedRecipeWater(recipe: WaterReadingsRecipe) {
       ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio)
     })
   }, raBand);
-  const phEstimate = estimateMashPh(grains, treatment.mashPhRa, mashRatio);
+  const waterModelIssue = noloWaterModelIssue(recipe.nolo, mashRatio);
+  const phEstimate = waterModelIssue ? undefined : estimateMashPh(grains, treatment.mashPhRa, mashRatio);
+  const retainedAcid = plan.acidOverride ?? (plan.acid
+    ? { mash: plan.acid.mash, sparge: plan.acid.sparge } : undefined);
   const start = dilute(source, plan.diRatioPct);
   const og = BrewingMath.calculateOg(fermentables, recipe.volumeL,
     recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? 75);
@@ -55,6 +59,6 @@ export function describeSavedRecipeWater(recipe: WaterReadingsRecipe) {
     : hopBalanceHint(hops, ibu, og, style.ratio)?.ratio ?? (style.ratio.min + style.ratio.max) / 2);
   const profile = waterProfileTarget(style, start, plan.targetIons, requestedRatio,
     !plan.targetIons || plan.ratioOverride != null);
-  return { treatment, raBand, beerEbc, style, phEstimate, targetPh: plan.targetPh,
+  return { treatment, raBand, beerEbc, style, phEstimate, waterModelIssue, retainedAcid, targetPh: plan.targetPh,
     requestedRatio, targetRanges: profile.ranges };
 }

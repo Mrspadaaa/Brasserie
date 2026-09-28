@@ -9,7 +9,7 @@ qaLookup.set('Culture QA R-125', { found: true, name: 'Culture QA R-125', lab: '
   strain: 'R-125', form: 'liquide', attenuationPct: 81, tempMinC: 17, tempMaxC: 24,
   flocculation: 'Moyenne', alcoholTolerancePct: 12.5,
   note: 'Fixture synthétique : données de contrôle, aucune recommandation de brassage.',
-  source: 'Fixture QA synthétique · https://example.invalid/r-125', technicalFacts: [
+  source: 'Fixture QA synthétique · https://example.invalid/r-125', sourceUrl: 'https://example.invalid/r-125', technicalFacts: [
     { key: 'attenuation', reported: '77,25–82,75 %', range: { min: 77.25, max: 82.75 }, unit: '%', qualifier: 'range', origin: 'ai', source: 'Fixture QA synthétique', sourceUrl: 'https://example.invalid/r-125', retrievedAt: '2026-09-20', context: 'Moût témoin QA' },
     { key: 'alcoholTolerance', reported: 'Au moins 12,5 %', range: { min: 12.5, max: 12.5 }, unit: '% v/v', qualifier: 'atLeast', origin: 'ai', source: 'Fixture QA synthétique', sourceUrl: 'https://example.invalid/r-125' },
     { key: 'fermentationTime', reported: '12 jours indicatifs', range: { min: 12, max: 12 }, unit: 'd', qualifier: 'reportedPoint', origin: 'ai', source: 'Fixture QA synthétique', context: 'Moût témoin QA ; aucune fin de fermentation garantie.' },

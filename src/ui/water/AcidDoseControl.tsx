@@ -10,13 +10,15 @@ export const AcidDoseControl: React.FC<{
   unit: string;
   amount: number;
   force: boolean;
+  status?: "unknown" | "manual" | "calculated";
   hco3?: number;
   descriptionId?: string;
   disabled?: boolean;
   onDose: (v: number) => void;
   onEditStart?: () => void;
   onEditEnd?: () => void;
-}> = ({ label, name, unit, amount, force, hco3, descriptionId, disabled = false, onDose, onEditStart, onEditEnd }) => {
+}> = ({ label, name, unit, amount, force, status, hco3, descriptionId, disabled = false, onDose, onEditStart, onEditEnd }) => {
+  const doseStatus = status ?? (force ? "manual" : "calculated");
   const presse = useHoldRepeat(amount, onDose, (from, delta) =>
     Math.max(0, Math.round((from + delta) * 10) / 10),
   );
@@ -27,15 +29,15 @@ export const AcidDoseControl: React.FC<{
       <span className="block text-xs leading-tight text-cave-400">
         {label} <span className="sm:hidden">({unit})</span>
 
-        <span className={`hidden sm:inline ${force ? "text-ebc-straw" : "text-cave-400"}`}>
+        <span className={`hidden sm:inline ${doseStatus === "manual" ? "text-ebc-straw" : "text-cave-400"}`}>
           {" "}
-          · {force ? "manuel" : "calculé"} ({unit})
+          · {doseStatus === "unknown" ? "à déterminer" : doseStatus === "manual" ? "manuel" : "calculé"} ({unit})
         </span>
       </span>
       <div className="flex items-stretch mt-0.5">
         <button
           type="button"
-          disabled={disabled || amount <= 0}
+          disabled={disabled || !Number.isFinite(amount) || amount <= 0}
           {...presse(-0.5)}
           aria-label={`Retirer 0,5 ${unit} — ${label}`}
           className="w-6 min-h-8 shrink-0 rounded-l-control bg-cave-800 active:bg-cave-700
@@ -57,7 +59,7 @@ export const AcidDoseControl: React.FC<{
         />
         <button
           type="button"
-          disabled={disabled}
+          disabled={disabled || !Number.isFinite(amount)}
           {...presse(0.5)}
           aria-label={`Ajouter 0,5 ${unit} — ${label}`}
           className="w-6 min-h-8 shrink-0 rounded-r-control bg-cave-800 active:bg-cave-700

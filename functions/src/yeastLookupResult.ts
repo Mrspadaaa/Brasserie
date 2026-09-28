@@ -7,6 +7,7 @@ function documentUrl(value: unknown): boolean {
   try {
     const url = new URL(value);
     return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password &&
+      !((url.pathname === '' || url.pathname === '/') && !url.search && !url.hash) &&
       !/\.(?:png|jpe?g|gif|webp|avif|svg|ico)(?:\/|$)/i.test(url.pathname);
   } catch { return false; }
 }

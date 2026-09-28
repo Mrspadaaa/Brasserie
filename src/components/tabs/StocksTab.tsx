@@ -1,9 +1,9 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useRef } from 'react';
 import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop } from 'lucide-react';
-import { StockItem, EquipmentItem, KegItem, Batch } from '../../types';
+import { StockItem, EquipmentItem, KegItem, Batch, Recipe } from '../../types';
 import { StorageService } from '../../services/storage';
 import { Units } from '../../services/units';
-import { computeStockLevel, shortfall } from '../../domain/stockLevel';
+import { compareRecipeWithStock, computeStockLevel, shortfall, type RecipeStockComparison } from '../../domain/stockLevel';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
 import { StockRow } from '../../ui/StockRow';
@@ -20,7 +20,7 @@ import { INVENTORY_REASONS, InventoryReason } from '../../services/storage';
 import { ExpenseSheet } from '../../ui/finance/ExpenseSheet';
 import { EquipmentSheet } from '../../ui/EquipmentSheet';
 import { KegSheet } from '../../ui/KegSheet';
-import { useLiveSelection } from '../../hooks/useLiveData';
+import { useLiveSelection, useStorageValue } from '../../hooks/useLiveData';
 import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
 import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
@@ -31,6 +31,8 @@ const HopIndexPanel = lazy(() =>
     default: HopIndexWorkspace,
   })),
 );
+
+const readRecipes = () => StorageService.getRecipes();
 
 interface StocksTabProps {
   stocks: {
@@ -100,6 +102,16 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     () => [...stocks.rawMaterials, ...stocks.cleaning],
     [stocks.rawMaterials, stocks.cleaning]
   );
+  const savedRecipes = useStorageValue(readRecipes);
+  const recipes = useMemo(() => savedRecipes
+    .filter(recipe => !recipe.archivedAt)
+    .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
+  [savedRecipes]);
+  const [recipeId, setRecipeId] = useState('');
+  const selectedRecipe = recipes.find(recipe => recipe.id === recipeId) ?? null;
+  const recipeComparison = useMemo(() => selectedRecipe
+    ? compareRecipeWithStock(selectedRecipe, batches, allItems)
+    : [], [selectedRecipe, batches, allItems]);
   const [selected, setSelected] = useLiveSelection(allItems, 'ref');
   const [creating, setCreating] = useState(false);
   const [copiedSupplier, setCopiedSupplier] = useState<string | null>(null);
@@ -341,8 +353,63 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       {subTab === 'hops' && <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>}
 
       {subTab === 'stock' && (
+        <>
+        <details className="shrink-0 border-b border-cave-800">
+          <summary className="flex min-h-touch cursor-pointer items-center justify-between gap-2 py-1.5 text-sm text-cave-50">
+            <span className="font-semibold">Comparer une recette</span>
+            <span className="min-w-0 text-right text-xs text-cave-400">{selectedRecipe?.name ?? 'Besoin prévu face au stock'}</span>
+          </summary>
+          <div className="space-y-2 pb-2">
+            {recipes.length === 0
+              ? <p className="text-xs text-cave-400">Aucune recette enregistrée.</p>
+              : <Combobox
+                  id="stock-recipe-comparison"
+                  ariaLabel="Recette à comparer"
+                  value={selectedRecipe?.id ?? ''}
+                  onChange={setRecipeId}
+                  options={recipes.map(recipe => ({
+                    value: recipe.id,
+                    label: recipe.name,
+                    detail: [recipe.style, Number.isFinite(recipe.volumeL) ? `${recipe.volumeL} L` : ''].filter(Boolean).join(' · '),
+                    keywords: recipe.style
+                  }))}
+                  placeholder="Choisir une recette…"
+                  compact
+                />}
+            {selectedRecipe && <>
+              <p className="text-xs leading-snug text-cave-400">
+                Essai sans réservation : ses manques restent hors « À commander ». Libre = stock physique moins ingrédients encore réservés aux brassins en cours ; les consommations sont déjà retirées du physique. Commandes entrantes non suivies.
+              </p>
+              {recipeComparison.some(row => row.stockItem) && <div aria-label="Légende de la barre de stock" className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
+                <span className="text-water">Réservé</span><span className="text-attention">Besoin prévu</span><span className="text-hop">Libre</span><span className="text-alert-strong">Manque</span>
+              </div>}
+              {recipeComparison.length === 0
+                ? <p className="text-xs text-cave-400">Aucun ingrédient renseigné dans cette recette.</p>
+                : <ul className="space-y-1.5">
+                    {recipeComparison.map((comparison: RecipeStockComparison) => comparison.stockItem
+                      ? <li key={comparison.key}>
+                          <StockRow
+                            item={comparison.stockItem}
+                            batches={batches}
+                            stockItems={allItems}
+                            comparison={comparison}
+                            onOpen={setSelected}
+                            onToggleFavorite={item => StorageService.toggleFavorite('stockItem', item.ref)}
+                          />
+                        </li>
+                      : <li key={comparison.key} className="border-b border-cave-800 py-1.5">
+                          <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+                            <span className="text-sm font-medium text-cave-50 break-words">{comparison.label}</span>
+                            <span className="shrink-0 font-mono text-sm text-cave-200">{comparison.quantity === null || !comparison.unit ? 'Inconnu' : Units.format(comparison.quantity, comparison.unit)}</span>
+                          </div>
+                          <p className="text-xs text-attention">{comparison.issue}</p>
+                        </li>)}
+                  </ul>}
+            </>}
+          </div>
+        </details>
         <EntityList
-          className="flex-1"
+          className={`flex-1 ${mobile ? 'pb-16' : ''}`}
           items={visibleItems}
           keyOf={(i) => i.ref}
           groupOf={(i) => i.category}
@@ -350,7 +417,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}
           searchPlaceholder="Rechercher un article…"
-          header={allItems.length > 0 && <SegmentedControl className="stock-filters" label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
+          header={allItems.length > 0 && <SegmentedControl className={`stock-filters ${mobile ? 'pr-16' : ''}`} label="Filtrer les articles" value={stockFilter} onChange={setStockFilter} options={[
             { value: 'all', label: `Tous · ${allItems.length}` },
             { value: 'order', label: `À commander · ${totalToOrder}` },
             { value: 'favorite', label: `Épinglés · ${favoriteCount}` }
@@ -389,6 +456,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             />
           )}
         />
+        </>
       )}
 
       {subTab === 'courses' && (
@@ -484,6 +552,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       <StockDetailSheet stockItems={allItems}
         item={selected}
         batches={batches}
+        recipeCheck={selectedRecipe && selected ? (() => {
+          const comparison = recipeComparison.find(row => row.stockItem?.ref === selected.ref);
+          return comparison ? { recipeName: selectedRecipe.name, comparison } : null;
+        })() : null}
         onClose={() => setSelected(null)}
         onSave={(item) => StorageService.updateStockItem(typeOf(item), item)}
         onDelete={(item) => StorageService.deleteStockItem(typeOf(item), item.ref)}

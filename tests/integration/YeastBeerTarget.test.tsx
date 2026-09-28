@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { YeastBeerTargetPanel } from '../../src/ui/YeastBeerTargetPanel';
 import { BrewWizard } from '../../src/pages/BrewWizard';
-import { readYeastRecipeDesign } from '../../src/domain/yeastRecipeDesign';
+import { applyYeastBeerTargetIntent, readYeastRecipeDesign } from '../../src/domain/yeastRecipeDesign';
 import { projectYeastRecipe } from '../../src/domain/yeastProjection';
 import { readRecipeText, writeRecipeText } from '../../src/domain/recipeTransfer';
 import { normalizeRecipe } from '../../src/domain/recipeSnapshot';
@@ -27,7 +27,22 @@ function Host({ initial = initialRecipe(), changed = vi.fn(), navigate = vi.fn()
 }
 const click = (name: string | RegExp) => fireEvent.click(screen.getByRole('button', { name, exact: typeof name === 'string' }));
 const change = (label: string, value: string) => { const field = screen.getByRole('textbox', { name: label, exact: true }); expect(field).toBeVisible(); fireEvent.change(field, { target: { value } }); fireEvent.blur(field); };
-const example = (value: string) => { click('Définir ma cible'); fireEvent.change(screen.getByRole('combobox', { name: 'Point de départ' }), { target: { value } }); };
+const openObjectives = () => {
+  const objectives = document.querySelector<HTMLButtonElement>('[data-station-toggle="objectives"]');
+  if (objectives?.getAttribute('aria-expanded') === 'false') fireEvent.click(objectives);
+};
+const example = (value: 'session' | 'stout' | 'champagne') => {
+  openObjectives();
+  const sample = {
+    session: { label: 'Session NEIPA douce, peu amère, très légère', finish: 'round' },
+    stout: { label: 'Stout très amère et chocolatée', accent: 'chocolate' },
+    champagne: { label: 'Bière de Champagne assez sucrée', finish: 'sweet', sparkling: true },
+  }[value];
+  click('Définir ma cible'); change('Ma cible', sample.label);
+  if ('finish' in sample) fireEvent.change(screen.getByRole('combobox', { name: 'Finale recherchée' }), { target: { value: sample.finish } });
+  if ('accent' in sample) fireEvent.change(screen.getByRole('combobox', { name: 'Accent recherché' }), { target: { value: sample.accent } });
+  if ('sparkling' in sample) fireEvent.click(screen.getByRole('checkbox', { name: 'Effervescence marquée recherchée' }));
+};
 const targets = () => { change('Alcool cible minimum', '2,5'); change('Alcool cible maximum', '3,5'); change('IBU à chaud cible minimum', '10'); change('IBU à chaud cible maximum', '20'); };
 
 describe('Cible de bière, levure personnelle et variantes explicites', () => {
@@ -41,6 +56,20 @@ describe('Cible de bière, levure personnelle et variantes explicites', () => {
     expect(screen.getByRole('combobox', { name: 'Finale recherchée' })).toHaveValue('round');
     expect(screen.getByRole('button', { name: 'Préparer une variante chiffrée' })).toBeDisabled();
     expect(changed).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { label: 'Bière de Champagne assez sucrée', finish: 'sweet' as const, sparkling: true },
+    { label: 'Stout très amère et chocolatée', accent: 'chocolate' as const },
+    { label: 'Session NEIPA douce, peu amère, très légère', finish: 'round' as const },
+  ])('rouvre une ancienne cible personnelle sans réintroduire son exemple comme option : $label', target => {
+    const saved = applyYeastBeerTargetIntent(initialRecipe(), target, refs);
+    const restored = normalizeRecipe({ ...readRecipeText(writeRecipeText(saved))!, id: saved.id });
+    render(<Host initial={restored} />);
+    click('Ajuster ma cible'); click('Modifier la cible');
+    expect(screen.getByRole('textbox', { name: 'Ma cible' })).toHaveValue(target.label);
+    expect(screen.queryByRole('combobox', { name: 'Point de départ' })).not.toBeInTheDocument();
+    expect(readYeastRecipeDesign(restored)?.beerTarget).toMatchObject(target);
   });
 
   it('prépare une NEIPA légère, compare trois plages exactes et conserve le cru jusqu’à application', () => {
@@ -205,13 +234,13 @@ describe('Cible de bière, levure personnelle et variantes explicites', () => {
     const props = { config: defaultConfig, stockItems: [], knownStyles: ['NEIPA'], onSave: save, onClose: vi.fn(), onSaveWaterSource: vi.fn(), onLearnIngredient: vi.fn(), onCreateStockItem: vi.fn() };
     const view = render(<BrewWizard {...props} seed={{ recipe: initial }} />);
     allerEtape('Levure'); example('session'); targets(); click('Préparer une variante chiffrée'); click('Appliquer cible et variante');
-    allerEtape('Houblons'); allerEtape('Levure'); expect(screen.getByRole('button', { name: 'Ajuster ma cible' })).toBeVisible();
+    allerEtape('Houblons'); allerEtape('Levure'); openObjectives(); expect(screen.getByRole('button', { name: 'Ajuster ma cible' })).toBeVisible();
     allerEtape('Récapitulatif'); click('Enregistrer la recette');
     expect(save).toHaveBeenCalledTimes(1); const saved = save.mock.lastCall![0] as Recipe;
     expect(saved.yeast.name).toBe(initial.yeast.name); expect(saved.hops[1]).toEqual(initial.hops[1]);
     expect(saved.fermentables![0].weightKg).toBeLessThan(initial.fermentables![0].weightKg);
     expect(readYeastRecipeDesign(saved)?.beerTarget?.abv).toEqual({ min: 2.5, max: 3.5 });
-    view.unmount(); render(<BrewWizard {...props} seed={{ recipe: saved }} />); allerEtape('Levure'); click('Ajuster ma cible'); click('Modifier la cible');
+    view.unmount(); render(<BrewWizard {...props} seed={{ recipe: saved }} />); allerEtape('Levure'); openObjectives(); click('Ajuster ma cible'); click('Modifier la cible');
     expect(screen.getByRole('textbox', { name: 'Alcool cible maximum' })).toHaveValue('3,5');
   });
 });

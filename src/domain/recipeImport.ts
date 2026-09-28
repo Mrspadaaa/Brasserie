@@ -52,6 +52,16 @@ export function normalizeRecipeImport(
     warnings.push(message);
     clean.notesCreation = [clean.notesCreation, `${label} : ${unparsed(value)}`].filter(Boolean).join('\n');
   };
+  const hasIncomingAdoptedDocumentary = d.yeast?.adoptedDocumentary !== undefined;
+  const hasIncomingLocalDocumentary = d.yeast?.localDocumentary !== undefined;
+  if (via === 'ia' && (hasIncomingAdoptedDocumentary || hasIncomingLocalDocumentary)) {
+    if (clean.yeast) { delete clean.yeast.adoptedDocumentary; delete clean.yeast.localDocumentary; }
+    rejected('Une fiche documentaire adoptée doit venir d’une action explicite dans l’application.',
+      'Fiche documentaire non adoptée', { adoptedDocumentary: d.yeast.adoptedDocumentary, localDocumentary: d.yeast.localDocumentary });
+  } else if (via === 'local' && hasIncomingAdoptedDocumentary && hasIncomingLocalDocumentary) {
+    rejected('Les fiches locale et catalogue sont toutes deux présentes ; leur portée reste à choisir.',
+      'Portées documentaires en conflit', { adoptedDocumentary: d.yeast.adoptedDocumentary, localDocumentary: d.yeast.localDocumentary });
+  }
   if (d.yeastDesign !== undefined && !clean.yeastDesign) {
     rejected('Scénario de levure invalide ou non reconnu : aucun scénario de remplacement créé.',
       'Scénario levure non importé', d.yeastDesign);
@@ -65,12 +75,13 @@ export function normalizeRecipeImport(
     hopIndexId: 'Référence de levure', form: 'Forme de levure', qty: 'Quantité de levure',
     unit: 'Unité de levure', lab: 'Laboratoire', strain: 'Souche',
     fermentationFacts: 'Données fermentaires sourcées',
-    technicalFacts: 'Faits de levure sourcés', technicalSource: 'Source de la fiche',
+    technicalFacts: 'Faits de levure sourcés', technicalSelections: 'Plages documentaires retenues', documentaryNotes: 'Notes documentaires', technicalSource: 'Source de la fiche',
+    adoptedDocumentary: 'Fiche documentaire adoptée', localDocumentary: 'Fiche documentaire locale',
     attenuationBasis: 'Base de l’atténuation', flocculation: 'Floculation', alcoholTolerancePct: 'Tolérance alcoolique',
     pitchTempC: 'Température d’ensemencement', fermTempMinC: 'Température minimale de fermentation',
     fermTempMaxC: 'Température maximale de fermentation', attenuationPct: 'Atténuation', fermentDays: 'Durée de fermentation'
   })) {
-    if (d.yeast?.[key] != null && clean.yeast?.[key] === undefined) {
+    if (!((key === 'adoptedDocumentary' || key === 'localDocumentary') && via === 'ia') && d.yeast?.[key] !== undefined && clean.yeast?.[key] === undefined) {
       rejected(`${label} invalide : valeur non importée.`, label, d.yeast[key]);
     }
   }

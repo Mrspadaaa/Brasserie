@@ -1,4 +1,5 @@
 import type { Recipe } from '../types';
+import { readYeastDocumentaryView } from '../services/recipeDraft';
 
 export type RecipeStepId = 'identite' | 'fermentescibles' | 'houblons' | 'levure' | 'paliers' | 'eau' | 'recap';
 export interface RecipeFieldIssue {
@@ -73,6 +74,11 @@ export function recipeSaveIssues(recipe: Recipe): RecipeFieldIssue[] {
   if (recipe.yeast?.attenuationPct != null && (!Number.isFinite(recipe.yeast.attenuationPct) || recipe.yeast.attenuationPct < 0 || recipe.yeast.attenuationPct > 100)) {
     if (!Number.isFinite(recipe.yeast.attenuationPct)) knownNonFinite = true;
     add('wz-yeast-range', 'levure', 'Atténuation de la levure : valeur attendue entre 0 et 100 %.');
+  }
+  if (recipe.yeast) {
+    const documentary = readYeastDocumentaryView(recipe.yeast);
+    if (documentary.status === 'invalid' || documentary.status === 'conflict')
+      add('wz-yeast-documentary', 'levure', `${documentary.message} Corrige la portée documentaire avant d’enregistrer.`);
   }
   (recipe.mash?.steps ?? []).forEach((item, i) => {
     number(item.tempC, 0, `wz-mash-temp-${i}`, 'paliers', `Température du palier ${i + 1}`, 100);

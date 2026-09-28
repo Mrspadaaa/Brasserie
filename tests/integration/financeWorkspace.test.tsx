@@ -57,26 +57,27 @@ describe('Comptabilité quotidienne intégrée',()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    expect(screen.queryByRole('img',{name:'Évolution mensuelle, montants exacts dans le tableau suivant'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('group',{name:/Scénario mensuel à venir/})).not.toBeInTheDocument();
     const summary=screen.getByText('Comparer les mois',{exact:true});
     summary.focus();fireEvent.click(summary);
     expect(summary).toHaveFocus();
-    expect(await screen.findByRole('table',{name:'Prévision mensuelle selon le scénario sélectionné'})).toBeVisible();
-    await waitFor(()=>expect(screen.getByRole('img',{name:'Évolution mensuelle, montants exacts dans le tableau suivant'})).toBeVisible());
+    expect(await screen.findByRole('table',{name:/Scénario mensuel à venir/})).toBeVisible();
+    await waitFor(()=>expect(screen.getByRole('group',{name:/Scénario mensuel à venir/})).toBeVisible());
   });
   it('fait varier les sorties et les soldes mensuels du même montant lorsque le projet de matériel est exclu',async()=>{
     FinanceService.saveProfile({...FinanceService.getProfile(),openingCash:{date:todayISO(),amountCents:100000,confirmed:true}});
     StorageService.addTransaction(tx());
     FinanceService.savePlan({id:'POMPE',title:'Pompe prévue',date:todayISO(),amountCents:20000,direction:'out',category:'materiel',source:'equipment',status:'active',createdAt:new Date().toISOString()});
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-    const outgoing=()=>screen.getByText(/Sorties (prévues|renseignées)/).parentElement;
+    const summary=within(screen.getByRole('region',{name:/Prévision sur/}));
+    const outgoing=()=>summary.getByText(/Sorties (prévues|renseignées)/).parentElement;
     expect(outgoing()).toHaveTextContent('350,00');
     fireEvent.click(screen.getByText('Comparer les mois',{exact:true}));
-    const table=within(await screen.findByRole('table',{name:'Prévision mensuelle selon le scénario sélectionné'}));
-    expect(table.getAllByRole('row')[1]).toHaveTextContent('350,00 CHF650,00 CHF');
+    const table=within(await screen.findByRole('table',{name:/Scénario mensuel à venir/}));
+    expect(table.getAllByRole('row')[1]).toHaveTextContent(/350,00\s*CHF\s*0,00\s*CHF\s*650,00\s*CHF/);
     fireEvent.click(screen.getByRole('checkbox',{name:/Inclure mes projets de matériel/}));
     expect(outgoing()).toHaveTextContent('150,00');
-    expect(table.getAllByRole('row')[1]).toHaveTextContent('150,00 CHF850,00 CHF');
+    expect(table.getAllByRole('row')[1]).toHaveTextContent(/150,00\s*CHF\s*0,00\s*CHF\s*850,00\s*CHF/);
     expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
   });
   it('ne redemande pas le solde déjà confirmé lorsque les paiements empêchent de calculer la trésorerie',()=>{
@@ -128,7 +129,7 @@ describe('Comptabilité quotidienne intégrée',()=>{
     render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
     expect(screen.getByText('Factures à régler').parentElement).toHaveTextContent('150,00');
     expect(screen.getByText('Budgets et estimations').parentElement).toHaveTextContent('80,00');
-    const due=within(screen.getByRole('heading',{name:'Prochaines échéances'}).closest('section')!);
+    const due=within(screen.getByRole('heading',{name:'Échéances et estimations à venir'}).closest('section')!);
     expect(due.queryByRole('button',{name:/^Achat prévu 8/})).not.toBeInTheDocument();
     fireEvent.click(due.getByRole('button',{name:'Voir les 3 échéances suivantes'}));
     expect(due.getByRole('button',{name:/^Achat prévu 8/})).toBeVisible();
@@ -149,7 +150,7 @@ describe('Comptabilité quotidienne intégrée',()=>{
     try {
       for(const [id,date] of [['Dans 29 jours','2026-10-08'],['Dans 30 jours','2026-10-09'],['Dernier jour inclus','2027-09-08'],['Anniversaire exclu','2027-09-09']]) FinanceService.savePlan({id,title:id,date,amountCents:1000,direction:'out',category:'divers',source:'manual',status:'active',createdAt:new Date().toISOString()});
       render(<Workspace/>);fireEvent.click(screen.getByRole('tab',{name:'Prévisions'}));
-      const due=()=>within(screen.getByRole('heading',{name:'Prochaines échéances'}).closest('section')!);
+      const due=()=>within(screen.getByRole('heading',{name:'Échéances et estimations à venir'}).closest('section')!);
       fireEvent.click(screen.getByRole('button',{name:'30 jours',exact:true}));
       expect(due().getByRole('button',{name:/^Dans 29 jours/})).toBeInTheDocument();
       expect(due().queryByRole('button',{name:/^Dans 30 jours/})).not.toBeInTheDocument();

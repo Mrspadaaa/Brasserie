@@ -54,10 +54,13 @@ describe('Bilan aromatique en lecture seule', () => {
     const initial=recipe(), before=structuredClone(initial), onEdit=vi.fn();
     render(<HopRecipePanel recipe={initial} onEdit={onEdit} />);
     expect(screen.getByText('US-05 · lecture seule')).toBeInTheDocument();
-    expect(screen.getByText(/À cru · phase à préciser/)).toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     expect(screen.queryByText('Adéquation au profil recherché')).not.toBeInTheDocument();
+    expect(screen.queryByText('Composition, thiols et phénols')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Analyses aromatiques avancées'));
+    await screen.findByText('Composition, thiols et phénols');
+    expect(screen.getByText(/À cru · phase à préciser/)).toBeInTheDocument();
     fireEvent.click(screen.getByText('Composition, thiols et phénols'));
     fireEvent.click(await screen.findByRole('button', {name:'Phénols et polyphénols'}));
     expect(screen.getByText(/Phénols de levure/)).toBeInTheDocument();

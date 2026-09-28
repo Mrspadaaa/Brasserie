@@ -22,6 +22,9 @@
   .water-radar .water-radar-legend {
     display: none;
   }
+  .water-controls .water-radar-caption {
+    display: none;
+  }
 
   .water-controls .water-salt-cell {
     padding: 1px;

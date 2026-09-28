@@ -1,13 +1,14 @@
 import type { HopRange, HopSource } from '../../functions/src/hopIndexSchema';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { YeastFactKey } from '../../functions/src/yeastCatalogueSchema';
-import { alcoholPercentUnit, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
+import { alcoholPercentUnit, readYeastFactValue, readYeastTechnicalFacts, type YeastFactQualifier, type YeastFactReading, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import type { Fermentable, YeastSpec } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
 import { yeastAcidifyingProductSource, yeastCultureComposition, yeastStyleEvidence } from './yeastStyleEvidence';
 import { resolveBrewingStyle } from './brewingStyles';
 import { readIngredientFermentationFacts, type IngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { noloScience } from './noloScience';
+import { beerSheetContext, readYeastDocumentaryView, yeastFactScope, type YeastHistoricalScalarReading } from './ingredientFacts';
 import type { NoloSugar } from '../../functions/src/noloSchema';
 
 export type YeastFermentationProcess = 'unspecified' | 'preacidified' | 'acidifying-yeast' | 'mixed-culture';
@@ -15,7 +16,7 @@ export type YeastCultureRole = { name: string; role: 'alcoholic' | 'acidifying' 
 export type YeastAttenuationBasis = 'declared' | 'recipe' | 'measured';
 export interface YeastDossierMeasurement {
   range: HopRange;
-  qualifier: 'range' | 'reportedPoint' | 'atLeast' | 'upTo';
+  qualifier: YeastFactQualifier;
   sources: HopSource[];
   basis?: YeastAttenuationBasis;
 }
@@ -24,7 +25,9 @@ export interface YeastDossier {
   temperature?: YeastDossierMeasurement;
   attenuation?: YeastDossierMeasurement;
   documentedAttenuation?: YeastDossierMeasurement;
+  historicalScalarReading?: YeastHistoricalScalarReading;
   alcoholTolerance?: YeastDossierMeasurement;
+  flocculation: YeastFactReading;
   warnings: string[];
 }
 export interface YeastProjectionEstimate {
@@ -32,6 +35,12 @@ export interface YeastProjectionEstimate {
   reasons: string[];
   sources: HopSource[];
   confidence: 'low' | 'medium' | 'high';
+}
+export interface YeastProjectionFermentableGap {
+  /** Index in the recipe's fermentables array, suitable for a direct editor target. */
+  index: number;
+  name: string;
+  missingFields: Array<'weightKg' | 'potentialPpg' | 'fermentabilityPct'>;
 }
 export interface YeastRecipeProjection {
   modelVersion: 'yeast-projection-3';
@@ -41,12 +50,13 @@ export interface YeastRecipeProjection {
   attenuation?: YeastDossierMeasurement;
   dossier: YeastDossier;
   warnings: string[];
+  /** Ingredient-backed correction targets; never reconstructed from reason text. */
+  incompleteFermentables: YeastProjectionFermentableGap[];
   extract?: { totalPoints: number; wortPoints: number; sugarPoints: number; unfermentablePoints: number; lateAdditionPoints: number };
 }
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const uniqueSources = (sources: HopSource[]) => [...new Map(sources.map(s => [s.reference, s])).values()];
-const brewingContext = (context: string | undefined) => !context || /^(beer|bière|biere|wort|moût|mout)$/i.test(context) || context === 'Conversion exacte Fahrenheit → Celsius, arrondie au dixième.';
 const point = (value: number, basis?: YeastAttenuationBasis, sources: HopSource[] = []): YeastDossierMeasurement => ({ range: { min: value, max: value }, qualifier: 'reportedPoint', sources, ...(basis ? { basis } : {}) });
 const suppliedSource = (fact: YeastTechnicalFact): HopSource[] => fact.source || fact.sourceUrl ? [{
   author: fact.origin === 'manufacturer' ? 'Fiche fabricant' : fact.origin === 'personal' ? 'Fiche personnelle' : 'Source proposée',
@@ -119,19 +129,38 @@ export function yeastRecipeBoilOg(recipe: ExtractInputs, projection: Pick<YeastR
 
 /** Numeric metadata never creates a source or turns a one-sided bound into a range. */
 export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): YeastDossier {
+  const view = readYeastDocumentaryView(yeast), effectiveYeast = view.effectiveYeast;
   const catalogue = reference?.catalogue?.facts ?? [];
-  const facts = [...yeast.technicalFacts ?? [], ...catalogue.map((f): YeastTechnicalFact => ({
+  const localFacts = readYeastTechnicalFacts(view.technicalFacts) ?? [];
+  const catalogueFacts = readYeastTechnicalFacts(catalogue.map((f): YeastTechnicalFact => ({
     key: f.key, reported: f.reported, origin: 'manufacturer', ...(f.range ? { range: f.range, unit: f.unit, qualifier: f.qualifier } : {}),
     source: f.source.title, ...(f.source.reference.startsWith('http') ? { sourceUrl: f.source.reference } : {}), ...(f.context ? { context: f.context } : {})
-  }))];
+  }))) ?? [];
+  const facts = [...localFacts, ...catalogueFacts];
   const warnings: string[] = [];
-  const read = (key: YeastFactKey, unit: string): YeastDossierMeasurement | undefined => {
+  if (view.status === 'invalid') warnings.push('Fiche documentaire adoptée invalide ou liée à une autre identité ; ses champs adoptés sont ignorés.');
+  const selections = view.technicalSelections;
+  const read = (key: 'temperature' | 'attenuation' | 'alcoholTolerance', unit: string): YeastDossierMeasurement | undefined => {
+    if (selections && Object.prototype.hasOwnProperty.call(selections, key)) {
+      const retained = selections[key];
+      if (!retained) { warnings.push(`${key} : plage retenue inconnue après revue.`); return undefined; }
+      const validSelection = retained.key === key && readYeastTechnicalFacts([retained])?.length === 1 &&
+        retained.range && (key === 'alcoholTolerance' ? alcoholPercentUnit(retained.unit) : retained.unit === unit) &&
+        beerSheetContext(retained.context, key) && !!retained.qualifier;
+      if (!validSelection) { warnings.push(`${key} : sélection documentaire invalide.`); return undefined; }
+      if (localFacts.some(fact => fact.key === key && fact.range &&
+        (fact.range.min !== retained.range!.min || fact.range.max !== retained.range!.max)))
+        warnings.push(`${key === 'temperature' ? 'Température' : key === 'attenuation' ? 'Atténuation' : 'Tolérance à l’alcool'} : observations divergentes conservées ; seule la plage explicitement retenue sert à la projection.`);
+      return { range: { ...retained.range! }, qualifier: retained.qualifier!, sources: suppliedSource(retained),
+        ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
+    }
     // A personal dossier describes the selected product. It is not overwritten by a catalogue refresh.
-    const local = yeast.technicalFacts?.filter(f => f.key === key) ?? [];
+    const local = localFacts.filter(f => f.key === key);
     // A product sheet may list the same figure for beer and mead. Only beer
-    // observations enter the calculation; the complete sheet remains in facts.
-    const localCandidates = local.filter(f => brewingContext(f.context));
-    const catalogueCandidates = catalogue.filter(f => f.key === key && brewingContext(f.context));
+    // observations, or a bare label of this property, enter the calculation;
+    // the complete sheet remains in facts.
+    const localCandidates = local.filter(f => beerSheetContext(f.context, key));
+    const catalogueCandidates = catalogue.filter(f => f.key === key && beerSheetContext(f.context, key));
     // A personal beer observation wins. A mead-only note is retained in the
     // sheet but cannot hide a separate beer observation from the catalogue.
     const fromLocal = localCandidates.length > 0;
@@ -149,17 +178,57 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
     return { range: { ...first.range! }, qualifier: first.qualifier, sources: uniqueSources(fromLocal ? localCandidates.flatMap(suppliedSource) : catalogueCandidates.map(f => f.source)), ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
   };
   const documentedAttenuation = read('attenuation', '%');
-  const hasAttenuationFacts = facts.some(f => f.key === 'attenuation');
-  const scalarSources = yeast.technicalSource ? [{ author: 'Fiche saisie', title: yeast.name, reference: yeast.technicalSource, kind: 'observation' as const, year: null }] : [];
-  const hasScalar = finite(yeast.attenuationPct) && yeast.attenuationPct >= 0 && yeast.attenuationPct <= 100;
-  const attenuation = hasScalar && yeast.attenuationBasis !== 'declared'
-    ? point(yeast.attenuationPct!, yeast.attenuationBasis ?? 'recipe', scalarSources)
-    : documentedAttenuation ?? (hasScalar && !hasAttenuationFacts ? point(yeast.attenuationPct!, 'declared', scalarSources) : undefined);
+  const scalarSources = effectiveYeast.technicalSource ? [{ author: 'Fiche saisie', title: yeast.name, reference: effectiveYeast.technicalSource, kind: 'observation' as const, year: null }] : [];
+  const hasScalar = finite(effectiveYeast.attenuationPct) && effectiveYeast.attenuationPct >= 0 && effectiveYeast.attenuationPct <= 100;
+  // An explicit reviewed `null` blocks a legacy scalar from masquerading as a
+  // retained documentary value. A recipe/measured hypothesis remains separate.
+  const attenuationSelectionPresent = !!selections && Object.prototype.hasOwnProperty.call(selections, 'attenuation');
+  const hasExplicitHypothesis = effectiveYeast.attenuationBasis === 'recipe' || effectiveYeast.attenuationBasis === 'measured' ||
+    effectiveYeast.attenuationBasis === undefined && !attenuationSelectionPresent;
+  const attenuation = hasScalar && hasExplicitHypothesis
+    ? point(effectiveYeast.attenuationPct!, effectiveYeast.attenuationBasis ?? 'recipe')
+    : documentedAttenuation;
   const documentedTemperature = read('temperature', '°C');
-  const temperature = documentedTemperature ?? (!facts.some(f => f.key === 'temperature') && finite(yeast.fermTempMinC) && finite(yeast.fermTempMaxC) && yeast.fermTempMinC <= yeast.fermTempMaxC
-    ? { range: { min: yeast.fermTempMinC, max: yeast.fermTempMaxC }, qualifier: 'range' as const, sources: scalarSources } : undefined);
-  const alcoholTolerance = read('alcoholTolerance', '%') ?? (!facts.some(f => f.key === 'alcoholTolerance') && finite(yeast.alcoholTolerancePct) && yeast.alcoholTolerancePct >= 0 && yeast.alcoholTolerancePct <= 100 ? point(yeast.alcoholTolerancePct, undefined, scalarSources) : undefined);
-  return { facts, temperature, attenuation, documentedAttenuation, alcoholTolerance, warnings };
+  const temperatureSelectionPresent = !!selections && Object.prototype.hasOwnProperty.call(selections, 'temperature');
+  const temperature = documentedTemperature ?? (!temperatureSelectionPresent && !facts.some(f => f.key === 'temperature') && finite(effectiveYeast.fermTempMinC) && finite(effectiveYeast.fermTempMaxC) && effectiveYeast.fermTempMinC <= effectiveYeast.fermTempMaxC
+    ? { range: { min: effectiveYeast.fermTempMinC, max: effectiveYeast.fermTempMaxC }, qualifier: 'range' as const, sources: scalarSources } : undefined);
+  const alcoholToleranceSelectionPresent = !!selections && Object.prototype.hasOwnProperty.call(selections, 'alcoholTolerance');
+  const alcoholTolerance = read('alcoholTolerance', '%') ?? (!alcoholToleranceSelectionPresent && !facts.some(f => f.key === 'alcoholTolerance') && finite(effectiveYeast.alcoholTolerancePct) && effectiveYeast.alcoholTolerancePct >= 0 && effectiveYeast.alcoholTolerancePct <= 100 ? point(effectiveYeast.alcoholTolerancePct, undefined, scalarSources) : undefined);
+  const flocculationSelectionPresent = !!selections && Object.prototype.hasOwnProperty.call(selections, 'flocculation');
+  let flocculation = readYeastFactValue(undefined);
+  if (flocculationSelectionPresent) {
+    const selected = selections?.flocculation;
+    if (selected) {
+      flocculation = readYeastFactValue(selected);
+      if (flocculation.value.kind !== 'category') {
+        warnings.push('Floculation : sélection catégorielle invalide.');
+        flocculation = readYeastFactValue(undefined);
+      }
+    }
+  } else {
+    const localCategories = localFacts.filter(f => f.key === 'flocculation' && beerSheetContext(f.context, 'flocculation') && readYeastFactValue(f).value.kind === 'category');
+    const legacyText = effectiveYeast.flocculation?.trim();
+    const legacyReading: YeastFactReading | undefined = legacyText ? {
+      value: { kind: 'category', value: legacyText }, key: 'flocculation', reported: legacyText
+    } : undefined;
+    if (legacyReading) {
+      // A historical scalar has no source/origin. Never borrow one from an
+      // observation with the same text; explicit review stores its own fact.
+      flocculation = legacyReading;
+      if (localCategories.length) warnings.push('Floculation : scalaire historique sans provenance typée ; observations publiées conservées séparément.');
+    } else if (localCategories.length) {
+      const values = new Set(localCategories.map(f => f.reported.trim().toLocaleLowerCase('fr')));
+      if (values.size === 1) flocculation = readYeastFactValue(localCategories[0]);
+      else warnings.push('Floculation : catégories publiées divergentes ; aucune valeur n’est retenue.');
+    } else {
+      const catalogueCategories = catalogueFacts.filter(f => f.key === 'flocculation' && beerSheetContext(f.context, 'flocculation') && readYeastFactValue(f).value.kind === 'category');
+      const values = new Set(catalogueCategories.map(f => f.reported.trim().toLocaleLowerCase('fr')));
+      if (values.size === 1 && catalogueCategories[0]) flocculation = readYeastFactValue(catalogueCategories[0]);
+      else if (values.size > 1) warnings.push('Floculation : catégories publiées divergentes ; aucune valeur n’est retenue.');
+    }
+  }
+  return { facts, temperature, attenuation, documentedAttenuation, historicalScalarReading: view.historicalScalarReading,
+    alcoholTolerance, flocculation, warnings };
 }
 
 /** A recipe estimate, independent of catalogue coverage and product packaging.
@@ -173,40 +242,68 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   process?: YeastFermentationProcess;
   cultureRoles?: YeastCultureRole[];
 } = {}): YeastRecipeProjection {
+  const documentaryView = readYeastDocumentaryView(recipe.yeast), effectiveYeast = documentaryView.effectiveYeast;
   const dossier = resolveYeastDossier(recipe.yeast, options.reference);
-  const attenuation = options.attenuationPct !== undefined && finite(options.attenuationPct) && options.attenuationPct >= 0 && options.attenuationPct <= 100
-    ? point(options.attenuationPct, options.attenuationBasis ?? 'recipe') : dossier.attenuation;
-  const capabilities = sugarCapabilities(recipe.yeast, options.reference);
-  const globalApparent = attenuation?.basis === 'measured';
-  const explicitHypothesis = globalApparent || attenuation?.basis === 'recipe' && (recipe.yeast.attenuationBasis === 'recipe' || options.attenuationPct !== undefined);
-  const sources = uniqueSources([...(attenuation?.sources ?? []), ...(capabilities ? [capabilities.source] : [])]);
+  const optionAttenuation = options.attenuationPct !== undefined && finite(options.attenuationPct) && options.attenuationPct >= 0 && options.attenuationPct <= 100
+    ? point(options.attenuationPct, options.attenuationBasis ?? 'recipe') : undefined;
+  const hasTypedAttenuationFacts = dossier.facts.some(fact => fact.key === 'attenuation');
+  const legacyCompatibility = !optionAttenuation && !dossier.attenuation && !hasTypedAttenuationFacts && effectiveYeast.attenuationBasis === 'declared'
+    ? dossier.historicalScalarReading : undefined;
+  const compatibilityAttenuation = legacyCompatibility ? point(legacyCompatibility.value, 'declared') : undefined;
+  const calculationAttenuation = optionAttenuation ?? dossier.attenuation ?? compatibilityAttenuation;
+  // Do not expose the untyped historical scalar as a measurement-shaped value.
+  const attenuation = optionAttenuation ?? dossier.attenuation;
+  const capabilities = sugarCapabilities(effectiveYeast, options.reference);
+  const globalApparent = calculationAttenuation?.basis === 'measured';
+  const explicitHypothesis = globalApparent || calculationAttenuation?.basis === 'recipe' &&
+    (effectiveYeast.attenuationBasis === 'recipe' || options.attenuationPct !== undefined);
+  const sources = uniqueSources([...(calculationAttenuation?.sources ?? []), ...(capabilities ? [capabilities.source] : [])]);
   const warnings = dossier.warnings.filter(w => !w.startsWith('Tolérance à l’alcool'));
+  if (legacyCompatibility) warnings.push('Atténuation historique non qualifiée utilisée uniquement pour compatibilité numérique ; aucune origine ni qualification n’est inférée.');
   const unavailable = (reason: string): YeastProjectionEstimate => ({ range: null, reasons: [reason], sources, confidence: 'low' });
-  const rows = (recipe.fermentables ?? []).filter(f => f.weightKg !== 0);
+  const rows = (recipe.fermentables ?? []).map((f, index) => ({ f, index })).filter(({ f }) => f.weightKg !== 0);
+  const incompleteByIndex = new Map<number, YeastProjectionFermentableGap>();
+  const markFermentableGap = (index: number, name: string, field?: YeastProjectionFermentableGap['missingFields'][number]) => {
+    const previous = incompleteByIndex.get(index) ?? { index, name, missingFields: [] };
+    if (field && !previous.missingFields.includes(field)) previous.missingFields.push(field);
+    incompleteByIndex.set(index, previous);
+  };
   let allPoints = 0, sugarPoints = 0, unfermentablePoints = 0, lateAdditionPoints = 0;
   let complete = rows.length > 0, specialIncomplete = false;
   let compositionError: string | undefined;
   const compositionNotes: string[] = [];
-  for (const f of rows) {
+  for (const { f, index } of rows) {
     const grain = (f.kind ?? 'grain') === 'grain';
     const explicitFraction = f.fermentabilityPct;
     if (!finite(f.weightKg) || f.weightKg < 0 || explicitFraction !== undefined && (!finite(explicitFraction) || explicitFraction < 0 || explicitFraction > 100)) {
-      compositionError = `${f.name} : masse ou fermentescibilité invalide.`; complete = false; continue;
+      compositionError = `${f.name} : masse ou fermentescibilité invalide.`; complete = false;
+      if (!finite(f.weightKg) || f.weightKg < 0) markFermentableGap(index, f.name, 'weightKg');
+      continue;
     }
     const special = f.kind === 'sucre' || f.kind === 'lactose' || f.kind === 'fruit' || explicitFraction !== undefined && explicitFraction < 100;
     const points = ingredientPoints(f, recipe);
-    if (points === undefined) { complete = false; if (special || f.use === 'fermentation') specialIncomplete = true; continue; }
+    if (points === undefined) {
+      complete = false;
+      if (special || f.use === 'fermentation') {
+        specialIncomplete = true;
+        if (!finite(f.potentialPpg) || f.potentialPpg < 0) markFermentableGap(index, f.name, 'potentialPpg');
+        if (f.use === 'fermentation' && (!finite(f.weightKg) || f.weightKg < 0)) markFermentableGap(index, f.name, 'weightKg');
+      }
+      continue;
+    }
     allPoints += points;
     if (f.use === 'fermentation') lateAdditionPoints += points;
     if (!globalApparent && f.kind === 'fruit' && explicitFraction === undefined) {
-      specialIncomplete = true; compositionError = `${f.name} : part fermentescible du fruit inconnue.`; continue;
+      specialIncomplete = true; markFermentableGap(index, f.name, 'fermentabilityPct');
+      compositionError = `${f.name} : part fermentescible du fruit inconnue.`; continue;
     }
     // A malt/extract row's overall fermentability is not an additional inert
     // mass fraction to multiply by the yeast's apparent attenuation.
     if ((grain || f.kind === 'extrait') && explicitFraction !== undefined && explicitFraction < 100) compositionNotes.push(`${f.name} : la fermentabilité de ligne (${explicitFraction} %) et l’atténuation du moût ne sont pas multipliées ; l’hypothèse d’atténuation retenue décrit le moût.`);
     let fraction = grain || f.kind === 'extrait' ? 1 : (explicitFraction ?? (f.kind === 'lactose' ? 0 : 100)) / 100;
     if (!globalApparent && f.kind === 'sucre' && explicitFraction === undefined && (!simpleSugar(f.name) || /malto[ -]?dextrin|dextrine/i.test(f.name))) {
-      specialIncomplete = true; compositionError = `${f.name} : part fermentescible à préciser ; la catégorie « sucre » ne signifie pas 100 % de sucres simples.`; continue;
+      specialIncomplete = true; markFermentableGap(index, f.name, 'fermentabilityPct');
+      compositionError = `${f.name} : part fermentescible à préciser ; la catégorie « sucre » ne signifie pas 100 % de sucres simples.`; continue;
     }
     if (!globalApparent && f.kind === 'sucre' && /dextrin/i.test(f.name) && capabilities?.hydrolysis === 'positive') {
       compositionError = `${f.name} : hydrolyse documentée pour cette culture ; la part restante n’est pas quantifiable par ce modèle.`; continue;
@@ -224,17 +321,22 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   }
   const suppliedOg = options.og !== undefined ? options.og : recipe.ogTarget;
   const og = finite(suppliedOg) ? suppliedOg : options.og === null ? null : complete && allPoints > 0 ? 1 + allPoints / 1000 : null;
-  const base: Omit<YeastRecipeProjection, 'fg' | 'abv'> = { modelVersion: 'yeast-projection-3', og, dossier, attenuation, warnings };
+  const base: Omit<YeastRecipeProjection, 'fg' | 'abv'> = { modelVersion: 'yeast-projection-3', og, dossier, attenuation, warnings,
+    incompleteFermentables: [...incompleteByIndex.values()] };
   const stop = (reason: string): YeastRecipeProjection => ({ ...base, fg: unavailable(reason), abv: unavailable(reason) });
   if (recipe.nolo?.enabled) return stop('NOLO : utiliser le bilan des sucres et les analyses du panneau NOLO ; cette projection ne prédit pas l’alcool au conditionnement.');
   if (suppliedOg != null && !finite(suppliedOg)) return stop('DI fournie invalide : aucune valeur n’est substituée silencieusement.');
-  if (recipe.yeast.fermentationFacts !== undefined && !readIngredientFermentationFacts(recipe.yeast.fermentationFacts)) return stop('Données d’assimilation invalides : vérifier la fiche de cette souche.');
-  if (recipe.yeast.attenuationPct != null && (!finite(recipe.yeast.attenuationPct) || recipe.yeast.attenuationPct < 0 || recipe.yeast.attenuationPct > 100) || recipe.yeast.attenuationBasis !== undefined && !['declared', 'recipe', 'measured'].includes(recipe.yeast.attenuationBasis)) return stop('Atténuation saisie ou base invalide : vérifier la fiche de cette souche.');
+  if (effectiveYeast.fermentationFacts !== undefined && !readIngredientFermentationFacts(effectiveYeast.fermentationFacts)) return stop('Données d’assimilation invalides : vérifier la fiche de cette souche.');
+  if (effectiveYeast.attenuationPct != null && (!finite(effectiveYeast.attenuationPct) || effectiveYeast.attenuationPct < 0 || effectiveYeast.attenuationPct > 100) || effectiveYeast.attenuationBasis !== undefined && !['declared', 'recipe', 'measured'].includes(effectiveYeast.attenuationBasis)) return stop('Atténuation saisie ou base invalide : vérifier la fiche de cette souche.');
   if (options.attenuationPct !== undefined && (!finite(options.attenuationPct) || options.attenuationPct < 0 || options.attenuationPct > 100)) return stop('Atténuation choisie invalide : une valeur entre 0 et 100 % est requise.');
   if (!finite(og) || og <= 1 || og > 1.25) return stop('DI équivalente requise entre 1,000 et 1,250 SG : renseigner les potentiels, le volume et le rendement, ou une DI de recette.');
   if (compositionError || specialIncomplete && !globalApparent) return stop(compositionError ?? 'Potentiel d’un sucre, non-fermentescible ou ajout tardif manquant : son apport ne peut pas être ignoré.');
-  if (!attenuation) return stop('Atténuation absente : renseigner une hypothèse de recette ou une donnée de cette souche.');
-  if (!['range', 'reportedPoint'].includes(attenuation.qualifier)) return stop('L’atténuation publiée est une borne seule, pas une plage : choisir explicitement une hypothèse pour projeter cette recette.');
+  if (!calculationAttenuation) return stop('Atténuation absente : renseigner une hypothèse de recette ou une donnée de cette souche.');
+  if (!['range', 'reportedPoint'].includes(calculationAttenuation.qualifier)) {
+    const bound = calculationAttenuation.qualifier === 'greaterThan' ? 'strictement supérieure à' : calculationAttenuation.qualifier === 'atLeast' ? 'au moins'
+      : calculationAttenuation.qualifier === 'lessThan' ? 'strictement inférieure à' : calculationAttenuation.qualifier === 'upTo' ? 'au plus' : 'une borne';
+    return stop(`L’atténuation publiée indique ${bound} ${calculationAttenuation.range.min} %, pas une valeur à appliquer : choisir explicitement une hypothèse pour projeter cette recette.`);
+  }
   const totalPoints = (og - 1) * 1000;
   const wortPoints = totalPoints - unfermentablePoints - sugarPoints;
   if (wortPoints < -1e-8 && !globalApparent) return stop('DI incohérente avec les apports connus de sucres et non-fermentescibles ; vérifier la DI équivalente et les quantités.');
@@ -242,22 +344,26 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   const wort = Math.max(0, wortPoints);
   const documentaryContext = dossier.facts.filter(f => ['styles', 'application', 'attenuation'].includes(f.key)).map(f => `${f.reported} ${f.context ?? ''}`).join(' ');
   const nonWortUse = /\b(wine|vin|cidre|cider|mead|hydromel|seltzer|distill\w*|conditioning|conditionnement|refermentation|re-fermentation)\b/i.test(documentaryContext) ||
-    /\b(champagne|ec[ -]?1118|cbc[ -]?1)\b/i.test(`${recipe.yeast.name} ${recipe.yeast.strain ?? ''} ${options.reference?.name ?? ''}`) || options.reference && yeastStyleEvidence(options.reference).culture === 'other-fermentation';
+    /\b(champagne|ec[ -]?1118|cbc[ -]?1)\b/i.test(`${recipe.yeast.name} ${effectiveYeast.strain ?? ''} ${options.reference?.name ?? ''}`) || options.reference && yeastStyleEvidence(options.reference).culture === 'other-fermentation';
   // Match the dossier's source selection: a personal mead observation cannot
   // hide the compatible beer observation that supplies this projection.
-  const localAttenuation = recipe.yeast.technicalFacts?.filter(f => f.key === 'attenuation' && brewingContext(f.context)) ?? [];
-  const explicitWortAttenuation = (localAttenuation.length ? localAttenuation : dossier.facts.filter(f => f.key === 'attenuation')).some(f => /^(beer|bière|biere|wort|moût|mout)$/i.test(f.context ?? ''));
+  const localAttenuation = effectiveYeast.technicalFacts?.filter(f => f.key === 'attenuation' && beerSheetContext(f.context, 'attenuation')) ?? [];
+  // A bare « Atténuation apparente » label does not show that a wine or
+  // conditioning culture was measured on wort: the medium must be named.
+  const explicitWortAttenuation = (localAttenuation.length ? localAttenuation : dossier.facts.filter(f => f.key === 'attenuation')).some(f => yeastFactScope(f.context, 'attenuation') === 'beer');
   const restrictedMalt = capabilities?.sugars.maltose === 'no' || capabilities?.sugars.maltotriose === 'no';
   if (wort > 1e-8 && (nonWortUse && !explicitWortAttenuation || restrictedMalt)) {
     if (!explicitHypothesis) return stop(restrictedMalt ? 'Assimilation du malt limitée : sans profil des sucres de ce moût, choisir explicitement une hypothèse d’atténuation ou une mesure comparable.' : 'Atténuation sur moût non établie : une valeur publiée pour le vin, le cidre ou le conditionnement n’est pas transférée automatiquement. Choisir une hypothèse explicite pour cette recette.');
     warnings.push(restrictedMalt ? 'Assimilation du malt limitée : l’atténuation choisie reste une hypothèse à éprouver sur ce moût ; aucune capacité supplémentaire n’est attribuée à la souche.' : 'Usage vin/cidre/conditionnement : atténuation choisie comme hypothèse de recette ; assimilation du malt non démontrée par cette valeur.');
   }
-  if (!globalApparent && capabilities && (['glucose', 'fructose', 'sucrose', 'maltose', 'maltotriose'] as const).every(s => capabilities.sugars[s] === 'no') && attenuation.range.max > 0) return stop('Aucun sucre de ce bilan n’est assimilé d’après la fiche : l’atténuation positive choisie est contradictoire.');
-  const range = globalApparent ? { min: 1 + (og - 1) * (1 - attenuation.range.max / 100), max: 1 + (og - 1) * (1 - attenuation.range.min / 100) } : {
-    min: 1 + (unfermentablePoints + wort * (1 - attenuation.range.max / 100)) / 1000,
-    max: 1 + (unfermentablePoints + wort * (1 - attenuation.range.min / 100)) / 1000
+  if (!globalApparent && capabilities && (['glucose', 'fructose', 'sucrose', 'maltose', 'maltotriose'] as const).every(s => capabilities.sugars[s] === 'no') && calculationAttenuation.range.max > 0) return stop('Aucun sucre de ce bilan n’est assimilé d’après la fiche : l’atténuation positive choisie est contradictoire.');
+  const range = globalApparent ? { min: 1 + (og - 1) * (1 - calculationAttenuation.range.max / 100), max: 1 + (og - 1) * (1 - calculationAttenuation.range.min / 100) } : {
+    min: 1 + (unfermentablePoints + wort * (1 - calculationAttenuation.range.max / 100)) / 1000,
+    max: 1 + (unfermentablePoints + wort * (1 - calculationAttenuation.range.min / 100)) / 1000
   };
-  const reasons = [globalApparent ? 'Atténuation apparente observée sur l’ensemble du brassin : DF = 1 + (DI − 1) × (1 − atténuation). Hypothèse de répétition sur cette recette, sans seconde correction sucre/lactose.' : attenuation.basis === 'recipe' ? 'Hypothèse d’atténuation choisie pour le moût de cette recette.' : 'Atténuation annoncée pour la souche : estimation conditionnelle à ce moût, pas une mesure ni un intervalle statistique.',
+  const reasons = [legacyCompatibility ? 'Scalaire historique non qualifié appliqué par compatibilité numérique ; sa qualification reste inconnue.'
+    : globalApparent ? 'Atténuation apparente observée sur l’ensemble du brassin : DF = 1 + (DI − 1) × (1 − atténuation). Hypothèse de répétition sur cette recette, sans seconde correction sucre/lactose.'
+      : calculationAttenuation.basis === 'recipe' ? 'Hypothèse d’atténuation choisie pour le moût de cette recette.' : 'Atténuation annoncée pour la souche : estimation conditionnelle à ce moût, pas une mesure ni un intervalle statistique.',
     globalApparent ? 'Une densité apparente ne décrit pas la composition en sucres résiduels ; la recette et le procédé doivent rester comparables au brassin mesuré.' : 'Atténuation appliquée à l’extrait de moût ; apports fermentescibles déclarés et non-fermentescibles distingués. Ni DF garantie ni intervalle statistique. Aucune correction automatique liée à la température d’empâtage.', ...compositionNotes];
   if (globalApparent && unfermentablePoints > 0) warnings.push('Non-fermentescibles présents : vérifier la comparabilité de l’atténuation mesurée ; la densité apparente dépend aussi de l’alcool, pas seulement des sucres restants.');
   if (lateAdditionPoints > 0) reasons.push('La DI équivalente inclut les ajouts prévus en fermentation ; elle peut différer de la DI mesurée avant ces ajouts. Volume final supposé égal au volume de recette.');
@@ -289,9 +395,11 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   const tolerance = dossier.alcoholTolerance;
   const toleranceFloor = Math.min(...dossier.facts.filter(f => f.key === 'alcoholTolerance' && alcoholPercentUnit(f.unit) && f.range).map(f => f.range!.min));
   if (og > 1.1 || abv.range && abv.range.max > toleranceFloor) warnings.push(...dossier.warnings.filter(w => w.startsWith('Tolérance à l’alcool')));
-  if (abv.range && tolerance && abv.range.max > tolerance.range.min) warnings.push(
-    tolerance.qualifier === 'atLeast' ? `Alcool projeté au-delà de ${tolerance.range.min} % vol. La fiche annonce « au moins » cette tolérance ; la limite supérieure reste inconnue.` :
-      `Alcool projeté ${abv.range.max > tolerance.range.max ? 'au-delà de la tolérance' : 'dans la zone de tolérance'} annoncée (${tolerance.range.min === tolerance.range.max ? tolerance.range.max : `${tolerance.range.min}–${tolerance.range.max}`} % vol). Atténuation non garantie ; aucun plafond d’alcool artificiel n’est appliqué.`);
+  if (abv.range && tolerance && abv.range.max > tolerance.range.min) {
+    if (tolerance.qualifier === 'atLeast') warnings.push(`Alcool projeté au-delà de ${tolerance.range.min} % vol. La fiche annonce « au moins » cette tolérance ; la limite supérieure reste inconnue.`);
+    else if (tolerance.qualifier === 'greaterThan') warnings.push(`Alcool projeté au-delà de ${tolerance.range.min} % vol. La fiche annonce strictement plus que ce seuil ; la limite supérieure reste inconnue.`);
+    else warnings.push(`Alcool projeté ${abv.range.max > tolerance.range.max ? 'au-delà de la tolérance' : 'dans la zone de tolérance'} annoncée (${tolerance.range.min === tolerance.range.max ? tolerance.range.max : `${tolerance.range.min}–${tolerance.range.max}`} % vol${tolerance.qualifier === 'lessThan' ? ' ; strictement sous cette borne' : tolerance.qualifier === 'upTo' ? ' au plus' : ''}). Atténuation non garantie ; aucun plafond d’alcool artificiel n’est appliqué.`);
+  }
   if (finite(og) && og > 1.1 && !tolerance) warnings.push('Moût de forte densité : tolérance à l’alcool non renseignée ; confirmer la souche, l’inoculum et sa conduite.');
   return { ...base, fg, abv, extract: { totalPoints, wortPoints: wort, sugarPoints, unfermentablePoints, lateAdditionPoints } };
 }

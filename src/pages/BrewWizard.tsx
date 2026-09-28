@@ -24,7 +24,9 @@ import {
 import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
 import { recipeFieldIssues, recipeReadiness, recipeSaveIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
-import { clearRecipeDraft, readRecipeDraft, serializeRecipeDraft, writeRecipeDraft } from '../services/recipeDraft';
+import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCandidateSheet, mergeYeastCandidateSheet, readRecipeDraft, readYeastDocumentaryView, serializeRecipeDraft,
+  tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, yeastWithAdoptedDocumentary,
+  type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { defaultBrewVolume } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
@@ -42,8 +44,9 @@ import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide as SyncHopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/FermentationWorkshop';
 import { YeastRecipeContext as SyncYeastRecipeContext, YeastRecipeHeading as SyncYeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
-import { YeastRecipeChoice as SyncYeastRecipeChoice } from '../ui/YeastRecipeChoice';
+import { YeastRecipeChoice as SyncYeastRecipeChoice, startYeastChoiceChange, type YeastChoiceChange, type YeastChoiceIntent } from '../ui/YeastRecipeChoice';
 import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossier';
+import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
 import { yeastReferences } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
@@ -102,6 +105,7 @@ import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoCo
 import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
 import { BrewSheetWithCompanion as SyncBrewSheet } from '../ui/BrewSheetWithCompanion';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
+import { evaluateNoloRecipe } from '../domain/nolo';
 import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
 
 // Vitest exercises the wizard with immediate, cross-step assertions. Keep
@@ -403,6 +407,12 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   onSaveWaterSource
 }) => {
   const [restoredDraft] = useState(() => readRecipeDraft(draftKey));
+  // Accepted documentary sheets belong to the Wizard, not the mounted step.
+  const [candidateSheets, setCandidateSheets] = useState<YeastCandidateSheets>(() => restoredDraft?.candidateSheets ?? {});
+  const candidateSheetsRef = useRef(candidateSheets);
+  candidateSheetsRef.current = candidateSheets;
+  const [candidateSheetsWarning, setCandidateSheetsWarning] = useState(restoredDraft?.candidateSheetsReadWarning);
+  const [yeastChange, setYeastChange] = useState<YeastChoiceChange>();
   const base = restoredDraft?.recipe ?? seed?.recipe;
   const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
   const [details, setDetails] = useState<Partial<Recipe>>(restoredDraft?.details ?? base ?? {});
@@ -448,6 +458,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     requestAnimationFrame(() => document.getElementById('recipe-hop-simulation')?.scrollIntoView({ block: 'start' }));
   };
   const [yeastFocus, setYeastFocus] = useState<{ goal: import('../domain/yeastRecipeDesign').YeastRecipeGoal; yeastId?: string }>();
+  const yeastSelectionEpoch = useRef(0);
   useEffect(() => { if (step !== 'levure') setYeastFocus(undefined); }, [step]);
   const [yeastSelection, setYeastSelection] = useState(0);
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
@@ -621,7 +632,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    * que le brasseur ne reconnaissait pas.
    */
   const [mashRatioOverride, setMashRatioOverride] = useState<number | null>(
-    restoredDraft ? restoredDraft.mashRatioOverride : base?.installation?.manualWaterSplit === false ? null : base?.mash?.ratioLPerKg ?? null
+    restoredDraft ? restoredDraft.mashRatioOverride : base?.nolo?.planning?.simulation ? null :
+      base?.installation?.manualWaterSplit === false ? null : base?.mash?.ratioLPerKg ?? null
   );
 
   const [notes, setNotes] = useState(base?.instructions ?? seed?.description ?? '');
@@ -750,6 +762,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const spargeDi = water.spargeDiRatioPct ?? water.diRatioPct;
     const allSaltsInMash = water.allSaltsInMash !== false;
     const mashRatio = totalGrist > 0 ? water.mashWaterL / totalGrist : 0;
+    const waterModelIssue = noloWaterModelIssue(details.nolo, mashRatio);
     const band = targetRaForGrist(color?.ebc ?? null, grains, mashRatio);
     const mashAlkalinity = { ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio) };
     const alkaliGoal = alkalineSaltGoal(band, mashAlkalinity.ceiling);
@@ -758,13 +771,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const style = water.customTarget
       ? styleFromTargetIons(water.customTarget.ions, water.customTarget.name)
       : styleByCode(water.styleCode);
+    // NOLO sans modèle d'empâtage pris en charge : ne pas fabriquer de dose.
+    // Les seuls apports affichés viennent des doses explicitement retenues.
+    const acidOverride = waterModelIssue
+      ? { mash: water.acidOverride?.mash ?? 0, sparge: water.acidOverride?.sparge ?? 0 }
+      : water.acidOverride;
     const treatment = calculateWaterTreatment(waterSource,
-      { ...water, ...waterTreatmentTarget(style, water.customTarget?.ions, mashAlkalinity) }, band);
+      { ...water, acidOverride, ...waterTreatmentTarget(style, water.customTarget?.ions, mashAlkalinity) }, band);
 
     return {
       targetStatus: {
         style, treatment, raBand: band, beerEbc: color?.ebc ?? null,
-        phEstimate: noloWaterModelIssue(details.nolo,mashRatio)?null:estimateMashPh(grains, treatment.mashPhRa,
+        phEstimate: waterModelIssue ? null : estimateMashPh(grains, treatment.mashPhRa,
           totalGrist > 0 ? water.mashWaterL / totalGrist : 0),
         targetPh: details.waterPlan?.targetPh,
         customTarget: !!water.customTarget,
@@ -812,10 +830,17 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     }),
     [waterRecap]
   );
+  const noloWaterIssue = noloWaterModelIssue(details.nolo, totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
+  const noloWaterUnverified = !!noloWaterIssue;
+  // The workshop keeps source ions; the unsupported wort projection stays out
+  // of the recap and exports until the NOLO context has a supported model.
+  const waterRecapForReview = noloWaterUnverified && !water.acidOverride
+    ? { ...waterRecap, wortIons: undefined }
+    : waterRecap;
 
   /** Une saisie manuelle de volume fige les volumes : le grain ne les pilote plus. */
   const onWaterChange = (next: WaterState) => {
-    if (water.autoTreatment && next.autoTreatment === false) {
+    if (water.autoTreatment && next.autoTreatment === false && !noloWaterUnverified) {
       next = { ...next, acidOverride: { mash: waterAcid.mash, sparge: waterAcid.sparge } };
     }
     if (next.styleCode !== water.styleCode || next.customTarget !== water.customTarget) {
@@ -1041,7 +1066,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     if (r.mashSteps.length || r.complete) setMashSteps(r.mashSteps);
     if (has('fermentation')) setFerment(r.fermentation);
     if (r.mash?.spargeType != null || r.complete) setSpargeType(r.mash?.spargeType ?? 'batch');
-    if (r.mash?.ratioLPerKg != null || r.complete) setMashRatioOverride(content.installation?.manualWaterSplit === false ? null : r.mash?.ratioLPerKg ?? null);
+    if (r.mash?.ratioLPerKg != null || r.complete) setMashRatioOverride(r.nolo?.planning?.simulation || content.installation?.manualWaterSplit === false ? null : r.mash?.ratioLPerKg ?? null);
     if (r.carboTarget != null || r.complete) setCarboTarget(r.carboTarget ?? '');
     else if (r.carboVolumes != null) setCarboTarget(r.carboVolumes + ' vol');
     if (r.instructions != null || r.waterNote || r.dryHopNote || r.complete) {
@@ -1137,25 +1162,33 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
 
   const selectYeast = (selectedName: string, item?: StockItem) => {
-    const sameIdentity = yeast.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr') &&
-      yeast.stockItemRef === item?.ref;
-    if (!sameIdentity) {
-      setDetails(previous => ({ ...previous, yeastGuide: undefined, yeastDesign: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
-      setYeastSelection(n => n + 1);
+    const current = latestWizardDraft.current.recipe.yeast;
+    const sameStock = !!item && current.stockItemRef === item.ref;
+    if (sameStock) {
+      if (current.name === selectedName) return;
+      const renamed: YeastSpec = { ...current, name: selectedName };
+      const result = tryAdoptYeastDocumentary(current, renamed, { intent: 'documentary' });
+      if (result.accepted === false) { setCandidateSheetsWarning(result.message); return; }
+      setYeast(result.yeast);
+      return;
     }
-    setYeast(current => {
-      if (current.name.trim().toLocaleLowerCase('fr') === selectedName.trim().toLocaleLowerCase('fr') && current.stockItemRef === item?.ref) return current;
-      const unit = item?.unit;
-      return {
-        name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
-        form: item?.yeastForm, unit, qty: undefined, stockItemRef: item?.ref,
-        attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
-        fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
-        fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
-        flocculation: item?.yeastFlocculation, alcoholTolerancePct: item?.yeastAlcoholTolerancePct,
-        technicalSource: item?.technicalSource, notes: item?.yeastNotes, hopIndexId: undefined
-      };
-    });
+
+    const next: YeastSpec = {
+      name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
+      form: item?.yeastForm, unit: item?.unit, qty: undefined, stockItemRef: item?.ref,
+      attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
+      fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
+      fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
+      flocculation: item?.yeastFlocculation, alcoholTolerancePct: item?.yeastAlcoholTolerancePct,
+      technicalSource: item?.technicalSource, notes: item?.yeastNotes, hopIndexId: undefined
+    };
+    rememberCandidateBeforeYeastChoice(next);
+    yeastSelectionEpoch.current += 1;
+    setDetails(previous => ({ ...previous, yeastGuide: undefined, yeastDesign: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+    setYeastSelection(n => n + 1);
+    const result = tryAdoptYeastDocumentary(current, next, { intent: 'replace-selection' });
+    if (result.accepted === false) { setCandidateSheetsWarning(result.message); return; }
+    setYeast(result.yeast);
   };
 
   const build = (): Recipe => ({
@@ -1236,8 +1269,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        */
       targetIons: water.customTarget?.ions,
       targetName: water.customTarget?.name,
-      startIons: waterRecap.startIons,
-      wortIons: waterRecap.wortIons,
+      startIons: noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.startIons,
+      wortIons: noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.wortIons,
       mashWaterL: water.mashWaterL,
       spargeWaterL: water.spargeWaterL,
       allSaltsInMash: water.allSaltsInMash !== false,
@@ -1248,7 +1281,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        * Le brasseur arrivait à la cuve avec ses sels pesés et sans sa dose
        * d'acide, que la minuterie du jour ne pouvait pas lui rappeler.
        */
-      acid: details.nolo?.enabled && details.nolo.process === 'coldExtraction' ? details.waterPlan?.acid : waterAcid,
+      acid: details.nolo?.enabled && details.nolo.process === 'coldExtraction' && !water.acidOverride ? details.waterPlan?.acid :
+        noloWaterUnverified && !water.acidOverride ? undefined : waterAcid,
       disabled: water.disabled,
       targetPh: details.waterPlan?.targetPh ?? 5.4,
       // Les pH relevés à la cuve : la seule boucle de retour du modèle.
@@ -1264,12 +1298,32 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     archivedAt: base?.archivedAt
   });
 
-  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step) => {
+  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step, restoreSelection = false) => {
+    if (restoreSelection) {
+      // Undo restores the captured YeastSpec verbatim: no stock lookup, adoption or enrichment.
+      setDetails(previous => ({ ...previous, nolo: next.nolo, fermentationIntent: next.fermentationIntent,
+        yeastGuide: next.yeastGuide, yeastDesign: next.yeastDesign, hopMatrixId: next.hopMatrixId,
+        hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+      setYeast(structuredClone(next.yeast));
+      setFerment(next.fermentation ?? []);
+      setStep(destination);
+      return next;
+    }
     const enrichedYeast = (syncWizardPanels
       ? SyncCompleteFromLocalReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems, knowledge)
       : completeFromStockReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems)
     ).yeast;
     next = completeYeastRecipeDesignApplication(next, enrichedYeast);
+    if (next.nolo?.planning?.simulation && next.nolo.process !== 'coldExtraction' && next.nolo.process !== 'secondRunnings' &&
+        next.brewhouse?.equipment && next.waterPlan && evaluateNoloRecipe(next)?.simulationActive) {
+      const fit = BrewingMath.waterVolumes(next.totalGristKg, next.volumeL, next.brewhouse,
+        next.mash?.spargeType, next.boilMin, kettleHopGrams(next.hops), {
+          manualWaterSplit: { mashWaterL: next.waterPlan.mashWaterL, spargeWaterL: next.waterPlan.spargeWaterL }
+        });
+      if (fit.planningStatus === 'invalid' || fit.planningStatus === 'impossible') {
+        throw Error(`La proposition d’eau ne tient pas dans le matériel : ${fit.issues.join(' ')} Ajuste la répartition avant de l’appliquer.`);
+      }
+    }
     const current = build();
     const preparationChanged = (['fermentables', 'hops', 'volumeL', 'boilMin', 'mash', 'waterPlan', 'carboTarget', 'efficiencyPct'] as const)
       .some(key => JSON.stringify(next[key]) !== JSON.stringify(current[key]));
@@ -1306,15 +1360,23 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     return `${formatDecimal(perdu)} L évaporés — autant d’eau à prévoir en plus dans la cuve.`;
   }, [volumeL, boilMin, brewhouse]);
   const stepIndex = STEPS.findIndex((s) => s.id === step);
-  const resizeForEquipment=(profile=brewhouse, targetL=defaultBrewVolume(profile))=>{
+  const resizeForEquipment=(profile=brewhouse, targetL=defaultBrewVolume(profile), destination: StepId = 'identite')=>{
     try {
       if(!profile)return;
       const resized=adaptRecipeEquipment(build(),profile,targetL);
       applyImport(normalizeRecipeImport(resized,'local',true), resized);
-      setStep('identite');
+      setStep(destination);
       setEquipmentNotice(`Recette adaptée à ${formatDecimal(resized.volumeL)} L : ingrédients, eaux, sels et acide recalculés.`);
     }catch(e){setEquipmentNotice(e instanceof Error?e.message:'Adaptation impossible.');}
   };
+  const noloNeedsEquipmentAdoption = !!details.nolo?.enabled && installationNeedsAdoption && !!configuredBrewhouse?.equipment;
+  const noloEquipmentPrompt = () => <aside aria-label="Matériel requis pour le scénario NOLO" className="rounded-control border border-ebc-amber/40 bg-ebc-amber/10 p-2 space-y-2 text-sm text-cave-200">
+    <p>Cette recette n’a pas de matériel figé. Adapte-la à {configuredBrewhouse!.name} avant de préparer le scénario NOLO : la proposition montrera alors les volumes d’eau calculés avec ses limites de rinçage.</p>
+    <button type="button" className="equipment-button" onClick={() => resizeForEquipment(configuredBrewhouse, volumeL, step)}>
+      Adapter à mon matériel actuel · {configuredBrewhouse!.name}
+    </button>
+    {equipmentNotice && <p role="alert" className="text-ebc-amber">{equipmentNotice}</p>}
+  </aside>;
   const readiness = recipeReadiness(build());
   const fieldIssues = [...readiness.invalid, ...readiness.missing];
   const visibleIssues = validationRequested ? fieldIssues : [];
@@ -1344,11 +1406,148 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     return () => cancelAnimationFrame(frame);
   }, [focusIssue, step]);
 
-  const serializedDraft = serializeRecipeDraft({ recipe: { ...build(), name, style }, details, step, water: waterDraft,
-    volumesEdited, waterProfileAuto: waterProfileAuto.current, targetBasis, mashRatioOverride });
+  const wizardDraftSnapshot: RecipeWizardDraft = { recipe: { ...build(), name, style }, details, step, water: waterDraft,
+    volumesEdited, waterProfileAuto: waterProfileAuto.current, targetBasis, mashRatioOverride, candidateSheets };
+  const serializedDraft = serializeRecipeDraft(wizardDraftSnapshot);
   const firstDraft = useRef(serializedDraft);
   const latestDraft = useRef(serializedDraft);
   latestDraft.current = serializedDraft;
+  const latestWizardDraft = useRef(wizardDraftSnapshot);
+  latestWizardDraft.current = wizardDraftSnapshot;
+  const retainCandidateSheets = (next: YeastCandidateSheets) => {
+    candidateSheetsRef.current = next;
+    setCandidateSheets(next);
+    setCandidateSheetsWarning(undefined);
+  };
+  const selectedCandidateId = yeast.hopIndexId;
+  const selectedCandidateRevision = selectedCandidateId && !yeast.stockItemRef && yeast.localDocumentary === undefined
+    ? candidateSheets[selectedCandidateId]?.revision ?? 0 : 0;
+  const yeastReviewTokenFor = (value: YeastSpec, revision = 0) => JSON.stringify([
+    yeastSelectionEpoch.current, value.hopIndexId ?? null, value.stockItemRef ?? null, revision
+  ]);
+  const callbackEpoch = yeastSelectionEpoch.current;
+  const callbackBookRevision = selectedCandidateId && !yeast.stockItemRef && yeast.localDocumentary === undefined
+    ? candidateSheetsRef.current[selectedCandidateId]?.revision ?? 0 : undefined;
+  /** Recipe-scope dossier and AI edits also update the parent candidate book when a catalogue strain is selected.
+   * The extractor rejects stock/local scope and excludes recipe/measured attenuation and legacy lot notes. */
+  const updateSelectedYeastDocumentation = (next: YeastSpec, intent: YeastDocumentaryIntent = 'documentary'): RecipeYeastAcceptance => {
+    const current = latestWizardDraft.current.recipe.yeast;
+    if (callbackEpoch !== yeastSelectionEpoch.current)
+      return { accepted: false, message: 'La sélection de levure a changé pendant la correction. Rouvre sa fiche avant de réessayer.' };
+    if (current.hopIndexId !== selectedCandidateId) {
+      setCandidateSheetsWarning('La levure a changé pendant la correction. Rouvre sa fiche actuelle avant de réessayer.');
+      return { accepted: false, message: 'La levure a changé pendant la correction. Rouvre sa fiche actuelle avant de réessayer.' };
+    }
+    if (selectedCandidateId && callbackBookRevision !== undefined &&
+        callbackBookRevision !== (candidateSheetsRef.current[selectedCandidateId]?.revision ?? 0))
+      return { accepted: false, message: 'La fiche catalogue a changé pendant la correction. Rouvre sa version actuelle avant de réessayer.' };
+    if (next.hopIndexId !== selectedCandidateId)
+      return { accepted: false, message: 'La portée catalogue a changé pendant la correction. Rouvre la fiche de la souche actuelle.' };
+
+    const isLocalScope = !!current.stockItemRef || !!next.stockItemRef || current.localDocumentary !== undefined ||
+      next.localDocumentary !== undefined || !selectedCandidateId;
+    const currentSheet = !isLocalScope && selectedCandidateId ? candidateSheetsRef.current[selectedCandidateId] : undefined;
+    const hydratedCurrent = currentSheet ? mergeYeastCandidateSheet(current, currentSheet) ?? current : current;
+    const acceptedSheet = currentSheet ? adoptedDocumentaryFromCandidateSheet(currentSheet) : undefined;
+    const base = acceptedSheet ? { ...hydratedCurrent, adoptedDocumentary: acceptedSheet } : hydratedCurrent;
+    const baseView = readYeastDocumentaryView(base), nextView = readYeastDocumentaryView(next);
+    const before = baseView.effectiveYeast;
+    const documentaryFields = ['lab', 'strain', 'form', 'fermTempMinC', 'fermTempMaxC', 'flocculation',
+      'alcoholTolerancePct', 'fermentDays', 'technicalSource'] as const;
+    const fieldsChanged = documentaryFields.some(key => JSON.stringify(before[key]) !== JSON.stringify(next[key])) ||
+      JSON.stringify(before.technicalFacts) !== JSON.stringify(next.technicalFacts) ||
+      JSON.stringify(before.technicalSelections) !== JSON.stringify(next.technicalSelections) ||
+      JSON.stringify(before.documentaryNotes) !== JSON.stringify(next.documentaryNotes) ||
+      JSON.stringify(before.fermentationFacts) !== JSON.stringify(next.fermentationFacts) ||
+      ((before.attenuationBasis === 'declared' || next.attenuationBasis === 'declared') &&
+        (before.attenuationBasis !== next.attenuationBasis || before.attenuationPct !== next.attenuationPct));
+    if (intent === 'documentary' && baseView.status === 'none' && nextView.status === 'none' && !fieldsChanged) {
+      // Dose/unit/pitch/legacy notes edits are recipe operations; they must not create a documentary envelope.
+      setYeast(next);
+      return { accepted: true, yeast: next, reviewRevisionToken: yeastReviewTokenFor(next, callbackBookRevision) };
+    }
+    const adoption = tryAdoptYeastDocumentary(base, next, { intent });
+    if (adoption.accepted === false) {
+      setCandidateSheetsWarning(adoption.message);
+      return adoption;
+    }
+    const canonical = adoption.yeast;
+    const view = readYeastDocumentaryView(canonical);
+    if (view.status === 'invalid' || view.status === 'conflict') {
+      setCandidateSheetsWarning(view.message);
+      return { accepted: false, message: view.message };
+    }
+    if (isLocalScope || view.status === 'valid' && view.scope === 'local' || canonical.stockItemRef || !selectedCandidateId) {
+      setYeast(canonical);
+      setCandidateSheetsWarning(undefined);
+      return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical) };
+    }
+    if (!selectedCandidateId || canonical.hopIndexId !== selectedCandidateId)
+      return { accepted: false, message: 'Identité catalogue absente ou différente : aucune fiche n’a été retenue.' };
+    const expectedRevision = callbackBookRevision ?? 0;
+    const beforeSheet = extractYeastCandidateSheet(base);
+    const update = extractYeastCandidateSheet(canonical);
+    if (!update) {
+      setCandidateSheetsWarning('La fiche documentaire de cette levure est invalide et n’a pas été retenue. Vérifie les valeurs, unités et sources.');
+      return { accepted: false, message: 'La fiche documentaire de cette levure est invalide et n’a pas été retenue. Vérifie les valeurs, unités et sources.' };
+    }
+    if (beforeSheet && JSON.stringify(beforeSheet) === JSON.stringify(update)) {
+      setYeast(canonical);
+      setCandidateSheetsWarning(undefined);
+      return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical, expectedRevision) };
+    }
+    if (!Object.keys(update).some(key => key !== 'hopIndexId')) {
+      setYeast(canonical);
+      return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical, expectedRevision) };
+    }
+    const draftAtCommit = { ...latestWizardDraft.current, candidateSheets: candidateSheetsRef.current };
+    const acceptedSheetUpdate = tryAcceptYeastCandidateSheet(draftAtCommit, update, expectedRevision);
+    if (acceptedSheetUpdate.accepted === false) { setCandidateSheetsWarning(acceptedSheetUpdate.message); return { accepted: false, message: acceptedSheetUpdate.message }; }
+    retainCandidateSheets(acceptedSheetUpdate.draft.candidateSheets ?? {});
+    setCandidateSheetsWarning(undefined);
+    setYeast(canonical);
+    return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical, acceptedSheetUpdate.revision) };
+  };
+  /** Seed the leaving catalogue strain's saved documentary state only on an explicit identity change,
+   * never when merely reopening an older recipe. An accepted local sheet remains authoritative. */
+  const rememberCandidateBeforeYeastChoice = (next: YeastSpec) => {
+    const current = latestWizardDraft.current.recipe.yeast, id = current.hopIndexId;
+    if (!id || id === next.hopIndexId || current.stockItemRef || current.localDocumentary !== undefined || candidateSheetsRef.current[id]) return;
+    const currentForBook = yeastWithAdoptedDocumentary(current);
+    const update = extractYeastCandidateSheet(currentForBook);
+    if (!update) {
+      setCandidateSheetsWarning('La fiche documentaire de cette levure n’a pas pu être conservée. Vérifie les valeurs, unités et sources avant de changer de souche.');
+      return;
+    }
+    const hasDocumentaryData = !!update.technicalFacts?.length || update.documentaryNotes !== undefined ||
+      update.technicalSelections !== undefined || update.fermentationFacts !== undefined || !!Object.keys(update.documentary ?? {}).length;
+    if (!hasDocumentaryData) return;
+    const draftAtCommit = { ...latestWizardDraft.current, candidateSheets: candidateSheetsRef.current };
+    const accepted = tryAcceptYeastCandidateSheet(draftAtCommit, update, 0);
+    if (accepted.accepted === false) { setCandidateSheetsWarning(accepted.message); return; }
+    retainCandidateSheets(accepted.draft.candidateSheets ?? {});
+  };
+  const applyYeastChoice = (next: import('../domain/hopIndex/trials').TrialRecipe, intent: YeastChoiceIntent = 'replace-selection') => {
+    const current = latestWizardDraft.current.recipe.yeast;
+    if (intent === 'restore-selection') {
+      yeastSelectionEpoch.current += 1;
+      setYeastSelection(value => value + 1);
+      return applyFermentationRecipe(next, 'levure', true);
+    }
+    const selectionChanged = current.hopIndexId !== next.yeast.hopIndexId || current.stockItemRef !== next.yeast.stockItemRef ||
+      current.form !== next.yeast.form || intent === 'replace-selection';
+    if (selectionChanged) yeastSelectionEpoch.current += 1;
+    const sameOwner = current.stockItemRef || next.yeast.stockItemRef
+      ? current.stockItemRef === next.yeast.stockItemRef
+      : current.hopIndexId || next.yeast.hopIndexId
+        ? current.hopIndexId === next.yeast.hopIndexId : intent === 'conduct';
+    if (intent === 'replace-selection' || intent === 'conduct' && !sameOwner) rememberCandidateBeforeYeastChoice(next.yeast);
+    const adoptionIntent: YeastDocumentaryIntent = intent === 'conduct' && sameOwner ? 'documentary' : 'replace-selection';
+    const adoption = tryAdoptYeastDocumentary(current, next.yeast, { intent: adoptionIntent });
+    if (adoption.accepted === false) throw new Error(adoption.message);
+    if (adoption.yeast !== next.yeast) next = { ...next, yeast: adoption.yeast };
+    return applyFermentationRecipe(next, 'levure');
+  };
 
   useEffect(() => {
     if (!draftKey || draftFinished.current || (!restoredDraft && serializedDraft === firstDraft.current)) return;
@@ -1461,6 +1660,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       mobileHeader={mobileHeader}
       className="recipe-wizard"
       scrollKey={step}
+      wide={step === 'levure' && !details.nolo?.enabled}
       /*
        * Le fil d'étapes vit dans l'en-tête. Sur ordinateur, `PageShell` affiche
        * déjà le nom de l'étape en sous-titre : la piste seule suffit ici, et
@@ -1624,13 +1824,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               </div>
               <p className="text-xs text-cave-400">{evaporationHint}</p>
             </div>
-            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>applyFermentationRecipe(next)}/></Suspense>
+            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
+              <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} allowEnable onChange={next=>applyFermentationRecipe(next)}/></Suspense>}
 
             {(brewhouse?.equipment || installationNeedsAdoption && configuredBrewhouse?.equipment)&&<div className="space-y-2">
               <RecipeInstallationChoice recipe={build()} profile={brewhouse} onChange={next=>setDetails(d=>({...d,installation:next.installation}))}/>
               <p className="text-sm text-cave-200">{installationNeedsAdoption ? 'Installation à adopter' : 'Matériel du plan'} : {(installationNeedsAdoption ? configuredBrewhouse : brewhouse)?.name}</p>
               {volumeL!==defaultBrewVolume(installationNeedsAdoption ? configuredBrewhouse : brewhouse)&&<button type="button" className="equipment-button" onClick={()=>resizeForEquipment(installationNeedsAdoption ? configuredBrewhouse : brewhouse)}>Adapter la recette à {defaultBrewVolume(installationNeedsAdoption ? configuredBrewhouse : brewhouse)} L</button>}
-              {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && <button type="button" className="equipment-button" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
+              {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="equipment-button" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
               {equipmentNotice&&<p role="status" className="text-sm text-ebc-straw">{equipmentNotice}</p>}
               <BrewEquipmentSummary recipe={build()} profile={brewhouse}/>
               {recipeInstallationIssues(build(), configuredBrewhouse).map(issue=><p key={issue} role="status" className="text-xs text-ebc-amber">{installationNeedsAdoption && configuredBrewhouse?.equipment
@@ -2120,28 +2321,43 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {/* ---------------------------------------------------- ÉTAPE 4 */}
       {step === 'levure' && (
         <Section title="Levure">
+          {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
           <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>
-            <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={next => applyFermentationRecipe(next, 'levure')} onNavigate={setStep}
-              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={setYeast} invalid={!!fieldError('wz-yeast-qty')} />}
-              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={selectYeast} personalChoice
-                onCreate={n => selectYeast(n)}
+            <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} savedRecipe={seed?.recipe} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={applyYeastChoice} onNavigate={setStep}
+              candidateSheets={candidateSheets} onCandidateSheetsChange={retainCandidateSheets} candidateSheetsWarning={candidateSheetsWarning}
+              yeastChange={yeastChange} onYeastChange={setYeastChange}
+              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
+              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {
+                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                  selectYeast(name, item);
+                }} personalChoice
+                onCreate={n => {
+                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'free'));
+                  selectYeast(n);
+                }}
                 onReference={reference => {
+                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'catalogue'));
                   const next = applyCatalogueYeast(build(), reference, reference.form);
                   if (yeast.hopIndexId !== reference.id) {
                     delete next.yeast.qty; delete next.yeast.unit;
                   }
-                  applyFermentationRecipe(next, 'levure');
+                  applyYeastChoice(next, 'replace-selection');
                   setYeastSelection(n => n + 1);
                 }} /></Suspense>}
-              factsEditor={<>
-                <YeastRecipeDossier yeast={yeast} onChange={setYeast} />
-                <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure"
-                  onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
-                  hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} /></Suspense>
+              factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
+              aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure" reviewScope="recipe"
+                reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
+                stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={updateSelectedYeastDocumentation} /></Suspense>}
+              trialFactsEditor={(candidateYeast, onCandidateYeast) => <>
+                <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete key={candidateYeast.hopIndexId} active embedded yeastEnrichment scope="levure" reviewScope="trial"
+                  fermentables={[]} onFermentables={() => {}} hops={[]} onHops={() => {}}
+                  yeast={candidateYeast} onYeast={onCandidateYeast} /></Suspense>
+                <details className="yc-data-editor"><summary>Saisie manuelle de cette souche</summary><div><YeastRecipeDossier yeast={candidateYeast} onChange={onCandidateYeast} /></div></details>
               </>}
-              programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyFermentationRecipe(next, 'levure')} /></Suspense>}
+              programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyYeastChoice(next, 'conduct')} /></Suspense>}
             />
-          </Suspense>
+          </Suspense>}
         </Section>
       )}
 
@@ -2365,7 +2581,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                           name={`Durée de la phase ${s.name || i + 1}, en jours`}
                           unit="j"
                           min={0}
-                          integer
                           value={s.days}
                           onValue={(v) =>
                             setFerment(ferment.map((x, j) => (j === i ? { ...x, days: v } : x)))
@@ -2385,7 +2600,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step === 'eau' && (
         <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
           {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
-          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>:<SaltSolver
+          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?(noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>):<SaltSolver
             source={waterSource}
             onSourceChange={(source) => {
               setRecipeWaterSource(source);
@@ -2496,7 +2711,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
         {details.nolo?.enabled&&<>
           <section className="panel p-2"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’aperçu NOLO…</p>}><NoloRecipeOverview recipe={build()} saved={knowledge}/></Suspense></section>
-          <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense></RecipeDisclosure>
+          {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
+          <RecipeDisclosure title="Atelier NOLO" summary="Procédés, ajouts et mesures">{noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} showOverview={false} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}</RecipeDisclosure>
         </>}
         <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la fiche de brassage…</p>}><BrewSheet
           onLearnIngredient={onLearnIngredient}
@@ -2505,7 +2721,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
               efficiencyPct: efficiency, volumes: suggestedVolumes },
-            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecap,
+            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecapForReview,
             conventions: { ions: 'mg/L dans les eaux de traitement, avant extraction et ébullition',
               salts: 'grammes réellement retenus, répartis entre empâtage et rinçage',
               acid: 'doses retenues, concentration indiquée dans le nom du produit',
@@ -2548,7 +2764,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             setVolumesEdited(true);
             setWater((w) => ({ ...w, spargeWaterL: v }));
           }}
-          water={details.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(details.nolo.process) ? undefined : waterRecap}
+          water={details.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(details.nolo.process) ? undefined : waterRecapForReview}
           onEditWater={() => setStep('eau')}
           notes={notes}
           onNotes={setNotes}
@@ -2585,21 +2801,21 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               yeast,
               mashSteps,
               fermentation: ferment,
-              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecap ? {
-                ...waterRecap,
-                sourceName: waterRecap.sourceName,
-                styleName: waterRecap.styleName,
-                mashWaterL: waterRecap.mashWaterL,
-                spargeWaterL: waterRecap.spargeWaterL,
-                mashOsmoseeL: waterRecap.mashOsmoseeL,
-                spargeOsmoseeL: waterRecap.spargeOsmoseeL,
-                wortIons: waterRecap.wortIons,
-                doses: waterRecap.doses,
-                acidId: waterRecap.acidId,
-                mashAcid: waterRecap.mashAcid,
-                spargeAcid: waterRecap.spargeAcid,
-                ra: waterRecap.ra,
-                mashPh: waterRecap.mashPh
+              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecapForReview ? {
+                ...waterRecapForReview,
+                sourceName: waterRecapForReview.sourceName,
+                styleName: waterRecapForReview.styleName,
+                mashWaterL: waterRecapForReview.mashWaterL,
+                spargeWaterL: waterRecapForReview.spargeWaterL,
+                mashOsmoseeL: waterRecapForReview.mashOsmoseeL,
+                spargeOsmoseeL: waterRecapForReview.spargeOsmoseeL,
+                wortIons: waterRecapForReview.wortIons,
+                doses: waterRecapForReview.doses,
+                acidId: waterRecapForReview.acidId,
+                mashAcid: waterRecapForReview.mashAcid,
+                spargeAcid: waterRecapForReview.spargeAcid,
+                ra: waterRecapForReview.ra,
+                mashPh: waterRecapForReview.mashPh
               }:undefined,
               notes
             })

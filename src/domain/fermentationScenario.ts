@@ -5,12 +5,47 @@ import { projectYeastRecipe } from './yeastProjection';
 import type { TrialRecipe } from './hopIndex/trials';
 import { findRecipeYeastMatches, withDocumentedYeastNames } from './hopIndex/recipeGuide';
 import { normalizeHop } from './hopStage';
+import { normalizedYeastText } from './yeastCatalogue';
 
 /** Read-time identity resolution, shared by choice, manual scenario and consultation.
- * An explicit missing ID or ambiguous name cannot be replaced by another strain. */
+ * An explicit missing ID, ambiguous name, or conflicting maker/code cannot be
+ * replaced by another strain. A unique stored alias can still supply documentary facts. */
 export function resolveFermentationYeast<T extends HopYeast & { aliases?: readonly string[] }>(recipe: TrialRecipe, yeasts: T[]) {
   if (recipe.yeast.hopIndexId) return yeasts.find(y => y.id === recipe.yeast.hopIndexId);
-  const matches = findRecipeYeastMatches(recipe.yeast.name, withDocumentedYeastNames(yeasts));
+  const names = withDocumentedYeastNames(yeasts);
+  let matches = findRecipeYeastMatches(recipe.yeast.name, names);
+  const maker = recipe.yeast.lab?.trim();
+  if (maker) {
+    const makerWords = normalizedYeastText(maker).split(' ').filter(Boolean);
+    matches = matches.filter(match => {
+      const published = match.item.catalogue?.manufacturer;
+      if (!published || !makerWords.length) return false;
+      const publishedWords = new Set(normalizedYeastText(published).split(' ').filter(Boolean));
+      // A short stored lab name (e.g. "Lallemand") may omit its product division;
+      // every supplied word must still name the published manufacturer.
+      return makerWords.every(word => publishedWords.has(word));
+    });
+  }
+  const strain = recipe.yeast.strain?.trim();
+  if (strain) {
+    const wanted = normalizedYeastText(strain).split(' ').filter(Boolean);
+    const wantedCode = wanted.join('');
+    matches = matches.filter(({ item }) => {
+      const catalogue = item.catalogue;
+      const productCode = catalogue?.productCode;
+      if (productCode && normalizedYeastText(productCode).replace(/ /g, '') === wantedCode) return true;
+      // Some listed products have no separate code field. Accept only a whole
+      // token sequence in their stored name/aliases, never a fuzzy or first-row match.
+      const labels = [item.name, ...(item.aliases ?? []), ...(catalogue?.aliases ?? [])];
+      return labels.some(label => {
+        const words = normalizedYeastText(label).split(' ').filter(Boolean);
+        for (let start = 0; start + wanted.length <= words.length; start++) {
+          if (words.slice(start, start + wanted.length).join('') === wantedCode) return true;
+        }
+        return false;
+      });
+    });
+  }
   return matches.length === 1 ? matches[0].item : undefined;
 }
 
