@@ -9,6 +9,7 @@ import { formatDecimal } from "../numericInput";
 
 import { Droplets, ChevronRight } from "lucide-react";
 
+import type { WaterIons } from "../../types";
 import type { WaterWorkshopModel } from "./useWaterWorkshop";
 type Tab = "empatage" | "rincage";
 
@@ -93,6 +94,8 @@ export function WaterPreparation(model: Props) {
     totalOsmoseeL,
     totalReseauL,
   } = model;
+  const unknownIons = (['ca', 'mg', 'na', 'so4', 'cl', 'hco3'] as Array<keyof WaterIons>)
+    .filter(ion => !Number.isFinite(source[ion]));
   return (
     <>
       {" "}
@@ -121,6 +124,7 @@ export function WaterPreparation(model: Props) {
           start={treatment.startTotal}
           achieved={achievedTotalApresAcide}
           style={style}
+          unknownIons={unknownIons}
         />
 
         </details>

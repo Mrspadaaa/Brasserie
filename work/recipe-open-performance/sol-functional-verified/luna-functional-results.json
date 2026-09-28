@@ -1,0 +1,964 @@
+{
+  "environment": {
+    "url": "http://127.0.0.1:64698",
+    "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-verified",
+    "browser": "Chrome/153.0.8010.53",
+    "widths": [
+      390,
+      1280
+    ],
+    "execution": "Chromium headless PC; 390 px n'est qu'une émulation de viewport.",
+    "data": "Fixtures synthétiques; QA local remplace Firestore et Functions. Aucune requête externe autorisée.",
+    "scope": "Contrats fonctionnels et quelques timings de gestes utiles; aucun profil ni série de performance."
+  },
+  "viewports": [
+    {
+      "width": 390,
+      "environment": "viewport mobile émulé dans Chromium desktop; pas Android physique",
+      "checks": [
+        {
+          "check": "catalogue et fixtures synthétiques",
+          "pass": true,
+          "cards": 3
+        },
+        {
+          "check": "Détails et actions + Tab/Shift+Tab réels",
+          "pass": true
+        },
+        {
+          "check": "fiche initiale : titre, repères calculés et action de brassage accessibles",
+          "pass": true,
+          "ibu": "96"
+        },
+        {
+          "check": "détail Grain ouvert/fermé, noms et poids exacts, clavier",
+          "pass": true
+        },
+        {
+          "check": "défilement réel de la fiche",
+          "pass": true,
+          "scroll": {
+            "top": 370,
+            "overflow": true
+          }
+        },
+        {
+          "check": "focus initial/retour, défilement et Escape de la PageShell recette",
+          "pass": true,
+          "focusState": {
+            "tag": "BUTTON",
+            "ariaLabel": "Ouvrir la recette LUNA_RECIPE_SENTINEL_complexe",
+            "visible": true,
+            "inPageShell": false,
+            "insideOriginalCard": true,
+            "activeIsBody": false
+          },
+          "scroll": {
+            "top": 370,
+            "overflow": true
+          }
+        },
+        {
+          "check": "retour par historique navigateur et réouverture",
+          "pass": true
+        },
+        {
+          "check": "entrée en édition depuis la fiche sans écriture adaptateur ni IA",
+          "pass": true,
+          "localKeys": [
+            "__sak",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        },
+        {
+          "check": "entrée directe Modifier sans écriture adaptateur ni IA",
+          "pass": true,
+          "localKeys": [
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        },
+        {
+          "check": "import portaled, Tab/Shift+Tab, Escape, retour du focus sans IA/écriture",
+          "pass": true,
+          "portal": {
+            "outsideWizard": true,
+            "heading": true
+          },
+          "tabInsideDialog": true,
+          "shiftInsideDialog": true,
+          "restoredImportFocus": true
+        },
+        {
+          "check": "geste focus \u001a première saisie réelle visible",
+          "pass": true,
+          "trusted": true,
+          "field": "wz-title",
+          "gestureToPaintMs": 76.6,
+          "focused": true,
+          "visible": true
+        },
+        {
+          "check": "refus QA annoncé et recette stockée inchangée",
+          "pass": true,
+          "alert": true,
+          "message": "QA : enregistrement refusé. Le brouillon est conservé.\n\nFermer",
+          "storedName": "LUNA_RECIPE_SENTINEL_complexe",
+          "storedVolumeL": 24,
+          "adapterWrites": 2,
+          "confirmations": 1,
+          "retainedDraft": {
+            "title": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+            "volume": "36"
+          }
+        },
+        {
+          "check": "nom et volume conservés dans le brouillon après retour à Identité",
+          "pass": true,
+          "retainedDraft": {
+            "title": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+            "volume": "36"
+          }
+        },
+        {
+          "check": "valeurs recette enregistrées dans l’adaptateur QA",
+          "pass": true,
+          "name": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+          "volumeL": 36
+        },
+        {
+          "check": "snapshot du brassin figé inchangé",
+          "pass": true
+        },
+        {
+          "check": "diagnostic observe ouverture, édition et retour",
+          "pass": true,
+          "actions": [
+            "open",
+            "recipe-gesture",
+            "recipe-gesture",
+            "recipe-gesture",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "edit",
+            "first-editor-focus",
+            "browser-return-from-popstate",
+            "edit",
+            "first-editor-focus",
+            "first-editor-input",
+            "browser-return-from-popstate"
+          ]
+        },
+        {
+          "check": "export diagnostic sans nom, valeur, ID, requête ou URL métier",
+          "pass": true,
+          "actions": [
+            "open",
+            "recipe-gesture",
+            "recipe-gesture",
+            "recipe-gesture",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "edit",
+            "first-editor-focus",
+            "browser-return-from-popstate",
+            "edit",
+            "first-editor-focus",
+            "first-editor-input",
+            "browser-return-from-popstate"
+          ]
+        },
+        {
+          "check": "réouverture après rechargement, stockage durable et calcul actualisé",
+          "pass": true,
+          "name": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+          "volumeL": 36,
+          "ibuBefore": "96",
+          "ibuAfter": "69"
+        },
+        {
+          "check": "démarrage local du brassin et snapshot figé inchangé",
+          "pass": true,
+          "adapterWritesOnStart": 2
+        },
+        {
+          "check": "BrewDayPage affiche les valeurs exactes de son snapshot figé",
+          "pass": true,
+          "nameMatches": true,
+          "volumeMatches": true,
+          "grainMatches": true,
+          "expected": {
+            "name": "LUNA_RECIPE_SENTINEL_complexe",
+            "volumeL": 24,
+            "totalGristKg": 6
+          }
+        },
+        {
+          "check": "Escape ferme BrewDay et rend le focus à l’action de brassin",
+          "pass": true,
+          "focusAfterBrewEscape": {
+            "tag": "BUTTON",
+            "ariaLabel": "Reprendre le brassage · qa-luna-frozen-batch",
+            "inBatchCard": true
+          }
+        },
+        {
+          "check": "focus initial, scroll, clavier et Escape dans la PageShell BrewDay",
+          "pass": true,
+          "scroll": {
+            "top": 400,
+            "overflow": true
+          }
+        },
+        {
+          "check": "retour navigateur depuis BrewDay réaffiche Brassins et la carte",
+          "pass": true,
+          "batchListState": {
+            "pageShellGone": true,
+            "selectedSubtab": "Brassins (1)",
+            "batchCard": {
+              "visible": true,
+              "ariaLabel": "Brassin qa-luna-frozen-batch, LUNA_RECIPE_SENTINEL_complexe",
+              "actionLabels": [
+                "Ouvrir le brassin qa-luna-frozen-batch",
+                "Épingler le brassin qa-luna-frozen-batch",
+                "Reprendre le brassage · qa-luna-frozen-batch",
+                "Ranger le brassin qa-luna-frozen-batch"
+              ]
+            }
+          }
+        }
+      ],
+      "timings": [
+        {
+          "action": "catalog-details",
+          "durationMs": 18.2,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 52,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "recipe-details",
+          "durationMs": 19.6,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 26.7,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 26.4,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 27.3,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "edit-recipe",
+          "durationMs": 346.3,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "edit-recipe",
+          "durationMs": 33.8,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-brewday",
+          "durationMs": 339.1,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-brewday",
+          "durationMs": 33.6,
+          "framesAfterContent": 2
+        }
+      ],
+      "editEntryWrites": [
+        {
+          "route": "fiche-vers-editeur",
+          "localKeys": [
+            "__sak",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        },
+        {
+          "route": "catalogue-direct",
+          "localKeys": [
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        }
+      ],
+      "snapshots": {
+        "focusBeforeOpen": {
+          "tag": "BUTTON",
+          "ariaLabel": "Ouvrir la recette LUNA_RECIPE_SENTINEL_complexe",
+          "inCatalogCard": true,
+          "inPageShell": false
+        },
+        "focusAfterOpen": {
+          "tag": "MAIN",
+          "ariaLabel": "Lager · 24 L",
+          "inPageShell": true,
+          "pageShellLabel": null
+        },
+        "initial": {
+          "visible": true,
+          "titleVisible": true,
+          "brewActionVisible": true,
+          "metricCount": 6,
+          "ingredientVisible": true,
+          "exactWeightVisible": true
+        },
+        "recipeScroll": {
+          "top": 370,
+          "overflow": true
+        },
+        "focusAfterEscape": {
+          "tag": "BUTTON",
+          "ariaLabel": "Ouvrir la recette LUNA_RECIPE_SENTINEL_complexe",
+          "visible": true,
+          "inPageShell": false,
+          "insideOriginalCard": true,
+          "activeIsBody": false
+        },
+        "failedSave": {
+          "alert": true,
+          "message": "QA : enregistrement refusé. Le brouillon est conservé.\n\nFermer",
+          "storedName": "LUNA_RECIPE_SENTINEL_complexe",
+          "storedVolumeL": 24,
+          "adapterWrites": 2,
+          "confirmations": 1,
+          "retainedDraft": {
+            "title": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+            "volume": "36"
+          }
+        },
+        "saved": {
+          "name": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+          "volumeL": 36,
+          "ibuBefore": "96",
+          "ibuAfter": "69"
+        },
+        "diagnosticActions": [
+          "open",
+          "recipe-gesture",
+          "recipe-gesture",
+          "recipe-gesture",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "edit",
+          "first-editor-focus",
+          "browser-return-from-popstate",
+          "edit",
+          "first-editor-focus",
+          "first-editor-input",
+          "browser-return-from-popstate"
+        ],
+        "brewday": {
+          "name": "LUNA_RECIPE_SENTINEL_complexe",
+          "volume": "24 L",
+          "grain": "6 kg",
+          "nameMatches": true,
+          "volumeMatches": true,
+          "grainMatches": true,
+          "expected": {
+            "name": "LUNA_RECIPE_SENTINEL_complexe",
+            "volumeL": 24,
+            "totalGristKg": 6
+          }
+        },
+        "brewdayScroll": {
+          "top": 400,
+          "overflow": true
+        },
+        "beforeBrewEscape": {
+          "focus": "<button type=\"button\" aria-label=\"Recette\" aria-pressed=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-book-open\" aria-hidden=\"true\"><path d=\"M12 5v16\"></path><path d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\"></path></svg>Recette</button>",
+          "dialogs": [
+            {
+              "html": "<dialog class=\"brew-capture is-mobile brew-measure-capture\" role=\"dialog\" aria-label=\"Mesurer\"><header class=\"brew-capture-header\"><div><h2>Mesurer</h2><p>Eau et sels</p></div><button type=\"button\" aria-label=\"Fermer la saisie\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-x\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"></path><path d=\"m6 6 12 12\"></path></svg></button></header><div class=\"brew-capture-content\"><div class=\"brew-measure-panel\"><section aria-label=\"Mesures de cette étape\" class=\"space-y-2\"><div class=\"flex justify-between items-center\"><h3 class=\"font-semibold text-cave-50\">Mesurer à la cuve</h3><button type=\"button\" aria-pressed=\"false\" class=\"min-h-touch px-2 text-xs text-water underline\">Volume + densité</button></div><div class=\"flex gap-1\" role=\"group\" aria-label=\"Type de mesure\"><button type=\"button\" aria-label=\"pH\" ",
+              "display": "none",
+              "inert": false
+            },
+            {
+              "html": "<dialog class=\"brew-capture is-mobile brew-note-capture\" role=\"dialog\" aria-label=\"Note\"><header class=\"brew-capture-header\"><div><h2>Note</h2><p>Eau et sels</p></div><button type=\"button\" aria-label=\"Fermer la saisie\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-x\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"></path><path d=\"m6 6 12 12\"></path></svg></button></header><div class=\"brew-capture-content\"><section aria-label=\"Notes et conseil\" class=\"brew-notes\"><div class=\"brew-section-heading\"><h3><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-notebook-pen\" aria-hidden=\"true\"><path d=\"M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4\"></path><path d=\"M2 6h4\"></path><path d=",
+              "display": "none",
+              "inert": false
+            }
+          ]
+        },
+        "batchListAfterHistoryBack": {
+          "pageShellGone": true,
+          "selectedSubtab": "Brassins (1)",
+          "batchCard": {
+            "visible": true,
+            "ariaLabel": "Brassin qa-luna-frozen-batch, LUNA_RECIPE_SENTINEL_complexe",
+            "actionLabels": [
+              "Ouvrir le brassin qa-luna-frozen-batch",
+              "Épingler le brassin qa-luna-frozen-batch",
+              "Reprendre le brassage · qa-luna-frozen-batch",
+              "Ranger le brassin qa-luna-frozen-batch"
+            ]
+          }
+        }
+      },
+      "diagnostic": {
+        "actions": [
+          "open",
+          "recipe-gesture",
+          "recipe-gesture",
+          "recipe-gesture",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "edit",
+          "first-editor-focus",
+          "browser-return-from-popstate",
+          "edit",
+          "first-editor-focus",
+          "first-editor-input",
+          "browser-return-from-popstate"
+        ],
+        "leaks": [],
+        "network": 0,
+        "platform": "Windows",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "serviceWorkerControlled": false
+      },
+      "externalRequestAttempts": 0,
+      "consoleErrors": [],
+      "limits": []
+    },
+    {
+      "width": 1280,
+      "environment": "Chrome desktop local",
+      "checks": [
+        {
+          "check": "catalogue et fixtures synthétiques",
+          "pass": true,
+          "cards": 3
+        },
+        {
+          "check": "fiche initiale : titre, repères calculés et action de brassage accessibles",
+          "pass": true,
+          "ibu": "96"
+        },
+        {
+          "check": "détail Grain ouvert/fermé, noms et poids exacts, clavier",
+          "pass": true
+        },
+        {
+          "check": "défilement réel de la fiche",
+          "pass": true,
+          "scroll": {
+            "top": 249,
+            "overflow": true
+          }
+        },
+        {
+          "check": "focus initial/retour, défilement et Escape de la PageShell recette",
+          "pass": true,
+          "focusState": {
+            "tag": "BUTTON",
+            "ariaLabel": "Ouvrir la recette LUNA_RECIPE_SENTINEL_complexe",
+            "visible": true,
+            "inPageShell": false,
+            "insideOriginalCard": true,
+            "activeIsBody": false
+          },
+          "scroll": {
+            "top": 249,
+            "overflow": true
+          }
+        },
+        {
+          "check": "retour par historique navigateur et réouverture",
+          "pass": true
+        },
+        {
+          "check": "entrée en édition depuis la fiche sans écriture adaptateur ni IA",
+          "pass": true,
+          "localKeys": [
+            "__sak",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        },
+        {
+          "check": "entrée directe Modifier sans écriture adaptateur ni IA",
+          "pass": true,
+          "localKeys": [
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        },
+        {
+          "check": "import portaled, Tab/Shift+Tab, Escape, retour du focus sans IA/écriture",
+          "pass": true,
+          "portal": {
+            "outsideWizard": true,
+            "heading": true
+          },
+          "tabInsideDialog": true,
+          "shiftInsideDialog": true,
+          "restoredImportFocus": true
+        },
+        {
+          "check": "geste focus \u001a première saisie réelle visible",
+          "pass": true,
+          "trusted": true,
+          "field": "wz-title",
+          "gestureToPaintMs": 55.5,
+          "focused": true,
+          "visible": true
+        },
+        {
+          "check": "refus QA annoncé et recette stockée inchangée",
+          "pass": true,
+          "alert": true,
+          "message": "QA : enregistrement refusé. Le brouillon est conservé.\n\nFermer",
+          "storedName": "LUNA_RECIPE_SENTINEL_complexe",
+          "storedVolumeL": 24,
+          "adapterWrites": 2,
+          "confirmations": 1,
+          "retainedDraft": {
+            "title": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+            "volume": "36"
+          }
+        },
+        {
+          "check": "nom et volume conservés dans le brouillon après retour à Identité",
+          "pass": true,
+          "retainedDraft": {
+            "title": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+            "volume": "36"
+          }
+        },
+        {
+          "check": "valeurs recette enregistrées dans l’adaptateur QA",
+          "pass": true,
+          "name": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+          "volumeL": 36
+        },
+        {
+          "check": "snapshot du brassin figé inchangé",
+          "pass": true
+        },
+        {
+          "check": "diagnostic observe ouverture, édition et retour",
+          "pass": true,
+          "actions": [
+            "open",
+            "recipe-gesture",
+            "recipe-gesture",
+            "recipe-gesture",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "edit",
+            "first-editor-focus",
+            "browser-return-from-popstate",
+            "edit",
+            "first-editor-focus",
+            "first-editor-input",
+            "browser-return-from-popstate"
+          ]
+        },
+        {
+          "check": "export diagnostic sans nom, valeur, ID, requête ou URL métier",
+          "pass": true,
+          "actions": [
+            "open",
+            "recipe-gesture",
+            "recipe-gesture",
+            "recipe-gesture",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "browser-return-from-popstate",
+            "open",
+            "edit",
+            "first-editor-focus",
+            "browser-return-from-popstate",
+            "edit",
+            "first-editor-focus",
+            "first-editor-input",
+            "browser-return-from-popstate"
+          ]
+        },
+        {
+          "check": "réouverture après rechargement, stockage durable et calcul actualisé",
+          "pass": true,
+          "name": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+          "volumeL": 36,
+          "ibuBefore": "96",
+          "ibuAfter": "69"
+        },
+        {
+          "check": "démarrage local du brassin et snapshot figé inchangé",
+          "pass": true,
+          "adapterWritesOnStart": 2
+        },
+        {
+          "check": "BrewDayPage affiche les valeurs exactes de son snapshot figé",
+          "pass": true,
+          "nameMatches": true,
+          "volumeMatches": true,
+          "grainMatches": true,
+          "expected": {
+            "name": "LUNA_RECIPE_SENTINEL_complexe",
+            "volumeL": 24,
+            "totalGristKg": 6
+          }
+        },
+        {
+          "check": "Escape ferme BrewDay et rend le focus à l’action de brassin",
+          "pass": true,
+          "focusAfterBrewEscape": {
+            "tag": "BUTTON",
+            "ariaLabel": "Reprendre le brassage · qa-luna-frozen-batch",
+            "inBatchCard": true
+          }
+        },
+        {
+          "check": "focus initial, scroll, clavier et Escape dans la PageShell BrewDay",
+          "pass": true,
+          "scroll": {
+            "top": 400,
+            "overflow": true
+          }
+        },
+        {
+          "check": "retour navigateur depuis BrewDay réaffiche Brassins et la carte",
+          "pass": true,
+          "batchListState": {
+            "pageShellGone": true,
+            "selectedSubtab": "Brassins (1)",
+            "batchCard": {
+              "visible": true,
+              "ariaLabel": "Brassin qa-luna-frozen-batch, LUNA_RECIPE_SENTINEL_complexe",
+              "actionLabels": [
+                "Ouvrir le brassin qa-luna-frozen-batch",
+                "Épingler le brassin qa-luna-frozen-batch",
+                "Reprendre le brassage · qa-luna-frozen-batch",
+                "Ranger le brassin qa-luna-frozen-batch"
+              ]
+            }
+          }
+        }
+      ],
+      "timings": [
+        {
+          "action": "open-recipe",
+          "durationMs": 49.6,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "recipe-details",
+          "durationMs": 14.8,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 27,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 26.4,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-recipe",
+          "durationMs": 26.8,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "edit-recipe",
+          "durationMs": 346.4,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "edit-recipe",
+          "durationMs": 39.3,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-brewday",
+          "durationMs": 346.3,
+          "framesAfterContent": 2
+        },
+        {
+          "action": "open-brewday",
+          "durationMs": 40.9,
+          "framesAfterContent": 2
+        }
+      ],
+      "editEntryWrites": [
+        {
+          "route": "fiche-vers-editeur",
+          "localKeys": [
+            "__sak",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "brewer-jobs:disconnected",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "laffinee_ui_state",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "__HOP_RECIPE_QA_ONLY__",
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        },
+        {
+          "route": "catalogue-direct",
+          "localKeys": [
+            "laffinee_recipe_draft_v1:__HOP_RECIPE_QA_ONLY__:qa-luna-recipe-open-complex"
+          ]
+        }
+      ],
+      "snapshots": {
+        "focusBeforeOpen": {
+          "tag": "BUTTON",
+          "ariaLabel": "Ouvrir la recette LUNA_RECIPE_SENTINEL_complexe",
+          "inCatalogCard": true,
+          "inPageShell": false
+        },
+        "focusAfterOpen": {
+          "tag": "MAIN",
+          "ariaLabel": "Lager · 24 L",
+          "inPageShell": true,
+          "pageShellLabel": null
+        },
+        "initial": {
+          "visible": true,
+          "titleVisible": true,
+          "brewActionVisible": true,
+          "metricCount": 6,
+          "ingredientVisible": true,
+          "exactWeightVisible": true
+        },
+        "recipeScroll": {
+          "top": 249,
+          "overflow": true
+        },
+        "focusAfterEscape": {
+          "tag": "BUTTON",
+          "ariaLabel": "Ouvrir la recette LUNA_RECIPE_SENTINEL_complexe",
+          "visible": true,
+          "inPageShell": false,
+          "insideOriginalCard": true,
+          "activeIsBody": false
+        },
+        "failedSave": {
+          "alert": true,
+          "message": "QA : enregistrement refusé. Le brouillon est conservé.\n\nFermer",
+          "storedName": "LUNA_RECIPE_SENTINEL_complexe",
+          "storedVolumeL": 24,
+          "adapterWrites": 2,
+          "confirmations": 1,
+          "retainedDraft": {
+            "title": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+            "volume": "36"
+          }
+        },
+        "saved": {
+          "name": "LUNA_RECIPE_SENTINEL_complexe modifiee 7f2a",
+          "volumeL": 36,
+          "ibuBefore": "96",
+          "ibuAfter": "69"
+        },
+        "diagnosticActions": [
+          "open",
+          "recipe-gesture",
+          "recipe-gesture",
+          "recipe-gesture",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "edit",
+          "first-editor-focus",
+          "browser-return-from-popstate",
+          "edit",
+          "first-editor-focus",
+          "first-editor-input",
+          "browser-return-from-popstate"
+        ],
+        "brewday": {
+          "name": "LUNA_RECIPE_SENTINEL_complexe",
+          "volume": "24 L",
+          "grain": "6 kg",
+          "nameMatches": true,
+          "volumeMatches": true,
+          "grainMatches": true,
+          "expected": {
+            "name": "LUNA_RECIPE_SENTINEL_complexe",
+            "volumeL": 24,
+            "totalGristKg": 6
+          }
+        },
+        "brewdayScroll": {
+          "top": 400,
+          "overflow": true
+        },
+        "beforeBrewEscape": {
+          "focus": "<button type=\"button\" aria-label=\"Recette\" aria-pressed=\"true\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-book-open\" aria-hidden=\"true\"><path d=\"M12 5v16\"></path><path d=\"M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z\"></path></svg>Recette</button>",
+          "dialogs": [
+            {
+              "html": "<dialog class=\"brew-capture is-inline brew-measure-capture\" role=\"presentation\" open=\"\"><div class=\"brew-capture-content\"><div class=\"brew-measure-panel\"><section aria-label=\"Mesures de cette étape\" class=\"space-y-2\"><div class=\"flex justify-between items-center\"><h3 class=\"font-semibold text-cave-50\">Mesurer à la cuve</h3><button type=\"button\" aria-pressed=\"false\" class=\"min-h-touch px-2 text-xs text-water underline\">Volume + densité</button></div><div class=\"flex gap-1\" role=\"group\" aria-label=\"Type de mesure\"><button type=\"button\" aria-label=\"pH\" aria-pressed=\"false\" class=\"flex-1 min-h-10 px-1 rounded-control text-sm border border-cave-700 text-cave-200 hover:bg-cave-850\">pH</button><button type=\"button\" aria-label=\"Température\" aria-pressed=\"false\" class=\"flex-1 min-h-10 px-1 rounded-control text-sm border border-cave-700 text-cave-200 hover:bg-cave-850\">Temp.</button><button type=\"button\" aria-label=\"Densité\" aria-pressed=\"false\" class=\"flex-1 min-h-10 px-1 rounded-control text-s",
+              "display": "none",
+              "inert": false
+            },
+            {
+              "html": "<dialog class=\"brew-capture is-inline brew-note-capture\" role=\"presentation\" open=\"\"><div class=\"brew-capture-content\"><section aria-label=\"Notes et conseil\" class=\"brew-notes\"><div class=\"brew-section-heading\"><h3><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-notebook-pen\" aria-hidden=\"true\"><path d=\"M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4\"></path><path d=\"M2 6h4\"></path><path d=\"M2 10h4\"></path><path d=\"M2 14h4\"></path><path d=\"M2 18h4\"></path><path d=\"M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z\"></path></svg>Carnet de cuve</h3></div><label for=\"brew-note\" class=\"sr-only\">Observation</label><textarea id=\"brew-note\" aria-label=\"Carnet de cuve\" rows=\"3\" maxlength=\"2000\" placeholder=\"Débit de rinçage, changement de malt, ajusteme",
+              "display": "block",
+              "inert": false
+            }
+          ]
+        },
+        "batchListAfterHistoryBack": {
+          "pageShellGone": true,
+          "selectedSubtab": "Brassins (1)",
+          "batchCard": {
+            "visible": true,
+            "ariaLabel": "Brassin qa-luna-frozen-batch, LUNA_RECIPE_SENTINEL_complexe",
+            "actionLabels": [
+              "Ouvrir le brassin qa-luna-frozen-batch",
+              "Épingler le brassin qa-luna-frozen-batch",
+              "Reprendre le brassage · qa-luna-frozen-batch",
+              "Ranger le brassin qa-luna-frozen-batch"
+            ]
+          }
+        }
+      },
+      "diagnostic": {
+        "actions": [
+          "open",
+          "recipe-gesture",
+          "recipe-gesture",
+          "recipe-gesture",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "browser-return-from-popstate",
+          "open",
+          "edit",
+          "first-editor-focus",
+          "browser-return-from-popstate",
+          "edit",
+          "first-editor-focus",
+          "first-editor-input",
+          "browser-return-from-popstate"
+        ],
+        "leaks": [],
+        "network": 0,
+        "platform": "Windows",
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "serviceWorkerControlled": false
+      },
+      "externalRequestAttempts": 0,
+      "consoleErrors": [],
+      "limits": [
+        "Pas de disclosure compact dans la variante desktop; Modifier reste directement visible."
+      ]
+    }
+  ],
+  "limits": []
+}

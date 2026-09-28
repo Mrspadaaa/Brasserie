@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { SaltSolver, WaterState } from "../../src/ui/SaltSolver";
-import { ZERO, DEFAULT_WATER_SOURCE } from "../../src/domain/water";
+import { DEFAULT_WATER_SOURCE, SALTS, SALT_IDS } from "../../src/domain/water";
+import { ZERO } from "../../src/domain/water/ions";
 import type { WaterSource } from "../../src/types";
 import { changeWaterRatio } from "../helpers/waterRatio";
 
@@ -15,10 +16,11 @@ const source: WaterSource = {
   ca: 50,
   hco3: 100,
 };
-function mount(target: WaterState["customTarget"], waterSource = source) {
+function mount(target: WaterState["customTarget"], waterSource = source, autoTreatment?: boolean) {
   let current: WaterState;
   function Host() {
     const [state, setState] = useState<WaterState>({
+      autoTreatment,
       styleCode: "—",
       diRatioPct: 0,
       doses: {},
@@ -47,6 +49,30 @@ function mount(target: WaterState["customTarget"], waterSource = source) {
 }
 
 describe("Atelier : cibles explicites et commandes", () => {
+  it.each([false, true])("garde les exclusions dans le même brouillon que Doser (autoTreatment=%s)", (autoTreatment) => {
+    const state = mount({ name: "Minéraux", ions: { ca: 80, mg: 8, na: 10, so4: 120, cl: 70, hco3: 0 } }, source, autoTreatment);
+    const dose = () => fireEvent.click(screen.getByRole("button", { name: "Proposer les doses" }));
+    dose();
+    const selected = SALT_IDS.find(id => (state().doses[id] ?? 0) > 0)!;
+    expect(selected).toBeDefined();
+    fireEvent.click(screen.getByRole("switch", { name: SALTS[selected].name + " — autorisé" }));
+    expect(state().disabled).toContain(selected);
+    expect(state().doses[selected] ?? 0).toBe(0);
+    dose();
+    expect(state().disabled).toContain(selected);
+    expect(state().doses[selected] ?? 0).toBe(0);
+    changeWaterRatio(screen.getByRole("slider", { name: "SO₄ ⇄ Cl" }), 1.5);
+    expect(state().disabled).toContain(selected);
+    expect(state().doses[selected] ?? 0).toBe(0);
+    fireEvent.click(screen.getByRole("switch", { name: SALTS[selected].name + " — écarté" }));
+    expect(state().disabled).not.toContain(selected);
+    const input = screen.getByRole("textbox", { name: "Dose de " + SALTS[selected].name + " en grammes" });
+    fireEvent.change(input, { target: { value: "1,2" } });
+    fireEvent.blur(input);
+    expect(state().doses[selected]).toBe(1.2);
+    expect(screen.queryByRole("button", { name: "Appliquer au brouillon" })).not.toBeInTheDocument();
+  });
+
   it("distingue les objectifs de Ttt et actualise le HCO₃ quand l’acide de rinçage change", () => {
     function Ttt() {
       const [state, setState] = useState<WaterState>({

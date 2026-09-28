@@ -22,6 +22,7 @@ const enrichment = [...core, ...recipeProfiles, ...belgian.references, ...lager.
 const startup = [...initial, ...studies.hopKnowledge, ...trials.hopKnowledge, ...solver, ...guides, ...science, ...legacy, ...nolo];
 const knownForms = new Map((startup as HopKnowledge[]).filter((r): r is HopYeast => r.kind === 'yeast' && !!r.form).map(r => [r.id, r.form]));
 let documentedById: Map<string, HopYeast> | undefined;
+const validatedLibraryReferences = new WeakSet<HopYeast>();
 const cache = new WeakMap<HopKnowledge[], YeastReference[]>();
 const coreCache = new WeakMap<HopKnowledge[], YeastReference[]>();
 export function yeastReferences(saved: HopKnowledge[] = empty, options: { includeCatalogue?: boolean } = {}): YeastReference[] {
@@ -31,7 +32,14 @@ export function yeastReferences(saved: HopKnowledge[] = empty, options: { includ
   const cached = activeCache.get(cacheKey); if(cached) return cached;
   // The bundled library is available offline to the editor and server tools.
   // Reading it never installs a catalogue into the brewer's personal records.
-  if (options.includeCatalogue !== false) documentedById ??= new Map([...yeastCatalogueLibrary(), ...enrichment as HopYeast[]].map(row => [row.id, row]));
+  if (options.includeCatalogue !== false && !documentedById) {
+    // The decoder already validates every library row and freezes its entire
+    // graph. Preserve that validation rather than repeating its dates/URLs/facts
+    // for each saved collection. Personal/enriched objects still validate below.
+    const library = yeastCatalogueLibrary();
+    library.forEach(row => validatedLibraryReferences.add(row));
+    documentedById = new Map([...library, ...enrichment as HopYeast[]].map(row => [row.id, row]));
+  }
   const defaults = options.includeCatalogue === false ? new Map((enrichment as HopYeast[]).map(row => [row.id, row])) : documentedById!;
   const rows = [...new Map([...startup, ...defaults.values(), ...saved.map(r=>{
       if(r.kind!=='yeast') return r;
@@ -46,7 +54,10 @@ export function yeastReferences(saved: HopKnowledge[] = empty, options: { includ
     })].map(r => [r.id, r])).values()];
   const valid = rows.filter((r): r is HopKnowledge => {
     if (r.kind !== 'yeast' && r.kind !== 'fermentation' && r.kind !== 'noloScience') return false;
-    try { assertHopKnowledge(r); return true; } catch { return false; }
+    try {
+      if (!validatedLibraryReferences.has(r as HopYeast)) assertHopKnowledge(r);
+      return true;
+    } catch { return false; }
   });
   // Index aliases once. Scanning the entire catalogue for each strain made
   // opening the recipe quadratic after the full catalogue was merged.

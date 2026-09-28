@@ -14,6 +14,7 @@ import { QuantityStepper } from '../../ui/QuantityStepper';
 import { parseDecimal } from '../../ui/numericInput';
 import '../../ui/production/compact.css';
 import { ViewNavigation } from '../../ui/ViewNavigation';
+import { loadRecipePage } from '../../pages/recipePageLoader';
 
 const CreativeLabTab = lazy(() =>
   import('../CreativeLabTab').then(({ CreativeLabTab: CreativeLab }) => ({
@@ -22,6 +23,8 @@ const CreativeLabTab = lazy(() =>
 );
 
 interface ProductionTabProps {
+  /** The catalogue remains mounted behind a full-screen page. */
+  visible?: boolean;
   batches: Batch[];
   recipes: Recipe[];
   brewhouses: BrewhouseProfile[];
@@ -50,6 +53,7 @@ interface ProductionTabProps {
 }
 
 export const ProductionTab: React.FC<ProductionTabProps> = ({
+  visible = true,
   batches,
   recipes,
   brewhouses,
@@ -74,6 +78,38 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   const [subTab, setSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() =>
     targetSubTab || StorageService.getUiState('production_subtab', 'batches')
   );
+
+  useEffect(() => {
+    if (!visible || subTab !== 'recipes' || !recipes.length) return;
+    let active = true, idle: number | undefined;
+    const useIdle = !!window.requestIdleCallback && !!window.cancelIdleCallback;
+    // Only the reading surface/data are prepared. No editor, model simulation,
+    // stock write or AI request is run while the list is displayed.
+    void loadRecipePage().then(module => {
+      if (!active) return;
+      const advance = module.prepareRecipeReferenceData();
+      const prepare = (deadline?: IdleDeadline) => {
+        if (!active) return;
+        const start = performance.now();
+        try {
+          // Yield between names and leave idle time for an arriving gesture.
+          const done = advance(() => performance.now() - start < 6 && (!deadline || deadline.timeRemaining() > 1));
+          if (!done && active) schedule();
+        } catch { /* The actual route keeps its error surface. */ }
+      };
+      const schedule = () => {
+        idle = useIdle ? window.requestIdleCallback(prepare) : window.setTimeout(prepare, 0);
+      };
+      schedule();
+    }).catch(() => { /* Opening retains the normal loading/error surface. */ });
+    return () => {
+      active = false;
+      if (idle !== undefined) {
+        if (useIdle) window.cancelIdleCallback(idle);
+        else window.clearTimeout(idle);
+      }
+    };
+  }, [visible, subTab, recipes.length]);
 
   // Peut être indéfini : au tout premier lancement la base est vide, et il n'y
   // a alors aucune recette à mettre à l'échelle.

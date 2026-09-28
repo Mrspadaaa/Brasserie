@@ -1,5 +1,5 @@
 import { load, compact, plain, sha } from './fetch.mjs';
-export const PARSER_VERSION = 'yeast-catalogue-2026-09-08.1';
+export const PARSER_VERSION = 'yeast-catalogue-2026-09-26.1';
 const text = x => compact(x).replace(/\u200b|\u00ad/g, '');
 const number = x => Number(x.replace(',', '.'));
 const num = '(\\d+(?:[.,]\\d+)?)';
@@ -16,10 +16,14 @@ export function reportedRange(value, unit) {
     if (min > max || min < 0 || max > (unit === '°C' ? 60 : unit === '%' ? 100 : 10000)) return null;
     return { range: { min, max }, unit, qualifier: min === max ? 'reportedPoint' : 'range' };
   }
-  const point = new RegExp(`^\\s*(>|≥|<|≤|up to|at least)?\\s*${num}\\s*${suffix}\\s*$`, 'i').exec(value);
+  const point = new RegExp(`^\\s*(>=|<=|>|≥|<|≤|up to|at least)?\\s*${num}\\s*${suffix}\\s*$`, 'i').exec(value);
   if (point) {
     const n = number(point[2]); if (n > (unit === '°C' ? 60 : unit === '%' ? 100 : 10000)) return null;
-    return { range: { min: n, max: n }, unit, qualifier: />|≥|at least/.test(point[1] ?? '') ? 'atLeast' : /<|≤|up to/.test(point[1] ?? '') ? 'upTo' : 'reportedPoint' };
+    const operator = (point[1] ?? '').toLowerCase();
+    const qualifier = operator === '>' ? 'greaterThan' : operator === '<' ? 'lessThan'
+      : ['>=', '≥', 'at least'].includes(operator) ? 'atLeast'
+        : ['<=', '≤', 'up to'].includes(operator) ? 'upTo' : 'reportedPoint';
+    return { range: { min: n, max: n }, unit, qualifier };
   }
   return null;
 }

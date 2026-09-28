@@ -2,10 +2,12 @@ import type { HopRange, HopSource } from '../../functions/src/hopIndexSchema';
 import { YEAST_PRACTICAL_GUIDES } from '../data/yeastPracticalGuides';
 import { assertHopKnowledge } from '../../functions/src/hopPredictionSchema';
 import { agreedFermentationFact, fermentationProgramIssues, type FermentationRange } from '../../functions/src/fermentationContext';
-import { readYeastTechnicalFacts } from '../../functions/src/yeastTechnicalFacts';
+import { readYeastDocumentarySheet, readYeastLocalDocumentary } from '../../functions/src/yeastDocumentarySheet';
+import { readYeastDocumentaryNotes, readYeastTechnicalFacts } from '../../functions/src/yeastTechnicalFacts';
 import type { FermentationStep, TempStep, YeastSpec } from '../types';
 import type { TrialRecipe } from './hopIndex/trials';
 import type { YeastReference } from './yeastReferences';
+import { planFermentationTimeline, type FermentationTimelineStep } from './fermentationTimeline';
 import { resolveFermentationYeast } from './fermentationScenario';
 import { fermentationStateKey } from './fermentationGuide';
 import { normalizeHop } from './hopStage';
@@ -24,12 +26,14 @@ export type { YeastFermentationProcess, YeastCultureRole } from './yeastProjecti
 
 export interface YeastRecipeDraft {
   yeastId: string; styleId: YeastStyleId; goal: YeastRecipeGoal;
+  /** The default goal helps catalogue reading but is not a brewer's expressed objective. */
+  goalExplicit?: boolean;
   /** Physical product confirmed by the brewer; never changes the catalogue's documented form. */
   form?: YeastSpec['form'];
   formYeastId?: string;
   temperatureC?: number; days?: number; pitchTempC?: number; pressureBar?: number; quantityG?: number;
-  /** Complete, explicitly previewed programme. Conditions are persisted in each phase's note. */
-  programme?: FermentationStep[];
+  /** The local programme is the single source of truth; missing values stay unknown until completed. */
+  programme?: FermentationTimelineStep[];
   /** Desired beer, not a measured result or a sensory prediction. */
   beerTarget?: YeastBeerTarget;
   attenuationPct?: number; attenuationBasis?: YeastAttenuationBasis;
@@ -48,8 +52,10 @@ export interface YeastRecipeCandidate {
   form?: YeastSpec['form'];
   styleMatch: 'documented' | 'other-style' | 'unclassified' | 'excluded';
   evidence: ReturnType<typeof yeastStyleEvidence>;
-  reference: YeastReference; temperature?: FermentationRange; attenuation?: FermentationRange; doseG?: FermentationRange; sources: HopSource[];
+  reference: YeastReference; temperature?: YeastRecipeCandidateMeasurement; attenuation?: YeastRecipeCandidateMeasurement; doseG?: FermentationRange; sources: HopSource[];
 }
+/** `source` keeps the existing card/compare API; qualifier and sources preserve the full dossier reading. */
+export type YeastRecipeCandidateMeasurement = YeastDossierMeasurement & { source: HopSource };
 export interface YeastRecipeEffect {
   id: string; label: string; impact: string; detail: string;
   state: 'documented' | 'conditional' | 'unknown' | 'warning'; source?: HopSource;
@@ -62,14 +68,29 @@ export interface YeastRecipeHopSummary {
   totalG?: number; doseGL?: number; activeG?: number; postG?: number; unknownG?: number; unknownCount: number; additions: YeastRecipeHopAddition[];
 }
 export interface YeastRecipeEstimate { range: HopRange | null; reasons: string[]; sources: HopSource[]; confidence: 'low' | 'medium' | 'high' }
+export type YeastRecipeProblemSection = 'identity' | 'objectives' | 'programme' | 'preparation' | 'pitch' | 'mash';
+/** Navigation target for one error returned by the same draft validator. */
+export interface YeastRecipeProblem {
+  code: string;
+  message: string;
+  section: YeastRecipeProblemSection;
+  /** Draft field or recipe property to correct. */
+  property: string;
+  /** Phase/culture row. -1 asks the editor to add the missing row at its start. */
+  index?: number;
+  /** Field within the indexed row (for example `tempC` or `days`). */
+  field?: string;
+}
 export interface YeastRecipeEvaluation {
   candidate?: YeastRecipeCandidate; effects: YeastRecipeEffect[]; fg: YeastRecipeEstimate; abv: YeastRecipeEstimate; doseG?: FermentationRange;
-  hops: YeastRecipeHopSummary; warnings: string[]; errors: string[]; changes: YeastRecipeChange[]; sources: HopSource[];
+  hops: YeastRecipeHopSummary; warnings: string[]; errors: string[]; problems: YeastRecipeProblem[]; changes: YeastRecipeChange[]; sources: HopSource[];
   projection: YeastRecipeProjection;
   activeHopTemperatureConflicts: YeastRecipeHopAddition[];
 }
 export interface YeastRecipeDesignSnapshot {
   modelVersion: 'yeast-recipe-1' | 'yeast-recipe-2'; yeastId: string; styleId: YeastStyleId; goal: YeastRecipeGoal;
+  /** Missing on older recipes; those retain their previously displayed objective. */
+  goalExplicit?: boolean;
   pressureBar?: number; ferulicRest: boolean;
   process?: YeastFermentationProcess;
   cultureRoles?: YeastCultureRole[];
@@ -93,7 +114,15 @@ const textKey = (s: string) => s.normalize('NFKD').replace(/[\u0300-\u036f]/g, '
 const uniqueSources = (sources: (HopSource | undefined)[]) => [...new Map(sources.filter((s): s is HopSource => !!s).map(s => [s.reference, s])).values()];
 const profileFor = (id: string) => YEAST_RECIPE_PROFILES.find(p => p.yeastId === id);
 const format = (v: unknown, unit = '') => finite(v) ? `${v.toLocaleString('fr-FR', { maximumFractionDigits: 3 })}${unit ? ` ${unit}` : ''}` : 'À renseigner';
+/** The two documentary scopes cannot be overlaid on the same yeast object. */
+const validYeastDocumentaryScope = (yeast: YeastSpec) => {
+  if (yeast.localDocumentary !== undefined && yeast.adoptedDocumentary !== undefined) return false;
+  if (yeast.localDocumentary !== undefined) return !!readYeastLocalDocumentary(yeast.localDocumentary);
+  return yeast.adoptedDocumentary === undefined ||
+    !!yeast.hopIndexId && !!readYeastDocumentarySheet(yeast.adoptedDocumentary, yeast.hopIndexId);
+};
 const defaultGoal = (styleId: YeastStyleId) => YEAST_STYLE_FAMILIES.find(s => s.id === styleId)?.goals[0] ?? 'balanced';
+const expressedGoal = (draft: YeastRecipeDraft) => draft.goalExplicit !== false;
 const knownGoal = (goal: unknown) => typeof goal === 'string' && Object.prototype.hasOwnProperty.call(YEAST_RECIPE_GOAL_LABELS, goal);
 const draftForm = (draft: YeastRecipeDraft, reference: YeastReference) => draft.formYeastId === reference.id ? draft.form : reference.form;
 export function readYeastBeerTarget(value: unknown): YeastBeerTarget | undefined {
@@ -107,23 +136,50 @@ export function readYeastBeerTarget(value: unknown): YeastBeerTarget | undefined
     v.sparkling !== undefined && typeof v.sparkling !== 'boolean' || v.label !== undefined && typeof v.label !== 'string') return;
   return { ...structuredClone(v), modelVersion: 'yeast-beer-target-1' };
 }
-const validProgramme = (value: unknown): value is FermentationStep[] => Array.isArray(value) && value.length > 0 && value.some(p => p?.kind === 'primaire') && value.every(p => p &&
-  typeof p.name === 'string' && p.name.trim() && ['primaire', 'reposDiacetyle', 'garde', 'refermentation', 'ajout'].includes(p.kind) &&
-  finite(p.tempC) && p.tempC >= 0 && p.tempC <= 60 && finite(p.days) && (p.kind === 'primaire' ? p.days > 0 : p.days >= 0) &&
-  (p.note === undefined || typeof p.note === 'string'));
+export interface YeastRecipeProgrammeIssue {
+  phaseIndex: number;
+  field: 'phase' | 'name' | 'kind' | 'tempC' | 'days' | 'note';
+  message: string;
+}
+const programmeKinds = ['primaire', 'reposDiacetyle', 'garde', 'refermentation', 'ajout'];
+/** Field-level issues let the editor focus the exact incomplete local value. */
+export function yeastRecipeProgrammeIssues(value: unknown): YeastRecipeProgrammeIssue[] {
+  if (!Array.isArray(value) || value.length === 0) return [{ phaseIndex: -1, field: 'phase', message: 'Ajouter au moins une phase au programme.' }];
+  const issues: YeastRecipeProgrammeIssue[] = [];
+  if (!value.some(phase => phase?.kind === 'primaire')) issues.push({ phaseIndex: -1, field: 'phase', message: 'Ajouter une phase primaire.' });
+  value.forEach((phase, phaseIndex) => {
+    if (!phase || typeof phase !== 'object' || Array.isArray(phase)) {
+      issues.push({ phaseIndex, field: 'phase', message: 'Cette phase est invalide.' }); return;
+    }
+    if (typeof phase.name !== 'string' || !phase.name.trim()) issues.push({ phaseIndex, field: 'name', message: 'Donner un nom à cette phase.' });
+    if (typeof phase.kind !== 'string' || !programmeKinds.includes(phase.kind)) issues.push({ phaseIndex, field: 'kind', message: 'Choisir un type de phase valide.' });
+    if (!finite(phase.tempC) || phase.tempC < 0 || phase.tempC > 60) issues.push({ phaseIndex, field: 'tempC', message: 'Renseigner une température entre 0 et 60 °C.' });
+    if (!finite(phase.days) || phase.days < 0) issues.push({ phaseIndex, field: 'days', message: 'Renseigner une durée positive ou nulle.' });
+    if (phase.note !== undefined && typeof phase.note !== 'string') issues.push({ phaseIndex, field: 'note', message: 'La note doit être du texte.' });
+  });
+  return issues;
+}
+export const isCompleteYeastRecipeProgramme = (value: unknown): value is FermentationStep[] => yeastRecipeProgrammeIssues(value).length === 0;
+const validProgramme = isCompleteYeastRecipeProgramme;
 const withProgrammePrimary = (draft: YeastRecipeDraft): YeastRecipeDraft => {
-  const primary = Array.isArray(draft.programme) ? draft.programme.find(p => p?.kind === 'primaire') : undefined;
-  return primary ? { ...draft, temperatureC: draft.temperatureC ?? primary.tempC, days: draft.days ?? primary.days } : draft;
+  if (draft.programme !== undefined) {
+    const primary = Array.isArray(draft.programme) ? draft.programme.find(p => p?.kind === 'primaire') : undefined;
+    return { ...draft, temperatureC: primary?.tempC, days: primary?.days };
+  }
+  return draft;
 };
 
-/** Primary edits stay authoritative after preparing a complete programme. */
-export function yeastRecipeProgramme(recipe: TrialRecipe, draft: YeastRecipeDraft): FermentationStep[] {
-  const phases = (draft.programme ?? recipe.fermentation ?? []).map(p => ({ ...p }));
+/** An explicit local programme wins; scalar primary inputs apply only to legacy programme-less drafts. */
+export function yeastRecipeProgramme(recipe: TrialRecipe, draft: YeastRecipeDraft): FermentationTimelineStep[] {
+  const source = draft.programme !== undefined ? Array.isArray(draft.programme) ? draft.programme : [] : recipe.fermentation ?? [];
+  const phases = source.map(p => ({ ...p }));
   const primary = phases.find(s => s.kind === 'primaire');
   if (primary) {
-    if (draft.temperatureC !== undefined) primary.tempC = draft.temperatureC;
-    if (draft.days !== undefined) primary.days = draft.days;
-  } else if (finite(draft.temperatureC) && positive(draft.days)) phases.unshift({
+    if (draft.programme === undefined) {
+      if (draft.temperatureC !== undefined) primary.tempC = draft.temperatureC;
+      if (draft.days !== undefined) primary.days = draft.days;
+    }
+  } else if (draft.programme === undefined && finite(draft.temperatureC) && positive(draft.days)) phases.unshift({
     name: 'Fermentation principale', kind: 'primaire', tempC: draft.temperatureC, days: draft.days,
     note: 'Durée indicative choisie pour ce scénario. Contrôler la densité et les défauts avant refroidissement ou conditionnement.'
   });
@@ -168,8 +224,8 @@ export function inferYeastRecipeStyle(recipe: TrialRecipe): YeastStyleId {
   return infer(yeastRecipeStyleText(recipe));
 }
 
-const sourcedRange = (measurement?: YeastDossierMeasurement): FermentationRange | undefined =>
-  measurement?.sources[0] ? { range: measurement.range, source: measurement.sources[0] } : undefined;
+const sourcedMeasurement = (measurement?: YeastDossierMeasurement): YeastRecipeCandidateMeasurement | undefined =>
+  measurement?.sources[0] ? { ...structuredClone(measurement), source: { ...measurement.sources[0] } } : undefined;
 
 function candidateFor(reference: YeastReference, goal: YeastRecipeGoal, volumeL?: number, styleId: YeastStyleId = 'unknown', form = reference.form): YeastRecipeCandidate {
   const profile = profileFor(reference.id), evidence = yeastStyleEvidence(reference), pitch = agreedFermentationFact(reference, 'pitchRate', 'g/hL');
@@ -179,7 +235,7 @@ function candidateFor(reference: YeastReference, goal: YeastRecipeGoal, volumeL?
   // Candidate cards and the chosen recipe must resolve the same beer-only
   // observations. Other fermentation contexts stay in the detailed sheet.
   const dossier = resolveYeastDossier({ name: reference.name }, reference);
-  const temperature = sourcedRange(dossier.temperature), attenuation = sourcedRange(dossier.documentedAttenuation);
+  const temperature = sourcedMeasurement(dossier.temperature), attenuation = sourcedMeasurement(dossier.documentedAttenuation);
   const styleMatch = evidence.exclusions.some(e => e.styleId === styleId) ? 'excluded'
     : evidence.styles.includes(styleId) ? 'documented' : evidence.styles.length ? 'other-style' : 'unclassified';
   const goalReason = evidence.goalReasons[goal];
@@ -192,7 +248,7 @@ function candidateFor(reference: YeastReference, goal: YeastRecipeGoal, volumeL?
     reason: goalReason?.text ?? (styleMatch === 'documented' ? 'Usage documenté pour cette famille. Aucun effet spécifique de cet objectif n’est décrit.' : 'Adéquation au style à confirmer à partir des usages et conditions de cette fiche.'),
     preferred: !!goalReason, form, styleMatch, evidence, reference, temperature, attenuation, doseG,
     sources: uniqueSources([evidence.descriptorSource, goalReason?.source, ...evidence.styleMatches.map(e => e.source),
-      ...evidence.exclusions.map(e => e.source), temperature?.source, attenuation?.source, doseG?.source, reference.source]) };
+      ...evidence.exclusions.map(e => e.source), ...temperature?.sources ?? [], ...attenuation?.sources ?? [], doseG?.source, reference.source]) };
 }
 
 export function yeastRecipeCandidates(styleId: YeastStyleId, goal: YeastRecipeGoal, refs: YeastReference[], volumeL?: number, options: { includeOtherStyles?: boolean } = {}): YeastRecipeCandidate[] {
@@ -200,6 +256,44 @@ export function yeastRecipeCandidates(styleId: YeastStyleId, goal: YeastRecipeGo
     .map(r => candidateFor(r, goal, volumeL, styleId))
     .sort((a, b) => Number(b.preferred) - Number(a.preferred) ||
       Number(b.styleMatch === 'documented') - Number(a.styleMatch === 'documented') || a.label.localeCompare(b.label, 'fr'));
+}
+
+/** Identity and published observations for a local trial, without another product's pack or stock lot. */
+export function yeastSpecForCandidate(candidate: YeastRecipeCandidate): YeastSpec {
+  return {
+    name: candidate.label, hopIndexId: candidate.yeastId,
+    ...(candidate.form ? { form: candidate.form } : {}), lab: candidate.lab,
+    technicalFacts: resolveYeastDossier({ name: candidate.label }, candidate.reference).facts,
+    attenuationBasis: 'declared',
+    ...(candidate.reference.catalogue?.productCode ? { strain: candidate.reference.catalogue.productCode } : {}),
+  };
+}
+
+/** Technical edits may accompany a trial; its dose and pitch stay under the plan's explicit controls. */
+export function withTrialYeast<T extends TrialRecipe>(recipe: T, trialYeast?: YeastSpec, draft?: YeastRecipeDraft): T {
+  if (!trialYeast) return recipe;
+  const stableIdentityMatches = !!recipe.yeast.hopIndexId && recipe.yeast.hopIndexId === trialYeast.hopIndexId;
+  const localScopePresent = recipe.yeast.localDocumentary !== undefined || trialYeast.localDocumentary !== undefined;
+  if (localScopePresent ? !stableIdentityMatches : recipe.yeast.hopIndexId !== trialYeast.hopIndexId) return recipe;
+  // A trial is a preview source. Only a sheet already attached to the recipe
+  // may cross this projection boundary. Catalogue and local sheets enter the
+  // recipe through their separate, explicit adoption actions.
+  const trialFields = { ...trialYeast };
+  delete trialFields.adoptedDocumentary;
+  delete trialFields.localDocumentary;
+  const nextYeast: YeastSpec = { ...recipe.yeast, ...trialFields,
+    qty: recipe.yeast.qty, unit: recipe.yeast.unit, pitchTempC: recipe.yeast.pitchTempC,
+    stockItemRef: recipe.yeast.stockItemRef };
+  if (draft?.attenuationPct !== undefined) {
+    nextYeast.attenuationPct = draft.attenuationPct;
+    nextYeast.attenuationBasis = draft.attenuationBasis ?? 'recipe';
+  } else if (draft?.attenuationBasis === 'declared') {
+    // "Utiliser la plage de la fiche" explicitly rejects an earlier local
+    // point hypothesis, even if it is still present in the trial dossier.
+    delete nextYeast.attenuationPct;
+    nextYeast.attenuationBasis = 'declared';
+  }
+  return { ...recipe, yeast: nextYeast };
 }
 
 /** A catalogue dose describes its product form, not a propagated culture of that strain. */
@@ -216,6 +310,11 @@ function ferulicRestIndex(steps: TempStep[]): number {
   return steps.findIndex((s, i) => i < saccharification && s.tempC >= 43 && s.tempC <= 45 && positive(s.durationMin) && !steps.slice(0, i).some(p => p.tempC >= 60));
 }
 
+/** A cereal mash supplies the documented ferulic-acid precursor context. */
+function hasMaltMashSubstrate(recipe: TrialRecipe): boolean {
+  return (recipe.fermentables ?? []).some(f => f.kind === 'grain' && f.use === 'empatage' && positive(f.weightKg));
+}
+
 function recipeStyleUnchanged(recipe: TrialRecipe, snapshot: YeastRecipeDesignSnapshot): boolean {
   if (snapshot.applied.style === undefined) {
     // A legacy snapshot cannot distinguish a personal style from a comparison filter.
@@ -228,14 +327,20 @@ function recipeStyleUnchanged(recipe: TrialRecipe, snapshot: YeastRecipeDesignSn
 }
 
 export function createYeastRecipeDraft(recipe: TrialRecipe, refs: YeastReference[], styleId?: YeastStyleId, yeastId?: string): YeastRecipeDraft {
-  const resolved = resolveFermentationYeast(recipe, refs), currentId = recipe.yeast.hopIndexId ?? resolved?.id ?? '', selected = yeastId ?? currentId;
+  const resolved = resolveFermentationYeast(recipe, refs);
+  // A local sheet binds the current spec, not a catalogue alias inferred from
+  // its free name. Only a stable id or an explicit candidate choice supplies it.
+  const currentId = recipe.yeast.hopIndexId ?? (recipe.yeast.localDocumentary !== undefined ? undefined : resolved?.id) ?? '';
+  const selected = yeastId ?? currentId;
   const snapshot = readYeastRecipeDesign(recipe), primary = recipe.fermentation?.find(s => s.kind === 'primaire');
   const same = selected === currentId, saved = same && snapshot?.yeastId === selected ? snapshot : undefined;
   const sameStyle = !!saved && recipeStyleUnchanged(recipe, saved);
   const selectedStyle = styleId ?? (sameStyle ? saved!.styleId : inferYeastRecipeStyle(recipe));
   return { yeastId: selected, styleId: selectedStyle, goal: sameStyle && saved!.styleId === selectedStyle ? saved!.goal : defaultGoal(selectedStyle),
+    goalExplicit: sameStyle && saved!.styleId === selectedStyle ? saved!.goalExplicit !== false : false,
     form: same ? recipe.yeast.form : refs.find(r => r.id === selected)?.form, formYeastId: selected,
-    temperatureC: finite(primary?.tempC) ? primary.tempC : undefined, days: positive(primary?.days) ? primary.days : undefined,
+    temperatureC: finite(primary?.tempC) ? primary.tempC : undefined,
+    days: finite(primary?.days) && primary!.days >= 0 ? primary!.days : undefined,
     ...(saved?.programme && !yeastRecipeDesignChanged(recipe, saved) ? { programme: structuredClone(recipe.fermentation ?? []) } : {}),
     ...(snapshot?.beerTarget ? { beerTarget: structuredClone(snapshot.beerTarget) } : {}),
     pitchTempC: same && finite(recipe.yeast.pitchTempC) ? recipe.yeast.pitchTempC : undefined,
@@ -248,38 +353,79 @@ export function createYeastRecipeDraft(recipe: TrialRecipe, refs: YeastReference
 }
 
 /** Returns a proposal to preview. Calling this helper does not mutate the draft or adopt settings. */
-export function proposeYeastGoalSettings(recipe: TrialRecipe, draft: YeastRecipeDraft, refs: YeastReference[]): {
+export function proposeYeastGoalSettings(recipe: TrialRecipe, draft: YeastRecipeDraft, refs: YeastReference[], trialYeast?: YeastSpec): {
   patch: Partial<YeastRecipeDraft>; label: string; rationale: string; source?: HopSource;
+  outcome: 'proposed' | 'unchanged' | 'insufficient-data'; reasons: string[];
 } | undefined {
+  if (draft.goalExplicit === false) return { patch: {}, outcome: 'insufficient-data', reasons: ['Aucun objectif de conduite n’a été exprimé ; un objectif par défaut ne déclenche pas de proposition.'],
+    label: 'Objectif à préciser', rationale: 'Choisir explicitement un profil recherché avant de préparer une consigne.' };
   const reference = refs.find(r => r.id === draft.yeastId), profile = profileFor(draft.yeastId);
   const current = draft.yeastId === (recipe.yeast.hopIndexId ?? resolveFermentationYeast(recipe, refs)?.id ?? '');
-  const dossier = resolveYeastDossier(current ? recipe.yeast : { name: reference?.name ?? '' }, reference);
+  const effectiveYeast = trialYeast?.hopIndexId === draft.yeastId ? trialYeast : current ? recipe.yeast : { name: reference?.name ?? '' };
+  const dossier = resolveYeastDossier(effectiveYeast, reference);
   const temperature = dossier.temperature?.qualifier === 'range' ? dossier.temperature : undefined;
-  if (draft.goal === 'clove' && draft.styleId === 'weissbier' && yeastTrait(reference, 'pof', current ? recipe.yeast : undefined).value === true) {
+  const phenolic = yeastTrait(reference, 'pof', trialYeast?.hopIndexId === draft.yeastId ? trialYeast : current ? recipe.yeast : undefined);
+  if (draft.goal === 'clove' && phenolic.value === true) {
     const steps = recipe.mash?.steps ?? [];
     const patch: Partial<YeastRecipeDraft> = {};
-    if (ferulicRestIndex(steps) < 0 && !steps.some(s => s.tempC >= 43 && s.tempC <= 45 && positive(s.durationMin)) &&
-      steps.some(s => s.tempC >= 60 && s.tempC <= 75 && positive(s.durationMin))) patch.ferulicRest = true;
+    const hasSaccharification = steps.some(s => finite(s.tempC) && s.tempC >= 60 && s.tempC <= 75 && positive(s.durationMin));
+    const hasUnplacedRest = steps.some(s => finite(s.tempC) && s.tempC >= 43 && s.tempC <= 45 && positive(s.durationMin));
+    const restAlreadyPlaced = ferulicRestIndex(steps) >= 0;
+    const hasCerealMash = hasMaltMashSubstrate(recipe);
+    if (hasCerealMash && hasSaccharification && !restAlreadyPlaced && !hasUnplacedRest) patch.ferulicRest = true;
     if (profile?.temperatureEsters && temperature && temperature.range.min <= 18 && temperature.range.max >= 18) patch.temperatureC = 18;
-    if (!Object.keys(patch).length) return undefined;
-    return { patch, label: 'Préparer un essai girofle', rationale: 'Proposition L’Affinée : repos 44 °C / 15 min si absent ; pour les Wyeast documentées, 18 °C comme point de départ dans leur fenêtre afin de limiter les esters. Ni durée de repos optimale ni hausse de 4-VG démontrée. La dose et la pression restent à choisir.',
+    const restLimit = restAlreadyPlaced ? 'Le repos avant saccharification existe déjà ; aucun doublon n’est ajouté.'
+      : !hasCerealMash ? 'Aucun fermentescible grain n’est déclaré à l’empâtage.'
+        : !hasSaccharification ? 'Aucun palier de saccharification (60–75 °C) n’est renseigné.'
+          : hasUnplacedRest ? 'Un repos à 43–45 °C est déjà saisi ailleurs dans l’empâtage ; le replacer avant saccharification avant d’en ajouter un.' : undefined;
+    if (!Object.keys(patch).length) {
+      if (restAlreadyPlaced) return { patch, outcome: 'unchanged', reasons: ['Le repos férulique avant saccharification est déjà présent ; aucun second repos n’est ajouté.'],
+        label: 'Empâtage conservé', rationale: 'Le repos déjà enregistré reste en place. Sa présence ne mesure ni sa conversion en 4-VG ni le girofle perçu.' };
+      const missing = restLimit ?? 'Aucun réglage de température propre à cette souche n’est documenté pour le girofle.';
+      return { patch, outcome: 'insufficient-data', reasons: [missing], label: 'Empâtage à vérifier',
+        rationale: `${missing} Aucun nouveau repos férulique n’est préparé ; l’effet dépend aussi du moût et reste qualitatif.` };
+    }
+    const reasons = [
+      ...(patch.ferulicRest ? ['Souche phénolique documentée, céréale prévue à l’empâtage et saccharification disponible ; le repos reste une proposition de procédé.'] : []),
+      ...(patch.temperatureC === 18 ? ['Point de départ à 18 °C réservé aux souches dont le fabricant documente la tendance esters/température.'] : []),
+      ...(!patch.ferulicRest && restLimit ? [restLimit] : []),
+    ];
+    const actions = [
+      ...(patch.ferulicRest ? ['préparer un repos férulique à 44 °C / 15 min avant la saccharification (durée éditoriale)'] : []),
+      ...(patch.temperatureC === 18 ? ['essayer 18 °C dans la plage fabricant pour rendre le girofle plus lisible en limitant les esters'] : []),
+    ];
+    return { patch, outcome: 'proposed', reasons, label: 'Préparer un essai girofle', rationale: `Proposition L’Affinée : ${actions.join(' ; ')}. ${restLimit ? `${restLimit} ` : ''}Le repos peut libérer un précurseur de 4-VG ; les céréales, le traitement du malt et la levure comptent, sans jauge de blé ni intensité aromatique calculée. Ni durée de repos optimale ni hausse de 4-VG démontrée. La dose et la pression restent à choisir.`,
       source: { title: 'Choix de scénario girofle — preuves et limites', author: 'L’Affinée', year: 2026, kind: 'judgment', reference: 'docs/research/yeast-wheat-style-evidence.md' } };
   }
   const guide = guides.find(g => g.kind === 'fermentation' && g.yeastId === draft.yeastId && g.enabled);
   const plan = guide?.plans?.find(p => p.goal === draft.goal);
   const first = plan?.phases.find(p => p.kind === 'primaire');
   if (!first || !temperature || first.temperatureC.central < temperature.range.min || first.temperatureC.central > temperature.range.max) {
-    if (draft.temperatureC === undefined && temperature) {
+    if (!temperature) {
+      const detail = dossier.temperature ? 'La fiche publie un point ou une borne, pas une plage de conduite.' : 'La plage de conduite documentée est absente ou contradictoire.';
+      return { patch: {}, outcome: 'insufficient-data', reasons: [detail], label: 'Données de température insuffisantes',
+        rationale: `${detail} Aucun réglage thermique n’est déduit ; les paliers locaux restent à vérifier.` };
+    }
+    if (finite(draft.temperatureC) && (draft.temperatureC < temperature.range.min || draft.temperatureC > temperature.range.max)) {
+      const corrected = Math.max(temperature.range.min, Math.min(temperature.range.max, draft.temperatureC));
+      return { patch: { temperatureC: corrected }, outcome: 'proposed', reasons: [`Consigne hors plage : déplacement minimal de ${format(Math.abs(corrected - draft.temperatureC), '°C')} pour atteindre la borne ${format(corrected, '°C')}.`],
+        label: `Correction minimale · ${format(corrected, '°C')}`,
+        rationale: `Correction de conformité à la plage documentée (${format(temperature.range.min)}–${format(temperature.range.max, '°C')}) : déplacement minimal vers ${format(corrected, '°C')}. Ce n’est pas un optimum aromatique.`, source: temperature.sources[0] };
+    }
+    if (draft.temperatureC === undefined) {
       const middle = (temperature.range.min + temperature.range.max) / 2;
-      return { patch: { temperatureC: middle }, label: `Préparer ${format(middle, '°C')} · point de départ`,
+      return { patch: { temperatureC: middle }, outcome: 'proposed', reasons: ['La plage est connue mais aucun réglage local ne l’occupe encore ; le point médian sert uniquement de départ éditorial.'], label: `Préparer ${format(middle, '°C')} · point de départ`,
         rationale: 'Point médian de la fenêtre renseignée pour préparer la conduite. Ce repère éditorial ne prédit pas un profil aromatique ; ajuste-le selon le protocole de cette souche et tes essais.', source: temperature.sources[0] };
     }
-    return { patch: {}, label: 'Consigne conservée', rationale: `Aucun réglage de température documenté pour cet objectif. ${finite(draft.temperatureC) ? `Consigne actuelle conservée : ${format(draft.temperatureC, '°C')}.` : 'Plage de conduite à renseigner.'}` };
+    return { patch: {}, outcome: 'unchanged', reasons: ['Aucun réglage propre à cet objectif ne justifie de déplacer la consigne déjà dans la plage documentée.'], label: 'Consigne conservée', rationale: `Aucun réglage de température plus précis n’est documenté pour cet objectif. Consigne actuelle conservée dans la plage : ${format(draft.temperatureC, '°C')}.` };
   }
-  const patch: Partial<YeastRecipeDraft> = { temperatureC: first.temperatureC.central };
+  const patch: Partial<YeastRecipeDraft> = {};
+  if (draft.temperatureC !== first.temperatureC.central) patch.temperatureC = first.temperatureC.central;
   if (draft.pitchTempC === undefined) patch.pitchTempC = plan!.pitchTemperatureC.central;
   if (draft.days === undefined) patch.days = first.days.central;
-  return { patch, label: `Essayer ${format(first.temperatureC.central, '°C')} · point de départ`,
+  const outcome = Object.keys(patch).length ? 'proposed' as const : 'unchanged' as const;
+  const reasons = outcome === 'proposed' ? ['Le guide apporte une consigne de planification compatible avec la plage documentée.'] : ['Les réglages locaux correspondent déjà au repère du guide.'];
+  return { patch, outcome, reasons, label: outcome === 'proposed' ? `Essayer ${format(first.temperatureC.central, '°C')} · point de départ` : 'Consigne conservée',
     rationale: `Consigne éditoriale du guide L’Affinée, dans la fenêtre de cette souche. ${draft.days === undefined ? `${first.days.central} jours proposés pour planifier la phase principale, à réévaluer aux mesures ; aucune fin de fermentation garantie. ` : 'La durée saisie est conservée. '}Aucune baisse automatique de dose. Les autres phases restent en place.`, source: guide!.source as HopSource };
 }
 
@@ -299,43 +445,108 @@ export function yeastRecipeHopSummary(recipe: TrialRecipe): YeastRecipeHopSummar
     unknownG: sum(additions.filter(h => h.phase === 'unknown')), unknownCount: additions.filter(h => h.phase === 'unknown').length };
 }
 
-function draftErrors(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: YeastRecipeCandidate | undefined, mode: 'strain' | 'settings'): string[] {
-  const errors: string[] = [];
-  if (!candidate && (mode === 'strain' || draft.yeastId && draft.yeastId !== recipe.yeast.hopIndexId || !recipe.yeast.name.trim())) errors.push('Choisis une levure ou renseigne le nom de ta souche.');
-  if (!YEAST_STYLE_FAMILIES.some(s => s.id === draft.styleId)) errors.push('Le style sélectionné est inconnu.');
-  if (!knownGoal(draft.goal)) errors.push('L’objectif sélectionné est inconnu.');
-  if (draft.beerTarget !== undefined && !readYeastBeerTarget(draft.beerTarget)) errors.push('Cible de bière invalide : vérifier les plages et leurs unités.');
-  if (mode === 'strain') return errors;
-  for (const [label, value] of [['Température', draft.temperatureC], ['Ensemencement', draft.pitchTempC]] as const) {
-    if (value === undefined) continue;
-    if (!finite(value) || value < 0 || value > 60) errors.push(`${label} : saisis une température valide en °C.`);
+function validateDraft(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: YeastRecipeCandidate | undefined, mode: 'strain' | 'settings', refs: YeastReference[]): {
+  errors: string[]; problems: YeastRecipeProblem[];
+} {
+  const errors: string[] = [], problems: YeastRecipeProblem[] = [];
+  const addProblem = (problem: YeastRecipeProblem) => {
+    if (!problems.some(existing => existing.code === problem.code && existing.section === problem.section && existing.property === problem.property &&
+      existing.index === problem.index && existing.field === problem.field)) problems.push(problem);
+  };
+  const addError = (message: string, problem: Omit<YeastRecipeProblem, 'message'>) => { errors.push(message); addProblem({ ...problem, message }); };
+  if (!candidate && (mode === 'strain' || draft.yeastId && draft.yeastId !== recipe.yeast.hopIndexId || !recipe.yeast.name.trim())) {
+    addError('Choisis une levure ou renseigne le nom de ta souche.', { code: 'identity.required', section: 'identity', property: 'yeastId' });
   }
-  if (draft.days !== undefined && !positive(draft.days)) errors.push('La durée indicative doit être positive ou rester à renseigner.');
-  if (draft.programme !== undefined && !validProgramme(draft.programme)) errors.push('Programme incomplet : chaque phase exige un nom, une température et une durée valides, avec une primaire.');
-  if (draft.pressureBar !== undefined && (!finite(draft.pressureBar) || draft.pressureBar < 0)) errors.push('La pression en fermentation doit être positive ou nulle, en bar relatif.');
-  if (draft.attenuationPct !== undefined && (!finite(draft.attenuationPct) || draft.attenuationPct < 0 || draft.attenuationPct > 100)) errors.push('Atténuation : saisis une valeur entre 0 et 100 %.');
-  if (draft.process !== undefined && !['unspecified', 'preacidified', 'acidifying-yeast', 'mixed-culture'].includes(draft.process)) errors.push('Procédé de fermentation inconnu.');
-  if (draft.cultureRoles?.some(c => !c.name.trim() || !['alcoholic', 'acidifying', 'conditioning', 'mixed'].includes(c.role))) errors.push('Chaque culture exige un nom et un rôle explicites.');
-  if (draft.pitchRateMillionPerMlPlato !== undefined && !positive(draft.pitchRateMillionPerMlPlato)) errors.push('Taux d’ensemencement cible positif requis.');
-  if (draft.viableCellsBillion !== undefined && (!finite(draft.viableCellsBillion) || draft.viableCellsBillion < 0)) errors.push('Cellules viables : saisis une valeur positive ou nulle.');
-  if (draft.quantityG !== undefined && (!positive(draft.quantityG) || (candidate?.form ?? recipe.yeast.form) !== 'sèche')) errors.push('La quantité en grammes doit être positive et concerne une levure sèche.');
-  if (!(Array.isArray(draft.programme) ? draft.programme : recipe.fermentation)?.some(s => s.kind === 'primaire') && (draft.temperatureC !== undefined || draft.days !== undefined) && (!finite(draft.temperatureC) || !positive(draft.days))) errors.push('Pour créer une phase principale, renseigne sa température et sa durée indicative.');
+  if (!YEAST_STYLE_FAMILIES.some(s => s.id === draft.styleId)) addError('Le style sélectionné est inconnu.', { code: 'style.unknown', section: 'objectives', property: 'styleId' });
+  if (!knownGoal(draft.goal)) addError('L’objectif sélectionné est inconnu.', { code: 'goal.unknown', section: 'objectives', property: 'goal' });
+  if (draft.beerTarget !== undefined && !readYeastBeerTarget(draft.beerTarget)) addError('Cible de bière invalide : vérifier les plages et leurs unités.',
+    { code: 'beerTarget.invalid', section: 'objectives', property: 'beerTarget' });
+  if (mode === 'strain') return { errors, problems };
+
+  if (draft.programme !== undefined && !validProgramme(draft.programme)) {
+    errors.push('Programme incomplet : chaque phase exige un nom, une température et une durée valides, avec une primaire.');
+    for (const issue of yeastRecipeProgrammeIssues(draft.programme)) addProblem({ code: `programme.${issue.field}`, message: issue.message,
+      section: 'programme', property: 'programme', index: issue.phaseIndex, field: issue.field });
+  }
+  const primaryIndex = Array.isArray(draft.programme) ? draft.programme.findIndex(phase => phase.kind === 'primaire')
+    : (recipe.fermentation ?? []).findIndex(phase => phase.kind === 'primaire');
+  for (const [label, value, property, section, field] of [
+    ['Température', draft.temperatureC, 'temperatureC', 'programme', 'tempC'],
+    ['Ensemencement', draft.pitchTempC, 'pitchTempC', 'pitch', 'pitchTempC'],
+  ] as const) {
+    if (value === undefined) continue;
+    if (!finite(value) || value < 0 || value > 60) {
+      errors.push(`${label} : saisis une température valide en °C.`);
+      // An explicit programme already supplies a more precise phase-indexed issue.
+      if (!(property === 'temperatureC' && draft.programme !== undefined)) addProblem({ code: `${property}.range`, section,
+        property, ...(property === 'temperatureC' ? { index: primaryIndex, field } : { field }) , message: `${label} : saisis une température valide en °C.` });
+    }
+  }
+  if (draft.days !== undefined && (!finite(draft.days) || draft.days < 0)) {
+    const message = 'La durée indicative doit être positive ou nulle, ou rester à renseigner.'; errors.push(message);
+    if (draft.programme === undefined) addProblem({ code: 'days.invalid', section: 'programme', property: 'days', index: primaryIndex, field: 'days', message });
+  }
+  if (draft.pressureBar !== undefined && (!finite(draft.pressureBar) || draft.pressureBar < 0)) addError('La pression en fermentation doit être positive ou nulle, en bar relatif.',
+    { code: 'pressureBar.range', section: 'preparation', property: 'pressureBar' });
+  if (draft.attenuationPct !== undefined && (!finite(draft.attenuationPct) || draft.attenuationPct < 0 || draft.attenuationPct > 100)) addError('Atténuation : saisis une valeur entre 0 et 100 %.',
+    { code: 'attenuationPct.range', section: 'preparation', property: 'attenuationPct' });
+  if (draft.process !== undefined && !['unspecified', 'preacidified', 'acidifying-yeast', 'mixed-culture'].includes(draft.process)) addError('Procédé de fermentation inconnu.',
+    { code: 'process.unknown', section: 'preparation', property: 'process' });
+  const invalidCultureRoles = (draft.cultureRoles ?? []).flatMap((culture, index) => [
+    ...(!culture.name.trim() ? [{ index, field: 'name' }] : []),
+    ...(!['alcoholic', 'acidifying', 'conditioning', 'mixed'].includes(culture.role) ? [{ index, field: 'role' }] : []),
+  ]);
+  if (invalidCultureRoles.length) {
+    const message = 'Chaque culture exige un nom et un rôle explicites.'; errors.push(message);
+    invalidCultureRoles.forEach(({ index, field }) => addProblem({ code: `cultureRoles.${field}`, section: 'preparation', property: 'cultureRoles', index, field, message }));
+  }
+  if (draft.pitchRateMillionPerMlPlato !== undefined && !positive(draft.pitchRateMillionPerMlPlato)) addError('Taux d’ensemencement cible positif requis.',
+    { code: 'pitchRateMillionPerMlPlato.positive', section: 'pitch', property: 'pitchRateMillionPerMlPlato' });
+  if (draft.viableCellsBillion !== undefined && (!finite(draft.viableCellsBillion) || draft.viableCellsBillion < 0)) addError('Cellules viables : saisis une valeur positive ou nulle.',
+    { code: 'viableCellsBillion.range', section: 'pitch', property: 'viableCellsBillion' });
+  const sameStrain = !candidate || candidate.yeastId === (recipe.yeast.hopIndexId ?? resolveFermentationYeast(recipe, refs)?.id ?? '');
+  const productForm = candidate?.form ?? (sameStrain ? recipe.yeast.form : undefined);
+  if (draft.quantityG !== undefined && (!positive(draft.quantityG) || productForm !== 'sèche')) {
+    const message = 'La quantité en grammes doit être positive et concerne une levure sèche de forme confirmée.'; errors.push(message);
+    if (!positive(draft.quantityG)) addProblem({ code: 'quantityG.positive', section: 'pitch', property: 'quantityG', message });
+    if (productForm !== 'sèche') addProblem({ code: 'quantityG.dryForm', section: 'identity', property: 'form', message });
+  }
+  const programmeSource = Array.isArray(draft.programme) ? draft.programme : recipe.fermentation;
+  if (!programmeSource?.some(s => s.kind === 'primaire') && (draft.temperatureC !== undefined || draft.days !== undefined) && (!finite(draft.temperatureC) || !positive(draft.days))) {
+    const message = 'Pour créer une phase principale, renseigne sa température et sa durée indicative.'; errors.push(message);
+    if (!finite(draft.temperatureC)) addProblem({ code: 'programme.primary.temperatureC', section: 'programme', property: 'temperatureC', index: -1, field: 'tempC', message });
+    if (!positive(draft.days)) addProblem({ code: 'programme.primary.days', section: 'programme', property: 'days', index: -1, field: 'days', message });
+  }
   const steps = recipe.mash?.steps ?? [];
   if (draft.ferulicRest && ferulicRestIndex(steps) < 0) {
-    if (!steps.some(s => finite(s.tempC) && s.tempC >= 60 && s.tempC <= 75 && positive(s.durationMin))) errors.push('Prépare d’abord un palier de saccharification (60–75 °C) dans l’empâtage avant d’ajouter le repos férulique.');
-    if (steps.some(s => s.tempC >= 43 && s.tempC <= 45 && positive(s.durationMin))) errors.push('Un repos à 43–45 °C existe après la chauffe : replace-le avant la saccharification dans l’empâtage.');
-    if (yeastTrait(candidate?.reference, 'pof', !candidate || resolveFermentationYeast(recipe, [candidate.reference])?.id === candidate.yeastId ? recipe.yeast : undefined).value !== true) errors.push('L’effet de ce repos exige une capacité phénolique documentée pour cette souche.');
+    if (!hasMaltMashSubstrate(recipe)) addError('Le repos férulique exige un fermentescible grain prévu à l’empâtage ; vérifier les céréales de la recette avant de le préparer.',
+      { code: 'ferulicRest.mashGrain', section: 'mash', property: 'fermentables', index: -1 });
+    if (!steps.some(s => finite(s.tempC) && s.tempC >= 60 && s.tempC <= 75 && positive(s.durationMin))) addError('Prépare d’abord un palier de saccharification (60–75 °C) dans l’empâtage avant d’ajouter le repos férulique.',
+      { code: 'ferulicRest.saccharification', section: 'mash', property: 'mash.steps', index: -1, field: 'saccharification' });
+    if (steps.some(s => s.tempC >= 43 && s.tempC <= 45 && positive(s.durationMin))) {
+      const index = steps.findIndex(s => s.tempC >= 43 && s.tempC <= 45 && positive(s.durationMin));
+      addError('Un repos à 43–45 °C existe après la chauffe : replace-le avant la saccharification dans l’empâtage.',
+        { code: 'ferulicRest.reorder', section: 'mash', property: 'mash.steps', index, field: 'order' });
+    }
+    if (yeastTrait(candidate?.reference, 'pof', !candidate || resolveFermentationYeast(recipe, [candidate.reference])?.id === candidate.yeastId ? recipe.yeast : undefined).value !== true) addError('L’effet de ce repos exige une capacité phénolique documentée pour cette souche.',
+      { code: 'ferulicRest.pof', section: 'identity', property: 'yeast.technicalFacts.pof' });
   }
-  return errors;
+  return { errors, problems };
+}
+
+function draftErrors(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: YeastRecipeCandidate | undefined, mode: 'strain' | 'settings', refs: YeastReference[]): string[] {
+  return validateDraft(recipe, draft, candidate, mode, refs).errors;
 }
 
 function proposedRecipe<T extends TrialRecipe>(recipe: T, draft: YeastRecipeDraft, candidate: YeastRecipeCandidate | undefined, refs: YeastReference[], mode: 'strain' | 'settings'): T {
-  const same = !candidate || resolveFermentationYeast(recipe, refs)?.id === candidate.yeastId;
-  const nextYeast: YeastSpec = same ? { ...recipe.yeast, ...(candidate ? { hopIndexId: candidate.yeastId, ...(candidate.form ? { form: candidate.form } : {}) } : {}) } : {
-    name: candidate!.label, hopIndexId: candidate!.yeastId, ...(candidate!.form ? { form: candidate!.form } : {}), lab: candidate!.lab,
-    technicalFacts: resolveYeastDossier({ name: candidate!.label }, candidate!.reference).facts, attenuationBasis: 'declared',
-    ...(candidate!.reference.catalogue?.productCode ? { strain: candidate!.reference.catalogue.productCode } : {})
-  };
+  const same = !candidate || (recipe.yeast.localDocumentary !== undefined
+    ? recipe.yeast.hopIndexId === candidate.yeastId
+    : resolveFermentationYeast(recipe, refs)?.id === candidate.yeastId);
+  const nextYeast: YeastSpec = same ? { ...recipe.yeast, ...(candidate ? { hopIndexId: candidate.yeastId, ...(candidate.form ? { form: candidate.form } : {}) } : {}) }
+    : yeastSpecForCandidate(candidate!);
+  // A fresh candidate is a new documentary owner. Never transplant either
+  // envelope from the former catalogue or local scope.
+  if (!same) { delete nextYeast.adoptedDocumentary; delete nextYeast.localDocumentary; }
   let fermentation = recipe.fermentation?.map(s => ({ ...s })), mash = recipe.mash;
   if (mode === 'settings') {
     if (nextYeast.form === 'sèche' && draft.quantityG !== undefined) { nextYeast.qty = draft.quantityG; nextYeast.unit = 'g'; }
@@ -345,8 +556,11 @@ function proposedRecipe<T extends TrialRecipe>(recipe: T, draft: YeastRecipeDraf
     else if (ownAttenuation && draft.attenuationBasis === 'declared') { delete nextYeast.attenuationPct; nextYeast.attenuationBasis = 'declared'; }
     if (draft.pitchTempC !== undefined) nextYeast.pitchTempC = draft.pitchTempC;
     else delete nextYeast.pitchTempC;
-    if (candidate?.temperature && !same) { nextYeast.fermTempMinC = candidate.temperature.range.min; nextYeast.fermTempMaxC = candidate.temperature.range.max; }
-    if (draft.programme || fermentation || finite(draft.temperatureC) && positive(draft.days)) fermentation = yeastRecipeProgramme(recipe, draft);
+    if (candidate?.temperature?.qualifier === 'range' && !same) { nextYeast.fermTempMinC = candidate.temperature.range.min; nextYeast.fermTempMaxC = candidate.temperature.range.max; }
+    if (draft.programme !== undefined || fermentation || finite(draft.temperatureC) && positive(draft.days)) {
+      const planned = yeastRecipeProgramme(recipe, draft);
+      if (planned.every(step => finite(step.tempC) && finite(step.days))) fermentation = planned as FermentationStep[];
+    }
     if (draft.ferulicRest && ferulicRestIndex(mash?.steps ?? []) < 0) {
       mash = { ...mash, steps: [{ name: 'Repos férulique · proposition L’Affinée', tempC: 44, durationMin: 15 }, ...mash?.steps ?? []] };
     }
@@ -371,10 +585,12 @@ function changesFor(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Yea
     add('yeast', 'Levure', recipe.yeast.name || 'À choisir', same ? recipe.yeast.name : candidate.label);
     add('form', 'Forme de levure', recipe.yeast.form || 'À confirmer', candidate.form || (same ? recipe.yeast.form : undefined) || 'À confirmer');
   }
-  if (draft.programme && validProgramme(draft.programme)) {
+  if (draft.programme !== undefined) {
     const planned = yeastRecipeProgramme(recipe, draft), before = recipe.fermentation ?? [];
-    const phaseLabel = (phase: FermentationStep | undefined) => phase ? `${phase.name} · ${format(phase.tempC, '°C')} · ${format(phase.days, 'j')}` : 'Aucune phase';
-    const coldDescent = (phase: FermentationStep) => phase.kind === 'garde' && /refroid|cold[ -]?crash/i.test(phase.name);
+    const readable = (value: unknown, unit: string) => finite(value) ? format(value, unit) : `Inconnu${unit ? ` ${unit}` : ''}`;
+    const phaseLabel = (phase: FermentationTimelineStep | undefined) => phase
+      ? `${phase.name} · ${readable(phase.tempC, '°C')} · ${readable(phase.days, 'j')}` : 'Aucune phase';
+    const coldDescent = (phase: FermentationTimelineStep) => phase.kind === 'garde' && /refroid|cold[ -]?crash/i.test(phase.name);
     const used = new Set<number>(), order: number[] = [];
     planned.forEach((phase, index) => {
       let match = before.findIndex((p, i) => !used.has(i) && p.kind === phase.kind && p.name === phase.name);
@@ -385,6 +601,18 @@ function changesFor(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Yea
     });
     before.forEach((phase, index) => { if (!used.has(index)) add(`programme-removed-${index}`, phase.name, phaseLabel(phase), 'Phase retirée'); });
     if (order.some((value, index) => index > 0 && value < order[index - 1])) add('programme-order', 'Ordre des phases', before.map(p => p.name).join(' → '), planned.map(p => p.name).join(' → '));
+    const totalText = (steps: readonly FermentationTimelineStep[]) => {
+      const endDay = planFermentationTimeline(steps).endDay;
+      return endDay === null ? 'Durée totale inconnue' : `${format(endDay, 'j')} au total`;
+    };
+    add('programme-total', 'Durée totale planifiée', totalText(before), totalText(planned));
+    if (!validProgramme(planned)) {
+      const issue = planned.length === 0 ? 'aucune phase' : !planned.some(phase => phase.kind === 'primaire') ? 'primaire absente'
+        : planned.some(phase => !finite(phase.tempC) || phase.tempC < 0 || phase.tempC > 60) ? 'température à renseigner ou invalide'
+          : 'durée à renseigner ou invalide';
+      const beforeState = validProgramme(before) ? 'Programme complet' : 'Programme incomplet';
+      add('programme-validity', 'Programme', beforeState, `Incomplet · ${issue}`);
+    }
   } else {
     if (draft.temperatureC !== undefined) add('temperature', 'Primaire', format(primary?.tempC, '°C'), format(draft.temperatureC, '°C'));
     if (draft.days !== undefined) add('duration', 'Durée indicative', format(primary?.days, 'j'), format(draft.days, 'j'));
@@ -393,7 +621,9 @@ function changesFor(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Yea
   if ((candidate?.form ?? recipe.yeast.form) === 'sèche' && (draft.quantityG !== undefined || recipe.yeast.unit === 'g')) add('quantity', 'Levure sèche', positive(recipe.yeast.qty) ? format(recipe.yeast.qty, recipe.yeast.unit) : 'À renseigner', format(draft.quantityG, 'g'));
   else if (candidate && resolveFermentationYeast(recipe, refs)?.id !== candidate.yeastId && positive(recipe.yeast.qty)) add('quantity', 'Quantité', format(recipe.yeast.qty, recipe.yeast.unit), 'À renseigner pour la nouvelle souche');
   add('pressure', 'Pression précoce · scénario', format(readYeastRecipeDesign(recipe)?.pressureBar, 'bar rel.'), format(draft.pressureBar, 'bar rel.'));
-  add('goal', 'Profil recherché', YEAST_RECIPE_GOAL_LABELS[readYeastRecipeDesign(recipe)?.goal ?? createYeastRecipeDraft(recipe, refs).goal], YEAST_RECIPE_GOAL_LABELS[draft.goal]);
+  const previousGoal = readYeastRecipeDesign(recipe);
+  add('goal', 'Profil recherché', previousGoal && previousGoal.goalExplicit !== false ? YEAST_RECIPE_GOAL_LABELS[previousGoal.goal] : 'Aucun objectif exprimé',
+    expressedGoal(draft) ? YEAST_RECIPE_GOAL_LABELS[draft.goal] : 'Aucun objectif exprimé');
   if (draft.attenuationPct !== undefined && (draft.attenuationYeastId === undefined || draft.attenuationYeastId === draft.yeastId)) add('attenuation', 'Atténuation choisie', format(recipe.yeast.attenuationPct, '%'), format(draft.attenuationPct, '%'));
   const processLabels = { unspecified: 'À préciser', preacidified: 'Moût pré-acidifié', 'acidifying-yeast': 'Levure acidifiante', 'mixed-culture': 'Cultures mixtes' };
   add('process', 'Procédé acidulé', processLabels[readYeastRecipeDesign(recipe)?.process ?? 'unspecified'], processLabels[draft.process ?? 'unspecified']);
@@ -405,14 +635,15 @@ function changesFor(recipe: TrialRecipe, draft: YeastRecipeDraft, candidate: Yea
   return changes;
 }
 
-export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecipeDraft, refs: YeastReference[]): YeastRecipeEvaluation {
+export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecipeDraft, refs: YeastReference[], trialYeast?: YeastSpec): YeastRecipeEvaluation {
   draft = withProgrammePrimary(draft);
   const reference = refs.find(r => r.id === draft.yeastId), candidate = reference && candidateFor(reference, draft.goal, recipe.volumeL, draft.styleId, draftForm(draft, reference)), profile = profileFor(draft.yeastId);
   const currentYeast = !draft.yeastId || draft.yeastId === (recipe.yeast.hopIndexId ?? resolveFermentationYeast(recipe, refs)?.id) ? recipe.yeast : undefined;
   const phenolic = yeastTrait(reference, 'pof', currentYeast), diastatic = yeastTrait(reference, 'diastatic', currentYeast);
-  const dossier = resolveYeastDossier(currentYeast ?? { name: reference?.name ?? '' }, reference);
+  const dossier = resolveYeastDossier(trialYeast?.hopIndexId === draft.yeastId ? trialYeast : currentYeast ?? { name: reference?.name ?? '' }, reference);
   const selectedTemperature = dossier.temperature?.qualifier === 'range' ? dossier.temperature : undefined;
-  const effects: YeastRecipeEffect[] = [], warnings: string[] = [], errors = draftErrors(recipe, draft, candidate, 'settings'), hops = yeastRecipeHopSummary(recipe);
+  const effects: YeastRecipeEffect[] = [], warnings: string[] = [], validation = validateDraft(recipe, draft, candidate, 'settings', refs),
+    errors = validation.errors, hops = yeastRecipeHopSummary(recipe);
   const effect = (e: YeastRecipeEffect) => effects.push(e);
   const source = profile?.source ?? reference?.source;
   const directPitchGuide = reference && YEAST_PRACTICAL_GUIDES[reference.id];
@@ -437,7 +668,7 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
   if (candidate) effect({ id: 'strain', label: 'Souche', impact: candidate.descriptor, detail: candidate.reason, state: candidate.evidence.descriptor ? 'documented' : 'unknown', source: candidate.evidence.descriptorSource });
   const oldT = recipe.fermentation?.find(s => s.kind === 'primaire')?.tempC, t = draft.temperatureC;
   if (!finite(t)) effect({ id: 'temperature', label: 'Température', impact: 'Consigne à renseigner', detail: 'La plage de conduite ne choisit pas ta consigne.', state: 'unknown', source: selectedTemperature?.sources[0] });
-  else if (profile?.temperatureEsters && candidate?.temperature && t >= candidate.temperature.range.min && t <= candidate.temperature.range.max) {
+  else if (profile?.temperatureEsters && selectedTemperature && t >= selectedTemperature.range.min && t <= selectedTemperature.range.max) {
     const delta = finite(oldT) ? t - oldT : undefined;
     effect({ id: 'temperature', label: 'Température', impact: delta === undefined || delta === 0 ? 'Tendance documentée, sans gain chiffré' : delta > 0 ? 'Esters potentiellement favorisés' : 'Esters potentiellement moins présents',
       detail: `Pour cette souche, Wyeast associe une température accrue à davantage d’esters. ${draft.goal === 'clove' ? 'Moins d’esters peut rendre le girofle plus perceptible ; cela ne prédit pas davantage de 4-VG.' : 'Dose, densité et moût interviennent aussi ; aucune intensité de banane n’est calculée.'}`, state: 'conditional', source });
@@ -477,7 +708,7 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
   if (draft.styleId === 'weissbier' && (hops.additions.length || !wheatVariant && (finite(currentIbu) && currentIbu > 15 || finite(recipe.ibuTarget) && recipe.ibuTarget > 15))) effect({ id: 'style-hops', label: 'Weizen · équilibre', impact: 'Houblonnage à comparer à l’expression levure',
     detail: `${wheatVariant ? 'Le repère d’amertume dépend du style exact : Dunkles Weissbier et Weizenbock ont leurs propres plages.' : 'Le repère BJCP Weissbier clair donne 8–15 IBU et privilégie le caractère de fermentation.'} IBU calculés à chaud : ${format(currentIbu)} ; cible saisie : ${format(recipe.ibuTarget)}. Un dry-hop modifie aussi la lecture aromatique, même sans IBU élevés ; aucune pénalité de banane calculée.`, state: 'conditional', source: YEAST_RECIPE_SOURCES.weissbier });
   if (draft.styleId === 'witbier' && recipe.adjuncts?.length) effect({ id: 'wit-adjuncts', label: 'Wit · ingrédients', impact: 'Comparer épices ajoutées et phénols de la souche', detail: `Ajouts présents : ${recipe.adjuncts.map(a => a.name).join(', ')}. Leur présence ne mesure pas l’intensité finale ; régler les apports dans leur étape.`, state: 'conditional', source });
-  const proposed = !errors.length ? proposedRecipe(recipe, draft, candidate, refs, 'settings') : recipe;
+  const proposed = !errors.length ? withTrialYeast(proposedRecipe(recipe, draft, candidate, refs, 'settings'), trialYeast, draft) : recipe;
   const projection = projectYeastRecipe(proposed, { reference, process: draft.process, cultureRoles: draft.cultureRoles ?? [] });
   const temperature = projection.dossier.temperature;
   warnings.push(...fermentationProgramIssues(proposed.fermentation ?? [], temperature?.qualifier === 'range' ? { range: temperature.range, source: temperature.sources[0] } : undefined,
@@ -489,19 +720,27 @@ export function evaluateYeastRecipeDesign(recipe: TrialRecipe, draft: YeastRecip
   const activeHopTemperatureConflicts = hops.additions.filter(h => h.phase === 'active' && finite(draft.temperatureC) && h.temperatureC !== draft.temperatureC);
   if (activeHopTemperatureConflicts.length && !draft.alignActiveHopTemperature) warnings.push(`Température de contact distincte pour ${activeHopTemperatureConflicts.map(h => h.name).join(', ')} : conserver ces consignes ou les aligner explicitement sur la primaire.`);
   if (draft.styleId === 'sour' && draft.process === 'unspecified') warnings.push('Procédé acidulé à préciser : moût pré-acidifié, levure acidifiante ou cultures mixtes. Le style seul ne définit pas la fermentation.');
-  return { candidate, effects, fg: projection.fg, abv: projection.abv, projection, activeHopTemperatureConflicts, doseG: candidate?.doseG, hops, warnings: [...new Set(warnings)], errors: [...new Set(errors)], changes: changesFor(recipe, draft, candidate, refs), sources: uniqueSources([...candidate?.sources ?? [], ...effects.map(e => e.source), ...projection.fg.sources]) };
+  return { candidate, effects, fg: projection.fg, abv: projection.abv, projection, activeHopTemperatureConflicts, doseG: candidate?.doseG, hops,
+    warnings: [...new Set(warnings)], errors: [...new Set(errors)], problems: validation.problems,
+    changes: changesFor(recipe, draft, candidate, refs), sources: uniqueSources([...candidate?.sources ?? [], ...effects.map(e => e.source), ...projection.fg.sources]) };
 }
 
 /** The explicit commit boundary. Goals alone never rewrite hops, saccharification, targets, conditioning or ingredient events. */
 export function applyYeastRecipeDesign<T extends TrialRecipe>(recipe: T, draft: YeastRecipeDraft, refs: YeastReference[], mode: 'strain' | 'settings' = 'settings'): T {
+  const currentIdentity = recipe.yeast.localDocumentary !== undefined && !recipe.yeast.hopIndexId
+    ? '' : recipe.yeast.hopIndexId ?? resolveFermentationYeast(recipe, refs)?.id ?? '';
+  const explicitlyChangingIdentity = !!draft.yeastId && draft.yeastId !== currentIdentity;
+  if (!validYeastDocumentaryScope(recipe.yeast) && !explicitlyChangingIdentity)
+    throw Error('La fiche documentaire ne correspond pas à une portée valide de la levure. Reprends une fiche validée avant d’appliquer.');
   if (mode === 'settings') draft = withProgrammePrimary(draft);
   const reference = refs.find(r => r.id === draft.yeastId), candidate = reference && candidateFor(reference, draft.goal, recipe.volumeL, draft.styleId, draftForm(draft, reference));
   if (reference) { const { aliases: _aliases, ...knowledge } = reference; assertHopKnowledge(knowledge); }
-  const errors = draftErrors(recipe, draft, candidate, mode); if (errors.length) throw Error(errors[0]);
+  const errors = draftErrors(recipe, draft, candidate, mode, refs); if (errors.length) throw Error(errors[0]);
   const next = proposedRecipe(recipe, draft, candidate, refs, mode);
   const previous = readYeastRecipeDesign(recipe);
   const scenario = mode === 'settings' ? draft : previous?.yeastId === draft.yeastId ? previous : undefined;
   const snapshot: YeastRecipeDesignSnapshot = { modelVersion: 'yeast-recipe-2', yeastId: draft.yeastId, styleId: draft.styleId, goal: draft.goal,
+    goalExplicit: expressedGoal(draft),
     ...(mode === 'settings' && draft.pressureBar !== undefined ? { pressureBar: draft.pressureBar } : mode === 'strain' && previous?.yeastId === draft.yeastId && previous.pressureBar !== undefined ? { pressureBar: previous.pressureBar } : {}),
     ferulicRest: ferulicRestIndex(next.mash?.steps ?? []) >= 0,
     process: scenario?.process ?? 'unspecified',
@@ -520,8 +759,11 @@ export function readYeastRecipeDesign(recipe: TrialRecipe): YeastRecipeDesignSna
   const s = (recipe as RecipeWithDesign).yeastDesign;
   const optionalNumber = (value: unknown, min = -Infinity, max = Infinity) => value == null || finite(value) && value >= min && value <= max;
   const optionalText = (value: unknown) => value === undefined || typeof value === 'string';
+  const validSelections = (value: unknown) => value === undefined || !!value && typeof value === 'object' && !Array.isArray(value) &&
+    Object.entries(value).every(([key, fact]) => ['temperature', 'attenuation', 'alcoholTolerance', 'flocculation'].includes(key) &&
+      (fact === null || readYeastTechnicalFacts([fact])?.[0]?.key === key));
   if (!s || !['yeast-recipe-1', 'yeast-recipe-2'].includes(s.modelVersion) || typeof s.yeastId !== 'string' || s.modelVersion === 'yeast-recipe-1' && !s.yeastId || !YEAST_STYLE_FAMILIES.some(f => f.id === s.styleId) ||
-    !knownGoal(s.goal) || typeof s.ferulicRest !== 'boolean' ||
+    !knownGoal(s.goal) || s.goalExplicit !== undefined && typeof s.goalExplicit !== 'boolean' || typeof s.ferulicRest !== 'boolean' ||
     s.pressureBar !== undefined && (!finite(s.pressureBar) || s.pressureBar < 0) || !s.applied || typeof s.applied.yeast?.name !== 'string' ||
     !finite(s.applied.volumeL) || s.applied.volumeL < 0 || (s.applied.yeast.hopIndexId ?? '') !== s.yeastId || !Array.isArray(s.applied.fermentation) || !Array.isArray(s.applied.mashSteps) ||
     !optionalNumber(s.applied.yeast.qty, 0) || !optionalText(s.applied.yeast.unit) ||
@@ -529,7 +771,10 @@ export function readYeastRecipeDesign(recipe: TrialRecipe): YeastRecipeDesignSna
     !(['pitchTempC', 'fermTempMinC', 'fermTempMaxC'] as const).every(key => optionalNumber(s.applied.yeast[key])) ||
     !optionalNumber(s.applied.yeast.attenuationPct, 0, 100) || !optionalNumber(s.applied.yeast.fermentDays, 0) ||
     !optionalNumber(s.applied.yeast.alcoholTolerancePct, 0, 100) || !optionalText(s.applied.yeast.flocculation) || !optionalText(s.applied.yeast.technicalSource) ||
+    !validYeastDocumentaryScope(s.applied.yeast) ||
     s.applied.yeast.technicalFacts !== undefined && !readYeastTechnicalFacts(s.applied.yeast.technicalFacts) ||
+    s.applied.yeast.documentaryNotes !== undefined && readYeastDocumentaryNotes(s.applied.yeast.documentaryNotes) === undefined ||
+    !validSelections(s.applied.yeast.technicalSelections) ||
     s.applied.yeast.attenuationBasis !== undefined && !['declared', 'recipe', 'measured'].includes(s.applied.yeast.attenuationBasis) ||
     s.process !== undefined && !['unspecified', 'preacidified', 'acidifying-yeast', 'mixed-culture'].includes(s.process) ||
     !optionalNumber(s.pitchRateMillionPerMlPlato, Number.MIN_VALUE) || !optionalNumber(s.viableCellsBillion, 0) ||
@@ -556,6 +801,42 @@ export function yeastRecipeDesignChanged(recipe: TrialRecipe, snapshot: YeastRec
       (recipe.efficiencyPct ?? null) !== snapshot.applied.efficiencyPct || (recipe.ogTarget ?? null) !== snapshot.applied.ogTarget || recipe.boilMin !== snapshot.applied.boilMin);
 }
 
+export type YeastRecipeDesignChangeKind = 'unchanged' | 'documentary' | 'settings';
+
+/** Classify a stale banner without weakening the strict snapshot comparison used by guards. */
+export function classifyYeastRecipeDesignChange(recipe: TrialRecipe, snapshot: YeastRecipeDesignSnapshot): YeastRecipeDesignChangeKind {
+  if (!validYeastDocumentaryScope(recipe.yeast) || !validYeastDocumentaryScope(snapshot.applied.yeast)) return 'settings';
+  if (!yeastRecipeDesignChanged(recipe, snapshot)) return 'unchanged';
+  const identity = recipe.yeast.hopIndexId ?? '';
+  const localScope = recipe.yeast.localDocumentary !== undefined || snapshot.applied.yeast.localDocumentary !== undefined;
+  if (identity !== snapshot.yeastId || (snapshot.applied.yeast.hopIndexId ?? '') !== identity || (!identity && !localScope)) return 'settings';
+
+  const current = { ...recipe.yeast }, applied = { ...snapshot.applied.yeast };
+  for (const key of ['fermentationFacts', 'technicalFacts', 'documentaryNotes', 'technicalSelections', 'technicalSource',
+    'adoptedDocumentary', 'localDocumentary', 'fermTempMinC', 'fermTempMaxC', 'flocculation', 'alcoholTolerancePct', 'fermentDays'] as const) {
+    delete current[key]; delete applied[key];
+  }
+
+  // Lab/code may arrive later from the local catalogue, but replacing known
+  // provenance stays conservative and remains a settings change.
+  if (!snapshot.applied.yeast.lab?.trim() && recipe.yeast.lab?.trim()) { delete current.lab; delete applied.lab; }
+  if (!snapshot.applied.yeast.strain?.trim() && recipe.yeast.strain?.trim()) { delete current.strain; delete applied.strain; }
+
+  // A measured/recipe hypothesis is an input to the projection. Legacy values
+  // without a basis also remain explicit hypotheses; declared values are docs.
+  const explicitAttenuation = [recipe.yeast, snapshot.applied.yeast].some(yeast =>
+    yeast.attenuationBasis === 'recipe' || yeast.attenuationBasis === 'measured' ||
+    yeast.attenuationPct !== undefined && yeast.attenuationBasis === undefined);
+  if (!explicitAttenuation) {
+    delete current.attenuationPct; delete applied.attenuationPct;
+    delete current.attenuationBasis; delete applied.attenuationBasis;
+  }
+
+  const normalizedRecipe = { ...recipe, yeast: current };
+  const normalizedSnapshot = { ...snapshot, applied: { ...snapshot.applied, yeast: applied } };
+  return yeastRecipeDesignChanged(normalizedRecipe, normalizedSnapshot) ? 'settings' : 'documentary';
+}
+
 /** Save only the target and its comparison baseline, without normalising legacy
  * quantities, culture settings or other pending recipe-design edits. */
 export function applyYeastBeerTargetIntent<T extends TrialRecipe>(recipe: T, target: YeastBeerTarget | undefined, refs: YeastReference[]): T {
@@ -563,6 +844,7 @@ export function applyYeastBeerTargetIntent<T extends TrialRecipe>(recipe: T, tar
   if (target !== undefined && !clean) throw Error('Cible de bière invalide : vérifier les plages et leurs unités.');
   const draft = createYeastRecipeDraft(recipe, refs), previous = readYeastRecipeDesign(recipe);
   const snapshot: YeastRecipeDesignSnapshot = { modelVersion: 'yeast-recipe-2', yeastId: recipe.yeast.hopIndexId ?? '', styleId: draft.styleId, goal: draft.goal,
+    goalExplicit: previous?.goalExplicit ?? draft.goalExplicit,
     ferulicRest: draft.ferulicRest, process: draft.process,
     ...(draft.cultureRoles ? { cultureRoles: structuredClone(draft.cultureRoles) } : {}),
     ...(draft.pressureBar !== undefined ? { pressureBar: draft.pressureBar } : {}),
@@ -580,9 +862,19 @@ export function applyYeastBeerTargetIntent<T extends TrialRecipe>(recipe: T, tar
  * A later edit must retain its original comparison baseline. Never call this from
  * an enrichment effect: only a still-current proposal can adopt the completed facts. */
 export function completeYeastRecipeDesignApplication<T extends TrialRecipe>(recipe: T, yeast: YeastSpec): T {
+  if (!validYeastDocumentaryScope(yeast)) throw Error('Les fiches documentaires ont des portées invalides ou incompatibles. Reprends une fiche validée avant d’appliquer.');
   const snapshot = readYeastRecipeDesign(recipe);
   const completed = { ...recipe, yeast };
-  if (!snapshot || yeastRecipeDesignChanged(recipe, snapshot)) return completed;
+  if (!snapshot) return completed;
+  const explicitSheetChanged = fermentationStateKey(recipe.yeast.adoptedDocumentary ?? null) !==
+    fermentationStateKey(snapshot.applied.yeast.adoptedDocumentary ?? null) ||
+    fermentationStateKey(recipe.yeast.localDocumentary ?? null) !== fermentationStateKey(snapshot.applied.yeast.localDocumentary ?? null);
+  // An explicit Wizard adoption can land after the Plan's settings snapshot was
+  // prepared. Advance that document-only delta at this commit boundary. Local
+  // reference enrichment alone, or a simultaneous recipe-setting change, keeps
+  // the former baseline and remains detectable.
+  if (classifyYeastRecipeDesignChange(recipe, snapshot) === 'settings' ||
+      yeastRecipeDesignChanged(recipe, snapshot) && !explicitSheetChanged) return completed;
   return { ...completed, yeastDesign: { ...snapshot, applied: { ...snapshot.applied, yeast: structuredClone(yeast) } } };
 }
 

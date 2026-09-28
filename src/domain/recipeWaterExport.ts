@@ -8,17 +8,19 @@ export function recipeWaterExport(recipe: WaterReadingsRecipe) {
   if (!readings) {
     return { waterDiagnosticNote: 'Analyse source ou volumes manquants : traitement et pH non vérifiables.' };
   }
-  const { treatment, phEstimate: ph, style, requestedRatio, targetRanges } = readings;
+  const { treatment, phEstimate: ph, waterModelIssue, style, requestedRatio, targetRanges } = readings;
   return {
     treatedWater: treatment.treatedTotal,
     mashIons: treatment.treated.mash,
     spargeIons: treatment.treated.sparge,
     ra: treatment.raAfter,
-    ...(ph.known ? {
+    ...(waterModelIssue ? {
+      mashPhNote: `${waterModelIssue} ${plan.acid ? 'Vérifier la dose d’acide retenue par mesure.' : 'Aucune dose d’acide calculée ; mesurer ou titrer avant de doser.'}`
+    } : ph?.known ? {
       mashPhEstimated: ph.phPredicted,
       mashPhUncertainty: ph.uncertainty,
       mashPhNote: 'Estimation après les doses d’acide retenues ; ne garantit pas la consigne. Vérifier au pH-mètre sur un échantillon refroidi.'
-    } : { mashPhNote: ph.note }),
+    } : { mashPhNote: ph?.note ?? 'pH à mesurer ou à titrer.' }),
     ...(Number.isFinite(requestedRatio) ? { requestedRatio } : {}),
     requestedRatioNote: plan.ratioOverride != null ? 'Choix manuel enregistré.'
       : plan.targetIons ? 'Rapport de la cible personnelle.'

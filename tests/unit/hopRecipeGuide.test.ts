@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { HopSource, HopVariety } from '../../functions/src/hopIndexSchema';
 import { hopSourceError } from '../../functions/src/hopIndexSchema';
 import {
   findRecipeHopMatches, findRecipeYeastMatches, normalizeRecipeIngredientName, rankDocumentaryHopLeads,
+  prepareRecipeIngredientNames,
 } from '../../src/domain/hopIndex/recipeGuide';
 import type { HopGuideFamily } from '../../src/domain/hopIndex/recipeGuide';
 import guideBootstrap from '../../src/data/hopRecipeGuideBootstrap.json';
@@ -28,6 +29,25 @@ const publicVarieties = [
 ] as HopVariety[];
 
 describe('Rapprochement explicite des ingrédients du guide', () => {
+  it('reuses normalized catalogue names while noticing edits, alias replacement and archive status', () => {
+    const item = { id: 'personal', name: 'Culture personnelle', aliases: ['R-7'], archived: false };
+    const catalogue = [item];
+    findRecipeYeastMatches('R-7', catalogue);
+    const normalize = vi.spyOn(String.prototype, 'normalize');
+    try {
+      expect(findRecipeYeastMatches('R-7', catalogue)).toMatchObject([{ matchedName: 'R-7', via: 'alias' }]);
+      expect(normalize).toHaveBeenCalledTimes(1); // Only the user's query, not every published name.
+      item.name = 'Culture corrigée'; item.aliases[0] = 'R-8';
+      expect(findRecipeYeastMatches('R-7', catalogue)).toEqual([]);
+      expect(findRecipeYeastMatches('Culture corrigée', catalogue)).toMatchObject([{ via: 'name' }]);
+      expect(findRecipeYeastMatches('R-8', catalogue)).toMatchObject([{ matchedName: 'R-8' }]);
+      item.aliases = ['R-9'];
+      expect(findRecipeYeastMatches('R-8', catalogue)).toEqual([]);
+      expect(findRecipeYeastMatches('R-9', catalogue)).toHaveLength(1);
+      item.archived = true;
+      expect(findRecipeYeastMatches('R-9', catalogue)).toEqual([]);
+    } finally { normalize.mockRestore(); }
+  });
   it.each([
     ['Houblon Idaho 7 12.7%', 'idaho 7'],
     ['Houblon : Idaho 7 (AA : 12,7 %)', 'idaho 7'],
@@ -84,6 +104,23 @@ describe('Rapprochement explicite des ingrédients du guide', () => {
     expect(findRecipeYeastMatches('US 05', yeasts)).toEqual([]);
     expect(findRecipeYeastMatches('BRY-97 12%', yeasts)).toEqual([]);
   });
+});
+
+it('yields catalogue priming when its budget is exhausted, then resumes without repeating names', () => {
+  const rows = Array.from({ length: 100 }, (_, index) => variety(`idle-${index}`, `Nom ${index}`));
+  const normalize = vi.spyOn(String.prototype, 'normalize');
+  try {
+    const next = prepareRecipeIngredientNames(rows, { canContinue: () => normalize.mock.calls.length < 2 });
+    expect(normalize).toHaveBeenCalledTimes(2);
+    expect(next).toBe(2);
+    expect(prepareRecipeIngredientNames(rows, { from: next, canContinue: () => false })).toBe(next);
+    expect(normalize).toHaveBeenCalledTimes(2);
+    expect(prepareRecipeIngredientNames(rows, { from: next })).toBe(rows.length);
+    expect(normalize).toHaveBeenCalledTimes(rows.length);
+    normalize.mockClear();
+    expect(findRecipeHopMatches('Nom 99', rows).map(match => match.item.id)).toEqual(['idle-99']);
+    expect(normalize).toHaveBeenCalledTimes(1);
+  } finally { normalize.mockRestore(); }
 });
 
 describe('Classement documentaire, sans prédiction sensorielle', () => {

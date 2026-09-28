@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { lstat } from 'node:fs/promises';
 import { basename } from 'node:path';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export async function buildHopRecipeQa(out = resolve(tmpdir(), 'laffinee-hop-qa-build')) {
+export async function buildHopRecipeQa(out = resolve(tmpdir(), 'laffinee-hop-qa-build'), options = {}) {
   out = resolve(out);
   // Vite empties this directory. Restrict the resolved target to a dedicated direct
   // child of TEMP and reject junctions/symlinks before allowing recursive cleanup.
@@ -23,8 +23,10 @@ export async function buildHopRecipeQa(out = resolve(tmpdir(), 'laffinee-hop-qa-
       if (source === '../data/seedData') return resolve(root, 'src/data/seedData.example.ts').replaceAll('\\', '/');
       const name = source.replaceAll('\\', '/').match(/(?:^|\/)(firestoreRepo|firebaseAuth|migration)(?:\.ts)?$/)?.[1];
       return name ? resolve(root, 'tests/qa/hop-recipe', adapters[name]).replaceAll('\\', '/') : null;
-    } }, react()
-  ], define: { 'import.meta.env.VITE_FIREBASE_PROJECT_ID': JSON.stringify('local-hop-qa'), 'import.meta.env.VITE_FIREBASE_API_KEY': JSON.stringify('local-qa-no-key'),
+    } }, ...(options.plugins ?? []), react()
+  ], resolve: { alias: options.reactProfile ? [{ find: 'react-dom/client', replacement: resolve(root, 'node_modules/react-dom/profiling.js') }] : [] },
+  esbuild: options.keepNames ? { keepNames: true } : undefined,
+  define: { 'import.meta.env.VITE_FIREBASE_PROJECT_ID': JSON.stringify('local-hop-qa'), 'import.meta.env.VITE_FIREBASE_API_KEY': JSON.stringify('local-qa-no-key'),
     'import.meta.env.VITE_FIREBASE_APP_ID': JSON.stringify('local-qa'), 'import.meta.env.VITE_AUTHORIZED_ACCOUNTS': JSON.stringify('qa@localhost') },
   build: { outDir: out, emptyOutDir: true, minify: true, rollupOptions: { input: resolve(root, 'tests/qa/hop-recipe/index.html') } } });
   return out;

@@ -174,7 +174,8 @@ async function callGemini(
    * réponse — c'est ce qui permet de retrouver l'atténuation d'une SafAle US-05
    * sur la fiche Fermentis au lieu de la deviner.
    */
-  grounded = false
+  grounded = false,
+  maxOutputTokens = 4500
 ): Promise<unknown> {
   const parts: unknown[] = [{ text: userText }];
   if (file) {
@@ -189,7 +190,7 @@ async function callGemini(
         responseMimeType: 'application/json',
         responseSchema: schema,
         temperature,
-        maxOutputTokens: 4500
+        maxOutputTokens
       }
     };
   const json = await runWithMonthlyAiBudget(model, body, async normalized => {
@@ -284,7 +285,8 @@ export const aiTask = onCall(
           def.schema,
           cfg.temperature,
           file,
-          def.grounded
+          def.grounded,
+          task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure' ? 12000 : 4500
         );
         const elapsedMs = Date.now() - started;
         if (task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure') {

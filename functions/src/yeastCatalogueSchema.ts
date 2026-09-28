@@ -3,11 +3,13 @@ import { hopSourceError, validHopRange, type HopRange, type HopSource } from './
 /** Documentary observations, not coefficients or calibrated predictions. */
 export const YEAST_FACT_KEYS = ['temperature', 'attenuation', 'alcoholTolerance', 'pitchRate', 'fermentationTime', 'flocculation', 'pof', 'sta1', 'diastatic', 'betaLyase', 'biotransformation', 'species', 'aroma', 'esters', 'higherAlcohols', 'h2s', 'styles', 'application', 'form', 'availability', 'nutrientNeed', 'ph', 'residualSugar', 'fermentationRate', 'foam', 'so2', 'volatileAcidity', 'glycerol', 'malolacticCompatibility'] as const;
 export type YeastFactKey = typeof YEAST_FACT_KEYS[number];
+export const YEAST_FACT_QUALIFIERS = ['range', 'reportedPoint', 'atLeast', 'upTo', 'greaterThan', 'lessThan'] as const;
+export type YeastFactQualifier = typeof YEAST_FACT_QUALIFIERS[number];
 export interface YeastCatalogueFact {
   key: YeastFactKey; label: string; reported: string; source: HopSource;
   /** A range/point reported by the manufacturer, not a confidence interval. */
   range?: HopRange; unit?: '°C' | '%' | 'g/hL' | 'h' | 'd';
-  qualifier?: 'range' | 'reportedPoint' | 'atLeast' | 'upTo';
+  qualifier?: YeastFactQualifier;
   context?: string;
 }
 export interface YeastCatalogue {
@@ -41,7 +43,7 @@ export function assertYeastCatalogue(v: any): asserts v is YeastCatalogue {
     check(YEAST_FACT_KEYS.includes(f.key) && str(f.label) && str(f.reported) && f.reported.length <= 500 && (f.context === undefined || str(f.context)), 'Fait de levure incomplet.');
     const error = hopSourceError(f.source); if (error) throw Error(error);
     if (f.range !== undefined) {
-      check(validHopRange(f.range) && ['°C', '%', 'g/hL', 'h', 'd'].includes(f.unit) && ['range', 'reportedPoint', 'atLeast', 'upTo'].includes(f.qualifier), 'Plage documentaire sans unité ou qualificatif.');
+      check(validHopRange(f.range) && ['°C', '%', 'g/hL', 'h', 'd'].includes(f.unit) && YEAST_FACT_QUALIFIERS.includes(f.qualifier), 'Plage documentaire sans unité ou qualificatif.');
       check(f.range.min >= 0 && (f.unit !== '%' || f.range.max <= 100) && (f.unit !== '°C' || f.range.max <= 60), 'Plage documentaire hors limites.');
       check(f.qualifier === 'range' || f.range.min === f.range.max, 'Borne/point documentaire ambigu.');
     } else check(f.unit === undefined && f.qualifier === undefined, 'Unité numérique sans valeur.');

@@ -24,6 +24,7 @@ import { changeWaterRatio, readWaterRatio } from '../helpers/waterRatio';
 
 afterEach(cleanup);
 
+
 it('Doser respecte les cinq ions d’une cible personnalisée (Angles), puis suit les modifications manuelles', () => {
   const source: WaterSource = { id: 'angles', name: 'Angles', ca: 49, mg: 1.1, na: 1.9, so4: 7.1, cl: 1.3, hco3: 157.4 };
   function Host() {
@@ -114,6 +115,22 @@ function monter(
     );
   };
   return render(<Hote />);
+}
+
+function ouvrirSels() {
+  const tab = screen.queryByRole('button', { name: /^2\. Sels/ });
+  if (tab && tab.getAttribute('aria-pressed') !== 'true') fireEvent.click(tab);
+}
+
+const comparaisonsIon = () => {
+  ouvrirSels();
+  return screen.getAllByRole('list', { name: 'Eau de départ et eau corrigée : cibles ion par ion en mg/L (ppm)' });
+};
+
+function ionValuesDiffer(row: HTMLElement) {
+  const departure = within(row).getByLabelText(/^Départ [\d,]+ mg\/L$/);
+  const achieved = within(row).getByLabelText(/^(?:Plan|Corrigée) [\d,]+ mg\/L$/);
+  expect(departure.textContent).not.toBe(achieved.textContent);
 }
 
 const clic = (nom: string) => fireEvent.click(screen.getByText(nom));
@@ -299,19 +316,7 @@ describe('L’acidifiant pilote les deux doses', () => {
 });
 
 describe('Le style pilote les cibles', () => {
-  /*
-   * ⚠️ Cadré sur la COMPARAISON, car la fourchette s'écrit à deux endroits :
-   * ici, et au coin de la toile sur la feuille des sels. Ce n'est pas un
-   * doublon — la toile donne une forme, la comparaison donne des nombres et
-   * l'écart départ → corrigé — mais `getByText` en trouve deux.
-   *
-   * On cible par le NOM ACCESSIBLE de la liste plutôt que par sa structure :
-   * ce bloc est déjà passé d'un tableau à une liste de rangs, et le nom, lui,
-   * a survécu à la refonte.
-   */
-  const comparaison = () =>
-    screen.getByRole('list', { name: /Eau de départ et eau corrigée/i });
-
+  /* Le profil doit rester cohérent dans chaque comparaison ionique affichée. */
   /*
    * ⚠️ CE TEST LISAIT L'ALCALINITÉ, ET C'EST JUSTEMENT L'AXE QUI A CHANGÉ.
    *
@@ -327,20 +332,24 @@ describe('Le style pilote les cibles', () => {
    */
   it('changer de style change la fourchette affichée et la proposition', () => {
     monter({}, 6);
-    expect(within(comparaison()).getByText('80–160')).toBeInTheDocument();
+    comparaisonsIon().forEach(list => expect(within(list).getByText('80–160')).toBeInTheDocument());
 
     clic('style Pils');
 
-    expect(within(comparaison()).queryByText('80–160')).not.toBeInTheDocument();
-    expect(within(comparaison()).getByText('20–50')).toBeInTheDocument();
+    comparaisonsIon().forEach(list => {
+      expect(within(list).queryByText('80–160')).not.toBeInTheDocument();
+      expect(within(list).getByText('20–50')).toBeInTheDocument();
+    });
   });
 
   it('la cible HCO₃ reste visible et change uniquement avec le profil', () => {
     monter({}, 6);
-    expect(within(comparaison()).getByText('120–250')).toBeInTheDocument();
+    comparaisonsIon().forEach(list => expect(within(list).getByText('120–250')).toBeInTheDocument());
     clic('style Pils');
-    expect(within(comparaison()).queryByText('120–250')).not.toBeInTheDocument();
-    expect(within(comparaison()).getByText('0–40')).toBeInTheDocument();
+    comparaisonsIon().forEach(list => {
+      expect(within(list).queryByText('120–250')).not.toBeInTheDocument();
+      expect(within(list).getByText('0–40')).toBeInTheDocument();
+    });
   });
 });
 
@@ -688,21 +697,19 @@ describe('Comparaison départ / corrigé', () => {
    * passée d'un tableau en colonnes à une liste de rangs, et devra pouvoir
    * changer encore.
    */
-  const comparaison = () =>
-    screen.getByRole('list', { name: /Eau de départ et eau corrigée/i });
-
   it('⚠️ montre l’eau de DÉPART à côté de l’eau corrigée, pas seulement le résultat', () => {
     monter({ doses: { gypse: 8 } }, 6);
-    const rangs = within(comparaison()).getAllByRole('listitem');
-    const calcium = rangs.find((li) => /Ca/.test(li.textContent ?? ''))!;
-    // Le gypse monte le calcium : les deux nombres doivent différer, et la
-    // flèche relier l'un à l'autre.
-    expect(calcium.textContent).toMatch(/→/);
+    for (const list of comparaisonsIon()) {
+      const rangs = within(list).getAllByRole('listitem');
+      const calcium = rangs.find((li) => /Ca/.test(li.textContent ?? ''))!;
+      // Le gypse fait différer les mesures exactes de départ et de plan.
+      ionValuesDiffer(calcium);
+    }
   });
 
   it('les six ions sont présents — aucun ne tombe hors du bloc', () => {
     monter({}, 6);
-    expect(within(comparaison()).getAllByRole('listitem')).toHaveLength(6);
+    comparaisonsIon().forEach(list => expect(within(list).getAllByRole('listitem')).toHaveLength(6));
   });
 
   /*
@@ -712,9 +719,11 @@ describe('Comparaison départ / corrigé', () => {
    */
   it('⚠️ le bicarbonate est lisible ENTIER, symbole compris', () => {
     monter({}, 6);
-    const rangs = within(comparaison()).getAllByRole('listitem');
-    const hco3 = rangs.find((li) => /HCO/.test(li.textContent ?? ''))!;
-    expect(hco3.textContent).toContain('éq.');
+    for (const list of comparaisonsIon()) {
+      const rangs = within(list).getAllByRole('listitem');
+      const hco3 = rangs.find((li) => /HCO/.test(li.textContent ?? ''))!;
+      expect(hco3.textContent).toContain('éq.');
+    }
   });
 
   /*
@@ -726,18 +735,22 @@ describe('Comparaison départ / corrigé', () => {
    */
   it('ne montre pas de flèche sur un ion que RIEN ne touche', () => {
     monter({ doses: {} }, 6);
-    within(comparaison())
-      .getAllByRole('listitem')
-      .filter((li) => !/HCO/.test(li.textContent ?? ''))
-      .forEach((li) => expect(li.textContent).not.toMatch(/→/));
+    for (const list of comparaisonsIon()) {
+      within(list)
+        .getAllByRole('listitem')
+        .filter((li) => !/HCO/.test(li.textContent ?? ''))
+        .forEach((li) => expect(li.textContent).not.toMatch(/→/));
+    }
   });
 
   it('⚠️ le bicarbonate, lui, BOUGE — l’acide le fait descendre', () => {
     monter({ doses: {} }, 6);
-    const hco3 = within(comparaison())
-      .getAllByRole('listitem')
-      .find((li) => /HCO/.test(li.textContent ?? ''))!;
-    expect(hco3.textContent).toMatch(/→/);
+    for (const list of comparaisonsIon()) {
+      const hco3 = within(list)
+        .getAllByRole('listitem')
+        .find((li) => /HCO/.test(li.textContent ?? ''))!;
+      ionValuesDiffer(hco3);
+    }
   });
 });
 

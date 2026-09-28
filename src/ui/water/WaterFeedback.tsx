@@ -8,6 +8,7 @@ import {
   LACTATE_TASTE_THRESHOLD,
 } from "../../domain/water";
 import { WATER_PROFILE_SOURCES } from "../../domain/waterStyles";
+import { noloWaterModelIssue } from "../../domain/noloWaterModelIssue";
 
 import { AlertTriangle } from "lucide-react";
 
@@ -18,6 +19,7 @@ type Props = Pick<
   WaterWorkshopModel,
   | "beerVolumeL"
   | "brew"
+  | "mashRatioLPerKg"
   | "state"
   | "set"
   | "activeSalt"
@@ -48,6 +50,7 @@ type Props = Pick<
 export function WaterFeedback({
   beerVolumeL,
   brew,
+  mashRatioLPerKg,
   state,
   set,
   activeSalt,
@@ -75,10 +78,16 @@ export function WaterFeedback({
   caShort,
   hasSparge,
 }: Props) {
+  const waterModelIssue = phEstimate === null ? noloWaterModelIssue(brew?.nolo, mashRatioLPerKg) : undefined;
   return (
     <>
       {" "}
-      {treatment.hco3Target && (
+      {phEstimate === null && <p role="status" className="px-1 text-sm text-ebc-amber leading-snug">
+        {waterModelIssue ?? 'pH non estimable pour ce plan.'} {state.acidOverride?.mash != null || state.acidOverride?.sparge != null
+          ? 'Seules les doses saisies manuellement sont retenues ; mesurer le pH.'
+          : 'Les doses d’acide restent à mesurer ou à titrer.'}
+      </p>}
+      {phEstimate !== null && treatment.hco3Target && (
         <p
           className={`px-1 text-sm leading-snug ${treatment.hco3Target.reached ? "text-hop" : "text-ebc-straw"}`}
           aria-label="Cible HCO₃ après traitement"
@@ -88,7 +97,7 @@ export function WaterFeedback({
             : formatWaterMessage(treatment.hco3Target.message)}
         </p>
       )}
-      {hasSparge && state.acidOverride?.sparge != null && (
+      {phEstimate !== null && hasSparge && state.acidOverride?.sparge != null && (
         <p
           role="status"
           aria-label="Acide manuel au rinçage"
@@ -102,7 +111,7 @@ export function WaterFeedback({
           {formatDecimal(treatment.treated.sparge.hco3)} ppm.
         </p>
       )}
-      {alkaliGoal.limitedByGrist && (
+      {phEstimate !== null && alkaliGoal.limitedByGrist && (
         <p
           className="px-1 text-2xs text-cave-200 leading-snug"
           aria-label="Objectif du bicarbonate"
@@ -117,14 +126,6 @@ export function WaterFeedback({
             " Le respect du profil ne garantit pas le pH d’empâtage."}
         </p>
       )}
-      {achievedTotalApresAcide.mg === 0 &&
-        style.ions.mg.min === 0 &&
-        (brew?.totalGristKg ?? 0) > 0 && (
-          <p className="px-1 text-2xs text-cave-400 leading-snug">
-            Mg : 0 ppm dans l’eau. Ajout facultatif pour ce profil ; les malts
-            en apportent au moût, hors de ce graphique.
-          </p>
-        )}
       {differentProfile && (
         <div className="px-1 text-2xs text-cave-200 leading-snug">
           Profil d’eau différent de la recette.{" "}
@@ -139,7 +140,7 @@ export function WaterFeedback({
           </button>
         </div>
       )}
-      {mashAcidDiffers && (
+      {phEstimate !== null && mashAcidDiffers && (
         <p
           role="status"
           aria-label="Acide manuel à l’empâtage"
@@ -190,7 +191,7 @@ export function WaterFeedback({
       ))}
       <p className="text-2xs text-cave-400 leading-snug px-1">
         {formatWaterMessage(ACIDS[state.acidId].note)}
-        {seuilGoutProche && ` ${formatWaterMessage(ACIDS[state.acidId].taste!.text)}`}
+        {phEstimate !== null && seuilGoutProche && ` ${formatWaterMessage(ACIDS[state.acidId].taste!.text)}`}
       </p>
       {!state.customTarget && (
         <details className="text-2xs text-cave-400 px-1">
@@ -236,8 +237,8 @@ export function WaterFeedback({
         )}
       {(messagesSolveur.length > 0 ||
         caShort ||
-        lactate > LACTATE_TASTE_THRESHOLD ||
-        spargeAcid.warning) && (
+        phEstimate !== null && lactate > LACTATE_TASTE_THRESHOLD ||
+        phEstimate !== null && spargeAcid.warning) && (
         <ul className="space-y-1.5 panel p-2.5 sm:p-3 bg-amber-950/20 border border-ebc-amber/40 rounded-control">
           {messagesSolveur.map((msg, i) => (
             <li
@@ -259,7 +260,7 @@ export function WaterFeedback({
             </li>
           )}
 
-          {lactate > LACTATE_TASTE_THRESHOLD && (
+          {phEstimate !== null && lactate > LACTATE_TASTE_THRESHOLD && (
             <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span>
@@ -271,7 +272,7 @@ export function WaterFeedback({
             </li>
           )}
 
-          {spargeAcid.warning && (
+          {phEstimate !== null && spargeAcid.warning && (
             <li className="flex items-start gap-2 text-xs text-ebc-amber leading-snug">
               <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
               <span>{formatWaterMessage(spargeAcid.warning)}</span>

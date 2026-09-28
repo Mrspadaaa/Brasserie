@@ -41,6 +41,25 @@ describe('Autocomplete levure : résultat documentaire utilisable', () => {
     const reversed = result(); reversed.technicalFacts![0].range = { min: 83, max: 77 };
     expect(yeastLookupResultError(reversed)).toBeDefined();
   });
+  it('refuse une racine seule, mais conserve les racines qui identifient une ressource par query ou fragment', () => {
+    const rootResult = result();
+    rootResult.sourceUrl = 'https://mangrovejacks.com/';
+    rootResult.technicalFacts![0].sourceUrl = rootResult.sourceUrl;
+    expect(yeastLookupResultError(rootResult)).toBeDefined();
+
+    const rootFact = result();
+    rootFact.technicalFacts![0].sourceUrl = 'https://example.invalid/';
+    expect(yeastLookupResultError(rootFact)).toBeDefined();
+
+    for (const sourceUrl of ['https://example.invalid/?product=culture', 'https://example.invalid/#/products/culture']) {
+      const identified = result();
+      identified.sourceUrl = sourceUrl;
+      identified.technicalFacts![0].sourceUrl = sourceUrl;
+      expect(yeastLookupResultError(identified)).toBeUndefined();
+      expect(identified.sourceUrl).toBe(sourceUrl);
+      expect(identified.technicalFacts![0].sourceUrl).toBe(sourceUrl);
+    }
+  });
   it('accepte une fiche PDF et un constat explicite de recherche infructueuse', () => {
     const facts = result(); facts.sourceUrl = 'https://example.invalid/fiche.pdf';
     expect(yeastLookupResultError(facts)).toBeUndefined();

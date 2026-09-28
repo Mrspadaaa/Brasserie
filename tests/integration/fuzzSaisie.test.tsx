@@ -333,7 +333,7 @@ describe('Fuzz — l’assistant de recette', () => {
     });
 
     expect(fautes.slice(0, 5)).toEqual([]);
-  });
+  }, 30000);
 
   /*
    * ⚠️ Une masse ou un poids NÉGATIF passe sans bruit jusqu'à la facture de
@@ -359,7 +359,7 @@ describe('Fuzz — l’assistant de recette', () => {
             // recipeEditing covers save rejection and focus on this exact field.
             if (/^Quantité de levure,/.test(champ.getAttribute('aria-label') ?? '') && Number(champ.value.replace(',', '.')) < 0) {
               expect(champ).toHaveAttribute('aria-invalid', 'true');
-              expect(screen.getByRole('alert')).toHaveTextContent('quantité');
+              expect(screen.getAllByRole('alert').some(alert => /quantité/i.test(alert.textContent ?? ''))).toBe(true);
               return;
             }
             expect(

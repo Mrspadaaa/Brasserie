@@ -1,0 +1,103 @@
+{
+  "url": "https://brasserie-l-affinee.web.app",
+  "checkedAt": "2026-09-27T21:29:46.112Z",
+  "mode": "public GET only, no database access",
+  "assets": [
+    {
+      "file": "index.html",
+      "status": 200,
+      "sha256": "5c01e41aef19292dbbae67a945d5d96c1977867acc342f870b34cf5baabfb0e3",
+      "bytes": 1656
+    },
+    {
+      "file": "brew-alerts-sw.js",
+      "status": 200,
+      "sha256": "51ba18cace23c0ff616b0caceb644dfb34e181fbe315667698992cee1d882876",
+      "bytes": 2182
+    },
+    {
+      "file": "assets/index-B2Sz5FzH.js",
+      "status": 200,
+      "sha256": "861ff3be62e47bdfa96304c581b599bef84d2bfddb061b599daede515d7f2c92",
+      "bytes": 198140
+    },
+    {
+      "file": "assets/index-Y1qRvSJY.css",
+      "status": 200,
+      "sha256": "7598e2b3cafdd5d2d931cfc97a2a4ff2a43309fb025e44616d4921f85a629e98",
+      "bytes": 69970
+    },
+    {
+      "file": "assets/App-0kP1eOlI.js",
+      "status": 200,
+      "sha256": "a76f533b53963189fa024707be35d1720c4c0362db4f0ee18c98e1a38880b0bc",
+      "bytes": 2799188
+    },
+    {
+      "file": "assets/BrewWizardEntry-BhwHfAgG.js",
+      "status": 200,
+      "sha256": "c6450b395090d3cb5d3fa30ab56dcc9e4d0e7158cb2fbd005395cb812a396579",
+      "bytes": 488711
+    },
+    {
+      "file": "assets/FermentationResearchSheet-BdNSPNRL.js",
+      "status": 200,
+      "sha256": "e68400732dc4116574d217f315b35dace4c4c0e4d5958ac0379bcc9297d8b2ee",
+      "bytes": 274090
+    },
+    {
+      "file": "assets/FermentationSciencePanel-Dced6rfZ.js",
+      "status": 200,
+      "sha256": "cc621315d807c86713d736b672ca06e91b24937dea4963fba5081bcdd42b36c2",
+      "bytes": 13013
+    },
+    {
+      "file": "assets/FermentationWorkshop-BN55Shl8.js",
+      "status": 200,
+      "sha256": "4179f77e60d8287eaa28f8c5c926ace5035dbe0e8432cc42f4f846aa727640ed",
+      "bytes": 20963
+    },
+    {
+      "file": "assets/FinancesTab-CS28a3Rw.js",
+      "status": 200,
+      "sha256": "50b40c09c8ad72d6184668bfe09351748994dac5c55e3768f0cbfc3b6938baa2",
+      "bytes": 117366
+    },
+    {
+      "file": "assets/HopRecipeChemistry-BQR9ZWZf.js",
+      "status": 200,
+      "sha256": "73e240659fa5130bf5c7df5ab3b9357597bb6a1c3a0ccb5b5f587941247d77ff",
+      "bytes": 3982
+    },
+    {
+      "file": "assets/HopRecipeGuide-29Rpgr4N.js",
+      "status": 200,
+      "sha256": "b007cf65620f97325e76690a36f8479ecf430f4bee43c97a0915950937a6874b",
+      "bytes": 13519
+    },
+    {
+      "file": "assets/HopRecipePanel-B1L5NZJg.js",
+      "status": 200,
+      "sha256": "52c6cbb42e364ad5669cf46096df2f1978d2fd9b0cf23236b7d385440120a7d8",
+      "bytes": 967
+    },
+    {
+      "file": "assets/HopRecipeSimulationPanel-C3MUmGdc.js",
+      "status": 200,
+      "sha256": "39a679c58125e60b57468360d2565c6405768f10684feb289341d719dfea49db",
+      "bytes": 74186
+    },
+    {
+      "file": "assets/HopRecipeWorkbench-BinJj_cq.js",
+      "status": 200,
+      "sha256": "d016033be53a9316ea2ca83d0e2dee563afa42422c1675242a558e2564d9b1c5",
+      "bytes": 22802
+    },
+    {
+      "file": "assets/RecipePage-Smc4FQuh.js",
+      "status": 200,
+      "sha256": "5e33cad80395e76ba8ac83683908f660e589b2b5c327b12760429da2a5c1e8e8",
+      "bytes": 37613
+    }
+  ]
+}

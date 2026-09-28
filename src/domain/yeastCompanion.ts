@@ -24,12 +24,13 @@ export interface YeastCompanionOptions {
 }
 export interface YeastCompanionMissing { id: string; section: 'style' | 'yeast' | 'fermentation' | 'mash' | 'hops' | 'recipe'; detail: string }
 type DocumentaryRange = NonNullable<YeastRecipeCandidate['temperature']>;
+type DocumentaryDose = NonNullable<YeastRecipeCandidate['doseG']>;
 type CompanionCandidate = {
   yeastId: string; label: string; lab: string; form: string | null; descriptor: string; reason: string;
   preferred: boolean; temperatureC: DocumentaryRange | null; attenuationPct: DocumentaryRange | null;
   styleMatch: YeastRecipeCandidate['styleMatch']; styleEvidence: YeastRecipeCandidate['evidence']['styleMatches'];
   culture: YeastRecipeCandidate['evidence']['culture'];
-  dryDoseG: DocumentaryRange | null; observations: YeastCatalogueFact[]; observationsLimited: boolean; sources: HopSource[];
+  dryDoseG: DocumentaryDose | null; observations: YeastCatalogueFact[]; observationsLimited: boolean; sources: HopSource[];
   practicalNotes: YeastPracticalNote[]; practicalNotesLimited: boolean;
   preparationStatus: 'documented' | 'confirm-form' | 'not-documented';
 };
@@ -138,12 +139,12 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
   const hasSnapshot = recipe.yeastDesign !== undefined, stale = !!snapshot && yeastRecipeDesignChanged(recipe, snapshot);
   const comparisonFamily = currentDraft.styleId, recipeFamily = inferYeastRecipeStyle(recipe);
   const allowedGoals = YEAST_STYLE_FAMILIES.find(f => f.id === comparisonFamily)?.goals ?? [];
-  const adopted = !!snapshot && snapshot.yeastId === resolved?.id && snapshot.styleId === comparisonFamily &&
-    snapshot.goal === currentDraft.goal && allowedGoals.includes(snapshot.goal);
+  const adopted = !!snapshot && snapshot.goalExplicit !== false && snapshot.yeastId === resolved?.id && snapshot.styleId === comparisonFamily &&
+    snapshot.goal === currentDraft.goal;
   const nolo = recipe.nolo?.enabled === true;
   if (hasSnapshot && !snapshot) missing('yeastDesign', 'yeast', 'L’intention enregistrée est invalide ou provient d’un modèle non reconnu ; elle n’est pas reconstituée.');
-  if (snapshot && !allowedGoals.includes(currentDraft.goal)) missing('yeastDesign.goal', 'yeast', 'L’ancien objectif ne correspond pas à la famille actuelle ; il reste une trace, sans devenir une instruction de scénario.');
-  if (comparisonFamily === 'unknown') missing('style.family', 'style', 'La famille de style est inconnue. Choisir une famille avant de demander une liste de souches.');
+  if (snapshot?.goalExplicit !== false && snapshot && !allowedGoals.includes(currentDraft.goal)) missing('yeastDesign.goalContext', 'yeast', 'Objectif hors des repères usuels de cette famille : vérifier les faits de la souche et le procédé ; le style seul ne prouve aucun effet.');
+  if (comparisonFamily === 'unknown') missing('style.family', 'style', 'Famille de style inconnue : aucune liste de souches préfiltrée ; un objectif ou une référence explicite peuvent être examinés sans présumer leur usage.');
   if (!resolved) missing('yeast.reference', 'yeast', 'La souche actuelle n’est pas identifiée sans ambiguïté ; aucun ID voisin n’est substitué.');
   if (!recipe.yeast.form) missing('yeast.form', 'yeast', 'Forme de la levure à renseigner.');
   if (resolved?.form && recipe.yeast.form && resolved.form !== recipe.yeast.form) missing('yeast.formMismatch', 'yeast', 'La forme actuelle diffère de la référence documentée ; confirmer le produit avant de transférer ses repères de dose.');
@@ -158,7 +159,8 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
   if (!recipe.fermentation?.some(s => s.kind === 'primaire')) missing('fermentation.primary', 'fermentation', 'Aucune phase principale renseignée.');
   const fermentation = (recipe.fermentation ?? []).map((s, i) => {
     if (!finite(s.tempC)) missing(`fermentation.${i}.temperature`, 'fermentation', `${s.name || 'Phase'} : température inconnue.`);
-    if (!finite(s.days) || s.days < 0 || (s.kind === 'primaire' || s.kind === 'reposDiacetyle') && s.days === 0) missing(`fermentation.${i}.days`, 'fermentation', `${s.name || 'Phase'} : durée inconnue ou invalide, aucun calendrier complété automatiquement.`);
+    if (!finite(s.days) || s.days < 0) missing(`fermentation.${i}.days`, 'fermentation', `${s.name || 'Phase'} : durée inconnue ou invalide, aucun calendrier complété automatiquement.`);
+    else if ((s.kind === 'primaire' || s.kind === 'reposDiacetyle') && s.days === 0) missing(`fermentation.${i}.days`, 'fermentation', `${s.name || 'Phase'} : 0 j explicite, aucune période de fermentation n’est démontrée et aucune fin biologique n’est déduite.`);
     return { name: s.name, kind: s.kind ?? null, tempC: value(s.tempC), days: value(s.days), note: text(s.note) };
   });
   const mash = (recipe.mash?.steps ?? []).map((s, i) => {
@@ -188,7 +190,7 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
   const data: YeastCompanionData = { ...empty, mode: nolo ? 'nolo' : 'recipe',
     style: { recipeStyle: text(recipe.style), reference: recipe.styleRef ? { guideId: recipe.styleRef.guideId, version: recipe.styleRef.version, styleId: recipe.styleRef.styleId } : null,
       recipeFamily, comparisonFamily, comparisonOrigin: adopted ? 'adopted-filter' : comparisonFamily === 'unknown' ? 'unknown' : 'recipe-style' },
-    adoptedIntent: snapshot ? { modelVersion: snapshot.modelVersion, yeastId: snapshot.yeastId, comparisonFamily: snapshot.styleId, goal: snapshot.goal,
+    adoptedIntent: snapshot && snapshot.goalExplicit !== false ? { modelVersion: snapshot.modelVersion, yeastId: snapshot.yeastId, comparisonFamily: snapshot.styleId, goal: snapshot.goal,
       pressureBar: value(snapshot.pressureBar), ferulicRest: snapshot.ferulicRest, stale, applicable: !nolo && adopted } : null,
     snapshotStatus: snapshot ? stale ? 'stale' : 'current' : hasSnapshot ? 'invalid' : 'none',
     current: { volumeL: value(recipe.volumeL), ogTarget: value(recipe.ogTarget), fgTarget: value(recipe.fgTarget), abvTarget: value(recipe.abvTarget),
@@ -206,13 +208,13 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
     }
     return jsonCopy(data);
   }
-  let effectiveGoal = allowedGoals.includes(currentDraft.goal) ? currentDraft.goal : allowedGoals[0] ?? 'balanced';
+  let effectiveGoal = adopted ? currentDraft.goal : allowedGoals.includes(currentDraft.goal) ? currentDraft.goal : allowedGoals[0] ?? 'balanced';
   let goalOrigin: NonNullable<YeastCompanionData['analysis']>['goalOrigin'] = adopted ? 'adopted' : comparisonFamily === 'unknown' ? 'unknown' : 'style-default';
   if (options.goal !== undefined) {
     const mapped = typeof options.goal === 'string' && Object.prototype.hasOwnProperty.call(goalMap, options.goal) ? goalMap[options.goal] : undefined;
     request.goal.mappedGoal = mapped ?? null;
-    if (!mapped || comparisonFamily === 'unknown' || !allowedGoals.includes(mapped)) {
-      request.goal.status = 'rejected'; request.goal.reason = comparisonFamily === 'unknown' ? 'Choisir le style avant de demander une orientation aromatique.' : 'Cet objectif ne fait pas partie de la famille retenue ; le style et la souche ne sont pas changés pour le satisfaire.';
+    if (!mapped) {
+      request.goal.status = 'rejected'; request.goal.reason = 'Objectif non reconnu ; aucun effet n’est déduit.';
     } else {
       request.goal.status = 'accepted'; effectiveGoal = mapped; goalOrigin = 'explicit-request';
       request.goal.reason = options.goal === 'phenolic' ? 'Objectif historique phenolic traduit en girofle/épices, sans concentration prédite.' :
@@ -224,10 +226,12 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
   if (options.yeastId !== undefined) {
     if (typeof options.yeastId !== 'string' || !options.yeastId.trim() || !refs.some(y => y.id === options.yeastId)) {
       request.yeastId.status = 'rejected'; request.yeastId.reason = 'Référence absente ou invalide ; aucun remplacement par nom approchant.';
-    } else if (options.yeastId !== selectedId && !eligible.some(y => y.yeastId === options.yeastId)) {
+    } else if (options.yeastId !== selectedId && comparisonFamily !== 'unknown' && !eligible.some(y => y.yeastId === options.yeastId)) {
       request.yeastId.status = 'rejected'; request.yeastId.reason = 'Cette alternative ne fait pas partie de la famille de comparaison. Réviser explicitement le style pour l’explorer.';
     } else {
-      selectedId = options.yeastId; request.yeastId.status = 'accepted'; request.yeastId.reason = 'Souche examinée dans le scénario seulement ; la levure actuelle est conservée.';
+      selectedId = options.yeastId; request.yeastId.status = 'accepted'; request.yeastId.reason = comparisonFamily === 'unknown'
+        ? 'Souche examinée sur demande ; usage pour cette recette non établi par le style, levure actuelle conservée.'
+        : 'Souche examinée dans le scénario seulement ; la levure actuelle est conservée.';
     }
   }
   let og = recipe.ogTarget, explicitGravity = false;
@@ -236,7 +240,8 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
       og = options.og; explicitGravity = true; request.og.status = 'accepted'; request.og.reason = 'DI fournie pour une comparaison ; son statut mesuré n’est pas certifié.';
     } else { request.og.status = 'rejected'; request.og.reason = 'DI de scénario invalide : valeur SG supérieure à 1 et au plus 1,25, ou inconnue explicite.'; }
   }
-  const scenarioDraft = { ...createYeastRecipeDraft(recipe, refs, comparisonFamily, selectedId), goal: effectiveGoal, pressureBar: currentDraft.pressureBar };
+  const scenarioDraft = { ...createYeastRecipeDraft(recipe, refs, comparisonFamily, selectedId), goal: effectiveGoal,
+    goalExplicit: goalOrigin === 'adopted' || goalOrigin === 'explicit-request', pressureBar: currentDraft.pressureBar };
   const evaluation = evaluateYeastRecipeDesign({ ...recipe, ogTarget: og }, scenarioDraft, refs);
   if (resolved && !evaluation.candidate?.temperature) missing('yeast.temperatureRange', 'yeast', 'Fenêtre documentaire absente ou contradictoire ; ne pas choisir une moyenne.');
   if (!evaluation.candidate?.attenuation) missing('yeast.attenuation', 'yeast', 'Plage d’atténuation absente ou contradictoire ; DF documentaire inconnue.');
@@ -251,7 +256,7 @@ export function buildYeastCompanion(recipe: TrialRecipe | null | undefined, know
   data.alternatives = [...representatives, ...alternateRows.filter(c => !representativeIds.has(c.yeastId))].slice(0, limit).map(c => candidateData(c, c.reference.form));
   data.alternativeCount = alternateRows.length; data.alternativesLimited = alternateRows.length > limit;
   const selectedCandidate = evaluation.candidate ? candidateData(evaluation.candidate, selectedId === currentDraft.yeastId ? recipe.yeast.form : evaluation.candidate.reference.form) : null;
-  data.analysis = { yeastId: selectedId || null, goal: comparisonFamily === 'unknown' ? null : effectiveGoal, goalOrigin,
+  data.analysis = { yeastId: selectedId || null, goal: comparisonFamily === 'unknown' && goalOrigin === 'unknown' ? null : effectiveGoal, goalOrigin,
     scenario: selectedId !== currentDraft.yeastId || goalOrigin === 'explicit-request' || explicitGravity,
     og: value(og), gravityOrigin: explicitGravity ? 'explicit-scenario-not-certified' : 'recipe-target-not-measured',
     candidate: selectedCandidate, effects: evaluation.effects,

@@ -34,12 +34,18 @@ describe('Autres tâches IA derrière le même contrôle, fournisseur simulé', 
     await aiTask.run(input as any);
     const body = JSON.parse(fetchMock.mock.calls[0][1].body), schema = body.generationConfig.responseSchema;
     expect(schema.required).toContain('technicalFacts');
+    expect(schema.properties.technicalFacts.items.properties.qualifier.enum).toEqual([
+      'range', 'reportedPoint', 'atLeast', 'upTo', 'greaterThan', 'lessThan'
+    ]);
     expect(schema.properties).toHaveProperty('tempMaxC');
     expect(schema.properties).not.toHaveProperty('usage');
     expect(body.tools).toEqual([{ googleSearch: {} }]);
+    expect(body.generationConfig.maxOutputTokens).toBe(12000);
     fetchMock.mockClear(); input.data.context = { kind: 'houblon', name: 'Citra' } as any;
     await aiTask.run(input as any);
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body).generationConfig.responseSchema.properties).toHaveProperty('usage');
+    const hopBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(hopBody.generationConfig.responseSchema.properties).toHaveProperty('usage');
+    expect(hopBody.generationConfig.maxOutputTokens).toBe(4500);
   });
   it('chaque repli est lui-même réservé, y compris après une réponse JSON invalide', async () => {
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: 'broken' }] } }], usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 2, totalTokenCount: 3 } }) });

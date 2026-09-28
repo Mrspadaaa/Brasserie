@@ -1,0 +1,86 @@
+{
+  "sourceCommit": "9aa513238298bbdf3be38b267630b9fbf94255c1",
+  "applicationTree": "95fb74cd133962fbc4129408519b108f9f149af0 (test-only correction afterwards)",
+  "project": "brasserie-l-affinee",
+  "command": "npm run deploy",
+  "exitCode": 0,
+  "url": "https://brasserie-l-affinee.web.app",
+  "release": "projects/brasserie-l-affinee/sites/brasserie-l-affinee/channels/live/releases/1790544537116000",
+  "version": "projects/brasserie-l-affinee/sites/brasserie-l-affinee/versions/6e99e40977bf97a7",
+  "releasedAt": "2026-09-27T21:28:57.116Z",
+  "hostingFileCount": 142,
+  "functions": {
+    "count": 33,
+    "regions": [
+      "europe-west6"
+    ],
+    "sameNamesAsBefore": true
+  },
+  "publicAssetsChecked": 16,
+  "allHashesMatch": true,
+  "modules": [
+    {
+      "file": "assets/index-B2Sz5FzH.js",
+      "status": 200,
+      "sha256": "861ff3be62e47bdfa96304c581b599bef84d2bfddb061b599daede515d7f2c92",
+      "bytes": 198140
+    },
+    {
+      "file": "assets/App-0kP1eOlI.js",
+      "status": 200,
+      "sha256": "a76f533b53963189fa024707be35d1720c4c0362db4f0ee18c98e1a38880b0bc",
+      "bytes": 2799188
+    },
+    {
+      "file": "assets/RecipePage-Smc4FQuh.js",
+      "status": 200,
+      "sha256": "5e33cad80395e76ba8ac83683908f660e589b2b5c327b12760429da2a5c1e8e8",
+      "bytes": 37613
+    }
+  ],
+  "pocIncluded": true,
+  "uncommittedYeastRefactorExcluded": true,
+  "rollbackHosting": {
+    "url": "https://brasserie-l-affinee.web.app",
+    "release": "projects/brasserie-l-affinee/sites/brasserie-l-affinee/channels/live/releases/1790519594676000",
+    "version": "projects/brasserie-l-affinee/sites/brasserie-l-affinee/versions/f86f0b7e11ad883d",
+    "releaseTime": "2026-09-27T14:33:14.676Z"
+  },
+  "tests": {
+    "files": 320,
+    "passed": 4806,
+    "failed": 0
+  },
+  "authenticatedSmoke": {
+    "status": "passed",
+    "authorThread": "01a0d312-277d-7383-a3c0-b1b5427417e5",
+    "author": "pilot, not this performance thread",
+    "completedAt": "2026-09-27T21:53:32Z",
+    "surface": "User Chrome PC, browser2/tab1005985658, normal OAuth",
+    "loadedModules": [
+      "index-B2Sz5FzH.js",
+      "App-0kP1eOlI.js"
+    ],
+    "sameVersionAsPublication": true,
+    "flows": [
+      "catalogue22",
+      "reading-complete",
+      "first-aroma-report",
+      "close-return-focus",
+      "reopen-with-collapsed-details",
+      "editor-identity",
+      "name-field-focused-without-input",
+      "close-editor-return-focus"
+    ],
+    "recentToolWarningsErrors": 0,
+    "noCommandedRecipeMutationOrAi": true,
+    "reportOutsideGit": "C:/Users/mrspa/Downloads/production-chrome-postdeploy-2026-09-27.md",
+    "imagesOutsideGit": [
+      "C:/Users/mrspa/Downloads/production-chrome-after-20260927.png",
+      "C:/Users/mrspa/Downloads/production-chrome-after-editor-20260927.png"
+    ],
+    "limitations": "Functional PC smoke, no CUA timing used as app performance, no physical Android after measured; recent console observation is not exhaustive."
+  },
+  "physicalAndroidAfter": "Not measured yet; baseline trace is not an after of this release.",
+  "hostingFileCountSource": "Firebase CLI deployment log"
+}

@@ -108,15 +108,38 @@ function wizard(recipe = base, save = vi.fn(), stockOverride?: StockItem[]) {
 }
 /* Les étapes se rejoignent par la liste de l’assistant : voir tests/helpers/wizard.ts. */
 const step = (name: RegExp) => allerEtape(name);
+const openCatalogue = () => {
+  const source = document.querySelector<HTMLDetailsElement>('.yc-personal-fold');
+  if (source && !source.open) fireEvent.click(source.querySelector('summary')!);
+};
+/** Folded stations open through their visible toggle before any action inside them. */
+const openStation = (fold: 'objectives' | 'conduct') => {
+  const toggle = document.querySelector<HTMLButtonElement>(`[data-station-toggle="${fold}"]`)!;
+  expect(toggle).toBeVisible();
+  if (toggle.getAttribute('aria-expanded') !== 'true') fireEvent.click(toggle);
+  expect(document.getElementById(toggle.getAttribute('aria-controls')!)).toBeVisible();
+};
+const openScenario = () => { openStation('conduct'); expect(screen.getByRole('region', { name: 'Scénario de levure' })).toBeVisible(); };
+const proposeGoal = (value: string) => {
+  openStation('objectives');
+  const select = screen.getByLabelText('Profil recherché'); expect(select).toBeVisible();
+  fireEvent.change(select, { target: { value } });
+  const propose = screen.getByRole('button', { name: 'Proposer une conduite' }); expect(propose).toBeVisible();
+  fireEvent.click(propose);
+};
 const change = (el: HTMLElement, value: string) => {
   fireEvent.change(el, { target: { value } });
   fireEvent.blur(el);
 };
 const radar = () => screen.getByRole('img', { name: /Profil ionique/ }).getAttribute('aria-label');
-const dossier = () => fireEvent.click(screen.getByText('Fiche, sources et données de la souche'));
+const dossier = () => fireEvent.click(screen.getByText('Repères pratiques, sources et programme détaillé'));
 const openYeastDetails = (label: string) => { const summary = screen.getByText(label, { selector: 'summary' }); expect(summary).toBeVisible();
   const details = summary.closest('details')!; if (!details.open) fireEvent.click(summary); expect(details).toHaveAttribute('open'); };
-const changeYeast = (label: string, value: string) => { const input = screen.getByLabelText(label); expect(input).toBeVisible(); change(input, value); };
+const changeYeast = (label: string, value: string) => {
+  // The selected phase now includes its name in the accessible label.
+  const query = /^(Température|Durée) du palier \d+$/.test(label) ? new RegExp(`^${label} ·`) : label;
+  const input = screen.getByRole('textbox', { name: query }); expect(input).toBeVisible(); change(input, value);
+};
 
 describe('Recipe data entry regressions', () => {
   it('ne compare pas des sachets à des grammes et conserve les conversions physiques du stock', () => {
@@ -215,7 +238,7 @@ describe('Recipe data entry regressions', () => {
     wizard({ ...base, yeast: { ...base.yeast, hopIndexId: 'fermentis-us05', pitchTempC: 30, fermentDays: 3,
       fermentation: { version: 1, strainName: 'Ancienne souche', sugars: {}, pof: 'negative', hydrolysis: 'unknown' } as any } });
     step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Changer / comparer' }));
+    openCatalogue();
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker);
     fireEvent.change(picker, { target: { value: 'Nouvelle souche' } });
@@ -244,16 +267,16 @@ describe('Recipe data entry regressions', () => {
     fireEvent.click(screen.getByText('Programme détaillé et guides enregistrés'));
     expect(screen.queryByRole('button', { name: 'Trouver une conduite' })).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Température du scénario 1 (°C)')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
-    const temperature = screen.getByLabelText('Température du palier 1');
+    openScenario();
+    const temperature = screen.getByRole('textbox', { name: /^Température du palier 1 ·/ });
     change(temperature, '');
     expect(temperature).toBeInTheDocument();
     expect(temperature).toHaveValue('');
-    expect(screen.getByLabelText('Température du palier 2')).toHaveValue('4');
+    expect(screen.getByRole('region', { name: 'Programme proposé' })).toHaveTextContent('4 °C · 7 j');
     change(temperature, '18,5');
-    const duration = screen.getByLabelText('Durée du palier 1');
+    const duration = screen.getByRole('textbox', { name: /^Durée du palier 1 ·/ });
     change(duration, ''); change(duration, '12');
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     step(/^Récapitulatif$/);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved = save.mock.calls[0][0];
@@ -263,15 +286,16 @@ describe('Recipe data entry regressions', () => {
     expect(saved.waterPlan.mash).toEqual(original.waterPlan.mash);
     view.unmount(); wizard(saved);
     step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
-    expect(screen.getByLabelText('Température du palier 1')).toHaveValue('18,5');
+    openScenario();
+    expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toHaveValue('18,5');
   });
   it('chooses a documented yeast outside the stock and returns to the actual recipe assessment', () => {
     const save = vi.fn(); wizard(base, save); step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Changer / comparer' }));
+    openCatalogue();
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker); fireEvent.change(picker, { target: { value: 'Verdant' } });
-    expect(screen.getByRole('option', { name: /LalBrew Verdant IPA/ })).toHaveTextContent('Stock non renseigné');
+    expect(screen.getByRole('option', { name: /LalBrew Verdant IPA/ })).toHaveTextContent('Fabricant Lallemand Brewing · sèche');
+    expect(screen.getByText('Catalogue documenté')).toBeVisible();
     fireEvent.keyDown(picker, { key: 'Enter' });
     expect(screen.getByLabelText('Quantité de levure')).toHaveValue('');
     expect(screen.getByLabelText('Unité de la quantité de levure')).toHaveValue('');
@@ -295,14 +319,14 @@ describe('Recipe data entry regressions', () => {
     };
     const save = vi.fn(), view = wizard(original, save);
     step(/^Levure$/);
-    fireEvent.change(screen.getByLabelText('Profil recherché'), { target: { value: 'clove' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Proposer une conduite' }));
+    proposeGoal('clove');
     expect(screen.getByRole('region', { name: 'Programme proposé' })).toBeVisible();
-    expect(screen.getByLabelText('Température du palier 1')).toHaveValue('18');
+    expect(screen.getByRole('region', { name: 'Proposition de conduite' })).toHaveTextContent('20 °C → 18 °C');
+    expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toHaveValue('18');
     expect(screen.getByLabelText('Effets attendus de la stratégie')).toBeVisible(); expect(save).not.toHaveBeenCalled();
     openYeastDetails('Hypothèses et réglages complémentaires'); openYeastDetails('Ensemencement, durée et pression');
     changeYeast('Contre-pression du scénario en bar', '0');
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     expect(screen.queryByText(/La recette a changé pendant la comparaison/)).not.toBeInTheDocument();
     step(/^Paliers$/);
     expect(screen.getByLabelText('Nom du palier 1')).toHaveValue('Repos férulique · proposition L’Affinée');
@@ -314,9 +338,9 @@ describe('Recipe data entry regressions', () => {
       note: expect.stringContaining('Suivre la densité et vérifier la fin de fermentation') }, original.fermentation[1]]);
     expect(saved.hops).toEqual(original.hops); expect(saved.waterPlan.mash).toEqual(original.waterPlan.mash);
     view.unmount(); wizard(saved); step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     expect(screen.getByLabelText('Profil recherché')).toHaveValue('clove');
-    expect(screen.getByLabelText('Température du palier 1')).toBeVisible(); expect(screen.getByLabelText('Température du palier 1')).toHaveValue('18');
+    expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toBeVisible(); expect(screen.getByRole('textbox', { name: /^Température du palier 1 ·/ })).toHaveValue('18');
   });
   it('propose sur demande la finition d’une Lager puis conserve uniquement le programme explicitement appliqué', () => {
     const original: Recipe = { ...structuredClone(base), name: 'Lager de contrôle', style: 'Munich Helles',
@@ -324,31 +348,41 @@ describe('Recipe data entry regressions', () => {
         attenuationPct: 80, attenuationBasis: 'recipe', fermTempMinC: 12, fermTempMaxC: 18 },
       fermentation: [{ name: 'Primaire', kind: 'primaire', tempC: 12, days: 10 }] };
     const save = vi.fn(), view = wizard(original, save); step(/^Levure$/);
-    fireEvent.change(screen.getByLabelText('Profil recherché'), { target: { value: 'low-sulfur' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Proposer une conduite' }));
+    proposeGoal('low-sulfur');
     const programme = screen.getByRole('region', { name: 'Programme proposé' }); expect(programme).toBeVisible();
+    const proposal = screen.getByRole('region', { name: 'Proposition de conduite' });
+    expect(proposal).toHaveAttribute('data-outcome', 'proposed');
+    expect(within(proposal).getByRole('list', { name: 'Changements proposés' })).toHaveTextContent('Ajouté · Garde lager');
     const effects = screen.getByRole('region', { name: 'Effets attendus de la stratégie' });
     expect(effects).toBeVisible(); expect(effects).toHaveTextContent('Soufre'); expect(effects).toHaveTextContent('aucun résultat garanti');
-    expect(within(programme).getByLabelText('Température du palier 1')).toHaveValue('12');
-    expect(within(programme).getByLabelText('Température du palier 2')).toHaveValue('14');
-    expect(within(programme).getByLabelText('Durée du palier 2')).toHaveValue('5');
-    expect(within(programme).getByLabelText('Température du palier 3')).toHaveValue('2');
-    expect(within(programme).getByLabelText('Température du palier 4')).toHaveValue('2');
+    expect(programme).toHaveTextContent('12 °C · 10 j');
+    expect(programme).toHaveTextContent('14 °C · 5 j');
+    expect(programme).toHaveTextContent('2 °C · 2 j');
+    expect(programme).toHaveTextContent('2 °C · 21 j');
+    fireEvent.click(programme.querySelector('[data-phase-choice="1"]')!);
+    expect(screen.getByRole('textbox', { name: /^Température du palier 2 ·/ })).toHaveValue('14');
+    expect(screen.getByRole('textbox', { name: /^Durée du palier 2 ·/ })).toHaveValue('5');
+    fireEvent.click(programme.querySelector('[data-phase-choice="2"]')!);
+    expect(screen.getByRole('textbox', { name: /^Température du palier 3 ·/ })).toHaveValue('2');
+    fireEvent.click(programme.querySelector('[data-phase-choice="3"]')!);
+    expect(screen.getByRole('textbox', { name: /^Température du palier 4 ·/ })).toHaveValue('2');
     expect(programme).toHaveTextContent('test forcé du diacétyle négatif');
     expect(screen.getByText('Hypothèses et réglages complémentaires').closest('details')).not.toHaveAttribute('open');
     expect(save).not.toHaveBeenCalled();
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save.mock.lastCall![0].fermentation).toEqual(original.fermentation);
     expect(save.mock.lastCall![0].yeastDesign).toBeUndefined();
-    step(/^Levure$/); fireEvent.change(screen.getByLabelText('Profil recherché'), { target: { value: 'low-sulfur' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Proposer une conduite' }));
+    step(/^Levure$/); proposeGoal('low-sulfur');
+    fireEvent.click(screen.getByRole('region', { name: 'Programme proposé' }).querySelector('[data-phase-choice="1"]')!);
     changeYeast('Durée du palier 2', '6');
     expect(screen.getByRole('region', { name: 'Programme proposé' })).toHaveTextContent('39 j indicatifs');
-    const changes = screen.getByText(/Recette → proposition ·/, { selector: 'summary' });
-    expect(changes).toBeVisible(); fireEvent.click(changes);
-    expect(screen.getByLabelText('Changements proposés')).toHaveTextContent('14 °C');
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
-    expect(screen.getByText(/Conduite appliquée au brouillon/)).toBeVisible();
+    expect(screen.getByRole('region', { name: 'Modifier le palier sélectionné' })).toHaveTextContent('Refroidissement progressif : J15 → J16 (+1 j)');
+    expect(screen.getByRole('region', { name: 'Modifier le palier sélectionné' })).toHaveTextContent('Garde lager : J17 → J18 (+1 j)');
+    const changes = screen.getByLabelText('Tous les changements réels');
+    expect(changes.querySelector('summary')).toBeVisible(); fireEvent.click(changes.querySelector('summary')!);
+    expect(changes).toHaveTextContent('14 °C');
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
+    expect(screen.getAllByText(/Essai appliqué au brouillon/).length).toBeGreaterThan(0);
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved: Recipe = save.mock.lastCall![0];
     expect(saved.fermentation.map(({ kind, tempC, days }) => ({ kind, tempC, days }))).toEqual([
@@ -363,11 +397,13 @@ describe('Recipe data entry regressions', () => {
     const restored = normalizeRecipe({ ...readRecipeText(writeRecipeText(saved))!, id: saved.id });
     expect(restored.fermentation).toEqual(saved.fermentation); expect(restored.yeastDesign).toEqual(saved.yeastDesign);
     const again = vi.fn(); view.unmount(); wizard(restored, again); step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     expect(screen.getByLabelText('Profil recherché')).toHaveValue('low-sulfur');
-    expect(screen.getByLabelText('Durée du palier 2')).toBeVisible(); expect(screen.getByLabelText('Durée du palier 2')).toHaveValue('6');
-    expect(screen.getByLabelText('Température du palier 4')).toHaveValue('2');
-    expect(screen.getByRole('button', { name: 'Appliquer les changements' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('region', { name: 'Programme proposé' }).querySelector('[data-phase-choice="1"]')!);
+    expect(screen.getByRole('textbox', { name: /^Durée du palier 2 ·/ })).toBeVisible(); expect(screen.getByRole('textbox', { name: /^Durée du palier 2 ·/ })).toHaveValue('6');
+    fireEvent.click(screen.getByRole('region', { name: 'Programme proposé' }).querySelector('[data-phase-choice="3"]')!);
+    expect(screen.getByRole('textbox', { name: /^Température du palier 4 ·/ })).toHaveValue('2');
+    expect(screen.queryByRole('button', { name: 'Appliquer au brouillon' })).not.toBeInTheDocument();
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(again.mock.lastCall![0].fermentation).toEqual(saved.fermentation);
     expect(again.mock.lastCall![0].yeastDesign).toEqual(saved.yeastDesign);
@@ -386,7 +422,7 @@ describe('Recipe data entry regressions', () => {
     expect(current).toHaveTextContent('78 %'); expect(current).toHaveTextContent('hypothèse de recette');
     expect(current).toHaveTextContent('Procédé acidulé non précisé');
     expect(screen.getByLabelText('Forme de la levure')).toHaveValue('');
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     openYeastDetails('Hypothèses et réglages complémentaires');
     changeYeast('Atténuation retenue pour le scénario', '80');
     changeYeast('Température du palier 1', '21');
@@ -398,7 +434,7 @@ describe('Recipe data entry regressions', () => {
     changeYeast('Taux de cellules visé par mL et degré Plato', '0,75');
     changeYeast('Cellules viables disponibles en milliards', '200');
     expect(current).toHaveTextContent('78 %'); expect(save).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('80 %');
     step(/^Paliers$/); step(/^Récapitulatif$/);
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
@@ -418,7 +454,7 @@ describe('Recipe data entry regressions', () => {
     view.unmount(); wizard(restored); step(/^Levure$/);
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('80 %');
     expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('125');
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     openYeastDetails('Hypothèses et réglages complémentaires'); openYeastDetails('Ensemencement, durée et pression');
     expect(screen.getByLabelText('Taux de cellules visé par mL et degré Plato')).toHaveValue('0,75');
     expect(screen.getByLabelText('Cellules viables disponibles en milliards')).toHaveValue('200');
@@ -437,30 +473,33 @@ describe('Recipe data entry regressions', () => {
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     // Opening a saved recipe alone preserves its author's target, while the projection stays unknown.
     expect(save.mock.lastCall![0].ogTarget).toBe(1.05); expect(save.mock.lastCall![0].abvTarget).toBe(original.abvTarget);
-    step(/^Levure$/); fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    step(/^Levure$/); openScenario();
     fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'preacidified' } });
     expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('5,1 % vol');
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved: Recipe = save.mock.lastCall![0];
     expect(saved.styleRef).toEqual(original.styleRef); expect(saved.ogTarget).toBe(1.05);
     expect(saved.fgTarget).toBeCloseTo(1.011, 10); expect(saved.abvTarget).toBeCloseTo(5.11875, 10);
     const again = vi.fn(); view.unmount(); wizard(saved, again); step(/^Levure$/);
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('5,1');
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     fireEvent.change(screen.getByLabelText('Procédé de fermentation'), { target: { value: 'acidifying-yeast' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
+    expect(screen.getByLabelText('Procédé de fermentation')).toHaveValue('acidifying-yeast');
+    step(/^Récapitulatif$/); step(/^Levure$/);
+    expect(screen.getByLabelText('Procédé de fermentation')).toHaveValue('acidifying-yeast');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(again).toHaveBeenCalledTimes(1);
+    expect(again.mock.lastCall![0].yeastDesign.process).toBe('acidifying-yeast');
     expect(again.mock.lastCall![0]).toMatchObject({ ogTarget: 1.05, abvTarget: null });
     expect(again.mock.lastCall![0].fgTarget).toBeCloseTo(1.011, 10);
-    expect(again.mock.lastCall![0].yeastDesign.process).toBe('acidifying-yeast');
   });
   it('enregistre une conversion inconnue comme recette incomplète et demande la quantité avant brassin', () => {
     const original: Recipe = { ...structuredClone(base), yeast: { name: 'Culture liquide rare', form: 'liquide', qty: 125,
       unit: 'mL', attenuationPct: 78, fermTempMinC: 18, fermTempMaxC: 24 } };
     const save = vi.fn(); wizard(original, save); step(/^Levure$/);
-    fireEvent.click(screen.getByText('Ensemencement', { exact: false, selector: '.yc-pitch summary > span' }).closest('summary')!);
+    expect(screen.getByRole('group', { name: 'Quantité prévue de levure' })).toBeVisible();
     fireEvent.change(screen.getByLabelText('Unité de la quantité de levure'), { target: { value: 'flacon' } });
     expect(screen.getByLabelText('Quantité de levure, en flacon')).toHaveValue('');
     expect(screen.getByText(/aucune conversion depuis mL/)).toBeVisible();
@@ -528,7 +567,7 @@ describe('Recipe data entry regressions', () => {
   it('ne transforme pas une dose négative en zéro et ramène le brasseur au champ à corriger', () => {
     const original: Recipe = { ...structuredClone(base), yeast: { name: 'Culture liquide rare', form: 'liquide', qty: 125, unit: 'mL', attenuationPct: 78 } };
     const save = vi.fn(); wizard(original, save); step(/^Levure$/);
-    fireEvent.click(screen.getByText('Ensemencement', { exact: false, selector: '.yc-pitch summary > span' }).closest('summary')!);
+    expect(screen.getByRole('group', { name: 'Quantité prévue de levure' })).toBeVisible();
     change(screen.getByLabelText('Quantité de levure, en mL'), '-1');
     expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('-1');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
@@ -542,39 +581,46 @@ describe('Recipe data entry regressions', () => {
   it('corrige une plage documentaire inversée et sauvegarde ses bornes exactes sans fabriquer de valeur centrale', () => {
     const original: Recipe = { ...structuredClone(base), style: 'American Pale Ale',
       yeast: { name: 'Culture personnelle documentée', form: 'liquide', qty: 125, unit: 'mL' } };
-    const save = vi.fn(), view = wizard(original, save); step(/^Levure$/); dossier();
-    fireEvent.click(screen.getByText('Saisir une plage ou une borne d’atténuation'));
-    change(screen.getByLabelText('Atténuation documentaire minimale'), '82,75');
-    change(screen.getByLabelText('Atténuation documentaire maximale'), '77,25');
-    change(screen.getByLabelText('Source de la plage d’atténuation'), 'https://example.test/lot-231');
-    fireEvent.click(screen.getByRole('button', { name: 'Conserver ce repère' }));
-    expect(screen.getByRole('alert')).toHaveTextContent('maximum supérieur ou égal au minimum');
-    change(screen.getByLabelText('Atténuation documentaire minimale'), '77,25');
-    change(screen.getByLabelText('Atténuation documentaire maximale'), '82,75');
-    fireEvent.click(screen.getByRole('button', { name: 'Conserver ce repère' }));
+    const save = vi.fn(), view = wizard(original, save); step(/^Levure$/);
+    const openAttenuation = () => {
+      const sheet = screen.getByRole('group', { name: `Fiche de ${original.yeast.name}` });
+      if (!sheet.hasAttribute('open')) fireEvent.click(within(sheet).getByText(/^Compléter ou corriger la fiche/));
+      fireEvent.click(within(sheet).getByRole('button', { name: 'Corriger Atténuation annoncée' }));
+      return within(sheet).getByRole('group', { name: 'Corriger Atténuation annoncée' });
+    };
+    const editor = openAttenuation();
+    change(within(editor).getByLabelText('Atténuation annoncée · minimum'), '82,75');
+    change(within(editor).getByLabelText('Atténuation annoncée · maximum'), '77,25');
+    change(within(editor).getByLabelText('Source · Atténuation annoncée'), 'https://example.test/lot-231');
+    fireEvent.click(within(editor).getByRole('button', { name: 'Retenir' }));
+    expect(within(editor).getByRole('alert')).toHaveTextContent('maximum doit dépasser le minimum');
+    change(within(editor).getByLabelText('Atténuation annoncée · minimum'), '77,25');
+    change(within(editor).getByLabelText('Atténuation annoncée · maximum'), '82,75');
+    fireEvent.click(within(editor).getByRole('button', { name: 'Retenir' }));
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-    expect(screen.getByRole('region', { name: 'Levure choisie dans la recette' })).toHaveTextContent('77,25–82,75 %');
+    expect(screen.getByRole('region', { name: 'Levure de la recette' })).toHaveTextContent('77,25–82,75 %');
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('1,009–1,011');
-    expect(screen.getByLabelText('Atténuation de la levure, en pourcent')).toHaveValue('');
+    expect(screen.getByLabelText('Atténuation retenue pour cette recette, en pourcent')).toHaveValue('');
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved: Recipe = save.mock.lastCall![0];
     expect(saved.yeast.attenuationPct).toBeUndefined();
-    expect(saved.yeast.technicalFacts).toEqual([{ key: 'attenuation', reported: 'Atténuation 77.25–82.75 %',
+    expect(saved.yeast.technicalFacts).toEqual([{ key: 'attenuation', reported: '77,25–82,75 %',
       range: { min: 77.25, max: 82.75 }, qualifier: 'range', unit: '%', origin: 'personal',
-      source: 'https://example.test/lot-231', sourceUrl: 'https://example.test/lot-231' }]);
+      source: 'https://example.test/lot-231', sourceUrl: 'https://example.test/lot-231', context: 'beer' }]);
     expect(saved.fgTarget).toBeNull(); expect(saved.abvTarget).toBeNull();
-    view.unmount(); wizard(saved); step(/^Levure$/); dossier();
-    fireEvent.click(screen.getByText('Saisir une plage ou une borne d’atténuation'));
-    expect(screen.getByLabelText('Atténuation documentaire minimale')).toHaveValue('77,25');
-    expect(screen.getByLabelText('Atténuation documentaire maximale')).toHaveValue('82,75');
-    expect(screen.getByLabelText('Source de la plage d’atténuation')).toHaveValue('https://example.test/lot-231');
+    expect(saved.yeast.technicalSelections?.attenuation).toEqual(saved.yeast.technicalFacts[0]);
+    view.unmount(); wizard(saved); step(/^Levure$/);
+    const reopened = openAttenuation();
+    expect(within(reopened).getByLabelText('Atténuation annoncée · minimum')).toHaveValue('77,25');
+    expect(within(reopened).getByLabelText('Atténuation annoncée · maximum')).toHaveValue('82,75');
+    expect(within(reopened).getByLabelText('Source · Atténuation annoncée')).toHaveValue('https://example.test/lot-231');
   });
   it('conserve les contacts de houblon explicitement alignés après sauvegarde et réouverture de la NEIPA', () => {
     const original: Recipe = { ...structuredClone(base), yeast: { ...base.yeast, hopIndexId: 'fermentis-us05', qty: 16, unit: 'g' },
       hops: [{ name: 'Citra', weightG: 100, alpha: 12, stage: 'dryHop', aromaTiming: 'fermentation', aromaTemperatureC: 19, aromaContactHours: 48 },
         { name: 'Mosaic', weightG: 80, alpha: 11, stage: 'dryHop', aromaTiming: 'postFermentation', aromaTemperatureC: 14, aromaContactHours: 24 }] };
     const save = vi.fn(), view = wizard(original, save); step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     expect(screen.queryAllByRole('alert').map(alert => alert.textContent)).toEqual([]);
     changeYeast('Température du palier 1', '23');
     const align = screen.getByRole('checkbox', { name: /Aligner les ajouts en fermentation active/ });
@@ -588,16 +634,16 @@ describe('Recipe data entry regressions', () => {
     expect(within(previewContacts).getByRole('row', { name: /Mosaic/ })).toHaveTextContent('14 °C');
     expect(save).not.toHaveBeenCalled();
     expect(screen.queryAllByRole('alert').map(alert => alert.textContent)).toEqual([]);
-    expect(screen.getByRole('button', { name: 'Appliquer les changements' })).toBeEnabled();
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
-    expect(screen.getByText(/Conduite appliquée au brouillon/)).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Appliquer au brouillon' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
+    expect(screen.getAllByText(/Essai appliqué au brouillon/).length).toBeGreaterThan(0);
     step(/^Récapitulatif$/); fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved: Recipe = save.mock.calls[0][0];
     expect(saved.hops).toEqual([{ ...original.hops[0], aromaTemperatureC: 23, tempC: 23 }, original.hops[1]]);
     expect(saved.yeastDesign?.applied.hops).toEqual(saved.hops);
     expect(yeastRecipeDesignChanged(saved, readYeastRecipeDesign(saved)!)).toBe(false);
     view.unmount(); wizard(JSON.parse(JSON.stringify(saved))); step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
+    openScenario();
     fireEvent.click(screen.getByText('Contacts, calcul et sources'));
     const contacts = screen.getByRole('table', { name: 'Contacts de houblon prévus' });
     expect(within(contacts).getByRole('row', { name: /Citra/ })).toHaveTextContent('23 °C');
@@ -660,7 +706,7 @@ describe('Recipe data entry regressions', () => {
     const original = structuredClone(base);
     original.yeast = { ...original.yeast, name: 'Nouvelle souche', stockItemRef: 'Y1', qty: 2, hopIndexId: 'ancienne' };
     const save = vi.fn(); wizard(original, save); step(/^Levure$/);
-    fireEvent.click(screen.getByRole('button', { name: 'Changer / comparer' }));
+    openCatalogue();
     const picker = screen.getByRole('combobox', { name: 'Souche de levure' });
     fireEvent.focus(picker); fireEvent.change(picker, { target: { value: 'Nouvelle souche' } });
     const article = screen.getAllByRole('option', { name: /Nouvelle souche/ }).find(option => option.textContent?.includes('Y2'));

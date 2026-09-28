@@ -16,6 +16,8 @@ import { describeSavedRecipeWater } from '../domain/recipeWaterReadings';
 import { PHASE_LABEL } from '../domain/brewPrograms';
 import { PageShell } from './PageShell';
 import { RecipeDisclosure, RecipeWaterVolumes } from '../ui/RecipeDisclosure';
+import { LazySurface } from '../ui/LazySurface';
+import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
 const Section=({hint,...props}:React.ComponentProps<typeof RecipeDisclosure>&{hint?:string})=><RecipeDisclosure {...props} summary={hint??props.summary}/>;
 import { ConfirmSheet } from '../ui/Sheet';
 import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react';
@@ -36,15 +38,29 @@ import { Pencil, Copy, Trash2, FlaskConical, AlertTriangle } from 'lucide-react'
  */
 
 import { BrewerChat } from '../ui/BrewerChat';
-import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
-import { YeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
+import { YeastRecipeHeading } from '../ui/YeastRecipeHeading';
+import { prepareRecipeIngredientNames } from '../domain/hopIndex/recipeGuide';
 import { readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
 import { yeastReferences } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
+// Reading code is part of the prepared route, preserving disclosures after a
+// connection loss. Its reports/calculations still mount only when requested.
+import { FermentationRecipeSummary } from '../ui/FermentationWorkshop';
 import { HopRecipePanel } from '../ui/hopIndex/HopRecipePanel';
 import { NoloPanel } from '../ui/NoloPanel';
-import { NoloRecipeOverview } from '../ui/NoloRecipeOverview';
+import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';
+
+/** Prepare shared read-only reference data while the recipe list is idle. */
+export function prepareRecipeReferenceData() {
+  let references: ReturnType<typeof yeastReferences> | undefined, next = 0;
+  return (canContinue: () => boolean) => {
+    if (!canContinue()) return false;
+    references ??= yeastReferences(StorageService.getHopKnowledge());
+    next = prepareRecipeIngredientNames(references, { from: next, canContinue });
+    return next === references.length;
+  };
+}
 import { noloScenarioInput } from '../domain/nolo';
 import { matchingNoloSimulation } from '../../functions/src/noloSimulation';
 import { useStorageValue } from '../hooks/useLiveData';
@@ -123,6 +139,14 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   }, [recipe, knowledge]);
   const waterDisplay = useMemo(() => savedWaterDisplay(recipe.waterPlan), [recipe.waterPlan]);
   const waterReadings = useMemo(() => describeSavedRecipeWater(recipe), [recipe]);
+  const waterModelIssue = waterReadings?.waterModelIssue;
+  const retainedAcid = waterReadings?.retainedAcid;
+  const acidProduct = recipe.waterPlan?.acid?.id;
+  const acidUnit = acidProduct ? ACIDS[acidProduct].unit : undefined;
+  const retainedMashAcid = typeof retainedAcid?.mash === 'number' && Number.isFinite(retainedAcid.mash) && retainedAcid.mash >= 0
+    ? retainedAcid.mash : undefined;
+  const retainedSpargeAcid = typeof retainedAcid?.sparge === 'number' && Number.isFinite(retainedAcid.sparge) && retainedAcid.sparge >= 0
+    ? retainedAcid.sparge : undefined;
 
   const brewhouse = recipe.brewhouse ??
     config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -445,15 +469,17 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </Section>
 
-      <Section title="Potentiel aromatique">
-        <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
-        <HopRecipePanel recipe={recipe} onEdit={onEdit} />
+      <Section title="Potentiel aromatique" deferContent>
+        <LazySurface resetKey={`aroma:${recipe.id}`} fallback={<div role="status">Préparation du potentiel aromatique…</div>}>
+          <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
+          <HopRecipePanel recipe={recipe} onEdit={onEdit} />
+        </LazySurface>
       </Section>
 
       {/* --- Levure ------------------------------------------------------ */}
-      {recipe.nolo?.enabled&&<Section title="Suivi NOLO" hint="Simuler, analyses et conservation"><NoloPanel recipe={recipe} showOverview={false} onVariantChange={setSimulatingNolo}/></Section>}
-      <Section title="Levure" summary={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}>
-        {!recipe.nolo?.enabled && readYeastRecipeDesign(recipe) ? <FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /> : !recipe.yeast?.name ? (
+      {recipe.nolo?.enabled&&<Section title="Suivi NOLO" hint="Simuler, analyses et conservation" deferContent><LazySurface resetKey={`nolo:${recipe.id}`} fallback={<div role="status">Préparation du suivi NOLO…</div>}><NoloPanel recipe={recipe} showOverview={false} onVariantChange={setSimulatingNolo}/></LazySurface></Section>}
+      <Section title="Levure" deferContent={!!readYeastRecipeDesign(recipe)} summary={recipe.nolo?.enabled ? recipe.yeast.name : <YeastRecipeHeading recipe={recipe} />}>
+        {!recipe.nolo?.enabled && readYeastRecipeDesign(recipe) ? <LazySurface resetKey={`yeast:${recipe.id}`} fallback={<div role="status">Préparation de la conduite de levure…</div>}><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></LazySurface> : !recipe.yeast?.name ? (
           <p className="text-sm text-cave-400">Aucune levure renseignée.</p>
         ) : (
           <div className="space-y-2">
@@ -489,7 +515,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         )}
       </Section>
 
-      {!recipe.nolo?.enabled&&!readYeastRecipeDesign(recipe)&&<Section title="Conduite de levure"><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></Section>}
+      {!recipe.nolo?.enabled&&!readYeastRecipeDesign(recipe)&&<Section title="Conduite de levure" deferContent><LazySurface resetKey={`yeast:${recipe.id}`} fallback={<div role="status">Préparation de la conduite de levure…</div>}><FermentationRecipeSummary recipe={recipe} onEdit={onEdit} /></LazySurface></Section>}
 
       {/* --- Additifs ---------------------------------------------------- */}
       {recipe.adjuncts && recipe.adjuncts.length > 0 && (
@@ -607,29 +633,42 @@ export const RecipePage: React.FC<RecipePageProps> = ({
 
             {recipe.waterPlan.allSaltsInMash !== false && recipe.waterPlan.spargeWaterL > 0 && (
               <div className="px-2.5 py-1 text-2xs text-hop bg-hop/10 rounded border border-hop/20 flex items-center justify-between">
-                <span>Tous les sels versés à l’empâtage · Rinçage acidifié seul</span>
+                <span>Tous les sels versés à l’empâtage{retainedSpargeAcid != null && retainedSpargeAcid > 0 ? ' · Rinçage acidifié seul' : ''}</span>
               </div>
             )}
 
-            {recipe.waterPlan.acid && (
+            {(recipe.waterPlan.acid || waterModelIssue) && (
               <div className="space-y-1 text-base text-cave-50">
-                {recipe.waterPlan.acid.mash > 0 && (
-                  <p>
-                    <span className="reading text-water">
-                      {recipe.waterPlan.acid.mash} {ACIDS[recipe.waterPlan.acid.id].unit}
-                    </span>{' '}
-                    de {ACIDS[recipe.waterPlan.acid.id].name} dans l’eau d’empâtage, pour
-                    l’alcalinité résiduelle.
-                  </p>
-                )}
-                {recipe.waterPlan.acid.sparge > 0 && (
-                  <p>
-                    <span className="reading text-water">
-                      {recipe.waterPlan.acid.sparge} {ACIDS[recipe.waterPlan.acid.id].unit}
-                    </span>{' '}
-                    dans l’eau de rinçage, pour ne pas extraire les tanins des drêches.
-                  </p>
-                )}
+                {waterModelIssue ? <>
+                  {recipe.waterPlan.mashWaterL > 0 && (retainedMashAcid == null
+                    ? <p>Acidification de l’empâtage à déterminer après mesure ou titrage du pH.</p>
+                    : <p>Dose d’acide d’empâtage retenue : <span className="reading text-water">
+                        {retainedMashAcid}{acidUnit ? ` ${acidUnit}` : ''}
+                      </span>{acidProduct ? ` de ${ACIDS[acidProduct].name}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
+                  {recipe.waterPlan.spargeWaterL > 0 && (retainedSpargeAcid == null
+                    ? <p>Acidification de l’eau de rinçage à déterminer après mesure ou titrage du pH.</p>
+                    : <p>Dose d’acide de rinçage retenue : <span className="reading text-water">
+                        {retainedSpargeAcid}{acidUnit ? ` ${acidUnit}` : ''}
+                      </span>{acidProduct ? ` de ${ACIDS[acidProduct].name}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
+                </> : <>
+                  {recipe.waterPlan.acid && recipe.waterPlan.acid.mash > 0 && (
+                    <p>
+                      <span className="reading text-water">
+                        {recipe.waterPlan.acid.mash} {ACIDS[recipe.waterPlan.acid.id].unit}
+                      </span>{' '}
+                      de {ACIDS[recipe.waterPlan.acid.id].name} dans l’eau d’empâtage, pour
+                      l’alcalinité résiduelle.
+                    </p>
+                  )}
+                  {recipe.waterPlan.acid && recipe.waterPlan.acid.sparge > 0 && (
+                    <p>
+                      <span className="reading text-water">
+                        {recipe.waterPlan.acid.sparge} {ACIDS[recipe.waterPlan.acid.id].unit}
+                      </span>{' '}
+                      dans l’eau de rinçage, pour ne pas extraire les tanins des drêches.
+                    </p>
+                  )}
+                </>}
               </div>
             )}
 
@@ -771,7 +810,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                         </span>
                         <span className="reading text-sm text-water shrink-0">{s.tempC} °C</span>
                         <span className="reading text-sm text-cave-400 w-16 text-right shrink-0">
-                          {s.days ? `${s.days} j` : '—'}
+                          {Number.isFinite(s.days) ? `${s.days} j` : '—'}
                         </span>
                       </li>
                     );
@@ -859,5 +898,3 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     </PageShell>
   );
 };
-
-import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';

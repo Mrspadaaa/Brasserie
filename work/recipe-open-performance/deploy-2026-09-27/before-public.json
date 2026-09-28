@@ -1,0 +1,50 @@
+{
+  "hosting": {
+    "url": "https://brasserie-l-affinee.web.app",
+    "release": "projects/brasserie-l-affinee/sites/brasserie-l-affinee/channels/live/releases/1790519594676000",
+    "version": "projects/brasserie-l-affinee/sites/brasserie-l-affinee/versions/f86f0b7e11ad883d",
+    "releaseTime": "2026-09-27T14:33:14.676Z"
+  },
+  "functions": {
+    "count": 33,
+    "regions": [
+      "europe-west6"
+    ],
+    "names": [
+      "aiTask",
+      "applyBrewerProposal",
+      "askBrewer",
+      "cleanupBreweryTransfers",
+      "cleanupFinancialSync",
+      "deliverBrewAlarm",
+      "dispatchBrewerQuestion",
+      "driveAuthorization",
+      "exportBreweryData",
+      "getBrewAlertConfig",
+      "getBrewSession",
+      "getBrewerActivity",
+      "getBrewerAiBudget",
+      "getBrewerConversation",
+      "getFermentationResearch",
+      "markBrewerRead",
+      "migrateFinanceDocuments",
+      "notifyBrewerAnswer",
+      "processBrewerQuestion",
+      "recordDataChange",
+      "recordFinancialPaymentChange",
+      "recordFinancialTransactionChange",
+      "registerBrewDevice",
+      "registerBrewerNotifications",
+      "rescheduleBrewAlarms",
+      "resetBrewerConversation",
+      "restoreBreweryData",
+      "retryBrewerQuestion",
+      "saveBrewSession",
+      "setBrewerAiBudget",
+      "syncBrewAlarms",
+      "syncFinancialLedger",
+      "transferBreweryData"
+    ]
+  },
+  "source": "b09af85 recorded release, remote state verified before publication"
+}

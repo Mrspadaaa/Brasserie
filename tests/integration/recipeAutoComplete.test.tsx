@@ -32,6 +32,17 @@ const FICHE = (over: Record<string, unknown>) => ({
   data: { found: true, name: 'X', source: 'Fiche fabricant', ...over }
 });
 
+it('consulter une fiche en mode revue ne réécrit pas automatiquement la recette depuis le catalogue local', () => {
+  const onYeast = vi.fn(), onFermentables = vi.fn(), onHops = vi.fn();
+  render(<RecipeAutoComplete active embedded yeastEnrichment scope="levure" reviewScope="recipe"
+    fermentables={[]} onFermentables={onFermentables} hops={[]} onHops={onHops}
+    yeast={{ name: 'Wyeast 3068', hopIndexId: 'wyeast-3068', form: 'liquide', qty: 125, unit: 'mL' }} onYeast={onYeast} />);
+  expect(onYeast).not.toHaveBeenCalled();
+  expect(onFermentables).not.toHaveBeenCalled();
+  expect(onHops).not.toHaveBeenCalled();
+  expect(run).not.toHaveBeenCalled();
+});
+
 function monter(init: {
   fermentables?: Fermentable[];
   hops?: HopIngredient[];

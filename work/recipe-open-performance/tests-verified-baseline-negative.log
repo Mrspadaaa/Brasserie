@@ -1,0 +1,285 @@
+ DEPRECATED  "environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.
+
+ RUN  v3.2.7 C:/Users/mrspa/.codex/worktrees/recipe-open-performance/Brasserie
+
+ ❯ tests/unit/hopRecipeGuide.test.ts (33 tests | 1 failed | 32 skipped) 6ms
+   × Rapprochement explicite des ingrédients du guide > reuses normalized catalogue names while noticing edits, alias replacement and archive status 5ms
+     → expected "normalize" to be called 1 times, but got 3 times
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Houblon Idaho 7 12.7%
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Houblon : Idaho 7 (AA : 12,7 %)
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Houblons Cascade 5.5% AA
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Houblon Cascade (5,5 % alpha)
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : 50 g Houblon Idaho 7 12,7 % 100 g
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Houblon Cascade - 100 g - 5,5 %
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Cascade® (12.7%)
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Cascade™ [AA 5,5%]
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : HBC 630
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Idaho 7
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Cascade (NZ)
+   ↓ Rapprochement explicite des ingrédients du guide > normalise seulement les annotations explicites : Cascade Cryo
+   ↓ Rapprochement explicite des ingrédients du guide > garde chaque fiche Idaho 7 et chaque source Cascade sans extraire les AA
+   ↓ Rapprochement explicite des ingrédients du guide > conserve une ambiguïté nom/alias au lieu de choisir la première fiche
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour Casca
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour Cascade / Citra 12%
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour Cascade NZ
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour Idaho7
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour Idaho 7 T90
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour HBC 63
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour 12.7%
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour Houblon 100 g
+   ↓ Rapprochement explicite des ingrédients du guide > ne devine pas de variété pour
+   ↓ Rapprochement explicite des ingrédients du guide > ignore les fiches archivées et ne transforme pas un alias vide en correspondance
+   ↓ Rapprochement explicite des ingrédients du guide > rapproche une levure sur son nom exact sans supposer de synonymes commerciaux
+   ↓ yields catalogue priming when its budget is exhausted, then resumes without repeating names
+   ↓ Classement documentaire, sans prédiction sensorielle > classe par familles mentionnées, puis nom, en exposant le texte et les deux provenances
+   ↓ Classement documentaire, sans prédiction sensorielle > une description répétée ne favorise pas une source ni ne fusionne les fiches homonymes
+   ↓ Classement documentaire, sans prédiction sensorielle > respecte les mots entiers, les expressions et les tags anglais sans sous-chaînes trompeuses
+   ↓ Classement documentaire, sans prédiction sensorielle > ne classe pas un élément sans description sourcée ou une famille sans provenance
+   ↓ Classement documentaire, sans prédiction sensorielle > conserve le contexte original : houblon brut, infusion ou bière restent des descriptions
+   ↓ Classement documentaire, sans prédiction sensorielle > le lexique public couvre exactement les axes existants et identifie son jugement éditorial
+ ❯ tests/unit/yeastRecipeReferences.test.ts (5 tests | 1 failed | 4 skipped) 54ms
+   ↓ existing recipe yeast references > relie le laboratoire et le code exact Wyeast 1056 à son seul produit documenté
+   ↓ existing recipe yeast references > enriches a valid earlier bootstrap of the exact product, preserving personal identity fields
+   ↓ existing recipe yeast references > preserves a personal conflict without substituting a shipped interval
+   ↓ existing recipe yeast references > does not replace an invalid saved record or a deliberate empty catalogue
+   × existing recipe yeast references > does not revalidate the exact immutable library rows, while changed personal documentary records still validate 53ms
+     → expected true to be false // Object.is equality
+ ❯ tests/integration/pageShellPerformance.test.tsx (5 tests | 4 failed | 1 skipped) 175ms
+   × keeps style reads bounded when many announcements share ancestors, including on a subtree mutation 113ms
+     → expected 600 to be less than 300
+   ↓ rechecks visibility after a closed disclosure opens or a hidden global recovery action becomes visible
+   × restores the catalogue trigger when a lazy page replaces a focused loading PageShell 23ms
+     → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button>
+  Ouvrir la recette
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <button>
+      Ouvrir la recette
+    </button>
+  </div>
+</body>
+   × keeps page keyboard navigation and Escape active with a desktop inline presentation dialog 21ms
+     → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  aria-label="Fermer"
+  class="w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="lucide lucide-chevron-left w-4 h-4"
+    fill="none"
+    height="24"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    width="24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="m15 18-6-6 6-6"
+    />
+  </svg>
+</button>
+Received element with focus:
+  <button>
+  Dernière action
+</button>
+   × returns to the catalogue when a command overlay directly replaces one keyed recipe page with another 17ms
+     → expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button>
+  Catalogue
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <button>
+      Catalogue
+    </button>
+  </div>
+</body>
+ ❯ tests/integration/hopKnowledgeSnapshot.test.ts (3 tests | 1 failed | 2 skipped) 7ms
+   × shares unchanged knowledge and invalidates replacement, in-place row writes, deletion and session clearing 6ms
+     → expected [ { id: 'wyeast-3068', …(6) } ] to be [ { id: 'wyeast-3068', …(6) } ] // Object.is equality
+
+If it should pass with deep equality, replace "toBe" with "toStrictEqual"
+
+Expected: [ { id: 'wyeast-3068', …(6) } ]
+Received: serializes to the same string
+
+   ↓ shares unchanged varieties and updates existing and new records without mutating previous snapshots
+   ↓ shares unchanged lots and updates existing and new records without mutating previous snapshots
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/hopKnowledgeSnapshot.test.ts > shares unchanged knowledge and invalidates replacement, in-place row writes, deletion and session clearing
+AssertionError: expected [ { id: 'wyeast-3068', …(6) } ] to be [ { id: 'wyeast-3068', …(6) } ] // Object.is equality
+
+If it should pass with deep equality, replace "toBe" with "toStrictEqual"
+
+Expected: [ { id: 'wyeast-3068', …(6) } ]
+Received: serializes to the same string
+
+
+Compared values have no visual difference.
+
+ ❯ tests/integration/hopKnowledgeSnapshot.test.ts:18:44
+     16|   const first = StorageService.getHopKnowledge();
+     17|   expect(first[0]).not.toHaveProperty('__docId');
+     18|   expect(StorageService.getHopKnowledge()).toBe(first);
+       |                                            ^
+     19|   const references = yeastReferences(first);
+     20|   expect(yeastReferences(StorageService.getHopKnowledge())).toBe(refer…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/integration/pageShellPerformance.test.tsx > keeps style reads bounded when many announcements share ancestors, including on a subtree mutation
+AssertionError: expected 600 to be less than 300
+ ❯ tests/integration/pageShellPerformance.test.tsx:28:36
+     26|   // The former isolation walked every ancestor of every hidden docume…
+     27|   // A pass may read each distinct visible element once, not its ances…
+     28|   expect(styles.mock.calls.length).toBeLessThan(300);
+       |                                    ^
+     29|   expect(screen.getByRole('button', { name: 'Navigation de fond' }).cl…
+     30|   styles.mockClear();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/integration/pageShellPerformance.test.tsx > restores the catalogue trigger when a lazy page replaces a focused loading PageShell
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button>
+  Ouvrir la recette
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <button>
+      Ouvrir la recette
+    </button>
+  </div>
+</body>
+ ❯ tests/integration/pageShellPerformance.test.tsx:91:19
+     89|   expect(screen.getByRole('main', { name: 'Recette chargée' })).toHave…
+     90|   fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+     91|   expect(trigger).toHaveFocus();
+       |                   ^
+     92| });
+     93|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/integration/pageShellPerformance.test.tsx > keeps page keyboard navigation and Escape active with a desktop inline presentation dialog
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button
+  aria-label="Fermer"
+  class="w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="lucide lucide-chevron-left w-4 h-4"
+    fill="none"
+    height="24"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+    width="24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="m15 18-6-6 6-6"
+    />
+  </svg>
+</button>
+Received element with focus:
+  <button>
+  Dernière action
+</button>
+ ❯ tests/integration/pageShellPerformance.test.tsx:103:58
+    101|   last.focus();
+    102|   fireEvent.keyDown(last, { key: 'Tab' });
+    103|   expect(screen.getByRole('button', { name: 'Fermer' })).toHaveFocus();
+       |                                                          ^
+    104|   fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+    105|   expect(close).toHaveBeenCalledOnce();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/integration/pageShellPerformance.test.tsx > returns to the catalogue when a command overlay directly replaces one keyed recipe page with another
+Error: expect(element).toHaveFocus()
+
+Expected element with focus:
+  <button>
+  Catalogue
+</button>
+Received element with focus:
+  <body>
+  <div>
+    <button>
+      Catalogue
+    </button>
+  </div>
+</body>
+ ❯ tests/integration/pageShellPerformance.test.tsx:132:21
+    130|   expect(screen.getByRole('main', { name: 'B' })).toHaveFocus();
+    131|   fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
+    132|   expect(catalogue).toHaveFocus();
+       |                     ^
+    133| });
+    134|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/unit/hopRecipeGuide.test.ts > Rapprochement explicite des ingrédients du guide > reuses normalized catalogue names while noticing edits, alias replacement and archive status
+AssertionError: expected "normalize" to be called 1 times, but got 3 times
+ ❯ tests/unit/hopRecipeGuide.test.ts:39:25
+     37|     try {
+     38|       expect(findRecipeYeastMatches('R-7', catalogue)).toMatchObject([…
+     39|       expect(normalize).toHaveBeenCalledTimes(1); // Only the user's q…
+       |                         ^
+     40|       item.name = 'Culture corrigée'; item.aliases[0] = 'R-8';
+     41|       expect(findRecipeYeastMatches('R-7', catalogue)).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/unit/yeastRecipeReferences.test.ts > existing recipe yeast references > does not revalidate the exact immutable library rows, while changed personal documentary records still validate
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/unit/yeastRecipeReferences.test.ts:49:70
+     47|     yeastReferences([personal]);
+     48|     const libraryRows = new Set(library);
+     49|     expect(validation.rows.some(row => libraryRows.has(row as any))).t…
+       |                                                                      ^
+     50|     expect(validation.rows.some((row: any) => row?.id === personal.id …
+     51|     const invalid = { ...personal, catalogue: { ...personal.catalogue …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  4 failed (4)
+      Tests  7 failed | 39 skipped (46)
+   Start at  22:46:13
+   Duration  1.72s (transform 985ms, setup 384ms, collect 1.62s, tests 241ms, environment 1.27s, prepare 260ms)

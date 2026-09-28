@@ -115,9 +115,8 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   fitToControls = false,
   className = ''
 }) => {
-  // The weighing view uses a wider diagram: the labels keep their font sizes,
-  // while the radius shrinks. Scaling the entire tall SVG made numbers unreadable.
-  const R = fitToControls ? 79 : 133;
+  // Use the full plotting area; the weighing layout reserves room for controls.
+  const R = 133;
   const CY = 36 + R, H = 74 + 2 * R, LABEL_R = R + 12;
   const xy = useCallback((d: number, r: number) => plotPoint(d, r, CY), [CY]);
   const lit = useMemo(() => new Set(highlight ?? []), [highlight]);
@@ -350,7 +349,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
             </tspan>
           );
           const valeur = (
-            <tspan fontSize={17} fontWeight={700} fill={a.alarm ? AMBER : '#D8CEC5'}>
+            <tspan fontSize={fitToControls ? 19 : 17} fontWeight={700} fill={a.alarm ? AMBER : '#D8CEC5'}>
               {a.reading}
               {flèche}
             </tspan>
@@ -361,7 +360,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 x={a.lx}
                 y={a.ly}
                 textAnchor={a.anchor}
-                fontSize={12.5}
+                fontSize={fitToControls ? 14 : 12.5}
                 fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
               >
                 {ION_SYMBOL[a.ion]}
@@ -385,7 +384,7 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
                 x={a.lx}
                 y={a.ly + (a.serre ? 17 : 31)}
                 textAnchor={a.anchor}
-                fontSize={11.5}
+                fontSize={fitToControls ? 13 : 11.5}
                 fill={lit.has(a.ion) ? STRAW : '#9A8A7E'}
               >
                 {a.targeted ? `${a.band.min}–${a.band.max}` : 'sans cible'}

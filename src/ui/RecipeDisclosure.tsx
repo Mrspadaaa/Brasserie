@@ -1,14 +1,18 @@
-import React, { useId, useEffect, useRef } from 'react';
+import React, { useId, useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-export function RecipeDisclosure({ title, summary, children, actions }: {
+export function RecipeDisclosure({ title, summary, children, actions, deferContent = false }: {
   title: string;
   summary?: React.ReactNode;
   children: React.ReactNode;
   actions?: React.ReactNode;
+  /** Read-only reports can mount on first disclosure, retaining state thereafter.
+   * Editable/validated preparation sections keep their eager default. */
+  deferContent?: boolean;
 }) {
   const id = useId();
   const ref = useRef<HTMLDetailsElement>(null);
+  const [visited, setVisited] = useState(false);
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
@@ -27,6 +31,7 @@ export function RecipeDisclosure({ title, summary, children, actions }: {
   }, []);
   return (
     <details ref={ref} data-recipe-section={title} className="recipe-disclosure group/recipe panel p-0 min-w-0"
+      onToggle={event => { if (deferContent && event.currentTarget.open) setVisited(true); }}
       onInvalidCapture={event => { event.currentTarget.open = true; }}>
       <summary aria-controls={id} className="list-none cursor-pointer min-h-touch px-2 py-1 flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-water rounded-control">
         <span className="min-w-0 flex-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
@@ -36,8 +41,10 @@ export function RecipeDisclosure({ title, summary, children, actions }: {
         <ChevronDown className="w-4 h-4 shrink-0 text-cave-400 group-open/recipe:rotate-180" aria-hidden="true" />
       </summary>
       <div id={id} className="mt-1 px-2 pb-2 min-w-0 space-y-2">
-        {actions && <div className="flex flex-wrap gap-1">{actions}</div>}
-        {children}
+        {(!deferContent || visited) && <>
+          {actions && <div className="flex flex-wrap gap-1">{actions}</div>}
+          {children}
+        </>}
       </div>
     </details>
   );

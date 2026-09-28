@@ -1,5 +1,6 @@
 import { httpsCallable, HttpsCallableResult } from 'firebase/functions';
 import { functions } from './firebase';
+import { yeastLookupResultError } from '../../functions/src/yeastLookupResult';
 
 /**
  * Client des deux niveaux d'IA.
@@ -111,7 +112,14 @@ export const AiClient = {
       }
 
       const result: HttpsCallableResult<AiResponse> = await callAiTask(payload);
-      return (result.data ?? { ok: false, error: 'Réponse vide du serveur.' }) as AiResponse<T>;
+      const response = result.data ?? { ok: false, error: 'Réponse vide du serveur.' };
+      const yeastLookup = req.task === 'lookupIngredient' && req.context !== null &&
+        typeof req.context === 'object' && 'kind' in req.context && req.context.kind === 'levure';
+      if (response.ok && yeastLookup) {
+        const error = yeastLookupResultError(response.data);
+        if (error) return { ...response, ok: false, data: undefined, error };
+      }
+      return response as AiResponse<T>;
     } catch (err: any) {
       return { ok: false, error: this.humanize(err) };
     }

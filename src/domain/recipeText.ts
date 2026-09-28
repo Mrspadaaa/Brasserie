@@ -130,10 +130,11 @@ export function recipeYeastIntentText(recipe: Recipe): string | undefined {
   const pressure = snapshot.pressureBar === undefined ? 'pression inconnue'
     : `pression de fermentation ${n(snapshot.pressureBar, 3)} bar`;
   const changed = yeastRecipeDesignChanged(recipe, snapshot);
-  return `${family} · objectif ${YEAST_RECIPE_GOAL_LABELS[snapshot.goal]} · ${pressure}. ` +
+  return `${family} · ${snapshot.goalExplicit === false ? 'aucun objectif exprimé' : `objectif ${YEAST_RECIPE_GOAL_LABELS[snapshot.goal]}`} · ${pressure}. ` +
     (changed ? 'Scénario ancien : réglages modifiés depuis son adoption ; les consignes actuelles figurent dans la recette.'
-      : 'Intention adoptée ; les consignes figurent dans Levure, Empâtage et Fermentation.') +
-    ' L’objectif aromatique ne prédit pas une intensité de goût.';
+      : snapshot.goalExplicit === false ? 'Conduite enregistrée ; les consignes figurent dans Levure, Empâtage et Fermentation.'
+        : 'Intention adoptée ; les consignes figurent dans Levure, Empâtage et Fermentation.') +
+    (snapshot.goalExplicit === false ? ' Aucun objectif aromatique n’est déduit du style.' : ' L’objectif aromatique ne prédit pas une intensité de goût.');
 }
 
 export function recipeToText(r: RecipeTextInput, date = new Date()): string {

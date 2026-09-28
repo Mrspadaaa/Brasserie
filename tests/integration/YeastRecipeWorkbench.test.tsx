@@ -32,7 +32,7 @@ function Host({ initial, changed }: { initial: Recipe; changed: (r: Recipe) => v
 }
 
 describe('Levure : style, comparaison et application', () => {
-  it('keeps the first dry-yeast application current through the actual wizard steps', () => {
+  it('choisit directement la levure sèche, conserve sa quantité inconnue puis enregistre sa correction', () => {
     const initial: Recipe = { ...wheat(), style: 'American Pale Ale', name: 'Première application',
       yeast: { name: '', form: 'sèche', qty: 1, unit: 'sachet' },
       fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 10 }, { kind: 'garde', name: 'Garde', tempC: 4, days: 5 }] };
@@ -41,14 +41,12 @@ describe('Levure : style, comparaison et application', () => {
       onClose={vi.fn()} onSave={onSave} onCreateStockItem={vi.fn()} onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()} />);
     allerEtape(/^Levure/);
     fireEvent.change(screen.getByLabelText('Rechercher une levure'), { target: { value: 'US-05' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Choisir SafAle US-05 dans la recette' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Régler / simuler' }));
-    open(/Hypothèses et réglages complémentaires/);
-    open(/Ensemencement, durée et pression/);
-    change('Température d’ensemencement du scénario', '19');
-    change('Masse de levure du scénario en grammes', '20');
-    fireEvent.click(screen.getByRole('button', { name: 'Appliquer les changements' }));
-    expect(screen.getByText(/Conduite appliquée au brouillon/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Choisir SafAle US-05 pour le brouillon' }));
+    expect(screen.queryByRole('button', { name: 'Appliquer au brouillon' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Essai de conduite/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Quantité de levure')).toHaveValue('');
+    expect(screen.getByLabelText('Unité de la quantité de levure')).toHaveValue('');
+    expect(screen.getByLabelText('Quantité de levure')).toHaveValue('');
     expect(screen.queryByText(/La recette a changé pendant la comparaison/)).not.toBeInTheDocument();
     allerEtape(/^Paliers/);
     expect(screen.queryByText(/Des réglages ont changé/)).not.toBeInTheDocument();
@@ -56,11 +54,15 @@ describe('Levure : style, comparaison et application', () => {
     expect(screen.queryByText(/réglages modifiés/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const saved = onSave.mock.calls[0][0] as Recipe;
+    expect(saved.yeast).toMatchObject({ hopIndexId: 'fermentis-us05', form: 'sèche' });
+    expect(saved.yeast.qty).toBeUndefined(); expect(saved.yeast.unit).toBeUndefined();
+    expect(saved.yeast.pitchTempC).toBeUndefined();
     expect({ yeast: saved.yeast, volumeL: saved.volumeL, fermentation: saved.fermentation, mashSteps: saved.mash.steps,
       hops: saved.hops, style: saved.style, ...(saved.styleRef ? { styleRef: saved.styleRef } : {}) }).toEqual(saved.yeastDesign?.applied);
     expect(yeastRecipeDesignChanged(saved, readYeastRecipeDesign(saved)!)).toBe(false);
     allerEtape(/^Levure/);
-    fireEvent.click(screen.getByText('Ensemencement', { exact: false, selector: '.yc-pitch summary > span' }).closest('summary')!);
+    expect(screen.getByRole('group', { name: 'Quantité prévue de levure' })).toBeVisible();
+    change('Unité de la quantité de levure', 'g');
     change('Quantité de levure, en g', '25');
     allerEtape(/^Paliers/);
     expect(screen.getByText(/Des réglages ont changé/)).toBeInTheDocument();
@@ -69,7 +71,8 @@ describe('Levure : style, comparaison et application', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     const changed = onSave.mock.calls[1][0] as Recipe;
     expect(changed.yeast.qty).toBe(25);
-    expect(changed.yeastDesign!.applied.yeast.qty).toBe(20);
+    expect(changed.yeastDesign!.applied.yeast.qty).toBeUndefined();
+    expect(changed.yeastDesign!.applied.yeast.unit).toBeUndefined();
     expect(yeastRecipeDesignChanged(changed, readYeastRecipeDesign(changed)!)).toBe(true);
   });
   it('starts with the beer style and limits wheat choices before choosing a flavor', () => {
@@ -151,6 +154,20 @@ describe('Levure : style, comparaison et application', () => {
     expect(screen.getByRole('button', { name: 'Appliquer le scénario' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre les données actuelles' }));
     expect(screen.getByLabelText('Température principale du scénario')).toHaveValue('20');
+    expect(onChange).not.toHaveBeenCalled();
+  });
+  it.each(['recipe', 'measured', undefined] as const)('protects a corrected %s attenuation hypothesis from an older scenario', basis => {
+    const original = wheat();
+    original.yeast = { ...original.yeast, attenuationPct: 70, attenuationBasis: basis };
+    const onChange = vi.fn(), view = render(<YeastRecipeWorkbench recipe={original} onChange={onChange} />);
+    change('Température principale du scénario', '23');
+    const corrected = { ...original, yeast: { ...original.yeast, attenuationPct: 75 } };
+    view.rerender(<YeastRecipeWorkbench recipe={corrected} onChange={onChange} />);
+    expect(screen.getByRole('alert')).toHaveTextContent('La recette a changé');
+    expect(screen.getByRole('button', { name: 'Appliquer le scénario' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Choisir cette souche' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Reprendre les données actuelles' }));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
   });
   it('keeps unknown temperature and gravity unknown and calculates cells only from explicit inputs', () => {

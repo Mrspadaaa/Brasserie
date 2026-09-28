@@ -153,7 +153,10 @@ export function HopRecipeWorkbench({ recipe, onChange, onNavigate, onPlanYeast, 
         <dt>{stageNames[p.stage]}</dt><dd>{p.grams !== undefined && <span className="hop-mass-track" aria-hidden="true"><i style={{ width: `${p.grams / maxMass * 100}%` }} /></span>}<span>{fmt(p.grams)} g · {fmt(p.doseGL)} g/L</span></dd>
       </div>)}</dl>
       {recipe.hops.length > 0 && <ol className="hop-addition-bridges" aria-label="Ajouts à simuler">
-        {recipe.hops.map((hop, index) => <li key={index}><span><strong>{hop.name}</strong><small>{stageNames[hop.stage]} · {fmt(hop.weightG)} g{hop.stage === 'dryHop' ? ` · ${fmt(recipe.volumeL > 0 ? hop.weightG / recipe.volumeL : undefined)} g/L` : ''}</small></span><button type="button" onClick={() => focusAddition(index)} aria-label={`Simuler l’ajout ${index + 1} de ${hop.name}`}>Simuler</button></li>)}
+        {recipe.hops.map((hop, index) => {
+          const doseGL = recipe.volumeL > 0 ? hop.weightG / recipe.volumeL : undefined;
+          return <li key={index}><span><strong>{hop.name}</strong><small>{stageNames[hop.stage]} · {Units.format(hop.weightG, 'g')}{hop.stage === 'dryHop' ? ` · ${fmt(doseGL)} g/L` : ''}</small></span><button type="button" onClick={() => focusAddition(index)} aria-label={`Simuler l’ajout ${index + 1} de ${hop.name}`}>Simuler</button></li>;
+        })}
       </ol>}
       {!recipe.hops.length && <p>Aucun ajout. Prépare une masse selon l’IBU visé ou la dose à cru.</p>}
       <div className="hop-actions"><button type="button" onClick={() => chooseTool('ibu')}>Calculer ma dose amère</button>{hoppy && <button type="button" onClick={() => chooseTool('dryHop')}>Préparer le dry hop</button>}</div>

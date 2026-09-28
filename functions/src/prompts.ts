@@ -1,6 +1,6 @@
 import { AiTier } from './models.js';
 import { HOP_ANALYTES, HOP_FORMS, HOP_UNITS } from './hopIndexSchema.js';
-import { YEAST_FACT_KEYS } from './yeastCatalogueSchema.js';
+import { YEAST_FACT_KEYS, YEAST_FACT_QUALIFIERS } from './yeastCatalogueSchema.js';
 
 /**
  * Catalogue des tâches IA.
@@ -93,7 +93,7 @@ const arr = (items: unknown) => ({ type: 'ARRAY', items });
 const yeastTechnicalFactProperties = {
   key: {type:'STRING',enum:[...YEAST_FACT_KEYS]}, reported:str,
   range:S({min:num,max:num},['min','max']), unit:str,
-  qualifier:{type:'STRING',enum:['range','reportedPoint','atLeast','upTo']},
+  qualifier:{type:'STRING',enum:[...YEAST_FACT_QUALIFIERS]},
   origin:{type:'STRING',enum:['ai']}, source:str, sourceUrl:str, retrievedAt:str, context:str
 };
 
@@ -343,7 +343,7 @@ houblon, la couleur ou le potentiel d'un malt, l'atténuation d'une levure — v
 la chercher sur la fiche du producteur et nomme cette source dans « source ».
 Une valeur que tu n'as pas trouvée reste ABSENTE : ne la devine jamais.
 Pour la levure, conserve les plages et bornes exactes dans technicalFacts
-(key, reported, range {min,max}, unit, qualifier range/reportedPoint/atLeast/upTo,
+(key, reported, range {min,max}, unit, qualifier range/reportedPoint/atLeast/upTo/greaterThan/lessThan,
 origin ai, source et sourceUrl si publiées, contexte). Une plage ne devient
 jamais son milieu dans attenuationPct. attenuationBasis vaut recipe pour une
 hypothèse déjà écrite dans la recette, measured pour une mesure explicitement
@@ -888,8 +888,10 @@ sa source directe, sa date de consultation et ses conditions. Une plage reste
 une plage : aucune moyenne inventée dans attenuationPct ou alcoholTolerancePct.
 Les champs scalaires ne contiennent que des valeurs ponctuelles publiées.
 range={min,max}, unit et qualifier sont indissociables : range pour une plage,
-reportedPoint pour un point, atLeast pour une borne minimale, upTo pour un
-maximum (dans ces trois derniers cas min=max). origin vaut ai pour cette
+reportedPoint pour un point, atLeast pour ≥, greaterThan pour >, upTo pour ≤,
+lessThan pour < (borne unique min=max dans les quatre cas). Le champ reported
+et le qualifier doivent conserver le même signe exact : ne remplace jamais > par ≥,
+ni < par ≤. origin vaut ai pour cette
 extraction ; source est le titre de la fiche et sourceUrl son URL directe.
 Les observations textuelles (flocculation, arômes, espèce, conduite, etc.) ont
 reported mais pas de range/unit/qualifier. Omettre ce qui n'a pas été trouvé,

@@ -88,6 +88,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div
+      data-page-overlay
       className="fixed inset-0 z-[100] flex items-start justify-center
                  px-3 pt-[6dvh] sm:px-4 sm:pt-[12vh] bg-cave-950/80 backdrop-blur-sm"
       onPointerDown={(e) => {

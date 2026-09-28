@@ -6,10 +6,11 @@ import {
   YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS,
   inferYeastRecipeStyle, yeastRecipeCandidates, createYeastRecipeDraft,
   evaluateYeastRecipeDesign, applyYeastRecipeDesign, calculateYeastCellRequirement, proposeYeastGoalSettings,
-  readYeastRecipeDesign, yeastRecipeDesignChanged, yeastRecipeFormWarning,
+  readYeastRecipeDesign, classifyYeastRecipeDesignChange, yeastRecipeFormWarning,
   type YeastRecipeDraft, type YeastRecipeGoal, type YeastStyleId,
 } from '../domain/yeastRecipeDesign';
 import { fermentationStateKey } from '../domain/fermentationGuide';
+import { editFermentationTimelineStep, type FermentationTimelineStep } from '../domain/fermentationTimeline';
 import { yeastReferences } from '../domain/yeastReferences';
 import { StorageService } from '../services/storage';
 import { useStorageValue } from '../hooks/useLiveData';
@@ -34,11 +35,15 @@ const range = (r?: { range: { min: number; max: number } } | null, unit = '') =>
  * enrich a selected yeast after this panel mounts (lab, documentary window,
  * and fermentation facts); those facts do not invalidate the scenario the
  * brewer is editing. OG is also recalculated when that enrichment supplies
- * attenuation data, so it is deliberately not part of this identity.
+ * attenuation data. An explicit recipe/measured hypothesis is the brewer's
+ * input, though: changing it invalidates an already prepared scenario.
  */
 const comparisonYeast = (yeast: TrialRecipe['yeast']) => ({
   name: yeast.name, hopIndexId: yeast.hopIndexId, form: yeast.form, qty: yeast.qty, unit: yeast.unit,
   pitchTempC: yeast.pitchTempC, fermentDays: yeast.fermentDays,
+  attenuationHypothesis: yeast.attenuationBasis === 'recipe' || yeast.attenuationBasis === 'measured' ||
+    yeast.attenuationBasis === undefined && yeast.attenuationPct != null && !yeast.technicalSelections?.attenuation
+    ? { value: yeast.attenuationPct, basis: yeast.attenuationBasis ?? 'recipe' } : undefined,
 });
 const baseKey = (recipe: TrialRecipe) => fermentationStateKey({
   style: recipe.style, styleRef: recipe.styleRef, volumeL: recipe.volumeL,
@@ -69,7 +74,8 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const [local, setLocal] = useState(() => {
     const draft = createYeastRecipeDraft(recipe, refs, undefined, initialYeastId);
     const goals = YEAST_STYLE_FAMILIES.find(style => style.id === draft.styleId)?.goals ?? [];
-    return { key, draft: { ...draft, ...(initialGoal && goals.includes(initialGoal) ? { goal: initialGoal } : {}) } };
+    const acceptedGoal = initialGoal && goals.includes(initialGoal) ? initialGoal : undefined;
+    return { key, draft: { ...draft, ...(acceptedGoal ? { goal: acceptedGoal, goalExplicit: true } : {}) } };
   });
   const [compareOpen, setCompareOpen] = useState(!recipe.yeast?.hopIndexId || !!initialYeastId);
   const [notice, setNotice] = useState('');
@@ -102,7 +108,19 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const cell = calculateYeastCellRequirement({ volumeL: recipe.volumeL, og: recipe.ogTarget,
     pitchRateMillionPerMlPlato: cellRate, viableCellsBillion: viableCells });
   const patch = (updates: Partial<YeastRecipeDraft>) => {
-    setLocal(value => ({ ...value, draft: { ...value.draft, ...updates } })); setNotice(''); setError('');
+    setLocal(value => {
+      const nextDraft = { ...value.draft, ...updates }, programme = value.draft.programme;
+      if (programme === undefined || !Array.isArray(programme)) return { ...value, draft: nextDraft };
+      const phasePatch: Partial<FermentationTimelineStep> = {};
+      if (Object.prototype.hasOwnProperty.call(updates, 'temperatureC')) phasePatch.tempC = updates.temperatureC;
+      if (Object.prototype.hasOwnProperty.call(updates, 'days')) phasePatch.days = updates.days;
+      if (!Object.keys(phasePatch).length) return { ...value, draft: nextDraft };
+      const primaryIndex = programme.findIndex(phase => phase.kind === 'primaire');
+      if (primaryIndex < 0) return { ...value, draft: { ...nextDraft, temperatureC: undefined, days: undefined } };
+      const syncedProgramme = editFermentationTimelineStep(programme, primaryIndex, phasePatch), primary = syncedProgramme[primaryIndex];
+      return { ...value, draft: { ...nextDraft, programme: syncedProgramme, temperatureC: primary.tempC, days: primary.days } };
+    });
+    setNotice(''); setError('');
   };
   const reset = () => {
     setLocal({ key, draft: createYeastRecipeDraft(recipe, refs) }); setNotice('Scénario repris depuis la recette.'); setError('');
@@ -113,7 +131,7 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   };
   const chooseStrain = (yeastId: string) => {
     const next = createYeastRecipeDraft(recipe, refs, draft.styleId, yeastId);
-    setLocal(value => ({ key: value.key, draft: { ...next, goal: draft.goal, pressureBar: draft.pressureBar, ferulicRest: draft.ferulicRest } }));
+    setLocal(value => ({ key: value.key, draft: { ...next, goal: draft.goal, goalExplicit: draft.goalExplicit, pressureBar: draft.pressureBar, ferulicRest: draft.ferulicRest } }));
     setNotice(''); setError('');
   };
   const apply = (mode: 'strain' | 'settings') => {
@@ -149,9 +167,9 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     {stale && <div role="alert" className="yeast-notice">La recette a changé pendant la comparaison. <button type="button" onClick={reset}>Reprendre les données actuelles</button></div>}
     {draft.styleId === 'unknown' && <p className="yeast-small">Style non reconnu : explore le catalogue et vérifie les usages de la souche. Tu peux préciser la famille à tout moment.</p>}
       {draft.styleId === 'unknown' ? <div className="yeast-filter"><label htmlFor={`${uid}-goal`}>Caractère recherché</label>
-        <select id={`${uid}-goal`} value={draft.goal} onChange={e => patch({ goal: e.target.value as YeastRecipeGoal })}>
+        <select id={`${uid}-goal`} value={draft.goal} onChange={e => patch({ goal: e.target.value as YeastRecipeGoal, goalExplicit: true })}>
           {(style?.goals ?? []).map(goal => <option key={goal} value={goal}>{YEAST_RECIPE_GOAL_LABELS[goal]}</option>)}
-        </select></div> : <SegmentedControl className="yeast-goals" label="Caractère recherché" value={draft.goal} onChange={goal => patch({ goal })}
+        </select></div> : <SegmentedControl className="yeast-goals" label="Caractère recherché" value={draft.goal} onChange={goal => patch({ goal, goalExplicit: true })}
         options={(style?.goals ?? []).map(goal => ({ value: goal as YeastRecipeGoal, label: YEAST_RECIPE_GOAL_LABELS[goal] }))} />}
       <details open={compareOpen} onToggle={e => setCompareOpen(e.currentTarget.open)} className="yeast-strain-comparison">
         <summary>Comparer les souches du style · {draft.styleId === 'unknown' ? 'catalogue entier' : styleCount}<ChevronDown size={14} aria-hidden="true" /></summary>
@@ -287,21 +305,18 @@ export function YeastRecipeContext({ recipe, onChooseYeast }: { recipe: TrialRec
   if (!snapshot || recipe.nolo?.enabled) return null;
   const draft = createYeastRecipeDraft(recipe, refs);
   const result = evaluateYeastRecipeDesign(recipe, draft, refs);
+  const change = classifyYeastRecipeDesignChange(recipe, snapshot);
   const relevant = result.effects.filter(e => e.id.startsWith('hop-') || e.id === 'style-hops');
   return <aside className="yeast-workbench border-t border-cave-700 pt-2" aria-label="Levure et conduite liées à la recette">
-    <div className="flex items-center justify-between gap-2"><p><strong>{recipe.yeast.name}</strong> · {YEAST_RECIPE_GOAL_LABELS[snapshot.goal]}</p>{onChooseYeast && <button type="button" onClick={onChooseYeast}>Comparer</button>}</div>
-    {yeastRecipeDesignChanged(recipe, snapshot) && <p className="yeast-notice">Des réglages ont changé depuis l’application. Recompare la conduite avec les valeurs actuelles.</p>}
+    <div className="flex items-center justify-between gap-2"><p><strong>{recipe.yeast.name}</strong> · {snapshot.goalExplicit === false ? 'aucun objectif exprimé' : YEAST_RECIPE_GOAL_LABELS[snapshot.goal]}</p>{onChooseYeast && <button type="button" onClick={onChooseYeast}>Comparer</button>}</div>
+    {change === 'settings' && <p className="yeast-notice">Des réglages ont changé depuis l’application. Recompare la conduite avec les valeurs actuelles.</p>}
+    {change === 'documentary' && <p className="yeast-notice">La fiche de la levure a été actualisée. Relis les observations et leurs sources ; les consignes du programme restent conservées.</p>}
     {result.hops.additions.length > 0 && <p className="text-[13px]">{number(result.hops.doseGL)} g/L à cru · {number(result.hops.activeG)} g en phase active · {number(result.hops.postG)} g après fermentation{result.hops.unknownCount ? ` · ${result.hops.unknownCount} phase${result.hops.unknownCount > 1 ? 's' : ''} à préciser` : ''}.</p>}
     {relevant.length > 0 && <Disclosure title="Ce que cela change avec les houblons"><div className="space-y-2 text-[13px]">{relevant.map(e => <p key={e.id}><strong>{e.impact}.</strong> {e.detail}</p>)}</div></Disclosure>}
   </aside>;
 }
 
-/** Closed overview keeps the adopted intent separate from today's actual setpoint. */
-export function YeastRecipeHeading({ recipe }: { recipe: TrialRecipe }) {
-  const intent = readYeastRecipeDesign(recipe);
-  const primary = recipe.fermentation?.find(s => s.kind === 'primaire');
-  return <span>{recipe.yeast.name || 'Souche à préciser'} · {recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty, 20)} ${recipe.yeast.unit}` : 'quantité à préciser'}{intent && <span className="block">Objectif : {YEAST_RECIPE_GOAL_LABELS[intent.goal]} · primaire {number(primary?.tempC)} °C{yeastRecipeDesignChanged(recipe, intent) ? ' · réglages modifiés' : ''}</span>}</span>;
-}
+export { YeastRecipeHeading } from './YeastRecipeHeading';
 
 export function YeastRecipeSummary({ recipe, onEdit }: { recipe: TrialRecipe; onEdit?: () => void }) {
   const [variant, setVariant] = useState<TrialRecipe>();
@@ -311,12 +326,14 @@ export function YeastRecipeSummary({ recipe, onEdit }: { recipe: TrialRecipe; on
   const result = evaluateYeastRecipeDesign(recipe, draft, refs);
   const formWarning = yeastRecipeFormWarning(recipe, result.candidate?.reference);
   const intent = readYeastRecipeDesign(recipe);
+  const change = intent ? classifyYeastRecipeDesignChange(recipe, intent) : 'unchanged';
   return <section className="yeast-workbench" aria-label="Conduite de levure de la recette">
     {variant ? <>
       <button type="button" onClick={() => setVariant(undefined)}>Fermer la variante de levure</button>
       <YeastRecipeWorkbench recipe={variant} onChange={setVariant} simulationOnly />
     </> : <>
-      {intent && yeastRecipeDesignChanged(recipe, intent) && <p className="yeast-notice">Des réglages ont changé depuis l’application de l’objectif. Les consignes ci-dessous sont celles de la recette actuelle.</p>}
+      {change === 'settings' && <p className="yeast-notice">Des réglages ont changé depuis l’application de l’objectif. Les consignes ci-dessous sont celles de la recette actuelle.</p>}
+      {change === 'documentary' && <p className="yeast-notice">La fiche de la levure a été actualisée depuis l’application de l’objectif. Relis les observations et leurs sources ; la conduite appliquée reste inchangée.</p>}
       {formWarning && <p className="yeast-notice">{formWarning}</p>}
       <dl className="grid grid-cols-2 gap-2 text-[13px]">
         <div><dt className="text-cave-400">Primaire</dt><dd>{number(draft.temperatureC)} °C · {number(draft.days)} j prévus</dd></div>

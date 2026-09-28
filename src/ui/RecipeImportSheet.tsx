@@ -366,7 +366,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                   .join(' · ')}
               </p>
               {!result.nolo?.enabled && result.yeastDesign && <p className="text-xs text-cave-200 mt-1">
-                Objectif adopté : <strong>{YEAST_RECIPE_GOAL_LABELS[result.yeastDesign.goal]}</strong> · pression précoce {result.yeastDesign.pressureBar == null ? 'inconnue' : `${result.yeastDesign.pressureBar.toLocaleString('fr-FR')} bar rel.`}
+                {result.yeastDesign.goalExplicit === false ? 'Aucun objectif exprimé' : <>Objectif adopté : <strong>{YEAST_RECIPE_GOAL_LABELS[result.yeastDesign.goal]}</strong></>} · pression précoce {result.yeastDesign.pressureBar == null ? 'inconnue' : `${result.yeastDesign.pressureBar.toLocaleString('fr-FR')} bar rel.`}
               </p>}
               {result.hops.some(h => h.stage === 'dryHop') && <details className="mt-1 border-t border-cave-800 pt-1">
                 <summary className="min-h-touch cursor-pointer text-xs text-cave-200">Contacts des houblons à cru</summary>

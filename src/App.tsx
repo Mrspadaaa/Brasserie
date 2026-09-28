@@ -55,12 +55,13 @@ import { User } from 'firebase/auth';
 import { DeferredSurface, LazySurface } from './ui/LazySurface';
 import { Sheet } from './ui/Sheet';
 import { PageShell } from './pages/PageShell';
+import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
 const AuditLogModal = lazy(() => import('./components/AuditLogModal').then(module => ({ default: module.AuditLogModal })));
 const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then(module => ({ default: module.CloudConfigModal })));
-const RecipePage = lazy(() => import('./pages/RecipePage').then(module => ({ default: module.RecipePage })));
+const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module.RecipePage })));
 const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ default: module.BrewDayPage })));
 const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
 const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
@@ -187,6 +188,10 @@ export const App: React.FC = () => {
    */
   const [createRequest, setCreateRequest] = useState<{ kind: FabIntent; at: number } | null>(null);
   const route = useFullScreenRoute();
+  // A resolved background import should not still mount a Suspense fallback.
+  // Lock the surface for this route so later data updates preserve local UI state.
+  const RecipeSurface = useMemo(() => preparedRecipePage()?.RecipePage ?? RecipePage,
+    [route.route.view === 'recipe' ? route.route.recipeId : undefined]);
   const currentRoute = useRef(route.route);
   currentRoute.current = route.route;
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -735,6 +740,7 @@ export const App: React.FC = () => {
 
         {activeTab === 'production' && (
           <ProductionTab
+            visible={view.view === 'tabs'}
             batches={batches}
             recipes={recipes}
             brewhouses={config.brewhouses}
@@ -859,7 +865,8 @@ export const App: React.FC = () => {
 
       <LazySurface resetKey={view.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
       {routedRecipe && (
-        <RecipePage
+        <RecipeSurface
+          key={routedRecipe.id}
           recipe={routedRecipe}
           batches={batches}
           config={config}

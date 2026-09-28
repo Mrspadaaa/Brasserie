@@ -44,15 +44,20 @@ describe('Parcours du sélecteur de candidats levure', () => {
     render(<YeastCandidatePicker candidates={[us05, wyeast]} styleId="clean-ale" selectedId="" onSelect={vi.fn()}
       recipeChoice={{ volumeL: 20, onChoose }} />);
     await user.type(search(), '1056');
-    expect(screen.getByText(/Aucune référence avec ces filtres/)).toBeInTheDocument();
-    await user.click(screen.getByRole('radio', { name: /Tout le catalogue/ }));
-    const row = within(screen.getByRole('list', { name: 'Levures à consulter' })).getByRole('listitem');
+    // A query searches the whole catalogue; the documented family only narrows it on explicit choice.
+    expect(screen.getByRole('status')).toHaveTextContent('1 résultat · tout le catalogue');
+    await user.click(screen.getByRole('radio', { name: /Style documenté/ }));
+    expect(screen.getByText('Aucun résultat avec ces filtres.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Tout afficher' }));
+    const row = within(screen.getByRole('list', { name: 'Références de levure à comparer' })).getByRole('listitem');
     expect(row).toHaveTextContent('16–22 °C');
+    expect(row).toHaveTextContent('forme non publiée');
+    expect(row).toHaveTextContent(/Usage pour .+ non documenté/);
+    await user.click(within(row).getByRole('button', { name: 'Consulter 1056 American Ale®' }));
     expect(row).toHaveTextContent('73–77 %');
-    expect(row).toHaveTextContent('forme à préciser');
-    expect(row).toHaveTextContent('Style à confirmer');
-    await user.click(within(row).getByRole('button', { name: /Choisir 1056 American Ale® dans la recette/ }));
+    await user.click(within(row).getByRole('button', { name: 'Choisir 1056 American Ale® pour le brouillon' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('wyeast-1056', undefined);
+    expect(screen.queryByRole('region', { name: 'Comparaison des levures' })).not.toBeInTheDocument();
   });
 
   it('place US-05 avant les occurrences dans des faits et des identifiants techniques', async () => {
@@ -65,7 +70,7 @@ describe('Parcours du sélecteur de candidats levure', () => {
     render(<YeastCandidatePicker candidates={[...decoys, us05]} styleId="clean-ale" selectedId="" onSelect={onSelect} />);
     expect(search().tagName).toBe('TEXTAREA');
     await user.type(search(), 'US-05');
-    expect(screen.getByRole('status')).toHaveTextContent('8 références');
+    expect(screen.getByRole('status')).toHaveTextContent('8 résultats');
     expect(visibleChoices()).toHaveLength(6);
     expect(visibleChoices()[0]).toHaveAccessibleName(`Comparer ${us05.label}`);
     expect(onSelect).not.toHaveBeenCalled();
@@ -130,7 +135,7 @@ describe('Parcours du sélecteur de candidats levure', () => {
     await user.selectOptions(laboratory(), 'Laboratoire Alpha');
     await user.selectOptions(productForm(), 'sèche');
     await user.type(search(), 'aucun résultat');
-    expect(screen.getByText(/Aucune référence avec ces filtres/)).toBeInTheDocument();
+    expect(screen.getByText(/Aucune référence ne correspond à «\s*aucun résultat\s*»/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Afficher sa ligne' }));
     expect(search()).toHaveValue('');
     expect(laboratory()).toHaveValue('');
@@ -142,7 +147,7 @@ describe('Parcours du sélecteur de candidats levure', () => {
     expect(onSelect).not.toHaveBeenCalled();
   });
 
-  it('préserve le choix explicite quand une recherche le masque puis que les filtres sont effacés', async () => {
+  it('préserve le choix explicite quand une recherche le masque puis qu’elle est effacée', async () => {
     const candidates = rows(), onSelect = vi.fn(), user = userEvent.setup();
     function Host() {
       const [selectedId, setSelectedId] = useState('');
@@ -155,12 +160,13 @@ describe('Parcours du sélecteur de candidats levure', () => {
     await user.type(search(), 'Culture 13');
     expect(screen.getByText(/Scénario conservé : Culture 02/)).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Comparer Culture 13' })).not.toBeChecked();
-    await user.click(screen.getByRole('button', { name: 'Effacer les filtres' }));
+    // The query is not a filter: clearing it in the field brings the chosen row back.
+    await user.clear(search());
     expect(screen.getByRole('radio', { name: 'Comparer Culture 02' })).toBeChecked();
     expect(onSelect).toHaveBeenCalledExactlyOnceWith('picker-culture-2');
   });
 
-  it('efface tous les filtres et revient à la première page en conservant la portée et le scénario', async () => {
+  it('efface laboratoire et forme, revient à la première page et conserve la recherche, sa portée et le scénario', async () => {
     const candidates = rows(), onSelect = vi.fn(), user = userEvent.setup();
     render(<YeastCandidatePicker candidates={candidates} styleId="clean-ale" selectedId={candidates[1].yeastId} onSelect={onSelect} />);
     await user.click(screen.getByRole('radio', { name: /Tout le catalogue/ }));
@@ -170,7 +176,7 @@ describe('Parcours du sélecteur de candidats levure', () => {
     await user.click(screen.getByRole('button', { name: 'Suivantes' }));
     expect(screen.getByText('7–12 / 13')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Effacer les filtres' }));
-    expect(search()).toHaveValue('');
+    expect(search()).toHaveValue('Culture');
     expect(laboratory()).toHaveValue('');
     expect(productForm()).toHaveValue('');
     expect(screen.getByText('1–6 / 13')).toBeInTheDocument();
@@ -189,11 +195,16 @@ describe('Parcours du sélecteur de candidats levure', () => {
     expect(screen.getByText('Style à confirmer')).toBeInTheDocument();
     expect(onSelect).not.toHaveBeenCalled();
     view.rerender(<YeastCandidatePicker candidates={[]} styleId="unknown" selectedId="" onSelect={onSelect} />);
+    // Without a style, search comes first; browsing the catalogue stays an explicit gesture.
+    expect(search()).toBeVisible();
+    expect(screen.queryByText(/Cherche une souche par nom, code, fabricant/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Parcourir les 0 références' }));
     expect(screen.getByText(/Aucune référence avec ces filtres/)).toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
     expect(screen.queryByRole('radiogroup')).not.toBeInTheDocument();
     await user.type(search(), 'US-05');
-    await user.click(screen.getByRole('button', { name: 'Effacer les filtres' }));
+    expect(screen.getByText(/Aucune référence ne correspond à «\s*US-05\s*»/)).toBeInTheDocument();
+    await user.clear(search());
     expect(search()).toHaveValue('');
     expect(onSelect).not.toHaveBeenCalled();
   });

@@ -1,0 +1,414 @@
+{
+  "sourceCommit": "e04b856e24ff2b41489c92c374cacdd9c4c2fa27",
+  "baseline": "5a49cc51ba4d37ef4300e6404c0c989d22d10425",
+  "sets": {
+    "baseline-mobile": {
+      "environment": {
+        "browserVersion": "Chrome/153.0.8010.53",
+        "width": 390,
+        "cpuRate": 6,
+        "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-baseline-final",
+        "sampleCount": 20,
+        "profiling": false,
+        "directOpening": true,
+        "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+        "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+      },
+      "phases": {
+        "open-cold": {
+          "n": 20,
+          "medianMs": 1795.9500000000698,
+          "p95Ms": 2081.5999999998603,
+          "minMs": 1610,
+          "maxMs": 2800
+        },
+        "first-grain": {
+          "n": 20,
+          "medianMs": 40.250000000116415,
+          "p95Ms": 48.800000000046566,
+          "minMs": 39.4000000001397,
+          "maxMs": 52.299999999813735
+        },
+        "first-aroma": {
+          "n": 20,
+          "medianMs": 39.449999999953434,
+          "p95Ms": 50.10000000009313,
+          "minMs": 32.60000000009313,
+          "maxMs": 60.10000000009313
+        },
+        "first-advanced": {
+          "n": 20,
+          "medianMs": 46.89999999990687,
+          "p95Ms": 64.19999999995343,
+          "minMs": 44.699999999953434,
+          "maxMs": 65.30000000004657
+        },
+        "edit-cold": {
+          "n": 20,
+          "medianMs": 1100.9499999999534,
+          "p95Ms": 1339.5,
+          "minMs": 979.3000000000466,
+          "maxMs": 1389
+        },
+        "open-warm": {
+          "n": 20,
+          "medianMs": 1173.5999999999767,
+          "p95Ms": 1507.5999999998603,
+          "minMs": 1088.8000000000466,
+          "maxMs": 1748.3000000000466
+        },
+        "edit-warm": {
+          "n": 20,
+          "medianMs": 561.9000000000233,
+          "p95Ms": 672.2000000001863,
+          "minMs": 521.5999999998603,
+          "maxMs": 1611.5
+        },
+        "first-input": {
+          "n": 20,
+          "medianMs": 55.300000000046566,
+          "p95Ms": 80,
+          "minMs": 48.9000000001397,
+          "maxMs": 81
+        }
+      },
+      "errors": [],
+      "remote": [],
+      "artifact": "evidence/delivery-baseline-mobile"
+    },
+    "after-mobile": {
+      "environment": {
+        "browserVersion": "Chrome/153.0.8010.53",
+        "width": 390,
+        "cpuRate": 6,
+        "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-final",
+        "sampleCount": 20,
+        "profiling": false,
+        "directOpening": true,
+        "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+        "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+      },
+      "phases": {
+        "open-cold": {
+          "n": 20,
+          "medianMs": 321.4999999998836,
+          "p95Ms": 376.39999999990687,
+          "minMs": 298.5999999998603,
+          "maxMs": 406.80000000004657
+        },
+        "first-grain": {
+          "n": 20,
+          "medianMs": 40.550000000046566,
+          "p95Ms": 46.9000000001397,
+          "minMs": 36,
+          "maxMs": 47.39999999990687
+        },
+        "first-aroma": {
+          "n": 20,
+          "medianMs": 144.85000000009313,
+          "p95Ms": 159.19999999995343,
+          "minMs": 137.39999999990687,
+          "maxMs": 165
+        },
+        "first-advanced": {
+          "n": 20,
+          "medianMs": 223.10000000009313,
+          "p95Ms": 241.80000000004657,
+          "minMs": 213.70000000018626,
+          "maxMs": 260.89999999990687
+        },
+        "edit-cold": {
+          "n": 20,
+          "medianMs": 875.8499999999767,
+          "p95Ms": 953,
+          "minMs": 836.6000000000931,
+          "maxMs": 1015.5
+        },
+        "open-warm": {
+          "n": 20,
+          "medianMs": 194.90000000002328,
+          "p95Ms": 228,
+          "minMs": 178.5,
+          "maxMs": 259.80000000004657
+        },
+        "edit-warm": {
+          "n": 20,
+          "medianMs": 296.9999999998836,
+          "p95Ms": 342.19999999995343,
+          "minMs": 278.80000000004657,
+          "maxMs": 395
+        },
+        "first-input": {
+          "n": 20,
+          "medianMs": 53.300000000046566,
+          "p95Ms": 64.5,
+          "minMs": 46,
+          "maxMs": 70.69999999995343
+        }
+      },
+      "errors": [],
+      "remote": [],
+      "artifact": "evidence/delivery-after-mobile"
+    },
+    "baseline-desktop": {
+      "environment": {
+        "browserVersion": "Chrome/153.0.8010.53",
+        "width": 1280,
+        "cpuRate": 1,
+        "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-baseline-final",
+        "sampleCount": 3,
+        "profiling": false,
+        "directOpening": true,
+        "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+        "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+      },
+      "phases": {
+        "open-cold": {
+          "n": 3,
+          "medianMs": 438,
+          "minMs": 437,
+          "maxMs": 438.89999999990687
+        },
+        "first-grain": {
+          "n": 3,
+          "medianMs": 14.199999999720603,
+          "minMs": 12.299999999813735,
+          "maxMs": 14.600000000093132
+        },
+        "first-aroma": {
+          "n": 3,
+          "medianMs": 13,
+          "minMs": 12.900000000372529,
+          "maxMs": 13.100000000093132
+        },
+        "first-advanced": {
+          "n": 3,
+          "medianMs": 12.799999999813735,
+          "minMs": 12.399999999906868,
+          "maxMs": 12.800000000279397
+        },
+        "edit-cold": {
+          "n": 3,
+          "medianMs": 388.6999999997206,
+          "minMs": 388.5,
+          "maxMs": 391.70000000018626
+        },
+        "open-warm": {
+          "n": 3,
+          "medianMs": 149.70000000018626,
+          "minMs": 148.60000000009313,
+          "maxMs": 151.89999999990687
+        },
+        "edit-warm": {
+          "n": 3,
+          "medianMs": 81.90000000037253,
+          "minMs": 81.3000000002794,
+          "maxMs": 82.70000000018626
+        },
+        "first-input": {
+          "n": 3,
+          "medianMs": 9.099999999627471,
+          "minMs": 8.900000000372529,
+          "maxMs": 9.700000000186265
+        }
+      },
+      "errors": [],
+      "remote": [],
+      "artifact": "evidence/delivery-baseline-desktop"
+    },
+    "after-desktop": {
+      "environment": {
+        "browserVersion": "Chrome/153.0.8010.53",
+        "width": 1280,
+        "cpuRate": 1,
+        "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-final",
+        "sampleCount": 3,
+        "profiling": false,
+        "directOpening": true,
+        "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+        "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+      },
+      "phases": {
+        "open-cold": {
+          "n": 3,
+          "medianMs": 47.6999999997206,
+          "minMs": 47.1999999997206,
+          "maxMs": 48.299999999813735
+        },
+        "first-grain": {
+          "n": 3,
+          "medianMs": 12.899999999906868,
+          "minMs": 12.199999999720603,
+          "maxMs": 13.200000000186265
+        },
+        "first-aroma": {
+          "n": 3,
+          "medianMs": 26.799999999813735,
+          "minMs": 26.399999999906868,
+          "maxMs": 26.899999999906868
+        },
+        "first-advanced": {
+          "n": 3,
+          "medianMs": 33.700000000186265,
+          "minMs": 33.700000000186265,
+          "maxMs": 33.700000000186265
+        },
+        "edit-cold": {
+          "n": 3,
+          "medianMs": 381.6999999997206,
+          "minMs": 381.60000000009313,
+          "maxMs": 385.70000000018626
+        },
+        "open-warm": {
+          "n": 3,
+          "medianMs": 34.10000000009313,
+          "minMs": 33.8000000002794,
+          "maxMs": 34.10000000009313
+        },
+        "edit-warm": {
+          "n": 3,
+          "medianMs": 54.90000000037253,
+          "minMs": 54.799999999813735,
+          "maxMs": 55
+        },
+        "first-input": {
+          "n": 3,
+          "medianMs": 9.399999999906868,
+          "minMs": 9.200000000186265,
+          "maxMs": 10.299999999813735
+        }
+      },
+      "errors": [],
+      "remote": [],
+      "artifact": "evidence/delivery-after-desktop"
+    }
+  },
+  "standardSeriesCommit": "e04b856e24ff2b41489c92c374cacdd9c4c2fa27",
+  "currentCandidateCommit": "c2891156bcf946e0457fbe68f38bd8eadfb5aff1",
+  "standardSeriesQualification": "QA startup derives knowledge through guidePredictionKnowledge and recipe fixtures use Storage.addRecipe. Reference work can occur before the gesture; this series is not proof of an absolutely unprepared library.",
+  "targetedCold": {
+    "before": {
+      "environment": {
+        "browserVersion": "Chrome/153.0.8010.53",
+        "width": 390,
+        "cpuRate": 6,
+        "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-cold-before",
+        "sampleCount": 3,
+        "profiling": false,
+        "directOpening": true,
+        "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+        "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+      },
+      "phases": {
+        "open-cold": {
+          "n": 3,
+          "medianMs": 1261.8000000002794,
+          "minMs": 1239.5,
+          "maxMs": 1402
+        },
+        "first-grain": {
+          "n": 3,
+          "medianMs": 45.89999999990687,
+          "minMs": 42.60000000009313,
+          "maxMs": 46.3000000002794
+        },
+        "first-aroma": {
+          "n": 3,
+          "medianMs": 44.89999999990687,
+          "minMs": 38.200000000186265,
+          "maxMs": 51.5
+        },
+        "first-advanced": {
+          "n": 3,
+          "medianMs": 58.1999999997206,
+          "minMs": 46.6999999997206,
+          "maxMs": 60.1999999997206
+        },
+        "edit-cold": {
+          "n": 3,
+          "medianMs": 886.6999999997206,
+          "minMs": 876.7000000001863,
+          "maxMs": 1131.7999999998137
+        },
+        "open-warm": {
+          "n": 3,
+          "medianMs": 612.5,
+          "minMs": 594.7000000001863,
+          "maxMs": 616.5
+        },
+        "edit-warm": {
+          "n": 3,
+          "medianMs": 356,
+          "minMs": 341,
+          "maxMs": 433
+        }
+      },
+      "errors": [],
+      "remote": [],
+      "artifact": "evidence/documentary-cold-before",
+      "source": "5a49cc51ba4d37ef4300e6404c0c989d22d10425"
+    },
+    "after": {
+      "environment": {
+        "browserVersion": "Chrome/153.0.8010.53",
+        "width": 390,
+        "cpuRate": 6,
+        "buildDir": "C:\\Users\\mrspa\\AppData\\Local\\Temp\\laffinee-hop-qa-recipe-open-final-check",
+        "sampleCount": 3,
+        "profiling": false,
+        "directOpening": true,
+        "cache": "Fresh context per iteration; first recipe visit then reopen in the same session. Reading preparation from the list is part of the implementation, not a precondition added by the harness. Local HTTP, external network blocked.",
+        "method": "Trusted pointerdown (click fallback); expected full content and controls then two rAF. CPU emulation, not physical Android."
+      },
+      "phases": {
+        "open-cold": {
+          "n": 3,
+          "medianMs": 280.29999999981374,
+          "minMs": 279,
+          "maxMs": 296.1999999997206
+        },
+        "first-grain": {
+          "n": 3,
+          "medianMs": 40.09999999962747,
+          "minMs": 36.3000000002794,
+          "maxMs": 40.10000000009313
+        },
+        "first-aroma": {
+          "n": 3,
+          "medianMs": 136.39999999990687,
+          "minMs": 120.6999999997206,
+          "maxMs": 136.60000000009313
+        },
+        "first-advanced": {
+          "n": 3,
+          "medianMs": 200.60000000009313,
+          "minMs": 194.6999999997206,
+          "maxMs": 205.70000000018626
+        },
+        "edit-cold": {
+          "n": 3,
+          "medianMs": 797.7999999998137,
+          "minMs": 793.3000000002794,
+          "maxMs": 810.3999999999069
+        },
+        "open-warm": {
+          "n": 3,
+          "medianMs": 190.10000000009313,
+          "minMs": 183.20000000018626,
+          "maxMs": 303.89999999990687
+        },
+        "edit-warm": {
+          "n": 3,
+          "medianMs": 271.3000000002794,
+          "minMs": 269.60000000009313,
+          "maxMs": 345.20000000018626
+        }
+      },
+      "errors": [],
+      "remote": [],
+      "artifact": "evidence/documentary-cold-verified",
+      "source": "c2891156bcf946e0457fbe68f38bd8eadfb5aff1"
+    },
+    "method": "3 fresh contexts per version. No QA guidePredictionKnowledge, no installed variety catalogue, no personal knowledge; fixtures injected directly in repo, no recipe-save enrichment. Same first direct click and full-content/two-frame predicate. CPU6 on PC, not physical Android."
+  }
+}

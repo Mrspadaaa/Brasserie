@@ -24,11 +24,12 @@ describe('Routage IA de la recette levure', () => {
     expect(data.alternatives).toEqual(data.recipeDesign.alternatives);
     expect(data.recipeDesign.style.comparisonFamily).toBe('weissbier'); expect(JSON.stringify(c)).toBe(before);
   });
-  it('rejects banana as a lager goal without yielding taste-first legacy guides or replacing the style', () => {
+  it('accepts banana as an explicit lager wish without claiming a documented fruity result or replacing the style', () => {
     const c = context(); c.recipe = { ...c.recipe!, style: 'Helles Lager', yeastDesign: undefined,
       yeast: { name: 'Diamond', hopIndexId: 'lalbrew-diamond', form: 'sèche', qty: 20, unit: 'g' } };
     const data = runBrewerTool('fermentation_advice', { goal: 'banana' }, c).data as any;
-    expect(data.recipeDesign.request.goal.status).toBe('rejected'); expect(data.guides).toEqual([]); expect(data.levers).toEqual([]);
+    expect(data.recipeDesign.request.goal.status).toBe('accepted'); expect(data.guides).toEqual([]); expect(data.levers).toEqual([]);
+    expect(data.recipeDesign.analysis).toMatchObject({ goal: 'banana', goalOrigin: 'explicit-request' });
     expect(data.recipeDesign.style.comparisonFamily).toBe('lager');
   });
   it('does not label the recipe OG as a measurement or explicit scenario input', () => {

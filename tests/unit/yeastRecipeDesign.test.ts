@@ -5,8 +5,8 @@ import references from '../../src/data/yeastRecipeReferences.json';
 import { YEAST_RECIPE_PROFILES } from '../../src/data/yeastRecipeProfiles';
 import {
   applyYeastRecipeDesign, calculateYeastCellRequirement, completeYeastRecipeDesignApplication, createYeastRecipeDraft, evaluateYeastRecipeDesign,
-  inferYeastRecipeStyle, proposeYeastGoalSettings, readYeastRecipeDesign, yeastRecipeCandidates, yeastRecipeDesignChanged, yeastRecipeHopSummary,
-  type YeastRecipeDraft, type YeastStyleId
+  classifyYeastRecipeDesignChange, inferYeastRecipeStyle, proposeYeastGoalSettings, readYeastRecipeDesign, yeastRecipeCandidates, yeastRecipeDesignChanged, yeastRecipeHopSummary,
+  yeastRecipeProgramme, yeastRecipeProgrammeIssues, type YeastRecipeDraft, type YeastStyleId
 } from '../../src/domain/yeastRecipeDesign';
 import { fullRecipe } from '../fixtures/fullRecipe';
 import { completeFromLocalReferences } from '../../src/domain/localIngredientFacts';
@@ -25,7 +25,8 @@ const recipe = (id = 'wyeast-3068') => ({ ...structuredClone(fullRecipe), name: 
   ], hops: [], fermentables: [{ name: 'Blé', kind: 'grain' as const, use: 'empatage' as const, weightKg: 5 }],
   mash: { ratioLPerKg: 3, spargeTempC: 76, steps: [{ name: 'Saccharification', tempC: 66, durationMin: 60 }, { name: 'Mash-out', tempC: 76, durationMin: 10 }] }
 });
-const draft = (r = recipe(), patch: Partial<YeastRecipeDraft> = {}) => ({ ...createYeastRecipeDraft(r, refs), ...patch });
+const draft = (r = recipe(), patch: Partial<YeastRecipeDraft> = {}) => ({ ...createYeastRecipeDraft(r, refs), ...patch,
+  ...(patch.goal !== undefined && patch.goalExplicit === undefined ? { goalExplicit: true } : {}) });
 
 describe('Choisir une levure par le style, puis par une raison documentée', () => {
   it('livre des références traçables, uniques et validées sans fusion entre laboratoires', () => {
@@ -79,12 +80,15 @@ describe('Choisir une levure par le style, puis par une raison documentée', () 
     expect(bavarian.evidence.goalMatches.some(m => m.goal === 'fruit')).toBe(true);
   });
   it('montre sur la candidate 1056 les mêmes faits Beer que le dossier, sans inventer IPA ni forme', () => {
-    const reference = yeastReferences([]).find(y => y.id === 'wyeast-1056')!;
+    const reference = structuredClone(yeastReferences([]).find(y => y.id === 'wyeast-1056')!);
     const beerTemperature = reference.catalogue!.facts.find(f => f.key === 'temperature' && f.context === 'Beer')!;
     const beerAttenuation = reference.catalogue!.facts.find(f => f.key === 'attenuation' && f.context === 'Beer')!;
+    const secondTemperatureSource = { ...beerTemperature.source, title: 'Source recoupée', reference: 'https://example.test/wyeast-1056/temperature' };
+    reference.catalogue!.facts.push({ ...beerTemperature, source: secondTemperatureSource });
     const candidate = yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20, { includeOtherStyles: true })[0];
-    expect(candidate.temperature).toEqual({ range: { min: 16, max: 22 }, source: beerTemperature.source });
-    expect(candidate.attenuation).toEqual({ range: { min: 73, max: 77 }, source: beerAttenuation.source });
+    expect(candidate.temperature).toEqual({ range: { min: 16, max: 22 }, qualifier: 'range', sources: [beerTemperature.source, secondTemperatureSource], source: beerTemperature.source });
+    expect(candidate.sources.map(source => source.reference)).toContain(secondTemperatureSource.reference);
+    expect(candidate.attenuation).toEqual({ range: { min: 73, max: 77 }, qualifier: 'range', sources: [beerAttenuation.source], basis: 'declared', source: beerAttenuation.source });
     expect(candidate.styleMatch).not.toBe('documented');
     expect(candidate.form).toBeUndefined();
     expect(yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20)).toEqual([]);
@@ -101,6 +105,35 @@ describe('Choisir une levure par le style, puis par une raison documentée', () 
     reference.catalogue!.facts = reference.catalogue!.facts.filter(f => f.context === 'Mead');
     expect(candidate().temperature).toBeUndefined();
     expect(candidate().attenuation).toBeUndefined();
+  });
+  it.each([
+    { key: 'temperature' as const, qualifier: 'greaterThan' as const, reported: '> 22 °C' },
+    { key: 'temperature' as const, qualifier: 'lessThan' as const, reported: '< 22 °C' },
+    { key: 'attenuation' as const, qualifier: 'atLeast' as const, reported: '≥ 80 %' },
+    { key: 'attenuation' as const, qualifier: 'upTo' as const, reported: '≤ 80 %' },
+  ])('transmet $qualifier sans le réduire à une plage dans la fiche candidate', ({ key, qualifier, reported }) => {
+    const reference = structuredClone(yeastReferences([]).find(y => y.id === 'wyeast-1056')!);
+    reference.catalogue!.facts = reference.catalogue!.facts.filter(f => f.key !== key || f.context !== 'Beer');
+    const fact = structuredClone(yeastReferences([]).find(y => y.id === 'wyeast-1056')!.catalogue!.facts.find(f => f.key === key && f.context === 'Beer')!);
+    fact.qualifier = qualifier; fact.reported = reported; fact.range = { min: 80, max: 80 };
+    reference.catalogue!.facts.push(fact);
+    const candidate = yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20, { includeOtherStyles: true })[0];
+    const measurement = key === 'temperature' ? candidate.temperature : candidate.attenuation;
+    expect(measurement).toMatchObject({ qualifier, range: { min: 80, max: 80 }, source: fact.source });
+    expect(measurement?.sources).toEqual([fact.source]);
+  });
+  it('ne convertit pas une borne de température en plage de conduite appliquée', () => {
+    const reference = structuredClone(yeastReferences([]).find(row => row.id === 'wyeast-1056')!);
+    const sourceFact = reference.catalogue!.facts.find(f => f.key === 'temperature' && f.context === 'Beer')!;
+    reference.catalogue!.facts = reference.catalogue!.facts.filter(f => f !== sourceFact);
+    reference.catalogue!.facts.push({ ...sourceFact, qualifier: 'greaterThan', reported: '> 18 °C', range: { min: 18, max: 18 } });
+    const base = recipe('wyeast-3068'), recipeWithBound = { ...base, style: 'American Wheat' };
+    const selectedRefs = [...refs.filter(row => row.id !== reference.id), reference];
+    const selected = createYeastRecipeDraft(recipeWithBound, selectedRefs, 'clean-ale', reference.id);
+    const applied = applyYeastRecipeDesign(recipeWithBound, selected, selectedRefs, 'strain');
+    expect(applied.yeast.fermTempMinC).toBeUndefined();
+    expect(applied.yeast.fermTempMaxC).toBeUndefined();
+    expect(applied.yeast.technicalFacts?.some(f => f.key === 'temperature' && f.qualifier === 'greaterThan')).toBe(true);
   });
 });
 
@@ -199,9 +232,54 @@ describe('Simulations bornées par les données réelles', () => {
     expect(clove.rationale).toContain('Ni durée de repos optimale ni hausse de 4-VG démontrée');
     expect(proposeYeastGoalSettings(recipe('fermentis-us05'), draft(recipe('fermentis-us05'), { goal: 'banana' }), refs)?.patch).toEqual({});
   });
+  it('propose le repos férulique par capacité, céréales et empâtage, sans dépendre du style, du nom ni de l’ordre des références', () => {
+    const current = recipe('wyeast-3068'), currentDraft = draft(current, { goal: 'clove', styleId: 'weissbier' });
+    const first = proposeYeastGoalSettings(current, currentDraft, refs)!;
+    const renamedRef = { ...structuredClone(ref('wyeast-3068')), name: 'Culture renommée, même identité documentaire' };
+    const reorderedRefs = [...refs.filter(row => row.id !== renamedRef.id), renamedRef].reverse();
+    const renamedRecipe = { ...current, name: 'Bière de garde personnelle', style: 'Style maison',
+      yeast: { ...current.yeast, name: 'Souche locale renommée', hopIndexId: renamedRef.id },
+      fermentables: current.fermentables.map(f => ({ ...f, name: 'Orge maltée' })) };
+    const renamedDraft = draft(renamedRecipe, { goal: 'clove', styleId: 'unknown' });
+    const renamed = proposeYeastGoalSettings(renamedRecipe, renamedDraft, reorderedRefs)!;
+    expect(first.patch).toMatchObject({ ferulicRest: true, temperatureC: 18 });
+    expect(first.patch.programme).toBeUndefined();
+    expect(renamed.patch).toEqual(first.patch);
+    expect(renamed.reasons.join(' ')).toContain('céréale prévue à l’empâtage');
+  });
+  it('ne prépare pas de repos férulique sans grain au mash ou sans capacité POF documentée', () => {
+    const withNoMashGrain = { ...recipe('wyeast-3068'), style: 'Style libre', fermentables: [] };
+    const missingWortContext = proposeYeastGoalSettings(withNoMashGrain, draft(withNoMashGrain, { goal: 'clove', styleId: 'unknown' }), refs)!;
+    expect(missingWortContext.patch.ferulicRest).toBeUndefined();
+    expect(missingWortContext.reasons.join(' ')).toContain('Aucun fermentescible grain');
+
+    const noPof = recipe('fermentis-us05');
+    expect(proposeYeastGoalSettings(noPof, draft(noPof, { goal: 'clove', styleId: 'unknown' }), refs)?.patch.ferulicRest).toBeUndefined();
+  });
+  it('ne propose pas de réglage depuis un objectif par défaut non exprimé', () => {
+    const r = recipe(), d = createYeastRecipeDraft(r, refs);
+    const proposal = proposeYeastGoalSettings(r, d, refs)!;
+    expect(d.goalExplicit).toBe(false);
+    expect(proposal).toMatchObject({ patch: {}, outcome: 'insufficient-data' });
+    expect(proposal.reasons.join(' ')).toContain('Aucun objectif de conduite n’a été exprimé');
+  });
+  it('corrige une consigne hors plage par le déplacement minimal quand aucun guide ne donne de réglage', () => {
+    const reference = structuredClone(ref('wyeast-3068'));
+    reference.id = 'synthetic-z9-no-guide'; reference.name = 'Culture synthétique Z9';
+    reference.catalogue!.facts = [structuredClone(reference.catalogue!.facts.find(f => f.key === 'temperature' && f.context === 'Beer')!)];
+    reference.catalogue!.facts[0].reported = '18–24 °C'; reference.catalogue!.facts[0].range = { min: 18, max: 24 };
+    const r = recipe();
+    const proposal = (temperatureC: number) => proposeYeastGoalSettings(r, {
+      ...createYeastRecipeDraft(r, [reference], 'unknown', reference.id), goal: 'clean', goalExplicit: true, temperatureC,
+    }, [reference])!;
+    expect(proposal(17)).toMatchObject({ patch: { temperatureC: 18 }, outcome: 'proposed' });
+    expect(proposal(17).reasons.join(' ')).toContain('déplacement minimal');
+    expect(proposal(17).rationale).toContain('pas un optimum aromatique');
+    expect(proposal(30)).toMatchObject({ patch: { temperatureC: 24 }, outcome: 'proposed' });
+  });
   it('bloque les valeurs invalides et signale les choix explicites hors fenêtre', () => {
     const r = recipe();
-    for (const patch of [{ temperatureC: 61 }, { pitchTempC: -1 }, { days: 0 }, { days: -2 }, { pressureBar: -1 }, { quantityG: 15 }, { temperatureC: NaN }]) {
+    for (const patch of [{ temperatureC: 61 }, { pitchTempC: -1 }, { days: -2 }, { pressureBar: -1 }, { quantityG: 15 }, { temperatureC: NaN }]) {
       const d = draft(r, patch); expect(evaluateYeastRecipeDesign(r, d, refs).errors.length).toBeGreaterThan(0);
       expect(() => applyYeastRecipeDesign(r, d, refs)).toThrow();
     }
@@ -218,6 +296,22 @@ describe('Simulations bornées par les données réelles', () => {
       expect(preview.warnings.join(' ')).toContain('hors de la plage de conduite retenue (18–26 °C)');
       expect(applyYeastRecipeDesign(clean, d, refs).fermentation![0].tempC).toBe(temperatureC);
     }
+  });
+  it('relie une culture sans nom à son contrôle et conserve la chaîne errors existante', () => {
+    const r = recipe(), message = 'Chaque culture exige un nom et un rôle explicites.';
+    const result = evaluateYeastRecipeDesign(r, draft(r, { process: 'mixed-culture', cultureRoles: [{ name: '', role: 'mixed' }] }), refs);
+    expect(result.errors).toEqual([message]);
+    expect(result.problems).toEqual([{ code: 'cultureRoles.name', message, section: 'preparation', property: 'cultureRoles', index: 0, field: 'name' }]);
+  });
+  it('cible aussi les contrôles de pression et de viabilité sans parser les messages', () => {
+    const r = recipe(), result = evaluateYeastRecipeDesign(r, draft(r, { pressureBar: -0.1, viableCellsBillion: -1 }), refs);
+    expect(result.errors).toEqual([
+      'La pression en fermentation doit être positive ou nulle, en bar relatif.',
+      'Cellules viables : saisis une valeur positive ou nulle.',
+    ]);
+    expect(result.problems.map(({ section, property }) => [section, property])).toEqual([
+      ['preparation', 'pressureBar'], ['pitch', 'viableCellsBillion'],
+    ]);
   });
 });
 
@@ -257,6 +351,27 @@ describe('Houblons : les vrais ajouts et leur contexte biologique', () => {
 });
 
 describe('Application explicite et traçabilité de l’intention', () => {
+  it('distingue objectif facultatif et objectif seul enregistré sans changer les paliers', () => {
+    const original = recipe(), initial = createYeastRecipeDraft(original, refs);
+    expect(initial.goal).toBe('balanced');
+    expect(initial.goalExplicit).toBe(false);
+    const withoutGoal = applyYeastRecipeDesign(original, initial, refs);
+    expect(readYeastRecipeDesign(withoutGoal)?.goalExplicit).toBe(false);
+    expect(createYeastRecipeDraft(withoutGoal, refs).goalExplicit).toBe(false);
+
+    const withGoal = applyYeastRecipeDesign(withoutGoal, { ...createYeastRecipeDraft(withoutGoal, refs), goal: 'banana', goalExplicit: true }, refs);
+    expect(withGoal.fermentation).toEqual(original.fermentation);
+    expect(readYeastRecipeDesign(withGoal)).toMatchObject({ goal: 'banana', goalExplicit: true });
+    expect(createYeastRecipeDraft(withGoal, refs)).toMatchObject({ goal: 'banana', goalExplicit: true });
+    const withdrawn = applyYeastRecipeDesign(withGoal, { ...createYeastRecipeDraft(withGoal, refs), goal: 'banana', goalExplicit: false }, refs);
+    expect(readYeastRecipeDesign(withdrawn)).toMatchObject({ goal: 'banana', goalExplicit: false });
+    expect(createYeastRecipeDraft(withdrawn, refs).goalExplicit).toBe(false);
+  });
+  it('relit les snapshots qui conservent une sélection documentaire explicitement inconnue', () => {
+    const r = recipe(); r.yeast.technicalSelections = { flocculation: null };
+    const saved = applyYeastRecipeDesign(r, createYeastRecipeDraft(r, refs), refs);
+    expect(readYeastRecipeDesign(saved)?.applied.yeast.technicalSelections?.flocculation).toBeNull();
+  });
   it('change la souche sans transporter les faits de stock et garde intact le reste de la recette', () => {
     const r = { ...recipe('fermentis-us05'), yeast: { ...recipe('fermentis-us05').yeast, stockItemRef: 'stock', qty: 20, attenuationPct: 80, notes: 'Mon lot US-05', fermentDays: 14 },
       hopPredictionIds: ['old'], hopMatrixId: 'old', hopTrialId: 'old' };
@@ -270,6 +385,18 @@ describe('Application explicite et traçabilité de l’intention', () => {
     expect(next.waterPlan).toEqual(r.waterPlan); expect(next.fermentables).toEqual(r.fermentables); expect(next.steps).toEqual(r.steps);
     expect(next.fgTarget).toBe(r.fgTarget); expect(next.abvTarget).toBe(r.abvTarget); expect(r).toEqual(before);
   });
+  it('ne reprend pas une masse sèche quand la nouvelle culture R42 a une forme inconnue', () => {
+    const old = recipe('fermentis-us05'); old.yeast.qty = 20; old.yeast.unit = 'g';
+    const unknown: YeastReference = { ...structuredClone(ref('wyeast-3068')), id: 'qa-culture-r42', name: 'Culture personnelle R42', form: undefined };
+    const localRefs = [...refs, unknown];
+    const trial = createYeastRecipeDraft(old, localRefs, undefined, unknown.id);
+    expect(trial.form).toBeUndefined(); expect(trial.quantityG).toBeUndefined();
+    expect(() => applyYeastRecipeDesign(old, { ...trial, quantityG: 10 }, localRefs)).toThrow('forme confirmée');
+    const unconfirmed = applyYeastRecipeDesign(old, trial, localRefs);
+    expect(unconfirmed.yeast.form).toBeUndefined(); expect(unconfirmed.yeast.qty).toBeUndefined();
+    const confirmed = applyYeastRecipeDesign(old, { ...trial, form: 'sèche', formYeastId: unknown.id, quantityG: 10 }, localRefs);
+    expect(confirmed.yeast).toMatchObject({ form: 'sèche', qty: 10, unit: 'g' });
+  });
   it('modifie la première phase sans détruire rampes, ajouts, repos ou garde', () => {
     const r = recipe(), next = applyYeastRecipeDesign(r, draft(r, { temperatureC: 22, days: 9 }), refs);
     expect(next.fermentation?.[0]).toEqual({ ...r.fermentation[0], tempC: 22, days: 9 });
@@ -281,7 +408,39 @@ describe('Application explicite et traçabilité de l’intention', () => {
     expect(d.days).toBeUndefined(); expect(d.temperatureC).toBeUndefined();
     expect(applyYeastRecipeDesign(r, d, refs).fermentation).toEqual([]);
     expect(() => applyYeastRecipeDesign(r, { ...d, temperatureC: 20 }, refs)).toThrow('température et sa durée');
+    expect(() => applyYeastRecipeDesign(r, { ...d, temperatureC: 20, days: 0 }, refs)).toThrow('température et sa durée');
     expect(applyYeastRecipeDesign(r, { ...d, temperatureC: 20, days: 5 }, refs).fermentation?.[0]).toMatchObject({ kind: 'primaire', tempC: 20, days: 5 });
+  });
+  it('conserve la primaire à 0 j explicitement saisie lors d’une autre correction sans l’assimiler à inconnu', () => {
+    const r = recipe(); r.fermentation[0].days = 0;
+    const d = createYeastRecipeDraft(r, refs);
+    expect(d.days).toBe(0);
+    const programme = r.fermentation.map((phase, index) => index === 1 ? { ...phase, tempC: 5 } : { ...phase });
+    const applied = applyYeastRecipeDesign(r, { ...d, programme }, refs);
+    expect(applied.fermentation?.[0].days).toBe(0);
+    expect(applied.fermentation?.[1].tempC).toBe(5);
+  });
+  it('garde les inconnues locales visibles et bloque un programme incomplet sans réutiliser la recette', () => {
+    const r = recipe(), d = createYeastRecipeDraft(r, refs);
+    const incomplete: YeastRecipeDraft['programme'] = [
+      { ...r.fermentation[0], days: undefined }, ...r.fermentation.slice(1).map(phase => ({ ...phase }))
+    ];
+    const draftWithUnknown = { ...d, programme: incomplete };
+    const preview = evaluateYeastRecipeDesign(r, draftWithUnknown, refs);
+    expect(preview.errors.join(' ')).toContain('Programme incomplet');
+    expect(preview.errors).toEqual(['Programme incomplet : chaque phase exige un nom, une température et une durée valides, avec une primaire.']);
+    expect(preview.problems).toContainEqual(expect.objectContaining({ section: 'programme', property: 'programme', index: 0, field: 'days' }));
+    expect(preview.changes.find(change => change.id === 'programme-0')?.after).toContain('Inconnu j');
+    expect(preview.changes.find(change => change.id === 'programme-total')?.after).toBe('Durée totale inconnue');
+    expect(yeastRecipeProgrammeIssues(incomplete).some(issue => issue.field === 'days' && issue.phaseIndex === 0)).toBe(true);
+    expect(() => applyYeastRecipeDesign(r, draftWithUnknown, refs)).toThrow('Programme incomplet');
+
+    const withoutPrimary: YeastRecipeDraft = { ...d, temperatureC: 20, days: 7, programme: [{ ...r.fermentation.at(-1)! }] };
+    expect(yeastRecipeProgramme(r, withoutPrimary).map(phase => phase.kind)).toEqual(['garde']);
+    const noPrimaryPreview = evaluateYeastRecipeDesign(r, withoutPrimary, refs);
+    expect(noPrimaryPreview.changes.find(change => change.id === 'programme-validity')?.after).toContain('primaire absente');
+    expect(noPrimaryPreview.changes.some(change => change.id === 'programme-removed-0')).toBe(true);
+    expect(() => applyYeastRecipeDesign(r, withoutPrimary, refs)).toThrow('Programme incomplet');
   });
   it('insère une seule proposition de repos avant l’empâtage et préserve le traitement d’eau', () => {
     const r = recipe(), d = draft(r, { ferulicRest: true, goal: 'clove' });
@@ -299,6 +458,8 @@ describe('Application explicite et traçabilité de l’intention', () => {
     expect(() => applyYeastRecipeDesign(misplaced, draft(misplaced, { ferulicRest: true }), refs)).toThrow('après la chauffe');
     const neutral = recipe('fermentis-us05');
     expect(() => applyYeastRecipeDesign(neutral, draft(neutral, { ferulicRest: true }), refs)).toThrow('capacité phénolique');
+    const withoutMashGrain = { ...r, fermentables: [] };
+    expect(() => applyYeastRecipeDesign(withoutMashGrain, draft(withoutMashGrain, { ferulicRest: true }), refs)).toThrow('fermentescible grain');
   });
   it('respecte le mode souche seule malgré des réglages de scénario différents', () => {
     const r = recipe(), next = applyYeastRecipeDesign(r, draft(r, { yeastId: 'lallemand-munich-classic', temperatureC: 24, days: 15, quantityG: 18, ferulicRest: true }), refs, 'strain');
@@ -331,8 +492,10 @@ describe('Application explicite et traçabilité de l’intention', () => {
     const enriched = completeFromLocalReferences(proposal.fermentables, proposal.hops, proposal.yeast, [], []).yeast;
     expect(proposal.yeast.fermentationFacts).toBeUndefined();
     expect(enriched.fermentationFacts?.pitchGL).toEqual({ min: 0.5, max: 0.8 });
-    // Negative control: the old post-render completion produced the false warning.
-    expect(yeastRecipeDesignChanged({ ...proposal, yeast: enriched }, readYeastRecipeDesign(proposal)!)).toBe(true);
+    // Strict stale remains true; the separate display classifier calls this documentary enrichment.
+    const enrichedProposal = { ...proposal, yeast: enriched }, snapshot = readYeastRecipeDesign(proposal)!;
+    expect(yeastRecipeDesignChanged(enrichedProposal, snapshot)).toBe(true);
+    expect(classifyYeastRecipeDesignChange(enrichedProposal, snapshot)).toBe('documentary');
     const accepted = completeYeastRecipeDesignApplication(proposal, enriched);
     expect(accepted.yeastDesign!.applied.yeast).toEqual(accepted.yeast);
     expect(accepted.yeast.qty).toBe(mode === 'settings' ? 20 : undefined);
@@ -345,6 +508,61 @@ describe('Application explicite et traçabilité de l’intention', () => {
     accepted.yeast.qty = 25;
     expect(accepted.yeastDesign!.applied.yeast.qty).toBe(mode === 'settings' ? 20 : undefined);
     expect(yeastRecipeDesignChanged(accepted, readYeastRecipeDesign(accepted)!)).toBe(true);
+  });
+  it('classe les faits fabricant ajoutés à la Wyeast 3068 comme documentaires et conserve les phases', () => {
+    const original = recipe('wyeast-3068');
+    const programme = original.fermentation.map((phase, index) => index === 0 ? { ...phase, tempC: 22, days: 10 } : { ...phase });
+    const proposal = applyYeastRecipeDesign(original, draft(original, { temperatureC: 22, days: 10, programme }), refs);
+    const snapshot = readYeastRecipeDesign(proposal)!;
+    const source = 'https://wyeastlab.com/product/weihenstephan-weizen/';
+    const enriched = { ...proposal, yeast: { ...proposal.yeast, lab: 'Wyeast', strain: '3068', fermTempMinC: 18, fermTempMaxC: 24,
+      flocculation: 'Low', technicalSource: source, technicalFacts: [
+        { key: 'temperature' as const, reported: '64–75°F (18–24°C)', range: { min: 18, max: 24 }, unit: '°C', qualifier: 'range' as const,
+          origin: 'manufacturer' as const, source, sourceUrl: source, context: 'Beer' },
+        { key: 'flocculation' as const, reported: 'Low', origin: 'manufacturer' as const, source, sourceUrl: source, context: 'Beer' }
+      ] } };
+    expect(enriched.yeast.hopIndexId).toBe(snapshot.yeastId);
+    expect(yeastRecipeDesignChanged(enriched, snapshot)).toBe(true);
+    expect(classifyYeastRecipeDesignChange(enriched, snapshot)).toBe('documentary');
+    expect(enriched.fermentation).toEqual(snapshot.applied.fermentation);
+    expect(snapshot.programme).toEqual(snapshot.applied.fermentation);
+  });
+  it('garde la qualification réglages pour dose, phase et hypothèses recipe/measured', () => {
+    const original = recipe(), applied = applyYeastRecipeDesign(original, draft(original), refs), snapshot = readYeastRecipeDesign(applied)!;
+    const changes: [string, (current: Recipe) => void][] = [
+      ['quantité', current => { current.yeast.qty = 125; }],
+      ['température de phase', current => { current.fermentation[0].tempC = 22; }],
+      ['hypothèse recipe', current => { current.yeast.attenuationPct = 74; current.yeast.attenuationBasis = 'recipe'; }],
+      ['mesure', current => { current.yeast.attenuationPct = 74; current.yeast.attenuationBasis = 'measured'; }]
+    ];
+    for (const [label, modify] of changes) {
+      const current = structuredClone(applied) as Recipe;
+      modify(current);
+      expect(yeastRecipeDesignChanged(current, snapshot), label).toBe(true);
+      expect(classifyYeastRecipeDesignChange(current, snapshot), label).toBe('settings');
+    }
+  });
+  it('signale les valeurs personnelles inconnues et les sources contradictoires comme changements documentaires', () => {
+    const applied = applyYeastRecipeDesign(recipe(), draft(recipe()), refs), snapshot = readYeastRecipeDesign(applied)!;
+    const unknown = { ...applied, yeast: { ...applied.yeast, technicalSelections: { flocculation: null } } };
+    expect(yeastRecipeDesignChanged(unknown, snapshot)).toBe(true);
+    expect(classifyYeastRecipeDesignChange(unknown, snapshot)).toBe('documentary');
+
+    const observations: NonNullable<Recipe['yeast']['technicalFacts']> = [
+      { key: 'temperature', reported: '18–24 °C', range: { min: 18, max: 24 }, unit: '°C', qualifier: 'range', origin: 'manufacturer', source: 'Fiche fabricant A' },
+      { key: 'temperature', reported: '20–25 °C', range: { min: 20, max: 25 }, unit: '°C', qualifier: 'range', origin: 'personal', source: 'Correction du brasseur' }
+    ];
+    const conflict = { ...applied, yeast: { ...applied.yeast, technicalFacts: observations } };
+    expect(yeastRecipeDesignChanged(conflict, snapshot)).toBe(true);
+    expect(classifyYeastRecipeDesignChange(conflict, snapshot)).toBe('documentary');
+  });
+  it.each(['lab', 'strain'] as const)('reste conservateur lorsqu’un %s déjà connu change', field => {
+    const original = recipe(), withKnownValue = { ...original, yeast: { ...original.yeast, [field]: field === 'lab' ? 'Wyeast' : '3068' } };
+    const applied = applyYeastRecipeDesign(withKnownValue, draft(withKnownValue), refs), snapshot = readYeastRecipeDesign(applied)!;
+    const current = structuredClone(applied) as Recipe;
+    current.yeast[field] = 'Autre';
+    expect(yeastRecipeDesignChanged(current, snapshot)).toBe(true);
+    expect(classifyYeastRecipeDesignChange(current, snapshot)).toBe('settings');
   });
   it.each<[string, (r: Recipe) => void]>([
     ['dose', r => { r.yeast.qty = 25; }],

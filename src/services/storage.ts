@@ -329,6 +329,18 @@ function clean<T>(docs: any[]): T[] {
   return docs.map(({ __docId, ...rest }) => rest as T);
 }
 
+// Readers share a snapshot until the repository replaces, adds or removes a
+// document. Local writes can replace a row in the same repository array.
+const catalogueSnapshots = new Map<CollectionName, { rows: unknown[]; value: unknown[] }>();
+function readCatalogueSnapshot<T>(name: CollectionName): T[] {
+  const rows = FirestoreRepo.all(name), previous = catalogueSnapshots.get(name);
+  if (previous && rows.length === previous.rows.length &&
+    rows.every((row, index) => row === previous.rows[index])) return previous.value as T[];
+  const value = clean<T>(rows);
+  catalogueSnapshots.set(name, { rows: [...rows], value });
+  return value;
+}
+
 /**
  * Motifs d'une correction d'inventaire. Obligatoire : un écart sans raison
  * n'apprend rien, et c'est justement l'écart qui est l'information.
@@ -382,6 +394,7 @@ export const StorageService = {
 
   /** Coupe la synchronisation Firestore (déconnexion). */
   clearMemoryCache(): void {
+    catalogueSnapshots.clear();
     stopRecipeYeastReferencesQueue();
     FirestoreRepo.stopSync();
     Object.keys(localCache).forEach((k) => delete localCache[k]);
@@ -564,12 +577,14 @@ export const StorageService = {
 
   // Documentary hop index. Upserts never replace a filtered collection or copy inherited facts.
   getHopVarieties(): HopVariety[] {
-    return clean<HopVariety>(FirestoreRepo.all('hopVarieties'));
+    return readCatalogueSnapshot<HopVariety>('hopVarieties');
   },
   getHopLots(): HopLot[] {
-    return clean<HopLot>(FirestoreRepo.all('hopLots'));
+    return readCatalogueSnapshot<HopLot>('hopLots');
   },
-  getHopKnowledge(): HopKnowledge[] { return clean<HopKnowledge>(FirestoreRepo.all('hopKnowledge')); },
+  getHopKnowledge(): HopKnowledge[] {
+    return readCatalogueSnapshot<HopKnowledge>('hopKnowledge');
+  },
   getHopPredictions(): HopPredictionSnapshot[] { return clean<HopPredictionSnapshot>(FirestoreRepo.all('hopPredictions')); },
   getHopTastings(): HopTasting[] { return clean<HopTasting>(FirestoreRepo.all('hopTastings')); },
   saveHopKnowledge(item: HopKnowledge): void {

@@ -83,7 +83,7 @@ describe('Sauvegardes : préparation et restauration explicites', () => {
     await waitFor(() => expect(screen.getByText(/Restauration confirmée : 173 éléments/)).toBeInTheDocument());
     expect(screen.getByText(/7 fiches de stock et de production ont conservé leur état actuel/)).toBeInTheDocument();
     expect(api.restoreInspectedBackup.mock.calls[0][0]).toBe(checkedArchive);
-    expect(busy).toHaveBeenLastCalledWith(false);
+    await waitFor(() => expect(busy).toHaveBeenLastCalledWith(false));
     expect(screen.queryByRole('button', { name: 'Confirmer la restauration' })).not.toBeInTheDocument();
   });
 

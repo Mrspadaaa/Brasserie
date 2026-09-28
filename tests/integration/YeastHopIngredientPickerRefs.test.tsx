@@ -43,7 +43,7 @@ describe('Choix de stock dans la recette', () => {
     const onStock = vi.fn();
     render(<YeastIngredientPicker items={[available]} yeast={{ name: '' }} personalChoice
       onStock={onStock} onReference={vi.fn()} onCreate={vi.fn()} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Choisir Levure homonyme, article LOT-3' }));
+    fireEvent.click(screen.getByRole('button', { name: /Choisir Levure homonyme.*article LOT-3/ }));
     expect(onStock).toHaveBeenCalledExactlyOnceWith(available.name, available);
   });
 
