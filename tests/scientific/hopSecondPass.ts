@@ -5,7 +5,7 @@ import yeastPack from '../../src/data/hopYeastBootstrap.json';
 import catalogue from '../../src/data/yeastCatalogueBootstrap.json';
 import conventions from '../../src/data/hopKnowledgeBootstrap.json';
 import extrapolation from '../../src/data/hopExtrapolationBootstrap.json';
-import { benchmarkMetrics, doseBenchmarkData, doseBenchmarkTriplet, fitLine, fitLotTrainingEnvelope, lotPredictionFromTraining, type LotRow } from './hopBenchmark';
+import { benchmarkMetrics, diagnoseLotFromTraining, doseBenchmarkData, doseBenchmarkTriplet, fitLine, fitLotTrainingEnvelope, type LotRow } from './hopBenchmark';
 import { compareHopPredictions, predictHopTriplet, type HopEngineData } from '../../functions/src/hopPredictionCore';
 import { predictHopRecipe, type HopRecipeInput } from '../../functions/src/hopRecipePrediction';
 import type { HopAxis, HopTriplet, HopYeast } from '../../functions/src/hopPredictionSchema';
@@ -24,20 +24,23 @@ export function compareLotEnvelopeMethods() {
   const rows = lotFixture.rows as LotRow[];
   const folds = rows.map((held, i) => {
     const training = rows.filter((_, j) => i !== j);
-    const fitted = fitLotTrainingEnvelope(training);
+    const diagnostic = diagnoseLotFromTraining(training, held[1]);
+    const { fitted, central } = diagnostic;
     const fits = [fitted.complete, ...training.map((_, j) => fitLine(training.filter((__, k) => j !== k)))];
-    const { prediction, central } = lotPredictionFromTraining(training, held[1], held[0]);
-    const boxed = prediction.profile['citrus-lafontaine'].range;
     const joint = extent(fits.map(f => f.intercept + f.slope * held[1]));
     const withResidual = (r: HopRange) => ({ min: Math.max(0, r.min + fitted.residual.min), max: Math.min(15, r.max + fitted.residual.max) });
-    return { id: held[0], observed: held[2], central: boxed ? central : null, boxed,
-      paired: boxed ? withResidual(joint) : null, singleFit: boxed ? withResidual({ min: central, max: central }) : null };
+    const inSupport = diagnostic.range !== null;
+    return { id: held[0], observed: held[2], central: inSupport ? central : null,
+      referenceDiagnostic: diagnostic.range,
+      paired: inSupport ? withResidual(joint) : null,
+      singleFit: inSupport ? withResidual({ min: central, max: central }) : null };
   });
-  return (['boxed', 'paired', 'singleFit'] as const).map(method => ({
-    method, deployed: method === 'boxed', validation: 'internal-nested-leave-one-lot-out', unit: 'panel 0–15',
+  return (['referenceDiagnostic', 'paired', 'singleFit'] as const).map(method => ({
+    method, deployed: false, validation: 'internal-nested-leave-one-lot-out-diagnostic', unit: 'panel 0–15',
     metrics: benchmarkMetrics(folds.map(f => ({ ...f, range: f[method] })), lotFixture.sensoryScale),
     missed: folds.filter(f => f[method] && (f.observed < f[method]!.min || f.observed > f[method]!.max)).map(f => f.id),
-    decision: method === 'boxed' ? 'Maintenu : comparaison sur les mêmes cas.' : 'Non retenu : plages réduites mais couverture empirique dégradée, erreur centrale inchangée.',
+    bounds: 'Enveloppes exploratoires intra-étude, ni IC95% ni validation externe.',
+    decision: method === 'referenceDiagnostic' ? 'Référence descriptive ; LF01 reste suspendu en production.' : 'Non retenu : plages réduites mais couverture empirique dégradée, erreur centrale inchangée.',
   }));
 }
 

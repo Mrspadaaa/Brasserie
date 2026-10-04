@@ -15,6 +15,14 @@ import { startBrewStep, restoreBrewDay } from '../../src/domain/brewDay';
 import { recipe, brewState, malt } from '../fixtures/brewCompanion';
 
 describe('Compagnon de cuve : tâches et horloges', () => {
+  it('keeps the recipe target before pitching but returns an unknown yeast amount after an unmeasured event', () => {
+    const r = recipe(), yeast = brewIngredients(r).find(i => i.id === 'yeast')!;
+    const before = brewState(r);
+    expect(actualAmount(yeast, before)).toBe(yeast.planned);
+    const unmeasured = { ...before, pitchedAt: 10, pitchQuantityConfirmation: 'unmeasured' as const };
+    expect(actualAmount(yeast, unmeasured)).toBeUndefined();
+    expect(actualAmount(yeast, { ...unmeasured, additions: { yeast: { amount: 8, unit: 'g' } } })).toBe(8);
+  });
   it('la seconde extraction ne propose pas de peser une nouvelle fois le malt du brassin source',async()=>{
     const {newNoloConfig}=await import('../../src/domain/nolo');
     const nolo=newNoloConfig();nolo.process='secondRunnings';

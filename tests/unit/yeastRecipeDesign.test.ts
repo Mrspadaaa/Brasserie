@@ -86,9 +86,11 @@ describe('Choisir une levure par le style, puis par une raison documentée', () 
     const secondTemperatureSource = { ...beerTemperature.source, title: 'Source recoupée', reference: 'https://example.test/wyeast-1056/temperature' };
     reference.catalogue!.facts.push({ ...beerTemperature, source: secondTemperatureSource });
     const candidate = yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20, { includeOtherStyles: true })[0];
-    expect(candidate.temperature).toEqual({ range: { min: 16, max: 22 }, qualifier: 'range', sources: [beerTemperature.source, secondTemperatureSource], source: beerTemperature.source });
+    expect(candidate.temperature).toMatchObject({ range: { min: 16, max: 22 }, qualifier: 'range', sources: [beerTemperature.source, secondTemperatureSource], source: beerTemperature.source,
+      fact: { key: 'temperature', reported: beerTemperature.reported, origin: 'manufacturer', context: 'Beer', sourceUrl: beerTemperature.source.reference } });
     expect(candidate.sources.map(source => source.reference)).toContain(secondTemperatureSource.reference);
-    expect(candidate.attenuation).toEqual({ range: { min: 73, max: 77 }, qualifier: 'range', sources: [beerAttenuation.source], basis: 'declared', source: beerAttenuation.source });
+    expect(candidate.attenuation).toMatchObject({ range: { min: 73, max: 77 }, qualifier: 'range', sources: [beerAttenuation.source], basis: 'declared', source: beerAttenuation.source,
+      fact: { key: 'attenuation', reported: beerAttenuation.reported, origin: 'manufacturer', context: 'Beer', sourceUrl: beerAttenuation.source.reference } });
     expect(candidate.styleMatch).not.toBe('documented');
     expect(candidate.form).toBeUndefined();
     expect(yeastRecipeCandidates('clean-ale', 'balanced', [reference], 20)).toEqual([]);

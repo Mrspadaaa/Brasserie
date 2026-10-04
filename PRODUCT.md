@@ -87,6 +87,15 @@ accessible, mais l'entrée sert à trouver une levure, comprendre son effet dans
 la recette, ajuster le procédé et comparer une alternative avant de l'appliquer.
 Le détail de réalisation est dans [la mission Levure](docs/prompts/refonte-levure.md).
 
+Après le choix de souche, le brasseur doit pouvoir définir le résultat recherché,
+préparer ou ajuster sa conduite de fermentation et comprendre les conséquences
+justifiables des réglages. Le programme reste lié aux paliers de la recette,
+avec les mêmes valeurs, une application explicite et un suivi distinct dans le
+brassin. Les conduites spécialisées, dont lager et NOLO, conservent leurs phases,
+paramètres, conditions et bilans propres. Une comparaison de levures réussie ne
+valide pas à elle seule ce parcours ; aucune capacité métier utile ne disparaît
+pour simplifier sa présentation. Un effet non documenté reste incertain.
+
 Privilégier les petits sachets secs (environ 11–12 g, sans imposer un poids unique)
 et petits packs liquides. Classer l'approvisionnement par distribution effective :
 Suisse d'abord, France et Allemagne au même rang ensuite, puis reste de l'Europe.

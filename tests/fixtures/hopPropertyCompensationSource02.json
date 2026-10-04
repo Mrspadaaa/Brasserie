@@ -1,0 +1,178 @@
+{
+  "format": "hop-v55-q10-compensation-request-candidate-v2",
+  "provenance": "Fixture synthétique; réponse de domaine non construite dans ce test.",
+  "sourceReadingReference": "reading-v2-source-fixture",
+  "requestDraftReference": "hop-v55-property-advice-request-draft-v2:sha256:b7267a439dd1a8b204043ce5bf8e872b429b2dd2eb8e42c7241cedcb3c38ba74",
+  "preparedReference": "hop-v55-property-advice-prepared-v2:sha256:596e154a3a48d6b101365a2248b07e738de10ab3aef83cf4f37326600f1e7132",
+  "interpretation": {
+    "id": "interpretation-request-property-v2",
+    "version": "hop-v55-property-advice-reading-v2",
+    "text": "Lecture proposée : Constat rapporté : sucrée; Question à examiner : compenser, reliée au constat rapporté « sucrée ».",
+    "origin": "proposal"
+  },
+  "expectedMeaning": {
+    "observation": "La sucrosité rapportée reste une observation du brasseur, sans valeur mesurée ni demande de baisse chiffrée.",
+    "investigation": "Le fragment exact de compensation est une investigation reliée à cette observation; aucune voie ni amertume n’est présélectionnée.",
+    "contractLimit": "Le schéma reçu ne porte pas de discriminant compensation-versus-recherche-de-cause. Ne pas faire relire le label ou la question par le builder; arbitrage pilote requis."
+  },
+  "requestSnapshot": {
+    "format": "hop-documentary-request-v2",
+    "id": "request-property-v2",
+    "originalQuestion": "Ma pastry stout est trop sucrée, comment compenser ça avec mon houblon ?",
+    "interpretation": {
+      "id": "interpretation-request-property-v2",
+      "version": "hop-v55-property-advice-reading-v2",
+      "text": "Lecture proposée : Constat rapporté : sucrée; Question à examiner : compenser, reliée au constat rapporté « sucrée ».",
+      "origin": "proposal"
+    },
+    "propertyIntents": [
+      {
+        "id": "criterion-source-25-31-sucree",
+        "property": "sweetness",
+        "label": "sucrée",
+        "role": "reportedObservation",
+        "direction": null,
+        "qualification": null,
+        "required": false,
+        "comparisonBasis": {
+          "kind": "current",
+          "assertionIds": []
+        },
+        "metric": "sensory",
+        "subject": {
+          "kind": "beer",
+          "label": "Bière visée",
+          "materialId": null,
+          "sensoryContext": "beer"
+        },
+        "sourceSpans": [
+          {
+            "start": 25,
+            "end": 31,
+            "text": "sucrée"
+          }
+        ],
+        "interpretationOrigin": "proposal",
+        "basis": "Interprétation proposée depuis la lecture structurée; la propriété et le rôle restent corrigibles.",
+        "relatedIntentIds": []
+      },
+      {
+        "id": "criterion-source-41-50-compenser",
+        "property": "sweetness",
+        "label": "compenser",
+        "role": "investigation",
+        "direction": "investigate",
+        "qualification": null,
+        "required": true,
+        "comparisonBasis": {
+          "kind": "none",
+          "assertionIds": []
+        },
+        "metric": "sensory",
+        "subject": {
+          "kind": "beer",
+          "label": "Bière visée",
+          "materialId": null,
+          "sensoryContext": "beer"
+        },
+        "sourceSpans": [
+          {
+            "start": 41,
+            "end": 50,
+            "text": "compenser"
+          }
+        ],
+        "interpretationOrigin": "proposal",
+        "basis": "La demande de compensation reste une investigation reliée au constat source; aucun levier ni résultat de goût n’est choisi.",
+        "relatedIntentIds": [
+          "criterion-source-25-31-sucree"
+        ]
+      }
+    ],
+    "candidatePolicy": {
+      "kind": "explicit",
+      "materialIds": [],
+      "basis": "Aucun candidat n’a été choisi pour cette demande."
+    },
+    "context": {
+      "stage": "planning",
+      "stageBasis": "Stade exact du programme lié au contexte préparé; aucun stade ne vient d’un nom de recette ou d’un scénario futur.",
+      "assertions": [
+        {
+          "id": "context-culture",
+          "subject": "culture",
+          "statement": "Une souche est explicitement liée ou résolue dans cette recette; aucune composition supplémentaire supposée.",
+          "state": "reported",
+          "value": "hop-v55-fixture-culture-neutral",
+          "dimension": "bioInteraction"
+        },
+        {
+          "id": "context-style-intention",
+          "subject": "style.name",
+          "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+          "state": "planned",
+          "value": "Style non renseigné",
+          "source": {
+            "title": "Recette et journal du scénario",
+            "author": "Données enregistrées du brasseur",
+            "year": null,
+            "kind": "observation",
+            "reference": "brewing-scenario-context-recipe-v1:sha256:58ed17fe062bf20b65f846e5dc6994906c4774f9097c1de3f9a9d2fe516b80f2"
+          }
+        },
+        {
+          "id": "context-target-volumeL",
+          "subject": "volumeL",
+          "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+          "state": "planned",
+          "value": 20,
+          "unit": "L",
+          "source": {
+            "title": "Recette et journal du scénario",
+            "author": "Données enregistrées du brasseur",
+            "year": null,
+            "kind": "observation",
+            "reference": "brewing-scenario-context-recipe-v1:sha256:58ed17fe062bf20b65f846e5dc6994906c4774f9097c1de3f9a9d2fe516b80f2"
+          }
+        },
+        {
+          "id": "program-recipe-hop:0",
+          "subject": "recipe-hop:0",
+          "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-planning:recipe-hop:0, boil, planned.",
+          "state": "planned",
+          "value": 40,
+          "unit": "g",
+          "dimension": "process"
+        },
+        {
+          "id": "program-recipe-hop:1",
+          "subject": "recipe-hop:1",
+          "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-planning:recipe-hop:1, fermentation, planned.",
+          "state": "planned",
+          "value": 30,
+          "unit": "g",
+          "dimension": "process"
+        }
+      ],
+      "access": {
+        "bulkBeer": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        },
+        "sampling": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        },
+        "separatePortion": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        }
+      }
+    },
+    "exclusions": [],
+    "materials": []
+  }
+}

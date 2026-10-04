@@ -206,7 +206,7 @@ export function brewIngredients(recipe: RecipeSnapshot): BrewIngredient[] {
   return items;
 }
 export const actualAmount = (i: BrewIngredient, s: BrewDayState) =>
-  s.additions?.[i.id]?.amount ?? i.planned;
+  s.additions?.[i.id]?.amount ?? (i.id === 'yeast' && s.pitchedAt != null ? undefined : i.planned);
 export function effectiveFermentables(recipe: Pick<RecipeSnapshot,'fermentables'>, state: BrewDayState): Fermentable[] {
   return (recipe.fermentables ?? []).map((f, i) => {
     const actual = state.additions?.[`grain-${i}`];
@@ -247,7 +247,7 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
       if (
         i.beforeEndMin != null &&
         state.additions?.[i.id]?.doneAt == null &&
-        actualAmount(i, state) > 0
+        (actualAmount(i, state) ?? i.planned) > 0
       ) {
         const at =
           state.hopElapsedMin?.[i.id] != null
@@ -267,7 +267,7 @@ export function brewAlarms(state: BrewDayState, recipe: RecipeSnapshot): BrewAla
         at,
         stepId: items[0].stepId,
         title: 'Ajout en cuve',
-        body: items.map((i) => `${actualAmount(i, state)} ${i.unit} ${i.name}`).join(' · ')
+        body: items.map((i) => `${actualAmount(i, state) ?? i.planned} ${i.unit} ${i.name}`).join(' · ')
       });
     alarms.push({
       id: 'boil-end',
@@ -367,11 +367,11 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
     const doses = Object.fromEntries(
       ingredients
         .filter((i) => i.kind === 'salt' && i.side === side)
-        .map((i) => [i.salt, actualAmount(i, s)])
+        .map((i) => [i.salt, actualAmount(i, s) ?? i.planned])
     );
     let ions = addIons(start, ionsFromSalts(doses, litres));
     const acid = ingredients.find((i) => i.kind === 'acid' && i.side === side);
-    if (acid) ions = ionsAfterAcid(ions, actualAmount(acid, s), acid.acid!, litres);
+    if (acid) ions = ionsAfterAcid(ions, actualAmount(acid, s) ?? acid.planned, acid.acid!, litres);
     for (const c of s.acidCorrections ?? [])
       if (side === 'mash' ? isMash(c.stepId) : c.stepId === 'sparge')
         ions = ionsAfterAcid(ions, c.amount, c.acid, litres);
@@ -393,7 +393,7 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
   const changed = ingredients.filter(
     (i) =>
       (i.kind === 'salt' || i.kind === 'acid' || i.kind === 'water') &&
-      Math.abs(actualAmount(i, s) - i.planned) > 0.01
+      Math.abs((actualAmount(i, s) ?? i.planned) - i.planned) > 0.01
   );
   const added = changed.some((i) => s.additions?.[i.id]?.doneAt != null);
   const extraRO = Math.max(
@@ -405,7 +405,7 @@ export function mineralFeedback(recipe: RecipeSnapshot, s: BrewDayState) {
   const lactic =
     ingredients
       .filter((i) => i.acid === 'lactique')
-      .reduce((sum, i) => sum + actualAmount(i, s), 0) +
+      .reduce((sum, i) => sum + (actualAmount(i, s) ?? i.planned), 0) +
     (s.acidCorrections ?? [])
       .filter((c) => c.acid === 'lactique')
       .reduce((sum, c) => sum + c.amount, 0);

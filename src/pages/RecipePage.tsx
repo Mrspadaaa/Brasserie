@@ -78,6 +78,7 @@ interface RecipePageProps {
   onDelete: () => void;
   onBrew: () => void;
   onOpenBatch: (batch: Batch) => void;
+  onOpenHopV55?: () => void;
 }
 
 /** Une des cinq mesures de tête. */
@@ -124,7 +125,8 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   onDuplicate,
   onDelete,
   onBrew,
-  onOpenBatch
+  onOpenBatch,
+  onOpenHopV55
 }) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [simulatingNolo, setSimulatingNolo] = useState(false);
@@ -473,6 +475,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         <LazySurface resetKey={`aroma:${recipe.id}`} fallback={<div role="status">Préparation du potentiel aromatique…</div>}>
           <details><summary className="min-h-touch cursor-pointer text-water">Style et sources</summary><BrewingStyleDetails recipe={recipe}/></details>
           <HopRecipePanel recipe={recipe} onEdit={onEdit} />
+          {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={onOpenHopV55}>Ouvrir l’atelier Houblons V5.5</button>}
         </LazySurface>
       </Section>
 

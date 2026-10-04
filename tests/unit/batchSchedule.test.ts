@@ -29,6 +29,38 @@ describe('intention and actual brewing day', () => {
       expect(daysSinceBrew(value)).toBeUndefined();
     }
   });
+  it('counts schema-qualified readings as work but ignores their timestamp without a measured value', () => {
+    const reading = { id: 'preboil-sg', at: time, kind: 'densite' as const, value: 1.047, unit: 'SG', roomTemp: true, stepId: 'preboil' };
+    const measured = batch({ brewDay: { steps: [], currentIndex: 0, readings: [reading] } });
+    expect(hasBrewStarted(measured)).toBe(true);
+    expect(actualBrewDate(measured)).toBe('21.09.2026');
+    expect(measured.brewDay?.readings).toEqual([reading]);
+
+    const metadataOnly = batch({ brewDay: { steps: [], currentIndex: 0, readings: [{ at: time } as any] } });
+    expect(metadataOnly.brewDay?.readings?.[0].at).toBe(time);
+    expect(hasBrewStarted(metadataOnly)).toBe(false);
+    expect(actualBrewDate(metadataOnly)).toBeUndefined();
+    expect(brewSessionDatePatch(metadataOnly, metadataOnly.brewDay!)).toEqual({});
+
+    const zeroTemperature = batch({ brewDay: { steps: [], currentIndex: 0,
+      readings: [{ at: time, kind: 'temperature', value: 0, unit: '°C' }] } });
+    expect(hasBrewStarted(zeroTemperature)).toBe(true);
+  });
+
+  it.each([
+    ['absente', { at: time, kind: 'densite', unit: 'SG' }],
+    ['non finie', { at: time, kind: 'densite', value: NaN, unit: 'SG' }],
+  ])('ne traite pas une valeur de mesure %s comme un départ', (_label, reading) => {
+    const value = batch({ brewDay: { steps: [], currentIndex: 0, readings: [reading as any] } });
+    expect(hasBrewStarted(value)).toBe(false);
+  });
+  it('keeps measurements accepted by the shared server validator without inventing a missing unit', () => {
+    const state = validateSession({ steps: [{ id: 'eau', label: 'Préparation', durationMin: 0 }], currentIndex: 0,
+      readings: [{ at: time, kind: 'densite', value: 1.047 }] });
+    expect(brewSessionDatePatch(batch(), state)).toEqual({ plannedBrewDate: '25.09.2026', brewDate: '21.09.2026' });
+    expect(state.readings?.[0]).toEqual({ at: time, kind: 'densite', value: 1.047 });
+    expect(state.readings?.[0]).not.toHaveProperty('unit');
+  });
   it('retains a legacy planning day without mistaking it for an actual day', () => {
     const old = batch({ plannedBrewDate: undefined, brewDate: '2026-09-25' });
     expect(plannedBrewDate(old)).toBe('25.09.2026'); expect(actualBrewDate(old)).toBeUndefined();
@@ -48,7 +80,8 @@ describe('intention and actual brewing day', () => {
     { startedAt: time }, { boilStartedAt: time }, { steps: [{ doneAt: time }] },
     { steps: [{ rampStartedAt: time }] }, { steps: [{ holdStartedAt: time }] },
     { thermalSegments: [{ startedAt: time }] }, { transferredAt: time }, { pitchedAt: time },
-    { additions: { malt: { doneAt: time } } }, { readings: [{ at: time }] }, { finishedAt: time }
+    { additions: { malt: { doneAt: time } } }, { readings: [{ at: time, kind: 'densite' as const, value: 1.047, unit: 'SG' }] },
+    { finishedAt: time }
   ])('recognizes actual work even without an explicit global start', session => {
     expect(brewSessionDatePatch(batch({ plannedBrewDate: '' }), session)).toEqual({ plannedBrewDate: '', brewDate: '21.09.2026' });
   });

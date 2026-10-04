@@ -1,0 +1,161 @@
+/* Qualified pitching shared by the recipe journey and the workbench. Project DESIGN tokens remain authoritative:
+   separators inside a station rather than nested cards, measures in IBM Plex Mono, entries at 16 px. */
+.yeast-workbench.yp-panel { display: grid; gap: 8px; min-width: 0; }
+.yeast-workbench.yp-panel > * + * { margin-top: 0; }
+.yp-panel h4 { color: theme('colors.cave.50'); font-size: .8125rem; font-weight: 650; }
+.yp-panel p, .yp-panel li { min-width: 0; overflow-wrap: anywhere; }
+.yp-num { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; color: theme('colors.cave.50'); }
+.yp-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; min-width: 0; }
+.yp-head-actions { display: inline-flex; flex-wrap: wrap; gap: 0 12px; }
+.yp-panel .yeast-link { min-height: 28px; font-size: .8125rem; }
+.yp-panel details.yp-more { border-top: 0; padding-top: 0; }
+.yp-panel details.yp-more > summary { display: inline-flex; justify-content: flex-start; gap: 3px; min-height: 28px; color: theme('colors.cave.200'); font-size: .75rem; }
+.yp-panel details.yp-more > div { display: grid; gap: 4px; padding: 2px 0 4px; font-size: .75rem; color: theme('colors.cave.200'); }
+.yp-source { color: theme('colors.cave.200'); text-decoration: underline; text-underline-offset: 2px; overflow-wrap: anywhere; font-size: .75rem; }
+.yp-source-date { color: theme('colors.cave.400'); }
+
+/* Tags: a word always carries the state; the tone only helps finding it. */
+.yp-tag { display: inline-flex; align-items: center; min-height: 20px; padding: 1px 6px; border: 1px solid theme('colors.cave.700'); border-radius: 999px; color: theme('colors.cave.200'); font-size: .6875rem; font-weight: 500; white-space: nowrap; }
+.yp-tag[data-tone='ok'] { border-color: theme('colors.hop'); color: theme('colors.hop'); }
+.yp-tag[data-tone='bad'] { border-color: theme('colors.alert-strong'); color: theme('colors.alert-strong'); }
+.yp-tag[data-tone='low'], .yp-tag[data-tone='high'] { border-color: theme('colors.attention'); color: theme('colors.attention'); }
+.yp-tag[data-tone='chosen'] { border-color: theme('colors.area.production'); color: theme('colors.area.production'); }
+.yp-tag[data-tone='missing'] { border-color: theme('colors.attention'); color: theme('colors.attention'); }
+.yp-tag[data-tone='invalid'] { border-color: theme('colors.alert-strong'); color: theme('colors.alert-strong'); }
+.yp-basis { display: inline-flex; padding: 0 5px; border-radius: 4px; background: theme('colors.cave.800'); color: theme('colors.cave.200'); font-size: .6875rem; }
+.yp-basis[data-basis='measured'] { color: theme('colors.hop'); }
+.yp-basis[data-basis='recipe-estimate'] { color: theme('colors.area.production'); }
+.yp-basis[data-basis='unknown'] { color: theme('colors.cave.400'); }
+
+/* Product and offers where the strain is chosen. */
+.yp-supply { padding-top: 8px; border-top: 1px solid theme('colors.cave.700'); }
+.yp-chosen { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; min-width: 0; }
+.yp-chosen[data-state='incompatible'] .yp-chosen-main strong { text-decoration: line-through; text-decoration-color: theme('colors.attention'); }
+.yp-chosen-main { display: grid; gap: 1px; min-width: 0; }
+.yp-chosen-main strong { color: theme('colors.cave.50'); font-size: .875rem; font-weight: 650; }
+.yp-chosen-main small { color: theme('colors.cave.400'); font-size: .75rem; }
+.yp-products { display: grid; gap: 0; }
+.yp-products > li { display: grid; gap: 4px; padding-block: 7px; border-top: 1px solid theme('colors.cave.700'); }
+.yp-products > li[data-chosen='true'] { padding-inline: 6px; border-radius: 8px; background: theme('colors.cave.850'); }
+.yp-product-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.yp-panel .yp-choose { flex-shrink: 0; min-height: 28px; padding-inline: 10px; border-color: theme('colors.area.production'); font-weight: 650; }
+.yp-offers { display: grid; gap: 0; }
+.yp-offer { display: grid; gap: 3px; padding: 5px 0 5px 8px; border-left: 1px solid theme('colors.cave.700'); }
+.yp-offer + .yp-offer { margin-top: 3px; }
+.yp-offer[data-retained='true'] { border-left-color: theme('colors.area.production'); }
+.yp-offer-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 8px; }
+.yp-offer-seller { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; min-width: 0; font-size: .8125rem; }
+.yp-offer-seller strong { color: theme('colors.cave.50'); font-weight: 600; }
+.yp-country { color: theme('colors.cave.400'); font-size: .75rem; }
+.yp-offer-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 5px; }
+.yp-price { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; font-size: .8125rem; }
+.yp-offer-none { padding-left: 8px; }
+.yp-foot { display: flex; flex-wrap: wrap; gap: 0 12px; }
+.yp-panel .yeast-link.yp-correct { font-size: .75rem; color: theme('colors.cave.200'); }
+
+/* Pitching station: one section per decision, separated by rules. */
+.yp-section { display: grid; align-content: start; gap: 5px; min-width: 0; padding-top: 7px; border-top: 1px solid theme('colors.cave.700'); }
+.yp-plan > .yp-section:first-child { padding-top: 0; border-top: 0; }
+.yp-reading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 12px; font-size: .875rem; }
+.yp-reading > span { display: inline-flex; align-items: baseline; gap: 5px; }
+.yp-line { font-size: .8125rem; color: theme('colors.cave.200'); }
+.yp-line[data-tone='ok'] { color: theme('colors.hop'); }
+.yp-warn { color: theme('colors.attention'); }
+.yp-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.yp-editor { display: grid; gap: 7px; min-width: 0; padding: 7px 0 2px; }
+.yp-field-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
+.yp-field-row > label, .yp-field-row > .yp-label { flex: 0 0 auto; min-width: 72px; color: theme('colors.cave.200'); font-size: .8125rem; }
+.yp-input-unit { display: inline-flex; align-items: center; gap: 4px; min-width: 0; color: theme('colors.cave.400'); font-size: .75rem; }
+.yp-panel .yp-input-unit :is(input, textarea:where([data-single-line])) { width: 84px; text-align: right; }
+.yp-panel .yp-input-unit select { max-width: 110px; }
+.yp-field-row > [role='radiogroup'] { flex: 1 1 210px; min-width: 0; max-width: 320px; }
+.yp-stack { display: grid; gap: 3px; min-width: 0; font-size: .8125rem; }
+.yp-stack :is(input, textarea, select) { width: 100%; min-width: 0; }
+.yp-panel .yp-stack textarea:not([data-single-line]) { background: theme('colors.cave.950'); color: theme('colors.cave.50'); border: 1px solid theme('colors.cave.700'); border-radius: 10px; padding: 4px 6px; font-size: 1rem; }
+.yp-timing { display: grid; gap: 5px; min-width: 0; margin: 0; padding: 7px 8px; border: 1px dashed theme('colors.cave.600'); border-radius: 8px; }
+.yp-timing legend { padding-inline: 4px; color: theme('colors.cave.50'); font-size: .8125rem; font-weight: 600; }
+.yp-timing-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 3px 8px; }
+.yp-timing-row[data-missing='true'] .yp-timing-name { color: theme('colors.attention'); }
+.yp-timing-name { min-width: 0; font-size: .8125rem; color: theme('colors.cave.200'); }
+.yp-timing-row > [role='radiogroup'] { flex: 0 1 230px; min-width: 0; }
+
+/* Advice: the measured figure first, its unit beside it, then conditions on demand. */
+.yp-figure { display: flex; flex-wrap: wrap; align-items: baseline; gap: 1px 8px; font-size: .8125rem; color: theme('colors.cave.200'); }
+.yp-big { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.yp-reasons { display: grid; gap: 2px; padding-left: 14px; list-style: disc; color: theme('colors.cave.400'); font-size: .75rem; }
+.yp-legacy { padding: 4px 8px; border-left: 1px dashed theme('colors.cave.400'); background: theme('colors.cave.850'); color: theme('colors.cave.200'); font-size: .75rem; }
+.yp-rate { display: grid; gap: 4px; }
+
+/* The single planned quantity and its explicit adoption. */
+.yp-compare { font-size: .8125rem; color: theme('colors.cave.200'); }
+.yp-compare[data-tone='low'], .yp-compare[data-tone='high'], .yp-compare[data-tone='missing'] { color: theme('colors.attention'); }
+.yp-compare[data-tone='invalid'] { color: theme('colors.alert-strong'); }
+/* Scoped checks: each row names what it compares (pack count, dose if all is pitched, cells); only an out-of-range row is marked. */
+.yp-checks { display: grid; gap: 2px; margin: 0; }
+.yp-checks > div { display: grid; grid-template-columns: minmax(96px, 34%) minmax(0, 1fr); gap: 6px; align-items: baseline; padding-block: 2px; }
+.yp-checks > div + div { border-top: 1px solid theme('colors.cave.800'); }
+.yp-checks dt { color: theme('colors.cave.400'); font-size: .75rem; }
+.yp-checks dd { min-width: 0; margin: 0; color: theme('colors.cave.200'); font-size: .8125rem; overflow-wrap: anywhere; }
+.yp-checks > div[data-tone='low'] dd, .yp-checks > div[data-tone='high'] dd { color: theme('colors.attention'); }
+.yp-checks > div[data-tone='low'] .yp-num, .yp-checks > div[data-tone='high'] .yp-num { color: theme('colors.attention'); }
+.yp-adopt { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.yp-panel .yp-adopt button { min-height: 28px; padding-inline: 10px; font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+.yp-panel .yp-adopt button[aria-pressed='true'] { border-color: theme('colors.area.production'); background: theme('colors.cave.850'); }
+.yp-panel .yp-adopt :is(input, textarea:where([data-single-line])) { width: 64px; text-align: right; }
+.yp-adopted { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding: 4px 8px; border: 1px dashed theme('colors.area.production'); border-radius: 8px; font-size: .8125rem; color: theme('colors.cave.50'); }
+.yp-adopted .yeast-link { display: inline-flex; align-items: center; gap: 4px; }
+
+/* Lot and preparation. */
+.yp-linked { display: grid; gap: 3px; }
+.yp-protocol { display: grid; gap: 3px; }
+.yp-steps { display: grid; gap: 3px; padding-left: 18px; list-style: decimal; font-size: .75rem; color: theme('colors.cave.200'); }
+.yp-steps .yp-num { margin-right: 4px; font-size: .75rem; }
+.yp-plan-state { display: grid; gap: 4px; padding: 6px 8px; border-left: 1px solid theme('colors.area.production'); background: theme('colors.cave.850'); }
+.yp-prep[data-preparation='cancelled'] .yp-plan-state { border-left-color: theme('colors.cave.400'); }
+.yp-prep[data-preparation='stale'] .yp-plan-state, .yp-prep[data-preparation='due'] .yp-plan-state { border-left-color: theme('colors.attention'); }
+.yp-scope { padding-top: 5px; border-top: 1px solid theme('colors.cave.700'); }
+.yp-receipt { padding: 4px 8px; border-left: 1px solid theme('colors.water'); background: theme('colors.cave.850'); color: theme('colors.cave.200'); font-size: .75rem; }
+.yp-simulation { padding: 4px 8px; border: 1px dashed theme('colors.ebc.straw'); border-radius: 8px; color: theme('colors.cave.50'); font-size: .75rem; }
+
+/* Manual product/format and offer definition: opened on intent, same dashed frame as the addition timing, sections by rules. */
+.yp-entry-slot { min-width: 0; }
+.yp-entry { padding: 8px; border: 1px dashed theme('colors.cave.600'); border-radius: 8px; }
+.yp-entry-title { color: theme('colors.cave.50'); font-size: .8125rem; font-weight: 650; }
+.yp-entry-fields { display: grid; gap: 7px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.yp-entry-source { display: grid; gap: 5px; min-width: 0; margin: 0; padding: 6px 0 0; border: 0; border-top: 1px solid theme('colors.cave.800'); }
+/* A floated legend is a normal grid item, so it sits above its fields instead of across the rule. */
+.yp-entry-source > legend { float: left; width: 100%; padding: 0; color: theme('colors.cave.200'); font-size: .75rem; font-weight: 600; }
+.yp-entry-own { display: grid; gap: 5px; min-width: 0; }
+.yp-entry-own .yeast-check { font-size: .75rem; color: theme('colors.cave.200'); }
+.yp-entry .yp-field-row > .yp-entry-wide { flex: 1 1 100%; min-width: 0; }
+.yp-panel .yp-entry input:is([type='date'], [type='datetime-local']) { width: 100%; min-width: 0; }
+.yp-entry-errors { padding: 4px 8px; border-left: 1px solid theme('colors.alert-strong'); background: theme('colors.cave.850'); }
+.yp-entry-errors ul { display: grid; gap: 2px; padding-left: 16px; list-style: disc; }
+.yp-entry-errors:focus-visible, .yp-entry-state:focus-visible { outline: 2px solid theme('colors.ebc.straw'); outline-offset: 2px; }
+/* Recipe copy, proposal, server confirmation and readback read as different states, each with its words. */
+.yp-entry-state { padding: 4px 8px; border-left: 1px solid theme('colors.cave.400'); background: theme('colors.cave.850'); color: theme('colors.cave.200'); font-size: .75rem; }
+.yp-entry-state[data-entry-state='local'] { border-left-color: theme('colors.area.production'); }
+.yp-entry-state[data-entry-state='review'] { border-left-color: theme('colors.attention'); }
+.yp-entry-state[data-entry-state='confirmed'] { border-left-color: theme('colors.water'); color: theme('colors.cave.50'); }
+.yp-entry-state[data-entry-state='error'] { border-left-color: theme('colors.alert-strong'); color: theme('colors.cave.50'); }
+/* Starter notice: ordered steps edited in place; order controls stay beside their step. */
+.yp-step-editor { display: grid; gap: 5px; margin: 0; padding-left: 20px; list-style: decimal; color: theme('colors.cave.400'); font-size: .75rem; }
+.yp-step-row { min-width: 0; }
+.yp-step-row > :is(input, textarea) { width: 100%; min-width: 0; }
+.yp-step-actions { display: flex; flex-wrap: wrap; gap: 0 12px; }
+.yp-panel .yp-step-actions .yeast-link { min-height: 24px; font-size: .75rem; }
+@media (min-width: 900px) {
+  .yp-entry-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; }
+  .yp-entry-fields > :is(.yp-entry-source, .yp-field-row, .yp-entry-wide) { grid-column: 1 / -1; }
+  .yp-step-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
+}
+
+@media (min-width: 900px) {
+  /* Desktop: wort beside advice, quantity beside lot; the preparation keeps the full width for its dated steps. */
+  .yeast-workbench.yp-plan { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 18px; }
+  .yp-plan > .yp-section:nth-child(2) { padding-top: 0; border-top: 0; }
+  .yp-plan > :is(.yp-prep, .yp-scope, .yp-receipt) { grid-column: 1 / -1; }
+}
+@media (max-width: 360px) {
+  .yp-field-row > [role='radiogroup'], .yp-timing-row > [role='radiogroup'] { flex-basis: 100%; max-width: none; }
+}

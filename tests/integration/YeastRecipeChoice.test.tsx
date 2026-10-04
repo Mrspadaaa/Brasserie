@@ -36,7 +36,7 @@ describe('Résumé documentaire fidèle aux états', () => {
     render(<YeastRecipeChoice recipe={draft} savedRecipe={saved} onChange={vi.fn()} />);
     const status=screen.getByLabelText('État du choix de levure');
     const fold=status.querySelector('details');if(fold)fireEvent.click(fold.querySelector('summary')!);
-    expect(status).toHaveTextContent('hypothèse d’atténuation');expect(status).toHaveTextContent('73 %');
+    expect(status).toHaveTextContent(/hypothèse d’atténuation/i);expect(status).toHaveTextContent('73 %');
     expect(status).not.toHaveTextContent('adoptedDocumentary');expect(status).not.toHaveTextContent('78 % → 73 %');
   });
   it.each([null, []] as const)('ne confond pas une documentation absente avec %j', notes => {
@@ -634,6 +634,22 @@ describe('Choix de levure réservé à la création de recette', () => {
     expect(screen.getByRole('region', { name: 'Programme proposé' }).querySelector('li')).toHaveAttribute('data-phase-days', '11');
   });
 
+  it('ne ressuscite pas un moût effacé après changement de souche puis Undo et Redo', async () => {
+    const initial = yeastFlowRecipe();
+    initial.yeast.pitching = { version: 1, wort: { volumeL: 25, sg: 1.048, basis: 'measured', volumeBasis: 'measured', sgBasis: 'measured' } };
+    const changed = vi.fn(); render(<Host initial={initial} changed={changed} />);
+    search('M20'); chooseRow(rowOf('yeast-mangrove-jacks-132040951'));
+    const wort = screen.getByRole('region', { name: 'Moût à ensemencer' });
+    fireEvent.click(within(wort).getByRole('button', { name: 'Corriger' }));
+    fireEvent.click(within(wort).getByRole('button', { name: 'Effacer le moût' }));
+    expect((changed.mock.lastCall![0] as Recipe).yeast.pitching?.wort).toBeUndefined();
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Annuler le changement' }));
+    expect((changed.mock.lastCall![0] as Recipe).yeast.pitching?.wort).toBeUndefined();
+    await userEvent.setup().click(screen.getByRole('button', { name: /^Rétablir M20/ }));
+    expect((changed.mock.lastCall![0] as Recipe).yeast.pitching?.wort).toBeUndefined();
+    expect(initial.yeast.pitching.wort?.volumeL).toBe(25);
+  });
+
   it('annule puis rétablit un choix direct en retirant la quantité nommée et en gardant une correction indépendante de palier', async () => {
     const initial = yeastFlowRecipe(); initial.yeast.stockItemRef = 'QA-LOT-3068';
     const before = structuredClone(initial), changed = vi.fn();
@@ -948,10 +964,14 @@ describe('Choix de levure réservé à la création de recette', () => {
     expect(yeastStation().querySelector('.yc-identity-card')).toHaveTextContent('SafAle US-05');
     expect(yeastStation().querySelector('.yc-identity-card')).toHaveTextContent('Catalogue');
     const quantity = screen.getByRole('group', { name: 'Quantité prévue de levure' });
-    if (qty == null) expect(quantity).toHaveTextContent('non renseignée · g');
-    else if (qty === 0 || qty < 0) expect(quantity).toHaveTextContent(text);
+    const quantitySection = quantity.closest('section')!;
+    const pitchStation = screen.getByRole('region', { name: 'Ensemencement et préparation' });
+    if (qty == null) expect(quantitySection).toHaveTextContent('non renseignée · g');
+    else if (qty === 0 || qty < 0) expect(quantitySection).toHaveTextContent(text);
     else expect(within(quantity).getByRole('textbox', { name: 'Quantité à saisir' })).toHaveValue('12.5');
-    expect(yeastStation()).toContainElement(quantity);
+    expect(quantitySection).toHaveAttribute('data-planned', qty == null ? 'missing' : qty <= 0 ? 'invalid' : 'unknown');
+    expect(pitchStation).toContainElement(quantity);
+    expect(pitchStation).toContainElement(quantitySection.querySelector('[data-quantity-reading]'));
     expect(quantity.closest('details')).toBeNull();
     expect(within(quantity).getByRole('textbox', { name: 'Quantité à saisir' })).toBeVisible();
     expect(value.yeast.qty).toBe(qty);
@@ -1300,8 +1320,10 @@ describe('Choix de levure réservé à la création de recette', () => {
     fireEvent.click(documentary.querySelector('summary')!); documentary.open = true;
     expect(state.querySelector('[data-difference="sheet-attenuationPct"]')).toHaveTextContent('82 %');
     expect(state.querySelector('[data-difference="sheet-attenuationPct"]')).toBeVisible();
-    expect(state.querySelector('[data-difference="sheet-technicalFacts"]')).toHaveTextContent('borne >90 %');
-    expect(state.querySelector('[data-difference="sheet-technicalFacts"]')).toHaveTextContent('https://example.invalid/corrected');
+    const observationDiff = state.querySelector('[data-difference="sheet-technicalFacts"]')! as HTMLElement;
+    expect(observationDiff).toHaveTextContent(/>\s*90 %.*borne/);
+    expect(within(observationDiff).getByRole('link', { name: 'Fiche corrigée' })).toHaveAttribute('href', 'https://example.invalid/corrected');
+    expect(observationDiff).not.toHaveTextContent('https://example.invalid/corrected');
     expect(state).not.toHaveTextContent('autre fiche, lot ou stock');
   });
 

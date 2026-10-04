@@ -14,6 +14,27 @@ export function HopField({ children, ...props }: React.ComponentProps<typeof For
     ? React.cloneElement(children as React.ReactElement<{ id?: string }>, { id }) : children}</FormField>;
 }
 const Field = HopField;
+type HopBasis = HopMeasurement['basis'];
+type HopUnit = HopMeasurement['unit'];
+
+const HOP_MASS_UNITS = new Set<HopUnit>(['percentMass', 'ml100g', 'mg100g', 'ugKg', 'ugKgThiolEquivalent']);
+// These option labels say “de bière”; choosing one is an explicit matrix choice.
+const BEER_MATRIX_UNITS = new Set<HopUnit>(['ngL', 'ugL']);
+
+function basisForAddedUnit(unit: HopUnit): HopBasis {
+  // The denominator in percentOil is part of the unit itself. Other defaults
+  // need evidence or an explicit choice from the brewer.
+  return unit === 'percentOil' ? 'oil' : 'unknown';
+}
+
+function basisAfterUnitChange(previous: HopBasis, unit: HopUnit): HopBasis {
+  if (unit === 'percentOil') return 'oil';
+  if (unit === 'unknown' || unit === 'index') return 'unknown';
+  if (BEER_MATRIX_UNITS.has(unit)) return 'beer';
+  if (unit === 'ugLInternalStandardEquivalent') return previous === 'beer' ? 'beer' : 'unknown';
+  if (HOP_MASS_UNITS.has(unit)) return previous === 'asIs' || previous === 'dryMatter' ? previous : 'unknown';
+  return 'unknown';
+}
 
 export function HopSourceEditor({ value, onChange }: { value: HopSource; onChange: (value: HopSource) => void }) {
   return <div className="grid gap-3 sm:grid-cols-2">
@@ -32,8 +53,10 @@ export function HopFactsEditor({ value, onChange, sourceKind = 'manufacturer' }:
   value: HopMeasurement[]; onChange: (v: HopMeasurement[]) => void; sourceKind?: HopSource['kind'];
 }) {
   const patch = (index: number, next: HopMeasurement) => onChange(value.map((m, i) => i === index ? next : m));
-  const add = (analyte: HopAnalyte) => onChange([...value, { analyte, unit: analyte === 'hsi' ? 'index' : analyte === 'totalOil' ? 'ml100g' : ['alpha', 'beta'].includes(analyte) ? 'percentMass' : 'ugKg',
-    basis: 'asIs', kind: 'point', confidence: 'low', source: value[value.length - 1]?.source ?? blankHopSource(sourceKind) }]);
+  const add = (analyte: HopAnalyte) => {
+    const unit: HopUnit = analyte === 'hsi' ? 'index' : analyte === 'totalOil' ? 'ml100g' : ['alpha', 'beta'].includes(analyte) ? 'percentMass' : 'ugKg';
+    onChange([...value, { analyte, unit, basis: basisForAddedUnit(unit), kind: 'point', confidence: 'low', source: value[value.length - 1]?.source ?? blankHopSource(sourceKind) }]);
+  };
   return <div className="space-y-4">
     {value.map((m, index) => <fieldset key={m.analyte} className="border border-cave-700 rounded-control p-3 space-y-3">
       <legend className="px-1 font-semibold text-cave-50">{HOP_ANALYTE_LABELS[m.analyte]}</legend>
@@ -45,8 +68,10 @@ export function HopFactsEditor({ value, onChange, sourceKind = 'manufacturer' }:
           <option value="point">Valeur rapportée</option><option value="range">Plage publiée</option>
           <option value="below">Non détecté / non quantifié</option><option value="unknown">Non déterminé</option>
         </select></Field>
-        <Field label="Unité"><select className={inputClass} value={m.unit} onChange={e => patch(index, { ...m, unit: e.target.value as HopMeasurement['unit'],
-          basis: e.target.value === 'percentOil' ? 'oil' : ['ngL', 'ugL', 'ugLInternalStandardEquivalent'].includes(e.target.value) ? 'beer' : ['unknown', 'ugKgThiolEquivalent'].includes(e.target.value) ? 'unknown' : 'asIs' })}>
+        <Field label="Unité"><select className={inputClass} value={m.unit} onChange={e => {
+          const unit = e.target.value as HopUnit;
+          patch(index, { ...m, unit, basis: basisAfterUnitChange(m.basis, unit) });
+        }}>
           {HOP_UNITS.map(unit => <option key={unit} value={unit}>{HOP_UNIT_LABELS[unit]}</option>)}
         </select></Field>
         <Field label="Base de mesure"><select className={inputClass} value={m.basis} onChange={e => patch(index, { ...m, basis: e.target.value as HopMeasurement['basis'] })}>

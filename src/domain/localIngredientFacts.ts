@@ -50,8 +50,11 @@ export function completeFromLocalReferences(fermentables: Fermentable[], hops: H
   const hop = hops.map(h => { const facts = factsForRecipeStockItem('houblon',h,stock); return facts ? applyHopFacts(h,facts) : h; });
   // Catalogue identity and a local stock lot are separate choices. Only an
   // explicit article ref permits lot-specific facts to enter this recipe.
-  const stockYeast = yeast.stockItemRef ? factsForRecipeStockItem('levure',yeast,stock) : undefined;
-  const reference = localYeastFacts(yeast,knowledge);
+  // An adopted sheet is a decision of its owner. Automatic local reads may fill
+  // legacy records, but cannot append documentary facts to this saved decision.
+  const ownedSheet = yeast.localDocumentary !== undefined || yeast.adoptedDocumentary !== undefined;
+  const stockYeast = !ownedSheet && yeast.stockItemRef ? factsForRecipeStockItem('levure',yeast,stock) : undefined;
+  const reference = ownedSheet ? undefined : localYeastFacts(yeast,knowledge);
   let y = stockYeast ? applyYeastFacts(yeast,stockYeast) : yeast;
   if (reference) y = applyYeastFacts(y,reference);
   return { fermentables:malt, hops:hop, yeast:y };

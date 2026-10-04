@@ -2,6 +2,7 @@ import type { Batch, StockItem } from '../../types';
 import { brewIngredients, actualAmount } from '../brewCompanion';
 import { Units } from '../../services/units';
 import { demandKey, resolveBudgetStock, type BrewBudgetDemand } from './brewBudget';
+import { yeastQuantityInStockUnit } from '../yeastPitching';
 
 export interface BrewStockConsumptionItem { stockItemRef: string; quantity: number; unit: string }
 export interface BrewStockConsumption {
@@ -72,11 +73,79 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
   } else {
     const recipe = batch.recipeSnapshot;
     const state = batch.brewDay ?? { steps: [], currentIndex: 0 };
+    const assignYeast = (name: string, quantity: number, unit: string, stockItemRef: string) => {
+      const linked = stocks.find(item => item.ref === stockItemRef);
+      const yeast = recipe.yeast;
+      const product = yeast?.pitching?.product;
+      const recipeLotProductId = yeast?.pitching?.lot?.productId;
+      const stockLotProductId = linked?.yeastLot?.productId;
+      if (product && linked && (stockLotProductId && stockLotProductId !== product.id || recipeLotProductId && recipeLotProductId !== product.id)) {
+        issues.push(`${name} : le produit associé au lot de stock contredit le format choisi dans la recette.`);
+        return;
+      }
+      if (linked && Units.convert(quantity, unit, linked.unit) === null) {
+        const formatProductId = stockLotProductId ?? recipeLotProductId;
+        if (!product?.format || product.referenceId !== yeast?.hopIndexId || formatProductId !== product.id) {
+          issues.push(`${name} : conversion de conditionnement impossible sans format exact et lot associé.`);
+          return;
+        }
+        const converted = yeastQuantityInStockUnit(quantity, unit, product, linked.unit);
+        if (converted === undefined) {
+          issues.push(`${name} : unités incompatibles, conversion de conditionnement impossible.`);
+          return;
+        }
+        assign(consumed, { key: demandKey(name, linked.unit, linked.ref), name, quantity: converted, unit: linked.unit, kind: 'ingredient', stockItemRef: linked.ref });
+        return;
+      }
+      assign(consumed, { key: demandKey(name, unit, stockItemRef), name, quantity, unit, kind: 'ingredient', stockItemRef });
+    };
     for (const ingredient of brewIngredients(recipe)) {
       if (ingredient.kind === 'water') continue;
       const replacement = state.additions?.[ingredient.id]?.replacement;
       const name = replacement?.name ?? ingredient.name;
-      const quantity = actualAmount(ingredient, state);
+      if (ingredient.id === 'yeast') {
+        const addition = state.additions?.yeast;
+        const preparation = batch.yeastPreparation;
+        const starterMayHaveConsumedInoculum = !!preparation &&
+          (preparation.status === 'started' || preparation.status === 'ready' || preparation.status === 'transferred' || preparation.status === 'cancelled' && preparation.steps.length > 0);
+        if (starterMayHaveConsumedInoculum) {
+          const inoculum = preparation!.inoculumUsed;
+          const inoculumAdjusted = !!inoculum?.inventoryAdjustedAt || (preparation!.stockRegularization ?? []).some(entry => entry.kind === 'inoculum');
+          const mediumAdjusted = (preparation!.stockRegularization ?? []).some(entry => entry.kind === 'medium');
+          if (!inoculumAdjusted) {
+            if (!inoculum || !Number.isFinite(inoculum.amount) || inoculum.amount <= 0 || !inoculum.unit.trim())
+              issues.push('Inoculum du starter : quantité non consignée ; consommation à régulariser par comptage.');
+            else if (!inoculum.stockItemRef)
+              issues.push('Inoculum du starter : article de stock à associer pour régulariser la consommation.');
+            else assignYeast('Inoculum de levure', inoculum.amount, inoculum.unit, inoculum.stockItemRef);
+          }
+          if (!mediumAdjusted) issues.push('Milieu du starter : stock à régulariser par comptage avant la clôture.');
+        }
+        if (state.pitchQuantityConfirmation === 'starter-transferred') {
+          if (!preparation || preparation.status !== 'transferred')
+            issues.push('Starter transféré : son exécution au brassin doit être consignée avant la clôture du stock.');
+          continue;
+        }
+        if (state.pitchedAt == null) {
+          issues.push('Levure : l’ajout réel doit être confirmé avant de déstocker la dose prévue.');
+          continue;
+        }
+        if ((state.pitchQuantityConfirmation !== 'measured' && state.pitchQuantityConfirmation !== 'planned') || !addition ||
+          !Number.isFinite(addition.amount) || addition.amount <= 0 || !(addition.unit ?? ingredient.unit)?.trim()) {
+          issues.push('Levure : quantité réelle non renseignée ; consommation à régulariser, sans reprendre la dose prévue.');
+          continue;
+        }
+        const unit = addition.unit ?? ingredient.unit;
+        const yeast = recipe.yeast;
+        const yeastStockItemRef = replacement ? undefined : yeast?.stockItemRef;
+        if (!yeastStockItemRef) {
+          issues.push(`${name} : article ou lot de levure à associer explicitement avant le déstockage.`);
+          continue;
+        }
+        assignYeast(name, addition.amount, unit, yeastStockItemRef);
+        continue;
+      }
+      const quantity = actualAmount(ingredient, state) ?? ingredient.planned;
       const adjunct = ingredient.id.startsWith('adjunct-') ? recipe.adjuncts?.[Number(ingredient.id.slice(8))] : undefined;
       const source = ingredient.fermentableIndex != null ? recipe.fermentables[ingredient.fermentableIndex] : ingredient.hopIndex != null ? recipe.hops[ingredient.hopIndex] : ingredient.id === 'yeast' ? recipe.yeast : adjunct;
       const kind = ingredient.kind === 'salt' || ingredient.kind === 'acid' ? 'treatment' : 'ingredient';

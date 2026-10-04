@@ -54,6 +54,11 @@ export function normalizeRecipeImport(
   };
   const hasIncomingAdoptedDocumentary = d.yeast?.adoptedDocumentary !== undefined;
   const hasIncomingLocalDocumentary = d.yeast?.localDocumentary !== undefined;
+  if (via === 'ia' && d.yeast?.pitching !== undefined) {
+    if (clean.yeast) delete clean.yeast.pitching;
+    rejected('Un produit, une offre et un plan d’ensemencement doivent être choisis explicitement dans l’application.',
+      'Plan d’ensemencement proposé, non adopté', d.yeast.pitching);
+  }
   if (via === 'ia' && (hasIncomingAdoptedDocumentary || hasIncomingLocalDocumentary)) {
     if (clean.yeast) { delete clean.yeast.adoptedDocumentary; delete clean.yeast.localDocumentary; }
     rejected('Une fiche documentaire adoptée doit venir d’une action explicite dans l’application.',

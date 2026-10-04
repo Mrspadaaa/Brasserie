@@ -12,6 +12,7 @@ import type { BrewerAiLimits } from './brewerLimits.js';
 import { GeminiApiError } from './geminiErrors.js';
 import { aiBudgetMonth, GEMINI_COST_POLICY, monthlyLimit, pricesCurrent, readMonthlyUsage } from './geminiCosts.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
+import { HOP_ADVICE_V1_COLLECTIONS } from './brewerHopAdviceLaneV1.js';
 
 const controlPath = 'brewerAiControls/current';
 const emptyUsage = () => ({ calls: 0, proCalls: 0, tokens: 0 });
@@ -112,9 +113,15 @@ type Generate = (model: string, body: Record<string, unknown>, signal: AbortSign
 /** Reserve BEFORE each paid request. Retries share the same durable question budget.
  * A timeout keeps its reservation, since the provider may have billed the request.
  */
-export function budgetedBrewerTransport(generate: Generate, jobId: string, fence: string) {
+export function budgetedBrewerTransport(
+  generate: Generate,
+  jobId: string,
+  fence: string,
+  lane: 'ordinary' | 'hopAdviceReadonlyV1' = 'ordinary'
+) {
   const db = getFirestore(),
-    jobRef = db.doc(`brewerJobs/${jobId}`);
+    jobCollection = lane === 'hopAdviceReadonlyV1' ? HOP_ADVICE_V1_COLLECTIONS.jobs : 'brewerJobs',
+    jobRef = db.doc(`${jobCollection}/${jobId}`);
   const stopped = new AbortController();
   const unsubscribe = db.doc(controlPath).onSnapshot(
     (snapshot) => {

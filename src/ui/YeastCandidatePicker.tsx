@@ -6,8 +6,9 @@ import { SegmentedControl } from './SegmentedControl';
 import { Input } from './Input';
 import { YeastChoiceResults } from './YeastChoiceComparison';
 
-/** Candidate sheets, reference reading and explicit compare requests pass through to the side by side unchanged. */
-type SheetProps = Pick<ComponentProps<typeof YeastChoiceResults>, 'sheetYeast' | 'sheetRevision' | 'renderSheet' | 'referenceDossier' | 'referenceYeast' | 'onEditReference' | 'compareRequest'>;
+/** Candidate sheets, shared pitching context and explicit compare requests pass unchanged to the side by side. */
+type SheetProps = Pick<ComponentProps<typeof YeastChoiceResults>, 'sheetYeast' | 'sheetRevision' | 'renderSheet' | 'referenceDossier' | 'referenceYeast' | 'onEditReference' | 'compareRequest'
+  | 'supply' | 'comparisonWort' | 'comparisonRecipeContext' | 'recipeProductCopy' | 'recipeOfferCopy'>;
 
 const PAGE_SIZE = 6;
 type Scope = 'style' | 'catalogue';
@@ -151,7 +152,9 @@ export function YeastCandidatePicker({ candidates, styleId, selectedId, onSelect
       controls={searchControls} afterList={<>{emptyState}{pagination}{referenceLine}{cultureNote}</>} selectionContext="recipe"
       styleLabel={styleId === 'unknown' ? null : styleLabel} trialId={recipeChoice.trialId} draftReference={recipeChoice.draftReference} onChoose={recipeChoice.onChoose} onTry={recipeChoice.onTry}
       sheetYeast={recipeChoice.sheetYeast} sheetRevision={recipeChoice.sheetRevision} renderSheet={recipeChoice.renderSheet} referenceDossier={recipeChoice.referenceDossier}
-      referenceYeast={recipeChoice.referenceYeast} onEditReference={recipeChoice.onEditReference} compareRequest={recipeChoice.compareRequest} />}
+      referenceYeast={recipeChoice.referenceYeast} onEditReference={recipeChoice.onEditReference} compareRequest={recipeChoice.compareRequest}
+      supply={recipeChoice.supply} comparisonWort={recipeChoice.comparisonWort} comparisonRecipeContext={recipeChoice.comparisonRecipeContext}
+      recipeProductCopy={recipeChoice.recipeProductCopy} recipeOfferCopy={recipeChoice.recipeOfferCopy} />}
     {!recipeChoice && <>
       {searchControls}
       {filtered.length > 0 && <div className="yeast-candidate-list"><table className="yeast-candidates">

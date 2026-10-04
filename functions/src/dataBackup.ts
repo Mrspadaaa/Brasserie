@@ -5,6 +5,8 @@ import { BACKUP_COLLECTIONS as BUSINESS_COLLECTIONS, IMMUTABLE_COLLECTIONS, Back
 import { BreweryBackup, parseBackup, preserveOperationalState, stableJson } from './backupCore.js';
 import { requireBrewer } from './brewSession.js';
 import { paymentGuardFromRegister } from './financePaymentGuard.js';
+import { brewingScenarioArchiveApi as scenarioArchive, brewingScenarioDossierApi as scenarioDomain } from './brewerTools.js';
+import { prepareScenarioRestoreWrites, preserveCatalogueOnBackupRestore, readScenarioBackupGroups } from './scenarioBackupRestore.js';
 
 const options = { region: 'europe-west6', timeoutSeconds: 120, memory: '512MiB' as const, maxInstances: 2 };
 export const exportBreweryData = onCall(options, async request => {
@@ -32,7 +34,10 @@ export const restoreBreweryData = onCall(options, async request => {
   if (backup.collections.financeDocuments?.length) throw new HttpsError('failed-precondition', 'Cette sauvegarde contient des originaux. Importe-la depuis Paramètres → Sauvegardes pour les restaurer sur Drive avec vérification.');
   const db = getFirestore(), digest = createHash('sha256').update(json).digest('hex');
   const receipt = db.doc(`restoreOperations/${uid}-${operationId}`);
-  const entries = Object.entries(backup.collections).flatMap(([collection, rows]) => (rows ?? []).map(row => ({ ...row, collection: collection as BusinessCollection })));
+  const allEntries = Object.entries(backup.collections).flatMap(([collection, rows]) => (rows ?? []).map(row => ({ ...row, collection: collection as BusinessCollection })));
+  const scenarioGroups = readScenarioBackupGroups(backup.collections.brewerScenarios ?? [], backup.collections.brewerScenarioEvents ?? [], uid, scenarioDomain, scenarioArchive);
+  const isScenario = (entry: typeof allEntries[number]) => entry.collection === 'brewerScenarios' || entry.collection === 'brewerScenarioEvents';
+  const entries = allEntries.filter(entry => !isScenario(entry));
   const isImmutable = (e: typeof entries[number]) => IMMUTABLE_COLLECTIONS.has(e.collection) || e.collection === 'financialClosings' && !!e.data.report;
   const mutable = entries.filter(e => !isImmutable(e));
   const immutable = entries.filter(isImmutable);
@@ -43,6 +48,7 @@ export const restoreBreweryData = onCall(options, async request => {
       return seen.data()!;
     }
     const current = mutable.length ? await tx.getAll(...mutable.map(e => db.doc(`${e.collection}/${e.id}`))) : [];
+    const scenarioWrites = await prepareScenarioRestoreWrites(tx, db, scenarioGroups, uid, scenarioDomain, scenarioArchive);
     // Existing payment IDs win over an older backup. Reserve their combined net
     // balance before restoring immutable rows, so an interrupted restore cannot
     // reopen capacity for a concurrent payment or void.
@@ -63,9 +69,10 @@ export const restoreBreweryData = onCall(options, async request => {
       catch (error) { throw new HttpsError('failed-precondition', (error as Error).message); }
     });
     const writes: Array<{ path: string; data: Record<string, any> }> = [];
-    let journalsPreserved = 0, operationalPreserved = 0;
+    let journalsPreserved = 0, operationalPreserved = 0, cataloguePreserved = 0;
     mutable.forEach((entry, i) => {
       const data = { ...entry.data }, old = current[i].data();
+      if (preserveCatalogueOnBackupRestore(entry.collection, old, data)) { cataloguePreserved++; return; }
       // Restoring an older draft must not replace the frozen annual statement.
       if (entry.collection === 'financialClosings' && old?.report) return;
       // An old backup cannot reactivate a cancelled accounting document.
@@ -85,9 +92,13 @@ export const restoreBreweryData = onCall(options, async request => {
       const data = { ...old, ...guards.get(id) };
       if (stableJson(old) !== stableJson(data)) writes.push({ path: `transactions/${id}`, data });
     });
-    if (writes.length > 440) throw new HttpsError('resource-exhausted', 'Plus de 440 fiches à restaurer : utilise la restauration Firestore. Aucune donnée n’a été modifiée.');
+    if (writes.length + scenarioWrites.length > 440) throw new HttpsError('resource-exhausted', 'Plus de 440 fiches à restaurer : utilise la restauration Firestore. Aucune donnée n’a été modifiée.');
     for (const entry of writes) tx.set(db.doc(entry.path), entry.data);
-    const result = { digest, changed: writes.length, journalsPreserved, operationalPreserved, complete: false, at: Timestamp.now(), expiresAt: Timestamp.fromMillis(Date.now() + 7 * 86400000) };
+    for (const entry of scenarioWrites) {
+      const ref = db.doc(`${entry.collection}/${entry.id}`);
+      if (entry.create) tx.create(ref, entry.data); else tx.set(ref, entry.data);
+    }
+    const result = { digest, changed: writes.length + scenarioWrites.length, journalsPreserved, operationalPreserved, cataloguePreserved, complete: false, at: Timestamp.now(), expiresAt: Timestamp.fromMillis(Date.now() + 7 * 86400000) };
     tx.create(receipt, result);
     return result;
   });
@@ -103,5 +114,6 @@ export const restoreBreweryData = onCall(options, async request => {
     }
     await receipt.update({ complete: true, completedAt: Timestamp.now() });
   }
-  return { changed: core.changed, journalsPreserved: core.journalsPreserved, operationalPreserved: core.operationalPreserved ?? 0, complete: true };
+  return { changed: core.changed, journalsPreserved: core.journalsPreserved, operationalPreserved: core.operationalPreserved ?? 0,
+    cataloguePreserved: core.cataloguePreserved ?? 0, complete: true };
 });

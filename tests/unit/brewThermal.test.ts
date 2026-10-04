@@ -90,9 +90,9 @@ describe('Ensemencement documenté et événements persistants', () => {
     expect(pending.pitchedAt).toBeUndefined(); expect(pending.finishedAt).toBeUndefined();
     expect(markTransferred(pending, now + 1)).toBe(pending);
     const restored = restoreBrewDay(JSON.parse(JSON.stringify(pending)));
-    const pitched = recordPitch(restored, now + 16 * 3600000, 19.2);
+    const pitched = recordPitch(restored, now + 16 * 3600000, 19.2, { mode: 'measured', amount: 1, unit: 'sachet' });
     expect(pitched).toMatchObject({ phase: 'brewing', transferredAt: now, pitchedAt: now + 16 * 3600000, finishedAt: now + 16 * 3600000, pitchTemperatureC: 19.2 });
-    expect(recordPitch(pitched, now + 17 * 3600000, 20)).toBe(pitched);
+    expect(recordPitch(pitched, now + 17 * 3600000, 20, { mode: 'unmeasured' })).toBe(pitched);
     expect(source.transferredAt).toBeUndefined();
     expect(validateSession(pitched)).toMatchObject({ pitchTemperatureC: 19.2 });
   });
@@ -102,7 +102,7 @@ describe('Ensemencement documenté et événements persistants', () => {
     s = startThermalSegment(s, s.steps[s.currentIndex], 'chamber', 18, now);
     s.thermalChoices = { ...s.thermalChoices, changedAt: now, pitchingMode: 'chamber-before-pitch' };
     s.readings = [reading(s, 22, 0)];
-    const sent = recordPitch(s, now + 1000, 22);
+    const sent = recordPitch(s, now + 1000, 22, { mode: 'measured', amount: 1, unit: 'sachet' });
     const canonical = stampSession(sent, undefined, now + 1000, now + 2500);
     const merged = mergeBrewTimestamps(sent, sent, canonical);
     expect(merged.transferredAt).toBe(now - 12 * 3600000);

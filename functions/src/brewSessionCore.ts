@@ -22,13 +22,14 @@ export interface SessionState {
   transferredAt?: number;
   pitchedAt?: number;
   pitchTemperatureC?: number;
+  pitchQuantityConfirmation?: 'measured' | 'planned' | 'unmeasured' | 'starter-transferred';
   phase?: 'brewing' | 'awaiting-pitch';
   thermalSegments?: Array<{ id: string; stepId: string; method: 'heating' | 'immersion' | 'chamber'; startedAt: number; endedAt?: number; targetC: number; volumeL?: number; coolantC?: number; vesselRef?: string; note?: string }>;
   thermalChoices?: { coolingMethod?: 'immersion' | 'chamber'; pitchTargetC?: number; pitchingMode?: 'at-target' | 'chamber-before-pitch' | 'documented-warm'; changedAt?: number; reason?: string; protocolSource?: string; protocolConditions?: string };
   boilStartedAt?: number;
   boilFinishedAt?: number;
   boilDurationMin?: number;
-  additions?: Record<string, { amount: number; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number }>;
+  additions?: Record<string, { amount: number; unit?: string; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number }>;
   lauterRetainedL?: number;
   hopElapsedMin?: Record<string, number>;
   waterMix?: Record<string, { roL: number }>;
@@ -167,6 +168,20 @@ export function validateSession(input: unknown): SessionState {
   const validTemperature = (v: unknown) => typeof v === 'number' && Number.isFinite(v) && v >= -10 && v <= 120;
   if (s.pitchTemperatureC != null && (!validTemperature(s.pitchTemperatureC) || s.pitchedAt == null))
     throw new Error('Température d’ensemencement invalide.');
+  if (s.pitchQuantityConfirmation !== undefined) {
+    if (!['measured', 'planned', 'unmeasured', 'starter-transferred'].includes(s.pitchQuantityConfirmation) || s.pitchedAt == null)
+      throw new Error('Confirmation de quantité sans ensemencement valide.');
+    const added = s.additions?.yeast;
+    if (s.pitchQuantityConfirmation === 'unmeasured' && added !== undefined)
+      throw new Error('Quantité non mesurée : aucun montant de substitution autorisé.');
+    if (s.pitchQuantityConfirmation === 'measured' || s.pitchQuantityConfirmation === 'planned') {
+      if (!added || !Number.isFinite(added.amount) || added.amount <= 0 || typeof added.unit !== 'string' || !added.unit.trim())
+        throw new Error('Quantité réellement ajoutée et unité positive requises.');
+    }
+    if (s.pitchQuantityConfirmation === 'starter-transferred' && added !== undefined &&
+        (!Number.isFinite(added.amount) || added.amount <= 0 || added.unit !== 'L'))
+      throw new Error('Volume de culture transférée positif requis, en litres.');
+  }
   if (s.thermalChoices != null) {
     const c = s.thermalChoices;
     if (typeof c !== 'object' || Array.isArray(c) || c.coolingMethod != null && !['immersion', 'chamber'].includes(c.coolingMethod) ||
@@ -205,6 +220,9 @@ export function validateSession(input: unknown): SessionState {
   for (const x of Object.values(s.additions ?? {}))
     if (!x || !Number.isFinite(x.amount) || x.amount < 0 || x.amount > 100000)
       throw new Error('Quantité invalide.');
+  for (const x of Object.values(s.additions ?? {}))
+    if (x.unit !== undefined && (typeof x.unit !== 'string' || !x.unit.trim() || x.unit.length > 40))
+      throw new Error('Unité d’ajout invalide.');
   for (const x of Object.values(s.additions ?? {}))
     if (x.doneAt != null && (!Number.isFinite(x.doneAt) || x.doneAt < 0))
       throw new Error('Heure d’ajout invalide.');

@@ -2,9 +2,12 @@ import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'rea
 import { ChevronDown, Undo2 } from 'lucide-react';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
 import type { YeastSpec } from '../types';
+import { readYeastPitchingPlan, type YeastPitchingWort } from '../../functions/src/yeastSupplySchema';
 import { adoptedDocumentaryFromCandidateSheet, extractYeastCandidateSheet, mergeYeastCandidateSheet, tryAdoptYeastDocumentary, tryAcceptYeastCandidateSheet, type RecipeWizardDraft, type YeastCandidateSheets } from '../services/recipeDraft';
 import { YeastSheetAssistant, type YeastLookupEntry, type YeastSheetAccept } from './RecipeAutoComplete';
-import { YeastRecipeDossier } from './YeastRecipeDossier';
+import { YeastCitationList, YeastCitationMark, YeastLinkedText, YeastRecipeDossier, yeastCitationKey, yeastCitations, yeastDateText, yeastFactLabel, yeastObservationText, yeastSourceTitle } from './YeastRecipeDossier';
+import { YeastDbCorrectionsPanel } from './YeastDbCorrectionsPanel';
+import type { YeastDbCorrectionTarget } from '../../functions/src/yeastDbCorrectionTypes';
 import {
   applyYeastRecipeDesign, completeYeastRecipeDesignApplication, createYeastRecipeDraft, evaluateYeastRecipeDesign, readYeastRecipeDesign, yeastRecipeCandidates, yeastSpecForCandidate, inferYeastRecipeStyle,
   YEAST_RECIPE_GOAL_LABELS, YEAST_STYLE_FAMILIES, type YeastRecipeGoal, type YeastStyleId, type YeastRecipeCandidate,
@@ -13,19 +16,23 @@ import { planFermentationTimeline, type FermentationTimelineStep } from '../doma
 import { yeastReferences } from '../domain/yeastReferences';
 import { yeastStrainInformation } from '../domain/yeastStrainInformation';
 import { YEAST_FACT_LABELS } from '../domain/yeastCatalogue';
-import { readYeastFactValue } from '../../functions/src/yeastTechnicalFacts';
+import { readYeastDocumentaryNotes, readYeastFactValue, readYeastTechnicalFacts, type YeastDocumentaryNote, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import { readYeastDocumentaryView } from '../domain/ingredientFacts';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { YeastCandidatePicker } from './YeastCandidatePicker';
 import { YeastRecipeWorkbench, type YeastRecipeDestination } from './YeastRecipeWorkbench';
 import { YeastStrainDetails } from './YeastStrainDetails';
-import { YeastRecipePlan, YeastProjectionReading, StationHeading, projectionRange, yeastWarningsForReading } from './YeastRecipePlan';
+import { YeastRecipePlan, YeastProjectionReading, StationHeading, yeastWarningsForReading } from './YeastRecipePlan';
 import { YeastBeerTargetPanel, yeastBeerTargetSummary } from './YeastBeerTargetPanel';
 import { YeastEvidenceSummary } from './YeastEvidenceSummary';
 import './yeast-choice.css';
+import { keepIndependentPitchingWort } from '../domain/yeastPitching';
+import { YeastPitchingPanel, yeastPitchingChoiceChanged, yeastPitchingDifferences } from './YeastPitchingPanel';
+import { useYeastSupply } from '../hooks/useYeastSupply';
 
 type QuantityReading = { state: 'missing' | 'invalid' | 'unitless' | 'set'; text: string; hint?: string };
+const UNKNOWN_COMPARISON_WORT: YeastPitchingWort = { basis: 'hypothesis', note: 'Moût à ensemencer non renseigné.' };
 const quantityReading = ({ qty, unit }: YeastSpec): QuantityReading => {
   if (qty == null) return { state: 'missing', text: unit ? `non renseignée · ${unit}` : 'non renseignée',
     hint: 'Saisis la quantité prévue ; le repère fabricant ne la remplit pas automatiquement.' };
@@ -55,13 +62,65 @@ const documentaryComparable = (value: unknown): string => value === undefined ? 
     .filter(([, item]) => item !== undefined).sort(([a],[b]) => a < b ? -1 : a > b ? 1 : 0)) : entry);
 const IDENTITY_KEYS = ['name', 'hopIndexId', 'stockItemRef'] as const;
 const PHYSICAL_KEYS = new Set<string>([...IDENTITY_KEYS, 'form', 'qty', 'unit', 'pitchTempC']);
-const SHEET_LABELS: Record<string, string> = { attenuationPct: 'hypothèse d’atténuation', attenuationBasis: 'nature de l’hypothèse', declaredAttenuationPct:'atténuation documentaire', documentaryInvalid:'fiche adoptée', fermTempMinC: 'température mini',
-  lab: 'fabricant / laboratoire', strain: 'code de souche', documentaryNotes: 'notes documentaires', fermentationFacts: 'données fermentaires',
-  fermTempMaxC: 'température maxi', alcoholTolerancePct: 'tolérance alcoolique', flocculation: 'floculation', fermentDays: 'durée de fiche',
-  technicalFacts: 'observations', technicalSelections: 'valeurs retenues', technicalSource: 'source', notes: 'notes', fermentation: 'profil fermentaire' };
+const SHEET_LABELS: Record<string, string> = { attenuationPct: 'Hypothèse d’atténuation', attenuationBasis: 'Nature de l’hypothèse', declaredAttenuationPct:'Atténuation documentaire', documentaryInvalid:'Fiche adoptée', fermTempMinC: 'Température mini',
+  lab: 'Fabricant / laboratoire', strain: 'Code de souche', documentaryNotes: 'Notes documentaires', fermentationFacts: 'Assimilation et domaine publié',
+  fermTempMaxC: 'Température maxi', alcoholTolerancePct: 'Tolérance alcoolique', flocculation: 'Floculation', fermentDays: 'Durée de fiche',
+  technicalFacts: 'Observations documentaires', technicalSelections: 'Valeurs retenues de la fiche', technicalSource: 'Source / notice', notes: 'Notes (recette, lot)', fermentation: 'Profil fermentaire' };
+const factDiffKey = (fact: YeastTechnicalFact) => JSON.stringify([fact.key, fact.reported, fact.range, fact.unit, fact.qualifier, fact.context, yeastCitationKey(fact)]);
+const noteDiffKey = (note: YeastDocumentaryNote) => JSON.stringify([note.text.trim(), note.context, yeastCitationKey(note)]);
+const counted = (count: number, singular: string, pluralWord = `${singular}s`) => count ? `${count} ${count > 1 ? pluralWord : singular}` : '';
+/** Added and removed items only, each with its value and a short citation; the common document is named once. */
+function ItemChanges({ rows }: { rows: { change: 'added' | 'removed' | 'changed'; label: string; value: ReactNode; cited?: { source?: string; sourceUrl?: string; retrievedAt?: string } }[] }) {
+  if (!rows.length) return null;
+  const citations = yeastCitations(rows.flatMap(row => row.cited ? [row.cited] : [])), single = citations.list.length === 1;
+  return <><ul className="yc-diff-items">{rows.map((row, index) => <li key={index} data-diff-change={row.change}>
+    <span className="yc-diff-kind">{row.change === 'added' ? 'Ajout' : row.change === 'removed' ? 'Retrait' : 'Retenue'}</span> {row.label} : {row.value}
+    {row.cited && <YeastCitationMark citation={citations.of(row.cited)} single={single} />}</li>)}</ul>
+    <YeastCitationList citations={citations.list} /></>;
+}
+/** Documentary changes read as decisions (added, removed, kept, retained value) instead of serialized records. */
+function documentaryDifference(key: string, before: unknown, after: unknown): DraftDifference | undefined {
+  const id = `sheet-${key}`, label = SHEET_LABELS[key] ?? key;
+  if (key === 'technicalFacts') {
+    const a = readYeastTechnicalFacts(before ?? []), b = readYeastTechnicalFacts(after ?? []);
+    if (!a || !b) return undefined;
+    const had = new Set(a.map(factDiffKey)), has = new Set(b.map(factDiffKey));
+    const added = b.filter(fact => !had.has(factDiffKey(fact))), removed = a.filter(fact => !has.has(factDiffKey(fact))), kept = b.length - added.length;
+    const text = [counted(added.length, 'ajoutée'), counted(removed.length, 'retirée'), counted(kept, 'conservée')].filter(Boolean).join(' · ');
+    const row = (fact: YeastTechnicalFact, change: 'added' | 'removed') => ({ change, label: yeastFactLabel(fact.key), cited: fact,
+      value: <>{yeastObservationText(fact).value}{fact.context && !/^beer$/i.test(fact.context) ? ` · ${fact.context}` : ''}</> });
+    return { id, label, text: added.length || removed.length ? text : `${text || 'aucune observation'} · date ou origine de consultation actualisée`,
+      detail: <ItemChanges rows={[...added.map(fact => row(fact, 'added')), ...removed.map(fact => row(fact, 'removed'))]} /> };
+  }
+  if (key === 'documentaryNotes') {
+    const a = before === undefined ? [] : readYeastDocumentaryNotes(before), b = after === undefined ? [] : readYeastDocumentaryNotes(after);
+    if (a === undefined || b === undefined) return undefined;
+    if (a === null || b === null) return { id, label, before: a === null ? 'documentation inconnue' : counted(a.length, 'note') || 'aucune note', after: b === null ? 'documentation inconnue' : counted(b.length, 'note') || 'aucune note' };
+    const had = new Set(a.map(noteDiffKey)), has = new Set(b.map(noteDiffKey));
+    const added = b.filter(note => !had.has(noteDiffKey(note))), removed = a.filter(note => !has.has(noteDiffKey(note))), kept = b.length - added.length;
+    const row = (note: YeastDocumentaryNote, change: 'added' | 'removed') => ({ change, label: note.origin === 'personal' ? 'Note personnelle' : 'Note', cited: note, value: <YeastLinkedText text={note.text} /> });
+    return { id, label, text: [counted(added.length, 'ajoutée'), counted(removed.length, 'retirée'), counted(kept, 'conservée')].filter(Boolean).join(' · ') || (b.length ? 'provenance actualisée' : 'notes retirées'),
+      detail: <ItemChanges rows={[...added.map(note => row(note, 'added')), ...removed.map(note => row(note, 'removed'))]} /> };
+  }
+  if (key === 'technicalSelections') {
+    const a = (before ?? {}) as Record<string, unknown>, b = (after ?? {}) as Record<string, unknown>;
+    const reading = (value: unknown) => value === null ? 'inconnue après revue' : value === undefined ? 'non retenue'
+      : readYeastTechnicalFacts([value])?.[0] ? yeastObservationText(readYeastTechnicalFacts([value])![0]).value : 'valeur illisible';
+    const rows = [...new Set([...Object.keys(a), ...Object.keys(b)])].filter(field => JSON.stringify(a[field] ?? null) !== JSON.stringify(b[field] ?? null) || (field in a) !== (field in b))
+      .map(field => ({ change: 'changed' as const, label: yeastFactLabel(field), value: <>{reading(a[field])} → <strong>{reading(b[field])}</strong></>,
+        cited: b[field] && typeof b[field] === 'object' ? b[field] as { source?: string; sourceUrl?: string; retrievedAt?: string } : undefined }));
+    return { id, label, text: counted(rows.length, 'valeur modifiée', 'valeurs modifiées') || 'provenance actualisée', detail: <ItemChanges rows={rows} /> };
+  }
+  if (key === 'technicalSource') {
+    const text = (value: unknown) => typeof value === 'string' && value.trim() ? yeastSourceTitle(value) : 'non renseignée';
+    return { id, label, before: text(before), after: text(after),
+      detail: typeof after === 'string' && /^https?:\/\//.test(after.trim()) ? <span className="block"><a className="yeast-source" href={after.trim()} target="_blank" rel="noreferrer">Ouvrir la nouvelle source</a></span> : undefined };
+  }
+  return undefined;
+}
 const PROCESS_LABELS: Record<string, string> = { unspecified: 'procédé à préciser', preacidified: 'moût pré-acidifié', 'acidifying-yeast': 'levure acidifiante', 'mixed-culture': 'cultures mixtes' };
 const goalLabel = (goal?: YeastRecipeGoal) => goal ? YEAST_RECIPE_GOAL_LABELS[goal] : 'aucun';
-type DraftDifference = { id: string; label: string; before?: string; after?: string; text?: string; open?: 'objectives' | 'conduct' };
+type DraftDifference = { id: string; label: string; before?: string; after?: string; text?: string; detail?: ReactNode; open?: 'objectives' | 'conduct' };
 /** Exact change of the stored phases; the programme itself stays in the conduct station. */
 function programmeDifference(before: readonly FermentationTimelineStep[], after: readonly FermentationTimelineStep[]): string | undefined {
   if (comparable(before) === comparable(after)) return undefined;
@@ -82,7 +141,8 @@ function programmeDifference(before: readonly FermentationTimelineStep[], after:
 /** Compare effective documentary decisions, never the storage wrapper or its schema version. */
 function documentaryDiffValues(yeast: YeastSpec): Record<string,unknown> {
   const view=readYeastDocumentaryView(yeast), values:Record<string,unknown>={...yeast};
-  for(const key of [...PHYSICAL_KEYS,'adoptedDocumentary','localDocumentary','lab','strain','fermTempMinC','fermTempMaxC','flocculation','alcoholTolerancePct','fermentDays','technicalSource',
+  // `pitching` (product, offer, lot, wort, preparation) is compared by its own named rows, never as a sheet key.
+  for(const key of [...PHYSICAL_KEYS,'pitching','adoptedDocumentary','localDocumentary','lab','strain','fermTempMinC','fermTempMaxC','flocculation','alcoholTolerancePct','fermentDays','technicalSource',
     'technicalFacts','technicalSelections','documentaryNotes','fermentationFacts','attenuationPct','attenuationBasis'])delete values[key];
   if(view.documentary)for(const [key,value]of Object.entries(view.documentary))if(!PHYSICAL_KEYS.has(key))values[key]=value;
   for(const key of ['technicalFacts','technicalSelections','documentaryNotes','fermentationFacts']as const)if(Object.prototype.hasOwnProperty.call(view,key))values[key]=view[key];
@@ -102,6 +162,7 @@ function draftDifferences(saved: TrialRecipe, draft: TrialRecipe, savedGoal?: Ye
   if ((a.form || '') !== (b.form || '')) rows.push({ id: 'form', label: 'Forme', before: a.form || 'inconnue', after: b.form || 'inconnue' });
   if (comparable([a.qty, a.unit]) !== comparable([b.qty, b.unit])) rows.push({ id: 'quantity', label: 'Quantité', before: stateQuantity(a), after: stateQuantity(b) });
   if (comparable(a.pitchTempC) !== comparable(b.pitchTempC)) rows.push({ id: 'pitch', label: 'Température d’ensemencement', before: degrees(a.pitchTempC, 'à renseigner'), after: degrees(b.pitchTempC, 'à renseigner') });
+  rows.push(...yeastPitchingDifferences(a, b));
   const adoc=documentaryDiffValues(a),bdoc=documentaryDiffValues(b);
   const sheet = [...new Set([...Object.keys(adoc), ...Object.keys(bdoc)])].filter(key => documentaryComparable(adoc[key]) !== documentaryComparable(bdoc[key]));
   const units: Record<string, string> = { attenuationPct: ' %', declaredAttenuationPct:' %', fermTempMinC: ' °C', fermTempMaxC: ' °C', alcoholTolerancePct: ' % vol', fermentDays: ' j' };
@@ -124,8 +185,10 @@ function draftDifferences(saved: TrialRecipe, draft: TrialRecipe, savedGoal?: Ye
         : reading.kind === 'point' ? `point publié ${decimal(reading.value)} ${row.unit ?? ''}`
           : reading.kind === 'bound' ? `borne ${reading.operator}${decimal(reading.value)} ${row.unit ?? ''}` : '';
       const origin = row.origin === 'ai' ? 'recherche IA' : row.origin === 'manufacturer' ? 'fabricant' : row.origin === 'personal' ? 'donnée personnelle' : '';
+      // Unreadable records only: still one short source, never the pasted URL and timestamp.
+      const cited = row.source || row.sourceUrl ? yeastSourceTitle(typeof row.source === 'string' ? row.source : undefined, typeof row.sourceUrl === 'string' ? row.sourceUrl : undefined) : '';
       return [label ? `${label} : ${row.reported ?? row.text ?? ''}` : row.text ?? row.reported ?? '', shape,
-        origin, row.source, row.sourceUrl, row.context, row.retrievedAt].filter(Boolean).join(' · ');
+        origin, cited, row.context].filter(Boolean).join(' · ');
     }).join(' ; ') : 'aucune donnée retenue';
     if (key === 'technicalSelections' && typeof value === 'object') return Object.entries(value).map(([property, selected]) => {
       const label = YEAST_FACT_LABELS[property as keyof typeof YEAST_FACT_LABELS] ?? property;
@@ -145,11 +208,12 @@ function draftDifferences(saved: TrialRecipe, draft: TrialRecipe, savedGoal?: Ye
       const sugars = data.sugars && typeof data.sugars === 'object' ? Object.entries(data.sugars).map(([sugar, reading]) => `${sugarLabels[sugar] ?? sugar} : ${state(reading)}`) : [];
       return [data.strainName, data.conditions, ...sugars, data.pof != null ? `POF : ${state(data.pof)}` : '',
         data.hydrolysis != null ? `Hydrolyse : ${state(data.hydrolysis)}` : '', range(data.pitchGL, 'g/L'), range(data.temperatureC, '°C'),
-        range(data.durationDays, 'j'), source?.title, source?.reference, data.retrievedAt].filter(Boolean).join(' · ') || 'non renseigné';
+        range(data.durationDays, 'j'), source?.title || source?.reference ? `source : ${yeastSourceTitle(typeof source?.title === 'string' ? source.title : undefined, typeof source?.reference === 'string' && /^https?:\/\//.test(source.reference) ? source.reference : undefined)}` : '',
+        typeof data.retrievedAt === 'string' ? `date indiquée : ${yeastDateText(data.retrievedAt)}` : ''].filter(Boolean).join(' · ') || 'non renseigné';
     }
     return 'donnée à consulter dans la fiche';
   };
-  for (const key of sheet) rows.push({ id: `sheet-${key}`, label: SHEET_LABELS[key] ?? key,
+  for (const key of sheet) rows.push(documentaryDifference(key, adoc[key], bdoc[key]) ?? { id: `sheet-${key}`, label: SHEET_LABELS[key] ?? key,
     before: sheetReading(key, adoc[key]), after: sheetReading(key, bdoc[key]) });
   if (savedGoal !== draftGoal) rows.push({ id: 'goal', label: 'Profil de fermentation', before: goalLabel(savedGoal), after: goalLabel(draftGoal), open: 'objectives' });
   const savedDesign = readYeastRecipeDesign(saved), draftDesign = readYeastRecipeDesign(draft);
@@ -170,7 +234,7 @@ function draftDifferences(saved: TrialRecipe, draft: TrialRecipe, savedGoal?: Ye
 export type YeastChoiceFields = Pick<TrialRecipe, 'yeast' | 'yeastDesign' | 'yeastGuide' | 'hopPredictionIds' | 'hopMatrixId' | 'hopTrialId'>;
 /** Catalogue sheet, a real stock lot, or a free entry: three distinct sources, never merged here. */
 export type YeastChoiceSource = 'catalogue' | 'stock' | 'free';
-export type YeastChoiceIntent = 'replace-selection' | 'restore-selection' | 'conduct';
+export type YeastChoiceIntent = 'replace-selection' | 'restore-selection' | 'conduct' | 'pitching';
 /** Last strain change of the draft. `to` is missing while a change started by the Wizard is not rendered yet. */
 export interface YeastChoiceChange { source: YeastChoiceSource | 'undo'; from: YeastChoiceFields; to?: YeastChoiceFields; startedAt?: number }
 export const yeastChoiceFields = (recipe: TrialRecipe): YeastChoiceFields => structuredClone({
@@ -190,6 +254,8 @@ function laterEdits(to: YeastChoiceFields, now: TrialRecipe): string[] {
   if (comparable([a.qty, a.unit]) !== comparable([b.qty, b.unit])) rows.push(`quantité ${stateQuantity(b)}`);
   if ((a.form || '') !== (b.form || '')) rows.push(`forme ${b.form || 'à préciser'}`);
   if (comparable(a.pitchTempC) !== comparable(b.pitchTempC)) rows.push(`ensemencement ${degrees(b.pitchTempC, 'vide')}`);
+  // The wort to pitch is a physical correction kept by the undo; product, offer, lot and preparation are not.
+  if (yeastPitchingChoiceChanged(a, b)) rows.push('produit, offre, lot ou préparation choisis depuis');
   const adoc=documentaryDiffValues(a),bdoc=documentaryDiffValues(b);
   if ([...new Set([...Object.keys(adoc), ...Object.keys(bdoc)])].some(key => documentaryComparable(adoc[key]) !== documentaryComparable(bdoc[key]))) rows.push('corrections de fiche');
   if (comparable(to.yeastDesign) !== comparable(now.yeastDesign)) rows.push('conduite ou objectifs appliqués depuis');
@@ -216,8 +282,17 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
    * Without it, catalogue choices keep a local undo. */
   yeastChange?: YeastChoiceChange; onYeastChange?: (change?: YeastChoiceChange) => void;
 }) {
+  const supply = useYeastSupply();
   const saved = useStorageValue(StorageService.getHopKnowledge);
   const refs = useMemo(() => yeastReferences(saved), [saved]);
+  // The comparison uses only the stored moût at pitching. Recipe OG and final
+  // recipe volume are never substituted for an absent measurement/estimate.
+  const comparisonPlan = useMemo(() => recipe.yeast.pitching ? readYeastPitchingPlan(recipe.yeast.pitching) : undefined, [recipe.yeast.pitching]);
+  const comparisonWort = useMemo(() => {
+    return comparisonPlan?.wort ? structuredClone(comparisonPlan.wort) : UNKNOWN_COMPARISON_WORT;
+  }, [comparisonPlan]);
+  const comparisonRecipeContext = useMemo(() => ({ volumeL: recipe.volumeL, fermentables: recipe.fermentables, efficiencyPct: recipe.efficiencyPct }),
+    [recipe.volumeL, recipe.fermentables, recipe.efficiencyPct]);
   const currentDraft = useMemo(() => createYeastRecipeDraft(recipe, refs), [recipe, refs]);
   const current = useMemo(() => evaluateYeastRecipeDesign(recipe, currentDraft, refs), [recipe, currentDraft, refs]);
   const savedDraft = useMemo(() => savedRecipe && createYeastRecipeDraft(savedRecipe, refs), [savedRecipe, refs]);
@@ -265,6 +340,10 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
   const objectivesHeading = useRef<HTMLHeadingElement>(null);
   const catalogue = useRef<HTMLDivElement>(null);
   const quantityBlock = useRef<HTMLDivElement>(null);
+  const pitchStation = useRef<HTMLElement>(null);
+  // Shared catalogue sheet: corrected in the canonical base, never rewriting the sheet already adopted by this recipe.
+  const [catalogueTarget, setCatalogueTarget] = useState<YeastDbCorrectionTarget | null>(null);
+  const [catalogueReceipt, setCatalogueReceipt] = useState('');
   const personal = useRef<HTMLDetailsElement>(null);
   const referenceSheetSummary = useRef<HTMLElement>(null);
   const candidateSheetSummary = useRef<HTMLElement>(null);
@@ -377,7 +456,8 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
   const commitStrain = (next: TrialRecipe, source: YeastChoiceSource) => {
     const from = yeastChoiceFields(recipe);
     let accepted: TrialRecipe;
-    try { accepted = onChange(next,'replace-selection') || next; }
+    const withWort = { ...next, yeast: keepIndependentPitchingWort(next.yeast, recipe.yeast) };
+    try { accepted = onChange(withWort,'replace-selection') || withWort; }
     catch (e) { setChoiceError(e instanceof Error ? e.message : 'Changement de levure impossible.'); return; }
     setChange({ source, from, to: yeastChoiceFields(accepted) });
     settleStrainChange(from.yeast.hopIndexId !== accepted.yeast.hopIndexId);
@@ -428,7 +508,8 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
     if (!change?.to || !changeCurrent) return;
     const now = yeastChoiceFields(recipe);
     let accepted: TrialRecipe;
-    try { accepted = onChange({ ...recipe, ...structuredClone(change.from) },'restore-selection') || { ...recipe, ...change.from }; }
+    const restored = { ...recipe, ...structuredClone(change.from), yeast: keepIndependentPitchingWort(structuredClone(change.from.yeast), recipe.yeast) };
+    try { accepted = onChange(restored,'restore-selection') || restored; }
     catch (e) { setChoiceError(e instanceof Error ? e.message : 'Annulation impossible.'); return; }
     setChange({ source: 'undo', from: now, to: yeastChoiceFields(accepted) });
     settleStrainChange(now.yeast.hopIndexId !== accepted.yeast.hopIndexId);
@@ -442,9 +523,21 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
     return accepted;
   };
   const focusQuantity = () => requestAnimationFrame(() => {
-    quantityBlock.current?.scrollIntoView({ block: 'center' });
-    quantityBlock.current?.querySelector<HTMLElement>('input, select')?.focus({ preventScroll: true });
+    // The Wizard's editor sits in its slot; without one, the pitching panel's own quantity entry carries the same marker.
+    const block = quantityBlock.current ?? pitchStation.current?.querySelector<HTMLElement>('[data-yeast-quantity-editor]') ?? pitchStation.current;
+    block?.scrollIntoView({ block: 'center' });
+    // On touch devices the protected text entry renders a single-line textarea.
+    block?.querySelector<HTMLElement>('input, textarea, select')?.focus({ preventScroll: true });
   });
+  /** Product, offer, lot, wort and preparation edits. Associating a stock lot changes the article reference,
+   * not the strain choice: the last strain change keeps its undo, which names what it would also remove. */
+  const pitchingChange = (next: TrialRecipe) => {
+    const accepted = onChange(next, 'pitching') || next;
+    if (changeCurrent && change?.to && identityKey(accepted.yeast) !== identityKey(recipe.yeast)
+      && accepted.yeast.name === recipe.yeast.name && accepted.yeast.hopIndexId === recipe.yeast.hopIndexId)
+      setChange({ ...change, to: { ...change.to, yeast: { ...change.to.yeast, stockItemRef: accepted.yeast.stockItemRef } } });
+    return accepted;
+  };
   const openPersonal = () => { setPersonalOpen(true); requestAnimationFrame(() => personal.current?.scrollIntoView({ block: 'start' })); };
   /** Settings of the former strain that the new one does not inherit, each with its place of correction. Rows vanish once set again. */
   const revalidations = (from: YeastChoiceFields): { id: string; text: string; action?: { label: string; run: () => void } }[] => {
@@ -453,6 +546,7 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
     if (was.qty != null && is.qty == null) rows.push({ id: 'quantity', text: `Quantité : ${stateQuantity(was)} non reprise`, action: { label: 'Saisir', run: focusQuantity } });
     if (Number.isFinite(was.pitchTempC) && !Number.isFinite(is.pitchTempC)) rows.push({ id: 'pitch', text: `Ensemencement : ${degrees(was.pitchTempC)} non repris`, action: { label: 'Régler', run: () => setPitchRequest(count => count + 1) } });
     if (was.stockItemRef && was.stockItemRef !== is.stockItemRef) rows.push({ id: 'stock', text: `Lot ${was.stockItemRef} non repris${is.stockItemRef ? ` · lot ${is.stockItemRef}` : ' · aucun lot lié'}`, action: identityEditor ? { label: 'Mon stock', run: openPersonal } : undefined });
+    if (was.pitching?.product && was.pitching.product.id !== is.pitching?.product?.id) rows.push({ id: 'product', text: `Produit ${was.pitching.product.label} non repris${was.pitching.preparation ? ', ni sa préparation' : ''}`, action: { label: 'Ensemencement', run: focusQuantity } });
     const before = readYeastRecipeDesign({ ...recipe, ...from }), after = readYeastRecipeDesign(recipe);
     const lost = [before?.pressureBar !== undefined && after?.pressureBar === undefined ? `pression ${decimal(before.pressureBar)} bar` : '',
       (before?.process ?? 'unspecified') !== 'unspecified' && (after?.process ?? 'unspecified') === 'unspecified' ? PROCESS_LABELS[before!.process!] : '',
@@ -493,16 +587,21 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
   const hasObjectives = chosen || !!trial;
   // Paliers already in the draft stay reachable even before any strain is chosen.
   const hasPlan = hasObjectives || !!recipe.fermentation?.length;
+  // Decisions with a lead time (product, purchase, preparation before J0) come right after the strain; numbers never skip.
+  const pitchStep = chosen ? 2 : 0;
+  const objectivesStep = hasObjectives ? (chosen ? 3 : 2) : 0;
+  const conductStep = (objectivesStep || pitchStep || 1) + 1;
   const draftGoal = currentDraft.goalExplicit ? currentDraft.goal : undefined;
   // A local profile not yet applied follows the strain change into the remounted plan.
   const goalCarry = goalIntentOverride && goalIntentOverride !== draftGoal ? goalIntentOverride : undefined;
   const differences = savedRecipe ? draftDifferences(savedRecipe, recipe, savedDraft?.goalExplicit ? savedDraft.goal : undefined, draftGoal) : [];
   const immediateDifferences = differences.filter(row => !row.id.startsWith('sheet-'));
   const documentaryDifferences = differences.filter(row => row.id.startsWith('sheet-'));
-  const differenceRow = (row: DraftDifference) => <li key={row.id} data-difference={row.id}><strong>{row.label}</strong><span>
-    {row.text ?? <><span data-side="saved">{row.before}</span> → <span data-side="draft">{row.after}</span></>}
+  const differenceRow = (row: DraftDifference) => <li key={row.id} data-difference={row.id}><strong>{row.label}</strong><div className="yc-diff-body">
+    {row.text ?? <><span data-side="saved"><YeastLinkedText text={row.before ?? ''} /></span> → <span data-side="draft"><YeastLinkedText text={row.after ?? ''} /></span></>}
+    {row.detail}
     {row.open && (row.open === 'conduct' ? hasPlan : hasObjectives) && <> <button type="button" className="yeast-link" onClick={() => row.open === 'conduct' ? setConductRequest(count => count + 1) : openObjectives()}>{row.open === 'conduct' ? 'Voir la conduite' : 'Voir les objectifs'}</button></>}
-  </span></li>;
+  </div></li>;
   const targetText = yeastBeerTargetSummary(currentDraft.beerTarget);
   const objectivesSummary = <><span>Profil : {goalLabel(trialGoal)}{trialGoal !== draftGoal ? ` · brouillon : ${goalLabel(draftGoal)}` : ''}</span>
     <span>Cible : {targetText || 'non fixée'}</span></>;
@@ -512,11 +611,27 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
   const toRevalidate = changeCurrent && change && change.source !== 'undo' ? revalidations(change.from) : [];
   const identityText = [recipe.yeast.lab || selected?.lab || 'laboratoire à préciser', recipe.yeast.form || 'forme à préciser'].join(' · ');
   const sourceText = recipe.yeast.stockItemRef ? `Lot ${recipe.yeast.stockItemRef}` : recipe.yeast.hopIndexId ? 'Catalogue' : 'Saisie libre';
-  if (recipe.nolo?.enabled) return <><YeastRecipeWorkbench recipe={recipe} onChange={onChange} onNavigate={onNavigate} />{quantityEditor}{identityEditor}{aiEditor}{factsEditor}</>;
+  // NOLO keeps its complete workshop; the same qualified pitching carries the single quantity entry once a strain exists.
+  if (recipe.nolo?.enabled) return <><YeastRecipeWorkbench recipe={recipe} onChange={onChange} onNavigate={onNavigate} />
+    {chosen ? <YeastPitchingPanel recipe={recipe} onChange={pitchingChange} quantityEditor={quantityEditor} /> : quantityEditor}{identityEditor}{aiEditor}{factsEditor}</>;
+  const quantitySlot = (editor: ReactNode) => <div ref={quantityBlock} role="group" aria-label="Quantité prévue de levure" className="yc-quantity-slot" data-yeast-quantity={quantity.state} data-yeast-quantity-editor>
+    {editor}</div>;
+  const catalogueReference = recipe.yeast.hopIndexId && selected?.reference && selected.reference.id === recipe.yeast.hopIndexId ? selected.reference : undefined;
+  const openCatalogueCorrection = () => {
+    if (!catalogueReference) return;
+    const inBase = Array.isArray(saved) && saved.some(row => row.id === catalogueReference.id);
+    setCatalogueReceipt('');
+    setCatalogueTarget({ scope: 'catalogue', id: catalogueReference.id, ...(inBase ? {} : { fallback: catalogueReference }), context: { recipe } });
+  };
+  const catalogueCorrection = catalogueReference && <div className="yc-catalogue-correction" data-catalogue-correction>
+    <p className="yeast-small">Fiche catalogue partagée de {catalogueReference.name ?? recipe.yeast.name} : corrigée dans la base commune ; la fiche déjà adoptée dans cette recette n’est pas réécrite.</p>
+    <button type="button" className="yeast-link" onClick={openCatalogueCorrection}>Corriger la fiche catalogue</button>
+    {catalogueReceipt && <p className="yeast-small" role="status" data-catalogue-receipt>{catalogueReceipt}</p>}
+  </div>;
   return <div className="yeast-workbench yeast-choice yc-journey" aria-label="Choisir la levure de la recette" data-yeast-state={trial ? 'trial' : chosen ? 'chosen' : 'empty'}>
     <header className="yc-journey-state" aria-label="État du choix de levure">
       {!savedRecipe ? <p className="yc-state-line" data-draft-state="new">Recette pas encore enregistrée</p>
-        : !differences.length ? <p className="yc-state-line" data-draft-state="saved" title="Comparés : identité, forme, quantité, ensemencement et fiche de la levure ; profil, cible, pression, procédé et paliers.">
+        : !differences.length ? <p className="yc-state-line" data-draft-state="saved" title="Comparés : identité, forme, quantité, ensemencement et fiche de la levure ; produit, offre, lot, moût à ensemencer et préparation ; profil, cible, pression, procédé et paliers.">
           Levure, quantité et conduite identiques à la recette enregistrée</p>
           : <><p className="yc-state-line" data-draft-state="changed"><strong>Brouillon non enregistré</strong></p>
             {immediateDifferences.length > 0 && <ul className="yc-state-diff" aria-label="Écarts du brouillon avec la recette enregistrée">{immediateDifferences.map(differenceRow)}</ul>}
@@ -568,6 +683,8 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
           </>}
           recipeChoice={{ volumeL: recipe.volumeL, onChoose: chooseDirect, onTry: tryConduct, trialId: trial?.yeastId,
             draftReference: chosen ? { label: recipe.yeast.name, lab: recipe.yeast.lab, form: recipe.yeast.form } : undefined,
+            supply, comparisonWort, comparisonRecipeContext,
+            recipeProductCopy: comparisonPlan?.product, recipeOfferCopy: comparisonPlan?.offer,
             sheetYeast: candidate => hydrate(candidate), sheetRevision: candidate => sheets[candidate.yeastId]?.revision ?? 0,
             renderSheet: candidate => candidateSheet(candidate),
             referenceDossier: chosen ? dossier : undefined, referenceYeast: chosen ? recipe.yeast : undefined,
@@ -580,20 +697,15 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
           </details>
           : <div className="yc-personal" data-personal-open><h4>Mon stock ou saisie libre</h4>{identityEditor}</div>)}
       </div>
-      {chosen && <div ref={quantityBlock} role="group" aria-label="Quantité prévue de levure" className="yc-quantity-block" data-yeast-quantity={quantity.state}>
-        {/* The value is repeated beside the title only when it is a state to act on, or when its field is not shown. */}
-        <div className="yc-projection-title"><h4>Ensemencement du brouillon</h4>{(trial || quantity.state !== 'set') && <span className={quantity.state === 'set' ? 'yc-number' : 'yeast-notice'}>{quantity.text}</span>}</div>
-        {trial ? <p className="yeast-small" data-quantity-trial>Propre à {recipe.yeast.name} : non reprise pour l’essai, à revalider avant d’appliquer.</p>
-          : <>{quantity.hint && <p className="yeast-notice">{quantity.hint}</p>}<div className="yc-quantity">{quantityEditor}</div>
-            {recipe.yeast.form === 'sèche' && current.doseG && <p className="yeast-small">Repère fabricant pour {recipe.volumeL.toLocaleString('fr-FR')} L : <span className="yc-number">{projectionRange(current.doseG.range, 1)} g</span>{recipe.yeast.unit !== 'g' ? ' · masse du conditionnement à vérifier.' : '.'}</p>}</>}
-      </div>}
+      {/* Exact product and offers, after the direct search that must stay in the first screen: optional, never a quantity, never a purchase. */}
+      {chosen && <YeastPitchingPanel part="supply" recipe={recipe} onChange={pitchingChange} />}
       {/* Recipe reference and tried candidate are separate editable identities. */}
       {chosen && !!(aiEditor || factsEditor) && <details className="yc-sheet-fold" data-sheet-scope="recipe"
         aria-label={`Fiche de ${recipe.yeast.name}`} open={referenceSheetOpen} onToggle={e => setReferenceSheetOpen(e.currentTarget.open)}>
         <summary ref={referenceSheetSummary}><span><strong>Compléter ou corriger la fiche{candidateFold ? ` de ${recipe.yeast.name}` : ''}</strong>
           <small>{candidateFold ? 'Référence du brouillon · distincte de la fiche en essai' : 'Valeurs typées, sources et recherche IA'}</small></span>
           <ChevronDown size={14} aria-hidden="true" /></summary>
-        <div>{aiEditor}{factsEditor}</div>
+        <div>{aiEditor}{factsEditor}{catalogueCorrection}</div>
       </details>}
       {candidateFold && trial && trialCandidate && <details className="yc-sheet-fold" data-sheet-scope="candidate"
         aria-label={`Fiche de ${trialName}`} open={candidateSheetOpen} onToggle={e => setCandidateSheetOpen(e.currentTarget.open)}>
@@ -609,9 +721,21 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
       {chosen && warnings.length > 0 && <ul className="yc-alerts" aria-label="Points à vérifier pour la levure choisie">{warnings.map(text => <li key={text}>{text}</li>)}</ul>}
       {strainErrors.map(text => <p className="yeast-error" role="alert" key={text}>{text} Corrige la conduite ci-dessous.</p>)}
     </section>
+    {/* Wort to pitch, sourced advice, the single planned quantity, lot and preparation before J0 of the draft strain. */}
+    {chosen && <section ref={pitchStation} className="yc-station yc-pitch-station" aria-label="Ensemencement et préparation" data-pitch-trial={trial ? true : undefined}>
+      <div className="yc-station-heading"><span className="yc-step-number" aria-hidden="true">{pitchStep}</span><div><h3>Ensemencement et préparation</h3></div></div>
+      {trial ? quantitySlot(<>
+        <div className="yc-projection-title"><h4>Quantité prévue de {recipe.yeast.name}</h4><span className={quantity.state === 'set' ? 'yc-number' : 'yeast-notice'}>{quantity.text}</span></div>
+        <p className="yeast-small" data-quantity-trial>Propre à {recipe.yeast.name} : non reprise pour l’essai, à revalider avant d’appliquer. Produit, moût et préparation restent ceux du brouillon.</p></>)
+        // The state of the one planned quantity (missing, unit, zero, negative) is read by the panel right under this editor.
+        // Without a Wizard editor, nothing is passed and the panel keeps its own entry.
+        : <YeastPitchingPanel part="pitching" recipe={recipe} onChange={pitchingChange}
+          legacyDoseG={recipe.yeast.form === 'sèche' ? current.doseG?.range : undefined}
+          quantityEditor={quantityEditor ? quantitySlot(<div className="yc-quantity">{quantityEditor}</div>) : undefined} />}
+    </section>}
     {/* Two distinct intentions, one entry: the profile prepares the conduct, the target may rescale the recipe. */}
     {hasObjectives && <section className="yc-station yc-goal-station" aria-label="Objectifs">
-      <StationHeading step={2} title="Objectifs" fold="objectives" open={objectivesOpen} onToggle={() => setObjectivesOpen(open => !open)}
+      <StationHeading step={objectivesStep} title="Objectifs" fold="objectives" open={objectivesOpen} onToggle={() => setObjectivesOpen(open => !open)}
         controls={`${id}-objectives`} headingRef={objectivesHeading} summary={objectivesSummary} />
       <div id={`${id}-objectives`} hidden={!objectivesOpen} className="yc-station-body">
         <div ref={setGoalSlot} className="yc-objective-slot" />
@@ -622,15 +746,19 @@ export function YeastRecipeChoice({ recipe, savedRecipe, onChange, onNavigate, q
         onNavigate={onNavigate} onEditFacts={trial ? openCandidateSheet : openReferenceSheet} onEditObjectives={openObjectives}
         initialGoal={trial ? trialGoal : goalCarry ?? (consumedInitial ? undefined : initialGoal)} initialYeastId={trial?.yeastId} initialForm={trial?.form}
         initialProgramme={trialProgramme} trialYeast={trialYeast} onProgrammeChange={setTrialProgramme}
-        goalSlot={hasObjectives ? goalSlot : null} conductStep={hasObjectives ? 3 : 2} conductRequest={conductRequest} pitchRequest={pitchRequest}
+        goalSlot={hasObjectives ? goalSlot : null} conductStep={conductStep} conductRequest={conductRequest} pitchRequest={pitchRequest}
         onApplied={() => { setTrial(undefined); setCandidateSheetOpen(false); setTrialProgramme(undefined); setGoalIntentOverride(undefined); setNotice('Essai appliqué au brouillon. Enregistre la recette pour le conserver.'); }}
         onDiscard={() => { setCandidateSheetOpen(false); setTrialProgramme(undefined); setGoalIntentOverride(undefined); if (trial) { setTrial(undefined); setNotice(chosen ? `Essai annulé. Le brouillon garde ${recipe.yeast.name}.` : 'Essai annulé. Le brouillon reste sans levure.'); } }} />}
     {chosen && <details className="yc-dossier" aria-label="Dossier de la levure" open={dossierOpen} onToggle={e => setDossierOpen(e.currentTarget.open)}><summary>Repères pratiques, sources et programme détaillé<ChevronDown size={14} aria-hidden="true" /></summary><div>
       {selected && <p className="yc-selected-profile">{selected.descriptor}</p>}
       {recipeStyle === 'unknown' && <p className="yeast-small">Style libre : {recipe.style || 'non précisé'}. Le catalogue permet une comparaison toutes familles.</p>}
       <YeastStrainDetails information={yeastStrainInformation(selected?.reference, recipe.yeast.form)} />
+      {!(aiEditor || factsEditor) && catalogueCorrection}
       {programEditor && <details onToggle={e => { if (e.currentTarget.open) setProgramVisited(true); }}><summary onClick={() => setProgramVisited(true)}>Programme détaillé et guides enregistrés<ChevronDown size={14} aria-hidden="true" /></summary><div>{programVisited && programEditor}</div></details>}
     </div></details>}
+    <YeastDbCorrectionsPanel target={catalogueTarget} onClose={() => setCatalogueTarget(null)} onUpdated={receipt => setCatalogueReceipt(receipt.readback === 'pending'
+      ? 'Fiche catalogue corrigée et confirmée par la base ; la copie de cet appareil reste à actualiser. La fiche adoptée dans cette recette est inchangée.'
+      : 'Fiche catalogue corrigée et confirmée par la base. La fiche adoptée dans cette recette est inchangée : relis-la ou relance sa recherche pour reprendre ces valeurs.')} />
     {/* Without a strain there is no sheet to show; the recorded programme stays one fold away. */}
     {!chosen && programEditor && <details className="yc-dossier" onToggle={e => { if (e.currentTarget.open) setProgramVisited(true); }}><summary onClick={() => setProgramVisited(true)}>Programme détaillé et guides enregistrés<ChevronDown size={14} aria-hidden="true" /></summary><div>{programVisited && programEditor}</div></details>}
   </div>;

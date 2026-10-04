@@ -4,7 +4,7 @@ import { ChevronDown, Plus, Trash2, Undo2 } from 'lucide-react';
 import type { TrialRecipe } from '../domain/hopIndex/trials';
 import type { YeastReference } from '../domain/yeastReferences';
 import {
-  applyYeastRecipeDesign, calculateYeastCellRequirement, completeYeastRecipeDesignApplication, createYeastRecipeDraft, evaluateYeastRecipeDesign, withTrialYeast,
+  applyYeastRecipeDesign, completeYeastRecipeDesignApplication, createYeastRecipeDraft, evaluateYeastRecipeDesign, withTrialYeast,
   isCompleteYeastRecipeProgramme, yeastRecipeProgramme, yeastRecipeProgrammeIssues, proposeYeastGoalSettings,
   YEAST_RECIPE_GOAL_LABELS, YEAST_STYLE_FAMILIES,
   yeastRecipeHopSummary,
@@ -478,8 +478,10 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
     (fact.sourceUrl || fact.source)).map(fact => [fact.sourceUrl ?? fact.source, fact]) ?? []).values()];
   const sourceTitle = (source?: string) => source?.replace(/https?:\/\/\S+/g, '').replace(/[\s·—–-]+$/g, '').trim() || 'fiche publiée';
   const realChangeCount = result.changes.length + factChanges.length + selectionChanges.length;
-  const cells = calculateYeastCellRequirement({ volumeL: recipe.volumeL, og: result.projection?.og ?? recipe.ogTarget,
-    pitchRateMillionPerMlPlato: draft.pitchRateMillionPerMlPlato, viableCellsBillion: draft.viableCellsBillion });
+  // The former cell requirement used the final equivalent OG and the recipe volume, not the wort to pitch:
+  // it is no longer computed here. Stored scenario values stay editable, distinctly labelled, until cleared.
+  const legacyCells = draft.pitchRateMillionPerMlPlato !== undefined || draft.viableCellsBillion !== undefined
+    || result.problems.some(problem => problem.property === 'pitchRateMillionPerMlPlato' || problem.property === 'viableCellsBillion');
   const warnings = yeastWarningsForReading(result);
   const primaryPhase = programme.find(phase => phase.kind === 'primaire');
   const mainTemperature = primaryPhase ? primaryPhase.tempC : draft.temperatureC;
@@ -763,12 +765,16 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
         <div className="yeast-setting-line"><label htmlFor={`${id}-pressure`}>Contre-pression précoce</label><NumberInput id={`${id}-pressure`} aria-label="Contre-pression du scénario en bar" min={0} value={draft.pressureBar} emptyValue={undefined} onValue={pressureBar => patch({ pressureBar })} /><span>bar rel.</span></div>
         <p className="yeast-small">Vide : inconnue. 0 bar : sans contre-pression. Les jours servent au calendrier, pas à attester la fin de fermentation.</p>
         {(draft.ferulicRest || proposeYeastGoalSettings(recipe, { ...draft, ferulicRest: false }, refs, trialYeast)?.patch.ferulicRest) && <label className="yeast-check"><input type="checkbox" checked={draft.ferulicRest} onChange={e => patch({ ferulicRest: e.target.checked })} /><span>Ajouter un repos férulique · 44 °C, 15 min si absent</span></label>}
-        {trialForm === 'sèche' ? <>{!strainChanged && <div className="yeast-setting-line"><label htmlFor={`${id}-grams`}>Masse sèche prévue</label><NumberInput id={`${id}-grams`} disabled={stale} aria-label="Masse de levure du scénario en grammes" min={0} value={draft.quantityG} emptyValue={undefined} onValue={quantityG => patch({ quantityG })} /><span>g</span></div>}<p className="yeast-small">Dose fabricant au volume de la recette : {projectionRange(result.doseG?.range, 1)} g. La masse du produit essayé reste à renseigner explicitement.</p></>
-          : <>{!trialForm && <p className="yeast-notice">Forme du nouveau produit inconnue : aucune masse sèche ou quantité de pack n’est déduite. Le besoin en cellules peut être exploré avec un taux et une viabilité explicitement renseignés.</p>}
-            <div className="yeast-setting-line"><label htmlFor={`${id}-rate`}>Taux visé · M cellules/mL/°P</label><NumberInput id={`${id}-rate`} aria-label="Taux de cellules visé par mL et degré Plato" min={0} value={draft.pitchRateMillionPerMlPlato} emptyValue={undefined} onValue={pitchRateMillionPerMlPlato => patch({ pitchRateMillionPerMlPlato })} /></div>
-            <div className="yeast-setting-line"><label htmlFor={`${id}-cells`}>Cellules viables disponibles</label><NumberInput id={`${id}-cells`} aria-label="Cellules viables disponibles en milliards" min={0} value={draft.viableCellsBillion} emptyValue={undefined} onValue={viableCellsBillion => patch({ viableCellsBillion })} /><span>Md</span></div>
-            <output className="yc-cell-result">{cells.requiredBillion == null ? 'Besoin calculable avec volume, densité et taux visé.' : `${number(cells.requiredBillion)} Md nécessaires${cells.balanceBillion == null ? ' · disponibilité inconnue' : ` · écart ${number(cells.balanceBillion)} Md`}`}</output>
-            <p className="yeast-small">Le taux est une hypothèse. Aucun nombre de flacons ni volume de levain sans comptage viable.</p>
+        {/* The single planned quantity, the exact product and the qualified advice live in the Ensemencement station. */}
+        {trialForm === 'sèche' ? <p className="yeast-small" data-legacy-dose>{strainChanged
+          ? <>Repère de fiche au volume de recette ({number(recipe.volumeL)} L) : {projectionRange(result.doseG?.range, 1)} g. Ni produit exact ni moût à ensemencer : pas un conseil d’ensemencement, à qualifier après application.</>
+          : 'Quantité prévue, produit exact et conseil : station Ensemencement, avec le moût à ensemencer qualifié.'}</p>
+          : <>{!trialForm && <p className="yeast-notice">Forme du nouveau produit inconnue : aucune masse sèche ou quantité de pack n’est déduite.</p>}
+            {legacyCells ? <div className="yc-legacy-cells" data-legacy-cells>
+              <p className="yeast-small">Ancien repère cellulaire du scénario, conservé tel qu’enregistré et plus calculé : il reposait sur la densité initiale et le volume de la recette, pas sur le moût à ensemencer. Vide pour le retirer.</p>
+              <div className="yeast-setting-line"><label htmlFor={`${id}-rate`}>Ancien taux visé · M cellules/mL/°P</label><NumberInput id={`${id}-rate`} aria-label="Ancien taux de cellules du scénario par mL et degré Plato" min={0} value={draft.pitchRateMillionPerMlPlato} emptyValue={undefined} onValue={pitchRateMillionPerMlPlato => patch({ pitchRateMillionPerMlPlato })} /></div>
+              <div className="yeast-setting-line"><label htmlFor={`${id}-cells`}>Anciennes cellules viables</label><NumberInput id={`${id}-cells`} aria-label="Anciennes cellules viables du scénario en milliards" min={0} value={draft.viableCellsBillion} emptyValue={undefined} onValue={viableCellsBillion => patch({ viableCellsBillion })} /><span>Md</span></div>
+            </div> : <p className="yeast-small">Besoin en cellules : station Ensemencement, avec le moût à ensemencer qualifié, un taux sourcé et les cellules viables déclarées du produit ou du lot.</p>}
           </>}
       </div></details>
       </details>
@@ -785,7 +791,7 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
     </section>
     {/* Only a trial has something to decide; its blocking states stay here, outside the folds. */}
     {edited && <section className="yc-station yc-decision" aria-label="Décider des changements de l’essai">
-      <div className="yc-station-heading"><span className="yc-step-number" aria-hidden="true">4</span><div><h3 id={`${id}-decision-title`} tabIndex={-1}>Relire et décider</h3><p className="yeast-small">Essai local → brouillon · {realChangeCount} changement{realChangeCount === 1 ? '' : 's'} réel{realChangeCount === 1 ? '' : 's'}</p></div></div>
+      <div className="yc-station-heading"><span className="yc-step-number" aria-hidden="true">{conductStep + 1}</span><div><h3 id={`${id}-decision-title`} tabIndex={-1}>Relire et décider</h3><p className="yeast-small">Essai local → brouillon · {realChangeCount} changement{realChangeCount === 1 ? '' : 's'} réel{realChangeCount === 1 ? '' : 's'}</p></div></div>
       {stale && <div className="yeast-notice" role="alert">La recette ou la fiche de la souche a changé. <button type="button" onClick={resumeCurrent}>Reprendre les données actuelles</button>
         {draft.programme !== undefined && <> <button type="button" onClick={resumeKeepingProgramme}>Reprendre en gardant les paliers de l’essai</button></>}</div>}
       {result.changes.length ? <ul className="yc-decision-list" aria-label="Changements principaux de l’essai">{headlineChanges.map(change => <li key={change.id}><strong>{changeLabel(change)}</strong><span>{change.before} → {change.after}</span></li>)}</ul>
@@ -802,7 +808,7 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
       {!result.fg.range && <p className="yeast-notice">{result.fg.reasons[0]}</p>}
       {!result.abv.range && result.abv.reasons[0] !== result.fg.reasons[0] && <p className="yeast-notice">{result.abv.reasons[0]}</p>}
       {(factChanges.length > 0 || selectionChanges.length > 0) && <div className="yc-fact-changes"><h4>Fiche du candidat retenue dans l’essai</h4>{factChanges.length > 0 && <ul className="yc-decision-list">{factChanges.map(change => <li key={change.label}><strong>{change.label}</strong><span>{change.before} → {change.after}</span></li>)}</ul>}
-        {(addedFacts.length > 0 || removedFacts.length > 0) && <details><summary>Observations et sources modifiées</summary><ul className="yc-decision-list" aria-label="Observations documentaires retenues">{[...addedFacts.map(fact => ({ fact, added: true })), ...removedFacts.map(fact => ({ fact, added: false }))].map(({ fact, added }) => <li key={`${added}-${factSignature(fact)}`}><strong>{added ? 'Ajout' : 'Retrait'} · {YEAST_FACT_LABELS[fact.key]}</strong><span>{observationText(fact)}<small className="block">{fact.origin === 'personal' ? 'Saisie personnelle' : fact.origin === 'manufacturer' ? 'Fabricant' : 'IA'} · {fact.sourceUrl ? <a className="yeast-source" href={fact.sourceUrl} target="_blank" rel="noreferrer">{sourceTitle(fact.source)}</a> : fact.source || 'source à préciser'}{fact.retrievedAt && ` · consultée le ${fact.retrievedAt}`}</small></span></li>)}</ul></details>}
+        {(addedFacts.length > 0 || removedFacts.length > 0) && <details><summary>Observations et sources modifiées</summary><ul className="yc-decision-list" aria-label="Observations documentaires retenues">{[...addedFacts.map(fact => ({ fact, added: true })), ...removedFacts.map(fact => ({ fact, added: false }))].map(({ fact, added }) => <li key={`${added}-${factSignature(fact)}`}><strong>{added ? 'Ajout' : 'Retrait'} · {YEAST_FACT_LABELS[fact.key]}</strong><span>{observationText(fact)}<small className="block">{fact.origin === 'personal' ? 'Saisie personnelle' : fact.origin === 'manufacturer' ? 'Fabricant' : 'IA'} · {fact.sourceUrl ? <a className="yeast-source" href={fact.sourceUrl} target="_blank" rel="noreferrer">{sourceTitle(fact.source)}</a> : fact.source || 'source à préciser'}{fact.retrievedAt && ` · date indiquée : ${fact.retrievedAt}`}</small></span></li>)}</ul></details>}
         {selectionChanges.length > 0 && <><ul className="yc-decision-list" aria-label="Plages documentaires retenues">{selectionChanges.map(change => <li key={change.key}><strong>{change.label}</strong><span>{change.text}{(change.source || change.sourceUrl) && <small className="block">Source : {change.sourceUrl ? <a className="yeast-source" href={change.sourceUrl} target="_blank" rel="noreferrer">{sourceTitle(change.source)}</a> : change.source}</small>}</span></li>)}</ul><p className="yeast-small">Plages, bornes et points retenus tels que publiés, sans valeur médiane.</p></>}
         <p className="yeast-small">Sources : {relevantSources.length ? relevantSources.map((fact, index) => <span key={fact.sourceUrl ?? fact.source}>{index > 0 && ' · '}{fact.sourceUrl ? <a className="yeast-source" href={fact.sourceUrl} target="_blank" rel="noreferrer">{YEAST_FACT_LABELS[fact.key]} · {sourceTitle(fact.source)}</a> : `${YEAST_FACT_LABELS[fact.key]} · ${fact.source}`}</span>) : preview.yeast.technicalSource || 'à préciser'}. Les autres valeurs de la fiche restent celles du candidat.</p></div>}
       {strainChanged && <div role="group" aria-labelledby={`${id}-pitch-check`} data-pitch-revalidation className="yc-pitch-check min-w-0 space-y-2 rounded-panel border border-ebc-straw bg-cave-900 p-2">
@@ -811,9 +817,10 @@ export function YeastRecipePlan({ recipe, refs, onChange, onCompare, onGoal, ini
         <ul className="yc-decision-list">
           <li data-pitch-check="quantity"><strong>Quantité prévue</strong><span>{previousQuantity ? `${previousQuantity} (${previousProduct}) · non repris` : `Inconnue (${previousProduct})`} → {trialQuantity || 'à renseigner'}</span></li>
           <li data-pitch-check="temperature"><strong>Temp. ensemencement</strong><span>{Number.isFinite(recipe.yeast.pitchTempC) ? `${number(recipe.yeast.pitchTempC)} °C (${previousProduct}) · non reprise` : `Inconnue (${previousProduct})`} → {Number.isFinite(draft.pitchTempC) ? `${number(draft.pitchTempC)} °C · saisie dans l’essai` : 'à renseigner'}</span></li>
+          <li data-pitch-check="product"><strong>Produit exact</strong><span>{recipe.yeast.pitching?.product ? `${recipe.yeast.pitching.product.label} (${previousProduct}) · non repris` : `Aucun (${previousProduct})`} → à choisir après application, avec son lot et sa préparation</span></li>
         </ul>
         {trialForm === 'sèche' && <div className="yeast-setting-line"><label htmlFor={`${id}-grams`}>Masse sèche prévue<span className="yeast-small block">Vide = inconnue</span></label><NumberInput id={`${id}-grams`} disabled={stale} aria-label="Masse de levure du scénario en grammes" min={0} value={draft.quantityG} emptyValue={undefined} onValue={quantityG => patch({ quantityG })} placeholder="—" /><span>g</span></div>}
-        {trialForm === 'sèche' && <details><summary>Repère de dose fabricant<ChevronDown size={14} aria-hidden="true" /></summary><p className="yeast-small">Au volume de la recette : {projectionRange(result.doseG?.range, 1)} g. Aucun pré-remplissage ni conversion de l’ancienne quantité.</p></details>}
+        {trialForm === 'sèche' && <details><summary>Repère de fiche au volume de recette<ChevronDown size={14} aria-hidden="true" /></summary><p className="yeast-small">{number(recipe.volumeL)} L de recette : {projectionRange(result.doseG?.range, 1)} g. Sans produit exact ni moût à ensemencer : pas un conseil d’ensemencement. Aucun pré-remplissage ni conversion de l’ancienne quantité.</p></details>}
         {pitchField('Vide : à renseigner dans le brouillon après application.')}
       </div>}
       {incomplete && <div className="yeast-error yc-programme-issues" role="alert" data-programme-incomplete>

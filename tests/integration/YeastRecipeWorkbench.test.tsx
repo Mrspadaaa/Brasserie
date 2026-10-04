@@ -170,15 +170,19 @@ describe('Levure : style, comparaison et application', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
   });
-  it('keeps unknown temperature and gravity unknown and calculates cells only from explicit inputs', () => {
+  it('keeps unknown temperature and gravity unknown and directs cell advice to the qualified pitching station', () => {
     const original = { ...wheat(), fermentation: [], ogTarget: null };
     render(<YeastRecipeWorkbench recipe={original} onChange={vi.fn()} />);
     expect(screen.getByLabelText('Température principale du scénario')).toHaveValue('');
     expect(screen.queryByRole('slider')).not.toBeInTheDocument();
     expect(within(screen.getByRole('figure', { name: 'Densité finale documentaire' })).getAllByText('À renseigner')).toHaveLength(2);
     open(/Ensemencement et durée à préparer/);
-    change('Taux de cellules visé par mL et degré Plato', '0,75');
-    expect(screen.getByText(/Renseigne volume, densité et taux/)).toBeInTheDocument();
+    const wort = screen.getByRole('region', { name: 'Moût à ensemencer' });
+    expect(wort).toHaveTextContent('Volume ?');
+    expect(wort).toHaveTextContent('SG ?');
+    expect(screen.getByText('Non calculable')).toBeVisible();
+    expect(screen.queryByLabelText('Taux de cellules visé par mL et degré Plato')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Ancien taux de cellules du scénario par mL et degré Plato')).not.toBeInTheDocument();
   });
   it('reads actual dry-hop phase and contact and provides cross-step navigation', () => {
     const recipe = { ...wheat(), hops: [{ name: 'Citra', weightG: 60, alpha: 12, stage: 'dryHop' as const, dayOffset: 3 }] };

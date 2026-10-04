@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
+import { buildBrewingScenarioRequest, simulateBrewingScenario, type BrewingScenarioRequest, type BrewingScenarioResult, type BrewingScenarioRuntime } from '../../src/domain/brewingScenario';
+import { applyBrewingScenarioEvent, createBrewingScenarioDossier, createBrewingScenarioResultRevisionEvent, readBrewingScenarioRecord } from '../../src/domain/brewingScenarioDossier';
+import { decodeBrewingScenarioArchive, encodeBrewingScenarioArchive } from '../../src/domain/brewingScenarioArchive';
+import { testHopData, testHopTriplet, testHopYeast } from '../fixtures/hopPrediction';
+import { hopTestVariety } from '../fixtures/hopIndex';
 
 const mock = vi.hoisted(() => {
   class Stamp {
@@ -51,6 +56,11 @@ const mock = vi.hoisted(() => {
   }), setFailure: (collection: string) => { state.failCollection = collection; } };
 });
 vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js', () => ({ Timestamp: mock.Stamp, FieldPath: { documentId: () => '__name__' }, getFirestore: mock.db }));
+vi.mock('../../functions/src/brewerTools.js', async () => {
+  const dossier = await vi.importActual<typeof import('../../src/domain/brewingScenarioDossier')>('../../src/domain/brewingScenarioDossier');
+  const archive = await vi.importActual<typeof import('../../src/domain/brewingScenarioArchive')>('../../src/domain/brewingScenarioArchive');
+  return { brewingScenarioDossierApi: dossier, brewingScenarioArchiveApi: archive };
+});
 import { transferBreweryData, cleanupBreweryTransfers } from '../../functions/src/backupTransfer';
 
 const hash = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -61,6 +71,36 @@ type Entry = { collection: string; id: string; data: any };
 const recipe = (id: string): Entry => ({ collection: 'recipes', id, data: { id, name: 'Stout', volumeL: 24 } });
 const payment = (id: string, transactionId = 'T1', amountCents = 4000): Entry => ({ collection: 'financialPayments', id, data: { id, transactionId, amountCents, direction: 'out', recordedAt: '2026-09-01T10:00:00Z' } });
 const invoice = (id = 'T1', amountTTC = 100): Entry => ({ collection: 'transactions', id, data: { id, amountTTC, amountHT: amountTTC, tvaRate: 0, category: 'brassage' } });
+const scenarioOwner = 'brewer', scenarioId = 'scenario-transfer-test';
+const scenarioRecipe = () => ({ volumeL: 24, yeastId: testHopYeast.id,
+  additions: [{ id: 'hop-1', name: 'Lot témoin', triplet: structuredClone(testHopTriplet) }],
+  fermentation: [{ kind: 'primaire' as const, tempC: 20, days: 7 }] });
+const scenarioRuntime: BrewingScenarioRuntime = { engineData: testHopData(), materials: [] };
+const scenarioResult = (revision: number, label = 'Base de test'): BrewingScenarioResult => simulateBrewingScenario(
+  buildBrewingScenarioRequest({ scenarioId, revision, baseline: { kind: 'hypothetical', label, input: scenarioRecipe() } } as BrewingScenarioRequest),
+  structuredClone(scenarioRuntime)
+);
+function scenarioHistory(revisions: number, label = 'Base de test') {
+  const first = createBrewingScenarioDossier({ ownerKey: scenarioOwner, scenarioId, eventId: 'scenario-transfer-event-1',
+    recordedAt: '2026-09-01T10:00:00.000Z', result: scenarioResult(1, label) });
+  const events = [first.event];
+  let dossier = first.dossier;
+  if (revisions >= 2) {
+    const event = createBrewingScenarioResultRevisionEvent({ ownerKey: scenarioOwner, scenarioId, eventId: 'scenario-transfer-event-2',
+      expectedRevision: 1, recordedAt: '2026-09-02T10:00:00.000Z', previousSnapshotReference: first.event.payload.snapshot.reference,
+      reason: 'Révision de fixture', result: scenarioResult(2, label) });
+    dossier = applyBrewingScenarioEvent(dossier, event, events); events.push(event);
+  }
+  const key = hash(`${scenarioOwner}:${scenarioId}`);
+  const head: Entry = { collection: 'brewerScenarios', id: key,
+    data: { id: key, ownerKey: scenarioOwner, scenarioId, dossier, updatedAt: dossier.updatedAt } };
+  const eventRows: Entry[] = events.map(event => {
+    const id = hash(`${scenarioOwner}:${event.eventId}`);
+    return { collection: 'brewerScenarioEvents', id, data: { id, ownerKey: scenarioOwner, scenarioId, dossierKey: key,
+      resultingRevision: event.resultingRevision, commandFingerprint: 'b'.repeat(64), event: encodeBrewingScenarioArchive(event) } };
+  });
+  return { key, dossier, events, head, eventRows };
+}
 function makePages(entries: Entry[], pageSize = 100) {
   const pages: string[] = [];
   for (let start = 0; start < entries.length || !start; start += pageSize) {
@@ -198,6 +238,47 @@ describe('Restauration volumineuse, validation et reprise', () => {
     rows.slice(0, 5).forEach((row, i) => expect(mock.docs.get(`${row.collection}/${row.id}`)).toEqual(current[i]));
     expect(mock.docs.get('stockItems/NEW').currentStock).toBe(1);
     expect(result.operationalPreserved).toBe(5);
+  });
+  it('restaure un nouveau scénario en un seul groupe et conserve une lignée plus récente lors d’un ancien backup', async () => {
+    const current = scenarioHistory(2);
+    mock.docs.set(`brewerScenarios/${current.key}`, current.head.data);
+    current.eventRows.forEach(row => mock.docs.set(`${row.collection}/${row.id}`, row.data));
+    const catalogueMeta = { schemaVersion: 1, entityKind: 'hopVariety', revision: 2, fingerprint: 'c'.repeat(64),
+      claims: [], unmapped: [], projections: [], corrections: [], identityResolutions: [] };
+    const currentHop = { ...hopTestVariety({ id: 'backup-hop', name: 'Current name' }), catalogueMeta };
+    mock.docs.set('hopVarieties/backup-hop', currentHop);
+    const old = scenarioHistory(1), oldHop = hopTestVariety({ id: 'backup-hop', name: 'Name from old backup' });
+    const sessionId = await upload([...old.eventRows.map(row => row as Entry), old.head,
+      { collection: 'hopVarieties', id: oldHop.id, data: oldHop }]);
+    await validate(sessionId);
+    const result = await apply(sessionId);
+    expect(result).toMatchObject({ phase: 'complete', changed: 0 });
+    expect(mock.docs.get('hopVarieties/backup-hop')).toEqual(currentHop);
+    expect(mock.docs.get(`brewerScenarios/${current.key}`)).toEqual(current.head.data);
+    current.eventRows.forEach(row => expect(mock.docs.get(`${row.collection}/${row.id}`)).toEqual(row.data));
+    expect(mock.writes.some(write => write.paths.some(path => path.startsWith('brewerScenario')))).toBe(false);
+
+    mock.docs.clear(); mock.writes.length = 0;
+    const fresh = scenarioHistory(2);
+    const freshSession = await upload([...fresh.eventRows.map(row => row as Entry), fresh.head], 'restore-fresh-scenario-1234');
+    await validate(freshSession);
+    const freshResult = await apply(freshSession);
+    expect(freshResult).toMatchObject({ phase: 'complete', changed: 3 });
+    expect(mock.docs.get(`brewerScenarios/${fresh.key}`)).toEqual(fresh.head.data);
+    const restoredEvents = fresh.eventRows.map(row => mock.docs.get(`${row.collection}/${row.id}`));
+    expect(readBrewingScenarioRecord(fresh.head.data.dossier, restoredEvents.map(row => decodeBrewingScenarioArchive(row.event)))).toMatchObject({ dossier: fresh.dossier });
+    expect(mock.writes.some(write => write.paths.includes(`brewerScenarios/${fresh.key}`)
+      && fresh.eventRows.every(row => write.paths.includes(`${row.collection}/${row.id}`)))).toBe(true);
+  });
+  it('refuse une branche de scénario divergente avant toute donnée métier', async () => {
+    const current = scenarioHistory(2);
+    mock.docs.set(`brewerScenarios/${current.key}`, current.head.data);
+    current.eventRows.forEach(row => mock.docs.set(`${row.collection}/${row.id}`, row.data));
+    const divergent = scenarioHistory(2, 'Branche qui diverge');
+    const sessionId = await upload([...divergent.eventRows.map(row => row as Entry), divergent.head, recipe('R1')], 'restore-divergent-scenario-1234');
+    await expect(validate(sessionId)).rejects.toThrow(/divergent/);
+    expect(mock.docs.has('recipes/R1')).toBe(false);
+    expect(mock.docs.get(`brewerScenarios/${current.key}`)).toEqual(current.head.data);
   });
   it('refuse doublons, corruption et manifeste incomplet avant de modifier les données métier', async () => {
     const pages = makePages([recipe('R1'), recipe('R1')], 1);

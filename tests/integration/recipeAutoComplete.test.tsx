@@ -347,7 +347,7 @@ describe('Compléter les données manquantes avec l’IA', () => {
     const vu = monter({ fermentables: [GRAIN_SANS_COULEUR] });
 
     fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
-    await waitFor(() => expect(screen.getByText('Fiche fabricant')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/Source citée\s*:\s*Fiche fabricant/)).toBeInTheDocument());
 
     // Vu, pas encore écrit.
     expect(vu.f[0].colorEbc).toBeUndefined();

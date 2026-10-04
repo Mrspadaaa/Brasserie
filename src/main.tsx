@@ -62,6 +62,11 @@ root.render(
 );
 
 async function bootstrap() {
+  if (previewMode === 'hop-v55') {
+    const { HopV55FixturePreview } = await import('./ui/hopV55/FixturePreview');
+    root.render(<React.StrictMode><HopV55FixturePreview /></React.StrictMode>);
+    return;
+  }
   if (previewMode === 'design') {
     const { DesignPreview } = await import('./design/DesignPreview');
     root.render(<React.StrictMode><DesignPreview /></React.StrictMode>);

@@ -517,6 +517,16 @@
   line-height: 1.6;
   margin-top: 5px;
 }
+.brewer-chat-proof > div > p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 7px 0;
+}
+.brewer-chat-proof > div > small {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 6px;
+}
 .brewer-chat-proof a {
   display: flex;
   align-items: center;

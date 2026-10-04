@@ -19,6 +19,7 @@ import { projectYeastRecipe, resolveYeastDossier, yeastRecipeStyleText, type Yea
 import guides from '../data/fermentationGuideBootstrap.json';
 import { YEAST_RECIPE_PROFILES, YEAST_RECIPE_SOURCES, YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS, type YeastRecipeGoal, type YeastStyleId } from '../data/yeastRecipeProfiles';
 import type { YeastBeerTarget } from './yeastBeerTarget';
+import { effectiveYeastTechnicalFacts } from './yeastReferences';
 
 export { YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS };
 export type { YeastRecipeGoal, YeastStyleId };
@@ -188,7 +189,8 @@ export function yeastRecipeProgramme(recipe: TrialRecipe, draft: YeastRecipeDraf
 
 function yeastTrait(reference: YeastReference | undefined, key: 'pof' | 'diastatic', yeast?: YeastSpec): { value?: boolean; source?: HopSource; conflict: boolean } {
   const local = yeast?.technicalFacts?.filter(f => f.key === key || key === 'diastatic' && f.key === 'sta1') ?? [];
-  const facts = local.length ? local : reference?.catalogue?.facts.filter(f => f.key === key || key === 'diastatic' && f.key === 'sta1') ?? [];
+  const catalogue = reference ? effectiveYeastTechnicalFacts(reference) : [];
+  const facts = local.length ? local : catalogue.filter(f => f.key === key || key === 'diastatic' && f.key === 'sta1');
   if (facts.length) {
     const values = facts.map(f => /^(?:positive|yes|pof\s*\+|sta1\s*\+|\+)$/i.test(f.reported.trim()) ? true :
       /^(?:negative|no|non[ -]?(?:phenolic|diastatic)|pof\s*[-−]|sta1\s*[-−]|[-−])$/i.test(f.reported.trim()) ? false : undefined);

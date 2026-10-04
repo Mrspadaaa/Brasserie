@@ -50,6 +50,7 @@ interface ProductionTabProps {
   /** Ouvre l'assistant de recette, prérempli depuis une idée du labo. */
   onDraftRecipe: (seed: { title: string; description?: string }) => void;
   onSuccessMessage?: (msg: string) => void;
+  onOpenHopV55?: () => void;
 }
 
 export const ProductionTab: React.FC<ProductionTabProps> = ({
@@ -72,7 +73,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
   onEditRecipe,
   onOpenBrewDay,
   onDraftRecipe,
-  onSuccessMessage
+  onSuccessMessage,
+  onOpenHopV55
 }) => {
   // Persistent sub-navigation
   const [subTab, setSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() =>
@@ -231,6 +233,8 @@ export const ProductionTab: React.FC<ProductionTabProps> = ({
       </div>
 
       </ViewNavigation>
+
+      {onOpenHopV55 && <div className="flex justify-end"><button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={onOpenHopV55}>Atelier Houblons V5.5</button></div>}
 
       {(subTab === 'batches' || subTab === 'recipes') && <>
         <h2 className="sr-only">{subTab === 'recipes' ? 'Le carnet de recettes' : 'Les brassins'}</h2>

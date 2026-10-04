@@ -5,14 +5,19 @@ import { BACKUP_COLLECTIONS } from '../../functions/src/dataSchema';
 import { sessionEvents } from '../../functions/src/brewSessionCore';
 
 const mock = vi.hoisted(() => ({
-  docs: new Map<string, any>(), failHistory: false, commits: 0,
+  docs: new Map<string, any>(), failHistory: false, commits: 0, writeBatches: [] as string[][],
   snapshot: (path: string) => ({ exists: mock.docs.has(path), id: path.split('/').at(-1), data: () => structuredClone(mock.docs.get(path)) }),
   ref: (path: string): any => ({ path, update: async (value: any) => mock.docs.set(path, { ...mock.docs.get(path), ...value }),
-    create: async (value: any) => { if (mock.docs.has(path)) throw { code: 6 }; mock.docs.set(path, value); } })
+    create: async (value: any) => { if (mock.docs.has(path)) throw { code: 6 }; mock.docs.set(path, value); } }),
+  query: (name: string, filters: Array<{ field: string; value: unknown }> = []): any => ({
+    collection: name,
+    filters,
+    where: (field: string, _op: string, value: unknown) => mock.query(name, [...filters, { field, value }])
+  })
 }));
 vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js', () => ({
   Timestamp: { now: () => new Date(), fromMillis: (n: number) => new Date(n) },
-  getFirestore: () => ({ doc: mock.ref, collection: (name: string) => ({ collection: name }),
+  getFirestore: () => ({ doc: mock.ref, collection: (name: string) => mock.query(name),
     batch: () => {
       const writes: any[] = [];
       return { create: (ref: any, data: any) => writes.push({ ref, data }), commit: async () => {
@@ -23,24 +28,66 @@ vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
     runTransaction: async (fn: any) => {
       const writes: Array<{ path: string; value: any }> = [];
       const result = await fn({
-        get: async (ref: any) => ref.collection ? { docs: [...mock.docs.keys()].filter(p => p.startsWith(ref.collection + '/')).map(mock.snapshot) } : mock.snapshot(ref.path),
+        get: async (ref: any) => ref.collection ? { docs: [...mock.docs.keys()].filter(p => p.startsWith(ref.collection + '/') && !p.slice(ref.collection.length + 1).includes('/')
+          && (ref.filters ?? []).every((filter: any) => mock.docs.get(p)?.[filter.field] === filter.value)).map(mock.snapshot) } : mock.snapshot(ref.path),
         getAll: async (...refs: any[]) => refs.map(r => mock.snapshot(r.path)),
         set: (ref: any, value: any) => writes.push({ path: ref.path, value }),
         create: (ref: any, value: any) => { if (mock.docs.has(ref.path)) throw new Error('exists'); writes.push({ path: ref.path, value }); }
       });
       if (mock.failHistory && writes.some(w => w.path.startsWith('auditLogs/'))) throw new Error('interruption réseau');
+      if (writes.length) mock.writeBatches.push(writes.map(write => write.path));
       for (const w of writes) mock.docs.set(w.path, structuredClone(w.value));
       mock.commits++;
       return result;
     }
   })
 }));
+vi.mock('../../functions/src/brewerTools.js', async () => {
+  const dossier = await vi.importActual<typeof import('../../src/domain/brewingScenarioDossier')>('../../src/domain/brewingScenarioDossier');
+  const archive = await vi.importActual<typeof import('../../src/domain/brewingScenarioArchive')>('../../src/domain/brewingScenarioArchive');
+  return { brewingScenarioDossierApi: dossier, brewingScenarioArchiveApi: archive };
+});
 import { exportBreweryData, restoreBreweryData } from '../../functions/src/dataBackup';
 import { recordDataChange } from '../../functions/src/dataHistory';
+import { createBrewingScenarioDossier, createBrewingScenarioResultRevisionEvent, applyBrewingScenarioEvent, readBrewingScenarioRecord } from '../../src/domain/brewingScenarioDossier';
+import { encodeBrewingScenarioArchive, decodeBrewingScenarioArchive } from '../../src/domain/brewingScenarioArchive';
+import { buildBrewingScenarioRequest, simulateBrewingScenario, type BrewingScenarioRequest, type BrewingScenarioResult, type BrewingScenarioRuntime } from '../../src/domain/brewingScenario';
+import { testHopData, testHopTriplet, testHopYeast } from '../fixtures/hopPrediction';
+import { hopTestVariety } from '../fixtures/hopIndex';
 const request = (data: any = {}) => ({ auth: { uid: 'brewer', token: { email: 'brewer@example.test', email_verified: true } }, data });
 const backup = (collections: any) => JSON.stringify({ schemaVersion: 3, source: 'server', exportedAt: '2026-09-07T12:00:00Z', collections });
 const recipe = { id: 'R', name: 'Stout', volumeL: 24 };
-beforeEach(() => { mock.docs.clear(); mock.failHistory = false; mock.commits = 0; vi.stubEnv('AUTHORIZED_ACCOUNTS', 'brewer@example.test'); });
+const scenarioOwner = 'brewer', scenarioId = 'scenario-backup-test';
+const scenarioRecipe = () => ({ volumeL: 24, yeastId: testHopYeast.id,
+  additions: [{ id: 'hop-1', name: 'Lot témoin', triplet: structuredClone(testHopTriplet) }],
+  fermentation: [{ kind: 'primaire' as const, tempC: 20, days: 7 }] });
+const scenarioRuntime: BrewingScenarioRuntime = { engineData: testHopData(), materials: [] };
+const scenarioResult = (revision: number, label = 'Base de test'): BrewingScenarioResult => simulateBrewingScenario(
+  buildBrewingScenarioRequest({ scenarioId, revision, baseline: { kind: 'hypothetical', label, input: scenarioRecipe() } } as BrewingScenarioRequest),
+  structuredClone(scenarioRuntime)
+);
+const scenarioHash = (value: string) => createHash('sha256').update(value).digest('hex');
+function scenarioHistory(revisions: number, label = 'Base de test') {
+  const first = createBrewingScenarioDossier({ ownerKey: scenarioOwner, scenarioId, eventId: 'scenario-event-1',
+    recordedAt: '2026-09-01T10:00:00.000Z', result: scenarioResult(1, label) });
+  const events = [first.event];
+  let dossier = first.dossier;
+  if (revisions >= 2) {
+    const event = createBrewingScenarioResultRevisionEvent({ ownerKey: scenarioOwner, scenarioId, eventId: 'scenario-event-2',
+      expectedRevision: 1, recordedAt: '2026-09-02T10:00:00.000Z', previousSnapshotReference: first.event.payload.snapshot.reference,
+      reason: 'Révision de fixture', result: scenarioResult(2, label) });
+    dossier = applyBrewingScenarioEvent(dossier, event, events); events.push(event);
+  }
+  const key = scenarioHash(`${scenarioOwner}:${scenarioId}`);
+  const head = { id: key, data: { id: key, ownerKey: scenarioOwner, scenarioId, dossier, updatedAt: dossier.updatedAt } };
+  const eventRows = events.map(event => {
+    const id = scenarioHash(`${scenarioOwner}:${event.eventId}`);
+    return { id, data: { id, ownerKey: scenarioOwner, scenarioId, dossierKey: key,
+      resultingRevision: event.resultingRevision, commandFingerprint: 'a'.repeat(64), event: encodeBrewingScenarioArchive(event) } };
+  });
+  return { key, dossier, events, head, eventRows };
+}
+beforeEach(() => { mock.docs.clear(); mock.failHistory = false; mock.commits = 0; mock.writeBatches.length = 0; vi.stubEnv('AUTHORIZED_ACCOUNTS', 'brewer@example.test'); });
 afterEach(() => vi.unstubAllEnvs());
 
 describe('Validation intégrale des sauvegardes', () => {
@@ -203,6 +250,47 @@ describe('Export et restauration serveur', () => {
     expect(mock.docs.get('stockItems/MALT')).toEqual(currentStock);
     expect(mock.docs.get('batches/B')).toEqual(currentBatch);
     expect(result.operationalPreserved).toBe(2);
+  });
+
+  it('un ancien backup préserve le ledger catalogue et la lignée scénario courante', async () => {
+    const currentScenario = scenarioHistory(2), oldScenario = scenarioHistory(1);
+    mock.docs.set(`brewerScenarios/${currentScenario.key}`, currentScenario.head.data);
+    currentScenario.eventRows.forEach(row => mock.docs.set(`brewerScenarioEvents/${row.id}`, row.data));
+    const currentHop = { ...hopTestVariety({ id: 'catalogue-hop', name: 'Nom courant' }), catalogueMeta: {
+      schemaVersion: 1, entityKind: 'hopVariety', revision: 2, fingerprint: 'c'.repeat(64),
+      claims: [], unmapped: [], projections: [], corrections: [], identityResolutions: []
+    } };
+    mock.docs.set('hopVarieties/catalogue-hop', currentHop);
+    const oldHop = hopTestVariety({ id: 'catalogue-hop', name: 'Nom de l’ancien backup' });
+    const json = backup({ recipes: [{ id: 'R', data: recipe }], hopVarieties: [{ id: oldHop.id, data: oldHop }],
+      brewerScenarios: [oldScenario.head], brewerScenarioEvents: oldScenario.eventRows });
+
+    const result = await restoreBreweryData.run(request({ json, operationId: 'restore-old-scenario-catalogue-123' }) as any);
+    expect(result).toMatchObject({ complete: true, cataloguePreserved: 1 });
+    expect(mock.docs.get('hopVarieties/catalogue-hop')).toEqual(currentHop);
+    expect(mock.docs.get(`brewerScenarios/${currentScenario.key}`)).toEqual(currentScenario.head.data);
+    expect(currentScenario.eventRows.map(row => mock.docs.get(`brewerScenarioEvents/${row.id}`))).toEqual(currentScenario.eventRows.map(row => row.data));
+  });
+
+  it('recharge un nouveau dossier avec événement et tête atomiques, et refuse une branche divergente avant écriture', async () => {
+    const fresh = scenarioHistory(2);
+    const json = backup({ brewerScenarios: [fresh.head], brewerScenarioEvents: fresh.eventRows });
+    const imported = await restoreBreweryData.run(request({ json, operationId: 'restore-new-scenario-dossier-123' }) as any);
+    expect(imported.changed).toBe(3);
+    expect(mock.docs.get(`brewerScenarios/${fresh.key}`)).toEqual(fresh.head.data);
+    const restoredEvents = fresh.eventRows.map(row => mock.docs.get(`brewerScenarioEvents/${row.id}`));
+    const restored = readBrewingScenarioRecord(fresh.head.data.dossier, restoredEvents.map(row => decodeBrewingScenarioArchive(row.event)));
+    expect(restored).toMatchObject({ dossier: fresh.dossier, snapshots: [{ result: { revision: 1 } }, { result: { revision: 2 } }] });
+    expect(mock.writeBatches.find(paths => paths.includes(`brewerScenarios/${fresh.key}`))).toEqual(expect.arrayContaining([
+      `brewerScenarios/${fresh.key}`, ...fresh.eventRows.map(row => `brewerScenarioEvents/${row.id}`)
+    ]));
+
+    const divergent = scenarioHistory(2, 'Autre base divergente');
+    const before = mock.docs.size, commits = mock.commits;
+    const forkBackup = backup({ recipes: [{ id: 'R', data: recipe }], brewerScenarios: [divergent.head], brewerScenarioEvents: divergent.eventRows });
+    await expect(restoreBreweryData.run(request({ json: forkBackup, operationId: 'restore-divergent-scenario-123' }) as any)).rejects.toThrow(/divergent/);
+    expect(mock.docs.size).toBe(before);
+    expect(mock.commits).toBe(commits);
   });
 });
 

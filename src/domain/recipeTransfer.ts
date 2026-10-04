@@ -3,6 +3,7 @@ import { recipeWaterExport } from './recipeWaterExport';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { readYeastDocumentaryNotes, readYeastTechnicalFacts, readYeastTechnicalSelections } from '../../functions/src/yeastTechnicalFacts';
 import { readYeastDocumentarySheet, readYeastLocalDocumentary } from '../../functions/src/yeastDocumentarySheet';
+import { readYeastPitchingPlan } from '../../functions/src/yeastSupplySchema';
 import { assertNoloConfig } from '../../functions/src/noloSchema';
 import { readYeastRecipeDesign } from './yeastRecipeDesign';
 import { sameField } from '../../functions/src/brewerFields';
@@ -19,7 +20,7 @@ type Field = {
   label: string;
   /** Older labels remain readable when wording is clarified within format v1. */
   aliases?: readonly string[];
-  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'technicalFacts' | 'technicalSelections' | 'documentaryNotes' | 'yeastDocumentarySheet' | 'yeastLocalDocumentary' | 'technicalSelection' | 'yeastDesign';
+  type: 'text' | 'number' | 'boolean' | 'object' | 'array' | 'nolo' | 'fermentationFacts' | 'technicalFacts' | 'technicalSelections' | 'documentaryNotes' | 'yeastDocumentarySheet' | 'yeastLocalDocumentary' | 'technicalSelection' | 'yeastDesign' | 'yeastPitching';
   fields?: Fields;
   item?: Field;
   values?: readonly string[];
@@ -139,6 +140,7 @@ export const recipeFields = {
     })
   ),
   yeast: o('Levure', {
+    pitching: { label: 'Produit, offre et plan d’ensemencement', type: 'yeastPitching' } as Field,
     name: t('Nom'),
     hopIndexId: t('Souche de référence'),
     lab: t('Laboratoire'),
@@ -279,6 +281,10 @@ export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
 export function readRecipeFields(value: unknown, strict = false): Partial<RecipeContent> {
   const { estimates: _, ...recipe } = (readField(root, value, strict, 'Recette') ?? {}) as Record<string, unknown>;
   const yeast = recipe.yeast as YeastSpec | undefined;
+  if (yeast?.pitching?.product && yeast.pitching.product.referenceId !== yeast.hopIndexId) {
+    if (strict) throw new Error('Produit d’ensemencement lié à une autre référence de levure.');
+    delete yeast.pitching;
+  }
   if (yeast?.adoptedDocumentary !== undefined) {
     const sheet = readYeastDocumentarySheet(yeast.adoptedDocumentary, yeast.hopIndexId);
     if (!sheet) {
@@ -389,6 +395,7 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
   }
   if (field.type === 'yeastDocumentarySheet') return readYeastDocumentarySheet(value) ?? fail();
   if (field.type === 'yeastLocalDocumentary') return readYeastLocalDocumentary(value) ?? fail();
+  if (field.type === 'yeastPitching') return readYeastPitchingPlan(value) ?? fail();
   if (field.type === 'technicalSelection') return readYeastTechnicalFacts([value])?.[0] ?? fail();
   if (field.type === 'nolo') return fail();
   if (field.type === 'yeastDesign') {

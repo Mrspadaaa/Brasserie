@@ -33,6 +33,7 @@ import { assertHopPredictionSnapshot } from '../../functions/src/hopPredictionVa
 import { mergeYeastTechnicalFacts } from '../domain/ingredientFacts';
 import { readIngredientFermentationFacts } from '../../functions/src/ingredientFermentationFacts';
 import { normalizeBrewDate } from '../domain/batchSchedule';
+import { readYeastProductDocument, type YeastProductDocument } from '../../functions/src/yeastSupplySchema';
 
 /**
  * Façade de données de l'application.
@@ -310,6 +311,13 @@ function sameDoc(a: any, b: any): boolean {
   return JSON.stringify(sortKeys(clean)) === JSON.stringify(sortKeys(b ?? {}));
 }
 
+/** Legacy full-document writers cannot safely advance a revisioned catalogue ledger. */
+function assertLegacyCatalogueWriteAllowed(previous: any, next: any): void {
+  if (previous?.catalogueMeta && !sameDoc(previous, next)) {
+    throw Error('Cette fiche possède un historique de catalogue versionné. Relire et enrichir via le raccord catalogue pour préserver son ledger.');
+  }
+}
+
 function sortKeys(v: any): any {
   if (Array.isArray(v)) return v.map(sortKeys);
   if (v && typeof v === 'object' && !(v instanceof Date)) {
@@ -585,12 +593,21 @@ export const StorageService = {
   getHopKnowledge(): HopKnowledge[] {
     return readCatalogueSnapshot<HopKnowledge>('hopKnowledge');
   },
+  getYeastProducts(): YeastProductDocument[] {
+    return clean<YeastProductDocument>(FirestoreRepo.all('yeastProducts')).map(readYeastProductDocument).filter((value): value is YeastProductDocument => !!value);
+  },
+  saveYeastProduct(item: YeastProductDocument): void {
+    const valid = readYeastProductDocument(item);
+    if (!valid) throw Error('Produit ou offres invalides : vérifie les identités, sources et conditionnements.');
+    FirestoreRepo.put('yeastProducts', valid.id, valid);
+  },
   getHopPredictions(): HopPredictionSnapshot[] { return clean<HopPredictionSnapshot>(FirestoreRepo.all('hopPredictions')); },
   getHopTastings(): HopTasting[] { return clean<HopTasting>(FirestoreRepo.all('hopTastings')); },
   saveHopKnowledge(item: HopKnowledge): void {
     assertHopKnowledge(item);
     const previous = this.getHopKnowledge().find(row => row.id === item.id);
     if (previous && sameDoc(previous, item)) return;
+    assertLegacyCatalogueWriteAllowed(previous, item);
     if (previous && previous.kind !== item.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');
     if (previous && 'version' in previous && 'version' in item && previous.version === item.version) throw Error('Changer la version du modèle pour conserver une révision identifiable.');
     if (previous && previous.kind === 'axis' && item.kind === 'axis' && previous.version === item.version) throw Error('Changer la version de l’axe pour conserver son échelle historique.');
@@ -610,6 +627,7 @@ export const StorageService = {
   saveHopVariety(item: HopVariety): void {
     assertHopDocument('hopVarieties', item);
     const previous = FirestoreRepo.all<any>('hopVarieties').find(row => row.id === item.id || row.__docId === item.id);
+    assertLegacyCatalogueWriteAllowed(previous, item);
     if (!previous || !sameDoc(previous, item)) FirestoreRepo.put('hopVarieties', item.id, item);
   },
   saveHopLot(item: HopLot): void {
@@ -634,6 +652,7 @@ export const StorageService = {
       const current = new Map(FirestoreRepo.all<any>(name as CollectionName).map(d => [d.__docId || d.id, d]));
       for (const row of rows ?? []) {
         const previous = current.get(row.id), unchanged = previous && sameDoc(previous, row.data);
+        assertLegacyCatalogueWriteAllowed(previous, row.data);
         if (previous && !unchanged && name === 'hopPredictions') throw Error('Une prédiction figée différente existe déjà. Aucun import effectué.');
         if (previous && !unchanged && name === 'hopKnowledge') {
           if (previous.kind !== row.data.kind) throw Error('Le type d’une connaissance existante ne peut pas changer.');

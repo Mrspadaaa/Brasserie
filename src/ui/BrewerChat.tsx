@@ -1,5 +1,5 @@
 import { Textarea } from './Input';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import {
   MessageCircle,
   ChevronRight,
@@ -14,11 +14,11 @@ import {
 } from 'lucide-react';
 import { Sheet } from './Sheet';
 import { BrewerChat as api, brewerChatError } from '../services/brewerChat';
-import type { BrewerChatInput, BrewerScope, BrewerTurn } from '../services/brewerChat';
+import type { BrewerChatInput, BrewerHistory, BrewerScope, BrewerTurn } from '../services/brewerChat';
 import type { BrewerMode, BrewerProduct } from '../../functions/src/companionTypes';
+import { stableBrewerHopAdviceJson } from '../../functions/src/brewerHopAdviceProposal';
 import {
   brewerJobs,
-  useBrewerJobs,
   sameBrewerScope,
   isBrewerWorking,
   brewerJobStatus,
@@ -30,6 +30,100 @@ import './brewer-chat.css';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import { brewerLauncher } from '../services/brewerLauncher';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
+import type { HopV55AssistedCompanionSession } from './hopV55/assistedAdviceUiContracts';
+
+export type BrewerChatAssistedAdvice = Pick<HopV55AssistedCompanionSession,
+  'id' | 'request' | 'onBeforeSend' | 'onAssistedTurn'>;
+
+export interface BrewerChatJobActivity {
+  jobs: ClientBrewerJob[];
+  connectionError: string;
+}
+
+export interface BrewerChatAssistedJobStore {
+  /** True only when a DONE input remains retained until the UI attaches its exact receipt. */
+  retainInputUntilRead?: boolean;
+  subscribe(listener: () => void): () => void;
+  snapshot(): BrewerChatJobActivity;
+  start(): void | Promise<void>;
+  refresh(): void | Promise<void>;
+  submit(input: BrewerChatInput, label: string): void;
+  retry(job: ClientBrewerJob): void;
+  markRead(job: ClientBrewerJob): void;
+  forget(scope: BrewerScope, generation: number): void;
+}
+
+/** Dedicated frontend façade; its backend and local recovery namespace are supplied by the host. */
+export interface BrewerChatAssistedRuntime {
+  mode: 'hopAdviceReadonlyV1';
+  /** Supplied by the façade's mode-aware key factory; must be isolated from ordinary chat storage. */
+  storeNamespace: string;
+  history(scope: BrewerScope, before?: number): Promise<BrewerHistory>;
+  reset(scope: BrewerScope, generation: number, operationId: string): Promise<{ generation: number }>;
+  jobs: BrewerChatAssistedJobStore;
+}
+
+interface AssistedTicket {
+  requestKey: string;
+  input: BrewerChatInput;
+  label: string;
+  onBeforeSend: BrewerChatAssistedAdvice['onBeforeSend'];
+  onAssistedTurn: BrewerChatAssistedAdvice['onAssistedTurn'];
+  prepared: boolean;
+  submitted: boolean;
+}
+
+const sameJson = (left: unknown, right: unknown) => stableBrewerHopAdviceJson(left) === stableBrewerHopAdviceJson(right);
+const assistedSessionKey = (session?: Pick<HopV55AssistedCompanionSession, 'id' | 'request'>) =>
+  session ? stableBrewerHopAdviceJson({ id: session.id, request: session.request }) : '';
+const sameScopeExactly = (left: BrewerScope, right: BrewerScope) =>
+  left.kind === right.kind && left.id === right.id;
+const sameBrewerChatInput = (left: BrewerChatInput, right: BrewerChatInput) =>
+  sameJson(left, right);
+const isRecoverableAssistedJob = (job: ClientBrewerJob, scope: BrewerScope,
+  request: BrewerChatAssistedAdvice['request'] | undefined, generation: number) => {
+  if (!request || job.unsupportedReadOnly || !job.input || job.turn || job.status === 'done' || job.status === 'cancelled') return false;
+  return job.operationId === job.input.operationId && job.question === request.question
+    && job.input.question === request.question && job.generation === generation
+    && job.input.generation === generation && sameScopeExactly(job.scope, scope)
+    && sameScopeExactly(job.input.scope, scope) && sameJson(job.input.hopAdvice, request);
+};
+const isRecoverableAssistedReceipt = (job: ClientBrewerJob, scope: BrewerScope,
+  request: BrewerChatAssistedAdvice['request'] | undefined) => {
+  const turn = job.turn;
+  const envelope = turn?.hopAdviceProposal;
+  return !!request && !job.unsupportedReadOnly && !!job.input?.hopAdvice && !!turn && !!envelope && job.status === 'done' && !job.readAt
+    && job.operationId === job.input.operationId && turn.operationId === job.operationId
+    && job.question === job.input.question && turn.question === job.input.question
+    && job.generation === job.input.generation
+    && sameScopeExactly(job.scope, scope) && sameScopeExactly(job.input.scope, scope)
+    && sameJson(job.input.hopAdvice, request) && sameJson(envelope.request, request)
+    && Array.isArray(turn.evidence);
+};
+const isUnsupportedAssistedJob = (job: ClientBrewerJob, scope: BrewerScope,
+  request: BrewerChatAssistedAdvice['request'] | undefined) => !!request && !!job.unsupportedReadOnly
+  && !!job.input?.hopAdvice && sameScopeExactly(job.scope, scope) && sameScopeExactly(job.input.scope, scope)
+  && sameJson(job.input.hopAdvice, request);
+const jsonText = (value: unknown) => {
+  try { return JSON.stringify(value, null, 2) ?? String(value); }
+  catch { return String(value); }
+};
+/** The fixture transport reserves this namespace; host partitions use the canonical JSON partition key. */
+function isLocalAssistedFixture(runtime?: BrewerChatAssistedRuntime): boolean {
+  return runtime?.mode === 'hopAdviceReadonlyV1'
+    && typeof runtime.storeNamespace === 'string'
+    && runtime.storeNamespace.startsWith('assistantFixture:hopAdviceReadonlyV1:');
+}
+function localAssistedFixtureStatus(job: ClientBrewerJob): string {
+  if (job.sendError || job.status === 'error') return 'Simulation locale interrompue';
+  if (job.status === 'done') return 'Réponse simulée prête';
+  if (job.sending || job.status === 'running') return 'Réponse simulée en attente';
+  if (job.status === 'cancelled') return 'Simulation locale annulée';
+  return 'Question conservée dans la fixture locale';
+}
+const EMPTY_ACTIVITY: BrewerChatJobActivity = { jobs: [], connectionError: '' };
+const emptySnapshot = () => EMPTY_ACTIVITY;
+const emptySubscribe = () => () => {};
 
 interface Props {
   scope: BrewerScope;
@@ -45,6 +139,8 @@ interface Props {
   initialOpen?: boolean;
   initialQuestion?: string;
   suggestedPrompts?: Array<{ label: string; question: string }>;
+  assistedAdvice?: BrewerChatAssistedAdvice;
+  assistedRuntime?: BrewerChatAssistedRuntime;
   hideLauncher?: boolean;
   onClose?: () => void;
 }
@@ -115,6 +211,8 @@ function ScopedChat({
   initialOpen = false,
   initialQuestion = '',
   suggestedPrompts,
+  assistedAdvice,
+  assistedRuntime,
   hideLauncher = false,
   onClose
 }: Props) {
@@ -122,7 +220,9 @@ function ScopedChat({
   const draft = currentDraft ?? savedDraft;
   const [open, setOpen] = useState(initialOpen),
     [turns, setTurns] = useState<BrewerTurn[]>([]),
-    [question, setQuestion] = useState(initialQuestion);
+    [question, setQuestion] = useState(assistedAdvice?.request.question ?? initialQuestion);
+  const assistedRequestKey = assistedSessionKey(assistedAdvice);
+  const hasAssistedSession = !!assistedAdvice;
   const finance = scope.kind === 'app' && scope.id === 'finances';
   const questions = suggestedPrompts ?? (finance ? [
     'Explique mes principaux postes de dépenses et les variations.',
@@ -135,13 +235,36 @@ function ScopedChat({
     [more, setMore] = useState(false),
     [kept, setKept] = useState<string[]>([]);
   const [mode, setMode] = useState<BrewerMode>(modePreference);
-  const activity = useBrewerJobs();
+  const assistedRuntimeReady = !!assistedAdvice && assistedRuntime?.mode === 'hopAdviceReadonlyV1'
+    && typeof assistedRuntime.storeNamespace === 'string'
+    && assistedRuntime.storeNamespace.includes('hopAdviceReadonlyV1');
+  const localAssistedFixture = !!assistedAdvice && isLocalAssistedFixture(assistedRuntime);
+  const activeJobsStore = assistedAdvice
+    ? (assistedRuntimeReady ? assistedRuntime.jobs : undefined)
+    : brewerJobs;
+  const assistedReceiptsRetained = hasAssistedSession && assistedRuntimeReady
+    && assistedRuntime?.jobs.retainInputUntilRead === true;
+  const activity = useSyncExternalStore(
+    activeJobsStore?.subscribe ?? emptySubscribe,
+    activeJobsStore?.snapshot ?? emptySnapshot,
+    activeJobsStore?.snapshot ?? emptySnapshot
+  );
   const [confirmReset, setConfirmReset] = useState(false),
     [resetting, setResetting] = useState(false),
     [notice, setNotice] = useState('');
   const [applying, setApplying] = useState(false);
+  const [assistedSubmitting, setAssistedSubmitting] = useState(false);
+  const [completedAssistedKeys, setCompletedAssistedKeys] = useState<Set<string>>(() => new Set());
   const draftControl = useRef({ draft, onDraftApply });
   draftControl.current = { draft, onDraftApply };
+  const assistedTicketsByKey = useRef(new Map<string, AssistedTicket>());
+  const assistedTicketsByOperation = useRef(new Map<string, AssistedTicket>());
+  const deliveredAssistedTurns = useRef(new Set<string>());
+  const attachedAssistedReceipts = useRef(new Set<string>());
+  const assistedRequestKeyRef = useRef(assistedRequestKey);
+  const assistedAdviceRef = useRef(assistedAdvice);
+  assistedAdviceRef.current = assistedAdvice;
+  const assistedSubmitLock = useRef(false);
   const generation = useRef(0),
     epoch = useRef(0),
     resetOperation = useRef('');
@@ -158,65 +281,102 @@ function ScopedChat({
     lock = useRef(false),
     end = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (assistedRequestKeyRef.current === assistedRequestKey) return;
+    assistedRequestKeyRef.current = assistedRequestKey;
+    epoch.current++;
+    if (assistedAdvice) {
+      setQuestion(assistedAdvice.request.question);
+      setError('');
+    }
+  }, [assistedAdvice, assistedRequestKey]);
+  useEffect(() => {
     return brewerLauncher.register(scope, () => setOpen(true));
   }, [scope.kind, scope.id]);
   useEffect(() => {
     if (open) return brewerLauncher.dialog();
   }, [open]);
-  const jobs = activity.jobs.filter(
-    (j) => sameBrewerScope(j.scope, scope) && j.generation === generation.current
-  );
+  const jobs = activity.jobs.filter((j) => {
+    if (!sameBrewerScope(j.scope, scope)) return false;
+    if (!hasAssistedSession) return j.generation === generation.current;
+    const ticket = assistedTicketsByOperation.current.get(j.operationId);
+    if (ticket && ticket.requestKey === assistedRequestKey) return j.generation === generation.current;
+    const unsupported = isUnsupportedAssistedJob(j, scope, assistedAdvice?.request);
+    const receiptRecovery = assistedReceiptsRetained && isRecoverableAssistedReceipt(j, scope, assistedAdvice?.request)
+      && !attachedAssistedReceipts.current.has(`operation:${j.operationId}`);
+    if (ticket) return !!receiptRecovery;
+    return unsupported || receiptRecovery || isRecoverableAssistedJob(j, scope, assistedAdvice?.request, generation.current);
+  });
+  const visibleTurns = assistedAdvice
+    ? turns.filter((turn) => {
+        const ticket = assistedTicketsByOperation.current.get(turn.operationId);
+        return ticket ? ticket.requestKey === assistedRequestKey : !turn.hopAdviceProposal;
+      })
+    : turns;
   const timeline: Array<{ turn?: BrewerTurn; job?: ClientBrewerJob; at: number }> = [
-    ...turns.map((turn) => ({
+    ...visibleTurns.map((turn) => ({
       turn,
       at: jobs.find((j) => j.operationId === turn.operationId)?.createdAt ?? turn.createdAt
     })),
     ...jobs
-      .filter((job) => !turns.some((t) => t.operationId === job.operationId))
+      .filter((job) => !visibleTurns.some((t) => t.operationId === job.operationId))
       .map((job) => ({ job, at: job.createdAt }))
   ].sort((a, b) => a.at - b.at);
   useEffect(() => {
     alive.current = true;
-    void brewerJobs.start();
+    if (activeJobsStore) void activeJobsStore.start();
     return () => {
       alive.current = false;
     };
-  }, []);
+  }, [activeJobsStore]);
   useEffect(() => {
     if (!open) return;
-    void brewerJobs.refresh();
+    if (assistedAdvice && !assistedRuntimeReady) {
+      setLoading(false);
+      setError('Le transport dédié à la lecture assistée est indisponible. Aucune question ne sera envoyée au compagnon standard.');
+      return;
+    }
+    if (!activeJobsStore) {
+      setLoading(false);
+      return;
+    }
+    void activeJobsStore.refresh();
     let live = true;
     const version = epoch.current;
     setLoading(true);
     setError('');
     void (async () => {
       try {
-        const history = await api.history(scope);
+        const history = hasAssistedSession
+          ? await assistedRuntime!.history(scope)
+          : await api.history(scope);
         if (!live || version !== epoch.current) return;
         const nextGeneration = history.generation ?? 0;
         if (history.draft) setSavedDraft(history.draft);
         const sameGeneration = nextGeneration === generation.current;
         generation.current = nextGeneration;
-        brewerJobs.forget(scope, nextGeneration);
+        activeJobsStore.forget(scope, nextGeneration);
         setTurns((t) => (sameGeneration ? merge(t, history) : history));
         setMore(history.length === 20);
-        // Move the old single-message outbox into the conversation after upgrading.
-        const oldKey =
-          'brewer-chat-pending:' + (await api.userKey()) + ':' + scope.kind + ':' + scope.id;
-        const old = localStorage.getItem(oldKey);
-        if (old && live && version === epoch.current) {
-          try {
-            const input = JSON.parse(old);
-            if (
-              sameBrewerScope(input.scope, scope) &&
-              (input.generation ?? 0) === nextGeneration &&
-              !history.some((t) => t.operationId === input.operationId)
-            )
-              brewerJobs.submit(input, label);
-          } catch {
-            /* Invalid legacy outbox. */
+        if (!hasAssistedSession) {
+          // Migrate only the ordinary chat's legacy outbox. The assisted facade owns recovery separately.
+          const oldKey =
+            'brewer-chat-pending:' + (await api.userKey()) + ':' + scope.kind + ':' + scope.id;
+          const old = localStorage.getItem(oldKey);
+          if (old && live && version === epoch.current) {
+            try {
+              const input = JSON.parse(old);
+              if (
+                sameBrewerScope(input.scope, scope) &&
+                !input.hopAdvice &&
+                (input.generation ?? 0) === nextGeneration &&
+                !history.some((t) => t.operationId === input.operationId)
+              )
+                activeJobsStore.submit(input, label);
+            } catch {
+              /* Invalid legacy outbox. */
+            }
+            localStorage.removeItem(oldKey);
           }
-          localStorage.removeItem(oldKey);
         }
       } catch (e) {
         if (live && version === epoch.current) setError(brewerChatError(e));
@@ -227,27 +387,141 @@ function ScopedChat({
     return () => {
       live = false;
     };
-  }, [open, scope.kind, scope.id]);
+  }, [activeJobsStore, assistedRequestKey, assistedRuntime, assistedRuntimeReady, hasAssistedSession, label, open, scope.kind, scope.id]);
   useEffect(() => {
-    const current = activity.jobs.filter(
-      (j) => sameBrewerScope(j.scope, scope) && j.generation === generation.current
-    );
-    const received = current.flatMap((j) => (j.turn ? [j.turn] : []));
+    const current = activity.jobs.filter((job) => {
+      if (!sameBrewerScope(job.scope, scope)) return false;
+      if (!hasAssistedSession) return job.generation === generation.current;
+      const ticket = assistedTicketsByOperation.current.get(job.operationId);
+      return job.generation === generation.current || !!ticket
+        || assistedReceiptsRetained && isRecoverableAssistedReceipt(job, scope, assistedAdviceRef.current?.request);
+    });
+    const received = current.flatMap((job) => {
+      const ticket = assistedTicketsByOperation.current.get(job.operationId);
+      if (ticket && assistedAdviceRef.current && ticket.requestKey !== assistedRequestKey) return [];
+      if (assistedAdviceRef.current && !ticket && (job.input?.hopAdvice || job.turn?.hopAdviceProposal)) return [];
+      if (assistedAdviceRef.current && ticket && job.turn
+        && !attachedAssistedReceipts.current.has(`operation:${job.operationId}`)) return [];
+      return job.turn ? [job.turn] : [];
+    });
     if (received.length) setTurns((t) => merge(t, received));
+    for (const job of current) {
+      const ticket = assistedTicketsByOperation.current.get(job.operationId);
+      const turn = job.turn;
+      if (!ticket || !turn || job.status !== 'done' || !ticket.submitted) continue;
+      const envelope = turn.hopAdviceProposal;
+      if (!envelope || turn.operationId !== ticket.input.operationId || job.operationId !== ticket.input.operationId
+        || turn.question !== ticket.input.question || job.question !== ticket.input.question
+        || job.generation !== ticket.input.generation || !sameScopeExactly(job.scope, ticket.input.scope)
+        || (job.input && !sameBrewerChatInput(job.input, ticket.input))
+        || !sameJson(envelope.request, ticket.input.hopAdvice)) continue;
+      const operationKey = `operation:${turn.operationId}`;
+      const turnKey = `turn:${turn.id}`;
+      if (deliveredAssistedTurns.current.has(operationKey) || deliveredAssistedTurns.current.has(turnKey)) continue;
+      deliveredAssistedTurns.current.add(operationKey);
+      deliveredAssistedTurns.current.add(turnKey);
+      const inputSnapshot = structuredClone(ticket.input);
+      const turnSnapshot = structuredClone(turn);
+      const envelopeSnapshot = turnSnapshot.hopAdviceProposal;
+      if (!envelopeSnapshot) continue;
+      void Promise.resolve(ticket.onAssistedTurn({
+        input: inputSnapshot,
+        job: { ...structuredClone(job), input: inputSnapshot, turn: turnSnapshot },
+        turn: turnSnapshot,
+        envelope: envelopeSnapshot,
+        evidence: turnSnapshot.evidence
+      })).then(() => {
+        attachedAssistedReceipts.current.add(operationKey);
+        activeJobsStore?.markRead({ ...job, input: inputSnapshot, turn: turnSnapshot });
+        if (ticket.requestKey === assistedSessionKey(assistedAdviceRef.current)) {
+          setTurns((rows) => merge(rows, [turnSnapshot]));
+        }
+      }).catch((error) => {
+        deliveredAssistedTurns.current.delete(operationKey);
+        deliveredAssistedTurns.current.delete(turnKey);
+        const currentKey = assistedSessionKey(assistedAdviceRef.current);
+        if (currentKey === ticket.requestKey) setError(brewerChatError(error));
+      });
+    }
+    if (hasAssistedSession) return;
     if (open && document.visibilityState !== 'hidden')
       current
         .filter(
           (j) =>
-            j.status === 'error' ||
+            !j.unsupportedReadOnly && (j.status === 'error' ||
             (j.status === 'done' && (j.turn || turns.some((t) => t.operationId === j.operationId)))
+            )
         )
-        .forEach((j) => brewerJobs.markRead(j));
-  }, [activity.jobs, open, turns.length]);
+        .forEach((j) => activeJobsStore?.markRead(j));
+  }, [activity.jobs, activeJobsStore, assistedRequestKey, hasAssistedSession, open, turns.length]);
   useEffect(() => {
     if (open) end.current?.scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
   }, [turns.length, jobs.length, open]);
-  const ask = () => {
-    if (question.trim().length < 2 || loading || resetting || applying) return;
+  const ask = async () => {
+    if (loading || resetting || applying || assistedSubmitting || assistedSubmitLock.current) return;
+    if (assistedAdvice) {
+      if (!assistedRuntimeReady || !activeJobsStore) {
+        setError('Le transport dédié à la lecture assistée est indisponible. Aucune question ne sera envoyée au compagnon standard.');
+        return;
+      }
+      const request = assistedAdvice.request;
+      if (!sameScopeExactly(scope, request.contextLaunch.scope)) {
+        setError('La lecture assistée est liée à une autre portée. Reprends-la depuis sa source dans l’atelier.');
+        return;
+      }
+      if (question !== request.question || request.question.length < 2) {
+        setError('Cette question ne correspond plus à la lecture. Reprends une nouvelle lecture dans l’atelier avant de l’envoyer.');
+        return;
+      }
+      if (completedAssistedKeys.has(assistedRequestKey)) return;
+      let ticket = assistedTicketsByKey.current.get(assistedRequestKey);
+      if (!ticket) {
+        const requestSnapshot = structuredClone(request);
+        const input: BrewerChatInput = {
+          scope: structuredClone(scope),
+          operationId: crypto.randomUUID(),
+          question: requestSnapshot.question,
+          mode,
+          generation: generation.current,
+          hopAdvice: requestSnapshot
+        };
+        ticket = {
+          requestKey: assistedRequestKey,
+          input,
+          label,
+          onBeforeSend: assistedAdvice.onBeforeSend,
+          onAssistedTurn: assistedAdvice.onAssistedTurn,
+          prepared: false,
+          submitted: false
+        };
+        assistedTicketsByKey.current.set(assistedRequestKey, ticket);
+        assistedTicketsByOperation.current.set(input.operationId, ticket);
+      }
+      if (ticket.submitted) return;
+      assistedSubmitLock.current = true;
+      setAssistedSubmitting(true);
+      setError('');
+      try {
+        if (!ticket.prepared) {
+          await ticket.onBeforeSend(ticket.input);
+          ticket.prepared = true;
+        }
+        // The ticket and request stay frozen even if the parent displays another reading meanwhile.
+        activeJobsStore.submit(ticket.input, ticket.label);
+        ticket.submitted = true;
+        setCompletedAssistedKeys((keys) => new Set(keys).add(ticket!.requestKey));
+      } catch (error) {
+        const currentKey = assistedSessionKey(assistedAdviceRef.current);
+        if (currentKey === ticket.requestKey) {
+          setError((error as Error)?.message || 'La lecture n’a pas pu être préparée. Réessaie sans modifier la question.');
+        }
+      } finally {
+        assistedSubmitLock.current = false;
+        setAssistedSubmitting(false);
+      }
+      return;
+    }
+    if (question.trim().length < 2) return;
     brewerJobs.submit(
       {
         scope,
@@ -266,11 +540,17 @@ function ScopedChat({
     setError('');
   };
   const older = async () => {
+    if (hasAssistedSession && !assistedRuntimeReady) {
+      setError('Le transport dédié à l’historique assisté est indisponible.');
+      return;
+    }
     const version = epoch.current;
     setLoading(true);
     setError('');
     try {
-      const old = await api.history(scope, turns[0]?.createdAt);
+      const old = hasAssistedSession
+        ? await assistedRuntime!.history(scope, turns[0]?.createdAt)
+        : await api.history(scope, turns[0]?.createdAt);
       if (alive.current && version === epoch.current) {
         const nextGeneration = old.generation ?? 0;
         const sameGeneration = nextGeneration === generation.current;
@@ -286,6 +566,10 @@ function ScopedChat({
   };
   const reset = async () => {
     if (resetting) return;
+    if (hasAssistedSession && !assistedRuntimeReady) {
+      setError('Le transport dédié à la réinitialisation assistée est indisponible.');
+      return;
+    }
     epoch.current++;
     lock.current = true;
     setResetting(true);
@@ -293,12 +577,14 @@ function ScopedChat({
     setError('');
     resetOperation.current ||= crypto.randomUUID();
     try {
-      const result = await api.reset(scope, generation.current, resetOperation.current);
+      const result = hasAssistedSession
+        ? await assistedRuntime!.reset(scope, generation.current, resetOperation.current)
+        : await api.reset(scope, generation.current, resetOperation.current);
       if (!alive.current) return;
       generation.current = result.generation;
       setTurns([]);
       setQuestion('');
-      brewerJobs.forget(scope, result.generation);
+      activeJobsStore?.forget(scope, result.generation);
       setMore(false);
       setKept([]);
       setConfirmReset(false);
@@ -312,6 +598,7 @@ function ScopedChat({
     }
   };
   const decide = async (turn: BrewerTurn, ids: string[], decision: 'apply' | 'dismiss') => {
+    if (hasAssistedSession) throw new Error('Les propositions de lecture assistée ne passent pas par les décisions du compagnon standard.');
     if (resetting || lock.current) return;
     lock.current = true;
     const version = epoch.current;
@@ -338,6 +625,104 @@ function ScopedChat({
       if (alive.current) setApplying(false);
     }
   };
+  const retryAssistedJob = async (job: ClientBrewerJob) => {
+    if (job.unsupportedReadOnly || !hasAssistedSession || !assistedAdvice || !assistedRuntimeReady || !activeJobsStore
+      || resetting || applying || assistedSubmitLock.current) return;
+    let ticket = assistedTicketsByOperation.current.get(job.operationId);
+    const exactJob = ticket ? { ...job, input: structuredClone(ticket.input) } : job;
+    if (!isRecoverableAssistedJob(exactJob, scope, assistedAdvice.request, generation.current)) return;
+    if (!ticket) {
+      ticket = {
+        requestKey: assistedRequestKey,
+        input: structuredClone(job.input!),
+        label,
+        onBeforeSend: assistedAdvice.onBeforeSend,
+        onAssistedTurn: assistedAdvice.onAssistedTurn,
+        prepared: false,
+        submitted: false
+      };
+      assistedTicketsByKey.current.set(assistedRequestKey, ticket);
+      assistedTicketsByOperation.current.set(job.operationId, ticket);
+    }
+    if (ticket.requestKey !== assistedRequestKey) return;
+    assistedSubmitLock.current = true;
+    setAssistedSubmitting(true);
+    setError('');
+    try {
+      // Explicit retry rechecks the existing operation ticket; it never captures a new dated ticket.
+      await ticket.onBeforeSend(ticket.input);
+      ticket.prepared = true;
+      activeJobsStore.retry({ ...job, input: structuredClone(ticket.input) });
+      ticket.submitted = true;
+      setCompletedAssistedKeys((keys) => new Set(keys).add(ticket!.requestKey));
+    } catch (error) {
+      const currentKey = assistedSessionKey(assistedAdviceRef.current);
+      if (currentKey === ticket.requestKey) {
+        setError((error as Error)?.message || 'La reprise de cette question n’a pas été vérifiée. Tu peux réessayer sans changer la lecture.');
+      }
+    } finally {
+      assistedSubmitLock.current = false;
+      setAssistedSubmitting(false);
+    }
+  };
+  const attachAssistedReceipt = async (job: ClientBrewerJob) => {
+    if (job.unsupportedReadOnly || !hasAssistedSession || !assistedAdvice || !assistedRuntimeReady || !activeJobsStore
+      || !assistedReceiptsRetained || resetting || applying || assistedSubmitLock.current
+      || !isRecoverableAssistedReceipt(job, scope, assistedAdvice.request)) return;
+    let ticket = assistedTicketsByOperation.current.get(job.operationId);
+    if (!ticket) {
+      ticket = {
+        requestKey: assistedRequestKey,
+        input: structuredClone(job.input!),
+        label,
+        onBeforeSend: assistedAdvice.onBeforeSend,
+        onAssistedTurn: assistedAdvice.onAssistedTurn,
+        prepared: true,
+        submitted: true
+      };
+      assistedTicketsByOperation.current.set(job.operationId, ticket);
+      assistedTicketsByKey.current.set(ticket.requestKey, ticket);
+    }
+    if (!sameBrewerChatInput(job.input!, ticket.input)) return;
+    if (ticket.submitted !== true) return;
+    const turn = job.turn!;
+    const operationKey = `operation:${turn.operationId}`;
+    const turnKey = `turn:${turn.id}`;
+    if (deliveredAssistedTurns.current.has(operationKey) || deliveredAssistedTurns.current.has(turnKey)) return;
+    const inputSnapshot = structuredClone(ticket.input);
+    const turnSnapshot = structuredClone(turn);
+    const envelopeSnapshot = turnSnapshot.hopAdviceProposal;
+    if (!envelopeSnapshot) return;
+    const jobSnapshot = { ...structuredClone(job), input: inputSnapshot, turn: turnSnapshot };
+    deliveredAssistedTurns.current.add(operationKey);
+    deliveredAssistedTurns.current.add(turnKey);
+    assistedSubmitLock.current = true;
+    setAssistedSubmitting(true);
+    setError('');
+    try {
+      // This is attachment of an existing DONE receipt, never a new send or a fresh Page capture.
+      await ticket.onAssistedTurn({ input: inputSnapshot, job: jobSnapshot, turn: turnSnapshot,
+        envelope: envelopeSnapshot, evidence: turnSnapshot.evidence });
+      attachedAssistedReceipts.current.add(operationKey);
+      activeJobsStore.markRead(jobSnapshot);
+      if (ticket.requestKey === assistedSessionKey(assistedAdviceRef.current)) {
+        setCompletedAssistedKeys(keys => new Set(keys).add(ticket!.requestKey));
+        setTurns(rows => merge(rows, [turnSnapshot]));
+      }
+    } catch (error) {
+      deliveredAssistedTurns.current.delete(operationKey);
+      deliveredAssistedTurns.current.delete(turnKey);
+      if (ticket.requestKey === assistedSessionKey(assistedAdviceRef.current)) setError(brewerChatError(error));
+    } finally {
+      assistedSubmitLock.current = false;
+      setAssistedSubmitting(false);
+    }
+  };
+  const assistedScopeMatches = !assistedAdvice || sameScopeExactly(scope, assistedAdvice.request.contextLaunch.scope);
+  const assistedQuestionMatches = !assistedAdvice || question === assistedAdvice.request.question;
+  const assistedAlreadySubmitted = !!assistedAdvice && completedAssistedKeys.has(assistedRequestKey);
+  const activeAssistedTicket = assistedAdvice ? assistedTicketsByKey.current.get(assistedRequestKey) : undefined;
+  const assistedTicketLocked = !!activeAssistedTicket && !activeAssistedTicket.submitted;
   return (
     <>
       {!hideLauncher && (
@@ -394,7 +779,7 @@ function ScopedChat({
           >
             <div className="brewer-chat-mode">
               <fieldset
-                disabled={applying || resetting}
+                disabled={applying || resetting || assistedSubmitting || assistedTicketLocked}
                 aria-describedby={`brewer-mode-${scope.id}`}
               >
                 <legend className="sr-only">Mode de réponse</legend>
@@ -435,20 +820,47 @@ function ScopedChat({
             <Textarea
               id={`brewer-question-${scope.id}`}
               value={question}
-              maxLength={3000}
+              maxLength={assistedAdvice ? 4000 : 3000}
               rows={2}
               placeholder={finance ? 'Une dépense à comprendre, un achat à préparer…' : 'Décris ce que tu observes…'}
-              readOnly={applying || resetting}
-              onChange={(e) => setQuestion(e.target.value)}
+              readOnly={applying || resetting || assistedSubmitting}
+              onChange={(e) => {
+                setQuestion(e.target.value);
+                if (assistedAdvice) setError('');
+              }}
             />
+            {assistedAdvice && !assistedRuntimeReady && (
+              <p className="brewer-chat-status" role="status">
+                Le transport dédié de cette lecture n’est pas disponible. Aucune question ne partira par le compagnon standard.
+              </p>
+            )}
+            {assistedAdvice && !assistedScopeMatches && (
+              <p className="brewer-chat-status" role="status">
+                Cette lecture est liée à une autre portée. Reprends-la depuis sa source dans l’atelier.
+              </p>
+            )}
+            {assistedAdvice && assistedScopeMatches && !assistedQuestionMatches && (
+              <p className="brewer-chat-status" role="status">
+                La question a changé. Reprends une nouvelle lecture dans l’atelier avant de l’envoyer.
+              </p>
+            )}
+            {assistedAlreadySubmitted && (
+              <p className="brewer-chat-status" role="status">
+                Cette lecture a déjà été envoyée. Reprends une lecture dans l’atelier pour poser une autre question.
+              </p>
+            )}
             <button
               type="submit"
               disabled={
                 applying ||
                 loading ||
+                assistedSubmitting ||
                 resetting ||
-                question.trim().length < 2 ||
-                (scope.kind === 'draft' && !draft)
+                (!!assistedAdvice && !assistedRuntimeReady) ||
+                (assistedAdvice
+                  ? !assistedScopeMatches || !assistedQuestionMatches || assistedAlreadySubmitted || question.length < 2
+                  : question.trim().length < 2) ||
+                (!assistedAdvice && scope.kind === 'draft' && !draft)
               }
               aria-label="Envoyer la question"
             >
@@ -461,8 +873,9 @@ function ScopedChat({
         <div className="brewer-chat-context">
           <span className="brewer-chat-dot" />
           <span>
-            {scope.kind === 'draft' ? 'Brouillon en cours' : phase || 'Recette'} · contexte
-            actualisé à chaque question
+            {assistedAdvice
+              ? 'Lecture assistée liée à sa question et à sa source'
+              : `${scope.kind === 'draft' ? 'Brouillon en cours' : phase || 'Recette'} · contexte actualisé à chaque question`}
           </span>
           <button
             type="button"
@@ -485,8 +898,8 @@ function ScopedChat({
             <RotateCcw size={17} />
           </button>
         </div>
-        <BrewerNotificationOption />
-        <BrewerBudget />
+        {!assistedAdvice && <BrewerNotificationOption />}
+        {!assistedAdvice && <BrewerBudget />}
         {finance && <p className="brewer-chat-status">Gemini reçoit un résumé de tes comptes, paiements, prévisions, budgets de brassins et matériel. Les limites des données sont signalées ; les corrections restent à valider.</p>}
         {scope.kind === 'draft' && !currentDraft && (
           <p className="brewer-chat-status">
@@ -536,20 +949,24 @@ function ScopedChat({
         {!timeline.length && !loading && (
           <div className="brewer-chat-welcome">
             <Sparkles size={25} />
-            <h3>On regarde ça ensemble.</h3>
+            <h3>{hasAssistedSession ? 'Lecture assistée' : 'On regarde ça ensemble.'}</h3>
             <p>
-              {finance ? 'Comprendre où va ton argent, anticiper un brassin ou décider d’un achat utile à ta brasserie.' : 'Je m’appuie sur ta recette, ton matériel et tes relevés pour t’aider à décider du prochain geste.'}
+              {hasAssistedSession ? 'Cette question reste liée à la lecture enregistrée et à son contexte exact. Pour changer sa formulation, relis une nouvelle demande dans l’atelier.'
+                : finance ? 'Comprendre où va ton argent, anticiper un brassin ou décider d’un achat utile à ta brasserie.'
+                  : 'Je m’appuie sur ta recette, ton matériel et tes relevés pour t’aider à décider du prochain geste.'}
             </p>
-            <div className="brewer-chat-prompts">
+            {!hasAssistedSession && <div className="brewer-chat-prompts">
               {questions.map((p) => (
                 <button type="button" key={p.label} disabled={resetting} onClick={() => setQuestion(p.question)}>
                   {p.label}
                   <ArrowUpRight size={15} />
                 </button>
               ))}
-            </div>
+            </div>}
             <small>
-              {finance ? 'Choisis une question, adapte-la puis envoie-la. Ouvrir cette aide ne lance aucune analyse.' : 'Les simulations restent des propositions. Les relevés et les gestes se consignent dans le journal.'}
+              {hasAssistedSession ? 'Le conseil reste une proposition. Rien n’est confirmé tant que tu n’as pas choisi une suggestion dans l’atelier.'
+                : finance ? 'Choisis une question, adapte-la puis envoie-la. Ouvrir cette aide ne lance aucune analyse.'
+                  : 'Les simulations restent des propositions. Les relevés et les gestes se consignent dans le journal.'}
             </small>
           </div>
         )}
@@ -559,14 +976,23 @@ function ScopedChat({
               <BrewerWorkCard
                 key={job.operationId}
                 job={job}
-                onRetry={() => {
-                  if (job.sendError) brewerJobs.retry(job);
+                localFixture={localAssistedFixture}
+                onRecover={assistedReceiptsRetained
+                  && isRecoverableAssistedReceipt(job, scope, assistedAdvice?.request)
+                  && !attachedAssistedReceipts.current.has(`operation:${job.operationId}`)
+                  ? () => void attachAssistedReceipt(job) : undefined}
+                recoverDisabled={assistedSubmitting || resetting || applying}
+                onRetry={job.unsupportedReadOnly ? undefined : () => {
+                  const ticket = assistedTicketsByOperation.current.get(job.operationId);
+                  if (hasAssistedSession) { void retryAssistedJob(job); return; }
+                  if (ticket || job.input?.hopAdvice || job.turn?.hopAdviceProposal) return;
+                  if (job.sendError) activeJobsStore?.retry(job);
                   else if (scope.kind === 'draft' && !draft) {
-                    brewerJobs.markRead(job);
+                    activeJobsStore?.markRead(job);
                     brewerJobs.retrySaved(job);
                   } else {
-                    brewerJobs.markRead(job);
-                    brewerJobs.submit(
+                    activeJobsStore?.markRead(job);
+                    activeJobsStore?.submit(
                       {
                         ...(job.input ?? {}),
                         scope,
@@ -583,7 +1009,7 @@ function ScopedChat({
                     );
                   }
                 }}
-                onEdit={() => {
+                onEdit={job.unsupportedReadOnly ? undefined : () => {
                   setQuestion(job!.question);
                   document.getElementById('brewer-question-' + scope.id)?.focus();
                 }}
@@ -616,7 +1042,7 @@ function ScopedChat({
                   )}
                   {t.advice.question && <p className="brewer-chat-followup">{t.advice.question}</p>}
                   <SupplierCards products={t.evidence.flatMap((e) => e.products ?? [])} selectedUrls={t.advice.productUrls} />
-                  {t.proposal && (
+                  {t.proposal && !hasAssistedSession && (
                     <BrewerProposalCard
                       proposal={t.proposal}
                       draft={scope.kind === 'draft'}
@@ -704,7 +1130,7 @@ function ScopedChat({
         {activity.connectionError && (
           <p className="brewer-chat-error" role="status">
             {activity.connectionError}{' '}
-            <button type="button" onClick={() => void brewerJobs.refresh()}>
+            <button type="button" onClick={() => void activeJobsStore?.refresh()}>
               Actualiser
             </button>
           </p>
@@ -735,11 +1161,17 @@ function ScopedChat({
 function BrewerWorkCard({
   job,
   onRetry,
+  onRecover,
+  recoverDisabled = false,
+  localFixture = false,
   onEdit
 }: {
   job: ClientBrewerJob;
-  onRetry: () => void;
-  onEdit: () => void;
+  onRetry?: () => void;
+  onRecover?: () => void;
+  recoverDisabled?: boolean;
+  localFixture?: boolean;
+  onEdit?: () => void;
 }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -756,12 +1188,21 @@ function BrewerWorkCard({
           {!failed && isBrewerWorking(job) && (
             <LoaderCircle size={17} className="brewer-chat-spin" />
           )}
-          <strong>{brewerJobStatus(job)}</strong>
+          <strong>{job.unsupportedReadOnly ? 'Format futur conservé · lecture seule'
+            : localFixture ? localAssistedFixtureStatus(job) : brewerJobStatus(job)}</strong>
           <time aria-hidden="true">
             {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')}
           </time>
         </div>
-        {failed ? (
+        {job.unsupportedReadOnly ? (
+          <>
+            <p role="status">Source conservée sans conversion · {job.unsupportedReadOnly.source}</p>
+            <p>{job.unsupportedReadOnly.reason}</p>
+            <details><summary>Données brutes conservées (lecture seule)</summary>
+              <pre>{jsonText(job.unsupportedReadOnly.snapshot)}</pre>
+            </details>
+          </>
+        ) : failed ? (
           <>
             <p role="alert">{job.sendError || job.error?.message}</p>
             {job.error?.code === 'gemini-spend-cap' && (
@@ -771,21 +1212,24 @@ function BrewerWorkCard({
               </a>
             )}
             <div className="brewer-work-actions">
-              {(job.sendError || job.error?.retryable) && (
+              {(job.sendError || job.error?.retryable) && onRetry && (
                 <button type="button" onClick={onRetry}>
-                  {job.sendError ? 'Réessayer l’envoi' : 'Relancer l’analyse'}
+                  {localFixture ? 'Relancer la simulation locale'
+                    : job.sendError ? 'Réessayer l’envoi' : 'Relancer l’analyse'}
                 </button>
               )}
-              <button type="button" onClick={onEdit}>
+              {onEdit ? <button type="button" onClick={onEdit}>
                 Reformuler
-              </button>
+              </button> : null}
             </div>
           </>
         ) : (
           <>
             {job.detail && <p>{job.detail}</p>}
             <small>
-              {job.model?.includes('pro')
+              {localFixture
+                ? job.status === 'done' && !job.sending ? 'Réponse simulée · fixture locale' : 'Traitement local · réponse simulée'
+                : job.model?.includes('pro')
                 ? 'Gemini 3.1 Pro'
                 : job.model
                   ? 'Gemini Flash'
@@ -796,14 +1240,21 @@ function BrewerWorkCard({
             </small>
             {!job.sending && (
               <p className="brewer-work-away">
-                Tu peux continuer ailleurs. La réponse restera dans ce fil.
+                {localFixture ? 'Tu peux continuer; cette fixture garde le parcours local dans ce navigateur.'
+                  : 'Tu peux continuer ailleurs. La réponse restera dans ce fil.'}
               </p>
             )}
             {job.status === 'running' && now - job.updatedAt > 90000 && (
               <p>
-                Cette étape prend du temps. Le serveur poursuit l’analyse et signalera tout échec
-                ici.
+                {localFixture ? 'La simulation locale reste en attente; aucun modèle distant n’est appelé.'
+                  : 'Cette étape prend du temps. Le serveur poursuit l’analyse et signalera tout échec ici.'}
               </p>
+            )}
+            {onRecover && (
+              <div className="brewer-work-actions">
+                <p>La réponse reçue reste liée à sa question d’origine. Vérifie son ticket avant de la rattacher.</p>
+                <button type="button" disabled={recoverDisabled} onClick={onRecover}>Rattacher la réponse assistée</button>
+              </div>
             )}
           </>
         )}

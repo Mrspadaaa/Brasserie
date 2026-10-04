@@ -74,7 +74,20 @@ export const FirestoreRepo = {
     rows[name] = { ...rows[name], [id]: JSON.parse(JSON.stringify(options.merge ? { ...rows[name]?.[id], ...data } : data)) };
     persist();
   },
-  remove(name: string, id: string) { qaMetrics.writes++; rows[name] = { ...rows[name] }; delete rows[name][id]; persist(); },
+  /** Local equivalent of FirestoreRepo.adjustNumber; never calls the network. */
+  adjustNumber(name: string, id: string, field: string, delta: number, extra: Record<string, unknown> = {}) {
+    if (!Number.isFinite(delta)) throw new Error('Quantité invalide.');
+    const current = rows[name]?.[id];
+    const value = Math.round(((Number(current?.[field]) || 0) + delta) * 1e6) / 1e6;
+    this.put(name, id, { ...extra, [field]: value }, { merge: true });
+  },
+  remove(name: string, id: string) {
+    qaMetrics.writes++;
+    const collection = { ...rows[name] };
+    delete collection[id];
+    rows[name] = collection;
+    persist();
+  },
   async bulkWrite(entries: any[]) { for (const e of entries) this.put(e.name, e.id, e.data); await this.waitForWrites(); },
   async replaceAll(data: Record<string, any[]>) { seedQa(data); },
   async isEmpty(name: string) { return !Object.keys(rows[name] ?? {}).length; },

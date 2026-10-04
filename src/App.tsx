@@ -69,6 +69,7 @@ const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(
 const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
 const ClientsTab = lazy(() => import('./components/tabs/ClientsTab').then(module => ({ default: module.ClientsTab })));
 const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
+const HopV55Host = lazy(() => import('./ui/hopV55/Host').then(module => ({ default: module.HopV55Host })));
 
 /**
  * Compte factice pour le DÉVELOPPEMENT LOCAL, et rien d'autre.
@@ -188,6 +189,7 @@ export const App: React.FC = () => {
    */
   const [createRequest, setCreateRequest] = useState<{ kind: FabIntent; at: number } | null>(null);
   const route = useFullScreenRoute();
+  const [hopV55Journal, setHopV55Journal] = useState<{ batchId: string; journal: import('./types').BrewDayState }>();
   // A resolved background import should not still mount a Suspense fallback.
   // Lock the surface for this route so later data updates preserve local UI state.
   const RecipeSurface = useMemo(() => preparedRecipePage()?.RecipePage ?? RecipePage,
@@ -654,7 +656,7 @@ export const App: React.FC = () => {
       {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
           Contrairement au toast, il ne disparaît pas tout seul : perdre une
           écriture comptable sans s'en apercevoir n'est pas acceptable. */}
-      {writeError && view.view !== 'wizard' && (
+      {writeError && view.view !== 'wizard' && view.view !== 'hopV55' && (
         <div role="alert" className="fixed top-0 inset-x-0 z-[60] bg-alert text-white px-4 py-3 shadow-2xl flex items-start gap-3">
           <span className="text-lg leading-none shrink-0">⚠️</span>
           <div className="flex-1 text-sm leading-relaxed font-medium">{writeError}</div>
@@ -749,6 +751,7 @@ export const App: React.FC = () => {
             targetSubTab={productionSubTab}
             onOpenCreateBatch={() => openWizard()}
             onOpenRecipe={openRecipe}
+            onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onEditRecipe={(recipe) => openWizard({ recipe })}
             onOpenBrewDay={openBrewDay}
             onSubTabChange={handleProductionSubTabChange}
@@ -767,6 +770,7 @@ export const App: React.FC = () => {
           <StocksTab
             stocks={stocks}
             batches={batches}
+            onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
             onSubTabChange={(sub) => setSubTab(sub as never)}
             openItemRequest={stockOpenRequest}
@@ -889,6 +893,7 @@ export const App: React.FC = () => {
           }}
           onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
           onOpenBatch={openBrewDay}
+          onOpenHopV55={() => route.open({ view: 'hopV55', recipeId: routedRecipe.id })}
         />
       )}
 
@@ -901,8 +906,15 @@ export const App: React.FC = () => {
           onClose={route.close}
           onSave={(b) => StorageService.updateBatch(b)}
           onFinish={finishBrewDay}
+          onOpenHopV55={journal => { setHopV55Journal({ batchId: routedBatch.id, journal }); route.open({ view: 'hopV55', batchId: routedBatch.id }); }}
         />
       )}
+
+      {view.view === 'hopV55' && <HopV55Host key={`${currentUser.uid}:${view.recipeId ?? view.batchId ?? 'explore'}`} ownerKey={currentUser.uid}
+        recipe={view.recipeId ? recipes.find(recipe => recipe.id === view.recipeId) : undefined}
+        batch={view.batchId ? batches.find(batch => batch.id === view.batchId) : undefined}
+        journal={view.batchId === hopV55Journal?.batchId ? hopV55Journal?.journal : undefined}
+        onClose={route.close} onOpenRecipe={openRecipe} writeError={writeError} onDismissWriteError={() => setWriteError(null)} />}
 
       {view.view === 'wizard' && (
         <BrewWizard

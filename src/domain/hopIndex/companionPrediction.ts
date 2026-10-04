@@ -12,7 +12,12 @@ export type HopRecipeCompanionEvidence = ReferencedSources<HopRecipePrediction> 
 /** Lossless tool representation. The same sources/reasons recur on every axis and addition;
  * retaining them once keeps both the model prompt and stored conversation bounded.
  * Calculation/snapshot formats and every numerical value remain unchanged. */
-export function compactHopRecipeEvidence(prediction: HopRecipePrediction): HopRecipeCompanionEvidence {
+export function compactHopEvidence<T>(prediction: T): ReferencedSources<T> & {
+  sourceDictionary: Record<string, HopSource>; sourceSets: Record<string, string[]>; reasonSets: Record<string, string[]>;
+} {
+  const isSource = (value: any): value is HopSource => !!value && typeof value === 'object' && !Array.isArray(value)
+    && typeof value.title === 'string' && typeof value.author === 'string' && typeof value.reference === 'string'
+    && (value.year === null || typeof value.year === 'number') && typeof value.kind === 'string';
   const sourceDictionary: Record<string, HopSource> = {}, ids = new Map<string, string>();
   const sourceSets: Record<string, string[]> = {}, setIds = new Map<string, string>();
   const reasonSets: Record<string, string[]> = {}, reasonIds = new Map<string, string>();
@@ -38,9 +43,13 @@ export function compactHopRecipeEvidence(prediction: HopRecipePrediction): HopRe
     if (Array.isArray(value)) return value.map(compact);
     if (!value || typeof value !== 'object') return value;
     return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key,
-      key === 'sources' ? references(entry as HopSource[])
-        : key === 'source' ? reference(entry as HopSource)
-          : key === 'reasons' ? reasons(entry as string[]) : compact(entry)]));
+      key === 'sources' && Array.isArray(entry) && entry.every(isSource) ? references(entry)
+        : key === 'source' && isSource(entry) ? reference(entry)
+          : key === 'reasons' && Array.isArray(entry) && entry.every(item => typeof item === 'string') ? reasons(entry) : compact(entry)]));
   };
   return { ...compact(prediction), sourceDictionary, sourceSets, reasonSets };
+}
+
+export function compactHopRecipeEvidence(prediction: HopRecipePrediction): HopRecipeCompanionEvidence {
+  return compactHopEvidence(prediction);
 }

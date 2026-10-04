@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { yeastLookupResultError } from '../../functions/src/yeastLookupResult';
-import { applyYeastFacts, sanitizeFacts, type IngredientFacts } from '../../src/domain/ingredientFacts';
+import { adaptYeastLookupResult, applyYeastFacts, sanitizeFacts, type IngredientFacts } from '../../src/domain/ingredientFacts';
+import { readYeastTechnicalFacts } from '../../functions/src/yeastTechnicalFacts';
 import { readRecipeText, writeRecipeText } from '../../src/domain/recipeTransfer';
 import { yeastFlowRecipe } from '../fixtures/yeastRecipeFlow';
 import { resolveYeastDossier } from '../../src/domain/yeastProjection';
@@ -11,6 +12,31 @@ const result = (): IngredientFacts => ({ found: true, name: 'Culture de test', s
     qualifier: 'range', origin: 'ai', source: 'Fiche synthétique', sourceUrl: 'https://example.invalid/culture' }] });
 
 describe('Autocomplete levure : résultat documentaire utilisable', () => {
+  const autoMarked = (): IngredientFacts => ({ found: true, name: 'Culture de test', source: 'Source IA synthétique',
+    sourceUrl: 'https://example.invalid/flocculation', retrievedAt: '2026-09-28', technicalFacts: [
+      { key: 'flocculation', reported: 'Low', origin: 'ai', source: 'Source IA synthétique', sourceUrl: 'https://example.invalid/flocculation',
+        retrievedAt: '2026-09-28', context: 'Beer', acceptedScalarFields: ['yeastFlocculation'] }
+    ] });
+  it('refuse une nouvelle réponse IA qui déclare elle-même une acceptation de scalaire', () => {
+    expect(yeastLookupResultError(autoMarked())).toContain('Aucune donnée appliquée');
+  });
+  it('neutralise un auto-marquage à l’adaptation sans attribuer sa source au scalaire historique', () => {
+    const response = autoMarked();
+    const normalized = adaptYeastLookupResult(response);
+    expect(normalized.technicalFacts?.[0]).not.toHaveProperty('acceptedScalarFields');
+    expect(normalized.technicalFacts?.[0]).toMatchObject({ reported: 'Low', origin: 'ai', sourceUrl: response.sourceUrl,
+      retrievedAt: '2026-09-28', context: 'Beer' });
+    const recipe = yeastFlowRecipe();
+    recipe.yeast = applyYeastFacts({ name: 'Culture de test', flocculation: 'Low' }, normalized);
+    const reopened = readRecipeText(writeRecipeText(recipe));
+    const dossier = resolveYeastDossier(reopened!.yeast!);
+    expect(dossier.flocculation.value).toEqual({ kind: 'category', value: 'Low' });
+    expect(dossier.flocculation.origin).toBeUndefined();
+    expect(dossier.flocculation.sourceUrl).toBeUndefined();
+    expect(dossier.flocculationFact).toBeUndefined();
+    expect(response.technicalFacts?.[0].acceptedScalarFields).toEqual(['yeastFlocculation']);
+    expect(readYeastTechnicalFacts(response.technicalFacts)?.[0].acceptedScalarFields).toEqual(['yeastFlocculation']);
+  });
   it('préserve une plage exacte sans retenir le scalaire supplémentaire du modèle, puis la copie', () => {
     const facts = result(); expect(yeastLookupResultError(facts)).toBeUndefined();
     expect(sanitizeFacts(facts).attenuationPct).toBeUndefined();

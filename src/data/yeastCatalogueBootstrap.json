@@ -100156,7 +100156,7 @@
             "kind": "manufacturer",
             "reference": "https://escarpmentlabs.com/products/on-deck-lager"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -100292,7 +100292,7 @@
             "reference": "https://escarpmentlabs.com/products/on-deck-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -100354,7 +100354,7 @@
       "publishedAt": "2026-03-25T13:51:15-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "fcb22acbdf0fc4ab1a06cc7a77355b1e86bc7d7fd69e9b4760642b93106b5d87",
+      "contentSha256": "7879986aad9f8ad760342341e2b6c630bc7fe7958d12ecabe1ce533ef4f53dc0",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Statut POF non documenté dans les champs extraits."
@@ -100490,7 +100490,7 @@
             "kind": "manufacturer",
             "reference": "https://escarpmentlabs.com/products/3470-lager"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -100626,7 +100626,7 @@
             "reference": "https://escarpmentlabs.com/products/3470-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -100688,7 +100688,7 @@
       "publishedAt": "2026-03-25T13:51:53-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "a67e481a0129b4858fc3d754ac385fa55b6c4f084e4c13d8ca3dbef0d2981829",
+      "contentSha256": "a8348d60f23bfa4a08b2df0345c50adae6f7c3860632c1378a9e8ac75cdb5172",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Statut POF non documenté dans les champs extraits."
@@ -101260,7 +101260,7 @@
             "reference": "https://escarpmentlabs.com/products/cali-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -101340,7 +101340,7 @@
       "publishedAt": "2022-02-10T13:49:41-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "2847350dbfd037f0eaa9b15414f928f88910f4646da90e360b1fdc84ac43fa00",
+      "contentSha256": "a0ae71609b39b19e2f8ed61d934fb10d7686f62cdc5bfe0d4d66d58f023f7f7d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -101522,7 +101522,7 @@
             "reference": "https://escarpmentlabs.com/products/cali-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -101660,7 +101660,7 @@
             "reference": "https://escarpmentlabs.com/products/cali-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -101715,7 +101715,7 @@
       "publishedAt": "2020-02-14T11:18:17-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "75be01ca0fe8b62ed585d9b867ae3a0710b72820eaa18c30cf38b7c0576a5a90",
+      "contentSha256": "ad9293293e404da8697c3c5b437cc226e272df2d5c126c08ebfbebda001b776b",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -101895,7 +101895,7 @@
             "reference": "https://escarpmentlabs.com/products/american-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -101975,7 +101975,7 @@
       "publishedAt": "2020-02-14T11:18:19-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "e0ddc0a726299f156d8afef4d40b32cd611e824614578277d06af9dd834efde3",
+      "contentSha256": "b3f6c52fc570aaa1b033d237c47686bf96af842ab83b23c264af089b6af4e661",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -102156,7 +102156,7 @@
             "reference": "https://escarpmentlabs.com/products/american-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -102254,7 +102254,7 @@
             "reference": "https://escarpmentlabs.com/products/american-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -102309,7 +102309,7 @@
       "publishedAt": "2020-02-14T11:18:20-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3c9a92f9e046d2cd9e860ea3bf537e69c772048306a1ba94e94dbd3b42b22585",
+      "contentSha256": "3b2504385a8645f17679cd1425ee3dd927c98c2518861d5ee9574f1400a608ac",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -102487,7 +102487,7 @@
             "reference": "https://escarpmentlabs.com/products/northwest-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -102542,7 +102542,7 @@
       "publishedAt": "2020-02-14T11:18:21-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f13c5d385c736ef55947525ea992301f3cccf77cea3c5fa5b55bfbe10bfbe50e",
+      "contentSha256": "cc39609d4cb128fa3a8b7381b557c2210ee75ed9cdafff5b75a6af38ab779353",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -102720,7 +102720,7 @@
             "reference": "https://escarpmentlabs.com/products/northwest-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -102838,7 +102838,7 @@
             "reference": "https://escarpmentlabs.com/products/northwest-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -102893,7 +102893,7 @@
       "publishedAt": "2020-02-14T11:18:22-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3af4b0bd6aeec86361da44405f3c46d119a09c034aaba4e526ba5dd3be7b8c46",
+      "contentSha256": "d346d6bee6ce00c98be3310af70eb680dc0ac0e53faece7a8462c8dcda1a6c75",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -103070,7 +103070,7 @@
             "reference": "https://escarpmentlabs.com/products/anchorman-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -103150,7 +103150,7 @@
       "publishedAt": "2020-02-14T11:18:23-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "a7ab11bd1f4a64d4a64938065211fa33085c7d9bf782519a76fdad72cead5764",
+      "contentSha256": "f1b90efeda575fc0f4858027200c81e16b517db7b025450b90ccdbb8f8825071",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -103329,7 +103329,7 @@
             "reference": "https://escarpmentlabs.com/products/anchorman-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -103427,7 +103427,7 @@
             "reference": "https://escarpmentlabs.com/products/anchorman-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -103482,7 +103482,7 @@
       "publishedAt": "2020-02-14T11:18:25-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "390e6ebcd3ced640f0ef495fb3ecdde986e57df52b1f6c3deb3df544ee031ccd",
+      "contentSha256": "d79340dd3e7062ce0479fb5f607d4bac9415e5b922e5bab3267c737bfcd333f5",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -103665,7 +103665,7 @@
             "reference": "https://escarpmentlabs.com/products/vermont-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -103745,7 +103745,7 @@
       "publishedAt": "2020-02-14T11:18:26-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "eb166c8baa3ddc38caabfb40606864fead042bb7876c8e93a1b80fe7d524d9b4",
+      "contentSha256": "4c9fff645a430c58aa769ac0bdbb4c91abb57fb4108ea0d1340aeb9f627c1c48",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -103930,7 +103930,7 @@
             "reference": "https://escarpmentlabs.com/products/vermont-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -104028,7 +104028,7 @@
             "reference": "https://escarpmentlabs.com/products/vermont-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -104083,7 +104083,7 @@
       "publishedAt": "2020-02-14T11:18:28-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "52c9ed3377e3574bfe9d0ddf8cc472d129864635fd8ef00cf00e9cee7df5950e",
+      "contentSha256": "39d1d54a6b2d7b2e7d534b63ab1814c9ec4d845e8c89c242bfbc3ab65240caeb",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -104267,7 +104267,7 @@
             "reference": "https://escarpmentlabs.com/products/foggy-london-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -104347,7 +104347,7 @@
       "publishedAt": "2022-09-26T14:26:12-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "d54ad9e05a818646b516dca936872ded080e9bbd0a5122b05def18b6556e2bd0",
+      "contentSha256": "f8035b9732fef3592a3b5aeb2f912fa583fe93f9c07ce31e20a5376a6e3023b6",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -104544,7 +104544,7 @@
             "reference": "https://escarpmentlabs.com/products/foggy-london-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -104662,7 +104662,7 @@
             "reference": "https://escarpmentlabs.com/products/foggy-london-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -104717,7 +104717,7 @@
       "publishedAt": "2020-02-14T11:18:31-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "918b4db31763762399d9cce0cfad221d441a60f4ac850e4c758f56c86c83e2f0",
+      "contentSha256": "35c74b8c552a2fbeb7051e888e6eb8aeb82ef1c390df89684e88c1b4b74d9f60",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -104895,7 +104895,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-i",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -104975,7 +104975,7 @@
       "publishedAt": "2020-02-14T11:18:32-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "d876591bf61711cd923d2601def974beb59ef589668a710ad2e1b1b919338b56",
+      "contentSha256": "41d4e851c04a8018bab4f1d305881a763ec4c33301c4a4e6b43e038f0efdd9be",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -105154,7 +105154,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-i-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -105292,7 +105292,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-i-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -105347,7 +105347,7 @@
       "publishedAt": "2020-02-14T11:18:34-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "fff9b191d36a1542844765181d263c43de2f0be35ff5220a9b28f649cac22422",
+      "contentSha256": "023b7813b31e33cc9131e882d285f090fd6483c436a8726af21e5b1e3ab8e4ba",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -105527,7 +105527,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-ii",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -105607,7 +105607,7 @@
       "publishedAt": "2020-02-14T11:18:35-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "a94a4fb86627e9e8357a38a5784ec0ceafd55ee38a1f76b769ef60377b01805f",
+      "contentSha256": "f9f6446f36f01198faadd44b167b09474f0ef1b889950bce9b962edf62211fe2",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -105788,7 +105788,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-ii-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -105906,7 +105906,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-ii-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -105961,7 +105961,7 @@
       "publishedAt": "2020-02-14T11:18:37-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "04462a7786879091e25a3f8b24a78f1eea5dfeeb8707b1745211f19e9e8dd194",
+      "contentSha256": "396a0609b413bcdd3d6e6d0f2db690dde9198cb80e7e59ec94952b8e1f1eb191",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -106141,7 +106141,7 @@
             "reference": "https://escarpmentlabs.com/products/sterling-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -106259,7 +106259,7 @@
             "reference": "https://escarpmentlabs.com/products/sterling-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -106314,7 +106314,7 @@
       "publishedAt": "2020-02-14T11:18:40-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "920a45c0503539b9436e9acad415f64cabc5ec8ba5a0e0659fdbad1025f4d2b4",
+      "contentSha256": "72283db08c9ec3ca8b7f4638519fc7407b5da07cf757effe77abd919fbe695cc",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -106749,7 +106749,7 @@
             "reference": "https://escarpmentlabs.com/products/irish-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -106867,7 +106867,7 @@
             "reference": "https://escarpmentlabs.com/products/irish-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -106922,7 +106922,7 @@
       "publishedAt": "2020-02-14T11:18:44-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "b805f778ae2d466485388f3069afb2bf488eba3febc746c0030428a7518edbb0",
+      "contentSha256": "d31def5b3d70e3dd91e5460b5f7fd99448a5a474e136deb1f9823e55468de544",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -107100,7 +107100,7 @@
             "reference": "https://escarpmentlabs.com/products/kolsch",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -107155,7 +107155,7 @@
       "publishedAt": "2020-02-14T11:18:46-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "aeec5fc08455eb1d010015997541a1fa3f6d37dc8556806aa5017e240a34a778",
+      "contentSha256": "f1ebb44bcb71d02804f236e555243bae0fe2824bdb7ef6587f2e996d064cb602",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -107326,7 +107326,7 @@
             "reference": "https://escarpmentlabs.com/products/kolsch-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -107444,7 +107444,7 @@
             "reference": "https://escarpmentlabs.com/products/kolsch-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -107499,7 +107499,7 @@
       "publishedAt": "2020-02-14T11:18:47-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "2ee4e0556a6c14e573c611ffe81b170eb4ccff1527a81927aea71dd4f18d0d8e",
+      "contentSha256": "082349a2018ec059b79fb8dbf38d2a1baa5ff0d0db2f530e63bb3fb7b410f828",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -107692,7 +107692,7 @@
             "reference": "https://escarpmentlabs.com/products/uberweizen",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -107747,7 +107747,7 @@
       "publishedAt": "2020-02-14T11:18:48-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "5e9cfb53118befaf0e13f50a4333da81c71b03e8f1ee50bd04dac6d67e03f5a5",
+      "contentSha256": "26940b7b94727fbe0482fc508ad9d0885573aef877ee8c4b0c4dcde27a5ff07d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -107940,7 +107940,7 @@
             "reference": "https://escarpmentlabs.com/products/uberweizen-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -108038,7 +108038,7 @@
             "reference": "https://escarpmentlabs.com/products/uberweizen-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -108093,7 +108093,7 @@
       "publishedAt": "2020-02-14T11:18:49-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "568dc1df392af6232e88b4752305d28b9138feebff4d39fd5ca8b8e1e825ef42",
+      "contentSha256": "e9431933e0fa93aad40baf386aed6568a373030bfcdfd51b38c92abba3108d12",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -108285,7 +108285,7 @@
             "reference": "https://escarpmentlabs.com/products/weizen-i",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -108365,7 +108365,7 @@
       "publishedAt": "2020-02-14T11:18:51-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "44297cf2931bf5d55411c8f80846a1cf1e33c1948094094fcb0247040fe702a7",
+      "contentSha256": "01df7a9796792107a480d0897f789736ad65487212f10d174cfb48e11ff00a42",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -108558,7 +108558,7 @@
             "reference": "https://escarpmentlabs.com/products/weizen-i-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -108676,7 +108676,7 @@
             "reference": "https://escarpmentlabs.com/products/weizen-i-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -108731,7 +108731,7 @@
       "publishedAt": "2020-02-14T11:18:52-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "db48ae3791761d719def9f8a1f5ae3d2b7ca8ffc0314264700787b675005b579",
+      "contentSha256": "ae1cc0798b12326e53cf6dc24cd8d3d5ee955e6103d36766c38cd634956f5288",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -108917,7 +108917,7 @@
             "reference": "https://escarpmentlabs.com/products/brut-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -108997,7 +108997,7 @@
       "publishedAt": "2020-02-14T11:18:53-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "222d818b060669821b81ca439d7ad1b0352eec03b460d5687ee5415de9225d99",
+      "contentSha256": "f45be240d3f3e04e3d502160bd569cb30730073c72da169ada85f4e4a70b2406",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -109183,7 +109183,7 @@
             "reference": "https://escarpmentlabs.com/products/brut-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -109301,7 +109301,7 @@
             "reference": "https://escarpmentlabs.com/products/brut-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -109356,7 +109356,7 @@
       "publishedAt": "2020-02-14T11:18:54-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "0778280874a4bb048f31a07e66623224465d9a83dba9cdf6513c6b26c4ed80c2",
+      "contentSha256": "ea106f100f06dc9207a0b4f5f1540b83fc2720d8e461efdb3697b813c0574f3b",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -109547,7 +109547,7 @@
             "reference": "https://escarpmentlabs.com/products/ardennes-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -109627,7 +109627,7 @@
       "publishedAt": "2020-02-14T11:18:55-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "93bf14f3f662231fd746a47823bfa7233b40d0c5ffbd3f6a9f5db1f64e88a743",
+      "contentSha256": "ab11e9d7968a9faabcb9a7e91513cbe21b84aa872e72e92904711eca7789179a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -109820,7 +109820,7 @@
             "reference": "https://escarpmentlabs.com/products/ardennes-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -109938,7 +109938,7 @@
             "reference": "https://escarpmentlabs.com/products/ardennes-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -109993,7 +109993,7 @@
       "publishedAt": "2021-06-28T11:13:55-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "9e2782f756c3d29459ce405a3d69060c85f4e2a91bda41c95f4c1bdbfe3a6be6",
+      "contentSha256": "9cd94af963532b18b9a1d9a161b3a4ba04c7342367f9d8f29ffb11e9115464aa",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -110183,7 +110183,7 @@
             "reference": "https://escarpmentlabs.com/products/west-abbey-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -110263,7 +110263,7 @@
       "publishedAt": "2020-02-14T11:18:58-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "a1f06ed5286c4d5dc54329da28cbc720faf24d0dc721bcee96a2bcf7176c92f4",
+      "contentSha256": "c1f037ec7106b3104e060ceb213ed1d287e8126c6284a2ba26701d2aab7713a3",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -110454,7 +110454,7 @@
             "reference": "https://escarpmentlabs.com/products/west-abbey-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -110552,7 +110552,7 @@
             "reference": "https://escarpmentlabs.com/products/west-abbey-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -110607,7 +110607,7 @@
       "publishedAt": "2020-02-14T11:18:59-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "4d42ade3bb563052a22892c3dde92a81f1d77d8b9ffb1cdffbde49625809c43f",
+      "contentSha256": "38c56aa8f6394d97cc35e980d1331d2a7735a10bbd5cae82e5e9cc47b15f700d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -110792,7 +110792,7 @@
             "reference": "https://escarpmentlabs.com/products/st-remy-abbey-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -110847,7 +110847,7 @@
       "publishedAt": "2020-02-14T11:19:00-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "113f5639d70b80a9ce81873eb7202da36047f2eeab60c60cf7fdb1051446912b",
+      "contentSha256": "5ad57a9ca3fd3dbdc35f37a279c6105e3c6796891567af4ce2316ead343af94a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -111033,7 +111033,7 @@
             "reference": "https://escarpmentlabs.com/products/st-remy-abbey-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -111131,7 +111131,7 @@
             "reference": "https://escarpmentlabs.com/products/st-remy-abbey-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -111186,7 +111186,7 @@
       "publishedAt": "2020-02-14T11:19:01-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "153b56852380f9f47ed68a4e22bf79df5cacaccc5b8d210a9ccee2d3bfe2f4e2",
+      "contentSha256": "bcb543e65e3f86f4da01c2dd15f9781d55fa301a9beee1d1dd826132801b5d0c",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -111365,7 +111365,7 @@
             "reference": "https://escarpmentlabs.com/products/st-lucifer",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -111445,7 +111445,7 @@
       "publishedAt": "2020-02-14T11:19:03-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "7204c3de1d97c1fa99f5eb71e844f219453fc28347ae2622b56896309b584dc7",
+      "contentSha256": "90183d483ebdc599e3838fb43b361f79e53f678177c84b2cdc3c6287043c68fe",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -111626,7 +111626,7 @@
             "reference": "https://escarpmentlabs.com/products/st-lucifer-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -111724,7 +111724,7 @@
             "reference": "https://escarpmentlabs.com/products/st-lucifer-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -111779,7 +111779,7 @@
       "publishedAt": "2020-02-14T11:19:04-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "35ed2047f1f28bf529ab5bd173acbf5c1b93b3ed88dd4a42ff15b55ea71917ca",
+      "contentSha256": "d146c97cef49135293fded6f855ffc3b29819d97587a2988db86956ddb93ee6d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -111966,7 +111966,7 @@
             "reference": "https://escarpmentlabs.com/products/dry-belgian-ale",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -112046,7 +112046,7 @@
       "publishedAt": "2020-02-14T11:19:05-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f8637005c2a28809f2813afd15fdcbdc5354a7f75dd5178bf0a7e506329168a4",
+      "contentSha256": "d0ff02b1c979a3ce3d956540ad84f2fc58dafd1714f90b1c0caee304cdff6e91",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -112221,7 +112221,7 @@
             "reference": "https://escarpmentlabs.com/products/dry-belgian-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -112333,7 +112333,7 @@
             "reference": "https://escarpmentlabs.com/products/dry-belgian-ale-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -112388,7 +112388,7 @@
       "publishedAt": "2020-02-14T11:19:06-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "06199f4d72e6fe35c4180a2385f1457528e4feb0cc6a3cf39d6db6da85ac74c8",
+      "contentSha256": "62a0e080e9eaafb8b3c3598ec76e9eb98b373d1a3196841547a98af54e037f20",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -112579,7 +112579,7 @@
             "reference": "https://escarpmentlabs.com/products/classic-witbier",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -112659,7 +112659,7 @@
       "publishedAt": "2021-10-05T09:14:31-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "e9773a4241b0ce945ad1d0e3da448968c33f8318aa4cc5151c3e2565910fd9b5",
+      "contentSha256": "d9d12ef7fdf1c78e2cfd8caef233d2b4f73f66f894e91327e7c12c92668b57dd",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -112851,7 +112851,7 @@
             "reference": "https://escarpmentlabs.com/products/classic-witbier-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -112969,7 +112969,7 @@
             "reference": "https://escarpmentlabs.com/products/classic-witbier-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -113024,7 +113024,7 @@
       "publishedAt": "2020-02-14T11:19:09-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "842454ba322eaca05909c2e895232eb84f25214f89fb5fd86ddeea1e7f992cb1",
+      "contentSha256": "aa8feeca31cd6b8900d1cf0e022d041fe38f53d0c377963550794d033ed524c9",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -113218,7 +113218,7 @@
             "reference": "https://escarpmentlabs.com/products/fruity-witbier",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -113298,7 +113298,7 @@
       "publishedAt": "2021-08-16T13:51:18-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f4961084d68c1ba256899e0396b3d218fd983c7047952f9236d1cecaa1eb4985",
+      "contentSha256": "10aade2dd39eb46ea361d7f676ce853311d0aef4bf5e5a27628fa86cc747f384",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -113493,7 +113493,7 @@
             "reference": "https://escarpmentlabs.com/products/fruity-witbier-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -113591,7 +113591,7 @@
             "reference": "https://escarpmentlabs.com/products/fruity-witbier-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -113646,7 +113646,7 @@
       "publishedAt": "2020-02-14T11:19:11-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "323a38b7f7e2ef03fb8fea1a0811466cc733186335ca727fddaf2d04b70d0e1c",
+      "contentSha256": "7e38037dd3a36dee096e4191bbe96031d9fb5acbfb37535c83ad91edb855b47e",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -113832,7 +113832,7 @@
             "reference": "https://escarpmentlabs.com/products/pine-tree-wit-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -113930,7 +113930,7 @@
             "reference": "https://escarpmentlabs.com/products/pine-tree-wit-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -113985,7 +113985,7 @@
       "publishedAt": "2020-02-14T11:19:13-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "412511c513230f83a25314d5846c709e90a159486227244b14e43b320b1b5637",
+      "contentSha256": "a61e889f1fda584711ab12bb6582ea19268dc356b79ecc79ccc7d328b8763781",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -114168,7 +114168,7 @@
             "reference": "https://escarpmentlabs.com/products/hornindal-kveik-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -114248,7 +114248,7 @@
       "publishedAt": "2020-02-14T11:19:14-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "25c5168d29f5f8f42193a4cab63be80dac7dcaaf550d9055a46b3725897d5ce9",
+      "contentSha256": "31b7b0578715bfffb9db99c2c0ae9e19f06c963c9498e2bf4ad84ef433d27749",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -114445,7 +114445,7 @@
             "reference": "https://escarpmentlabs.com/products/hornindal-kveik-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -114563,7 +114563,7 @@
             "reference": "https://escarpmentlabs.com/products/hornindal-kveik-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -114618,7 +114618,7 @@
       "publishedAt": "2020-02-14T11:19:16-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "eabce7ab535d5da4e244bcb7b740048f2df4e6f00ace9b93927551492ef61bf8",
+      "contentSha256": "0f9e8a731fe644067295d4a98d4b77415d662f9a2b8cbc74b3e082f7f65ba7c0",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -115059,7 +115059,7 @@
             "reference": "https://escarpmentlabs.com/products/voss-kveik-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -115238,7 +115238,7 @@
       "publishedAt": "2020-02-14T11:19:18-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "cc44573c6b6081b92c23fef747028d3e0d7ecb72444af60856528514f15fa8ed",
+      "contentSha256": "286c70bf03f4b5706b6bcc59845ff3f2cd53ca44515f82061327bd9f27f949da",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -115416,7 +115416,7 @@
             "reference": "https://escarpmentlabs.com/products/ebbegarden-kveik-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -115496,7 +115496,7 @@
       "publishedAt": "2021-06-28T21:06:46-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "39f0d4f730f12a8097dbe05e91ccbf237b40de030759002bc57d50deefe4ba56",
+      "contentSha256": "7e866e9370ae926bb960d71623396498b1bcdf63a8c397a13ad6012a84f98b1f",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -115681,7 +115681,7 @@
             "reference": "https://escarpmentlabs.com/products/ebbegarden-kveik-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -115799,7 +115799,7 @@
             "reference": "https://escarpmentlabs.com/products/ebbegarden-kveik-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -115854,7 +115854,7 @@
       "publishedAt": "2020-02-14T11:19:20-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "287fceaa95b8ae13d565b67e9672e54f35bf19032c22400dc5a3d235f6946893",
+      "contentSha256": "7871c4e9b4347e6c0fc23efcc44fac0c30c8acc0efdb126c69a2034746766d06",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -116026,7 +116026,7 @@
             "reference": "https://escarpmentlabs.com/products/arset-kveik-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -116081,7 +116081,7 @@
       "publishedAt": "2020-02-14T11:19:22-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "8333cb620cf1f9db2c46e2613a1804b52a387778a3e2badb836cb9d1c723b8c0",
+      "contentSha256": "7bfde9e6ed10c16f8e5e129598f1dea70e90811200d1eab09974cdb3f6fb8ded",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -116253,7 +116253,7 @@
             "reference": "https://escarpmentlabs.com/products/arset-kveik-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -116351,7 +116351,7 @@
             "reference": "https://escarpmentlabs.com/products/arset-kveik-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -116406,7 +116406,7 @@
       "publishedAt": "2020-02-14T11:19:23-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3252598cd816eb2093c27e0f4787ba245dc1e9ccb52bfaaab1ac9c48d5950125",
+      "contentSha256": "c7a5239ca78f6fa4a577c487f9bc74e52f63093bc270e00dfc1e8cf9c90e3bea",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -116595,7 +116595,7 @@
             "reference": "https://escarpmentlabs.com/products/old-world-saison-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -116675,7 +116675,7 @@
       "publishedAt": "2020-02-14T11:19:24-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "83bc604aeaf7d4f49235f63a141a84ef2d7dfdbf79c85fd2c227bb607ccddea3",
+      "contentSha256": "b558a5a349e6268262080a0ec3b3e811112d9ab24920b9ea846848fbb4f935ee",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -116864,7 +116864,7 @@
             "reference": "https://escarpmentlabs.com/products/old-world-saison-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -116982,7 +116982,7 @@
             "reference": "https://escarpmentlabs.com/products/old-world-saison-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -117037,7 +117037,7 @@
       "publishedAt": "2020-02-14T11:19:25-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "80c9bf4a824a84b0be539ada732dc834a91bb187bfa062e94e26c564f1037abe",
+      "contentSha256": "84e58483575f59d97bd606d2aa0d8951683ee6d1be907a9943334f7942aed036",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -117204,7 +117204,7 @@
             "reference": "https://escarpmentlabs.com/products/new-world-saison-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -117259,7 +117259,7 @@
       "publishedAt": "2020-02-14T11:19:26-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "523efbeee5de53fe75655419b5ebd4120d17f9bc158d8b174aa07286f9f32c6a",
+      "contentSha256": "008409159866381843ce56c9c03f509e437e6fba93f9df51b73d747255bbbf8f",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -117427,7 +117427,7 @@
             "reference": "https://escarpmentlabs.com/products/new-world-saison-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -117525,7 +117525,7 @@
             "reference": "https://escarpmentlabs.com/products/new-world-saison-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -117580,7 +117580,7 @@
       "publishedAt": "2020-02-14T11:19:27-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "0d6488870222891d16fad069ad30fbe45d30104ef6e7891d79dc6ea4499b5a8a",
+      "contentSha256": "44c98c0494cb0176296cc75a6c061506dae9b683128964775ad093839fb117ea",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -117747,7 +117747,7 @@
             "reference": "https://escarpmentlabs.com/products/fruit-bomb-saison-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -117802,7 +117802,7 @@
       "publishedAt": "2020-02-14T11:19:29-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "fa3f244b0d9c3338a345ba58043a9e8ea464ae7b86857c056bfd157171c85476",
+      "contentSha256": "2d6d33cbeb3cb880dce2f1ad74e79a7db734f3ea4865d58814f4446522e2ea19",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -117970,7 +117970,7 @@
             "reference": "https://escarpmentlabs.com/products/fruit-bomb-saison-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -118068,7 +118068,7 @@
             "reference": "https://escarpmentlabs.com/products/fruit-bomb-saison-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -118123,7 +118123,7 @@
       "publishedAt": "2020-02-14T11:19:30-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "efc6dd5e5fc8ba5ee8ef1bf247c70cc78d51d284718fe070eaeab2a561d0447a",
+      "contentSha256": "a7d7495e3e2eb4b26d06ebd2ba8f434666fdcd8a6c8b437cd6aa6baf80bd5928",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -118304,7 +118304,7 @@
             "reference": "https://escarpmentlabs.com/products/cerberus",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -118384,7 +118384,7 @@
       "publishedAt": "2020-02-14T11:19:31-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f9368303f22ccbffcc17b46511e9a310971dd61ae64a97cb9e67b8d679886998",
+      "contentSha256": "77d6f3abd43b8bd323dde8046e2512860978bf52233109ca16fd55174fd43cba",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -118579,7 +118579,7 @@
             "reference": "https://escarpmentlabs.com/products/cerberus-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -118677,7 +118677,7 @@
             "reference": "https://escarpmentlabs.com/products/cerberus-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -118732,7 +118732,7 @@
       "publishedAt": "2020-02-14T11:19:32-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "b519b33f886c008c609acf6ce2556878c01a74f44a91dad4474db19254b6f94e",
+      "contentSha256": "a49d316b8705b85c06a7bc3aa623cc5d628d6f002b70fd76731560e21272dd78",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -118899,7 +118899,7 @@
             "reference": "https://escarpmentlabs.com/products/ontario-farmhouse-ale-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -118979,7 +118979,7 @@
       "publishedAt": "2020-02-14T11:19:34-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "31ce5c8e77ce7b4d23c448ef3af5383e3d32b0c9aa8eecf87f46e58029454877",
+      "contentSha256": "101d21d23bcf00498d27550f3a3a7582fe117297e5fad89b1193ba7d70e51189",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -119141,7 +119141,7 @@
             "reference": "https://escarpmentlabs.com/products/ontario-farmhouse-ale-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -119239,7 +119239,7 @@
             "reference": "https://escarpmentlabs.com/products/ontario-farmhouse-ale-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -119294,7 +119294,7 @@
       "publishedAt": "2020-02-14T11:19:35-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "520c782ea3bacd8884255375a623fc671a686db1982e37eb5ea156dfdaf357e6",
+      "contentSha256": "9532402bea70938a17df13ea44c14afb7e9afcf7c2eec56981f1e792a96654ac",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -119473,7 +119473,7 @@
             "reference": "https://escarpmentlabs.com/products/wild-thing",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -119553,7 +119553,7 @@
       "publishedAt": "2020-02-14T11:19:36-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "93a474fbf734bdac3b5f16a4637bdaccb3499abe3924ef95748757f0b037ddc0",
+      "contentSha256": "01d114eb848a7883f639484fa18953bce2beeaaff9d4566307e8534dbfc98bf7",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -119739,7 +119739,7 @@
             "reference": "https://escarpmentlabs.com/products/wild-thing-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -119851,7 +119851,7 @@
             "reference": "https://escarpmentlabs.com/products/wild-thing-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -119906,7 +119906,7 @@
       "publishedAt": "2020-02-14T11:19:37-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "98a437091e05cb99afac8e6431190d8e0daba8e0a3daf48cbbd4f2faa240e9ee",
+      "contentSha256": "2babff055ca3e91b24f931f7ead7615a3bb67ee431e17c54105d3c19cfbf94ed",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -120102,7 +120102,7 @@
             "reference": "https://escarpmentlabs.com/products/isar-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -120182,7 +120182,7 @@
       "publishedAt": "2020-02-14T11:19:39-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "5c321018e7ddec413453d04884f87bf67867a3224b8a02db0df4d9d96dd36fb0",
+      "contentSha256": "78e1542722a9a9fc683f3a9a5e706d30a09c2d03c35ae1fcdf52c3f0a43ecefb",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -120379,7 +120379,7 @@
             "reference": "https://escarpmentlabs.com/products/isar-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -120497,7 +120497,7 @@
             "reference": "https://escarpmentlabs.com/products/isar-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -120552,7 +120552,7 @@
       "publishedAt": "2020-02-14T11:19:40-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "12be1ea155e228d6c1dae993ca7c5d27c520fb22cd7e1b3c6e392167ba4e24f8",
+      "contentSha256": "e223bea34d77d60099557ec04ef732becaced6d14fc6b763e925aff67a8a5208",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -120745,7 +120745,7 @@
             "reference": "https://escarpmentlabs.com/products/biergarten-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -120825,7 +120825,7 @@
       "publishedAt": "2020-02-14T11:19:41-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "b8d1dc02d004b5164b7882cd850cc25e09623aab69da2985241f9e31951e59ac",
+      "contentSha256": "7fecfbc3882f2ab31524005f1efde13cfd60af0bc19f98e93d376d5701882853",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -121017,7 +121017,7 @@
             "reference": "https://escarpmentlabs.com/products/biergarten-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -121155,7 +121155,7 @@
             "reference": "https://escarpmentlabs.com/products/biergarten-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -121210,7 +121210,7 @@
       "publishedAt": "2020-02-14T11:19:53-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "d92ce2ae806d270a4ee26a91610534a2ea92d72e38c0ff23a574098c8b5b9ce3",
+      "contentSha256": "284a78f6de94d27551ca2a39d288808f3ece165d364e26890c254ce9de3ac265",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -121388,7 +121388,7 @@
             "reference": "https://escarpmentlabs.com/products/mexican-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -121468,7 +121468,7 @@
       "publishedAt": "2022-03-23T09:20:04-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "1e5544a40f50db1437554ac29c109a85055b18b5e5e4487090e904467e2cacdb",
+      "contentSha256": "690fb68de848871f1a4f9497171974e65aa034bb70b27aa2baee4e388d6ec43a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -121647,7 +121647,7 @@
             "reference": "https://escarpmentlabs.com/products/mexican-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -121765,7 +121765,7 @@
             "reference": "https://escarpmentlabs.com/products/mexican-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -121820,7 +121820,7 @@
       "publishedAt": "2020-02-14T11:19:56-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "9bc6d51c3f972c7cf748bdef68371a5e073ff1077e4c4a14647a99afb2c55022",
+      "contentSha256": "568bd70652700057043aa019c5d712ee97c176037bddc3450d98b4b19c912879",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -122010,7 +122010,7 @@
             "reference": "https://escarpmentlabs.com/products/czech-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -122090,7 +122090,7 @@
       "publishedAt": "2021-02-19T11:40:33-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "6353c29fa0101a48437e9812b2bb02aaf0a4677fbda42aff91dddf893f82be6f",
+      "contentSha256": "dcb5f3f976b59e22922a3d8259ba7dacaed9f2eb54b9a107c67170123268b947",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -122281,7 +122281,7 @@
             "reference": "https://escarpmentlabs.com/products/czech-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -122399,7 +122399,7 @@
             "reference": "https://escarpmentlabs.com/products/czech-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -122454,7 +122454,7 @@
       "publishedAt": "2020-02-14T11:19:58-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3c711c49d15f5e93faa2cec2431779812aabaf2f7684bf8e360c60a9f63688b1",
+      "contentSha256": "6decff63b433bcec29917a2f9b6bee0d05bf669601fac5835cf609b210ba9425",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -122626,7 +122626,7 @@
             "reference": "https://escarpmentlabs.com/products/copenhagen-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -122706,7 +122706,7 @@
       "publishedAt": "2020-02-14T11:19:59-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3ecccac50eba374bd85649fc2357f6cd54227f7633e13c49b19916b651c92d2b",
+      "contentSha256": "493b7d0091dfaea9b4fdc2f64e20eeffdc12f42be842bf54c97bebb09f8858fc",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -122879,7 +122879,7 @@
             "reference": "https://escarpmentlabs.com/products/copenhagen-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -122977,7 +122977,7 @@
             "reference": "https://escarpmentlabs.com/products/copenhagen-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -123032,7 +123032,7 @@
       "publishedAt": "2020-02-14T11:20:00-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "dcc2c918932f43c23c96cbc2297b1abf5bc512ba694ecff8520218f757b84dc4",
+      "contentSha256": "20c04b6b76ba026b864248e3dedd347f155f66674cae2f1544118fc19f0009c9",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -123204,7 +123204,7 @@
             "reference": "https://escarpmentlabs.com/products/goldrush-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -123284,7 +123284,7 @@
       "publishedAt": "2020-02-14T11:20:01-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "1e5abd2a96f59d07506356f9d749966e3981c63bd06f9fac946840092ac09c73",
+      "contentSha256": "e1aaeeb9b89fb3f45f5c59b6240070bfbd23943c27302254124f88f2fbb8e41f",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -123457,7 +123457,7 @@
             "reference": "https://escarpmentlabs.com/products/goldrush-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -123555,7 +123555,7 @@
             "reference": "https://escarpmentlabs.com/products/goldrush-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -123610,7 +123610,7 @@
       "publishedAt": "2020-02-14T11:20:03-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "df8b1a9b121aed686f76271193d385e930aa4c85d854e001604ad7eb0dcdfacc",
+      "contentSha256": "95042b57643ea614155eed2ebfbdb4bc7fd9dd451948e0c5c0dc2d3d5d335ac4",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -123786,7 +123786,7 @@
             "reference": "https://escarpmentlabs.com/products/autobahn-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -123866,7 +123866,7 @@
       "publishedAt": "2020-02-14T11:20:04-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "e1abc0acfaf851d508794a07567b49fe61edb5f17a875a09d137d46050ffd73b",
+      "contentSha256": "a394b05da7c797ea0b569d04ee023df794ff60d946722acd974896e8f5f1d396",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -124043,7 +124043,7 @@
             "reference": "https://escarpmentlabs.com/products/autobahn-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "diastatic",
@@ -124127,7 +124127,7 @@
             "reference": "https://escarpmentlabs.com/products/autobahn-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -124182,7 +124182,7 @@
       "publishedAt": "2020-02-14T11:20:05-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "242b2ce82ef81c9d7071db2367078abbbe4131e72281e52e96d301f37a63f4a0",
+      "contentSha256": "3c912fa8e943fbee03c3f80a4a06091bc2f470b1ad19449bb5a27e54d283b74c",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -124357,7 +124357,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-d-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -124482,7 +124482,7 @@
       "publishedAt": "2020-02-14T11:20:08-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f742f9b9320ae78036fcd8017ac3d86b39866b9d317ed8157576145b5ca1c296",
+      "contentSha256": "8f7628f8189ca14c267b7389a58bd01f275d2bcfad5f38b8a97e594ecc215532",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -124654,7 +124654,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-b-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -124779,7 +124779,7 @@
       "publishedAt": "2020-02-14T11:20:12-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "b1f1e390782c03e0f47ed98619fc04c069a1633746a02edde29099c42b8b8459",
+      "contentSha256": "f4c4c80fb5b67ab6b69e8612d72fbe234d0ef8d139dcb94b97548492fa4798b3",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -124937,7 +124937,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-q-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "styles",
@@ -125006,7 +125006,7 @@
       "publishedAt": "2020-02-14T11:20:15-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "02ed9302dd7ec2a28756da1bf78349dce0710b65510e6f234470698f9fb785aa",
+      "contentSha256": "dbc1a8363b6573b0defa4fa77dee7e108af5321fd271f2a412dd3a8c438150bc",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -125369,7 +125369,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-l-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -125494,7 +125494,7 @@
       "publishedAt": "2020-02-14T11:20:17-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "064a84f6dfff99f8d5a31d57fcab3b4f36aaaca5683b1eafdd36be918a87b866",
+      "contentSha256": "9d319dd819a78ffbce2f6051990bd216cf9a0ea8c2d2208ab92ee7d57ebe933a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -125841,7 +125841,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-m-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -125952,7 +125952,7 @@
       "publishedAt": "2020-02-14T11:20:19-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3cf38786437f5d0ac3ace7680b494bff5fb5e4aa633a312b3d8126c235d82f9d",
+      "contentSha256": "bed3c79d4193e449efcb88264afce1fb175cc2c83ea44c08d2db373d825e0042",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -126105,7 +126105,7 @@
             "reference": "https://escarpmentlabs.com/products/brussels-brett-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -126230,7 +126230,7 @@
       "publishedAt": "2020-02-14T11:20:23-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "387822e21a64e3d1d9418b041a2cdfd50d4625de1a7813729de1d7d3ed2bc685",
+      "contentSha256": "13763e1f7c199d03985bd9ac84b195b857e224f49a0d011b690ad694fabb4752",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -126619,7 +126619,7 @@
             "reference": "https://escarpmentlabs.com/products/berliner-brett-i-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -126758,7 +126758,7 @@
       "publishedAt": "2020-02-14T11:20:25-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "739b9e4738681fc4ceef12877ebfdab86c63a93da1860a2c9a0bd021bbf00cdb",
+      "contentSha256": "b0e7de145b5e23f47a761d8f720c080d08bee5bd8f665c9694fe2e2999913bd7",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -127141,7 +127141,7 @@
             "reference": "https://escarpmentlabs.com/products/berliner-brett-ii-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -127280,7 +127280,7 @@
       "publishedAt": "2020-02-14T11:20:28-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "5c71fed7c9e864cca0605cd66801e6536d8d372518b4cee77aa94b85a43d75ee",
+      "contentSha256": "de0baf8f506e98d4cf1ffee0bb893a57c80b3b58f6a190af79877788565a1fc3",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -127451,7 +127451,7 @@
             "reference": "https://escarpmentlabs.com/products/mothership-brett-blend",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -127506,7 +127506,7 @@
       "publishedAt": "2020-02-14T11:20:29-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "34120c31162e611ccb8ec7e8dd36e592c285a5ddc6fd45a05cfdd64de73514f3",
+      "contentSha256": "4cb255096fec7e682922ffd5a9d7aecd5700790fe7e55d323e35db12868758f9",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -127650,7 +127650,7 @@
             "reference": "https://escarpmentlabs.com/products/mothership-brett-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -127761,7 +127761,7 @@
       "publishedAt": "2020-02-14T11:20:30-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "0553a0c845ab1e6351931df15dc8852edc06cc47135201f0ca07a9e2a3bee022",
+      "contentSha256": "35b2908b95d29e10ac785b0d870850a7026ae4b664f685d32725728dd9b87f5c",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -128121,7 +128121,7 @@
             "reference": "https://escarpmentlabs.com/products/belgian-sour-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "fermentationRate",
@@ -128246,7 +128246,7 @@
       "publishedAt": "2020-02-14T11:20:32-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "4d363d393f34b0da2b10ae626fdd3365a19a72377245cad62fafa1970b26cd6d",
+      "contentSha256": "15b05e3cbbc6e934f5ec922683149b0f7dca7d31bdfebcd94f741de4b80ce27a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -130778,7 +130778,7 @@
             "reference": "https://escarpmentlabs.com/products/krispy-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -130957,7 +130957,7 @@
       "publishedAt": "2020-08-21T13:17:50-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "c6f2dcedf85f7390bc09588a80f192a3545c91b8cf7a9c32662b74cfe405dcf4",
+      "contentSha256": "f4d981fcacce4c02762e776eb8a80a253a56ddf528c5a8b358ef27eb50d04b0c",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -131129,7 +131129,7 @@
             "reference": "https://escarpmentlabs.com/products/framgarden-kveik-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -131184,7 +131184,7 @@
       "publishedAt": "2023-11-01T15:36:36-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "e01c807a58daa12f1fbdf482f545de193dbea9d0aeaa57008627c4f17bd1296b",
+      "contentSha256": "212d06fdc83fce5a880509fa8a58b8fb172a1b8fafa995b1be4bf90a82de664b",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -131363,7 +131363,7 @@
             "reference": "https://escarpmentlabs.com/products/premium-pils-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -131418,7 +131418,7 @@
       "publishedAt": "2020-08-21T13:25:35-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "5b8c702ecdcb1c2b680ba58eaaba571a9e9083e74785b8151f86ae985744ad05",
+      "contentSha256": "3c8a71d7c9bf4240147a982ddcd74649352d8436a68171a75b02aa48f947e0d7",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -131813,7 +131813,7 @@
             "reference": "https://escarpmentlabs.com/products/spooky-saison-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -131868,7 +131868,7 @@
       "publishedAt": "2020-08-21T13:34:06-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "4b7b962573577170921ec4ea62a8d7daa450a1fe9fb3b4b0ea190759f9f4fd7c",
+      "contentSha256": "f7bb56c527eae71c09a2ae1d9ef2a72b24305055eec340e1fe82fee5e63fba7a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -132719,7 +132719,7 @@
             "reference": "https://escarpmentlabs.com/products/laerdal-kveik-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -132857,7 +132857,7 @@
             "reference": "https://escarpmentlabs.com/products/laerdal-kveik-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -132912,7 +132912,7 @@
       "publishedAt": "2020-09-04T13:12:24-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f9519232ef9615c522ccf09d59a651d857703c2a79cdb5da30f3364f80c7fa12",
+      "contentSha256": "86cff15fee5e92041db40d08e5258a69ddbceca87145fdb85594b89b2341703f",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -133544,7 +133544,7 @@
             "reference": "https://escarpmentlabs.com/products/jotunn",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -133624,7 +133624,7 @@
       "publishedAt": "2020-11-17T07:52:32-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "1012beba1f411767dbaed1c0ab6b047ef9a7d5a61cc254c2d92ee97c2b809ffc",
+      "contentSha256": "a5037e7d8cee3090ed84be306b8685fea3a381de3c7d5aabd6078d93f5272c3f",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -133814,7 +133814,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-iii",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -133894,7 +133894,7 @@
       "publishedAt": "2020-11-03T08:32:48-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "e8ba63b5cdf88bfa2a22cc75cd084e4b8558d5b554be98bdf16f9580bcde0e1d",
+      "contentSha256": "31e9c3fa7118e117f4c4cc1142d0f71792550008d70f4bb370c58d70ed13b437",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -134087,7 +134087,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-iii-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -134225,7 +134225,7 @@
             "reference": "https://escarpmentlabs.com/products/english-ale-iii-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -134280,7 +134280,7 @@
       "publishedAt": "2020-11-03T08:33:18-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "1a627a2b544240aa0ba102fb24af3419a08e5c523d40f66a0518f0235a24a6b7",
+      "contentSha256": "b4a723f8f113f6e878cd1d4ab149757309359ca2a2b5b17d96b430cc715c29ba",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -134471,7 +134471,7 @@
             "reference": "https://escarpmentlabs.com/products/laerdal-kveik",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -134526,7 +134526,7 @@
       "publishedAt": "2020-10-15T11:32:26-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "fae480a7d52dca0a4a35e16c77128792f6b2dd59cdf6417de9ea3bea89acf424",
+      "contentSha256": "80487456cea852970691153f4f24475f31b1be1f99a72a7afbf02a6500c144ba",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -134712,7 +134712,7 @@
             "reference": "https://escarpmentlabs.com/products/jotunn-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -134830,7 +134830,7 @@
             "reference": "https://escarpmentlabs.com/products/jotunn-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -134885,7 +134885,7 @@
       "publishedAt": "2020-11-17T07:52:59-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "782800b9715aa58db7a4362d83b16b7d2f82ebbdef1e40a3dead0c938d3c51b1",
+      "contentSha256": "ff7e70ec99fc052679008855bdf6ec3c66d71f2f8b4598de902d4604f816b351",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -135114,7 +135114,7 @@
             "reference": "https://escarpmentlabs.com/products/farmstand-saison",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -135194,7 +135194,7 @@
       "publishedAt": "2022-04-26T09:51:18-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "da48cdd4e295a0b02b576669862e528195cff2da724a87e06829e7a473c3dd67",
+      "contentSha256": "c54b24340027c70776054e03a90c9943c36fd15ec17431dddc1a553b10f193cf",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -135362,7 +135362,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-c",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -135417,7 +135417,7 @@
       "publishedAt": "2020-12-07T14:58:27-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "109e1a590b5fccbc37158a6c2ec229c545534018adc6a375069ed85bd9489df2",
+      "contentSha256": "06246c89f5b846875d80d39321af0a3ae6fccddc50b8dd4ef4a10dc719bf1ef5",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -135881,7 +135881,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-d-primary",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -135936,7 +135936,7 @@
       "publishedAt": "2021-01-12T14:42:18-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "82c4d28a26cea3fdee7ac622cb2f6ba39b089ea831113a87f21de8758b1f2623",
+      "contentSha256": "360eff39aa0ee469572776e0b62f7963b6b67946ea0c56c9ff089edd2911dd20",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -136336,7 +136336,7 @@
             "reference": "https://escarpmentlabs.com/products/cream-ale-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "attenuation",
@@ -136431,7 +136431,7 @@
       "publishedAt": "2022-04-21T09:55:46-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "95353ff9709fc68b2dd860364dd49711bebb4cbadba9957160f4cce13ad1bd3d",
+      "contentSha256": "65f7375d5041e0085890023bd3a5ae3849aa76847b4ebacd2f5d751241ca5556",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -136673,7 +136673,7 @@
             "reference": "https://escarpmentlabs.com/products/farmstand-saison-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -136728,7 +136728,7 @@
       "publishedAt": "2023-03-16T01:28:06-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "009cadd7d597862f2bd837088e169a9dd002ea3d0db151a258f5892027d97ee2",
+      "contentSha256": "8df3085aa4d9e7562d3d3d6378dc73427457632f165fd18e353f6a18076f00c0",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé."
@@ -136893,7 +136893,7 @@
             "reference": "https://escarpmentlabs.com/products/berliner-brett-blend-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "temperature",
@@ -137038,7 +137038,7 @@
       "publishedAt": "2020-11-26T14:55:25-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "950e1c8be9b69d62d2737ca935ed1fa10d28d37cba22226168ce838f259fb739",
+      "contentSha256": "685218d099db5c87df158db2e62f62812e879f95f21720a1b049b00897e9a73c",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -137277,7 +137277,7 @@
             "reference": "https://escarpmentlabs.com/products/spooky-saison",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -137357,7 +137357,7 @@
       "publishedAt": "2021-01-13T15:13:30-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "ac863845c10a526fb766f628eade8479d4458426384dcec8d083117d421dafbf",
+      "contentSha256": "6d111b7a28d8a24a0dbe1883331d1f9c77db844e8980e5df62a4f26c9c190adb",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -137951,7 +137951,7 @@
             "reference": "https://escarpmentlabs.com/products/pink-boots-yeast",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -138031,7 +138031,7 @@
       "publishedAt": "2025-02-03T14:06:13-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "b897fc2049c99197c8e0ee65efcac99f4c1823c4dd6f168c4aa79eef472f820b",
+      "contentSha256": "bc215f03049b11bd1a1c08302ee03580e0965206a04795b90798363a1df8fb9a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -138205,7 +138205,7 @@
             "reference": "https://escarpmentlabs.com/products/hydra",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -138285,7 +138285,7 @@
       "publishedAt": "2021-12-22T11:23:00-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "278ee68405ce9c2002e0d4e568c024b76552ca21cdbe04f8a3dcfd7caa1430db",
+      "contentSha256": "153e29d324df10093de284c294072b692acf4b572fb3f933960bcd4152ed8b3a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -139496,7 +139496,7 @@
             "reference": "https://escarpmentlabs.com/products/hydra-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -139551,7 +139551,7 @@
       "publishedAt": "2021-07-07T13:23:47-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "99357454b90cc80dfaaf0f57eb22d5b97cd86e71db03d5150c9219ae09f96dbc",
+      "contentSha256": "ae521cb5c989d5a75ee0f3a37f5bfdbd011fd1c24864ff4ce9b58b3a18f80415",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -140138,7 +140138,7 @@
             "reference": "https://escarpmentlabs.com/products/optimus-primary",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -140193,7 +140193,7 @@
       "publishedAt": "2022-01-06T13:46:44-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "59111144b40a080778416bf3b8b8278b4d0ad461c8344f30a60b613a752fa6b6",
+      "contentSha256": "85c4ce587146a97a9096f75796356506987aad12ea631ed04a87816e538b62b9",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -140460,7 +140460,7 @@
             "reference": "https://escarpmentlabs.com/products/thiol-libre",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -140540,7 +140540,7 @@
       "publishedAt": "2022-02-16T08:32:28-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "20a4f249c46b6d17a4f789099fea56fca9fe1e8912e18340909db1c7ef547464",
+      "contentSha256": "2d99bab75864b0ccc97eb2a4e36c062146417edef78414fe35dc30803cdc4192",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -140935,7 +140935,7 @@
             "reference": "https://escarpmentlabs.com/products/thiol-libre-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -140990,7 +140990,7 @@
       "publishedAt": "2022-02-16T08:29:06-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "026f7084de63b9445a78b733e15941e380b9c6118d3b34150e3c6320b70d9f3c",
+      "contentSha256": "b8ab190267163b0e3c3584631206feb41e1cab6d93c9e027d2c57c15926d08cf",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -141162,7 +141162,7 @@
             "reference": "https://escarpmentlabs.com/products/lost-lager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -141242,7 +141242,7 @@
       "publishedAt": "2023-11-24T09:38:34-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "ee2331491fc699c7aed6d931dafadf3bf4a7f64e88280662f79765448676af0f",
+      "contentSha256": "0269e5a1f8d028a2f965ed5ee162c71902631eacd86d57b865e44c6f15e83d2d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -141419,7 +141419,7 @@
             "reference": "https://escarpmentlabs.com/products/valor-blend-limited-edition-hb",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -141474,7 +141474,7 @@
       "publishedAt": "2022-04-18T11:07:07-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "43a6be5662df5b7786352645a05a4285a4a372ff7f384e3a21b0c4b5147558f3",
+      "contentSha256": "d5f2e0cb3acf96fb02fc36098f933fb632d1bd182685ebce87e3b013f07e323d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -141646,7 +141646,7 @@
             "reference": "https://escarpmentlabs.com/products/the-kveik-ring-framgarden",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -141701,7 +141701,7 @@
       "publishedAt": "2023-08-30T08:12:05-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "c4f3e80dd88feaa518fe1d048f0e06614e618af22ada27f248cd1e98d146750b",
+      "contentSha256": "a254aa5d582b36d5ee0073fbcc5a065d63a6d1a2b248f6969cca349d4b44f76f",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -141886,7 +141886,7 @@
             "reference": "https://escarpmentlabs.com/products/the-kveik-ring-kolnasata",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -141941,7 +141941,7 @@
       "publishedAt": "2023-11-02T15:39:28-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "f7ee7a93d7379518d3bc03e8104e623f63de609dfc524a3f541e741dcfc123e2",
+      "contentSha256": "1cbf9cb976434c429dff5673c0865851d03918ed1290a01468ac0614cbe870a9",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -142391,7 +142391,7 @@
             "reference": "https://escarpmentlabs.com/products/brett-d-secondary-pitch-rate",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -142446,7 +142446,7 @@
       "publishedAt": "2022-11-30T09:06:04-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "784f401d77615026e3c6f61c2f59234b03b3ea881dad92142d14781e856561fb",
+      "contentSha256": "b1bba2ed10ef2551f97f60e957b7c3e2fb4b0eee637eb294cd6abafd28af9b50",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -143136,7 +143136,7 @@
             "reference": "https://escarpmentlabs.com/products/elysium",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -143216,7 +143216,7 @@
       "publishedAt": "2023-10-12T09:01:41-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "debcd8d1a8d784557f80cc02e441ae2a071106f68f4d190dbc0c58e4cfd455ac",
+      "contentSha256": "02586ffebc881f7268f0370357a0ae87cba42f918fd89b957a585572b0bb7a07",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -143410,7 +143410,7 @@
             "reference": "https://escarpmentlabs.com/products/elysium-hb",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -143465,7 +143465,7 @@
       "publishedAt": "2023-10-30T09:35:13-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "d39710b6073f46513391e48c70cc38778226d6369be6732e82ba7b6959e693de",
+      "contentSha256": "c9350db55b5d00fdb2bacf90e2794aae4b16a9da971cc3c6f52c579e97a2d68a",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -143661,7 +143661,7 @@
             "reference": "https://escarpmentlabs.com/products/lost-lager-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -143716,7 +143716,7 @@
       "publishedAt": "2023-11-23T16:37:55-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "4f8bf32adb5d00419a53090815f6c07debbbdea2e87eec22fd2d0017dc31c950",
+      "contentSha256": "1d51f43b5d6f6ec1b39d6db0d9109e6ca605b9d724d7e49ff4f34c2e13d12275",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -144180,7 +144180,7 @@
             "reference": "https://escarpmentlabs.com/products/terps",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -144260,7 +144260,7 @@
       "publishedAt": "2024-04-16T11:04:03-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "81aee0dfe87350c75ffab1c9e4722d8a55cbe5df08c37efc9efbcd88add21d8a",
+      "contentSha256": "bdc7e8ae3ea2df1b2857a3b8a51e329491ee47594e29eacb386b97193999673d",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -144441,7 +144441,7 @@
             "reference": "https://escarpmentlabs.com/products/terps-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -144496,7 +144496,7 @@
       "publishedAt": "2024-04-18T14:06:17-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "fa72e9bcc852bc64aa5b3489925098acac214efaaa8824072246748af996d534",
+      "contentSha256": "ab7394384a107711bd73e63735a8f4d048d71b94fdf94e0bd989215e5c526ebb",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -144951,7 +144951,7 @@
             "reference": "https://escarpmentlabs.com/products/superfog",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -145031,7 +145031,7 @@
       "publishedAt": "2024-10-17T09:13:14-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "3f9d78d2ba5b580abb2430d2a77f4b28cf10d12871f287d688b0f9ac4019b5e6",
+      "contentSha256": "46ad84cd74fb10f0548b211626081da4323f112421835dba7dd023f84ab58320",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -145215,7 +145215,7 @@
             "reference": "https://escarpmentlabs.com/products/superfog-homebrew",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -145270,7 +145270,7 @@
       "publishedAt": "2024-10-17T09:34:15-04:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "847507b64fcde4babefbfc1ccbac13431978f3c9c755dfe66807cc1048a0e905",
+      "contentSha256": "9f86ab25bf93aef832f8aaf085c112016de3a05ce46a65b9853f55fcb860140e",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",
@@ -145454,7 +145454,7 @@
             "reference": "https://escarpmentlabs.com/products/superlager",
             "locator": "Key Characteristics / description produit · Biotransformation"
           },
-          "context": "Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols."
+          "context": "Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement."
         },
         {
           "key": "aroma",
@@ -145534,7 +145534,7 @@
       "publishedAt": "2025-02-25T09:19:23-05:00",
       "pageUpdatedAt": "2026-09-08T06:31:10-04:00",
       "parserVersion": "yeast-catalogue-2026-09-08.1",
-      "contentSha256": "dc8a990bbe28f3f4ea565e0b6120d9127166def53aaa7142634bda0667d352f4",
+      "contentSha256": "86686ca351bb2e300a706ddbde2ba7838c02b95c7bebcac0c0de0c18b1d2757c",
       "gaps": [
         "Rendement de libération des thiols et intensités sensorielles non calibrés.",
         "Fiche détaillée indisponible à la collecte ; inventaire conservé.",

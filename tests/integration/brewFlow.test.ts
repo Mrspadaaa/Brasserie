@@ -78,7 +78,7 @@ const recipe = (over: Partial<T['Recipe']> = {}): T['Recipe'] =>
       { name: 'Lactose', weightKg: 0.5, kind: 'lactose', use: 'ebullition' }
     ],
     hops: [{ name: 'Citra', weightG: 100, alpha: 12, stage: 'whirlpool', timeMin: 20 }],
-    yeast: { name: 'SafAle US-05', form: 'sèche', qty: 2, unit: 'sachet' },
+    yeast: { name: 'SafAle US-05', form: 'sèche', qty: 2, unit: 'sachet', stockItemRef: 'MP-004' },
     ...over
   }) as T['Recipe'];
 
@@ -99,9 +99,16 @@ beforeEach(() => {
   });
 });
 
+/** This fixture models the brewer explicitly confirming that the planned dose was added. */
+const confirmPlannedPitchForTest = (batch: T['Batch']): T['Batch'] => {
+  const yeast = batch.recipeSnapshot?.yeast;
+  if (!yeast || !Number.isFinite(yeast.qty) || yeast.qty <= 0 || !yeast.unit?.trim()) return batch;
+  return { ...batch, brewDay: { currentIndex: 0, pitchedAt: 1, pitchQuantityConfirmation: 'planned',
+    additions: { yeast: { amount: yeast.qty, unit: yeast.unit } }, steps: [], readings: [] } };
+};
 const finish = (r: T['Recipe'], id: string) => {
   const batch = StorageService.planRecipeBatch(r, id);
-  return StorageService.completeBrewStock({ ...batch, status: 'fermentation' });
+  return StorageService.completeBrewStock({ ...confirmPlannedPitchForTest(batch), status: 'fermentation' });
 };
 
 describe('Planifier puis brasser consomme le stock une seule fois', () => {
@@ -148,6 +155,18 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
     expect(refStock('MP-004')).toBe(4); // 6 − 2 sachets
   });
 
+  it('ne déduit aucun ingrédient tant que l’ajout réel de levure reste inconnu', () => {
+    const planned = StorageService.planRecipeBatch(recipe(), 'LOT-NO-PITCH');
+    const result = StorageService.completeBrewStock({ ...planned, status: 'fermentation' });
+    expect(result.success).toBe(false);
+    expect(result.issues.join(' ')).toContain('ajout réel doit être confirmé');
+    expect(refStock('MP-001')).toBe(25);
+    expect(refStock('MP-002')).toBe(400);
+    expect(refStock('MP-003')).toBe(2);
+    expect(refStock('MP-004')).toBe(6);
+    expect(fakeRepo.all('movements')).toEqual([]);
+  });
+
   it('lève le drapeau de réapprovisionnement en passant sous le minimum', () => {
     finish(recipe(), 'LOT-1');
     const citra = StorageService.getStocks().rawMaterials.find((i) => i.ref === 'MP-002');
@@ -183,8 +202,9 @@ describe('Planifier puis brasser consomme le stock une seule fois', () => {
 
   it('un double clic avec un ancien brouillon ne déstocke jamais deux fois', () => {
     const planned = StorageService.planRecipeBatch(recipe(), 'LOT-1');
-    expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
-    expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
+    const explicitlyPitched = confirmPlannedPitchForTest(planned);
+    expect(StorageService.completeBrewStock({ ...explicitlyPitched, status: 'fermentation' }).success).toBe(true);
+    expect(StorageService.completeBrewStock({ ...explicitlyPitched, status: 'fermentation' }).success).toBe(true);
     expect(refStock('MP-001')).toBe(19);
     expect(fakeRepo.all('movements')).toHaveLength(4);
   });

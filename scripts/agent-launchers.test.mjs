@@ -68,11 +68,11 @@ test('Claude uses native subscription credentials, with xhigh effort isolated to
   assert.equal(original.ANTHROPIC_API_KEY, 'test-key');
 });
 
-test('API authentication cannot silently stand in for a Pro subscription', () => {
+test('API authentication cannot silently stand in for a native subscription', () => {
   const pro = { loggedIn: true, authMethod: 'claude.ai', subscriptionType: 'pro', apiProvider: 'firstParty', apiKeySource: null };
   assert.equal(subscriptionStatus(pro).subscriptionType, 'pro');
   for (const patch of [{ loggedIn: false }, { authMethod: 'apiKey' }, { apiKeySource: 'environment' }, { apiProvider: 'bedrock' },
-    { subscriptionType: null }, { subscriptionType: 'max' }, { subscriptionType: 'team' }, { subscriptionType: 'enterprise' }]) {
+    { subscriptionType: null }, { subscriptionType: 'free' }, { subscriptionType: 'unknown' }]) {
     assert.throws(() => subscriptionStatus({ ...pro, ...patch }));
   }
 });
@@ -117,7 +117,7 @@ test('edit rules cover only explicitly named copies and Write uses Edit(path) pe
   assert(args.includes('Read'));
   assert(args.includes('Edit(./src/ui/test.tsx)'));
   assert(!args.includes('Write(./src/ui/test.tsx)'));
-  assert.equal(args[args.indexOf('--max-turns') + 1], '30');
+  assert.equal(args[args.indexOf('--max-turns') + 1], '60');
 });
 
 test('Luna remains opt-in inside one Claude consultation, with one exact relay command', () => {
@@ -136,7 +136,7 @@ test('launcher parses real arguments and refuses malformed turn budgets', () => 
   const basic = parseLauncherOptions(['--brief', 'b.txt', '--output', 'r.json']);
   assert.equal(basic.mode, 'review');
   assert.equal(basic.maxTurns, 30);
-  assert.equal(parseLauncherOptions(['--mode', 'edit', '--brief', 'b', '--output', 'o']).maxTurns, 30);
+  assert.equal(parseLauncherOptions(['--mode', 'edit', '--brief', 'b', '--output', 'o']).maxTurns, 60);
   assert.deepEqual(basic.files, []);
   const edit = parseLauncherOptions(['--mode', 'edit', '--max-turns', '18',
     '--allow-file', 'src/a.ts', '--allow-file', 'src/b.ts', '--brief', 'b.txt', '--output', 'r.json']);

@@ -115,18 +115,46 @@ export interface IngredientFacts {
 /** Adapt only the server lookup response. Stock and recipe notes never pass through this path. */
 export function adaptYeastLookupResult(facts: IngredientFacts): IngredientFacts {
   if (!facts.found) return facts;
-  const { note, documentaryNotes: _untrustedNotes, ...response } = facts;
+  const { note, documentaryNotes: _untrustedNotes, technicalFacts: untrustedTechnicalFacts, ...response } = facts;
   const documentaryNotes = typeof note === 'string' && note.trim() ? [{
     text: note, origin: 'ai' as const,
     ...(facts.source?.trim() ? { source: facts.source } : {}),
     ...(facts.sourceUrl?.trim() ? { sourceUrl: facts.sourceUrl } : {}),
     ...(facts.retrievedAt?.trim() ? { retrievedAt: facts.retrievedAt } : {})
   }] : undefined;
-  const technicalFacts = readYeastTechnicalFacts(facts.technicalFacts);
+  // Only a confirmed correction pair can stamp a scalar link. A fresh lookup
+  // remains an observation even if its payload claims an earlier acceptance.
+  const lookupTechnicalFacts = Array.isArray(untrustedTechnicalFacts) ? untrustedTechnicalFacts.map(fact => {
+    if (!fact || typeof fact !== 'object' || Array.isArray(fact)) return fact;
+    const { acceptedScalarFields: _untrustedAcceptance, ...observation } = fact;
+    return observation;
+  }) : untrustedTechnicalFacts;
+  const technicalFacts = readYeastTechnicalFacts(lookupTechnicalFacts);
+  // Older lookup responses may put flocculation only in the documented scalar
+  // field while returning an empty technicalFacts array. The sheet-review path
+  // works from observations, so carry the verbatim text and its sheet-level
+  // provenance into that shared representation. Do not classify or rewrite
+  // descriptions such as “High / Fast sedimentation”. If an observation already
+  // exists, it remains the source of truth and is never duplicated by the scalar.
+  const scalarFlocculation = typeof facts.flocculation === 'string' ? facts.flocculation.trim() : '';
+  const hasFlocculationObservation = technicalFacts?.some(fact => fact.key === 'flocculation') ?? false;
+  let normalizedTechnicalFacts = technicalFacts;
+  if (technicalFacts && scalarFlocculation && scalarFlocculation.length <= 2000 && !hasFlocculationObservation) {
+    const source = typeof facts.source === 'string' && facts.source.trim().length <= 2000 ? facts.source.trim() : undefined;
+    const sourceUrl = typeof facts.sourceUrl === 'string' && facts.sourceUrl.trim().length <= 2000
+      ? facts.sourceUrl.trim() : undefined;
+    const retrievedAt = typeof facts.retrievedAt === 'string' && facts.retrievedAt.trim().length <= 2000 &&
+      Number.isFinite(Date.parse(facts.retrievedAt)) ? facts.retrievedAt.trim() : undefined;
+    const promoted = readYeastTechnicalFacts([...technicalFacts, {
+      key: 'flocculation', reported: scalarFlocculation, origin: 'ai',
+      ...(source ? { source } : {}), ...(sourceUrl ? { sourceUrl } : {}), ...(retrievedAt ? { retrievedAt } : {})
+    }]);
+    if (promoted) normalizedTechnicalFacts = promoted;
+  }
   return {
     ...response,
     origin: 'ai',
-    ...(technicalFacts ? { technicalFacts: technicalFacts.map(fact => ({ ...fact, origin: 'ai', source: fact.source || facts.source })) } : {}),
+    ...(normalizedTechnicalFacts ? { technicalFacts: normalizedTechnicalFacts.map(fact => ({ ...fact, origin: 'ai', source: fact.source || facts.source })) } : {}),
     ...(documentaryNotes ? { documentaryNotes } : {})
   };
 }

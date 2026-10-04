@@ -18,7 +18,7 @@
             "year": 2018,
             "kind": "research",
             "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
-            "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+            "locator": "BrewingScience 71, §§2.2–2.8 pp. 119–121 (échantillons, grist et analyses) ; figure 1 p. 123 ; tableau S12 p. 139 (Cascade 2015). La Table S12 n'explicite pas la base d'humidité ni le dénominateur de 100 g. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
           }
         }
       ],
@@ -26,7 +26,7 @@
         {
           "analyte": "geraniol",
           "unit": "mg100g",
-          "basis": "asIs",
+          "basis": "unknown",
           "kind": "range",
           "range": {
             "min": 0.32,
@@ -38,10 +38,10 @@
             "year": 2018,
             "kind": "research",
             "reference": "https://doi.org/10.23763/BrSc18-19lafontaine",
-            "locator": "BrewingScience 71, p. 119 protocole ; tableau S6 p. 133 ; tableau S12 p. 139. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
+            "locator": "BrewingScience 71, §§2.6–2.8 pp. 120–121 (prise analytique, hydrodistillation et GC-MS 2015) ; figure 1 p. 123 ; tableau S12 p. 139. Unité imprimée mg/100 g, base wet/dry non précisée. PDF éditeur : https://brewingscience.de/index.php/brewingscience/article/download/277/186/489"
           },
           "confidence": "low",
-          "method": "Hydrodistillation et GC-FID/GC-MS, tableau S12.",
+          "method": "Hydrodistillation selon ASBC Hops-13 pour l'huile totale; composition des échantillons 2015 par GC-MS sous conditions modifiées d'ASBC Hops-17, §§2.6–2.8. Table S12 p. 139.",
           "note": "Extrema entre les 29 lots de 2015 ; variabilité entre lots, pas incertitude d’une analyse."
         }
       ]
@@ -102,8 +102,8 @@
       "id": "cascade1728-clarified-lafontaine",
       "kind": "model",
       "name": "Cascade × Wyeast 1728 · bière clarifiée",
-      "version": "lafontaine2015-local-1",
-      "enabled": true,
+      "version": "lafontaine2015-local-2",
+      "enabled": false,
       "confidence": "low",
       "source": {
         "title": "Étalonnage exploratoire Cascade 2015 — reconstruction L’Affinée",
@@ -111,7 +111,7 @@
         "year": 2026,
         "kind": "judgment",
         "reference": "docs/index-houblon-etalonnage.md",
-        "locator": "https://doi.org/10.23763/BrSc18-19lafontaine ; tableaux S6 et S12 ; Régression linéaire locale sur géraniol, conformément au prédicteur retenu par les auteurs. Bornes de pente et d’interception : extrema des 29 ajustements laissant une observation de côté, plus l’ajustement complet. Résidu : extrema des erreurs sur observations laissées de côté. Addition par intervalles, sans supposer l’indépendance des paramètres. Enveloppe empirique exploratoire de moyennes de panel, pas intervalle de prédiction à couverture garantie. Classes et poids : conventions locales."
+        "locator": "https://doi.org/10.23763/BrSc18-19lafontaine ; Tables S6/S12. Suspension LF01 (2026-10-01) : la source donne mg/100 g mais ne qualifie pas la base d'humidité. Le terme est conservé avec base unknown et nombres inchangés; aucune conversion ni nouveaux calculs avant preuve du dénominateur. Calibration locale exploratoire conservée en archive, non utilisable sur de nouveaux calculs."
       },
       "scope": {
         "varietyId": "cascade-cones-lafontaine",
@@ -131,7 +131,7 @@
           "max": 24
         },
         "matrixId": "pale-ale-clarifiee-cascade-2015",
-        "notes": "Protocole Lafontaine : 86 % pale two-row, 13,5 % caramel 10 °L, 0,5 % caramel 120 °L ; 11,3 °P, Wyeast 1728 à 19–20 °C, puis clarification, 4,8 % vol et 20 BU. Houblonnage après élimination de la levure, cônes grossièrement broyés en sacs, 3,86 g/L pendant 24 h à 13,3–15 °C, puis filtration. Échantillons de récolte 2015. L’utilisation sur un nouveau lot comparable est exploratoire, sans validation externe ni rendement de biotransformation. Ne pas appliquer à une bière trouble, à une fermentation active ou à des pellets."
+        "notes": "Protocole Lafontaine : 86 % pale two-row, 13,5 % caramel 10 °L, 0,5 % caramel 120 °L ; 11,3 °P, Wyeast 1728 à 19–20 °C, puis clarification, 4,8 % vol et 20 BU. Houblonnage après élimination de la levure, cônes grossièrement broyés en sacs, 3,86 g/L pendant 24 h à 13,3–15 °C, puis filtration. Échantillons de récolte 2015. L’utilisation sur un nouveau lot comparable est exploratoire, sans validation externe ni rendement de biotransformation. Ne pas appliquer à une bière trouble, à une fermentation active ou à des pellets. Suspension LF01 (2026-10-01) : l'observation de géraniol est conservée, mais l'humidité/dénominateur de l'étude ne permet pas d'étayer asIs ou dryMatter. Le modèle est désactivé pour de nouveaux calculs; ses coefficients et sa portée expérimentale sont conservés. [lafontaine-basis-unknown-lf01-2026-10-01]"
       },
       "outputs": [
         {
@@ -185,7 +185,7 @@
               {
                 "analyte": "geraniol",
                 "unit": "mg100g",
-                "basis": "asIs",
+                "basis": "unknown",
                 "support": {
                   "min": 0.32,
                   "max": 4.07

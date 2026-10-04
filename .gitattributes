@@ -3,3 +3,7 @@
 # Source receipts bind exact catalogue bytes; keep generated-library checks portable.
 src/data/yeastCatalogueBootstrap.json text eol=lf
 src/data/yeastCatalogueLibrary.json text eol=lf
+# Historical fixtures retain the exact bytes produced by their original readers.
+tests/fixtures/public-history/*.json -text
+# Keep the received, unapplied Q09 patch bound to its published SHA-256.
+docs/validation/q09-team-pro.pending.patch -text

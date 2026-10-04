@@ -15,7 +15,8 @@ export interface BrewDateSession {
   steps?: Array<{ startedAt?: number; doneAt?: number; rampStartedAt?: number; holdStartedAt?: number }>;
   thermalSegments?: Array<{ startedAt: number }>;
   additions?: Record<string, { doneAt?: number }>;
-  readings?: Array<{ at: number }>;
+  /** Keep legacy/incomplete input representable; only measured kind/value pairs provide start evidence. */
+  readings?: Array<{ at?: number; kind?: string; value?: number; unit?: string }>;
 }
 
 /** Accept the two stored formats, but never normalize an impossible calendar day. */
@@ -45,7 +46,10 @@ export function brewStartedAt(session?: BrewDateSession): number | undefined {
     ...(session?.steps ?? []).flatMap(step => [step.startedAt, step.doneAt, step.rampStartedAt, step.holdStartedAt]),
     ...(session?.thermalSegments ?? []).map(segment => segment.startedAt),
     ...Object.values(session?.additions ?? {}).map(item => item.doneAt),
-    ...(session?.readings ?? []).map(reading => reading.at)]
+    ...(session?.readings ?? [])
+      .filter(reading => typeof reading?.value === 'number' && Number.isFinite(reading.value)
+        && ['temperature', 'volume', 'densite', 'ph'].includes(reading.kind ?? ''))
+      .map(reading => reading.at)]
     .filter((time): time is number => typeof time === 'number' && Number.isFinite(time) && time >= 0);
   return times.length ? Math.min(...times) : undefined;
 }

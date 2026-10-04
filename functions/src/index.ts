@@ -31,5 +31,20 @@ export {
   markBrewerRead,
   retryBrewerQuestion
 } from './brewerJobs.js';
-export { registerBrewerNotifications, notifyBrewerAnswer } from './brewerNotifications.js';
+export { processBrewerHopAdviceV1 } from './brewerJobs.js';
+export {
+  askBrewerHopAdviceV1,
+  dispatchBrewerHopAdviceV1,
+  getBrewerHopAdviceActivityV1,
+  markBrewerHopAdviceReadV1,
+  retryBrewerHopAdviceQuestionV1
+} from './brewerHopAdviceJobsV1.js';
+export {
+  getBrewerHopAdviceConversationV1,
+  resetBrewerHopAdviceConversationV1
+} from './brewerHopAdviceConversationV1.js';
+export { registerBrewerNotifications, notifyBrewerAnswer, notifyBrewerHopAdviceAnswerV1 } from './brewerNotifications.js';
 export { getBrewerAiBudget, setBrewerAiBudget } from './brewerBudget.js';
+export { proposeYeastDbCorrection, applyYeastDbCorrection } from './yeastDbCorrections.js';
+export { readBrewingCatalogue, writeBrewingCatalogue } from './brewerCatalogueApi.js';
+export { readBrewingScenario, writeBrewingScenario } from './brewerScenarioApi.js';

@@ -1,0 +1,72 @@
+{
+  "fixtureMetadata": {
+    "kind": "synthetic scenario input projection",
+    "scope": "Original structured scenario inputs only; no proposed answer, prediction or model/session metadata. Unknown values remain unknown."
+  },
+  "request": {
+    "originalQuestion": "Je planifie une bière faible en alcool et acidulée avec une co-culture de Saccharomyces pastorianus et Lactobacillus plantarum. J’ai une petite récolte de houblon maison sans analyse. Je cherche un caractère plus fruité/citronné en gardant l’acidité. Quelles voies sont défendables ?",
+    "proposedInterpretation": {
+      "criteria": [
+        {
+          "id": "alcohol-constraint",
+          "role": "constraint",
+          "origin": "user",
+          "text": "faible alcool; aucune limite numérique fournie"
+        },
+        {
+          "id": "acid-preservation",
+          "role": "preserve",
+          "origin": "user",
+          "text": "préserver le caractère acidulé; pH et acidité titrable non fournis"
+        },
+        {
+          "id": "aroma-seek",
+          "role": "seek",
+          "origin": "user",
+          "text": "fruité/citronné; ceci n’est pas traduit automatiquement en thiols, tropical ou intensité"
+        }
+      ]
+    }
+  },
+  "scenarioStatements": {
+    "stage": "planning",
+    "houseHop": {
+      "materialId": "house-hop-lot-unanalysed",
+      "identity": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+      "form": "unknown",
+      "harvestYear": null,
+      "storage": null,
+      "availableGrams": null,
+      "analysis": [],
+      "unknowns": [
+        "masse sèche ou fraîche",
+        "alpha et base",
+        "huile et base",
+        "composés libres",
+        "précurseurs thiolés",
+        "forme et conservation"
+      ]
+    },
+    "matrix": {
+      "alcohol": {
+        "description": "faible alcool visé",
+        "measuredValue": null
+      },
+      "acidity": {
+        "description": "acidité à préserver",
+        "pH": null,
+        "titratableAcidity": null
+      }
+    },
+    "culture": {
+      "reportedSpecies": [
+        "Saccharomyces pastorianus",
+        "Lactobacillus plantarum"
+      ],
+      "strainIds": null,
+      "source": "assertion du scénario, non mesurée et non vérifiée indépendamment",
+      "betaLyase": "unknown",
+      "viabilityAtFutureHopContact": "not_yet_observed"
+    }
+  }
+}

@@ -65,6 +65,8 @@ function mount(over: Partial<BrewDayState> = {}, batchOver: Partial<Batch> = {})
     latest: () => save.mock.calls.at(-1)?.[0]?.brewDay as BrewDayState
   };
 }
+const pitchingRecipe = () => ({ name: 'Test', style: 'Pale Ale', totalGristKg: 0, fermentables: [], hops: [], volumeL: 25,
+  yeast: { name: 'US-05', form: 'sèche' as const, qty: 12, unit: 'g' } });
 const form = () => within(screen.getByRole('region', { name: 'Mesures de cette étape' }));
 const enter = (v: string) =>
   fireEvent.change(screen.getByLabelText(/pH de maische/), {
@@ -260,7 +262,10 @@ describe('Assistant pendant le brassage', () => {
         { at: 2, stepId: 'preboil', kind: 'densite', value: 1.035, unit: 'SG' },
         { at: 3, stepId: 'preboil', kind: 'volume', value: 35, unit: 'L' }
       ]
-    });
+    }, { recipeSnapshot: pitchingRecipe() as never });
+    const guide = screen.getByText(/^Levure ·/).closest('details')!;
+    if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
+    fireEvent.click(within(guide).getByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' }));
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(v.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée', exact: true }));
@@ -279,7 +284,10 @@ describe('Assistant pendant le brassage', () => {
       { id: 'new-og', at: 3, stepId: 'ensemencement', kind: 'densite' as const, value: 1.044, unit: 'SG', roomTemp: false },
       { id: 'new-v', at: 3, stepId: 'ensemencement', kind: 'volume' as const, value: 27, unit: 'L', volumeBasis: 'hot' as const },
     ];
-    const v = mount({ currentIndex: 1, readings });
+    const v = mount({ currentIndex: 1, readings }, { recipeSnapshot: pitchingRecipe() as never });
+    const guide = screen.getByText(/^Levure ·/).closest('details')!;
+    if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
+    fireEvent.click(within(guide).getByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' }));
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(screen.getByText('OG inconnue · volume en fermenteur inconnu.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
@@ -289,7 +297,7 @@ describe('Assistant pendant le brassage', () => {
   });
   it('le transfert reste en attente après réouverture ; seule la levure confirmée clôture une fois', async () => {
     const clock = vi.spyOn(Date, 'now').mockReturnValue(Date.UTC(2026, 8, 20, 18));
-    const evening = mount({ currentIndex: 1 }, { status: 'planifie', brewDate: '', plannedBrewDate: '25.09.2026' });
+    const evening = mount({ currentIndex: 1 }, { status: 'planifie', brewDate: '', plannedBrewDate: '25.09.2026', recipeSnapshot: pitchingRecipe() as never });
     expect(screen.getByRole('button', { name: 'Commencer aujourd’hui' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Transfert effectué · sans levure' }));
     const pending = evening.latest();
@@ -305,13 +313,16 @@ describe('Assistant pendant le brassage', () => {
     expect(screen.getByText('En attente d’ensemencement')).toBeInTheDocument();
     expect(screen.getByLabelText('Température du moût à l’ajout de levure')).toHaveValue('');
     fireEvent.change(screen.getByLabelText('Température du moût à l’ajout de levure'), { target: { value: '19,2' } });
+    const guide = screen.getByText(/^Levure ·/).closest('details')!;
+    if (!guide.open) fireEvent.click(guide.querySelector('summary')!);
+    fireEvent.click(within(guide).getByRole('radio', { name: 'Ajout confirmé, quantité non mesurée' }));
     fireEvent.click(screen.getByRole('button', { name: 'J’ai ajouté la levure' }));
     expect(morning.finish).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Confirmer la levure ajoutée' }));
     await waitFor(() => expect(morning.finish).toHaveBeenCalledTimes(1));
     expect(morning.finish.mock.calls[0][0]).toMatchObject({ status: 'fermentation', brewDate: '20.09.2026', plannedBrewDate: '25.09.2026' });
     const completed = morning.finish.mock.calls[0][0].brewDay;
-    expect(completed).toMatchObject({ transferredAt: pending.transferredAt, pitchedAt: Date.UTC(2026, 8, 21, 8), pitchTemperatureC: 19.2 });
+    expect(completed).toMatchObject({ transferredAt: pending.transferredAt, pitchedAt: Date.UTC(2026, 8, 21, 8), pitchTemperatureC: 19.2, pitchQuantityConfirmation: 'unmeasured' });
     expect(completed.notes.filter((n: { text: string }) => n.text.startsWith('Levure ajoutée'))).toHaveLength(1);
   });
 });

@@ -17,6 +17,9 @@ export function yeastLookupResultError(value: unknown): string | undefined {
   if (!result || typeof result !== 'object' || Array.isArray(result) || typeof result.found !== 'boolean')
     return 'La réponse ne contient pas de fiche de levure exploitable. Complète les données manuellement.';
   if (!result.found) return undefined;
+  if (Array.isArray(result.technicalFacts) && result.technicalFacts.some(fact =>
+    fact && typeof fact === 'object' && Object.prototype.hasOwnProperty.call(fact, 'acceptedScalarFields')))
+    return 'La réponse IA ne peut pas déclarer un choix confirmé. Aucune donnée appliquée ; relance la recherche ou complète la fiche manuellement.';
   const facts = readYeastTechnicalFacts(result.technicalFacts);
   if (!facts || !documentUrl(result.sourceUrl) ||
       facts.some(fact => !fact.source?.trim() || !documentUrl(fact.sourceUrl)))

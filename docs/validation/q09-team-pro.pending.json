@@ -1,0 +1,91 @@
+{
+  "status": "recovered-code-pending-reception-not-applied",
+  "createdAt": "2026-10-04T10:45:45.432Z",
+  "patch": "q09-team-pro.pending.patch",
+  "patchSha256": "522c06975d3fd1b5b568e340fa524d026c11dc4239e447eec3884367942354b5",
+  "files": [
+    {
+      "path": "src/services/hopV55/qualifiedAdviceController.ts",
+      "baseSha256": "8b4416316dbf25d9bfe91c0c4b08c8ac7a90e4f4d00ad6cb7424b70e29d1168c",
+      "recoveredSha256": "2ed48d2873b34623aeff4611c800fc7136e5a4700627903413683ff92aa6ab98",
+      "recoveredBytes": 24358,
+      "primarySha256": "8b4416316dbf25d9bfe91c0c4b08c8ac7a90e4f4d00ad6cb7424b70e29d1168c",
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "src/services/hopV55/qualifiedStudyPreference.ts",
+      "baseSha256": "df56223fe16ac370b2d55dbf71683c44b43a2b32244c26b9fe2e1fe9038ba66c",
+      "recoveredSha256": "b4da0fb977eb542d76fdb2b29a20bec6c63f93258ab33af035384eff67229ade",
+      "recoveredBytes": 33018,
+      "primarySha256": "df56223fe16ac370b2d55dbf71683c44b43a2b32244c26b9fe2e1fe9038ba66c",
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "src/services/hopV55/qualifiedStudyWorkspace.ts",
+      "baseSha256": "ab37e00bf0d031f06463f636dd009729118a32a714197963d90030b4c635db58",
+      "recoveredSha256": "012b1825dfb7b41c2ca340e11468c898bf27d7480479314d0b4af6b281eb3371",
+      "recoveredBytes": 67509,
+      "primarySha256": "ab37e00bf0d031f06463f636dd009729118a32a714197963d90030b4c635db58",
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "src/services/hopV55/workspaceRepository.ts",
+      "baseSha256": "2aaab08024eaac0c9ceb4c0369437c1b93e272631d4e829363b213372d518353",
+      "recoveredSha256": "2144cbd98ed5ff7bf927aad55cc58ef1d727f48eaede4060211b298e01050cfb",
+      "recoveredBytes": 107335,
+      "primarySha256": "3da1aa1ad0aa8b8bbb578226b4e12a390184053e8502ed47732808f81f9f522f",
+      "primaryMatchesBase": false
+    },
+    {
+      "path": "src/domain/hopDecision/adviceDossier.ts",
+      "baseSha256": "07ccb374e6d0981c6bc33712b30fb21f8f4d8e672b5e9b8bfaf9c71ffaad2c84",
+      "recoveredSha256": "af0a742ec6cae84f50086bc0a59b5274464f736640e657e030c0b75e47dd461f",
+      "recoveredBytes": 52613,
+      "primarySha256": "07ccb374e6d0981c6bc33712b30fb21f8f4d8e672b5e9b8bfaf9c71ffaad2c84",
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "src/domain/hopDecision/adviceProgramAdapter.ts",
+      "baseSha256": "ff624ac85ad4cc7615e67220fd25881c3ec29d4ccae8a85e93683352cc95960d",
+      "recoveredSha256": "8fe718f2e5167a2d27decea4bed3526fb97dccc033024ead4292f8294679bbc6",
+      "recoveredBytes": 14771,
+      "primarySha256": "ff624ac85ad4cc7615e67220fd25881c3ec29d4ccae8a85e93683352cc95960d",
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "tests/unit/hopV55QualifiedStudyPreference.test.ts",
+      "baseSha256": "cf91604b59a62e8793da340e1829315ab888abc9a757ac5f709c5563c135430e",
+      "recoveredSha256": "347feffe772749edd28549f81eb960aea9b8eee9339b2195809dc9a6f5ee40d3",
+      "recoveredBytes": 22246,
+      "primarySha256": "cf91604b59a62e8793da340e1829315ab888abc9a757ac5f709c5563c135430e",
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "src/services/hopV55/operationScopedQualifiedValidation.ts",
+      "baseSha256": null,
+      "recoveredSha256": "b1837db54a0f798bda0cfb5e6da64ef3407606f9948ce1111ae3e8c5898f5933",
+      "recoveredBytes": 5009,
+      "primarySha256": null,
+      "primaryMatchesBase": true
+    },
+    {
+      "path": "tests/unit/hopV55QualifiedStudyPerformance.test.ts",
+      "baseSha256": null,
+      "recoveredSha256": "b88864439e0c9ff74ea7a7e723f4b6acfe19309e7b70e4daa1bb9221f94e1197",
+      "recoveredBytes": 24722,
+      "primarySha256": null,
+      "primaryMatchesBase": true
+    }
+  ],
+  "verifiedBaseFiles": 31,
+  "verifiedLatestFiles": 31,
+  "readOnlyFilesPreserved": 21,
+  "appliedToApplication": false,
+  "limits": [
+    "Team original tests reject a semantic fixture forced into historical archive V2 before performance services.",
+    "Team overlay typecheck passed before separate recipient fixture edits; Pro delta has not been typechecked or functionally received.",
+    "No measured performance gain; original normal 60s test remains red.",
+    "Primary base mismatches must be reconciled with the current profile/trial/repository implementation, not overwritten."
+  ],
+  "mergeRequired": "src/services/hopV55/workspaceRepository.ts has newer trial/profile changes; merge them instead of overwriting."
+}

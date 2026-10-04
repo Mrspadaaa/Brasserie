@@ -41,6 +41,8 @@ export interface Transaction {
 }
 
 export interface StockItem {
+  /** Explicitly documented yeast product and biological lot; never inferred by name. */
+  yeastLot?: import('../../functions/src/yeastSupplySchema').YeastLotDetails;
   id: string;
   ref: string;
   name: string;
@@ -196,6 +198,7 @@ export interface HopIngredient {
  * pour la FG.
  */
 export interface YeastSpec {
+  pitching?: import('../../functions/src/yeastSupplySchema').YeastPitchingPlan;
   stockItemRef?: string;
   fermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
   /** Durable documentary sheet explicitly adopted for this catalogue identity. */
@@ -554,6 +557,7 @@ export interface BrewDayState {
   transferredAt?: number;
   pitchedAt?: number;
   pitchTemperatureC?: number;
+  pitchQuantityConfirmation?: 'measured' | 'planned' | 'unmeasured' | 'starter-transferred';
   phase?: 'brewing' | 'awaiting-pitch';
   thermalSegments?: import('./brewSystem').BrewThermalSegment[];
   thermalChoices?: import('./brewSystem').BrewThermalChoices;
@@ -570,7 +574,7 @@ export interface BrewDayState {
   /** Ajustement du jour, sans réécrire la recette. */
   boilDurationMin?: number;
   boilFinishedAt?: number;
-  additions?: Record<string, { amount: number; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
+  additions?: Record<string, { amount: number; unit?: string; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
   /** Measured free wort left after lautering; zero must also be explicitly confirmed. */
   lauterRetainedL?: number;
   preparations?: Record<string, boolean>;
@@ -597,6 +601,7 @@ export interface BatchPackaging {
 }
 
 export interface Batch {
+  yeastPreparation?: import('../../functions/src/yeastSupplySchema').YeastPreparationExecution;
   nolo?: import('../../functions/src/noloSchema').NoloConfig;
   stockAccountingVersion?: 1;
   stockReviewIssues?: string[];

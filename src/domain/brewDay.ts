@@ -14,7 +14,8 @@ export const brewAdviceKey = (s: BrewDayState) =>
     s.thermalChoices,
     s.thermalSegments,
     s.transferredAt,
-    s.pitchedAt
+    s.pitchedAt,
+    s.pitchQuantityConfirmation
   ]);
 export const READING = {
   ph: { label: 'pH', unit: '', min: 0.1, max: 14, placeholder: '5,4' },
@@ -236,7 +237,9 @@ export function startBrewStep(state: BrewDayState, now: number): BrewDayState {
 
 export function completeBrewStep(state: BrewDayState, now: number): BrewDayState {
   const current = state.steps[state.currentIndex];
-  if (!current || current.doneAt != null) return state;
+  // The ensemencement is a physical event, not a timer/checkbox completion.
+  // Only recordPitch may confirm it, after the brewer chooses a quantity state.
+  if (!current || current.doneAt != null || current.id === 'ensemencement') return state;
   // Confirmer un ajout au début de l'ébullition est aussi le départ de l'horloge.
   const started =
     current.boilElapsedMin != null && state.boilStartedAt == null
@@ -275,15 +278,41 @@ export function markTransferred(state: BrewDayState, now: number): BrewDayState 
 }
 
 /** Confirm the actual yeast addition. No OG, volume or pitch temperature is invented. */
-export function recordPitch(state: BrewDayState, now: number, temperatureC?: number): BrewDayState {
+export type PitchQuantityChoice =
+  | { mode: 'measured' | 'planned'; amount: number; unit: string }
+  | { mode: 'unmeasured' }
+  | { mode: 'starter-transferred'; cultureVolumeL?: number };
+
+export function validPitchQuantityChoice(choice: PitchQuantityChoice | undefined): choice is PitchQuantityChoice {
+  if (!choice) return false;
+  if (choice.mode === 'unmeasured') return true;
+  if (choice.mode === 'starter-transferred') return choice.cultureVolumeL === undefined || Number.isFinite(choice.cultureVolumeL) && choice.cultureVolumeL > 0;
+  return Number.isFinite(choice.amount) && choice.amount > 0 && typeof choice.unit === 'string' && choice.unit.trim().length > 0;
+}
+
+/** The choice is required: a missing quantity never silently falls back to the recipe dose. */
+export function recordPitch(state: BrewDayState, now: number, temperatureC: number | undefined, choice: PitchQuantityChoice): BrewDayState {
   if (state.pitchedAt != null || state.finishedAt != null) return state;
+  if (!validPitchQuantityChoice(choice)) return state;
   const temperature = typeof temperatureC === 'number' && Number.isFinite(temperatureC) ? temperatureC : undefined;
-  return { ...state, phase: 'brewing', pitchedAt: now, finishedAt: now,
+  const quantity = choice.mode === 'measured' || choice.mode === 'planned'
+    ? { amount: choice.amount, unit: choice.unit.trim() }
+    : choice.mode === 'starter-transferred' && choice.cultureVolumeL !== undefined
+      ? { amount: choice.cultureVolumeL, unit: 'L' }
+      : undefined;
+  const additions = { ...state.additions };
+  if (quantity) additions.yeast = { ...additions.yeast, ...quantity, doneAt: now };
+  else delete additions.yeast;
+  const quantityNote = choice.mode === 'measured' ? `${quantity!.amount} ${quantity!.unit} mesurés`
+    : choice.mode === 'planned' ? `${quantity!.amount} ${quantity!.unit} · quantité prévue effectivement ajoutée`
+      : choice.mode === 'starter-transferred' ? `culture de starter transférée${quantity ? ` · ${quantity.amount} L relevés` : ' · volume non relevé'}`
+        : 'quantité non mesurée · consommation de stock à régulariser';
+  return { ...state, additions, pitchQuantityConfirmation: choice.mode, phase: 'brewing', pitchedAt: now, finishedAt: now,
     ...(temperature == null ? {} : { pitchTemperatureC: temperature }),
     steps: state.steps.map(s => s.id === 'ensemencement' ? { ...s, doneAt: now } : s),
     thermalSegments: state.thermalSegments?.map(s => s.endedAt == null ? { ...s, endedAt: now } : s),
     notes: [...state.notes ?? [], { id: crypto.randomUUID(), at: now, stepId: 'ensemencement',
-      text: `Levure ajoutée${temperature == null ? ' · température non relevée' : ` · moût à ${temperature} °C`}. Début de fermentation consigné.` }] };
+      text: `Levure ajoutée · ${quantityNote}${temperature == null ? ' · température non relevée' : ` · moût à ${temperature} °C`}. Début de fermentation consigné.` }] };
 }
 
 export interface QualifiedFinalBrewReading {

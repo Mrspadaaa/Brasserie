@@ -232,7 +232,7 @@ describe('Recettes et brassins', () => {
     ],
     totalGristKg: 5,
     hops: [{ name: 'Citra', alpha: 12, weightG: 40, stage: 'dryHop' as const, dayOffset: 3 }],
-    yeast: { name: 'US-05', form: 'sèche' as const, qty: 1, unit: 'sachet' },
+    yeast: { name: 'US-05', form: 'sèche' as const, qty: 1, unit: 'sachet', stockItemRef: 'Y' },
     steps: [],
     notes: []
   };
@@ -244,7 +244,9 @@ describe('Recettes et brassins', () => {
     const planned = StorageService.planRecipeBatch(recipe, 'LOT-NEW');
     expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'MP-001')?.currentStock).toBe(25);
     expect(planned.stockAccountingVersion).toBe(1);
-    expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);
+    const pitched = { ...planned, status: 'fermentation' as const, brewDay: { currentIndex: 0, pitchedAt: 1,
+      pitchQuantityConfirmation: 'planned' as const, additions: { yeast: { amount: recipe.yeast.qty, unit: recipe.yeast.unit } }, steps: [], readings: [] } };
+    expect(StorageService.completeBrewStock(pitched).success).toBe(true);
     expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'MP-001')?.currentStock).toBe(20);
     expect(StorageService.getStocks().rawMaterials.find(s => s.ref === 'H')?.currentStock).toBe(100); // dry hop remains reserved
     expect(StorageService.completeBrewStock({ ...planned, status: 'fermentation' }).success).toBe(true);

@@ -13,7 +13,7 @@ import sciencePack from '../../src/data/fermentationScienceBootstrap.json';
 import { predictHopTriplet, type HopEngineData } from '../../functions/src/hopPredictionCore';
 import { fitPhenolStudy, phenolFeatures, predictStudyPhenols, type PhenolScenario } from '../../functions/src/fermentationScienceCore';
 import type { FermentationPhenolStudy, FermentationScience } from '../../functions/src/fermentationScienceSchema';
-import type { HopRange, HopSource } from '../../functions/src/hopIndexSchema';
+import type { HopRange } from '../../functions/src/hopIndexSchema';
 import type { HopModel, HopTriplet, HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { HopTrial } from '../../functions/src/hopTrialSchema';
 import type { Recipe } from '../../src/types';
@@ -59,7 +59,21 @@ function pointErrors(rows: { observed: number; central: number }[]) {
     mae: rows.length ? mean(rows.map(r => Math.abs(r.central - r.observed))) : null,
     rmse: rows.length ? Math.sqrt(mean(rows.map(r => (r.central - r.observed) ** 2))) : null };
 }
+function assertValidLotRows(rows: LotRow[]) {
+  if (!Array.isArray(rows)) throw Error('Lot observations must be an array.');
+  const identities = new Set<string>();
+  for (const [index, row] of rows.entries()) {
+    if (!Array.isArray(row) || row.length !== 3) throw Error(`Invalid lot row shape at index ${index}.`);
+    const id = row[0];
+    if (typeof id !== 'string' || id.length === 0 || id.trim() !== id)
+      throw Error(`Invalid lot row identity at index ${index}.`);
+    if (identities.has(id)) throw Error(`Duplicate lot row identity: ${id}.`);
+    identities.add(id);
+    if (!finite(row[1]) || !finite(row[2])) throw Error(`Non-finite lot data for ${id}.`);
+  }
+}
 export function fitLine(rows: LotRow[]) {
+  assertValidLotRows(rows);
   if (rows.length < 3) throw Error('At least three distinct source rows are required.');
   const x = mean(rows.map(row => row[1])), y = mean(rows.map(row => row[2]));
   const ssx = rows.reduce((sum, row) => sum + (row[1] - x) ** 2, 0);
@@ -76,59 +90,84 @@ export function fitLotTrainingEnvelope(training: LotRow[]) {
   return {
     trainingIds: training.map(row => row[0]),
     support: bounds(training.map(row => row[1])),
-    observedEnvelope: bounds(training.map(row => row[2])),
     intercept: bounds([complete.intercept, ...inner.map(fit => fit.intercept)]),
     coefficient: bounds([complete.slope, ...inner.map(fit => fit.slope)]),
     residual: bounds(residuals), complete,
     baseline: mean(training.map(row => row[2])),
   };
 }
-export function lotPredictionFromTraining(training: LotRow[], covariate: number, id: string) {
+/** A numeric, held-out source coordinate is diagnostic only; it is not a typed COA measurement. */
+export function diagnoseLotFromTraining(training: LotRow[], covariate: number) {
+  if (!finite(covariate)) throw Error('Non-finite held-out lot coordinate.');
   const fitted = fitLotTrainingEnvelope(training);
-  const data = clone(lotPack) as unknown as { hopVarieties: HopEngineData['varieties']; hopKnowledge: HopEngineData['knowledge'] };
-  const model = data.hopKnowledge.find(k => k.kind === 'model') as HopModel;
-  const output = model.outputs[0], calibration = output.calibration!;
-  calibration.intercept.range = fitted.intercept;
-  calibration.residual.range = fitted.residual;
-  calibration.terms[0].coefficient.range = fitted.coefficient;
-  calibration.terms[0].support = fitted.support;
-  output.envelope!.range = fitted.observedEnvelope;
-  data.hopVarieties[0].analysis[0].range = fitted.support;
-  // A conditional model diagnostic at the published covariate, NOT an error-free COA claim.
-  const source = lotFixture.source as HopSource;
-  const lot = { id: 'benchmark-' + id, varietyId: lotFixture.protocol.varietyId, name: 'Covariable publiée — diagnostic conditionnel', form: 'cone' as const,
-    analysis: [{ analyte: 'geraniol' as const, unit: 'mg100g' as const, basis: 'asIs' as const, kind: 'range' as const,
-      range: { min: covariate, max: covariate }, source, confidence: 'low' as const,
-      note: 'Covariable fixée pour évaluer la régression ; incertitude analytique individuelle non disponible.' }] };
-  const protocol = lotFixture.protocol;
-  const triplet: HopTriplet = { varietyId: protocol.varietyId, lotId: lot.id, yeastId: protocol.yeastId,
-    timing: 'postFermentation', doseGL: protocol.doseGL, temperatureC: protocol.temperatureC,
-    contactHours: protocol.contactHours, matrixId: protocol.matrixId };
-  const prediction = predictHopTriplet(triplet, {}, { varieties: data.hopVarieties, knowledge: data.hopKnowledge, lots: [lot] });
-  return { fitted, prediction, central: fitted.complete.intercept + fitted.complete.slope * covariate };
+  const central = fitted.complete.intercept + fitted.complete.slope * covariate;
+  const inSupport = covariate >= fitted.support.min && covariate <= fitted.support.max;
+  if (!inSupport) return { fitted, central, range: null, inSupport, reason: 'Coordonnée publiée hors du support d’entraînement ; aucune extrapolation.' };
+
+  const products = [fitted.coefficient.min * covariate, fitted.coefficient.max * covariate];
+  const raw = {
+    min: fitted.intercept.min + fitted.residual.min + Math.min(...products),
+    max: fitted.intercept.max + fitted.residual.max + Math.max(...products),
+  };
+  const range = { min: Math.max(0, raw.min), max: Math.min(15, raw.max) };
+  if (!validRange(range)) return { fitted, central, range: null, inSupport, reason: 'Enveloppe diagnostique hors de l’échelle publiée.' };
+  return { fitted, central, range, inSupport, reason: 'Enveloppe exploratoire recalculée dans le support ; base d’humidité inconnue.' };
 }
 
-export function benchmarkLots() {
-  const rows = lotFixture.rows as LotRow[];
+/** Production probe uses the unchanged LF01 pack and no synthetic lot/COA. */
+function lotProductionStatus(total: number) {
+  const model = lotPack.hopKnowledge.find(row => row.kind === 'model') as HopModel;
+  const protocol = lotFixture.protocol;
+  const triplet: HopTriplet = { varietyId: protocol.varietyId, yeastId: protocol.yeastId,
+    timing: 'postFermentation', doseGL: protocol.doseGL, temperatureC: protocol.temperatureC,
+    contactHours: protocol.contactHours, matrixId: protocol.matrixId };
+  const prediction = predictHopTriplet(triplet, {}, {
+    varieties: clone(lotPack.hopVarieties) as HopEngineData['varieties'], lots: [],
+    knowledge: clone(lotPack.hopKnowledge) as HopEngineData['knowledge'],
+  });
+  const estimate = prediction.profile['citrus-lafontaine'];
+  const variety = lotPack.hopVarieties.find(row => row.id === protocol.varietyId)!;
+  const observation = variety.analysis.find(row => row.analyte === 'geraniol')!;
+  return {
+    status: 'suspended-LF01', modelId: model.id, modelVersion: model.version, modelEnabled: model.enabled,
+    observationBasis: observation.basis,
+    calibrationBasis: model.outputs[0].calibration!.terms[0].basis,
+    total, quantified: estimate.range ? total : 0, unknown: estimate.range ? 0 : total,
+    probe: { lotId: triplet.lotId ?? null, range: estimate.range, reasons: estimate.reasons, modelRefs: prediction.modelRefs },
+    note: `Un seul probe du protocole, sans lot ni COA synthétique ; l’absence de plage sur le modèle suspendu laisse les ${total} observations inconnues en production.`,
+  };
+}
+
+export function benchmarkLots(sourceRows: LotRow[] = lotFixture.rows as LotRow[]) {
+  assertValidLotRows(sourceRows);
+  const rows = sourceRows;
   const folds = rows.map((held, index) => {
     const training = rows.filter((_, i) => i !== index);
-    const { fitted, prediction, central } = lotPredictionFromTraining(training, held[1], held[0]);
-    const estimate = prediction.profile['citrus-lafontaine'];
-    return { id: held[0], observed: held[2], central: estimate.range ? central : null,
-      range: estimate.range, reason: estimate.reasons.join(' '),
+    const diagnostic = diagnoseLotFromTraining(training, held[1]);
+    const { fitted, central } = diagnostic;
+    return { id: held[0], inputCoordinate: held[1], inputUnit: 'mg/100 g · base d’humidité inconnue',
+      observed: held[2], central: diagnostic.range ? central : null,
+      range: diagnostic.range, reason: diagnostic.reason, inSupport: diagnostic.inSupport,
       diagnosticOls: central, baseline: fitted.baseline, trainingIds: fitted.trainingIds,
       support: fitted.support, calibration: { intercept: fitted.intercept, coefficient: fitted.coefficient, residual: fitted.residual } };
   });
   const supported = folds.filter(fold => fold.range);
-  return { id: lotFixture.id, source: lotFixture.source, validation: 'internal-nested-leave-one-lot-out',
-    unit: 'panel Citrus 0–15', trainingUnit: 'one published lot mean', outerFolds: rows.length,
-    method: 'Outer lot excluded from coefficients, inner leave-one-out residuals, envelopes and support. Central errors evaluate the OLS mean conditional on published geraniol; displayed engine bounds are scored separately.',
-    metrics: benchmarkMetrics(folds, lotFixture.sensoryScale),
-    baselineOnSameSupportedCases: pointErrors(supported.map(row => ({ observed: row.observed, central: row.baseline }))),
-    diagnosticOlsAll29: { ...pointErrors(folds.map(row => ({ observed: row.observed, central: row.diagnosticOls }))),
-      productionPrediction: false, note: 'Includes two outer-fold covariates outside training support; these diagnostic points are NOT exposed by the engine.' },
-    baselineAll29: pointErrors(folds.map(row => ({ observed: row.observed, central: row.baseline }))),
-    limitations: lotFixture.limitations, folds };
+  return {
+    id: lotFixture.id, source: lotFixture.source,
+    production: lotProductionStatus(rows.length),
+    diagnostic: {
+      validation: 'internal-nested-leave-one-lot-out-diagnostic',
+      unit: 'panel Citrus 0–15', input: 'géraniol publié, mg/100 g · base d’humidité inconnue',
+      trainingUnit: 'one published lot mean', outerFolds: rows.length,
+      method: 'OLS descriptif intra-étude. L’observation extérieure est exclue des coefficients, résidus internes, enveloppes et supports. Les bornes sont exploratoires ; ce ne sont ni des IC95 %, ni des prédictions de production, ni une validation externe.',
+      metrics: benchmarkMetrics(folds, lotFixture.sensoryScale),
+      baselineOnSameSupportedCases: pointErrors(supported.map(row => ({ observed: row.observed, central: row.baseline }))),
+      diagnosticOlsAll29: { ...pointErrors(folds.map(row => ({ observed: row.observed, central: row.diagnosticOls }))),
+        productionPrediction: false, note: 'Le diagnostic ponctuel hors support est descriptif uniquement ; aucune plage ne lui est attribuée.' },
+      baselineAll29: pointErrors(folds.map(row => ({ observed: row.observed, central: row.baseline }))),
+      limitations: lotFixture.limitations, folds,
+    },
+  };
 }
 
 export function doseBenchmarkData(): HopEngineData {
@@ -293,7 +332,10 @@ export function runHopScientificBenchmark() {
   if (qualitative.contradictionCount) failures.push(...qualitative.checks.filter(c => !c.passed).map(c => c.id));
   if (Math.abs(phenols.reproduction.results[0].r2 - phenolFixture.publishedDiagnostics.vgR2) > .00005)
     failures.push('DM303 published R² is not reproduced.');
-  if (lots.metrics.scored === 0) failures.push('All held-out lot predictions became indeterminate.');
+  if (lots.production.modelEnabled || lots.production.observationBasis !== 'unknown' || lots.production.calibrationBasis !== 'unknown')
+    failures.push('Suspended LF01 model or unknown measurement basis changed in production data.');
+  if (lots.production.unknown !== lots.production.total) failures.push('Suspended LF01 production model unexpectedly quantified held-out lots.');
+  if (lots.diagnostic.metrics.scored === 0) failures.push('All held-out lot diagnostic estimates became indeterminate.');
   return { schemaVersion: 1, offline: true, paidAiCalls: 0,
     interpretation: 'Reproduction is not validation. Report errors, width, unknowns and informative coverage together. No general 95% confidence or universal aroma precision is claimed.',
     externalIndependentStudies: 0, results: { dose, doseInterpolation, lots, phenols, qualitative }, failures };

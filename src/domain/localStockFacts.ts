@@ -20,7 +20,8 @@ export function completeFromStockReferences(
     const facts = factsForRecipeStockItem('houblon', h, stock);
     return facts ? applyHopFacts(h, facts) : h;
   });
-  const stockYeast = factsForRecipeStockItem('levure', yeast, stock);
+  const ownedSheet = yeast.localDocumentary !== undefined || yeast.adoptedDocumentary !== undefined;
+  const stockYeast = ownedSheet ? undefined : factsForRecipeStockItem('levure', yeast, stock);
   return {
     fermentables: malt,
     hops: hop,

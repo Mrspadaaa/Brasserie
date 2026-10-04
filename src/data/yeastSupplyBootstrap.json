@@ -1,0 +1,573 @@
+{
+  "version": 1,
+  "products": [
+    {
+      "id": "fermentis-us05-11_5g",
+      "referenceId": "fermentis-us05",
+      "label": "SafAle US-05 — sachet 11,5 g",
+      "manufacturer": "Fermentis",
+      "form": "sèche",
+      "format": {
+        "amount": 11.5,
+        "unit": "g",
+        "label": "Sachet individuel 11,5 g",
+        "source": {
+          "url": "https://fermentis.com/en/product/safale-us-05/",
+          "title": "SafAle US-05 — formats fabricant",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "source": {
+        "url": "https://fermentis.com/en/product/safale-us-05/",
+        "title": "SafAle US-05 — Fermentis",
+        "checkedAt": "2026-09-27"
+      },
+      "dose": {
+        "range": {
+          "min": 50,
+          "max": 80
+        },
+        "unit": "g/hL",
+        "conditions": "Recommandation fabricant à 18–26 °C; la dose et les consignes de réhydratation/ensemencement dépendent de la conduite retenue.",
+        "source": {
+          "url": "https://fermentis.com/en/product/safale-us-05/",
+          "title": "SafAle US-05 — dosage et température",
+          "checkedAt": "2026-09-27"
+        },
+        "qualifier": "range"
+      }
+    },
+    {
+      "id": "lalbrew-verdant-11g",
+      "referenceId": "lalbrew-verdant-ipa",
+      "label": "LalBrew Verdant IPA — sachet 11 g",
+      "manufacturer": "Lallemand Brewing",
+      "form": "sèche",
+      "format": {
+        "amount": 11,
+        "unit": "g",
+        "label": "Sachet individuel 11 g",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/lallemand-verdant-ipa-11g",
+          "title": "LALLEMAND Verdant IPA 11g — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "source": {
+        "url": "https://www.lallemandbrewing.com/en/canada/products/lalbrew-verdant-ipa/",
+        "title": "LalBrew Verdant IPA — Lallemand Brewing",
+        "checkedAt": "2026-09-27"
+      },
+      "dose": {
+        "range": {
+          "min": 50,
+          "max": 100
+        },
+        "unit": "g/hL",
+        "conditions": "Taux recommandé par le fabricant; l’annonce technique le relie au minimum de 2,5–5 millions de cellules viables/mL dans ses conditions, sans décompte propre au sachet ni au lot.",
+        "source": {
+          "url": "https://www.lallemandbrewing.com/en/canada/resources/new-product-announcement-lalbrew-verdant-ipa/?market=canada",
+          "title": "LalBrew Verdant IPA — annonce technique et taux recommandé",
+          "checkedAt": "2026-09-27"
+        },
+        "qualifier": "range"
+      }
+    },
+    {
+      "id": "lalbrew-novalager-11g",
+      "referenceId": "lalbrew-novalager",
+      "label": "LalBrew NovaLager — sachet 11 g",
+      "manufacturer": "Lallemand Brewing",
+      "form": "sèche",
+      "format": {
+        "amount": 11,
+        "unit": "g",
+        "label": "Sachet individuel 11 g",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/lallemand-novalager-11g",
+          "title": "LALLEMAND NovaLager 11g — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "source": {
+        "url": "https://www.lallemandbrewing.com/en/canada/products/lalbrew-novalager/",
+        "title": "LalBrew NovaLager — Lallemand Brewing",
+        "checkedAt": "2026-09-27"
+      },
+      "dose": {
+        "range": {
+          "min": 50,
+          "max": 100
+        },
+        "unit": "g/hL",
+        "conditions": "Taux suffisant pour la plupart des fermentations selon le TDS; les moûts à forte densité, riches en adjuncts ou très acides peuvent demander un taux supérieur et des nutriments supplémentaires.",
+        "source": {
+          "url": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/NovaLager-TDS-ENGPrint-A4-LalBrew-3.pdf",
+          "title": "LalBrew NovaLager — fiche technique fabricant, usage",
+          "checkedAt": "2026-09-27"
+        },
+        "qualifier": "range"
+      }
+    },
+    {
+      "id": "lalbrew-pomona-11g",
+      "referenceId": "lalbrew-pomona",
+      "label": "LalBrew Pomona — sachet 11 g",
+      "manufacturer": "Lallemand Brewing",
+      "form": "sèche",
+      "format": {
+        "amount": 11,
+        "unit": "g",
+        "label": "Sachet individuel 11 g",
+        "source": {
+          "url": "https://www.rolling-beers.fr/fr/levures-seches/6383-lallemand-lalbrew-pomona-11g.html",
+          "title": "Lallemand LalBrew Pomona 11g — Rolling Beers",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "source": {
+        "url": "https://www.lallemandbrewing.com/en/asia/products/lalbrew-pomona/",
+        "title": "LalBrew Pomona — Lallemand Brewing",
+        "checkedAt": "2026-09-27"
+      },
+      "dose": {
+        "range": {
+          "min": 50,
+          "max": 100
+        },
+        "unit": "g/hL",
+        "conditions": "Taux indiqué dans les quick facts du fabricant; profil et plage de température associés: 18–22 °C. La dose reste une plage de conduite, pas une cellule ni une équivalence garantie par sachet.",
+        "source": {
+          "url": "https://www.lallemandbrewing.com/en/asia/products/lalbrew-pomona/",
+          "title": "LalBrew Pomona — taux et conditions fabricant",
+          "checkedAt": "2026-09-27"
+        },
+        "qualifier": "range"
+      }
+    },
+    {
+      "id": "wyeast-1084-xl-unspecified",
+      "referenceId": "wyeast-1084",
+      "label": "Wyeast 1084 Irish Ale — pack vendeur XL, volume non communiqué",
+      "manufacturer": "Wyeast Laboratories",
+      "form": "liquide",
+      "source": {
+        "url": "https://wyeastlab.com/product/irish-ale/",
+        "title": "Strain 1084 — Irish Ale — Wyeast Labs",
+        "checkedAt": "2026-09-27"
+      }
+    },
+    {
+      "id": "wyeast-1007-xl-unspecified",
+      "referenceId": "wyeast-1007",
+      "label": "Wyeast 1007 German Ale — pack vendeur XL, volume non communiqué",
+      "manufacturer": "Wyeast Laboratories",
+      "form": "liquide",
+      "source": {
+        "url": "https://wyeastlab.com/product/german-ale/",
+        "title": "Strain 1007 — German Ale — Wyeast Labs",
+        "checkedAt": "2026-09-27"
+      }
+    },
+    {
+      "id": "wyeast-1056-activator-125ml",
+      "referenceId": "wyeast-1056",
+      "label": "Wyeast 1056 American Ale — Activator Smack Pack 125 mL",
+      "manufacturer": "Wyeast Laboratories",
+      "form": "liquide",
+      "format": {
+        "amount": 125,
+        "unit": "mL",
+        "label": "Activator Smack Pack 125 mL, avec sachet d’activation et nutriment",
+        "source": {
+          "url": "https://www.brouwmaatje.nl/biergisten/1834-biergist-wyeast-xl-1056-american-ale.html",
+          "title": "American Ale 1056 Wyeast XL — format Activator — Brouwmaatje",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "source": {
+        "url": "https://wyeastlab.com/product/american-ale/",
+        "title": "Strain 1056 — American Ale — Wyeast Labs",
+        "checkedAt": "2026-09-27"
+      },
+      "directPitch": {
+        "maxVolumeL": 19,
+        "maxSg": 1.065,
+        "minTemperatureC": 18,
+        "maxTemperatureC": 22,
+        "conditions": "Pour un Activator 125 mL: jusqu’à 19 L de moût d’ale standard, densité strictement inférieure à 1.065, moût bien aéré ou oxygéné et ensemencement à 18–22 °C. Au-dessus de 1.065 ou en fermentation froide, le fabricant demande davantage de levure. Notice destinée au brassage amateur, sans garantie d’usage commercial.",
+        "source": {
+          "url": "https://wyeastlab.com/resource/home-enthusiast-making-a-yeast-starter/",
+          "title": "Making a Yeast Starter — volume et conditions d’ensemencement Activator — Wyeast",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "starter": {
+        "id": "wyeast-activator-starter-1l-1040",
+        "label": "Starter Wyeast Activator au malt sec, cible SG 1.040",
+        "source": {
+          "url": "https://wyeastlab.com/resource/home-enthusiast-making-a-yeast-starter/",
+          "title": "Making a Yeast Starter — protocole malté — Wyeast",
+          "checkedAt": "2026-09-27"
+        },
+        "method": "Faire croître un Activator dans environ 1 L d’eau avec extrait sec de malt et nutriment, puis agiter pendant 24–36 h. Contrôler la gravité du starter avant l’ensemencement; la source ne garantit aucun rendement cellulaire.",
+        "medium": "malt-extract",
+        "targetSg": 1.04,
+        "conditions": "Recette générale Wyeast Home Enthusiast: 100 g DME, 2,2 g Wyeast Beer Nutrient, 1 L d’eau, gravité proche de 1.040 à 21 °C. Pour les fermentations >1.065 OG ou froides, augmenter le taux par plusieurs packs ou starter. Notice Activator amateur uniquement; le fabricant exclut la garantie commerciale. Les 24–36 h sont le temps indicatif au starter, pas une promesse de croissance.",
+        "leadHours": {
+          "min": 24,
+          "max": 36
+        },
+        "steps": [
+          "Nettoyer et désinfecter le matériel; mélanger 100 g de DME et 2,2 g de Wyeast Beer Nutrient dans 1 L d’eau.",
+          "Faire bouillir 20 minutes pour stériliser le milieu.",
+          "Verser dans une fiole ou un bocal désinfecté couvert sans fermeture hermétique et refroidir à 21 °C.",
+          "Porter l’Activator à température ambiante; selon la notice, casser le sachet d’activation, secouer et le laisser gonfler 3–5 h à 21 °C. Ajouter la culture au starter.",
+          "Agiter par intermittence ou utiliser un agitateur pendant 24–36 h.",
+          "Vérifier la gravité avant d’ensemencer; utiliser immédiatement ou réfrigérer jusqu’à une semaine selon la notice fabricant."
+        ]
+      }
+    }
+  ],
+  "offers": [
+    {
+      "id": "brau-rauch-us05-he0102-20260927",
+      "productId": "fermentis-us05-11_5g",
+      "seller": "Brau- und Rauchshop",
+      "sellerCountry": "CH",
+      "sellerSource": {
+        "url": "https://www.brauundrauchshop.ch/impressum",
+        "title": "Impressum — adresse, numéro TVA CHE et registre CH — Brau- und Rauchshop",
+        "checkedAt": "2026-09-27"
+      },
+      "url": "https://www.brauundrauchshop.ch/safale-us-05-115g-4",
+      "sku": "HE0102",
+      "stock": {
+        "status": "in-stock",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/safale-us-05-115g-4",
+          "title": "Safale US-05 11,5g — disponibilité affichée — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche annonçait 2073 pièces en stock et proposait l’achat; quantité volatile, non réservée."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "yes",
+        "conditions": "Vendeur à Hauptstrasse 1, 5026 Densbüren; la page distingue les commandes de l’étranger, traitées en livraison internationale avec port calculé non contraignant. Livraison domestique CH via le parcours local; tarifs et transporteur domestiques non détaillés sur cette page, à confirmer au panier.",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/versand-und-retouren",
+          "title": "Versand und Retouren — règles de port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 3.4,
+        "currency": "CHF",
+        "packs": 1,
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/safale-us-05-115g-4",
+          "title": "Safale US-05 11,5g — prix 1+ pièce, hors port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "brau-rauch-verdant-he2036-20260927",
+      "productId": "lalbrew-verdant-11g",
+      "seller": "Brau- und Rauchshop",
+      "sellerCountry": "CH",
+      "sellerSource": {
+        "url": "https://www.brauundrauchshop.ch/impressum",
+        "title": "Impressum — adresse, numéro TVA CHE et registre CH — Brau- und Rauchshop",
+        "checkedAt": "2026-09-27"
+      },
+      "url": "https://www.brauundrauchshop.ch/lallemand-verdant-ipa-11g",
+      "sku": "HE2036",
+      "stock": {
+        "status": "in-stock",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/lallemand-verdant-ipa-11g",
+          "title": "LALLEMAND Verdant IPA 11g — disponibilité affichée — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche annonçait 36 pièces en stock et proposait l’achat; quantité volatile, non réservée."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "yes",
+        "conditions": "Vendeur à Hauptstrasse 1, 5026 Densbüren; la page distingue les commandes de l’étranger, traitées en livraison internationale avec port calculé non contraignant. Livraison domestique CH via le parcours local; tarifs et transporteur domestiques non détaillés sur cette page, à confirmer au panier.",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/versand-und-retouren",
+          "title": "Versand und Retouren — règles de port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 4.7,
+        "currency": "CHF",
+        "packs": 1,
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/lallemand-verdant-ipa-11g",
+          "title": "LALLEMAND Verdant IPA 11g — prix par pièce, hors port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "brau-rauch-novalager-he2303-20260927",
+      "productId": "lalbrew-novalager-11g",
+      "seller": "Brau- und Rauchshop",
+      "sellerCountry": "CH",
+      "sellerSource": {
+        "url": "https://www.brauundrauchshop.ch/impressum",
+        "title": "Impressum — adresse, numéro TVA CHE et registre CH — Brau- und Rauchshop",
+        "checkedAt": "2026-09-27"
+      },
+      "url": "https://www.brauundrauchshop.ch/lallemand-novalager-11g",
+      "sku": "HE2303",
+      "stock": {
+        "status": "in-stock",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/lallemand-novalager-11g",
+          "title": "LALLEMAND NovaLager 11g — disponibilité affichée — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche annonçait 85 pièces en stock et proposait l’achat; quantité volatile, non réservée."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "yes",
+        "conditions": "Vendeur à Hauptstrasse 1, 5026 Densbüren; la page distingue les commandes de l’étranger, traitées en livraison internationale avec port calculé non contraignant. Livraison domestique CH via le parcours local; tarifs et transporteur domestiques non détaillés sur cette page, à confirmer au panier.",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/versand-und-retouren",
+          "title": "Versand und Retouren — règles de port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 6.2,
+        "currency": "CHF",
+        "packs": 1,
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/lallemand-novalager-11g",
+          "title": "LALLEMAND NovaLager 11g — prix par pièce, hors port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "brau-rauch-wyeast1084-he1084xl-20260927",
+      "productId": "wyeast-1084-xl-unspecified",
+      "seller": "Brau- und Rauchshop",
+      "sellerCountry": "CH",
+      "sellerSource": {
+        "url": "https://www.brauundrauchshop.ch/impressum",
+        "title": "Impressum — adresse, numéro TVA CHE et registre CH — Brau- und Rauchshop",
+        "checkedAt": "2026-09-27"
+      },
+      "url": "https://www.brauundrauchshop.ch/wyeast-1084-irish-ale-xl",
+      "sku": "HE1084XL",
+      "stock": {
+        "status": "in-stock",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/wyeast-1084-irish-ale-xl",
+          "title": "Wyeast 1084 Irish Ale XL — disponibilité affichée — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche annonçait 8 pièces en stock et proposait l’achat; format imprimé XL, volume non communiqué."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "yes",
+        "conditions": "Vendeur à Hauptstrasse 1, 5026 Densbüren; la page distingue les commandes de l’étranger, traitées en livraison internationale avec port calculé non contraignant. Livraison domestique CH via le parcours local; tarifs et transporteur domestiques non détaillés sur cette page, à confirmer au panier.",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/versand-und-retouren",
+          "title": "Versand und Retouren — règles de port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 13.5,
+        "currency": "CHF",
+        "packs": 1,
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/wyeast-1084-irish-ale-xl",
+          "title": "Wyeast 1084 Irish Ale XL — prix par pièce, hors port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "brau-rauch-wyeast1007-he1007xl-20260927",
+      "productId": "wyeast-1007-xl-unspecified",
+      "seller": "Brau- und Rauchshop",
+      "sellerCountry": "CH",
+      "sellerSource": {
+        "url": "https://www.brauundrauchshop.ch/impressum",
+        "title": "Impressum — adresse, numéro TVA CHE et registre CH — Brau- und Rauchshop",
+        "checkedAt": "2026-09-27"
+      },
+      "url": "https://www.brauundrauchshop.ch/wyeast-1007-german-ale-xl",
+      "sku": "HE1007XL",
+      "stock": {
+        "status": "out-of-stock",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/wyeast-1007-german-ale-xl",
+          "title": "Wyeast 1007 German Ale XL — disponibilité affichée — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche affichait explicitement Out of stock; la page conserve le prix et la référence, mais pas de pack achetable confirmé."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "yes",
+        "conditions": "Vendeur à Hauptstrasse 1, 5026 Densbüren; la page distingue les commandes de l’étranger, traitées en livraison internationale avec port calculé non contraignant. Livraison domestique CH via le parcours local; tarifs et transporteur domestiques non détaillés sur cette page, à confirmer au panier.",
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/versand-und-retouren",
+          "title": "Versand und Retouren — règles de port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 13.5,
+        "currency": "CHF",
+        "packs": 1,
+        "source": {
+          "url": "https://www.brauundrauchshop.ch/wyeast-1007-german-ale-xl",
+          "title": "Wyeast 1007 German Ale XL — prix par pièce, hors port — Brau- und Rauchshop",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "rollingbeers-pomona-pomona11g-20260927",
+      "productId": "lalbrew-pomona-11g",
+      "seller": "Rolling Beers",
+      "sellerCountry": "FR",
+      "sellerSource": {
+        "url": "https://www.rolling-beers.fr/fr/nous-joindre",
+        "title": "Nous contacter — adresse et expédition — Rolling Beers",
+        "checkedAt": "2026-09-27"
+      },
+      "region": "Europe",
+      "url": "https://www.rolling-beers.fr/fr/levures-seches/6383-lallemand-lalbrew-pomona-11g.html",
+      "sku": "POMONA-11G",
+      "stock": {
+        "status": "in-stock",
+        "source": {
+          "url": "https://www.rolling-beers.fr/fr/levures-seches/6383-lallemand-lalbrew-pomona-11g.html",
+          "title": "Lallemand LalBrew Pomona 11g — disponibilité affichée — Rolling Beers",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche affichait En stock — prêt à être expédié."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "no",
+        "conditions": "Pas d’expédition directe confirmée vers la Suisse: la FAQ expédie en France, DOM-TOM et Europe, puis prévoit les clients hors UE via un transitaire basé en France. Les documents administratifs sont fournis; retards ou blocages douaniers exclus de la responsabilité du vendeur.",
+        "source": {
+          "url": "https://www.rolling-beers.fr/fr/nous-joindre",
+          "title": "Nous contacter — pays et conditions d’expédition — Rolling Beers",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 4.45,
+        "currency": "EUR",
+        "packs": 1,
+        "source": {
+          "url": "https://www.rolling-beers.fr/fr/levures-seches/6383-lallemand-lalbrew-pomona-11g.html",
+          "title": "Lallemand LalBrew Pomona 11g — prix affiché, base une unité; TVA non précisée sur la fiche ouverte — Rolling Beers",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "braupartner-us05-237-US-05-115-20260927",
+      "productId": "fermentis-us05-11_5g",
+      "seller": "Braupartner",
+      "sellerCountry": "DE",
+      "sellerSource": {
+        "url": "https://www.braupartner.de/zahlung-versand-lieferung",
+        "title": "Zahlung & Versand — adresse et pays desservis — Braupartner",
+        "checkedAt": "2026-09-27"
+      },
+      "region": "Europe",
+      "url": "https://www.braupartner.de/fermentis-safale-us-05-trockenhefe-og",
+      "sku": "237-US-05-115",
+      "stock": {
+        "status": "in-stock",
+        "source": {
+          "url": "https://www.braupartner.de/fermentis-safale-us-05-trockenhefe-og",
+          "title": "Fermentis SafAle US-05 Trockenhefe — disponibilité affichée — Braupartner",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche indiquait Disponible, délai 1–3 jours ouvrés en Allemagne; la page précise que les délais à l’étranger diffèrent."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "yes",
+        "conditions": "Livraison standard en Suisse. Tarifs publiés: 12,90 € pour Warenpost jusqu’à 0,5 kg ou 35,90 € pour colis jusqu’à 30 kg; certains produits ne sont pas admissibles à Warenpost malgré un faible poids, donc l’éligibilité de ce SKU reste à confirmer au panier. Frais de douane, dédouanement et TVA d’import à la charge de l’acheteur. Pour un client privé, la TVA allemande est retirée au récapitulatif si une adresse CH est saisie; le prix affiché de 2,90 € est TTC avant cette étape et hors port.",
+        "source": {
+          "url": "https://www.braupartner.de/zahlung-versand-lieferung",
+          "title": "Zahlung & Versand — Suisse, barèmes et restrictions — Braupartner",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 2.9,
+        "currency": "EUR",
+        "packs": 1,
+        "source": {
+          "url": "https://www.braupartner.de/fermentis-safale-us-05-trockenhefe-og",
+          "title": "SafAle US-05 11,5 g — 2,90 € TTC avant export, hors port — Braupartner",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    },
+    {
+      "id": "brouwmaatje-wyeast1056-BM-BL0501874-20260927",
+      "productId": "wyeast-1056-activator-125ml",
+      "seller": "Brouwmaatje",
+      "sellerCountry": "NL",
+      "sellerSource": {
+        "url": "https://www.brouwmaatje.nl/content/1-levering-retourbeleid",
+        "title": "Levering en retourbeleid — adresse vendeur — Brouwmaatje",
+        "checkedAt": "2026-09-27"
+      },
+      "region": "Europe",
+      "url": "https://www.brouwmaatje.nl/biergisten/1834-biergist-wyeast-xl-1056-american-ale.html",
+      "sku": "BM-BL.050.187.4",
+      "stock": {
+        "status": "unknown",
+        "source": {
+          "url": "https://www.brouwmaatje.nl/biergisten/1834-biergist-wyeast-xl-1056-american-ale.html",
+          "title": "American Ale 1056 Wyeast XL — date de remise en vente — Brouwmaatje",
+          "checkedAt": "2026-09-27"
+        },
+        "text": "La fiche dit « vanaf 23-3 weer leverbaar » (de nouveau disponible à partir du 23-3), sans année, tout en affichant le bouton Ajouter au panier. Le stock actuel reste inconnu; cette date ne permet pas de conclure."
+      },
+      "shipping": {
+        "destination": "CH",
+        "status": "unknown",
+        "conditions": "La politique décrit l’expédition suivie via PostNL et des frais selon le poids, mais ne précise pas les pays desservis ni une livraison en Suisse. Destination CH à vérifier auprès du vendeur ou au panier.",
+        "source": {
+          "url": "https://www.brouwmaatje.nl/content/1-levering-retourbeleid",
+          "title": "Levering en retourbeleid — modes et destinations — Brouwmaatje",
+          "checkedAt": "2026-09-27"
+        }
+      },
+      "price": {
+        "amount": 15.99,
+        "currency": "EUR",
+        "packs": 1,
+        "source": {
+          "url": "https://www.brouwmaatje.nl/biergisten/1834-biergist-wyeast-xl-1056-american-ale.html",
+          "title": "Wyeast 1056 Activator 125 mL — 15,99 € TTC par pack — Brouwmaatje",
+          "checkedAt": "2026-09-27"
+        }
+      }
+    }
+  ]
+}

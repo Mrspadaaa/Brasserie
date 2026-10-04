@@ -1,0 +1,1895 @@
+[
+  {
+    "stage": "planning",
+    "dossier": {
+      "formatVersion": 3,
+      "ownerKey": "fixture-prior-advice-owner",
+      "dossierId": "fixture-prior-planning",
+      "revision": 2,
+      "createdAt": "2026-10-01T08:00:00Z",
+      "updatedAt": "2026-10-01T08:00:00Z",
+      "lastEventId": "preferred-planning",
+      "state": "strategyPreferred",
+      "study": {
+        "formatVersion": 3,
+        "kind": "advice",
+        "requestSnapshot": {
+          "intent": {
+            "originalQuestion": "Je planifie une bière faible en alcool et acidulée avec une co-culture de Saccharomyces pastorianus et Lactobacillus plantarum. J’ai une petite récolte de houblon maison sans analyse. Je cherche un caractère plus fruité/citronné en gardant l’acidité. Quelles voies sont défendables ?",
+            "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+            "criteria": [
+              {
+                "id": "alcohol-constraint",
+                "description": "faible alcool; aucune limite numérique fournie",
+                "role": "constraint",
+                "origin": "user"
+              },
+              {
+                "id": "acid-preservation",
+                "description": "préserver le caractère acidulé; pH et acidité titrable non fournis",
+                "role": "preserve",
+                "origin": "user"
+              },
+              {
+                "id": "aroma-seek",
+                "description": "fruité/citronné; ceci n’est pas traduit automatiquement en thiols, tropical ou intensité",
+                "role": "seek",
+                "origin": "user"
+              }
+            ]
+          },
+          "action": {
+            "kind": "exploreStrategies",
+            "situation": {
+              "stage": "planning",
+              "program": null,
+              "materialIds": [
+                "house-hop-lot-unanalysed"
+              ],
+              "exclusions": [],
+              "criterionDimensions": [
+                {
+                  "criterionId": "alcohol-constraint",
+                  "dimension": "alcohol"
+                },
+                {
+                  "criterionId": "acid-preservation",
+                  "dimension": "acidity"
+                },
+                {
+                  "criterionId": "aroma-seek",
+                  "dimension": "aroma",
+                  "familyId": "citrus"
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "reported-alcohol",
+                  "subject": "alcohol",
+                  "statement": "faible alcool visé",
+                  "state": "reported",
+                  "value": "low",
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-abv",
+                  "subject": "ABV",
+                  "statement": "Aucune mesure d’alcool fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-ph",
+                  "subject": "pH",
+                  "statement": "Aucun pH fourni.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "missing-ta",
+                  "subject": "titratable-acidity",
+                  "statement": "Aucune acidité titrable fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "culture",
+                  "subject": "culture",
+                  "statement": "assertion du scénario, non mesurée et non vérifiée indépendamment",
+                  "state": "reported",
+                  "value": "Saccharomyces pastorianus + Lactobacillus plantarum",
+                  "dimension": "bioInteraction"
+                },
+                {
+                  "id": "viability",
+                  "subject": "viability",
+                  "statement": "Viabilité au contact non établie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "bioInteraction"
+                }
+              ]
+            }
+          },
+          "qualificationInput": {
+            "variants": [
+              {
+                "variantId": "fixture:house-hop-lot-unanalysed",
+                "scope": "assignment",
+                "recordId": "house-hop-lot-unanalysed",
+                "origin": {
+                  "kind": "assignment"
+                },
+                "material": {
+                  "id": "house-hop-lot-unanalysed",
+                  "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                  "form": "unknown",
+                  "availableGrams": null,
+                  "declaredAnalysis": []
+                }
+              }
+            ]
+          }
+        },
+        "qualificationSnapshot": {
+          "version": "hop-catalogue-qualification-v1",
+          "result": {
+            "version": "hop-catalogue-qualification-v1",
+            "groups": [
+              {
+                "key": "[\"assignment\",\"house-hop-lot-unanalysed\"]",
+                "scope": "assignment",
+                "recordId": "house-hop-lot-unanalysed",
+                "status": "ready",
+                "selectedVariantId": "fixture:house-hop-lot-unanalysed",
+                "equivalentVariantIds": [],
+                "rawVariants": [
+                  {
+                    "variantId": "fixture:house-hop-lot-unanalysed",
+                    "scope": "assignment",
+                    "recordId": "house-hop-lot-unanalysed",
+                    "origin": {
+                      "kind": "assignment"
+                    },
+                    "material": {
+                      "id": "house-hop-lot-unanalysed",
+                      "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                      "form": "unknown",
+                      "availableGrams": null,
+                      "declaredAnalysis": []
+                    }
+                  }
+                ],
+                "observations": [],
+                "supplementalFacts": [],
+                "calculationMaterial": {
+                  "id": "house-hop-lot-unanalysed",
+                  "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                  "form": "unknown",
+                  "availableGrams": null,
+                  "declaredAnalysis": []
+                },
+                "calculationProjection": {
+                  "material": {
+                    "id": "house-hop-lot-unanalysed",
+                    "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                    "form": "unknown",
+                    "availableGrams": null,
+                    "declaredAnalysis": []
+                  },
+                  "fallbackBlockedAnalytes": [],
+                  "fallbackBlockReasons": []
+                },
+                "calculationVariants": [
+                  {
+                    "variantId": "fixture:house-hop-lot-unanalysed",
+                    "material": {
+                      "id": "house-hop-lot-unanalysed",
+                      "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                      "form": "unknown",
+                      "availableGrams": null,
+                      "declaredAnalysis": []
+                    },
+                    "fallbackBlockedAnalytes": [],
+                    "fallbackBlockReasons": [],
+                    "disposition": "selected"
+                  }
+                ],
+                "commonCalculationMaterial": {
+                  "id": "house-hop-lot-unanalysed",
+                  "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                  "form": "unknown",
+                  "availableGrams": null,
+                  "declaredAnalysis": []
+                },
+                "commonCalculationProjection": {
+                  "material": {
+                    "id": "house-hop-lot-unanalysed",
+                    "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+                    "form": "unknown",
+                    "availableGrams": null,
+                    "declaredAnalysis": []
+                  },
+                  "fallbackBlockedAnalytes": [],
+                  "fallbackBlockReasons": []
+                },
+                "commonCalculationReasons": [
+                  "Une seule variante source est présente."
+                ],
+                "fallbackBlockedAnalytes": [],
+                "fallbackBlockReasons": [],
+                "blockers": []
+              }
+            ],
+            "modelCandidates": [],
+            "limitations": [
+              "Le calcul actif utilise calculationMaterial pour ready/equivalent; sur collision, commonCalculationMaterial ne convient qu’aux actions qui ne dépendent pas des faits analytiques écartés. Résoudre explicitement toute variante conditionnelle avant de l’employer.",
+              "Ne jamais passer rawVariants aux fonctions HopDecision : cela réintroduirait une base non qualifiée par un autre chemin analytique.",
+              "Les alpha modèle documentaires sont des candidats non sélectionnés; ce module ne crée pas alphaForModel.",
+              "Cette projection ne vérifie pas le contenu scientifique des sources fournies comme preuves; elle vérifie seulement leurs liaisons structurées.",
+              "Les attributs supplémentaires hors HopMeasurement restent raw-only jusqu’à extension de schéma validée."
+            ]
+          }
+        },
+        "serviceInput": {
+          "intent": {
+            "originalQuestion": "Je planifie une bière faible en alcool et acidulée avec une co-culture de Saccharomyces pastorianus et Lactobacillus plantarum. J’ai une petite récolte de houblon maison sans analyse. Je cherche un caractère plus fruité/citronné en gardant l’acidité. Quelles voies sont défendables ?",
+            "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+            "criteria": [
+              {
+                "id": "alcohol-constraint",
+                "description": "faible alcool; aucune limite numérique fournie",
+                "role": "constraint",
+                "origin": "user"
+              },
+              {
+                "id": "acid-preservation",
+                "description": "préserver le caractère acidulé; pH et acidité titrable non fournis",
+                "role": "preserve",
+                "origin": "user"
+              },
+              {
+                "id": "aroma-seek",
+                "description": "fruité/citronné; ceci n’est pas traduit automatiquement en thiols, tropical ou intensité",
+                "role": "seek",
+                "origin": "user"
+              }
+            ]
+          },
+          "action": {
+            "kind": "exploreStrategies",
+            "situation": {
+              "stage": "planning",
+              "program": null,
+              "materialIds": [
+                "house-hop-lot-unanalysed"
+              ],
+              "exclusions": [],
+              "criterionDimensions": [
+                {
+                  "criterionId": "alcohol-constraint",
+                  "dimension": "alcohol"
+                },
+                {
+                  "criterionId": "acid-preservation",
+                  "dimension": "acidity"
+                },
+                {
+                  "criterionId": "aroma-seek",
+                  "dimension": "aroma",
+                  "familyId": "citrus"
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "reported-alcohol",
+                  "subject": "alcohol",
+                  "statement": "faible alcool visé",
+                  "state": "reported",
+                  "value": "low",
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-abv",
+                  "subject": "ABV",
+                  "statement": "Aucune mesure d’alcool fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-ph",
+                  "subject": "pH",
+                  "statement": "Aucun pH fourni.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "missing-ta",
+                  "subject": "titratable-acidity",
+                  "statement": "Aucune acidité titrable fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "culture",
+                  "subject": "culture",
+                  "statement": "assertion du scénario, non mesurée et non vérifiée indépendamment",
+                  "state": "reported",
+                  "value": "Saccharomyces pastorianus + Lactobacillus plantarum",
+                  "dimension": "bioInteraction"
+                },
+                {
+                  "id": "viability",
+                  "subject": "viability",
+                  "statement": "Viabilité au contact non établie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "bioInteraction"
+                }
+              ]
+            },
+            "qualification": {
+              "omitted": [],
+              "conditional": [],
+              "limitations": [
+                "Les matières non projetées restent des identités documentaires ; leur présence ne permet aucune action chiffrée implicite.",
+                "Le conseil porte sur les matières explicitement désignées et le contexte du programme ; les autres fiches chargées restent dans le snapshot, sans être automatiquement des options."
+              ]
+            }
+          },
+          "materials": [
+            {
+              "id": "house-hop-lot-unanalysed",
+              "name": "houblon maison; cultivar/lot documentés non fournis dans cette fixture",
+              "form": "unknown",
+              "availableGrams": null,
+              "declaredAnalysis": []
+            }
+          ]
+        },
+        "responseSnapshot": {
+          "version": "hop-decision-v1",
+          "intent": {
+            "originalQuestion": "Je planifie une bière faible en alcool et acidulée avec une co-culture de Saccharomyces pastorianus et Lactobacillus plantarum. J’ai une petite récolte de houblon maison sans analyse. Je cherche un caractère plus fruité/citronné en gardant l’acidité. Quelles voies sont défendables ?",
+            "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+            "criteria": [
+              {
+                "id": "alcohol-constraint",
+                "description": "faible alcool; aucune limite numérique fournie",
+                "role": "constraint",
+                "origin": "user"
+              },
+              {
+                "id": "acid-preservation",
+                "description": "préserver le caractère acidulé; pH et acidité titrable non fournis",
+                "role": "preserve",
+                "origin": "user"
+              },
+              {
+                "id": "aroma-seek",
+                "description": "fruité/citronné; ceci n’est pas traduit automatiquement en thiols, tropical ou intensité",
+                "role": "seek",
+                "origin": "user"
+              }
+            ]
+          },
+          "actionKind": "exploreStrategies",
+          "status": "conditional",
+          "answer": "Des pistes de stratégie sont examinées selon votre lecture et la situation fournie. Préférer une piste ne choisit aucune dose et ne modifie pas le programme ; chaque voie garde ses raisons, conditions et inconnues.",
+          "result": {
+            "version": "hop-strategy-advice-v1",
+            "inputReference": "hop-advice-input-v1:sha256:ff4f313436e80ba54eaa6997e0928c38e19d6a410e17b3132fb5b730bdc76a2c",
+            "stage": "planning",
+            "status": "conditional",
+            "options": [
+              {
+                "id": "hop-advice-option-001",
+                "reference": "hop-advice-option-v1:sha256:46142a6758dc12d076173f492e931fe3166d4b93cbe2dbea2dcdef19fbbed2e8",
+                "title": "Documenter houblon maison; cultivar/lot documentés non fournis dans cette fixture avant de choisir un emploi",
+                "materialIds": [
+                  "house-hop-lot-unanalysed"
+                ],
+                "relevance": "conditional",
+                "programScope": {
+                  "kind": "none"
+                },
+                "criterionEffects": [
+                  {
+                    "criterionId": "alcohol-constraint",
+                    "status": "constraintUnverified",
+                    "reason": "Aucun prédicat structurel précis n’est lié à cette contrainte; son texte n’est pas interprété automatiquement.",
+                    "evidenceIds": []
+                  },
+                  {
+                    "criterionId": "acid-preservation",
+                    "status": "unknown",
+                    "reason": "Aucune règle documentaire aromatique ne s’applique à la dimension « acidity »; le texte du critère n’est pas réinterprété.",
+                    "evidenceIds": []
+                  },
+                  {
+                    "criterionId": "aroma-seek",
+                    "status": "unknown",
+                    "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Agrumes; caractère inconnu.",
+                    "evidenceIds": []
+                  }
+                ],
+                "dimensionEffects": [
+                  {
+                    "dimension": "alcohol",
+                    "status": "unknown",
+                    "statement": "Le conseil ne calcule pas l’alcool final et ne valide pas un plafond non fourni.",
+                    "reason": "Une description « faible alcool » sans borne mesurée ne suffit pas à établir conformité ou violation.",
+                    "evidenceIds": [],
+                    "assertionIds": [
+                      "reported-alcohol",
+                      "missing-abv"
+                    ],
+                    "criterionIds": [
+                      "alcohol-constraint"
+                    ]
+                  },
+                  {
+                    "dimension": "acidity",
+                    "status": "conditional",
+                    "statement": "Des essais ciblés rapportent une hausse de pH mesuré après dry-hop post-fermentation dans leurs bières; ils ne mesurent pas l’acidité titrable ni la perception acidulée.",
+                    "reason": "Une cible pH, l’acidité titrable et la sensation acidulée sont des décisions distinctes; la preuve ne se transfère pas à une bière sour/faible en alcool.",
+                    "evidenceIds": [
+                      "m-ph-maye-2018",
+                      "m-ph-schmick-2014"
+                    ],
+                    "assertionIds": [
+                      "missing-ph",
+                      "missing-ta"
+                    ],
+                    "criterionIds": [
+                      "acid-preservation"
+                    ]
+                  },
+                  {
+                    "dimension": "bioInteraction",
+                    "status": "conditional",
+                    "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                    "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                    "evidenceIds": [
+                      "m-ab-sakamoto-2001",
+                      "m-ab-dysvik-2020",
+                      "m-ab-mahanta-2022"
+                    ],
+                    "assertionIds": [
+                      "culture",
+                      "viability"
+                    ],
+                    "criterionIds": []
+                  },
+                  {
+                    "dimension": "aroma",
+                    "status": "unknown",
+                    "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                    "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Agrumes; caractère inconnu.",
+                    "evidenceIds": [],
+                    "assertionIds": [],
+                    "criterionIds": [
+                      "aroma-seek"
+                    ]
+                  }
+                ],
+                "exclusions": [],
+                "conditions": [
+                  "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                  "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil."
+                ],
+                "nonConclusions": [
+                  "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                  "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+                  "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit.",
+                  "Une observation de pH n’est ni une mesure d’acidité titrable ni une preuve de perception acidulée."
+                ],
+                "informationRequestIds": [
+                  "decision-alcohol-constraint-alcohol",
+                  "decision-acid-preservation-acidity",
+                  "decision-aroma-seek-aroma",
+                  "decision-assertion-viability"
+                ]
+              }
+            ],
+            "informationRequests": [
+              {
+                "id": "decision-alcohol-constraint-alcohol",
+                "question": "Une limite d’alcool chiffrée et une mesure de cette bière sont-elles disponibles ?",
+                "whyDecisionChanging": "Sans seuil/mesure, une description faible en alcool ne départage pas une voie sur la conformité.",
+                "optionIds": [
+                  "hop-advice-option-001"
+                ]
+              },
+              {
+                "id": "decision-acid-preservation-acidity",
+                "question": "La contrainte porte-t-elle sur le pH mesuré, l’acidité titrable ou la sensation acidulée ?",
+                "whyDecisionChanging": "Ces dimensions ne sont pas interchangeables; la cible choisie décide quelles mesures sont utiles.",
+                "optionIds": [
+                  "hop-advice-option-001"
+                ]
+              },
+              {
+                "id": "decision-aroma-seek-aroma",
+                "question": "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+                "whyDecisionChanging": "Une absence de mention n’établit pas l’absence du caractère et une description de houblon ne prédit pas la bière.",
+                "optionIds": [
+                  "hop-advice-option-001"
+                ]
+              },
+              {
+                "id": "decision-assertion-viability",
+                "question": "Quelles cultures/souches et quelle viabilité au moment du contact sont documentées, si cette voie peut changer le choix ?",
+                "whyDecisionChanging": "Les résultats biologiques reçus dépendent des cultures et conditions; l’absence de mesure reste inconnue.",
+                "optionIds": [
+                  "hop-advice-option-001"
+                ]
+              }
+            ],
+            "evidenceSources": [
+              {
+                "id": "m-ph-maye-2018",
+                "source": {
+                  "title": "Dry Hopping and Its Effect on Beer Bitterness, the IBU Test, and pH",
+                  "author": "John Paul Maye, Robert Smith et Jeremy Leker",
+                  "year": 2018,
+                  "kind": "research",
+                  "reference": "https://hopsteiner.us/wp-content/uploads/2019/05/Dry-Hopping-and-its-Effects-on-Bitterness-IBU-pH-Brauwelt-2018-1-25.pdf",
+                  "locator": "Brauwelt International 2018/I, p. 25–29; PDF technique expérimentale d’auteurs fabricants."
+                },
+                "locator": "Printed p. 28, « Dry Hopping and pH »; Cascade pellets, 0/1/2/3/4/6 lb/bbl, three days at 16 °C. p. 28–29 for the separate bitterness comparison.",
+                "readingLevel": "primaryFullText",
+                "domain": "dry-hop post-fermentation et pH mesuré",
+                "established": "Dans cette série Cascade et cette matrice, les auteurs rapportent une hausse de pH mesuré approximativement linéaire; ils indiquent que l’amplitude dépend de la capacité tampon.",
+                "limits": [
+                  "Essai technique fabricant, une matrice et un calendrier; ce n’est pas un coefficient de dose transférable.",
+                  "Bière sour/acidifiée et faible alcool non établies; ni acidité titrable ni perception acidulée mesurées.",
+                  "Ne donne ni promesse d’arôme, ni conformité globale, ni résultat pour la situation fournie."
+                ]
+              },
+              {
+                "id": "m-ph-schmick-2014",
+                "source": {
+                  "title": "Dry Hopping and its Effect on Beer pH",
+                  "author": "Matthew J. Schmick",
+                  "year": 2014,
+                  "kind": "research",
+                  "reference": "https://www2.uwstout.edu/content/lib/thesis/2014/2014schmickm.pdf",
+                  "locator": "Mémoire MS UW–Stout; extraits indexés du résumé, chapitre III et Table 4."
+                },
+                "locator": "Abstract; Chapter III: Methodology — Sample Selection/Sample Preparation; Chapter IV, extrait Table 4.",
+                "readingLevel": "primaryExcerpt",
+                "domain": "dry-hop post-fermentation et pH mesuré",
+                "established": "Les extraits accessibles rapportent une hausse de pH dans quatre bières commerciales et six variétés de houblon T90, dont les plages observées varient entre bières/variétés.",
+                "limits": [
+                  "Le PDF complet et le tableau n’ont pas été inspectés visuellement; les passages consultés sont des extraits indexés.",
+                  "Aucune catégorie sour/acidifiée ou faible alcool identifiée; pas de modèle prédictif transférable.",
+                  "Ne démontre rien sur l’acidité titrable ou la perception acidulée."
+                ]
+              },
+              {
+                "id": "m-ab-sakamoto-2001",
+                "source": {
+                  "title": "Hop resistance in the beer spoilage bacterium Lactobacillus brevis is mediated by the ATP-binding cassette multidrug transporter HorA",
+                  "author": "Sakamoto, Margolles, van Veen et Konings",
+                  "year": 2001,
+                  "kind": "research",
+                  "reference": "https://journals.asm.org/doi/10.1128/JB.183.18.5371-5375.2001",
+                  "locator": "Journal of Bacteriology 183(18):5371–5375; méthodes « Bacterial strains and growth conditions », « Hop resistance »; résultats/Figure 2 et discussion."
+                },
+                "locator": "Methods and Results/Fig. 2; study of a specific L. brevis isolate and heterologous HorA expression in L. lactis.",
+                "readingLevel": "primaryFullText",
+                "domain": "résistance de souches à des composés de houblon",
+                "established": "Le travail porte sur HorA d’un isolat L. brevis précis; le test rapporté utilise des iso-α-acides et une expression de HorA dans L. lactis.",
+                "limits": [
+                  "N’établit pas HorA, tolérance ou inhibition pour une culture L. plantarum non identifiée.",
+                  "Ne teste pas S. pastorianus, leur co-culture ni l’ajout à froid de houblon brut."
+                ]
+              },
+              {
+                "id": "m-ab-dysvik-2020",
+                "source": {
+                  "title": "Co-fermentation Involving Saccharomyces cerevisiae and Lactobacillus Species Tolerant to Brewing-Related Stress Factors for Controlled and Rapid Production of Sour Beer",
+                  "author": "Dysvik et al.",
+                  "year": 2020,
+                  "kind": "research",
+                  "reference": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2020.00279/full",
+                  "locator": "Frontiers in Microbiology 11:279; méthodes « Yeast, Bacterial Strains and Growth Conditions », « Stress Experiments », « Small Scale Co-fermentations »; Figure 1 et discussion."
+                },
+                "locator": "Primary full text; pure-culture stress assays and separate co-fermentation protocol.",
+                "readingLevel": "primaryFullText",
+                "domain": "interaction conditionnelle entre iso-α-acides et cultures lactiques",
+                "established": "Une souche commerciale L. plantarum réagit différemment selon les conditions de stress et réussit une co-fermentation séparée avec S. cerevisiae sous leur protocole.",
+                "limits": [
+                  "Les essais de stress utilisent un extrait pré-isomérisé; ils ne prouvent pas une exposition équivalente avec des cônes crus ajoutés à froid.",
+                  "Les souches, matrice, milieu, éthanol et montage diffèrent de la situation fournie; aucune inhibition/tolérance du couple de cultures n’est prédite."
+                ]
+              },
+              {
+                "id": "m-ab-mahanta-2022",
+                "source": {
+                  "title": "Sour beer production in India using a coculture of Saccharomyces pastorianus and Lactobacillus plantarum: optimization, microbiological, and biochemical profiling",
+                  "author": "Mahanta et al.",
+                  "year": 2022,
+                  "kind": "research",
+                  "reference": "https://link.springer.com/article/10.1007/s42770-022-00691-8",
+                  "locator": "Brazilian Journal of Microbiology 53:947–958; résumé de l’éditeur et extraits indexés de texte primaire."
+                },
+                "locator": "Publisher abstract; indexed excerpts for inoculation/methods and process-variable/optimization results.",
+                "readingLevel": "primaryAbstract",
+                "domain": "précédent de procédé avec un couple d’espèces documenté",
+                "established": "Le résumé éditeur rapporte une co-fermentation de S. pastorianus et L. plantarum avec houblon comme facteur de procédé dans une bière cible à 6–8 % vol.",
+                "limits": [
+                  "Le plein texte et les suppléments n’ont pas été examinés; les extraits accessibles ne donnent pas de souche comparable à la situation fournie.",
+                  "Ne démontre pas une tolérance universelle, un effet à faible alcool, une exposition iso-α isolée, un résultat d’arôme ou une dose transférable."
+                ]
+              }
+            ],
+            "coverage": {
+              "status": "completeWithinSuppliedScope",
+              "consideredMaterialIds": [
+                "house-hop-lot-unanalysed"
+              ],
+              "excludedMaterialIds": [],
+              "contextOnlyMaterialIds": [],
+              "omittedMaterials": [],
+              "conditionalMaterials": [],
+              "limits": [
+                "Les matières non projetées restent des identités documentaires ; leur présence ne permet aucune action chiffrée implicite.",
+                "Le conseil porte sur les matières explicitement désignées et le contexte du programme ; les autres fiches chargées restent dans le snapshot, sans être automatiquement des options.",
+                "Le programme vaut null dans l’entrée; aucun programme vide ni état de recette n’est inventé.",
+                "Exploration limitée aux IDs de matières explicitement sélectionnés dans la situation.",
+                "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+                "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+                "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+              ]
+            },
+            "limitations": [
+              "Les matières non projetées restent des identités documentaires ; leur présence ne permet aucune action chiffrée implicite.",
+              "Le conseil porte sur les matières explicitement désignées et le contexte du programme ; les autres fiches chargées restent dans le snapshot, sans être automatiquement des options.",
+              "Le programme vaut null dans l’entrée; aucun programme vide ni état de recette n’est inventé.",
+              "Exploration limitée aux IDs de matières explicitement sélectionnés dans la situation.",
+              "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+              "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+              "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+            ],
+            "reference": "hop-advice-result-v1:sha256:13d8ed079e9fb86e3cc1e06232408effeaa3822067427fc98be8c6f10c9693c5"
+          },
+          "criteria": [
+            {
+              "id": "alcohol-constraint",
+              "description": "faible alcool; aucune limite numérique fournie",
+              "role": "constraint",
+              "origin": "user",
+              "status": "evaluatedByStrategy",
+              "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+              "strategies": [
+                {
+                  "optionId": "hop-advice-option-001",
+                  "optionReference": "hop-advice-option-v1:sha256:46142a6758dc12d076173f492e931fe3166d4b93cbe2dbea2dcdef19fbbed2e8",
+                  "evaluation": {
+                    "criterionId": "alcohol-constraint",
+                    "status": "constraintUnverified",
+                    "reason": "Aucun prédicat structurel précis n’est lié à cette contrainte; son texte n’est pas interprété automatiquement.",
+                    "evidenceIds": []
+                  }
+                }
+              ]
+            },
+            {
+              "id": "acid-preservation",
+              "description": "préserver le caractère acidulé; pH et acidité titrable non fournis",
+              "role": "preserve",
+              "origin": "user",
+              "status": "evaluatedByStrategy",
+              "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+              "strategies": [
+                {
+                  "optionId": "hop-advice-option-001",
+                  "optionReference": "hop-advice-option-v1:sha256:46142a6758dc12d076173f492e931fe3166d4b93cbe2dbea2dcdef19fbbed2e8",
+                  "evaluation": {
+                    "criterionId": "acid-preservation",
+                    "status": "unknown",
+                    "reason": "Aucune règle documentaire aromatique ne s’applique à la dimension « acidity »; le texte du critère n’est pas réinterprété.",
+                    "evidenceIds": []
+                  }
+                }
+              ]
+            },
+            {
+              "id": "aroma-seek",
+              "description": "fruité/citronné; ceci n’est pas traduit automatiquement en thiols, tropical ou intensité",
+              "role": "seek",
+              "origin": "user",
+              "status": "evaluatedByStrategy",
+              "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+              "strategies": [
+                {
+                  "optionId": "hop-advice-option-001",
+                  "optionReference": "hop-advice-option-v1:sha256:46142a6758dc12d076173f492e931fe3166d4b93cbe2dbea2dcdef19fbbed2e8",
+                  "evaluation": {
+                    "criterionId": "aroma-seek",
+                    "status": "unknown",
+                    "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Agrumes; caractère inconnu.",
+                    "evidenceIds": []
+                  }
+                }
+              ]
+            }
+          ],
+          "missingInformation": [
+            "Une limite d’alcool chiffrée et une mesure de cette bière sont-elles disponibles ?",
+            "La contrainte porte-t-elle sur le pH mesuré, l’acidité titrable ou la sensation acidulée ?",
+            "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+            "Quelles cultures/souches et quelle viabilité au moment du contact sont documentées, si cette voie peut changer le choix ?"
+          ],
+          "sources": [
+            {
+              "title": "Dry Hopping and Its Effect on Beer Bitterness, the IBU Test, and pH",
+              "author": "John Paul Maye, Robert Smith et Jeremy Leker",
+              "year": 2018,
+              "kind": "research",
+              "reference": "https://hopsteiner.us/wp-content/uploads/2019/05/Dry-Hopping-and-its-Effects-on-Bitterness-IBU-pH-Brauwelt-2018-1-25.pdf",
+              "locator": "Brauwelt International 2018/I, p. 25–29; PDF technique expérimentale d’auteurs fabricants."
+            },
+            {
+              "title": "Dry Hopping and its Effect on Beer pH",
+              "author": "Matthew J. Schmick",
+              "year": 2014,
+              "kind": "research",
+              "reference": "https://www2.uwstout.edu/content/lib/thesis/2014/2014schmickm.pdf",
+              "locator": "Mémoire MS UW–Stout; extraits indexés du résumé, chapitre III et Table 4."
+            },
+            {
+              "title": "Hop resistance in the beer spoilage bacterium Lactobacillus brevis is mediated by the ATP-binding cassette multidrug transporter HorA",
+              "author": "Sakamoto, Margolles, van Veen et Konings",
+              "year": 2001,
+              "kind": "research",
+              "reference": "https://journals.asm.org/doi/10.1128/JB.183.18.5371-5375.2001",
+              "locator": "Journal of Bacteriology 183(18):5371–5375; méthodes « Bacterial strains and growth conditions », « Hop resistance »; résultats/Figure 2 et discussion."
+            },
+            {
+              "title": "Co-fermentation Involving Saccharomyces cerevisiae and Lactobacillus Species Tolerant to Brewing-Related Stress Factors for Controlled and Rapid Production of Sour Beer",
+              "author": "Dysvik et al.",
+              "year": 2020,
+              "kind": "research",
+              "reference": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2020.00279/full",
+              "locator": "Frontiers in Microbiology 11:279; méthodes « Yeast, Bacterial Strains and Growth Conditions », « Stress Experiments », « Small Scale Co-fermentations »; Figure 1 et discussion."
+            },
+            {
+              "title": "Sour beer production in India using a coculture of Saccharomyces pastorianus and Lactobacillus plantarum: optimization, microbiological, and biochemical profiling",
+              "author": "Mahanta et al.",
+              "year": 2022,
+              "kind": "research",
+              "reference": "https://link.springer.com/article/10.1007/s42770-022-00691-8",
+              "locator": "Brazilian Journal of Microbiology 53:947–958; résumé de l’éditeur et extraits indexés de texte primaire."
+            }
+          ],
+          "boundaries": {
+            "offline": true,
+            "writesRecipe": false,
+            "writesBatch": false,
+            "sensoryValidation": "notEstablished"
+          }
+        },
+        "context": null,
+        "reference": "hop-advice-study-v3:sha256:de6583637dec8d2447654f103d62d7835083f2c09e0b0ae6caeab954469169bb"
+      }
+    },
+    "events": [
+      {
+        "ownerKey": "fixture-prior-advice-owner",
+        "dossierId": "fixture-prior-planning",
+        "eventId": "saved-planning",
+        "expectedRevision": 0,
+        "recordedAt": "2026-10-01T08:00:00Z",
+        "kind": "studySaved",
+        "payload": {
+          "snapshotFormatVersion": 3
+        },
+        "eventFormatVersion": 3,
+        "resultingRevision": 1
+      },
+      {
+        "ownerKey": "fixture-prior-advice-owner",
+        "dossierId": "fixture-prior-planning",
+        "recordedAt": "2026-10-01T08:00:00Z",
+        "eventId": "preferred-planning",
+        "expectedRevision": 1,
+        "kind": "strategyPreferred",
+        "payload": {
+          "preferenceId": "prior-preference-planning",
+          "studyReference": "hop-advice-study-v3:sha256:de6583637dec8d2447654f103d62d7835083f2c09e0b0ae6caeab954469169bb",
+          "resultReference": "hop-advice-result-v1:sha256:13d8ed079e9fb86e3cc1e06232408effeaa3822067427fc98be8c6f10c9693c5",
+          "optionId": "hop-advice-option-001",
+          "optionReference": "hop-advice-option-v1:sha256:46142a6758dc12d076173f492e931fe3166d4b93cbe2dbea2dcdef19fbbed2e8",
+          "programScope": {
+            "kind": "none"
+          },
+          "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+          "interpretationReference": "hop-advice-interpretation-v1:sha256:0c5aee85586db3ffa6aca998b2bcdecefdab02fef3c5675f3ff8194d47642b8b",
+          "reason": "Préférence synthétique antérieure à la correction métier.",
+          "preferenceReference": "hop-advice-preference-v1:sha256:5027a6142bfbb2db01da786395cd43f58e20bb30ebf2cf2cb4cdd04047cd3d99"
+        },
+        "eventFormatVersion": 3,
+        "resultingRevision": 2
+      }
+    ]
+  },
+  {
+    "stage": "conditioning",
+    "dossier": {
+      "formatVersion": 3,
+      "ownerKey": "fixture-prior-advice-owner",
+      "dossierId": "fixture-prior-conditioning",
+      "revision": 2,
+      "createdAt": "2026-10-01T08:00:00Z",
+      "updatedAt": "2026-10-01T08:00:00Z",
+      "lastEventId": "preferred-conditioning",
+      "state": "strategyPreferred",
+      "study": {
+        "formatVersion": 3,
+        "kind": "advice",
+        "requestSnapshot": {
+          "intent": {
+            "originalQuestion": "La fermentation est terminée et le lot est en conditionnement. La bière est faible en alcool et acidulée, mais la culture et mon houblon maison ne sont pas caractérisés. Puis-je ajouter quelque chose pour renforcer un fruité/citronné ?",
+            "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+            "criteria": [
+              {
+                "id": "alcohol",
+                "description": "bière décrite comme faible en alcool; ABV mesuré absent",
+                "role": "constraint",
+                "origin": "user"
+              },
+              {
+                "id": "acid",
+                "description": "caractère acidulé à préserver; pH et acidité titrable absents",
+                "role": "preserve",
+                "origin": "user"
+              },
+              {
+                "id": "aroma",
+                "description": "fruité/citronné; aucune molécule cible ou intensité n’est inférée",
+                "role": "seek",
+                "origin": "user"
+              }
+            ]
+          },
+          "action": {
+            "kind": "exploreStrategies",
+            "situation": {
+              "stage": "conditioning",
+              "program": {
+                "id": "fixture-x01-conditioning",
+                "revision": 4,
+                "stage": "conditioning",
+                "volumeL": null,
+                "wortGravity": null,
+                "additions": [
+                  {
+                    "id": "performed-late-hop",
+                    "materialId": "house-hop-lot-unanalysed",
+                    "grams": null,
+                    "use": "postFermentation",
+                    "status": "performed",
+                    "contactHours": null,
+                    "temperatureC": null
+                  },
+                  {
+                    "id": "planned-follow-up-hop",
+                    "materialId": "house-hop-lot-unanalysed",
+                    "grams": null,
+                    "use": "postFermentation",
+                    "status": "planned",
+                    "contactHours": null,
+                    "temperatureC": null
+                  }
+                ]
+              },
+              "materialIds": [
+                "house-hop-lot-unanalysed"
+              ],
+              "exclusions": [],
+              "criterionDimensions": [
+                {
+                  "criterionId": "alcohol",
+                  "dimension": "alcohol"
+                },
+                {
+                  "criterionId": "acid",
+                  "dimension": "acidity"
+                },
+                {
+                  "criterionId": "aroma",
+                  "dimension": "aroma",
+                  "familyId": "citrus"
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "reported-alcohol",
+                  "subject": "alcohol",
+                  "statement": "faible alcool rapporté",
+                  "state": "reported",
+                  "value": "low",
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-abv",
+                  "subject": "ABV",
+                  "statement": "Aucune mesure d’alcool fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-ph",
+                  "subject": "pH",
+                  "statement": "Aucun pH fourni.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "missing-ta",
+                  "subject": "titratable-acidity",
+                  "statement": "Aucune acidité titrable fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "culture",
+                  "subject": "culture",
+                  "statement": "Culture non caractérisée.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "bioInteraction"
+                },
+                {
+                  "id": "viability",
+                  "subject": "viability",
+                  "statement": "Viabilité au contact non établie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "bioInteraction"
+                },
+                {
+                  "id": "finished",
+                  "subject": "fermentation",
+                  "statement": "Fermentation terminée rapportée; aucune déduction de viabilité.",
+                  "state": "reported",
+                  "value": "finished",
+                  "dimension": "process"
+                }
+              ]
+            }
+          },
+          "qualificationInput": {
+            "variants": [
+              {
+                "variantId": "fixture:house-hop-lot-unanalysed",
+                "scope": "assignment",
+                "recordId": "house-hop-lot-unanalysed",
+                "origin": {
+                  "kind": "assignment"
+                },
+                "material": {
+                  "id": "house-hop-lot-unanalysed",
+                  "name": "houblon maison reporté par le brasseur",
+                  "form": "unknown",
+                  "availableGrams": null,
+                  "declaredAnalysis": []
+                }
+              }
+            ]
+          }
+        },
+        "qualificationSnapshot": {
+          "version": "hop-catalogue-qualification-v1",
+          "result": {
+            "version": "hop-catalogue-qualification-v1",
+            "groups": [
+              {
+                "key": "[\"assignment\",\"house-hop-lot-unanalysed\"]",
+                "scope": "assignment",
+                "recordId": "house-hop-lot-unanalysed",
+                "status": "ready",
+                "selectedVariantId": "fixture:house-hop-lot-unanalysed",
+                "equivalentVariantIds": [],
+                "rawVariants": [
+                  {
+                    "variantId": "fixture:house-hop-lot-unanalysed",
+                    "scope": "assignment",
+                    "recordId": "house-hop-lot-unanalysed",
+                    "origin": {
+                      "kind": "assignment"
+                    },
+                    "material": {
+                      "id": "house-hop-lot-unanalysed",
+                      "name": "houblon maison reporté par le brasseur",
+                      "form": "unknown",
+                      "availableGrams": null,
+                      "declaredAnalysis": []
+                    }
+                  }
+                ],
+                "observations": [],
+                "supplementalFacts": [],
+                "calculationMaterial": {
+                  "id": "house-hop-lot-unanalysed",
+                  "name": "houblon maison reporté par le brasseur",
+                  "form": "unknown",
+                  "availableGrams": null,
+                  "declaredAnalysis": []
+                },
+                "calculationProjection": {
+                  "material": {
+                    "id": "house-hop-lot-unanalysed",
+                    "name": "houblon maison reporté par le brasseur",
+                    "form": "unknown",
+                    "availableGrams": null,
+                    "declaredAnalysis": []
+                  },
+                  "fallbackBlockedAnalytes": [],
+                  "fallbackBlockReasons": []
+                },
+                "calculationVariants": [
+                  {
+                    "variantId": "fixture:house-hop-lot-unanalysed",
+                    "material": {
+                      "id": "house-hop-lot-unanalysed",
+                      "name": "houblon maison reporté par le brasseur",
+                      "form": "unknown",
+                      "availableGrams": null,
+                      "declaredAnalysis": []
+                    },
+                    "fallbackBlockedAnalytes": [],
+                    "fallbackBlockReasons": [],
+                    "disposition": "selected"
+                  }
+                ],
+                "commonCalculationMaterial": {
+                  "id": "house-hop-lot-unanalysed",
+                  "name": "houblon maison reporté par le brasseur",
+                  "form": "unknown",
+                  "availableGrams": null,
+                  "declaredAnalysis": []
+                },
+                "commonCalculationProjection": {
+                  "material": {
+                    "id": "house-hop-lot-unanalysed",
+                    "name": "houblon maison reporté par le brasseur",
+                    "form": "unknown",
+                    "availableGrams": null,
+                    "declaredAnalysis": []
+                  },
+                  "fallbackBlockedAnalytes": [],
+                  "fallbackBlockReasons": []
+                },
+                "commonCalculationReasons": [
+                  "Une seule variante source est présente."
+                ],
+                "fallbackBlockedAnalytes": [],
+                "fallbackBlockReasons": [],
+                "blockers": []
+              }
+            ],
+            "modelCandidates": [],
+            "limitations": [
+              "Le calcul actif utilise calculationMaterial pour ready/equivalent; sur collision, commonCalculationMaterial ne convient qu’aux actions qui ne dépendent pas des faits analytiques écartés. Résoudre explicitement toute variante conditionnelle avant de l’employer.",
+              "Ne jamais passer rawVariants aux fonctions HopDecision : cela réintroduirait une base non qualifiée par un autre chemin analytique.",
+              "Les alpha modèle documentaires sont des candidats non sélectionnés; ce module ne crée pas alphaForModel.",
+              "Cette projection ne vérifie pas le contenu scientifique des sources fournies comme preuves; elle vérifie seulement leurs liaisons structurées.",
+              "Les attributs supplémentaires hors HopMeasurement restent raw-only jusqu’à extension de schéma validée."
+            ]
+          }
+        },
+        "serviceInput": {
+          "intent": {
+            "originalQuestion": "La fermentation est terminée et le lot est en conditionnement. La bière est faible en alcool et acidulée, mais la culture et mon houblon maison ne sont pas caractérisés. Puis-je ajouter quelque chose pour renforcer un fruité/citronné ?",
+            "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+            "criteria": [
+              {
+                "id": "alcohol",
+                "description": "bière décrite comme faible en alcool; ABV mesuré absent",
+                "role": "constraint",
+                "origin": "user"
+              },
+              {
+                "id": "acid",
+                "description": "caractère acidulé à préserver; pH et acidité titrable absents",
+                "role": "preserve",
+                "origin": "user"
+              },
+              {
+                "id": "aroma",
+                "description": "fruité/citronné; aucune molécule cible ou intensité n’est inférée",
+                "role": "seek",
+                "origin": "user"
+              }
+            ]
+          },
+          "action": {
+            "kind": "exploreStrategies",
+            "situation": {
+              "stage": "conditioning",
+              "program": {
+                "id": "fixture-x01-conditioning",
+                "revision": 4,
+                "stage": "conditioning",
+                "volumeL": null,
+                "wortGravity": null,
+                "additions": [
+                  {
+                    "id": "performed-late-hop",
+                    "materialId": "house-hop-lot-unanalysed",
+                    "grams": null,
+                    "use": "postFermentation",
+                    "status": "performed",
+                    "contactHours": null,
+                    "temperatureC": null
+                  },
+                  {
+                    "id": "planned-follow-up-hop",
+                    "materialId": "house-hop-lot-unanalysed",
+                    "grams": null,
+                    "use": "postFermentation",
+                    "status": "planned",
+                    "contactHours": null,
+                    "temperatureC": null
+                  }
+                ]
+              },
+              "materialIds": [
+                "house-hop-lot-unanalysed"
+              ],
+              "exclusions": [],
+              "criterionDimensions": [
+                {
+                  "criterionId": "alcohol",
+                  "dimension": "alcohol"
+                },
+                {
+                  "criterionId": "acid",
+                  "dimension": "acidity"
+                },
+                {
+                  "criterionId": "aroma",
+                  "dimension": "aroma",
+                  "familyId": "citrus"
+                }
+              ],
+              "assertions": [
+                {
+                  "id": "reported-alcohol",
+                  "subject": "alcohol",
+                  "statement": "faible alcool rapporté",
+                  "state": "reported",
+                  "value": "low",
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-abv",
+                  "subject": "ABV",
+                  "statement": "Aucune mesure d’alcool fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "alcohol"
+                },
+                {
+                  "id": "missing-ph",
+                  "subject": "pH",
+                  "statement": "Aucun pH fourni.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "missing-ta",
+                  "subject": "titratable-acidity",
+                  "statement": "Aucune acidité titrable fournie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "acidity"
+                },
+                {
+                  "id": "culture",
+                  "subject": "culture",
+                  "statement": "Culture non caractérisée.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "bioInteraction"
+                },
+                {
+                  "id": "viability",
+                  "subject": "viability",
+                  "statement": "Viabilité au contact non établie.",
+                  "state": "unknown",
+                  "value": null,
+                  "dimension": "bioInteraction"
+                },
+                {
+                  "id": "finished",
+                  "subject": "fermentation",
+                  "statement": "Fermentation terminée rapportée; aucune déduction de viabilité.",
+                  "state": "reported",
+                  "value": "finished",
+                  "dimension": "process"
+                }
+              ]
+            },
+            "qualification": {
+              "omitted": [],
+              "conditional": [],
+              "limitations": [
+                "Les matières non projetées restent des identités documentaires ; leur présence ne permet aucune action chiffrée implicite.",
+                "Le conseil porte sur les matières explicitement désignées et le contexte du programme ; les autres fiches chargées restent dans le snapshot, sans être automatiquement des options."
+              ]
+            }
+          },
+          "materials": [
+            {
+              "id": "house-hop-lot-unanalysed",
+              "name": "houblon maison reporté par le brasseur",
+              "form": "unknown",
+              "availableGrams": null,
+              "declaredAnalysis": []
+            }
+          ]
+        },
+        "responseSnapshot": {
+          "version": "hop-decision-v1",
+          "intent": {
+            "originalQuestion": "La fermentation est terminée et le lot est en conditionnement. La bière est faible en alcool et acidulée, mais la culture et mon houblon maison ne sont pas caractérisés. Puis-je ajouter quelque chose pour renforcer un fruité/citronné ?",
+            "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+            "criteria": [
+              {
+                "id": "alcohol",
+                "description": "bière décrite comme faible en alcool; ABV mesuré absent",
+                "role": "constraint",
+                "origin": "user"
+              },
+              {
+                "id": "acid",
+                "description": "caractère acidulé à préserver; pH et acidité titrable absents",
+                "role": "preserve",
+                "origin": "user"
+              },
+              {
+                "id": "aroma",
+                "description": "fruité/citronné; aucune molécule cible ou intensité n’est inférée",
+                "role": "seek",
+                "origin": "user"
+              }
+            ]
+          },
+          "actionKind": "exploreStrategies",
+          "status": "conditional",
+          "answer": "Des pistes de stratégie sont examinées selon votre lecture et la situation fournie. Préférer une piste ne choisit aucune dose et ne modifie pas le programme ; chaque voie garde ses raisons, conditions et inconnues.",
+          "result": {
+            "version": "hop-strategy-advice-v1",
+            "inputReference": "hop-advice-input-v1:sha256:69dacde6f5be769e9349d2ef221ef6edc39bf219403d5450021241137ef3e9df",
+            "stage": "conditioning",
+            "status": "conditional",
+            "options": [
+              {
+                "id": "hop-advice-option-001",
+                "reference": "hop-advice-option-v1:sha256:0f356416ebc73155c1a410a24b52e35981173fd5bedfba3e34cf2f130a017bb0",
+                "title": "Retirer seulement l’ajout prévu planned-follow-up-hop du brouillon",
+                "materialIds": [
+                  "house-hop-lot-unanalysed"
+                ],
+                "relevance": "conditional",
+                "programScope": {
+                  "kind": "removePlanned",
+                  "additionIds": [
+                    "planned-follow-up-hop"
+                  ]
+                },
+                "criterionEffects": [
+                  {
+                    "criterionId": "alcohol",
+                    "status": "constraintUnverified",
+                    "reason": "Aucun prédicat structurel précis n’est lié à cette contrainte; son texte n’est pas interprété automatiquement.",
+                    "evidenceIds": []
+                  },
+                  {
+                    "criterionId": "acid",
+                    "status": "unknown",
+                    "reason": "Aucune règle documentaire aromatique ne s’applique à la dimension « acidity »; le texte du critère n’est pas réinterprété.",
+                    "evidenceIds": []
+                  },
+                  {
+                    "criterionId": "aroma",
+                    "status": "unknown",
+                    "reason": "Aucune matière candidate n’est liée à cette option; le critère reste sans conclusion pour une matière.",
+                    "evidenceIds": []
+                  }
+                ],
+                "dimensionEffects": [
+                  {
+                    "dimension": "alcohol",
+                    "status": "unknown",
+                    "statement": "Le conseil ne calcule pas l’alcool final et ne valide pas un plafond non fourni.",
+                    "reason": "Une description « faible alcool » sans borne mesurée ne suffit pas à établir conformité ou violation.",
+                    "evidenceIds": [],
+                    "assertionIds": [
+                      "reported-alcohol",
+                      "missing-abv"
+                    ],
+                    "criterionIds": [
+                      "alcohol"
+                    ]
+                  },
+                  {
+                    "dimension": "acidity",
+                    "status": "conditional",
+                    "statement": "Des essais ciblés rapportent une hausse de pH mesuré après dry-hop post-fermentation dans leurs bières; ils ne mesurent pas l’acidité titrable ni la perception acidulée.",
+                    "reason": "Une cible pH, l’acidité titrable et la sensation acidulée sont des décisions distinctes; la preuve ne se transfère pas à une bière sour/faible en alcool.",
+                    "evidenceIds": [
+                      "m-ph-maye-2018",
+                      "m-ph-schmick-2014"
+                    ],
+                    "assertionIds": [
+                      "missing-ph",
+                      "missing-ta"
+                    ],
+                    "criterionIds": [
+                      "acid"
+                    ]
+                  },
+                  {
+                    "dimension": "bioInteraction",
+                    "status": "conditional",
+                    "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                    "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                    "evidenceIds": [
+                      "m-ab-sakamoto-2001",
+                      "m-ab-dysvik-2020",
+                      "m-ab-mahanta-2022"
+                    ],
+                    "assertionIds": [
+                      "culture",
+                      "viability"
+                    ],
+                    "criterionIds": []
+                  },
+                  {
+                    "dimension": "process",
+                    "status": "structuralChange",
+                    "statement": "Les ajouts effectués restent intacts : performed-late-hop.",
+                    "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                    "evidenceIds": [],
+                    "assertionIds": [
+                      "finished"
+                    ],
+                    "criterionIds": []
+                  },
+                  {
+                    "dimension": "aroma",
+                    "status": "unknown",
+                    "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                    "reason": "Aucune matière candidate n’est liée à cette option; le critère reste sans conclusion pour une matière.",
+                    "evidenceIds": [],
+                    "assertionIds": [],
+                    "criterionIds": [
+                      "aroma"
+                    ]
+                  }
+                ],
+                "exclusions": [],
+                "conditions": [
+                  "Les lignes effectuées et leurs valeurs nulles sont préservées exactement."
+                ],
+                "nonConclusions": [
+                  "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                  "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+                  "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit.",
+                  "Une observation de pH n’est ni une mesure d’acidité titrable ni une preuve de perception acidulée."
+                ],
+                "informationRequestIds": [
+                  "decision-alcohol-alcohol",
+                  "decision-acid-acidity",
+                  "decision-aroma-aroma",
+                  "decision-assertion-culture",
+                  "decision-assertion-viability"
+                ]
+              },
+              {
+                "id": "hop-advice-option-002",
+                "reference": "hop-advice-option-v1:sha256:4afe9b9d20fa00099b318a700288a7aa61e144c5071e84fcde3659e70625c0a3",
+                "title": "Conserver houblon maison reporté par le brasseur comme option prévue à réévaluer",
+                "materialIds": [
+                  "house-hop-lot-unanalysed"
+                ],
+                "relevance": "conditional",
+                "programScope": {
+                  "kind": "none"
+                },
+                "criterionEffects": [
+                  {
+                    "criterionId": "alcohol",
+                    "status": "constraintUnverified",
+                    "reason": "Aucun prédicat structurel précis n’est lié à cette contrainte; son texte n’est pas interprété automatiquement.",
+                    "evidenceIds": []
+                  },
+                  {
+                    "criterionId": "acid",
+                    "status": "unknown",
+                    "reason": "Aucune règle documentaire aromatique ne s’applique à la dimension « acidity »; le texte du critère n’est pas réinterprété.",
+                    "evidenceIds": []
+                  },
+                  {
+                    "criterionId": "aroma",
+                    "status": "unknown",
+                    "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Agrumes; caractère inconnu.",
+                    "evidenceIds": []
+                  }
+                ],
+                "dimensionEffects": [
+                  {
+                    "dimension": "alcohol",
+                    "status": "unknown",
+                    "statement": "Le conseil ne calcule pas l’alcool final et ne valide pas un plafond non fourni.",
+                    "reason": "Une description « faible alcool » sans borne mesurée ne suffit pas à établir conformité ou violation.",
+                    "evidenceIds": [],
+                    "assertionIds": [
+                      "reported-alcohol",
+                      "missing-abv"
+                    ],
+                    "criterionIds": [
+                      "alcohol"
+                    ]
+                  },
+                  {
+                    "dimension": "acidity",
+                    "status": "conditional",
+                    "statement": "Des essais ciblés rapportent une hausse de pH mesuré après dry-hop post-fermentation dans leurs bières; ils ne mesurent pas l’acidité titrable ni la perception acidulée.",
+                    "reason": "Une cible pH, l’acidité titrable et la sensation acidulée sont des décisions distinctes; la preuve ne se transfère pas à une bière sour/faible en alcool.",
+                    "evidenceIds": [
+                      "m-ph-maye-2018",
+                      "m-ph-schmick-2014"
+                    ],
+                    "assertionIds": [
+                      "missing-ph",
+                      "missing-ta"
+                    ],
+                    "criterionIds": [
+                      "acid"
+                    ]
+                  },
+                  {
+                    "dimension": "bioInteraction",
+                    "status": "conditional",
+                    "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                    "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                    "evidenceIds": [
+                      "m-ab-sakamoto-2001",
+                      "m-ab-dysvik-2020",
+                      "m-ab-mahanta-2022"
+                    ],
+                    "assertionIds": [
+                      "culture",
+                      "viability"
+                    ],
+                    "criterionIds": []
+                  },
+                  {
+                    "dimension": "process",
+                    "status": "structuralChange",
+                    "statement": "Les ajouts effectués restent intacts : performed-late-hop.",
+                    "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                    "evidenceIds": [],
+                    "assertionIds": [
+                      "finished"
+                    ],
+                    "criterionIds": []
+                  },
+                  {
+                    "dimension": "aroma",
+                    "status": "unknown",
+                    "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                    "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Agrumes; caractère inconnu.",
+                    "evidenceIds": [],
+                    "assertionIds": [],
+                    "criterionIds": [
+                      "aroma"
+                    ]
+                  }
+                ],
+                "exclusions": [],
+                "conditions": [
+                  "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                  "Les lignes effectuées et leurs valeurs nulles sont préservées exactement."
+                ],
+                "nonConclusions": [
+                  "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                  "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+                  "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit.",
+                  "Une observation de pH n’est ni une mesure d’acidité titrable ni une preuve de perception acidulée."
+                ],
+                "informationRequestIds": [
+                  "decision-alcohol-alcohol",
+                  "decision-acid-acidity",
+                  "decision-aroma-aroma",
+                  "decision-assertion-culture",
+                  "decision-assertion-viability"
+                ]
+              }
+            ],
+            "informationRequests": [
+              {
+                "id": "decision-alcohol-alcohol",
+                "question": "Une limite d’alcool chiffrée et une mesure de cette bière sont-elles disponibles ?",
+                "whyDecisionChanging": "Sans seuil/mesure, une description faible en alcool ne départage pas une voie sur la conformité.",
+                "optionIds": [
+                  "hop-advice-option-001",
+                  "hop-advice-option-002"
+                ]
+              },
+              {
+                "id": "decision-acid-acidity",
+                "question": "La contrainte porte-t-elle sur le pH mesuré, l’acidité titrable ou la sensation acidulée ?",
+                "whyDecisionChanging": "Ces dimensions ne sont pas interchangeables; la cible choisie décide quelles mesures sont utiles.",
+                "optionIds": [
+                  "hop-advice-option-001",
+                  "hop-advice-option-002"
+                ]
+              },
+              {
+                "id": "decision-aroma-aroma",
+                "question": "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+                "whyDecisionChanging": "Une absence de mention n’établit pas l’absence du caractère et une description de houblon ne prédit pas la bière.",
+                "optionIds": [
+                  "hop-advice-option-001",
+                  "hop-advice-option-002"
+                ]
+              },
+              {
+                "id": "decision-assertion-culture",
+                "question": "Quelles cultures/souches et quelle viabilité au moment du contact sont documentées, si cette voie peut changer le choix ?",
+                "whyDecisionChanging": "Les résultats biologiques reçus dépendent des cultures et conditions; l’absence de mesure reste inconnue.",
+                "optionIds": [
+                  "hop-advice-option-001",
+                  "hop-advice-option-002"
+                ]
+              },
+              {
+                "id": "decision-assertion-viability",
+                "question": "Quelles cultures/souches et quelle viabilité au moment du contact sont documentées, si cette voie peut changer le choix ?",
+                "whyDecisionChanging": "Les résultats biologiques reçus dépendent des cultures et conditions; l’absence de mesure reste inconnue.",
+                "optionIds": [
+                  "hop-advice-option-001",
+                  "hop-advice-option-002"
+                ]
+              }
+            ],
+            "evidenceSources": [
+              {
+                "id": "m-ph-maye-2018",
+                "source": {
+                  "title": "Dry Hopping and Its Effect on Beer Bitterness, the IBU Test, and pH",
+                  "author": "John Paul Maye, Robert Smith et Jeremy Leker",
+                  "year": 2018,
+                  "kind": "research",
+                  "reference": "https://hopsteiner.us/wp-content/uploads/2019/05/Dry-Hopping-and-its-Effects-on-Bitterness-IBU-pH-Brauwelt-2018-1-25.pdf",
+                  "locator": "Brauwelt International 2018/I, p. 25–29; PDF technique expérimentale d’auteurs fabricants."
+                },
+                "locator": "Printed p. 28, « Dry Hopping and pH »; Cascade pellets, 0/1/2/3/4/6 lb/bbl, three days at 16 °C. p. 28–29 for the separate bitterness comparison.",
+                "readingLevel": "primaryFullText",
+                "domain": "dry-hop post-fermentation et pH mesuré",
+                "established": "Dans cette série Cascade et cette matrice, les auteurs rapportent une hausse de pH mesuré approximativement linéaire; ils indiquent que l’amplitude dépend de la capacité tampon.",
+                "limits": [
+                  "Essai technique fabricant, une matrice et un calendrier; ce n’est pas un coefficient de dose transférable.",
+                  "Bière sour/acidifiée et faible alcool non établies; ni acidité titrable ni perception acidulée mesurées.",
+                  "Ne donne ni promesse d’arôme, ni conformité globale, ni résultat pour la situation fournie."
+                ]
+              },
+              {
+                "id": "m-ph-schmick-2014",
+                "source": {
+                  "title": "Dry Hopping and its Effect on Beer pH",
+                  "author": "Matthew J. Schmick",
+                  "year": 2014,
+                  "kind": "research",
+                  "reference": "https://www2.uwstout.edu/content/lib/thesis/2014/2014schmickm.pdf",
+                  "locator": "Mémoire MS UW–Stout; extraits indexés du résumé, chapitre III et Table 4."
+                },
+                "locator": "Abstract; Chapter III: Methodology — Sample Selection/Sample Preparation; Chapter IV, extrait Table 4.",
+                "readingLevel": "primaryExcerpt",
+                "domain": "dry-hop post-fermentation et pH mesuré",
+                "established": "Les extraits accessibles rapportent une hausse de pH dans quatre bières commerciales et six variétés de houblon T90, dont les plages observées varient entre bières/variétés.",
+                "limits": [
+                  "Le PDF complet et le tableau n’ont pas été inspectés visuellement; les passages consultés sont des extraits indexés.",
+                  "Aucune catégorie sour/acidifiée ou faible alcool identifiée; pas de modèle prédictif transférable.",
+                  "Ne démontre rien sur l’acidité titrable ou la perception acidulée."
+                ]
+              },
+              {
+                "id": "m-ab-sakamoto-2001",
+                "source": {
+                  "title": "Hop resistance in the beer spoilage bacterium Lactobacillus brevis is mediated by the ATP-binding cassette multidrug transporter HorA",
+                  "author": "Sakamoto, Margolles, van Veen et Konings",
+                  "year": 2001,
+                  "kind": "research",
+                  "reference": "https://journals.asm.org/doi/10.1128/JB.183.18.5371-5375.2001",
+                  "locator": "Journal of Bacteriology 183(18):5371–5375; méthodes « Bacterial strains and growth conditions », « Hop resistance »; résultats/Figure 2 et discussion."
+                },
+                "locator": "Methods and Results/Fig. 2; study of a specific L. brevis isolate and heterologous HorA expression in L. lactis.",
+                "readingLevel": "primaryFullText",
+                "domain": "résistance de souches à des composés de houblon",
+                "established": "Le travail porte sur HorA d’un isolat L. brevis précis; le test rapporté utilise des iso-α-acides et une expression de HorA dans L. lactis.",
+                "limits": [
+                  "N’établit pas HorA, tolérance ou inhibition pour une culture L. plantarum non identifiée.",
+                  "Ne teste pas S. pastorianus, leur co-culture ni l’ajout à froid de houblon brut."
+                ]
+              },
+              {
+                "id": "m-ab-dysvik-2020",
+                "source": {
+                  "title": "Co-fermentation Involving Saccharomyces cerevisiae and Lactobacillus Species Tolerant to Brewing-Related Stress Factors for Controlled and Rapid Production of Sour Beer",
+                  "author": "Dysvik et al.",
+                  "year": 2020,
+                  "kind": "research",
+                  "reference": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2020.00279/full",
+                  "locator": "Frontiers in Microbiology 11:279; méthodes « Yeast, Bacterial Strains and Growth Conditions », « Stress Experiments », « Small Scale Co-fermentations »; Figure 1 et discussion."
+                },
+                "locator": "Primary full text; pure-culture stress assays and separate co-fermentation protocol.",
+                "readingLevel": "primaryFullText",
+                "domain": "interaction conditionnelle entre iso-α-acides et cultures lactiques",
+                "established": "Une souche commerciale L. plantarum réagit différemment selon les conditions de stress et réussit une co-fermentation séparée avec S. cerevisiae sous leur protocole.",
+                "limits": [
+                  "Les essais de stress utilisent un extrait pré-isomérisé; ils ne prouvent pas une exposition équivalente avec des cônes crus ajoutés à froid.",
+                  "Les souches, matrice, milieu, éthanol et montage diffèrent de la situation fournie; aucune inhibition/tolérance du couple de cultures n’est prédite."
+                ]
+              },
+              {
+                "id": "m-ab-mahanta-2022",
+                "source": {
+                  "title": "Sour beer production in India using a coculture of Saccharomyces pastorianus and Lactobacillus plantarum: optimization, microbiological, and biochemical profiling",
+                  "author": "Mahanta et al.",
+                  "year": 2022,
+                  "kind": "research",
+                  "reference": "https://link.springer.com/article/10.1007/s42770-022-00691-8",
+                  "locator": "Brazilian Journal of Microbiology 53:947–958; résumé de l’éditeur et extraits indexés de texte primaire."
+                },
+                "locator": "Publisher abstract; indexed excerpts for inoculation/methods and process-variable/optimization results.",
+                "readingLevel": "primaryAbstract",
+                "domain": "précédent de procédé avec un couple d’espèces documenté",
+                "established": "Le résumé éditeur rapporte une co-fermentation de S. pastorianus et L. plantarum avec houblon comme facteur de procédé dans une bière cible à 6–8 % vol.",
+                "limits": [
+                  "Le plein texte et les suppléments n’ont pas été examinés; les extraits accessibles ne donnent pas de souche comparable à la situation fournie.",
+                  "Ne démontre pas une tolérance universelle, un effet à faible alcool, une exposition iso-α isolée, un résultat d’arôme ou une dose transférable."
+                ]
+              }
+            ],
+            "coverage": {
+              "status": "completeWithinSuppliedScope",
+              "consideredMaterialIds": [
+                "house-hop-lot-unanalysed"
+              ],
+              "excludedMaterialIds": [],
+              "contextOnlyMaterialIds": [],
+              "omittedMaterials": [],
+              "conditionalMaterials": [],
+              "limits": [
+                "Les matières non projetées restent des identités documentaires ; leur présence ne permet aucune action chiffrée implicite.",
+                "Le conseil porte sur les matières explicitement désignées et le contexte du programme ; les autres fiches chargées restent dans le snapshot, sans être automatiquement des options.",
+                "Exploration limitée aux IDs de matières explicitement sélectionnés dans la situation.",
+                "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+                "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+                "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+              ]
+            },
+            "limitations": [
+              "Les matières non projetées restent des identités documentaires ; leur présence ne permet aucune action chiffrée implicite.",
+              "Le conseil porte sur les matières explicitement désignées et le contexte du programme ; les autres fiches chargées restent dans le snapshot, sans être automatiquement des options.",
+              "Exploration limitée aux IDs de matières explicitement sélectionnés dans la situation.",
+              "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+              "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+              "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+            ],
+            "reference": "hop-advice-result-v1:sha256:1f8693db293329e174f64272814abadcf4d98fdfb46b74f1c16423c0d712b611"
+          },
+          "criteria": [
+            {
+              "id": "alcohol",
+              "description": "bière décrite comme faible en alcool; ABV mesuré absent",
+              "role": "constraint",
+              "origin": "user",
+              "status": "evaluatedByStrategy",
+              "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+              "strategies": [
+                {
+                  "optionId": "hop-advice-option-001",
+                  "optionReference": "hop-advice-option-v1:sha256:0f356416ebc73155c1a410a24b52e35981173fd5bedfba3e34cf2f130a017bb0",
+                  "evaluation": {
+                    "criterionId": "alcohol",
+                    "status": "constraintUnverified",
+                    "reason": "Aucun prédicat structurel précis n’est lié à cette contrainte; son texte n’est pas interprété automatiquement.",
+                    "evidenceIds": []
+                  }
+                },
+                {
+                  "optionId": "hop-advice-option-002",
+                  "optionReference": "hop-advice-option-v1:sha256:4afe9b9d20fa00099b318a700288a7aa61e144c5071e84fcde3659e70625c0a3",
+                  "evaluation": {
+                    "criterionId": "alcohol",
+                    "status": "constraintUnverified",
+                    "reason": "Aucun prédicat structurel précis n’est lié à cette contrainte; son texte n’est pas interprété automatiquement.",
+                    "evidenceIds": []
+                  }
+                }
+              ]
+            },
+            {
+              "id": "acid",
+              "description": "caractère acidulé à préserver; pH et acidité titrable absents",
+              "role": "preserve",
+              "origin": "user",
+              "status": "evaluatedByStrategy",
+              "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+              "strategies": [
+                {
+                  "optionId": "hop-advice-option-001",
+                  "optionReference": "hop-advice-option-v1:sha256:0f356416ebc73155c1a410a24b52e35981173fd5bedfba3e34cf2f130a017bb0",
+                  "evaluation": {
+                    "criterionId": "acid",
+                    "status": "unknown",
+                    "reason": "Aucune règle documentaire aromatique ne s’applique à la dimension « acidity »; le texte du critère n’est pas réinterprété.",
+                    "evidenceIds": []
+                  }
+                },
+                {
+                  "optionId": "hop-advice-option-002",
+                  "optionReference": "hop-advice-option-v1:sha256:4afe9b9d20fa00099b318a700288a7aa61e144c5071e84fcde3659e70625c0a3",
+                  "evaluation": {
+                    "criterionId": "acid",
+                    "status": "unknown",
+                    "reason": "Aucune règle documentaire aromatique ne s’applique à la dimension « acidity »; le texte du critère n’est pas réinterprété.",
+                    "evidenceIds": []
+                  }
+                }
+              ]
+            },
+            {
+              "id": "aroma",
+              "description": "fruité/citronné; aucune molécule cible ou intensité n’est inférée",
+              "role": "seek",
+              "origin": "user",
+              "status": "evaluatedByStrategy",
+              "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+              "strategies": [
+                {
+                  "optionId": "hop-advice-option-001",
+                  "optionReference": "hop-advice-option-v1:sha256:0f356416ebc73155c1a410a24b52e35981173fd5bedfba3e34cf2f130a017bb0",
+                  "evaluation": {
+                    "criterionId": "aroma",
+                    "status": "unknown",
+                    "reason": "Aucune matière candidate n’est liée à cette option; le critère reste sans conclusion pour une matière.",
+                    "evidenceIds": []
+                  }
+                },
+                {
+                  "optionId": "hop-advice-option-002",
+                  "optionReference": "hop-advice-option-v1:sha256:4afe9b9d20fa00099b318a700288a7aa61e144c5071e84fcde3659e70625c0a3",
+                  "evaluation": {
+                    "criterionId": "aroma",
+                    "status": "unknown",
+                    "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Agrumes; caractère inconnu.",
+                    "evidenceIds": []
+                  }
+                }
+              ]
+            }
+          ],
+          "missingInformation": [
+            "Une limite d’alcool chiffrée et une mesure de cette bière sont-elles disponibles ?",
+            "La contrainte porte-t-elle sur le pH mesuré, l’acidité titrable ou la sensation acidulée ?",
+            "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+            "Quelles cultures/souches et quelle viabilité au moment du contact sont documentées, si cette voie peut changer le choix ?"
+          ],
+          "sources": [
+            {
+              "title": "Dry Hopping and Its Effect on Beer Bitterness, the IBU Test, and pH",
+              "author": "John Paul Maye, Robert Smith et Jeremy Leker",
+              "year": 2018,
+              "kind": "research",
+              "reference": "https://hopsteiner.us/wp-content/uploads/2019/05/Dry-Hopping-and-its-Effects-on-Bitterness-IBU-pH-Brauwelt-2018-1-25.pdf",
+              "locator": "Brauwelt International 2018/I, p. 25–29; PDF technique expérimentale d’auteurs fabricants."
+            },
+            {
+              "title": "Dry Hopping and its Effect on Beer pH",
+              "author": "Matthew J. Schmick",
+              "year": 2014,
+              "kind": "research",
+              "reference": "https://www2.uwstout.edu/content/lib/thesis/2014/2014schmickm.pdf",
+              "locator": "Mémoire MS UW–Stout; extraits indexés du résumé, chapitre III et Table 4."
+            },
+            {
+              "title": "Hop resistance in the beer spoilage bacterium Lactobacillus brevis is mediated by the ATP-binding cassette multidrug transporter HorA",
+              "author": "Sakamoto, Margolles, van Veen et Konings",
+              "year": 2001,
+              "kind": "research",
+              "reference": "https://journals.asm.org/doi/10.1128/JB.183.18.5371-5375.2001",
+              "locator": "Journal of Bacteriology 183(18):5371–5375; méthodes « Bacterial strains and growth conditions », « Hop resistance »; résultats/Figure 2 et discussion."
+            },
+            {
+              "title": "Co-fermentation Involving Saccharomyces cerevisiae and Lactobacillus Species Tolerant to Brewing-Related Stress Factors for Controlled and Rapid Production of Sour Beer",
+              "author": "Dysvik et al.",
+              "year": 2020,
+              "kind": "research",
+              "reference": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2020.00279/full",
+              "locator": "Frontiers in Microbiology 11:279; méthodes « Yeast, Bacterial Strains and Growth Conditions », « Stress Experiments », « Small Scale Co-fermentations »; Figure 1 et discussion."
+            },
+            {
+              "title": "Sour beer production in India using a coculture of Saccharomyces pastorianus and Lactobacillus plantarum: optimization, microbiological, and biochemical profiling",
+              "author": "Mahanta et al.",
+              "year": 2022,
+              "kind": "research",
+              "reference": "https://link.springer.com/article/10.1007/s42770-022-00691-8",
+              "locator": "Brazilian Journal of Microbiology 53:947–958; résumé de l’éditeur et extraits indexés de texte primaire."
+            }
+          ],
+          "boundaries": {
+            "offline": true,
+            "writesRecipe": false,
+            "writesBatch": false,
+            "sensoryValidation": "notEstablished"
+          }
+        },
+        "context": null,
+        "reference": "hop-advice-study-v3:sha256:a926a95517c64137b5d5474778010a05327936e52568a961906fcc17e84277eb"
+      }
+    },
+    "events": [
+      {
+        "ownerKey": "fixture-prior-advice-owner",
+        "dossierId": "fixture-prior-conditioning",
+        "eventId": "saved-conditioning",
+        "expectedRevision": 0,
+        "recordedAt": "2026-10-01T08:00:00Z",
+        "kind": "studySaved",
+        "payload": {
+          "snapshotFormatVersion": 3
+        },
+        "eventFormatVersion": 3,
+        "resultingRevision": 1
+      },
+      {
+        "ownerKey": "fixture-prior-advice-owner",
+        "dossierId": "fixture-prior-conditioning",
+        "recordedAt": "2026-10-01T08:00:00Z",
+        "eventId": "preferred-conditioning",
+        "expectedRevision": 1,
+        "kind": "strategyPreferred",
+        "payload": {
+          "preferenceId": "prior-preference-conditioning",
+          "studyReference": "hop-advice-study-v3:sha256:a926a95517c64137b5d5474778010a05327936e52568a961906fcc17e84277eb",
+          "resultReference": "hop-advice-result-v1:sha256:1f8693db293329e174f64272814abadcf4d98fdfb46b74f1c16423c0d712b611",
+          "optionId": "hop-advice-option-001",
+          "optionReference": "hop-advice-option-v1:sha256:0f356416ebc73155c1a410a24b52e35981173fd5bedfba3e34cf2f130a017bb0",
+          "programScope": {
+            "kind": "removePlanned",
+            "additionIds": [
+              "planned-follow-up-hop"
+            ]
+          },
+          "interpretation": "Lecture proposée : faible alcool, acidulé à préserver, fruité/citronné recherché; aucune valeur ou souche ajoutée.",
+          "interpretationReference": "hop-advice-interpretation-v1:sha256:d21534c8dbb665286ed1b817660914a246947bdfdea4e28ab7c3295714d67610",
+          "reason": "Préférence synthétique antérieure à la correction métier.",
+          "preferenceReference": "hop-advice-preference-v1:sha256:064a03b9fa80939fd07b20d194e016c94cfb24c64ca53e9b89560c7fb7a9a034"
+        },
+        "eventFormatVersion": 3,
+        "resultingRevision": 2
+      }
+    ]
+  }
+]

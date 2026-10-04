@@ -10,7 +10,7 @@ import nolo from '../../docs/research/yeast-enrichment/nolo.json';
 import escarpment from '../../docs/research/yeast-enrichment/escarpment.json';
 import styles from '../../docs/research/yeast-style-enrichment-supplement.json';
 import { canonical, enrichYeastDataset, enrichYeastReference, selectImportReferences, validateSupplements } from '../../scripts/yeast-catalogue/enrichment.mjs';
-import { catalogueHash } from '../../scripts/yeast-catalogue/parse.mjs';
+import { catalogueHash, ESCARPMENT_BIOTRANSFORMATION_TOOLTIP_CONTEXT } from '../../scripts/yeast-catalogue/parse.mjs';
 import { encode, planCatalogueImport } from '../../scripts/yeast-catalogue/import-plan.mjs';
 
 const packs = [mangrove, nolo, escarpment, styles];
@@ -22,6 +22,9 @@ const document = (data: HopYeast) => ({ name: `projects/test/databases/(default)
 describe('documentary yeast catalogue enrichment', () => {
   it('ships valid primary observations in every matching active data layer', () => {
     expect(() => validateSupplements(packs, catalogue, assertYeastCatalogue)).not.toThrow();
+    for (const fact of escarpment.items.flatMap(item => item.facts).filter(fact => fact.key === 'biotransformation')) {
+      expect(fact.context).toBe(ESCARPMENT_BIOTRANSFORMATION_TOOLTIP_CONTEXT);
+    }
     for (const dataset of [catalogue, core, recipes]) {
       dataset.forEach(value => assertHopKnowledge(value, value.id));
       for (const addition of packs.flatMap(pack => pack.items)) {
@@ -50,6 +53,28 @@ describe('documentary yeast catalogue enrichment', () => {
     expect(merged.catalogue.facts).toContainEqual(temperature);
     expect(merged.catalogue.contentSha256).toBe(catalogueHash(merged.catalogue));
     expect(agreedFermentationFact(merged, 'temperature', '°C')).toBeUndefined();
+  });
+
+  it('preserves distinct contexts when source, key, reported value and range match', () => {
+    const id = 'yeast-escarpment-15272687173798';
+    const before = structuredClone(catalogue.find(value => value.id === id)!) as HopYeast;
+    const addition = structuredClone(escarpment.items.find(value => value.id === id)!);
+    const sourceLocator = 'Key Characteristics / description produit · Temperature';
+    const activeFact = before.catalogue!.facts.find(fact => fact.key === 'temperature' && fact.source.locator === sourceLocator)!;
+    const factIndex = addition.facts.findIndex(fact => fact.key === 'temperature');
+    // Test-only context variant: the sourced measurement itself remains unchanged.
+    addition.facts[factIndex] = { ...addition.facts[factIndex], context: 'Contexte de portée distinct, fixture de test.' };
+    const incomingFact = addition.facts[factIndex];
+    const withoutContext = (fact: any) => { const { context: _context, ...observation } = fact; return observation; };
+    const snapshot = structuredClone(before), merged = enrichYeastReference(before, addition);
+
+    expect(withoutContext(incomingFact)).toEqual(withoutContext(activeFact));
+    expect(incomingFact.context).not.toBe(activeFact.context);
+    expect(activeFact.range).toEqual({ min: 10, max: 14 });
+    expect(before).toEqual(snapshot);
+    expect(merged.catalogue.facts).toContainEqual(activeFact);
+    expect(merged.catalogue.facts).toContainEqual(incomingFact);
+    expect(merged.catalogue.contentSha256).toBe(catalogueHash(merged.catalogue));
   });
 
   it('rejects an uncollected source, invalid range, duplicate or unknown identity before integration', () => {
