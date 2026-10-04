@@ -1,0 +1,1778 @@
+diff --git a/src/services/hopV55/qualifiedAdviceController.ts b/src/services/hopV55/qualifiedAdviceController.ts
+index b6001d8f..c2f9b7f1 100644
+--- a/src/services/hopV55/qualifiedAdviceController.ts
++++ b/src/services/hopV55/qualifiedAdviceController.ts
+@@ -3,7 +3,7 @@ import { hopAdviceContentReference } from '../../domain/hopDecision/adviceConten
+ import type { HopCatalogueLoaderInput } from '../../domain/hopDecision/catalogueLoader';
+ import type { HopDecisionContext } from '../../domain/hopDecision/dossier';
+ import { hopDecisionReference } from '../../domain/hopDecision/measurements';
+-import { hopAdviceStudyReference, readHopAdviceDossier,
++import { readHopAdviceDossier,
+   type HopAdviceDossierV3, type HopAdviceEventV3, type HopAdviceStudyV3 } from '../../domain/hopDecision/adviceDossier';
+ import { captureHopAdvicePreference } from '../../domain/hopDecision/adviceProgramAdapter';
+ import type { HopAdviceAction } from '../../domain/hopDecision/qualifiedAdvice';
+@@ -360,8 +360,9 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
+       const rawDossier = await host.services.qualifiedStudies.read(host.services.ownerKey, preparation.dossierId);
+       if (!rawDossier) throw Error('Le dossier advice lié n’est plus disponible.');
+       const dossier = readHopAdviceDossier(rawDossier);
++      // readHopAdviceDossier has just recomputed the study fingerprint and compared it with study.reference.
+       if ('status' in dossier || dossier.formatVersion !== 3 || dossier.dossierId !== request.expectedDossierId
+-        || dossier.revision !== request.expectedDossierRevision || hopAdviceStudyReference(dossier.study) !== preparation.studyReference) {
++        || dossier.revision !== request.expectedDossierRevision || dossier.study.reference !== preparation.studyReference) {
+         throw Error('La révision du dossier a changé; recharge ses options avant de choisir une préférence.');
+       }
+       const option = study.responseSnapshot.result.options.find(row => row.id === request.expectedOptionId
+diff --git a/src/services/hopV55/qualifiedStudyPreference.ts b/src/services/hopV55/qualifiedStudyPreference.ts
+index 457b9df1..aad040a6 100644
+--- a/src/services/hopV55/qualifiedStudyPreference.ts
++++ b/src/services/hopV55/qualifiedStudyPreference.ts
+@@ -1,10 +1,10 @@
+ import { hopAdviceContentReference } from '../../domain/hopDecision/adviceContentReference';
+-import { hopAdviceEventContentReference, hopAdviceStudyReference, readHopAdviceDossier, readHopAdviceEvent,
++import { hopAdviceEventContentReference, readHopAdviceDossier, readHopAdviceEvent,
+   type HopAdviceDossierV3, type HopAdviceEventRead, type HopAdviceEventV3 } from '../../domain/hopDecision/adviceDossier';
+ import type { HopDecisionLocalRepository } from '../hopDecisionLocalRepository';
+ import { readHopV55DecisionReadingArchive } from './decisionArchive';
+-import { readHopV55QualifiedStudyLink, readHopV55QualifiedStudyPreparation,
+-  type HopV55QualifiedStudyFreshness, type HopV55QualifiedStudyLinkV1,
++import { decodeHopV55QualifiedStudyPreparationRow, readHopV55QualifiedStudyLink,
++  type HopV55QualifiedStudyCollectionsIndexV1, type HopV55QualifiedStudyFreshness, type HopV55QualifiedStudyLinkV1,
+   type HopV55QualifiedStudyPreparationRecord } from './qualifiedStudyWorkspace';
+ import type { HopV55Workspace, HopV55WorkspaceRepository } from './contracts';
+ 
+@@ -163,24 +163,44 @@ function opaqueScope(value: unknown, ownerKey: string, workspaceId: string, sour
+   }
+ }
+ 
++/**
++ * Rows and readings already validated for this same workspace object in the
++ * same synchronous step (the repository passes what its collection validation
++ * just returned). Without it, every row is decoded strictly here.
++ */
++export interface HopV55QualifiedStudyPreferenceValidatedContextV1 {
++  sourceReadingReferences: ReadonlySet<string>;
++  qualified: Pick<HopV55QualifiedStudyCollectionsIndexV1, 'preparationsByReference' | 'linksByPreparationReference'>;
++}
++
+ export function assertHopV55QualifiedStudyPreferenceCommands(workspace: Pick<HopV55Workspace,
+-  'id' | 'ownerKey' | 'decisionReadings' | 'qualifiedStudyPreparations' | 'qualifiedStudyLinks' | 'qualifiedStudyPreferenceCommands'>): void {
++  'id' | 'ownerKey' | 'decisionReadings' | 'qualifiedStudyPreparations' | 'qualifiedStudyLinks' | 'qualifiedStudyPreferenceCommands'>,
++  validated?: HopV55QualifiedStudyPreferenceValidatedContextV1): void {
+   const rows = workspace.qualifiedStudyPreferenceCommands ?? [];
+   if (!Array.isArray(rows)) throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Historique des préparations de préférence invalide.');
+-  const sourceReferences = new Set((workspace.decisionReadings ?? []).flatMap(raw => {
++  const sourceReferences = validated?.sourceReadingReferences ?? new Set((workspace.decisionReadings ?? []).flatMap(raw => {
+     const read = readHopV55DecisionReadingArchive(raw);
+     return read.status === 'available' && read.archive.ownerKey === workspace.ownerKey
+       && read.archive.workspaceId === workspace.id ? [read.archive.contentReference] : [];
+   }));
+-  const preparations = new Map<string, HopV55QualifiedStudyPreparationRecord>();
+-  for (const raw of workspace.qualifiedStudyPreparations ?? []) {
+-    const read = readHopV55QualifiedStudyPreparation(raw);
+-    if (read.status === 'available') preparations.set(read.preparation.reference, read.preparation);
+-  }
+-  const links = new Map<string, HopV55QualifiedStudyLinkV1>();
+-  for (const raw of workspace.qualifiedStudyLinks ?? []) {
+-    const read = readHopV55QualifiedStudyLink(raw);
+-    if (read.status === 'available') links.set(read.link.preparationReference, read.link);
++  let preparations: ReadonlyMap<string, HopV55QualifiedStudyPreparationRecord>;
++  let links: ReadonlyMap<string, HopV55QualifiedStudyLinkV1>;
++  if (validated) {
++    preparations = validated.qualified.preparationsByReference;
++    links = validated.qualified.linksByPreparationReference;
++  } else {
++    const decodedPreparations = new Map<string, HopV55QualifiedStudyPreparationRecord>();
++    for (const raw of workspace.qualifiedStudyPreparations ?? []) {
++      const read = decodeHopV55QualifiedStudyPreparationRow(raw);
++      if (read.status === 'available') decodedPreparations.set(read.preparation.reference, read.preparation);
++    }
++    const decodedLinks = new Map<string, HopV55QualifiedStudyLinkV1>();
++    for (const raw of workspace.qualifiedStudyLinks ?? []) {
++      const read = readHopV55QualifiedStudyLink(raw);
++      if (read.status === 'available') decodedLinks.set(read.link.preparationReference, read.link);
++    }
++    preparations = decodedPreparations;
++    links = decodedLinks;
+   }
+   const ids = new Set<string>(), references = new Set<string>(), eventIds = new Set<string>(), preferenceIds = new Set<string>();
+   const futureSources = new Set<string>();
+@@ -252,7 +272,8 @@ export function appendHopV55QualifiedStudyPreferenceCommand(workspace: HopV55Wor
+     throw new HopV55QualifiedStudyPreferenceError('unsupportedFormat', 'Une commande future de préférence reste en lecture seule.');
+   }
+   const preparation = (workspace.qualifiedStudyPreparations ?? []).flatMap(raw => {
+-    const read = readHopV55QualifiedStudyPreparation(raw);
++    // Strict decode without a copy: only identities and references are compared here.
++    const read = decodeHopV55QualifiedStudyPreparationRow(raw);
+     return read.status === 'available' && read.preparation.reference === command.preparationReference ? [read.preparation] : [];
+   })[0];
+   const link = (workspace.qualifiedStudyLinks ?? []).flatMap(raw => {
+@@ -274,17 +295,26 @@ export function appendHopV55QualifiedStudyPreferenceCommand(workspace: HopV55Wor
+   ] };
+ }
+ 
+-export function assertHopV55QualifiedStudyPreferenceAppendOnly(previous: HopV55Workspace, next: HopV55Workspace): void {
++/**
++ * `previousIndex` may carry the collections index validated for `previous` in
++ * the same synchronous step; rows absent from it are decoded strictly.
++ */
++export function assertHopV55QualifiedStudyPreferenceAppendOnly(previous: HopV55Workspace, next: HopV55Workspace,
++  options: { previousIndex?: HopV55QualifiedStudyCollectionsIndexV1 } = {}): void {
+   const prior = previous.qualifiedStudyPreferenceCommands ?? [], incoming = next.qualifiedStudyPreferenceCommands ?? [];
+   if (incoming.length < prior.length || prior.some((row, index) => !sameExact(row, incoming[index]))) {
+     throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Les commandes préparées de préférence sont immuables et append-only.');
+   }
+   const priorReadingReferences = new Set((previous.decisionReadings ?? []).map(row => row.contentReference));
+   const priorPreparations = new Set((previous.qualifiedStudyPreparations ?? []).flatMap(raw => {
+-    const read = readHopV55QualifiedStudyPreparation(raw);
++    const known = isRow(raw) ? options.previousIndex?.preparations.get(raw) : undefined;
++    if (known) return [known.reference];
++    const read = decodeHopV55QualifiedStudyPreparationRow(raw);
+     return read.status === 'available' ? [read.preparation.reference] : [];
+   }));
+   const priorLinks = new Set((previous.qualifiedStudyLinks ?? []).flatMap(raw => {
++    const known = isRow(raw) ? options.previousIndex?.links.get(raw) : undefined;
++    if (known) return [known.preparationReference];
+     const read = readHopV55QualifiedStudyLink(raw);
+     return read.status === 'available' ? [read.link.preparationReference] : [];
+   }));
+@@ -323,7 +353,8 @@ function validateStoredCommand(workspace: HopV55Workspace, command: HopV55Qualif
+ 
+ function validateLinkedWorkspace(workspace: HopV55Workspace, command: HopV55QualifiedStudyPreferenceCommandV1) {
+   validateStoredCommand(workspace, command);
+-  const preparationRead = (workspace.qualifiedStudyPreparations ?? []).map(readHopV55QualifiedStudyPreparation)
++  // Strict decode of this freshly read private workspace; the row is only read below.
++  const preparationRead = (workspace.qualifiedStudyPreparations ?? []).map(row => decodeHopV55QualifiedStudyPreparationRow(row))
+     .find(row => row.status === 'available' && row.preparation.reference === command.preparationReference);
+   const linkRead = (workspace.qualifiedStudyLinks ?? []).map(readHopV55QualifiedStudyLink)
+     .find(row => row.status === 'available' && row.link.preparationReference === command.preparationReference);
+@@ -350,9 +381,10 @@ async function readCurrentAdvice(repository: HopDecisionLocalRepository, command
+   if (!rawDossier) throw new HopV55QualifiedStudyPreferenceError('notFound', 'Dossier conseil local introuvable pour sa préférence.');
+   const dossierRead = readHopAdviceDossier(rawDossier);
+   if ('status' in dossierRead) throw new HopV55QualifiedStudyPreferenceError('unsupportedFormat', 'Dossier conseil futur conservé en lecture seule.');
++  // readHopAdviceDossier has just recomputed the study fingerprint and compared it with study.reference.
+   if (dossierRead.formatVersion !== 3 || dossierRead.ownerKey !== command.ownerKey || dossierRead.dossierId !== command.dossierId
+     || dossierRead.supersedesDossierId !== preparation.createCommand.supersedesDossierId
+-    || hopAdviceStudyReference(dossierRead.study) !== command.studyReference) {
++    || dossierRead.study.reference !== command.studyReference) {
+     throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'Le dossier actuel ne correspond plus au lien d’étude conseil préparé.');
+   }
+   const eventReads = await repository.readEvents(command.ownerKey, command.dossierId);
+diff --git a/src/services/hopV55/qualifiedStudyWorkspace.ts b/src/services/hopV55/qualifiedStudyWorkspace.ts
+index 0f1a8382..5469b5d3 100644
+--- a/src/services/hopV55/qualifiedStudyWorkspace.ts
++++ b/src/services/hopV55/qualifiedStudyWorkspace.ts
+@@ -3,7 +3,7 @@ import { hopDecisionReference } from '../../domain/hopDecision/measurements';
+ import type { HopDecisionStudySnapshotV2, CreateHopDecisionDossierV2Input,
+   HopDecisionDossierRead, HopDecisionEventRead, HopDecisionEventV2 } from '../../domain/hopDecision/dossier';
+ import { createHopDecisionDossierV2 } from '../../domain/hopDecision/dossier';
+-import { createHopAdviceDossier, hopAdviceStudyReference, type CreateHopAdviceDossierInput, type HopAdviceDossierRead,
++import { assertHopAdviceDossierCreateInput, hopAdviceStudyReference, type CreateHopAdviceDossierInput, type HopAdviceDossierRead,
+   type HopAdviceDossierV3,
+   type HopAdviceEventRead, type HopAdviceEventV3, type HopAdviceStudyV3 } from '../../domain/hopDecision/adviceDossier';
+ import type { HopProcessStage } from '../../domain/hopDecision/types';
+@@ -14,6 +14,7 @@ import type { HopV55QualifiedAdviceFutureStageV1, HopV55QualifiedAdviceStudyPrep
+ import type { HopV55Workspace, HopV55WorkspaceRepository } from './contracts';
+ import { hopV55DecisionReadingScopesV1 } from './decisionReadingAccessors';
+ import type { HopV55QuestionScopeCoverageV1, HopV55QuestionScopeLedgerV1 } from './questionScopeReading';
++import { HopV55OperationValidationScope, sameCanonicalData } from './operationScopedQualifiedValidation';
+ 
+ export const HOP_V55_QUALIFIED_STUDY_PREPARATION_V1_FORMAT = 'hop-v55-qualified-study-preparation-v1' as const;
+ export const HOP_V55_QUALIFIED_STUDY_PREPARATION_V2_FORMAT = 'hop-v55-qualified-study-preparation-v2' as const;
+@@ -106,6 +107,27 @@ export interface PersistHopV55QualifiedStudyResult {
+   workspace: HopV55Workspace;
+ }
+ 
++/**
++ * Optional operation scope. Only a frozen preparation captured and validated by
++ * this same open scope skips a repeated strict validation; any other object is
++ * validated again.
++ */
++export interface HopV55QualifiedStudyOperationOptionsV1 {
++  scope?: HopV55OperationValidationScope;
++}
++
++/**
++ * Rows validated by assertHopV55QualifiedStudyWorkspaceCollections. The maps
++ * hold the exact row objects that were passed in; they are only meaningful in
++ * the same synchronous step, on the same unmodified collections.
++ */
++export interface HopV55QualifiedStudyCollectionsIndexV1 {
++  readonly preparations: ReadonlyMap<object, HopV55QualifiedStudyPreparationRecord>;
++  readonly preparationsByReference: ReadonlyMap<string, HopV55QualifiedStudyPreparationRecord>;
++  readonly links: ReadonlyMap<object, HopV55QualifiedStudyLinkV1>;
++  readonly linksByPreparationReference: ReadonlyMap<string, HopV55QualifiedStudyLinkV1>;
++}
++
+ export class HopV55QualifiedStudyWorkspaceError extends Error {
+   constructor(readonly code: 'invalidInput' | 'notFound' | 'staleRevision' | 'eventConflict' | 'unsupportedFormat' | 'invalidStoredRecord', message: string) {
+     super(message);
+@@ -120,6 +142,8 @@ const clone = <T,>(value: T): T => structuredClone(value);
+ const validInstant = (value: unknown): value is string => typeof value === 'string'
+   && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/u.test(value)
+   && Number.isFinite(Date.parse(value));
++/** Module-private: only this module's strict validator can register a preparation in a scope. */
++const PREPARATION_SCOPE_KIND = Symbol('hop-v55-qualified-study-preparation');
+ 
+ function onlyKeys(value: Row, keys: readonly string[], label: string): void {
+   if (Object.keys(value).some(key => !keys.includes(key))) throw new HopV55QualifiedStudyWorkspaceError('invalidInput', `${label} contient une clé inconnue.`);
+@@ -179,7 +203,11 @@ function linkReference(value: Omit<HopV55QualifiedStudyLinkV1, 'reference'> | Ho
+   return hopAdviceContentReference(HOP_V55_QUALIFIED_STUDY_LINK_V1_FORMAT, body);
+ }
+ 
+-function assertCreateCommand(value: unknown): asserts value is HopV55QualifiedStudyCreateCommandV1 {
++/**
++ * Strictly validates a create command and returns the study reference that the
++ * domain validator has just recomputed from the study content.
++ */
++function verifyCreateCommand(value: unknown): string {
+   if (!isRow(value) || (value.kind !== 'products' && value.kind !== 'advice')) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Commande d’étude qualifiée inconnue.');
+   }
+@@ -198,22 +226,26 @@ function assertCreateCommand(value: unknown): asserts value is HopV55QualifiedSt
+     const { kind: _kind, ...createInput } = value;
+     try { createHopDecisionDossierV2(clone(createInput) as unknown as CreateHopDecisionDossierV2Input); }
+     catch (error) { throw new HopV55QualifiedStudyWorkspaceError('invalidInput', `Étude produit V2 invalide : ${(error as Error).message}`); }
+-  } else {
+-    const study = value.study as HopAdviceStudyV3;
+-    if (study.formatVersion !== 3 || study.kind !== 'advice' || study.requestSnapshot?.action?.kind !== 'exploreStrategies') {
+-      throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Une étude de stratégie doit être une HopAdviceStudyV3 exploreStrategies.');
+-    }
+-    const { kind: _kind, ...createInput } = value;
+-    try { createHopAdviceDossier(clone(createInput) as unknown as CreateHopAdviceDossierInput); }
+-    catch (error) { throw new HopV55QualifiedStudyWorkspaceError('invalidInput', `Étude de stratégie V3 invalide : ${(error as Error).message}`); }
++    return hopDecisionReference(value.study);
+   }
++  const study = value.study as HopAdviceStudyV3;
++  if (study.formatVersion !== 3 || study.kind !== 'advice' || study.requestSnapshot?.action?.kind !== 'exploreStrategies') {
++    throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Une étude de stratégie doit être une HopAdviceStudyV3 exploreStrategies.');
++  }
++  const { kind: _kind, ...createInput } = value;
++  // The same domain checks as createHopAdviceDossier, without materialising a dossier copy.
++  try { return assertHopAdviceDossierCreateInput(createInput as unknown as CreateHopAdviceDossierInput); }
++  catch (error) { throw new HopV55QualifiedStudyWorkspaceError('invalidInput', `Étude de stratégie V3 invalide : ${(error as Error).message}`); }
+ }
+ 
+-function studyReferenceForCommand(command: HopV55QualifiedStudyCreateCommandV1): string {
+-  return command.kind === 'products' ? hopDecisionReference(command.study) : hopAdviceStudyReference(command.study);
++interface PreparationCheckOptions {
++  /** Internal only: the caller sealed `reference` from this exact body in the same synchronous step. */
++  referenceComputedHere?: boolean;
++  /** Internal only: this exact private command object was verified in the same synchronous step. */
++  verifiedCreateCommand?: { command: unknown; studyReference: string };
+ }
+ 
+-function assertPreparationV1(value: unknown): asserts value is HopV55QualifiedStudyPreparationV1 {
++function assertPreparationV1(value: unknown, options: PreparationCheckOptions = {}): asserts value is HopV55QualifiedStudyPreparationV1 {
+   if (!isRow(value) || value.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V1_FORMAT || !text(value.id)
+     || (value.kind !== 'products' && value.kind !== 'advice') || ![2, 3].includes(value.formatVersion)
+     || !text(value.ownerKey) || !text(value.workspaceId) || !text(value.sourceReadingReference)
+@@ -224,7 +256,8 @@ function assertPreparationV1(value: unknown): asserts value is HopV55QualifiedSt
+   onlyKeys(value, ['format', 'id', 'kind', 'formatVersion', 'ownerKey', 'workspaceId', 'sourceReadingReference',
+     'preparedReference', 'dossierId', 'eventId', 'recordedAt', 'studyReference', 'createCommand', 'advicePreparationContext', 'reference'],
+   'Préparation d’étude qualifiée');
+-  assertCreateCommand(value.createCommand);
++  const verifiedStudyReference = options.verifiedCreateCommand && options.verifiedCreateCommand.command === value.createCommand
++    ? options.verifiedCreateCommand.studyReference : verifyCreateCommand(value.createCommand);
+   const command = value.createCommand as HopV55QualifiedStudyCreateCommandV1;
+   const expectedFormatVersion = command.kind === 'products' ? 2 : 3;
+   const hasAdviceContext = Object.prototype.hasOwnProperty.call(value, 'advicePreparationContext');
+@@ -243,8 +276,8 @@ function assertPreparationV1(value: unknown): asserts value is HopV55QualifiedSt
+   if (value.kind !== command.kind || value.formatVersion !== expectedFormatVersion
+     || value.ownerKey !== command.ownerKey || value.dossierId !== command.dossierId
+     || value.eventId !== command.eventId || value.recordedAt !== command.recordedAt
+-    || value.studyReference !== studyReferenceForCommand(command)
+-    || preparationReference(value as unknown as HopV55QualifiedStudyPreparationV1) !== value.reference) {
++    || value.studyReference !== verifiedStudyReference
++    || !options.referenceComputedHere && preparationReference(value as unknown as HopV55QualifiedStudyPreparationV1) !== value.reference) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Préparation scellée différente de sa commande ou de ses identités exactes.');
+   }
+   if (unsupportedContextReason) throw new HopV55QualifiedStudyWorkspaceError('unsupportedFormat', unsupportedContextReason);
+@@ -278,7 +311,8 @@ function assertScopeCoverage(value: unknown): asserts value is HopV55QuestionSco
+   }
+ }
+ 
+-function assertPreparationV2(value: unknown): asserts value is HopV55QualifiedStudyPreparationV2 {
++function assertPreparationV2(value: unknown, options: Pick<PreparationCheckOptions, 'referenceComputedHere'> = {}):
++  asserts value is HopV55QualifiedStudyPreparationV2 {
+   if (!isRow(value) || value.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V2_FORMAT
+     || value.kind !== 'advice' || !text(value.scopeLedgerReference) || !Array.isArray(value.scopeCoverage)
+     || !isRow(value.qualifiedPreparation) || !text(value.reference)) {
+@@ -297,7 +331,8 @@ function assertPreparationV2(value: unknown): asserts value is HopV55QualifiedSt
+     qualifiedPreparation: _qualifiedPreparation, ...base } = value;
+   const legacyBody = { ...base, format: HOP_V55_QUALIFIED_STUDY_PREPARATION_V1_FORMAT } as Omit<HopV55QualifiedStudyPreparationV1, 'reference'>;
+   const legacy = { ...legacyBody, reference: preparationReference(legacyBody) };
+-  assertPreparationV1(legacy);
++  // `legacy.reference` was just sealed from legacyBody; re-hashing it here would be a tautology.
++  assertPreparationV1(legacy, { referenceComputedHere: true });
+   const qualified = value.qualifiedPreparation;
+   const qualifiedKeys = ['format', 'kind', 'ownerKey', 'workspaceId', 'sourceReadingReference', 'sourceRuntimeReference',
+     'sourceContext', 'sourceContextReference', 'qualificationInputReference', 'preparedReference', 'action', 'explicitFutureStage',
+@@ -313,8 +348,12 @@ function assertPreparationV2(value: unknown): asserts value is HopV55QualifiedSt
+     || !isRow(qualified.action)) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'DTO qualifié V2 incomplet ou futur.');
+   }
+-  assertPreparationV1(qualified.preparation);
+-  if (!sameValue(qualified.preparation, legacy) || !sameValue(qualified.scopeCoverage, value.scopeCoverage)
++  // When the nested preparation is exactly the plain data of the legacy projection
++  // validated above, its verdict is that same verdict. Otherwise the historical
++  // order is kept: strict validation of the nested record, then the divergence check.
++  const nestedIsLegacy = sameCanonicalData(qualified.preparation, legacy);
++  if (!nestedIsLegacy) assertPreparationV1(qualified.preparation);
++  if (!(nestedIsLegacy || sameValue(qualified.preparation, legacy)) || !sameValue(qualified.scopeCoverage, value.scopeCoverage)
+     || qualified.scopeLedgerReference !== value.scopeLedgerReference
+     || qualified.ownerKey !== value.ownerKey || qualified.workspaceId !== value.workspaceId
+     || qualified.sourceReadingReference !== value.sourceReadingReference || qualified.preparedReference !== value.preparedReference
+@@ -322,12 +361,14 @@ function assertPreparationV2(value: unknown): asserts value is HopV55QualifiedSt
+     || qualified.reference !== hopAdviceContentReference('hop-v55-qualified-advice-study-preparation-v2', qualifiedBody)) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Le DTO qualifié V2 diverge de sa couverture, de ses références ou de la commande scellée.');
+   }
+-  if (value.reference !== preparationReferenceV2(value as unknown as HopV55QualifiedStudyPreparationV2)) {
++  if (!options.referenceComputedHere
++    && value.reference !== preparationReferenceV2(value as unknown as HopV55QualifiedStudyPreparationV2)) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Référence de préparation qualifiée V2 incohérente.');
+   }
+ }
+ 
+-function assertPreparation(value: unknown): asserts value is HopV55QualifiedStudyPreparationRecord {
++function assertPreparation(value: unknown, options: HopV55QualifiedStudyOperationOptionsV1 = {}): asserts value is HopV55QualifiedStudyPreparationRecord {
++  if (options.scope?.has(PREPARATION_SCOPE_KIND, value)) return;
+   if (isRow(value) && value.format === HOP_V55_QUALIFIED_STUDY_PREPARATION_V2_FORMAT) assertPreparationV2(value);
+   else assertPreparationV1(value);
+ }
+@@ -357,8 +398,15 @@ export function createHopV55QualifiedStudyPreparationV1(input: {
+   createCommand: HopV55QualifiedStudyCreateCommandV1;
+   advicePreparationContext?: HopV55QualifiedAdvicePreparationContextV1;
+ }): HopV55QualifiedStudyPreparationV1 {
+-  assertCreateCommand(input.createCommand);
+-  const command = clone(input.createCommand);
++  let command: HopV55QualifiedStudyCreateCommandV1;
++  try { command = clone(input.createCommand); }
++  catch (error) {
++    // A non-clonable command keeps the validator's own refusal.
++    verifyCreateCommand(input.createCommand);
++    throw error;
++  }
++  // The private copy is the object that is verified, sealed and returned below.
++  const studyReference = verifyCreateCommand(command);
+   const advicePreparationContext = input.advicePreparationContext === undefined
+     ? undefined : readHopV55QualifiedAdvicePreparationContextV1(input.advicePreparationContext);
+   if (advicePreparationContext?.status === 'unsupportedReadOnly') {
+@@ -369,12 +417,13 @@ export function createHopV55QualifiedStudyPreparationV1(input: {
+     kind: command.kind, formatVersion: command.kind === 'products' ? 2 : 3,
+     ownerKey: input.ownerKey, workspaceId: input.workspaceId, sourceReadingReference: input.sourceReadingReference,
+     preparedReference: input.preparedReference, dossierId: command.dossierId, eventId: command.eventId,
+-    recordedAt: command.recordedAt, studyReference: studyReferenceForCommand(command), createCommand: command,
++    recordedAt: command.recordedAt, studyReference, createCommand: command,
+     ...(advicePreparationContext?.status === 'available' ? { advicePreparationContext: advicePreparationContext.context } : {}),
+   };
+   const record = { ...body, reference: preparationReference(body) };
+-  assertPreparation(record);
+-  return clone(record);
++  assertPreparationV1(record, { referenceComputedHere: true, verifiedCreateCommand: { command, studyReference } });
++  // Built only from this call's private copies: no other holder can alter it, so it is returned as is.
++  return record;
+ }
+ 
+ export function createHopV55QualifiedStudyPreparationV2(input: {
+@@ -399,32 +448,83 @@ export function createHopV55QualifiedStudyPreparationV2(input: {
+     qualifiedPreparation,
+   };
+   const preparationV2 = { ...body, reference: preparationReferenceV2(body) };
+-  assertPreparationV2(preparationV2);
+-  return clone(preparationV2);
++  // The V2 reference was sealed from this private body just above; every other V2 check still runs.
++  assertPreparationV2(preparationV2, { referenceComputedHere: true });
++  return preparationV2;
+ }
+ 
+-export function readHopV55QualifiedStudyPreparation(value: unknown):
++export type HopV55QualifiedStudyPreparationDecode =
+   | { status: 'available'; preparation: HopV55QualifiedStudyPreparationRecord }
+-  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string } {
+-  if (isRow(value) && typeof value.format === 'string'
++  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string };
++type PreparationDecode = HopV55QualifiedStudyPreparationDecode;
++
++function isFuturePreparationFormat(value: unknown): boolean {
++  return isRow(value) && typeof value.format === 'string'
+     && value.format.startsWith('hop-v55-qualified-study-preparation-')
+     && value.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V1_FORMAT
+-    && value.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V2_FORMAT) {
+-    return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: 'Format futur de préparation qualifiée conservé brut.' };
+-  }
++    && value.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V2_FORMAT;
++}
++
++const FUTURE_PREPARATION_REASON = 'Format futur de préparation qualifiée conservé brut.';
++
++function unsupportedContextRefusal(error: unknown, value: unknown): string | undefined {
++  return error instanceof HopV55QualifiedStudyWorkspaceError && error.code === 'unsupportedFormat'
++    && isRow(value) && Object.prototype.hasOwnProperty.call(value, 'advicePreparationContext') ? error.message : undefined;
++}
++
++/**
++ * Strict decode with the exact semantics of readHopV55QualifiedStudyPreparation,
++ * but returning the validated input row itself instead of a copy. It creates no
++ * new alias: use it only for synchronous checks that neither retain nor mutate
++ * the row.
++ */
++export function decodeHopV55QualifiedStudyPreparationRow(value: unknown): PreparationDecode {
++  if (isFuturePreparationFormat(value)) return { status: 'unsupportedReadOnly', snapshot: value, reason: FUTURE_PREPARATION_REASON };
+   try { assertPreparation(value); }
+   catch (error) {
+-    if (error instanceof HopV55QualifiedStudyWorkspaceError && error.code === 'unsupportedFormat'
+-      && isRow(value) && Object.prototype.hasOwnProperty.call(value, 'advicePreparationContext')) {
+-      return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: error.message };
+-    }
++    const reason = unsupportedContextRefusal(error, value);
++    if (reason !== undefined) return { status: 'unsupportedReadOnly', snapshot: value, reason };
+     throw error;
+   }
+-  return { status: 'available', preparation: clone(value) };
++  return { status: 'available', preparation: value as HopV55QualifiedStudyPreparationRecord };
+ }
+ 
+-export function createHopV55QualifiedStudyLinkV1(preparation: HopV55QualifiedStudyPreparationRecord): HopV55QualifiedStudyLinkV1 {
+-  assertPreparation(preparation);
++export function readHopV55QualifiedStudyPreparation(value: unknown):
++  | { status: 'available'; preparation: HopV55QualifiedStudyPreparationRecord }
++  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string } {
++  const read = decodeHopV55QualifiedStudyPreparationRow(value);
++  return read.status === 'available'
++    ? { status: 'available', preparation: clone(read.preparation) }
++    : { status: 'unsupportedReadOnly', snapshot: clone(read.snapshot), reason: read.reason };
++}
++
++/**
++ * Captures a frozen copy of a preparation in an explicit operation scope after
++ * the canonical strict validation of that frozen copy. Later checks in the same
++ * open scope recognise only this returned object.
++ */
++export function captureHopV55QualifiedStudyPreparation(scope: HopV55OperationValidationScope,
++  value: unknown): HopV55QualifiedStudyPreparationRecord {
++  const read = capturePreparation(scope, value);
++  if (read.status !== 'available') throw new HopV55QualifiedStudyWorkspaceError('unsupportedFormat', read.reason);
++  return read.preparation;
++}
++
++function capturePreparation(scope: HopV55OperationValidationScope, value: unknown): PreparationDecode {
++  if (isFuturePreparationFormat(value)) return { status: 'unsupportedReadOnly', snapshot: value, reason: FUTURE_PREPARATION_REASON };
++  try {
++    return { status: 'available',
++      preparation: scope.capture<HopV55QualifiedStudyPreparationRecord>(PREPARATION_SCOPE_KIND, value, frozen => { assertPreparation(frozen); }) };
++  } catch (error) {
++    const reason = unsupportedContextRefusal(error, value);
++    if (reason !== undefined) return { status: 'unsupportedReadOnly', snapshot: value, reason };
++    throw error;
++  }
++}
++
++export function createHopV55QualifiedStudyLinkV1(preparation: HopV55QualifiedStudyPreparationRecord,
++  options: HopV55QualifiedStudyOperationOptionsV1 = {}): HopV55QualifiedStudyLinkV1 {
++  assertPreparation(preparation, options);
+   const body: Omit<HopV55QualifiedStudyLinkV1, 'reference'> = {
+     format: HOP_V55_QUALIFIED_STUDY_LINK_V1_FORMAT, id: preparation.id,
+     kind: preparation.kind, formatVersion: preparation.formatVersion,
+@@ -462,24 +562,24 @@ function assertOpaqueScope(value: unknown, ownerKey: string, workspaceId: string
+   }
+ }
+ 
+-function scopeLedgersFromWorkspace(workspace: Pick<HopV55Workspace, 'decisionReadings'>): Map<string, HopV55QuestionScopeLedgerV1> {
+-  const result = new Map<string, HopV55QuestionScopeLedgerV1>();
+-  for (const raw of workspace.decisionReadings ?? []) {
+-    const read = readHopV55DecisionReadingArchive(raw);
+-    if (read.status !== 'available') continue;
+-    const scopes = hopV55DecisionReadingScopesV1(read.archive);
+-    if (scopes) result.set(read.archive.contentReference, scopes.scopeLedger);
+-  }
+-  return result;
++interface ArchiveIndex {
++  available: HopV55DecisionReadingArchive[];
++  scopeLedgersByReading: Map<string, HopV55QuestionScopeLedgerV1>;
++  sourceRuntimeReferencesByReading: Map<string, string>;
+ }
+ 
+-function sourceRuntimeReferencesFromWorkspace(workspace: Pick<HopV55Workspace, 'decisionReadings'>): Map<string, string> {
+-  const result = new Map<string, string>();
++/** One strict pass over the archives instead of one pass per derived map. */
++function archiveIndexFromWorkspace(workspace: Pick<HopV55Workspace, 'decisionReadings'>): ArchiveIndex {
++  const index: ArchiveIndex = { available: [], scopeLedgersByReading: new Map(), sourceRuntimeReferencesByReading: new Map() };
+   for (const raw of workspace.decisionReadings ?? []) {
+     const read = readHopV55DecisionReadingArchive(raw);
+-    if (read.status === 'available') result.set(read.archive.contentReference, read.archive.runtimeReference);
++    if (read.status !== 'available') continue;
++    index.available.push(read.archive);
++    const scopes = hopV55DecisionReadingScopesV1(read.archive);
++    if (scopes) index.scopeLedgersByReading.set(read.archive.contentReference, scopes.scopeLedger);
++    index.sourceRuntimeReferencesByReading.set(read.archive.contentReference, read.archive.runtimeReference);
+   }
+-  return result;
++  return index;
+ }
+ 
+ function assertPreparationScopeCoverage(preparation: HopV55QualifiedStudyPreparationRecord,
+@@ -527,19 +627,22 @@ export function assertHopV55QualifiedStudyWorkspaceCollections(input: {
+   sourceRuntimeReferencesByReading?: ReadonlyMap<string, string>;
+   preparations?: unknown;
+   links?: unknown;
+-}): void {
++}): HopV55QualifiedStudyCollectionsIndexV1 {
+   const preparationRows = input.preparations ?? [];
+   const linkRows = input.links ?? [];
+   if (!Array.isArray(preparationRows) || !Array.isArray(linkRows)) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Historique des études qualifiées invalide.');
+   }
++  const preparationsByRow = new Map<object, HopV55QualifiedStudyPreparationRecord>();
+   const preparationsByReference = new Map<string, HopV55QualifiedStudyPreparationRecord>();
++  const linksByRow = new Map<object, HopV55QualifiedStudyLinkV1>();
++  const linksByPreparationReference = new Map<string, HopV55QualifiedStudyLinkV1>();
+   const preparationIds = new Set<string>();
+   const preparationDossierIds = new Set<string>(), preparationEventIds = new Set<string>();
+   const linkIds = new Set<string>(), linkReferences = new Set<string>();
+   const futurePreparationSources = new Set<string>(), futureLinkSources = new Set<string>();
+   for (const raw of preparationRows) {
+-    const read = readHopV55QualifiedStudyPreparation(raw);
++    const read = decodeHopV55QualifiedStudyPreparationRow(raw);
+     if (read.status === 'unsupportedReadOnly') {
+       assertOpaqueScope(read.snapshot, input.ownerKey, input.workspaceId, input.sourceReadingReferences, 'Préparation qualifiée');
+       if (isRow(read.snapshot) && typeof read.snapshot.sourceReadingReference === 'string') futurePreparationSources.add(read.snapshot.sourceReadingReference);
+@@ -574,6 +677,7 @@ export function assertHopV55QualifiedStudyWorkspaceCollections(input: {
+     preparationDossierIds.add(preparation.dossierId);
+     preparationEventIds.add(preparation.eventId);
+     preparationsByReference.set(preparation.reference, preparation);
++    preparationsByRow.set(raw as object, preparation);
+   }
+   for (const raw of linkRows) {
+     const read = readHopV55QualifiedStudyLink(raw);
+@@ -604,7 +708,10 @@ export function assertHopV55QualifiedStudyWorkspaceCollections(input: {
+       throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'ID ou référence de lien qualifié dupliqué.');
+     }
+     linkIds.add(link.id); linkReferences.add(link.reference);
++    linksByRow.set(raw as object, link);
++    linksByPreparationReference.set(link.preparationReference, link);
+   }
++  return { preparations: preparationsByRow, preparationsByReference, links: linksByRow, linksByPreparationReference };
+ }
+ 
+ function sameValue(left: unknown, right: unknown): boolean {
+@@ -621,32 +728,27 @@ function sameValue(left: unknown, right: unknown): boolean {
+ }
+ 
+ export function appendHopV55QualifiedStudyPreparationRecord(workspace: HopV55Workspace,
+-  preparation: HopV55QualifiedStudyPreparationRecord): HopV55Workspace {
+-  assertPreparation(preparation);
++  preparation: HopV55QualifiedStudyPreparationRecord, options: HopV55QualifiedStudyOperationOptionsV1 = {}): HopV55Workspace {
++  assertPreparation(preparation, options);
++  const archives = archiveIndexFromWorkspace(workspace);
+   if (workspace.ownerKey !== preparation.ownerKey || workspace.id !== preparation.workspaceId
+-    || !workspace.decisionReadings?.some(raw => {
+-      const archive = readHopV55DecisionReadingArchive(raw);
+-      return archive.status === 'available' && archive.archive.ownerKey === workspace.ownerKey
+-        && archive.archive.workspaceId === workspace.id && archive.archive.contentReference === preparation.sourceReadingReference;
+-    })) {
++    || !archives.available.some(archive => archive.ownerKey === workspace.ownerKey
++      && archive.workspaceId === workspace.id && archive.contentReference === preparation.sourceReadingReference)) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Owner/workspace et archive de lecture doivent correspondre exactement avant la préparation.');
+   }
+-  assertPreparationScopeCoverage(preparation, scopeLedgersFromWorkspace(workspace), sourceRuntimeReferencesFromWorkspace(workspace));
++  assertPreparationScopeCoverage(preparation, archives.scopeLedgersByReading, archives.sourceRuntimeReferencesByReading);
+   const rows = workspace.qualifiedStudyPreparations ?? [];
+-  const existing = rows.map(readHopV55QualifiedStudyPreparation).find(read => read.status === 'available'
++  const existing = rows.map(row => decodeHopV55QualifiedStudyPreparationRow(row)).find(read => read.status === 'available'
+     && read.preparation.id === preparation.id);
+   if (existing?.status === 'available') {
+     if (existing.preparation.reference !== preparation.reference) throw new HopV55QualifiedStudyWorkspaceError('eventConflict', 'ID de préparation déjà utilisé avec un autre payload.');
+     return clone(workspace);
+   }
+-  if (rows.some(row => isRow(row) && typeof row.format === 'string'
+-    && row.format.startsWith('hop-v55-qualified-study-preparation-')
+-    && row.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V1_FORMAT
+-    && row.format !== HOP_V55_QUALIFIED_STUDY_PREPARATION_V2_FORMAT
+-    && row.sourceReadingReference === preparation.sourceReadingReference)) {
++  if (rows.some(row => isFuturePreparationFormat(row) && (row as Row).sourceReadingReference === preparation.sourceReadingReference)) {
+     throw new HopV55QualifiedStudyWorkspaceError('unsupportedFormat', 'Une préparation future reste en lecture seule.');
+   }
+-  return { ...clone(workspace), qualifiedStudyPreparations: [...clone(rows), preparation] };
++  const next = clone(workspace);
++  return { ...next, qualifiedStudyPreparations: [...(next.qualifiedStudyPreparations ?? []), preparation] };
+ }
+ 
+ export function appendHopV55QualifiedStudyPreparation(workspace: HopV55Workspace,
+@@ -656,17 +758,18 @@ export function appendHopV55QualifiedStudyPreparation(workspace: HopV55Workspace
+ }
+ 
+ export function appendHopV55QualifiedStudyLink(workspace: HopV55Workspace,
+-  preparation: HopV55QualifiedStudyPreparationRecord): HopV55Workspace {
+-  assertPreparation(preparation);
++  preparation: HopV55QualifiedStudyPreparationRecord, options: HopV55QualifiedStudyOperationOptionsV1 = {}): HopV55Workspace {
++  assertPreparation(preparation, options);
+   if (workspace.ownerKey !== preparation.ownerKey || workspace.id !== preparation.workspaceId
+     || !workspace.decisionReadings?.some(archive => archive.contentReference === preparation.sourceReadingReference)
+     || !workspace.qualifiedStudyPreparations?.some(row => {
+-      const read = readHopV55QualifiedStudyPreparation(row);
++      // The stored row is another object: it is always decoded strictly.
++      const read = decodeHopV55QualifiedStudyPreparationRow(row);
+       return read.status === 'available' && read.preparation.reference === preparation.reference;
+     })) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'La préparation et son archive source doivent être déjà persistées dans ce workspace.');
+   }
+-  const link = createHopV55QualifiedStudyLinkV1(preparation);
++  const link = createHopV55QualifiedStudyLinkV1(preparation, options);
+   const rows = workspace.qualifiedStudyLinks ?? [];
+   const existing = rows.map(readHopV55QualifiedStudyLink).find(read => read.status === 'available'
+     && read.link.preparationReference === preparation.reference);
+@@ -680,10 +783,20 @@ export function appendHopV55QualifiedStudyLink(workspace: HopV55Workspace,
+     && row.sourceReadingReference === preparation.sourceReadingReference)) {
+     throw new HopV55QualifiedStudyWorkspaceError('unsupportedFormat', 'Un lien futur reste en lecture seule.');
+   }
+-  return { ...clone(workspace), qualifiedStudyLinks: [...clone(rows), link] };
++  const next = clone(workspace);
++  return { ...next, qualifiedStudyLinks: [...(next.qualifiedStudyLinks ?? []), link] };
+ }
+ 
+-export function assertHopV55QualifiedStudyAppendOnly(previous: HopV55Workspace, next: HopV55Workspace): void {
++/**
++ * Append-only transition. `previousIndex` may carry the collections index that
++ * assertHopV55QualifiedStudyWorkspaceCollections returned for `previous` in the
++ * same synchronous step; rows absent from it are decoded strictly.
++ */
++export function assertHopV55QualifiedStudyAppendOnly(previous: HopV55Workspace, next: HopV55Workspace, options: {
++  previousIndex?: HopV55QualifiedStudyCollectionsIndexV1;
++  previousScopeLedgersByReading?: ReadonlyMap<string, HopV55QuestionScopeLedgerV1>;
++  previousSourceRuntimeReferencesByReading?: ReadonlyMap<string, string>;
++} = {}): void {
+   const priorPreparations = previous.qualifiedStudyPreparations ?? [];
+   const nextPreparations = next.qualifiedStudyPreparations ?? [];
+   if (nextPreparations.length < priorPreparations.length
+@@ -691,13 +804,20 @@ export function assertHopV55QualifiedStudyAppendOnly(previous: HopV55Workspace,
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Une préparation d’étude qualifiée est append-only.');
+   }
+   const priorReadingReferences = new Set((previous.decisionReadings ?? []).map(row => row.contentReference));
+-  for (const raw of nextPreparations.slice(priorPreparations.length)) {
+-    const read = readHopV55QualifiedStudyPreparation(raw);
+-    if (read.status !== 'available') throw new HopV55QualifiedStudyWorkspaceError('unsupportedFormat', 'Une préparation future ne peut pas être écrite par ce client.');
+-    if (!priorReadingReferences.has(read.preparation.sourceReadingReference)) {
+-      throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'L’archive de lecture doit être persistée avant la préparation d’étude.');
++  const newPreparations = nextPreparations.slice(priorPreparations.length);
++  if (newPreparations.length) {
++    const archives = options.previousScopeLedgersByReading && options.previousSourceRuntimeReferencesByReading
++      ? undefined : archiveIndexFromWorkspace(previous);
++    const ledgers = options.previousScopeLedgersByReading ?? archives!.scopeLedgersByReading;
++    const runtimes = options.previousSourceRuntimeReferencesByReading ?? archives!.sourceRuntimeReferencesByReading;
++    for (const raw of newPreparations) {
++      const read = decodeHopV55QualifiedStudyPreparationRow(raw);
++      if (read.status !== 'available') throw new HopV55QualifiedStudyWorkspaceError('unsupportedFormat', 'Une préparation future ne peut pas être écrite par ce client.');
++      if (!priorReadingReferences.has(read.preparation.sourceReadingReference)) {
++        throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'L’archive de lecture doit être persistée avant la préparation d’étude.');
++      }
++      assertPreparationScopeCoverage(read.preparation, ledgers, runtimes);
+     }
+-    assertPreparationScopeCoverage(read.preparation, scopeLedgersFromWorkspace(previous), sourceRuntimeReferencesFromWorkspace(previous));
+   }
+   const priorLinks = previous.qualifiedStudyLinks ?? [];
+   const nextLinks = next.qualifiedStudyLinks ?? [];
+@@ -705,7 +825,9 @@ export function assertHopV55QualifiedStudyAppendOnly(previous: HopV55Workspace,
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Un lien d’étude qualifiée est append-only.');
+   }
+   const priorPrepReferences = new Set(priorPreparations.flatMap(row => {
+-    const read = readHopV55QualifiedStudyPreparation(row);
++    const known = isRow(row) ? options.previousIndex?.preparations.get(row) : undefined;
++    if (known) return [known.reference];
++    const read = decodeHopV55QualifiedStudyPreparationRow(row);
+     return read.status === 'available' ? [read.preparation.reference] : [];
+   }));
+   for (const raw of nextLinks.slice(priorLinks.length)) {
+@@ -719,15 +841,13 @@ export function assertHopV55QualifiedStudyAppendOnly(previous: HopV55Workspace,
+ }
+ 
+ export function assertHopV55QualifiedStudyWorkspace(workspace: Pick<HopV55Workspace,
+-  'id' | 'ownerKey' | 'decisionReadings' | 'qualifiedStudyPreparations' | 'qualifiedStudyLinks'>): void {
+-  const readingReferences = new Set((workspace.decisionReadings ?? []).flatMap(archive => {
+-    const read = readHopV55DecisionReadingArchive(archive);
+-    return read.status === 'available' && read.archive.ownerKey === workspace.ownerKey && read.archive.workspaceId === workspace.id
+-      ? [read.archive.contentReference] : [];
+-  }));
+-  assertHopV55QualifiedStudyWorkspaceCollections({ ownerKey: workspace.ownerKey, workspaceId: workspace.id,
+-    sourceReadingReferences: readingReferences, scopeLedgersByReading: scopeLedgersFromWorkspace(workspace),
+-    sourceRuntimeReferencesByReading: sourceRuntimeReferencesFromWorkspace(workspace),
++  'id' | 'ownerKey' | 'decisionReadings' | 'qualifiedStudyPreparations' | 'qualifiedStudyLinks'>): HopV55QualifiedStudyCollectionsIndexV1 {
++  const archives = archiveIndexFromWorkspace(workspace);
++  const readingReferences = new Set(archives.available.flatMap(archive =>
++    archive.ownerKey === workspace.ownerKey && archive.workspaceId === workspace.id ? [archive.contentReference] : []));
++  return assertHopV55QualifiedStudyWorkspaceCollections({ ownerKey: workspace.ownerKey, workspaceId: workspace.id,
++    sourceReadingReferences: readingReferences, scopeLedgersByReading: archives.scopeLedgersByReading,
++    sourceRuntimeReferencesByReading: archives.sourceRuntimeReferencesByReading,
+     preparations: workspace.qualifiedStudyPreparations,
+     links: workspace.qualifiedStudyLinks });
+ }
+@@ -796,23 +916,29 @@ async function readDomainReceipt(repository: HopDecisionLocalRepository, prepara
+   return { dossier, events, studySavedEvent: first as HopDecisionEventV2 | HopAdviceEventV3 };
+ }
+ 
++/**
++ * Finds the exact stored preparation in this freshly read workspace and captures
++ * a frozen, strictly validated copy of it in `scope`. Rows are matched by their
++ * stored reference before the strict decode, which then proves the reference
++ * from the content.
++ */
+ function validateStoredPreparation(workspace: HopV55Workspace, ownerKey: string, workspaceId: string,
+-  preparationReferenceValue: string): HopV55QualifiedStudyPreparationRecord {
++  preparationReferenceValue: string, scope: HopV55OperationValidationScope): HopV55QualifiedStudyPreparationRecord {
+   if (workspace.ownerKey !== ownerKey || workspace.id !== workspaceId) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Owner/workspace différent du rattachement préparé.');
+   }
+-  const raw = workspace.qualifiedStudyPreparations?.find(row => {
+-    const read = readHopV55QualifiedStudyPreparation(row);
+-    return read.status === 'available' && read.preparation.reference === preparationReferenceValue;
+-  });
+-  const read = raw && readHopV55QualifiedStudyPreparation(raw);
+-  if (!read || read.status !== 'available') throw new HopV55QualifiedStudyWorkspaceError('notFound', 'Préparation exacte d’étude absente du workspace.');
+-  const preparation = read.preparation;
+-  assertPreparationScopeCoverage(preparation, scopeLedgersFromWorkspace(workspace), sourceRuntimeReferencesFromWorkspace(workspace));
+-  const archiveRaw = workspace.decisionReadings?.find(row => row.contentReference === preparation.sourceReadingReference);
+-  const archiveRead = archiveRaw && readHopV55DecisionReadingArchive(archiveRaw);
+-  if (!archiveRead || archiveRead.status !== 'available' || archiveRead.archive.ownerKey !== ownerKey
+-    || archiveRead.archive.workspaceId !== workspaceId || archiveRead.archive.contentReference !== preparation.sourceReadingReference) {
++  let preparation: HopV55QualifiedStudyPreparationRecord | undefined;
++  for (const row of workspace.qualifiedStudyPreparations ?? []) {
++    if (!isRow(row) || row.reference !== preparationReferenceValue) continue;
++    const read = capturePreparation(scope, row);
++    if (read.status === 'available' && read.preparation.reference === preparationReferenceValue) { preparation = read.preparation; break; }
++  }
++  if (!preparation) throw new HopV55QualifiedStudyWorkspaceError('notFound', 'Préparation exacte d’étude absente du workspace.');
++  const archives = archiveIndexFromWorkspace(workspace);
++  assertPreparationScopeCoverage(preparation, archives.scopeLedgersByReading, archives.sourceRuntimeReferencesByReading);
++  const archive = archives.available.find(row => row.contentReference === preparation!.sourceReadingReference);
++  if (!archive || archive.ownerKey !== ownerKey
++    || archive.workspaceId !== workspaceId || archive.contentReference !== preparation.sourceReadingReference) {
+     throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'La lecture source n’est pas persistée sous son owner/workspace exact.');
+   }
+   return preparation;
+@@ -825,6 +951,8 @@ function sameLink(left: HopV55QualifiedStudyLinkV1, right: HopV55QualifiedStudyL
+ /**
+  * Creates/recovers the exact durable domain study, then links it in the workspace
+  * with a separate CAS. This deliberately does not claim cross-database atomicity.
++ * Each attempt re-reads the workspace and captures the stored preparation in a
++ * fresh operation scope; callbacks receive their own mutable copy.
+  */
+ export async function persistHopV55QualifiedStudy(input: {
+   workspaces: Pick<HopV55WorkspaceRepository, 'read' | 'save'>;
+@@ -848,53 +976,60 @@ export async function persistHopV55QualifiedStudy(input: {
+   let createdInThisCall = false;
+   let lastError: unknown;
+   for (let attempt = 0; attempt < maxAttempts; attempt++) {
+-    const workspace = await input.workspaces.read(input.ownerKey, input.workspaceId);
+-    if (!workspace) throw new HopV55QualifiedStudyWorkspaceError('notFound', 'Workspace de l’étude qualifiée introuvable.');
+-    const preparation = validateStoredPreparation(workspace, input.ownerKey, input.workspaceId, input.preparationReference);
+-    const durable = await readDomainReceipt(input.qualifiedStudies, preparation);
+-    let domainReceipt = durable;
+-    if (!domainReceipt) {
+-      const beforeCreate = normalizeFreshness(await input.validateFreshness({ preparation, phase: 'beforeCreate' }));
+-      if (beforeCreate.status !== 'current') {
+-        throw new HopV55QualifiedStudyWorkspaceError('staleRevision', beforeCreate.reason || 'La source ou la qualification a changé avant la création de l’étude.');
++    const scope = new HopV55OperationValidationScope();
++    try {
++      const workspace = await input.workspaces.read(input.ownerKey, input.workspaceId);
++      if (!workspace) throw new HopV55QualifiedStudyWorkspaceError('notFound', 'Workspace de l’étude qualifiée introuvable.');
++      const preparation = validateStoredPreparation(workspace, input.ownerKey, input.workspaceId, input.preparationReference, scope);
++      const freshnessFor = async (phase: HopV55QualifiedStudyFreshnessInput['phase']) =>
++        normalizeFreshness(await input.validateFreshness({ preparation: clone(preparation), phase }));
++      const durable = await readDomainReceipt(input.qualifiedStudies, preparation);
++      let domainReceipt = durable;
++      if (!domainReceipt) {
++        const beforeCreate = await freshnessFor('beforeCreate');
++        if (beforeCreate.status !== 'current') {
++          throw new HopV55QualifiedStudyWorkspaceError('staleRevision', beforeCreate.reason || 'La source ou la qualification a changé avant la création de l’étude.');
++        }
++        const created = await input.qualifiedStudies.create(commandForRepository(preparation));
++        domainResult = created.status;
++        createdInThisCall = created.status === 'created';
++        // Read the committed domain rows again. Only this durable reread may authorize a workspace link.
++        domainReceipt = await readDomainReceipt(input.qualifiedStudies, preparation);
++        if (!domainReceipt) throw new HopV55QualifiedStudyWorkspaceError('invalidStoredRecord', 'Le create domaine a retourné sans étude durable relisible.');
+       }
+-      const created = await input.qualifiedStudies.create(commandForRepository(preparation));
+-      domainResult = created.status;
+-      createdInThisCall = created.status === 'created';
+-      // Read the committed domain rows again. Only this durable reread may authorize a workspace link.
+-      domainReceipt = await readDomainReceipt(input.qualifiedStudies, preparation);
+-      if (!domainReceipt) throw new HopV55QualifiedStudyWorkspaceError('invalidStoredRecord', 'Le create domaine a retourné sans étude durable relisible.');
+-    }
+-    if (!createdInThisCall) domainResult = 'duplicate';
+-
+-    const link = createHopV55QualifiedStudyLinkV1(preparation);
+-    const priorLinkRaw = workspace.qualifiedStudyLinks?.find(row => {
+-      const read = readHopV55QualifiedStudyLink(row);
+-      return read.status === 'available' && read.link.preparationReference === preparation.reference;
+-    });
+-    if (priorLinkRaw) {
+-      const priorLinkRead = readHopV55QualifiedStudyLink(priorLinkRaw);
+-      if (priorLinkRead.status !== 'available' || !sameLink(priorLinkRead.link, link)) {
+-        throw new HopV55QualifiedStudyWorkspaceError('eventConflict', 'Le rattachement existant porte un autre dossier/étude.');
++      if (!createdInThisCall) domainResult = 'duplicate';
++
++      const link = createHopV55QualifiedStudyLinkV1(preparation, { scope });
++      const priorLinkRaw = workspace.qualifiedStudyLinks?.find(row => {
++        const read = readHopV55QualifiedStudyLink(row);
++        return read.status === 'available' && read.link.preparationReference === preparation.reference;
++      });
++      if (priorLinkRaw) {
++        const priorLinkRead = readHopV55QualifiedStudyLink(priorLinkRaw);
++        if (priorLinkRead.status !== 'available' || !sameLink(priorLinkRead.link, link)) {
++          throw new HopV55QualifiedStudyWorkspaceError('eventConflict', 'Le rattachement existant porte un autre dossier/étude.');
++        }
++        const freshness = await freshnessFor('alreadyLinked');
++        return { status: freshness.status === 'historical' ? 'recoveredHistorical' : 'alreadyLinked',
++          freshContext: freshness, repositoryStatus: domainResult, preparation: clone(preparation), link: priorLinkRead.link,
++          dossier: domainReceipt.dossier, events: domainReceipt.events, studySavedEvent: domainReceipt.studySavedEvent,
++          workspace };
+       }
+-      const freshness = normalizeFreshness(await input.validateFreshness({ preparation, phase: 'alreadyLinked' }));
+-      return { status: freshness.status === 'historical' ? 'recoveredHistorical' : 'alreadyLinked',
+-        freshContext: freshness, repositoryStatus: domainResult, preparation, link: priorLinkRead.link,
+-        dossier: domainReceipt.dossier, events: domainReceipt.events, studySavedEvent: domainReceipt.studySavedEvent,
+-        workspace };
+-    }
+ 
+-    const freshness = normalizeFreshness(await input.validateFreshness({ preparation, phase: 'beforeLink' }));
+-    const next = appendHopV55QualifiedStudyLink(workspace, preparation);
+-    try {
+-      const saved = await input.workspaces.save(next, workspace.revision);
+-      return { status: freshness.status === 'historical' ? 'recoveredHistorical' : 'linked',
+-        freshContext: freshness, repositoryStatus: domainResult, preparation, link,
+-        dossier: domainReceipt.dossier, events: domainReceipt.events, studySavedEvent: domainReceipt.studySavedEvent,
+-        workspace: saved };
+-    } catch (error) {
+-      if ((error as { code?: unknown })?.code === 'staleRevision') { lastError = error; continue; }
+-      throw error;
++      const freshness = await freshnessFor('beforeLink');
++      const next = appendHopV55QualifiedStudyLink(workspace, preparation, { scope });
++      try {
++        const saved = await input.workspaces.save(next, workspace.revision);
++        return { status: freshness.status === 'historical' ? 'recoveredHistorical' : 'linked',
++          freshContext: freshness, repositoryStatus: domainResult, preparation: clone(preparation), link,
++          dossier: domainReceipt.dossier, events: domainReceipt.events, studySavedEvent: domainReceipt.studySavedEvent,
++          workspace: saved };
++      } catch (error) {
++        if ((error as { code?: unknown })?.code === 'staleRevision') { lastError = error; continue; }
++        throw error;
++      }
++    } finally {
++      scope.close();
+     }
+   }
+   throw new HopV55QualifiedStudyWorkspaceError('staleRevision',
+@@ -904,7 +1039,9 @@ export async function persistHopV55QualifiedStudy(input: {
+ /**
+  * Durably prepares the exact command in workspace CAS, creates the independent
+  * domain dossier, then links its receipt with a second workspace CAS. A retry
+- * finds the same preparation/domain IDs and never rebuilds the study.
++ * finds the same preparation/domain IDs and never rebuilds the study. The
++ * caller's preparation is captured once (frozen copy, strict validation);
++ * mutating the caller's object afterwards cannot change what is stored.
+  */
+ export async function saveHopV55QualifiedStudy(input: {
+   workspaces: Pick<HopV55WorkspaceRepository, 'read' | 'save'>;
+@@ -914,41 +1051,47 @@ export async function saveHopV55QualifiedStudy(input: {
+   maxPreparationAttempts?: number;
+   maxLinkAttempts?: number;
+ }): Promise<PersistHopV55QualifiedStudyResult> {
+-  assertPreparation(input.preparation);
+-  const maxPreparationAttempts = input.maxPreparationAttempts ?? 4;
+-  if (!Number.isSafeInteger(maxPreparationAttempts) || maxPreparationAttempts < 1 || maxPreparationAttempts > 8) {
+-    throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Nombre de reprises CAS de préparation invalide.');
+-  }
+-  let persisted = false;
+-  let lastError: unknown;
+-  for (let attempt = 0; attempt < maxPreparationAttempts; attempt++) {
+-    const workspace = await input.workspaces.read(input.preparation.ownerKey, input.preparation.workspaceId);
+-    if (!workspace) throw new HopV55QualifiedStudyWorkspaceError('notFound', 'Workspace source de l’étude qualifiée introuvable.');
+-    const existing = (workspace.qualifiedStudyPreparations ?? []).flatMap(row => {
+-      const read = readHopV55QualifiedStudyPreparation(row);
+-      return read.status === 'available' && read.preparation.id === input.preparation.id ? [read.preparation] : [];
+-    })[0];
+-    if (existing) {
+-      if (existing.reference !== input.preparation.reference) {
+-        throw new HopV55QualifiedStudyWorkspaceError('eventConflict', 'ID de préparation déjà utilisé avec un contenu différent.');
+-      }
+-      persisted = true;
+-      break;
++  const scope = new HopV55OperationValidationScope();
++  try {
++    const preparation = scope.capture<HopV55QualifiedStudyPreparationRecord>(PREPARATION_SCOPE_KIND, input.preparation,
++      frozen => { assertPreparation(frozen); });
++    const maxPreparationAttempts = input.maxPreparationAttempts ?? 4;
++    if (!Number.isSafeInteger(maxPreparationAttempts) || maxPreparationAttempts < 1 || maxPreparationAttempts > 8) {
++      throw new HopV55QualifiedStudyWorkspaceError('invalidInput', 'Nombre de reprises CAS de préparation invalide.');
+     }
+-    const next = appendHopV55QualifiedStudyPreparationRecord(workspace, input.preparation);
+-    try {
+-      await input.workspaces.save(next, workspace.revision);
+-      persisted = true;
+-      break;
+-    } catch (error) {
+-      if ((error as { code?: unknown })?.code === 'staleRevision') { lastError = error; continue; }
+-      throw error;
++    let persisted = false;
++    let lastError: unknown;
++    for (let attempt = 0; attempt < maxPreparationAttempts; attempt++) {
++      const workspace = await input.workspaces.read(preparation.ownerKey, preparation.workspaceId);
++      if (!workspace) throw new HopV55QualifiedStudyWorkspaceError('notFound', 'Workspace source de l’étude qualifiée introuvable.');
++      const existing = (workspace.qualifiedStudyPreparations ?? []).flatMap(row => {
++        const read = decodeHopV55QualifiedStudyPreparationRow(row);
++        return read.status === 'available' && read.preparation.id === preparation.id ? [read.preparation] : [];
++      })[0];
++      if (existing) {
++        if (existing.reference !== preparation.reference) {
++          throw new HopV55QualifiedStudyWorkspaceError('eventConflict', 'ID de préparation déjà utilisé avec un contenu différent.');
++        }
++        persisted = true;
++        break;
++      }
++      const next = appendHopV55QualifiedStudyPreparationRecord(workspace, preparation, { scope });
++      try {
++        await input.workspaces.save(next, workspace.revision);
++        persisted = true;
++        break;
++      } catch (error) {
++        if ((error as { code?: unknown })?.code === 'staleRevision') { lastError = error; continue; }
++        throw error;
++      }
+     }
++    if (!persisted) throw new HopV55QualifiedStudyWorkspaceError('staleRevision',
++      `La préparation exacte reste en attente d’un CAS workspace : ${(lastError as Error | undefined)?.message ?? 'révision modifiée'}`);
++    return persistHopV55QualifiedStudy({ workspaces: input.workspaces, qualifiedStudies: input.qualifiedStudies,
++      ownerKey: preparation.ownerKey, workspaceId: preparation.workspaceId,
++      preparationReference: preparation.reference, validateFreshness: input.validateFreshness,
++      maxLinkAttempts: input.maxLinkAttempts });
++  } finally {
++    scope.close();
+   }
+-  if (!persisted) throw new HopV55QualifiedStudyWorkspaceError('staleRevision',
+-    `La préparation exacte reste en attente d’un CAS workspace : ${(lastError as Error | undefined)?.message ?? 'révision modifiée'}`);
+-  return persistHopV55QualifiedStudy({ workspaces: input.workspaces, qualifiedStudies: input.qualifiedStudies,
+-    ownerKey: input.preparation.ownerKey, workspaceId: input.preparation.workspaceId,
+-    preparationReference: input.preparation.reference, validateFreshness: input.validateFreshness,
+-    maxLinkAttempts: input.maxLinkAttempts });
+ }
+diff --git a/src/services/hopV55/workspaceRepository.ts b/src/services/hopV55/workspaceRepository.ts
+index 786dd3c0..54d4d408 100644
+--- a/src/services/hopV55/workspaceRepository.ts
++++ b/src/services/hopV55/workspaceRepository.ts
+@@ -26,7 +26,9 @@ import { assertHopV55ObservationAppendOnly, assertHopV55ObservationCollections,
+   HopV55ObservationSessionError } from './observationSession';
+ import { assertHopV55ObservationSupportAppendOnly, assertHopV55ObservationSupportCollections } from './observationSupport';
+ import { assertHopV55QualifiedStudyAppendOnly, assertHopV55QualifiedStudyWorkspaceCollections,
+-  HopV55QualifiedStudyWorkspaceError } from './qualifiedStudyWorkspace';
++  HopV55QualifiedStudyWorkspaceError, type HopV55QualifiedStudyCollectionsIndexV1 } from './qualifiedStudyWorkspace';
++import type { HopV55QuestionScopeLedgerV1 } from './questionScopeReading';
++import { sameCanonicalData } from './operationScopedQualifiedValidation';
+ import { assertHopV55QualifiedStudyPreferenceAppendOnly, assertHopV55QualifiedStudyPreferenceCommands,
+   HopV55QualifiedStudyPreferenceError } from './qualifiedStudyPreference';
+ import { assertHopV55PropertyAdviceReexaminationCommandAppendOnly,
+@@ -164,11 +166,23 @@ function assertRecipe(value: unknown, label: string): asserts value is HopV55Wor
+ function sameWorkspaceValue(left: unknown, right: unknown): boolean {
+   if (left === right) return true;
+   try {
++    // Equal plain data has equal canonical JSON; anything else keeps the fingerprint comparison.
++    if (sameCanonicalData(left, right)) return true;
+     return hopAdviceContentReference('hop-v55-workspace-append-only-value-v1', left)
+       === hopAdviceContentReference('hop-v55-workspace-append-only-value-v1', right);
+   } catch { return false; }
+ }
+ 
++/**
++ * What validateWorkspace proved about the exact object it received. It is
++ * only used in the same synchronous step, on that same unmodified object.
++ */
++interface ValidatedWorkspaceIndex {
++  qualified: HopV55QualifiedStudyCollectionsIndexV1;
++  scopeLedgersByReading: ReadonlyMap<string, HopV55QuestionScopeLedgerV1>;
++  sourceRuntimeReferencesByReading: ReadonlyMap<string, string>;
++}
++
+ function assertNuanceStudies(value: unknown, scenarioIds: Set<string>): void {
+   if (value === undefined) return;
+   if (!Array.isArray(value)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Archives de nuance invalides.');
+@@ -933,6 +947,10 @@ function hasUnsupportedDocumentaryRecordForReading(
+ }
+ 
+ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): asserts value is HopV55Workspace {
++  validateWorkspaceIndexed(value, assistedAdviceContract);
++}
++
++function validateWorkspaceIndexed(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): ValidatedWorkspaceIndex {
+   if (!isRecord(value) || !onlyKeys(value, ['format', 'id', 'ownerKey', 'revision', 'title', 'intent', 'sourceRecipeId', 'sourceBatchId',
+     'decisionReadings', 'futureDrafts', 'activeFutureDraftSource', 'futureRecipeMaterializations', 'futureRecipeSaveReceipts',
+     'documentaryAnswers', 'documentaryDossiers',
+@@ -981,9 +999,11 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
+   }));
+   const sourceRuntimeReferencesByReading = new Map([...decisionReadings].map(([reference, archive]) =>
+     [reference, archive.runtimeReference] as const));
++  const sourceReadingReferences = new Set(decisionReadings.keys());
++  let qualified: HopV55QualifiedStudyCollectionsIndexV1;
+   try {
+-    assertHopV55QualifiedStudyWorkspaceCollections({ ownerKey: value.ownerKey as string, workspaceId: value.id as string,
+-      sourceReadingReferences: new Set(decisionReadings.keys()),
++    qualified = assertHopV55QualifiedStudyWorkspaceCollections({ ownerKey: value.ownerKey as string, workspaceId: value.id as string,
++      sourceReadingReferences,
+       scopeLedgersByReading,
+       sourceRuntimeReferencesByReading,
+       preparations: value.qualifiedStudyPreparations, links: value.qualifiedStudyLinks });
+@@ -992,7 +1012,8 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
+       && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput',
+     error instanceof Error ? error.message : 'Historique des études qualifiées invalide.');
+   }
+-  try { assertHopV55QualifiedStudyPreferenceCommands(value as unknown as HopV55Workspace); }
++  // Same synchronous pass on the same object: the rows and readings validated just above are reused.
++  try { assertHopV55QualifiedStudyPreferenceCommands(value as unknown as HopV55Workspace, { sourceReadingReferences, qualified }); }
+   catch (error) {
+     throw new HopV55WorkspaceRepositoryError(error instanceof HopV55QualifiedStudyPreferenceError
+       && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput',
+@@ -1122,29 +1143,42 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
+       }
+     }
+   }
++  return { qualified, scopeLedgersByReading, sourceRuntimeReferencesByReading };
+ }
+ 
+ function parseEnvelope(row: unknown, ownerKey: string, workspaceId?: string,
+   assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): HopV55WorkspaceEnvelopeV1 {
++  return parseEnvelopeIndexed(row, ownerKey, workspaceId, assistedAdviceContract).envelope;
++}
++
++/** Strict parse of a stored row; the index describes that exact parsed object. */
++function parseEnvelopeIndexed(row: unknown, ownerKey: string, workspaceId?: string,
++  assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): { envelope: HopV55WorkspaceEnvelopeV1; index: ValidatedWorkspaceIndex } {
+   if (!isRecord(row) || !onlyKeys(row, ['format', 'ownerKey', 'workspaceId', 'revision', 'workspace'])
+     || row.format !== 'hop-v55-workspace-envelope-v1' || row.ownerKey !== ownerKey
+     || !isId(row.workspaceId) || workspaceId !== undefined && row.workspaceId !== workspaceId
+     || !Number.isSafeInteger(row.revision) || (row.revision as number) < 1) {
+     throw new HopV55WorkspaceRepositoryError('invalidStoredRecord', 'Enveloppe v1 du workspace illisible ou incohérente.');
+   }
+-  try { validateWorkspace(row.workspace, assistedAdviceContract); }
++  let index: ValidatedWorkspaceIndex;
++  try { index = validateWorkspaceIndexed(row.workspace, assistedAdviceContract); }
+   catch (error) {
+     if (error instanceof HopV55WorkspaceRepositoryError && error.code === 'unsupportedFormat') throw error;
+     throw new HopV55WorkspaceRepositoryError('invalidStoredRecord', (error as Error).message);
+   }
+-  if (row.workspace.id !== row.workspaceId || row.workspace.ownerKey !== ownerKey || row.workspace.revision !== row.revision) {
++  const workspace = row.workspace as HopV55Workspace;
++  if (workspace.id !== row.workspaceId || workspace.ownerKey !== ownerKey || workspace.revision !== row.revision) {
+     throw new HopV55WorkspaceRepositoryError('invalidStoredRecord', 'Les identités ou la révision de l’enveloppe divergent du workspace.');
+   }
+-  return row as unknown as HopV55WorkspaceEnvelopeV1;
++  return { envelope: row as unknown as HopV55WorkspaceEnvelopeV1, index };
+ }
+ 
++/**
++ * `previousIndex` is the index returned by the strict parse of `previous` in the
++ * same synchronous step; it spares re-decoding those exact rows.
++ */
+ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Workspace,
+-  assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): void {
++  assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1, previousIndex?: ValidatedWorkspaceIndex): void {
+   try { assertHopV55ObservationAppendOnly(previous, next); }
+   catch (error) {
+     const code = error instanceof HopV55ObservationSessionError && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput';
+@@ -1356,13 +1390,16 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
+     || priorDecisionReadings.some((archive, index) => !sameWorkspaceValue(archive, nextDecisionReadings[index]))) {
+     throw new HopV55WorkspaceRepositoryError('invalidInput', 'Les lectures de décision sont immuables et append-only.');
+   }
+-  try { assertHopV55QualifiedStudyAppendOnly(previous, next); }
+-  catch (error) {
++  try {
++    assertHopV55QualifiedStudyAppendOnly(previous, next, previousIndex ? { previousIndex: previousIndex.qualified,
++      previousScopeLedgersByReading: previousIndex.scopeLedgersByReading,
++      previousSourceRuntimeReferencesByReading: previousIndex.sourceRuntimeReferencesByReading } : {});
++  } catch (error) {
+     const code = error instanceof HopV55QualifiedStudyWorkspaceError && error.code === 'unsupportedFormat'
+       ? 'unsupportedFormat' : 'invalidInput';
+     throw new HopV55WorkspaceRepositoryError(code, error instanceof Error ? error.message : 'Transition d’étude qualifiée invalide.');
+   }
+-  try { assertHopV55QualifiedStudyPreferenceAppendOnly(previous, next); }
++  try { assertHopV55QualifiedStudyPreferenceAppendOnly(previous, next, previousIndex ? { previousIndex: previousIndex.qualified } : {}); }
+   catch (error) {
+     const code = error instanceof HopV55QualifiedStudyPreferenceError && error.code === 'unsupportedFormat'
+       ? 'unsupportedFormat' : 'invalidInput';
+@@ -1563,9 +1600,11 @@ export function createHopV55WorkspaceRepository(options: {
+       }
+       const nextRevision = inputRevision + 1;
+       const saved = { ...incoming, revision: nextRevision } satisfies HopV55Workspace;
++      // `incoming` is this call's private copy and is never exposed; the adapter
++      // receives its own copy below and the caller receives another one.
+       const envelope: HopV55WorkspaceEnvelopeV1 = {
+         format: 'hop-v55-workspace-envelope-v1', ownerKey, workspaceId: saved.id, revision: nextRevision,
+-        workspace: clone(saved),
++        workspace: saved,
+       };
+       return database.transaction('rw', database.workspaces, async () => {
+         const prior = await database.workspaces.get([ownerKey, saved.id]);
+@@ -1574,11 +1613,12 @@ export function createHopV55WorkspaceRepository(options: {
+           await database.workspaces.add(clone(envelope) as HopV55WorkspaceRow);
+         } else {
+           if (!prior) throw new HopV55WorkspaceRepositoryError('notFound', 'Workspace introuvable pour cette révision.');
+-          const current = parseEnvelope(prior, ownerKey, saved.id, options.assistedAdviceContract);
+-          if (current.revision !== expectedRevision) {
++          // Fresh read: strict parse. Its index is consumed synchronously by the append-only checks below.
++          const current = parseEnvelopeIndexed(prior, ownerKey, saved.id, options.assistedAdviceContract);
++          if (current.envelope.revision !== expectedRevision) {
+             throw new HopV55WorkspaceRepositoryError('staleRevision', 'Le workspace a changé depuis sa lecture.');
+           }
+-          assertAppendOnlyTransition(current.workspace, incoming, options.assistedAdviceContract);
++          assertAppendOnlyTransition(current.envelope.workspace, incoming, options.assistedAdviceContract, current.index);
+           await database.workspaces.put(clone(envelope) as HopV55WorkspaceRow);
+         }
+         return clone(saved);
+diff --git a/src/domain/hopDecision/adviceDossier.ts b/src/domain/hopDecision/adviceDossier.ts
+index 1da2c047..45acae39 100644
+--- a/src/domain/hopDecision/adviceDossier.ts
++++ b/src/domain/hopDecision/adviceDossier.ts
+@@ -332,11 +332,12 @@ function validateStudyV3ForCreate(study: HopAdviceStudyV3): void {
+     || study.responseSnapshot.version !== HOP_DECISION_VERSION || study.responseSnapshot.result.version !== HOP_ADVICE_VERSION) {
+     invalid('L’étude de conseil utilise une version de qualification, calcul ou conseil non reconnue.');
+   }
+-  if (study.requestSnapshot.intent && hopAdviceCanonicalReference('hop-advice-intent-v1', study.requestSnapshot.intent)
++  const requestIntentReference = hopAdviceCanonicalReference('hop-advice-intent-v1', study.requestSnapshot.intent);
++  if (study.requestSnapshot.intent && requestIntentReference
+     !== hopAdviceCanonicalReference('hop-advice-intent-v1', study.serviceInput.intent)
+     || hopAdviceCanonicalReference('hop-advice-situation-v1', study.requestSnapshot.action.situation)
+       !== hopAdviceCanonicalReference('hop-advice-situation-v1', study.serviceInput.action.situation)
+-    || hopAdviceCanonicalReference('hop-advice-intent-v1', study.requestSnapshot.intent)
++    || requestIntentReference
+       !== hopAdviceCanonicalReference('hop-advice-intent-v1', study.responseSnapshot.intent)) invalid('L’entrée de service/réponse ne correspond pas à l’intention et à la situation originales.');
+   const assembly = study.requestSnapshot.qualificationInput.assembly;
+   if (assembly !== undefined && (!record(assembly) || assembly.version !== SUPPORTED_ASSEMBLY_VERSION)) {
+@@ -381,7 +382,8 @@ function validateStudyV3ForCreate(study: HopAdviceStudyV3): void {
+   if ((study.responseSnapshot as any).actionKind !== 'exploreStrategies'
+     || adviceResult.inputReference !== adviceInputReferenceFromServiceInput(study.serviceInput)
+     || adviceResult.stage !== study.serviceInput.action.situation.stage) invalid('La réponse de conseil ne correspond pas à l’entrée réellement exécutée.');
+-  if (adviceResult.reference !== schemaHopAdviceResultReference(omitReference(adviceResult))) invalid('Référence du résultat de conseil incohérente.');
++  // The result reference was recomputed from this same result by assertHopStrategyAdviceResult
++  // in validateStudyV3Structure above; recomputing the identical fingerprint adds no check.
+ }
+ 
+ function assertProgram(value: unknown): asserts value is HopDecisionProgram {
+@@ -668,15 +670,34 @@ function validateDossierV3(dossier: HopAdviceDossierV3): void {
+   validateStudyV3Structure(dossier.study);
+ }
+ 
+-export function createHopAdviceDossier(input: CreateHopAdviceDossierInput): CreatedHopAdviceDossier {
++function validateCreateInput(input: CreateHopAdviceDossierInput): void {
+   if (!record(input) || !nonempty(input.ownerKey) || !nonempty(input.dossierId) || !nonempty(input.eventId)
+     || !isIsoDate(input.recordedAt) || input.supersedesDossierId !== undefined
+       && (!nonempty(input.supersedesDossierId) || input.supersedesDossierId === input.dossierId)) invalid('Identité ou horodatage de dossier conseil invalide.');
+   validateStudyV3ForCreate(input.study);
+-  const study = clone(input.study);
+-  const event = createHopAdviceEvent({ ownerKey: input.ownerKey, dossierId: input.dossierId, eventId: input.eventId,
++}
++
++function studySavedCommand(input: CreateHopAdviceDossierInput): HopAdviceEventCommand<'studySaved'> {
++  return { ownerKey: input.ownerKey, dossierId: input.dossierId, eventId: input.eventId,
+     expectedRevision: 0, recordedAt: input.recordedAt, kind: 'studySaved',
+-    payload: { snapshotFormatVersion: 3, ...(input.supersedesDossierId ? { supersedesDossierId: input.supersedesDossierId } : {}) } });
++    payload: { snapshotFormatVersion: 3, ...(input.supersedesDossierId ? { supersedesDossierId: input.supersedesDossierId } : {}) } };
++}
++
++/**
++ * Runs exactly the checks of createHopAdviceDossier without materialising a
++ * dossier copy. The returned study reference is the one validateStudyV3Structure
++ * has just recomputed from the study content and compared with study.reference.
++ */
++export function assertHopAdviceDossierCreateInput(input: CreateHopAdviceDossierInput): string {
++  validateCreateInput(input);
++  createHopAdviceEvent(studySavedCommand(input));
++  return input.study.reference;
++}
++
++export function createHopAdviceDossier(input: CreateHopAdviceDossierInput): CreatedHopAdviceDossier {
++  validateCreateInput(input);
++  const study = clone(input.study);
++  const event = createHopAdviceEvent(studySavedCommand(input));
+   return {
+     dossier: { formatVersion: 3, ownerKey: input.ownerKey, dossierId: input.dossierId, revision: 1,
+       createdAt: input.recordedAt, updatedAt: input.recordedAt, lastEventId: input.eventId, state: 'studySaved', study,
+diff --git a/src/domain/hopDecision/adviceProgramAdapter.ts b/src/domain/hopDecision/adviceProgramAdapter.ts
+index 5c974023..19b04695 100644
+--- a/src/domain/hopDecision/adviceProgramAdapter.ts
++++ b/src/domain/hopDecision/adviceProgramAdapter.ts
+@@ -18,8 +18,13 @@ const equal = (left: unknown, right: unknown) => hopDecisionReference(left) ===
+ const requireReason = (reason: string) => { if (typeof reason !== 'string' || !reason.trim()) throw Error('Conserver le motif explicite de ce geste.'); };
+ 
+ function assertCurrentStudy(study: HopAdviceStudyV3, currentStudy: HopAdviceStudyV3, qualificationInput: HopQualifiedAssemblyInput) {
+-  if (study.reference !== hopAdviceStudyReference(study) || currentStudy.reference !== hopAdviceStudyReference(currentStudy)
+-    || study.reference !== currentStudy.reference || !equal(qualificationInput, currentStudy.requestSnapshot.qualificationInput)) {
++  const studyReference = hopAdviceStudyReference(study);
++  // One object passed twice in this synchronous check has one fingerprint; distinct objects are each hashed.
++  const currentReference = currentStudy === study ? studyReference : hopAdviceStudyReference(currentStudy);
++  const currentQualification = currentStudy.requestSnapshot.qualificationInput;
++  if (study.reference !== studyReference || currentStudy.reference !== currentReference
++    || study.reference !== currentStudy.reference
++    || qualificationInput !== currentQualification && !equal(qualificationInput, currentQualification)) {
+     throw Error('La lecture, la situation ou ses données ont changé ; conserver l’ancien conseil et produire une nouvelle étude explicite.');
+   }
+   // This explicit command checks a new decision; historical reads never execute this adapter.
+diff --git a/tests/unit/hopV55QualifiedStudyPreference.test.ts b/tests/unit/hopV55QualifiedStudyPreference.test.ts
+index f5e2363b..97b9b805 100644
+--- a/tests/unit/hopV55QualifiedStudyPreference.test.ts
++++ b/tests/unit/hopV55QualifiedStudyPreference.test.ts
+@@ -297,6 +297,31 @@ describe('Staging CAS et append idempotent de strategyPreferred Q09', () => {
+     expect(() => appendHopV55QualifiedStudyPreferenceCommand(unrelated, row.command)).toThrow(/future|lecture/i);
+   });
+ 
++  it('reprend un CAS concurrent pendant le staging : nouvelle lecture, nouvelle fraîcheur, une seule commande', async () => {
++    const row = journey();
++    await saveStudy(row);
++    let failNextStage = true;
++    const workspaces = {
++      read: row.workspaces.read,
++      async save(next: HopV55Workspace, expectedRevision: number | null) {
++        if (failNextStage && next.qualifiedStudyPreferenceCommands?.length) {
++          failNextStage = false;
++          throw Object.assign(new Error('Révision workspace changée par un autre onglet.'), { code: 'staleRevision' });
++        }
++        return row.workspaces.save(next, expectedRevision);
++      },
++    };
++    const phases: string[] = [];
++    const result = await appendHopV55QualifiedStudyPreference({ workspaces, qualifiedStudies: row.repository,
++      command: row.command, validateFreshness: async ({ phase }) => { phases.push(phase); return { status: 'current' }; } });
++    expect(result.status).toBe('appended');
++    expect(result.eventAdvice3).toEqual(row.command.event);
++    expect(phases).toEqual(['beforeStage', 'beforeStage', 'beforeAppend']);
++    const staged = await row.workspaces.read(row.ownerKey, row.workspaceId);
++    expect(staged?.qualifiedStudyPreferenceCommands).toEqual([row.command]);
++    expect(row.repository.appendCalls).toBe(1);
++  });
++
+   it('refuse un staging sans le CAS préalable du lien d’étude conseil V3', async () => {
+     const row = journey();
+     await row.workspaces.save(row.workspace, null);
+diff --git a/src/services/hopV55/operationScopedQualifiedValidation.ts b/src/services/hopV55/operationScopedQualifiedValidation.ts
+new file mode 100644
+--- /dev/null
++++ b/src/services/hopV55/operationScopedQualifiedValidation.ts
+@@ -0,0 +1,117 @@
++/**
++ * Explicit validation scope for one qualified-study operation.
++ *
++ * `capture` deep-clones a value, deep-freezes that private clone and validates
++ * the frozen clone with the canonical strict validator supplied by the caller.
++ * Only the identity of that frozen clone is remembered, per validator kind, and
++ * only until `close()`. The caller's original object, a re-read, a structural
++ * copy or any mutated object is never recognised: it goes through the strict
++ * validator again. There is no process-wide cache and no mark is ever added to
++ * an object this scope did not create.
++ *
++ * `kind` must be a module-private symbol owned by the module that also owns the
++ * canonical validator, so that no other caller can register a value under that
++ * kind with a weaker validator.
++ */
++export class HopV55OperationValidationScope {
++  private readonly validated = new Map<symbol, WeakSet<object>>();
++  private open = true;
++
++  capture<T>(kind: symbol, value: unknown, validate: (frozen: unknown) => void): T {
++    if (!this.open) throw Error('Portée de validation fermée; recommencer une opération explicite.');
++    let snapshot: unknown;
++    try { snapshot = structuredClone(value); }
++    catch (error) {
++      // A non-clonable value keeps the canonical validator's own refusal.
++      validate(value);
++      throw error;
++    }
++    const immutable = deepFreeze(snapshot);
++    validate(snapshot);
++    if (immutable && snapshot !== null && typeof snapshot === 'object') this.kind(kind).add(snapshot);
++    return snapshot as T;
++  }
++
++  /** True only for a frozen clone captured and validated by this still-open scope. */
++  has(kind: symbol, value: unknown): boolean {
++    return this.open && value !== null && typeof value === 'object' && Object.isFrozen(value)
++      && (this.validated.get(kind)?.has(value) ?? false);
++  }
++
++  close(): void {
++    this.open = false;
++    this.validated.clear();
++  }
++
++  private kind(kind: symbol): WeakSet<object> {
++    let rows = this.validated.get(kind);
++    if (!rows) { rows = new WeakSet<object>(); this.validated.set(kind, rows); }
++    return rows;
++  }
++}
++
++/** Freezes plain data deeply; returns false when a value cannot be made immutable. */
++function deepFreeze(value: unknown, seen = new WeakSet<object>()): boolean {
++  if (value === null || typeof value !== 'object') return true;
++  if (seen.has(value)) return true;
++  seen.add(value);
++  if (ArrayBuffer.isView(value) || value instanceof ArrayBuffer || value instanceof Map
++    || value instanceof Set || value instanceof Date) return false;
++  let immutable = true;
++  for (const key of Reflect.ownKeys(value)) {
++    const descriptor = Object.getOwnPropertyDescriptor(value, key);
++    if (descriptor && 'value' in descriptor && !deepFreeze(descriptor.value, seen)) immutable = false;
++  }
++  Object.freeze(value);
++  return immutable;
++}
++
++const isPlainObject = (value: object): boolean => {
++  const prototype = Object.getPrototypeOf(value);
++  return prototype === Object.prototype || prototype === null;
++};
++
++/**
++ * Exact equality restricted to JSON-like plain data. When it returns true, both
++ * values have the same canonical JSON and therefore the same content
++ * fingerprint and the same verdict from any content-only validator. `undefined`
++ * is accepted only in the same position on both sides. Anything else (key
++ * present on one side only, non-finite number, Date, Map, class instance,
++ * accessor, array hole, function) returns false so that callers fall back to
++ * their strict path.
++ */
++export function sameCanonicalData(left: unknown, right: unknown): boolean {
++  if (typeof left !== typeof right) return false;
++  switch (typeof left) {
++    case 'undefined':
++      return true;
++    case 'string':
++    case 'boolean':
++      return left === right;
++    case 'number':
++      return Number.isFinite(left) && left === right;
++    case 'object':
++      break;
++    default:
++      return false;
++  }
++  if (left === null || right === null) return left === right;
++  const a = left as object, b = right as object;
++  if (Array.isArray(a) || Array.isArray(b)) {
++    if (!Array.isArray(a) || !Array.isArray(b) || Object.getPrototypeOf(a) !== Array.prototype
++      || Object.getPrototypeOf(b) !== Array.prototype || a.length !== b.length) return false;
++    for (let index = 0; index < a.length; index++) {
++      const da = Object.getOwnPropertyDescriptor(a, index), db = Object.getOwnPropertyDescriptor(b, index);
++      if (!da || !db || !('value' in da) || !('value' in db) || !sameCanonicalData(da.value, db.value)) return false;
++    }
++    return true;
++  }
++  if (!isPlainObject(a) || !isPlainObject(b)) return false;
++  const leftKeys = Object.keys(a), rightKeys = Object.keys(b);
++  if (leftKeys.length !== rightKeys.length) return false;
++  for (const key of leftKeys) {
++    const da = Object.getOwnPropertyDescriptor(a, key), db = Object.getOwnPropertyDescriptor(b, key);
++    if (!da || !db || !db.enumerable || !('value' in da) || !('value' in db) || !sameCanonicalData(da.value, db.value)) return false;
++  }
++  return true;
++}
+diff --git a/tests/unit/hopV55QualifiedStudyPerformance.test.ts b/tests/unit/hopV55QualifiedStudyPerformance.test.ts
+new file mode 100644
+--- /dev/null
++++ b/tests/unit/hopV55QualifiedStudyPerformance.test.ts
+@@ -0,0 +1,400 @@
++import { afterEach, describe, expect, it, vi } from 'vitest';
++import type { HopDecisionLocalRepository } from '../../src/services/hopDecisionLocalRepository';
++import { hopAdviceContentReference } from '../../src/domain/hopDecision/adviceContentReference';
++import { createHopAdviceDossier, applyHopAdviceEvent, hopAdviceEventContentReference,
++  readHopAdviceEvent, type CreateHopAdviceDossierInput, type HopAdviceDossierV3,
++  type HopAdviceEventRead, type HopAdviceEventV3 } from '../../src/domain/hopDecision/adviceDossier';
++import * as qualifiedAdviceDomain from '../../src/domain/hopDecision/qualifiedAdvice';
++import * as catalogueLoader from '../../src/domain/hopDecision/catalogueLoader';
++import { captureHopAdvicePreference } from '../../src/domain/hopDecision/adviceProgramAdapter';
++import { prepareBrewingScenarioContext } from '../../src/domain/brewingScenarioContext';
++import { makeHopAdviceJourneyFixture } from '../fixtures/hopAdviceJourney';
++import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
++import { readHopV55Question } from '../../src/services/hopV55/decision';
++import { createHopV55DecisionReadingArchiveV2 } from '../../src/services/hopV55/decisionArchive';
++import { appendHopV55QualifiedStudyPreparationRecord, captureHopV55QualifiedStudyPreparation,
++  createHopV55QualifiedStudyLinkV1, createHopV55QualifiedStudyPreparationV1, createHopV55QualifiedStudyPreparationV2,
++  readHopV55QualifiedStudyPreparation, saveHopV55QualifiedStudy,
++  type HopV55QualifiedStudyPreparationV1 } from '../../src/services/hopV55/qualifiedStudyWorkspace';
++import { appendHopV55QualifiedStudyPreference, createHopV55QualifiedStudyPreferenceCommandV1,
++  readHopV55QualifiedStudyPreferenceCommand } from '../../src/services/hopV55/qualifiedStudyPreference';
++import { HopV55OperationValidationScope, sameCanonicalData } from '../../src/services/hopV55/operationScopedQualifiedValidation';
++import type { HopV55Workspace } from '../../src/services/hopV55/contracts';
++import { createHopV55WorkspaceRepository, type HopV55WorkspaceDatabaseAdapter,
++  type HopV55WorkspaceEnvelopeV1, type HopV55WorkspaceTable } from '../../src/services/hopV55/workspaceRepository';
++
++// Deterministic cost oracle: count content fingerprints by namespace instead of timing.
++const hashStats = vi.hoisted(() => ({ byPrefix: {} as Record<string, number> }));
++vi.mock('../../src/domain/hopDecision/adviceContentReference', async () => {
++  const actual = await vi.importActual<typeof import('../../src/domain/hopDecision/adviceContentReference')>(
++    '../../src/domain/hopDecision/adviceContentReference');
++  return { ...actual, hopAdviceContentReference(prefix: string, value: unknown) {
++    hashStats.byPrefix[prefix] = (hashStats.byPrefix[prefix] ?? 0) + 1;
++    return actual.hopAdviceContentReference(prefix, value);
++  } };
++});
++
++const STUDY = 'hop-advice-study-v3';
++const PREPARATION_V1 = 'hop-v55-qualified-study-preparation-v1';
++const PREPARATION_V2 = 'hop-v55-qualified-study-preparation-v2';
++const QUALIFIED_V2 = 'hop-v55-qualified-advice-study-preparation-v2';
++const resetCounts = () => { hashStats.byPrefix = {}; };
++const count = (prefix: string) => hashStats.byPrefix[prefix] ?? 0;
++
++afterEach(() => { vi.restoreAllMocks(); });
++
++class MemoryTable implements HopV55WorkspaceTable<HopV55WorkspaceEnvelopeV1> {
++  rows = new Map<string, HopV55WorkspaceEnvelopeV1>();
++  key(value: unknown) { return JSON.stringify(Array.isArray(value) ? value : [
++    (value as HopV55WorkspaceEnvelopeV1).ownerKey, (value as HopV55WorkspaceEnvelopeV1).workspaceId,
++  ]); }
++  async get(key: unknown) { const row = this.rows.get(this.key(key)); return row && structuredClone(row); }
++  async add(row: HopV55WorkspaceEnvelopeV1) {
++    const key = this.key(row);
++    if (this.rows.has(key)) throw new Error('ConstraintError');
++    this.rows.set(key, structuredClone(row));
++  }
++  async put(row: HopV55WorkspaceEnvelopeV1) { this.rows.set(this.key(row), structuredClone(row)); }
++  where(index: string) { return { equals: (key: unknown) => ({ toArray: async () => [...this.rows.values()]
++    .filter(row => index === 'ownerKey' && row.ownerKey === key).map(row => structuredClone(row)) }) }; }
++}
++
++class MemoryWorkspaceDatabase implements HopV55WorkspaceDatabaseAdapter {
++  workspaces = new MemoryTable();
++  private tail: Promise<void> = Promise.resolve();
++  async transaction<T>(_mode: 'r' | 'rw', ...tablesAndWork: unknown[]): Promise<T> {
++    const work = tablesAndWork.at(-1) as () => Promise<T>;
++    const operation = this.tail.then(async () => {
++      const snapshot = new Map([...this.workspaces.rows].map(([key, value]) => [key, structuredClone(value)]));
++      try { return await work(); }
++      catch (error) { this.workspaces.rows = snapshot; throw error; }
++    });
++    this.tail = operation.then(() => undefined, () => undefined);
++    return operation;
++  }
++  close() { /* Memory fixture only. */ }
++}
++
++class MemoryAdviceRepository implements HopDecisionLocalRepository {
++  dossiers = new Map<string, HopAdviceDossierV3>();
++  events = new Map<string, HopAdviceEventV3[]>();
++  createCalls = 0;
++  appendCalls = 0;
++  key(owner: string, dossierId: string) { return `${owner}\0${dossierId}`; }
++  async create(input: Parameters<HopDecisionLocalRepository['create']>[0]) {
++    if (!('formatVersion' in input.study) || input.study.formatVersion !== 3) throw new Error('Étude conseil V3 attendue.');
++    this.createCalls++;
++    const created = createHopAdviceDossier(input as CreateHopAdviceDossierInput);
++    const key = this.key(input.ownerKey, input.dossierId);
++    const prior = this.dossiers.get(key);
++    const priorEvent = this.events.get(key)?.[0];
++    if (prior && priorEvent) return { status: 'duplicate' as const, dossier: prior, event: priorEvent };
++    this.dossiers.set(key, created.dossier);
++    this.events.set(key, [created.event]);
++    return { status: 'created' as const, dossier: created.dossier, event: created.event };
++  }
++  async append(input: Parameters<HopDecisionLocalRepository['append']>[0]) {
++    this.appendCalls++;
++    const read = readHopAdviceEvent(input.event);
++    if ('status' in read) throw new Error('Événement V3 requis.');
++    const key = this.key(input.ownerKey, input.dossierId);
++    const current = this.dossiers.get(key);
++    const priorEvents = this.events.get(key);
++    if (!current || !priorEvents) throw Object.assign(new Error('Dossier absent.'), { code: 'notFound' });
++    const existing = priorEvents.find(row => row.eventId === read.eventId);
++    if (existing) {
++      if (hopAdviceEventContentReference(existing) !== hopAdviceEventContentReference(read)) {
++        throw Object.assign(new Error('EventId déjà utilisé avec un autre contenu.'), { code: 'eventIdConflict' });
++      }
++      return { status: 'duplicate' as const, dossier: current, event: existing };
++    }
++    const next = applyHopAdviceEvent(current, read, priorEvents);
++    priorEvents.push(structuredClone(read));
++    this.dossiers.set(key, next);
++    return { status: 'appended' as const, dossier: next, event: read };
++  }
++  async read(ownerKey: string, dossierId: string) { return this.dossiers.get(this.key(ownerKey, dossierId)) ?? null; }
++  async list(ownerKey: string) { return [...this.dossiers.values()].filter(row => row.ownerKey === ownerKey); }
++  async readEvents(ownerKey: string, dossierId: string): Promise<HopAdviceEventRead[]> {
++    const rows = this.events.get(this.key(ownerKey, dossierId));
++    if (!rows) throw Object.assign(new Error('Dossier absent.'), { code: 'notFound' });
++    return structuredClone(rows);
++  }
++  close() { /* Memory fixture only. */ }
++}
++
++function journey() {
++  const ownerKey = 'owner-q09-performance';
++  const workspaceId = 'workspace-q09-performance';
++  const fixture = makeHopAdviceJourneyFixture('planning');
++  const study = qualifiedAdviceDomain.answerQualifiedHopAdvice(fixture);
++  const context = prepareBrewingScenarioContext(makeHopV55FixtureContext('unknown'));
++  const reading = readHopV55Question(fixture.intent.originalQuestion, context);
++  const archive = createHopV55DecisionReadingArchiveV2({ id: 'reading-q09-performance', ownerKey, workspaceId,
++    recordedAt: '2026-10-04T08:00:00.000Z', reading, source: { kind: 'exploration' }, runtimeReference: 'runtime-q09-performance' });
++  const dossierId = 'dossier-q09-performance';
++  const preparation = createHopV55QualifiedStudyPreparationV1({ id: 'preparation-q09-performance', ownerKey, workspaceId,
++    sourceReadingReference: archive.contentReference, preparedReference: 'prepared-q09-performance',
++    createCommand: { kind: 'advice', ownerKey, dossierId, eventId: 'study-saved-q09-performance',
++      recordedAt: '2026-10-04T08:01:00.000Z', study } });
++  const workspace: HopV55Workspace = { format: 'hop-v55-workspace-v1', id: workspaceId, ownerKey, revision: 0,
++    title: 'Coût Q09 synthétique', intent: { question: fixture.intent.originalQuestion, criteria: [] },
++    decisionReadings: [archive], scenarioIds: [], referenceHypotheses: [], copies: [],
++    updatedAt: '2026-10-04T08:00:00.000Z' };
++  const option = study.responseSnapshot.result.options[0];
++  if (!option) throw new Error('Une option stratégique exacte est requise.');
++  const event = captureHopAdvicePreference({ identity: { ownerKey, dossierId, eventId: 'preference-event-q09-performance',
++    expectedRevision: 1, recordedAt: '2026-10-04T08:02:00.000Z' }, study, currentStudy: study,
++    qualificationInput: fixture.qualificationInput, preferenceId: 'preference-id-q09-performance', optionId: option.id,
++    reason: 'Choix explicite de fixture; aucun dosage ni changement de programme.' });
++  const command = createHopV55QualifiedStudyPreferenceCommandV1({ preparation, event });
++  const database = new MemoryWorkspaceDatabase();
++  const workspaces = createHopV55WorkspaceRepository({ ownerKey, database });
++  const repository = new MemoryAdviceRepository();
++  return { ownerKey, workspaceId, workspace, archive, study, preparation, command, database, workspaces, repository };
++}
++
++async function saveStudy(row: ReturnType<typeof journey>) {
++  await row.workspaces.save(row.workspace, null);
++  return saveHopV55QualifiedStudy({ workspaces: row.workspaces, qualifiedStudies: row.repository,
++    preparation: row.preparation, validateFreshness: async () => ({ status: 'current' }) });
++}
++
++/** Seals a V2 record around an exact V1 advice preparation, as the V2 preparer stores it. */
++function qualifiedV2Body(base: HopV55QualifiedStudyPreparationV1, nested: HopV55QualifiedStudyPreparationV1) {
++  if (base.createCommand.kind !== 'advice') throw new Error('Préparation advice attendue.');
++  const study = base.createCommand.study;
++  const body = {
++    format: 'hop-v55-qualified-advice-study-preparation-v2', kind: 'advice',
++    ownerKey: base.ownerKey, workspaceId: base.workspaceId, sourceReadingReference: base.sourceReadingReference,
++    sourceRuntimeReference: 'runtime-q09-performance', sourceContext: null,
++    sourceContextReference: 'source-context-q09-performance', qualificationInputReference: 'qualification-input-q09-performance',
++    preparedReference: base.preparedReference, action: structuredClone(study.requestSnapshot.action),
++    study: structuredClone(study), preparation: structuredClone(nested),
++    scopeLedgerReference: 'scope-ledger-q09-performance', scopeCoverage: [],
++  };
++  return { ...body, reference: hopAdviceContentReference(QUALIFIED_V2, body) };
++}
++
++describe('Coût local Q09 — validations stricts sans répétition dans une même passe', () => {
++  it('relit un workspace en validant strictement chaque préparation une seule fois, sans changer un octet', async () => {
++    const row = journey();
++    await saveStudy(row);
++    const stored = [...row.database.workspaces.rows.values()][0];
++    const storedJson = JSON.stringify(stored.workspace);
++    resetCounts();
++    const read = await row.workspaces.read(row.ownerKey, row.workspaceId);
++    expect(count(STUDY)).toBe(1);
++    expect(count(PREPARATION_V1)).toBe(1);
++    expect(JSON.stringify(read)).toBe(storedJson);
++    const decoded = readHopV55QualifiedStudyPreparation(read!.qualifiedStudyPreparations![0]);
++    expect(decoded.status).toBe('available');
++    if (decoded.status !== 'available') throw new Error('Préparation exacte attendue.');
++    expect(JSON.stringify(decoded.preparation)).toBe(JSON.stringify(row.preparation));
++    expect(decoded.preparation.reference).toBe(row.preparation.reference);
++  });
++
++  it('sauve en relisant strictement la version stockée, et réutilise son index seulement dans la même passe', async () => {
++    const row = journey();
++    await saveStudy(row);
++    const current = await row.workspaces.read(row.ownerKey, row.workspaceId);
++    if (!current) throw new Error('Workspace attendu.');
++    resetCounts();
++    const saved = await row.workspaces.save({ ...current, title: 'Titre modifié sans toucher l’étude' }, current.revision);
++    // One strict validation of the incoming copy, one of the stored row read inside the transaction.
++    expect(count(STUDY)).toBe(2);
++    expect(count(PREPARATION_V1)).toBe(2);
++    expect(saved.revision).toBe(current.revision + 1);
++    expect(saved.qualifiedStudyPreparations).toEqual(current.qualifiedStudyPreparations);
++    expect(saved.qualifiedStudyLinks).toEqual(current.qualifiedStudyLinks);
++
++    // Another writer alters the stored study without resealing it: every new read is strict again.
++    const key = row.database.workspaces.key([row.ownerKey, row.workspaceId]);
++    const tampered = structuredClone(row.database.workspaces.rows.get(key)!);
++    const preparation = tampered.workspace.qualifiedStudyPreparations![0] as HopV55QualifiedStudyPreparationV1;
++    if (preparation.createCommand.kind !== 'advice') throw new Error('Préparation advice attendue.');
++    (preparation.createCommand.study.responseSnapshot as { answer: string }).answer = 'Réponse altérée hors scellé.';
++    row.database.workspaces.rows.set(key, tampered);
++    await expect(row.workspaces.read(row.ownerKey, row.workspaceId)).rejects.toMatchObject({ code: 'invalidStoredRecord' });
++    await expect(row.workspaces.save({ ...saved, title: 'Autre titre' }, saved.revision))
++      .rejects.toMatchObject({ code: 'invalidStoredRecord' });
++  });
++
++  it('borne le coût d’une préférence, garde ses deux fraîcheurs et rend le même événement exact', async () => {
++    const row = journey();
++    await saveStudy(row);
++    const phases: string[] = [];
++    resetCounts();
++    const result = await appendHopV55QualifiedStudyPreference({ workspaces: row.workspaces, qualifiedStudies: row.repository,
++      command: row.command, validateFreshness: async ({ phase }) => { phases.push(phase); return { status: 'current' }; } });
++    expect(result.status).toBe('appended');
++    expect(result.eventAdvice3).toEqual(row.command.event);
++    expect(result.dossierAdvice3.revision).toBe(2);
++    expect(phases).toEqual(['beforeStage', 'beforeAppend']);
++    // Before this lot: 29 study fingerprints and 12 preparation fingerprints on this same path.
++    expect(count(STUDY)).toBeLessThanOrEqual(9);
++    expect(count(PREPARATION_V1)).toBeLessThanOrEqual(6);
++    expect(row.repository.appendCalls).toBe(1);
++
++    resetCounts();
++    const retry = await appendHopV55QualifiedStudyPreference({ workspaces: row.workspaces, qualifiedStudies: row.repository,
++      command: row.command, validateFreshness: async () => ({ status: 'current' }) });
++    expect(retry.status).toBe('alreadyAppended');
++    expect(retry.eventAdvice3).toEqual(result.eventAdvice3);
++    expect(row.repository.appendCalls).toBe(1);
++  });
++
++  it('capture la préparation de l’appelant : une mutation après l’appel n’est jamais stockée', async () => {
++    const row = journey();
++    await row.workspaces.save(row.workspace, null);
++    const original = structuredClone(row.preparation);
++    resetCounts();
++    const pending = saveHopV55QualifiedStudy({ workspaces: row.workspaces, qualifiedStudies: row.repository,
++      preparation: row.preparation, validateFreshness: async () => ({ status: 'current' }) });
++    if (row.preparation.createCommand.kind !== 'advice') throw new Error('Préparation advice attendue.');
++    (row.preparation.createCommand.study.responseSnapshot as { answer: string }).answer = 'Réponse modifiée après validation.';
++    const result = await pending;
++    // Before this lot: about 40 study fingerprints for this save, preparation and link.
++    expect(count(STUDY)).toBeLessThanOrEqual(10);
++    expect(result.status).toBe('linked');
++    expect(result.preparation).toEqual(original);
++    expect(Object.isFrozen(result.preparation)).toBe(false);
++    const stored = await row.workspaces.read(row.ownerKey, row.workspaceId);
++    expect(stored?.qualifiedStudyPreparations).toEqual([original]);
++    expect(stored?.qualifiedStudyLinks?.[0]).toMatchObject({ preparationReference: original.reference, studyReference: original.studyReference });
++  });
++
++  it('donne à chaque contrôle de fraîcheur sa propre copie : il ne peut altérer ni la commande domaine ni le lien', async () => {
++    const row = journey();
++    await row.workspaces.save(row.workspace, null);
++    const phases: string[] = [];
++    const result = await saveHopV55QualifiedStudy({ workspaces: row.workspaces, qualifiedStudies: row.repository,
++      preparation: row.preparation, validateFreshness: async ({ preparation, phase }) => {
++        phases.push(phase);
++        (preparation as { studyReference: string }).studyReference = 'référence-forgée';
++        (preparation.createCommand as { dossierId: string }).dossierId = 'dossier-forgé';
++        return { status: 'current' };
++      } });
++    expect(phases).toEqual(['beforeCreate', 'beforeLink']);
++    expect(result.link).toMatchObject({ studyReference: row.preparation.studyReference, dossierId: row.preparation.dossierId });
++    expect([...row.repository.dossiers.keys()]).toEqual([row.repository.key(row.ownerKey, row.preparation.dossierId)]);
++    expect(row.repository.createCalls).toBe(1);
++  });
++
++  it('décode une préparation V2 sans revalider la préparation imbriquée identique, et refuse une imbrication divergente', () => {
++    const row = journey();
++    const v2 = createHopV55QualifiedStudyPreparationV2({
++      qualifiedPreparation: qualifiedV2Body(row.preparation, row.preparation) as never });
++    resetCounts();
++    const read = readHopV55QualifiedStudyPreparation(structuredClone(v2));
++    expect(read.status).toBe('available');
++    expect(JSON.stringify(read.status === 'available' ? read.preparation : null)).toBe(JSON.stringify(v2));
++    // Before this lot: 4 study and 3 V1 fingerprints for one V2 decode.
++    expect(count(STUDY)).toBe(1);
++    expect(count(PREPARATION_V1)).toBe(1);
++    expect(count(QUALIFIED_V2)).toBe(1);
++    expect(count(PREPARATION_V2)).toBe(1);
++
++    const other = createHopV55QualifiedStudyPreparationV1({ id: 'preparation-q09-autre', ownerKey: row.ownerKey,
++      workspaceId: row.workspaceId, sourceReadingReference: row.preparation.sourceReadingReference,
++      preparedReference: row.preparation.preparedReference, createCommand: structuredClone(row.preparation.createCommand) });
++    const { reference: _reference, ...v2Body } = v2;
++    const divergentBody = { ...v2Body, qualifiedPreparation: qualifiedV2Body(row.preparation, other) };
++    const divergent = { ...divergentBody, reference: hopAdviceContentReference(PREPARATION_V2, divergentBody) };
++    expect(() => readHopV55QualifiedStudyPreparation(divergent)).toThrow(/diverge/);
++  });
++
++  it('ne reconnaît dans une portée que la copie gelée capturée; une copie altérée ou une portée fermée repassent par le contrôle strict', () => {
++    const row = journey();
++    const scope = new HopV55OperationValidationScope();
++    resetCounts();
++    const snapshot = captureHopV55QualifiedStudyPreparation(scope, row.preparation);
++    expect(count(STUDY)).toBe(1);
++    expect(Object.isFrozen(snapshot)).toBe(true);
++    resetCounts();
++    const link = createHopV55QualifiedStudyLinkV1(snapshot, { scope });
++    expect(count(STUDY)).toBe(0);
++    expect(link).toEqual(createHopV55QualifiedStudyLinkV1(row.preparation));
++
++    const altered = structuredClone(snapshot);
++    if (altered.createCommand.kind !== 'advice') throw new Error('Préparation advice attendue.');
++    (altered.createCommand.study.responseSnapshot as { answer: string }).answer = 'Réponse altérée.';
++    expect(() => createHopV55QualifiedStudyLinkV1(altered, { scope })).toThrow(/invalide/i);
++    const foreign = { ...structuredClone(row.workspace), ownerKey: 'owner-étranger' };
++    expect(() => appendHopV55QualifiedStudyPreparationRecord(foreign, snapshot, { scope })).toThrow(/Owner\/workspace/);
++
++    scope.close();
++    resetCounts();
++    createHopV55QualifiedStudyLinkV1(snapshot, { scope });
++    expect(count(STUDY)).toBe(1);
++  });
++
++  it('relit l’historique sans requalifier ni recharger le catalogue', async () => {
++    const row = journey();
++    await saveStudy(row);
++    await appendHopV55QualifiedStudyPreference({ workspaces: row.workspaces, qualifiedStudies: row.repository,
++      command: row.command, validateFreshness: async () => ({ status: 'current' }) });
++    const advice = vi.spyOn(qualifiedAdviceDomain, 'answerQualifiedHopAdvice');
++    const loader = vi.spyOn(catalogueLoader, 'loadHopCatalogueQualificationInput');
++    const workspace = await row.workspaces.read(row.ownerKey, row.workspaceId);
++    const preparation = readHopV55QualifiedStudyPreparation(workspace!.qualifiedStudyPreparations![0]);
++    const command = readHopV55QualifiedStudyPreferenceCommand(workspace!.qualifiedStudyPreferenceCommands![0]);
++    expect(preparation.status).toBe('available');
++    expect(command).toEqual({ status: 'available', command: row.command });
++    expect(advice).not.toHaveBeenCalled();
++    expect(loader).not.toHaveBeenCalled();
++  });
++});
++
++describe('HopV55OperationValidationScope', () => {
++  it('valide une seule fois une copie gelée; l’original, une copie ou une autre clé ne sont jamais reconnus', () => {
++    const kind = Symbol('scope-test');
++    const validate = vi.fn((value: unknown) => {
++      if (!value || (value as { ok?: unknown }).ok !== true) throw new Error('Valeur invalide.');
++    });
++    const scope = new HopV55OperationValidationScope();
++    const original = { ok: true, nested: { values: [1, 2] } };
++    const snapshot = scope.capture<typeof original>(kind, original, validate);
++    expect(validate).toHaveBeenCalledTimes(1);
++    expect(snapshot).toEqual(original);
++    expect(snapshot).not.toBe(original);
++    expect(Object.isFrozen(snapshot) && Object.isFrozen(snapshot.nested) && Object.isFrozen(snapshot.nested.values)).toBe(true);
++    expect(() => { snapshot.nested.values.push(3); }).toThrow(TypeError);
++    expect(scope.has(kind, snapshot)).toBe(true);
++    expect(scope.has(kind, original)).toBe(false);
++    expect(scope.has(kind, structuredClone(snapshot))).toBe(false);
++    expect(scope.has(Symbol('scope-test'), snapshot)).toBe(false);
++    original.ok = false;
++    expect(snapshot.ok).toBe(true);
++    expect(() => scope.capture(kind, { ok: false }, validate)).toThrow('Valeur invalide.');
++    scope.close();
++    expect(scope.has(kind, snapshot)).toBe(false);
++    expect(() => scope.capture(kind, { ok: true }, validate)).toThrow(/fermée/);
++  });
++
++  it('ne déclare pas validée une valeur qui ne peut pas être gelée entièrement', () => {
++    const kind = Symbol('scope-date');
++    const scope = new HopV55OperationValidationScope();
++    const snapshot = scope.capture<{ at: Date }>(kind, { at: new Date(0) }, () => undefined);
++    expect(scope.has(kind, snapshot)).toBe(false);
++  });
++});
++
++describe('sameCanonicalData', () => {
++  it('n’affirme l’égalité que pour des données JSON identiques', () => {
++    expect(sameCanonicalData({ a: 1, b: [true, null, 'x'] }, { b: [true, null, 'x'], a: 1 })).toBe(true);
++    expect(sameCanonicalData({ a: 0 }, { a: -0 })).toBe(true);
++    expect(sameCanonicalData({ a: undefined }, { a: undefined })).toBe(true);
++    expect(sameCanonicalData({ a: undefined }, {})).toBe(false);
++    expect(sameCanonicalData({ a: Number.NaN }, { a: Number.NaN })).toBe(false);
++    expect(sameCanonicalData({ at: new Date(0) }, { at: new Date(1) })).toBe(false);
++    expect(sameCanonicalData(new Map(), new Map())).toBe(false);
++    class Box { value: number; constructor(value: number) { this.value = value; } }
++    expect(sameCanonicalData(new Box(1), new Box(1))).toBe(false);
++    const accessor = Object.defineProperty({}, 'a', { get: () => 1, enumerable: true });
++    expect(sameCanonicalData(accessor, { a: 1 })).toBe(false);
++    // eslint-disable-next-line no-sparse-arrays
++    expect(sameCanonicalData([1, , 3], [1, undefined, 3])).toBe(false);
++    expect(sameCanonicalData({ a: '1' }, { a: 1 })).toBe(false);
++  });
++});
