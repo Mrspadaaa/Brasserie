@@ -89,6 +89,16 @@ if (!gabarit.includes(JETON)) {
   );
 }
 
+const catalogueMetaGuardPresent = gabarit.includes('function preservesHopCatalogueMeta(before, after)')
+  && gabarit.includes('preservesHopCatalogueMeta(resource.data, request.resource.data)')
+  && gabarit.includes("resource.data.get('catalogueMeta', null) == null");
+if (!catalogueMetaGuardPresent) {
+  echouer(
+    'La protection du ledger catalogue manque dans le gabarit Firestore.',
+    'Conserve exactement catalogueMeta sur les mises à jour client et empêche la suppression d’une fiche versionnée.'
+  );
+}
+
 const liste = comptes.map((a) => `        '${a}'`).join(',\n');
 fs.writeFileSync(SORTIE, gabarit.replace(JETON, liste));
 

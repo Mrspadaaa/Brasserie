@@ -47,6 +47,10 @@ firestore.rules
 *.xlsx
 
 # Artefacts de travail : audits, brouillons, dumps, couverture.
+# Les preuves publiques nécessaires aux tests sont rangées sous tests/fixtures/.
+# Les archives brutes, conversations et copies de travail restent locales.
+/work/
+/tmp/
 .cov/
 scratch_guidance.txt
 scripts/all_fields_dump.json

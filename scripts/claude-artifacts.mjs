@@ -3,6 +3,11 @@ import { dirname, join, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
+export function claudeSourceManifest(sources) {
+  return sources.map(({ source, staged, size, digest, readOnly = false }) =>
+    ({ source, staged, size, sha256: digest, readOnly }));
+}
+
 export function assertFreshClaudeOutput(output) {
   for (const path of [output, `${output}.progress.json`, `${output}.recovery.json`, `${output}.expert.json`, `${output}.artifacts`]) {
     if (existsSync(path)) throw new Error(`Sortie déjà utilisée : ${path}. Conserver ce dossier et choisir une nouvelle sortie pour la suite.`);
@@ -19,7 +24,7 @@ export function createClaudeArchive({ output, brief, sources, sourceCwd, configu
   writeFileSync(join(root, 'brief.txt'), brief, { flag: 'wx' });
   writeFileSync(join(root, 'request.json'), JSON.stringify({
     createdAt: new Date().toISOString(), sourceCwd, configured,
-    sources: sources.map(({ source, staged, size, digest }) => ({ source, staged, size, sha256: digest })),
+    sources: claudeSourceManifest(sources),
     retention: 'Conserver entrées, sorties et copies, même après réception. Aucun nettoyage automatique.',
   }, null, 2), { flag: 'wx' });
   // Originals are kept separately from copies Claude may edit.

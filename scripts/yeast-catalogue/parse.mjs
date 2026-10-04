@@ -1,5 +1,6 @@
 import { load, compact, plain, sha } from './fetch.mjs';
-export const PARSER_VERSION = 'yeast-catalogue-2026-09-26.1';
+export const PARSER_VERSION = 'yeast-catalogue-2026-09-30.1';
+export const ESCARPMENT_BIOTRANSFORMATION_TOOLTIP_CONTEXT = 'Info-bulle générale Escarpment associée au champ « Biotransformation » : conversion du géraniol en β-citronellol. Elle reste distincte du libellé fabricant exact (reported) et n’en retire aucun qualificatif thiol/terpène ; cette info-bulle ne rapporte ni mesure de libération des thiols ni rendement.';
 const text = x => compact(x).replace(/\u200b|\u00ad/g, '');
 const number = x => Number(x.replace(',', '.'));
 const num = '(\\d+(?:[.,]\\d+)?)';
@@ -174,7 +175,7 @@ export function parseProduct(config, p, html = '') {
   for(const low of minima){const high=facts.find(f=>f.key==='temperature'&&/^Maximum /i.test(f.label)&&f.range&&f.unit==='°C'&&f.source.reference===low.source.reference&&f.context===low.context);
     if(high&&low.range.min<=high.range.max){facts.splice(facts.indexOf(low),1);facts.splice(facts.indexOf(high),1);facts.push({...low,label:'Temperature range',reported:`Minimum ${low.reported} ; maximum ${high.reported}`,range:{min:low.range.min,max:high.range.max},qualifier:'range'});}
   }
-  if (config.id === 'escarpment') facts.filter(f => f.key === 'biotransformation').forEach(f => { f.context = 'Indice fabricant de conversion géraniol → β-citronellol ; ne mesure pas la libération des thiols.'; });
+  if (config.id === 'escarpment') facts.filter(f => f.key === 'biotransformation').forEach(f => { f.context = ESCARPMENT_BIOTRANSFORMATION_TOOLTIP_CONTEXT; });
   const documents = [...(p.extraDocuments ?? []), ...(raw.documents ?? []).filter(d => /technical|data|fiche/i.test(d.label ?? '')).map(d => ({ title: d.label, url: d.link })), ...$('a[href]').filter((_i,e) => /\.pdf(?:\?|$)/i.test($(e).attr('href')) || $(e).closest('.language-flags').length > 0).map((_i,e) => ({ title: text($(e).text()) || 'Document technique', url: $(e).attr('href') })).get()].flatMap(d => { try { const url = new URL(d.url, p.url).href; return /^https?:/.test(url) ? [{ title: d.title.slice(0,200), url }] : []; } catch { return []; } });
   if (!code && raw.variants) code = raw.variants.map(v => v.sku).find(Boolean) ?? null;
   const formText = [raw.product_type, ...categories.filter(c=>/^(?:dryyeast|dehydrated brewing yeast|dry brewing yeast|liquid strains)$/i.test(c)), ...facts.filter(f=>f.key==='form').map(f=>f.reported)].join(' ');

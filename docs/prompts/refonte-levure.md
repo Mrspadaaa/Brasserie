@@ -1,245 +1,140 @@
-# Mission autonome — refonte complète de Levure
+# Refonte Levure — disponibilité, choix, fermentation et ensemencement
 
-## Démarrage et responsabilités
+## Départ de la future session
 
-Cette mission est destinée à une **future session**, après fusion de la
-préparation. Partir de `main` synchronisé, constater l'état du dépôt, préserver
-tout travail présent et créer `codex/yeast-ui-refactor` si une branche dédiée
-convient. `AGENTS.md` est chargé automatiquement ; ce fichier est la mission
-explicitement pointée au démarrage, pas une invitation à lire tous les markdown.
-Lire les skills natifs `unlazy`, `caveman-lite` et
-`brasserie-frontend`, puis les sections pertinentes de `PRODUCT.md`, `DESIGN.md`
-et `docs/ui-compacte.md`. Ne pas charger `CLAUDE.md` ou `.claude/` dans les
-modèles OpenAI. Aucun déploiement ni écriture de vérification sur une DB réelle :
-utiliser des fixtures et les émulateurs adaptés. Ne pas écraser les modifications
-d'autrui. Cette préparation n'a modifié aucun écran de l'application.
+Reprendre **poc publiée, base fonctionnelle « main v2 »**, sur `codex/levure-refonte`.
+Le commit de base/passation exact est dans
+[le registre](../validation/levure-refonte-preparation-2026-09-27.md).
+Ne pas repartir de main, renommer/forcer main, rejouer la reprise Git ou refaire
+les acquis. Constater branche/HEAD/diff et préserver les travaux présents.
 
-Sol Max pilote les choix, l'implémentation et ses preuves dans son contexte
-complet. Il consulte Astra Max dans un processus `astra-review` séparé au
-cadrage, avant les choix coûteux de contrat, d'UX et d'architecture, puis lui
-fait relire les risques restants du parcours intégré et ses preuves avant
-livraison. D'autres avis ciblés sont possibles dès que l'incertitude ou le coût
-d'une erreur le justifie. Astra mène l'investigation pertinente en lecture seule
-et propose une solution, ses preuves et limites, sans prendre en charge
-l'implémentation générale ni l'orchestration. Sol décide et motive un avis
-écarté. Les Luna Max peuvent posséder des livrables bornés de recherche,
-réalisation, test ou vérification si contrats et critères sont clairs, avec
-fichiers attribués et preuves ; elles remontent les ambiguïtés structurantes.
-Sol en délègue jusqu'à 9 utiles selon les places disponibles, sans doublonner
-les recherches ni confondre revue par l'auteur et vérification indépendante.
-Un seul Claude Opus 5.5 xhigh participe : d'abord une contribution de conception
-à partir d'un brief et de captures ciblés, puis une revue sur rendu et parcours
-observés avec corrections utiles. Une nouvelle mission Claude exige un problème
-précis ; ne pas entretenir une boucle de consultations ni lui confier
-l'exploration générale du dépôt. Le relais Claude peut mobiliser au plus 9 Luna,
-sans doublonner le
-travail des Sol. Voir `docs/openai-setup.md` pour lancer et diagnostiquer le CLI
-sur abonnement sans repli API. Les profils natifs Sol/Luna complets restent
-872000 tokens configurés, 828400 utiles vérifiés précédemment. Astra reste à
-272000 tokens configurés, 258400 utiles.
+Lire AGENTS.md, docs/openai-setup.md, cette mission et le registre, puis les
+sections utiles de PRODUCT.md, DESIGN.md et docs/ui-compacte.md. Les rôles/profils
+actuels sont canoniques : ne pas les recopier ni utiliser les anciens chiffres
+Astra272000. Sol Max pilote ; Astra Max intervient dès la conception structurante
+via astra-review. Luna possède une investigation indépendante utile si nécessaire.
+Claude Pro Opus5.5 xhigh peut réaliser un lot frontend cohérent sur copies ; Sol
+rend, joue et valide l'intégration. Pas d'appel pour quota, second Sol ou reprise
+d'expertise en boucle. CLAUDE.md/.claude ne sont pas des instructions OpenAI.
 
-Écrire avant les changements les critères, responsabilités de fichiers et
-contrôles dans `docs/validation/yeast-refactor-implementation.md`. Y garder
-un petit « État de reprise » vivant : objectif et dernières corrections de
-l'utilisateur ; branche et commit de référence ; décisions et invariants ;
-agents actifs, identifiants et fichiers confiés ; terminé et prouvé versus
-ouvert ; prochaine action et liens aux preuves. Actualiser aux jalons et avant
-une pause ou un relais prévisible, pas à chaque outil. Au démarrage, à la
-reprise, après une compaction détectée ou un changement de périmètre, relire
-les consignes applicables et cet état, vérifier diff et agents, puis poursuivre
-sans répéter les recherches ni créer de doublons. Ne pas créer de registre
-global partagé entre tâches ou promettre un hook avant toute compaction.
-Rester dans le périmètre Levure et les liaisons nécessaires avec recette, stock,
-catalogue, Gemini et brassage ; préserver les étapes Eau/sels et leur calcul.
+Cette ancienne session livre seulement publication et préparation. La nouvelle
+session consigne critères, owners, avis, décisions, preuves et état de reprise
+dans le registre propre à la refonte. Aucune publication future ni essai sur données
+réelles n'est autorisé implicitement ; utiliser fixtures/émulateurs.
 
-## Résultat attendu pour le brasseur
+## Résultat et périmètre complet
 
-Refondre réellement l'interface graphique de Levure. Aucun champ, composant,
-regroupement ou emplacement actuel n'est acquis. Depuis l'étape Levure, le
-brasseur trouve ou commence à saisir sa levure **en un clic**. Il comprend les
-conséquences documentées de cette levure **dans sa recette**, règle les variables
-pertinentes du procédé, voit la quantité à ensemencer et la préparation requise,
-compare une autre souche avant tout remplacement, puis l'applique explicitement.
-Il peut revenir, corriger, sauvegarder et retrouver ces décisions. Le parcours
-doit rester utilisable pour une recette incomplète et hors ligne.
+Trouver/saisir sa levure immédiatement, comprendre ses possibilités dans la recette,
+son approvisionnement, la dose et la préparation requise, choisir volontairement,
+enregistrer et retrouver ces décisions. Comparaison et objectif facultatifs.
+Choix direct dans le brouillon ; essai de conduite séparé jusqu'à son application
+explicite. Recette incomplète utilisable, hors ligne et brassin lancé figé.
 
-Traiter chaque **champ, sortie calculée, source, état, erreur et action** avec une
-matrice courte : décision du brasseur, utilité maintenant, moment, emplacement,
-visibilité immédiate ou à la demande, contrôle, représentation, meilleure
-alternative plausible et constat dans le parcours. Garder l'accès aux données
-secondaires pertinentes ; une donnée ne disparaît pas du modèle parce qu'elle
-quitte l'écran principal. Déplacer ou remplacer les composants hérités si une
-autre organisation aide mieux. Une capture sans geste vérifié et sans cette
-revue sémantique ne valide pas l'UX.
+### Disponibilité et formats réellement achetables
 
-Explorer plusieurs moyens **visuels et interactifs** de montrer sélection,
-écarts et conséquences, au-delà du texte. Prototyper les choix incertains avec
-les mêmes cas représentatifs, données manquantes et unités réelles. Examiner
-les outils du dépôt et des outils externes maintenus dans leur documentation
-actuelle ; décider selon lisibilité, clavier/tactile, exactitude, maintenance et
-coût mesuré. Aucune liste de graphiques ni nouvelle bibliothèque n'est imposée.
-Un résultat sensoriel qualitatif reste qualitatif : ne fabriquer ni intensité
-0–100, ni courbe temporelle, ni score de compatibilité faute de modèle applicable.
-Mettre mesures, estimations, cibles, informations fabricant et inconnues dans
-des états distincts. Un scénario ne modifie pas la recette avant l'action
-« appliquer » ; une recette mise à jour ne réécrit pas un brassin déjà lancé.
+Séparer référence technique/souche, produit et variante de conditionnement, offre
+vendeur/observation datée, article/lot détenu. Petits sachets secs autour de 11–12 g
+et petits packs liquides, sans imposer12g ou supposer un format depuis une souche.
+Priorité de distribution **vérifiée** : Suisse, puis France/Allemagne au même rang,
+puis Europe. Domaine vendeur/pays du labo ne prouvent ni stock ni livraison.
+Statut annoncé, vérification, ancienneté, destination/conditions de livraison,
+prix/devise/base de quantité et sources/dates restent distincts.
+Références indisponibles/étrangères conservées pour reconnaître les recettes et
+trouver des alternatives. Revoir le rapprochement nominal de pénurie quand aucune
+association stock n'existe : décider sa portée historique avant généralisation.
 
-## Recherche, offres et comparaison
+### Recherche, choix et alternatives dans le même contexte
 
-Une recherche accepte nom, code, fabricant, alias et souche d'une recette,
-y compris une référence étrangère sans offre locale connue. Séparer l'identité
-recherchée, l'alternative fonctionnelle, le produit vendu et le stock personnel.
-Une souche similaire n'est pas identique ; les différences de données et leur
-incertitude restent visibles. Comparer sur **la même recette** les plages
-documentées et les sorties estimables, puis demander une application explicite.
-Rendre les réglages de fermentation documentés accessibles au moment utile ;
-relier chaque réglage à son effet justifiable et à sa limite. Si volume, densité
-ou autre paramètre manque, montrer ce qui peut être comparé sans inventer le
-reste.
+Préserver nom/code/labo/alias, lots/homonymes séparés, catalogue/stock/libre,
+choix direct et Undo/Redo. L'approvisionnement ne crée pas une porte obligatoire.
+Une alternative fonctionnelle n'est pas une preuve d'identité. Comparaison volontaire
+avec référence fixe, données alignées, écarts discriminants, inconnus et sources
+accessibles. Étendre les sorties seulement si calculables sous hypothèses communes.
 
-Pour des petits brassins, privilégier sachets secs autour de 11–12 g **ou**
-petits packs liquides, sans filtre « exactement 12 g ». Classer les offres
-pertinentes par **distribution vérifiée** : Suisse, puis France et Allemagne
-au même rang, puis reste de l'Europe. Le pays du laboratoire n'est pas le pays
-de distribution. Distinguer : stock de la brasserie, référencement chez un
-vendeur, stock marchand annoncé, stock effectivement revérifié, conditions de
-livraison en Suisse et date de chaque observation. Une offre connue comme
-indisponible ou non livrable ne devient pas achetable grâce à son rang. Les
-souches étrangères restent recherchables comme références et comparateurs ;
-ne pas encombrer la sélection ordinaire avec toutes les fiches mondiales.
+### Possibilités et conduite de fermentation
 
-Partir des observations datées de
-`docs/research/yeast-availability-2026-09-24.md` et des pistes visuelles de
-`docs/research/yeast-visualization-options.md`. Ce sont des amorces, pas une
-preuve de stock actuel ni une liste fermée. Revérifier seulement les fiches
-produit et conditions de livraison nécessaires au parcours implémenté. La
-carte `docs/research/yeast-code-map-2026-09-24.md` situe le code et les limites
-Gemini ; recontrôler ses chemins sur le nouveau `main` avant modification.
+Objectif facultatif, réglages applicables (température/pression/procédé), programme
+de plusieurs phases et Paliers partagent les valeurs de la recette. Graphe : J0
+et jours cumulés de changement ; création : durées. Zéro/inconnu distincts,
+décalages visibles, précision, monoaxes, clavier/tactile et largeur mobile utiles.
+Lager/NOLO/autres cultures par propriétés et conditions, pas une liste de presets
+liée aux exemples. Guides actuels bornés, pas optimum universel. Pas de score
+sensoriel0–100, cinétique, DF garantie ou durée biologique inventés. Préserver les
+phases/capacités ; une phase retirée ne revient pas au changement de souche.
 
-## Ensemencement et starter, du choix au brassage
+### Quantité, pitch rate, packs et préparation
 
-Au choix d'une levure, indiquer la **quantité théorique nécessaire**, les
-**sachets/packs entiers** correspondants et, lorsque pertinent, la possibilité
-et le calendrier d'un starter. Présenter séparément la dose recommandée par le
-fabricant pour le produit et une estimation cellulaire documentée : elles ne
-sont pas interchangeables. Conserver les unités d'entrée et de sortie (g, mL,
-cellules, volume de moût en mL/L/hL, densité/°P, taille du pack) et le calcul
-de conversion explicitement. Une quantité en grammes ne donne pas un nombre de
-cellules sans données validées pour le produit ; un volume de pack ne garantit
-pas sa viabilité. Le nombre de packs à acheter est entier, la quantité calculée
-et l'éventuel surplus restant visibles.
+Distinguer dose fabricant, estimation cellulaire applicable, quantité manuelle,
+packs à acheter/ouvrir, surplus et quantité réellement ensemencée. Le conseil suit
+volume à ensemencer, densité/°P et données produit/procédé ; ni style ni masse de
+grains seuls. Une plage reste une plage de masse/packs, sans milieu automatique.
+Une action applique le conseil sans écraser une quantité ou consommer un stock.
 
-Séparer la **quantité prévue dans la recette** de la **quantité conseillée**.
-Pour un produit vendu exclusivement en sachet dont le conditionnement est
-documenté, la sélection peut initialiser « 1 sachet de 11,5 g » (poids réel
-du produit, jamais supposé). Cette quantité reste ajustable et ne certifie pas
-que la dose est suffisante. Si le calcul applicable conseille trois sachets,
-montrer « 1 prévu / 3 conseillés », l'écart et une action « Utiliser 3 sachets ».
-Recalculer le conseil lorsque volume, densité ou levure change, sans écraser
-silencieusement la quantité choisie. Garder le détail du pitch rate accessible
-au moment utile, sans imposer une longue fiche technique avant chaque choix.
+Conversions explicites g/kg,mL/L/hL,cellules,taux/°P et formats documentés. Grammes
+ou volume de pack ne donnent pas les cellules sans données produit. Âge/date/
+conservation/viabilité seulement si connus et justifiés ; modèle manquant → inconnu
+ou calcul impossible, pas moyenne opaque. Ne pas réactiver BrewingMath.pitchRate.
+Un pack prévu peut venir d'un format exact volontairement choisi, pas de la seule
+identité ; «1prévu/3conseillés» est une représentation, pas une règle métier.
 
-Définir et tester les paramètres, unités, formules et conditions d'application
-à partir des sources primaires réunies dans
-`docs/research/yeast-pitch-rate-2026-09-24.md`, puis vérifier la fiche exacte
-du produit retenu. Selon la méthode applicable, inclure volume à ensemencer,
-densité du moût, type/procédé de fermentation, forme et souche, dose ou contenu
-cellulaire publié par pack, date de production/péremption, conservation et
-viabilité **si connues**. Rendre les hypothèses modifiables là où elles le sont
-réellement. Afficher « inconnu / calcul impossible » quand la viabilité, le
-conditionnement ou le modèle manque ; ne pas substituer une moyenne opaque.
-Si le fabricant fournit une **plage** de dose, montrer la plage de masse et de
-packs entiers correspondante sans choisir silencieusement son milieu. Le
-brasseur peut ensuite sélectionner une dose applicable dans cette plage pour
-obtenir un nombre unique de packs et son surplus, avec la justification et les
-conditions affichées.
-La masse de grains seule, par exemple 12 kg pour une imperial stout, ne
-détermine ni le volume à ensemencer ni une recommandation de trois sachets.
-Relier le calcul aux valeurs communes de la recette. Distinguer la contribution
-à la densité et la fermentescibilité documentée des ajouts, notamment la
-maltodextrine ; ne pas inventer un retrait automatique de la densité utilisée
-par une formule de pitch rate. L'extrait de malt destiné au milieu d'un starter
-et la maltodextrine sont des produits distincts, avec usages et sources explicites.
-Ne pas supposer qu'une levure sèche exige un starter. Pour chaque résultat,
-montrer formule, provenance, unités, conditions et limites (notamment forme,
-souche, température, stockage et âge) ; éviter une précision injustifiée.
+Starter seulement si produit/méthode/contexte le justifient, jamais automatique
+pour le sec. Extrait de malt et maltodextrine ne sont pas un milieu équivalent.
+Si retenu : plan enregistré (méthode/milieu/volume/étapes/échéances/matériel/statut),
+correction/annulation, lien produit/lot/recette et révision, préparation avantJ0,
+reprise/réalisation au brassage, prévu/réel distincts, snapshot et hors ligne.
+Ne pas proposer le jour même une préparation devenue irréalisable.
 
-Si un starter est retenu, l'aide devient un **plan enregistré** : volume et
-milieu documentés, étapes, durée et échéances relatives à la date de brassage,
-matériel et consignes applicables, statut prévu/en cours/fait, confirmation de
-ce qui a réellement été préparé et quantité effectivement ensemencée. La
-préparation apparaît **en amont** du jour de brassage si son délai l'exige, puis
-se retrouve dans la conduite du jour de brassage. Éviter de proposer le jour
-même un starter devenu impossible. Relier le plan au produit/lot et à la recette
-avec une révision ; figer les données nécessaires dans le snapshot du brassin
-au lancement. Un changement ultérieur de recette ou de catalogue ne doit pas
-réécrire ce brassin. Prévoir correction, annulation et reprise hors ligne.
+### Gemini et correction durable dans la bonne portée
 
-## Gemini : corriger et enregistrer réellement
+Préserver livre candidat et enveloppes catalogue/locales, valeurs typées, sources/
+contexte/dates/notes, validation cohérente en un geste, exceptions indépendantes,
+priorité manuelle, réponses obsolètes refusées, save/reopen et statut sync.
+Compléter alternatives et correction de **valeurs DB existantes** : catalogue,
+offres, stock/lot et recette. Propositions avec identité stable, champ/ancienne/
+nouvelle valeur typés, raison, source/date/conditions, portée, révision attendue
+et reçu. Relire avant écriture autorisée ; conflit/saisie récente non écrasés.
+Suggestion/brouillon/attente sync ne sont pas une confirmation serveur.
 
-Implémenter un parcours où Gemini recherche des alternatives, complète,
-**contrôle et corrige aussi des champs déjà présents en DB**, avec des outils
-réels d'application. Il ne suffit ni d'écrire une suggestion dans le chat, ni
-de remplir uniquement les trous. Chaque proposition a : identité stable de
-l'entité et chemin du champ, ancien et nouveau typés, motif, URL/source directe
-et date de vérification, produit/souche/forme/conditionnement et portée
-(référence catalogue, offre, stock, recette, ou autre cible explicite), révision
-attendue et état de validation. Ne pas déduire la disponibilité marchande d'une
-fiche technique ou d'un pays de laboratoire. La recherche web établit une
-source, pas automatiquement la vérité de chaque fait extrait.
+URL localisée ≠ preuve factuelle ; racine seule d'un nouveau lookup ≠ fiche précise.
+Adoption garde l'origine IA. Correction personnelle de valeur/type et correction
+du lien seul sont distinctes : préserver brut/origine et tracer l'intervention.
 
-L'utilisateur peut demander et approuver une **correction** d'une valeur
-existante. L'outil relit l'état actuel, compare la révision et l'ancienne
-valeur, valide la portée et la source, écrit la correction autorisée dans la
-bonne entité et l'audit, puis retourne la valeur et la révision enregistrées.
-Une saisie plus récente ou un fait contradictoire déclenche un conflit lisible
-et une nouvelle évaluation ; l'autorisation de corriger n'est jamais un
-écrasement aveugle. Distinguer « brouillon modifié », « enregistré localement/en
-attente de synchronisation » et « confirmé côté serveur ». Revenir à la fiche
-et la rouvrir pour prouver la persistance ; vérifier aussi un refus/conflit et
-la reprise hors ligne. Le précédent `import-plan.mjs` et les transactions
-Gemini actuelles dans la carte sont des points de départ, pas cette fonction
-déjà implémentée. Préserver imports/exports, données antérieures et contrats
-des recettes incomplètes. Aucun test ne doit écrire sur la DB réelle.
+### UX et contraintes transversales
 
-## Vérification et sortie
+Mobile d'abord et desktop : chaque donnée/action aide une décision à ce moment.
+Aucun bloc n'a de place acquise ; ne refaire un acquis qu'avec bénéfice démontré.
+Richesse/source accessible à la demande, outils visuels utiles, commandes près de
+la décision, aucun panneau masquant les champs. Mesure/estimation/cible/document/
+manque distincts. Préserver performances, hors ligne, transports/import-export,
+unités, zoom/clavier/tactile, snapshots et NOLO. p95<200ms reste une cible à mesurer,
+pas un résultat. Tests verts/viewport/captures seuls ne valident pas la refonte.
 
-Avant/après : ouvrir réellement Levure sur **un mobile 390 px** et **un desktop
-1280 px** représentatifs, examiner les captures et jouer le parcours avec
-recherche, choix, réglage, comparaison, application, retour, erreur, sauvegarde,
-réouverture et correction. Une autre largeur sert seulement à élucider un
-défaut constaté. Vérifier clavier, zoom, libellés, unités et accès aux valeurs
-exactes. Rejouer la planification du starter avant brassage jusqu'à l'usage
-dans le jour de brassage ; tester dose fabricant et estimation cellulaire,
-valeurs manquantes, pack entier, sec et liquide. Tester une souche étrangère
-recherchée avec alternative distribuée localement, un vendeur France/Allemagne,
-un produit non livrable, stock personnel et offre inconnue distincts.
+## Conception et preuve discriminante
 
-Inclure le scénario imperial stout : sélectionner une levure en sachet,
-retrouver un sachet prévu, compléter volume/densité et obtenir le conseil
-calculé, l'appliquer puis sauvegarder/rouvrir. « Trois sachets » est un exemple
-de résultat à établir avec une fixture documentée, pas une règle liée au style
-ou aux 12 kg de grains. Faire varier le volume, la densité et le conditionnement,
-tester un manque de données, une quantité manuelle conservée et l'ajout de
-maltodextrine. Vérifier séparément l'option starter et son milieu approprié.
+Matrice d'audit du registre : acquis prouvé, manque/cassé, obsolète, décision ouverte.
+Recherches24/09 (disponibilité,pitch,visualisations,code) datées, à réutiliser ;
+offres non actuelles et carte antérieure aux corrections. Actualiser seulement
+ce qui change une décision. Définir avec Astra frontières référence→produit/format
+→offre datée→lot, puis conseil→prévu→préparation→réel. Les opérations/offres ne
+vont pas dans le livre documentaire. Règles/inconnus avant choix coûteux, puis
+conception avec Claude sur un lot utile et tranche réelle avant extension.
 
-Faire vérifier les contrats de calcul, sauvegarde/snapshot, conflits Gemini,
-offline et import/export avec des tests pouvant échouer et des fixtures. Partir
-des scripts et tests ciblés indiqués dans la carte, puis `npm run build` si les
-sources ont changé. Mesurer toute performance annoncée sur un banc décrit :
-latence locale de recherche/réglage (objectif produit : p95 sous 200 ms,
-sur un même banc avant/après ; ce n'est pas un résultat déjà obtenu),
-taille/chargement des graphes et dossiers, coût d'une dépendance ajoutée ;
-séparer la latence réseau/Gemini. Un build ou l'absence de débordement seuls
-ne valident pas l'expérience. Faire relire indépendamment les données métier
-et les captures, corriger les défauts observés, puis rejouer les parcours
-affectés. Ne prétendre à une validation utilisateur que si elle a eu lieu.
+Tranche proposée : recette incomplète/référence sans offre locale confirmée →
+retrouver → comparer volontairement alternative au format/offre documentés →
+distinguer non-livrable et lot homonyme → choisir directement → garder quantité
+manuelle → compléter volume/densité → comprendre/adopter conseil justifié →
+régler conduite → save/reopen hors ligne. Bifurcation liquide/starter applicable :
+préparation avantJ0→réalisation→snapshot figé. Correction concurrente refusée sans
+perte. Choisir par propriétés hors des dernières fixtures, pas campagne par style.
 
-Renseigner le registre avec fichiers changés, décisions visuelles et métier,
-sources/formules, captures examinées, scénarios joués, commandes exécutées,
-résultats, mesures et limites. À chaque jalon, vérifier critères, contrats à
-risque, avis reçus et suites, tests capables d'échouer et contrôle UX utile.
-Distinguer contrôles exécutables et décisions humaines : les consignes seules
-ne prouvent pas l'absence de dérive ni une baisse du quota. La livraison future
-est une refonte utilisable et prouvée, sans déploiement ou mutation de production
-automatiques.
+## Vérification et livraison
+
+Rapprocher demande/critères/contrats/avis/actions, tests capables d'échouer et
+parcours réel. Ouvrir/examiner390×844 et1280×900 ; recherche/choix/correction/retour/
+annulation/application selon l'action, save/reopen, clavier/tactile/hors ligne.
+Autre largeur seulement pour un défaut. Régressions identité/stock/source/unités/
+recette incomplète/import-export/snapshot/NOLO et phases selon leurs propriétés.
+Gates/build selon diff, pas répétition de campagne ou nombre d'appels comme objectif.
+Essais IA réels opt-in hors tests normaux, budget autorisé, données publiques/fixtures.
+Bilan : réalisé/prouvé, choix humains/limites, branches/commits/rendus complets et
+prochaine action concrète. Le déploiement de la base n'autorise pas la suite.

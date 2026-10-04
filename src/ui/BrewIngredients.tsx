@@ -84,28 +84,37 @@ function IngredientRow({
   onInteract: () => void;
 }) {
   const actual = state.additions?.[item.id];
-  const amount = actualAmount(item, state);
+  const pitchActualUnknown = item.id === 'yeast' && state.pitchedAt != null &&
+    (actual?.amount == null || !(actual.unit ?? item.unit));
+  const pitchPlannedUnknown = item.id === 'yeast' && state.pitchedAt == null && !(item.planned > 0) && !(Number.isFinite(actual?.amount) && actual!.amount > 0);
+  const amount = pitchActualUnknown || pitchPlannedUnknown ? undefined : actualAmount(item, state);
+  const controlAmount = amount ?? (item.planned > 0 ? item.planned : 0);
   const [alternatives, setAlternatives] = useState(false);
   const [editingDose, setEditingDose] = useState(false);
   const [replacementName, setReplacementName] = useState('');
   const named = actual?.replacement?.name ?? item.name;
   const patch = (p: Partial<NonNullable<BrewDayState['additions']>[string]>) => {
     onInteract();
-    update((s) => ({
-      ...s,
-      additions: {
-        ...s.additions,
-        [item.id]: {
-          amount: actualAmount(item, s),
-          ...s.additions?.[item.id],
-          ...p
+    update((s) => {
+      const existing = s.additions?.[item.id];
+      if (item.id === 'yeast' && s.pitchedAt != null) {
+        if (p.amount != null && Number.isFinite(p.amount) && p.amount > 0) {
+          const unit = p.unit ?? existing?.unit ?? item.unit;
+          if (!unit?.trim()) return s;
+          return { ...s, pitchQuantityConfirmation: 'measured', additions: { ...s.additions,
+            yeast: { ...existing, ...p, amount: p.amount, unit, doneAt: s.pitchedAt } } };
         }
+        if (p.unit && existing?.amount != null) return { ...s, pitchQuantityConfirmation: 'measured', additions: {
+          ...s.additions, yeast: { ...existing, ...p, unit: p.unit, doneAt: s.pitchedAt }
+        } };
+        return s;
       }
-    }));
+      return { ...s, additions: { ...s.additions, [item.id]: { amount: actualAmount(item, s) ?? item.planned, ...existing, ...p } } };
+    });
   };
   const rung = item.kind === 'salt' || item.kind === 'acid' ? 0.1 : item.unit === 'kg' ? 0.1 : 1;
   const press = useHoldRepeat(
-    amount,
+    controlAmount,
     (amount: number) => patch({ amount }),
     (v, d) => Math.max(0, Math.min(100000, Math.round((v + d) * 100) / 100))
   );
@@ -121,23 +130,28 @@ function IngredientRow({
           (state.additions?.[i.id]?.replacement?.name ?? i.name).trim().toLowerCase() ===
             x.name.trim().toLowerCase()
       )
-      .reduce((sum, i) => sum + (Units.convert(actualAmount(i, state), i.unit, x.unit) ?? 0), 0);
+      .reduce((sum, i) => sum + (Units.convert(actualAmount(i, state) ?? i.planned, i.unit, x.unit) ?? 0), 0);
     return { ...x, currentStock: Math.max(0, x.currentStock - reserved) };
   });
-  const choices = fermentable ? maltAlternatives(fermentable, amount, unreserved) : [];
+  const choices = fermentable ? maltAlternatives(fermentable, controlAmount, unreserved) : [];
   const available = unreserved.find(
     (s) => s.name.trim().toLowerCase() === named.trim().toLowerCase()
   );
   const availableQty = available
     ? Units.convert(available.currentStock, available.unit, item.unit)
     : null;
-  const shortage = availableQty != null && availableQty < amount;
-  const changed = Math.abs(amount - item.planned) > 0.001;
+  const shortage = availableQty != null && amount != null && availableQty < amount;
+  const changed = amount != null && Math.abs(amount - item.planned) > 0.001;
   return (
     <div className={`brew-ingredient ${actual?.doneAt != null ? 'is-added' : ''}`}>
       <div className="brew-ingredient-heading">
         <div className="brew-ingredient-name">
           <strong>{named}</strong>
+          {item.id === 'yeast' && (pitchActualUnknown
+            ? <span>{state.pitchQuantityConfirmation === 'unmeasured' ? 'Réel non mesuré' : state.pitchQuantityConfirmation === 'starter-transferred' ? 'Starter transféré · volume non relevé' : 'Réel non renseigné'} · prévu {item.planned > 0 ? `${f(item.planned)} ${item.unit}` : 'absent'}</span>
+            : pitchPlannedUnknown
+              ? <span>Quantité prévue absente ou nulle · saisis le réel dans le guide Levure</span>
+              : null)}
           {changed && (
             <span>
               Prévu {f(item.planned)} {item.unit}
@@ -195,31 +209,33 @@ function IngredientRow({
           aria-label={`Modifier la quantité de ${named}${item.side ? ' au ' + item.side : ''}`}
           aria-describedby={`brew-dose-value-${item.id} brew-dose-unit-${item.id}`}
           aria-expanded={editingDose}
+          disabled={pitchActualUnknown}
           onClick={() => setEditingDose((value) => !value)}
         >
-          <strong id={`brew-dose-value-${item.id}`}>{f(amount)}</strong>{' '}
-          <span id={`brew-dose-unit-${item.id}`}>{item.unit}{item.kind === 'water' ? ' à froid' : ''}</span>
+          <strong id={`brew-dose-value-${item.id}`}>{pitchActualUnknown ? 'Non renseignée' : pitchPlannedUnknown ? 'À préciser' : f(amount ?? 0)}</strong>{' '}
+          <span id={`brew-dose-unit-${item.id}`}>{pitchActualUnknown || pitchPlannedUnknown && !item.unit ? '' : item.unit}{item.kind === 'water' ? ' à froid' : ''}</span>
         </button>
         <label className="brew-add-check" title="Cocher après l’ajout réel">
           <input
             type="checkbox"
             aria-label={`Ajouté : ${named}`}
-            checked={actual?.doneAt != null}
+            checked={actual?.doneAt != null || item.id === 'yeast' && state.pitchedAt != null}
+            disabled={item.id === 'yeast' && state.pitchedAt != null}
             onChange={(e) => {
               onInteract();
               if (e.target.checked) patch({ doneAt: brewNow(), ...(item.kind === 'water' ? { volumeBasis: 'cold' as const } : {}) });
               else
                 update((s) => {
-                  const a = { amount: actualAmount(item, s), ...s.additions?.[item.id] };
+                  const a = { amount: actualAmount(item, s) ?? item.planned, ...s.additions?.[item.id] };
                   delete a.doneAt;
                   return { ...s, additions: { ...s.additions, [item.id]: a } };
                 });
             }}
           />
           <span className="brew-check-box" aria-hidden="true">
-            {actual?.doneAt != null && <Check size={16} />}
+            {(actual?.doneAt != null || item.id === 'yeast' && state.pitchedAt != null) && <Check size={16} />}
           </span>
-          <span className="sr-only">{actual?.doneAt != null ? 'Ajouté' : 'À ajouter'}</span>
+          <span className="sr-only">{state.pitchedAt != null && item.id === 'yeast' || actual?.doneAt != null ? 'Ajout consigné' : 'À ajouter'}</span>
         </label>
       </div>
       {editingDose && (
@@ -249,6 +265,11 @@ function IngredientRow({
               </button>
             )}
           </div>
+          {item.id === 'yeast' && !item.unit && <label className="block space-y-1 text-xs text-cave-400">Unité réelle
+            <select aria-label="Unité de la quantité réelle de levure" value={actual?.unit ?? ''} onChange={event => patch({ unit: event.target.value })} className="min-h-touch rounded-control border border-cave-700 bg-cave-900 px-2 text-sm text-cave-50">
+              <option value="">À choisir</option>{['g', 'kg', 'mL', 'L', 'sachet', 'flacon', 'paquet'].map(unit => <option key={unit} value={unit}>{unit}</option>)}
+            </select>
+          </label>}
           <button type="button" className="brew-text-button" onClick={() => setEditingDose(false)}>
             Fermer l’ajustement
           </button>
@@ -415,7 +436,7 @@ export function BrewIngredients({
     return i.area === area && (i.id !== 'yeast' || stepId === 'ensemencement');
   };
   const shown = items.filter(
-    (i) => forStep(i) && (i.planned > 0 || state.additions?.[i.id] || extra.includes(i.id))
+    (i) => forStep(i) && (i.planned > 0 || state.additions?.[i.id] || extra.includes(i.id) || i.id === 'yeast' && (overview || area === 'finish' && stepId === 'ensemencement'))
   );
   const inlineImpact = shown.some(
     (i) => i.id === activeItem && ['salt', 'acid', 'water'].includes(i.kind)
@@ -516,7 +537,7 @@ export function BrewIngredients({
         */}
         {shown.length > 0 && (
           <span className="brew-count">
-            {shown.filter((i) => state.additions?.[i.id]?.doneAt != null).length}/{shown.length}{' '}
+            {shown.filter((i) => state.additions?.[i.id]?.doneAt != null || i.id === 'yeast' && state.pitchedAt != null).length}/{shown.length}{' '}
             ajoutés
           </span>
         )}

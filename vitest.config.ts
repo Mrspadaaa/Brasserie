@@ -27,6 +27,11 @@ export default defineConfig({
   plugins: [react()],
   // Server deployment bundles this exact domain entry; tests use its TypeScript source.
   resolve: { alias: [
+    { find: './hopAdviceContentReference.js', replacement: fileURLToPath(new URL('./src/domain/hopDecision/adviceContentReference.ts', import.meta.url)) },
+    { find: './adviceContentReference.js', replacement: fileURLToPath(new URL('./src/domain/hopDecision/adviceContentReference.ts', import.meta.url)) },
+    { find: './brewerHopAdviceSemanticSource4.js', replacement: fileURLToPath(new URL('./src/services/hopV55/brewerHopAdviceSemanticSource4.ts', import.meta.url)) },
+    { find: /^\.\.\/\.\.\/domain\/(.+)\.js$/, replacement: `${fileURLToPath(new URL('./src/domain/', import.meta.url))}$1.ts` },
+    { find: /^\.\.\/\.\.\/\.\.\/functions\/src\/(.+)\.js$/, replacement: `${fileURLToPath(new URL('./functions/src/', import.meta.url))}$1.ts` },
     { find: '../data/seedData', replacement: fileURLToPath(new URL('./src/data/seedData.example.ts', import.meta.url)) },
     { find: './yeastCompanion.js', replacement: fileURLToPath(new URL('./src/domain/yeastCompanion.ts', import.meta.url)) },
     { find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) },
@@ -46,6 +51,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     testTimeout: 15000,
+    // The full 300-file suite can block Vitest's worker RPC on this Windows host
+    // at default parallelism. Four workers ran every test without skipping any.
+    maxWorkers: 4,
     setupFiles: ['tests/setup.ts'],
     environmentMatchGlobs: [['tests/integration/**', 'jsdom']],
     include: [

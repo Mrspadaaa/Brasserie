@@ -46,6 +46,7 @@ import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/Fermenta
 import { YeastRecipeContext as SyncYeastRecipeContext, YeastRecipeHeading as SyncYeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { YeastRecipeChoice as SyncYeastRecipeChoice, startYeastChoiceChange, type YeastChoiceChange, type YeastChoiceIntent } from '../ui/YeastRecipeChoice';
 import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossier';
+import { keepIndependentPitchingWort, yeastPlannedInFormat } from '../domain/yeastPitching';
 import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
 import { yeastReferences } from '../domain/yeastReferences';
@@ -937,6 +938,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
    *
    * La clé de cumul porte la référence de stock ET l'unité. Un ancien
    * ingrédient sans référence ne reprend un stock par nom que s'il est unique.
+   * Pour la levure, un homonyme reste une suggestion : le lot doit être associé.
    */
   const shortages = useMemo(() => {
     const besoins = new Map<string, { name: string; stockItemRef?: string; categories: string[]; needed: number; unit: string }>();
@@ -952,11 +954,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     hops.forEach((h) => add(h.name, h.weightG, 'g', ['Houblon'], h.stockItemRef));
     // Stock follows the actual planned dose, without assuming cells per packet.
     if (yeast.name) {
-      add(yeast.name, yeast.qty, yeast.unit, ['Levure'], yeast.stockItemRef);
+      const product = yeast.pitching?.product;
+      const amount = product?.referenceId === yeast.hopIndexId ? yeastPlannedInFormat(yeast, product) : undefined;
+      add(yeast.name, amount ?? yeast.qty, amount !== undefined ? product!.format!.unit : yeast.unit, ['Levure'], yeast.stockItemRef);
     }
 
     const need: Array<{ name: string; needed: number; unit: string; have?: number; haveUnit?: string; status: 'shortage' | 'unverified'; reason?: string }> = [];
     besoins.forEach((b) => {
+      if (!b.stockItemRef && b.categories.includes('Levure')) {
+        need.push({ name: b.name, needed: b.needed, unit: b.unit, status: 'unverified',
+          reason: 'Lot de levure à associer : couverture du stock non vérifiée' });
+        return;
+      }
       const matches = stockItems.filter(s => b.stockItemRef ? s.ref === b.stockItemRef :
         b.categories.some(category => s.category.toLocaleLowerCase('fr') === category.toLocaleLowerCase('fr')) &&
         s.name.trim().toLocaleLowerCase('fr') === b.name.toLocaleLowerCase('fr'));
@@ -964,7 +973,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       if (matches.length > 1) { need.push({ name, needed: b.needed, unit: b.unit, status: 'unverified', reason: 'Plusieurs articles : associer la référence du stock' }); return; }
       const item = matches.length === 1 ? matches[0] : undefined;
       if (!item) { need.push({ name, needed: b.needed, unit: b.unit, have: 0, status: 'shortage' }); return; }
-      const converted = Units.convert(item.currentStock, item.unit, b.unit);
+      let converted = Units.convert(item.currentStock, item.unit, b.unit);
+      const product = yeast.pitching?.product;
+      if (converted === null && b.categories.includes('Levure') && b.stockItemRef && product?.format &&
+          product.referenceId === yeast.hopIndexId && (item.yeastLot?.productId ?? yeast.pitching?.lot?.productId) === product.id) {
+        const physical = item.currentStock === 0 ? 0 : yeastPlannedInFormat({ qty: item.currentStock, unit: item.unit }, product);
+        if (physical !== undefined) converted = Units.convert(physical, product.format.unit, b.unit);
+      }
       if (converted === null || !Number.isFinite(converted)) {
         need.push({ name, needed: b.needed, unit: b.unit, have: Number.isFinite(item.currentStock) ? item.currentStock : undefined,
           haveUnit: item.unit, status: 'unverified', reason: converted === null ? 'Conditionnement à vérifier avant comparaison' : 'Quantité de stock à vérifier' });
@@ -1173,7 +1188,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       return;
     }
 
-    const next: YeastSpec = {
+    const next: YeastSpec = keepIndependentPitchingWort({
       name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
       form: item?.yeastForm, unit: item?.unit, qty: undefined, stockItemRef: item?.ref,
       attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
@@ -1181,7 +1196,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
       flocculation: item?.yeastFlocculation, alcoholTolerancePct: item?.yeastAlcoholTolerancePct,
       technicalSource: item?.technicalSource, notes: item?.yeastNotes, hopIndexId: undefined
-    };
+    }, current);
     rememberCandidateBeforeYeastChoice(next);
     yeastSelectionEpoch.current += 1;
     setDetails(previous => ({ ...previous, yeastGuide: undefined, yeastDesign: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
@@ -1298,7 +1313,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     archivedAt: base?.archivedAt
   });
 
-  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step, restoreSelection = false) => {
+  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step, restoreSelection = false, preserveYeastDocumentary = false) => {
+    setBrewDate(next.brewDate ?? '');
     if (restoreSelection) {
       // Undo restores the captured YeastSpec verbatim: no stock lookup, adoption or enrichment.
       setDetails(previous => ({ ...previous, nolo: next.nolo, fermentationIntent: next.fermentationIntent,
@@ -1309,11 +1325,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       setStep(destination);
       return next;
     }
-    const enrichedYeast = (syncWizardPanels
-      ? SyncCompleteFromLocalReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems, knowledge)
-      : completeFromStockReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems)
-    ).yeast;
-    next = completeYeastRecipeDesignApplication(next, enrichedYeast);
+    if (!preserveYeastDocumentary) {
+      const enrichedYeast = (syncWizardPanels
+        ? SyncCompleteFromLocalReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems, knowledge)
+        : completeFromStockReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems)
+      ).yeast;
+      next = completeYeastRecipeDesignApplication(next, enrichedYeast);
+    }
     if (next.nolo?.planning?.simulation && next.nolo.process !== 'coldExtraction' && next.nolo.process !== 'secondRunnings' &&
         next.brewhouse?.equipment && next.waterPlan && evaluateNoloRecipe(next)?.simulationActive) {
       const fit = BrewingMath.waterVolumes(next.totalGristKg, next.volumeL, next.brewhouse,
@@ -1540,13 +1558,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     const sameOwner = current.stockItemRef || next.yeast.stockItemRef
       ? current.stockItemRef === next.yeast.stockItemRef
       : current.hopIndexId || next.yeast.hopIndexId
-        ? current.hopIndexId === next.yeast.hopIndexId : intent === 'conduct';
-    if (intent === 'replace-selection' || intent === 'conduct' && !sameOwner) rememberCandidateBeforeYeastChoice(next.yeast);
-    const adoptionIntent: YeastDocumentaryIntent = intent === 'conduct' && sameOwner ? 'documentary' : 'replace-selection';
+        ? current.hopIndexId === next.yeast.hopIndexId : intent === 'conduct' || intent === 'pitching';
+    if (intent === 'replace-selection' || (intent === 'conduct' || intent === 'pitching') && !sameOwner) rememberCandidateBeforeYeastChoice(next.yeast);
+    const adoptionIntent: YeastDocumentaryIntent = (intent === 'conduct' || intent === 'pitching') && sameOwner ? 'documentary' : 'replace-selection';
     const adoption = tryAdoptYeastDocumentary(current, next.yeast, { intent: adoptionIntent });
     if (adoption.accepted === false) throw new Error(adoption.message);
     if (adoption.yeast !== next.yeast) next = { ...next, yeast: adoption.yeast };
-    return applyFermentationRecipe(next, 'levure');
+    return applyFermentationRecipe(next, 'levure', false, intent === 'pitching');
   };
 
   useEffect(() => {

@@ -2,7 +2,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { get, load, compact } from './fetch.mjs';
-import { parseProduct, reportedRange } from './parse.mjs';
+import { parseProduct, reportedRange, ESCARPMENT_BIOTRANSFORMATION_TOOLTIP_CONTEXT } from './parse.mjs';
 
 const folder = resolve('.codex-remote-attachments/yeast-enrichment/escarpment');
 await mkdir(folder, { recursive: true });
@@ -31,7 +31,7 @@ const contexts = {
   flocculation: 'Classement fabricant par méthode ASBC ; le calcium et le pH du moût influencent la floculation réelle.',
   alcoholTolerance: 'Classe qualitative du fabricant, dépendante de la santé de la levure et de sa nutrition ; aucune valeur numérique n’est déduite du seul classement.',
   pof: 'Caractère phénolique déclaré sur la fiche de cette culture ; aucune intensité aromatique n’est déduite.',
-  biotransformation: 'Classement fabricant de conversion géraniol → β-citronellol dans un moût standard ; ne mesure pas la libération des thiols.',
+  biotransformation: ESCARPMENT_BIOTRANSFORMATION_TOOLTIP_CONTEXT,
   aroma: 'Descripteurs qualitatifs du fabricant, issus d’analyses et de dégustations ; aucune intensité ni proportion prédite.',
   styles: 'Exemples de styles proposés par le fabricant ; aucune équivalence entre marques n’est déduite.'
 };

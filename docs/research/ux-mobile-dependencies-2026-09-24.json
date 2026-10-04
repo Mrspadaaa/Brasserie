@@ -1,0 +1,269 @@
+{
+  "checkedAt": "2026-09-24T16:48:29.762Z",
+  "installed": [
+    {
+      "name": "react",
+      "version": "19.2.8"
+    },
+    {
+      "name": "recharts",
+      "version": "3.10.1"
+    },
+    {
+      "name": "motion",
+      "version": "13.2.0"
+    },
+    {
+      "name": "cmdk",
+      "version": "1.1.1"
+    },
+    {
+      "name": "react-virtuoso",
+      "version": "4.18.12"
+    },
+    {
+      "name": "fuse.js",
+      "version": "7.5.0"
+    },
+    {
+      "name": "vaul",
+      "version": "1.1.2"
+    }
+  ],
+  "results": [
+    {
+      "name": "recharts",
+      "version": "3.10.1",
+      "published": "2026-07-25T15:23:05.240Z",
+      "license": "MIT",
+      "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+      "reactDom": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/recharts/recharts.git",
+      "source": "https://registry.npmjs.org/recharts"
+    },
+    {
+      "name": "echarts",
+      "version": "6.1.0",
+      "published": "2026-05-19T17:52:11.076Z",
+      "license": "Apache-2.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/apache/echarts.git",
+      "source": "https://registry.npmjs.org/echarts"
+    },
+    {
+      "name": "@visx/xychart",
+      "version": "4.0.0",
+      "published": "2026-06-11T21:40:23.345Z",
+      "license": "MIT",
+      "react": "^18.0.0 || ^19.0.0",
+      "reactDom": "^18.0.0 || ^19.0.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/airbnb/visx.git",
+      "source": "https://registry.npmjs.org/%40visx%2Fxychart"
+    },
+    {
+      "name": "@observablehq/plot",
+      "version": "0.6.17",
+      "published": "2025-02-14T16:15:29.386Z",
+      "license": "ISC",
+      "deprecated": null,
+      "repository": "git+https://github.com/observablehq/plot.git",
+      "source": "https://registry.npmjs.org/%40observablehq%2Fplot"
+    },
+    {
+      "name": "vega-lite",
+      "version": "6.4.3",
+      "published": "2026-04-24T16:53:14.821Z",
+      "license": "BSD-3-Clause",
+      "deprecated": null,
+      "repository": "git+https://github.com/vega/vega-lite.git",
+      "source": "https://registry.npmjs.org/vega-lite"
+    },
+    {
+      "name": "@nivo/core",
+      "version": "0.99.0",
+      "published": "2025-05-23T14:57:56.178Z",
+      "license": "MIT",
+      "react": "^16.14 || ^17.0 || ^18.0 || ^19.0",
+      "deprecated": null,
+      "repository": "https://github.com/plouc/nivo.git",
+      "source": "https://registry.npmjs.org/%40nivo%2Fcore"
+    },
+    {
+      "name": "highcharts",
+      "version": "13.1.1",
+      "published": "2026-09-20T12:53:02.677Z",
+      "license": "https://www.highcharts.com/license",
+      "deprecated": null,
+      "repository": "git+https://github.com/highcharts/highcharts-dist.git",
+      "source": "https://registry.npmjs.org/highcharts"
+    },
+    {
+      "name": "react-aria-components",
+      "version": "1.21.1",
+      "published": "2026-09-04T19:21:09.575Z",
+      "license": "Apache-2.0",
+      "react": "^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1",
+      "reactDom": "^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1",
+      "deprecated": null,
+      "repository": "git+https://github.com/adobe/react-spectrum.git",
+      "source": "https://registry.npmjs.org/react-aria-components"
+    },
+    {
+      "name": "@base-ui/react",
+      "version": "1.8.0",
+      "published": "2026-09-04T08:52:51.986Z",
+      "license": "MIT",
+      "react": "^17 || ^18 || ^19",
+      "reactDom": "^17 || ^18 || ^19",
+      "deprecated": null,
+      "repository": "git+https://github.com/mui/base-ui.git",
+      "source": "https://registry.npmjs.org/%40base-ui%2Freact"
+    },
+    {
+      "name": "@radix-ui/react-slider",
+      "version": "1.4.7",
+      "published": "2026-07-24T23:51:33.649Z",
+      "license": "MIT",
+      "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+      "reactDom": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc",
+      "deprecated": null,
+      "repository": "git+https://github.com/radix-ui/primitives.git",
+      "source": "https://registry.npmjs.org/%40radix-ui%2Freact-slider"
+    },
+    {
+      "name": "@dnd-kit/react",
+      "version": "0.5.0",
+      "published": "2026-06-11T13:05:25.810Z",
+      "license": "MIT",
+      "react": "^18.0.0 || ^19.0.0",
+      "reactDom": "^18.0.0 || ^19.0.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/clauderic/dnd-kit.git",
+      "source": "https://registry.npmjs.org/%40dnd-kit%2Freact"
+    },
+    {
+      "name": "@dnd-kit/core",
+      "version": "6.3.1",
+      "published": "2024-12-05T17:10:19.974Z",
+      "license": "MIT",
+      "react": ">=16.8.0",
+      "reactDom": ">=16.8.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/clauderic/dnd-kit.git",
+      "source": "https://registry.npmjs.org/%40dnd-kit%2Fcore"
+    },
+    {
+      "name": "@use-gesture/react",
+      "version": "10.3.1",
+      "published": "2024-03-21T16:16:20.332Z",
+      "license": "MIT",
+      "react": ">= 16.8.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/pmndrs/use-gesture.git",
+      "source": "https://registry.npmjs.org/%40use-gesture%2Freact"
+    },
+    {
+      "name": "motion",
+      "version": "13.4.3",
+      "published": "2026-09-24T11:51:17.709Z",
+      "license": "MIT",
+      "react": "^18.0.0 || ^19.0.0",
+      "reactDom": "^18.0.0 || ^19.0.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/motiondivision/motion.git",
+      "source": "https://registry.npmjs.org/motion"
+    },
+    {
+      "name": "@floating-ui/react",
+      "version": "0.27.20",
+      "published": "2026-07-11T08:41:33.223Z",
+      "license": "MIT",
+      "react": ">=17.0.0",
+      "reactDom": ">=17.0.0",
+      "deprecated": null,
+      "repository": "git+https://github.com/floating-ui/floating-ui.git",
+      "source": "https://registry.npmjs.org/%40floating-ui%2Freact"
+    },
+    {
+      "name": "@xyflow/react",
+      "version": "12.12.0",
+      "published": "2026-09-24T12:41:36.171Z",
+      "license": "MIT",
+      "react": ">=17",
+      "reactDom": ">=17",
+      "deprecated": null,
+      "repository": "git+https://github.com/xyflow/xyflow.git",
+      "source": "https://registry.npmjs.org/%40xyflow%2Freact"
+    },
+    {
+      "name": "@fullcalendar/react",
+      "version": "7.1.0",
+      "published": "2026-09-05T03:19:50.396Z",
+      "license": "MIT",
+      "react": "^17 || ^18 || ^19",
+      "reactDom": "^17 || ^18 || ^19",
+      "deprecated": null,
+      "repository": "git+https://github.com/fullcalendar/fullcalendar.git",
+      "source": "https://registry.npmjs.org/%40fullcalendar%2Freact"
+    },
+    {
+      "name": "vis-timeline",
+      "version": "8.5.4",
+      "published": "2026-08-12T15:57:02.063Z",
+      "license": "(Apache-2.0 OR MIT)",
+      "deprecated": null,
+      "repository": "git+https://github.com/visjs/vis-timeline.git",
+      "source": "https://registry.npmjs.org/vis-timeline"
+    },
+    {
+      "name": "@tanstack/react-table",
+      "version": "9.2.4",
+      "published": "2026-08-28T17:48:30.904Z",
+      "license": "MIT",
+      "react": ">=18",
+      "deprecated": null,
+      "repository": "https://github.com/TanStack/table.git",
+      "source": "https://registry.npmjs.org/%40tanstack%2Freact-table"
+    },
+    {
+      "name": "ag-grid-community",
+      "version": "36.2.0",
+      "published": "2026-09-16T08:00:00.051Z",
+      "license": "MIT",
+      "deprecated": null,
+      "repository": "git+https://github.com/ag-grid/ag-grid.git",
+      "source": "https://registry.npmjs.org/ag-grid-community"
+    },
+    {
+      "name": "mermaid",
+      "version": "12.0.0",
+      "published": "2026-09-10T07:43:05.270Z",
+      "license": "MIT",
+      "deprecated": null,
+      "repository": "git+https://github.com/mermaid-js/mermaid.git",
+      "source": "https://registry.npmjs.org/mermaid"
+    },
+    {
+      "name": "@zxing/browser",
+      "version": "0.2.1",
+      "published": "2026-07-06T13:51:23.395Z",
+      "license": "MIT",
+      "deprecated": null,
+      "repository": "git+https://github.com/zxing-js/browser.git",
+      "source": "https://registry.npmjs.org/%40zxing%2Fbrowser"
+    },
+    {
+      "name": "cmdk",
+      "version": "1.1.1",
+      "published": "2025-03-14T19:21:16.194Z",
+      "license": "MIT",
+      "react": "^18 || ^19 || ^19.0.0-rc",
+      "reactDom": "^18 || ^19 || ^19.0.0-rc",
+      "deprecated": null,
+      "repository": "git+https://github.com/pacocoursey/cmdk.git",
+      "source": "https://registry.npmjs.org/cmdk"
+    }
+  ]
+}

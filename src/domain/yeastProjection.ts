@@ -10,6 +10,8 @@ import { readIngredientFermentationFacts, type IngredientFermentationFacts } fro
 import { noloScience } from './noloScience';
 import { beerSheetContext, readYeastDocumentaryView, yeastFactScope, type YeastHistoricalScalarReading } from './ingredientFacts';
 import type { NoloSugar } from '../../functions/src/noloSchema';
+import { yeastTechnicalFactIdentity } from '../../functions/src/yeastDocumentarySheet';
+import { effectiveYeastTechnicalFactSources, effectiveYeastTechnicalFacts } from './yeastReferences';
 
 export type YeastFermentationProcess = 'unspecified' | 'preacidified' | 'acidifying-yeast' | 'mixed-culture';
 export type YeastCultureRole = { name: string; role: 'alcoholic' | 'acidifying' | 'conditioning' | 'mixed' };
@@ -18,6 +20,8 @@ export interface YeastDossierMeasurement {
   range: HopRange;
   qualifier: YeastFactQualifier;
   sources: HopSource[];
+  /** Exact typed observation selected for this field, when available. */
+  fact?: YeastTechnicalFact;
   basis?: YeastAttenuationBasis;
 }
 export interface YeastDossier {
@@ -28,6 +32,7 @@ export interface YeastDossier {
   historicalScalarReading?: YeastHistoricalScalarReading;
   alcoholTolerance?: YeastDossierMeasurement;
   flocculation: YeastFactReading;
+  flocculationFact?: YeastTechnicalFact;
   warnings: string[];
 }
 export interface YeastProjectionEstimate {
@@ -58,6 +63,22 @@ export interface YeastRecipeProjection {
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const uniqueSources = (sources: HopSource[]) => [...new Map(sources.map(s => [s.reference, s])).values()];
 const point = (value: number, basis?: YeastAttenuationBasis, sources: HopSource[] = []): YeastDossierMeasurement => ({ range: { min: value, max: value }, qualifier: 'reportedPoint', sources, ...(basis ? { basis } : {}) });
+function scalarFieldsForKey(key: 'temperature' | 'attenuation' | 'alcoholTolerance') {
+  return key === 'temperature' ? ['yeastTempMinC', 'yeastTempMaxC'] as const
+    : key === 'attenuation' ? ['yeastAttenuationPct'] as const : ['yeastAlcoholTolerancePct'] as const;
+}
+function hasRetainedScalar(yeast: YeastSpec, key: 'temperature' | 'attenuation' | 'alcoholTolerance') {
+  return key === 'temperature' ? finite(yeast.fermTempMinC) || finite(yeast.fermTempMaxC)
+    : key === 'attenuation' ? finite(yeast.attenuationPct) : finite(yeast.alcoholTolerancePct);
+}
+function factMatchesRetainedScalar(yeast: YeastSpec, key: 'temperature' | 'attenuation' | 'alcoholTolerance', fact: YeastTechnicalFact) {
+  if (key === 'temperature') return fact.key === key && fact.unit === '°C' && fact.qualifier === 'range' && !!fact.range &&
+    fact.range.min === yeast.fermTempMinC && fact.range.max === yeast.fermTempMaxC;
+  if (key === 'attenuation') return fact.key === key && fact.unit === '%' && fact.qualifier === 'reportedPoint' && !!fact.range &&
+    fact.range.min === fact.range.max && fact.range.min === yeast.attenuationPct;
+  return fact.key === key && alcoholPercentUnit(fact.unit) && fact.qualifier === 'reportedPoint' && !!fact.range &&
+    fact.range.min === fact.range.max && fact.range.min === yeast.alcoholTolerancePct;
+}
 const suppliedSource = (fact: YeastTechnicalFact): HopSource[] => fact.source || fact.sourceUrl ? [{
   author: fact.origin === 'manufacturer' ? 'Fiche fabricant' : fact.origin === 'personal' ? 'Fiche personnelle' : 'Source proposée',
   title: fact.source ?? fact.reported, reference: fact.sourceUrl ?? fact.source!, kind: fact.origin === 'manufacturer' ? 'manufacturer' : 'observation', year: null
@@ -130,12 +151,9 @@ export function yeastRecipeBoilOg(recipe: ExtractInputs, projection: Pick<YeastR
 /** Numeric metadata never creates a source or turns a one-sided bound into a range. */
 export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): YeastDossier {
   const view = readYeastDocumentaryView(yeast), effectiveYeast = view.effectiveYeast;
-  const catalogue = reference?.catalogue?.facts ?? [];
+  const catalogueFacts = reference ? effectiveYeastTechnicalFacts(reference) : [];
+  const catalogueFactSources = reference ? effectiveYeastTechnicalFactSources(reference) : new Map<string, HopSource[]>();
   const localFacts = readYeastTechnicalFacts(view.technicalFacts) ?? [];
-  const catalogueFacts = readYeastTechnicalFacts(catalogue.map((f): YeastTechnicalFact => ({
-    key: f.key, reported: f.reported, origin: 'manufacturer', ...(f.range ? { range: f.range, unit: f.unit, qualifier: f.qualifier } : {}),
-    source: f.source.title, ...(f.source.reference.startsWith('http') ? { sourceUrl: f.source.reference } : {}), ...(f.context ? { context: f.context } : {})
-  }))) ?? [];
   const facts = [...localFacts, ...catalogueFacts];
   const warnings: string[] = [];
   if (view.status === 'invalid') warnings.push('Fiche documentaire adoptée invalide ou liée à une autre identité ; ses champs adoptés sont ignorés.');
@@ -151,7 +169,7 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
       if (localFacts.some(fact => fact.key === key && fact.range &&
         (fact.range.min !== retained.range!.min || fact.range.max !== retained.range!.max)))
         warnings.push(`${key === 'temperature' ? 'Température' : key === 'attenuation' ? 'Atténuation' : 'Tolérance à l’alcool'} : observations divergentes conservées ; seule la plage explicitement retenue sert à la projection.`);
-      return { range: { ...retained.range! }, qualifier: retained.qualifier!, sources: suppliedSource(retained),
+      return { range: { ...retained.range! }, qualifier: retained.qualifier!, sources: suppliedSource(retained), fact: retained,
         ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
     }
     // A personal dossier describes the selected product. It is not overwritten by a catalogue refresh.
@@ -159,8 +177,21 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
     // A product sheet may list the same figure for beer and mead. Only beer
     // observations, or a bare label of this property, enter the calculation;
     // the complete sheet remains in facts.
-    const localCandidates = local.filter(f => beerSheetContext(f.context, key));
-    const catalogueCandidates = catalogue.filter(f => f.key === key && beerSheetContext(f.context, key));
+    let localCandidates = local.filter(f => beerSheetContext(f.context, key));
+    if (hasRetainedScalar(effectiveYeast, key)) {
+      const requiredFields = scalarFieldsForKey(key);
+      const linked = localCandidates.filter(fact => requiredFields.every(field => fact.acceptedScalarFields?.includes(field)) &&
+        factMatchesRetainedScalar(effectiveYeast, key, fact));
+      if (linked.length > 1) {
+        warnings.push(`${key === 'temperature' ? 'Température' : key === 'attenuation' ? 'Atténuation' : 'Tolérance à l’alcool'} : plusieurs faits revendiquent le même champ retenu; aucune source n’est privilégiée.`);
+        return undefined;
+      }
+      // The server-stamped link outranks older observations for this scalar.
+      // Without a link, typed observations remain their own documentary reading;
+      // the scalar itself does not gain their provenance by value equality.
+      if (linked.length) localCandidates = linked;
+    }
+    const catalogueCandidates = catalogueFacts.filter(f => f.key === key && beerSheetContext(f.context, key));
     // A personal beer observation wins. A mead-only note is retained in the
     // sheet but cannot hide a separate beer observation from the catalogue.
     const fromLocal = localCandidates.length > 0;
@@ -175,7 +206,11 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
       warnings.push(`${key === 'attenuation' ? 'Atténuation' : key === 'temperature' ? 'Température' : 'Tolérance à l’alcool'} : données absentes, conditionnelles ou non concordantes ; aucune plage n’est inventée.`);
       return undefined;
     }
-    return { range: { ...first.range! }, qualifier: first.qualifier, sources: uniqueSources(fromLocal ? localCandidates.flatMap(suppliedSource) : catalogueCandidates.map(f => f.source)), ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
+    return { range: { ...first.range! }, qualifier: first.qualifier, sources: uniqueSources(fromLocal
+      ? localCandidates.flatMap(suppliedSource)
+      : catalogueCandidates.flatMap(fact => catalogueFactSources.get(yeastTechnicalFactIdentity(fact)) ?? suppliedSource(fact))),
+      fact: first,
+      ...(key === 'attenuation' ? { basis: 'declared' as const } : {}) };
   };
   const documentedAttenuation = read('attenuation', '%');
   const scalarSources = effectiveYeast.technicalSource ? [{ author: 'Fiche saisie', title: yeast.name, reference: effectiveYeast.technicalSource, kind: 'observation' as const, year: null }] : [];
@@ -196,10 +231,12 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
   const alcoholTolerance = read('alcoholTolerance', '%') ?? (!alcoholToleranceSelectionPresent && !facts.some(f => f.key === 'alcoholTolerance') && finite(effectiveYeast.alcoholTolerancePct) && effectiveYeast.alcoholTolerancePct >= 0 && effectiveYeast.alcoholTolerancePct <= 100 ? point(effectiveYeast.alcoholTolerancePct, undefined, scalarSources) : undefined);
   const flocculationSelectionPresent = !!selections && Object.prototype.hasOwnProperty.call(selections, 'flocculation');
   let flocculation = readYeastFactValue(undefined);
+  let flocculationFact: YeastTechnicalFact | undefined;
   if (flocculationSelectionPresent) {
     const selected = selections?.flocculation;
     if (selected) {
       flocculation = readYeastFactValue(selected);
+      flocculationFact = selected;
       if (flocculation.value.kind !== 'category') {
         warnings.push('Floculation : sélection catégorielle invalide.');
         flocculation = readYeastFactValue(undefined);
@@ -212,23 +249,29 @@ export function resolveYeastDossier(yeast: YeastSpec, reference?: HopYeast): Yea
       value: { kind: 'category', value: legacyText }, key: 'flocculation', reported: legacyText
     } : undefined;
     if (legacyReading) {
-      // A historical scalar has no source/origin. Never borrow one from an
-      // observation with the same text; explicit review stores its own fact.
-      flocculation = legacyReading;
-      if (localCategories.length) warnings.push('Floculation : scalaire historique sans provenance typée ; observations publiées conservées séparément.');
+      const accepted = localCategories.filter(fact => fact.acceptedScalarFields?.includes('yeastFlocculation') &&
+        fact.reported.trim().toLocaleLowerCase('fr') === legacyText.toLocaleLowerCase('fr'));
+      if (accepted.length === 1) { flocculation = readYeastFactValue(accepted[0]); flocculationFact = accepted[0]; }
+      else {
+        // A historical scalar has no source/origin. Never borrow one from an
+        // observation with the same text; explicit server acceptance links it.
+        flocculation = legacyReading;
+        if (accepted.length > 1) warnings.push('Floculation : plusieurs faits acceptés revendiquent ce champ; aucune source n’est privilégiée.');
+        else if (localCategories.length) warnings.push('Floculation : scalaire historique sans provenance typée ; observations publiées conservées séparément.');
+      }
     } else if (localCategories.length) {
       const values = new Set(localCategories.map(f => f.reported.trim().toLocaleLowerCase('fr')));
-      if (values.size === 1) flocculation = readYeastFactValue(localCategories[0]);
+      if (values.size === 1) { flocculation = readYeastFactValue(localCategories[0]); flocculationFact = localCategories[0]; }
       else warnings.push('Floculation : catégories publiées divergentes ; aucune valeur n’est retenue.');
     } else {
       const catalogueCategories = catalogueFacts.filter(f => f.key === 'flocculation' && beerSheetContext(f.context, 'flocculation') && readYeastFactValue(f).value.kind === 'category');
       const values = new Set(catalogueCategories.map(f => f.reported.trim().toLocaleLowerCase('fr')));
-      if (values.size === 1 && catalogueCategories[0]) flocculation = readYeastFactValue(catalogueCategories[0]);
+      if (values.size === 1 && catalogueCategories[0]) { flocculation = readYeastFactValue(catalogueCategories[0]); flocculationFact = catalogueCategories[0]; }
       else if (values.size > 1) warnings.push('Floculation : catégories publiées divergentes ; aucune valeur n’est retenue.');
     }
   }
   return { facts, temperature, attenuation, documentedAttenuation, historicalScalarReading: view.historicalScalarReading,
-    alcoholTolerance, flocculation, warnings };
+    alcoholTolerance, flocculation, flocculationFact, warnings };
 }
 
 /** A recipe estimate, independent of catalogue coverage and product packaging.

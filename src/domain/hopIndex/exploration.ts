@@ -35,13 +35,16 @@ export function applyHopScenario<T extends TrialRecipe>(recipe: T, index: number
   if (index < 0 || index > recipe.hops.length || !Number.isInteger(index)) throw Error('Ajout introuvable.');
   const previous = recipe.hops[index];
   const sameHop = previous && (previous.hopVarietyId ? previous.hopVarietyId === variety.id : findRecipeHopMatches(previous.name, [variety]).length === 1);
+  const sameLot = sameHop && (previous.hopLotId ?? null) === (triplet.lotId ?? null);
   const sameYeast = recipe.yeast?.hopIndexId ? recipe.yeast.hopIndexId === yeast.id : findRecipeYeastMatches(recipe.yeast?.name ?? '', [yeast]).length === 1;
   const dry = ['fermentation', 'postFermentation'].includes(triplet.timing);
   const weightG = triplet.doseGL * recipe.volumeL;
   if (!Number.isFinite(weightG)) throw Error('Dose ou volume trop élevé.');
   const hops = [...recipe.hops];
   hops[index] = {
-    name: sameHop ? previous.name : variety.name, alpha: sameHop ? previous.alpha : 0, weightG,
+    // Legacy alpha=0 means not supplied. A different lot must not inherit the old lot's alpha.
+    name: sameHop ? previous.name : variety.name, alpha: sameLot ? previous.alpha : 0, weightG,
+    stockItemRef: sameLot ? previous.stockItemRef : undefined,
     hopVarietyId: variety.id, hopLotId: triplet.lotId ?? undefined,
     stage: dry ? 'dryHop' : triplet.timing as 'firstWort' | 'boil' | 'whirlpool',
     aromaTiming: dry ? triplet.timing : undefined,

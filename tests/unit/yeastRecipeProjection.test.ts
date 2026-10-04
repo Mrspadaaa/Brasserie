@@ -630,6 +630,40 @@ describe('Provenance d’une floculation scalaire ancienne', () => {
       origin: 'ai', source: fact.source, sourceUrl: fact.sourceUrl });
   });
 
+  it('reprend la provenance seulement depuis le compagnon accepté après copie stock et réouverture', () => {
+    const oldFact: YeastTechnicalFact = { key: 'flocculation', reported: 'Low', origin: 'ai', source: 'Ancienne source',
+      sourceUrl: 'https://example.test/old-flocculation', retrievedAt: '2026-09-01', context: 'Beer' };
+    const acceptedFact: YeastTechnicalFact = { key: 'flocculation', reported: 'Low', origin: 'ai', source: 'Source retenue en correction',
+      sourceUrl: 'https://example.test/accepted-flocculation', retrievedAt: '2026-09-28',
+      context: 'Beer · flocculation recommandée', acceptedScalarFields: ['yeastFlocculation'] };
+    const selectedFromStock = { name: 'SafAle US-05', stockItemRef: 'US05-LOT-A', flocculation: 'Low', technicalFacts: [oldFact, acceptedFact] };
+
+    const beforeSave = resolveYeastDossier(selectedFromStock);
+    expect(beforeSave.flocculation).toMatchObject({ value: { kind: 'category', value: 'Low' }, origin: 'ai',
+      source: acceptedFact.source, sourceUrl: acceptedFact.sourceUrl, retrievedAt: acceptedFact.retrievedAt, context: acceptedFact.context });
+    expect(beforeSave.flocculationFact).toEqual(acceptedFact);
+
+    const reopened = readYeastDocumentaryView(JSON.parse(JSON.stringify(selectedFromStock))).effectiveYeast;
+    const afterReopen = resolveYeastDossier(reopened);
+    expect(afterReopen.flocculation).toMatchObject({ origin: 'ai', source: acceptedFact.source, sourceUrl: acceptedFact.sourceUrl,
+      retrievedAt: acceptedFact.retrievedAt, context: acceptedFact.context });
+    expect(afterReopen.flocculationFact?.acceptedScalarFields).toEqual(['yeastFlocculation']);
+
+    const unacceptedLegacy = resolveYeastDossier({ ...selectedFromStock, technicalFacts: [oldFact] });
+    expect(unacceptedLegacy.flocculation.origin).toBeUndefined();
+    expect(unacceptedLegacy.flocculation.source).toBeUndefined();
+  });
+
+  it('laisse la floculation sans source quand plusieurs compagnons revendiquent le même champ', () => {
+    const first: YeastTechnicalFact = { key: 'flocculation', reported: 'Low', origin: 'ai', source: 'Source A',
+      sourceUrl: 'https://example.test/a', retrievedAt: '2026-09-27', context: 'Beer', acceptedScalarFields: ['yeastFlocculation'] };
+    const second: YeastTechnicalFact = { ...first, source: 'Source B', sourceUrl: 'https://example.test/b', retrievedAt: '2026-09-28' };
+    const dossier = resolveYeastDossier({ name: 'SafAle US-05', stockItemRef: 'US05-LOT-A', flocculation: 'Low', technicalFacts: [first, second] });
+    expect(dossier.flocculation.origin).toBeUndefined();
+    expect(dossier.flocculation.source).toBeUndefined();
+    expect(dossier.warnings.join(' ')).toContain('plusieurs faits acceptés');
+  });
+
   it('garde Rapide sans source empruntée et Fast sedimentation time sans le convertir en High', () => {
     const fact: YeastTechnicalFact = { key: 'flocculation', reported: 'Fast sedimentation time', origin: 'ai',
       source: 'SafAle S-04 manufacturer sheet', sourceUrl: 'https://fermentis.com/en/product/safale-s-04/',

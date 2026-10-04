@@ -71,7 +71,7 @@ if (only === 'all' || only === 'beer') {
           const value = $(tr).find('td').first().clone(); value.find('small,div,script').remove();
           return [norm(label.text()).replace(/^›\s*/, ''), norm(value.text())];
         });
-        const mapping = [[/^Alpha Acid/, 'alpha', 'percentMass', 'asIs'], [/^Beta Acid/, 'beta', 'percentMass', 'asIs'], [/^Total Oils \(mL\/100g\)/, 'totalOil', 'ml100g', 'asIs'], [/^Myrcene$/, 'myrcene', 'percentOil', 'oil'], [/^Humulene$/, 'humulene', 'percentOil', 'oil'], [/^Caryophyllene$/, 'caryophyllene', 'percentOil', 'oil']];
+        const mapping = [[/^Alpha Acid/, 'alpha', 'percentMass', 'unknown'], [/^Beta Acid/, 'beta', 'percentMass', 'unknown'], [/^Total Oils \(mL\/100g\)/, 'totalOil', 'ml100g', 'unknown'], [/^Myrcene$/, 'myrcene', 'percentOil', 'oil'], [/^Humulene$/, 'humulene', 'percentOil', 'oil'], [/^Caryophyllene$/, 'caryophyllene', 'percentOil', 'oil']];
         const analysis = mapping.flatMap(([pattern, analyte, unit, basis]) => {
           const cell = cells.find(([label]) => pattern.test(label)); if (!cell) return [];
           const raw = cell[1], match = raw.match(/^(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)\s*(?:%|mL)?$/i);

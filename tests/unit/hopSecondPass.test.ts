@@ -4,6 +4,9 @@ import { compareBrewerObjectives, compareLotEnvelopeMethods, compareRecipeArithm
 describe('Seconde passe : utilité, couverture et objectifs distincts', () => {
   it('refuse un gain apparent de largeur qui perd des observations réservées', () => {
     const [current, paired, single] = compareLotEnvelopeMethods();
+    expect(current.method).toBe('referenceDiagnostic');
+    expect([current, paired, single].every(candidate => candidate.deployed === false)).toBe(true);
+    expect(current.bounds).toContain('ni IC95% ni validation externe');
     expect(current.metrics.informativeCovered).toBe(26);
     for (const candidate of [paired, single]) {
       expect(candidate.metrics.unknown).toBe(current.metrics.unknown);

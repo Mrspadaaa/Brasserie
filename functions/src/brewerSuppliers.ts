@@ -7,7 +7,11 @@ const shops: Record<string, string> = {
   'brewstore.ch': 'Brewstore Suisse',
   'bierbrauzubehoer.ch': 'Sevibräu',
   'sios.ch': 'SIOS',
-  'eckenstein.shop': 'Eckenstein'
+  'eckenstein.shop': 'Eckenstein',
+  // These two exact primary sellers are already present in the yeast supply bootstrap.
+  // Generic parsing below requires a matching main product heading/schema; search snippets are never input.
+  'rolling-beers.fr': 'Rolling Beers',
+  'braupartner.de': 'Braupartner'
 };
 const USER_AGENT = 'LaffineeSupplierVerifier/1.0';
 const host = (url: URL) => url.hostname.replace(/^www\./, '');

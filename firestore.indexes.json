@@ -97,6 +97,48 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "brewerHopAdviceChatsV1",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "threadId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "brewerHopAdviceJobsV1",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "brewerHopAdviceJobsV1",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "threadId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [
@@ -151,6 +193,36 @@
       "indexes": []
     },
     {
+      "collectionGroup": "brewerHopAdviceContextsV1",
+      "fieldPath": "context",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceChatsV1",
+      "fieldPath": "context",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceChatsV1",
+      "fieldPath": "evidence",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceChatsV1",
+      "fieldPath": "trace",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceChatsV1",
+      "fieldPath": "advice",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceChatsV1",
+      "fieldPath": "hopAdviceProposal",
+      "indexes": []
+    },
+    {
       "collectionGroup": "auditLogs",
       "fieldPath": "changes",
       "indexes": []
@@ -201,6 +273,16 @@
     {
       "collectionGroup": "brewerJobs",
       "fieldPath": "input",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceJobsV1",
+      "fieldPath": "input",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "brewerHopAdviceJobsV1",
+      "fieldPath": "wireInput",
       "indexes": []
     },
     {

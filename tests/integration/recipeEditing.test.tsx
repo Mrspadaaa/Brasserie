@@ -408,7 +408,7 @@ describe('Recipe data entry regressions', () => {
     expect(again.mock.lastCall![0].fermentation).toEqual(saved.fermentation);
     expect(again.mock.lastCall![0].yeastDesign).toEqual(saved.yeastDesign);
   });
-  it('retient la conduite d’une souche rare sans catalogue ni forme connue jusque dans la recette relue', () => {
+  it('retient la conduite d’une souche rare et ses anciens repères enregistrés jusque dans la recette relue', () => {
     const original: Recipe = { ...structuredClone(base), name: 'Sour R-125', style: 'Sour', yeast: {
       name: 'Culture rare R-125', lab: 'Micro labo', strain: 'R-125', qty: 125, unit: 'mL',
       attenuationPct: 78, attenuationBasis: 'recipe', fermTempMinC: 18, fermTempMaxC: 24,
@@ -416,6 +416,10 @@ describe('Recipe data entry regressions', () => {
       technicalFacts: [{ key: 'attenuation', reported: '77,25–82,75 % selon le moût', range: { min: 77.25, max: 82.75 },
         unit: '%', qualifier: 'range', origin: 'manufacturer', source: 'Notice lot 231', sourceUrl: 'https://example.com/r-125' }]
     } };
+    original.yeastDesign = { modelVersion: 'yeast-recipe-2', yeastId: '', styleId: 'sour', goal: 'balanced', ferulicRest: false,
+      pitchRateMillionPerMlPlato: .5, viableCellsBillion: 150,
+      applied: { yeast: structuredClone(original.yeast), volumeL: original.volumeL, fermentation: structuredClone(original.fermentation),
+        mashSteps: structuredClone(original.mash.steps), style: original.style, hops: structuredClone(original.hops) } };
     const save = vi.fn(), view = wizard(original, save);
     step(/^Levure$/);
     const current = screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' });
@@ -431,8 +435,8 @@ describe('Recipe data entry regressions', () => {
     changeYeast('Température d’ensemencement du scénario', '20');
     changeYeast('Durée principale du scénario en jours', '14');
     changeYeast('Contre-pression du scénario en bar', '0,5');
-    changeYeast('Taux de cellules visé par mL et degré Plato', '0,75');
-    changeYeast('Cellules viables disponibles en milliards', '200');
+    changeYeast('Ancien taux de cellules du scénario par mL et degré Plato', '0,75');
+    changeYeast('Anciennes cellules viables du scénario en milliards', '200');
     expect(current).toHaveTextContent('78 %'); expect(save).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Appliquer au brouillon' }));
     expect(screen.getByRole('region', { name: 'Aperçu de la fermentation de cette recette' })).toHaveTextContent('80 %');
@@ -456,8 +460,8 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByLabelText('Quantité de levure, en mL')).toHaveValue('125');
     openScenario();
     openYeastDetails('Hypothèses et réglages complémentaires'); openYeastDetails('Ensemencement, durée et pression');
-    expect(screen.getByLabelText('Taux de cellules visé par mL et degré Plato')).toHaveValue('0,75');
-    expect(screen.getByLabelText('Cellules viables disponibles en milliards')).toHaveValue('200');
+    expect(screen.getByLabelText('Ancien taux de cellules du scénario par mL et degré Plato')).toHaveValue('0,75');
+    expect(screen.getByLabelText('Anciennes cellules viables du scénario en milliards')).toHaveValue('200');
     expect(screen.getByLabelText('Contre-pression du scénario en bar')).toHaveValue('0,5');
     expect(screen.getByLabelText('Procédé de fermentation')).toHaveValue('preacidified');
   });

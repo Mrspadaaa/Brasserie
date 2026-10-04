@@ -16,6 +16,7 @@ export type Route =
   | { view: 'tabs' }
   | { view: 'recipe'; recipeId: string }
   | { view: 'brewday'; batchId: string }
+  | { view: 'hopV55'; recipeId?: string; batchId?: string }
   | {
       view: 'wizard';
       recipeId?: string;
@@ -36,8 +37,11 @@ export function useFullScreenRoute() {
   // Compte les entrées poussées par l'application, pour ne dépiler que les
   // nôtres — sinon fermer une page ferait reculer dans l'historique du site.
   const pushed = useRef(0);
+  const currentRoute = useRef(route); currentRoute.current = route;
+  const returnFromHopV55 = useRef<Route | undefined>(undefined);
 
   const open = useCallback((next: Exclude<Route, { view: 'tabs' }>) => {
+    if (next.view === 'hopV55' && currentRoute.current.view !== 'hopV55') returnFromHopV55.current = currentRoute.current;
     setRoute(next);
     pushed.current += 1;
     window.history.pushState({ [MARKER]: true }, '');
@@ -52,14 +56,14 @@ export function useFullScreenRoute() {
       const url = new URL(window.location.href);
       url.searchParams.delete('brewday');
       window.history.replaceState({}, '', url);
-      setRoute({ view: 'tabs' });
+      setRoute(currentRoute.current.view === 'hopV55' ? returnFromHopV55.current ?? { view: 'tabs' } : { view: 'tabs' });
     }
   }, []);
 
   useEffect(() => {
     const onPop = () => {
       if (pushed.current > 0) pushed.current -= 1;
-      setRoute({ view: 'tabs' });
+      setRoute(currentRoute.current.view === 'hopV55' ? returnFromHopV55.current ?? { view: 'tabs' } : { view: 'tabs' });
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);

@@ -12,7 +12,7 @@ import { evaluateNoloRecipe, applyNoloStrain, noloScience, noloPlanningSource } 
 import { BrewingMath } from '../services/brewingMath';
 import { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { replanRecipeWater } from './recipeWater';
-import { resolveBrewingStyle } from './brewingStyles';
+import { brewingStyles, resolveBrewingStyle } from './brewingStyles';
 import { noloYeastCandidates, noloYeastProcessSources } from './noloYeastSelection';
 
 export const FERMENTATION_PLANNER_VERSION = 'fermentation-planner-v1';
@@ -43,7 +43,7 @@ export function fermentationReadiness(recipe: TrialRecipe, saved: HopKnowledge[]
   const range = strain?.temperatureC ?? temperature?.range;
   if (range && recipe.nolo?.process !== 'coldContact' && recipe.fermentation?.some(p => p.kind === 'primaire' && (p.tempC == null || p.tempC < range.min || p.tempC > range.max)))
     add('primary-temperature', 'fermentation', `Prévoir la fermentation primaire dans la plage ${range.min}–${range.max} °C, ou documenter l’écart.`, strain?.source ?? temperature?.source);
-  const fruitStyle = resolveBrewingStyle(recipe.style, recipe.styleRef)?.id === 'fruit-lambic';
+  const fruitStyle = resolveBrewingStyle(recipe.style, recipe.styleRef, brewingStyles(saved))?.id === 'fruit-lambic';
   if (fruitStyle && !recipe.fermentables.some(f => f.kind === 'fruit') && !recipe.nolo?.operations.some(o => o.kind === 'sugar'))
     add('fruit', 'fruit', 'Préciser le fruit et sa quantité ; ses sucres rejoindront le bilan alcoolique. Un arôme fruité de levure ne remplace pas cet apport.', undefined, 'notice');
   if (fruitStyle && !recipe.fermentationIntent?.acidity)

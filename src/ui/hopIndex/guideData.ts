@@ -1,3 +1,5 @@
+import { currentGuideRevision, guidePredictionKnowledge, guidePredictionKnowledgeQualification, canonicalPredictionReference as canonical } from '../../domain/hopIndex/predictionReferences';
+export { currentGuideRevision, guidePredictionKnowledge, guidePredictionKnowledgeQualification };
 import { yeastReferences } from '../../domain/yeastReferences';
 import { assertHopDocument, type HopVariety } from '../../../functions/src/hopIndexSchema';
 import { assertHopKnowledge, type HopAxis, type HopKnowledge, type HopRiskPolicy, type HopYeast } from '../../../functions/src/hopPredictionSchema';
@@ -26,6 +28,7 @@ import type { HopTrial } from '../../../functions/src/hopTrialSchema';
 import { StorageService } from '../../services/storage';
 import { catalogueSolverFacts } from '../../domain/yeastCatalogue';
 import { isModernIpaStyle } from '../../domain/hopIndex/styleSelection';
+import { qualifyHopPredictionKnowledge, type HopPredictionKnowledgeView, type HopSavedModelSelection } from '../../domain/hopIndex/knowledgeQualification';
 
 export type GuideYeast = HopYeast & { aliases?: string[] };
 
@@ -83,25 +86,6 @@ export function guideTrials(knowledge: HopKnowledge[]): HopTrial[] {
   return [...new Map(rows.map(row => [row.id, row])).values()].filter((row): row is HopTrial => row.kind === 'trial');
 }
 
-/** Proposed data are immediately usable; a saved revision (including disabled)
- * wins by ID. Invalid saved revisions are left visible to the engine validator,
- * never replaced silently by the initial model. No writes happen at read time. */
-const canonical = (value: any): string => JSON.stringify(value, (_key, item) => item && typeof item === 'object' && !Array.isArray(item) ? Object.fromEntries(Object.keys(item).sort().map(k => [k, item[k]])) : item);
-/** Upgrade only the untouched built-in. A disabled, invalid or edited revision wins. */
-export function currentGuideRevision(row: HopKnowledge): HopKnowledge {
-  if (row?.kind !== 'extrapolation' && row?.kind !== 'trial') return row;
-  const old = (row.kind === 'trial' ? legacyTrialPack : [...legacyExtrapolationPack, ...previousExtrapolationPack]).find(k => k.id === row.id && canonical(row) === canonical(k));
-  const next = (row.kind === 'trial' ? trialPack.hopKnowledge : extrapolationPack).find(k => k.id === row.id);
-  return old && next && canonical(row) === canonical(old) ? next as HopKnowledge : row;
-}
-export function guidePredictionKnowledge(knowledge: HopKnowledge[]): HopKnowledge[] {
-  const yeastById = new Map(guideYeasts(knowledge).map(row => [row.id, storedKnowledge(row)]));
-  const proposed = [...checkedKnowledge(initialKnowledge), ...checkedKnowledge(studyPack.hopKnowledge), ...checkedKnowledge(doseStudyPack), ...checkedKnowledge(trialPack.hopKnowledge), ...yeastReferences([], { includeCatalogue: false }).map(storedKnowledge), ...checkedKnowledge(extrapolationPack), ...checkedKnowledge(solverPack), ...guideFermentations([]), ...checkedKnowledge(noloPack)];
-  const merged = [...new Map([...proposed, ...knowledge.filter(k=>k.kind!=='styleGuide').map(storedKnowledge).map(currentGuideRevision)].map((row, i) => [row?.id ?? `invalid-${i}`, row])).values()];
-  // Use the same manufacturer facts as recipe selection. Invalid saved rows
-  // remain visible to validation, and a personal catalogue is never replaced.
-  return merged.map(row => row?.kind === 'yeast' ? yeastById.get(row.id) ?? row : row);
-}
 export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | undefined {
   const predictionKnowledge = guidePredictionKnowledge(knowledge);
   const policy = predictionKnowledge.find((k): k is HopSolverPolicy => {
@@ -116,7 +100,7 @@ export function guideSolverPolicy(knowledge: HopKnowledge[]): HopSolverPolicy | 
   const referenceIds = new Set([...predictionKnowledge, ...knowledge].filter(k => k.kind === 'yeast' && k.catalogue?.facts.some(f => f.key === 'temperature')).map(k => k.id));
   for (const k of [...fermentationPack, ...fermentationSciencePack, ...knowledge]) if (k.kind === 'fermentation') referenceIds.add(k.yeastId);
   return { ...policy,
-    styles: [policy.styles[0], ...brewingStyles(knowledge).map(s => {
+    styles: [policy.styles[0], ...brewingStyles(knowledge).filter(s => s.selectable !== false && !s.historical).map(s => {
       const start=policy.styles.find(p=>p.id===s.suggestions?.hop)??policy.styles[0];
       // Several IPA substyles have only the generic editorial mapping. Give
       // them a usable starting point without imposing Hazy's exclusions or

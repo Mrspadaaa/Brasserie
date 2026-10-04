@@ -3,6 +3,7 @@ import {
   completeBrewStep,
   finalBrewReadings,
   parseReading,
+  recordPitch,
   readingFeedback,
   restoreBrewDay,
   startBrewStep
@@ -28,6 +29,39 @@ const recipe = (boilMin = 60): Recipe =>
       spargeType: 'batch'
     }
   }) as Recipe;
+
+describe('Confirmation de l’ensemencement', () => {
+  const state = (): BrewDayState => ({ currentIndex: 0, steps: [{ id: 'ensemencement', label: 'Ensemencement', durationMin: 0 }] });
+
+  it('enregistre une quantité réellement mesurée, son unité et son horodatage, sans reprendre le prévu', () => {
+    const initial = { ...state(), additions: { yeast: { amount: 12, unit: 'g' } } };
+    const recorded = recordPitch(initial, 10, undefined, { mode: 'measured', amount: 8.5, unit: 'g' });
+    expect(recorded).toMatchObject({ pitchedAt: 10, pitchQuantityConfirmation: 'measured', additions: { yeast: { amount: 8.5, unit: 'g', doneAt: 10 } } });
+    expect(initial.additions?.yeast.amount).toBe(12);
+  });
+
+  it('n’accepte une dose prévue comme quantité réelle qu’après un choix explicite', () => {
+    const recorded = recordPitch(state(), 10, undefined, { mode: 'planned', amount: 1, unit: 'sachet' });
+    expect(recorded).toMatchObject({ pitchQuantityConfirmation: 'planned', additions: { yeast: { amount: 1, unit: 'sachet', doneAt: 10 } } });
+    expect(recorded.notes?.[0].text).toContain('quantité prévue effectivement ajoutée');
+  });
+
+  it('permet l’ajout confirmé sans mesure, sans valeur fictive ni dose prévue enregistrée', () => {
+    const recorded = recordPitch({ ...state(), additions: { yeast: { amount: 12, unit: 'g' } } }, 10, undefined, { mode: 'unmeasured' });
+    expect(recorded).toMatchObject({ pitchedAt: 10, pitchQuantityConfirmation: 'unmeasured' });
+    expect(recorded.additions?.yeast).toBeUndefined();
+    expect(recorded.notes?.[0].text).toContain('quantité non mesurée');
+  });
+
+  it('refuse zéro mesuré, et distingue le volume de culture transféré de la dose de pack', () => {
+    const initial = state();
+    expect(recordPitch(initial, 10, undefined, { mode: 'measured', amount: 0, unit: 'g' })).toBe(initial);
+    expect(completeBrewStep(initial, 10)).toBe(initial);
+    const transferred = recordPitch(initial, 11, undefined, { mode: 'starter-transferred', cultureVolumeL: 1.5 });
+    expect(transferred).toMatchObject({ pitchQuantityConfirmation: 'starter-transferred', additions: { yeast: { amount: 1.5, unit: 'L', doneAt: 11 } } });
+    expect(recordPitch(initial, 12, undefined, { mode: 'starter-transferred', cultureVolumeL: 0 })).toBe(initial);
+  });
+});
 
 describe('Déroulé réel de la cuve', () => {
   it('place le premier moût avant le rinçage et les sucres dix minutes avant la fin', () => {

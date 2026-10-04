@@ -4,6 +4,7 @@ import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
 import { requireBrewer } from './brewSession.js';
 import { validateSubscription, sendNativePush } from './brewPush.js';
+import { HOP_ADVICE_PROTOCOL_V1, HOP_ADVICE_V1_COLLECTIONS, hasHopAdviceV1Stamp } from './brewerHopAdviceLaneV1.js';
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 export const registerBrewerNotifications = onCall(
@@ -25,15 +26,19 @@ export const registerBrewerNotifications = onCall(
   }
 );
 
-/** Runs after the answer/error commit, even with every browser closed. Never includes recipe text. */
-export const notifyBrewerAnswer = onDocumentUpdated(
-  { document: 'brewerJobs/{jobId}', region: 'europe-west6', retry: true, maxInstances: 3 },
-  async (event) => {
+type NotificationLane = 'ordinary' | 'hopAdviceReadonlyV1';
+const notificationPaths = (lane: NotificationLane) => lane === 'hopAdviceReadonlyV1'
+  ? { jobs: HOP_ADVICE_V1_COLLECTIONS.jobs, conversations: HOP_ADVICE_V1_COLLECTIONS.conversations }
+  : { jobs: 'brewerJobs', conversations: 'brewerConversations' };
+
+/** Same delivery helper; the server-selected lane fixes both receipt and session paths. */
+async function notifyBrewerAnswerInLane(event: any, lane: NotificationLane) {
     const before = event.data?.before.data(),
       job = event.data?.after.data();
     if (!job || before?.status === job.status || !['done', 'error'].includes(job.status)) return;
-    const db = getFirestore(),
-      ref = db.doc(`brewerJobs/${event.params.jobId}`);
+    const paths = notificationPaths(lane);
+    if (lane === 'hopAdviceReadonlyV1' && !hasHopAdviceV1Stamp(job)) return;
+    const db = getFirestore(), ref = db.doc(`${paths.jobs}/${event.params.jobId}`);
     const devices = await db
       .collection('brewerNotificationDevices')
       .where('uid', '==', job.uid)
@@ -43,10 +48,11 @@ export const notifyBrewerAnswer = onDocumentUpdated(
         .filter((d) => d.data().enabled)
         .map(async (device) => {
           const current = (await ref.get()).data();
-          const session = (await db.doc(`brewerConversations/${job.threadId}`).get()).data();
+          const session = (await db.doc(`${paths.conversations}/${job.threadId}`).get()).data();
           if (
             !current ||
             current.status !== job.status ||
+            (lane === 'hopAdviceReadonlyV1' && !hasHopAdviceV1Stamp(current)) ||
             current.readAt ||
             current.notified?.[device.id] ||
             (session?.generation ?? 0) !== job.generation
@@ -57,6 +63,7 @@ export const notifyBrewerAnswer = onDocumentUpdated(
               device.data().subscription,
               {
                 kind: 'companion',
+                ...(lane === 'hopAdviceReadonlyV1' ? { protocol: HOP_ADVICE_PROTOCOL_V1.name } : {}),
                 title:
                   job.status === 'done'
                     ? 'Ton compagnon a répondu'
@@ -68,7 +75,7 @@ export const notifyBrewerAnswer = onDocumentUpdated(
                 scopeKind: job.scope.kind,
                 scopeId: job.scope.id,
                 operationId: job.operationId,
-                tag: hash(`companion:${job.id}`),
+                tag: hash(`${lane === 'hopAdviceReadonlyV1' ? `${HOP_ADVICE_PROTOCOL_V1.name}:` : ''}companion:${job.id}`),
                 at: String(job.finishedAt)
               },
               86400
@@ -87,5 +94,16 @@ export const notifyBrewerAnswer = onDocumentUpdated(
           }
         })
     );
-  }
+}
+
+/** Legacy notification listener remains tied to the old outbox. */
+export const notifyBrewerAnswer = onDocumentUpdated(
+  { document: 'brewerJobs/{jobId}', region: 'europe-west6', retry: true, maxInstances: 3 },
+  (event) => notifyBrewerAnswerInLane(event, 'ordinary')
+);
+
+/** Assisted notifications are emitted only from their own versioned outbox. */
+export const notifyBrewerHopAdviceAnswerV1 = onDocumentUpdated(
+  { document: `${HOP_ADVICE_V1_COLLECTIONS.jobs}/{jobId}`, region: 'europe-west6', retry: true, maxInstances: 3 },
+  (event) => notifyBrewerAnswerInLane(event, 'hopAdviceReadonlyV1')
 );

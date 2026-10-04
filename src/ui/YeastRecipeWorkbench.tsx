@@ -5,7 +5,7 @@ import type { HopSource } from '../../functions/src/hopIndexSchema';
 import {
   YEAST_STYLE_FAMILIES, YEAST_RECIPE_GOAL_LABELS,
   inferYeastRecipeStyle, yeastRecipeCandidates, createYeastRecipeDraft,
-  evaluateYeastRecipeDesign, applyYeastRecipeDesign, calculateYeastCellRequirement, proposeYeastGoalSettings,
+  evaluateYeastRecipeDesign, applyYeastRecipeDesign, proposeYeastGoalSettings,
   readYeastRecipeDesign, classifyYeastRecipeDesignChange, yeastRecipeFormWarning,
   type YeastRecipeDraft, type YeastRecipeGoal, type YeastStyleId,
 } from '../domain/yeastRecipeDesign';
@@ -22,6 +22,7 @@ import { NoloFermentationWorkshop } from './NoloFermentationWorkshop';
 import { YeastStrainDetails } from './YeastStrainDetails';
 import { YeastCandidatePicker } from './YeastCandidatePicker';
 import { yeastStrainInformation } from '../domain/yeastStrainInformation';
+import { YeastPitchingPanel, yeastPitchingSummary } from './YeastPitchingPanel';
 import './yeast-recipe.css';
 
 export type YeastRecipeDestination = 'identite' | 'fermentescibles' | 'houblons' | 'paliers' | 'eau';
@@ -80,8 +81,6 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const [compareOpen, setCompareOpen] = useState(!recipe.yeast?.hopIndexId || !!initialYeastId);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
-  const [cellRate, setCellRate] = useState<number>();
-  const [viableCells, setViableCells] = useState<number>();
   const stale = local.key !== key;
   const draft = local.draft;
   const style = YEAST_STYLE_FAMILIES.find(s => s.id === draft.styleId);
@@ -105,8 +104,8 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
   const currentDraft = createYeastRecipeDraft(recipe, refs);
   const current = evaluateYeastRecipeDesign(recipe, currentDraft, refs);
   const currentFormWarning = yeastRecipeFormWarning(recipe, current.candidate?.reference);
-  const cell = calculateYeastCellRequirement({ volumeL: recipe.volumeL, og: recipe.ogTarget,
-    pitchRateMillionPerMlPlato: cellRate, viableCellsBillion: viableCells });
+  // Pitching reads the recipe's own strain: a scenario strain gets its product, wort and packs only once chosen.
+  const pitchingStrain = !!recipe.yeast.name?.trim() && !!selected && selected.yeastId === recipe.yeast.hopIndexId;
   const patch = (updates: Partial<YeastRecipeDraft>) => {
     setLocal(value => {
       const nextDraft = { ...value.draft, ...updates }, programme = value.draft.programme;
@@ -230,7 +229,7 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
         </div>
         <div className="yeast-figures">
           <YeastRangeComparison label="Densité finale documentaire" unit="SG" digits={3} current={current.fg.range} proposed={result.fg.range} />
-          {selected.form === 'sèche' ? <YeastRangeComparison label={`Dose fabricant pour ${number(recipe.volumeL)} L`} unit="g" current={recipe.yeast.form === 'sèche' ? current.doseG?.range : undefined} proposed={result.doseG?.range} quantity={draft.quantityG} />
+          {selected.form === 'sèche' ? <YeastRangeComparison label={`Repère de fiche · ${number(recipe.volumeL)} L de recette`} unit="g" current={recipe.yeast.form === 'sèche' ? current.doseG?.range : undefined} proposed={result.doseG?.range} quantity={draft.quantityG} />
             : <dl className="text-[13px]"><dt className="text-cave-400">Alcool documentaire</dt><dd className="font-mono">{result.abv.range ? `${number(result.abv.range.min)}–${number(result.abv.range.max)} % vol` : 'Non quantifiable'}</dd></dl>}
         </div>
         <p className="yeast-small">Enveloppes documentaires · confiance faible. Intensité des arômes non chiffrée.</p>
@@ -244,16 +243,15 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
             <div className="yeast-setting-line"><label htmlFor={`${uid}-pitch`}>Température d’ensemencement</label><NumberInput id={`${uid}-pitch`} aria-label="Température d’ensemencement du scénario" value={draft.pitchTempC} emptyValue={undefined} onValue={pitchTempC => patch({ pitchTempC })} /><span>°C</span></div>
             <div className="yeast-setting-line"><label htmlFor={`${uid}-days`}>Durée principale à planifier</label><NumberInput id={`${uid}-days`} aria-label="Durée principale du scénario en jours" value={draft.days} emptyValue={undefined} onValue={days => patch({ days })} /><span>j</span></div>
             <p className="yeast-small">Les jours servent au calendrier. La fin de fermentation se vérifie par des mesures, après le dernier houblonnage à cru.</p>
-            {selected.form === 'sèche' ? <>
-              <div className="yeast-setting-line"><label htmlFor={`${uid}-grams`}>Levure sèche prévue</label><NumberInput id={`${uid}-grams`} aria-label="Masse de levure du scénario en grammes" min={0} value={draft.quantityG} emptyValue={undefined} onValue={quantityG => patch({ quantityG })} /><span>g</span></div>
-              <p className="yeast-small">Repère fabricant : {range(result.doseG, 'g')}. Aucune masse de sachet ni viabilité supposée ; la quantité reste à choisir.</p>
-            </> : selected.evidence.culture === 'bacteria' || selected.evidence.culture === 'other-fermentation' ? <p className="yeast-small">Cette culture demande son protocole spécifique. Le taux d’ensemencement d’une levure de bière ne lui est pas transféré.</p> : <>
-              <div className="yeast-setting-line"><label htmlFor={`${uid}-rate`}>Taux visé · M cellules/mL/°P</label><NumberInput id={`${uid}-rate`} aria-label="Taux de cellules visé par mL et degré Plato" value={cellRate} emptyValue={undefined} onValue={setCellRate} /></div>
-              <div className="yeast-setting-line"><label htmlFor={`${uid}-cells`}>Cellules viables disponibles</label><NumberInput id={`${uid}-cells`} aria-label="Cellules viables disponibles en milliards" value={viableCells} emptyValue={undefined} onValue={setViableCells} /><span>Md</span></div>
-              <output className="block text-[13px]" aria-live="polite">{cell.requiredBillion != null ? `${number(cell.requiredBillion)} milliards de cellules nécessaires${cell.balanceBillion != null ? ` · écart disponible ${number(cell.balanceBillion)} Md` : ''}.` : 'Renseigne volume, densité et taux d’ensemencement pour calculer le besoin.'}</output>
-              {cell.errors.map(text => <p key={text} className="yeast-error">{text}</p>)}
-              <p className="yeast-small">Le taux est ton hypothèse de travail. Sans comptage viable, aucun nombre de flacons ni volume de levain n’est déduit.</p>
+            {selected.form === 'sèche' && <>
+              <div className="yeast-setting-line"><label htmlFor={`${uid}-grams`}>Levure sèche du scénario</label><NumberInput id={`${uid}-grams`} aria-label="Masse de levure du scénario en grammes" min={0} value={draft.quantityG} emptyValue={undefined} onValue={quantityG => patch({ quantityG })} /><span>g</span></div>
+              <p className="yeast-small">Repère de fiche au volume de recette : {range(result.doseG, 'g')}. Ni format de sachet, ni moût à ensemencer : pas un conseil d’ensemencement.</p>
             </>}
+            {(selected.evidence.culture === 'bacteria' || selected.evidence.culture === 'other-fermentation') && <p className="yeast-small">Cette culture demande son protocole spécifique. Le taux d’ensemencement d’une levure de bière ne lui est pas transféré.</p>}
+            {/* Former cell calculator removed: it used the recipe's final OG and volume, not the wort to pitch. */}
+            {pitchingStrain ? <YeastPitchingPanel recipe={recipe} onChange={onChange} readOnly={!simulationOnly} mode={simulationOnly ? 'simulation' : 'recipe'} />
+              : <p className="yeast-small">Produit exact, moût à ensemencer, conseil et packs se règlent pour la souche de la recette{recipe.yeast.name ? ` (${recipe.yeast.name})` : ''} : « Choisir cette souche » d’abord pour les préparer avec elle.</p>}
+            {pitchingStrain && !simulationOnly && <p className="yeast-small">Lecture de la recette : ces réglages se modifient dans l’étape Levure de la recette, pas dans ce scénario.</p>}
           </div>
         </Disclosure>
         <Disclosure title={<>Interactions avec la recette · {number(result.hops.doseGL)} g/L à cru</>}>
@@ -338,7 +336,7 @@ export function YeastRecipeSummary({ recipe, onEdit }: { recipe: TrialRecipe; on
       <dl className="grid grid-cols-2 gap-2 text-[13px]">
         <div><dt className="text-cave-400">Primaire</dt><dd>{number(draft.temperatureC)} °C · {number(draft.days)} j prévus</dd></div>
         <div><dt className="text-cave-400">Pression prévue au départ</dt><dd>{draft.pressureBar == null ? 'À préciser' : `${number(draft.pressureBar)} bar rel.`}</dd></div>
-        <div><dt className="text-cave-400">Levure à préparer</dt><dd>{recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty, 20)} ${recipe.yeast.unit}` : 'Quantité à préciser'} · {recipe.yeast.form || 'forme à préciser'}</dd></div>
+        <div><dt className="text-cave-400">Levure à préparer</dt><dd>{recipe.yeast.qty > 0 && recipe.yeast.unit ? `${number(recipe.yeast.qty, 20)} ${recipe.yeast.unit}` : 'Quantité à préciser'} · {recipe.yeast.form || 'forme à préciser'}<span className="block yeast-small">{yeastPitchingSummary(recipe.yeast)}</span></dd></div>
         <div><dt className="text-cave-400">Ensemencement</dt><dd>{number(recipe.yeast.pitchTempC)} °C</dd></div>
       </dl>
       <FermentationTemperatureChart compact steps={recipe.fermentation ?? []} pitchTempC={recipe.yeast.pitchTempC} />

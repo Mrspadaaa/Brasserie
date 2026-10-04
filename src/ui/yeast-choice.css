@@ -125,6 +125,28 @@
 .yeast-choice .yc-compare-table .yc-facts { grid-template-columns: minmax(0,1fr); }
 .yeast-choice .yc-compare-table tfoot td { border-bottom: 0; }
 .yeast-choice .yc-compare-table tfoot .yc-choose { min-height: 36px; border-color: theme('colors.area.production'); text-align: left; font-weight: 650; }
+/* Supply comparison is a four-criterion matrix, unlike the strain comparison above. Keep readable columns and let its own region scroll. */
+.yeast-choice .yc-supply-comparison { min-width: 0; }
+.yeast-choice .yc-supply-comparison .yc-compare-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+.yeast-choice .yc-supply-comparison .yc-compare-table { width: 64rem; min-width: 100%; max-width: none; table-layout: fixed; }
+.yeast-choice .yc-supply-comparison .yc-supply-product-column { width: 16rem; }
+.yeast-choice .yc-supply-comparison .yc-supply-dose-column { width: 14rem; }
+.yeast-choice .yc-supply-comparison .yc-supply-preparation-column { width: 17rem; }
+.yeast-choice .yc-supply-comparison .yc-supply-offers-column { width: 17rem; }
+.yeast-choice .yc-supply-comparison .yc-compare-table :is(th, td) { overflow-wrap: anywhere; }
+.yeast-choice .yc-supply-comparison .yc-compare-col { width: auto; min-width: 0; max-width: 100%; }
+.yeast-choice .yc-supply-comparison .yc-compare-col > * { max-width: 100%; }
+.yeast-choice .yc-supply-comparison .yc-candidate-details { min-width: 0; overflow-wrap: anywhere; }
+.yeast-choice .yc-supply-comparison .yc-compare-table details[data-supply-offer] { display: block; width: 100%; min-width: 0; }
+.yeast-choice .yc-supply-comparison .yc-compare-table details[data-supply-offer] > summary { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 3px 6px; width: 100%; min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.yeast-choice .yc-supply-comparison .yc-compare-table details[data-supply-offer] > summary > .yc-supply-offer-product { flex: 1 1 100%; min-width: 0; max-width: 100%; color: theme('colors.cave.200'); font-size: .6875rem; font-weight: 500; line-height: 1.35; overflow-wrap: anywhere; white-space: normal; }
+.yeast-choice .yc-supply-comparison .yc-compare-table details[data-supply-offer] > summary > strong { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; }
+.yeast-choice .yc-supply-comparison .yc-compare-table details[data-supply-offer] > summary > .yp-tag { flex: 0 1 auto; max-width: 100%; white-space: normal; }
+.yeast-choice .yc-supply-comparison .yc-compare-table details[data-supply-offer] > summary > :is(.yp-num, .yeast-small) { flex: 0 1 auto; min-width: 0; max-width: 100%; overflow-wrap: anywhere; white-space: normal; }
+.yeast-choice .yc-supply-scroll-hint { display: none; }
+@media (max-width: 639px) {
+  .yeast-choice .yc-supply-scroll-hint { display: block; margin: 3px 0 5px; color: theme('colors.cave.400'); font-size: .75rem; }
+}
 /* Direct choice first; the conduct trial stays a secondary link under it. */
 .yeast-choice .yc-compare-decide { display: grid; justify-items: start; gap: 2px; }
 .yeast-choice .yc-compare-decide .yc-try { min-height: 32px; font-size: .75rem; }
@@ -284,6 +306,13 @@
 .yeast-choice .yc-quantity-block { display: grid; gap: 6px; min-width: 0; padding: 8px; border: 1px solid theme('colors.cave.700'); border-radius: 8px; background: theme('colors.cave.850'); }
 .yeast-choice .yc-quantity-block:not([data-yeast-quantity='set']) { border-left: 3px solid theme('colors.attention'); }
 .yeast-choice .yc-quantity-block > .yc-quantity { border-top: 0; padding-top: 0; }
+/* Pitching station: the recipe's quantity editor sits inside the shared panel as a slot, not as a nested card. */
+.yeast-choice .yc-pitch-station > .yp-panel + .yp-panel { margin-top: 8px; }
+.yeast-choice .yc-quantity-slot { display: grid; gap: 5px; min-width: 0; scroll-margin-top: 76px; }
+.yeast-choice .yc-quantity-slot > .yc-quantity { border-top: 0; padding-top: 0; }
+.yeast-choice .yc-quantity-slot[data-yeast-quantity='missing'] .yc-quantity, .yeast-choice .yc-quantity-slot[data-yeast-quantity='invalid'] .yc-quantity { outline: 1px dashed theme('colors.attention'); outline-offset: 3px; border-radius: 6px; }
+.yeast-choice .yc-strain-station > .yp-supply { margin-top: 9px; }
+.yeast-choice .yc-legacy-cells { display: grid; gap: 5px; padding: 6px 8px; border-left: 1px dashed theme('colors.cave.400'); background: theme('colors.cave.850'); }
 
 /* The Wizard follows one decision from strain to objective, programme and apply. */
 .yeast-choice.yc-journey { display: grid; gap: 10px; }
@@ -406,7 +435,13 @@
 .yeast-choice .yc-state-diff li { display: grid; grid-template-columns: minmax(92px, 30%) minmax(0, 1fr); gap: 6px; padding-block: 3px; }
 .yeast-choice .yc-state-diff li + li { border-top: 1px solid theme('colors.cave.700'); }
 .yeast-choice .yc-state-diff li > strong { color: theme('colors.cave.400'); font-weight: 500; }
-.yeast-choice .yc-state-diff li > span { min-width: 0; color: theme('colors.cave.200'); overflow-wrap: anywhere; }
+.yeast-choice .yc-state-diff li > :is(span, .yc-diff-body) { min-width: 0; color: theme('colors.cave.200'); overflow-wrap: anywhere; }
+/* Documentary differences: counts first, then only what was added or removed, one citation per document. */
+.yeast-choice .yc-diff-items { display: grid; gap: 2px; margin-top: 3px; }
+.yeast-choice .yc-diff-items li { display: block; padding: 0; border: 0; }
+.yeast-choice .yc-diff-kind { display: inline-block; min-width: 46px; color: theme('colors.cave.400'); }
+.yeast-choice .yc-diff-items [data-diff-change='added'] .yc-diff-kind { color: theme('colors.hop'); }
+.yeast-choice .yc-diff-items [data-diff-change='removed'] .yc-diff-kind { color: theme('colors.attention'); }
 .yeast-choice .yc-state-diff [data-side='draft'] { color: theme('colors.cave.50'); font-weight: 600; }
 
 /* Editable chart: touching a phase selects it; two one-axis handles, live exact reading of the gesture. */
@@ -527,3 +562,26 @@
 @media (max-width: 639px) {
   .yeast-choice .yc-review-actions > .yc-review-primary { flex: 1 1 100%; justify-content: center; min-height: 40px; }
 }
+
+/* Citations: a short mark beside each fact, the document named once below (also used outside the journey: recap, workbench). */
+.yc-cite { margin-left: 3px; color: theme('colors.cave.200'); font-size: .6875rem; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+.yc-cite-missing { color: theme('colors.cave.400'); font-size: .6875rem; }
+.yc-citations { display: grid; gap: 2px; margin-top: 4px; font-size: .6875rem; color: theme('colors.cave.400'); }
+.yc-citations ol { display: grid; gap: 1px; margin: 0; padding: 0; list-style: none; }
+.yc-citations li { overflow-wrap: anywhere; }
+.yc-citations-label { color: theme('colors.cave.400'); font-weight: 600; }
+.yc-cite-index { color: theme('colors.cave.200'); font-variant-numeric: tabular-nums; }
+.yc-source-date { color: theme('colors.cave.400'); }
+/* Observations read by use: short family titles, value first, published wording and correction on demand. */
+.yc-observations > section + section { margin-top: 6px; }
+.yc-observation-family { margin-bottom: 1px; }
+.yc-observations .yc-fact-actions { display: inline-flex; flex-wrap: wrap; gap: 0 10px; margin-left: 6px; }
+.yc-observations .yeast-link { min-height: 24px; font-size: .75rem; }
+.yeast-choice .yc-character { display: inline; color: theme('colors.cave.200'); font-size: .8125rem; }
+.yeast-choice .yc-character strong { color: theme('colors.cave.50'); font-weight: 600; }
+.yeast-choice [data-unretained-flocculation] .yeast-link { min-height: 24px; margin-left: 4px; }
+.yeast-choice .yc-review-others > summary { display: flex; min-height: 32px; align-items: center; cursor: pointer; color: theme('colors.cave.200'); font-size: .8125rem; }
+/* Canonical catalogue correction: a separate scope from the recipe sheet it sits under. */
+.yeast-choice .yc-catalogue-correction { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding-top: 6px; border-top: 1px solid theme('colors.cave.700'); }
+.yeast-choice .yc-catalogue-correction > p { flex: 1 1 220px; }
+.yeast-choice .yc-catalogue-correction .yeast-link { min-height: 28px; }

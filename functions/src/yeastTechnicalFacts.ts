@@ -3,6 +3,9 @@ export type { YeastFactQualifier } from './yeastCatalogueSchema.js';
 
 export const YEAST_TECHNICAL_SELECTION_KEYS = ['temperature', 'attenuation', 'alcoholTolerance', 'flocculation'] as const;
 export type YeastTechnicalSelectionKey = typeof YEAST_TECHNICAL_SELECTION_KEYS[number];
+/** Explicitly accepted links from a stock scalar to the documentary fact that supplied it. */
+export const YEAST_TECHNICAL_SCALAR_FIELDS = ['yeastForm', 'yeastAttenuationPct', 'yeastTempMinC', 'yeastTempMaxC', 'yeastAlcoholTolerancePct', 'yeastFlocculation'] as const;
+export type YeastTechnicalScalarField = typeof YEAST_TECHNICAL_SCALAR_FIELDS[number];
 
 /** A reported observation. These values are never fitted model coefficients. */
 export interface YeastTechnicalFact {
@@ -16,6 +19,8 @@ export interface YeastTechnicalFact {
   sourceUrl?: string;
   retrievedAt?: string;
   context?: string;
+  /** Stamped by an explicit, server-confirmed correction pair; value equality alone never creates this link. */
+  acceptedScalarFields?: YeastTechnicalScalarField[];
 }
 
 export type YeastTechnicalSelections = Partial<Record<YeastTechnicalSelectionKey, YeastTechnicalFact | null>>;
@@ -59,6 +64,26 @@ const text = (value: unknown, max = 2000): value is string =>
 export const alcoholPercentUnit = (unit: string | undefined) => typeof unit === 'string' &&
   /^%(?:vol\.?|v\/v|abv)?$/i.test(unit.replace(/\s/g, ''));
 
+function readAcceptedScalarFields(raw: any): YeastTechnicalScalarField[] | undefined | null {
+  if (raw.acceptedScalarFields === undefined) return undefined;
+  const fields = raw.acceptedScalarFields;
+  if (!Array.isArray(fields) || !fields.length || fields.length > 2 ||
+      fields.some((field: unknown) => !YEAST_TECHNICAL_SCALAR_FIELDS.includes(field as YeastTechnicalScalarField)) ||
+      new Set(fields).size !== fields.length || !raw.source?.trim() || !raw.sourceUrl?.trim() ||
+      !/^https:\/\//i.test(raw.sourceUrl) || !raw.retrievedAt || !Number.isFinite(Date.parse(raw.retrievedAt)) || !raw.context?.trim()) return null;
+  const compatible = (field: YeastTechnicalScalarField) => {
+    if (field === 'yeastForm') return raw.key === 'form' && raw.range === undefined && raw.unit === undefined && raw.qualifier === undefined;
+    if (field === 'yeastFlocculation') return raw.key === 'flocculation' && raw.range === undefined && raw.unit === undefined && raw.qualifier === undefined;
+    if (field === 'yeastAttenuationPct') return raw.key === 'attenuation' && raw.range && raw.unit === '%' && raw.qualifier === 'reportedPoint' && raw.range.min === raw.range.max;
+    if (field === 'yeastAlcoholTolerancePct') return raw.key === 'alcoholTolerance' && raw.range && alcoholPercentUnit(raw.unit) && raw.qualifier === 'reportedPoint' && raw.range.min === raw.range.max;
+    return raw.key === 'temperature' && raw.range && raw.unit === '°C' && raw.qualifier === 'range';
+  };
+  if (!fields.every(compatible)) return null;
+  const hasMin = fields.includes('yeastTempMinC'), hasMax = fields.includes('yeastTempMaxC');
+  if (hasMin !== hasMax) return null;
+  return YEAST_TECHNICAL_SCALAR_FIELDS.filter(field => fields.includes(field));
+}
+
 /** Recover the operator from older records whose parser incorrectly stored `>` as `atLeast`. */
 function reportedQualifier(reported: string): YeastFactQualifier | undefined {
   const operator = /^\s*[^0-9<>≥≤]{0,120}(>=|<=|>|≥|<|≤)\s*[+-]?\d/.exec(reported)?.[1];
@@ -93,23 +118,29 @@ export function readYeastTechnicalFacts(value: unknown): YeastTechnicalFact[] | 
         !text(fact.unit, 40) || !YEAST_FACT_QUALIFIERS.includes(qualifier) ||
         (qualifier !== 'range' && min !== max) ||
         ((fact.unit === '%' || fact.key === 'alcoholTolerance' && alcoholPercentUnit(fact.unit)) && (min < 0 || max > 100))) return undefined;
+      const acceptedScalarFields = readAcceptedScalarFields(fact);
+      if (acceptedScalarFields === null) return undefined;
       result.push({
         key: fact.key, reported: fact.reported, origin: fact.origin,
         range: { min, max }, unit: fact.unit, qualifier,
         ...(fact.source !== undefined ? { source: fact.source } : {}),
         ...(fact.sourceUrl !== undefined ? { sourceUrl: fact.sourceUrl } : {}),
         ...(fact.retrievedAt !== undefined ? { retrievedAt: fact.retrievedAt } : {}),
-        ...(fact.context !== undefined ? { context: fact.context } : {})
+        ...(fact.context !== undefined ? { context: fact.context } : {}),
+        ...(acceptedScalarFields ? { acceptedScalarFields } : {})
       });
       continue;
     } else if (fact.unit !== undefined || fact.qualifier !== undefined) return undefined;
+    const acceptedScalarFields = readAcceptedScalarFields(fact);
+    if (acceptedScalarFields === null) return undefined;
     result.push({
       key: fact.key, reported: fact.reported, origin: fact.origin,
       ...(fact.range !== undefined ? { range: { min: fact.range.min, max: fact.range.max }, unit: fact.unit, qualifier: fact.qualifier } : {}),
       ...(fact.source !== undefined ? { source: fact.source } : {}),
       ...(fact.sourceUrl !== undefined ? { sourceUrl: fact.sourceUrl } : {}),
       ...(fact.retrievedAt !== undefined ? { retrievedAt: fact.retrievedAt } : {}),
-      ...(fact.context !== undefined ? { context: fact.context } : {})
+      ...(fact.context !== undefined ? { context: fact.context } : {}),
+      ...(acceptedScalarFields ? { acceptedScalarFields } : {})
     });
   }
   return result;

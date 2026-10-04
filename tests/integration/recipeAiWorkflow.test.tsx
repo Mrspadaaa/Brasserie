@@ -58,7 +58,7 @@ describe('Autocomplétion pendant la synchronisation du catalogue', () => {
     run.mockResolvedValue(facts());
     const view = mountCompletion();
     search();
-    await screen.findByText('Fiche fabricant de contrôle');
+    expect(await screen.findByText(/Source citée.*Fiche fabricant de contrôle/)).toBeVisible();
     act(() => StorageService.notify());
     view.refreshStock();
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre ces valeurs' }));
@@ -250,7 +250,8 @@ describe('Révision de fiche des levures rares', () => {
     enrich();
     const panel = await review(rare.name);
     expect(within(panel).getByRole('list', { name: `Données proposées pour ${rare.name}` })).toHaveTextContent('Identité du lot à confirmer');
-    expect(within(panel).getByText(/référence de recherche/)).toHaveTextContent('Recherche fabricant R-125');
+    const searchSource = within(panel).getByRole('link', { name: 'Recherche fabricant R-125' });
+    expect(searchSource).toHaveAttribute('href', 'https://example.com/r-125-note');
     fireEvent.click(within(panel).getByRole('button', { name: 'Tout valider' }));
     expect(view.current().documentaryNotes).toEqual([{ text: 'Identité du lot à confirmer auprès du laboratoire.', origin: 'ai',
       source: 'Recherche fabricant R-125', sourceUrl: 'https://example.com/r-125-note' }]);
@@ -374,10 +375,10 @@ describe('Révision de fiche des levures rares', () => {
     expect(found).toHaveTextContent('Catalogue R-125');
     expect(found.querySelector('a')).toHaveAttribute('href', genericUrl);
     const form = gap('Forme');
-    expect(form).toHaveTextContent('source du fait : Fiche R-125 · conditionnement');
+    expect(form).toHaveTextContent('source citée pour ce fait : Fiche R-125 · conditionnement');
     expect(within(form).getAllByRole('link').map(link => link.getAttribute('href'))).toEqual([formUrl]);
     const temperature = gap('Température de fermentation');
-    expect(temperature).toHaveTextContent('source du fait : Note R-125 sans lien');
+    expect(temperature).toHaveTextContent('source citée pour ce fait : Note R-125 sans lien');
     expect(within(temperature).queryByRole('link')).not.toBeInTheDocument();
     fireEvent.click(within(form).getByRole('button', { name: 'Prendre la proposition' }));
     fireEvent.click(within(gap('Température de fermentation')).getByRole('button', { name: 'Prendre la proposition' }));
@@ -571,7 +572,11 @@ describe('Révision de fiche des levures rares', () => {
     expect(applied).toMatchObject({ name, qty: 2, unit: 'sachet', fermTempMinC: 12, fermTempMaxC: 18, attenuationPct: 78, attenuationBasis: 'declared',
       alcoholTolerancePct: 10, fermentDays: 14 });
     expect([applied.flocculation, applied.pitchTempC, applied.stockItemRef]).toEqual([undefined, undefined, undefined]);
+    const pitchRate = expect.objectContaining({ key: 'pitchRate', reported: '50–80 g/hl', range: { min: 50, max: 80 }, unit: 'g/hl',
+      qualifier: 'range', origin: 'ai', source: doc.source, sourceUrl: doc.sourceUrl, retrievedAt: doc.retrievedAt });
+    expect(applied.technicalFacts).toEqual(expect.arrayContaining([pitchRate]));
     const reopened = normalizeRecipe({ yeast: JSON.parse(JSON.stringify(applied)) } as Recipe).yeast;
+    expect(reopened.technicalFacts).toEqual(expect.arrayContaining([pitchRate]));
     expect(reopened).toMatchObject({ fermTempMinC: 12, fermTempMaxC: 18, attenuationPct: 78, alcoholTolerancePct: 10, fermentDays: 14 });
     expect(resolveYeastDossier(reopened)).toMatchObject({ temperature: { range: { min: 12, max: 18 } }, documentedAttenuation: { range: { min: 78, max: 78 } } });
     expect(view.learn).not.toHaveBeenCalled();
@@ -591,7 +596,13 @@ describe('Révision de fiche des levures rares', () => {
     expect(screen.getByLabelText('Durée indicative de la fiche, en jours')).toHaveValue('10');
     expect(screen.getByText(/^Fiche : 14 jours/)).toBeInTheDocument();
     expect(screen.getByText('Non repris dans les champs ni le calcul : milieu ou condition non attribuable à la bière.')).toBeInTheDocument();
-    expect(screen.getAllByText('50–80 g/hl').length).toBeGreaterThan(0);
+    const observations = screen.getByLabelText('Données documentaires conservées');
+    fireEvent.click(within(observations).getByText(/Toutes les observations/));
+    const preparation = within(observations).getByRole('region', { name: 'Préparer et ensemencer' });
+    expect(within(preparation).getByText('50–80 g/hl · plage')).toBeVisible();
+    expect(within(observations).getByRole('link', { name: 'Fiche de contrôle Q-12' })).toHaveAttribute('href', doc.sourceUrl);
+    expect(observations.querySelector('[data-citations]')).toHaveTextContent('Source commune');
+    expect(observations.querySelector('[data-citations]')).toHaveTextContent('date indiquée : 25.09.2026');
   });
 });
 
@@ -730,7 +741,7 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     expect(screen.getByRole('group', { name: `Fiche de ${M20}` })).toHaveAttribute('data-sheet-scope', 'recipe');
     const plannedQuantity = screen.getByRole('group', { name: 'Quantité prévue de levure' });
     expect(plannedQuantity).toHaveAttribute('data-yeast-quantity', 'missing');
-    expect(plannedQuantity).toHaveTextContent('non renseignée');
+    expect(within(plannedQuantity).getByRole('textbox', { name: 'Quantité de levure' })).toHaveValue('');
     const state = screen.getByLabelText('État du choix de levure');
     expect(state.querySelector('[data-difference="quantity"] [data-side="draft"]')).not.toHaveTextContent('125 mL');
     // The saved 3068 pack stays readable as the saved side of the exact difference, never as the draft value.
@@ -757,7 +768,9 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     view.unmount();
     wizard(saved);
     allerEtape('Levure');
-    expect(screen.getByRole('group', { name: `Fiche de ${M20}` })).toBeInTheDocument();
+    const reopenedSheet = screen.getByRole('group', { name: `Fiche de ${M20}` });
+    expect(reopenedSheet).toHaveTextContent('Fiche M20 contrôlée');
+    expect(within(reopenedSheet).getByRole('group', { name: 'Température de fermentation' }).querySelector('[data-fact-reading]')).toHaveTextContent('18–28 °C');
     expect(screen.getByLabelText('État du choix de levure')).toHaveTextContent('identiques à la recette enregistrée');
     expect(screen.getByLabelText('Quantité de levure, en g')).toHaveValue('12');
   });
@@ -903,7 +916,8 @@ describe('IA dans les étapes d’une recette enregistrée', () => {
     expect(within(chosenDraft).getByRole('button', { name: 'Annuler le changement' })).toBeVisible();
     const planned = screen.getByRole('group', { name: 'Quantité prévue de levure' });
     expect(planned).toHaveAttribute('data-yeast-quantity', 'missing');
-    expect(planned).toHaveTextContent('non renseignée');
+    expect(within(planned).getByRole('textbox', { name: 'Quantité de levure' })).toHaveValue('');
+    expect(screen.getByLabelText('Forme de la levure')).toHaveValue('liquide');
     expect(learn).not.toHaveBeenCalled(); expect(save).not.toHaveBeenCalled();
   });
 

@@ -3,3 +3,5 @@
 # Source receipts bind exact catalogue bytes; keep generated-library checks portable.
 src/data/yeastCatalogueBootstrap.json text eol=lf
 src/data/yeastCatalogueLibrary.json text eol=lf
+# Historical fixtures retain the exact bytes produced by their original readers.
+tests/fixtures/public-history/*.json -text

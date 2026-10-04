@@ -5,6 +5,7 @@ import phenolSource from '../fixtures/hopScientific/cui-dm303-2015.json';
 import samiaSource from '../fixtures/hopScientific/samia-diamond-2024.json';
 import recipeSource from '../fixtures/hopScientific/test-houb.json';
 import productionLotStudy from '../../src/data/hopStudies/lafontaine2018.cascade2015.json';
+import lotPack from '../../src/data/hopStudyBootstrap.json';
 import sciencePack from '../../src/data/fermentationScienceBootstrap.json';
 import type { FermentationScience } from '../../functions/src/fermentationScienceSchema';
 import type { HopModel } from '../../functions/src/hopPredictionSchema';
@@ -12,7 +13,7 @@ import { predictHopTriplet } from '../../functions/src/hopPredictionCore';
 import { fitPhenolStudy, predictStudyPhenols } from '../../functions/src/fermentationScienceCore';
 import {
   benchmarkDose, benchmarkDoseInterpolation, benchmarkLots, benchmarkMetrics, benchmarkPhenols, benchmarkSamiaAndRecipe,
-  doseBenchmarkData, doseBenchmarkTriplet, fitLotTrainingEnvelope, lotPredictionFromTraining,
+  doseBenchmarkData, doseBenchmarkTriplet, diagnoseLotFromTraining, fitLine, fitLotTrainingEnvelope,
   phenolSourceObservations, runHopScientificBenchmark, type LotRow,
 } from '../scientific/hopBenchmark';
 
@@ -109,32 +110,108 @@ describe('Benchmark scientifique : observations indépendantes des coefficients 
   it('recalcule paramètres, support et résidus sans jamais revoir le lot réservé', () => {
     const rows = lotSource.rows as LotRow[];
     const training = rows.filter(row => row[0] !== 'CAS_24_15');
-    const first = lotPredictionFromTraining(training, .7, 'CAS_24_15');
+    const first = diagnoseLotFromTraining(training, .7);
     const changedHeld = structuredClone(rows);
     changedHeld.find(row => row[0] === 'CAS_24_15')![2] = 14.9;
-    const second = lotPredictionFromTraining(changedHeld.filter(row => row[0] !== 'CAS_24_15'), .7, 'CAS_24_15');
+    const second = diagnoseLotFromTraining(changedHeld.filter(row => row[0] !== 'CAS_24_15'), .7);
     expect(second).toEqual(first);
     expect(first.fitted.trainingIds).not.toContain('CAS_24_15');
     expect(first.fitted.trainingIds).toHaveLength(28);
+    expect(first.fitted.support).toEqual({ min: .32, max: 4.07 });
+    expect(first.fitted.residual.min).toBeLessThan(0);
+    expect(first.fitted.residual.max).toBeGreaterThan(0);
     const withoutExtreme = fitLotTrainingEnvelope(rows.filter(row => row[0] !== 'CAS_12_15'));
     expect(withoutExtreme.support.min).toBe(.7);
     expect(withoutExtreme.support.max).toBe(4.07);
   });
 
-  it('distingue les 27 prédictions autorisées des deux diagnostics OLS hors support', () => {
+  it('garde LF01 suspendu en production et sépare le diagnostic intra-étude', () => {
+    const model = lotPack.hopKnowledge.find(row => row.kind === 'model')!;
+    const variety = lotPack.hopVarieties.find(row => row.id === lotSource.protocol.varietyId)!;
+    expect(model.enabled).toBe(false);
+    expect(variety.analysis.find(row => row.analyte === 'geraniol')!.basis).toBe('unknown');
+    expect(model.outputs[0].calibration!.terms[0].basis).toBe('unknown');
+
     const result = benchmarkLots();
-    expect(result.metrics).toMatchObject({
+    expect(result.production).toMatchObject({
+      status: 'suspended-LF01', modelEnabled: false, observationBasis: 'unknown', calibrationBasis: 'unknown',
+      total: 29, quantified: 0, unknown: 29,
+      probe: { lotId: null, range: null, modelRefs: [] },
+    });
+    expect(result.production.probe.reasons.join(' ')).toContain('Aucun modèle documenté');
+
+    const diagnostic = result.diagnostic;
+    expect(diagnostic).toMatchObject({
+      validation: 'internal-nested-leave-one-lot-out-diagnostic',
+      input: 'géraniol publié, mg/100 g · base d’humidité inconnue',
+    });
+    expect(diagnostic.metrics).toMatchObject({
       total: 29, quantified: 27, unknown: 2, scored: 27, uninformative: 0, covered: 26,
       unknownIds: ['CAS_12_15', 'CAS_17_15'],
     });
-    expect(result.metrics.mae).toBeCloseTo(.44407696863526747, 10);
-    expect(result.metrics.rmse).toBeCloseTo(.5556478342313025, 10);
-    expect(result.metrics.meanWidth).toBeCloseTo(2.7630915436127474, 10);
-    expect(result.metrics.mae).toBeLessThan(result.baselineOnSameSupportedCases.mae!);
-    expect(result.baselineOnSameSupportedCases.count).toBe(27);
-    expect(result.diagnosticOlsAll29.productionPrediction).toBe(false);
-    expect(result.diagnosticOlsAll29.mae).toBeCloseTo(.41537307496511094, 10);
-    for (const fold of result.folds) expect(fold.trainingIds).not.toContain(fold.id);
+    expect(diagnostic.metrics.mae).toBeCloseTo(.44407696863526747, 10);
+    expect(diagnostic.metrics.rmse).toBeCloseTo(.5556478342313025, 10);
+    expect(diagnostic.metrics.meanWidth).toBeCloseTo(2.7630915436127474, 10);
+    expect(diagnostic.metrics.mae).toBeLessThan(diagnostic.baselineOnSameSupportedCases.mae!);
+    expect(diagnostic.baselineOnSameSupportedCases.count).toBe(27);
+    expect(diagnostic.diagnosticOlsAll29.productionPrediction).toBe(false);
+    expect(diagnostic.diagnosticOlsAll29.mae).toBeCloseTo(.41537307496511094, 10);
+
+    const outside = diagnostic.folds.filter(fold => fold.range === null);
+    expect(outside.map(fold => fold.id)).toEqual(['CAS_12_15', 'CAS_17_15']);
+    const sourceRows = lotSource.rows as LotRow[];
+    for (const fold of diagnostic.folds) {
+      const training = sourceRows.filter(row => row[0] !== fold.id);
+      const xValues = training.map(row => row[1]);
+      expect(fold.trainingIds).toEqual(training.map(row => row[0]));
+      expect(fold.support).toEqual({ min: Math.min(...xValues), max: Math.max(...xValues) });
+      expect(fold.inSupport).toBe(fold.inputCoordinate >= fold.support.min && fold.inputCoordinate <= fold.support.max);
+      expect(fold.range === null).toBe(!fold.inSupport);
+      expect(fold.inputUnit).toContain('base d’humidité inconnue');
+      if (!fold.inSupport) expect(fold.reason).toContain('hors du support');
+    }
+  });
+
+  it('réserve la réponse observée au score et recalcule chaque pli sans cette réponse', () => {
+    const rows = lotSource.rows as LotRow[];
+    const baseline = benchmarkLots(rows).diagnostic.folds.find(fold => fold.id === 'CAS_24_15')!;
+    const changed = structuredClone(rows);
+    changed.find(row => row[0] === 'CAS_24_15')![2] = 14.9;
+    const counterfactual = benchmarkLots(changed).diagnostic.folds.find(fold => fold.id === 'CAS_24_15')!;
+    expect(counterfactual.observed).toBe(14.9);
+    expect(counterfactual).toMatchObject({
+      inputCoordinate: baseline.inputCoordinate, central: baseline.central, range: baseline.range,
+      trainingIds: baseline.trainingIds, support: baseline.support, calibration: baseline.calibration,
+    });
+  });
+
+  it('refuse les observations non finies avant tout ajustement ou score', () => {
+    const rows = lotSource.rows as LotRow[];
+    const nonFiniteY = structuredClone(rows);
+    nonFiniteY[0][2] = Number.NaN;
+    expect(() => fitLine(nonFiniteY)).toThrow(/non-finite/i);
+    expect(() => benchmarkLots(nonFiniteY)).toThrow(/non-finite/i);
+
+    const nonFiniteX = structuredClone(rows);
+    nonFiniteX[0][1] = Number.POSITIVE_INFINITY;
+    expect(() => benchmarkLots(nonFiniteX)).toThrow(/non-finite/i);
+
+    const training = rows.filter(row => row[0] !== 'CAS_24_15');
+    expect(() => diagnoseLotFromTraining(training, Number.NaN)).toThrow(/finite/i);
+    expect(() => diagnoseLotFromTraining(training, Number.NEGATIVE_INFINITY)).toThrow(/finite/i);
+  });
+
+  it('refuse les identités vides, non canoniques ou dupliquées', () => {
+    const rows = lotSource.rows as LotRow[];
+    const invalidIdentity = structuredClone(rows);
+    invalidIdentity[0][0] = '   ';
+    expect(() => fitLine(invalidIdentity)).toThrow(/identity/i);
+    expect(() => benchmarkLots(invalidIdentity)).toThrow(/identity/i);
+
+    const duplicateIdentity = structuredClone(rows);
+    duplicateIdentity[1][0] = duplicateIdentity[0][0];
+    expect(() => fitLine(duplicateIdentity)).toThrow(/duplicate/i);
+    expect(() => benchmarkLots(duplicateIdentity)).toThrow(/duplicate/i);
   });
 
   it('refuse un ajustement linéaire non identifiable', () => {
@@ -253,6 +330,8 @@ describe('Benchmark scientifique : observations indépendantes des coefficients 
     expect(report.failures).toEqual([]);
     expect(report).toMatchObject({ offline: true, paidAiCalls: 0, externalIndependentStudies: 0 });
     expect(report.results.dose.every(row => row.validation === 'reproduction')).toBe(true);
-    expect(report.results.lots.validation).toBe('internal-nested-leave-one-lot-out');
+    expect(report.results.lots.production.unknown).toBe(29);
+    expect(report.results.lots.diagnostic.validation).toBe('internal-nested-leave-one-lot-out-diagnostic');
+    expect(report.results.lots.diagnostic.metrics).toMatchObject({ quantified: 27, unknown: 2, covered: 26 });
   });
 });

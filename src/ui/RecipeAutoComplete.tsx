@@ -15,8 +15,8 @@ import { Fermentable, HopIngredient, YeastSpec, StockItem } from '../types';
 import { AiClient } from '../services/aiClient';
 import { readYeastFactValue, readYeastDocumentaryNotes, type YeastDocumentaryNote, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import {
-  YEAST_DOCUMENTARY_UNITS, YEAST_SHEET_LABELS, YEAST_VALUE_KIND, YeastFlocculationEditor, YeastMeasuredFactEditor,
-  withRetainedYeastFact, yeastCategoryKey, yeastRetainedValues, yeastValueText, type YeastDocumentaryKey
+  YEAST_DOCUMENTARY_UNITS, YEAST_SHEET_LABELS, YEAST_VALUE_KIND, YeastFlocculationEditor, YeastMeasuredFactEditor, YeastLinkedText, YeastObservationList,
+  withRetainedYeastFact, yeastCategoryKey, yeastRetainedValues, yeastSourceTitle, yeastValueText, type YeastDocumentaryKey
 } from './YeastRecipeDossier';
 import {
   IngredientFacts,
@@ -90,7 +90,7 @@ const proposedSource = (facts: IngredientFacts, field: string, proposed: unknown
 };
 const SourceLine = ({ source }: { source?: ReturnType<typeof proposedSource> }) => source ? <div className="text-cave-400">
   {source.exact ? 'Source du fait' : 'Source de la fiche'} : {source.url
-    ? <a className="text-water underline" href={source.url} target="_blank" rel="noreferrer">{source.label}</a> : source.label}
+    ? <a className="text-water underline" href={source.url} target="_blank" rel="noreferrer" title={source.url}>{yeastSourceTitle(source.label, source.url)}</a> : yeastSourceTitle(source.label)}
 </div> : null;
 
 // ---------------------------------------------------------------------------
@@ -363,8 +363,14 @@ const freshEntry = (requestId: number, revision: string): YeastLookupEntry =>
 
 function ReviewSourceLink({ source }: { source?: ReviewSource }) {
   if (!source) return null;
-  return <span className="yc-review-source">{source.exact ? 'source du fait' : 'fiche consultée'} : {source.url
-    ? <a className="yeast-source" href={source.url} target="_blank" rel="noreferrer">{source.label}</a> : source.label}</span>;
+  return <span className="yc-review-source">{source.exact ? 'source citée pour ce fait' : 'source citée'} : {source.url
+    ? <a className="yeast-source" href={source.url} target="_blank" rel="noreferrer" title={source.url}>{yeastSourceTitle(source.label, source.url)}</a> : yeastSourceTitle(source.label)}</span>;
+}
+/** Sourced observations of the answer outside the reviewed fields (POF, esters, pitch rate, species…), exactly as joined by the validation. */
+function otherYeastObservations(current: YeastSpec, facts: IngredientFacts): YeastTechnicalFact[] {
+  const reviewed = new Set(Object.values(REVIEW_FACT_KEY));
+  const known = new Set((current.technicalFacts ?? []).map(fact => JSON.stringify(fact)));
+  return (yeastTechnicalFactsFromIngredient(sanitizeFacts(facts)) ?? []).filter(fact => !reviewed.has(fact.key) && !known.has(JSON.stringify(fact)));
 }
 
 /** Compact review: one gesture for coherent data, a compact zone for the exceptions, explicit retained/remaining lists. */
@@ -376,6 +382,7 @@ function YeastReviewPanel({ subject, yeast, reference, entry, onEntry, onAccept,
 }) {
   const [manual, setManual] = useState<YeastReviewId>();
   const review = useMemo(() => reviewYeastFacts(yeast, entry.facts, reference), [yeast, entry.facts, reference]);
+  const otherFacts = useMemo(() => otherYeastObservations(yeast, entry.facts), [yeast, entry.facts]);
   const verdicts = entry.verification?.status === 'ready' && entry.verification.facts ? verifyYeastReview(yeast, reference, review, entry.verification.facts) : {};
   const gaps = review.items.filter(item => item.status === 'gap' && !entry.kept.includes(item.id));
   const pending = gaps.filter(item => !entry.deferred.includes(item.id)), later = gaps.filter(item => entry.deferred.includes(item.id));
@@ -452,7 +459,7 @@ function YeastReviewPanel({ subject, yeast, reference, entry, onEntry, onAccept,
   </div>;
   return <section className="yc-review" aria-label={`Proposition IA pour ${subject}`}>
     <p role="status" className="yeast-small" data-review-found>Fiche retrouvée{clean.source ? <> : {clean.sourceUrl
-      ? <a className="yeast-source" href={clean.sourceUrl} target="_blank" rel="noreferrer">{clean.source}</a> : clean.source}</> : null}.{scopeText ? ` ${scopeText}` : ''} Rien n’est retenu avant ta validation.</p>
+      ? <a className="yeast-source" href={clean.sourceUrl} target="_blank" rel="noreferrer" title={clean.sourceUrl}>{yeastSourceTitle(clean.source, clean.sourceUrl)}</a> : yeastSourceTitle(clean.source)}</> : null}.{scopeText ? ` ${scopeText}` : ''} Rien n’est retenu avant ta validation.</p>
     {blocked && <div role="alert" className="yc-review-identity">
       <strong>Identité à confirmer</strong>
       <p>La réponse ne décrit peut-être pas {subject} ({review.items.filter(item => item.identity).map(item => `${item.label.toLowerCase()} : ${item.current} → ${item.proposals[0].text}`).join(' ; ')}). Tant que l’identité n’est pas confirmée, aucune donnée de cette réponse n’est retenue.</p>
@@ -465,8 +472,9 @@ function YeastReviewPanel({ subject, yeast, reference, entry, onEntry, onAccept,
       {additions.map(item => <li key={item.id} data-review-item={item.id} data-review-status="addition"><span className="yc-fact-label">{item.label}</span>
         <span>{item.proposals[0]?.text}<span className="yc-tag">ajout</span></span><ReviewSourceLink source={ownSource(item.proposals[0]?.source)} /></li>)}
       {notes.map((note, index) => <li key={`note-${index}`} data-review-item="note" data-review-status="addition"><span className="yc-fact-label">Note documentaire</span>
-        <span>{note.text}</span>
-        {note.source && <span className="yc-review-source">référence de recherche : {note.sourceUrl ? <a className="yeast-source" href={note.sourceUrl} target="_blank" rel="noreferrer">{note.source}</a> : note.source}</span>}
+        <span><YeastLinkedText text={note.text} /></span>
+        {(note.source || note.sourceUrl) && sourceIdentity(note) !== sheetSourceKey && <span className="yc-review-source">référence de recherche : {note.sourceUrl
+          ? <a className="yeast-source" href={note.sourceUrl} target="_blank" rel="noreferrer" title={note.sourceUrl}>{yeastSourceTitle(note.source, note.sourceUrl)}</a> : yeastSourceTitle(note.source)}</span>}
       </li>)}
     </ul>}
     {review.newNotes.length > 0 && <label className="yc-review-note-choice">Note proposée<select aria-label="Décision pour la note documentaire proposée" value={String(entry.notesChoice)}
@@ -475,7 +483,11 @@ function YeastReviewPanel({ subject, yeast, reference, entry, onEntry, onAccept,
       {currentNotes.map((note, index) => <option key={index} value={index}>Remplacer « {note.text.slice(0, 40)}{note.text.length > 40 ? '…' : ''} »</option>)}
       <option value="skip">Ne pas l’ajouter</option>
     </select></label>}
-    {review.otherObservations > 0 && <p className="yeast-small">{review.otherObservations} autre{review.otherObservations > 1 ? 's' : ''} observation{review.otherObservations > 1 ? 's' : ''} sourcée{review.otherObservations > 1 ? 's' : ''} (ensemencement, espèce…) jointe{review.otherObservations > 1 ? 's' : ''} à la fiche, sans calcul.</p>}
+    {/* Joined by the validation: listed by use with their values, so a retained fact never looks unknown. */}
+    {otherFacts.length > 0 && <details className="yc-review-others" open={otherFacts.length <= 4} data-review-others={otherFacts.length}>
+      <summary>{otherFacts.length} autre{otherFacts.length > 1 ? 's' : ''} observation{otherFacts.length > 1 ? 's' : ''} jointe{otherFacts.length > 1 ? 's' : ''} à la fiche · sans calcul</summary>
+      <YeastObservationList facts={otherFacts} />
+    </details>}
     {review.corroborating.length > 0 && <section className="space-y-1" aria-label="Sources concordantes à conserver">
       <h5>Sources concordantes · valeur inchangée</h5>
       <ul className="yc-review-list" aria-label="Observations documentaires concordantes">
@@ -939,7 +951,7 @@ function IngredientCompletion({
                   <dl className="mt-1 divide-y divide-cave-800 text-xs">
                     {f.facts.technicalFacts?.filter(fact => fact.range).map((fact, i) => <div key={`fact-${i}`} className={FACT_ROW}>
                       <dt className="text-cave-400">{YEAST_FACT_LABELS[fact.key]}</dt>
-                      <dd className="min-w-0 text-cave-50 break-words"><span className="text-cave-400">Fiche consultée : </span>{yeastFactReported(fact)}{!beerSheetContext(fact.context, fact.key) && <span className="text-cave-400"> · non repris : {fact.context}</span>}</dd>
+                      <dd className="min-w-0 text-cave-50 break-words"><span className="text-cave-400">Réponse IA : </span>{yeastFactReported(fact)}{!beerSheetContext(fact.context, fact.key) && <span className="text-cave-400"> · non repris : {fact.context}</span>}</dd>
                     </div>)}
                     {visibleChanges.map(change => <div key={change.field} className={change.conflict ? CONFLICT_ROW : FACT_ROW}>
                       <dt className={change.conflict ? CONFLICT_LABEL : 'text-cave-400'}>{change.label}</dt>
@@ -959,15 +971,15 @@ function IngredientCompletion({
                       <dt className={CONFLICT_LABEL}>Observations {YEAST_FACT_LABELS[key]} contradictoires</dt><dd className="min-w-0 text-cave-50">
                         <select aria-label={`Choisir l’observation ${YEAST_FACT_LABELS[key]}`} className="w-full min-h-8 rounded-control border border-cave-700 bg-cave-850 px-1 text-base"
                           value={observationChoices[key] ?? ''} onChange={event => { setObservationChoices(current => ({ ...current, [key]: Number(event.target.value) })); setRangeChoices(current => ({ ...current, [key]: undefined })); }}>
-                          <option value="" disabled>Choisir…</option>{observations.map((fact, index) => <option key={`${fact.reported}-${index}`} value={index}>{yeastFactReported(fact)} · {fact.source || 'source inconnue'}</option>)}
+                          <option value="" disabled>Choisir…</option>{observations.map((fact, index) => <option key={`${fact.reported}-${index}`} value={index}>{yeastFactReported(fact)} · {fact.source || fact.sourceUrl ? yeastSourceTitle(fact.source, fact.sourceUrl) : 'source inconnue'}</option>)}
                         </select>
                         <p className="text-cave-400">L’observation choisie fixe les bornes ; les chiffres isolés de la réponse ne la remplacent pas.</p>
                       </dd>
                     </div>)}
                     {rangeConflicts.map(change => <div key={`range-${change.key}`} className={CONFLICT_ROW}>
                       <dt className={CONFLICT_LABEL}>{change.label}</dt><dd className="min-w-0 break-words text-cave-50">
-                        <div className="text-cave-400">Retenue : {yeastFactReported(change.current)} · {change.current.source || 'source inconnue'}</div>
-                        <div>Nouvelle fiche : {yeastFactReported(change.proposed)} · {change.proposed.source || 'source inconnue'}</div>
+                        <div className="text-cave-400">Retenue : {yeastFactReported(change.current)} · {change.current.source || change.current.sourceUrl ? yeastSourceTitle(change.current.source, change.current.sourceUrl) : 'source inconnue'}</div>
+                        <div>Nouvelle fiche : {yeastFactReported(change.proposed)} · {change.proposed.source || change.proposed.sourceUrl ? yeastSourceTitle(change.proposed.source, change.proposed.sourceUrl) : 'source inconnue'}</div>
                         <select aria-label={`Choisir ${change.label}`} className="mt-1 w-full min-h-8 rounded-control border border-cave-700 bg-cave-850 px-1 text-base"
                           value={rangeChoices[change.key] ?? ''} onChange={event => setRangeChoices(current => ({ ...current, [change.key]: event.target.value as 'keep' | 'replace' }))}>
                           <option value="" disabled>Choisir…</option><option value="keep">Garder la plage retenue</option><option value="replace">Reprendre la nouvelle fiche</option>
@@ -977,24 +989,23 @@ function IngredientCompletion({
                     {disagreements.map(({ key, observations }) => <div key={`disagreement-${key}`} className={CONFLICT_ROW}>
                       <dt className={CONFLICT_LABEL}>{YEAST_FACT_LABELS[key]} · observations non concordantes</dt>
                       <dd className="min-w-0 break-words [overflow-wrap:anywhere] text-cave-50">
-                        <span>{observations.map(fact => `${yeastFactReported(fact)} (${fact.source || 'source inconnue'})`).join(' · ')}</span>
+                        <span>{observations.map(fact => `${yeastFactReported(fact)} (${fact.source || fact.sourceUrl ? yeastSourceTitle(fact.source, fact.sourceUrl) : 'source inconnue'})`).join(' · ')}</span>
                         <p className="text-cave-400">Champ laissé vide : aucune valeur n’est choisie sans ta revue.</p>
                       </dd>
                     </div>)}
                   </dl>
                   {!!f.facts.technicalFacts?.length && <details className="mt-1"><summary className="min-h-7 cursor-pointer text-xs text-water">{f.facts.technicalFacts.length > 1 ? `${f.facts.technicalFacts.length} observations et leurs sources` : '1 observation et sa source'}</summary>
-                    <ul className="divide-y divide-cave-800 text-xs">{f.facts.technicalFacts.map((fact, i) => <li key={i} className="py-1 break-words [overflow-wrap:anywhere]">
-                      <span className="text-cave-400">{YEAST_FACT_LABELS[fact.key]} : </span><span className="text-cave-50">{yeastFactReported(fact)}</span>{fact.context && <span className="text-cave-400"> · {fact.context}</span>}
-                      {fact.sourceUrl ? <a className="block text-water underline" href={fact.sourceUrl} target="_blank" rel="noreferrer">{fact.source || 'Source publiée'}</a> : fact.source && <span className="block text-cave-400">{fact.source}</span>}
-                    </li>)}</ul>
+                    <YeastObservationList facts={f.facts.technicalFacts} />
                   </details>}
                 </>}
                 {/* La source est le cœur du dispositif : sans elle, on ne
                     distinguerait pas une donnée retrouvée d'une inventée. */}
-                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-sm text-cave-200 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-sm text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · {f.facts.fermentation.source.reference}</p></details>}
-                <p className="text-2xs text-cave-400 leading-snug break-words [overflow-wrap:anywhere]">
-                  {f.facts.source}
-                </p>
+                {f.facts.fermentation && <details><summary className="min-h-touch cursor-pointer text-sm text-water">Assimilation, ensemencement et domaine publié</summary><p className="text-sm text-cave-200 break-words">{Object.entries(f.facts.fermentation.sugars).map(([k,v])=>k+': '+({yes:'oui',no:'non',unknown:'inconnu'})[v]).join(' · ')} · POF {f.facts.fermentation.pof}</p><p className="text-sm text-cave-400">{f.facts.fermentation.conditions} · {f.facts.fermentation.source.year ?? 'Année inconnue'} · <YeastLinkedText text={f.facts.fermentation.source.reference} /></p></details>}
+                {(f.facts.source || f.facts.sourceUrl) && <p className="text-2xs text-cave-400 leading-snug break-words [overflow-wrap:anywhere]">
+                  Source citée : {f.facts.sourceUrl
+                    ? <a className="text-water underline" href={f.facts.sourceUrl} target="_blank" rel="noreferrer" title={f.facts.sourceUrl}>{yeastSourceTitle(f.facts.source, f.facts.sourceUrl)}</a>
+                    : <YeastLinkedText text={f.facts.source ?? ''} />}
+                </p>}
               </li>
             ))}
           </ul>

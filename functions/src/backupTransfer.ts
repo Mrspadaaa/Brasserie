@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { FieldPath, getFirestore, Timestamp, type Firestore, type Transaction, type DocumentReference } from 'firebase-admin/firestore';
+import { FieldPath, getFirestore, Timestamp, type Firestore, type Transaction, type DocumentReference, type QueryDocumentSnapshot } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { requireBrewer } from './brewSession.js';
@@ -9,6 +9,8 @@ import { paymentGuardFromRegister } from './financePaymentGuard.js';
 import { BACKUP_PAGE_BYTES, BACKUP_PAGE_DOCUMENTS, BACKUP_FINANCE_GROUP_PAYMENTS, type BackupRestoreProgress } from './backupTransferTypes.js';
 import { driveFinanceMetadata, isDriveFinanceOriginal, sameOriginalContent, type DriveFinanceOriginal } from './financeOriginalCore.js';
 import { decodeOriginal, originalSha, verifyDriveOriginal } from './driveOriginalVerification.js';
+import { brewingScenarioArchiveApi as scenarioArchive, brewingScenarioDossierApi as scenarioDomain } from './brewerTools.js';
+import { prepareScenarioRestoreWrites, preserveCatalogueOnBackupRestore, readScenarioBackupGroups, type ScenarioBackupGroup, type ScenarioRestoreWrite } from './scenarioBackupRestore.js';
 
 const options = { region: 'europe-west6', timeoutSeconds: 120, memory: '512MiB' as const, maxInstances: 2 };
 const DAY = 86_400_000, EXPORT_TTL = 45 * 60_000;
@@ -17,7 +19,8 @@ const bytes = (value: unknown) => Buffer.byteLength(JSON.stringify(value));
 const fail = (message: string): never => { throw new HttpsError('failed-precondition', message); };
 const validId = (value: unknown): value is string => typeof value === 'string' && value.length > 0 && value.length < 1500 && !value.includes('/') && !/^\.{1,2}$/.test(value) && !/^__.*__$/.test(value);
 type Row = BackupDocument & { collection: BackupCollection; transactionId?: string };
-type Work = { kind: 'row'; key: string } | { kind: 'finance'; transactionId: string } | { kind: 'original'; documentId: string };
+type Work = { kind: 'row'; key: string } | { kind: 'finance'; transactionId: string } | { kind: 'original'; documentId: string }
+  | { kind: 'scenario'; dossierKey: string };
 type Cursor = { collection: number; after: string };
 const rowKey = (collection: string, id: string) => sha(`${collection}/${id}`);
 const immutable = (row: Row) => IMMUTABLE_COLLECTIONS.has(row.collection) || row.collection === 'financialClosings' && !!row.data.report;
@@ -25,6 +28,28 @@ const rowsRef = (session: DocumentReference) => session.collection('backupTransf
 const workRef = (session: DocumentReference) => session.collection('backupTransferWork');
 const pageRef = (session: DocumentReference) => session.collection('backupTransferPages');
 const clean = (row: any): Row => ({ id: row.id, collection: row.collection, data: row.data });
+
+async function stagedRows(session: DocumentReference, collection: 'brewerScenarios' | 'brewerScenarioEvents'): Promise<BackupDocument[]> {
+  const output: BackupDocument[] = [];
+  let cursor: QueryDocumentSnapshot | undefined;
+  while (true) {
+    let query = rowsRef(session).where('collection', '==', collection).orderBy(FieldPath.documentId()).limit(200);
+    if (cursor) query = query.startAfter(cursor);
+    const page = await query.get();
+    for (const document of page.docs) {
+      const row = document.data();
+      output.push({ id: row.id, data: row.data });
+    }
+    if (page.docs.length < 200) break;
+    cursor = page.docs[page.docs.length - 1];
+  }
+  return output;
+}
+
+async function stagedScenarioGroups(session: DocumentReference, ownerKey: string): Promise<ScenarioBackupGroup[]> {
+  const [heads, events] = await Promise.all([stagedRows(session, 'brewerScenarios'), stagedRows(session, 'brewerScenarioEvents')]);
+  return readScenarioBackupGroups(heads, events, ownerKey, scenarioDomain, scenarioArchive);
+}
 
 function sessionRef(db: Firestore, id: unknown) {
   if (typeof id !== 'string' || !/^[a-zA-Z0-9-]{16,160}$/.test(id)) throw new HttpsError('invalid-argument', 'Session de sauvegarde invalide.');
@@ -131,8 +156,14 @@ async function uploadRestorePage(db: Firestore, uid: string, input: any) {
       const originalId = row.collection === 'financeDocuments' ? row.data.documentId ?? row.id : null;
       if (originalId !== null && (typeof originalId !== 'string' || !/^[A-Za-z0-9-]{8,100}$/.test(originalId))) fail('Identifiant de justificatif invalide.');
       tx.create(refs[index], { ...row, ...(row.collection === 'financialPayments' ? { transactionId } : {}), ...(originalId ? { originalId } : {}) });
-      const key = originalId ? `00-${sha(originalId)}` : financial ? `1-${sha(transactionId)}` : `${immutable(row) ? '01' : '2'}-${rowKey(row.collection, row.id)}`;
-      work.set(key, originalId ? { kind: 'original', documentId: originalId } : financial ? { kind: 'finance', transactionId } : { kind: 'row', key: refs[index].id });
+      if (row.collection === 'brewerScenarios' || row.collection === 'brewerScenarioEvents') {
+        const dossierKey = row.collection === 'brewerScenarios' ? row.id : row.data.dossierKey;
+        if (!validId(dossierKey)) fail('La lignée d’un événement scénario est absente ou invalide.');
+        work.set(`0-scenario-${dossierKey}`, { kind: 'scenario', dossierKey });
+      } else {
+        const key = originalId ? `00-${sha(originalId)}` : financial ? `1-${sha(transactionId)}` : `${immutable(row) ? '01' : '2'}-${rowKey(row.collection, row.id)}`;
+        work.set(key, originalId ? { kind: 'original', documentId: originalId } : financial ? { kind: 'finance', transactionId } : { kind: 'row', key: refs[index].id });
+      }
     });
     for (const [key, task] of work) tx.set(workRef(ref).doc(key), task);
     tx.create(pageRef(ref).doc(String(input.pageIndex).padStart(12, '0')), { sha256: input.sha256, documents: rows.length });
@@ -246,6 +277,23 @@ async function financialWrites(db: Firestore, tx: Transaction, id: string, incom
   return writes;
 }
 
+async function preflightScenarioRestore(db: Firestore, uid: string, ref: DocumentReference) {
+  let groups: ScenarioBackupGroup[];
+  try { groups = await stagedScenarioGroups(ref, uid); }
+  catch (error) { throw new HttpsError('failed-precondition', `Restauration scénario refusée : ${(error as Error).message}`); }
+  await db.runTransaction(async tx => {
+    const state = authorize((await tx.get(ref)).data(), uid, 'restore');
+    if (state.phase !== 'validating' || state.scenarioRestoreValidated) return;
+    let writes: ScenarioRestoreWrite[];
+    try { writes = await prepareScenarioRestoreWrites(tx, db, groups, uid, scenarioDomain, scenarioArchive); }
+    catch (error) { throw new HttpsError('failed-precondition', `Restauration scénario refusée : ${(error as Error).message}`); }
+    const perDossier = new Map<string, number>();
+    for (const write of writes) perDossier.set(write.scenarioKey, (perDossier.get(write.scenarioKey) ?? 0) + 1);
+    if ([...perDossier.values()].some(count => count + 1 > 450)) fail('Un dossier scénario dépasse le groupe atomique de restauration; aucun document scénario n’a été modifié.');
+    tx.update(ref, { scenarioRestoreValidated: true });
+  });
+}
+
 async function validateRestore(db: Firestore, uid: string, input: any) {
   const ref = sessionRef(db, input.sessionId);
   let state = authorize((await ref.get()).data(), uid, 'restore');
@@ -258,6 +306,14 @@ async function validateRestore(db: Firestore, uid: string, input: any) {
     });
     state = authorize((await ref.get()).data(), uid, 'restore');
   }
+  if (state.phase === 'validating' && !state.scenarioRestoreValidated) {
+    await preflightScenarioRestore(db, uid, ref);
+    state = authorize((await ref.get()).data(), uid, 'restore');
+  }
+  let incomingScenarioGroups: ScenarioBackupGroup[];
+  try { incomingScenarioGroups = await stagedScenarioGroups(ref, uid); }
+  catch (error) { throw new HttpsError('failed-precondition', `Restauration scénario refusée : ${(error as Error).message}`); }
+  const scenariosByKey = new Map(incomingScenarioGroups.map(group => [group.key, group]));
   let query = workRef(ref).orderBy(FieldPath.documentId()).limit(20);
   if (state.validateCursor) query = query.startAfter(state.validateCursor);
   const work = await query.get();
@@ -272,6 +328,10 @@ async function validateRestore(db: Firestore, uid: string, input: any) {
       await db.runTransaction(tx => financialWrites(db, tx, task.transactionId, incoming, payments), { readOnly: true });
       if (incoming) for (const id of new Set(documentIds({ id: task.transactionId, collection: 'transactions', data: incoming }))) await validateOriginal(db, ref, id);
       checked += payments.length + (incoming ? 1 : 0);
+    } else if (task.kind === 'scenario') {
+      const group = scenariosByKey.get(task.dossierKey);
+      if (!group) throw new HttpsError('failed-precondition', `Dossier scénario ${task.dossierKey} absent des lignes validées.`);
+      checked += group.eventRows.length + 1;
     } else {
       const row = clean((await rowsRef(ref).doc(task.key).get()).data());
       for (const id of new Set(documentIds(row))) await validateOriginal(db, ref, id);
@@ -303,6 +363,31 @@ async function applyRestore(db: Firestore, uid: string, input: any) {
     const row = clean((await rowsRef(ref).doc(work.key).get()).data()), amount = bytes(row);
     if (selected.length && size + amount > BACKUP_PAGE_BYTES) break;
     selected.push({ key: item.id, work, row }); size += amount;
+  }
+  if (selected.length === 1 && selected[0].work.kind === 'scenario') {
+    const task = selected[0].work;
+    const groups = await stagedScenarioGroups(ref, uid);
+    const incoming = groups.find(group => group.key === task.dossierKey);
+    if (!incoming) throw new HttpsError('failed-precondition', `Dossier scénario ${task.dossierKey} absent des lignes validées.`);
+    return db.runTransaction(async tx => {
+      const current = authorize((await tx.get(ref)).data(), uid, 'restore');
+      if (current.phase === 'complete' || current.applyCursor !== state.applyCursor) return progress(ref.id, current);
+      if (!current.scenarioRestoreValidated) fail('La validation groupée des scénarios est obligatoire avant leur restauration.');
+      let writes: ScenarioRestoreWrite[];
+      try { writes = await prepareScenarioRestoreWrites(tx, db, [incoming], uid, scenarioDomain, scenarioArchive); }
+      catch (error) { throw new HttpsError('failed-precondition', `Restauration scénario refusée : ${(error as Error).message}`); }
+      if (writes.length + 1 > 450) fail('Un dossier scénario dépasse le groupe atomique de restauration; aucune donnée scénario n’a été modifiée.');
+      const processed = 1 + incoming.eventRows.length;
+      const next = { ...current, phase: 'applying', applyCursor: selected[0].key,
+        processed: current.processed + processed, changed: current.changed + writes.length };
+      if (next.processed > next.totalDocuments) fail('Le dossier scénario dépasse les lignes du manifeste.');
+      for (const write of writes) {
+        const writeRef = db.doc(`${write.collection}/${write.id}`);
+        if (write.create) tx.create(writeRef, write.data); else tx.set(writeRef, write.data);
+      }
+      tx.update(ref, { phase: next.phase, applyCursor: next.applyCursor, processed: next.processed, changed: next.changed });
+      return progress(ref.id, next);
+    });
   }
   const group = selected[0]?.work.kind === 'finance' ? await financeGroup(db, ref, selected[0].work) : null;
   const original = selected[0]?.work.kind === 'original' ? await originalGroup(ref, selected[0].work.documentId) : null;
@@ -341,7 +426,10 @@ async function applyRestore(db: Firestore, uid: string, input: any) {
       selected.forEach((item, index) => {
         const row = item.row!, old = currentRows[index].data(), data = { ...row.data };
         processed++;
+        if (row.collection === 'brewerScenarios' || row.collection === 'brewerScenarioEvents')
+          fail('Cette session contient des lignes scénario non groupées. Recommence la restauration pour préserver leur historique atomiquement.');
         if (immutable(row) && old || row.collection === 'financialClosings' && old?.report) return;
+        if (preserveCatalogueOnBackupRestore(row.collection, old, data)) return;
         if (preserveOperationalState(row.collection, old)) { operationalPreserved++; if (row.collection === 'batches' && old?.brewDay) journalsPreserved++; return; }
         if (row.collection === 'batches') {
           if (data.brewDay) data.brewDay = { ...data.brewDay, restoredFromBackup: true };

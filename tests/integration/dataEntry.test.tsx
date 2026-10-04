@@ -519,7 +519,7 @@ const RECETTE_NEIPA = {
       { name: 'Citra', weightG: 40, alpha: 12, stage: 'whirlpool', timeMin: 20, tempC: 80 },
       { name: 'Citra', weightG: 60, alpha: 12, stage: 'dryHop', dayOffset: 3 }
     ],
-    yeast: { name: 'US-05', form: 'seche', qty: 1, unit: 'sachet' },
+    yeast: { name: 'US-05', form: 'seche', qty: 1, unit: 'sachet', stockItemRef: 'L' },
     mash: { steps: [{ name: 'Saccharification', tempC: 67, durationMin: 60 }], spargeType: 'batch' },
     fermentation: [{ kind: 'primaire', name: 'Primaire', tempC: 19, days: 7 }],
     steps: [],

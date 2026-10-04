@@ -6,13 +6,16 @@ import { parseBackup } from '../../functions/src/backupCore';
 import { predictHopTriplet } from '../../functions/src/hopPredictionCore';
 import type { HopEngineData } from '../../functions/src/hopPredictionCore';
 import type { HopTriplet, HopModel } from '../../functions/src/hopPredictionSchema';
+import { captureHopPrediction } from '../../src/domain/hopIndex/snapshots';
+import { assertHopPredictionSnapshot } from '../../functions/src/hopPredictionValidation';
+import { guidePredictionKnowledge, guidePredictionKnowledgeQualification } from '../../src/ui/hopIndex/guideData';
 import { hopTestSource } from '../fixtures/hopIndex';
 import { resolveHopFacts } from '../../functions/src/hopIndexFacts';
 import type { HopVariety } from '../../functions/src/hopIndexSchema';
 import { assertHopKnowledge, HOP_TIMINGS } from '../../functions/src/hopPredictionSchema';
 import { rankHopTriplets } from '../../functions/src/hopPredictionCore';
 import { publicHopData, publicHopPacks } from '../fixtures/hopPublicPacks';
-const data = (): HopEngineData => structuredClone({ varieties: pack.hopVarieties, lots: [], knowledge: pack.hopKnowledge }) as HopEngineData;
+const data = (): HopEngineData => structuredClone({ varieties: pack.hopVarieties, lots: [], knowledge: guidePredictionKnowledge([]) }) as HopEngineData;
 const triplet: HopTriplet = { varietyId: study.protocol.varietyId, yeastId: study.protocol.yeastId, timing: 'postFermentation', doseGL: 3.86, temperatureC: 14, contactHours: 24, matrixId: study.protocol.matrixId };
 const target = { 'citrus-lafontaine': { min: 5, max: 10 } };
 const backup = (p: Record<string, { id: string }[]>) => JSON.stringify({ schemaVersion: 3, source: 'device', exportedAt: '2026-09-08T10:00:00Z', collections: Object.fromEntries(Object.entries(p).map(([name, rows]) => [name, rows.map(data => ({ id: data.id, data }))])) });
@@ -48,13 +51,16 @@ describe('Données publiques distinctes des fixtures du moteur', () => {
     }
     expect(publicHopPacks.maverick.hopVarieties.find(v => v.id === 'beermaverick-citra')!.analysis[0].source.year).toBe(2023);
   });
-  it('classe le catalogue complet avec le même résultat que le calcul isolé, puis prend en compte une révision', () => {
+  it('classe le catalogue comme le calcul isolé sans réutiliser la calibration suspendue', () => {
     const d = publicHopData(), candidates = d.varieties.flatMap(v => HOP_TIMINGS.map(timing => ({ ...triplet, varietyId: v.id, timing })));
     const isolated = predictHopTriplet(triplet, target, d), ranked = rankHopTriplets(candidates, target, d);
-    expect(ranked).toHaveLength(3830); expect(ranked.filter(p => p.score.range)).toHaveLength(1);
-    expect(ranked[0]).toEqual(isolated);
-    const model = d.knowledge.find(k => k.kind === 'model') as HopModel; model.enabled = false;
-    expect(rankHopTriplets([triplet], target, d)[0].score.range).toBeNull();
+    expect(ranked).toHaveLength(3830); expect(ranked.filter(p => p.score.range)).toHaveLength(0);
+    expect(ranked.find(prediction => prediction.triplet.varietyId === triplet.varietyId
+      && prediction.triplet.yeastId === triplet.yeastId && prediction.triplet.timing === triplet.timing
+      && prediction.triplet.doseGL === triplet.doseGL && prediction.triplet.matrixId === triplet.matrixId)).toEqual(isolated);
+    const model = d.knowledge.find(k => k.id === 'cascade1728-clarified-lafontaine') as HopModel;
+    expect(model).toMatchObject({ enabled: false, version: 'lafontaine2015-local-2' });
+    expect(rankHopTriplets([triplet], target, d)[0].modelRefs.some(ref => ref.id === model.id)).toBe(false);
   });
   it('une unité non attestée reste documentaire et ne peut devenir un prédicteur ou un seuil', () => {
     const d = data(), model = d.knowledge.find(k => k.kind === 'model') as HopModel;
@@ -87,23 +93,60 @@ describe('Données publiques distinctes des fixtures du moteur', () => {
     const model = pack.hopKnowledge.find(k => k.kind === 'model') as HopModel;
     expect(model.source.kind).toBe('judgment'); expect(model.confidence).toBe('low');
     expect(model.outputs[0].calibration?.terms[0].unit).toBe('mg100g');
+    expect(model.enabled).toBe(false);
+    expect(model.outputs[0].calibration?.terms[0].basis).toBe('unknown');
   });
-  it('un COA compatible resserre la projection publiée mais laisse le résidu, sans changer d’échelle', () => {
-    const d = data(), generic = predictHopTriplet(triplet, target, d).profile['citrus-lafontaine'];
-    d.lots.push({ id: 'coa-test-only', varietyId: triplet.varietyId!, name: 'COA synthétique pour contrôle logiciel', form: 'cone', analysis: [{ analyte: 'geraniol', unit: 'mg100g', basis: 'asIs', kind: 'range', range: { min: 2, max: 2.1 }, source: hopTestSource, confidence: 'medium' }] });
-    const prediction = predictHopTriplet({ ...triplet, lotId: 'coa-test-only' }, target, d);
-    const narrowed = prediction.profile['citrus-lafontaine'];
-    expect(generic.confidence).toBe('low'); expect(narrowed.confidence).toBe('low');
-    expect(narrowed.range!.max - narrowed.range!.min).toBeLessThan(generic.range!.max - generic.range!.min);
-    expect(narrowed.range!.max - narrowed.range!.min).toBeGreaterThan(2);
-    expect(prediction.profile.citrus).toBeUndefined(); expect(prediction.score.range).not.toBeNull();
+  it('aucun COA ne réactive la calibration dont la base Lafontaine reste inconnue', () => {
+    const savedLegacy = structuredClone(pack.hopKnowledge.find(k => k.kind === 'model') as HopModel);
+    savedLegacy.version = 'lafontaine2015-local-1';
+    savedLegacy.enabled = true;
+    savedLegacy.outputs[0].calibration!.terms[0].basis = 'asIs';
+    const view = guidePredictionKnowledgeQualification([savedLegacy]);
+    const qualification = view.modelQualifications.find(row => row.id === savedLegacy.id)!;
+    expect(qualification.status).toBe('suspended');
+    expect(qualification.reason).toMatch(/base analytique non établie/i);
+    expect(qualification.rawVariants.some(row => row.origin === 'saved' && row.raw.kind === 'model'
+      && row.raw.enabled && row.raw.outputs[0].calibration?.terms[0].basis === 'asIs')).toBe(true);
+
+    const qualificationSafeKnowledge = guidePredictionKnowledge([savedLegacy]);
+    for (const basis of ['asIs', 'dryMatter', 'unknown'] as const) {
+      const d = { varieties: pack.hopVarieties, lots: [], knowledge: structuredClone(qualificationSafeKnowledge) } as HopEngineData;
+      d.lots.push({ id: `coa-${basis}`, varietyId: triplet.varietyId!, name: `Fixture synthétique ${basis}`, form: 'cone', analysis: [{
+        analyte: 'geraniol', unit: 'mg100g', basis, kind: 'range', range: { min: 2, max: 2.1 },
+        source: hopTestSource, confidence: 'medium',
+      }] });
+      const prediction = predictHopTriplet({ ...triplet, lotId: `coa-${basis}` }, target, d);
+      expect(prediction.profile['citrus-lafontaine'].range).toBeNull();
+      expect(prediction.modelRefs.some(ref => ref.id === savedLegacy.id)).toBe(false);
+    }
   });
-  it('une absence de marge ne gagne pas de précision, et une autre matrice ne gagne pas de modèle', () => {
-    const d = data(), generic = predictHopTriplet(triplet, target, d).profile['citrus-lafontaine'];
-    d.lots.push({ id: 'point-test-only', varietyId: triplet.varietyId!, name: 'Point sans marge', form: 'cone', analysis: [{ analyte: 'geraniol', unit: 'mg100g', basis: 'asIs', kind: 'point', value: 2, source: hopTestSource, confidence: 'medium' }] });
-    const point = predictHopTriplet({ ...triplet, lotId: 'point-test-only' }, target, d).profile['citrus-lafontaine'];
-    expect(point.range!.max - point.range!.min).toBeGreaterThanOrEqual(generic.range!.max - generic.range!.min);
-    expect(predictHopTriplet({ ...triplet, timing: 'fermentation' }, target, d).score.range).toBeNull();
-    expect(predictHopTriplet({ ...triplet, matrixId: 'biere-trouble' }, target, d).score.range).toBeNull();
+
+  it('valide le seed suspendu à l’import local sans réécrire un snapshot historique', () => {
+    expect(() => parseBackup(backup(pack))).not.toThrow();
+    const oldVariety = structuredClone(pack.hopVarieties[0]);
+    oldVariety.analysis[0].basis = 'asIs';
+    const oldModel = structuredClone(pack.hopKnowledge.find(k => k.kind === 'model') as HopModel);
+    oldModel.version = 'lafontaine2015-local-1';
+    oldModel.enabled = true;
+    oldModel.outputs[0].calibration!.terms[0].basis = 'asIs';
+    const savedCalibration = structuredClone(oldModel.outputs[0].calibration!);
+    const oldKnowledge = pack.hopKnowledge.map(row => row.id === oldModel.id ? oldModel : row);
+    const frozenData: HopEngineData = { varieties: [oldVariety], lots: [], knowledge: oldKnowledge };
+    const snapshot = captureHopPrediction(triplet, target, frozenData, {
+      id: 'fixture-lafontaine-archive', name: 'Archive ancienne fixture', createdAt: '2026-09-30T12:00:00.000Z',
+    });
+    const before = JSON.stringify(snapshot);
+    expect(() => assertHopPredictionSnapshot(snapshot)).not.toThrow();
+    expect(snapshot.evidence.knowledge.find(row => row.id === oldModel.id)).toMatchObject({ enabled: true, version: 'lafontaine2015-local-1' });
+    expect((snapshot.evidence.knowledge.find(row => row.id === oldModel.id) as HopModel).outputs[0].calibration!.terms[0].basis).toBe('asIs');
+    expect(JSON.stringify(snapshot)).toBe(before);
+    const current = guidePredictionKnowledge([oldModel]).find(row => row.id === oldModel.id) as HopModel;
+    expect(current).toMatchObject({ enabled: false, version: 'lafontaine2015-local-1-basis-suspended-lf01' });
+    expect(current.outputs[0].calibration!.intercept.range).toEqual(savedCalibration.intercept.range);
+    expect(current.outputs[0].calibration!.residual.range).toEqual(savedCalibration.residual.range);
+    expect(current.outputs[0].calibration!.terms[0]).toMatchObject({
+      basis: 'unknown', support: savedCalibration.terms[0].support,
+      coefficient: savedCalibration.terms[0].coefficient,
+    });
   });
 });

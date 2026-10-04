@@ -22,10 +22,11 @@ import {
 import './brew-day.css';
 import { AppConfig, Batch, BrewDayState, RecipeSnapshot, StockItem } from '../types';
 import { ingredientsOf } from '../domain/recipeSnapshot';
-import { breweryDay, brewSessionDatePatch, hasBrewStarted } from '../domain/batchSchedule';
+import { breweryDay, brewSessionDatePatch, hasBrewStarted, plannedBrewDate } from '../domain/batchSchedule';
 import { BatchSchedule } from '../ui/production/BatchSchedule';
 import { saveBatchSchedule } from '../services/batchSchedule';
-import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep, recordPitch } from '../domain/brewDay';
+import { brewAdviceKey, finalBrewReadings, isMash, measuredReadingFeedback, READING, restoreBrewDay, startBrewStep, recordPitch, validPitchQuantityChoice } from '../domain/brewDay';
+import type { PitchQuantityChoice } from '../domain/brewDay';
 import { effectiveThermalTarget, startThermalSegment } from '../domain/brewThermal';
 import { pitchTemperatureFeedback } from '../domain/pitchingPlan';
 import {
@@ -55,6 +56,7 @@ import {
 import { AiClient } from '../services/aiClient';
 import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
+import { toIsoDate } from '../ui/DateField';
 import { PageShell } from './PageShell';
 import { ConfirmSheet } from '../ui/Sheet';
 import {
@@ -96,6 +98,7 @@ interface Props {
   onClose: () => void;
   onSave: (batch: Batch) => void;
   onFinish: (batch: Batch) => void;
+  onOpenHopV55?: (journal: BrewDayState) => void;
 }
 const AREA: Record<BrewArea, string> = {
   preparation: 'Préparer',
@@ -109,7 +112,7 @@ const time = (at: number) =>
     minute: '2-digit'
   });
 
-export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, onFinish }: Props) {
+export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, onFinish, onOpenHopV55 }: Props) {
   const recipe = useMemo(
     () =>
       batch.recipeSnapshot ?? ({ ...batch, ...ingredientsOf(batch) } as unknown as RecipeSnapshot),
@@ -150,6 +153,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   }, [notice]);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const [pitchTemperature, setPitchTemperature] = useState<number>();
+  const [pitchQuantityMode, setPitchQuantityMode] = useState<PitchQuantityChoice['mode']>();
+  const [pitchQuantityAmount, setPitchQuantityAmount] = useState<number | undefined>(state.additions?.yeast?.amount);
+  const [pitchQuantityUnit, setPitchQuantityUnit] = useState<string>(state.additions?.yeast?.unit ?? recipe.yeast?.unit ?? '');
   const finalizing = useRef(false);
   const [confirmAdvance, setConfirmAdvance] = useState(false);
   const [note, setNote] = useState('');
@@ -226,6 +232,14 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     return feedback.tone === 'watch' || (kind === 'ph' && isMash(current.id) && feedback.tone === 'neutral');
   });
   const ingredients = brewIngredients(executionRecipe);
+  const ingredientDisplayRecipe = (() => {
+    const yeast = executionRecipe.yeast;
+    if (!yeast) return executionRecipe;
+    const actualYeast = state.additions?.yeast;
+    const actualUnit = actualYeast?.unit ?? yeast.unit;
+    if (actualYeast?.amount != null && actualUnit) return { ...executionRecipe, yeast: { ...yeast, qty: actualYeast.amount, unit: actualUnit } };
+    return executionRecipe;
+  })();
   const bitterness = brewBitterness(recipe, state);
   const signature =
     brewAdviceKey(state) +
@@ -380,7 +394,10 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
           .filter((i) => i.planned || s.additions?.[i.id])
           .map((i) => ({
             ...i,
-            actual: actualAmount(i, s),
+            actual: i.id === 'yeast' && s.pitchedAt != null && s.additions?.yeast?.amount == null ? undefined : actualAmount(i, s),
+            actualStatus: i.id === 'yeast' && s.pitchedAt != null
+              ? s.pitchQuantityConfirmation ?? (s.additions?.yeast?.amount != null ? 'legacy-mode-unknown' : 'unreported')
+              : undefined,
             ...s.additions?.[i.id]
           })),
         mineralFeedback: mineralFeedback(executionRecipe, s),
@@ -425,8 +442,9 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
     (s) => isUsefulTimer(s) && s.startedAt != null && s.doneAt == null
   );
   const finishedReadings = finalBrewReadings(state, recipe);
-  const confirmed = ingredients.filter(
-    (i) => i.planned > 0 && state.additions?.[i.id]?.doneAt != null
+  const countableIngredients = ingredients.filter(i => i.planned > 0 || i.id === 'yeast');
+  const confirmedOther = countableIngredients.filter(
+    (i) => i.id !== 'yeast' && i.planned > 0 && state.additions?.[i.id]?.doneAt != null
   ).length;
 
   const route = state.steps.filter(
@@ -500,6 +518,114 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
       ? upcoming
       : undefined;
   const lastStep = !nextStep;
+  const currentPitchMode = state.pitchedAt != null ? pitchQuantityMode ?? state.pitchQuantityConfirmation : pitchQuantityMode;
+  const currentPitchAmount = currentPitchMode === 'starter-transferred'
+    ? (state.additions?.yeast?.unit === 'L' ? state.additions.yeast.amount : pitchQuantityAmount)
+    : state.additions?.yeast?.amount ?? pitchQuantityAmount;
+  const currentPitchUnit = currentPitchMode === 'starter-transferred' ? 'L'
+    : currentPitchMode === 'planned' ? recipe.yeast?.unit ?? ''
+      : state.additions?.yeast?.unit ?? pitchQuantityUnit;
+  const makePitchChoice = (): PitchQuantityChoice | undefined => {
+    if (currentPitchMode === 'measured' && Number.isFinite(currentPitchAmount) && currentPitchUnit.trim())
+      return { mode: 'measured', amount: currentPitchAmount!, unit: currentPitchUnit.trim() };
+    if (currentPitchMode === 'planned' && typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit)
+      return { mode: 'planned', amount: recipe.yeast.qty, unit: recipe.yeast.unit };
+    if (currentPitchMode === 'unmeasured') return { mode: 'unmeasured' };
+    if (currentPitchMode === 'starter-transferred') {
+      if (currentPitchAmount === undefined) return { mode: 'starter-transferred' };
+      if (Number.isFinite(currentPitchAmount) && currentPitchAmount > 0) return { mode: 'starter-transferred', cultureVolumeL: currentPitchAmount };
+      return undefined;
+    }
+    return undefined;
+  };
+  const currentPitchChoice = makePitchChoice();
+  const pitchChoiceValid = validPitchQuantityChoice(currentPitchChoice);
+  const plannedPitchSummary = typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit
+    ? `Dose prévue : ${Units.format(recipe.yeast.qty, recipe.yeast.unit)}`
+    : 'Aucune quantité prévue valide';
+  const confirmed = confirmedOther + (ingredients.some(i => i.id === 'yeast') &&
+    (state.pitchedAt != null || state.additions?.yeast?.doneAt != null || pitchChoiceValid) ? 1 : 0);
+  const pitchQuantityConsequence = currentPitchChoice?.mode === 'measured'
+    ? `Quantité mesurée : ${Units.format(currentPitchChoice.amount, currentPitchChoice.unit)} · ${plannedPitchSummary}.`
+    : currentPitchChoice?.mode === 'planned'
+      ? `Quantité prévue explicitement confirmée : ${Units.format(currentPitchChoice.amount, currentPitchChoice.unit)}.`
+      : currentPitchChoice?.mode === 'starter-transferred'
+        ? `Culture du starter transférée${currentPitchChoice.cultureVolumeL != null ? ` : ${Units.format(currentPitchChoice.cultureVolumeL, 'L')} relevés` : ' ; volume non relevé'} · dose du brassin ${recipe.yeast?.qty != null && recipe.yeast.unit ? `${Units.format(recipe.yeast.qty, recipe.yeast.unit)} prévue` : 'sans quantité prévue'}. L’inoculum et le milieu se régularisent séparément.`
+        : currentPitchChoice?.mode === 'unmeasured'
+          ? `Ajout confirmé sans mesure de quantité ; aucun stock ne sera déduit à partir de la dose prévue (${plannedPitchSummary}).`
+          : state.pitchedAt != null ? 'Quantité réelle historique non renseignée.' : 'Quantité réelle à confirmer dans le guide Levure.';
+  const selectPitchQuantityMode = (mode: PitchQuantityChoice['mode']) => {
+    setPitchQuantityMode(mode);
+    if (mode === 'starter-transferred') {
+      setPitchQuantityAmount(undefined);
+      setPitchQuantityUnit('L');
+      update(s => {
+        const additions = { ...s.additions };
+        delete additions.yeast;
+        if (s.pitchedAt == null) return { ...s, additions };
+        return { ...s, additions, pitchQuantityConfirmation: 'starter-transferred' };
+      });
+      return;
+    }
+    if (mode === 'planned') {
+      setPitchQuantityUnit(recipe.yeast?.unit ?? '');
+      if (state.pitchedAt != null && typeof recipe.yeast?.qty === 'number' && recipe.yeast.qty > 0 && recipe.yeast.unit)
+        update(s => ({ ...s, pitchQuantityConfirmation: 'planned', additions: { ...s.additions,
+          yeast: { ...s.additions?.yeast, amount: recipe.yeast!.qty!, unit: recipe.yeast!.unit!, doneAt: s.pitchedAt } } }));
+      return;
+    }
+    if (mode === 'measured') {
+      setPitchQuantityUnit(state.additions?.yeast?.unit ?? recipe.yeast?.unit ?? '');
+      if (state.pitchedAt != null && Number.isFinite(currentPitchAmount) && currentPitchAmount! > 0 && currentPitchUnit.trim())
+        update(s => ({ ...s, pitchQuantityConfirmation: 'measured', additions: { ...s.additions,
+          yeast: { ...s.additions?.yeast, amount: currentPitchAmount!, unit: currentPitchUnit, doneAt: s.pitchedAt } } }));
+      return;
+    }
+    if (state.pitchedAt != null) update(s => {
+      const additions = { ...s.additions };
+      delete additions.yeast;
+      return { ...s, additions, pitchQuantityConfirmation: 'unmeasured' };
+    });
+  };
+  const updatePitchQuantityAmount = (amount: number | undefined) => {
+    setPitchQuantityAmount(amount);
+    if (pitchQuantityMode !== 'measured' && pitchQuantityMode !== 'starter-transferred') return;
+    update(s => {
+      const additions = { ...s.additions };
+      if (pitchQuantityMode === 'starter-transferred') {
+        if (s.pitchedAt != null && Number.isFinite(amount) && amount! > 0)
+          additions.yeast = { ...additions.yeast, amount: amount!, unit: 'L', doneAt: s.pitchedAt };
+        else delete additions.yeast;
+        return { ...s, additions, ...(s.pitchedAt != null ? { pitchQuantityConfirmation: 'starter-transferred' as const } : {}) };
+      }
+      if (s.pitchedAt != null) {
+        if (Number.isFinite(amount) && amount! > 0 && currentPitchUnit.trim()) {
+          additions.yeast = { ...additions.yeast, amount: amount!, unit: currentPitchUnit, doneAt: s.pitchedAt };
+          return { ...s, additions, pitchQuantityConfirmation: 'measured' as const };
+        }
+        delete additions.yeast;
+        if (s.pitchQuantityConfirmation === 'unmeasured') return { ...s, additions, pitchQuantityConfirmation: 'unmeasured' as const };
+        const next = { ...s, additions };
+        delete next.pitchQuantityConfirmation;
+        return next;
+      }
+      if (amount === undefined) delete additions.yeast;
+      else additions.yeast = { ...additions.yeast, amount, unit: currentPitchUnit };
+      return { ...s, additions };
+    });
+  };
+  const updatePitchQuantityUnit = (unit: string) => {
+    setPitchQuantityUnit(unit);
+    if (pitchQuantityMode !== 'measured') return;
+    update(s => {
+      const amount = s.additions?.yeast?.amount ?? pitchQuantityAmount;
+      if (amount === undefined) return s;
+      if (s.pitchedAt != null)
+        return { ...s, pitchQuantityConfirmation: 'measured', additions: { ...s.additions,
+          yeast: { ...s.additions?.yeast, amount, unit, doneAt: s.pitchedAt } } };
+      return { ...s, additions: { ...s.additions, yeast: { ...s.additions?.yeast, amount, unit } } };
+    });
+  };
   const primaryLabel = !brewingStarted && !isConsulting ? 'Commencer aujourd’hui' : isConsulting
     ? 'Revenir au brassage'
     : lastStep
@@ -522,7 +648,13 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
   const primaryAction = () => {
     if (isConsulting) navigate(areaOf(current.id));
     else if (!brewingStarted) update(s => ({ ...s, startedAt: brewNow() }));
-    else if (lastStep) setConfirmFinish(true);
+    else if (lastStep) {
+      if (!pitchChoiceValid) {
+        setNotice('Consigne la quantité réellement ajoutée dans le guide Levure avant de clôturer.');
+        return;
+      }
+      setConfirmFinish(true);
+    }
     else if (showTimer && !running && !completed) start();
     else if (!completed && showTimer && left != null && left > 0) setConfirmAdvance(true);
     else finishAndContinue();
@@ -1267,7 +1399,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                   </>
                 )}
                 <BrewIngredients
-                  recipe={displayRecipe ? recipe : executionRecipe}
+                  recipe={displayRecipe ? recipe : ingredientDisplayRecipe}
                   state={state}
                   stock={stockItems}
                   area={area}
@@ -1342,6 +1474,14 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                     state={state}
                     phase={displayRecipe ? 'recipe' : area}
                     onMeasure={displayRecipe ? undefined : requestMeasure}
+                    pitchQuantityMode={currentPitchMode}
+                    pitchQuantityAmount={currentPitchAmount}
+                    pitchQuantityUnit={currentPitchUnit}
+                    preparationExecution={batch.yeastPreparation}
+                    plannedBrewDate={toIsoDate(plannedBrewDate(batch) ?? '') || undefined}
+                    onPitchQuantityModeChange={selectPitchQuantityMode}
+                    onPitchQuantityAmountChange={updatePitchQuantityAmount}
+                    onPitchQuantityUnitChange={updatePitchQuantityUnit}
                   />
                   <BrewAide title="Houblons" summary="vigilances et potentiel">
                     <p className="brew-aide-note">
@@ -1352,6 +1492,7 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
                       recipe={recipeForHopAnalysis(actualRecipe, state)}
                       batchId={batch.id}
                     />
+                    {onOpenHopV55 && <button type="button" className="min-h-touch rounded-control border border-hop/40 px-2 text-xs text-cave-200" onClick={() => onOpenHopV55(structuredClone(state))}>Explorer les ajouts futurs dans V5.5</button>}
                   </BrewAide>
                 </section>
               </>
@@ -1561,12 +1702,17 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
         onClose={() => setConfirmFinish(false)}
         title={state.pitchedAt != null ? 'Finaliser la synchronisation ?' : 'Confirmer l’ajout de levure ?'}
         what={`OG ${finishedReadings.gravity?.value.toFixed(3).replace('.', ',') ?? 'inconnue'} · ${finishedReadings.volume ? `${finishedReadings.volume.approximate ? '≈ ' : ''}${finishedReadings.volume.value} L à froid en fermenteur` : 'volume en fermenteur inconnu'}.`}
-        consequence={`${confirmed}/${ingredients.filter((i) => i.planned > 0).length} ajouts cochés. ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${pitchTemperature} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
+        consequence={`${confirmed}/${countableIngredients.length} ajouts cochés. ${pitchQuantityConsequence} ${pitchTemperature == null ? 'Température à l’ajout non relevée.' : `Moût à l’ajout : ${pitchTemperature} °C. ${pitchTemperatureFeedback(recipe, pitchTemperature, state)}`} Confirme uniquement si la levure a réellement été ajoutée : cet événement démarre la fermentation et clôture le brassage.`}
         confirmLabel={state.pitchedAt != null ? 'Synchroniser et clôturer' : 'Confirmer la levure ajoutée'}
         onConfirm={async () => {
           if (finalizing.current) return;
+          if (!pitchChoiceValid) {
+            setNotice('Choisis une quantité mesurée, la dose prévue réellement ajoutée ou une confirmation sans mesure.');
+            return;
+          }
           finalizing.current = true;
-          update((s) => recordPitch(s, brewNow(), pitchTemperature));
+          const pitchChoice = currentPitchChoice ?? { mode: 'unmeasured' as const };
+          update((s) => recordPitch(s, brewNow(), pitchTemperature, pitchChoice));
           if (!(await session.flush())) {
             finalizing.current = false;
             setNotice(
@@ -1575,9 +1721,15 @@ export function BrewDayPage({ batch, config, stockItems = [], onClose, onSave, o
             return;
           }
           const f = finalBrewReadings(latest.current, recipe);
+          const currentBatch = batchRef.current;
+          const yeastPreparation = pitchChoice.mode === 'starter-transferred' && currentBatch.yeastPreparation
+            ? { ...currentBatch.yeastPreparation, status: 'transferred' as const,
+                ...(pitchChoice.cultureVolumeL != null ? { cultureVolumeL: pitchChoice.cultureVolumeL } : {}) }
+            : currentBatch.yeastPreparation;
           onFinish({
-            ...batchRef.current,
-            ...brewSessionDatePatch(batchRef.current, latest.current),
+            ...currentBatch,
+            ...(yeastPreparation ? { yeastPreparation } : {}),
+            ...brewSessionDatePatch(currentBatch, latest.current),
             brewDay: latest.current,
             og: f.gravity?.value.toFixed(3),
             volumeBrewedL: f.volume?.value,

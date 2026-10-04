@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react';
 import { BrewerChat as api } from './brewerChat';
 import type {
   BrewerChatInput,
+  BrewerReply,
   BrewerJob,
   BrewerScope,
   BrewerTurn
@@ -12,6 +13,7 @@ export type ClientBrewerJob = BrewerJob & {
   turn?: BrewerTurn;
   sending?: boolean;
   sendError?: string;
+  unsupportedReadOnly?: { source: string; snapshot: unknown; reason: string };
   contextSignature?: string;
   sourceJobId?: string;
 };
@@ -21,8 +23,64 @@ export const isBrewerWorking = (j: ClientBrewerJob) =>
   !j.sendError && (j.status === 'running' || j.status === 'queued');
 type State = { jobs: ClientBrewerJob[]; connectionError: string };
 
+export type BrewerJobStatusInput = Pick<BrewerChatInput, 'scope' | 'operationId' | 'question' | 'generation'>;
+
+/** Complete transport boundary for one job store. No individual method may fall back to BrewerChat. */
+export interface BrewerJobStoreTransport {
+  submit(input: BrewerChatInput): Promise<BrewerReply>;
+  retry(jobId: string, operationId: string): Promise<BrewerReply>;
+  activity(): Promise<ClientBrewerJob[]>;
+  status(input: BrewerJobStatusInput): Promise<BrewerReply>;
+  markRead(jobId: string): Promise<void>;
+  userKey(): Promise<string>;
+}
+
+/** An injected transport requires an isolated storage key and exact scope identity/comparison. */
+export interface BrewerJobStoreOptions {
+  transport: BrewerJobStoreTransport;
+  storageKeyForUser(userKey: string): string;
+  scopeIdentity(scope: BrewerScope): string;
+  sameScope(left: BrewerScope, right: BrewerScope): boolean;
+  /** Assisted histories keep the exact request until their local receipt is attached. */
+  retainInputUntilRead?: boolean;
+}
+
+const defaultScopeIdentity = (scope: BrewerScope) => `${scope.kind === 'draft' ? 'recipe' : scope.kind}:${scope.id}`;
+const defaultTransport: BrewerJobStoreTransport = {
+  submit: (input) => api.submit(input),
+  retry: (jobId, operationId) => api.retry(jobId, operationId),
+  activity: () => api.activity(),
+  status: (input) => api.status(input),
+  markRead: (jobId) => api.markRead(jobId),
+  userKey: () => api.userKey()
+};
+
+function isStoreTransport(value: unknown): value is BrewerJobStoreTransport {
+  if (!value || typeof value !== 'object') return false;
+  const row = value as Record<string, unknown>;
+  return ['submit', 'retry', 'activity', 'status', 'markRead', 'userKey'].every((method) => typeof row[method] === 'function');
+}
+
+function requireStoreOptions(options: BrewerJobStoreOptions): BrewerJobStoreOptions {
+  if (!options || typeof options !== 'object' || !isStoreTransport(options.transport)
+    || typeof options.storageKeyForUser !== 'function' || typeof options.scopeIdentity !== 'function'
+    || typeof options.sameScope !== 'function') {
+    throw new Error('Un store injecté exige un transport complet, une fabrique de clé et une identité/comparaison de scope.');
+  }
+  return options;
+}
+
 /** Lives outside React pages. The server owns execution; this store only follows receipts. */
-export function createBrewerJobStore() {
+export function createBrewerJobStore(options?: BrewerJobStoreOptions) {
+  const injected = options === undefined ? undefined : requireStoreOptions(options);
+  const transport = injected?.transport ?? defaultTransport;
+  const storageKeyForUser = injected?.storageKeyForUser ?? ((userKey: string) => `brewer-jobs:${userKey}`);
+  const scopeIdentity = injected?.scopeIdentity ?? defaultScopeIdentity;
+  const scopeMatches = injected?.sameScope ?? sameBrewerScope;
+  if (injected?.retainInputUntilRead !== undefined && typeof injected.retainInputUntilRead !== 'boolean') {
+    throw new Error('retainInputUntilRead doit être un booléen.');
+  }
+  const retainInputUntilRead = injected?.retainInputUntilRead ?? false;
   let state: State = { jobs: [], connectionError: '' },
     uid = '',
     epoch = 0;
@@ -31,15 +89,30 @@ export function createBrewerJobStore() {
     started = false;
   const listeners = new Set<() => void>(),
     sending = new Set<string>(),
-    reading = new Set<string>();
+    reading = new Set<string>(),
+    inputReleased = new Set<string>();
   const minimumGenerations = new Map<string, number>();
-  const key = (s: BrewerScope) => `${s.kind === 'draft' ? 'recipe' : s.kind}:${s.id}`;
+  const scopeKey = (scope: BrewerScope) => {
+    const identity = scopeIdentity(scope);
+    if (typeof identity !== 'string' || !identity.trim() || identity.trim() !== identity) {
+      throw new Error('L’identité de scope doit renvoyer une clé textuelle normalisée.');
+    }
+    return identity;
+  };
+  const jobKey = (job: Pick<ClientBrewerJob, 'scope' | 'operationId'>) => JSON.stringify([scopeKey(job.scope), job.operationId]);
+  const storageKey = (userKey: string) => {
+    const value = storageKeyForUser(userKey);
+    if (typeof value !== 'string' || !value.trim() || value.trim() !== value) {
+      throw new Error('La fabrique de clé du store doit renvoyer une clé textuelle normalisée.');
+    }
+    return value;
+  };
   const emit = (next: State) => {
     state = next;
     try {
       if (uid)
         localStorage.setItem(
-          `brewer-jobs:${uid}`,
+          storageKey(uid),
           JSON.stringify(state.jobs.map(({ turn, contextSignature, ...j }) => j).slice(-60))
         );
     } catch {
@@ -48,10 +121,11 @@ export function createBrewerJobStore() {
     listeners.forEach((f) => f());
   };
   const merge = (jobs: ClientBrewerJob[]) => {
-    const next = new Map(state.jobs.map((j) => [j.operationId, j]));
+    const next = new Map(state.jobs.map((j) => [jobKey(j), j]));
     jobs.forEach((job) => {
-      if (job.generation < (minimumGenerations.get(key(job.scope)) ?? 0)) return;
-      const old = next.get(job.operationId);
+      if (job.generation < (minimumGenerations.get(scopeKey(job.scope)) ?? 0)) return;
+      const itemKey = jobKey(job);
+      const old = next.get(itemKey);
       // A delayed HTTP acknowledgement must not rewind newer progress from polling.
       if (
         old &&
@@ -60,32 +134,36 @@ export function createBrewerJobStore() {
         job.updatedAt < old.updatedAt
       )
         return;
-      next.set(job.operationId, {
+      const preservedInput = old?.input;
+      next.set(itemKey, {
         ...old,
         ...job,
-        ...(job.status === 'done' ? { input: undefined } : {})
+        ...(retainInputUntilRead && preservedInput !== undefined
+          ? { input: inputReleased.has(itemKey) ? undefined : preservedInput }
+            : job.status === 'done' && !retainInputUntilRead ? { input: undefined } : {})
       });
     });
     emit({ ...state, jobs: [...next.values()].sort((a, b) => a.createdAt - b.createdAt) });
   };
-  const update = (operationId: string, patch: Partial<ClientBrewerJob>) => {
-    const job = state.jobs.find((j) => j.operationId === operationId);
+  const update = (scope: BrewerScope, operationId: string, patch: Partial<ClientBrewerJob>) => {
+    const job = state.jobs.find((j) => j.operationId === operationId && scopeMatches(j.scope, scope));
     if (job) merge([{ ...job, ...patch }]);
   };
   const send = async (job: ClientBrewerJob) => {
-    if ((!job.input && !job.sourceJobId) || sending.has(job.operationId)) return;
+    const operationKey = jobKey(job);
+    if (job.unsupportedReadOnly || (!job.input && !job.sourceJobId) || sending.has(operationKey)) return;
     const version = epoch;
-    sending.add(job.operationId);
-    update(job.operationId, { sending: true, sendError: undefined });
+    sending.add(operationKey);
+    update(job.scope, job.operationId, { sending: true, sendError: undefined });
     try {
       const reply = job.sourceJobId
-        ? await api.retry(job.sourceJobId, job.operationId)
-        : await api.submit(job.input!);
+        ? await transport.retry(job.sourceJobId, job.operationId)
+        : await transport.submit(job.input!);
       if (version !== epoch) return;
       if (reply.job)
         merge([{ ...reply.job, input: job.input, sending: false, sendError: undefined }]);
       else if (reply.turn)
-        update(job.operationId, {
+        update(job.scope, job.operationId, {
           id: reply.turn.id,
           status: 'done',
           turn: reply.turn,
@@ -97,21 +175,23 @@ export function createBrewerJobStore() {
     } catch (error) {
       if (version !== epoch) return;
       // The request may have timed out after polling already recovered its durable receipt.
-      const current = state.jobs.find((j) => j.operationId === job.operationId);
+      const current = state.jobs.find((j) => j.operationId === job.operationId && scopeMatches(j.scope, job.scope));
       if (current && current.id !== current.operationId) return;
       const reason = (error as any)?.details?.reason;
       if (reason === 'chat-reset') {
         forget(job.scope, (error as any)?.details?.generation ?? job.generation + 1);
         return;
       }
-      update(job.operationId, {
+      update(job.scope, job.operationId, {
         sending: false,
         sendError: (error as any)?.code?.includes('resource-exhausted')
           ? 'La file est pleine. Réessaie cet envoi quand une réponse sera arrivée.'
-          : 'Réception non confirmée. Vérifie ta connexion puis réessaie l’envoi ; la même question ne sera pas envoyée deux fois.'
+          : (error as any)?.unsupportedReadOnly?.reason
+            ?? 'Réception non confirmée. Vérifie ta connexion puis réessaie l’envoi ; la même question ne sera pas envoyée deux fois.',
+        ...((error as any)?.unsupportedReadOnly ? { unsupportedReadOnly: (error as any).unsupportedReadOnly } : {})
       });
     } finally {
-      sending.delete(job.operationId);
+      sending.delete(operationKey);
     }
   };
   const refresh = async () => {
@@ -119,27 +199,36 @@ export function createBrewerJobStore() {
     const version = epoch;
     pollVersion = version;
     try {
-      const jobs = await api.activity();
+      const jobs = await transport.activity();
       if (version !== epoch) return;
-      const incoming = jobs.map((j) => ({ ...j, sending: false, sendError: undefined }));
+      const incoming = jobs.map((j) => ({ ...j, sending: false, sendError: j.unsupportedReadOnly?.reason }));
       // A missing acknowledged job was removed by a reset on another device.
-      const ids = new Set(jobs.map((j) => j.operationId));
+      const ids = new Set(jobs.map(jobKey));
       emit({
-        jobs: state.jobs.filter((j) => j.id === j.operationId || ids.has(j.operationId)),
+        jobs: state.jobs.filter((j) => j.id === j.operationId || ids.has(jobKey(j))
+          || retainInputUntilRead && j.input !== undefined && j.readAt === undefined),
         connectionError: ''
       });
       merge(incoming);
       await Promise.all(
         state.jobs
-          .filter((j) => j.status === 'done' && !j.turn && !j.readAt)
+          .filter((j) => j.status === 'done' && !j.turn && !j.readAt && !j.unsupportedReadOnly)
           .map(async (job) => {
-            const reply = await api.status({
-              scope: job.scope,
-              operationId: job.operationId,
-              generation: job.generation,
-              question: job.question
-            });
-            if (version === epoch && reply.turn) update(job.operationId, { turn: reply.turn });
+            try {
+              const reply = await transport.status({
+                scope: job.scope,
+                operationId: job.operationId,
+                generation: job.generation,
+                question: job.question
+              });
+              if (version === epoch && reply.turn) update(job.scope, job.operationId, { turn: reply.turn });
+            } catch (error) {
+              const unsupportedReadOnly = (error as any)?.unsupportedReadOnly;
+              if (version === epoch && unsupportedReadOnly) update(job.scope, job.operationId, {
+                status: 'error', sending: false, sendError: unsupportedReadOnly.reason,
+                unsupportedReadOnly
+              });
+            }
           })
       );
     } catch {
@@ -171,11 +260,11 @@ export function createBrewerJobStore() {
     started = true;
     const version = epoch;
     init = (async () => {
-      const nextUid = await api.userKey();
+      const nextUid = await transport.userKey();
       if (version !== epoch) return;
       uid = nextUid;
       try {
-        const stored = JSON.parse(localStorage.getItem(`brewer-jobs:${uid}`) ?? '[]');
+        const stored = JSON.parse(localStorage.getItem(storageKey(uid)) ?? '[]');
         if (Array.isArray(stored))
           merge(
             stored
@@ -202,14 +291,16 @@ export function createBrewerJobStore() {
     return init;
   };
   const forget = (scope: BrewerScope, generation: number) => {
-    generation = Math.max(generation, minimumGenerations.get(key(scope)) ?? 0);
-    minimumGenerations.set(key(scope), generation);
+    const identity = scopeKey(scope);
+    generation = Math.max(generation, minimumGenerations.get(identity) ?? 0);
+    minimumGenerations.set(identity, generation);
     emit({
       ...state,
-      jobs: state.jobs.filter((j) => !sameBrewerScope(j.scope, scope) || j.generation >= generation)
+      jobs: state.jobs.filter((j) => !scopeMatches(j.scope, scope) || j.generation >= generation)
     });
   };
   return {
+    retainInputUntilRead,
     subscribe: (listener: () => void) => {
       listeners.add(listener);
       return () => {
@@ -227,6 +318,7 @@ export function createBrewerJobStore() {
       minimumGenerations.clear();
       sending.clear();
       reading.clear();
+      inputReleased.clear();
       emit({ jobs: [], connectionError: '' });
     },
     refresh,
@@ -256,8 +348,9 @@ export function createBrewerJobStore() {
         if (version === epoch && started) void send(job);
       });
     },
-    retry: (job: ClientBrewerJob) => void send(job),
+    retry: (job: ClientBrewerJob) => { if (!job.unsupportedReadOnly) void send(job); },
     retrySaved: (previous: ClientBrewerJob) => {
+      if (previous.unsupportedReadOnly) return;
       const operationId = crypto.randomUUID(),
         now = Date.now();
       const job: ClientBrewerJob = {
@@ -282,13 +375,18 @@ export function createBrewerJobStore() {
       });
     },
     markRead: (job: ClientBrewerJob) => {
-      if (job.readAt || isBrewerWorking(job) || reading.has(job.operationId)) return;
-      reading.add(job.operationId);
-      void api
+      const operationKey = jobKey(job);
+      if (job.unsupportedReadOnly || job.readAt || isBrewerWorking(job) || reading.has(operationKey)) return;
+      reading.add(operationKey);
+      void transport
         .markRead(job.id)
-        .then(() => update(job.operationId, { readAt: Date.now() }))
+        .then(() => {
+          if (retainInputUntilRead) inputReleased.add(operationKey);
+          update(job.scope, job.operationId, { readAt: Date.now(),
+            ...(retainInputUntilRead ? { input: undefined } : {}) });
+        })
         .catch(() => {})
-        .finally(() => reading.delete(job.operationId));
+        .finally(() => reading.delete(operationKey));
     }
   };
 }

@@ -4,6 +4,7 @@ import { assertHopKnowledge, assertHopTasting } from './hopPredictionSchema.js';
 import { assertHopPredictionSnapshot } from './hopPredictionValidation.js';
 import { assertNoloConfig } from './noloSchema.js';
 import { assertFinancialArchive } from './financialArchiveCore.js';
+import { readYeastProductDocument, readYeastPitchingPlan } from './yeastSupplySchema.js';
 
 export interface BackupDocument { id: string; data: Record<string, any> }
 export interface BreweryBackup {
@@ -14,7 +15,7 @@ export interface BreweryBackup {
 }
 /** A merge restore cannot rewind a physical stock or an already started brew. */
 export function preserveOperationalState(collection: BusinessCollection, current: Record<string, any> | undefined): boolean {
-  return !!current && (['stockItems', 'finishedGoods', 'reservations', 'kegs'].includes(collection) || collection === 'batches' && !!(current.brewDay || current.stockConsumption));
+  return !!current && (['stockItems', 'finishedGoods', 'reservations', 'kegs'].includes(collection) || collection === 'batches' && !!(current.brewDay || current.stockConsumption || current.yeastPreparation));
 }
 const plain = (v: unknown): v is Record<string, any> => !!v && typeof v === 'object' && !Array.isArray(v);
 const validId = (id: unknown): id is string => typeof id === 'string' && id.length > 0 &&
@@ -81,6 +82,9 @@ export function parseBackup(json: string): BreweryBackup {
       if (name === 'batches' && row.data.nolo !== undefined) assertNoloConfig(row.data.nolo);
       if (name === 'hopVarieties' || name === 'hopLots') assertHopDocument(name, row.data, row.id);
       if (name === 'hopKnowledge') assertHopKnowledge(row.data, row.id);
+      if (name === 'yeastProducts' && (!readYeastProductDocument(row.data) || row.data.id !== row.id)) throw new Error('Produit/offres de levure invalides.');
+      if ((name === 'recipes' || name === 'batches') && row.data.yeast?.pitching !== undefined && !readYeastPitchingPlan(row.data.yeast.pitching)) throw new Error('Plan d’ensemencement invalide.');
+      if (name === 'batches' && row.data.recipeSnapshot?.yeast?.pitching !== undefined && !readYeastPitchingPlan(row.data.recipeSnapshot.yeast.pitching)) throw new Error('Plan d’ensemencement figé invalide.');
       if (name === 'hopPredictions') assertHopPredictionSnapshot(row.data, row.id);
       if (name === 'hopTastings') assertHopTasting(row.data, row.id);
       if (name === 'financialArchives') assertFinancialArchive(row.data, row.id);

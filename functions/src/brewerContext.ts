@@ -54,20 +54,21 @@ export const RECIPE_FIELDS =
     ' '
   );
 export const BATCH_FIELDS =
-  'id name style nolo status plannedBrewDate brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
+  'id name style nolo status recipeSnapshot stockConsumption plannedBrewDate brewDate volumeL volumeBrewedL og fg gravityLog yeast notesCreation notesBrewDay notesTasting brewNotes mashPhTarget mashPhActual carbonation'.split(
     ' '
   );
-export const STOCK_FIELDS = 'id name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC yeastTechnicalFacts yeastFermentationFacts yeastFlocculation yeastAlcoholTolerancePct yeastNotes'.split(' ');
-export function validateChatInput(raw: any): BrewerChatInput {
+export const STOCK_FIELDS = 'id ref name category currentStock minStock maxStock reorder supplier pricePerUnit unit alphaPct colorEbc potentialPpg technicalSource yeastLab yeastStrain yeastForm yeastAttenuationPct yeastTempMinC yeastTempMaxC yeastTechnicalFacts yeastFermentationFacts yeastFlocculation yeastAlcoholTolerancePct yeastNotes'.split(' ');
+export function validateChatInput(raw: any, limits: { maxQuestionLength?: 12000 } = {}): BrewerChatInput {
+  const maxQuestionLength = limits.maxQuestionLength === 12000 ? 12000 : 3000;
   const scope = validateScope(raw?.scope);
   if (typeof raw.operationId !== 'string' || !/^[\w-]{16,100}$/.test(raw.operationId))
     throw new Error('Identifiant de message invalide.');
   if (
     typeof raw.question !== 'string' ||
     raw.question.trim().length < 2 ||
-    raw.question.length > 3000
+    raw.question.length > maxQuestionLength
   )
-    throw new Error('Écris une question de 2 à 3000 caractères.');
+    throw new Error(`Écris une question de 2 à ${maxQuestionLength} caractères.`);
   if (Buffer.byteLength(JSON.stringify(raw)) > 100000) throw new Error('Contexte trop volumineux.');
   if (raw.mode != null && !['fast', 'auto', 'deep'].includes(raw.mode))
     throw new Error('Mode d’analyse invalide.');

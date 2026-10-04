@@ -1,0 +1,96 @@
+.hv55-observation-workbench {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  color: var(--hv-ink, #20352b);
+}
+
+.hv55-observation-workbench * { box-sizing: border-box; }
+.hv55-observation-workbench h1,
+.hv55-observation-workbench h2,
+.hv55-observation-workbench h3,
+.hv55-observation-workbench p { overflow-wrap: anywhere; }
+
+.hv55-observation-workbench__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 8px 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hv-line, #d7d7c8);
+}
+
+.hv55-observation-workbench__heading h1 { margin: 0; font-size: 19px; line-height: 1.2; }
+.hv55-observation-workbench__heading > div > p:last-child { max-width: 68rem; margin: 4px 0 0; color: var(--hv-muted, #536356); font-size: 12px; }
+.hv55-observation-workbench__eyebrow { margin: 0 0 3px; color: #356c43; font-size: 10px; font-weight: 800; letter-spacing: .035em; text-transform: uppercase; }
+
+.hv55-observation-workbench__state {
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--hv-line, #d7d7c8);
+  border-left: 3px solid #527b55;
+  border-radius: 8px;
+  background: var(--hv-paper, #fffefa);
+}
+
+.hv55-observation-workbench__state-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 10px; }
+.hv55-observation-workbench__state-heading h2 { margin: 0; font-size: 15px; line-height: 1.25; }
+.hv55-observation-workbench__badge { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border: 1px solid #9bab8f; border-radius: 999px; background: #eff2e8; color: #304c37; font-size: 11px; font-weight: 700; }
+.hv55-observation-workbench__badge--refused { border-color: #c47d68; background: #fff0eb; color: #762820; }
+
+.hv55-observation-workbench__facts {
+  display: grid;
+  grid-template-columns: minmax(112px, .65fr) minmax(0, 1.35fr);
+  gap: 3px 9px;
+  margin: 7px 0 4px;
+  font-size: 11px;
+}
+.hv55-observation-workbench__facts > div { display: contents; }
+.hv55-observation-workbench__facts dt { color: var(--hv-muted, #536356); }
+.hv55-observation-workbench__facts dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.hv55-observation-workbench code { font-size: 10px; overflow-wrap: anywhere; }
+
+.hv55-observation-workbench__evidence { margin-top: 4px; border-top: 1px solid var(--hv-line, #d7d7c8); padding-top: 4px; }
+.hv55-observation-workbench__evidence summary { min-height: 28px; padding: 4px 0; color: #356c43; font-size: 11px; font-weight: 700; cursor: pointer; }
+.hv55-observation-workbench__evidence dl { display: grid; grid-template-columns: minmax(132px, .55fr) minmax(0, 1.45fr); gap: 4px 9px; margin: 5px 0; font-size: 11px; }
+.hv55-observation-workbench__evidence dt { color: var(--hv-muted, #536356); }
+.hv55-observation-workbench__evidence dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.hv55-observation-workbench__message,
+.hv55-observation-workbench__notice,
+.hv55-observation-workbench__pending {
+  margin: 0;
+  padding: 7px 9px;
+  border-left: 3px solid #71846a;
+  background: #eef1e6;
+  color: #304438;
+  font-size: 12px;
+}
+.hv55-observation-workbench__pending { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; border-left-color: #a77a27; background: #fff6da; }
+.hv55-observation-workbench__pending p { margin: 0; }
+.hv55-observation-workbench__secondary {
+  min-height: 32px;
+  padding: 5px 9px;
+  border: 1px solid #9bab8f;
+  border-radius: 7px;
+  background: #fffefa;
+  color: #20352b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hv55-observation-workbench__secondary:disabled { opacity: .55; cursor: default; }
+.hv55-observation-workbench :focus-visible { outline: 2px solid #226841; outline-offset: 2px; }
+
+@media (min-width: 760px) {
+  .hv55-observation-workbench__facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hv55-observation-workbench__facts > div { display: grid; grid-template-columns: minmax(112px, .7fr) minmax(0, 1.3fr); gap: 8px; }
+  .hv55-observation-workbench__evidence dl { grid-template-columns: minmax(170px, .45fr) minmax(0, 1.55fr); }
+}
+
+@media (max-width: 420px) {
+  .hv55-observation-workbench__heading { align-items: stretch; }
+  .hv55-observation-workbench__secondary { justify-self: start; }
+  .hv55-observation-workbench__facts { grid-template-columns: minmax(104px, .7fr) minmax(0, 1.3fr); font-size: 10px; }
+  .hv55-observation-workbench__evidence dl { grid-template-columns: minmax(108px, .7fr) minmax(0, 1.3fr); font-size: 10px; }
+}

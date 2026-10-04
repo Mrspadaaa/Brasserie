@@ -107,6 +107,14 @@ __AUTHORIZED_ACCOUNTS__
           || (paymentBalance(before) == 0 && paymentBalance(after) == 0 && unchangedPaymentGuard(before, after)));
     }
 
+    // A legacy/offline client may still write full catalogue documents. Once a
+    // versioned source ledger exists, only the server catalogue transaction may
+    // change it; stale client payloads must carry the exact stored value.
+    function preservesHopCatalogueMeta(before, after) {
+      let previous = before.get('catalogueMeta', null);
+      return previous == null || after.get('catalogueMeta', null) == previous;
+    }
+
     /**
      * Collections métier ordinaires : lecture et écriture complètes pour un
      * compte autorisé.
@@ -134,6 +142,7 @@ __AUTHORIZED_ACCOUNTS__
         'hopVarieties',
         'hopLots',
         'hopKnowledge',
+        'yeastProducts',
         'hopTastings',
         'financialPlans',
         'financialAssets',
@@ -161,11 +170,15 @@ __AUTHORIZED_ACCOUNTS__
 
     match /{collection}/{docId} {
       allow read: if estAutorise() && collection in collectionsMetier();
-      allow delete: if estAutorise() && collection in collectionsMetier() && collection != 'transactions';
+      allow delete: if estAutorise() && collection in collectionsMetier() && collection != 'transactions'
+        && ((collection != 'hopVarieties' && collection != 'hopKnowledge')
+          || resource.data.get('catalogueMeta', null) == null);
       allow create: if estAutorise() && collection in collectionsMetier()
         && (collection != 'transactions' || newTransactionGuard(request.resource.data, docId))
         && (collection != 'stockItems' || (request.resource.data.currentStock is number && request.resource.data.currentStock >= 0));
       allow update: if estAutorise() && collection in collectionsMetier()
+        && ((collection != 'hopVarieties' && collection != 'hopKnowledge')
+          || preservesHopCatalogueMeta(resource.data, request.resource.data))
         && (collection != 'stockItems' || (request.resource.data.currentStock is number && request.resource.data.currentStock >= 0))
         && (collection != 'transactions' || updatedTransactionGuard(resource.data, request.resource.data, docId))
         && (collection != 'batches' || (preservesBrewStock()

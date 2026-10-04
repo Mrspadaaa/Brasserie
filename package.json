@@ -28,6 +28,7 @@
     "test:smoke:fruty": "node scripts/check-test-boundary.mjs && node scripts/check-fruty-ui.mjs"
   },
   "dependencies": {
+    "@noble/hashes": "2.4.0",
     "canvas-confetti": "^1.9.4",
     "cmdk": "^1.1.1",
     "dexie": "^4.0.11",

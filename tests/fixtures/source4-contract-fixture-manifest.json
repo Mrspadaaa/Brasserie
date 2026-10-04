@@ -1,0 +1,6 @@
+{
+  "source": "C:/Users/mrspa/Documents/Brasserie/work/houblons-v55-integration-app-2026-10-02/opus-reading-05/source4-backend-handoff/source4-contract-fixture.json",
+  "target": "tests/fixtures/source4-contract-fixture.json",
+  "bytes": 60434,
+  "sha256": "0583333f376232defca8705ccfcb053b2437710d2ad014541f046f1ea61f6006"
+}

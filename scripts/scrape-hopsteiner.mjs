@@ -42,8 +42,8 @@ while (queue.length) {
 const countries = { 'United States': 'États-Unis', Germany: 'Allemagne', 'United Kingdom': 'Royaume-Uni', England: 'Angleterre', Australia: 'Australie', 'New Zealand': 'Nouvelle-Zélande', Czechia: 'Tchéquie', Slovenia: 'Slovénie', Poland: 'Pologne' };
 const tastes = { Citrusy: 'Agrumes', Fruity: 'Fruité', Herbal: 'Herbacé', Floral: 'Floral', Spicy: 'Épicé', Resinous: 'Résineux', Sugarlike: 'Doux', Misc: 'Autres' };
 const measurements = [
-  ['Alpha acids %', 'alpha', 'percentMass', 'asIs'], ['Beta acids %', 'beta', 'percentMass', 'asIs'],
-  ['Total oil (ml/100g)', 'totalOil', 'ml100g', 'asIs'], ['Linalool % rel. of total oil', 'linalool', 'percentOil', 'oil']
+  ['Alpha acids %', 'alpha', 'percentMass', 'unknown'], ['Beta acids %', 'beta', 'percentMass', 'unknown'],
+  ['Total oil (ml/100g)', 'totalOil', 'ml100g', 'unknown'], ['Linalool % rel. of total oil', 'linalool', 'percentOil', 'oil']
 ];
 const records = [], errors = [], quarantined = [];
 const limitIndex = process.argv.indexOf('--limit'), limit = limitIndex < 0 ? Infinity : Number(process.argv[limitIndex + 1]);

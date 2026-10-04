@@ -3,13 +3,15 @@ import { spawn, spawnSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { existsSync, openSync, closeSync, appendFileSync, fsyncSync, unlinkSync, renameSync, readdirSync, readFileSync, writeFileSync, realpathSync, statSync, mkdirSync, copyFileSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
-import { tmpdir } from 'node:os';
+import { tmpdir, homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { expertSchema, expertInstructions, validateExpertResponse, resolveSolThread, transferExpertTasks } from './claude-expert-contract.mjs';
-import { assertFreshClaudeOutput, createClaudeArchive } from './claude-artifacts.mjs';
+import { assertFreshClaudeOutput, createClaudeArchive, claudeSourceManifest } from './claude-artifacts.mjs';
 
 export const MAX_BRIEF_BYTES = 24 * 1024;
-const DEFAULT_MAX_TURNS = 30;
+const DEFAULT_REVIEW_TURNS = 30;
+const DEFAULT_EDIT_TURNS = 60;
+const SONNET_MODEL = 'claude-sonnet-5-5';
 export const MAX_FILES = 128;
 const MAX_TEXT_BYTES = 128 * 1024;
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
@@ -19,7 +21,7 @@ const MAX_STDERR_CHARS = 8 * 1024;
 const MAX_ACTIVE_TOOLS = 32;
 const PROGRESS_SCHEMA = 'laffinee.claude-progress.v1';
 const RECOVERY_SCHEMA = 'laffinee.claude-recovery.v1';
-const PROGRESS_TOOL_NAMES = new Set(['Read', 'Edit', 'Write', 'Bash']);
+const PROGRESS_TOOL_NAMES = new Set(['Read', 'Edit', 'Write', 'Bash', 'Agent']);
 const PROGRESS_COUNTERS = new Set(['reads', 'editWriteAttempts', 'toolErrors', 'permissionRefusals', 'retries']);
 const PROGRESS_CATEGORIES = new Set([
   'permission_refused', 'tool_error', 'allowed', 'allowed_warning', 'rejected', 'unknown', 'conflict', 'report_error', 'result_write_error',
@@ -29,7 +31,25 @@ const PROGRESS_DELIVERY_OUTCOMES = new Set(['completed', 'conflict', 'error', 'n
 const RECOVERY_SOURCE_STATUSES = new Set(['unchanged', 'changed', 'missing', 'unreadable']);
 const RECOVERY_COPY_STATUSES = new Set(['missing', 'unreadable']);
 
-export function subscriptionEnvironment(source = process.env) {
+export function claudeAccountProfile(name = 'team', userDirectory = homedir()) {
+  if (!['team', 'pro'].includes(name)) throw new Error('Compte Claude attendu : team ou pro.');
+  return { name, expectedSubscription: name,
+    configDirectory: join(userDirectory, name === 'team' ? '.claude' : '.claude-pro') };
+}
+
+export function validateClaudeAccountProfile(status, profile) {
+  if (status.subscriptionType !== profile.expectedSubscription) {
+    throw new Error('Profil ' + profile.name + ' : abonnement ' + profile.expectedSubscription
+      + ' attendu, ' + (status.subscriptionType || 'inconnu') + ' constaté. Aucune bascule automatique.');
+  }
+  const key = value => process.platform === 'win32' ? resolve(value).toLowerCase() : resolve(value);
+  if (typeof status.configDirectory !== 'string'
+    || key(status.configDirectory) !== key(profile.configDirectory)) {
+    throw new Error('Répertoire de connexion Claude différent du profil choisi ; lancement refusé.');
+  }
+}
+
+export function subscriptionEnvironment(source = process.env, { sonnet = false, account } = {}) {
   const env = { ...source };
   for (const key of Object.keys(env)) {
     if (/^ANTHROPIC_/i.test(key)
@@ -37,6 +57,28 @@ export function subscriptionEnvironment(source = process.env) {
       || /^CLAUDECODE$/i.test(key)) delete env[key];
   }
   env.CLAUDE_CODE_EFFORT_LEVEL = 'xhigh';
+  if (account) {
+    const profile = claudeAccountProfile(account, source.USERPROFILE || source.HOME || homedir());
+    // Select only this child's native login/history. Never copy credentials or
+    // mutate the parent environment, and do not inherit an overriding OAuth token.
+    for (const key of Object.keys(env)) {
+      if (/^CLAUDE_CONFIG_DIR$/i.test(key) || /^CLAUDE_CODE_OAUTH_TOKEN(?:_FD|_FILE_DESCRIPTOR)?$/i.test(key)) delete env[key];
+    }
+    // Explicitly setting the default directory relocates Claude's public
+    // account/settings metadata. Team must keep the original default layout.
+    if (account === 'pro') env.CLAUDE_CONFIG_DIR = profile.configDirectory;
+  }
+  if (sonnet) {
+    // Child process only. A forced exact model avoids alias or per-call overrides.
+    // Use the built-in helper: --safe-mode intentionally disables custom agents.
+    for (const key of Object.keys(env)) {
+      if (/^CLAUDE_(CODE_SUBAGENT_MODEL(?:_FORCE)?|CODE_MAX_SUBAGENT_SPAWN_DEPTH|CODE_DISABLE_BACKGROUND_TASKS|AGENT_SDK_DISABLE_BUILTIN_AGENTS)$/i.test(key)) delete env[key];
+    }
+    env.CLAUDE_CODE_SUBAGENT_MODEL = SONNET_MODEL;
+    env.CLAUDE_CODE_SUBAGENT_MODEL_FORCE = '1';
+    env.CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH = '1';
+    env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS = '1';
+  }
   return env;
 }
 
@@ -44,15 +86,25 @@ export function subscriptionStatus(status) {
   if (!status.loggedIn || status.authMethod !== 'claude.ai' || status.apiKeySource || status.apiProvider !== 'firstParty') {
     throw new Error('Une session native claude.ai est requise ; connexion API refusée.');
   }
-  if (status.subscriptionType !== 'pro') throw new Error('Une session Claude Pro est requise.');
-  return { loggedIn: true, authMethod: status.authMethod, subscriptionType: status.subscriptionType };
+  if (!['pro', 'max', 'team', 'enterprise'].includes(status.subscriptionType)) {
+    throw new Error('Un abonnement Claude natif reconnu est requis.');
+  }
+  const account = {};
+  for (const [source, target] of [['email', 'email'], ['orgId', 'organizationId'], ['orgName', 'organizationName']]) {
+    if (typeof status[source] === 'string' && status[source]) account[target] = status[source];
+  }
+  return {
+    loggedIn: true, authMethod: status.authMethod, subscriptionType: status.subscriptionType,
+    ...(Object.keys(account).length ? { account } : {}),
+  };
 }
 
 export function parseLauncherOptions(input) {
   const values = new Map();
   const files = [];
-  const switches = new Set(['--diagnose', '--dry-run', '--with-luna', '--expert']);
-  const valued = new Set(['--cwd', '--brief', '--output', '--mode', '--allow-file', '--max-turns', '--sol-thread']);
+  const referenceFiles = [];
+  const switches = new Set(['--diagnose', '--dry-run', '--with-luna', '--with-sonnet', '--expert']);
+  const valued = new Set(['--cwd', '--brief', '--output', '--mode', '--allow-file', '--reference-file', '--max-turns', '--sol-thread', '--resume', '--account']);
   for (let i = 0; i < input.length; i++) {
     const name = input[i];
     if (switches.has(name)) {
@@ -62,6 +114,7 @@ export function parseLauncherOptions(input) {
       const value = input[++i];
       if (!value || value.startsWith('--')) throw new Error(`Valeur manquante pour ${name}.`);
       if (name === '--allow-file') files.push(value);
+      else if (name === '--reference-file') referenceFiles.push(value);
       else {
         if (values.has(name)) throw new Error(`Option répétée : ${name}`);
         values.set(name, value);
@@ -69,19 +122,23 @@ export function parseLauncherOptions(input) {
     } else throw new Error(`Option inconnue : ${name}`);
   }
   const mode = values.get('--mode') || 'review';
+  const account = values.get('--account') || 'team';
+  claudeAccountProfile(account);
   if (!['review', 'edit'].includes(mode)) throw new Error('Mode attendu : review ou edit.');
-  const rawTurns = values.get('--max-turns') || String(DEFAULT_MAX_TURNS);
+  const rawTurns = values.get('--max-turns') || String(mode === 'edit' ? DEFAULT_EDIT_TURNS : DEFAULT_REVIEW_TURNS);
   if (!/^[1-9]\d*$/.test(rawTurns) || !Number.isSafeInteger(Number(rawTurns))) throw new Error('--max-turns doit être un entier positif sûr.');
-  if (files.length > MAX_FILES) throw new Error(`Au plus ${MAX_FILES} fichiers explicites par mission.`);
+  if (files.length + referenceFiles.length > MAX_FILES) throw new Error(`Au plus ${MAX_FILES} fichiers explicites par mission.`);
+  if (values.has('--resume') && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(values.get('--resume'))) throw new Error('--resume attend un UUID natif Claude.');
   if (values.has('--diagnose') && values.has('--dry-run')) throw new Error('Choisir --diagnose ou --dry-run.');
   if (!values.has('--diagnose') && (!values.get('--brief') || !values.get('--output'))) {
     throw new Error('--brief et --output sont requis. Vérifier dans Claude > Usage que les crédits supplémentaires sont désactivés.');
   }
   return {
-    cwd: resolve(values.get('--cwd') || process.cwd()), mode, files,
+    cwd: resolve(values.get('--cwd') || process.cwd()), mode, files, referenceFiles, account,
     maxTurns: Number(rawTurns), brief: values.get('--brief'), output: values.get('--output'),
-    luna: !!values.get('--with-luna'), dryRun: !!values.get('--dry-run'), diagnose: !!values.get('--diagnose'),
-    expert: !!values.get('--expert'), solThread: values.get('--sol-thread'),
+    luna: !!values.get('--with-luna'), sonnet: !!values.get('--with-sonnet'),
+    dryRun: !!values.get('--dry-run'), diagnose: !!values.get('--diagnose'),
+    expert: !!values.get('--expert'), solThread: values.get('--sol-thread'), resume: values.get('--resume'),
   };
 }
 
@@ -100,21 +157,23 @@ function inside(root, path) {
   return !!rest && !rest.startsWith('..') && !isAbsolute(rest);
 }
 
-export function describeSources(cwd, files, mode = 'review') {
+export function describeSources(cwd, files, mode = 'review', referenceFiles = []) {
   if (!['review', 'edit'].includes(mode)) throw new Error('Mode attendu : review ou edit.');
   if (mode === 'edit' && !files.length) throw new Error('Une liste explicite de fichiers est requise pour modifier.');
-  if (files.length > MAX_FILES) throw new Error(`Au plus ${MAX_FILES} fichiers explicites par mission.`);
+  if (files.length + referenceFiles.length > MAX_FILES) throw new Error(`Au plus ${MAX_FILES} fichiers explicites par mission.`);
   const root = realpathSync(cwd);
   const seen = new Set();
+  const stagedPaths = new Set();
   let total = 0;
-  return files.map((file, index) => {
+  return [...files, ...referenceFiles].map((file, index) => {
+    const readOnly = index >= files.length;
     if (typeof file !== 'string' || !file.trim() || /[\r\n\0*?\[\]{}]/.test(file)) throw new Error(`Chemin de fichier invalide : ${file}`);
-    if (mode === 'edit' && (isAbsolute(file) || /[()!:]/.test(file))) throw new Error(`Chemin de modification non borné : ${file}`);
+    if (mode === 'edit' && !readOnly && (isAbsolute(file) || /[()!:]/.test(file))) throw new Error(`Chemin de modification non borné : ${file}`);
     const candidate = resolve(root, file);
     if (!isAbsolute(file) && !inside(root, candidate)) throw new Error(`Chemin relatif hors du dossier de travail : ${file}`);
     const source = realpathSync(candidate);
     if (!isAbsolute(file) && !inside(root, source)) throw new Error(`Lien sortant du dossier de travail : ${file}`);
-    if (mode === 'edit' && !inside(root, source)) throw new Error(`Chemin de modification non borné : ${file}`);
+    if (mode === 'edit' && !readOnly && !inside(root, source)) throw new Error(`Chemin de modification non borné : ${file}`);
     const key = process.platform === 'win32' ? source.toLowerCase() : source;
     if (seen.has(key)) throw new Error(`Fichier répété : ${file}`);
     seen.add(key);
@@ -126,8 +185,21 @@ export function describeSources(cwd, files, mode = 'review') {
     total += info.size;
     if (total > MAX_TOTAL_SOURCE_BYTES) throw new Error(`Fichiers fournis trop volumineux : ${total} octets ; maximum ${MAX_TOTAL_SOURCE_BYTES}.`);
     const staged = inside(root, source) ? relative(root, source).replaceAll('\\', '/') : `attachments/${String(index + 1).padStart(2, '0')}-${basename(source)}`;
-    return { source, staged, size: info.size, digest: createHash('sha256').update(readFileSync(source)).digest('hex') };
+    const stagedKey = process.platform === 'win32' ? staged.toLowerCase() : staged;
+    if (stagedPaths.has(stagedKey)) throw new Error(`Destination de copie répétée : ${staged}`);
+    stagedPaths.add(stagedKey);
+    if (readOnly) assertPermissionPath(staged);
+    return { source, staged, size: info.size, digest: createHash('sha256').update(readFileSync(source)).digest('hex'), readOnly };
   });
+}
+
+export function prepareClaudeInputs({ cwd, files = [], referenceFiles = [], mode = 'review' }) {
+  const sources = describeSources(cwd, files, mode, referenceFiles);
+  return {
+    sources, manifest: claudeSourceManifest(sources),
+    files: sources.filter(file => !file.readOnly).map(file => file.staged),
+    referenceFiles: sources.filter(file => file.readOnly).map(file => file.staged),
+  };
 }
 
 export function stageSources(directory, sources) {
@@ -142,7 +214,14 @@ export function stageSources(directory, sources) {
 function hashFile(path) { return createHash('sha256').update(readFileSync(path)).digest('hex'); }
 
 export function applyStagedEdits(directory, sources) {
-  const changed = sources.filter(file => hashFile(resolve(directory, file.staged)) !== file.digest);
+  // A readonly input can never be written back, even if a native tool changed
+  // its copy despite permissions. Refuse the whole report before any write.
+  for (const file of sources.filter(file => file.readOnly)) {
+    if (hashFile(resolve(directory, file.staged)) !== file.digest) {
+      throw new Error(`Conflit : référence en lecture seule modifiée : ${file.staged}. Copies conservées dans ${directory}.`);
+    }
+  }
+  const changed = sources.filter(file => !file.readOnly && hashFile(resolve(directory, file.staged)) !== file.digest);
   for (const file of changed) {
     if (hashFile(file.source) !== file.digest) throw new Error(`Conflit : ${file.source} a changé pendant la mission. Copies conservées dans ${directory}.`);
   }
@@ -204,9 +283,11 @@ export function inspectStagedChanges(directory, sources) {
         sourceDiffers = hashFile(file.source) !== file.digest;
         sourceStatus = sourceDiffers ? 'changed' : 'unchanged';
       } catch (error) { sourceStatus = error?.code === 'ENOENT' ? 'missing' : 'unreadable'; }
-      files.push({ path, size: info.size, sha256: digest, sourceDiffers, sourceStatus });
+      files.push({ path, size: info.size, sha256: digest, sourceDiffers, sourceStatus,
+        ...(file.readOnly ? { readOnly: true } : {}) });
     } catch (error) {
-      unavailable.push({ path, status: error?.code === 'ENOENT' ? 'missing' : 'unreadable' });
+      unavailable.push({ path, status: error?.code === 'ENOENT' ? 'missing' : 'unreadable',
+        ...(file.readOnly ? { readOnly: true } : {}) });
     }
   }
   return { files, unavailable };
@@ -264,14 +345,26 @@ export function lunaRelayCommand(cwd, directory) {
   return `node ${shellQuote(relay)} --tasks ${shellQuote(join(directory, 'luna-tasks.json'))} --output-dir ${shellQuote(join(directory, 'luna'))} --cwd ${shellQuote(cwd)}`;
 }
 
-export function claudeArguments({ mode = 'review', files = [], luna = false, maxTurns = DEFAULT_MAX_TURNS, relayCommand, expert = false } = {}) {
+function assertPermissionPath(file) {
+  if (isAbsolute(file) || !file || /(^|\/)\.\.($|\/)|[\\*?\[\]{}()!:\r\n]/.test(file)) throw new Error(`Chemin de permission non borné : ${file}`);
+}
+
+export function claudeArguments({ mode = 'review', files = [], referenceFiles = [], luna = false, sonnet = false,
+  maxTurns = mode === 'edit' ? DEFAULT_EDIT_TURNS : DEFAULT_REVIEW_TURNS, relayCommand, expert = false, resume } = {}) {
   if (!['review', 'edit'].includes(mode)) throw new Error('Mode attendu : review ou edit.');
   if (!Number.isSafeInteger(maxTurns) || maxTurns < 1) throw new Error('--max-turns doit être un entier positif sûr.');
   if (mode === 'edit' && !files.length) throw new Error('Une liste explicite de fichiers est requise pour modifier.');
   if (luna && !relayCommand) throw new Error('Commande Luna ciblée requise.');
   const allowed = [];
+  const disallowed = ['mcp__*'];
   const tools = [];
-  if (files.length || luna || mode === 'edit') tools.push('Read');
+  for (const file of referenceFiles) {
+    assertPermissionPath(file);
+    if (files.includes(file)) throw new Error(`Fichier de référence aussi modifiable : ${file}`);
+    // The native Edit(path) permission covers both Edit and Write.
+    disallowed.push(`Edit(./${file})`);
+  }
+  if (files.length || referenceFiles.length || luna || sonnet || mode === 'edit') tools.push('Read');
   if (mode === 'edit') {
     tools.push('Edit', 'Write');
     for (const file of files) {
@@ -285,6 +378,12 @@ export function claudeArguments({ mode = 'review', files = [], luna = false, max
     tools.push('Bash', 'TaskOutput');
     allowed.push('Edit(./luna-tasks.json)', `Bash(${relayCommand})`, 'TaskOutput');
   }
+  if (sonnet) {
+    tools.push('Agent');
+    // Native dontAsk permissions remain scoped; helper inherits the parent's
+    // isolated file tools and exact Edit(path) permissions, never a new shell.
+    allowed.push('Agent(general-purpose)');
+  }
   // In dontAsk mode, listing Read in --tools does not approve its use.
   // --restricted confines it to the isolated mission directory.
   if (tools.includes('Read')) allowed.unshift('Read');
@@ -292,8 +391,12 @@ export function claudeArguments({ mode = 'review', files = [], luna = false, max
     '--output-format', 'stream-json', '--verbose', '--include-partial-messages',
     '--permission-mode', 'dontAsk',
     '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
-    '--disallowedTools', 'mcp__*', '--max-turns', String(maxTurns), '--tools', tools.join(',')];
+    '--disallowedTools', ...disallowed, '--max-turns', String(maxTurns), '--tools', tools.join(',')];
   if (expert) args.push('--json-schema', JSON.stringify(expertSchema));
+  if (resume) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(resume)) throw new Error('--resume attend un UUID natif Claude.');
+    args.push('--resume', resume);
+  }
   if (allowed.length) args.push('--allowedTools', ...allowed);
   return args;
 }
@@ -343,11 +446,13 @@ function sanitizeRecoverySnapshot(snapshot) {
         path: file.path.slice(0, 512), size: file.size, sha256: file.sha256.toLowerCase(),
         sourceDiffers: typeof file.sourceDiffers === 'boolean' ? file.sourceDiffers : null,
         sourceStatus: file.sourceStatus,
+        ...(file.readOnly === true ? { readOnly: true } : {}),
       }];
     }),
     unavailable: (Array.isArray(snapshot.unavailable) ? snapshot.unavailable : []).slice(0, MAX_FILES).flatMap(file => {
       if (!file || typeof file.path !== 'string' || !RECOVERY_COPY_STATUSES.has(file.status)) return [];
-      return [{ path: file.path.slice(0, 512), status: file.status }];
+      return [{ path: file.path.slice(0, 512), status: file.status,
+        ...(file.readOnly === true ? { readOnly: true } : {}) }];
     }),
   };
 }
@@ -370,12 +475,19 @@ export function createClaudeProgressTracker(progressFile, { deliveryRequested = 
     counters: { reads: 0, editWriteAttempts: 0, toolErrors: 0, permissionRefusals: 0, retries: 0 },
     recovery: null,
   };
-  let enabled = true;
+  let writeFailureReported = false;
   let timer;
 
   const persist = () => {
-    if (!enabled) return;
-    if (!writeJsonAtomically(progressFile, state)) enabled = false;
+    const written = writeJsonAtomically(progressFile, state);
+    if (!written && !writeFailureReported) {
+      console.error(JSON.stringify({ diagnostic: 'claude_progress_write_failed', progressFile,
+        retry: 'next_event_or_heartbeat', terminalResultRemainsAuthoritative: true }));
+    } else if (written && writeFailureReported) {
+      console.error(JSON.stringify({ diagnostic: 'claude_progress_write_recovered', progressFile }));
+    }
+    writeFailureReported = !written;
+    return written;
   };
   const refresh = () => {
     const now = Date.now();
@@ -405,8 +517,7 @@ export function createClaudeProgressTracker(progressFile, { deliveryRequested = 
   };
   const record = (status, type, details) => update(status, type, details, true);
 
-  persist();
-  if (!enabled) throw new Error('Impossible de créer l’état de progression Claude.');
+  if (!persist()) throw new Error('Impossible de créer l’état de progression Claude.');
   timer = setInterval(refresh, 1000);
   timer.unref?.();
   return {
@@ -626,32 +737,61 @@ export async function captureClaudeProcess(child, tracker, { transcriptPath } = 
   };
 }
 
-function findClaude() {
+export function findCachedClaude(localAppData) {
+  if (!localAppData) return undefined;
+  const packages = join(localAppData, 'Packages');
+  if (!existsSync(packages)) return undefined;
+  const versions = [];
+  for (const pkg of readdirSync(packages, { withFileTypes: true })) {
+    if (!pkg.isDirectory() || !/^Claude_/.test(pkg.name)) continue;
+    const root = join(packages, pkg.name, 'LocalCache', 'Roaming', 'Claude', 'claude-code');
+    if (!existsSync(root)) continue;
+    for (const version of readdirSync(root, { withFileTypes: true })) {
+      if (version.isDirectory() && /^\d+\.\d+\.\d+$/.test(version.name)) {
+        versions.push({ version: version.name, directory: join(root, version.name) });
+      }
+    }
+  }
+  versions.sort((a, b) => b.version.localeCompare(a.version, undefined, { numeric: true }));
+  for (const { directory } of versions) {
+    // Official desktop installations use either version/claude.exe or
+    // version/build-hash/claude.exe. Never recursively scan user configuration.
+    const candidates = [join(directory, 'claude.exe'),
+      ...readdirSync(directory, { withFileTypes: true }).filter(entry => entry.isDirectory())
+        .map(entry => join(directory, entry.name, 'claude.exe'))];
+    for (const exe of candidates) {
+      try { if (statSync(exe).isFile()) return exe; } catch { /* Missing or concurrently updated cache entry. */ }
+    }
+  }
+  return undefined;
+}
+
+export function findClaude() {
   if (process.env.CLAUDE_CLI_PATH && existsSync(process.env.CLAUDE_CLI_PATH)) return process.env.CLAUDE_CLI_PATH;
   const located = spawnSync(process.platform === 'win32' ? 'where.exe' : 'which', ['claude'], { encoding: 'utf8', windowsHide: true });
   const onPath = located.stdout?.trim().split(/\r?\n/).find(path => existsSync(path) && /(?:\.exe)?$/.test(path) && !/\.(?:cmd|ps1)$/.test(path));
   if (onPath) return onPath;
-  const packages = join(process.env.LOCALAPPDATA || '', 'Packages');
-  if (existsSync(packages)) {
-    for (const pkg of readdirSync(packages).filter(name => /^Claude_/.test(name))) {
-      const root = join(packages, pkg, 'LocalCache', 'Roaming', 'Claude', 'claude-code');
-      if (!existsSync(root)) continue;
-      const versions = readdirSync(root).sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
-      for (const version of versions) { const exe = join(root, version, 'claude.exe'); if (existsSync(exe)) return exe; }
-    }
-  }
+  const cached = findCachedClaude(process.env.LOCALAPPDATA);
+  if (cached) return cached;
   throw new Error('Claude Code introuvable. Installer le CLI natif ou fournir CLAUDE_CLI_PATH.');
 }
 
-function cliStatus(exe, env) {
+export function cliStatus(exe, env, accountName) {
   const version = spawnSync(exe, ['--version'], { encoding: 'utf8', windowsHide: true, env });
   const numbers = version.stdout?.match(/(\d+)\.(\d+)\.(\d+)/)?.slice(1).map(Number);
   if (version.status !== 0 || !numbers || numbers[0] < 2 || (numbers[0] === 2 && (numbers[1] < 1 || (numbers[1] === 1 && numbers[2] < 280)))) {
     throw new Error('Claude Code 2.1.280 ou ultérieur est requis pour Opus 5.5.');
   }
   const auth = spawnSync(exe, ['auth', 'status', '--json'], { encoding: 'utf8', windowsHide: true, env });
-  if (auth.status !== 0) throw new Error('Connexion Claude indisponible. Utiliser claude auth login --claudeai.');
-  return { version: numbers.join('.'), ...subscriptionStatus(JSON.parse(auth.stdout)), model: 'claude-opus-5-5', effort: 'xhigh' };
+  if (auth.status !== 0) throw new Error('Connexion Claude ' + (accountName || '') + ' indisponible. Utiliser le login du profil choisi.');
+  const publicStatus = JSON.parse(auth.stdout);
+  const subscription = subscriptionStatus(publicStatus);
+  if (accountName) {
+    validateClaudeAccountProfile(publicStatus, claudeAccountProfile(accountName, env.USERPROFILE || env.HOME || homedir()));
+  }
+  return { version: numbers.join('.'), cliPath: exe, ...subscription,
+    ...(accountName ? { accountProfile: accountName, configDirectory: publicStatus.configDirectory } : {}),
+    model: 'claude-opus-5-5', effort: 'xhigh' };
 }
 
 function acquireClaudeLock() {
@@ -665,9 +805,9 @@ function acquireClaudeLock() {
 
 export async function main(input = process.argv.slice(2)) {
   const options = parseLauncherOptions(input);
-  const env = subscriptionEnvironment();
+  const env = subscriptionEnvironment(process.env, { sonnet: options.sonnet, account: options.account });
   if (options.diagnose) {
-    console.log(JSON.stringify({ ...cliStatus(findClaude(), env), cwd: options.cwd }));
+    console.log(JSON.stringify({ ...cliStatus(findClaude(), env, options.account), cwd: options.cwd }));
     return;
   }
   if (process.env.LAFFINEE_CLAUDE_DELEGATE === '1' && !options.dryRun) {
@@ -679,7 +819,8 @@ export async function main(input = process.argv.slice(2)) {
   const expertPrompt = options.expert ? expertInstructions(solThread, options.mode) : '';
   if (options.expert) env.LAFFINEE_CLAUDE_CALLED_BY_SOL = '1';
   const brief = readBrief(options.brief);
-  const sources = describeSources(options.cwd, options.files, options.mode);
+  const inputs = prepareClaudeInputs(options);
+  const { sources } = inputs;
   if (options.luna && sources.some(file => file.staged === 'luna-tasks.json' || file.staged.startsWith('luna/'))) {
     throw new Error('Les fichiers fournis ne doivent pas occuper luna-tasks.json ou luna/.');
   }
@@ -688,7 +829,9 @@ export async function main(input = process.argv.slice(2)) {
   const progressFile = claudeProgressPath(output);
   const recoveryManifestPath = claudeRecoveryPath(output);
   const exe = findClaude();
-  const status = cliStatus(exe, env);
+  const status = { ...cliStatus(exe, env, options.account),
+    ...(options.sonnet ? { sonnetHelper: { configuredModel: SONNET_MODEL, agentType: 'general-purpose',
+      execution: 'foreground', maxSpawnDepth: 1, executionObserved: false } } : {}) };
   const previewDirectory = join(tmpdir(), 'laffinee-claude-preview');
   if (options.dryRun) {
     const relay = options.luna ? lunaRelayCommand(options.cwd, previewDirectory) : undefined;
@@ -696,9 +839,9 @@ export async function main(input = process.argv.slice(2)) {
       ...status, dryRun: true, cwd: options.cwd, mode: options.mode,
       expert: options.expert, solThread, archiveRoot: `${output}.artifacts`, sessionPersistence: true,
       maxTurns: options.maxTurns, briefBytes: Buffer.byteLength(brief),
-      files: sources.map(({ source, staged, size }) => ({ source, staged, size })),
-      args: claudeArguments({ mode: options.mode, files: sources.map(file => file.staged),
-        luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay, expert: options.expert }),
+      files: inputs.manifest,
+      args: claudeArguments({ mode: options.mode, files: inputs.files, referenceFiles: inputs.referenceFiles,
+        luna: options.luna, sonnet: options.sonnet, maxTurns: options.maxTurns, relayCommand: relay, expert: options.expert, resume: options.resume }),
       output, progressFile, recoveryManifestPath,
     }));
     return;
@@ -730,26 +873,31 @@ export async function main(input = process.argv.slice(2)) {
     progressTracker = createClaudeProgressTracker(progressFile, { deliveryRequested: options.mode === 'edit' });
     stageSources(directory, sources);
     const relay = options.luna ? lunaRelayCommand(options.cwd, directory) : undefined;
-    const args = claudeArguments({ mode: options.mode, files: sources.map(file => file.staged),
-      luna: options.luna, maxTurns: options.maxTurns, relayCommand: relay, expert: options.expert });
+    const args = claudeArguments({ mode: options.mode, files: inputs.files, referenceFiles: inputs.referenceFiles,
+      luna: options.luna, sonnet: options.sonnet, maxTurns: options.maxTurns, relayCommand: relay, expert: options.expert, resume: options.resume });
     const lines = [
       'Mission unique. Réponds brièvement et clairement en français, avec les preuves utiles.',
       ...(options.expert ? [expertPrompt] : []),
       'N’explore pas le dépôt. Les fichiers nommés ci-dessous sont les seules entrées prévues pour cette mission.',
       options.mode === 'edit'
-        ? 'Modifie seulement les fichiers nommés. Ce sont des copies ; le lanceur reporte les changements si les originaux sont inchangés.'
+        ? 'Modifie seulement les fichiers marqués modifiables. Les références sont en lecture seule. Ce sont des copies ; le lanceur reporte seulement les fichiers modifiables si les originaux sont inchangés.'
         : 'Revue en lecture seule ; ne modifie aucun fichier du projet.',
-      ...sources.map(file => 'Fichier fourni : ' + file.staged + ' (' + file.size + ' octets, sha256 ' + file.digest + ').'),
+      ...sources.map(file => (file.readOnly ? 'Référence en lecture seule : ' : options.mode === 'edit' ? 'Fichier modifiable : ' : 'Fichier fourni : ')
+        + file.staged + ' (' + file.size + ' octets, sha256 ' + file.digest + ').'),
     ];
     if (options.luna) {
-      lines.push('Relais Luna facultatif : écris 1 à 9 missions {id,prompt} dans luna-tasks.json, puis exécute exactement : '
+      lines.push('Renfort Luna gpt-6-luna/MAX attendu dès qu’une sous-tâche utile et autonome s’y prête : réutilise les résultats disponibles, puis délègue les investigations indépendantes restantes sans doublon. Tu conserves conception, réalisation, réception et synthèse. Le relais direct est en lecture seule ; les réalisations avec écriture reviennent au même Sol pour attribution et retour des preuves. Si le lot ne se prête pas à une délégation utile, indique brièvement pourquoi. Écris 1 à 9 missions {id,prompt} dans luna-tasks.json, puis exécute exactement : '
         + relay + '. Exécute cette commande au premier plan (run_in_background=false, timeout=600000). Si le CLI la bascule en arrière-plan, utilise TaskOutput block=true seulement si cet outil est effectivement exposé ; sinon conserve les références et rends la main au même Sol avec needs_sol, sans tenter un outil absent. Ne fais pas de polling Read et ne lis pas le journal JSONL complet. Lis ensuite luna/results.json et uniquement le rapport de synthèse de la vague. Ne conclus pas que le résultat existe avant sa réception. Si une attente bloque, rends les références durables au même Sol avec needs_sol. Les Luna examinent le dépôt courant, toi les copies : signale toute différence de référence. Une réponse reçue n’est pas une preuve de réussite métier. Une seule consultation Claude.');
     }
-    if (!sources.length && !options.luna) lines.push('Tout le contexte utile est dans le brief. Aucun outil n’est disponible.');
+    if (options.sonnet) {
+      lines.push('Aide native Sonnet 5.5 facultative : utilise seulement Agent avec subagent_type=general-purpose, au premier plan. Le modèle enfant est fixé à claude-sonnet-5-5 ; ne demande ni fork de conversation ni autre type/modèle. Confie une sous-tâche utile avec son contexte et ses fichiers attribués, sans écriture concurrente sur ces mêmes copies. Le helper hérite des permissions du lot et ne peut pas redéléguer. Tu restes Opus 5.5, responsable des choix, de la réception et du résultat final. Ne déduis pas une exécution effective de la configuration : relève le résultat natif du helper ou conserve la limite observée.');
+    }
+    if (!sources.length && !options.luna && !options.sonnet) lines.push('Tout le contexte utile est dans le brief. Aucun outil n’est disponible.');
     const prompt = lines.join('\n') + '\n\n' + brief;
     writeFileSync(join(archive.root, 'prompt.txt'), prompt, { flag: 'wx' });
     console.log(JSON.stringify({ ...status, mode: options.mode, maxTurns: options.maxTurns,
       briefBytes: Buffer.byteLength(brief), providedFiles: sources.map(file => file.staged),
+      referenceFiles: inputs.referenceFiles,
       output, progressFile, recoveryManifestPath, archiveRoot: archive.root, solThread }));
     let child;
     try {

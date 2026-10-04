@@ -20,6 +20,11 @@ import {
 import { computeBeerColor } from './beerColor';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from './yeastProjection';
 export { normalizeRecipe } from './recipeSnapshot';
+export { loadBrewingCatalogueReferences } from './brewingCatalogueReferences';
+/** Canonical scenario preparation shared with the server context-binding edge. */
+export { prepareBrewingScenarioContext } from './brewingScenarioContext';
+export * as brewingScenarioDossierApi from './brewingScenarioDossier';
+export * as brewingScenarioArchiveApi from './brewingScenarioArchive';
 export { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { refreshCompanionRecipe } from './brewerRecipeRefresh';
 export { reconcileRecipeWater, waterRelatedPath } from './recipeWater';
@@ -36,6 +41,11 @@ import { compactHopRecipeEvidence } from './hopIndex/companionPrediction';
 import { assertHopTriplet, HopAxis, HopTriplet } from '../../functions/src/hopPredictionSchema';
 import { HopRange } from '../../functions/src/hopIndexSchema';
 import { searchHopVarieties } from '../../functions/src/hopIndexFacts';
+import { brewingStyles, foldStyle } from './brewingStyles';
+import { compareBeerWithBrewingStyle } from './brewingStyleComparison';
+import { brewingScenarioToolDeclarations, isBrewingScenarioTool, runBrewingScenarioTool } from './brewingScenarioTools';
+import { brewingNuanceToolDeclarations, isBrewingNuanceTool, runBrewingNuanceTool } from './brewingNuanceTools';
+import { interpolateColdHopBuReference } from './hopDecision/coldIbuReference';
 import { hopIndexOverview } from '../../functions/src/hopCompanionContext';
 import { activeFermentationScience, fermentationFinalGravity, fermentationLagerRest, fermentationLevers, fermentationProgramWarnings } from '../../functions/src/fermentationScienceCore';
 import { FERMENTATION_GOALS, type FermentationGoal } from '../../functions/src/fermentationGuideSchema';
@@ -81,12 +91,21 @@ const tool = (
 ) => ({ name, description, parameters: { type: 'OBJECT', properties, required } });
 
 export const brewerToolDeclarations = [
+  ...brewingNuanceToolDeclarations,
+  ...brewingScenarioToolDeclarations,
+  tool('cold_contact_bitterness_reference', 'Calculer la référence expérimentale de BU au contact froid selon la courbe publiée conservée. Dose explicite en g/L. Le résultat est celui du protocole de référence; ce n’est ni l’IBU prédit de la bière cible, ni une quantité à ajouter au Tinseth. Domaine et absence de transfert général restent visibles.', {
+    doseGL: num('Dose du contact froid en g/L; une valeur manquante reste inconnue, zéro est explicite.')
+  }, ['doseGL']),
   tool('lookup_yeast_reference', 'Rechercher toutes les levures par nom, code, alias ou arôme. Retourne les faits et sources séparés, sans assimiler deux souches ou inventer une caractéristique manquante.', { query: str('Nom, code, arôme ou ID exact') }, ['query']),
   tool('fermentation_advice', 'Partir du style de la recette et de son intention adoptée, puis comparer les souches compatibles et les réglages. Fournit contexte actuel, pression prévue, paliers, contacts des houblons, alternatives par style, sources et plages documentaires. Lecture seule, aucun gain aromatique chiffré ; modifier avec propose_changes.', {
     goal: str('Objectif facultatif ; défaut intention adoptée ou orientation du style', [...new Set([...FERMENTATION_GOALS, ...Object.keys(YEAST_RECIPE_GOAL_LABELS)])]), yeastId: str('ID exact facultatif ; défaut souche associée à la recette'),
     og: num('DI SG du scénario, facultative ; prévue ou mesurée à distinguer dans la réponse'), sg: num('Densité actuelle corrigée SG, facultative')
   }),
   tool('lookup_hop_reference', 'Rechercher les fiches et COA complets par nom, alias, région ou ID exact. Renvoie chaque source séparément ; aucune fusion de plages.', { query: str('Nom, alias ou ID de variété/lot') }, ['query']),
+  tool('lookup_style_reference', 'Rechercher les styles documentaires ou personnels enregistrés par nom, alias ou ID. Renvoie la référence exacte du guide/version/style, les plages et sources. Les cibles de style ne sont pas des mesures de la bière.', { query: str('Nom, alias, code ou ID de style/guide') }, ['query']),
+  tool('compare_recipe_to_style', 'Comparer les calculs réels de la recette à un style enregistré, y compris personnel ou nouvellement créé. Conserve plages/inconnues et source de chaque cible; aucun coefficient par nom de style, aucune modification.', {
+    guideId: str('ID exact du guide'), version: str('Version exacte du guide'), styleId: str('ID exact du style')
+  }, ['guideId', 'version', 'styleId']),
   tool('predict_hop_aroma', 'Sans triplets explicites, simuler la recette du contexte : ajouts réels, souche unique, paliers, profil global expérimental et chimie disponible. Les plages du cumul sont conditionnelles au modèle, sans couverture statistique des interactions. Avec triplets explicites, classer des alternatives indépendantes ; ne pas les assembler. Aucun chiffre inventé.', {
     triplets: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
       varietyId: str('ID exact de variété'), lotId: str('ID exact de lot, facultatif'), yeastId: str('ID exact de levure'), timing: str('Moment biologique', ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation']),
@@ -216,18 +235,50 @@ export function runBrewerTool(
   c: BrewerContext
 ): Omit<BrewerEvidence, 'id'> {
   if (!brewerToolDeclarations.some((t) => t.name === name)) throw new Error('Outil inconnu.');
+  if (isBrewingNuanceTool(name)) return runBrewingNuanceTool(name, a, c);
+  if (isBrewingScenarioTool(name)) return runBrewingScenarioTool(name, a, c);
   const state: BrewDayState = c.journal ?? { steps: [], currentIndex: 0 };
   const base = c.recipe as RecipeSnapshot | undefined;
   const effective = base && c.batch?.nolo ? { ...base, nolo: c.batch.nolo } : base;
   const r = effective?.nolo?.enabled && c.batch
     ? noloRecipeForBatch({ ...c.batch, recipeSnapshot: effective }) ?? effective : effective;
-  const result = (label: string, data: unknown, facts: string[] = [], limits: string[] = []) => ({
+  const result = (label: string, data: unknown, facts: string[] = [], limits: string[] = [],
+    sources: NonNullable<BrewerEvidence['sources']> = []) => ({
     name,
     label,
     data,
     facts,
-    limits
+    limits,
+    ...(sources.length ? { sources } : {})
   });
+  if (name === 'cold_contact_bitterness_reference') {
+    if (typeof a.doseGL !== 'number' || !Number.isFinite(a.doseGL) || a.doseGL < 0) throw Error('Dose froide finie et non négative en g/L requise.');
+    const cold = interpolateColdHopBuReference({ dose: { value: a.doseGL, unit: 'g/L' } });
+    const n = (value: number) => String(value).replace('.', ',');
+    const status = { publishedObservation: 'observation publiée', interpolation: 'interpolation de référence',
+      doseUnknown: 'dose inconnue', outOfDomain: 'hors domaine publié' }[cold.status];
+    const sourceLocation = cold.source.locator ?? cold.source.title;
+    const facts = [
+      `Dose fournie : ${n(cold.doseInput.value!)} ${cold.doseInput.unit}; dose effective ${n(cold.doseEffectiveGPerHL!)} g/hL.`,
+      `Domaine de cette courbe : ${n(cold.domainGPerHL.min)}–${n(cold.domainGPerHL.max)} g/hL.`,
+      `Témoin publié : ${n(cold.controlBU)} BU; base préparée décrite dans l’étude : ${cold.calibrationSnapshot.conditions.beer.preparedBaseBU === null ? 'inconnue' : `${n(cold.calibrationSnapshot.conditions.beer.preparedBaseBU)} BU`}. Les deux références restent distinctes.`,
+      cold.valueBU === null ? `Aucun résultat BU disponible : ${status}.` : `Résultat du protocole : ${n(cold.valueBU)} BU spectrophotométriques (${status}).`,
+      cold.contrastToControlBU === null ? 'Aucun contraste au témoin calculé.' : `Contraste au témoin : ${cold.contrastToControlBU > 0 ? '+' : ''}${n(cold.contrastToControlBU)} BU.`,
+      `Méthode : ${cold.method}; source : ${cold.source.author} (${cold.source.year ?? 's. d.'}), ${sourceLocation}${/[.!?]$/.test(sourceLocation) ? '' : '.'}`,
+    ];
+    let sourceUrl: string | undefined;
+    try {
+      const parsed = new URL(cold.source.reference);
+      if (/^https?:\/\//i.test(cold.source.reference) && parsed.hostname && ['http:', 'https:'].includes(parsed.protocol)) sourceUrl = cold.source.reference;
+    } catch { /* A documentary reference can also be a DOI, COA or plain text. */ }
+    const sources = sourceUrl ? [{ title: cold.source.title, url: sourceUrl }] : [];
+    if (!sourceUrl) facts.push(`Référence de source : ${cold.source.reference}.`);
+    return result('Contact froid · référence publiée', cold, facts, [
+      ...cold.limitations,
+      'Le résultat appartient au protocole de référence publié. Aucune valeur IBU de la bière cible ni cinétique générale n’est établie.',
+      'Le contraste par rapport au témoin n’est pas une addition automatique aux IBU chauds. Hors domaine, cette courbe reste non applicable.'
+    ], sources);
+  }
   if (name === 'lookup_yeast_reference') {
     if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom, code ou arôme de levure requis.');
     const yeasts = yeastReferences(c.hopIndex?.knowledge);
@@ -236,6 +287,17 @@ export function runBrewerTool(
     return result('Références de levures', { yeasts: matches.slice(0, 10), totalMatches: matches.length }, [], [
       'Descripteurs fabricant et analyses ne sont pas une prédiction de la bière. Faits contradictoires conservés séparément. POF, STA1, caractère diastatique et β-lyase distincts.',
       ...c.hopIndex?.truncated ?? [], ...(matches.length > 10 ? ['Affiner le nom ou choisir un ID exact pour les autres résultats.'] : [])
+    ]);
+  }
+  if (name === 'lookup_style_reference') {
+    if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom, code ou ID de style requis.');
+    const query = foldStyle(a.query);
+    const styles = brewingStyles(c.hopIndex?.knowledge);
+    const exact = styles.filter(style => style.id === a.query || style.ref.guideId === a.query);
+    const matches = exact.length ? exact : styles.filter(style => style.selectable !== false && [style.name, style.code, ...style.aliases].some(value => foldStyle(value).includes(query)));
+    return result('Références de styles', { styles: matches.slice(0, 20), totalMatches: matches.length }, [], [
+      'Les plages d’un style expriment une référence ou une intention; elles ne sont ni des relevés ni des coefficients sensoriels.',
+      ...(c.hopIndex?.truncated ?? []), ...(matches.length > 20 ? ['Affiner la recherche ou choisir une référence exacte.'] : [])
     ]);
   }
   if (name === 'fermentation_advice') {
@@ -375,6 +437,22 @@ export function runBrewerTool(
     throw new Error(
       'Recette manquante pour ce lot : demander les données utiles sans les inventer.'
     );
+  if (name === 'compare_recipe_to_style') {
+    if (['guideId', 'version', 'styleId'].some(key => typeof a[key] !== 'string' || !(a[key] as string).trim())) throw Error('Référence exacte du style requise.');
+    const style = brewingStyles(c.hopIndex?.knowledge).find(row => row.ref.guideId === a.guideId && row.ref.version === a.version && row.ref.styleId === a.styleId);
+    if (!style) throw Error('Cette version de style est introuvable; relire le catalogue exact.');
+    const calculated = runBrewerTool('calculate_recipe', {}, c);
+    const data = calculated.data as any;
+    const point = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? { min: value, max: value } : null;
+    const origin = 'recipeProjection' as const;
+    const comparison = compareBeerWithBrewingStyle(style, {
+      og: { range: point(data.og), origin },
+      fg: { range: data.fermentationProjection?.fg?.range ?? point(data.fg), origin },
+      abv: { range: data.fermentationProjection?.abv?.range ?? (data.nolo?.projection?.min != null && data.nolo?.projection?.max != null ? { min: data.nolo.projection.min, max: data.nolo.projection.max } : point(data.abv)), origin },
+      ibu: { range: point(data.ibu), origin }, srm: { range: point(data.color?.srm), origin }
+    });
+    return result('Recette et intention de style', { comparison, calculation: data }, [], [...calculated.limits, ...comparison.limitations]);
+  }
   if (name === 'simulate_nolo_recipe') {
     if (!r.nolo?.enabled) throw Error('Activer le contexte NOLO de la recette avant de préparer le programme.');
     const allowed = ['process','targetAbvPct','yeastId','ogSg','attenuationMinPct','attenuationMaxPct','extractTolerancePct'];

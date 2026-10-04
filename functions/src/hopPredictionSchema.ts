@@ -4,11 +4,13 @@ import { assertHopExtrapolation, type HopExtrapolation } from './hopExtrapolatio
 import { assertHopSolverPolicy, type HopSolverPolicy } from './hopSolverSchema.js';
 import { assertFermentationGuide, type FermentationGuide } from './fermentationGuideSchema.js';
 import { assertYeastCatalogue, type YeastCatalogue } from './yeastCatalogueSchema.js';
+import { harvestedYeastTechnicalFact, readYeastDocumentarySheet, yeastTechnicalFactIdentity, type YeastDocumentarySheet } from './yeastDocumentarySheet.js';
 import { assertFermentationScience, type FermentationScience } from './fermentationScienceSchema.js';
 import { assertBrewingStyleGuide, type BrewingStyleGuide } from './brewingStyleSchema.js';
 import { assertNoloScience, type NoloScience } from './noloSchema.js';
 import { assertHopBitternessScience, type HopBitternessScience } from './hopBitternessSchema.js';
 import type { HopRecipePrediction } from './hopRecipePrediction.js';
+import { assertBrewerCatalogueMeta, type BrewerCatalogueMeta } from './brewerCatalogueSchema.js';
 
 export const HOP_TIMINGS = ['firstWort', 'boil', 'whirlpool', 'fermentation', 'postFermentation'] as const;
 export type HopTiming = typeof HOP_TIMINGS[number];
@@ -21,6 +23,12 @@ export interface HopYeast {
   id: string; kind: 'yeast'; name: string; betaLyase: 'positive' | 'negative' | 'unknown'; source: HopSource;
   form?: 'sèche' | 'liquide' | 'levain';
   catalogue?: YeastCatalogue;
+  /** Sparse, explicitly reviewed corrections. `catalogue` remains the raw collected sheet. */
+  reviewedDocumentary?: YeastDocumentarySheet;
+  /** Maps a harvested fact identity to the effective reviewed fact that replaces it. */
+  reviewedDocumentaryRevision?: { revision: number; replacements: Array<{ before: string; after: string }> };
+  /** Attributed open claims, operation revision and selected projections. */
+  catalogueMeta?: BrewerCatalogueMeta;
 }
 export interface HopTriplet {
   varietyId: string | null; lotId?: string | null; yeastId: string | null; timing: HopTiming | null;
@@ -121,7 +129,7 @@ export function assertHopTriplet(v: any): asserts v is HopTriplet {
 }
 export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowledge {
   check(obj(v) && idValid(v.id) && (!id || v.id === id) && str(v.name), 'Identité de connaissance invalide.');
-  const provenanceError = hopSourceError(v.source, v.kind !== 'yeast');
+  const provenanceError = hopSourceError(v.source, v.kind !== 'yeast' && v.kind !== 'styleGuide');
   if (provenanceError) throw Error(provenanceError);
   const base = ['id', 'kind', 'name', 'source'];
   switch (v.kind) {
@@ -142,8 +150,29 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
       check(Number.isFinite(v.lowMax) && Number.isFinite(v.mediumMax) && v.lowMax > v.scale.min && v.lowMax < v.mediumMax && v.mediumMax < v.scale.max, 'Classes de l’axe invalides.');
       parameter(v.weight, true); check(v.weight.range.min > 0, 'Poids strictement positif requis.'); break;
     case 'yeast':
-      keys(v, [...base, 'betaLyase', 'form', 'catalogue']);
+      keys(v, [...base, 'betaLyase', 'form', 'catalogue', 'reviewedDocumentary', 'reviewedDocumentaryRevision', 'catalogueMeta']);
       if (v.catalogue !== undefined) assertYeastCatalogue(v.catalogue);
+      if (v.catalogueMeta !== undefined) assertBrewerCatalogueMeta(v.catalogueMeta, 'yeastStrain');
+      const reviewed = v.reviewedDocumentary === undefined ? undefined : readYeastDocumentarySheet(v.reviewedDocumentary, v.id);
+      check(v.reviewedDocumentary === undefined || !!reviewed, 'Surcouche documentaire invalide ou liée à une autre levure.');
+      if (v.reviewedDocumentaryRevision !== undefined || reviewed !== undefined) {
+        const revision = v.reviewedDocumentaryRevision;
+        check(!!reviewed && obj(revision), 'Révision de la surcouche absente.');
+        keys(revision, ['revision', 'replacements']);
+        check(Number.isSafeInteger(revision.revision) && revision.revision >= 1 && Array.isArray(revision.replacements) && revision.replacements.length <= 200,
+          'Révision de la surcouche invalide.');
+        const harvested = new Set((v.catalogue?.facts ?? []).map((fact: any) => yeastTechnicalFactIdentity(harvestedYeastTechnicalFact(fact, v.catalogue))));
+        const corrected = new Set((reviewed!.technicalFacts ?? []).map(yeastTechnicalFactIdentity));
+        const beforeIds = new Set<string>(), afterIds = new Set<string>();
+        for (const pair of revision.replacements) {
+          keys(pair, ['before', 'after']);
+          check(typeof pair.before === 'string' && pair.before.length <= 8000 && harvested.has(pair.before) &&
+            typeof pair.after === 'string' && pair.after.length <= 8000 && corrected.has(pair.after) && pair.before !== pair.after,
+          'Correspondance de la correction documentaire invalide.');
+          check(!beforeIds.has(pair.before) && !afterIds.has(pair.after), 'Identité de remplacement documentaire répétée.');
+          beforeIds.add(pair.before); afterIds.add(pair.after);
+        }
+      }
       check(v.form === undefined || ['sèche', 'liquide', 'levain'].includes(v.form), 'Forme de levure invalide.');
       check(['positive', 'negative', 'unknown'].includes(v.betaLyase), 'Statut β-lyase invalide.'); break;
     case 'confidence': {
@@ -193,7 +222,9 @@ export function assertHopKnowledge(v: any, id?: string): asserts v is HopKnowled
           const terms = new Set();
           for (const t of c.terms) {
             check(obj(t), 'Prédicteur invalide.'); keys(t, ['analyte', 'unit', 'basis', 'support', 'coefficient']);
-            check(HOP_ANALYTES.includes(t.analyte) && HOP_UNITS.includes(t.unit) && t.unit !== 'unknown' && ['asIs', 'dryMatter', 'oil', 'beer'].includes(t.basis) && nonnegativeRange(t.support), 'Domaine du prédicteur invalide.');
+            check(HOP_ANALYTES.includes(t.analyte) && HOP_UNITS.includes(t.unit) && t.unit !== 'unknown'
+              && (['asIs', 'dryMatter', 'oil', 'beer'].includes(t.basis) || (!v.enabled && t.basis === 'unknown'))
+              && nonnegativeRange(t.support), 'Domaine du prédicteur invalide.');
             check(!terms.has(t.analyte), 'Prédicteur en double.'); terms.add(t.analyte); parameter(t.coefficient);
           }
         }

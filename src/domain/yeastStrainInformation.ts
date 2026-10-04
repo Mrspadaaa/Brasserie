@@ -1,6 +1,7 @@
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { YeastCatalogueFact, YeastFactKey } from '../../functions/src/yeastCatalogueSchema';
 import { YEAST_PRACTICAL_GUIDES, type YeastPracticalNote } from '../data/yeastPracticalGuides';
+import { effectiveYeastCatalogueFacts, reviewedYeastReplacements } from './yeastReferences';
 
 const LABELS = {
   temperature: 'Fermentation', attenuation: 'Atténuation apparente', alcoholTolerance: 'Tolérance à l’alcool',
@@ -25,10 +26,15 @@ export function yeastFactValue(fact: YeastCatalogueFact): string {
 export function yeastStrainInformation(reference: HopYeast | undefined, actualForm: HopYeast['form']) {
   if (!reference) return null;
   // Preserve different sources and conditions, even when their numeric interval is identical.
-  const observations = [...new Map((reference.catalogue?.facts ?? []).map(f => [JSON.stringify(f), f])).values()];
+  const observations = [...new Map(effectiveYeastCatalogueFacts(reference).map(f => [JSON.stringify(f), f])).values()];
   const facts = Object.entries(LABELS).map(([key, label]) => {
     const rows = observations.filter(f => f.key === key);
-    const values = rows.map(f => ({ value: yeastFactValue(f), reported: f.reported, condition: f.context === 'Beer' ? undefined : f.context, source: f.source }));
+    const values = rows.map(f => {
+      const reviewed = reference.reviewedDocumentary?.technicalFacts?.find(t => t.key === f.key && t.reported === f.reported &&
+        t.context === f.context && t.source === f.source.title && t.sourceUrl === f.source.reference);
+      return { value: yeastFactValue(f), reported: f.reported, condition: f.context === 'Beer' ? undefined : f.context, source: f.source,
+        ...(reviewed ? { origin: reviewed.origin } : {}) };
+    });
     const sedimentation = key === 'flocculation' && rows.some(f => /s[ée]dimentation/i.test(f.label));
     const metricLabel = sedimentation ? rows.every(f => /s[ée]dimentation/i.test(f.label)) ? 'Sédimentation' : 'Floculation / sédimentation' : label;
     return { key, label: metricLabel, values, multiple: new Set(values.map(v => v.value)).size > 1 };
@@ -49,6 +55,7 @@ export function yeastStrainInformation(reference: HopYeast | undefined, actualFo
   const documentary = !formConfirmed ? observations.filter(f => ['aroma', 'esters', 'styles', 'species', 'betaLyase', 'biotransformation'].includes(f.key)) : [];
   const sources = [...new Map([...observations.map(f => f.source), ...practical.map(n => n.source), reference.source].map(s => [JSON.stringify(s), s])).values()];
   return { yeastId: reference.id, name: reference.name, form: reference.form, formConfirmed, facts, observations, practical, behaviour, documentary, sources,
+    reviewedCorrections: reviewedYeastReplacements(reference),
     preparationWithheld: productProtocols.some(n => n.phase === 'preparation') && !formConfirmed,
     preparationDocumented: practical.some(n => n.phase === 'preparation'),
     retrievedAt: reference.catalogue?.retrievals.map(r => r.retrievedAt).sort().at(-1) ?? null,

@@ -17,9 +17,9 @@ describe('Parcours levure entre les écrans', () => {
     const { container } = render(<RecipePage recipe={recipe} batches={[]} config={defaultConfig} onClose={vi.fn()} onEdit={vi.fn()} onDuplicate={vi.fn()} onDelete={vi.fn()} onBrew={vi.fn()} onOpenBatch={vi.fn()} />);
     const section = container.querySelector('details[data-recipe-section="Levure"]') as HTMLDetailsElement;
     expect(section.open).toBe(false); expect(section.querySelector('summary')).toHaveTextContent('Girofle · épices · primaire 21 °C · réglages modifiés');
-    expect(container.querySelector('[data-recipe-section="Conduite de levure"]')).toBeNull();
     expect(screen.queryByLabelText('Conduite de levure de la recette')).not.toBeInTheDocument();
-    fireEvent.click(section.querySelector('summary')!); section.open = true;
+    expect(container.querySelector('[data-recipe-section="Conduite de levure"]')).toBeNull();
+    fireEvent.click(section.querySelector('summary')!); section.open = true; fireEvent(section, new Event('toggle'));
     expect(await screen.findByLabelText('Conduite de levure de la recette')).toHaveTextContent('21 °C');
     expect(container.querySelector('[data-step="0"]')).toHaveAttribute('data-temp', '21');
   });

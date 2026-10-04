@@ -18,6 +18,7 @@ import { applyProposal, proposalBasis } from './brewerProposals.js';
 import { stampSession } from './brewSessionCore.js';
 import { loadBrewerAppContext } from './brewerAppContext.js';
 import { loadBrewerHopContext } from './brewerHopContext.js';
+import { readBrewerStockSnapshot } from './brewerStockContext.js';
 import type {
   BrewerChatInput,
   BrewerContext,
@@ -43,7 +44,9 @@ export const publicTurn = (d: any): BrewerTurn =>
     'reviewReason',
     'mode',
     'contextLabel',
-    'proposal'
+    'proposal',
+    'hopAdviceProposal',
+    'protocol'
   ]);
 const publicPending = (active: any): BrewerPending | undefined =>
   active?.until > Date.now() && typeof active.operationId === 'string'
@@ -55,22 +58,26 @@ const publicPending = (active: any): BrewerPending | undefined =>
     : undefined;
 export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerContext> {
   const db = getFirestore();
-  const [config, stock, material, doc] = await Promise.all([
+  const [config, stockRead, material, recipeDoc] = await Promise.all([
     db.doc('config/app').get(),
-    db.collection('stockItems').limit(500).get(),
+    // The physical balance and formal pending ledger must describe one snapshot.
+    // This read-only transaction makes no reservation and changes no stock.
+    readBrewerStockSnapshot(db, input.scope.kind === 'batch' ? input.scope.id : undefined),
     db.collection('equipment').limit(200).get(),
-    ['draft', 'app'].includes(input.scope.kind)
+    input.scope.kind !== 'recipe'
       ? Promise.resolve(null)
-      : db.doc(`${input.scope.kind === 'batch' ? 'batches' : 'recipes'}/${input.scope.id}`).get()
+      : db.doc(`recipes/${input.scope.id}`).get()
   ]);
+  const { stock, batchDoc, stockReservations } = stockRead;
+  const doc = batchDoc ?? recipeDoc;
   if (doc && !doc.exists)
     throw new HttpsError('not-found', 'Cette recette ou ce lot n’existe plus.');
   const cfg = config.data(),
-    batch = input.scope.kind === 'batch' ? doc?.data() : undefined;
+    batch = input.scope.kind === 'batch' && doc ? { ...doc.data(), id: doc.id } as any : undefined;
   let recipe =
     input.scope.kind === 'draft'
       ? input.draft
-      : (batch?.recipeSnapshot ?? (input.scope.kind === 'recipe' ? doc?.data() : undefined));
+      : (batch?.recipeSnapshot ?? (input.scope.kind === 'recipe' && doc ? { ...doc.data(), id: doc.id } : undefined));
   const provenance = [
     input.scope.kind === 'app'
       ? 'Écran de la brasserie : données serveur de cette section, aucune recette sélectionnée. Aucun champ modifiable depuis cette vue. Les filtres locaux de période ne sont pas appliqués à cet aperçu.'
@@ -124,6 +131,7 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
         STOCK_FIELDS
       )
     ),
+    stockReservations,
     material: material.docs.map((d) =>
       pick(d.data(), 'name category state maintenance notes'.split(' '))
     ),
@@ -136,9 +144,14 @@ export async function loadBrewerContext(input: BrewerChatInput): Promise<BrewerC
     )
   }), ...(hopIndex ? { hopIndex } : {}) };
 }
-export async function history(threadId: string, before?: number, resetAt = 0) {
+export async function history(
+  threadId: string,
+  before?: number,
+  resetAt = 0,
+  collection: 'brewerChats' | 'brewerHopAdviceChatsV1' = 'brewerChats'
+) {
   let query = getFirestore()
-    .collection('brewerChats')
+    .collection(collection)
     .where('threadId', '==', threadId)
     .orderBy('createdAt', 'desc');
   if (resetAt) query = query.where('createdAt', '>', resetAt);

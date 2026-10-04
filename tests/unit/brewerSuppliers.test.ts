@@ -82,6 +82,22 @@ describe('Vérification du stock fournisseur', () => {
     const html = `<h1>Cascade 100g</h1><script type="application/ld+json">${JSON.stringify(schema)}</script>`;
     expect(parseSupplierPage(html, 'https://eckenstein.shop/cascade', 1)[0]).toMatchObject({ name: 'Cascade 100g', availability: 'in_stock', stockEvidence: 'structured-data', priceText: 'CHF 8.90', packageLabel: '100g', sku: 'CAS100' });
   });
+  it('vérifie aussi les deux vendeurs FR/DE déjà présents dans les offres levure bootstrap, uniquement sur leur fiche exacte', () => {
+    const france = 'https://www.rolling-beers.fr/fr/levures-seches/6383-lallemand-lalbrew-pomona-11g.html';
+    const germany = 'https://www.braupartner.de/fermentis-safale-us-05-trockenhefe-og';
+    expect(supplierUrl(france)?.hostname).toBe('www.rolling-beers.fr');
+    expect(supplierUrl(germany)?.hostname).toBe('www.braupartner.de');
+    expect(supplierUrl('https://www.rolling-beers.fr/fr/checkout')).toBeNull();
+    const rolling = { '@type': 'Product', name: 'Lallemand LalBrew Pomona 11g', sku: 'POMONA-11G',
+      offers: { '@type': 'Offer', availability: 'https://schema.org/InStock', price: '4.45', priceCurrency: 'EUR' } };
+    const braupartner = { '@type': 'Product', name: 'Fermentis SafAle US-05 Trockenhefe 11,5g', sku: '237-US-05-115',
+      offers: { '@type': 'Offer', availability: 'https://schema.org/OutOfStock', price: '2.90', priceCurrency: 'EUR' } };
+    expect(parseSupplierPage(`<h1>${rolling.name}</h1><script type="application/ld+json">${JSON.stringify(rolling)}</script>`, france, 1234)[0])
+      .toMatchObject({ supplier: 'Rolling Beers', name: rolling.name, sku: 'POMONA-11G', availability: 'in_stock', verifiedBy: 'product-page', stockEvidence: 'structured-data' });
+    expect(parseSupplierPage(`<h1>${braupartner.name}</h1><script type="application/ld+json">${JSON.stringify(braupartner)}</script>`, germany, 5678)[0])
+      .toMatchObject({ supplier: 'Braupartner', name: braupartner.name, sku: '237-US-05-115', availability: 'out_of_stock', verifiedBy: 'product-page', stockEvidence: 'structured-data' });
+    expect(parseSupplierPage(`<h1>Levures sèches</h1><script type="application/ld+json">${JSON.stringify(rolling)}</script>`, france, 1234)).toEqual([]);
+  });
   it('ne déduit pas le stock d’une variante à partir d’offres agrégées ou d’un bouton panier', () => {
     const schema = { '@type': 'Product', name: 'Cascade', offers: [{ '@type': 'Offer', availability: 'https://schema.org/InStock' }, { '@type': 'Offer', availability: 'https://schema.org/OutOfStock' }] };
     const html = `<h1>Cascade</h1><script type="application/ld+json">${JSON.stringify(schema)}</script>`;

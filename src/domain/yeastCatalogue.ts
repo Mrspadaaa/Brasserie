@@ -3,6 +3,7 @@ import type { YeastCatalogueFact, YeastFactKey } from '../../functions/src/yeast
 import type { TrialRecipe } from './hopIndex/trials';
 import type { YeastSpec } from '../types';
 import { agreedFermentationFact } from '../../functions/src/fermentationContext';
+import { normalizeBrewerCatalogueIdentity, type BrewerCatalogueClaim } from '../../functions/src/brewerCatalogueSchema';
 
 export const YEAST_FACT_LABELS: Record<YeastFactKey, string> = {
   temperature: 'Fermentation', attenuation: 'Atténuation apparente', alcoholTolerance: 'Tolérance à l’alcool', pitchRate: 'Ensemencement', fermentationTime: 'Durée de fermentation', flocculation: 'Floculation', pof: 'Phénols · POF', sta1: 'Gène STA1', diastatic: 'Caractère diastatique', betaLyase: 'β-lyase · thiols', biotransformation: 'Biotransformation', species: 'Espèce / culture', aroma: 'Arômes décrits', esters: 'Esters', higherAlcohols: 'Alcools supérieurs', h2s: 'H₂S', styles: 'Styles cités', application: 'Usage', form: 'Forme', availability: 'Disponibilité déclarée', nutrientNeed: 'Besoins nutritifs', ph: 'pH', residualSugar: 'Sucres résiduels', fermentationRate: 'Vitesse de fermentation', foam: 'Mousse', so2: 'SO₂', volatileAcidity: 'Acidité volatile', glycerol: 'Glycérol', malolacticCompatibility: 'Compatibilité malolactique'
@@ -45,11 +46,12 @@ export function yeastSearchIndex(yeast: HopYeast & { aliases?: string[] }, extra
     name: yeast.name,
     manufacturer: catalogue?.manufacturer,
     productCode: catalogue?.productCode,
-    aliases: [...(yeast.aliases ?? []), ...(catalogue?.aliases ?? [])],
+    aliases: [...catalogueIdentityAliases(yeast), ...(yeast.aliases ?? []), ...(catalogue?.aliases ?? [])],
     // Source product IDs and descriptive facts help locate a row, but score
     // below every manufacturer name, printed code and alias.
     descriptive: [catalogue?.productId ?? '', yeast.form ?? '', ...(catalogue?.categories ?? []),
-      ...(catalogue?.facts ?? []).map(f => f.reported)]
+      ...(catalogue?.facts ?? []).map(f => f.reported),
+      ...(yeast.catalogueMeta?.claims ?? []).flatMap(claim => [claim.property, claim.label ?? '', claim.reported])]
   }, extra);
 }
 /** Optimal string alignment distance \u2264 1: one insertion, deletion, substitution or adjacent swap. */
@@ -95,6 +97,25 @@ export function yeastHomonymKey(label: string, maker = '') {
 export function catalogueFacts(yeast: HopYeast, key?: YeastFactKey): YeastCatalogueFact[] {
   const facts = (yeast.catalogue?.facts ?? []).filter(f=>!key || f.key===key);
   return [...new Map(facts.map(f=>[JSON.stringify([f.key,f.reported,f.context,f.range]),f])).values()];
+}
+/** Open catalogue assertions stay attributed and separate from typed manufacturer facts. */
+export function catalogueAssertions(yeast: HopYeast): BrewerCatalogueClaim[] {
+  return [...(yeast.catalogueMeta?.claims ?? [])];
+}
+/** Exact identity aliases become searchable only after a validated legacy projection links them to their claim. */
+export function catalogueIdentityAliases(yeast: HopYeast): string[] {
+  const meta = yeast.catalogueMeta;
+  if (!meta) return [];
+  const claims = new Map(meta.claims.map(claim => [claim.id, claim]));
+  const superseded = new Set(meta.projections.map(row => row.supersedesProjectionId).filter((id): id is string => !!id));
+  const aliases = meta.projections.filter(row => row.mode === 'legacy' && row.targetField === 'identity.alias' && !superseded.has(row.id))
+    .flatMap(row => {
+      const claim = claims.get(row.claimId), value = claim?.normalized;
+      return claim?.property === 'identity.alias' && claim.epistemic !== 'estimate' && claim.epistemic !== 'hypothesis' && claim.epistemic !== 'modelOutput' &&
+        value && (value.kind === 'category' || value.kind === 'text') && value.value.trim()
+        ? [value.value.trim()] : [];
+    });
+  return [...new Set(aliases)].sort((a, b) => normalizeBrewerCatalogueIdentity(a).localeCompare(normalizeBrewerCatalogueIdentity(b), 'fr'));
 }
 export function catalogueYeasts(knowledge: HopKnowledge[]): HopYeast[] {
   return knowledge.filter((k): k is HopYeast => {

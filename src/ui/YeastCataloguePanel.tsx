@@ -1,9 +1,11 @@
 import { Input } from './Input';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
+import { ExternalLink } from 'lucide-react';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { YeastCatalogueFact } from '../../functions/src/yeastCatalogueSchema';
 import type { YeastSpec } from '../types';
-import { catalogueFacts, catalogueMatches, catalogueYeasts, YEAST_FACT_LABELS } from '../domain/yeastCatalogue';
+import { catalogueMatches, catalogueYeasts, YEAST_FACT_LABELS } from '../domain/yeastCatalogue';
+import { effectiveYeastCatalogueFacts, reviewedYeastReplacements } from '../domain/yeastReferences';
 import { useStorageValue } from '../hooks/useLiveData';
 import { StorageService } from '../services/storage';
 import { Button } from '../components/ui/Button';
@@ -11,6 +13,8 @@ import { inputClass } from './FormNav';
 import { Units } from '../services/units';
 import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
 import { yeastCatalogueBands, yeastCatalogueHeadline } from '../domain/yeastCatalogueSummary';
+
+const YeastDbCorrectionsPanel = lazy(() => import('./YeastDbCorrectionsPanel').then(module => ({ default: module.YeastDbCorrectionsPanel })));
 
 const display = (f: YeastCatalogueFact) => f.range && f.qualifier === 'range' ? `${Units.format(f.range.min,'').trim()}–${Units.format(f.range.max,f.unit ?? '').trim()}` : f.reported;
 function FactBand({ fact }: { fact: YeastCatalogueFact }) {
@@ -25,13 +29,16 @@ function FactBand({ fact }: { fact: YeastCatalogueFact }) {
 }
 export function YeastCatalogueDetails({ yeast }: { yeast: HopYeast }) {
   const c=yeast.catalogue;if(!c)return null;
-  const facts=catalogueFacts(yeast), dates=c.retrievals.map(r=>r.retrievedAt).sort();
+  const facts=effectiveYeastCatalogueFacts(yeast), corrections=reviewedYeastReplacements(yeast);
+  const dates=[...c.retrievals.map(r=>r.retrievedAt),...(yeast.reviewedDocumentary?.technicalFacts??[]).flatMap(f=>f.retrievedAt?[f.retrievedAt]:[])].sort();
   const bands=yeastCatalogueBands(facts), comparisons=yeastCatalogueHeadline(facts).filter(group=>group.compare);
+  const isReviewed=(fact:YeastCatalogueFact)=>yeast.reviewedDocumentary?.technicalFacts?.some(row=>row.key===fact.key&&row.reported===fact.reported&&row.context===fact.context&&row.source===fact.source.title&&row.sourceUrl===fact.source.reference)??false;
   return <div className="space-y-4">
     <p className="text-xs text-cave-400">Plages fabricant, dépendantes du moût et du procédé.</p>
     {comparisons.length>0&&<p className="text-xs text-attention">{comparisons.map(group=>group.label).join(' et ')} : plusieurs valeurs publiées. Compare les conditions et les sources ci-dessous.</p>}
     {bands.length>0&&<div className="grid sm:grid-cols-2 gap-4">{bands.map((f,i)=><FactBand key={i} fact={f}/>)}</div>}
-    {facts.length>0&&<details><summary className="cursor-pointer min-h-touch text-xs text-water">Caractéristiques et consignes · {facts.length} observations</summary><dl className="divide-y divide-cave-700">{facts.map((f,i)=><div key={i} className="py-2 space-y-1"><dt className="text-sm font-semibold text-cave-200">{YEAST_FACT_LABELS[f.key]} <span className="font-normal text-cave-400">· {f.label}</span></dt><dd className="text-sm text-cave-50 break-words">{display(f)}</dd>{f.context&&f.context!=='Beer'&&<dd className="text-sm text-cave-400">{f.context}</dd>}<dd><HopSourceLink source={f.source}/></dd></div>)}</dl></details>}
+    {facts.length>0&&<details><summary className="cursor-pointer min-h-touch text-xs text-water">Caractéristiques et consignes · {facts.length} observations</summary><dl className="divide-y divide-cave-700">{facts.map((f,i)=><div key={`${f.key}-${f.reported}-${f.context??''}-${f.source.reference}-${i}`} className="py-2 space-y-1"><dt className="text-sm font-semibold text-cave-200">{YEAST_FACT_LABELS[f.key]} <span className="font-normal text-cave-400">· {f.label}</span>{isReviewed(f)&&<span className="ml-2 text-xs font-normal text-ebc-straw">Correction IA sourcée</span>}</dt><dd className="text-sm text-cave-50 break-words">{display(f)}</dd>{f.context&&f.context!=='Beer'&&<dd className="text-sm text-cave-400">{f.context}</dd>}<dd><HopSourceLink source={f.source}/></dd>{isReviewed(f)&&<dd className="text-xs text-cave-400">Origine conservée : {yeast.reviewedDocumentary?.technicalFacts?.find(row=>row.key===f.key&&row.reported===f.reported&&row.context===f.context&&row.sourceUrl===f.source.reference)?.origin??'IA'} · lu le {yeast.reviewedDocumentary?.technicalFacts?.find(row=>row.key===f.key&&row.reported===f.reported&&row.context===f.context&&row.sourceUrl===f.source.reference)?.retrievedAt?.slice(0,10)??'date non renseignée'}</dd>}</div>)}</dl></details>}
+    {corrections.length>0&&<details className="rounded-control border border-ebc-straw/30 p-2"><summary className="cursor-pointer min-h-touch text-sm text-ebc-straw">Valeurs récoltées remplacées · sources originales conservées ({corrections.length})</summary><div className="pt-2 space-y-3">{corrections.map((pair,i)=><div key={`${pair.before.key}-${pair.before.reported}-${i}`} className="border-t border-cave-700 pt-2 space-y-1"><p className="text-xs text-cave-400">Avant · collecte brute</p><p className="text-sm text-cave-200">{display(pair.before)}</p><HopSourceLink source={pair.before.source}/><p className="text-xs text-cave-400 mt-2">Valeur effective · correction IA sourcée</p><p className="text-sm text-cave-50">{display(pair.after)}</p><HopSourceLink source={pair.after.source}/><p className="text-xs text-cave-400">Origine IA et date de lecture conservées dans la surcouche; l’empreinte de la collecte brute n’a pas changé.</p></div>)}</div></details>}
     {!facts.length&&<p className="text-sm text-cave-200">Référence identifiée dans le catalogue. Caractéristiques encore inconnues.</p>}
     <details className="border-t border-cave-700 pt-2"><summary className="cursor-pointer min-h-touch text-sm text-water">Sources et mises à jour</summary>
       <div className="space-y-2 text-sm text-cave-400"><p>Collecte la plus récente : {dates.at(-1)?.slice(0,10)}. Année de chaque publication indiquée dans sa source.</p><p>Présence au catalogue : {c.status==='discontinued'?'arrêt déclaré':c.status==='listed'?'répertoriée, disponibilité à vérifier':'inconnue'}.</p>
@@ -67,6 +74,7 @@ export function YeastCataloguePanel({ onSelect, disabled=false, selectedId, init
     return ()=>{active=false;};
   },[saved,savedCatalogue]);
   const [query,setQuery]=useState(''),[manufacturer,setManufacturer]=useState(''),[page,setPage]=useState(0),[expanded,setExpanded]=useState(''),[form,setForm]=useState(initialForm);
+  const [correctionTarget,setCorrectionTarget]=useState<import('../services/yeastDbCorrections').YeastDbCorrectionPanelTarget|null>(null);
   const manufacturers=useMemo(()=>[...new Set(yeasts.map(y=>y.catalogue!.manufacturer))].sort(),[yeasts]);
   const filtered=useMemo(()=>yeasts.filter(y=>(!manufacturer||y.catalogue!.manufacturer===manufacturer)&&catalogueMatches(y,query)).sort((a,b)=>a.name.localeCompare(b.name,'fr')),[yeasts,query,manufacturer]);
   const safePage=Math.min(page,Math.max(0,Math.ceil(filtered.length/12)-1)), shown=filtered.slice(safePage*12,safePage*12+12);
@@ -76,11 +84,14 @@ export function YeastCataloguePanel({ onSelect, disabled=false, selectedId, init
     {catalogueStatus==='loading'&&<p role="status" className="text-sm text-cave-400">{yeasts.length ? 'Actualisation du catalogue documenté…' : 'Chargement du catalogue documenté…'}</p>}
     {catalogueStatus==='error'&&<p role="alert" className="text-sm text-attention">Catalogue documenté indisponible ; les fiches enregistrées restent consultables.</p>}
     <p role="status" className="text-sm text-cave-400">{filtered.length.toLocaleString('fr')} référence(s) trouvée(s). Les mots aromatiques décrivent la source ; ils ne prédisent pas l’intensité dans ta bière.</p>
-    <div className="space-y-2">{shown.map(y=>{const facts=catalogueFacts(y), open=expanded===y.id;return <article key={y.id} className={`rounded-control border p-3 space-y-3 ${selectedId===y.id?'border-ebc-straw':'border-cave-700'}`}>
+    <div className="space-y-2">{shown.map(y=>{const facts=effectiveYeastCatalogueFacts(y), open=expanded===y.id;return <article key={y.id} className={`rounded-control border p-3 space-y-3 ${selectedId===y.id?'border-ebc-straw':'border-cave-700'}`}>
       <button type="button" aria-expanded={open} className="text-left w-full min-h-touch" onClick={()=>{setExpanded(open?'':y.id);setForm(y.form??initialForm)}}><span className="block font-semibold text-cave-50 break-words">{y.name}</span><span className="block text-sm text-cave-400 mt-1">{y.form??'Forme non documentée'} · {facts.length} caractéristique(s)</span><span className="block text-xs text-ebc-straw mt-1">{yeastCatalogueHeadline(facts).map(group=>group.compare?`${group.label} à comparer`:display(group.fact)).join(' · ')||'Caractéristiques à compléter'}</span></button>
-      {open&&<>{onSelect&&<div className="border-t border-cave-700 pt-2 space-y-2"><div className="flex flex-wrap items-end gap-2"><label className="text-xs text-cave-200">Forme utilisée dans la recette<select className={`${inputClass} mt-1`} value={form} disabled={disabled} onChange={e=>setForm(e.target.value as YeastSpec['form'])}><option value="sèche">Sèche</option><option value="liquide">Liquide</option><option value="levain">Levain / culture</option></select></label><Button disabled={disabled} onClick={()=>onSelect(y,form)}>Choisir cette culture</Button></div><p className="text-xs text-cave-400">Remplace la levure. Quantité et conduite restent à vérifier.</p></div>}<YeastCatalogueDetails yeast={y}/></>}
+      {open&&<>{onSelect&&<div className="border-t border-cave-700 pt-2 space-y-2"><div className="flex flex-wrap items-end gap-2"><label className="text-xs text-cave-200">Forme utilisée dans la recette<select className={`${inputClass} mt-1`} value={form} disabled={disabled} onChange={e=>setForm(e.target.value as YeastSpec['form'])}><option value="sèche">Sèche</option><option value="liquide">Liquide</option><option value="levain">Levain / culture</option></select></label><Button disabled={disabled} onClick={()=>onSelect(y,form)}>Choisir cette culture</Button></div><p className="text-xs text-cave-400">Remplace la levure. Quantité et conduite restent à vérifier.</p></div>}<div className="border-t border-cave-700 pt-2"><Button type="button" intent="secondary" icon={<ExternalLink size={15}/>} onClick={()=>setCorrectionTarget({scope:'catalogue',id:y.id,fallback:y})}>Vérifier ou corriger les faits</Button><p className="mt-1 text-xs text-cave-400">Recherche et corrections restent séparées du choix de levure. Une correction n’adopte rien dans la recette.</p></div><YeastCatalogueDetails yeast={y}/></>}
     </article>})}</div>
     {filtered.length>12&&<div className="flex justify-between items-center gap-3"><Button disabled={safePage===0} onClick={()=>setPage(safePage-1)}>Précédentes</Button><span className="text-sm text-cave-400">{safePage+1} / {Math.ceil(filtered.length/12)}</span><Button disabled={(safePage+1)*12>=filtered.length} onClick={()=>setPage(safePage+1)}>Suivantes</Button></div>}
     {!yeasts.length&&catalogueStatus==='ready'&&<p className="text-sm text-cave-400">Aucune référence ne correspond aux filtres actuels.</p>}
+    <Suspense fallback={correctionTarget?<p role="status" className="text-sm text-cave-400">Ouverture du panneau de correction…</p>:null}>
+      <YeastDbCorrectionsPanel target={correctionTarget} onClose={()=>setCorrectionTarget(null)} />
+    </Suspense>
   </section>;
 }

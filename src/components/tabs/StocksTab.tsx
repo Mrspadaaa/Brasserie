@@ -51,6 +51,8 @@ interface StocksTabProps {
   onOpenItemRequestHandled?: () => void;
   onSuccessMessage?: (msg: string) => void;
   onOpenEquipmentProjects?: () => void;
+  /** Ouvre le parcours catalogue houblon V5.5 de l’application. */
+  onOpenHopV55?: () => void;
 }
 
 type SubTab = 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
@@ -91,7 +93,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   openItemRequest,
   onOpenItemRequestHandled,
   onSuccessMessage,
-  onOpenEquipmentProjects
+  onOpenEquipmentProjects,
+  onOpenHopV55
 }) => {
   const [subTab, setSubTab] = useState<SubTab>(() =>
     StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
@@ -350,7 +353,16 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </ViewNavigation>
       </div>
 
-      {subTab === 'hops' && <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>}
+      {subTab === 'hops' && <>
+        {onOpenHopV55 && <section aria-label="Catalogue houblon V5.5" className="flex flex-wrap items-center justify-between gap-2 rounded-control border border-ebc-straw/30 bg-ebc-straw/5 p-2">
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold text-cave-50">Explorer le catalogue</h2>
+            <p className="text-xs leading-snug text-cave-400">Ouvrir l’espace de travail houblon V5.5.</p>
+          </div>
+          <Button intent="primary" onClick={onOpenHopV55}>Explorer les houblons dans V5.5</Button>
+        </section>}
+        <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
+      </>}
 
       {subTab === 'stock' && (
         <>

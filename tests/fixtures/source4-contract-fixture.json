@@ -1,0 +1,1208 @@
+{
+  "format": "hop-v55-source4-backend-handoff-v1",
+  "fixtureOnly": true,
+  "generatedAt": "2026-10-04T05:10:00.000Z",
+  "question": "Ma bière est trop sucrée. Comment envisager une compensation avec le houblon ? Je veux une faible amertume et garder la poire. Mon houblon maison sans analyse a une odeur résineuse.",
+  "source": {
+    "kind": "exploration"
+  },
+  "preparedContextSummary": {
+    "fixtureMode": "unknown",
+    "recipeOrBatchState": "unknown",
+    "materialCandidatesSelected": []
+  },
+  "sourceReadingArchive": {
+    "format": "hop-v55-decision-reading-v4",
+    "id": "reading:source4-contract-fixture",
+    "ownerKey": "owner:source4-contract-fixture",
+    "workspaceId": "workspace:source4-contract-fixture",
+    "recordedAt": "2026-10-04T05:10:00.000Z",
+    "reading": {
+      "format": "hop-v55-question-semantic-reading-v1",
+      "intent": {
+        "question": "Ma bière est trop sucrée. Comment envisager une compensation avec le houblon ? Je veux une faible amertume et garder la poire. Mon houblon maison sans analyse a une odeur résineuse.",
+        "criteria": [
+          {
+            "id": "criterion-source-120-125-poire",
+            "label": "À préserver : poire",
+            "direction": "keep",
+            "familyId": "pomeFruit"
+          }
+        ]
+      },
+      "annotations": [
+        {
+          "id": "criterion-source-18-24-sucree",
+          "sense": "reportedObservation",
+          "source": {
+            "start": 18,
+            "end": 24,
+            "text": "sucrée"
+          },
+          "term": "sucrée",
+          "requirement": "optional",
+          "direction": null,
+          "note": "Observation déclarée; écart rapporté sans demande de changement.",
+          "frameSource": {
+            "start": 9,
+            "end": 17,
+            "text": "est trop"
+          },
+          "subject": {
+            "kind": "beer",
+            "source": {
+              "start": 0,
+              "end": 8,
+              "text": "Ma bière"
+            }
+          },
+          "dimension": "other",
+          "lexicon": {
+            "status": "lexicon",
+            "key": "sweetness"
+          },
+          "relatedAnnotationIds": [],
+          "origin": "parser"
+        },
+        {
+          "id": "criterion-source-48-60-compensation",
+          "sense": "investigation",
+          "source": {
+            "start": 48,
+            "end": 60,
+            "text": "compensation"
+          },
+          "term": "compensation",
+          "requirement": "required",
+          "direction": "investigate",
+          "note": "Demande de compensation; propriété touchée et levier restent à qualifier.",
+          "frameSource": {
+            "start": 48,
+            "end": 60,
+            "text": "compensation"
+          },
+          "inquiry": "compensation",
+          "instrumentSource": {
+            "start": 66,
+            "end": 76,
+            "text": "le houblon"
+          },
+          "lexicon": {
+            "status": "notAProperty"
+          },
+          "relatedAnnotationIds": [
+            "criterion-source-18-24-sucree"
+          ],
+          "origin": "parser"
+        },
+        {
+          "id": "criterion-source-98-106-amertume",
+          "sense": "qualitativeTarget",
+          "source": {
+            "start": 98,
+            "end": 106,
+            "text": "amertume"
+          },
+          "term": "amertume",
+          "requirement": "required",
+          "direction": null,
+          "qualification": "faible",
+          "qualifierSource": {
+            "start": 91,
+            "end": 97,
+            "text": "faible"
+          },
+          "frameSource": {
+            "start": 91,
+            "end": 97,
+            "text": "faible"
+          },
+          "dimension": "other",
+          "lexicon": {
+            "status": "lexicon",
+            "key": "bitterness"
+          },
+          "relatedAnnotationIds": [],
+          "origin": "parser"
+        },
+        {
+          "id": "criterion-source-120-125-poire",
+          "sense": "guard",
+          "source": {
+            "start": 120,
+            "end": 125,
+            "text": "poire"
+          },
+          "term": "poire",
+          "requirement": "required",
+          "direction": "keep",
+          "frameSource": {
+            "start": 110,
+            "end": 116,
+            "text": "garder"
+          },
+          "guard": "preserve",
+          "familyId": "pomeFruit",
+          "dimension": "aroma",
+          "lexicon": {
+            "status": "lexicon"
+          },
+          "relatedAnnotationIds": [],
+          "origin": "parser"
+        },
+        {
+          "id": "criterion-source-171-180-resineuse",
+          "sense": "reportedObservation",
+          "source": {
+            "start": 171,
+            "end": 180,
+            "text": "résineuse"
+          },
+          "term": "résineuse",
+          "requirement": "optional",
+          "direction": null,
+          "note": "Observation déclarée; aucune direction de changement formulée.",
+          "subject": {
+            "kind": "material",
+            "source": {
+              "start": 127,
+              "end": 158,
+              "text": "Mon houblon maison sans analyse"
+            }
+          },
+          "familyId": "resin",
+          "dimension": "aroma",
+          "lexicon": {
+            "status": "lexicon"
+          },
+          "relatedAnnotationIds": [],
+          "origin": "parser"
+        }
+      ],
+      "projectionCoverage": {
+        "version": "hop-v55-semantic-projection-coverage-v1",
+        "included": [
+          "criterion-source-120-125-poire"
+        ],
+        "notProjected": [
+          {
+            "annotationId": "criterion-source-18-24-sucree",
+            "reason": "reportedObservation"
+          },
+          {
+            "annotationId": "criterion-source-48-60-compensation",
+            "reason": "linkedInquiry"
+          },
+          {
+            "annotationId": "criterion-source-98-106-amertume",
+            "reason": "qualitativeTargetWithoutDirection"
+          },
+          {
+            "annotationId": "criterion-source-171-180-resineuse",
+            "reason": "reportedObservation"
+          }
+        ]
+      },
+      "interpretation": "Lecture sémantique proposée : Constat rapporté · sucrée (sujet : Ma bière) — aucun changement demandé ; Enquête de compensation · compensation, reliée au constat « sucrée » ; Cible qualitative · amertume — faible (niveau visé, sans base actuelle, changement ni valeur déduits) ; Garde · À préserver : poire ; Constat rapporté · résineuse (sujet : Mon houblon maison sans analyse) — aucun changement demandé. Les annotations sont des intentions déclarées, pas des mesures ni des résultats sensoriels. Le stade opérationnel est inconnu; planning ne sert que de périmètre technique d’exploration.",
+      "response": {
+        "version": "hop-decision-v1",
+        "intent": {
+          "originalQuestion": "Ma bière est trop sucrée. Comment envisager une compensation avec le houblon ? Je veux une faible amertume et garder la poire. Mon houblon maison sans analyse a une odeur résineuse.",
+          "interpretation": "Lecture locale proposée : À préserver : poire ; Cible qualitative · amertume — faible (niveau visé, sans base actuelle ni valeur déduite) ; Mention à clarifier · sucrée — Observation déclarée; écart rapporté sans demande de changement. ; Mention à clarifier · compensation — Demande de compensation; propriété touchée et levier restent à qualifier. ; Mention à clarifier · résineuse — Observation déclarée; aucune direction de changement formulée.. Les critères sont des intentions déclarées, pas des mesures ni des résultats sensoriels. Le stade opérationnel est inconnu; planning ne sert que de périmètre technique d’exploration.",
+          "assumptions": [
+            "Le contrat exige un stade de conseil : planning sert ici de périmètre d’exploration faute de programme, pas de stade réel de la bière."
+          ],
+          "criteria": [
+            {
+              "id": "criterion-source-120-125-poire",
+              "description": "À préserver : poire",
+              "role": "preserve",
+              "origin": "user",
+              "familyId": "pomeFruit"
+            }
+          ]
+        },
+        "actionKind": "exploreStrategies",
+        "status": "conditional",
+        "answer": "Des pistes de stratégie sont examinées selon votre lecture et la situation fournie. Préférer une piste ne choisit aucune dose et ne modifie pas le programme ; chaque voie garde ses raisons, conditions et inconnues.",
+        "result": {
+          "version": "hop-strategy-advice-v1",
+          "inputReference": "hop-advice-input-v1:sha256:f8e9798dce4baf4b9f728cc7779a1e6f361255703aa66bf4910187cbd66b92b5",
+          "stage": "planning",
+          "status": "conditional",
+          "options": [
+            {
+              "id": "hop-advice-option-001",
+              "reference": "hop-advice-option-v1:sha256:fd0de3fe5056c3c23f2bb6f42b1e07cd35fa67107a466cee961c4122f6a6a6c0",
+              "title": "Documenter le lot Identité fictive A avant de choisir",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-a"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : rendre le lot comparable avant de choisir un usage. Geste : consigner l’identité, la forme, la récolte et le stockage connus, puis une description sourcée en précisant rawHop, infusion ou bière. Cela reste une observation, pas une analyse ni une prédiction de bière.",
+                "Information qui départage : provenance et contexte de description, état frais/sec si connu, et mesures réellement disponibles; l’absence de mention ne vaut pas absence du caractère."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-variety:hop-v55-fixture-identity-a-material-context"
+              ]
+            },
+            {
+              "id": "hop-advice-option-002",
+              "reference": "hop-advice-option-v1:sha256:12a8122569f0e2ea1d8b97a71985c56ebd3579a85bb1fdfad1b1d1e468dc2ee7",
+              "title": "Rechercher une référence documentaire pour Identité fictive A",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-a"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : obtenir un comparateur vérifiable si cela peut départager les voies. Geste : fournir une description sourcée avec son contexte; aucun cultivar, produit ou fournisseur n’est choisi à sa place."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-criterion-source-120-125-poire-aroma",
+                "decision-variety:hop-v55-fixture-identity-a-reference-source"
+              ]
+            },
+            {
+              "id": "hop-advice-option-003",
+              "reference": "hop-advice-option-v1:sha256:625cd9388b0630737fb934eecc88dd2c08c99af96a1cefb04cd44099f7aa21fd",
+              "title": "Comparer le transfert direct de Identité fictive A sur échantillon ou essai futur",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-a"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                },
+                {
+                  "dimension": "matrixTransfer",
+                  "status": "conditional",
+                  "statement": "Brendel 2020 motive une comparaison future de transfert/rétention de certains volatils dans sa matrice sans alcool; il ne prédit ni le lot ni la bière fournis.",
+                  "reason": "Le résultat porte sur un produit et une matrice de banc; il ne démontre ni libération de thiols par levure, ni équivalence à la bière acidifiée, ni délai universel.",
+                  "evidenceIds": [
+                    "m-transfer-brendel-2020"
+                  ],
+                  "assertionIds": [],
+                  "criterionIds": []
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : séparer le transfert/rétention physique d’une explication par levure. Geste possible sur un échantillon ou un essai futur : choisir la matrice et les analytes, puis mesurer aux points retenus; aucune masse, durée ou température n’est proposée.",
+                "Information qui départage : matière et analytes mesurés, matrice réelle, et points de comparaison choisis. Cette voie n’exige pas une hypothèse de biotransformation et ne prédit pas un caractère sensoriel final."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-matrix-transfer"
+              ]
+            },
+            {
+              "id": "hop-advice-option-004",
+              "reference": "hop-advice-option-v1:sha256:1ce4b8df76ac37b4959831848bcb922611528f3915ce0d616c8101dae9c14c49",
+              "title": "Documenter le lot Identité fictive B avant de choisir",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-b"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : rendre le lot comparable avant de choisir un usage. Geste : consigner l’identité, la forme, la récolte et le stockage connus, puis une description sourcée en précisant rawHop, infusion ou bière. Cela reste une observation, pas une analyse ni une prédiction de bière.",
+                "Information qui départage : provenance et contexte de description, état frais/sec si connu, et mesures réellement disponibles; l’absence de mention ne vaut pas absence du caractère."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-variety:hop-v55-fixture-identity-b-material-context"
+              ]
+            },
+            {
+              "id": "hop-advice-option-005",
+              "reference": "hop-advice-option-v1:sha256:9dab4f96f01309537ff4daa2311aa1920d91e17123bb4fd062798d1fa7bfa243",
+              "title": "Rechercher une référence documentaire pour Identité fictive B",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-b"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : obtenir un comparateur vérifiable si cela peut départager les voies. Geste : fournir une description sourcée avec son contexte; aucun cultivar, produit ou fournisseur n’est choisi à sa place."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-criterion-source-120-125-poire-aroma",
+                "decision-variety:hop-v55-fixture-identity-b-reference-source"
+              ]
+            },
+            {
+              "id": "hop-advice-option-006",
+              "reference": "hop-advice-option-v1:sha256:a0bcb57c28fd5172ffb3f73c8118fb99468b258bf8dd76e0e2a4ad9f7577ed9b",
+              "title": "Comparer le transfert direct de Identité fictive B sur échantillon ou essai futur",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-b"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                },
+                {
+                  "dimension": "matrixTransfer",
+                  "status": "conditional",
+                  "statement": "Brendel 2020 motive une comparaison future de transfert/rétention de certains volatils dans sa matrice sans alcool; il ne prédit ni le lot ni la bière fournis.",
+                  "reason": "Le résultat porte sur un produit et une matrice de banc; il ne démontre ni libération de thiols par levure, ni équivalence à la bière acidifiée, ni délai universel.",
+                  "evidenceIds": [
+                    "m-transfer-brendel-2020"
+                  ],
+                  "assertionIds": [],
+                  "criterionIds": []
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : séparer le transfert/rétention physique d’une explication par levure. Geste possible sur un échantillon ou un essai futur : choisir la matrice et les analytes, puis mesurer aux points retenus; aucune masse, durée ou température n’est proposée.",
+                "Information qui départage : matière et analytes mesurés, matrice réelle, et points de comparaison choisis. Cette voie n’exige pas une hypothèse de biotransformation et ne prédit pas un caractère sensoriel final."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-matrix-transfer"
+              ]
+            },
+            {
+              "id": "hop-advice-option-007",
+              "reference": "hop-advice-option-v1:sha256:73510b95beedfea14b71edd7c592f3e69fee6ebefb225f2c3f3e7aa03d6e83f7",
+              "title": "Documenter le lot Identité fictive C avant de choisir",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-c"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : rendre le lot comparable avant de choisir un usage. Geste : consigner l’identité, la forme, la récolte et le stockage connus, puis une description sourcée en précisant rawHop, infusion ou bière. Cela reste une observation, pas une analyse ni une prédiction de bière.",
+                "Information qui départage : provenance et contexte de description, état frais/sec si connu, et mesures réellement disponibles; l’absence de mention ne vaut pas absence du caractère."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-variety:hop-v55-fixture-identity-c-material-context"
+              ]
+            },
+            {
+              "id": "hop-advice-option-008",
+              "reference": "hop-advice-option-v1:sha256:c39c072681fc036eff0cc45fd2fef94aef22ed9724f32c3600712285cc59c697",
+              "title": "Rechercher une référence documentaire pour Identité fictive C",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-c"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : obtenir un comparateur vérifiable si cela peut départager les voies. Geste : fournir une description sourcée avec son contexte; aucun cultivar, produit ou fournisseur n’est choisi à sa place."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-criterion-source-120-125-poire-aroma",
+                "decision-variety:hop-v55-fixture-identity-c-reference-source"
+              ]
+            },
+            {
+              "id": "hop-advice-option-009",
+              "reference": "hop-advice-option-v1:sha256:8974c371db539ff733f5a53ea2603678b8ab46ee11e34e03f17e56ab2959063e",
+              "title": "Comparer le transfert direct de Identité fictive C sur échantillon ou essai futur",
+              "materialIds": [
+                "variety:hop-v55-fixture-identity-c"
+              ],
+              "relevance": "conditional",
+              "programScope": {
+                "kind": "none"
+              },
+              "criterionEffects": [
+                {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              ],
+              "dimensionEffects": [
+                {
+                  "dimension": "aroma",
+                  "status": "unknown",
+                  "statement": "Les descripteurs rapprochés concernent les descriptions et leur contexte source, pas une bière finie.",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": [],
+                  "assertionIds": [],
+                  "criterionIds": [
+                    "criterion-source-120-125-poire"
+                  ]
+                },
+                {
+                  "dimension": "matrixTransfer",
+                  "status": "conditional",
+                  "statement": "Brendel 2020 motive une comparaison future de transfert/rétention de certains volatils dans sa matrice sans alcool; il ne prédit ni le lot ni la bière fournis.",
+                  "reason": "Le résultat porte sur un produit et une matrice de banc; il ne démontre ni libération de thiols par levure, ni équivalence à la bière acidifiée, ni délai universel.",
+                  "evidenceIds": [
+                    "m-transfer-brendel-2020"
+                  ],
+                  "assertionIds": [],
+                  "criterionIds": []
+                }
+              ],
+              "exclusions": [],
+              "conditions": [
+                "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+                "Aucun programme n’est fourni; aucune addition n’est fabriquée pour remplir ce conseil.",
+                "But : séparer le transfert/rétention physique d’une explication par levure. Geste possible sur un échantillon ou un essai futur : choisir la matrice et les analytes, puis mesurer aux points retenus; aucune masse, durée ou température n’est proposée.",
+                "Information qui départage : matière et analytes mesurés, matrice réelle, et points de comparaison choisis. Cette voie n’exige pas une hypothèse de biotransformation et ne prédit pas un caractère sensoriel final."
+              ],
+              "nonConclusions": [
+                "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+                "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil."
+              ],
+              "informationRequestIds": [
+                "decision-matrix-transfer"
+              ]
+            }
+          ],
+          "informationRequests": [
+            {
+              "id": "decision-variety:hop-v55-fixture-identity-a-material-context",
+              "question": "Si cela départage le choix, quelle identité de lot, forme, source et contexte de description peuvent être consignés ?",
+              "whyDecisionChanging": "Ces informations améliorent la traçabilité du matériau; elles ne remplacent ni une analyse ni une dégustation de bière.",
+              "optionIds": [
+                "hop-advice-option-001"
+              ]
+            },
+            {
+              "id": "decision-criterion-source-120-125-poire-aroma",
+              "question": "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+              "whyDecisionChanging": "Une absence de mention n’établit pas l’absence du caractère et une description de houblon ne prédit pas la bière.",
+              "optionIds": [
+                "hop-advice-option-002",
+                "hop-advice-option-005",
+                "hop-advice-option-008"
+              ]
+            },
+            {
+              "id": "decision-variety:hop-v55-fixture-identity-a-reference-source",
+              "question": "Quelle description sourcée de ce matériau et dans quel contexte d’emploi pourraient servir à la comparaison, si elle est utile ?",
+              "whyDecisionChanging": "Aucun profil n’est inventé; une description manquante n’établit pas l’absence du caractère recherché.",
+              "optionIds": [
+                "hop-advice-option-002"
+              ]
+            },
+            {
+              "id": "decision-matrix-transfer",
+              "question": "Si cette comparaison change le choix, quelle matrice/échantillon et quels composés mesurés seraient pertinents ?",
+              "whyDecisionChanging": "Brendel motive une comparaison de transfert en sa matrice sans alcool seulement; elle ne dicte ni analyte ni protocole pour cette bière.",
+              "optionIds": [
+                "hop-advice-option-003",
+                "hop-advice-option-006",
+                "hop-advice-option-009"
+              ]
+            },
+            {
+              "id": "decision-variety:hop-v55-fixture-identity-b-material-context",
+              "question": "Si cela départage le choix, quelle identité de lot, forme, source et contexte de description peuvent être consignés ?",
+              "whyDecisionChanging": "Ces informations améliorent la traçabilité du matériau; elles ne remplacent ni une analyse ni une dégustation de bière.",
+              "optionIds": [
+                "hop-advice-option-004"
+              ]
+            },
+            {
+              "id": "decision-variety:hop-v55-fixture-identity-b-reference-source",
+              "question": "Quelle description sourcée de ce matériau et dans quel contexte d’emploi pourraient servir à la comparaison, si elle est utile ?",
+              "whyDecisionChanging": "Aucun profil n’est inventé; une description manquante n’établit pas l’absence du caractère recherché.",
+              "optionIds": [
+                "hop-advice-option-005"
+              ]
+            },
+            {
+              "id": "decision-variety:hop-v55-fixture-identity-c-material-context",
+              "question": "Si cela départage le choix, quelle identité de lot, forme, source et contexte de description peuvent être consignés ?",
+              "whyDecisionChanging": "Ces informations améliorent la traçabilité du matériau; elles ne remplacent ni une analyse ni une dégustation de bière.",
+              "optionIds": [
+                "hop-advice-option-007"
+              ]
+            },
+            {
+              "id": "decision-variety:hop-v55-fixture-identity-c-reference-source",
+              "question": "Quelle description sourcée de ce matériau et dans quel contexte d’emploi pourraient servir à la comparaison, si elle est utile ?",
+              "whyDecisionChanging": "Aucun profil n’est inventé; une description manquante n’établit pas l’absence du caractère recherché.",
+              "optionIds": [
+                "hop-advice-option-008"
+              ]
+            }
+          ],
+          "evidenceSources": [
+            {
+              "id": "m-transfer-brendel-2020",
+              "source": {
+                "title": "Brendel et al. 2020 — étude de transfert de volatils en bière sans alcool",
+                "author": "Brendel et al. (référence bibliographique du dossier; affichage incomplet)",
+                "year": 2020,
+                "kind": "research",
+                "reference": "https://doi.org/10.1002/ffj.3609",
+                "locator": "Source primaire vérifiée par le pilote; dossier bio-procédé, faits-candidats.json/nolo-volatile-transfer-is-not-biotransformation."
+              },
+              "locator": "Résumé du dossier parent-vérifié : méthodes et suivi de transfert sur sept jours; source réutilisée sans nouvelle ouverture.",
+              "readingLevel": "dossierSummary",
+              "domain": "transfert et rétention de certains volatils dans une matrice sans alcool",
+              "established": "Dans ce seul essai de banc, les profils temporels différaient selon les composés et la matrice.",
+              "limits": [
+                "Un produit HMB T90 2015 et une bière commerciale sans alcool; ce n’est pas le houblon ni la matrice de la situation fournie.",
+                "Preuve de transfert/évolution de volatils, pas de conversion de précurseurs thiolés par levure vivante.",
+                "Aucun délai optimal ou rendement universel n’est transférable.",
+                "Dossier parent-vérifié réutilisé; pas de collecte ni réouverture dans J4-R01/R02."
+              ]
+            }
+          ],
+          "coverage": {
+            "status": "completeWithinSuppliedScope",
+            "consideredMaterialIds": [
+              "variety:hop-v55-fixture-identity-a",
+              "variety:hop-v55-fixture-identity-b",
+              "variety:hop-v55-fixture-identity-c"
+            ],
+            "excludedMaterialIds": [],
+            "contextOnlyMaterialIds": [],
+            "omittedMaterials": [],
+            "conditionalMaterials": [],
+            "limits": [
+              "Le programme vaut null dans l’entrée; aucun programme vide ni état de recette n’est inventé.",
+              "Exploration limitée aux matières explicitement transmises à cette action; aucun catalogue complet ou épuisement de recherche n’est revendiqué.",
+              "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+              "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+              "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+            ]
+          },
+          "limitations": [
+            "Le programme vaut null dans l’entrée; aucun programme vide ni état de recette n’est inventé.",
+            "Exploration limitée aux matières explicitement transmises à cette action; aucun catalogue complet ou épuisement de recherche n’est revendiqué.",
+            "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+            "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+            "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+          ],
+          "reference": "hop-advice-result-v1:sha256:a998c7a5afda4938bb7b2c234d0e73909e7823c1ec4909d05eedbc75cfc9e183"
+        },
+        "criteria": [
+          {
+            "id": "criterion-source-120-125-poire",
+            "description": "À préserver : poire",
+            "role": "preserve",
+            "origin": "user",
+            "familyId": "pomeFruit",
+            "status": "evaluatedByStrategy",
+            "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+            "strategies": [
+              {
+                "optionId": "hop-advice-option-001",
+                "optionReference": "hop-advice-option-v1:sha256:fd0de3fe5056c3c23f2bb6f42b1e07cd35fa67107a466cee961c4122f6a6a6c0",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-002",
+                "optionReference": "hop-advice-option-v1:sha256:12a8122569f0e2ea1d8b97a71985c56ebd3579a85bb1fdfad1b1d1e468dc2ee7",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-003",
+                "optionReference": "hop-advice-option-v1:sha256:625cd9388b0630737fb934eecc88dd2c08c99af96a1cefb04cd44099f7aa21fd",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-004",
+                "optionReference": "hop-advice-option-v1:sha256:1ce4b8df76ac37b4959831848bcb922611528f3915ce0d616c8101dae9c14c49",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-005",
+                "optionReference": "hop-advice-option-v1:sha256:9dab4f96f01309537ff4daa2311aa1920d91e17123bb4fd062798d1fa7bfa243",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-006",
+                "optionReference": "hop-advice-option-v1:sha256:a0bcb57c28fd5172ffb3f73c8118fb99468b258bf8dd76e0e2a4ad9f7577ed9b",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-007",
+                "optionReference": "hop-advice-option-v1:sha256:73510b95beedfea14b71edd7c592f3e69fee6ebefb225f2c3f3e7aa03d6e83f7",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-008",
+                "optionReference": "hop-advice-option-v1:sha256:c39c072681fc036eff0cc45fd2fef94aef22ed9724f32c3600712285cc59c697",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              },
+              {
+                "optionId": "hop-advice-option-009",
+                "optionReference": "hop-advice-option-v1:sha256:8974c371db539ff733f5a53ea2603678b8ab46ee11e34e03f17e56ab2959063e",
+                "evaluation": {
+                  "criterionId": "criterion-source-120-125-poire",
+                  "status": "unknown",
+                  "reason": "Les descriptions sourcées du candidat ne permettent pas d'évaluer Pomme et poire; caractère inconnu.",
+                  "evidenceIds": []
+                }
+              }
+            ]
+          }
+        ],
+        "missingInformation": [
+          "Si cela départage le choix, quelle identité de lot, forme, source et contexte de description peuvent être consignés ?",
+          "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+          "Quelle description sourcée de ce matériau et dans quel contexte d’emploi pourraient servir à la comparaison, si elle est utile ?",
+          "Si cette comparaison change le choix, quelle matrice/échantillon et quels composés mesurés seraient pertinents ?"
+        ],
+        "sources": [
+          {
+            "title": "Brendel et al. 2020 — étude de transfert de volatils en bière sans alcool",
+            "author": "Brendel et al. (référence bibliographique du dossier; affichage incomplet)",
+            "year": 2020,
+            "kind": "research",
+            "reference": "https://doi.org/10.1002/ffj.3609",
+            "locator": "Source primaire vérifiée par le pilote; dossier bio-procédé, faits-candidats.json/nolo-volatile-transfer-is-not-biotransformation."
+          }
+        ],
+        "boundaries": {
+          "offline": true,
+          "writesRecipe": false,
+          "writesBatch": false,
+          "sensoryValidation": "notEstablished"
+        }
+      },
+      "branches": [],
+      "unresolved": [
+        "La cible qualitative « faible » sur « amertume » est conservée sans direction relative : ni base actuelle, ni baisse, ni valeur n’est déduite; le service local de stratégies ne la reçoit pas comme critère dirigé.",
+        "Le programme reste null. Le contrat du conseil exige un stade : planning sert de périmètre d’exploration, sans décrire un stade réel ni une ligne à appliquer.",
+        "Si cela départage le choix, quelle identité de lot, forme, source et contexte de description peuvent être consignés ?",
+        "Une description sourcée dans le contexte d’emploi visé ou une correction explicite de la famille documentaire départagerait-elle ces matières ?",
+        "Quelle description sourcée de ce matériau et dans quel contexte d’emploi pourraient servir à la comparaison, si elle est utile ?",
+        "Si cette comparaison change le choix, quelle matrice/échantillon et quels composés mesurés seraient pertinents ?",
+        "Le moteur confirme que le programme vaut null dans cette entrée."
+      ]
+    },
+    "source": {
+      "kind": "exploration"
+    },
+    "runtimeReference": "fixture-runtime:unknown-context",
+    "contentReference": "hop-v55-decision-reading-v4:sha256:ba52661b56ef3aef7facf1214418c61ddb0038570e6e620c72d3cc0d840cf9d2"
+  },
+  "propertyAdviceRequestDraft": {
+    "format": "hop-v55-property-advice-request-draft-v3",
+    "requestId": "request:source4-contract-fixture",
+    "ownerKey": "owner:source4-contract-fixture",
+    "workspaceId": "workspace:source4-contract-fixture",
+    "sourceReadingReference": "hop-v55-decision-reading-v4:sha256:ba52661b56ef3aef7facf1214418c61ddb0038570e6e620c72d3cc0d840cf9d2",
+    "preparedReference": "hop-v55-property-advice-prepared-v3:sha256:26e6f399f7879df6a4b49ae4b7fcf1caedec75faa9e01cff8baa941c6e232527",
+    "requestDraftReference": "hop-v55-property-advice-request-draft-v3:sha256:f453f4ac8193886f22b89f2855c7feb91d859a9628c6a7e4a57640d04f6b66a5",
+    "requestSnapshot": {
+      "format": "hop-documentary-request-v3",
+      "id": "request:source4-contract-fixture",
+      "originalQuestion": "Ma bière est trop sucrée. Comment envisager une compensation avec le houblon ? Je veux une faible amertume et garder la poire. Mon houblon maison sans analyse a une odeur résineuse.",
+      "interpretation": {
+        "id": "interpretation-request:source4-contract-fixture",
+        "version": "hop-v55-property-advice-reading-v3",
+        "text": "Lecture proposée : Constat rapporté : sucrée; Question à examiner : compensation, reliée au constat rapporté « sucrée »; Cible qualitative : amertume (faible); Cible à préserver : poire; Constat rapporté : résineuse.",
+        "origin": "proposal"
+      },
+      "propertyIntents": [
+        {
+          "id": "criterion-source-18-24-sucree",
+          "property": "sweetness",
+          "label": "sucrée",
+          "role": "reportedObservation",
+          "direction": null,
+          "qualification": null,
+          "required": false,
+          "comparisonBasis": {
+            "kind": "current",
+            "assertionIds": []
+          },
+          "metric": "sensory",
+          "subject": {
+            "kind": "beer",
+            "label": "Bière visée",
+            "materialId": null,
+            "sensoryContext": "beer"
+          },
+          "sourceSpans": [
+            {
+              "start": 18,
+              "end": 24,
+              "text": "sucrée"
+            }
+          ],
+          "interpretationOrigin": "proposal",
+          "basis": "Constat rapporté conservé dans son contexte; aucune mesure ni demande de changement n’est déduite.",
+          "relatedIntentIds": []
+        },
+        {
+          "id": "criterion-source-48-60-compensation",
+          "property": "sweetness",
+          "label": "compensation",
+          "role": "investigation",
+          "direction": "investigate",
+          "qualification": null,
+          "required": true,
+          "comparisonBasis": {
+            "kind": "none",
+            "assertionIds": []
+          },
+          "metric": "sensory",
+          "subject": {
+            "kind": "beer",
+            "label": "Bière visée",
+            "materialId": null,
+            "sensoryContext": "beer"
+          },
+          "sourceSpans": [
+            {
+              "start": 48,
+              "end": 60,
+              "text": "compensation"
+            }
+          ],
+          "interpretationOrigin": "proposal",
+          "basis": "La demande de compensation reste une investigation reliée au constat source; aucun levier ni résultat de goût n’est choisi.",
+          "relatedIntentIds": [
+            "criterion-source-18-24-sucree"
+          ],
+          "investigation": {
+            "kind": "comparePerceptualCompensation",
+            "observationIntentIds": [
+              "criterion-source-18-24-sucree"
+            ]
+          }
+        },
+        {
+          "id": "criterion-source-98-106-amertume",
+          "property": "bitterness",
+          "label": "amertume",
+          "role": "target",
+          "direction": null,
+          "qualification": "faible",
+          "required": true,
+          "comparisonBasis": {
+            "kind": "qualitativeTarget",
+            "assertionIds": []
+          },
+          "metric": "sensory",
+          "subject": {
+            "kind": "beer",
+            "label": "Bière visée",
+            "materialId": null,
+            "sensoryContext": "beer"
+          },
+          "sourceSpans": [
+            {
+              "start": 98,
+              "end": 106,
+              "text": "amertume"
+            }
+          ],
+          "interpretationOrigin": "proposal",
+          "basis": "Cible qualitative engagée par la question; qualificatif exact conservé (niveau visé), sans valeur actuelle, échelle ni changement déduit.",
+          "relatedIntentIds": []
+        },
+        {
+          "id": "criterion-source-120-125-poire",
+          "property": "aroma",
+          "label": "poire",
+          "familyId": "pomeFruit",
+          "role": "target",
+          "direction": "keep",
+          "qualification": null,
+          "required": true,
+          "comparisonBasis": {
+            "kind": "current",
+            "assertionIds": []
+          },
+          "metric": "sensory",
+          "subject": {
+            "kind": "beer",
+            "label": "Bière visée",
+            "materialId": null,
+            "sensoryContext": "beer"
+          },
+          "sourceSpans": [
+            {
+              "start": 120,
+              "end": 125,
+              "text": "poire"
+            }
+          ],
+          "interpretationOrigin": "proposal",
+          "basis": "Garde formulée dans la question; aucune hausse ni baisse n’en est déduite.",
+          "relatedIntentIds": []
+        },
+        {
+          "id": "criterion-source-171-180-resineuse",
+          "property": "materialCharacter",
+          "label": "résineuse",
+          "familyId": "resin",
+          "role": "reportedObservation",
+          "direction": null,
+          "qualification": null,
+          "required": false,
+          "comparisonBasis": {
+            "kind": "current",
+            "assertionIds": []
+          },
+          "metric": "sensory",
+          "subject": {
+            "kind": "material",
+            "label": "Mon houblon maison sans analyse",
+            "materialId": null,
+            "sensoryContext": "rawHop"
+          },
+          "sourceSpans": [
+            {
+              "start": 171,
+              "end": 180,
+              "text": "résineuse"
+            }
+          ],
+          "interpretationOrigin": "proposal",
+          "basis": "Constat rapporté conservé dans son contexte; aucune mesure ni demande de changement n’est déduite.",
+          "relatedIntentIds": []
+        }
+      ],
+      "candidatePolicy": {
+        "kind": "explicit",
+        "materialIds": [],
+        "basis": "Fixture de contrat : aucune matière candidate n’est choisie."
+      },
+      "context": {
+        "stage": "unknown",
+        "stageBasis": "Aucun stade de programme physique lié au contexte préparé; le stade reste unknown.",
+        "assertions": [],
+        "access": {
+          "bulkBeer": {
+            "state": "unknown",
+            "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+            "assertionIds": []
+          },
+          "sampling": {
+            "state": "unknown",
+            "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+            "assertionIds": []
+          },
+          "separatePortion": {
+            "state": "unknown",
+            "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+            "assertionIds": []
+          }
+        }
+      },
+      "exclusions": [],
+      "materials": []
+    }
+  },
+  "contract": {
+    "requestFormat": "hop-documentary-request-v3",
+    "projectionCoverage": {
+      "version": "hop-v55-semantic-projection-coverage-v1",
+      "included": [
+        "criterion-source-120-125-poire"
+      ],
+      "notProjected": [
+        {
+          "annotationId": "criterion-source-18-24-sucree",
+          "reason": "reportedObservation"
+        },
+        {
+          "annotationId": "criterion-source-48-60-compensation",
+          "reason": "linkedInquiry"
+        },
+        {
+          "annotationId": "criterion-source-98-106-amertume",
+          "reason": "qualitativeTargetWithoutDirection"
+        },
+        {
+          "annotationId": "criterion-source-171-180-resineuse",
+          "reason": "reportedObservation"
+        }
+      ]
+    },
+    "noScopeLedger": true,
+    "archiveResponseRole": "Résultat local lié par le lecteur; provenance de lecture, pas sortie attendue pour le backend ou un modèle.",
+    "api": {
+      "reader": "readHopV55QuestionSemanticV1(question, prepared)",
+      "archive": "createHopV55DecisionReadingArchiveV4(input) → readHopV55DecisionReadingArchive(value)",
+      "intentMapper": "hopV55PropertyIntentsFromSemanticReadingV1(reading, prepared)",
+      "requestSealer": "sealHopV55PropertyAdviceRequestDraftV3FromIntents(input)",
+      "combinedAdapter": "prepareHopV55PropertyAdviceFromSemanticReadingV1(input)",
+      "requestValidator": "assertHopPropertyAdviceRequestV3(requestSnapshot)"
+    },
+    "execution": {
+      "localReaderEngineOnly": true,
+      "propertyAdviceBuilderCalled": false,
+      "modelOrNetworkCalled": false
+    }
+  }
+}

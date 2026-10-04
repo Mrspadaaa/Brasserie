@@ -1,3 +1,5 @@
+import { assertBrewerCatalogueMeta, type BrewerCatalogueMeta } from './brewerCatalogueSchema.js';
+
 /** Shared, dependency-free contracts. Analytical observations are never aroma predictions. */
 export type HopConfidence = 'low' | 'medium' | 'high';
 export type HopProductForm = 'pelletT90' | 'pelletT45' | 'cryo' | 'cone' | 'extract' | 'unknown';
@@ -49,6 +51,7 @@ export interface HopVariety {
   descriptions: HopDescription[];
   analysis: HopMeasurement[];
   archived?: boolean;
+  catalogueMeta?: BrewerCatalogueMeta;
 }
 export interface HopLot {
   id: string;
@@ -125,7 +128,7 @@ export function hopMeasurementError(v: unknown): string | null {
 }
 export function assertHopDocument(collection: 'hopVarieties' | 'hopLots', value: unknown, id?: string): asserts value is HopVariety | HopLot {
   if (!plain(value) || !idOk(value.id) || (id != null && value.id !== id) || !nonempty(value.name)) throw Error('Identité de fiche houblon invalide.');
-  const allowed = collection === 'hopVarieties' ? ['id', 'name', 'aliases', 'origin', 'form', 'descriptions', 'analysis', 'archived']
+  const allowed = collection === 'hopVarieties' ? ['id', 'name', 'aliases', 'origin', 'form', 'descriptions', 'analysis', 'archived', 'catalogueMeta']
     : ['id', 'varietyId', 'name', 'lotNumber', 'harvestYear', 'growingRegion', 'grower', 'storageNotes', 'referenceOnly', 'form', 'stockItemRef', 'analysis', 'notes', 'archived'];
   if (!onlyKeys(value, allowed)) throw Error('Champ de fiche houblon non reconnu.');
   if (!HOP_FORMS.includes(value.form)) throw Error('Forme du houblon invalide.');
@@ -138,6 +141,7 @@ export function assertHopDocument(collection: 'hopVarieties' | 'hopLots', value:
     keys.add(measurement.analyte);
   }
   if (value.archived != null && typeof value.archived !== 'boolean') throw Error('État d’archivage invalide.');
+  if (value.catalogueMeta !== undefined) assertBrewerCatalogueMeta(value.catalogueMeta, collection === 'hopVarieties' ? 'hopVariety' : undefined);
   if (collection === 'hopVarieties') {
     if (!Array.isArray(value.aliases) || value.aliases.some((s: unknown) => !nonempty(s)) || !Array.isArray(value.descriptions)) throw Error('Description de variété invalide.');
     for (const description of value.descriptions) {

@@ -7,6 +7,7 @@ import {
   type YeastTechnicalFact,
   type YeastTechnicalSelections
 } from './yeastTechnicalFacts.js';
+import type { YeastCatalogue, YeastCatalogueFact } from './yeastCatalogueSchema.js';
 
 export type YeastDocumentaryForm = 'sèche' | 'liquide' | 'levain';
 
@@ -37,6 +38,39 @@ export interface YeastDocumentaryBody {
 export interface YeastDocumentarySheet extends YeastDocumentaryBody {
   version: 1;
   hopIndexId: string;
+}
+
+/** Stable identity for an observation, deliberately independent of its read date.
+ * The audit keeps complete before/after values; this key only joins the sparse
+ * personal overlay back to the immutable harvested fact it supersedes. */
+export function yeastTechnicalFactIdentity(fact: YeastTechnicalFact): string {
+  return JSON.stringify([
+    fact.key, fact.reported, fact.range?.min ?? null, fact.range?.max ?? null,
+    fact.unit ?? null, fact.qualifier ?? null, fact.context ?? null,
+    fact.source ?? null, fact.sourceUrl ?? null
+  ]);
+}
+
+/** Convert one untouched harvested observation without changing its wording,
+ * bounds, units, context, citation, or retrieval date. */
+export function harvestedYeastTechnicalFact(
+  fact: YeastCatalogueFact,
+  catalogue: YeastCatalogue
+): YeastTechnicalFact {
+  const sourceUrl = /^https?:\/\//i.test(fact.source.reference) ? fact.source.reference : undefined;
+  const retrievedAt = sourceUrl
+    ? catalogue.retrievals.find(retrieval => retrieval.url === sourceUrl)?.retrievedAt
+    : undefined;
+  return {
+    key: fact.key,
+    reported: fact.reported,
+    origin: 'manufacturer',
+    ...(fact.range ? { range: { ...fact.range }, unit: fact.unit, qualifier: fact.qualifier } : {}),
+    source: fact.source.title,
+    ...(sourceUrl ? { sourceUrl } : {}),
+    ...(retrievedAt ? { retrievedAt } : {}),
+    ...(fact.context ? { context: fact.context } : {})
+  };
 }
 
 /** Documentary information scoped to its containing recipe/lot ingredient. */

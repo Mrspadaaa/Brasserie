@@ -78,6 +78,14 @@ export interface BrewerJob {
   finishedAt?: number;
   readAt?: number;
   attempt: number;
+  /** Present only for the isolated assisted-read lane; ordinary jobs stay untagged. */
+  protocol?: typeof import('./brewerHopAdviceTransportV1.js').HOP_ADVICE_PROTOCOL_V1.name | 'unsupported';
+  /** Confirmed side effects survive a rejected/interrupted advice response. */
+  catalogueReceipts?: Array<{
+    operationId: string; kind: string; targetId: string; revision: number;
+    fingerprint: string; committedAt: string; status: 'committed';
+  }>;
+  scenarioReceipts?: Array<{ scenarioId: string; operationId: string; revision: number; reference: string; committedAt: string }>;
   error?: { code: string; message: string; retryable: boolean };
 }
 export interface BrewerFieldChange {
@@ -108,6 +116,10 @@ export interface BrewerContext {
   batch?: any;
   equipment?: any;
   inventory: any[];
+  /** Formal pending reservations loaded with the inventory. Every active row
+   * explicitly carries stockConsumption (null means confirmed absent).
+   * Plans/purchases are not reservations; omitted fields never prove zero. */
+  stockReservations?: { complete: boolean; batches: unknown[]; source?: 'firestoreReadOnlyTransaction' | 'localCache' };
   material: any[];
   waterSources: any[];
   phase: string;
@@ -115,6 +127,13 @@ export interface BrewerContext {
   provenance: string[];
   localJournal?: any;
   editableTargets?: BrewerProposal['target'][];
+}
+export interface BrewerReferenceRequest {
+  varietyIds?: string[];
+  lotIds?: string[];
+  knowledgeIds?: string[];
+  /** Targeted supplement to an already loaded bounded context. */
+  onlyReferences?: boolean;
 }
 export type BrewerMode = 'fast' | 'auto' | 'deep';
 export interface BrewerTurn {
@@ -131,6 +150,10 @@ export interface BrewerTurn {
   mode?: BrewerMode;
   contextLabel: string;
   proposal?: BrewerProposal;
+  /** Assisted reading: a corrigible proposal for the local V3/V4 path, never an adoption. */
+  hopAdviceProposal?: import('./brewerHopAdviceProposal.js').BrewerHopAdviceProposalEnvelope;
+  /** Identifies turns written by the versioned assisted-read lane. */
+  protocol?: typeof import('./brewerHopAdviceTransportV1.js').HOP_ADVICE_PROTOCOL_V1.name;
 }
 export interface BrewerChatInput {
   scope: BrewerScope;
@@ -142,4 +165,6 @@ export interface BrewerChatInput {
   mode?: BrewerMode;
   generation?: number;
   editableTargets?: BrewerProposal['target'][];
+  /** Typed handoff of the archived local reading; selects the bounded read-only profile. */
+  hopAdvice?: import('./brewerHopAdviceProposal.js').BrewerHopAdviceRequest;
 }
