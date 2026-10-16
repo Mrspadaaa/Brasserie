@@ -13,12 +13,12 @@ export type GeminiUnusableReason = 'degenerate' | 'truncated';
 
 /**
  * Never « relance la demande »: the same request loops or is cut again, and is billed again.
- * The lookup screens append « — à saisir à la main. » themselves. No provider name (DESIGN.md).
+ * The lookup screens add the manual way out as a sentence of its own (`src/ui/manualEntry.ts`). No provider name (DESIGN.md).
  * Non-breaking spaces keep « ; » and « : » off the start of a line at 390 px.
  */
 export const GEMINI_UNUSABLE_MESSAGES: Record<GeminiUnusableReason, string> = {
-  degenerate: 'L’IA a rendu une réponse inutilisable (un nombre répété sans fin). Rien n’est appliqué ; la même demande bouclerait encore : modifie-la avant de relancer.',
-  truncated: 'La réponse de l’IA a été coupée au plafond de sortie. Rien n’est appliqué ; la même demande serait coupée encore : modifie-la avant de relancer.'
+  degenerate: 'L’IA a rendu une réponse inutilisable (un nombre répété sans fin). Rien n’est appliqué\u00a0; la même demande bouclerait encore\u00a0: modifie-la avant de relancer.',
+  truncated: 'La réponse de l’IA a été coupée au plafond de sortie. Rien n’est appliqué\u00a0; la même demande serait coupée encore\u00a0: modifie-la avant de relancer.'
 };
 
 export class GeminiUnusableOutputError extends Error {

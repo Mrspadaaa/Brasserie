@@ -52,8 +52,13 @@ export const RECIPE_IMPORT_BOUNDS: Readonly<Record<string, Bounds>> = {
   'waterTarget.*': ION
 };
 
+/** An own entry only: a key from the model such as « constructor » must never reach `Object.prototype`. */
+function own<T>(table: Readonly<Record<string, T>>, key: string | undefined): T | undefined {
+  return key !== undefined && Object.prototype.hasOwnProperty.call(table, key) ? table[key] : undefined;
+}
+
 function boundsFor(pattern: string): Bounds {
-  return RECIPE_IMPORT_BOUNDS[pattern] ?? RECIPE_IMPORT_BOUNDS[pattern.replace(/\.[^.]+$/, '.*')] ?? OTHER;
+  return own(RECIPE_IMPORT_BOUNDS, pattern) ?? own(RECIPE_IMPORT_BOUNDS, pattern.replace(/\.[^.]+$/, '.*')) ?? OTHER;
 }
 
 /** The rule above: not finite, a non-zero residue under 1e-6, or outside the bounds of its field. */
@@ -67,13 +72,14 @@ function impossible(value: number, pattern: string): boolean {
  * L'avertissement parle au brasseur (V3 REV-D100, m9) : « Fuggle : durée d'ajout
  * impossible, valeur écartée. À compléter. » Ni clé du schéma, ni chemin, ni
  * nombre en notation scientifique. « valeur écartée » s'accorde quel que soit
- * le champ ; l'espace insécable garde « : » sur la ligne du nom.
+ * le champ ; des espaces insécables gardent « : » sur la ligne du nom et « À compléter » d'un bloc (V2 Chrome, 390 px).
  */
 
 const IONS: Readonly<Record<string, string>> = { ca: 'calcium', mg: 'magnésium', na: 'sodium', so4: 'sulfate', cl: 'chlorure', hco3: 'alcalinité' };
+/** Same names as the water workshop (`src/domain/water/substances.ts`). */
 const SALTS: Readonly<Record<string, string>> = {
-  gypse: 'gypse', cacl2: 'chlorure de calcium', epsom: 'sel d’Epsom', mgcl2: 'chlorure de magnésium', nacl: 'chlorure de sodium',
-  nahco3: 'bicarbonate de sodium', caco3: 'craie', chaux: 'chaux', kcl: 'chlorure de potassium'
+  gypse: 'gypse', cacl2: 'chlorure de calcium', epsom: 'sel d’Epsom', mgcl2: 'chlorure de magnésium', nacl: 'sel de table',
+  nahco3: 'bicarbonate de soude', caco3: 'craie', chaux: 'chaux éteinte', kcl: 'chlorure de potassium'
 };
 const SIDES: Readonly<Record<string, string>> = { mash: 'à l’empâtage', sparge: 'au rinçage' };
 
@@ -107,19 +113,21 @@ const SECTIONS: Readonly<Record<string, string>> = {
 
 /** The brewer's name of a numeric field of the import schema, or undefined for a field without one. */
 export function recipeImportFieldLabel(pattern: string): string | undefined {
-  if (FIELD_LABELS[pattern]) return FIELD_LABELS[pattern];
+  const exact = own(FIELD_LABELS, pattern);
+  if (exact) return exact;
   const [, group, key] = /^(.*)\.([^.]+)$/.exec(pattern) ?? [];
-  if (group === 'waterPlan.sourceSnapshot' && IONS[key]) return `${IONS[key]} de l’eau de départ`;
-  if ((group === 'waterPlan.targetIons' || group === 'waterTarget') && IONS[key]) return `${IONS[key]} cible`;
-  if (group === 'waterPlan.mash' && SALTS[key]) return `${SALTS[key]} ${SIDES.mash}`;
-  if (group === 'waterPlan.sparge' && SALTS[key]) return `${SALTS[key]} ${SIDES.sparge}`;
-  if ((group === 'waterPlan.acid' || group === 'waterPlan.acidOverride') && SIDES[key]) return `acide ${SIDES[key]}`;
+  const ion = own(IONS, key), salt = own(SALTS, key), side = own(SIDES, key);
+  if (group === 'waterPlan.sourceSnapshot' && ion) return `${ion} de l’eau de départ`;
+  if ((group === 'waterPlan.targetIons' || group === 'waterTarget') && ion) return `${ion} cible`;
+  if (group === 'waterPlan.mash' && salt) return `${salt} ${SIDES.mash}`;
+  if (group === 'waterPlan.sparge' && salt) return `${salt} ${SIDES.sparge}`;
+  if ((group === 'waterPlan.acid' || group === 'waterPlan.acidOverride') && side) return `acide ${side}`;
   return undefined;
 }
 
 function clean(node: unknown, pattern: string, who: string, warnings: string[]): unknown {
   if (Array.isArray(node)) {
-    const row = SECTIONS[pattern];
+    const row = own(SECTIONS, pattern);
     return node.map((item, index) => clean(item, `${pattern}[]`, row ? `${row} ${index + 1}` : who, warnings));
   }
   if (!node || typeof node !== 'object') return node;
@@ -128,15 +136,16 @@ function clean(node: unknown, pattern: string, who: string, warnings: string[]):
   const label = pattern && typeof record.name === 'string' && record.name.trim() ? record.name.trim() : who;
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(record)) {
+    if (key === '__proto__') continue; // not a schema field; assigning it would change the copy's prototype
     const childPattern = pattern ? `${pattern}.${key}` : key;
     if (typeof value === 'number' && impossible(value, childPattern)) {
       const field = recipeImportFieldLabel(childPattern);
       warnings.push(field
-        ? `${label} : ${field} impossible, valeur écartée. À compléter.`
-        : `${label} : une valeur impossible a été écartée. À compléter.`);
+        ? `${label}\u00a0: ${field} impossible, valeur écartée. À\u00a0compléter.`
+        : `${label}\u00a0: une valeur impossible a été écartée. À\u00a0compléter.`);
       continue;
     }
-    out[key] = clean(value, childPattern, SECTIONS[childPattern] ?? label, warnings);
+    out[key] = clean(value, childPattern, own(SECTIONS, childPattern) ?? label, warnings);
   }
   return out;
 }

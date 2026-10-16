@@ -158,7 +158,7 @@ export const AiClient = {
     // An HTTP error without a body reaches us as its bare code (« unknown », « not-found »…).
     const bare = code.replace(/^functions\//, '');
     if (bare && (!err?.message || err.message === bare)) {
-      return `Le serveur IA a répondu sans détail exploitable (code « ${bare} »). Réessaie dans quelques instants ; la saisie manuelle reste disponible.`;
+      return `Le serveur IA a répondu sans détail exploitable (code «\u00a0${bare}\u00a0»). Réessaie dans quelques instants ; la saisie manuelle reste disponible.`;
     }
     return err?.message || "L'analyse a échoué.";
   }

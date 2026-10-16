@@ -6,6 +6,7 @@ import { GEMINI_API_KEY } from './ai.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { GeminiUnusableOutputError, unusableGeminiOutput } from './geminiResponse.js';
 import { GeminiApiError } from './geminiErrors.js';
+import { BrewerBudgetError } from './brewerLimits.js';
 import { AI_ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS } from './aiTaskDeadline.js';
 import { geminiTransport } from './brewerHarness.js';
 import { TIERS, modelChain } from './models.js';
@@ -282,6 +283,8 @@ function lookupKnown(target: YeastDbCorrectionTarget, data: any) {
       product: document.product, offer: target.scope === 'offer' ? product : undefined } };
 }
 
+const INCOMPLETE_PROPOSAL = 'L’IA n’a pas rendu une proposition complète.';
+
 /**
  * `deadline` ends the whole generation, new attempt included, as for `aiTask` (V3 REV-D100, m6): it is taken
  * when the request starts, so the Function (150 s) still has time to answer and write. No new attempt after a
@@ -310,7 +313,7 @@ async function generateJson(system: string, context: unknown, schema: Record<str
         { daily: true, inspect: unusableGeminiOutput });
       const candidate = (response as any)?.candidates?.[0];
       const content = candidate?.content?.parts?.filter((part: any) => part?.thought !== true && typeof part?.text === 'string').map((part: any) => part.text).join('');
-      if (candidate?.finishReason !== 'STOP' || !content || content.length > 45000) throw new Error('L’IA n’a pas rendu une proposition complète.');
+      if (candidate?.finishReason !== 'STOP' || !content || content.length > 45000) throw new Error(INCOMPLETE_PROPOSAL);
       return { value: JSON.parse(content.replace(/^\s*```(?:json)?\s*/, '').replace(/\s*```\s*$/, '')), model, elapsedMs: Date.now() - started, response };
     } catch (error) {
       last = error;
@@ -318,14 +321,19 @@ async function generateJson(system: string, context: unknown, schema: Record<str
       if (error instanceof GeminiUnusableOutputError) throw new HttpsError('failed-precondition', error.message);
       if ((error as Error | undefined)?.name === 'TimeoutError' || (error as Error | undefined)?.name === 'AbortError')
         throw new HttpsError('deadline-exceeded', AI_OUT_OF_TIME_MESSAGE);
-      // Budget, permission and definite provider errors must not spend the new attempt on 3.8.
-      if (error instanceof HttpsError || /budget|limite|suspendu|autorisé|configuration/i.test(error instanceof Error ? error.message : '')) throw error;
+      // Budget, permission and definite provider errors must not spend the new attempt on 3.8. A plain error thrown
+      // out of the callable would reach the brewer as « INTERNAL »: the budget refusal is said as is (as in aiTask).
+      if (error instanceof HttpsError) throw error;
+      const message = error instanceof Error ? error.message : '';
+      if (error instanceof BrewerBudgetError || /budget|limite|suspendu|autorisé|configuration/i.test(message))
+        throw new HttpsError('failed-precondition', message);
       if (error instanceof GeminiApiError && !error.canTryAnotherModel) throw new HttpsError('unavailable', error.publicError().message);
     }
   }
-  // A provider error is said in the brewer's words, never as « Gemini HTTP 503 » (DESIGN.md).
+  // Said in the brewer's words: never « Gemini HTTP 503 » (DESIGN.md) nor a raw parser error.
   throw new HttpsError('unavailable', last instanceof GeminiApiError ? last.publicError().message
-    : last instanceof Error ? last.message : 'La recherche documentaire n’a pas abouti.');
+    : last instanceof Error && last.message === INCOMPLETE_PROPOSAL ? INCOMPLETE_PROPOSAL
+      : 'La recherche documentaire n’a pas abouti, même après une nouvelle tentative. Réessaie plus tard ou corrige la fiche à la main.');
 }
 
 const correctionSystem = `${ingredientLookupDefinition('levure').system}

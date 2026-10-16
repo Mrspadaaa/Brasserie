@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createHmac } from 'node:crypto';
 import { AI_TASK_DEADLINE_MS } from '../../functions/src/aiTaskDeadline';
+import { BrewerBudgetError } from '../../functions/src/brewerLimits';
 
 const state = vi.hoisted(() => ({ docs: new Map<string, any>(), commits: 0 }));
 const aiProvider = vi.hoisted(() => ({ content: '', finishReason: 'STOP', sent: [] as Array<{ model: string; body: any; signal?: AbortSignal }>,
@@ -363,6 +364,29 @@ describe('correction IA des fiches canoniques', () => {
       const failure = await labCheck().then(() => undefined, (error: Error) => error);
       expect(failure?.message).toMatch(/proposition complète/);
       expect(failure?.message).not.toMatch(/Gemini|Google/);
+    });
+
+    // Author review (code-review high, 16.10): a budget refusal reached the brewer as « INTERNAL », or was retried.
+    it.each([
+      ['ai-paused', 'L’IA est suspendue dans « Limites IA ».'],
+      ['ai-budget-unavailable', 'Le suivi mensuel IA est indisponible.']
+    ] as const)('un refus du budget (%s) est dit tel quel, sans nouvelle tentative', async (code, message) => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.failures = [() => new BrewerBudgetError(code, message)];
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      await expect(labCheck()).rejects.toMatchObject({ code: 'failed-precondition', message });
+      expect(aiProvider.sent).toHaveLength(1);
+    });
+
+    it('une réponse illisible deux fois rend un message français, jamais l’erreur brute du parseur', async () => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.content = '{"found":true,"name":';
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      const failure = await labCheck().then(() => undefined, (error: Error) => error);
+      expect(aiProvider.sent).toHaveLength(2);
+      expect(failure).toMatchObject({ code: 'unavailable' });
+      expect(failure?.message).toMatch(/^La recherche documentaire n’a pas abouti/);
+      expect(failure?.message).not.toMatch(/JSON|Unexpected|token/i);
     });
   });
 

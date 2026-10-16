@@ -33,7 +33,7 @@ describe('Erreur sans corps rendue lisible', () => {
       expect(result.error).toMatch(/serveur IA/);
       expect(result.error).toMatch(/saisie manuelle reste disponible/);
       // V2 Chrome 390 px: guillemets keep their code on the same line (non-breaking spaces).
-      expect(result.error).toContain(`(code « ${code} »)`);
+      expect(result.error).toContain(`(code «\u00a0${code}\u00a0»)`);
     });
 
   it('garde le message français d’une erreur serveur explicite', async () => {
@@ -57,8 +57,9 @@ describe('Erreur sans corps rendue lisible', () => {
   });
 
   it('la sortie manuelle des écrans de fiche est une phrase, jamais un fragment accolé', () => {
-    expect(withManualEntry('Rien n’est appliqué.')).toBe('Rien n’est appliqué. À saisir à la main.');
-    expect(withManualEntry('Lecture indisponible')).toBe('Lecture indisponible. À saisir à la main.');
-    expect(withManualEntry('Réessaie plus tard.  ')).toBe('Réessaie plus tard. À saisir à la main.');
+    // V2 Chrome 390 px: « à » ended a line before « la main »; non-breaking spaces after the one-letter words.
+    expect(withManualEntry('Rien n’est appliqué.')).toBe('Rien n’est appliqué. À\u00a0saisir à\u00a0la main.');
+    expect(withManualEntry('Lecture indisponible')).toBe('Lecture indisponible. À\u00a0saisir à\u00a0la main.');
+    expect(withManualEntry('Réessaie plus tard.  ')).toBe('Réessaie plus tard. À\u00a0saisir à\u00a0la main.');
   });
 });

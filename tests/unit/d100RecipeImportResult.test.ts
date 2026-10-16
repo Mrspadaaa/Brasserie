@@ -46,7 +46,7 @@ describe('Validation serveur des nombres d’un import de recette', () => {
     expect(result.waterPlan.mash).toEqual({ cacl2: 0 });
     expect(result.waterTarget).toEqual({ cl: 0 });
     // V3 m9: the brewer reads the ingredient and the field, never a schema key, a path or 6e-323.
-    const removed = (who: string, field: string) => `${who} : ${field} impossible, valeur écartée. À compléter.`;
+    const removed = (who: string, field: string) => `${who}\u00a0: ${field} impossible, valeur écartée. À\u00a0compléter.`;
     expect(result.importWarnings).toEqual([
       removed('Recette', 'volume du brassin'),
       removed('Recette', 'densité initiale'),
@@ -68,9 +68,10 @@ describe('Validation serveur des nombres d’un import de recette', () => {
     delete recipe.mashSteps[0].name; recipe.mashSteps[0].durationMin = 5e-324;
     recipe.mysteryScore = -1;
     expect(sanitizeRecipeImport(recipe).importWarnings).toEqual([
-      'Houblon 2 : quantité impossible, valeur écartée. À compléter.',
-      'Palier 1 : durée impossible, valeur écartée. À compléter.',
-      'Recette : une valeur impossible a été écartée. À compléter.'
+      // V2 Chrome 390 px: « À » alone ended a line; a non-breaking space keeps « À compléter » together.
+      'Houblon 2\u00a0: quantité impossible, valeur écartée. À\u00a0compléter.',
+      'Palier 1\u00a0: durée impossible, valeur écartée. À\u00a0compléter.',
+      'Recette\u00a0: une valeur impossible a été écartée. À\u00a0compléter.'
     ]);
   });
 
@@ -84,6 +85,20 @@ describe('Validation serveur des nombres d’un import de recette', () => {
     walk(TASKS.importRecipe.schema, '');
     expect(numbers.length).toBeGreaterThan(80);
     expect(numbers.filter(pattern => !recipeImportFieldLabel(pattern))).toEqual([]);
+    // Same names as the water workshop (src/domain/water/substances.ts).
+    expect(recipeImportFieldLabel('waterPlan.mash.nahco3')).toBe('bicarbonate de soude à l’empâtage');
+    expect(recipeImportFieldLabel('waterPlan.sparge.nacl')).toBe('sel de table au rinçage');
+    expect(recipeImportFieldLabel('waterPlan.mash.chaux')).toBe('chaux éteinte à l’empâtage');
+  });
+
+  it('ne prend jamais une clé du prototype (« constructor ») pour une borne ou un libellé', () => {
+    const recipe: any = { name: 'Brown ale', constructor: -1, waterPlan: { sourceSnapshot: { name: 'Réseau', constructor: -2, toString: 5 } } };
+    const result: any = sanitizeRecipeImport(recipe);
+    expect(result.importWarnings).toEqual([
+      'Recette\u00a0: une valeur impossible a été écartée. À\u00a0compléter.',
+      'Réseau\u00a0: une valeur impossible a été écartée. À\u00a0compléter.'
+    ]);
+    expect(Object.hasOwn(result.waterPlan.sourceSnapshot, 'toString')).toBe(true);
   });
 
   it('ne modifie pas l’objet reçu et ignore ce qui n’est pas un objet', () => {
