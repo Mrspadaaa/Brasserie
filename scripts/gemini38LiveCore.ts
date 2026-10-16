@@ -1,27 +1,38 @@
 /**
- * Garde-fous du test spécial Gemini 3.8 réel (scripts/gemini-38-live.ts).
+ * Garde-fous des tests spéciaux Gemini réels (scripts/gemini-38-live.ts,
+ * d100-gemini-live.ts, ia-b-gemini-live.ts).
  *
  * Aucun effet de bord à l'import : le test unitaire les vérifie avec un
  * fournisseur simulé, le script les branche sur le vrai `fetch`.
  * La clé ne passe jamais par ces fonctions : seuls l'URL et le corps sont lus.
  *
- * Ordre : modèle résolu et compteur contrôlés avant l'opt-in payant
+ * Seuls les deux modèles de la liste blanche du serveur (`GEMINI_MODELS`,
+ * models.ts) peuvent partir, chacun compté à son tarif.
+ *
+ * Ordre : modèles résolus et compteur contrôlés avant l'opt-in payant
  * (`livePreflight`), puis chaque appel réservé dans le compteur, sous verrou,
  * avant son envoi (`reserveLiveCall`) : un arrêt brutal ou une session
- * concurrente ne peut pas dépasser les 10 appels.
+ * concurrente ne peut pas dépasser les 40 appels (décision 63).
  */
 import { mkdirSync, readFileSync, rmdirSync, writeFileSync } from 'node:fs';
-import { GEMINI_MODEL } from '../functions/src/models';
+import { GEMINI_MODEL, GEMINI_MODELS } from '../functions/src/models';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
 
-export const LIVE_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
-export const LIVE_LAUNCH_CAP = 3;
-export const LIVE_TOTAL_CAP = 10;
+export const liveEndpoint = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+/** Point d'accès de 3.8, gardé pour les scripts qui n'appellent que lui. */
+export const LIVE_ENDPOINT = liveEndpoint(GEMINI_MODEL);
+const LIVE_ENDPOINTS = new Map<string, string>(GEMINI_MODELS.map(model => [liveEndpoint(model), model]));
+const WHITELIST = GEMINI_MODELS.join(' et ');
+/** Enveloppe des tests réels d'intégration : 5 appels par lancement, 40 au total (décision humaine du 16.10, décision 63). */
+export const LIVE_LAUNCH_CAP = 5;
+export const LIVE_TOTAL_CAP = 40;
 const COUNTER = /\*\*Compteur : (\d+) \/ (\d+)\*\*/;
 
 export interface LiveCall {
   n: number;
   at: Date;
+  /** Modèle demandé, lu dans l'URL ; `modelVersion` dit celui qui a répondu. */
+  model?: string;
   latencyMs: number;
   status?: number;
   modelVersion?: string;
@@ -44,7 +55,7 @@ export function readLiveCounter(journal: string): { used: number; total: number 
   return { used, total };
 }
 
-/** Appels permis pour ce lancement : 3 au plus, dans le reste des 10. */
+/** Appels permis pour ce lancement : 5 au plus, dans le reste des 40. */
 export function liveCallBudget(journal: string): number {
   const { used } = readLiveCounter(journal);
   return Math.max(0, Math.min(LIVE_LAUNCH_CAP, LIVE_TOTAL_CAP - used));
@@ -56,13 +67,13 @@ export function withLiveCounter(journal: string, used: number): string {
 }
 
 /**
- * Sans réseau ni coût, avant l'opt-in payant : chaque modèle résolu doit être 3.8,
- * puis le compteur doit laisser au moins un appel. Un refus n'appelle jamais `optIn`.
+ * Sans réseau ni coût, avant l'opt-in payant : chaque modèle résolu doit être dans
+ * la liste blanche du serveur, puis le compteur doit laisser au moins un appel.
+ * Un refus n'appelle jamais `optIn`.
  */
 export function livePreflight(resolvedModels: readonly string[], journal: string, optIn: () => void): { used: number; cap: number } {
-  if (!resolvedModels.length || resolvedModels.some(model => model !== 'gemini-3.8-flash')
-    || !LIVE_ENDPOINT.endsWith('/models/gemini-3.8-flash:generateContent'))
-    throw new Error('Le modèle résolu n’est pas gemini-3.8-flash. Aucun appel.');
+  if (!resolvedModels.length || resolvedModels.some(model => !(GEMINI_MODELS as readonly string[]).includes(model)))
+    throw new Error(`Modèle résolu hors de la liste blanche (${WHITELIST}). Aucun appel.`);
   const { used } = readLiveCounter(journal);
   const cap = liveCallBudget(journal);
   if (cap < 1) throw new Error(`Compteur global atteint (${used} / ${LIVE_TOTAL_CAP}). Aucun appel.`);
@@ -93,7 +104,7 @@ export function withJournalLock<T>(lockDir: string, action: () => T, { timeoutMs
 }
 
 /**
- * Réserve un appel avant son envoi : sous verrou, le compteur est relu, borné à 10,
+ * Réserve un appel avant son envoi : sous verrou, le compteur est relu, borné à 40,
  * puis incrémenté et réécrit. Renvoie le numéro de l'appel pour sa ligne du journal.
  */
 export function reserveLiveCall(journalPath: string, lockDir: string, options?: { timeoutMs?: number }): number {
@@ -125,7 +136,8 @@ export function liveJournalRow(call: LiveCall, issue: string, test: string, resu
 }
 
 /**
- * Enveloppe `fetch` : seul l'appel 3.8 part vers Google, dans la limite du lancement.
+ * Enveloppe `fetch` : seuls les appels aux modèles de la liste blanche partent vers
+ * Google, dans la limite du lancement, chacun compté au tarif de son modèle.
  * Le trafic local (émulateurs) passe ; tout autre hôte est refusé avant l'envoi.
  * `reserve` réserve l'appel dans le compteur global juste avant l'envoi et renvoie son
  * numéro ; s'il lève, rien ne part. `onCall` est appelé juste après chaque appel parti,
@@ -141,12 +153,13 @@ export function guardLiveFetch(
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
     const host = new URL(url).hostname;
     if (host === '127.0.0.1' || host === 'localhost' || host === '::1') return realFetch(input, init);
-    if (url !== LIVE_ENDPOINT) throw new Error(`Requête refusée avant l’envoi : seul ${GEMINI_MODEL} est autorisé.`);
+    const model = LIVE_ENDPOINTS.get(url);
+    if (!model) throw new Error(`Requête refusée avant l’envoi : seuls ${WHITELIST} sont autorisés.`);
     if (calls.length >= options.cap) throw new Error('Plafond d’appels Gemini réels atteint : requête refusée avant l’envoi.');
     const body = JSON.parse(String(init?.body ?? '{}'));
-    const quote = quoteGeminiCost(GEMINI_MODEL, body);
+    const quote = quoteGeminiCost(model, body);
     const thinkingLevel = body?.generationConfig?.thinkingConfig?.thinkingLevel;
-    const call: LiveCall = { n: options.reserve(), at: new Date(), latencyMs: 0, ...(typeof thinkingLevel === 'string' ? { thinkingLevel } : {}) };
+    const call: LiveCall = { n: options.reserve(), at: new Date(), model, latencyMs: 0, ...(typeof thinkingLevel === 'string' ? { thinkingLevel } : {}) };
     calls.push(call);
     const started = now();
     try {

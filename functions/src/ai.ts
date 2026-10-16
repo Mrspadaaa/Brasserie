@@ -1,7 +1,7 @@
 import { onCall, HttpsError, CallableRequest } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
 import { logger } from 'firebase-functions';
-import { AiTier, GEMINI_MODEL, TIERS, aiTier, assertGeminiModel, modelChain, type TierConfig } from './models.js';
+import { AiTier, GEMINI_LITE_MODEL, TIERS, aiTier, assertGeminiModel, geminiAttempts, type TierConfig } from './models.js';
 import { TASKS, TaskId, ingredientLookupDefinition } from './prompts.js';
 import { yeastLookupResultError } from './yeastLookupResult.js';
 import { validateInvoiceFile, normalizeInvoiceScan, SCAN_MODEL, type InvoiceFile } from './invoiceScanCore.js';
@@ -29,8 +29,9 @@ import {
  *   3. `gemini-3.8-flash` n'est pas encore au catalogue de Firebase AI Logic
  *      (sorti le 2 septembre 2026). Un relais permet d'utiliser un modèle le
  *      jour de sa sortie.
- *   4. Le modèle se décide ici, jamais chez le client : toute tâche part vers
- *      `gemini-3.8-flash`, le seul modèle autorisé (`models.ts`).
+ *   4. Le modèle se décide ici, jamais chez le client : `geminiAttempts`
+ *      (`models.ts`) choisit, tâche par tâche, entre `gemini-3.8-flash` et
+ *      `gemini-3.5-flash-lite`, les deux seuls modèles autorisés.
  */
 
 /** Clé Gemini — stockée dans Secret Manager, injectée à l'exécution. */
@@ -72,7 +73,7 @@ const UNAVAILABLE = 'L’IA n’a pas pu traiter la demande, même après une no
 /** Aucun champ `model` : un modèle envoyé par le client est ignoré. */
 interface AiTaskPayload {
   task: TaskId;
-  /** Réglage de 3.8 (température, réflexion) ; une valeur inconnue redevient Rapide. */
+  /** Réglage (température, réflexion), pas un modèle ; une valeur inconnue redevient Rapide. */
   tier?: AiTier;
   /** Contexte métier sérialisé (écritures, stock, brassin…). */
   context?: unknown;
@@ -191,7 +192,8 @@ async function callGemini(
    */
   grounded = false,
   maxOutputTokens = 4500,
-  signal: AbortSignal = AbortSignal.timeout(ATTEMPT_TIMEOUT_MS)
+  signal: AbortSignal = AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+  inspect: (response: any) => GeminiUnusableOutputError | undefined = unusableGeminiOutput
 ): Promise<unknown> {
   assertGeminiModel(model);
   const parts: unknown[] = [{ text: userText }];
@@ -213,7 +215,7 @@ async function callGemini(
         thinkingConfig: { thinkingLevel: settings.thinkingLevel }
       }
     };
-  // A cut or looping answer is billed, settled as unusable, never parsed nor retried (#100, geminiResponse.ts).
+  // A cut or looping answer is billed, settled as unusable and never parsed (#100, geminiResponse.ts); aiTask retries only a Flash-Lite one, on 3.8.
   const json = await runWithMonthlyAiBudget(model, body, async normalized => {
     const res = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
@@ -221,7 +223,7 @@ async function callGemini(
     });
     if (!res.ok) throw parseGeminiError(res.status, model, await res.json().catch(() => ({})));
     return res.json();
-  }, { daily: true, inspect: unusableGeminiOutput });
+  }, { daily: true, inspect });
   const raw = geminiAnswerText(json);
   if (!raw) {
     const reason = json?.candidates?.[0]?.finishReason ?? 'réponse vide';
@@ -230,6 +232,13 @@ async function callGemini(
 
   return JSON.parse(raw.replace(/```json/g, '').replace(/```/g, '').trim());
 }
+
+/**
+ * A Flash-Lite answer must also end normally: cut, looping or stopped otherwise, 3.8 takes it over (#91, décision 68).
+ * Like any refused answer, it is billed and settled as unusable at the Flash-Lite rate.
+ */
+const liteUnusable = (response: any) => unusableGeminiOutput(response)
+  ?? (response?.candidates?.[0]?.finishReason === 'STOP' ? undefined : new GeminiUnusableOutputError('truncated'));
 
 export const aiTask = onCall(
   {
@@ -294,36 +303,42 @@ export const aiTask = onCall(
     }
 
     const started = Date.now(), deadline = started + AI_TASK_DEADLINE_MS;
-    const attempts: string[] = [];
+    const route = geminiAttempts(task, tier), failures: string[] = [];
 
-    // Every attempt uses 3.8: a transient failure gets one new attempt, never another model,
-    // and only while the task deadline leaves it time. The client waits longer (aiTaskDeadline.ts).
-    for (const model of modelChain(tier)) {
+    // The server picks each attempt (models.ts): 3.8, or Flash-Lite first where bench #91 measured it without loss.
+    // A transient failure gets one new attempt on 3.8, never a third model, and only while the task deadline leaves
+    // it time. The client waits longer (aiTaskDeadline.ts).
+    for (const [index, { model, thinkingLevel }] of route.entries()) {
       const remaining = deadline - Date.now();
-      if (attempts.length && remaining < AI_TASK_MIN_ATTEMPT_MS) {
-        logger.error('Tâche IA sans temps pour une nouvelle tentative', { task, tier, model, attempts });
+      if (failures.length && remaining < AI_TASK_MIN_ATTEMPT_MS) {
+        logger.error('Tâche IA sans temps pour une nouvelle tentative', { task, tier, model, failures });
         return { ok: false, tier, elapsedMs: Date.now() - started, error: OUT_OF_TIME };
       }
+      const lite = model === GEMINI_LITE_MODEL;
       try {
         // In Rapide, a fiche, the yeast one included, is capped at 4500 tokens: 12000 let a numeric loop run 69 s (#100).
         // Import and review carry their own cap (TaskDef.maxOutputTokens). Max keeps at least 12000, shared with its
         // high reasoning (callGemini): no screen asks a fiche in Max, and 4500 would cut its answer.
-        let data = await callGemini(model, apiKey, def.system, userText, def.schema, cfg, file, def.grounded, def.maxOutputTokens ?? 4500,
-          AbortSignal.timeout(Math.min(ATTEMPT_TIMEOUT_MS, remaining)));
+        let data = await callGemini(model, apiKey, def.system, userText, def.schema, { temperature: cfg.temperature, thinkingLevel }, file,
+          def.grounded, def.maxOutputTokens ?? 4500, AbortSignal.timeout(Math.min(ATTEMPT_TIMEOUT_MS, remaining)),
+          lite ? liteUnusable : unusableGeminiOutput);
         const elapsedMs = Date.now() - started;
         if (task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure') {
           const error = yeastLookupResultError(data);
           if (error) return { ok: false, error, model, tier, elapsedMs };
         }
         if (task === 'importRecipe') data = sanitizeRecipeImport(data);
-        logger.info('Tâche IA exécutée', { task, tier, model, elapsedMs, email });
+        logger.info('Tâche IA exécutée', { task, tier, model, thinkingLevel, elapsedMs, email });
         return { ok: true, data, model, tier, elapsedMs };
       } catch (err: any) {
         const elapsedMs = Date.now() - started;
         if (err instanceof BrewerBudgetError) return { ok: false, tier, elapsedMs, error: err.message };
-        if (err instanceof GeminiApiError && !err.canTryAnotherModel)
+        // A Flash-Lite answer the brewer cannot use (cut, looping, refused schema) goes once to 3.8, without asking again.
+        const liteRetry = lite && index < route.length - 1 &&
+          (err instanceof GeminiUnusableOutputError || err instanceof GeminiApiError && err.kind === 'invalid-request');
+        if (err instanceof GeminiApiError && !err.canTryAnotherModel && !liteRetry)
           return { ok: false, tier, elapsedMs, error: err.publicError().message };
-        if (err instanceof GeminiUnusableOutputError) {
+        if (err instanceof GeminiUnusableOutputError && !liteRetry) {
           logger.warn('Réponse Gemini inutilisable, sans nouvelle tentative', { task, model, reason: err.reason, elapsedMs });
           return { ok: false, tier, elapsedMs, error: err.message };
         }
@@ -332,12 +347,12 @@ export const aiTask = onCall(
           return { ok: false, tier, elapsedMs, error: OUT_OF_TIME };
         }
         const message = err?.message ?? String(err);
-        attempts.push(message);
-        logger.warn('Gemini en échec', { task, model, attempt: attempts.length, message });
+        failures.push(message);
+        logger.warn('Gemini en échec', { task, model, attempt: failures.length, message, ...(liteRetry ? { retryOn: route[index + 1].model } : {}) });
       }
     }
 
-    logger.error('Tâche IA en échec après la nouvelle tentative', { task, tier, model: GEMINI_MODEL, attempts });
+    logger.error('Tâche IA en échec après la nouvelle tentative', { task, tier, models: route.map(attempt => attempt.model), failures });
     return { ok: false, tier, elapsedMs: Date.now() - started, error: UNAVAILABLE };
   }
 );

@@ -81,7 +81,10 @@ describe('Délais de l’équipe Flash', () => {
       ])
     } });
     expect(researchSignals).toHaveLength(2);
-    expect(new Set(generate.mock.calls.map(([model]) => model))).toEqual(new Set(['gemini-3.8-flash']));
+    // The reference lookup starts on Flash-Lite (#91, décision 68); its new attempt, cut by the same deadline, is the last.
+    expect(generate.mock.calls.filter(([, body]) => (body.tools as any[])?.some(entry => entry.googleSearch)).map(([model]) => model))
+      .toEqual(['gemini-3.5-flash-lite', 'gemini-3.8-flash']);
+    expect(new Set(generate.mock.calls.map(([model]) => model))).toEqual(new Set(['gemini-3.8-flash', 'gemini-3.5-flash-lite']));
   });
 
   it('partage les 30 secondes de relecture entre les deux tentatives sur 3.8', async () => {

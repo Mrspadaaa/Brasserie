@@ -23,8 +23,9 @@ export const GEMINI_SEARCH_COST_POLICY = {
   microChfPerQuery: 17_500 // 14 USD / 1,000 queries × 1.25 CHF/USD
 } as const;
 const MODEL_CONTEXT = 1_048_576;
-/** Every new call goes to gemini-3.8-flash (models.ts), so its cost is quoted at the 3.8 rate.
- * Older models keep their rates only to read past usage and settlements; none is called anymore.
+/** A call is quoted and settled at the rate of the model that serves it: gemini-3.8-flash, or
+ * gemini-3.5-flash-lite where models.ts routes a usage to it (LITE_ROUTES). Older models keep their
+ * rates only to read past usage and settlements; none is called anymore.
  */
 const PRICES: Record<string, { input: number; output: number; largeInput?: number; largeOutput?: number; audioInput?: number }> = {
   'gemini-3.5-flash-lite': { input: 300_000, output: 2_500_000 },

@@ -8,10 +8,11 @@ import { brewerContextForPrompt } from './hopCompanionContext.js';
 import { BREWER_PLAYBOOK, BREWER_SOURCES } from './brewerKnowledge.js';
 import { FINANCE_ADVICE_GUIDANCE } from './prompts.js';
 import { investmentTool, runInvestmentTool } from './brewerFinanceTools.js';
-import { assertGeminiModel, modelChain } from './models.js';
+import { GEMINI_LITE_MODEL, assertGeminiModel, geminiAttempts } from './models.js';
 import { BrewerBudgetError, BREWER_AGENT_LIMITS } from './brewerLimits.js';
 import { GeminiApiError, GeminiRequestNotSentError, parseGeminiError } from './geminiErrors.js';
 import { encodeGeminiToolsForRest } from './geminiRequestSchema.js';
+import { unusableGeminiOutput } from './geminiResponse.js';
 import { researchBrewing, validateShoppingAdviceLinks } from './brewerResearch.js';
 import { reviewBrewerAdvice } from './brewerReview.js';
 import {
@@ -170,6 +171,15 @@ const textOf = (response: any) =>
     .join('\n') ?? '';
 const parse = (text: string) =>
   JSON.parse(text.replace(/^\s*```(?:json)?\s*/, '').replace(/\s*```\s*$/, ''));
+/**
+ * A Flash-Lite lookup is kept only if it ended normally with text, without a numeric loop, and on at least one
+ * grounded https source (critical criterion of bench #91); otherwise 3.8 takes it over.
+ */
+const liteLookupUsable = (response: any) => {
+  const candidate = response?.candidates?.[0];
+  return candidate?.finishReason === 'STOP' && textOf(response).trim() !== '' && !unusableGeminiOutput(response) &&
+    (candidate.groundingMetadata?.groundingChunks ?? []).some((chunk: any) => typeof chunk?.web?.uri === 'string' && chunk.web.uri.startsWith('https://'));
+};
 
 /** Bounded mode on the same harness: its prompts, read tools and final contract replace the companion's. */
 export interface BrewerHarnessProfile {
@@ -270,14 +280,19 @@ export async function runBrewerHarness(
   let requestNotSent: GeminiRequestNotSentError | undefined;
   const call = async (
     body: Record<string, unknown>,
-    purpose: 'analysis' | 'research' | 'review' = 'analysis'
+    purpose: 'analysis' | 'research' | 'review' = 'analysis',
+    /** The research tool behind the call: only the reference lookup has a Flash-Lite route (models.ts). */
+    tool: string = purpose
   ) => {
     let last: unknown;
     const deep = purpose !== 'research' && (purpose === 'review' ? deepReview : deepAnalysis);
     // A slow provider cannot restart the entire waiting time on the new attempt.
     const requestSignal = AbortSignal.any([signal, AbortSignal.timeout(deep ? 60000 : purpose === 'review' ? 30000 : 45000)]);
-    // Every role and mode uses 3.8: a failure gets one new attempt on 3.8, never another model.
-    for (const candidate of modelChain()) {
+    // Every role and mode uses 3.8, except the reference lookup that bench #91 measured on Flash-Lite without loss:
+    // a failure, or an unusable Flash-Lite lookup, gets one new attempt on 3.8, never a third model.
+    const route = geminiAttempts(purpose === 'research' ? tool : purpose);
+    for (const [index, attempt] of route.entries()) {
+      const candidate = attempt.model, lite = candidate === GEMINI_LITE_MODEL;
       requestSignal.throwIfAborted();
       if (++modelCalls > BREWER_AGENT_LIMITS.modelCalls)
         throw new BrewerBudgetError(
@@ -310,17 +325,26 @@ export async function runBrewerHarness(
               // Deep mode thinks more than Flash's routine low effort at every step: the most for
               // the initial decision and a failed/sensitive review, less for tool follow-ups.
               // Grounded lookups stay low in every mode.
+              // On Flash-Lite, a reference lookup keeps the level bench #91 measured (`minimal`, models.ts).
               thinkingConfig: {
-                thinkingLevel: !deep
-                  ? 'low'
-                  : repairingAdvice || carefulReview || (purpose === 'analysis' && !model)
-                    ? 'high'
-                    : 'medium'
+                thinkingLevel: lite
+                  ? attempt.thinkingLevel
+                  : !deep
+                    ? 'low'
+                    : repairingAdvice || carefulReview || (purpose === 'analysis' && !model)
+                      ? 'high'
+                      : 'medium'
               }
             }
           },
           requestSignal
         );
+        // A 3.8 retry must still fit the deadline and the question's call and web pools; otherwise the lookup is kept.
+        if (lite && !liteLookupUsable(result) && index < route.length - 1 && !requestSignal.aborted &&
+            modelCalls < BREWER_AGENT_LIMITS.modelCalls && groundedCalls < BREWER_AGENT_LIMITS.groundedCalls) {
+          last = new Error('Recherche Flash-Lite inutilisable : nouvelle tentative sur 3.8.');
+          continue;
+        }
         if (purpose === 'review') reviewModel = candidate;
         else if (purpose === 'research') researchModel = candidate;
         else model = candidate;
@@ -332,7 +356,8 @@ export async function runBrewerHarness(
         if (e instanceof GeminiApiError) {
           (diagnostics.providerErrors ??= []).push(e.diagnostic());
           await options.onDiagnostic?.(diagnostics);
-          if (!e.canTryAnotherModel) throw e;
+          // A request Flash-Lite refuses (HTTP 400) may still suit 3.8.
+          if (!e.canTryAnotherModel && !(lite && e.kind === 'invalid-request')) throw e;
         }
         last = e;
         if (requestSignal.aborted) throw e;
@@ -601,7 +626,7 @@ Cherche une source fabricant pour une spécification absente, et pour une inform
                 searches += count;
                 promote('research');
                 await options.onProgress?.('research', count > 1 ? `${count} chercheurs Flash comparent les boutiques et conditionnements en parallèle` : 'Recherche Flash d’une source précise');
-                e = await researchBrewing(name, args.query, count, body => call(body, 'research'), signal);
+                e = await researchBrewing(name, args.query, count, body => call(body, 'research', name), signal);
                 e.model = researchModel;
                 researchCache.set(key, e);
               }

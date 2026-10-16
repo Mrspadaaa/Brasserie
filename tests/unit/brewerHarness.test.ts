@@ -60,6 +60,11 @@ const fields = (changes: Array<{ path: string; valueJson: string }>) => ({
   changes: changes.map((change) => ({ ...change, reason: 'Ajustement demandé' }))
 });
 const approved = () => json({ approved: true, proposalApproved: true, issues: [] });
+/** A complete web lookup, grounded on one https source. */
+const groundedAnswer = (text: string, finishReason = 'STOP') => ({
+  candidates: [{ content: { role: 'model', parts: [{ text }] }, finishReason,
+    groundingMetadata: { webSearchQueries: ['fiche fabricant'], groundingChunks: [{ web: { title: 'Fabricant', uri: 'https://example.invalid/fiche' } }] } }]
+});
 
 describe('Outils du compagnon : mêmes modèles et données explicites', () => {
   it('charge l’index à la demande une seule fois, depuis un autre écran', async () => {
@@ -160,26 +165,60 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     expect(generate.mock.calls.every((c) => c[0] === 'gemini-3.8-flash')).toBe(true);
     expect(result.trace[0].error).toMatch(/Mode rapide/);
   });
-  it('le mode rapide utilise Flash pour le web, le conseil et la relecture', async () => {
+  it('le mode rapide confie la recherche de référence à Flash-Lite, le conseil et la relecture à 3.8', async () => {
     const generate = vi
       .fn()
       .mockResolvedValueOnce(toolCall('lookup_brewing_reference', { query: 'Une fiche fabricant' }))
-      .mockResolvedValueOnce(json({ reference: 'Fiche trouvée' }))
+      .mockResolvedValueOnce(groundedAnswer('Fiche trouvée'))
       .mockResolvedValueOnce(done())
       .mockResolvedValueOnce(approved())
       .mockResolvedValueOnce(approved());
     const result = await runBrewerHarness(context(), 'Cherche une fiche', [], generate, {
       mode: 'fast'
     });
+    // Bench #91: the reference lookup on 3.5 Flash-Lite `minimal` matched 3.8 at 3.5 s instead of 7.6 s (p95).
     expect(generate.mock.calls.map((c) => c[0])).toEqual([
       'gemini-3.8-flash',
-      'gemini-3.8-flash',
+      'gemini-3.5-flash-lite',
       'gemini-3.8-flash',
       'gemini-3.8-flash',
       'gemini-3.8-flash'
     ]);
+    expect(generate.mock.calls.map((c) => c[1].generationConfig.thinkingConfig.thinkingLevel)).toEqual(['low', 'minimal', 'low', 'low', 'low']);
+    expect(result.evidence[0].model).toBe('gemini-3.5-flash-lite');
+    expect(result).toMatchObject({ model: 'gemini-3.8-flash', reviewModel: 'gemini-3.8-flash', mode: 'fast' });
+  });
+  it.each([
+    ['sans source web ancrée', () => json({ reference: 'Fiche citée de mémoire' })],
+    ['coupée au plafond de sortie', () => groundedAnswer('Fiche coup', 'MAX_TOKENS')],
+    ['terminée autrement que normalement', () => groundedAnswer('Fiche', 'SAFETY')],
+    ['vide', () => groundedAnswer('')]
+  ])('reprend sur 3.8 `low` une recherche Flash-Lite %s, une seule fois', async (_label, liteAnswer) => {
+    const generate = vi
+      .fn()
+      .mockResolvedValueOnce(toolCall('lookup_brewing_reference', { query: 'Une fiche fabricant' }))
+      .mockResolvedValueOnce(liteAnswer())
+      .mockResolvedValueOnce(groundedAnswer('Fiche fabricant relue par 3.8'))
+      .mockResolvedValueOnce(done({ ...advice, evidenceIds: ['E1'] }))
+      .mockResolvedValueOnce(approved())
+      .mockResolvedValueOnce(approved());
+    const result = await runBrewerHarness(context(), 'Cherche une fiche', [], generate, { mode: 'fast' });
+    expect(generate.mock.calls.slice(0, 3).map((c) => [c[0], c[1].generationConfig.thinkingConfig.thinkingLevel])).toEqual([
+      ['gemini-3.8-flash', 'low'], ['gemini-3.5-flash-lite', 'minimal'], ['gemini-3.8-flash', 'low']
+    ]);
+    expect(generate.mock.calls[2][1].contents).toEqual(generate.mock.calls[1][1].contents);
     expect(result.evidence[0].model).toBe('gemini-3.8-flash');
-    expect(result.mode).toBe('fast');
+    expect(result.evidence[0].facts).toEqual(['Fiche fabricant relue par 3.8']);
+    expect(generate.mock.calls.filter((c) => c[1].tools?.some((tool: any) => tool.googleSearch))).toHaveLength(2);
+  });
+  // The research deadline (no new attempt once it has run out) is covered by brewerFlashLimits.test.ts.
+  it('ne retente pas une recherche Flash-Lite après un refus de budget', async () => {
+    const failure = new BrewerBudgetError('ai-monthly-limit', 'Budget mensuel IA insuffisant.');
+    const budget = vi.fn()
+      .mockResolvedValueOnce(toolCall('lookup_brewing_reference', { query: 'Une fiche fabricant' }))
+      .mockRejectedValueOnce(failure);
+    await expect(runBrewerHarness(context(), 'Cherche une fiche', [], budget, { mode: 'fast' })).rejects.toBe(failure);
+    expect(budget.mock.calls.map((c) => c[0])).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite']);
   });
   it('garde les recherches réussies quand un chercheur épuise sa nouvelle tentative sur 3.8', async () => {
     let grounded = 0, analysis = 0;
@@ -221,6 +260,11 @@ describe('Outils du compagnon : mêmes modèles et données explicites', () => {
     expect(shopping[0].resultId).toBeTruthy();
     expect(shopping[1].error).toMatch(/recherches sont terminées/);
     expect(result.reviewed).toBe(true);
+    // The sixth lookup came back from Flash-Lite without a source: no web call was left for 3.8, so its answer is kept.
+    expect(generate.mock.calls.filter(([, body]) => body.tools?.some((tool: any) => tool.googleSearch)).map(([model]) => model)).toEqual([
+      'gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.5-flash-lite'
+    ]);
+    expect(result.evidence.find(entry => (entry.data as any)?.query === 'Vérifier la température de réhydratation')?.model).toBe('gemini-3.5-flash-lite');
   });
   it('autorise deux vagues de trois chercheurs et réutilise une recherche identique sans frais supplémentaires', async () => {
     let grounded = 0, analysis = 0;
@@ -755,7 +799,7 @@ describe('Validation serveur et relecture indépendante', () => {
     ).toBe(false);
   });
   it.each(['lookup_brewing_reference', 'find_brewing_suppliers'])(
-    'utilise uniquement Flash pour %s, puis une synthèse et une relecture indépendante',
+    'cherche %s avec son modèle routé, puis une synthèse et une relecture indépendante sur 3.8',
     async (name) => {
       let groundedCalls = 0, analysisCalls = 0;
       const call = vi
@@ -763,7 +807,7 @@ describe('Validation serveur et relecture indépendante', () => {
         .mockImplementation(async (_model, body) => {
           if (body.tools?.some((tool: any) => tool.googleSearch)) {
             groundedCalls++;
-            return { candidates: [{ content: { role: 'model', parts: [{ text: `Fiche documentaire ${groundedCalls}.` }] },
+            return { candidates: [{ content: { role: 'model', parts: [{ text: `Fiche documentaire ${groundedCalls}.` }] }, finishReason: 'STOP',
               groundingMetadata: { groundingChunks: [{ web: { title: 'Document', uri: 'https://example.invalid/document' } }] } }] };
           }
           if (body.generationConfig?.responseSchema?.properties?.approved) return approved();
@@ -771,10 +815,15 @@ describe('Validation serveur et relecture indépendante', () => {
           return analysisCalls === 1 ? toolCall(name, { query: 'Malt Pale Ale Suisse' }) : done({ ...advice, evidenceIds: ['E1'] });
         });
       const result = await runBrewerHarness(context(), 'Cherche une référence', [], call);
-      expect(call.mock.calls.map((c) => c[0])).toEqual(Array(name === 'find_brewing_suppliers' ? 7 : 5).fill('gemini-3.8-flash'));
+      // Only the reference lookup was measured on Flash-Lite (#91); the supplier search stays on 3.8.
+      const researcher = name === 'find_brewing_suppliers' ? 'gemini-3.8-flash' : 'gemini-3.5-flash-lite';
+      expect(call.mock.calls.map((c) => c[0])).toEqual(name === 'find_brewing_suppliers'
+        ? Array(7).fill('gemini-3.8-flash')
+        : ['gemini-3.8-flash', researcher, 'gemini-3.8-flash', 'gemini-3.8-flash', 'gemini-3.8-flash']);
       expect(groundedCalls).toBe(name === 'find_brewing_suppliers' ? 3 : 1);
       expect(call.mock.calls[1][1].tools).toEqual([{ googleSearch: {} }]);
-      expect(result.evidence[0].model).toBe('gemini-3.8-flash');
+      expect(call.mock.calls[1][1].generationConfig.thinkingConfig.thinkingLevel).toBe(name === 'find_brewing_suppliers' ? 'low' : 'minimal');
+      expect(result.evidence[0].model).toBe(researcher);
       expect(result.reviewReason).toBe('research');
       const synthesis = call.mock.calls.at(-3)![1];
       expect(JSON.stringify(synthesis.contents)).toContain('Fiche documentaire 1');
@@ -822,7 +871,8 @@ describe('Validation serveur et relecture indépendante', () => {
       .mockResolvedValueOnce(approved())
       .mockResolvedValueOnce(approved());
     const result = await runBrewerHarness(context(), 'Cherche la fiche', [], call);
-    expect(call.mock.calls.map((c) => c[0])).toEqual(Array(6).fill('gemini-3.8-flash'));
+    // Flash-Lite fails, 3.8 answers: no third model, and the evidence names the model that answered.
+    expect(call.mock.calls.map((c) => c[0])).toEqual(['gemini-3.8-flash', 'gemini-3.5-flash-lite', ...Array(4).fill('gemini-3.8-flash')]);
     expect(result.evidence[0].model).toBe('gemini-3.8-flash');
   });
   it('renforce la relecture pour un geste urgent et transmet le contexte de la conversation au relecteur', async () => {

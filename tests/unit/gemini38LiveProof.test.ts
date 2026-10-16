@@ -3,15 +3,16 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
-  LIVE_ENDPOINT, guardLiveFetch, liveCallBudget, liveJournalRow, livePreflight, readLiveCounter, reserveLiveCall,
-  withLiveCounter, type LiveCall
+  LIVE_ENDPOINT, LIVE_LAUNCH_CAP, LIVE_TOTAL_CAP, guardLiveFetch, liveCallBudget, liveEndpoint, liveJournalRow, livePreflight,
+  readLiveCounter, reserveLiveCall, withLiveCounter, type LiveCall
 } from '../../scripts/gemini38LiveCore';
 
 // Offline only: the provider is a local fake, the Gemini network guard stays active.
-const journal = (used: number) => `# Journal\n\n**Compteur : ${used} / 10**\n\n| # | Heure |\n|---|---|\n`;
+const journal = (used: number) => `# Journal\n\n**Compteur : ${used} / 40**\n\n| # | Heure |\n|---|---|\n`;
 const SECRET = 'fixture-secret-not-a-real-key';
-const providerAnswer = () => new Response(JSON.stringify({
-  modelVersion: 'gemini-3.8-flash',
+const LITE_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent';
+const providerAnswer = (modelVersion = 'gemini-3.8-flash') => new Response(JSON.stringify({
+  modelVersion,
   candidates: [{ finishReason: 'STOP', content: { parts: [{ text: '{"found":true}' }] } }],
   usageMetadata: { promptTokenCount: 1000, candidatesTokenCount: 100, thoughtsTokenCount: 20, totalTokenCount: 1120 }
 }), { status: 200 });
@@ -33,34 +34,37 @@ const tempJournal = (used: number) => {
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 describe('Garde-fous du test spécial Gemini 3.8 réel', () => {
-  it('lit le compteur global et borne chaque lancement à 3 appels dans les 10', () => {
-    expect(readLiveCounter(journal(0))).toEqual({ used: 0, total: 10 });
-    expect([0, 7, 8, 9, 10].map(used => liveCallBudget(journal(used)))).toEqual([3, 3, 2, 1, 0]);
-    expect(withLiveCounter(journal(4), 5)).toContain('**Compteur : 5 / 10**');
+  it('lit le compteur global et borne chaque lancement à 5 appels dans les 40 (décision 63)', () => {
+    expect([LIVE_LAUNCH_CAP, LIVE_TOTAL_CAP]).toEqual([5, 40]);
+    expect(readLiveCounter(journal(0))).toEqual({ used: 0, total: 40 });
+    expect([0, 5, 35, 36, 39, 40].map(used => liveCallBudget(journal(used)))).toEqual([5, 5, 5, 4, 1, 0]);
+    expect(withLiveCounter(journal(4), 5)).toContain('**Compteur : 5 / 40**');
     expect(() => readLiveCounter('# Journal sans compteur')).toThrow(/aucun appel/);
-    expect(() => readLiveCounter('**Compteur : 1 / 12**')).toThrow(/illisible/);
+    // A journal still at the old envelope, or with any other total, is refused rather than reinterpreted.
+    for (const total of [10, 12, 41]) expect(() => readLiveCounter(`**Compteur : 1 / ${total}**`)).toThrow(/illisible/);
   });
 
-  it('contrôle le modèle résolu puis le compteur avant l’opt-in payant', () => {
+  it('contrôle les modèles résolus (liste blanche du serveur) puis le compteur avant l’opt-in payant', () => {
     const optIn = vi.fn();
-    expect(() => livePreflight(['gemini-3.8-flash', 'gemini-3.7-flash'], journal(1), optIn)).toThrow(/n’est pas gemini-3\.8-flash/);
-    expect(() => livePreflight([], journal(1), optIn)).toThrow(/n’est pas gemini-3\.8-flash/);
-    expect(() => livePreflight(['gemini-3.8-flash'], journal(10), optIn)).toThrow(/Compteur global atteint \(10 \/ 10\)/);
+    for (const models of [['gemini-3.8-flash', 'gemini-3.7-flash'], ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'], ['gemini-3.1-pro-preview'], []])
+      expect(() => livePreflight(models, journal(1), optIn)).toThrow(/hors de la liste blanche \(gemini-3\.8-flash et gemini-3\.5-flash-lite\)/);
+    expect(() => livePreflight(['gemini-3.8-flash'], journal(40), optIn)).toThrow(/Compteur global atteint \(40 \/ 40\)/);
     expect(() => livePreflight(['gemini-3.8-flash'], '# Journal sans compteur', optIn)).toThrow(/aucun appel/);
     expect(optIn).not.toHaveBeenCalled();
-    expect(livePreflight(['gemini-3.8-flash', 'gemini-3.8-flash'], journal(8), optIn)).toEqual({ used: 8, cap: 2 });
-    expect(optIn).toHaveBeenCalledOnce();
+    expect(livePreflight(['gemini-3.8-flash', 'gemini-3.8-flash'], journal(38), optIn)).toEqual({ used: 38, cap: 2 });
+    expect(livePreflight(['gemini-3.5-flash-lite', 'gemini-3.8-flash'], journal(5), optIn)).toEqual({ used: 5, cap: 5 });
+    expect(optIn).toHaveBeenCalledTimes(2);
   });
 
   it('réserve chaque appel sous verrou, compteur relu, avant l’envoi', () => {
-    const { path, lock } = tempJournal(8);
-    expect(reserveLiveCall(path, lock)).toBe(9);
-    expect(readFileSync(path, 'utf8')).toContain('**Compteur : 9 / 10**');
+    const { path, lock } = tempJournal(38);
+    expect(reserveLiveCall(path, lock)).toBe(39);
+    expect(readFileSync(path, 'utf8')).toContain('**Compteur : 39 / 40**');
     expect(existsSync(lock)).toBe(false);
     // Another session reserved the last call meanwhile: the launch budget computed at start no longer counts.
-    writeFileSync(path, withLiveCounter(readFileSync(path, 'utf8'), 10));
-    expect(() => reserveLiveCall(path, lock)).toThrow(/Compteur global atteint \(10 \/ 10\).*avant l’envoi/);
-    expect(readFileSync(path, 'utf8')).toContain('**Compteur : 10 / 10**');
+    writeFileSync(path, withLiveCounter(readFileSync(path, 'utf8'), 40));
+    expect(() => reserveLiveCall(path, lock)).toThrow(/Compteur global atteint \(40 \/ 40\).*avant l’envoi/);
+    expect(readFileSync(path, 'utf8')).toContain('**Compteur : 40 / 40**');
     expect(existsSync(lock)).toBe(false);
   });
 
@@ -68,7 +72,7 @@ describe('Garde-fous du test spécial Gemini 3.8 réel', () => {
     const { path, lock } = tempJournal(3);
     mkdirSync(lock);
     expect(() => reserveLiveCall(path, lock, { timeoutMs: 120 })).toThrow(/Verrou .* occupé/);
-    expect(readFileSync(path, 'utf8')).toContain('**Compteur : 3 / 10**');
+    expect(readFileSync(path, 'utf8')).toContain('**Compteur : 3 / 40**');
     expect(existsSync(lock)).toBe(true);
   });
 
@@ -80,6 +84,9 @@ describe('Garde-fous du test spécial Gemini 3.8 réel', () => {
     for (const url of [
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent',
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent',
+      `${LITE_ENDPOINT}?alt=sse`,
+      'https://europe-west1-aiplatform.googleapis.com/v1/projects/x/models/gemini-3.5-flash-lite:generateContent',
       'https://europe-west1-aiplatform.googleapis.com/v1/projects/x/models/gemini-3.8-flash:generateContent',
       'https://example.invalid/'
     ]) await expect(guarded(url, init())).rejects.toThrow(/refusée avant l’envoi/);
@@ -134,6 +141,24 @@ describe('Garde-fous du test spécial Gemini 3.8 réel', () => {
     const row = liveJournalRow(calls[0], '#22 (G38)', 'test', 'HTTP 200');
     expect(row).toMatch(/\| 4 \| .+ \| #22 \(G38\) \| test \| gemini-3\.8-flash \| 1000 \/ 120 \| 0\.\d{4} CHF \| HTTP 200 \|/);
     expect(JSON.stringify(calls) + row).not.toContain(SECRET);
+  });
+
+  it('laisse partir les deux modèles de la liste blanche, chacun compté à son tarif', async () => {
+    expect(LIVE_ENDPOINT).toBe(liveEndpoint('gemini-3.8-flash'));
+    expect(liveEndpoint('gemini-3.5-flash-lite')).toBe(LITE_ENDPOINT);
+    const calls: LiveCall[] = [];
+    const { fetch: guarded } = guardLiveFetch(async input => providerAnswer(String(input).includes('flash-lite') ? 'gemini-3.5-flash-lite' : 'gemini-3.8-flash'), {
+      cap: 2, reserve: counter(6), onCall: call => calls.push({ ...call }), now: clock()
+    });
+    await guarded(LITE_ENDPOINT, init('minimal'));
+    await guarded(LIVE_ENDPOINT, init('low'));
+    expect(calls.map(({ n, model, modelVersion, thinkingLevel }) => ({ n, model, modelVersion, thinkingLevel }))).toEqual([
+      { n: 6, model: 'gemini-3.5-flash-lite', modelVersion: 'gemini-3.5-flash-lite', thinkingLevel: 'minimal' },
+      { n: 7, model: 'gemini-3.8-flash', modelVersion: 'gemini-3.8-flash', thinkingLevel: 'low' }
+    ]);
+    // Same tokens, cheaper model: the journal cost follows the model that served the call.
+    expect(calls[0].costMicroChf).toBeGreaterThan(0);
+    expect(calls[0].costMicroChf!).toBeLessThan(calls[1].costMicroChf!);
   });
 
   it('journalise aussi un appel interrompu, juste après l’échec', async () => {
