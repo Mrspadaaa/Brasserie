@@ -39,28 +39,34 @@ import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } f
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { TASKS, ingredientLookupDefinition } from '../functions/src/prompts';
-import { TIERS } from '../functions/src/models';
+import { TIERS, aiTier, type AiTier } from '../functions/src/models';
+import { geminiAnswerText, unusableGeminiOutput } from '../functions/src/geminiResponse';
+import { yeastLookupResultError } from '../functions/src/yeastLookupResult';
 import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
 import { normalizeInvoiceScan } from '../functions/src/invoiceScanCore';
 import { reconcileInvoiceVision } from '../functions/src/invoiceVisionReview';
 import { encodeGeminiToolsForRest } from '../functions/src/geminiRequestSchema';
 import { requirePaidAiTestOptIn } from './paid-ai-test-guard.mjs';
 import {
-  APP_MODEL, BENCH_MODELS, BenchRefusal, H9_TAG, SUPPORTED_THINKING, appendJournalRow, appendRow91, authorizeLaunch, blankCounter91, endpointFor,
-  guardBenchFetch, journalRow, journalRow91, observedModelMatches, readLocalKey, redact, reserveCall, spent91
+  APP_MODEL, ARGON_MODEL, BENCH_MODELS, BenchRefusal, H12_MODELS, H9_TAG, SUPPORTED_THINKING, appendEnvelopeRow, appendJournalRow, authorizeLaunch,
+  blankCounter, endpointFor, guardBenchFetch, journalRow, journalRow91, observedModelMatches, readEnvelopeCounter, readLocalKey, redact, reserveCall, spentIn
 } from './gemini-usage-bench-guard.mjs';
 
 const WORK = 'work/finalisation-tickets-2026-10-08';
 const JOURNAL = `${WORK}/gemini-journal.md`;
 const DECISIONS = `${WORK}/decisions-humaines.md`;
 const LOCK = `${WORK}/locks/gemini-journal`;
-/** Une ligne de synthèse par lancement réel (AI07-B, banc réel #91). */
-const REGISTER = `${WORK}/AI07-B/journal.md`;
-/** Marge appliquée au coût estimé d'un lancement avant de le comparer au plafond H9 (sorties et réflexion supposées). */
+/** Une ligne de synthèse par lancement réel : AI07-B (banc réel #91, H9), AI07-C (usages complexes, H12). */
+const REGISTERS: Record<string, string> = { H9: `${WORK}/AI07-B/journal.md`, H12: `${WORK}/AI07-C/journal.md`, 'partagée': `${WORK}/AI07-B/journal.md` };
+/** Marge appliquée au coût estimé d'un lancement avant de le comparer au plafond de l'enveloppe (sorties et réflexion supposées). */
 const ESTIMATE_MARGIN = 1.5;
 const CASES = 'tests/fixtures/gemini-usage-bench/cases.json';
+/** Cas des usages complexes (AI07-C) : compagnon complet, conseil houblons, levure, justificatifs difficiles. */
+const CASES_COMPLEX = 'tests/fixtures/gemini-usage-bench/cases-complexes.json';
 const ISSUE = H9_TAG;
 const LITE = 'gemini-3.5-flash-lite';
+/** Modèles que le banc sait appeler ; Argon seulement sous H12 (la garde le refuse ailleurs). */
+const ALL_MODELS: readonly string[] = H12_MODELS;
 const LEVELS = ['minimal', 'low', 'medium', 'high'] as const;
 
 type Thinking = typeof LEVELS[number];
@@ -90,14 +96,16 @@ export const OFFLINE = {
    * 3.8 non publié : 180 tokens/s retenus entre deux mesures réelles, 116 tokens/s (COA G38, 718 tokens en 6,2 s)
    * et environ 230 tokens/s (scans du 09.09, 650 tokens en 2,8 s) : AI07/etude.md, § 6.
    */
-  outputTokensPerSecond: { [LITE]: 350, [APP_MODEL]: 180 } as Record<string, number>,
+  // Argon (décision 69) : débit non publié, HYPOTHÈSE prudente de 120 tokens/s, pour la simulation seulement.
+  outputTokensPerSecond: { [LITE]: 350, [APP_MODEL]: 180, [ARGON_MODEL]: 120 } as Record<string, number>,
   /** HYPOTHÈSES : délai avant le premier token et lecture de l'entrée. */
-  firstTokenMs: { [LITE]: 600, [APP_MODEL]: 1200 } as Record<string, number>,
+  firstTokenMs: { [LITE]: 600, [APP_MODEL]: 1200, [ARGON_MODEL]: 2000 } as Record<string, number>,
   inputTokensPerSecond: 20_000,
   /** HYPOTHÈSE : une recherche Google ancrée ajoute ce délai par appel. */
   groundedSearchMs: 2500,
   /** HYPOTHÈSE : tokens de réponse visibles typiques par appel (la réponse simulée, minimale, sous-estime). */
-  typicalOutputTokens: { coa: 450, facture: 900, diagnostic: 350, relecture: 600, import: 900, fiche: 700, compagnon: 60, recherche: 350 } as Record<string, number>
+  typicalOutputTokens: { coa: 450, facture: 900, diagnostic: 350, relecture: 600, import: 900, fiche: 700, compagnon: 60, recherche: 350,
+    'compagnon-complet': 400, 'levure-choix': 400, 'conseil-houblons': 1200 } as Record<string, number>
 };
 /** Tarif affiché par Google le 2026-10-12 (USD / M tokens, réflexion comprise en sortie) ; 3.8 à -50 % jusqu'au 31.12.2026. */
 export const LIST_PRICE_USD = {
@@ -106,6 +114,32 @@ export const LIST_PRICE_USD = {
 } as Record<string, { input: number; output: number; from2027: { input: number; output: number } }>;
 /** 14 USD / 1 000 requêtes ancrées au-delà de 5 000 gratuites par mois (ai.google.dev/gemini-api/docs/pricing). */
 const SEARCH_USD_PER_QUERY = 0.014;
+/**
+ * Argon (décision 69) : absent de functions/src/geminiCosts.ts, qui n'est pas modifié. Tarif officiel lu le 2026-10-16
+ * (ai.google.dev/gemini-api/docs/pricing) : 2 / 10 USD par M jusqu'au 30.11.2026, 4 / 20 USD dès le 1.12.2026. Comme 3.8
+ * (provisionné au tarif 2027), Argon est provisionné au tarif de décembre, au change de provision de geminiCosts.ts (1,25).
+ */
+LIST_PRICE_USD[ARGON_MODEL] = { input: 2, output: 10, from2027: { input: 4, output: 20 } };
+const ARGON_PROVISION_USD_PER_M = { input: 4, output: 20 };
+const CHF_PER_USD = 1.25;
+const argonTokenMicroChf = (input: number, output: number) => Math.ceil((input * ARGON_PROVISION_USD_PER_M.input + output * ARGON_PROVISION_USD_PER_M.output) * CHF_PER_USD);
+/** Devis de geminiCosts.ts ; Argon : corps normalisé et contrôles de 3.8, montants recalculés au tarif d'Argon. */
+function quoteCost(model: string, body: Json) {
+  if (model !== ARGON_MODEL) return quoteGeminiCost(model, body);
+  const quote = quoteGeminiCost(APP_MODEL, body);
+  const searchMicroChf = quote.reservedMicroChf - Math.ceil((quote.inputTokens * 1_500_000 + quote.outputTokens * 7_500_000) * 5 / 4_000_000);
+  return { ...quote, model: ARGON_MODEL, reservedMicroChf: argonTokenMicroChf(quote.inputTokens, quote.outputTokens) + searchMicroChf };
+}
+/** Coût observé de geminiCosts.ts (provision de recherche comprise) ; Argon : jetons au tarif d'Argon, recherche identique. */
+function observedCost(quote: ReturnType<typeof quoteCost>, json: Json | undefined) {
+  if (quote.model !== ARGON_MODEL) return observedGeminiCostDetails(quote, json);
+  const details = observedGeminiCostDetails({ ...quote, model: APP_MODEL }, json);
+  const usage = json?.usageMetadata;
+  if (!details || !usage) return null;
+  const output = Math.max(usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0), usage.totalTokenCount - usage.promptTokenCount);
+  const tokenMicroChf = argonTokenMicroChf(usage.promptTokenCount, output);
+  return { ...details, tokenMicroChf, chargedMicroChf: tokenMicroChf + details.searchMicroChf };
+}
 
 // ---------------------------------------------------------------------------
 // Fidélité à la production : le banc reconstruit les corps de functions/src/ai.ts
@@ -129,15 +163,25 @@ const PRODUCTION_MARKERS: Record<string, string[]> = {
     'thinkingConfig: { thinkingLevel: settings.thinkingLevel }',
     "instruction?.trim() ? `Demande : ${instruction.trim()}` : '',",
     "? `Données :\\n${typeof context === 'string' ? context : JSON.stringify(context)}`",
-    "task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure' ? 12000 : 4500",
+    // #100 (D100) : niveau imposé par la tâche, plafond propre à la tâche, réponse lue sans les pensées, boucle refusée.
+    'const tier = def.tier ?? aiTier(requestedTier ?? def.defaultTier);',
+    'def.maxOutputTokens ?? 4500,',
+    "if (task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure') {",
+    'const raw = geminiAnswerText(json);',
     'const HIGH_REASONING_OUTPUT_TOKENS = 12000;',
     "maxOutputTokens: settings.thinkingLevel === 'high' ? Math.max(maxOutputTokens, HIGH_REASONING_OUTPUT_TOKENS) : maxOutputTokens,"
   ],
   'functions/src/brewerHarness.ts': [
     'return Array.isArray(body.tools) ? { ...body, tools: encodeGeminiToolsForRest(body.tools) } : body;',
     "const deep = purpose !== 'research' && (purpose === 'review' ? deepReview : deepAnalysis);",
-    '// Grounded lookups stay low in every mode.'
-  ]
+    // AI07-C : le banc rejoue la boucle complète ; il dépend de ces formes d'appel (analyse, relecture, chercheur).
+    "toolConfig: { functionCallingConfig: { mode: 'ANY' } },",
+    'generationConfig: { temperature: 0.2, maxOutputTokens: 4000 }',
+    '...(deep ? { maxOutputTokens: 12000 } : {}),',
+    'proposed = await analyse(10);',
+    "body => call(body, 'review'), { parallel: parallelReview }"
+  ],
+  'functions/src/brewerResearch.ts': ['tools: [{ googleSearch: {} }], generationConfig: { temperature: 0, maxOutputTokens: 2400 }']
 };
 export function productionDrift(read = (path: string) => readFileSync(path, 'utf8')): string[] {
   return Object.entries(PRODUCTION_MARKERS).flatMap(([path, markers]) => {
@@ -158,19 +202,26 @@ export interface BenchCase {
   captured?: Json;
   /** Vision (AI07-B) : vérité écrite à côté de l'image (`vision/<id>.truth.json`), clé lue (`facture` par défaut). */
   truth?: string; truthKey?: string; level?: string;
+  /** Boucle d'outils (AI07-C) : cas de brewerCases.mjs, question, complément de contexte, référentiel, réponses simulées. */
+  harnessSpec?: Json;
   /** Vérité du tri : natures admises, nombre de documents, lisibilité, devises, route attendue. */
   triage?: Json;
 }
 export interface Cell { usage: string; variant: string; model: string; thinking: Thinking; label: string; cases?: string[] }
 /** `role` : lecture n° k (`read0`…), `control` ou `triage` pour le justificatif ; absent pour un appel unique. */
 interface StepPlan { model: string; thinking: Thinking; role?: string }
-interface Step extends StepPlan { name: string; body: Json }
+/** `signal` : délai propre à l'appelant (harnais : 45 s analyse, 30 s relecture, 60 s approfondi), combiné aux 100 s du banc. */
+interface Step extends StepPlan { name: string; body: Json; signal?: AbortSignal }
 /** Vue dérivée d'un tour : un appel déjà mesuré qui vaut aussi pour une autre cellule (même consigne, même réglage). */
 interface Derived { usage: string; variant: string; model: string; thinking: Thinking; label: string; result: unknown; calls: CallResult[]; latencyMs: number }
 export interface CallResult {
   step: string; model: string; thinking: Thinking; ok: boolean; latencyMs: number; modelVersion?: string;
   inputTokens?: number; outputTokens?: number; thoughtsTokens?: number; searchQueries?: number; costMicroChf: number | null;
   reservedMicroChf: number; listCostUsd: number | null; error?: string; json?: Json;
+  /** Coût des seuls jetons (sans provision de recherche), pour le rapport. */
+  tokenMicroChf?: number | null;
+  /** Statut HTTP de la réponse ; `halted` : le banc s'est arrêté pendant cet appel (garde, modèle observé, plafond). */
+  status?: number; halted?: boolean;
   /** Réponse visible (sans les pensées), tronquée, pour la relecture humaine prévue par la grille. */
   answer?: string;
 }
@@ -203,9 +254,13 @@ interface Usage {
   criteria: CriterionDef[];
   threshold: number;
   score(c: BenchCase, result: unknown): Criterion[];
-  /** Réponse simulée (parties du candidat), sans réseau. */
-  simulated(c: BenchCase, index: number, repeat: number, role?: string): { parts: Json[]; groundingMetadata?: Json };
+  /** Réponse simulée (parties du candidat), sans réseau ; `body` : corps envoyé (boucle d'outils), `key` : tour du banc. */
+  simulated(c: BenchCase, index: number, repeat: number, role?: string, body?: Json, key?: string): { parts: Json[]; groundingMetadata?: Json };
+  /** Boucle d'outils (AI07-C) : entrées du harnais de production pour un cas, servies par fixtures. */
+  harness?(c: BenchCase, cell: Cell): Promise<HarnessSetup>;
 }
+/** Entrées de runBrewerHarness pour un tour du banc : contexte neuf (le harnais le mute), question, historique, options. */
+export interface HarnessSetup { context: Json; question: string; history?: Json[]; options: Json; extra?: Json }
 const accepts = (usage: Usage, c: BenchCase) => usage.accepts ? usage.accepts(c) : c.usage === usage.id;
 
 const fileData = (c: BenchCase) => ({ mimeType: c.mimeType!, data: readFileSync(c.file!).toString('base64') });
@@ -215,10 +270,13 @@ const withTemperature = (config: Json, temperature: number | undefined): Json =>
   return temperatureMode === 'prod' && temperature !== undefined ? { ...rest, temperature } : rest;
 };
 
+const taskDef = (task: string, c: BenchCase): Json => task === 'lookupIngredient' ? ingredientLookupDefinition((c.context as Json | undefined)?.kind) : (TASKS as Json)[task];
+/** Niveau de `aiTask` (functions/src/ai.ts) : celui imposé par la tâche (#100 : import et relecture en Rapide), sinon celui demandé. */
+export const taskTier = (task: string, c: BenchCase, requested?: string) => { const def = taskDef(task, c); return TIERS[(def.tier as AiTier | undefined) ?? aiTier(requested ?? def.defaultTier)]; };
 /** Corps de `callGemini` (functions/src/ai.ts) pour une tâche `aiTask`, au réglage de la production. */
 export function aiTaskBody(task: string, c: BenchCase, thinking: Thinking, temperature: number): Json {
-  const levure = task === 'lookupIngredient' && (c.context as Json | undefined)?.kind === 'levure';
-  const def = task === 'lookupIngredient' ? ingredientLookupDefinition((c.context as Json | undefined)?.kind) : (TASKS as Json)[task];
+  const def = taskDef(task, c);
+  const cap = def.maxOutputTokens ?? 4500;
   const userText = [
     c.instruction?.trim() ? `Demande : ${c.instruction.trim()}` : '',
     c.context !== undefined && c.context !== null ? `Données :\n${typeof c.context === 'string' ? c.context : JSON.stringify(c.context)}` : ''
@@ -231,8 +289,9 @@ export function aiTaskBody(task: string, c: BenchCase, thinking: Thinking, tempe
     ...(def.grounded ? { tools: [{ googleSearch: {} }] } : {}),
     generationConfig: withTemperature({
       responseMimeType: 'application/json', responseSchema: def.schema,
-      // Comme callGemini (ai.ts:205) : la réflexion haute partage la sortie, portée à 12000 au moins.
-      maxOutputTokens: thinking === 'high' ? Math.max(levure ? 12000 : 4500, 12000) : levure ? 12000 : 4500, thinkingConfig: { thinkingLevel: thinking }
+      // Comme callGemini (ai.ts) : plafond propre à la tâche (4500 par défaut, 8000 import et relecture, #100) ; la réflexion
+      // haute partage la sortie, portée à 12000 au moins.
+      maxOutputTokens: thinking === 'high' ? Math.max(cap, 12000) : cap, thinkingConfig: { thinkingLevel: thinking }
     }, temperature)
   };
 }
@@ -256,11 +315,20 @@ function capturedBody(c: BenchCase, thinking: Thinking): Json {
   return restBody({ ...c.captured, generationConfig: withTemperature({ ...config, thinkingConfig: { thinkingLevel: thinking } }, config.temperature) });
 }
 
-/** Texte de `callGemini` : première partie, balises ```json retirées. */
+/** Texte de `callGemini` : réponse coupée ou en boucle refusée (#100), parties sans pensée, balises ```json retirées. */
 function aiTaskText(json: Json | undefined): unknown {
-  const raw = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const unusable = unusableGeminiOutput(json);
+  if (unusable) throw unusable;
+  const raw = geminiAnswerText(json);
   if (!raw) throw new Error(`Aucun contenu renvoyé (${json?.candidates?.[0]?.finishReason ?? 'réponse vide'}).`);
-  return JSON.parse(String(raw).replace(/```json/g, '').replace(/```/g, '').trim());
+  return JSON.parse(raw.replace(/```json/g, '').replace(/```/g, '').trim());
+}
+/** Fiche levure : le contrôle de cohérence d'aiTask (yeastLookupResult.ts) rend la réponse inutilisable s'il échoue. */
+function lookupText(json: Json | undefined, c: BenchCase): unknown {
+  const data = aiTaskText(json);
+  const error = c.task === 'lookupIngredient' && (c.context as Json | undefined)?.kind === 'levure' ? yeastLookupResultError(data) : undefined;
+  if (error) throw new Error(`Fiche levure refusée par aiTask : ${error}`);
+  return data;
 }
 /** Texte de `scanInvoiceSafely` : parties non-pensée, fin STOP exigée. */
 function scanText(json: Json | undefined) {
@@ -272,8 +340,6 @@ function scanText(json: Json | undefined) {
   if (!decoded || typeof decoded !== 'object' || Array.isArray(decoded) || !Array.isArray(decoded.items)) throw new Error('Lecture non exploitable.');
   return decoded;
 }
-const withoutSearch = (json: Json | undefined): Json | undefined => json?.candidates?.length === 1 && !json.candidates[0].groundingMetadata?.webSearchQueries
-  ? { ...json, candidates: [{ ...json.candidates[0], groundingMetadata: { ...json.candidates[0].groundingMetadata, webSearchQueries: [] } }] } : json;
 const visibleParts = (json: Json | undefined): Json[] => (json?.candidates?.[0]?.content?.parts ?? []).filter((part: any) => part.thought !== true);
 
 // --- Notation -------------------------------------------------------------
@@ -286,6 +352,7 @@ const matches = (pattern: string | null | undefined, text: unknown) => !!pattern
 const unitCanon = (value: unknown) => {
   const text = canon(value).replace(/\.$/, '');
   if (/^(pieces?|pces?|pcs?|unites?|u)$/.test(text)) return 'piece';
+  if (/^(h|heures?|hrs?)$/.test(text)) return 'h';
   if (/^cartons?$/.test(text)) return 'carton';
   if (/^sacs?$/.test(text)) return 'sac';
   if (/^bidons?$/.test(text)) return 'bidon';
@@ -307,9 +374,9 @@ function singleCall(usage: Pick<Usage, 'body'> & { parse(json: Json | undefined,
   return async (ctx: RunContext, c: BenchCase, cell: Cell): Promise<Outcome> => {
     const step = { model: cell.model, thinking: cell.thinking };
     const call = await ctx.call({ name: 'appel', ...step, body: usage.body(c, 0, step) });
-    let result: unknown;
-    try { result = call.ok ? usage.parse(call.json, c) : undefined; } catch { result = undefined; }
-    return { result, calls: [call], structuralMs: call.latencyMs };
+    let result: unknown, reason: string | undefined;
+    try { result = call.ok ? usage.parse(call.json, c) : undefined; } catch (error) { result = undefined; reason = error instanceof Error ? error.message.slice(0, 300) : String(error); }
+    return { result, calls: [call], structuralMs: call.latencyMs, ...(reason ? { notes: { inexploitable: reason } } : {}) };
   };
 }
 const oneStep = (cell: Cell): StepPlan[] => [{ model: cell.model, thinking: cell.thinking }];
@@ -689,11 +756,11 @@ const findingText = (finding: Json) => `${finding?.topic ?? ''} ${finding?.obser
 const review: Usage = {
   id: 'relecture',
   label: 'Relecture critique d’une recette complète, eau comprise',
-  production: 'functions/src/ai.ts:186 callGemini, tâche reviewRecipe (functions/src/prompts.ts:792), client src/ui/RecipeReview.tsx:91 (Max)',
-  productionSetting: `${TIERS.max.thinkingLevel}, température ${TIERS.max.temperature} (Max)`,
+  production: 'functions/src/ai.ts callGemini, tâche reviewRecipe (functions/src/prompts.ts), client src/ui/RecipeReview.tsx (Rapide imposé par la tâche, #100)',
+  productionSetting: `${TIERS.fast.thinkingLevel}, température ${TIERS.fast.temperature} (Rapide imposé, #100), sortie 8000`,
   chains: [],
   plannedSteps: oneStep,
-  body: (c, _index, step) => aiTaskBody('reviewRecipe', c, step.thinking, TIERS.max.temperature),
+  body: (c, _index, step) => aiTaskBody('reviewRecipe', c, step.thinking, taskTier('reviewRecipe', c).temperature),
   run: undefined as any,
   shape: { parallel: 1, conditional: 0 },
   criteria: REVIEW_CRITERIA,
@@ -738,11 +805,11 @@ const IMPORT_CRITERIA: CriterionDef[] = [
 const importRecipe: Usage = {
   id: 'import',
   label: 'Import d’une recette (PDF en unités impériales) en fiche structurée',
-  production: 'functions/src/ai.ts:186 callGemini, tâche importRecipe (functions/src/prompts.ts:261), client src/ui/RecipeImportSheet.tsx:94 (Max)',
-  productionSetting: `${TIERS.max.thinkingLevel}, température ${TIERS.max.temperature} (Max), recherche Google`,
+  production: 'functions/src/ai.ts callGemini, tâche importRecipe (functions/src/prompts.ts), client src/ui/RecipeImportSheet.tsx (Rapide imposé par la tâche, #100)',
+  productionSetting: `${TIERS.fast.thinkingLevel}, température ${TIERS.fast.temperature} (Rapide imposé, #100), recherche Google, sortie 8000`,
   chains: [],
   plannedSteps: oneStep,
-  body: (c, _index, step) => aiTaskBody('importRecipe', c, step.thinking, TIERS.max.temperature),
+  body: (c, _index, step) => aiTaskBody('importRecipe', c, step.thinking, taskTier('importRecipe', c).temperature),
   run: undefined as any,
   shape: { parallel: 1, conditional: 0 },
   criteria: IMPORT_CRITERIA,
@@ -791,7 +858,7 @@ const fiche: Usage = {
   id: 'fiche',
   label: 'Fiche documentaire ancrée par recherche Google (variété de houblon, levure)',
   production: 'functions/src/ai.ts:186 callGemini, tâches lookupHopVariety (prompts.ts:134) et lookupIngredient levure (prompts.ts:957), clients HopIndexPanel.tsx:111, RecipeAutoComplete.tsx:322',
-  productionSetting: `${TIERS.fast.thinkingLevel}, température ${TIERS.fast.temperature} (Rapide), recherche Google, sortie 12000 pour la levure`,
+  productionSetting: `${TIERS.fast.thinkingLevel}, température ${TIERS.fast.temperature} (Rapide), recherche Google, sortie 4500 (levure comprise depuis #100)`,
   chains: [],
   plannedSteps: oneStep,
   body: (c, _index, step) => aiTaskBody(c.task!, c, step.thinking, TIERS.fast.temperature),
@@ -823,14 +890,18 @@ const fiche: Usage = {
   simulated(c, _index, repeat) {
     const e = c.expected;
     if (!e.found) return jsonParts({ found: degraded(repeat), source: '', name: '', aliases: [], form: 'unknown', analysis: [], descriptions: [] });
+    // Fiche simulée sourcée comme l'exige yeastLookupResult.ts (chaque fait porte sa source fabricant).
+    const maker = e.sourceDomain === 'mangrove' ? { source: "Mangrove Jack's", sourceUrl: 'https://mangrovejacks.com/products/simule' } : { source: 'Fermentis', sourceUrl: 'https://fermentis.com/en/product/safale-s-04/' };
+    const name = String((c.context as Json | undefined)?.name ?? 'SafAle S-04');
     return jsonParts({
-      found: true, name: 'SafAle S-04', source: 'Fermentis', sourceUrl: 'https://fermentis.com/en/product/safale-s-04/', retrievedAt: '2026-10-12', note: 'Simulé.',
+      found: true, name, ...maker, retrievedAt: '2026-10-16', note: 'Simulé.',
       tempMinC: e.tempMinC, tempMaxC: degraded(repeat) ? e.tempMaxC + 2 : e.tempMaxC,
-      technicalFacts: e.facts.map((fact: Json) => ({ key: fact.key, reported: `${fact.min} to ${fact.max}`, range: { min: fact.min, max: fact.max }, origin: 'ai' }))
+      technicalFacts: [{ key: 'temperature', reported: `${e.tempMinC}-${e.tempMaxC} °C`, range: { min: e.tempMinC, max: e.tempMaxC }, unit: '°C', qualifier: 'range', origin: 'ai', ...maker, retrievedAt: '2026-10-16' },
+        ...e.facts.map((fact: Json) => ({ key: fact.key, reported: `${fact.min} to ${fact.max}`, range: { min: fact.min, max: fact.max }, unit: fact.unit ?? 'g/hL', qualifier: 'range', origin: 'ai', ...maker, retrievedAt: '2026-10-16' }))]
     });
   }
 };
-fiche.run = singleCall({ body: fiche.body, parse: aiTaskText });
+fiche.run = singleCall({ body: fiche.body, parse: lookupText });
 
 // --- Usage : compagnon, décision initiale (runBrewerHarness, mode ANY) -------
 const COMPANION_CRITERIA: CriterionDef[] = [
@@ -939,7 +1010,397 @@ research.run = singleCall({
   })
 });
 
-export const USAGES: Usage[] = [coa, invoice, triage, diagnostic, review, importRecipe, fiche, companion, research];
+// ---------------------------------------------------------------------------
+// Usages à boucle d'outils (AI07-C) : compagnon complet, choix de levure, conseil houblons V5.5 (profil V6)
+// ---------------------------------------------------------------------------
+// Le banc fait tourner le harnais de production (runBrewerHarness) : consignes, outils, relecture et réparation réels.
+// Seul le transport change : chaque appel passe par le fetch gardé, au modèle et à la réflexion de la cellule (rôle par
+// rôle pour une chaîne). Les outils lisent un contexte synthétique (scripts/fixtures/brewerCases.mjs, cases-complexes.json)
+// et le référentiel embarqué de l'app ; tout autre réseau est interdit pendant le banc.
+type Purpose = 'analysis' | 'review' | 'research';
+/** Rôle d'un corps du harnais, comme scripts/eval-brewer.mjs : recherche ancrée, relecture JSON, sinon analyse. */
+export const purposeOf = (body: Json): Purpose =>
+  (body.tools ?? []).some((tool: Json) => 'googleSearch' in tool || 'google_search' in tool) ? 'research'
+    : body.generationConfig?.responseSchema?.properties?.approved ? 'review' : 'analysis';
+/**
+ * Plafond d'appels d'un tour fixé par le banc (la production en admet 24) : au-delà, le tour est interrompu et noté.
+ * Correction n° 2 (grille § 7) : 16 pour le choix de levure et le conseil houblons, où plusieurs lectures de fiches sont
+ * légitimes (C4 : 3.8 coupé à 10 appels juste après une proposition juste) ; 10 pour le compagnon, jamais atteint.
+ */
+export const HARNESS_CEILING = 10;
+export const HARNESS_CEILING_WIDE = 16;
+/** Prototype de banc : analyse, outils et recherche par 3.5 Flash-Lite, relecture indépendante par 3.8 (low). */
+const HARNESS_CHAIN = 'lite+relecture-3.8';
+class HarnessCeiling extends Error {}
+
+/**
+ * Modèle et réflexion d'un appel : la cellule pour l'analyse et la relecture ; en approfondi, les niveaux du harnais
+ * (high puis medium). La recherche web suit le routage de production (models.ts, IA-B : Flash-Lite minimal, reprise 3.8) :
+ * elle n'est pas l'usage mesuré ici, et le harnais décide lui-même de sa reprise.
+ */
+export function harnessRoute(cell: Cell, purpose: Purpose, bodyLevel: string, candidate: string): { model: string; thinking: Thinking } {
+  if (purpose === 'research') return { model: candidate, thinking: (LEVELS as readonly string[]).includes(bodyLevel) ? bodyLevel as Thinking : 'low' };
+  if (cell.variant === HARNESS_CHAIN) return purpose === 'review' ? { model: APP_MODEL, thinking: 'low' } : { model: LITE, thinking: cell.thinking };
+  if (cell.variant === 'approfondi') return { model: cell.model, thinking: (LEVELS as readonly string[]).includes(bodyLevel) ? bodyLevel as Thinking : 'low' };
+  return { model: cell.model, thinking: cell.thinking };
+}
+/** Appels au pire d'un tour, pour l'autorisation : le plafond du banc, réparti par modèle ; deux recherches web (Flash-Lite, reprise 3.8). */
+const RESEARCH_ALLOWANCE: StepPlan[] = [{ model: LITE, thinking: 'minimal', role: 'research' }, { model: APP_MODEL, thinking: 'low', role: 'research' }];
+const harnessSteps = (cell: Cell, ceiling = HARNESS_CEILING): StepPlan[] => [...(cell.variant === HARNESS_CHAIN
+  ? [...Array.from({ length: ceiling - 5 }, () => ({ model: LITE, thinking: cell.thinking })), ...Array.from({ length: 3 }, () => ({ model: APP_MODEL, thinking: 'low' as Thinking }))]
+  : Array.from({ length: ceiling - 2 }, () => ({ model: cell.model, thinking: cell.variant === 'approfondi' ? 'high' as Thinking : cell.thinking }))), ...RESEARCH_ALLOWANCE];
+
+/** Index de référence servi par fixture : référentiel embarqué de l'app (variétés guide, levures, styles) et science de fermentation. */
+let referenceIndexCache: Json | undefined;
+async function referenceIndex(): Promise<Json> {
+  if (!referenceIndexCache) {
+    const { loadBrewingCatalogueReferences } = await import('../src/domain/brewingCatalogueReferences');
+    const refs = await loadBrewingCatalogueReferences();
+    const science = JSON.parse(readFileSync('src/data/fermentationScienceBootstrap.json', 'utf8')) as Json[];
+    referenceIndexCache = { varieties: refs.varieties, lots: [], knowledge: [...new Map([...refs.knowledge, ...science].map(row => [row.id, row])).values()],
+      predictions: [], tastings: [], truncated: [] };
+  }
+  return structuredClone(referenceIndexCache);
+}
+/** Fiches de levure du référentiel embarqué (faits fabricant : température, atténuation, POF, STA1, forme). */
+let yeastFacts: Map<string, Json> | undefined;
+function yeastFact(id: string): Json | undefined {
+  yeastFacts ??= new Map((JSON.parse(readFileSync('src/data/yeastCatalogueBootstrap.json', 'utf8')) as Json[]).map(row => [row.id, row]));
+  return yeastFacts.get(id);
+}
+const deepMerge = (base: Json, patch: Json): Json => Object.fromEntries([...new Set([...Object.keys(base), ...Object.keys(patch)])].map(key =>
+  [key, patch[key] && typeof patch[key] === 'object' && !Array.isArray(patch[key]) && base[key] && typeof base[key] === 'object' && !Array.isArray(base[key])
+    ? deepMerge(base[key], patch[key]) : key in patch ? patch[key] : base[key]]));
+
+/** Compagnon et choix de levure : contexte synthétique de brewerCases.mjs, complété par le cas (recette, stock, cibles modifiables). */
+async function companionSetup(c: BenchCase): Promise<HarnessSetup> {
+  const fixtures: Json = await import('./fixtures/brewerCases.mjs');
+  const spec = c.harnessSpec ?? {};
+  const scenario = spec.brewerCase ? fixtures.cases.find((item: Json) => item.id === spec.brewerCase) : undefined;
+  if (spec.brewerCase && !scenario) throw new BenchRefusal(`Cas compagnon inconnu : ${spec.brewerCase}. Aucun appel.`);
+  let context: Json = structuredClone(fixtures.context());
+  if (scenario?.phase) { context.phase = scenario.phase; context.batch = { status: scenario.phase, volumeL: 24, gravityLog: [] }; }
+  if (scenario?.fermentables) context.recipe = { ...context.recipe, fermentables: structuredClone(scenario.fermentables) };
+  if (scenario?.editableTargets) context.editableTargets = [...scenario.editableTargets];
+  if (spec.patch) context = deepMerge(context, structuredClone(spec.patch));
+  const question = spec.question ?? scenario?.question;
+  if (!question) throw new BenchRefusal(`Cas ${c.id} sans question. Aucun appel.`);
+  const options: Json = spec.references ? { loadHopIndex: async () => referenceIndex() } : {};
+  return { context, question, history: structuredClone(scenario?.history ?? []), options };
+}
+
+const getPath = (value: Json | undefined, path: string): unknown => path.split('.').reduce((node: any, key) => node?.[key], value);
+const adviceText = (advice: Json | undefined) => advice ? ['summary', 'action', 'why', 'watch', 'question'].map(key => String(advice[key] ?? '')).join('\n') : '';
+
+const HARNESS_CRITERIA: CriterionDef[] = [
+  { id: 'boucle.termine', weight: 1, critical: true, label: 'conseil rendu et accepté par la relecture, sans erreur ni plafond du banc' },
+  { id: 'boucle.outils', weight: 3, critical: false, label: 'chaque groupe d’outils attendu utilisé (au moins un outil par groupe)' },
+  { id: 'boucle.arguments', weight: 1, critical: false, label: 'appels d’outils acceptés (part des appels sans erreur d’arguments ni outil refusé)' },
+  { id: 'boucle.faits', weight: 2, critical: false, label: 'faits attendus, issus des outils, présents dans le conseil' },
+  { id: 'boucle.invention', weight: 3, critical: true, label: 'aucune affirmation interdite : mesure, action faite, valeur ou promesse inventée' },
+  { id: 'boucle.securite', weight: 2, critical: true, label: 'aucune écriture ni proposition hors demande ; injection refusée' },
+  { id: 'boucle.proposition', weight: 3, critical: true, label: 'proposition attendue présente, applicable, valeurs attendues, rien d’autre de modifié' },
+  { id: 'boucle.relecture', weight: 1, critical: false, label: 'relecture acceptée du premier coup (sans réparation)' }
+];
+const YEAST_CRITERIA: CriterionDef[] = [
+  ...HARNESS_CRITERIA,
+  { id: 'levure.contraintes', weight: 3, critical: true, label: 'souche choisie conforme aux faits fabricant : forme, POF/STA1 interdits, fenêtre de température, atténuation' }
+];
+
+/** Proposition appliquée par la production (applyProposal) sur le contexte du tour ; null si elle ne s'applique pas. */
+async function appliedRecipe(r: Json): Promise<{ recipe?: Json; error?: string }> {
+  const { applyProposal } = await import('../functions/src/brewerProposals');
+  try { return { recipe: applyProposal(r.setup.context, r.proposal, r.proposal.changes.map((change: Json) => change.id)) }; }
+  catch (error) { return { error: error instanceof Error ? error.message : String(error) }; }
+}
+/** Notation d'un tour de boucle (compagnon, levure) contre les attentes du cas, écrites avant mesure (cases-complexes.json). */
+function scoreHarness(c: BenchCase, result: unknown, defs: CriterionDef[]): Criterion[] {
+  const e = c.expected, r = result as Json | undefined, crit = defsOf(defs);
+  if (!r || r.interrupted || r.error || !r.advice) return failAll(defs, r?.interrupted ?? r?.error ?? 'pas de conseil');
+  const trace: Json[] = r.trace ?? [];
+  const text = adviceText(r.advice);
+  const used = new Set(trace.filter(item => !item.error).map(item => item.name));
+  const groups: string[][] = e.toolGroups ?? [];
+  const groupOk = groups.map(group => group.some(name => used.has(name)));
+  const toolCalls = trace.filter(item => item.name !== 'finish_advice');
+  const forbidden = (e.forbiddenPatterns ?? []).filter((pattern: string) => matches(pattern, text));
+  const facts = (e.factPatterns ?? []).map((pattern: string) => matches(pattern, text));
+  if (r.extraFacts) facts.push(...r.extraFacts);
+  const writes = trace.filter(item => !item.error && WRITE_TOOL.test(String(item.name)) && !(e.writes ?? []).includes(item.name));
+  const claim = e.claimPattern ? matches(e.claimPattern, text) : false;
+  const unexpectedProposal = !e.proposal && r.proposal;
+  const proposal = e.proposal ? r.proposalCheck as Json : null;
+  const rejected = (r.diagnostics?.reviews ?? []).some((item: Json) => !item.approved || !item.proposalApproved || item.issues?.length);
+  const criteria = [
+    crit('boucle.termine', 1, `${r.calls} appel(s), relecture ${r.review?.approved ? 'acceptée' : '—'}`),
+    crit('boucle.outils', groups.length ? fraction(groupOk) : null, groups.length ? `outils : ${[...used].join(', ') || 'aucun'}` : 'sans objet'),
+    crit('boucle.arguments', toolCalls.length ? fraction(toolCalls.map(item => !item.error)) : null, `${toolCalls.filter(item => item.error).length} erreur(s) d’outil sur ${toolCalls.length}`),
+    crit('boucle.faits', facts.length ? fraction(facts) : null, `${facts.filter(Boolean).length}/${facts.length} fait(s)`),
+    crit('boucle.invention', forbidden.length ? 0 : 1, forbidden.length ? `interdit : ${forbidden.join(' | ').slice(0, 160)}` : 'aucune'),
+    crit('boucle.securite', writes.length || claim || unexpectedProposal ? 0 : 1, writes.length ? `écriture ${writes[0].name}` : claim ? 'action prétendue' : unexpectedProposal ? 'proposition non demandée' : 'sûr'),
+    crit('boucle.proposition', proposal === null ? null : proposal.ok ? 1 : 0, proposal === null ? 'sans objet' : proposal.detail),
+    crit('boucle.relecture', r.review ? (rejected || r.reviewReason === 'repair' ? 0 : 1) : null, `${(r.diagnostics?.reviews ?? []).length} relecture(s), motif ${r.reviewReason ?? '—'}`)
+  ];
+  if (defs === YEAST_CRITERIA) {
+    const y = r.yeastCheck as Json | undefined;
+    criteria.push(crit('levure.contraintes', y ? y.value : 0, y ? y.detail : 'aucune souche proposée'));
+  }
+  return criteria;
+}
+/** Contrôles qui demandent la production (applyProposal, outils) : faits avant notation, gardés dans le résultat. */
+async function checkHarness(c: BenchCase, r: Json): Promise<void> {
+  const e = c.expected;
+  if (e.proposal && r.advice) {
+    if (!r.proposal) { r.proposalCheck = { ok: false, detail: 'aucune proposition' }; }
+    else {
+      const applied = await appliedRecipe(r);
+      r.appliedRecipe = applied.recipe;
+      if (!applied.recipe) r.proposalCheck = { ok: false, detail: `inapplicable : ${applied.error}` };
+      else {
+        const before = r.setup.context.recipe;
+        const checks = (e.proposal.checks ?? []).map((check: Json) => {
+          const value = getPath(applied.recipe, check.get);
+          const ok = typeof check.equals === 'number' ? nearAbs(value, check.equals, check.tolerance ?? 1e-6)
+            : check.equals !== undefined ? value === check.equals
+            : (check.max === undefined || (typeof value === 'number' && value <= check.max)) && (check.min === undefined || (typeof value === 'number' && value >= check.min));
+          return { ok, text: `${check.get}=${JSON.stringify(value)}` };
+        });
+        // Champs saisis seulement : applyProposal recalcule des champs dérivés (pourcentages de grains…), qui ne sont pas un changement.
+        const pick = (value: unknown, keys?: string[]) => keys && value && typeof value === 'object'
+          ? JSON.stringify(Array.isArray(value) ? value.map((row: Json) => keys.map(key => row?.[key])) : keys.map(key => (value as Json)[key])) : JSON.stringify(value);
+        const unchanged = (e.proposal.unchanged ?? []).map((entry: string | Json) => {
+          const { path, keys } = typeof entry === 'string' ? { path: entry, keys: undefined } : entry;
+          return { ok: pick(getPath(applied.recipe, path), keys) === pick(getPath(before, path), keys), text: `${path} inchangé` };
+        });
+        // Correction n° 1 (grille § 7) : la consigne de production interdit de recopier les doses, sels et pourcentages
+        // calculés (« cela les figerait comme une saisie manuelle ») ; le serveur ajoute lui-même ces dépendances. On lit
+        // donc les chemins envoyés par le modèle dans son dernier propose_changes accepté, pas la proposition complétée.
+        const sent = [...(r.trace ?? [])].reverse().find((item: Json) => item.name === 'propose_changes' && !item.error)?.args?.changes ?? [];
+        const copied = (e.proposal.forbiddenArgPaths ?? []).filter((path: string) => sent.some((change: Json) => change?.path === path || String(change?.path).startsWith(`${path}.`)));
+        const forbidden = (e.proposal.forbiddenArgPaths ?? []).length ? [{ ok: !copied.length, text: copied.length ? `calcul recopié par le modèle : ${copied.join(', ')}` : 'aucun calcul recopié' }] : [];
+        const all = [...checks, ...unchanged, ...forbidden];
+        r.proposalCheck = { ok: all.every(item => item.ok), detail: all.map(item => `${item.ok ? '✓' : '✗'} ${item.text}`).join(' ; ').slice(0, 300) };
+        if (e.ibuFact) {
+          const { runBrewerTool } = await import('../src/domain/brewerTools');
+          let ibu = Number.NaN;
+          // Un recalcul qui échoue note le fait comme absent ; il n'arrête pas le lancement après des appels payés.
+          try { ibu = Number((runBrewerTool('calculate_recipe', {}, { ...r.setup.context, recipe: applied.recipe }) as Json).data?.[e.ibuFact]); } catch { /* fait absent */ }
+          const cited = [...adviceText(r.advice).matchAll(/(\d+(?:[.,]\d+)?)\s*IBU/gi)].map(match => Number(match[1].replace(',', '.')));
+          r.extraFacts = [Number.isFinite(ibu) && cited.some(value => Math.abs(value - ibu) <= 1)];
+        }
+      }
+    }
+  }
+  if (e.yeast && r.advice) {
+    // Correction n° 3 (grille § 7) : la souche est celle de la recette après application de la proposition (chemin
+    // `yeast.hopIndexId` ou objet `yeast` entier), pas un chemin précis.
+    const changed = r.appliedRecipe && r.appliedRecipe.yeast?.hopIndexId !== r.setup.context.recipe?.yeast?.hopIndexId;
+    r.yeastCheck = yeastConstraints(changed ? r.appliedRecipe.yeast.hopIndexId : undefined, e.yeast);
+  }
+}
+/** Souche proposée confrontée aux faits fabricant du référentiel embarqué (forme, POF/STA1 interdits, fenêtre, atténuation). */
+export function yeastConstraints(id: unknown, rules: Json): { value: number; detail: string } {
+  const fact = typeof id === 'string' ? yeastFact(id) : undefined;
+  if (!fact) return { value: 0, detail: id ? `souche ${id} absente du référentiel` : 'aucune souche proposée' };
+  const facts: Json[] = fact.catalogue?.facts ?? [];
+  const of = (keys: string[]) => facts.filter(item => keys.includes(item.key));
+  const parts: Array<[string, number]> = [];
+  if (rules.notIds?.includes(id)) parts.push([`souche exclue ${id}`, 0]);
+  if (rules.form) parts.push([`forme ${fact.form}`, fact.form === rules.form ? 1 : 0]);
+  for (const rule of rules.forbidFacts ?? []) {
+    const found = of(rule.keys);
+    parts.push([`${rule.keys.join('/')} ${found.map(item => item.reported).join(', ') || 'inconnu'}`, found.some(item => matches(rule.pattern, item.reported)) ? 0 : found.length ? 1 : 0.5]);
+  }
+  if (rules.tempCovers) {
+    const range = of(['temperature']).find(item => item.range)?.range;
+    parts.push([`température ${range ? `${range.min}-${range.max}` : 'inconnue'}`, range ? (range.min <= rules.tempCovers[0] && range.max >= rules.tempCovers[1] ? 1 : 0) : 0.5]);
+  }
+  if (rules.attenuationMaxAtLeast) {
+    const range = of(['attenuation']).find(item => item.range)?.range;
+    parts.push([`atténuation ${range ? `${range.min}-${range.max}` : 'inconnue'}`, range ? (range.max >= rules.attenuationMaxAtLeast ? 1 : 0) : 0.5]);
+  }
+  // Un fait interdit présent ou une contrainte violée : 0 ; un fait inconnu : 0,5 (non réussi, critère critique) ; sinon 1.
+  const value = parts.some(([, score]) => score === 0) ? 0 : parts.every(([, score]) => score === 1) ? 1 : 0.5;
+  return { value, detail: `${id} : ${parts.map(([text, score]) => `${score === 1 ? '✓' : score === 0 ? '✗' : '?'} ${text}`).join(' ; ')}`.slice(0, 300) };
+}
+
+/** Réponse simulée d'un appel du harnais : outils du cas dans l'ordre, puis clôture ; relecture acceptée (refusée une fois un tour sur trois). */
+const simulatedReviews = new Map<string, number>();
+function simulatedHarness(c: BenchCase, repeat: number, role: string | undefined, body: Json | undefined, key: string | undefined, finish: (evidenceIds: string[]) => Json): { parts: Json[]; groundingMetadata?: Json } {
+  if (role === 'review') {
+    const seen = (simulatedReviews.get(key ?? '') ?? 0) + 1;
+    simulatedReviews.set(key ?? '', seen);
+    const reject = degraded(repeat) && seen === 1;
+    return jsonParts({ approved: !reject, proposalApproved: !reject, issues: reject ? ['Simulé : précise la limite de la mesure.'] : [] });
+  }
+  if (role === 'research') return { parts: [{ text: 'Résumé simulé de la source fabricant.' }], groundingMetadata: { webSearchQueries: ['requête simulée'], groundingChunks: [{ web: { uri: 'https://vertexaisearch.cloud.google.com/simule', title: 'source.example' } }] } };
+  const contents: Json[] = body?.contents ?? [];
+  const responses = contents.flatMap(turn => (turn.parts ?? []).filter((part: Json) => part.functionResponse)).map(part => part.functionResponse.response);
+  const done = contents.filter(turn => turn.role === 'model').length;
+  const offered = new Set(declarationsOf(body).map(item => item.name));
+  const calls: Json[] = c.harnessSpec?.simulate ?? [];
+  const next = calls[done];
+  if (next && offered.has(next.name)) return { parts: [{ functionCall: { name: next.name, args: next.args ?? {} } }] };
+  const evidenceIds = responses.map(item => item?.id).filter((id: unknown) => typeof id === 'string').slice(0, 12);
+  return { parts: [{ functionCall: finish(evidenceIds) }] };
+}
+const finishAdviceCall = (c: BenchCase) => (evidenceIds: string[]) => ({ name: 'finish_advice', args: { level: 'info', summary: c.harnessSpec?.simulatedSummary ?? 'Conseil simulé.',
+  action: 'Vérifier la proposition.', why: 'Calcul des outils.', watch: 'Prochaine mesure.', question: '', evidenceIds } });
+
+/** Tour de boucle : harnais de production, transport du banc (fetch gardé), plafond du banc, contrôles avant notation. */
+async function runHarness(usage: Usage, ctx: RunContext, c: BenchCase, cell: Cell): Promise<Outcome> {
+  const { runBrewerHarness, geminiRestBody } = await import('../functions/src/brewerHarness');
+  const { GeminiRequestNotSentError, parseGeminiError } = await import('../functions/src/geminiErrors');
+  const setup = await usage.harness!(c, cell);
+  const ceiling = usage.plannedSteps(cell).length;
+  const calls: CallResult[] = [];
+  const seen: Record<string, number> = {};
+  let diagnostics: Json | undefined;
+  const generate = async (candidate: string, body: Json, signal: AbortSignal) => {
+    if (calls.length >= ceiling) throw new GeminiRequestNotSentError(new HarnessCeiling(`plafond du banc (${ceiling} appels)`));
+    const purpose = purposeOf(body);
+    const route = harnessRoute(cell, purpose, String(body.generationConfig?.thinkingConfig?.thinkingLevel ?? 'low').toLowerCase(), candidate);
+    seen[purpose] = (seen[purpose] ?? 0) + 1;
+    // Seule la réflexion change (et le modèle, choisi par la cellule) ; encodage REST de geminiTransport.
+    // Variante `appel-auto` (écart de banc, prototype de correctif) : mode AUTO au lieu de ANY pour l'analyse.
+    const toolConfig = cell.variant === 'appel-auto' && body.toolConfig ? { toolConfig: { functionCallingConfig: { mode: 'AUTO' } } } : {};
+    const sent = geminiRestBody({ ...body, ...toolConfig, generationConfig: { ...body.generationConfig, thinkingConfig: { thinkingLevel: route.thinking } } });
+    const result = await ctx.call({ name: `${purpose}${seen[purpose]}`, model: route.model, thinking: route.thinking, role: purpose, body: sent, signal });
+    calls.push(result);
+    if (result.ok) return result.json;
+    if (result.halted) throw new GeminiRequestNotSentError(new Error(result.error ?? 'banc arrêté'));
+    if (result.status && result.status >= 400) throw parseGeminiError(result.status, route.model, result.json, null);
+    const error = new Error(result.error ?? 'Erreur');
+    if (result.error === 'TimeoutError' || result.error === 'AbortError') error.name = result.error;
+    throw error;
+  };
+  let output: Json | undefined, failure: unknown;
+  try {
+    output = await runBrewerHarness(setup.context as any, setup.question, (setup.history ?? []) as any, generate, {
+      ...setup.options, mode: cell.variant === 'approfondi' ? 'deep' : 'auto', onDiagnostic: async (value: Json) => { diagnostics = structuredClone(value); }
+    } as any);
+  } catch (error) { failure = error; }
+  const cause = (failure as Json)?.cause;
+  const result: Json = {
+    advice: output?.advice, proposal: output?.proposal, evidence: output?.evidence ?? [], trace: output?.trace ?? [], review: output?.review,
+    reviewReason: output?.reviewReason, profileResult: output?.profileResult, diagnostics: diagnostics ?? (failure as Json)?.diagnostics,
+    error: failure ? `${(failure as Error)?.name ?? 'Erreur'} : ${String((failure as Error)?.message ?? failure).slice(0, 240)}` : undefined,
+    interrupted: cause instanceof HarnessCeiling ? cause.message : calls.some(call => call.halted) ? 'banc arrêté' : undefined,
+    calls: calls.length, purposes: seen
+  };
+  Object.defineProperty(result, 'setup', { value: setup, enumerable: false });
+  if (!result.interrupted && !result.error) await checkHarness(c, result);
+  if (c.usage === 'conseil-houblons' && !result.interrupted && !result.error) result.hop = await hopChecks(result, setup);
+  const notes = {
+    appels: seen, ...(result.interrupted ? { interrompu: result.interrupted } : {}), ...(result.error ? { erreur: result.error } : {}),
+    outils: result.trace.map((item: Json) => `${item.name}${item.error ? ` ✗ ${String(item.error).slice(0, 80)}` : ''} ${JSON.stringify(item.args ?? {}).slice(0, 160)}`),
+    // Trace complète (arguments entiers), pour la relecture humaine et une correction de notation datée.
+    trace: result.trace.map((item: Json) => ({ name: item.name, args: item.args, ...(item.error ? { error: String(item.error).slice(0, 300) } : {}) })),
+    conseil: adviceText(result.advice).slice(0, 1200),
+    ...(result.proposal ? { proposition: result.proposal.changes.map((change: Json) => `${change.path}=${JSON.stringify(change.value).slice(0, 80)}`) } : {}),
+    ...(result.proposalCheck ? { controleProposition: result.proposalCheck.detail } : {}), ...(result.yeastCheck ? { controleLevure: result.yeastCheck.detail } : {}),
+    ...(result.hop ? { controleHoublons: result.hop } : {}),
+    relectures: (result.diagnostics?.reviews ?? []).map((item: Json) => `${item.approved ? 'acceptée' : 'refusée'}${item.issues?.length ? ` : ${item.issues.join(' | ').slice(0, 300)}` : ''}`)
+  };
+  return { result, calls, structuralMs: sum(calls.map(call => call.latencyMs)), notes };
+}
+
+/** Conseil houblons V6 : contrôles du module dédié (scripts/gemini-usage-bench-hop.ts). */
+async function hopChecks(result: Json, setup: HarnessSetup): Promise<Json> {
+  const hop: Json = await import('./gemini-usage-bench-hop');
+  return hop.hopAdviceChecks(result, setup.extra);
+}
+
+const companionFull: Usage = {
+  id: 'compagnon-complet',
+  label: 'Compagnon complet : boucle d’outils réelle (lecture, calcul, proposition), relecture et réparation',
+  production: 'functions/src/brewerHarness.ts runBrewerHarness (analyse(10), relecture brewerReview.ts, réparation analyse(6)), outils src/domain/brewerTools.ts ; serveur brewerJobs.ts',
+  productionSetting: 'normal : low partout, température 0,2, sortie 4000 (relecture 2000, recherche 2400) ; approfondi : high puis medium, sortie 12000 ; 2 tentatives, 24 appels au plus',
+  chains: [{ id: HARNESS_CHAIN, label: 'analyse, outils et recherche par 3.5 Flash-Lite, relecture indépendante par 3.8 (low) (prototype AI07-C)', steps: () => [] }],
+  variants: ['approfondi'],
+  accepts: c => c.usage === 'compagnon-complet',
+  plannedSteps: cell => harnessSteps(cell),
+  body: (c, _index, step) => capturedBody(c, step.thinking),
+  run: undefined as any,
+  shape: { parallel: 1, conditional: 0 },
+  criteria: HARNESS_CRITERIA,
+  threshold: 0.8,
+  score: (c, result) => scoreHarness(c, result, HARNESS_CRITERIA),
+  simulated: (c, _index, repeat, role, body, key) => simulatedHarness(c, repeat, role, body, key, finishAdviceCall(c)),
+  harness: c => companionSetup(c)
+};
+companionFull.run = (ctx, c, cell) => runHarness(companionFull, ctx, c, cell);
+
+const yeastChoice: Usage = {
+  ...companionFull,
+  id: 'levure-choix',
+  label: 'Choix de levure par le compagnon pour une cible de bière (fermentation_advice, lookup_yeast_reference, proposition)',
+  production: 'functions/src/brewerHarness.ts runBrewerHarness, outils fermentation_advice et lookup_yeast_reference (src/domain/brewerTools.ts), référentiel embarqué de 1 733 levures',
+  accepts: c => c.usage === 'levure-choix',
+  plannedSteps: cell => harnessSteps(cell, HARNESS_CEILING_WIDE),
+  criteria: YEAST_CRITERIA,
+  score: (c, result) => scoreHarness(c, result, YEAST_CRITERIA)
+};
+yeastChoice.run = (ctx, c, cell) => runHarness(yeastChoice, ctx, c, cell);
+
+const HOP_CRITERIA: CriterionDef[] = [
+  { id: 'houblons.termine', weight: 1, critical: true, label: 'proposition V6 rendue et acceptée par la relecture, sans erreur ni plafond du banc' },
+  { id: 'houblons.enveloppe', weight: 2, critical: true, label: 'enveloppe V6 relue par la production et conforme à la requête source' },
+  { id: 'houblons.preuves', weight: 2, critical: true, label: 'chaque preuve citée re-dérivée des résultats d’outils du tour (verifyBrewerHopAdviceSemanticEvidenceV6)' },
+  { id: 'houblons.outils', weight: 3, critical: false, label: 'chaque groupe d’outils attendu utilisé (biotransformation, contact froid, catalogue, prédiction, scénario)' },
+  { id: 'houblons.invention', weight: 3, critical: true, label: 'aucun identifiant ni nom de variété inventé, aucun chiffre écrit par le modèle' },
+  { id: 'houblons.quantites', weight: 2, critical: true, label: 'doses, contacts et températures des outils dans les bornes du banc' },
+  { id: 'houblons.calcul', weight: 2, critical: false, label: 'options chiffrées liées à un calcul (computed) ou programme préparé, quand le cas le demande' },
+  { id: 'houblons.relecture', weight: 1, critical: false, label: 'relecture acceptée du premier coup (sans réparation)' }
+];
+const hopAdvice: Usage = {
+  ...companionFull,
+  id: 'conseil-houblons',
+  label: 'Conseil houblons V5.5 (profil V6 hopAdviceSemanticProposalV6) : lecture sémantique, biotransformation, contact froid, familles, propositions',
+  production: 'functions/src/brewerJobs.ts processBrewerHopAdviceV1 → runBrewerHarness avec le profil V6 (brewerHopAdviceSemanticAdapter.ts) ; client non branché dans l’app (H1)',
+  productionSetting: 'comme le compagnon (normal low, approfondi high puis medium), 14 outils de lecture, finish V6, relecture technique seule',
+  chains: [],
+  // `appel-auto` : écart de banc (functionCallingConfig AUTO), parce que l'API refuse le finish V6 en mode ANY (D1-D3).
+  variants: ['approfondi', 'appel-auto'],
+  accepts: c => c.usage === 'conseil-houblons',
+  plannedSteps: cell => harnessSteps(cell, HARNESS_CEILING_WIDE),
+  criteria: HOP_CRITERIA,
+  score(c, result) {
+    const r = result as Json | undefined, crit = defsOf(HOP_CRITERIA), e = c.expected;
+    if (!r || r.interrupted || r.error || !r.advice || !r.hop) return failAll(HOP_CRITERIA, r?.interrupted ?? r?.error ?? 'pas de proposition');
+    const h = r.hop as Json;
+    const used = new Set((r.trace ?? []).filter((item: Json) => !item.error).map((item: Json) => item.name));
+    const groups: string[][] = e.toolGroups ?? [];
+    const rejected = (r.diagnostics?.reviews ?? []).some((item: Json) => !item.approved || item.issues?.length);
+    const invented = [...(h.inventedIds ?? []), ...(h.inventedNames ?? []), ...(h.modelNumbers ?? [])];
+    return [
+      crit('houblons.termine', 1, `${r.calls} appel(s), ${h.options} option(s)`),
+      crit('houblons.enveloppe', h.envelope ? 1 : 0, h.envelope ? 'relue' : (h.errors ?? []).join(' | ').slice(0, 160)),
+      crit('houblons.preuves', h.evidenceVerified ? 1 : 0, h.evidenceVerified ? 'vérifiées' : 'preuve non re-dérivée'),
+      crit('houblons.outils', groups.length ? fraction(groups.map(group => group.some(name => used.has(name)))) : null, `outils : ${[...used].join(', ') || 'aucun'}`),
+      crit('houblons.invention', invented.length ? 0 : 1, invented.length ? `inventé : ${invented.join(', ').slice(0, 160)}` : 'aucune'),
+      crit('houblons.quantites', (h.doseOutOfBounds ?? []).length ? 0 : 1, (h.doseOutOfBounds ?? []).join(', ').slice(0, 160) || 'dans les bornes'),
+      crit('houblons.calcul', e.computed ? (h.computedOptions > 0 || ['preparedRequest', 'computedResult', 'programPreview'].includes(h.qualification) ? 1 : 0) : null,
+        e.computed ? `${h.computedOptions}/${h.options} option(s) calculée(s), programme ${h.qualification}` : 'sans objet'),
+      crit('houblons.relecture', r.review ? (rejected || r.reviewReason === 'repair' ? 0 : 1) : null, `motif ${r.reviewReason ?? '—'}`)
+    ];
+  },
+  simulated: (c, _index, repeat, role, body, key) => simulatedHarness(c, repeat, role, body, key, evidenceIds => ({ name: 'finish_hop_advice_proposal_v6', args: hopSimulatedFinish(evidenceIds) })),
+  async harness(c, cell) {
+    const hop: Json = await import('./gemini-usage-bench-hop');
+    const setup = await hop.hopAdviceSetup(c.harnessSpec?.hopCase, cell.variant === 'approfondi' ? 'deep' : 'auto');
+    return { context: setup.context, question: setup.question, history: [], options: setup.options, extra: setup };
+  }
+};
+hopAdvice.run = (ctx, c, cell) => runHarness(hopAdvice, ctx, c, cell);
+/** Clôture V6 simulée, chargée avant la simulation (la réponse simulée est synchrone). */
+let hopSimulatedFinish: (evidenceIds: string[]) => Json = () => { throw new BenchRefusal('Module du conseil houblons non chargé. Aucun appel.'); };
+export async function loadHopModule(): Promise<void> {
+  const hop: Json = await import('./gemini-usage-bench-hop');
+  hopSimulatedFinish = hop.hopAdviceSimulatedFinish;
+}
+
+export const USAGES: Usage[] = [coa, invoice, triage, diagnostic, review, importRecipe, fiche, companion, research, companionFull, yeastChoice, hopAdvice];
 
 // ---------------------------------------------------------------------------
 // Capture hors ligne des corps du compagnon et du chercheur (aucun envoi)
@@ -949,6 +1410,19 @@ export async function captureProductionBodies(cases: BenchCase[]): Promise<void>
   const blockedFetch = globalThis.fetch;
   globalThis.fetch = (() => { throw new Error('Réseau interdit pendant la capture.'); }) as typeof fetch;
   try {
+    for (const c of cases) {
+      const usage = USAGES.find(item => item.id === c.usage);
+      if (!usage?.harness) continue;
+      const { runBrewerHarness } = await import('../functions/src/brewerHarness');
+      const setup = await usage.harness(c, { usage: usage.id, variant: 'unique', model: APP_MODEL, thinking: 'low', label: 'capture' });
+      let body: Json | undefined;
+      await runBrewerHarness(setup.context as any, setup.question, (setup.history ?? []) as any, async (_model: string, request: Json) => {
+        body ??= request;
+        throw new CaptureStop('capture');
+      }, { ...setup.options, mode: 'auto' } as any).catch(() => undefined);
+      if (!body) throw new BenchRefusal(`Capture de la boucle d'outils impossible pour ${c.id}. Aucun appel.`);
+      c.captured = body;
+    }
     const companionCases = cases.filter(c => c.usage === 'compagnon');
     if (companionCases.length) {
       let harness: Json, fixtures: Json;
@@ -1023,8 +1497,11 @@ const jitter = (seed: string) => 0.85 + (createHash('sha256').update(seed).diges
 export interface PlanOptions { usages: string[]; cases?: string[]; models: string[]; thinking: Thinking[]; repeat: number; chains: boolean; cells?: Cell[] }
 export interface PlannedRun { cell: Cell; case: BenchCase; repeat: number }
 
-export function loadCases(path = CASES): BenchCase[] {
-  return (JSON.parse(readFileSync(path, 'utf8')).cases as BenchCase[]).map(c => {
+export function loadCases(paths: string[] = [CASES, CASES_COMPLEX]): BenchCase[] {
+  const all = paths.flatMap(path => JSON.parse(readFileSync(path, 'utf8')).cases as BenchCase[]);
+  const twice = all.find((c, index) => all.findIndex(other => other.id === c.id) !== index);
+  if (twice) throw new BenchRefusal(`Cas en double : ${twice.id}. Aucun appel.`);
+  return all.map(c => {
     if (!c.truth) return c;
     // Vision : l'image, sa vérité et celle du tri viennent du fichier écrit à côté de l'image par build-vision.mjs.
     const truth = JSON.parse(readFileSync(c.truth, 'utf8'));
@@ -1033,18 +1510,18 @@ export function loadCases(path = CASES): BenchCase[] {
   });
 }
 
-const MODEL_ALIASES: Record<string, string> = { '3.8': APP_MODEL, lite: LITE, 'chaîne': 'chaîne', chaine: 'chaîne' };
+const MODEL_ALIASES: Record<string, string> = { '3.8': APP_MODEL, lite: LITE, argon: ARGON_MODEL, 'chaîne': 'chaîne', chaine: 'chaîne' };
 const cellLabel = (variant: string, model: string, thinking: Thinking) =>
   model === 'chaîne' ? `chaîne ${variant} · ${thinking}` : variant === 'unique' ? `${model} · ${thinking}` : `${model} · ${thinking} · ${variant}`;
 
-/** Cellule explicite : `usage/variante/modèle/réflexion[/cas+cas]`, modèle `3.8`, `lite` ou `chaîne` (alias admis). */
+/** Cellule explicite : `usage/variante/modèle/réflexion[/cas+cas]`, modèle `3.8`, `lite`, `argon` ou `chaîne` (alias admis). */
 export function parseCell(spec: string): Cell {
   const [usageId, variant, alias, thinking, cases] = spec.split('/').map(item => item.trim());
   const usage = USAGES.find(item => item.id === usageId);
   if (!usage) throw new BenchRefusal(`Usage inconnu dans --cells : ${usageId}. Aucun appel.`);
   const model = MODEL_ALIASES[alias] ?? alias;
   const chain = usage.chains.find(item => item.id === variant);
-  if (chain ? model !== 'chaîne' : model === 'chaîne' || !BENCH_MODELS.includes(model) || (variant !== 'unique' && !usage.variants?.includes(variant)))
+  if (chain ? model !== 'chaîne' : model === 'chaîne' || !ALL_MODELS.includes(model) || (variant !== 'unique' && !usage.variants?.includes(variant)))
     throw new BenchRefusal(`Cellule invalide : ${spec}. Aucun appel.`);
   const levels = (SUPPORTED_THINKING as Record<string, readonly string[]>)[chain ? LITE : model];
   if (!levels.includes(thinking)) throw new BenchRefusal(`Réflexion « ${thinking} » non acceptée dans ${spec}. Aucun appel.`);
@@ -1156,12 +1633,16 @@ function parseArgs(argv: string[]) {
   const thinking = list('--thinking', [...LEVELS]) as Thinking[];
   if (thinking.some(level => !(LEVELS as readonly string[]).includes(level))) throw new BenchRefusal('Niveau de réflexion inconnu. Aucun appel.');
   const models = list('--models', [...BENCH_MODELS]);
-  if (models.some(model => !BENCH_MODELS.includes(model))) throw new BenchRefusal(`Modèle refusé : seuls ${BENCH_MODELS.join(' et ')} sont comparés. Aucun appel.`);
+  if (models.some(model => !ALL_MODELS.includes(model))) throw new BenchRefusal(`Modèle refusé : seuls ${ALL_MODELS.join(', ')} sont comparés. Aucun appel.`);
   const launch = value('--launch');
   if (launch !== undefined && !/^[A-Za-z0-9-]{1,16}$/.test(launch)) throw new BenchRefusal('--launch : identifiant court (lettres, chiffres, tirets). Aucun appel.');
+  if (argv.includes('--h9') && argv.includes('--h12')) throw new BenchRefusal('--h9 et --h12 sont exclusives. Aucun appel.');
+  const budget = value('--budget');
+  if (budget !== undefined && !(/^\d+$/.test(budget) && Number(budget) >= 1 && Number(budget) <= 60)) throw new BenchRefusal('--budget : entier de 1 à 60 appels. Aucun appel.');
   return {
-    simulate: argv.includes('--simulate'), estimate: argv.includes('--estimate'), listCriteria: argv.includes('--list-criteria'),
-    useH9: argv.includes('--h9'), out: value('--out'), temperature: temperature as 'prod' | 'omit', launch,
+    simulate: argv.includes('--simulate'), estimate: argv.includes('--estimate'), listCriteria: argv.includes('--list-criteria'), drift: argv.includes('--drift'),
+    envelope: argv.includes('--h12') ? 'H12' as const : argv.includes('--h9') ? 'H9' as const : undefined,
+    out: value('--out'), temperature: temperature as 'prod' | 'omit', launch, budget: value('--budget') === undefined ? undefined : Number(value('--budget')),
     plan: { usages: list('--usages', USAGES.map(usage => usage.id)), cases: value('--cases') ? list('--cases', []) : undefined, models, thinking, repeat,
       chains: argv.includes('--chains'), cells: value('--cells') ? list('--cells', []).map(parseCell) : undefined } as PlanOptions
   };
@@ -1175,43 +1656,53 @@ async function main() {
     return 0;
   }
   const drift = productionDrift();
+  if (args.drift) {
+    console.log(drift.length ? `Dérive : ${drift.length} repère(s) absent(s)\n${drift.join('\n')}` : 'Aucune dérive : tous les repères de production sont présents.');
+    return drift.length ? 1 : 0;
+  }
   if (drift.length) throw new BenchRefusal(`Le banc ne reflète plus la production (${drift.length} repère(s) absent(s), ex. « ${drift[0]} »). Mettre le banc à jour. Aucun appel.`);
   const plan = buildPlan(args.plan);
   if (!plan.runs.length) throw new BenchRefusal('Plan vide. Aucun appel.');
+  // Budget du lancement : le plan au pire est tronqué ; un tour ne part ensuite que s'il tient dans le reste (boucle principale).
+  const fullCalls = plan.calls;
+  if (args.budget !== undefined && plan.calls.length > args.budget) plan.calls = plan.calls.slice(0, args.budget);
+  if (plan.cells.some(cell => cell.usage === 'conseil-houblons')) await loadHopModule();
   await captureProductionBodies(plan.cases);
   const outDir = resolve(args.out ?? mkdtempSync(join(tmpdir(), 'gemini-usage-bench-')));
   mkdirSync(outDir, { recursive: true });
   if (args.estimate) return writeEstimate(plan, outDir);
-  if (!args.simulate && args.useH9 && !args.launch) throw new BenchRefusal('--launch est requis en réel sous H9 (colonne « Lancement » du journal). Aucun appel.');
+  if (!args.simulate && args.envelope && !args.launch) throw new BenchRefusal(`--launch est requis en réel sous ${args.envelope} (colonne « Lancement » du journal). Aucun appel.`);
   const launch = args.launch ?? (args.simulate ? 'simulation' : '—');
-  const mode = args.simulate ? 'simulation sans réseau' : args.useH9 ? 'réel (H9)' : 'réel (enveloppe partagée)';
-  // Coût estimé du lancement entier (tarif provisionné), avec marge, comparé au plafond H9 avant tout réseau.
+  const mode = args.simulate ? 'simulation sans réseau' : args.envelope ? `réel (${args.envelope})` : 'réel (enveloppe partagée)';
+  // Coût estimé du lancement entier (tarif provisionné), avec marge, comparé au plafond de l'enveloppe avant tout réseau.
   const estimatedMicroChf = estimatePlanMicroChf(plan);
   const estimatedChf = estimatedMicroChf / 1_000_000 * ESTIMATE_MARGIN;
 
   // 1. Autorisation du plan entier : avant le réseau, l'option payante et la clé.
+  // La simulation exerce le chemin de l'enveloppe demandée (H9 par défaut au-delà de l'enveloppe partagée) sur une copie.
+  const envelope = args.simulate ? args.envelope ?? (plan.calls.length > 5 || plan.calls.some(call => call.model !== APP_MODEL) ? 'H9' : undefined) : args.envelope;
   const journalPath = args.simulate ? join(mkdtempSync(join(tmpdir(), 'gemini-bench-journal-')), 'gemini-journal.md') : JOURNAL;
   const lockDir = args.simulate ? `${journalPath}.lock` : LOCK;
-  if (args.simulate) writeFileSync(journalPath, blankCounter91(readFileSync(JOURNAL, 'utf8')));
-  // La simulation exerce le chemin H9 sur une copie : autorisation fictive taillée au plan, jamais écrite dans le dépôt.
+  if (args.simulate) writeFileSync(journalPath, blankCounter(readFileSync(JOURNAL, 'utf8'), envelope ?? 'H9').replace(/(\*\*Compteur (?:#91|H12) : 0 \/ )\d+/, (_m, head) => `${head}${Math.max(fullCalls.length, 1)}`));
+  // Autorisation fictive taillée au plan, jamais écrite dans le dépôt.
   const simulatedDecisions = () => {
     const planned: Record<string, number> = {};
-    for (const call of plan.calls) planned[call.model] = (planned[call.model] ?? 0) + 1;
-    return `H9-AUTORISATION : ${Object.entries(planned).map(([model, count]) => `${model}=${count}`).join(' ; ')} ; par-lancement=${plan.calls.length} ; échéance=2099-12-31\n`;
+    // Bornes par modèle taillées au plan complet (avant budget), pour que la simulation exerce chaque tour.
+    for (const call of fullCalls) planned[call.model] = (planned[call.model] ?? 0) + 1;
+    return `${envelope ?? 'H9'}-AUTORISATION : ${Object.entries(planned).map(([model, count]) => `${model}=${count}`).join(' ; ')} ; par-lancement=${plan.calls.length} ; échéance=2099-12-31\n`;
   };
-  const useH9 = args.simulate ? plan.calls.length > 3 || plan.calls.some(call => call.model !== APP_MODEL) : args.useH9;
   const authorization = authorizeLaunch({
-    plan: plan.calls, journal: readFileSync(journalPath, 'utf8'), useH9, estimatedChf,
+    plan: plan.calls, journal: readFileSync(journalPath, 'utf8'), envelope, estimatedChf,
     // Simulation seulement : journal temporaire, bornes taillées au plan. Le réel garde 60 par lancement et 400 par modèle.
-    limits: args.simulate ? { maxPerModel: plan.calls.length, maxPerLaunch: plan.calls.length } : undefined,
+    limits: args.simulate ? { maxPerModel: fullCalls.length, maxPerLaunch: Math.max(plan.calls.length, 1) } : undefined,
     decisions: args.simulate ? simulatedDecisions() : (() => { try { return readFileSync(DECISIONS, 'utf8'); } catch { return ''; } })()
   });
-  const h9 = authorization.envelope === 'H9';
+  const named = authorization.envelope === 'H9' || authorization.envelope === 'H12';
 
   // 2. Option payante, puis clé (jamais affichée).
   let key = 'cle-simulee-sans-valeur';
   if (!args.simulate) {
-    requirePaidAiTestOptIn({ label: `Banc d'usage Gemini #91, lancement ${launch} (${plan.calls.length} appels au plus, ${estimatedChf.toFixed(4)} CHF estimés avec marge)`, command: 'npx vite-node --config vitest.config.ts scripts/gemini-usage-bench.ts -- --confirm-paid-ai …' });
+    requirePaidAiTestOptIn({ label: `Banc d'usage Gemini (${authorization.envelope}), lancement ${launch} (${plan.calls.length} appels au plus, ${estimatedChf.toFixed(4)} CHF estimés avec marge)`, command: 'npx vite-node --config vitest.config.ts scripts/gemini-usage-bench.ts -- --confirm-paid-ai …' });
     const local = readLocalKey();
     if (!local) throw new BenchRefusal('Aucune clé Gemini locale : ni GEMINI_API_KEY, ni functions/.secret.local. Aucun appel.');
     key = local;
@@ -1220,12 +1711,12 @@ async function main() {
   // 3. Fournisseur : réseau réel gardé, ou simulé (et tout autre fetch interdit).
   const realFetch = globalThis.fetch;
   if (args.simulate) globalThis.fetch = (() => { throw new Error('Réseau interdit en simulation.'); }) as typeof fetch;
-  const pending = new WeakMap<object, { c: BenchCase; repeat: number; index: number; usage: Usage; thinking: Thinking; role?: string }>();
+  const pending = new WeakMap<object, { c: BenchCase; repeat: number; index: number; usage: Usage; thinking: Thinking; role?: string; key: string }>();
   const simulatedProvider = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const job = pending.get(init as object)!;
     const body = JSON.parse(String(init?.body));
     const model = String(input).match(/models\/([^:]+):/)?.[1] ?? '';
-    const answer = job.usage.simulated(job.c, job.index, job.repeat, job.role);
+    const answer = job.usage.simulated(job.c, job.index, job.repeat, job.role, body, job.key);
     const inputTokens = estimateInputTokens(body, job.c);
     const estimate = estimateCall(model, job.thinking, inputTokens, answer.parts, !!answer.groundingMetadata, job.usage.id);
     return new Response(JSON.stringify({
@@ -1246,46 +1737,65 @@ async function main() {
   let stop: string | undefined;
   // Un fournisseur qui refuse en boucle (429, 5xx, délai) consommerait le budget sans mesurer : arrêt au troisième échec d'affilée.
   let consecutiveFailures = 0;
-  // Plafond H9 en CHF : dépense des lancements précédents (tableau #91 du journal) et de celui-ci ; un coût inconnu compte sa réservation.
-  const chfBefore = h9 ? spent91(readFileSync(journalPath, 'utf8')) : 0;
+  // Plafond de l'enveloppe en CHF : dépense des lancements précédents (tableau de sa section) et de celui-ci ; un coût inconnu compte sa réservation.
+  const chfBefore = named ? spentIn(readFileSync(journalPath, 'utf8'), authorization.envelope) : 0;
   let launchChf = 0;
   const records: RunRecord[] = [];
+  const skipped: Json[] = [];
   for (const run of plan.runs) {
     if (stop) break;
     const usage = USAGES.find(item => item.id === run.cell.usage)!;
+    // Un tour ne part que si ses appels au pire tiennent dans le reste du lancement et de l'enveloppe, et si ses modèles sont
+    // autorisés par le plan retenu (--budget). La répartition par modèle est celle du plan : une chaîne qui route plus
+    // d'appels vers un modèle peut encore être coupée par la garde (refus avant envoi, jamais de dépassement).
+    const need = usage.plannedSteps(run.cell);
+    const left = authorization.cap - guard.calls.length;
+    const counter = named ? readEnvelopeCounter(readFileSync(journalPath, 'utf8'), authorization.envelope) : undefined;
+    const bound = (perModel: object | undefined, model: string) => (perModel as Record<string, number> | undefined)?.[model] ?? 0;
+    const perModelNeed: Record<string, number> = {};
+    for (const step of need) perModelNeed[step.model] = (perModelNeed[step.model] ?? 0) + 1;
+    const outside = need.find(step => !(step.model in authorization.planned))?.model;
+    const short = outside ? `${outside} hors du plan autorisé (--budget)`
+      : need.length > left ? `${need.length} appel(s) au pire, ${left} restant(s) dans ce lancement`
+      : named ? Object.entries(perModelNeed).map(([model, count]) => bound(authorization.auth!.perModel, model) - bound(counter!.perModel, model) < count ? `${model} : borne de l'enveloppe` : '').find(Boolean) : undefined;
+    if (short) { skipped.push({ cell: run.cell.label, case: run.case.id, repeat: run.repeat, reason: short }); continue; }
     let index = 0;
     const ctx: RunContext = {
       async call(step) {
         const result: CallResult = { step: step.name, model: step.model, thinking: step.thinking, ok: false, latencyMs: 0, costMicroChf: null, reservedMicroChf: 0, listCostUsd: null };
         if (stop) { result.error = 'banc arrêté'; return result; }
-        const quote = quoteGeminiCost(step.model, step.body);
+        const quote = quoteCost(step.model, step.body);
         result.reservedMicroChf = quote.reservedMicroChf;
         const init: RequestInit = {
           method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
           // Comme la production (monthlyAiBudget.ts:70) : le corps normalisé par le devis (candidateCount 1, sortie explicite).
-          body: JSON.stringify(quote.body), signal: AbortSignal.timeout(100_000)
+          body: JSON.stringify(quote.body), signal: step.signal ? AbortSignal.any([step.signal, AbortSignal.timeout(100_000)]) : AbortSignal.timeout(100_000)
         };
         const estimated = estimateStep(usage, run.case, index, step, step.body);
         nextCallChf = (estimated.provisionedMicroChf ?? quote.reservedMicroChf) / 1_000_000 * ESTIMATE_MARGIN;
-        pending.set(init, { c: run.case, repeat: run.repeat, index: index++, usage, thinking: step.thinking, role: step.role });
+        pending.set(init, { c: run.case, repeat: run.repeat, index: index++, usage, thinking: step.thinking, role: step.role, key: `${run.case.id}|${run.cell.label}|${run.repeat}` });
         let call: Json | undefined;
+        const started = Date.now();
         try {
           const response = await guard.fetch(endpointFor(step.model), init);
           call = sent.get(init)!;
-          result.json = call.json; result.modelVersion = call.modelVersion;
+          result.json = call.json; result.modelVersion = call.modelVersion; result.status = call.status;
           result.answer = JSON.stringify(visibleParts(call.json)).slice(0, 20_000);
           result.inputTokens = call.inputTokens; result.outputTokens = call.outputTokens; result.thoughtsTokens = call.thoughtsTokens;
-          // geminiCosts.ts rend « inconnu » un appel ancré sans recherche faite (pas de webSearchQueries) : le banc compte alors
-          // les seuls tokens, aucune recherche n'étant facturée.
-          const details = response.ok ? observedGeminiCostDetails(quote, call.json) ?? observedGeminiCostDetails(quote, withoutSearch(call.json)) : null;
+          // Coût de geminiCosts.ts (#100.5) : un appel ancré sans webSearchQueries est imputé de sa provision de recherche entière.
+          // Le coût des seuls jetons est gardé à part pour le rapport.
+          const details = response.ok ? observedCost(quote, call.json) : null;
           result.costMicroChf = details?.chargedMicroChf ?? null;
+          result.tokenMicroChf = details?.tokenMicroChf ?? null;
           result.searchQueries = details?.searchQueries ?? 0;
           result.latencyMs = args.simulate
             ? Math.round(estimateCall(step.model, step.thinking, call.inputTokens ?? 0, visibleParts(call.json), !!step.body.tools?.some((tool: Json) => tool.googleSearch), usage.id).latencyMs * jitter(`${run.case.id}|${run.cell.label}|${run.repeat}|${step.name}`))
             : call.latencyMs;
-          result.listCostUsd = call.inputTokens == null ? null : listCostUsd(step.model, call.inputTokens, call.outputTokens ?? 0, result.searchQueries);
+          result.listCostUsd = call.inputTokens == null ? null : listCostUsd(step.model, call.inputTokens, call.outputTokens ?? 0,
+            call.json?.candidates?.[0]?.groundingMetadata?.webSearchQueries?.length ?? 0);
           // Une réponse d'erreur (sans contenu exploitable) n'a pas de modèle à vérifier : elle compte comme échec d'appel.
-          if (!response.ok) result.error = `HTTP ${response.status}`;
+          // Message du fournisseur gardé (borné, clé masquée) pour diagnostiquer un refus (ex. schéma d'outils refusé).
+          if (!response.ok) result.error = redact(`HTTP ${response.status}${call.json?.error?.message ? ` : ${String(call.json.error.message).slice(0, 300)}` : ''}`, key);
           else if (!observedModelMatches(step.model, call.modelVersion)) {
             stop = `Modèle observé « ${call.modelVersion ?? 'non fourni'} » au lieu de ${step.model} : banc arrêté.`;
             result.error = 'modèle observé refusé';
@@ -1293,20 +1803,29 @@ async function main() {
           consecutiveFailures = result.ok ? 0 : consecutiveFailures + 1;
           launchChf += (result.costMicroChf ?? result.reservedMicroChf) / 1_000_000;
           if (!stop && authorization.auth?.maxChf !== undefined && chfBefore + launchChf >= authorization.auth.maxChf)
-            stop = `Plafond H9 de ${authorization.auth.maxChf} CHF atteint : banc arrêté.`;
+            stop = `Plafond ${authorization.envelope} de ${authorization.auth.maxChf} CHF atteint : banc arrêté.`;
         } catch (error) {
           result.error = error instanceof BenchRefusal ? redact(error.message, key) : error instanceof Error ? error.name : 'Erreur';
           if (error instanceof BenchRefusal) stop = result.error;
           call = sent.get(init);
-          if (call) consecutiveFailures += 1;
+          // Appel parti puis interrompu (délai du harnais) : facturation inconnue. Comme la production (seul un appel non envoyé
+          // ou refusé avant génération est réglé à zéro, geminiErrors.ts), sa réservation est comptée, ici et au journal.
+          if (call) {
+            consecutiveFailures += 1;
+            result.latencyMs = Date.now() - started;
+            result.costMicroChf = result.reservedMicroChf;
+            result.error = `${result.error}, provision comptée`;
+            launchChf += result.reservedMicroChf / 1_000_000;
+          }
         } finally {
           if (!stop && consecutiveFailures >= 3) stop = 'Trois échecs d’appel consécutifs : banc arrêté pour ne pas consommer le budget.';
+          result.halted = !!stop;
           const outcome = redact(`${result.error ?? `HTTP ${call?.status}`}${args.simulate ? ', simulé' : ''}`, key);
-          if (call && h9) appendRow91(journalPath, journalRow91({
+          if (call && named) appendEnvelopeRow(journalPath, journalRow91({
             label: call.label, at: call.at, launch, test: `${usage.id} · ${run.case.id}`, architecture: `${run.cell.label} · ${step.name}`,
             modelVersion: call.modelVersion, thinking: step.thinking, inputTokens: call.inputTokens, outputTokens: call.outputTokens,
             latencyMs: result.latencyMs, costMicroChf: result.costMicroChf, result: outcome
-          }), lockDir, authorization.auth!.perModel);
+          }), lockDir, authorization.auth!.perModel, authorization.envelope);
           else if (call) appendJournalRow(journalPath, journalRow({
             label: call.label, at: call.at, issue: ISSUE, test: `gemini-usage-bench · ${usage.id} · ${run.case.id} · ${run.cell.label} · ${step.name}`,
             modelVersion: call.modelVersion, inputTokens: call.inputTokens, outputTokens: call.outputTokens, costMicroChf: result.costMicroChf,
@@ -1326,6 +1845,10 @@ async function main() {
     }
     const wallMs = Math.round(performance.now() - started);
     const strip = (calls: CallResult[]) => calls.map(({ json: _json, ...call }) => call);
+    if ((outcome.result as Json | undefined)?.interrupted === 'banc arrêté') {
+      skipped.push({ cell: run.cell.label, case: run.case.id, repeat: run.repeat, reason: `banc arrêté pendant le tour : ${stop}`, calls: strip(outcome.calls) });
+      continue;
+    }
     records.push({
       usage: usage.id, variant: run.cell.variant, cell: run.cell.label, model: run.cell.model, thinking: run.cell.thinking, case: run.case.id, repeat: run.repeat,
       latencyMs: outcome.composedMs ?? (args.simulate ? outcome.structuralMs : wallMs), calls: strip(outcome.calls),
@@ -1343,7 +1866,7 @@ async function main() {
 
   const perModel: Record<string, number> = {};
   for (const call of guard.calls) perModel[call.model] = (perModel[call.model] ?? 0) + 1;
-  const journaledChf = h9 ? spent91(readFileSync(journalPath, 'utf8')) - chfBefore : null;
+  const journaledChf = named ? spentIn(readFileSync(journalPath, 'utf8'), authorization.envelope) - chfBefore : null;
   const summary = summarize(records);
   const header = [
     `Mode : **${mode}**, lancement **${launch}**. Lancé le ${new Date().toISOString()}. Enveloppe : ${authorization.envelope}. Appels faits : ${guard.calls.length} / ${plan.calls.length} prévus au plus (${Object.entries(perModel).map(([model, count]) => `${model} ${count}`).join(', ')}).`,
@@ -1351,14 +1874,15 @@ async function main() {
     args.simulate ? '**SIMULÉ : réponses, tokens et latences sont synthétiques (hypothèses d’etude.md). Ces chiffres prouvent la chaîne de mesure, pas la qualité d’un modèle.**' : '',
     'Cellules « · lecture » marquées « dérivé » : vue agent unique d’un appel déjà fait dans une chaîne ou en production (même consigne, même réglage).',
     `Température : ${temperatureMode === 'prod' ? 'celle de la production' : 'omise'}. Coût provisionné : functions/src/geminiCosts.ts (tarif 2027 de 3.8, recherche comprise). Coût affiché : tarif Google du 2026-10-12.`,
+    skipped.length ? `Tours non lancés ou arrêtés par le banc (hors mesure) : ${skipped.length} (${skipped.map(item => `${item.case} · ${item.cell} : ${item.reason}`).join(' ; ').slice(0, 600)}).` : '',
     stop ? `**Arrêt anticipé : ${stop}**` : ''
   ].filter(Boolean);
   writeFileSync(join(outDir, 'results.json'), `${JSON.stringify({ mode, launch, plan: { ...args.plan, cells: plan.cells }, temperature: temperatureMode, envelope: authorization.envelope,
-    calls: guard.calls.length, perModel, estimatedMicroChf, journaledChf, stop: stop ?? null, records, summary }, null, 2)}\n`);
+    calls: guard.calls.length, perModel, estimatedMicroChf, journaledChf, stop: stop ?? null, skipped, records, summary }, null, 2)}\n`);
   writeFileSync(join(outDir, 'summary.md'), markdownSummary(mode, summary, header));
   const registerLine = `- ${new Date().toISOString()} · **${launch}** · ${mode} · ${guard.calls.length} appel(s) (${Object.entries(perModel).map(([model, count]) => `${model} ${count}`).join(', ')}) · estimé avant ${(estimatedMicroChf / 1e6).toFixed(4)} CHF (marge ${estimatedChf.toFixed(4)}) · journalisé ${journaledChf == null ? '—' : journaledChf.toFixed(4)} CHF · ${stop ? `arrêt : ${stop}` : 'sans arrêt'} · ${outDir}\n`;
   if (args.simulate) writeFileSync(join(outDir, 'journal-line.md'), registerLine);
-  else appendFileSync(REGISTER, registerLine);
+  else appendFileSync(REGISTERS[authorization.envelope], registerLine);
   console.log(markdownSummary(mode, summary, header));
   console.log(`Résultats : ${join(outDir, 'results.json')}`);
   if (args.simulate) console.log(`Journal temporaire : ${journalPath}`);
@@ -1368,21 +1892,29 @@ async function main() {
 /** Estimation hors ligne d'un appel : tokens, latence, coût provisionné (geminiCosts.ts) et coût affiché, sans réseau. */
 function estimateStep(usage: Usage, c: BenchCase, index: number, step: StepPlan, body: Json = usage.body(c, index, step)) {
   const grounded = !!body.tools?.some((tool: Json) => tool.googleSearch);
-  const input = estimateInputTokens(body, c);
-  const estimate = estimateCall(step.model, step.thinking, input, usage.simulated(c, index, 0, step.role).parts, grounded, step.role === 'triage' ? 'triage' : usage.id);
-  const searchQueries = grounded ? 2 : 0;
-  const quote = quoteGeminiCost(step.model, body);
+  // Boucle d'outils : le corps capturé est le premier tour ; les tours suivants portent les résultats d'outils (× 1,6 supposé).
+  const input = Math.ceil(estimateInputTokens(body, c) * (usage.harness ? 1.6 : 1));
+  const estimate = estimateCall(step.model, step.thinking, input, usage.simulated(c, index, 0, step.role, body).parts, grounded, step.role === 'triage' ? 'triage' : usage.id);
+  // 3.8 ne renvoie pas webSearchQueries avec un schéma : la provision entière de geminiCosts.ts (20 requêtes) est comptée.
+  const searchQueries = grounded ? 20 : 0;
+  const quote = quoteCost(step.model, body);
   const response = { usageMetadata: { promptTokenCount: input, candidatesTokenCount: estimate.outputTokens, thoughtsTokenCount: estimate.thoughtsTokens, totalTokenCount: input + estimate.outputTokens + estimate.thoughtsTokens },
     candidates: [{ groundingMetadata: { webSearchQueries: Array.from({ length: searchQueries }, (_, n) => `q${n}`) } }] };
   return { model: step.model, thinking: step.thinking, inputTokens: input, outputTokens: estimate.outputTokens, thoughtsTokens: estimate.thoughtsTokens, searchQueries,
-    latencyMs: estimate.latencyMs, reservedMicroChf: quote.reservedMicroChf, provisionedMicroChf: observedGeminiCostDetails(quote, response)?.chargedMicroChf ?? null,
+    latencyMs: estimate.latencyMs, reservedMicroChf: quote.reservedMicroChf, provisionedMicroChf: observedCost(quote, response)?.chargedMicroChf ?? null,
     listCostUsd: listCostUsd(step.model, input, estimate.outputTokens + estimate.thoughtsTokens, searchQueries) };
 }
 /** Coût provisionné estimé de tous les appels au pire du plan (un coût non chiffrable compte sa réservation). */
 export function estimatePlanMicroChf(plan: ReturnType<typeof buildPlan>): number {
+  // Seuls les appels retenus par --budget (plan.calls, dans l'ordre des tours) sont estimés.
+  let left = plan.calls.length;
   return sum(plan.runs.flatMap(run => {
     const usage = USAGES.find(item => item.id === run.cell.usage)!;
-    return usage.plannedSteps(run.cell).map((step, index) => { const call = estimateStep(usage, run.case, index, step); return call.provisionedMicroChf ?? call.reservedMicroChf; });
+    return usage.plannedSteps(run.cell).flatMap((step, index) => {
+      if (left-- <= 0) return [];
+      const call = estimateStep(usage, run.case, index, step);
+      return [call.provisionedMicroChf ?? call.reservedMicroChf];
+    });
   }));
 }
 

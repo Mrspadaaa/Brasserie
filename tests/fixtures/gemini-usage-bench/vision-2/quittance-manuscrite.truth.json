@@ -1,0 +1,69 @@
+{
+  "id": "quittance-manuscrite",
+  "level": "très compliqué : quittance manuscrite, non assujetti à la TVA, « 92.- »",
+  "facture": {
+    "vendor": "Jean Moret",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "11.10.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "57",
+      "n° 57",
+      "Quittance n° 57",
+      "Quittance 57",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": null,
+    "tvaRate": null,
+    "tvaAmount": null,
+    "amountTTC": 92,
+    "items": [
+      {
+        "name": "Reparation pompe circulation",
+        "kind": [
+          "maintenance",
+          "service"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 85,
+        "amountTTC": 85
+      },
+      {
+        "name": "Joint torique",
+        "kind": [
+          "maintenance",
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 3.5,
+        "amountTTC": 7
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt",
+      "invoice",
+      "other_expense"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision-2/quittance-manuscrite.png",
+  "mimeType": "image/png",
+  "note": "FIXTURE DE TEST – document fictif"
+}

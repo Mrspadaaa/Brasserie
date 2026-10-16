@@ -9,13 +9,13 @@ import { mkdtempSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  APP_MODEL, BenchRefusal, SHARED_LAUNCH_CAP, appendJournalRow, appendRow91, authorizeLaunch, blankCounter91, endpointFor, guardBenchFetch,
-  h9Expired, journalRow, journalRow91, observedModelMatches, parseH9Authorization, readCounter91, readLocalKey, readSharedCounter,
-  redact, reserveCall, spent91, withLock
+  APP_MODEL, ARGON_MODEL, BenchRefusal, H12_MODELS, SHARED_LAUNCH_CAP, appendEnvelopeRow, appendJournalRow, appendRow91, authorizeLaunch, blankCounter, blankCounter91, endpointFor,
+  guardBenchFetch, h9Expired, journalRow, journalRow91, observedModelMatches, parseAuthorization, parseH9Authorization, readCounter91,
+  readEnvelopeCounter, readLocalKey, readSharedCounter, redact, reserveCall, spent91, spentIn, withLock
 } from './gemini-usage-bench-guard.mjs';
 
 const LITE = 'gemini-3.5-flash-lite';
-const journalText = used => `# Journal des appels Gemini réels\n\n**Compteur : ${used} / 10**\n\n| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |\n|---|---|---|---|---|---|---|---|\n`;
+const journalText = used => `# Journal des appels Gemini réels\n\n**Compteur : ${used} / 40**\n\n| # | Heure | Issue | Test | Modèle observé | Tokens entrée / sortie | Coût estimé | Résultat |\n|---|---|---|---|---|---|---|---|\n`;
 /** Section #91 du journal (décision 57) : compteur et tableau propres au banc réel. */
 const SECTION = (counter = '**Compteur #91 : 0 / 100 · 0 CHF / 5**', rows = '') => `\n## Banc réel #91 (H9) — enveloppe séparée\n\n${counter}\n\n| # | Heure | Lancement | Usage · cas | Architecture | Modèle observé | Réflexion | Tokens entrée / sortie | Latence | Coût estimé | Résultat |\n|---|---|---|---|---|---|---|---|---|---|---|\n${rows}`;
 const journal91 = (used = 0, counter, rows) => `${journalText(used)}${SECTION(counter, rows)}`;
@@ -52,16 +52,6 @@ test('réflexion non acceptée par le modèle : refus avant le réseau (minimal 
   refused(() => authorizeLaunch({ plan: [{ model: LITE, thinking: 'max' }], journal: journalText(0), decisions: decisions(H9_LINE), useH9: true, now: NOW }), /non acceptée par gemini-3\.5-flash-lite/);
   assert.equal(authorizeLaunch({ plan: [{ model: APP_MODEL, thinking: 'LOW' }, { model: APP_MODEL, thinking: 'high' }], journal: journalText(0), now: NOW }).cap, 2);
   assert.equal(authorizeLaunch({ plan: [{ model: LITE, thinking: 'minimal' }], journal: journal91(), decisions: decisions(H9_LINE), useH9: true, now: NOW }).cap, 1);
-});
-
-test('enveloppe partagée : 3 par lancement, 10 au total, lancement refusé en bloc', () => {
-  assert.deepEqual(authorizeLaunch({ plan: plan(APP_MODEL, APP_MODEL, APP_MODEL), journal: journalText(0), now: NOW }).cap, SHARED_LAUNCH_CAP);
-  refused(() => authorizeLaunch({ plan: plan(APP_MODEL, APP_MODEL, APP_MODEL, APP_MODEL), journal: journalText(0), now: NOW }), /n'en permet que 3/);
-  assert.equal(authorizeLaunch({ plan: plan(APP_MODEL, APP_MODEL), journal: journalText(8), now: NOW }).cap, 2);
-  refused(() => authorizeLaunch({ plan: plan(APP_MODEL, APP_MODEL, APP_MODEL), journal: journalText(8), now: NOW }), /n'en permet que 2/);
-  refused(() => authorizeLaunch({ plan: plan(APP_MODEL), journal: journalText(10), now: NOW }), /n'en permet que 0/);
-  refused(() => readSharedCounter('# sans compteur'), /Compteur introuvable/);
-  refused(() => readSharedCounter('**Compteur : 1 / 12**'), /illisible/);
 });
 
 test('H9 : borne lue dans decisions-humaines.md, refus par défaut ; compteur #91 propre', () => {
@@ -153,7 +143,7 @@ test('réservation avant l\'envoi : le compteur est déjà incrémenté quand fe
 });
 
 test('compteur épuisé entre l\'autorisation et l\'envoi (session concurrente) : rien ne part', async () => {
-  const { journalPath, lockDir } = workspace(10);
+  const { journalPath, lockDir } = workspace(40);
   let sent = 0;
   const guard = guardBenchFetch(async () => { sent += 1; return new Response('{}'); }, {
     allowedModels: [APP_MODEL], cap: 3, onCall: () => {},
@@ -161,7 +151,7 @@ test('compteur épuisé entre l\'autorisation et l\'envoi (session concurrente) 
   });
   await assert.rejects(guard.fetch(endpointFor(APP_MODEL), { body: '{}' }), /Enveloppe partagée épuisée/);
   assert.equal(sent, 0);
-  assert.equal(readSharedCounter(readFileSync(journalPath, 'utf8')).used, 10);
+  assert.equal(readSharedCounter(readFileSync(journalPath, 'utf8')).used, 40);
 });
 
 test('H9 : compteur #91 par modèle réservé puis incrémenté, bornes tenues, compteur partagé intact ; ligne au tableau #91', () => {
@@ -235,6 +225,104 @@ test('journal : une ligne par appel, colonnes de G38, clé jamais écrite', () =
   assert.match(journal, /\| 1 \| 12\.10\.? 23:40 \| #91 \(AI07\) \| gemini-usage-bench · coa \/ low \| gemini-3\.8-flash \| 1200 \/ 300 \| 0\.0041 CHF \| HTTP 200, clé «clé masquée» \|\n$/);
   assert.equal(journal.includes(key), false);
   assert.equal(row.split('|').length, 10);
+});
+
+// --- Enveloppe H12 (AI07-C, décision 68) : banc des usages complexes, section et compteur propres -------------
+const H12_LINE = `H12-AUTORISATION : ${APP_MODEL}=60 ; ${LITE}=60 ; par-lancement=25 ; plafond-chf=8 ; échéance=2026-10-31`;
+const SECTION_H12 = (counter = '**Compteur H12 : 0 / 120 · 0 CHF / 8**', rows = '') => `\n## Banc réel des usages complexes (H12, AI07-C) — enveloppe séparée\n\n${counter}\n\n| # | Heure | Lancement | Usage · cas | Architecture | Modèle observé | Réflexion | Tokens entrée / sortie | Latence | Coût estimé | Résultat |\n|---|---|---|---|---|---|---|---|---|---|---|\n${rows}`;
+/** Journal réel du 16.10 : compteur partagé 5 / 40 (décision 63), section H12 avant la section #91, lignes G38 ajoutées en fin de fichier. */
+const journalH12 = ({ shared = 5, counter, rows, tail = '' } = {}) =>
+  `${journalText(shared)}${SECTION_H12(counter, rows)}${SECTION(undefined, row91('0.0300 CHF'))}\n${tail}`;
+const g38Row = cost => `| 6 | 16.10 17:00 | #100 (D100) | d100-gemini-live.ts · fiche | ${APP_MODEL} | 10 / 5 | ${cost} | HTTP 200 |`;
+const decisionsBoth = `${decisions(H9_LINE)}${H12_LINE}\n`;
+const NOW_H12 = Date.parse('2026-10-16T16:00:00Z');
+
+test('enveloppe partagée relevée par la décision 63 : 5 par lancement, 40 au total, lancement refusé en bloc', () => {
+  assert.equal(SHARED_LAUNCH_CAP, 5);
+  assert.deepEqual(readSharedCounter(journalText(5)), { used: 5, total: 40 });
+  assert.equal(authorizeLaunch({ plan: plan(...Array(5).fill(APP_MODEL)), journal: journalText(5), now: NOW }).cap, 5);
+  refused(() => authorizeLaunch({ plan: plan(...Array(6).fill(APP_MODEL)), journal: journalText(5), now: NOW }), /n'en permet que 5/);
+  refused(() => authorizeLaunch({ plan: plan(APP_MODEL, APP_MODEL), journal: journalText(39), now: NOW }), /n'en permet que 1/);
+  refused(() => authorizeLaunch({ plan: plan(APP_MODEL), journal: journalText(40), now: NOW }), /n'en permet que 0/);
+  refused(() => readSharedCounter('# sans compteur'), /Compteur introuvable/);
+  // L'ancien plafond (10) n'est plus lisible : un journal non mis à jour ne laisse rien partir.
+  refused(() => readSharedCounter('**Compteur : 1 / 10**'), /illisible/);
+});
+
+test('H12 : borne lue dans sa propre ligne, refus par défaut, H9 et H12 jamais confondues', () => {
+  assert.deepEqual(parseAuthorization(decisions(H12_LINE), 'H12'), { perModel: { [APP_MODEL]: 60, [LITE]: 60 }, perLaunch: 25, until: '2026-10-31', maxChf: 8 });
+  // Chaque enveloppe ne lit que sa ligne : H9 n'autorise pas H12, ni l'inverse.
+  assert.equal(parseAuthorization(decisions(H9_LINE), 'H12'), null);
+  assert.equal(parseAuthorization(decisions(H12_LINE), 'H9'), null);
+  assert.equal(parseH9Authorization(decisions(H12_LINE)), null);
+  refused(() => authorizeLaunch({ plan: plan(LITE), journal: journalH12(), decisions: decisions(H9_LINE), envelope: 'H12', now: NOW_H12 }), /H12 non inscrite/);
+  refused(() => authorizeLaunch({ plan: plan(LITE), journal: journalH12(), decisions: decisions(H12_LINE), useH9: true, now: NOW_H12 }), /H9 non inscrite/);
+  refused(() => parseAuthorization(decisions(H12_LINE.replace('=60', '=60.5')), 'H12'), /Borne H12 invalide/);
+  refused(() => parseAuthorization(decisions(`${H12_LINE}\n${H12_LINE}`), 'H12'), /Plusieurs lignes H12-AUTORISATION/);
+  refused(() => parseAuthorization(decisions(H12_LINE), 'H10'), /Enveloppe inconnue/);
+  const ok = authorizeLaunch({ plan: plan(LITE, APP_MODEL), journal: journalH12(), decisions: decisionsBoth, envelope: 'H12', now: NOW_H12, estimatedChf: 0.5 });
+  assert.equal(ok.envelope, 'H12');
+  assert.equal(ok.auth.maxChf, 8);
+  refused(() => authorizeLaunch({ plan: plan(...Array(26).fill(LITE)), journal: journalH12(), decisions: decisionsBoth, envelope: 'H12', now: NOW_H12 }), /H12 en permet 25 par lancement/);
+  refused(() => authorizeLaunch({ plan: plan(LITE), journal: journalH12(), decisions: decisionsBoth, envelope: 'H12', now: Date.parse('2026-11-02T00:00:00Z') }), /H12 échue le 2026-10-31/);
+  const used59 = journalH12({ counter: `**Compteur H12 : 59 / 120 · 0 CHF / 8** (${APP_MODEL} 59 / 60 ; ${LITE} 0 / 60)` });
+  refused(() => authorizeLaunch({ plan: plan(APP_MODEL, APP_MODEL), journal: used59, decisions: decisionsBoth, envelope: 'H12', now: NOW_H12 }), /59 \/ 60 déjà utilisés sous H12/);
+  refused(() => authorizeLaunch({ plan: plan('gemini-3.1-pro-preview'), journal: journalH12(), decisions: decisionsBoth, envelope: 'H12', now: NOW_H12 }), /n'est pas comparé par ce banc/);
+  // Sans section H12, rien ne part ; le compteur #91 n'en tient pas lieu.
+  refused(() => authorizeLaunch({ plan: plan(LITE), journal: journal91(), decisions: decisionsBoth, envelope: 'H12', now: NOW_H12 }), /Section « Banc réel des usages complexes » introuvable/);
+  assert.equal(readEnvelopeCounter(blankCounter(used59, 'H12'), 'H12').used, 0);
+});
+
+test('H12 : le modèle d\'essai de la décision 69 (Argon) admis sous H12 seulement, et seulement ces trois modèles', () => {
+  const line = H12_LINE.replace(' ; par-lancement', ` ; ${ARGON_MODEL}=30 ; par-lancement`).replace('plafond-chf=8', 'plafond-chf=15');
+  const auth = parseAuthorization(decisions(line), 'H12');
+  assert.deepEqual(auth.perModel, { [APP_MODEL]: 60, [LITE]: 60, [ARGON_MODEL]: 30 });
+  assert.equal(auth.maxChf, 15);
+  const counter = `**Compteur H12 : 0 / 150 · 0 CHF / 15**`;
+  assert.equal(authorizeLaunch({ plan: [{ model: ARGON_MODEL, thinking: 'high' }, { model: LITE }], journal: journalH12({ counter }), decisions: decisions(line), envelope: 'H12', now: NOW_H12 }).envelope, 'H12');
+  // Jamais sous H9 ni dans l'enveloppe partagée ; jamais un autre modèle « 4 » ; borne propre de 30.
+  refused(() => parseAuthorization(decisions(H9_LINE.replace(' ; par-lancement', ` ; ${ARGON_MODEL}=3 ; par-lancement`)), 'H9'), /Élément H9 inconnu/);
+  refused(() => authorizeLaunch({ plan: plan(ARGON_MODEL), journal: journal91(), decisions: decisions(`${H9_LINE}\n${line}`), useH9: true, now: NOW_H12 }), /n'est pas comparé par ce banc/);
+  refused(() => authorizeLaunch({ plan: plan(ARGON_MODEL), journal: journalText(0), now: NOW_H12 }), /n'est pas comparé par ce banc/);
+  refused(() => parseAuthorization(decisions(line.replace(ARGON_MODEL, 'gemini-4-pro')), 'H12'), /Élément H12 inconnu/);
+  refused(() => authorizeLaunch({ plan: [{ model: ARGON_MODEL, thinking: 'minimal' }], journal: journalH12({ counter }), decisions: decisions(line), envelope: 'H12', now: NOW_H12 }), /non acceptée par gemini-4-argon/);
+  const used30 = journalH12({ counter: `**Compteur H12 : 30 / 150 · 0 CHF / 15** (${ARGON_MODEL} 30 / 30)` });
+  refused(() => authorizeLaunch({ plan: plan(ARGON_MODEL), journal: used30, decisions: decisions(line), envelope: 'H12', now: NOW_H12 }), /30 \/ 30 déjà utilisés sous H12/);
+  assert.deepEqual(H12_MODELS, [APP_MODEL, LITE, ARGON_MODEL]);
+});
+
+test('H12 : dépense lue dans la seule section H12 ; lignes #91 et G38 (8 colonnes, ajoutées en fin de fichier) exclues', () => {
+  const rows = `${row91('0.2000 CHF')}\n${g38Row('0.3662 CHF')}\n`;
+  const journal = journalH12({ rows, tail: `${g38Row('0.3597 CHF')}\n` });
+  assert.equal(spentIn(journal, 'H12'), 0.2);
+  // La section #91 ne compte plus une ligne G38 tombée dans son tableau (D100, 16.10).
+  assert.equal(spent91(journal), 0.03);
+  assert.equal(spentIn(journal, 'H9'), 0.03);
+  const capped = H12_LINE.replace('plafond-chf=8', 'plafond-chf=0.5');
+  const launch = estimatedChf => authorizeLaunch({ plan: plan(LITE), journal, decisions: decisions(capped), envelope: 'H12', now: NOW_H12, estimatedChf });
+  assert.equal(launch(0.3).envelope, 'H12');
+  refused(() => launch(0.31), /il dépasserait le plafond H12 de 0\.5 CHF/);
+});
+
+test('H12 : réservation avant l\'envoi, ligne au tableau H12, compteurs #91 et partagé intacts', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'gemini-bench-h12-'));
+  const journalPath = join(dir, 'gemini-journal.md'), lockDir = join(dir, 'gemini-journal.lock');
+  writeFileSync(journalPath, journalH12({ tail: '' }));
+  const auth = parseAuthorization(decisions(H12_LINE.replace(`${LITE}=60`, `${LITE}=2`)), 'H12');
+  assert.deepEqual([1, 2].map(() => reserveCall(journalPath, { envelope: 'H12', model: LITE, auth, lockDir }).label), ['1', '2']);
+  refused(() => reserveCall(journalPath, { envelope: 'H12', model: LITE, auth, lockDir }), /Borne H12 atteinte/);
+  refused(() => reserveCall(journalPath, { envelope: 'H12', model: APP_MODEL, auth, lockDir, costChf: 8.01 }), /Plafond H12/);
+  assert.equal(reserveCall(journalPath, { envelope: 'H12', model: APP_MODEL, auth, lockDir, costChf: 0.01 }).label, '3');
+  appendEnvelopeRow(journalPath, journalRow91({ label: '3', at: new Date('2026-10-16T15:00:00Z'), launch: 'C1', test: 'compagnon-complet · cc-puissance',
+    architecture: `${APP_MODEL} · low · compagnon`, modelVersion: APP_MODEL, thinking: 'low', inputTokens: 10, outputTokens: 5, latencyMs: 900, costMicroChf: 12_300, result: 'HTTP 200' }),
+  lockDir, auth.perModel, 'H12');
+  const journal = readFileSync(journalPath, 'utf8');
+  assert.match(journal, /\*\*Compteur H12 : 3 \/ 120 · 0\.0123 CHF \/ 8\*\* \(gemini-3\.8-flash 1 \/ 60 ; gemini-3\.5-flash-lite 2 \/ 2\)/);
+  // La ligne finit le tableau H12, avant la section #91, dont le compteur et le tableau restent intacts.
+  assert.match(journal, /\| 3 \| 16\.10\.? 17:00 \| C1 \| compagnon-complet · cc-puissance \| [^\n]+\| 0\.0123 CHF \| HTTP 200 \|\n\n## Banc réel #91/);
+  assert.equal(readCounter91(journal).used, 0);
+  assert.equal(spent91(journal), 0.03);
+  assert.equal(readSharedCounter(journal).used, 5);
 });
 
 test('clé locale : environnement d\'abord, puis functions/.secret.local ; absente sinon', () => {

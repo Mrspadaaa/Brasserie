@@ -4,13 +4,14 @@
  * Module sans effet de bord à l'import, en JavaScript pur pour que
  * `node --test scripts/gemini-usage-bench.test.mjs` le vérifie sans vite-node.
  *
- * - Sans autorisation H9, seul `gemini-3.8-flash` part, dans l'enveloppe
- *   partagée de gemini-journal.md : 3 appels par lancement, 10 au total
- *   (même compteur et même lecture que scripts/gemini38LiveCore.ts).
- * - Avec `--h9`, une ligne `H9-AUTORISATION : …` de decisions-humaines.md fixe
- *   une borne par modèle, une borne par lancement, un plafond en CHF et une échéance.
- *   Sans cette ligne, ou si elle est invalide ou échue : refus. Les appels H9 sont
- *   comptés dans la section « Banc réel #91 » du journal (compteur et tableau propres).
+ * - Sans enveloppe nommée, seul `gemini-3.8-flash` part, dans l'enveloppe
+ *   partagée de gemini-journal.md : 5 appels par lancement, 40 au total (décision 63 ;
+ *   même compteur et même lecture que scripts/gemini38LiveCore.ts).
+ * - Avec `--h9` (banc #91) ou `--h12` (usages complexes, AI07-C), une ligne
+ *   `H9-AUTORISATION : …` ou `H12-AUTORISATION : …` de decisions-humaines.md fixe une borne
+ *   par modèle, une borne par lancement, un plafond en CHF et une échéance. Sans cette
+ *   ligne, ou si elle est invalide ou échue : refus. Chaque enveloppe a sa section dans
+ *   le journal (compteur et tableau propres) ; une ligne n'autorise que son enveloppe.
  * - Chaque appel est réservé dans le compteur AVANT l'envoi, sous verrou :
  *   un arrêt brutal ou une session concurrente ne peut pas dépasser la borne.
  * - La clé ne passe jamais par ces fonctions, sauf `redact` qui la masque.
@@ -26,12 +27,23 @@ export const THINKING_LEVELS = Object.freeze(['minimal', 'low', 'medium', 'high'
  * 3.8 Flash « low, medium, high » (minimal renvoie une erreur), 3.5 Flash-Lite « minimal, low, medium, high ».
  * Un appel voué à l'erreur coûterait une place du compteur : il est refusé avant le réseau.
  */
+/**
+ * Modèle d'essai de la décision 69 (16.10, 16:07 : « tu peux même tester Argon pour de vrai »), admis sous H12 seulement,
+ * jamais par l'app. Identifiant vérifié par la liste des modèles de l'API avant tout appel (AI07-C/logs/modeles-api.md).
+ */
+export const ARGON_MODEL = 'gemini-4-argon';
+/** H12 compare ces trois modèles, et seulement eux ; H9 et l'enveloppe partagée gardent BENCH_MODELS. */
+export const H12_MODELS = Object.freeze([...BENCH_MODELS, ARGON_MODEL]);
+const modelsOf = envelopeId => envelopeId === 'H12' ? H12_MODELS : BENCH_MODELS;
 export const SUPPORTED_THINKING = Object.freeze({
   'gemini-3.8-flash': Object.freeze(['low', 'medium', 'high']),
-  'gemini-3.5-flash-lite': Object.freeze(['minimal', 'low', 'medium', 'high'])
+  'gemini-3.5-flash-lite': Object.freeze(['minimal', 'low', 'medium', 'high']),
+  // Prudence tant que la documentation d'Argon n'est pas lue : les niveaux de 3.8, sans `minimal`.
+  [ARGON_MODEL]: Object.freeze(['low', 'medium', 'high'])
 });
-export const SHARED_LAUNCH_CAP = 3;
-export const SHARED_TOTAL_CAP = 10;
+/** Enveloppe des tests réels d'intégration, relevée de 3 / 10 à 5 / 40 par la décision 63 (16.10, ~12:30). */
+export const SHARED_LAUNCH_CAP = 5;
+export const SHARED_TOTAL_CAP = 40;
 /** Bornes de vraisemblance d'une autorisation H9 lue dans un fichier. */
 export const H9_MAX_PER_MODEL = 400;
 export const H9_MAX_PER_LAUNCH = 60;
@@ -65,59 +77,76 @@ function withSharedCounter(journal, used) {
 }
 
 /**
- * Section « Banc réel #91 » de gemini-journal.md (décision 57) : son compteur, son tableau et son coût cumulé.
- * Compteur : `**Compteur #91 : 3 / 100 · 0.0412 CHF / 5** (gemini-3.8-flash 2 / 50 ; gemini-3.5-flash-lite 1 / 50)`.
+ * Enveloppes nommées, chacune avec sa ligne d'autorisation dans decisions-humaines.md et sa section dans
+ * gemini-journal.md (compteur, tableau et coût cumulé propres) :
+ * - H9 : banc réel #91 (décision 57), `**Compteur #91 : 3 / 100 · 0.0412 CHF / 5** (gemini-3.8-flash 2 / 50 ; …)` ;
+ * - H12 : banc des usages complexes (AI07-C, décision 68), `**Compteur H12 : 3 / 120 · 0.0412 CHF / 8** (…)`.
  * Le détail par modèle, absent avant le premier appel, est écrit par le banc.
  */
-export const SECTION_91 = '## Banc réel #91';
-const COUNTER_91 = /\*\*Compteur #91 : (\d+) \/ (\d+) · (\d+(?:\.\d+)?) CHF \/ (\d+(?:\.\d+)?)\*\*(?: \(([^)\n]*)\))?/;
+export const ENVELOPES = Object.freeze({
+  H9: Object.freeze({ id: 'H9', authLine: 'H9-AUTORISATION', section: '## Banc réel #91', counter: '#91' }),
+  H12: Object.freeze({ id: 'H12', authLine: 'H12-AUTORISATION', section: '## Banc réel des usages complexes', counter: 'H12' })
+});
+export const SECTION_91 = ENVELOPES.H9.section;
+const envelopeOf = id => ENVELOPES[id] ?? refuse(`Enveloppe inconnue : ${id}.`);
+const counterPattern = env =>
+  new RegExp(`\\*\\*Compteur ${env.counter} : (\\d+) \\/ (\\d+) · (\\d+(?:\\.\\d+)?) CHF \\/ (\\d+(?:\\.\\d+)?)\\*\\*(?: \\(([^)\\n]*)\\))?`);
 
-function section91(journal) {
-  const heading = journal.indexOf(`\n${SECTION_91}`);
-  if (heading < 0) refuse('Section « Banc réel #91 » introuvable dans gemini-journal.md.');
+function sectionOf(journal, env) {
+  const heading = journal.indexOf(`\n${env.section}`);
+  if (heading < 0) refuse(`Section « ${env.section.replace(/^## /, '')} » introuvable dans gemini-journal.md.`);
   const next = journal.indexOf('\n## ', heading + 1);
   return { start: heading + 1, end: next < 0 ? journal.length : next };
 }
 
-/** Coût cumulé (colonne « Coût estimé ») des seules lignes du tableau de la section #91. */
-export function spent91(journal) {
-  const { start, end } = section91(journal);
+/**
+ * Coût cumulé (colonne « Coût estimé ») des seules lignes à 11 colonnes du tableau de la section. Une ligne du
+ * tableau partagé (8 colonnes), que scripts/gemini38LiveCore.ts ajoute en fin de fichier, peut tomber dans la
+ * dernière section (D100, 16.10) : elle ne compte pas.
+ */
+export function spentIn(journal, envelope) {
+  const { start, end } = sectionOf(journal, envelopeOf(envelope));
   let total = 0;
   for (const line of journal.slice(start, end).split(/\r?\n/)) {
-    const cost = line.startsWith('|') ? /\| (\d+\.\d+) CHF \|/.exec(line) : null;
+    const cost = line.startsWith('|') && line.trim().split('|').length === 13 ? /\| (\d+\.\d+) CHF \|/.exec(line) : null;
     if (cost) total += Number(cost[1]);
   }
   return Math.round(total * 10_000) / 10_000;
 }
+export const spent91 = journal => spentIn(journal, 'H9');
 
-/** Appels #91 déjà réservés : total, plafond du compteur et détail par modèle (somme exigée égale au total). */
-export function readCounter91(journal) {
-  const { start, end } = section91(journal);
-  const match = COUNTER_91.exec(journal.slice(start, end));
-  if (!match) refuse('Compteur #91 introuvable dans gemini-journal.md.');
+/** Appels déjà réservés dans une enveloppe : total, plafond du compteur et détail par modèle (somme exigée égale au total). */
+export function readEnvelopeCounter(journal, envelope) {
+  const env = envelopeOf(envelope);
+  const { start, end } = sectionOf(journal, env);
+  const match = counterPattern(env).exec(journal.slice(start, end));
+  if (!match) refuse(`Compteur ${env.counter} introuvable dans gemini-journal.md.`);
   const used = Number(match[1]), cap = Number(match[2]);
   const perModel = {};
   for (const part of (match[5] ?? '').split(';').map(item => item.trim()).filter(Boolean)) {
     const entry = /^(gemini-[a-z0-9.-]+) (\d+) \/ (\d+)$/.exec(part);
-    if (!entry || entry[1] in perModel) refuse(`Compteur #91 par modèle illisible : « ${part} ».`);
+    if (!entry || entry[1] in perModel) refuse(`Compteur ${env.counter} par modèle illisible : « ${part} ».`);
     perModel[entry[1]] = Number(entry[2]);
   }
   if (!Number.isSafeInteger(used) || !Number.isSafeInteger(cap) || Object.values(perModel).reduce((a, b) => a + b, 0) !== used)
-    refuse('Compteur #91 incohérent : le total diffère de la somme par modèle.');
+    refuse(`Compteur ${env.counter} incohérent : le total diffère de la somme par modèle.`);
   return { used, cap, maxChf: Number(match[4]), perModel, at: start + match.index, length: match[0].length };
 }
+export const readCounter91 = journal => readEnvelopeCounter(journal, 'H9');
 
-/** Simulation seulement : copie du journal dont le compteur #91 repart de zéro (le fichier réel n'est jamais réécrit). */
-export function blankCounter91(journal) {
-  const counter = readCounter91(journal);
-  return `${journal.slice(0, counter.at)}**Compteur #91 : 0 / ${counter.cap} · 0 CHF / ${counter.maxChf}**${journal.slice(counter.at + counter.length)}`;
+/** Simulation seulement : copie du journal dont le compteur de l'enveloppe repart de zéro (le fichier réel n'est jamais réécrit). */
+export function blankCounter(journal, envelope) {
+  const env = envelopeOf(envelope);
+  const counter = readEnvelopeCounter(journal, env.id);
+  return `${journal.slice(0, counter.at)}**Compteur ${env.counter} : 0 / ${counter.cap} · 0 CHF / ${counter.maxChf}**${journal.slice(counter.at + counter.length)}`;
 }
+export const blankCounter91 = journal => blankCounter(journal, 'H9');
 
-function withCounter91(journal, perModel, bounds) {
-  const counter = readCounter91(journal);
+function withCounter(journal, perModel, bounds, env) {
+  const counter = readEnvelopeCounter(journal, env.id);
   const used = Object.values(perModel).reduce((a, b) => a + b, 0);
   const detail = Object.entries(bounds).map(([model, bound]) => `${model} ${perModel[model] ?? 0} / ${bound}`).join(' ; ');
-  const line = `**Compteur #91 : ${used} / ${counter.cap} · ${spent91(journal).toFixed(4)} CHF / ${counter.maxChf}** (${detail})`;
+  const line = `**Compteur ${env.counter} : ${used} / ${counter.cap} · ${spentIn(journal, env.id).toFixed(4)} CHF / ${counter.maxChf}** (${detail})`;
   return `${journal.slice(0, counter.at)}${line}${journal.slice(counter.at + counter.length)}`;
 }
 
@@ -137,45 +166,49 @@ function linesOutsideFences(text) {
 }
 
 /**
- * Autorisation H9 inscrite par l'humain dans decisions-humaines.md, sur une seule ligne :
- *   H9-AUTORISATION : gemini-3.8-flash=60 ; gemini-3.5-flash-lite=60 ; par-lancement=30 ; plafond-chf=8 ; échéance=2026-11-30
+ * Autorisation d'une enveloppe (H9 ou H12) inscrite par l'humain dans decisions-humaines.md, sur une seule ligne :
+ *   H12-AUTORISATION : gemini-3.8-flash=60 ; gemini-3.5-flash-lite=60 ; par-lancement=25 ; plafond-chf=8 ; échéance=2026-10-31
  * `plafond-chf`, facultatif, borne le coût cumulé des appels du banc au tarif provisionné de geminiCosts.ts.
+ * Seuls les modèles de l'enveloppe sont admis (H9 : 3.8 et Flash-Lite ; H12 : en plus le modèle d'essai de la décision 69).
  * Renvoie null si la ligne est absente. Toute ligne présente mais invalide est refusée.
  */
-export function parseH9Authorization(decisions, { maxPerModel = H9_MAX_PER_MODEL, maxPerLaunch = H9_MAX_PER_LAUNCH } = {}) {
-  const lines = linesOutsideFences(decisions).filter(line => /^H9-AUTORISATION\s*:/.test(line));
+export function parseAuthorization(decisions, envelope = 'H9', { maxPerModel = H9_MAX_PER_MODEL, maxPerLaunch = H9_MAX_PER_LAUNCH } = {}) {
+  const { id, authLine } = envelopeOf(envelope);
+  const tag = new RegExp(`^${authLine}\\s*:`);
+  const lines = linesOutsideFences(decisions).filter(line => tag.test(line));
   if (!lines.length) return null;
-  if (lines.length > 1) refuse('Plusieurs lignes H9-AUTORISATION dans decisions-humaines.md : ambigu.');
+  if (lines.length > 1) refuse(`Plusieurs lignes ${authLine} dans decisions-humaines.md : ambigu.`);
   const perModel = {};
   let perLaunch, until, maxChf;
-  for (const part of lines[0].replace(/^H9-AUTORISATION\s*:/, '').split(';').map(item => item.trim()).filter(Boolean)) {
+  for (const part of lines[0].replace(tag, '').split(';').map(item => item.trim()).filter(Boolean)) {
     const [key, value, extra] = part.split('=').map(item => item.trim());
-    if (!key || value === undefined || extra !== undefined) refuse(`Élément H9 illisible : « ${part} ».`);
+    if (!key || value === undefined || extra !== undefined) refuse(`Élément ${id} illisible : « ${part} ».`);
     if (key === 'échéance') {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) refuse(`Échéance H9 invalide : ${value}.`);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) refuse(`Échéance ${id} invalide : ${value}.`);
       until = value;
       continue;
     }
     if (key === 'plafond-chf') {
       const chf = /^\d+(?:\.\d{1,2})?$/.test(value) ? Number(value) : NaN;
-      if (!(chf > 0 && chf <= 100)) refuse(`Plafond H9 en CHF invalide : ${value}.`);
+      if (!(chf > 0 && chf <= 100)) refuse(`Plafond ${id} en CHF invalide : ${value}.`);
       maxChf = chf;
       continue;
     }
     const count = /^\d+$/.test(value) ? Number(value) : NaN;
     if (key === 'par-lancement') {
-      if (!Number.isSafeInteger(count) || count < 1 || count > maxPerLaunch) refuse(`Borne par lancement H9 invalide : ${value}.`);
+      if (!Number.isSafeInteger(count) || count < 1 || count > maxPerLaunch) refuse(`Borne par lancement ${id} invalide : ${value}.`);
       perLaunch = count;
-    } else if (BENCH_MODELS.includes(key)) {
-      if (key in perModel) refuse(`Modèle ${key} cité deux fois dans H9.`);
-      if (!Number.isSafeInteger(count) || count < 1 || count > maxPerModel) refuse(`Borne H9 invalide pour ${key} : ${value}.`);
+    } else if (modelsOf(id).includes(key)) {
+      if (key in perModel) refuse(`Modèle ${key} cité deux fois dans ${id}.`);
+      if (!Number.isSafeInteger(count) || count < 1 || count > maxPerModel) refuse(`Borne ${id} invalide pour ${key} : ${value}.`);
       perModel[key] = count;
-    } else refuse(`Élément H9 inconnu : « ${key} ».`);
+    } else refuse(`Élément ${id} inconnu : « ${key} ».`);
   }
   if (!Object.keys(perModel).length || perLaunch === undefined || until === undefined)
-    refuse('Autorisation H9 incomplète : au moins un modèle, par-lancement et échéance sont requis.');
+    refuse(`Autorisation ${id} incomplète : au moins un modèle, par-lancement et échéance sont requis.`);
   return { perModel, perLaunch, until, ...(maxChf === undefined ? {} : { maxChf }) };
 }
+export const parseH9Authorization = (decisions, limits) => parseAuthorization(decisions, 'H9', limits);
 
 /** Échue après la fin du jour d'échéance, compté large (UTC+14) pour ne jamais raccourcir l'accord. */
 export const h9Expired = (auth, now = Date.now()) => now >= Date.parse(`${auth.until}T00:00:00Z`) + 86_400_000 + 14 * 3_600_000;
@@ -183,20 +216,22 @@ export const h9Expired = (auth, now = Date.now()) => now >= Date.parse(`${auth.u
 /**
  * Décide, avant tout réseau, si un lancement entier peut partir. Un plan qui ne
  * tient pas dans ses bornes est refusé en bloc : jamais d'exécution partielle.
- * `limits` relève les bornes de vraisemblance H9 : réservé à la simulation, qui travaille sur une copie du journal.
- * `estimatedChf` : coût estimé du lancement (tarif provisionné) ; avec le déjà dépensé, il doit tenir sous le plafond H9.
- * @param {{ plan: { model: string, thinking?: string }[], journal: string, decisions?: string, useH9?: boolean, now?: number, estimatedChf?: number, limits?: { maxPerModel?: number, maxPerLaunch?: number } }} input
+ * `envelope` : 'H9' (ou `useH9`, compatibilité) ou 'H12' ; absente, l'enveloppe partagée (3.8 seul).
+ * `limits` relève les bornes de vraisemblance : réservé à la simulation, qui travaille sur une copie du journal.
+ * `estimatedChf` : coût estimé du lancement (tarif provisionné) ; avec le déjà dépensé, il doit tenir sous le plafond.
+ * @param {{ plan: { model: string, thinking?: string }[], journal: string, decisions?: string, useH9?: boolean, envelope?: 'H9' | 'H12', now?: number, estimatedChf?: number, limits?: { maxPerModel?: number, maxPerLaunch?: number } }} input
  */
-export function authorizeLaunch({ plan, journal, decisions = '', useH9 = false, now = Date.now(), estimatedChf, limits }) {
+export function authorizeLaunch({ plan, journal, decisions = '', useH9 = false, envelope = useH9 ? 'H9' : undefined, now = Date.now(), estimatedChf, limits }) {
   if (!Array.isArray(plan) || !plan.length) refuse('Plan vide.');
   const planned = {};
+  const admitted = envelope ? modelsOf(envelopeOf(envelope).id) : BENCH_MODELS;
   for (const { model, thinking } of plan) {
-    if (!BENCH_MODELS.includes(model)) refuse(`Modèle refusé : ${model} n'est pas comparé par ce banc.`);
+    if (!admitted.includes(model)) refuse(`Modèle refusé : ${model} n'est pas comparé par ce banc.`);
     if (thinking !== undefined && !SUPPORTED_THINKING[model].includes(String(thinking).toLowerCase()))
       refuse(`Réflexion « ${thinking} » non acceptée par ${model} (niveaux : ${SUPPORTED_THINKING[model].join(', ')}).`);
     planned[model] = (planned[model] ?? 0) + 1;
   }
-  if (!useH9) {
+  if (!envelope) {
     const other = Object.keys(planned).find(model => model !== APP_MODEL);
     if (other) refuse(`Modèle refusé : ${other} exige l'autorisation humaine H9 (option --h9 et ligne H9-AUTORISATION dans decisions-humaines.md).`);
     const { used } = readSharedCounter(journal);
@@ -205,24 +240,25 @@ export function authorizeLaunch({ plan, journal, decisions = '', useH9 = false, 
       refuse(`Ce lancement prévoit ${plan.length} appel(s) ; l'enveloppe partagée n'en permet que ${left} (${SHARED_LAUNCH_CAP} par lancement, ${used} / ${SHARED_TOTAL_CAP} déjà utilisés).`);
     return { envelope: 'partagée', cap: plan.length, planned };
   }
-  const auth = parseH9Authorization(decisions, limits);
-  if (!auth) refuse('Autorisation H9 non inscrite dans decisions-humaines.md.');
-  if (h9Expired(auth, now)) refuse(`Autorisation H9 échue le ${auth.until}.`);
-  if (plan.length > auth.perLaunch) refuse(`Ce lancement prévoit ${plan.length} appels ; H9 en permet ${auth.perLaunch} par lancement.`);
+  const env = envelopeOf(envelope);
+  const auth = parseAuthorization(decisions, env.id, limits);
+  if (!auth) refuse(`Autorisation ${env.id} non inscrite dans decisions-humaines.md.`);
+  if (h9Expired(auth, now)) refuse(`Autorisation ${env.id} échue le ${auth.until}.`);
+  if (plan.length > auth.perLaunch) refuse(`Ce lancement prévoit ${plan.length} appels ; ${env.id} en permet ${auth.perLaunch} par lancement.`);
   readSharedCounter(journal);
-  const counter = readCounter91(journal);
-  const spent = spent91(journal);
-  if (auth.maxChf !== undefined && spent >= auth.maxChf) refuse(`Plafond H9 atteint : ${spent} CHF dépensés sur ${auth.maxChf} CHF.`);
+  const counter = readEnvelopeCounter(journal, env.id);
+  const spent = spentIn(journal, env.id);
+  if (auth.maxChf !== undefined && spent >= auth.maxChf) refuse(`Plafond ${env.id} atteint : ${spent} CHF dépensés sur ${auth.maxChf} CHF.`);
   if (auth.maxChf !== undefined && estimatedChf !== undefined && spent + estimatedChf > auth.maxChf)
-    refuse(`Coût estimé du lancement ${estimatedChf.toFixed(4)} CHF : avec ${spent} CHF dépensés, il dépasserait le plafond H9 de ${auth.maxChf} CHF.`);
-  if (counter.used + plan.length > counter.cap) refuse(`Ce lancement prévoit ${plan.length} appels ; ${counter.used} / ${counter.cap} déjà utilisés sous #91.`);
+    refuse(`Coût estimé du lancement ${estimatedChf.toFixed(4)} CHF : avec ${spent} CHF dépensés, il dépasserait le plafond ${env.id} de ${auth.maxChf} CHF.`);
+  if (counter.used + plan.length > counter.cap) refuse(`Ce lancement prévoit ${plan.length} appels ; ${counter.used} / ${counter.cap} déjà utilisés sous ${env.counter}.`);
   for (const [model, count] of Object.entries(planned)) {
     const bound = auth.perModel[model];
-    if (!bound) refuse(`Modèle refusé : ${model} n'est pas couvert par H9.`);
+    if (!bound) refuse(`Modèle refusé : ${model} n'est pas couvert par ${env.id}.`);
     if ((counter.perModel[model] ?? 0) + count > bound)
-      refuse(`${model} : ${count} appel(s) prévu(s), ${counter.perModel[model] ?? 0} / ${bound} déjà utilisés sous H9.`);
+      refuse(`${model} : ${count} appel(s) prévu(s), ${counter.perModel[model] ?? 0} / ${bound} déjà utilisés sous ${env.id}.`);
   }
-  return { envelope: 'H9', cap: plan.length, planned, auth };
+  return { envelope: env.id, cap: plan.length, planned, auth };
 }
 
 const sleepSync = ms => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
@@ -250,8 +286,8 @@ export function withLock(lockDir, action, { timeoutMs = 5000, sleep = sleepSync 
 /**
  * Réserve un appel dans gemini-journal.md, avant l'envoi : le compteur est relu
  * sous verrou, contrôlé contre sa borne, puis incrémenté et réécrit.
- * Sous H9, `costChf` (coût estimé de cet appel) s'ajoute au coût déjà journalisé dans la section #91 : au-delà du
- * plafond en CHF, l'appel est refusé avant l'envoi.
+ * Sous H9 ou H12, `costChf` (coût estimé de cet appel) s'ajoute au coût déjà journalisé dans la section de
+ * l'enveloppe : au-delà du plafond en CHF, l'appel est refusé avant l'envoi.
  * @returns {{ label: string }} numéro de l'appel pour la ligne du journal
  */
 export function reserveCall(journalPath, { envelope, model, auth, lockDir, costChf = 0 }) {
@@ -264,17 +300,18 @@ export function reserveCall(journalPath, { envelope, model, auth, lockDir, costC
       writeFileSync(journalPath, withSharedCounter(journal, next));
       return { label: String(next) };
     }
-    if (envelope !== 'H9' || !auth) refuse('Enveloppe inconnue.');
+    const env = ENVELOPES[envelope];
+    if (!env || !auth) refuse('Enveloppe inconnue.');
     const bound = auth.perModel[model];
-    if (!bound) refuse(`Modèle refusé : ${model} n'est pas couvert par H9.`);
-    const counter = readCounter91(journal);
+    if (!bound) refuse(`Modèle refusé : ${model} n'est pas couvert par ${env.id}.`);
+    const counter = readEnvelopeCounter(journal, env.id);
     const next = (counter.perModel[model] ?? 0) + 1;
-    if (next > bound) refuse(`Borne H9 atteinte pour ${model} (${bound}).`);
-    if (counter.used + 1 > counter.cap) refuse(`Compteur #91 épuisé (${counter.cap} / ${counter.cap}).`);
-    const spent = spent91(journal);
+    if (next > bound) refuse(`Borne ${env.id} atteinte pour ${model} (${bound}).`);
+    if (counter.used + 1 > counter.cap) refuse(`Compteur ${env.counter} épuisé (${counter.cap} / ${counter.cap}).`);
+    const spent = spentIn(journal, env.id);
     if (auth.maxChf !== undefined && spent + costChf > auth.maxChf)
-      refuse(`Plafond H9 : cet appel (≈ ${costChf.toFixed(4)} CHF) porterait le coût #91 de ${spent} CHF au-delà de ${auth.maxChf} CHF.`);
-    writeFileSync(journalPath, withCounter91(journal, { ...counter.perModel, [model]: next }, auth.perModel));
+      refuse(`Plafond ${env.id} : cet appel (≈ ${costChf.toFixed(4)} CHF) porterait le coût ${env.counter} de ${spent} CHF au-delà de ${auth.maxChf} CHF.`);
+    writeFileSync(journalPath, withCounter(journal, { ...counter.perModel, [model]: next }, auth.perModel, env));
     return { label: String(counter.used + 1), ordinal: next };
   });
 }
@@ -288,18 +325,20 @@ export function appendJournalRow(journalPath, row, lockDir) {
 }
 
 /**
- * Ajoute une ligne à la fin du tableau de la section #91, puis remet à jour le coût du compteur #91, sous verrou.
- * `bounds` : bornes H9 par modèle, pour réécrire le détail du compteur.
+ * Ajoute une ligne à la fin du tableau de la section de l'enveloppe, puis remet à jour le coût de son compteur, sous verrou.
+ * `bounds` : bornes de l'enveloppe par modèle, pour réécrire le détail du compteur.
  */
-export function appendRow91(journalPath, row, lockDir, bounds) {
+export function appendEnvelopeRow(journalPath, row, lockDir, bounds, envelope) {
+  const env = envelopeOf(envelope);
   withLock(lockDir, () => {
     const journal = readFileSync(journalPath, 'utf8');
-    const { start, end } = section91(journal);
+    const { start, end } = sectionOf(journal, env);
     const body = journal.slice(start, end).replace(/\s*$/, '');
     const next = `${journal.slice(0, start)}${body}\n${row}\n${journal.slice(end)}`;
-    writeFileSync(journalPath, withCounter91(next, readCounter91(next).perModel, bounds));
+    writeFileSync(journalPath, withCounter(next, readEnvelopeCounter(next, env.id).perModel, bounds, env));
   });
 }
+export const appendRow91 = (journalPath, row, lockDir, bounds) => appendEnvelopeRow(journalPath, row, lockDir, bounds, 'H9');
 
 const chf = micro => micro == null ? 'inconnu' : `${(micro / 1_000_000).toFixed(4)} CHF`;
 
