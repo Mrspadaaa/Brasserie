@@ -1,18 +1,34 @@
 import {
   readHopV55DecisionReadingArchive,
   type HopV55DecisionReadingArchiveV4,
+  type HopV55WizardDecisionReadingArchiveV4,
 } from './brewerHopAdviceSemanticSource4';
 import {
   assertBrewerHopAdviceSourceViewMatchesArchiveV1,
+  assertBrewerHopAdviceSourceViewMatchesArchiveV1ForWizardV1,
   BREWER_HOP_ADVICE_REQUEST_FORMAT_V3,
   assertBrewerHopAdviceRequestV3,
   createBrewerHopAdviceRequestV3,
+  createBrewerHopAdviceRequestV3ForWizardV1,
   measureBrewerHopAdviceSemanticJsonWire,
   readBrewerHopAdviceRequestV3,
+  readBrewerHopAdviceRequestV3ForWizardV1,
   type BrewerHopAdviceRequestV3,
+  type BrewerHopAdviceWizardRequestV3,
 } from '../../../functions/src/brewerHopAdviceSemanticV3';
-import type { HopAdviceV1WireInputV3 } from '../../../functions/src/brewerHopAdviceTransportV1';
-import type { BrewerHopAdviceContextLaunchClaimV1 } from '../../../functions/src/brewerHopAdviceContextBinding';
+import {
+  buildHopAdviceV1WireV3ForWizardV1,
+  type HopAdviceAnalysisMode,
+  type HopAdviceV1WireInputV3,
+  type HopAdviceV1WizardClientEntryV1,
+  type HopAdviceV1WizardWireInputV1,
+} from '../../../functions/src/brewerHopAdviceTransportV1';
+import {
+  type BrewerHopAdviceContextLaunchClaimV1,
+  type BrewerHopAdviceWizardContextLaunchV1,
+} from '../../../functions/src/brewerHopAdviceContextBinding';
+import { prepareHopV55SemanticAssistedAdviceLaunchForWizardV1,
+  type PrepareHopV55SemanticContextLaunchInputForWizardV1 } from './assistedSemanticAdviceContextV4';
 
 const SOURCE_ARCHIVE_V4 = 'hop-v55-decision-reading-v4';
 const SEMANTIC_READING_V1 = 'hop-v55-question-semantic-reading-v1';
@@ -176,5 +192,76 @@ export function measureHopAdviceV1SemanticWireV3(input: {
     return { status: 'ready', request: requestRead.request, wire: wire as unknown as HopAdviceV1WireInputV3, wireBytes };
   } catch (error) {
     return { status: 'invalid', reason: error instanceof Error ? error.message : 'Le wire complet ne se sérialise pas.' };
+  }
+}
+
+export type BuildHopV55AssistedSemanticAdviceRequestForWizardV1Result =
+  | { status: 'ready'; request: BrewerHopAdviceWizardRequestV3; sourceArchive: HopV55WizardDecisionReadingArchiveV4;
+      sourceSnapshot: import('./contracts').HopV55WizardSourceSnapshotV1;
+      contextLaunch: BrewerHopAdviceWizardContextLaunchV1; scope: HopAdviceV1WizardClientEntryV1['scope'];
+      wire: HopAdviceV1WizardWireInputV1; requestBytes: { utf8Bytes: number; maxDepth: number };
+      wireBytes: { utf8Bytes: number; maxDepth: number } }
+  | { status: 'stale' | 'invalid'; reason: string }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'tooLarge'; requestBytes?: { utf8Bytes: number; maxDepth: number };
+      wireBytes?: { utf8Bytes: number; maxDepth: number }; maxBytes: 100000; maxDepth: 18; snapshot: unknown };
+
+/** Build the explicit Wizard Request3 and its exact transport wire from the validated live context. */
+export function buildHopV55AssistedSemanticAdviceRequestForWizardV1(input: {
+  current: PrepareHopV55SemanticContextLaunchInputForWizardV1;
+  operationId: string;
+  generation: number;
+  analysisMode: HopAdviceAnalysisMode;
+  phase?: string;
+}): BuildHopV55AssistedSemanticAdviceRequestForWizardV1Result {
+  if (!isText(input.operationId) || !Number.isSafeInteger(input.generation) || input.generation < 0
+    || !['fast', 'auto', 'deep'].includes(input.analysisMode)
+    || input.phase !== undefined && typeof input.phase !== 'string') {
+    return { status: 'invalid', reason: 'Identité, génération ou mode du wire Wizard absent/invalide.' };
+  }
+  const launch = prepareHopV55SemanticAssistedAdviceLaunchForWizardV1(input.current);
+  if (launch.status !== 'ready') return launch;
+  try {
+    const requestRead = readBrewerHopAdviceRequestV3ForWizardV1(launch.request);
+    if (requestRead.status === 'unsupportedReadOnly') {
+      return { status: 'unsupportedReadOnly', snapshot: requestRead.snapshot, reason: requestRead.reason };
+    }
+    if (requestRead.status !== 'readOnly') return { status: 'invalid', reason: requestRead.reason };
+    assertBrewerHopAdviceSourceViewMatchesArchiveV1ForWizardV1(requestRead.request.sourceView, launch.sourceArchive);
+    if (requestRead.request.question !== launch.sourceArchive.reading.intent.question
+      || requestRead.request.sourceReadingReference !== launch.sourceArchive.contentReference
+      || requestRead.request.contextLaunch.sourceReadingReference !== launch.sourceArchive.contentReference
+      || !isRecord(requestRead.request.contextLaunch.scope)
+      || stableJson(requestRead.request.contextLaunch.scope) !== stableJson(launch.scope)) {
+      return { status: 'stale', reason: 'Question, archive V4, Request3 ou scope Wizard ne correspondent plus.' };
+    }
+    const requestBytes = measureBrewerHopAdviceSemanticJsonWire(requestRead.request);
+    if (requestBytes.utf8Bytes > MAX_JSON_WIRE_BYTES || requestBytes.maxDepth > MAX_JSON_WIRE_DEPTH) {
+      return { status: 'tooLarge', requestBytes, maxBytes: MAX_JSON_WIRE_BYTES, maxDepth: MAX_JSON_WIRE_DEPTH,
+        snapshot: requestRead.request };
+    }
+    const entry: HopAdviceV1WizardClientEntryV1 = {
+      operationId: input.operationId, question: requestRead.request.question, generation: input.generation,
+      ...(input.phase === undefined ? {} : { phase: input.phase }), scope: launch.scope,
+      draft: launch.sourceSnapshot.draft, hopAdvice: requestRead.request, analysisMode: input.analysisMode,
+    };
+    const wire = buildHopAdviceV1WireV3ForWizardV1(entry);
+    const wireBytes = measureBrewerHopAdviceSemanticJsonWire(wire);
+    if (wireBytes.utf8Bytes > MAX_JSON_WIRE_BYTES || wireBytes.maxDepth > MAX_JSON_WIRE_DEPTH) {
+      return { status: 'tooLarge', requestBytes, wireBytes, maxBytes: MAX_JSON_WIRE_BYTES, maxDepth: MAX_JSON_WIRE_DEPTH,
+        snapshot: wire };
+    }
+    const wireRequest = readBrewerHopAdviceRequestV3ForWizardV1(wire.hopAdvice);
+    if (wireRequest.status !== 'readOnly' || stableJson(wireRequest.request) !== stableJson(requestRead.request)) {
+      return { status: 'invalid', reason: 'Le wire Wizard ne conserve pas la Request3 V6 préparée exacte.' };
+    }
+    if (stableJson(wire.draft) !== stableJson(launch.sourceSnapshot.draft)) {
+      return { status: 'invalid', reason: 'Le champ wire.draft ne conserve pas le snapshot durable Wizard exact.' };
+    }
+    return { status: 'ready', request: requestRead.request, sourceArchive: launch.sourceArchive,
+      sourceSnapshot: launch.sourceSnapshot, contextLaunch: launch.contextLaunch, scope: launch.scope,
+      wire, requestBytes, wireBytes };
+  } catch (error) {
+    return { status: 'invalid', reason: error instanceof Error ? error.message : 'Construction Request3 Wizard invalide.' };
   }
 }

@@ -381,6 +381,7 @@ describe('Compléter les données manquantes avec l’IA', () => {
 
     fireEvent.click(screen.getByText(/Compléter les données manquantes avec l’IA/));
     await waitFor(() => expect(screen.getByText(/Rien de publié retrouvé/)).toBeInTheDocument());
-    expect(screen.getByText(/à saisir à la main/)).toBeInTheDocument();
+    // #100: the manual way out is now its own sentence (« … ingrédients. À saisir à la main. »).
+    expect(screen.getByText(/à saisir à la main/i)).toBeInTheDocument();
   });
 });

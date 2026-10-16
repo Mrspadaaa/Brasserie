@@ -1,6 +1,10 @@
 import type { BrewerHopAdviceRequest } from './brewerHopAdviceProposal.js';
-import type { BrewerHopAdviceRequestV3 } from './brewerHopAdviceSemanticV3.js';
+import type { BrewerHopAdviceRequestV3, BrewerHopAdviceWizardRequestV3 } from './brewerHopAdviceSemanticV3.js';
 import type { BrewerJob, BrewerPending, BrewerTurn } from './companionTypes.js';
+import {
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  mapBrewerHopAdviceWizardSourceToScopeV1,
+} from './brewerHopAdviceWizardSourceV1.js';
 
 /** Shared browser/server names. This module has no Node, Firebase or provider runtime dependency. */
 export const HOP_ADVICE_PROTOCOL_V1 = Object.freeze({
@@ -79,6 +83,22 @@ export type HopAdviceV1WireInput<TDraft = unknown, TLocalJournal = unknown> = Ho
 export type HopAdviceV1AnyWireInput<TDraft = unknown, TLocalJournal = unknown> =
   | HopAdviceV1WireInputV2<TDraft, TLocalJournal>
   | HopAdviceV1WireInputV3<TDraft, TLocalJournal>;
+
+/**
+ * Wizard V1 entry of the same callable, mode and scope network: scope draft only, whose `draft` is the
+ * exact canonical snapshot recipe named by the request's Wizard source. Not a member of the unions above.
+ */
+type HopAdviceV1WizardSourceFields<TDraft> = { scope: { kind: 'draft'; id: string }; draft: TDraft; localJournal?: never };
+
+export type HopAdviceV1WizardClientEntryV1<TDraft = unknown> =
+  Omit<HopAdviceV1ClientCommon, 'hopAdvice'> &
+  HopAdviceV1WizardSourceFields<TDraft> &
+  { hopAdvice: BrewerHopAdviceWizardRequestV3; analysisMode: HopAdviceAnalysisMode };
+
+export type HopAdviceV1WizardWireInputV1<TDraft = unknown> =
+  Omit<HopAdviceV1ClientCommon, 'hopAdvice'> &
+  HopAdviceV1WizardSourceFields<TDraft> &
+  { hopAdvice: BrewerHopAdviceWizardRequestV3; mode: typeof HOP_ADVICE_PROTOCOL_V1.name; analysisMode: HopAdviceAnalysisMode };
 
 export type HopAdviceV1PublicJob = BrewerJob & { protocol: typeof HOP_ADVICE_PROTOCOL_V1.name };
 export type HopAdviceV1UnsupportedJob = BrewerJob & { protocol: 'unsupported' };
@@ -206,6 +226,37 @@ export function buildHopAdviceV1WireV3<TDraft = unknown, TLocalJournal = unknown
     ...(entry.phase === undefined ? {} : { phase: entry.phase }),
     hopAdvice: entry.hopAdvice,
   } as HopAdviceV1WireInputV3<TDraft, TLocalJournal>;
+}
+
+/**
+ * Build the Wizard wire on the same callable. Question and draft scope must be those of the Wizard
+ * RequestV3, the scope must derive from its source origin, and the draft must be the canonical snapshot
+ * recipe whose reference is the source contentReference; a saved Recipe of the same ID is refused.
+ */
+export function buildHopAdviceV1WireV3ForWizardV1<TDraft = unknown>(
+  entry: HopAdviceV1WizardClientEntryV1<TDraft>
+): HopAdviceV1WizardWireInputV1<TDraft> {
+  const launch = entry.hopAdvice.contextLaunch;
+  const originScope = mapBrewerHopAdviceWizardSourceToScopeV1(launch.source);
+  if (entry.question !== entry.hopAdvice.question || entry.scope.kind !== 'draft'
+    || launch.scope.kind !== 'draft' || entry.scope.id !== launch.scope.id || entry.scope.id !== originScope.id) {
+    throw new Error('La question ou le scope draft Wizard doit correspondre exactement à la RequestV3 et à son origine.');
+  }
+  if (!Object.prototype.hasOwnProperty.call(entry, 'draft') || Object.prototype.hasOwnProperty.call(entry, 'localJournal')) {
+    throw new Error('Le wire Wizard porte exactement son brouillon, sans journal.');
+  }
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(launch.source, { recipe: entry.draft, reference: launch.source.contentReference });
+  return {
+    mode: HOP_ADVICE_PROTOCOL_V1.name,
+    analysisMode: entry.analysisMode,
+    scope: entry.scope,
+    operationId: entry.operationId,
+    question: entry.question,
+    ...(entry.generation === undefined ? {} : { generation: entry.generation }),
+    draft: entry.draft,
+    ...(entry.phase === undefined ? {} : { phase: entry.phase }),
+    hopAdvice: entry.hopAdvice,
+  };
 }
 
 /**

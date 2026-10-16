@@ -3,7 +3,7 @@ import { hopAdviceContentReference as contentReference } from './adviceContentRe
 import { qualifyHopCatalogueVariants } from './catalogueQualification';
 import type { HopQualifiedAssemblyInput } from './qualifiedDecision';
 import { programFingerprint } from './programs';
-import type { HopDecisionMaterial, HopDecisionProgram } from './types';
+import type { HopDecisionMaterial, HopDecisionProgram, HopUse } from './types';
 import { interpolateColdHopBuReference, interpolateColdHopBuFromMass, coldHopBuCalibrationReference,
   type ColdHopBuCalibration, type ColdHopBuReferenceResult } from './coldIbuReference';
 import { coldDecimal, coldDecimalToNumber, coldDecimalSnapshot, sumColdDecimalNumbers, divideColdDecimals, subtractColdDecimals } from './coldIbuDecimal';
@@ -166,6 +166,88 @@ function qualifiedMaterials(input: AssessQualifiedColdHopContactInput, ids: stri
   return { snapshot, materials, unresolved };
 }
 
+/** Brewer-facing labels; `property` stays the structured identifier and never appears in a visible reason. */
+export const HOP_COLD_CONTACT_COMPARISON_LABELS: Readonly<Record<string, string>> = {
+  employment: 'Moment d’usage', durationHours: 'Durée de contact', reportedMeanTemperatures: 'Température du contact',
+  materialForm: 'Forme de la matière', volumeBasis: 'Base du volume', abvPct: 'Teneur en alcool',
+  filteredBeforeContact: 'Filtration avant contact', yeastHandling: 'Traitement de la levure', contactMode: 'Mode de contact',
+  materialPreparation: 'Préparation de la matière', beerDescription: 'Description de la bière',
+};
+const COMPOSITE_FIELD_LABELS = { use: 'le moment d’usage', status: 'le statut prévu ou effectué', dayOffset: 'le jour d’ajout',
+  contactHours: 'la durée de contact', temperatureC: 'la température déclarée' } as const;
+const COLD_DIFFERENCE_SCOPE = 'Un écart compare seulement aux conditions du protocole publié; il ne prouve ni une cause sensorielle ni un résultat d’amertume dans cette bière.';
+const COLD_UNKNOWN_SCOPE = 'Une donnée inconnue n’est pas renseignée ou résolue dans les données lues; cela ne prouve pas son absence dans la bière réelle.';
+type ColdComparisonWording = {
+  value?(value: unknown): string | null; reference?(value: unknown): string | null; deviation?: string;
+  unknown(row: HopColdDomainComparison): string;
+};
+const ownKey = (record: object, key: string) => Object.prototype.hasOwnProperty.call(record, key);
+const isRecord = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
+// Locale-independent formatting: these texts are part of the assessment fingerprint.
+const frNumber = (value: unknown) => typeof value === 'number' && Number.isFinite(value) ? String(value).replace('.', ',') : null;
+const inUnit = (unit: string) => (value: unknown) => { const text = frNumber(value); return text === null ? null : `${text} ${unit}`; };
+const named = (labels: Record<string, string>) => (value: unknown) => typeof value === 'string' && ownKey(labels, value) ? labels[value] : null;
+const hopForm = named({ cone: 'cônes', pelletT90: 'pellets T90', pelletT45: 'pellets T45', cryo: 'Cryo', extract: 'extrait' });
+/** Declared moment of a program line, never a performed operation; unknown values get no guessed wording. */
+export const HOP_COLD_CONTACT_USE_LABELS: Readonly<Record<HopUse, string>> = { firstWort: 'premier moût', boil: 'ébullition',
+  whirlpool: 'whirlpool', fermentation: 'pendant la fermentation', postFermentation: 'après la fermentation' };
+export const coldContactUseLabel = named(HOP_COLD_CONTACT_USE_LABELS);
+const perLine = (row: HopColdDomainComparison) => Array.isArray(row.actual) && row.actual.length === 0
+  ? 'aucune ligne de programme n’est rattachée à ce contact.' : 'non renseignée pour au moins une ligne du contact.';
+const inContext = (detail: string) => () => `${detail} dans le contexte de bière lu.`;
+const COLD_COMPARISON_WORDING: Record<string, ColdComparisonWording> = {
+  employment: { value: coldContactUseLabel, unknown: perLine },
+  durationHours: { value: inUnit('h'), unknown: perLine },
+  reportedMeanTemperatures: { value: inUnit('°C'), deviation: 'hors de la plage des températures moyennes rapportées par la publication',
+    reference: value => isRecord(value) && frNumber(value.min) !== null && frNumber(value.max) !== null
+      ? `${frNumber(value.min)}–${frNumber(value.max)} °C` : null, unknown: perLine },
+  materialForm: { value: value => hopForm(isRecord(value) ? value.form : value),
+    unknown: () => 'forme non renseignée ou matière non résolue de façon univoque.' },
+  volumeBasis: { value: named({ beerAtContact: 'bière au contact' }), unknown: inContext('non précisée') },
+  abvPct: { value: inUnit('% vol.'), unknown: inContext('non renseignée') },
+  filteredBeforeContact: { value: value => value === true ? 'bière filtrée' : value === false ? 'bière non filtrée' : null,
+    unknown: inContext('non renseignée') },
+  yeastHandling: { value: named({ removedBeforeContact: 'levure retirée avant le contact', present: 'levure présente' }),
+    unknown: inContext('non renseignée ou déclarée inconnue') },
+  contactMode: { value: named({ static: 'statique', agitated: 'agité' }), unknown: inContext('non renseignée ou déclarée inconnue') },
+  materialPreparation: { unknown: inContext('description non fournie') },
+  beerDescription: { unknown: inContext('description non fournie') },
+};
+
+/** Every value must have a known wording; otherwise the reason keeps the deviation without guessing a value. */
+function listedWording(value: unknown, format: (value: unknown) => string | null): string | null {
+  const texts = (Array.isArray(value) ? value : [value]).map(format);
+  return texts.length && texts.every(text => text !== null) ? [...new Set(texts)].join(', ') : null;
+}
+
+function coldComparisonReason(row: HopColdDomainComparison): string {
+  const label = ownKey(HOP_COLD_CONTACT_COMPARISON_LABELS, row.property) ? HOP_COLD_CONTACT_COMPARISON_LABELS[row.property] : 'Condition du protocole';
+  const wording = ownKey(COLD_COMPARISON_WORDING, row.property) ? COLD_COMPARISON_WORDING[row.property] : undefined;
+  if (row.status === 'unknown') return `${label} : donnée inconnue, ${wording?.unknown(row) ?? 'non renseignée ou non résolue dans les données lues.'}`;
+  const declared = wording?.value ? listedWording(row.actual, wording.value) : null;
+  const published = (wording?.reference ?? wording?.value)?.(row.reference) ?? null;
+  return `${label} : ${wording?.deviation ?? 'écart au protocole publié'}${declared && published ? ` (déclaré : ${declared}; publié : ${published})` : ''}.`;
+}
+
+export interface HopColdComparisonDisplay {
+  label: string;
+  /** Null when the row is unknown or its value has no wording; the exact value stays in the row. */
+  declared: string | null;
+  published: string | null;
+  publishedLabel: string;
+}
+
+/** Display-only reading of a stored row: it never alters the row, its reason or any fingerprint. */
+export function describeColdContactComparison(row: HopColdDomainComparison): HopColdComparisonDisplay {
+  const label = ownKey(HOP_COLD_CONTACT_COMPARISON_LABELS, row.property) ? HOP_COLD_CONTACT_COMPARISON_LABELS[row.property] : 'Condition du protocole';
+  const wording = ownKey(COLD_COMPARISON_WORDING, row.property) ? COLD_COMPARISON_WORDING[row.property] : undefined;
+  const text = (value: unknown) => nonempty(value) ? value : null;
+  return { label,
+    declared: row.status === 'unknown' ? null : listedWording(row.actual, wording?.value ?? text),
+    published: (wording?.reference ?? wording?.value ?? text)(row.reference),
+    publishedLabel: row.property === 'reportedMeanTemperatures' ? 'moyennes observées publiées' : 'publié' };
+}
+
 /** The only numeric output is in the named reference. The target beer receives no numeric fallback. */
 export function assessQualifiedColdHopContact(input: AssessQualifiedColdHopContactInput): HopColdContactAssessment {
   assertBinding(input); validateContext(input.context);
@@ -177,7 +259,7 @@ export function assessQualifiedColdHopContact(input: AssessQualifiedColdHopConta
   if (materialIds.length > 1) compositeReasons.push('Plusieurs identités de matière ne constituent pas le traitement homogène de cette référence; comparer des contacts distincts.');
   for (const field of ['use', 'status', 'dayOffset', 'contactHours', 'temperatureC'] as const) {
     const known = selected.map(row => row[field] ?? null).filter(value => value !== null);
-    if (new Set(known).size > 1) compositeReasons.push(`Les lignes diffèrent sur ${field}; aucune fusion en un contact unique n’est établie.`);
+    if (new Set(known).size > 1) compositeReasons.push(`Les lignes diffèrent sur ${COMPOSITE_FIELD_LABELS[field]}; aucune fusion en un contact unique n’est établie.`);
   }
   const missingMassAdditionIds = selected.filter(row => row.grams === null).map(row => row.id);
   const knownMasses = selected.filter(row => row.grams !== null).map(row => row.grams!);
@@ -226,10 +308,13 @@ export function assessQualifiedColdHopContact(input: AssessQualifiedColdHopConta
   const quantityMissing = totalMassGrams === null || volumeL === null;
   const status = compositeReasons.length || referenceResult.status === 'outOfDomain' || checks.some(row => row.status === 'different') ? 'conditionsDiffer'
     : quantityMissing || unresolved.length || checks.some(row => row.status === 'unknown') ? 'insufficientData' : 'transferNotEstablished';
+  const differences = checks.filter(row => row.status === 'different'), unknowns = checks.filter(row => row.status === 'unknown');
   const reasons = [
     ...compositeReasons,
-    ...checks.filter(row => row.status === 'different').map(row => `${row.property} diffère de la référence publiée.`),
-    ...checks.filter(row => row.status === 'unknown').map(row => `${row.property} n’est pas renseigné ou résolu.`),
+    ...differences.map(coldComparisonReason),
+    ...(differences.length ? [COLD_DIFFERENCE_SCOPE] : []),
+    ...unknowns.map(coldComparisonReason),
+    ...(unknowns.length ? [COLD_UNKNOWN_SCOPE] : []),
     ...(quantityMissing ? ['La dose du contact ne peut pas être calculée avec les masses et le volume fournis.'] : []),
     ...(unresolved.length ? [`Identités matière sans projection qualifiée univoque : ${unresolved.join(', ')}.`] : []),
     ...(referenceResult.status === 'outOfDomain' ? ['La dose dépasse le domaine numérique de cette courbe.'] : []),

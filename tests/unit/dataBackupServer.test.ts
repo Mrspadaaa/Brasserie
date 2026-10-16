@@ -122,11 +122,61 @@ describe('Validation intégrale des sauvegardes', () => {
     expect(() => parseBackup(backup({ brewPrivate: [{ id: 'x', data: { key: 'x' } }] }))).toThrow();
     expect(() => parseBackup(backup({ recipes: [{ id: 'R', data: { ...recipe, __docId: 'R' } }] }))).toThrow();
   });
+  it('valide seulement le conteneur des traces V5.5 et garde les entrées futures ou illisibles brutes', async () => {
+    const history = [
+      { format: 'hop-v55-recipe-draft-application-v999', id: 'future-row', futurePayload: { keep: [1, 'opaque', { marker: true }] } },
+      { format: 'hop-v55-recipe-draft-application-v1', id: 'unreadable-row', incomplete: { preserve: true } },
+    ];
+    const coldAssociations = [{ format: 'hop-v55-recipe-cold-evidence-association-v999', id: 'cold-future-row',
+      opaquePayload: { source: 'fixture only', preserve: [true, null, { future: 'unchanged' }] } }];
+    const parsed = parseBackup(backup({ recipes: [{ id: 'R', data: { ...recipe,
+      hopV55Applications: history, hopV55ColdEvidenceAssociations: coldAssociations } }] }));
+    expect(parsed.collections.recipes?.[0].data.hopV55Applications).toEqual(history);
+    expect(parsed.collections.recipes?.[0].data.hopV55ColdEvidenceAssociations).toEqual(coldAssociations);
+
+    const invalidContainerBackup = backup({ recipes: [{ id: 'R', data: { ...recipe,
+      hopV55Applications: { format: 'hop-v55-recipe-draft-application-v999', futurePayload: true } } }] });
+    expect(() => parseBackup(invalidContainerBackup)).toThrow(/Historique d’applications V5\.5 invalide/);
+    await expect(restoreBreweryData.run(request({ json: invalidContainerBackup, operationId: 'restore-invalid-v55-applications-123' }) as any))
+      .rejects.toThrow(/Historique d’applications V5\.5 invalide/);
+    expect(mock.docs.size).toBe(0);
+    expect(mock.commits).toBe(0);
+    const invalidColdContainerBackup = backup({ recipes: [{ id: 'R', data: { ...recipe,
+      hopV55ColdEvidenceAssociations: { format: 'hop-v55-recipe-cold-evidence-association-v999', future: true } } }] });
+    expect(() => parseBackup(invalidColdContainerBackup)).toThrow(/Historique d’associations froides V5\.5 invalide/);
+    await expect(restoreBreweryData.run(request({ json: invalidColdContainerBackup,
+      operationId: 'restore-invalid-cold-associations-123' }) as any)).rejects.toThrow(/Historique d’associations froides V5\.5 invalide/);
+    expect(mock.docs.size).toBe(0);
+    expect(mock.commits).toBe(0);
+    expect(() => parseBackup(backup({ recipes: [{ id: 'R', data: { ...recipe, hopV55Applications: ['x'.repeat(950_000)] } }] })))
+      .toThrow(/Document trop volumineux/);
+    expect(() => parseBackup(backup({ recipes: [{ id: 'R', data: { ...recipe,
+      hopV55ColdEvidenceAssociations: ['x'.repeat(950_000)] } }] }))).toThrow(/Document trop volumineux/);
+
+    const legacy = parseBackup(JSON.stringify({ schemaVersion: 2, recipes: [recipe] }));
+    expect(legacy.collections.recipes?.[0].data).toEqual(recipe);
+    expect(legacy.collections.recipes?.[0].data.hopV55Applications).toBeUndefined();
+    expect(legacy.collections.recipes?.[0].data.hopV55ColdEvidenceAssociations).toBeUndefined();
+  });
   it('reprend un ancien export sans effacer les collections qu’il ne contenait pas', () => {
     const b = parseBackup(JSON.stringify({ schemaVersion: 2, recipes: [recipe], stocks: { rawMaterials: [{ ref: 'm', currentStock: 5 }] } }));
     expect(b.collections.recipes?.[0].id).toBe('R');
     expect(b.collections.stockItems?.[0].data.kind).toBe('rawMaterials');
     expect(b.collections.creativeItems).toBeUndefined();
+  });
+  it('contre-épreuve: un backup ancien sans le champ reste valide et ne peut pas rétablir cette trace après un restore complet', async () => {
+    const current = { ...recipe,
+      hopV55Applications: [{ format: 'hop-v55-recipe-draft-application-v999', opaque: true }],
+      hopV55ColdEvidenceAssociations: [{ format: 'hop-v55-recipe-cold-evidence-association-v999', opaque: true }] };
+    mock.docs.set('recipes/R', current);
+    const oldBackup = JSON.stringify({ schemaVersion: 2, recipes: [recipe] });
+    const parsed = parseBackup(oldBackup);
+    expect(parsed.collections.recipes?.[0].data.hopV55Applications).toBeUndefined();
+
+    await restoreBreweryData.run(request({ json: oldBackup, operationId: 'restore-old-recipe-no-v55-trace-123' }) as any);
+    expect(mock.docs.get('recipes/R')).toEqual(recipe);
+    expect(mock.docs.get('recipes/R').hopV55Applications).toBeUndefined();
+    expect(mock.docs.get('recipes/R').hopV55ColdEvidenceAssociations).toBeUndefined();
   });
 });
 
@@ -147,6 +197,24 @@ describe('Export et restauration serveur', () => {
     expect(b.collections.auditLogs).toHaveLength(650);
     expect(b.collections.creativeItems![0].data.title).toBe('À conserver');
     expect(createHash('sha256').update(result.json).digest('hex')).toBe(result.sha256);
+  });
+  it('exporte et restaure sans projection les traces V5.5, y compris les formats futurs opaques', async () => {
+    const history = [
+      { format: 'hop-v55-recipe-draft-application-v999', id: 'future-row', futurePayload: { retain: 'exactly' } },
+      { format: 'hop-v55-recipe-draft-application-v1', id: 'unreadable-row', raw: { retain: [true, null, 3] } },
+    ];
+    const coldAssociations = [{ format: 'hop-v55-recipe-cold-evidence-association-v999', id: 'cold-future-row',
+      opaquePayload: { keep: { source: 'fixture only' } } }];
+    const savedRecipe = { ...recipe, hopV55Applications: history, hopV55ColdEvidenceAssociations: coldAssociations };
+    mock.docs.set('recipes/R', savedRecipe);
+
+    const exported = await exportBreweryData.run(request() as any);
+    expect(parseBackup(exported.json).collections.recipes?.[0].data).toEqual(savedRecipe);
+    expect(createHash('sha256').update(exported.json).digest('hex')).toBe(exported.sha256);
+
+    mock.docs.clear();
+    await restoreBreweryData.run(request({ json: exported.json, operationId: 'restore-v55-app-history-123' }) as any);
+    expect(mock.docs.get('recipes/R')).toEqual(savedRecipe);
   });
   it('sauvegarde et restaure le classement réversible, ses seuils et son audit sans modifier les pièces', async () => {
     const archived = { id: 'ARCHIVE-2025', year: 2025, status: 'archived', archivedAt: '2026-03-01T12:00:00.000Z', updatedAt: '2026-03-01T12:00:00.000Z', operationId: 'archive-backup-2025' };

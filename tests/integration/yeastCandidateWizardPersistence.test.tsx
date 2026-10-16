@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { BrewWizard } from '../../src/pages/BrewWizard';
 import { defaultConfig } from '../../src/services/storage';
-import { adoptYeastDocumentary, readRecipeDraft, serializeRecipeDraft, writeRecipeDraft, type RecipeWizardDraft } from '../../src/services/recipeDraft';
+import { adoptYeastDocumentary, readRecipeDraft, recipeServerBase, serializeRecipeDraft, writeRecipeDraft, type RecipeWizardDraft } from '../../src/services/recipeDraft';
 import { yeastFlowRecipe } from '../fixtures/yeastRecipeFlow';
 import { allerEtape } from '../helpers/wizard';
 import { captureSnapshot, normalizeRecipe } from '../../src/domain/recipeSnapshot';
@@ -29,6 +29,13 @@ const draft = (): RecipeWizardDraft => ({ recipe: yeastFlowRecipe(), details: {}
   } });
 const wizard = (onSave = vi.fn(), seed?: Recipe, stockItems: StockItem[] = []) => render(<BrewWizard draftKey={key} seed={seed ? { recipe: seed } : undefined}
   config={defaultConfig} stockItems={stockItems} knownStyles={[]} onClose={vi.fn()} onSave={onSave} onCreateStockItem={vi.fn()} onSaveWaterSource={vi.fn()} />);
+/** #97: opening the editor creates no draft; a neutral edit (renamed, then restored) leaves the current one. */
+const leaveDraftWithoutChange = () => {
+  const title = document.getElementById('wz-title') as HTMLInputElement;
+  const name = title.value;
+  fireEvent.change(title, { target: { value: `${name} ·` } });
+  fireEvent.change(title, { target: { value: name } });
+};
 const openM20 = async () => {
   fireEvent.change(await screen.findByRole('searchbox', { name: 'Chercher une autre levure' }), { target: { value: 'M20' } });
   const compare = await screen.findByRole('checkbox', { name: `Comparer ${m20Label}` });
@@ -117,6 +124,8 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     seed.yeastDesign = undefined; seed.yeastGuide = undefined;
     const save = vi.fn();
     const first = wizard(save, seed);
+    expect(readRecipeDraft(key)).toBeUndefined();
+    leaveDraftWithoutChange();
     await waitFor(() => expect(readRecipeDraft(key)?.candidateSheets).toEqual({}));
     expect(readRecipeDraft(key)?.recipe.yeast.localDocumentary).toBeUndefined();
     expect(readRecipeDraft(key)?.recipe.yeast).toMatchObject({ attenuationPct: 78, attenuationBasis: 'declared' });
@@ -279,6 +288,7 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     savedSeed.yeastGuide = undefined;
     const save = vi.fn();
     const view = wizard(save, savedSeed);
+    leaveDraftWithoutChange();
     await waitFor(() => expect(readRecipeDraft(key)?.candidateSheets).toEqual({}));
     allerEtape('Levure');
 
@@ -384,7 +394,8 @@ describe('Fiches candidates — traversée du véritable Wizard', () => {
     resumed.yeast.qty = 110;
     resumed.yeast.notes = 'Note modifiée dans le brouillon repris.';
     resumed.fermentation = [{ ...resumed.fermentation[0], tempC: 20 }, ...resumed.fermentation.slice(1)];
-    const local = draft(); local.recipe = resumed;
+    // Same-device draft started from the saved version reopened below (#97).
+    const local = draft(); local.recipe = resumed; local.serverBase = recipeServerBase(savedSeed);
     writeRecipeDraft(key, serializeRecipeDraft(local));
     wizard(vi.fn(), savedSeed);
 

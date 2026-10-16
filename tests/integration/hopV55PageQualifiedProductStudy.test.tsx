@@ -12,7 +12,7 @@ import { prepareBrewingScenarioContext } from '../../src/domain/brewingScenarioC
 import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
 import type { HopV55Services, HopV55Workspace } from '../../src/services/hopV55/contracts';
 import { createHopV55DecisionReadingArchiveV2, readHopV55DecisionReadingArchive } from '../../src/services/hopV55/decisionArchive';
-import * as decisionService from '../../src/services/hopV55/decision';
+import * as questionScopeReading from '../../src/services/hopV55/questionScopeReading';
 import { readHopV55QualifiedStudyLink, readHopV55QualifiedStudyPreparation } from '../../src/services/hopV55/qualifiedStudyWorkspace';
 import { createHopV55WorkspaceRepository, type HopV55WorkspaceDatabaseAdapter, type HopV55WorkspaceEnvelopeV1,
   type HopV55WorkspaceTable } from '../../src/services/hopV55/workspaceRepository';
@@ -194,7 +194,7 @@ async function waitForStudyLink(harness: Awaited<ReturnType<typeof pageHarness>>
 describe('Page V5.5 — étude produit qualifiée Q03', () => {
   it('prépare depuis une lecture recette, reprend une erreur DAO, puis relit l’archive sans recalcul ni écriture', async () => {
     const harness = await pageHarness('recipe');
-    const parser = vi.spyOn(decisionService, 'readHopV55Question');
+    const parser = vi.spyOn(questionScopeReading, 'readHopV55QuestionSemanticWithScopesV1');
     const builder = vi.spyOn(qualifiedDecision, 'answerQualifiedHopDecision');
     render(<HopV55Page services={harness.services} />);
 
@@ -207,6 +207,11 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
     if (!response || response.actionKind !== 'understandProducts') throw new Error('Réponse Q03 de fiches produit attendue.');
     expect(archiveRead.archive.source).toEqual({ kind: 'recipe', id: harness.context.recipe!.id });
     expect(parser).toHaveBeenCalledTimes(1);
+    const parserCall = parser.mock.calls[0];
+    if (!parserCall) throw new Error('La lecture sémantique Q03 doit être réellement appelée avant la préparation.');
+    expect(parserCall[0]).toBe(question);
+    expect(parserCall[1]).toEqual(harness.prepared);
+
 
     fireEvent.click(screen.getByRole('button', { name: 'Préparer une étude de ces fiches produit' }));
     await screen.findByText('Nouvelle étude qualifiée préparée pour ces fiches. La lecture précédente reste intacte.');
@@ -279,7 +284,7 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
 
   it('scelle le numéro de révision réel du journal du brassin dans la préparation produit', async () => {
     const harness = await pageHarness('batch');
-    const parser = vi.spyOn(decisionService, 'readHopV55Question');
+    const parser = vi.spyOn(questionScopeReading, 'readHopV55QuestionSemanticWithScopesV1');
     const builder = vi.spyOn(qualifiedDecision, 'answerQualifiedHopDecision');
     render(<HopV55Page services={harness.services} />);
     fireEvent.click(await readQ03());
@@ -299,12 +304,17 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
       programFingerprint: programFingerprint(program), stage: program.stage });
     expect(harness.qualifiedStudies.createCalls).toBe(0);
     expect(parser).toHaveBeenCalledTimes(1);
+    const parserCall = parser.mock.calls[0];
+    if (!parserCall) throw new Error('La lecture sémantique Q03 du brassin doit être appelée avec le contexte préparé exact.');
+    expect(parserCall[0]).toBe(question);
+    expect(parserCall[1]).toEqual(harness.prepared);
+
     expect(builder).toHaveBeenCalledTimes(1);
   }, 30000);
 
   it('refuse un brassin sans révision de journal au lieu d’en créer une valeur zéro', async () => {
     const harness = await pageHarness('batch', { missingBatchJournal: true });
-    const parser = vi.spyOn(decisionService, 'readHopV55Question');
+    const parser = vi.spyOn(questionScopeReading, 'readHopV55QuestionSemanticWithScopesV1');
     const builder = vi.spyOn(qualifiedDecision, 'answerQualifiedHopDecision');
     render(<HopV55Page services={harness.services} />);
     fireEvent.click(await readQ03());
@@ -320,6 +330,11 @@ describe('Page V5.5 — étude produit qualifiée Q03', () => {
     expect(workspace?.qualifiedStudyLinks).toBeUndefined();
     expect(harness.qualifiedStudies.createCalls).toBe(0);
     expect(parser).toHaveBeenCalledTimes(1);
+    const parserCall = parser.mock.calls[0];
+    if (!parserCall) throw new Error('La lecture sémantique Q03 doit conserver la source exacte avant le refus de révision.');
+    expect(parserCall[0]).toBe(question);
+    expect(parserCall[1]).toEqual(harness.prepared);
+
     expect(builder).not.toHaveBeenCalled();
   }, 30000);
 });

@@ -1,8 +1,84 @@
 // Local callable adapter. Attempts remain counted; unexpected (especially paid)
 // tasks fail immediately, and this module contains no Firebase transport.
+import { sha256 } from '@noble/hashes/sha2.js';
+import { loadBrewingCatalogueReferences } from '../../../src/domain/brewingCatalogueReferences';
+import { canonicalBrewerCatalogueFingerprintInput, projectBrewerCatalogueEntity } from '../../../functions/src/brewerCatalogueCore';
+import { BREWER_CATALOGUE_KINDS, brewerCatalogueIdentityKeys,
+  type BrewerCatalogueEntity, type BrewerCatalogueKind } from '../../../functions/src/brewerCatalogueSchema';
+import type { BrewerCatalogueLookupRecord } from '../../../functions/src/brewerCatalogueStore';
+import type { StorageService } from '../../../src/services/storage';
+
 export const qaCalls: string[] = [];
 export const qaInputs: { name: string; input: any }[] = [];
 export const qaLookup = new Map<string, unknown>();
+const QA_BREWER_CATALOGUE_LOOKUP_LIMIT = 100;
+
+const queryKey = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '').toLocaleLowerCase('fr').trim();
+function isQaCatalogueReference(value: unknown, kind: BrewerCatalogueKind): value is BrewerCatalogueEntity {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const row = value as Record<string, unknown>;
+  if (kind === 'hopVariety') return typeof row.id === 'string' && !('kind' in row) && Array.isArray(row.aliases);
+  if (kind === 'yeastStrain') return row.kind === 'yeast' && typeof row.id === 'string';
+  return row.kind === 'styleGuide' && typeof row.id === 'string';
+}
+function sha256Hex(value: string): string {
+  return Array.from(sha256(new TextEncoder().encode(value)), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+function qaStyleIdForQuery(record: BrewerCatalogueEntity, normalizedQuery: string): string | undefined {
+  if (!('kind' in record) || record.kind !== 'styleGuide') return undefined;
+  for (const style of record.styles) {
+    const styleRecord = { ...record, catalogueMeta: undefined, styles: [style] } as BrewerCatalogueEntity;
+    if (brewerCatalogueIdentityKeys(styleRecord).some(key => key.toLocaleLowerCase('fr').includes(normalizedQuery))) return style.id;
+  }
+  return undefined;
+}
+
+/** Read-only replica of the catalogue lookup contract over the same bundled references as production. */
+async function readQaBrewingCatalogue(input: unknown): Promise<{ records: BrewerCatalogueLookupRecord[]; truncated: boolean }> {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) throw Error('Recherche de catalogue invalide.');
+  const query = (input as Record<string, unknown>).query;
+  const rawKind = (input as Record<string, unknown>).kind;
+  if (!BREWER_CATALOGUE_KINDS.includes(rawKind as BrewerCatalogueKind) || typeof query !== 'string'
+    || !query.trim() || query.length > 200) throw Error('Recherche de catalogue invalide.');
+  const kind = rawKind as BrewerCatalogueKind;
+
+  let references: Awaited<ReturnType<typeof loadBrewingCatalogueReferences>>;
+  try { references = await loadBrewingCatalogueReferences(); }
+  catch { return { records: [], truncated: true }; }
+  const rawRows = kind === 'hopVariety' ? references.varieties
+    : references.knowledge.filter(row => row.kind === (kind === 'yeastStrain' ? 'yeast' : 'styleGuide'));
+  const bundled: BrewerCatalogueLookupRecord[] = [];
+  try {
+    for (const raw of rawRows) {
+      if (!isQaCatalogueReference(raw, kind)) throw Error(`Référence QA invalide pour le catalogue ${kind}.`);
+      const record = structuredClone(raw);
+      // These are the same canonical reader/projection and fingerprint input used by lookup.
+      const projection = projectBrewerCatalogueEntity(record);
+      if (projection.kind !== kind) throw Error(`Projection canonique divergente pour ${kind}/${record.id}.`);
+      bundled.push({ kind, id: record.id, record, revision: record.catalogueMeta?.revision ?? 0,
+        fingerprint: sha256Hex(canonicalBrewerCatalogueFingerprintInput(record)), origin: 'bundled' });
+    }
+  } catch {
+    return { records: [], truncated: true };
+  }
+
+  // Match production's identity merge: later bundled references with the same kind/id win,
+  // and no user-specific Firestore data is fabricated in this local-only fixture.
+  const byIdentity = new Map<string, BrewerCatalogueLookupRecord>();
+  for (const row of bundled) byIdentity.set(`${row.kind}\0${row.id}`, row);
+  const needle = queryKey(query);
+  const matches: BrewerCatalogueLookupRecord[] = [];
+  for (const row of byIdentity.values()) {
+    const projection = projectBrewerCatalogueEntity(row.record);
+    const haystack = queryKey(`${row.id}\n${projection.searchTerms.join('\n')}`);
+    if (!haystack.includes(needle)) continue;
+    matches.push({ ...structuredClone(row), ...(qaStyleIdForQuery(row.record, needle) ? { styleId: qaStyleIdForQuery(row.record, needle) } : {}) });
+  }
+  return { records: matches.slice(0, QA_BREWER_CATALOGUE_LOOKUP_LIMIT), truncated: matches.length > QA_BREWER_CATALOGUE_LOOKUP_LIMIT };
+}
+
+/** The original QA main installs `__hopQa` with `storage: StorageService`; other hosts may leave it absent. */
+type QaHarnessWindow = Window & { __hopQa?: { storage: typeof StorageService } };
 const yeastCorrectionStoreKey = '__HOP_QA_YEAST_CORRECTION_SERVER__';
 type QaYeastCorrectionServer = { products: Record<string, any> };
 const readYeastCorrectionServer = (): QaYeastCorrectionServer => {
@@ -39,6 +115,7 @@ export function httpsCallable(_functions: unknown, name: string) {
     qaInputs.push({name,input});
     if (name === 'getBrewerActivity') return { data: { jobs: [] } };
     if (name === 'getBrewerConversation') return { data: { turns: [], generation: 0 } };
+    if (name === 'readBrewingCatalogue') return { data: await readQaBrewingCatalogue(input) };
     if (name === 'proposeYeastDbCorrection') {
       const { target, manual } = input ?? {};
       if (target?.scope === 'stock' && target.ref === 'QA-FLOC-COMPANION' && /flocculation\s+low/i.test(input?.request ?? '')) {
@@ -107,14 +184,14 @@ export function httpsCallable(_functions: unknown, name: string) {
       }
       if (proposal.target.scope === 'stock' && change.field === 'stock.yeastFlocculation') {
         const ref = proposal.target.ref;
-        const item = window.__hopQa?.storage.getStocks().rawMaterials.find((row: any) => row.ref === ref);
+        const item = (window as QaHarnessWindow).__hopQa?.storage.getStocks().rawMaterials.find((row: any) => row.ref === ref);
         const fact = change.documentaryFact;
         if (!item || item.yeastFlocculation !== change.before || change.value !== 'Low' || fact?.key !== 'flocculation'
           || fact?.reported !== change.value || fact?.context !== 'Beer' || fact?.origin !== 'ai')
           throw Error('QA : paire scalaire/fait companion flocculation invalide.');
         const companion = { ...structuredClone(fact), acceptedScalarFields: ['yeastFlocculation'] };
         const facts = [...(item.yeastTechnicalFacts ?? []).filter((row: any) => !(row.key === companion.key && row.context === companion.context)), companion];
-        window.__hopQa.storage.updateStockItem('rawMaterials', { ...item, yeastFlocculation: change.value, yeastTechnicalFacts: facts });
+        (window as QaHarnessWindow).__hopQa.storage.updateStockItem('rawMaterials', { ...item, yeastFlocculation: change.value, yeastTechnicalFacts: facts });
         return { data: qaCorrectionReceipt(proposal.target, selectedIds, false) };
       }
       if (proposal.target.scope === 'product') {

@@ -1,3 +1,4 @@
+import { ModalOpenerContext, transferModalReturnFocus } from './ModalShell';
 import React from 'react';
 import { Drawer } from 'vaul';
 import { X } from 'lucide-react';
@@ -64,6 +65,7 @@ export const Sheet: React.FC<SheetProps> = ({
    * poignée, le sous-titre et les rembourrages en consommaient la moitié.
    */
   const tight = useDensity() === 'tight';
+  const inheritedOpener = React.useContext(ModalOpenerContext);
   const returnFocus = React.useRef<HTMLElement | null>(null);
 
   return (
@@ -79,11 +81,20 @@ export const Sheet: React.FC<SheetProps> = ({
       <Drawer.Overlay className="fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm" />
 
       <Drawer.Content
-        onOpenAutoFocus={() => { returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+        onOpenAutoFocus={() => { returnFocus.current = inheritedOpener?.isConnected ? inheritedOpener : document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           // Une autre fiche peut venir de s'ouvrir : ne pas lui voler le focus.
-          const nextDialog = document.querySelector('[role="dialog"][data-state="open"]');
+          const nextDialog = [...document.querySelectorAll<HTMLElement>('[role="dialog"], [role="alertdialog"]')]
+            .filter(panel => panel.dataset.state !== 'closed' &&
+              !panel.closest('[aria-hidden="true"], [inert]') &&
+              getComputedStyle(panel).display !== 'none' && getComputedStyle(panel).visibility !== 'hidden').at(-1);
+          if (nextDialog && returnFocus.current?.isConnected && !nextDialog.contains(returnFocus.current)) {
+            transferModalReturnFocus(nextDialog, returnFocus.current);
+            // Le dialogue a pu monter sous le fallback et manquer son autofocus.
+            if (!nextDialog.contains(document.activeElement)) nextDialog.focus({ preventScroll: true });
+            return;
+          }
           if (returnFocus.current?.isConnected && (!nextDialog || nextDialog.contains(returnFocus.current))) {
             returnFocus.current.focus({ preventScroll: true });
           }

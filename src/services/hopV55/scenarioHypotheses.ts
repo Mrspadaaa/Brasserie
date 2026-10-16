@@ -108,10 +108,21 @@ function parameterLabel(parameter: BrewingScenarioModelParameter, model: HopExtr
   }
 }
 
-function parameterSources(model: HopExtrapolation, current: HopExperimentalParameter): HopSource[] {
+/** Content reference of each source object, computed once per options build (#81: a model's sources are shared by all its parameters). */
+type SourceReferences = WeakMap<HopSource, string>;
+function sourceReference(source: HopSource, references: SourceReferences): string {
+  let reference = references.get(source);
+  if (reference === undefined) {
+    reference = hopAdviceContentReference('hop-v55-hypothesis-source-v1', source);
+    references.set(source, reference);
+  }
+  return reference;
+}
+
+function parameterSources(model: HopExtrapolation, current: HopExperimentalParameter, references: SourceReferences): HopSource[] {
   const byReference = new Map<string, HopSource>();
   for (const source of [current.source, model.source, ...model.evidence]) {
-    byReference.set(hopAdviceContentReference('hop-v55-hypothesis-source-v1', source), clone(source));
+    byReference.set(sourceReference(source, references), clone(source));
   }
   return [...byReference.values()];
 }
@@ -119,11 +130,13 @@ function parameterSources(model: HopExtrapolation, current: HopExperimentalParam
 function modelParameterOptions(prepared: PreparedBrewingScenarioContext, models: HopExtrapolation[], yeasts: HopYeast[]): HopV55ModelParameterOption[] {
   const loadedYeastIds = new Set(yeasts.map(row => row.id));
   const options: HopV55ModelParameterOption[] = [];
+  // Local to this build: the prepared inputs are not mutated while the options are assembled.
+  const references: SourceReferences = new WeakMap();
   const add = (model: HopExtrapolation, parameter: BrewingScenarioModelParameter, current: HopExperimentalParameter,
     note?: string, minimum = 0, strictlyPositive = false) => {
     options.push({ modelId: model.id, modelName: model.name, modelVersion: model.version,
       parameter: clone(parameter), label: parameterLabel(parameter, model, note), unit: parameterUnit(parameter),
-      current: clone(current), sources: parameterSources(model, current), ...(note ? { note } : {}), minimum, strictlyPositive });
+      current: clone(current), sources: parameterSources(model, current, references), ...(note ? { note } : {}), minimum, strictlyPositive });
   };
   for (const model of models) {
     add(model, { kind: 'matrix' }, model.matrix, undefined, 0, true);

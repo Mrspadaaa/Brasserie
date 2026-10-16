@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Sparkles, Loader2, AlertTriangle, Check } from 'lucide-react';
 import { Fermentable, HopIngredient, YeastSpec, StockItem } from '../types';
 import { AiClient } from '../services/aiClient';
+import { withManualEntry } from './manualEntry';
 import { readYeastFactValue, readYeastDocumentaryNotes, type YeastDocumentaryNote, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import {
   YEAST_DOCUMENTARY_UNITS, YEAST_SHEET_LABELS, YEAST_VALUE_KIND, YeastFlocculationEditor, YeastMeasuredFactEditor, YeastLinkedText, YeastObservationList,
@@ -553,7 +554,7 @@ export function YeastSheetAssistant({ subject, yeast, reference, revision, lates
       onEntry={onEntry} onAccept={onAccept} onVerify={verify} scopeText={scopeText} />;
   return <div className="yc-sheet-assistant">
     {!entry && <p className="yeast-small">Retrouver les données publiées, avec leurs sources et leurs limites. {scopeText}</p>}
-    {entry?.status === 'error' && <p role="alert" className="yeast-small"><AlertTriangle className="w-4 h-4 inline" aria-hidden="true" /> {entry.error} — à saisir à la main.</p>}
+    {entry?.status === 'error' && <p role="alert" className="yeast-small"><AlertTriangle className="w-4 h-4 inline" aria-hidden="true" /> {withManualEntry(entry.error ?? '')}</p>}
     {stale && <p role="status" className="yeast-small" data-review-stale>La fiche de {subject} a changé depuis cette recherche : proposition périmée, rien n’a été retenu.</p>}
     <button type="button" className="yc-sheet-search" onClick={search}><Sparkles className="w-4 h-4" aria-hidden="true" />{stale ? 'Relancer la recherche' : searchLabel}</button>
   </div>;
@@ -913,7 +914,7 @@ function IngredientCompletion({
       {error && (
         <p role="alert" className="flex items-start gap-2 text-sm text-cave-200 leading-snug">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{error} — à saisir à la main.</span>
+          <span>{withManualEntry(error)}</span>
         </p>
       )}
 

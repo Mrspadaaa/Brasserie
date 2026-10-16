@@ -31,6 +31,7 @@ vi.mock('../../src/services/firestoreRepo', () => ({ FirestoreRepo: {
 } }));
 import { StorageService } from '../../src/services/storage';
 import { HopRecipeGuide } from '../../src/ui/hopIndex/HopRecipeGuide';
+import { HopRecipeSnapshot } from '../../src/ui/hopIndex/HopRecipeSnapshot';
 
 const recipe = (patch: Partial<Recipe> = {}): Recipe => ({
   id: 'guide-test', name: 'Recette témoin', style: 'IPA', volumeL: 20,
@@ -74,6 +75,29 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('Guide aromatique dans la recette', () => {
+  it('#75 : le bilan écrit la dose comme l’atelier V5.5 (3 décimales et valeur complète), pas une seconde précision', () => {
+    render(<HopRecipeSnapshot recipe={recipe({ volumeL: 30, hops: [{ name: 'Cascade', stage: 'boil', weightG: 25, alpha: 7, timeMin: 60 }] as Recipe['hops'] })} />);
+    const phases = screen.getByRole('definition');
+    expect(phases).toHaveTextContent('25 g · 0,833 g/L (5/6 g/L exacts)');
+    expect(phases).not.toHaveTextContent('0,8 g/L');
+  });
+
+  it('V4 : dans le créateur (contextOnly), ne double pas les éditeurs de moment, durée, température et phase des lignes', async () => {
+    const hops: Recipe['hops'] = [
+      { name: 'Magnum', weightG: 20, alpha: 12, stage: 'boil', timeMin: 60 },
+      { name: 'Citra', weightG: 40, alpha: 12, stage: 'whirlpool', timeMin: 20, tempC: 80 },
+      { name: 'Mosaic', weightG: 60, alpha: 12, stage: 'dryHop', aromaTiming: 'fermentation', aromaContactHours: 48, aromaTemperatureC: 18 },
+    ];
+    render(<HopRecipeGuide contextOnly recipe={recipe({ boilMin: 60, hops })} onChange={vi.fn()} />);
+    for (const label of ['Minutes avant la fin pour l’ajout 1', 'Durée au whirlpool de l’ajout 2 (min)', 'Température du whirlpool de l’ajout 2 (°C)',
+      'Durée à cru de l’ajout 3 (h)', 'Température à cru de l’ajout 3 (°C)', 'Phase du houblonnage à cru 3']) {
+      expect(screen.queryByLabelText(label), label).toBeNull();
+    }
+    // Lot and documentary references stay here: the creator line does not edit them.
+    expect(await loadedReference(1)).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Référence de la levure' })).toBeInTheDocument();
+  });
+
   it('édite chaque phase avec ses unités sans convertir un contact chaud en contact à cru', () => {
     const host = mount(recipe({ boilMin: 60, hops: [
       { name: 'Magnum', weightG: 20, alpha: 12, stage: 'boil', timeMin: 60 },

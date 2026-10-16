@@ -85,21 +85,43 @@ describe('contrat client browser-safe hopAdviceReadonlyV1', () => {
     expect(() => hopAdviceV1ClientPartitionKey('', recipe)).toThrow(/propriétaire/);
   });
 
-  it('se bundle pour navigateur sans dépendance Node, Firebase ou provider', async () => {
+  it.each(['buildHopAdviceV1Wire', 'buildHopAdviceV1WireV3ForWizardV1'])(
+    '%s se bundle pour navigateur avec seulement le codec et le hash partagés purs', async (wireBuilder) => {
     const entry = resolve(candidate, 'functions/src/brewerHopAdviceTransportV1.ts');
+    const codec = resolve(candidate, 'functions/src/brewerHopAdviceWizardSourceV1.ts');
+    const sharedReference = resolve(candidate, 'src/domain/hopDecision/adviceContentReference.ts');
     const result = await build({
-      entryPoints: [entry],
+      stdin: {
+        contents: `export { ${wireBuilder} } from './functions/src/brewerHopAdviceTransportV1.ts';`,
+        resolveDir: candidate,
+        sourcefile: 'transport-browser-entry.ts',
+        loader: 'ts'
+      },
       absWorkingDir: candidate,
       bundle: true,
       write: false,
+      preserveSymlinks: true,
       platform: 'browser',
       format: 'esm',
       metafile: true,
-      logLevel: 'silent'
+      logLevel: 'silent',
+      plugins: [{
+        name: 'canonical-shared-content-reference',
+        setup(bundler) {
+          // The same canonical helper as the project alias, never an external or test stub.
+          bundler.onResolve({ filter: /^\.\/hopAdviceContentReference\.js$/ }, args =>
+            resolve(args.importer) === codec ? { path: sharedReference } : undefined);
+        }
+      }]
     });
     const bundle = result.outputFiles[0].text;
     expect(bundle).not.toMatch(/node:crypto|firebase-admin|firebase-functions|\bBuffer\b/);
-    const bundleInputs = Object.keys(result.metafile?.inputs ?? {}).map((input) => resolve(candidate, input));
-    expect(bundleInputs).toEqual([entry]);
+    const bundleInputs = Object.keys(result.metafile?.inputs ?? {})
+      .map(input => resolve(candidate, input)).sort();
+    expect(bundleInputs).toEqual([
+      entry, codec, sharedReference, resolve(candidate, 'transport-browser-entry.ts'),
+      ...['_u64.js', 'utils.js', '_md.js', 'sha2.js']
+        .map(file => resolve(candidate, 'node_modules/@noble/hashes', file))
+    ].sort());
   });
 });

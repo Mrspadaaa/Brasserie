@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, rmdirSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { spawn } from 'node:child_process';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { applyStagedEdits, applyStagedEditsWithProgress, captureClaudeProcess, checkedOutputPath, claudeArguments, claudeProgressPath,
   claudeRecoveryPath, classifyClaudeOutcome, createClaudeProgressTracker, describeSources, inspectStagedChanges,
@@ -10,6 +11,14 @@ import { applyStagedEdits, applyStagedEditsWithProgress, captureClaudeProcess, c
   stageSources, writeClaudeRecoveryManifest,
   subscriptionEnvironment, subscriptionStatus } from './claude-frontend.mjs';
 import { acquireLunaBatch, lunaArguments, validateTasks } from './luna-review.mjs';
+
+const permissionRule = (workspace, file) => {
+  const absolute = resolve(workspace, file).replaceAll('\\', '/');
+  const pattern = process.platform === 'win32'
+    ? `//${absolute[0].toLowerCase()}${absolute.slice(2)}`
+    : `//${absolute.replace(/^\/+/, '')}`;
+  return `Edit(${pattern})`;
+};
 
 function splitText(value, width = 11) {
   return Array.from({ length: Math.ceil(value.length / width) }, (_, index) => value.slice(index * width, (index + 1) * width));
@@ -112,21 +121,44 @@ test('edit rules cover only explicitly named copies and Write uses Edit(path) pe
   for (const file of ['../outside.ts', 'src/*.tsx', 'src/file)', '/tmp/other.ts', 'src/!secret.ts']) {
     assert.throws(() => claudeArguments({ mode: 'edit', files: [file] }), /non borné/);
   }
-  const args = claudeArguments({ mode: 'edit', files: ['src/ui/test.tsx'] });
+  const workspace = process.platform === 'win32'
+    ? 'C:\\claude\\packet\\delivery-01.json.artifacts\\workspace'
+    : '/claude/packet/delivery-01.json.artifacts/workspace';
+  const editable = 'work/houblons-backend-technique-2026-09-30/reprise-postmerge-2026-10-04/opus-pro/input-01/functions/src/brewerHarness.ts';
+  const reference = 'work/houblons-backend-technique-2026-09-30/reprise-postmerge-2026-10-04/opus-pro/input-01/references/CAP01-correctable-adoption-contract.md';
+  const args = claudeArguments({ workspace, mode: 'edit', files: [editable], referenceFiles: [reference] });
   assert.equal(args[args.indexOf('--tools') + 1], 'Read,Edit,Write');
   assert(args.includes('Read'));
-  assert(args.includes('Edit(./src/ui/test.tsx)'));
-  assert(!args.includes('Write(./src/ui/test.tsx)'));
+  const allowed = args.slice(args.indexOf('--allowedTools') + 1);
+  const denied = args.slice(args.indexOf('--disallowedTools') + 1, args.indexOf('--max-turns'));
+  assert.deepEqual(allowed, ['Read', permissionRule(workspace, editable)]);
+  assert.deepEqual(denied, ['mcp__*', permissionRule(workspace, reference)]);
+  assert(!args.some(arg => arg.startsWith('Edit(./')));
+  assert(!args.some(arg => arg.startsWith('Write(')));
+  assert.throws(() => claudeArguments({ mode: 'edit', files: ['src/ui/test.tsx'] }), /workspace absolu/);
+  const spacedWorkspace = process.platform === 'win32' ? 'C:\\claude packet\\workspace' : '/claude packet/workspace';
+  const spacedArgs = claudeArguments({ workspace: spacedWorkspace, mode: 'edit', files: ['src/ui/test.tsx'] });
+  assert(spacedArgs.includes(permissionRule(spacedWorkspace, 'src/ui/test.tsx')));
+  for (const unsafeWorkspace of [`${workspace}(shifted)`, `${workspace}\nshifted`]) {
+    assert.throws(() => claudeArguments({ workspace: unsafeWorkspace, mode: 'edit', files: ['src/ui/test.tsx'] }), /non littéral/);
+  }
   assert.equal(args[args.indexOf('--max-turns') + 1], '60');
 });
 
 test('Luna remains opt-in inside one Claude consultation, with one exact relay command', () => {
-  const command = lunaRelayCommand(process.cwd(), join(tmpdir(), 'claude-stage'));
-  const args = claudeArguments({ files: ['screen.png'], luna: true, relayCommand: command });
+  const workspace = join(tmpdir(), 'claude-stage');
+  const sourceWorktree = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  const quote = value => `'${value.replaceAll('\\', '/').replaceAll("'", "'\"'\"'")}'`;
+  const command = lunaRelayCommand(workspace);
+  assert(command.startsWith(`node ${quote(join(sourceWorktree, 'scripts/luna-review.mjs'))}`));
+  assert(command.includes(`--tasks ${quote(join(workspace, 'luna-tasks.json'))}`));
+  assert(command.includes(`--output-dir ${quote(join(workspace, 'luna'))}`));
+  assert(command.endsWith(`--cwd ${quote(sourceWorktree)}`));
+  const args = claudeArguments({ workspace, files: ['screen.png'], luna: true, relayCommand: command });
   assert.equal(args[args.indexOf('--tools') + 1], 'Read,Write,Bash,TaskOutput');
   assert(args.includes('TaskOutput'));
   assert(args.includes('Read'));
-  assert(args.includes('Edit(./luna-tasks.json)'));
+  assert(args.includes(permissionRule(workspace, 'luna-tasks.json')));
   assert(args.includes('Bash(' + command + ')'));
   assert(!args.some(arg => arg === 'Bash(node scripts/luna-review.mjs *)'));
   assert.throws(() => claudeArguments({ luna: true }), /Commande Luna/);

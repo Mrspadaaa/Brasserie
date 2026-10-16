@@ -1,6 +1,7 @@
 import type { TrialRecipe } from '../../domain/hopIndex/trials';
 import { analyseHopRecipe } from '../../domain/hopRecipeDesign';
 import { HopIbuRange } from './HopIbuRange';
+import { hopV55DoseText } from '../hopV55/readings';
 import './hop-recipe.css';
 
 const stageNames = { firstWort: 'Premier moût', boil: 'Ébullition', whirlpool: 'Whirlpool', dryHop: 'À cru' };
@@ -15,7 +16,7 @@ export function HopRecipeSnapshot({ recipe }: { recipe: TrialRecipe }) {
       ? <p className="hop-snapshot-empty"><span>IBU à chaud · Tinseth</span><strong>{analysis.hot.total == null ? '—' : '0'}</strong></p>
       : <HopIbuRange current={analysis.hot.total} range={analysis.style.ibu} currentDigits={0} />}
     {analysis.phases.some(phase => phase.count > 0) && <dl className="hop-snapshot-phases" aria-label="Quantités par moment d’ajout">
-      {analysis.phases.filter(phase => phase.count > 0).map(phase => <div key={phase.stage}><dt>{stageNames[phase.stage]} · {phase.count} {phase.count > 1 ? 'ajouts' : 'ajout'}</dt><dd>{number(phase.grams)} g <span>· {number(phase.doseGL)} g/L</span></dd></div>)}
+      {analysis.phases.filter(phase => phase.count > 0).map(phase => <div key={phase.stage}><dt>{stageNames[phase.stage]} · {phase.count} {phase.count > 1 ? 'ajouts' : 'ajout'}</dt><dd>{`${number(phase.grams)}\u00a0g`} <span>· {phase.doseGL === undefined ? 'dose inconnue' : hopV55DoseText(phase.doseGL)}</span></dd></div>)}
     </dl>}
     {analysis.hot.missing.length > 0 && <p className="hop-warning" role="status">IBU incomplets : {analysis.hot.missing.join(' · ')}.</p>}
     {analysis.style.role && <p className="hop-small">{analysis.style.role}</p>}

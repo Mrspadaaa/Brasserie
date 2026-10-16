@@ -64,10 +64,31 @@ test('expert uses the same subscription model, a structured contract and native 
   assert.throws(() => expertInstructions(''), /Sol existant/);
   assert.equal(parseLauncherOptions(['--expert', '--mode', 'edit', '--brief', 'b', '--output', 'o']).mode, 'edit');
   assert.ok(expertInstructions(sol, 'edit').includes('réalisation du lot complet'));
-  const lot = claudeArguments({ expert: true, mode: 'edit', files: Array.from({ length: 20 }, (_, i) => `src/lot/file-${i}.tsx`) });
+  const workspace = resolve(tmpdir(), 'claude-expert-permission-workspace');
+  const lot = claudeArguments({ workspace, expert: true, mode: 'edit', files: Array.from({ length: 20 }, (_, i) => `src/lot/file-${i}.tsx`) });
   assert.equal(lot[lot.indexOf('--tools') + 1], 'Read,Edit,Write');
-  assert.ok(lot.includes('Edit(./src/lot/file-19.tsx)'));
+  assert.ok(lot.some(argument => argument.startsWith('Edit(//') && argument.endsWith('/src/lot/file-19.tsx)')));
   assert.ok(lot.includes('--json-schema'));
+});
+
+test('a new conversation UUID is chosen before spawn; a resume keeps its own UUID exclusively', () => {
+  const chosen = '3f0c2a8e-7b1d-4c55-9e0a-2b6f1d8c4a10';
+  const resumed = 'fc195af8-a52f-4852-a9b9-5ffe427c8c96';
+  assert.equal(parseLauncherOptions(['--brief', 'b', '--output', 'o', '--session-id', chosen]).sessionId, chosen);
+  assert.equal(parseLauncherOptions(['--brief', 'b', '--output', 'o']).sessionId, undefined);
+  assert.throws(() => parseLauncherOptions(['--brief', 'b', '--output', 'o', '--session-id', 'not-a-uuid']), /--session-id/);
+  assert.throws(() => parseLauncherOptions(['--brief', 'b', '--output', 'o', '--session-id', chosen, '--resume', resumed]), /reprise/);
+  const fresh = claudeArguments({ expert: true, sessionId: chosen });
+  assert.equal(fresh[fresh.indexOf('--session-id') + 1], chosen);
+  assert.ok(!fresh.includes('--resume'));
+  assert.equal(fresh[fresh.indexOf('--model') + 1], 'claude-opus-5-5');
+  assert.equal(fresh[fresh.indexOf('--effort') + 1], 'xhigh');
+  const resume = claudeArguments({ expert: true, resume: resumed });
+  assert.equal(resume[resume.indexOf('--resume') + 1], resumed);
+  assert.ok(!resume.includes('--session-id'));
+  assert.throws(() => claudeArguments({ resume: resumed, sessionId: chosen }), /reprise/);
+  assert.throws(() => claudeArguments({ sessionId: 'x' }), /--session-id/);
+  assert.ok(!claudeArguments().includes('--session-id'));
 });
 
 test('fresh archive keeps originals separately and refuses overwrite on success or retry', () => {

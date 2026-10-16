@@ -1042,7 +1042,7 @@ function actModalityForMention(text: string, start: number, acts: QuestionActRea
     }
     if ((act.kind === 'deliberation' || act.kind === 'hypothesis') && act.action && start >= act.action.end) {
       return { direction: 'investigate', requirement: 'required', qualification: act.kind === 'deliberation'
-        ? 'Question posée sur un changement; aucune décision n’est formulée.'
+        ? act.flavor ? 'Question posée sur un changement; aucune décision n’est formulée.' : 'Question ouverte; aucune décision n’est formulée.'
         : 'Hypothèse conditionnelle posée; aucune décision n’est formulée.', ...governed };
     }
   }
@@ -1203,11 +1203,121 @@ function isContextualFrameTerm(text: string, start: number, term: string): boole
   return /\b(?:a|au|dans|en|at|in)(?:\s+(?:ce|cet|cette|le|la|l|the|this|that|current|present)){0,2}\s*$/u.test(before);
 }
 
+interface ProcessConservationReading {
+  reading: ParsedCriterionReading;
+  operatorCue: ReaderSpan;
+}
+
+function processClauseEnd(text: string, start: number): number {
+  for (let index = start; index < text.length; index += 1) {
+    const character = text[index];
+    if (character === '.' && /\d/u.test(text[index - 1] ?? '') && /\d/u.test(text[index + 1] ?? '')) continue;
+    if (character === '.' || character === '?' || character === '!' || character === ';' || character === '\n') return index;
+  }
+  return text.length;
+}
+
+// A cited mass keeps the brasseur's words. Grouped thousands (« 1 000 », « 1'000 », « 1’000 », one space once normalized)
+// stay whole, and a range (« entre 5 et 10 », « entre 5 g et 10 g », « 5 à 10 », « 5 ou 10 », « 5-10 ») is cited whole or
+// not at all. A number right after « digit + space » is never read on its own, so neither « 000 g » nor a lone upper bound
+// can be cited.
+const MASS_NUMBER = String.raw`(?:\d{1,3}(?: \d{3})+(?:[.,]\d+)?|\d[\d.,]*)`;
+const MASS_RANGE = String.raw`(?<range>(?:(?:entre|de) )?${MASS_NUMBER}(?: ?(?:kg|g))? (?:a|et|ou) |${MASS_NUMBER} )??`;
+const MASS_START = String.raw`(?<![\p{L}\p{N}.,])(?<!\p{N} )${MASS_RANGE}(?<value>${MASS_NUMBER})\s*`;
+const PROCESS_MASS_VALUE = new RegExp(String.raw`${MASS_START}(?<unit>kg|g)\b(?!\s*\/\s*l)`, 'gu');
+
+/** Normalization turns a dash into a space: a bare « N N g » is a range only where the brasseur wrote a dash. */
+function faithfulMassRange(match: RegExpMatchArray, originalQuestion: string, sourceRanges: readonly SourceRange[]): boolean {
+  const range = match.groups?.range;
+  if (!range || / (?:a|et|ou) $/u.test(range)) return true;
+  const start = match.index ?? 0;
+  return /[‐‑–—-]/u.test(originalSourceAt(originalQuestion, sourceRanges, start, start + range.length).text);
+}
+const PROCESS_CONTEXT_CUE = /\b(?:fermentation|fermenter|fermente|houblonnage|dry\s*hop(?:ping)?|whirlpool|tourbillon|mout|wort|ebullition|boil|hop\s+stand|contact|post\s+fermentation|postfermentation)\b/u;
+
+/** A mass with an explicit material or process context is a process object, not a lexicon adjective. */
+function processConservationCriteria(text: string, originalQuestion: string, sourceRanges: readonly SourceRange[],
+  acts: QuestionActIndex): ProcessConservationReading[] {
+  const quantityMatches = [...text.matchAll(PROCESS_MASS_VALUE)].filter(match => faithfulMassRange(match, originalQuestion, sourceRanges));
+  const readings: ProcessConservationReading[] = [];
+  for (let index = 0; index < quantityMatches.length; index += 1) {
+    const match = quantityMatches[index];
+    const start = match.index ?? 0;
+    const quantityRaw = match.groups?.value ?? '';
+    const unitEnd = start + match[0].length;
+    const clauseStart = lastBoundaryBefore(text, start);
+    const clauseEnd = processClauseEnd(text, start);
+    const afterUnit = text.slice(unitEnd, clauseEnd);
+    if (/^\s*(?:de\s+)?(?:moins|less|plus|more)\b/u.test(afterUnit)) continue;
+    const materialMention = /^\s*(?:de|d|du|des|of|for)\s+(?!(?:moins|less|plus|more)\b)[\p{L}\p{N}]/u.test(afterUnit);
+    const processContext = PROCESS_CONTEXT_CUE.test(text.slice(clauseStart, clauseEnd));
+    if (!materialMention && !processContext) continue;
+
+    const nextQuantity = quantityMatches.slice(index + 1).find(candidate => {
+      const candidateStart = candidate.index ?? 0;
+      return candidateStart > start && candidateStart < clauseEnd;
+    });
+    let end = nextQuantity ? Math.min(clauseEnd, nextQuantity.index ?? clauseEnd) : clauseEnd;
+    const beforeNext = text.slice(start, end);
+    const trailingJoin = /\s+(?:et|and|ou|or)\s*$/u.exec(beforeNext);
+    if (nextQuantity && trailingJoin) end = start + trailingJoin.index;
+    while (end > start && /\s/u.test(text[end - 1])) end -= 1;
+    if (end <= start) continue;
+
+    const openAct = questionActsGoverning(acts.reading, start, ['deliberation'])
+      .filter(act => !!act.action && act.action.end <= start
+        && PRESERVATION_OPERATOR_PATTERN.test(text.slice(act.action.start, act.action.end)))
+      .sort((left, right) => (right.action?.start ?? 0) - (left.action?.start ?? 0))[0];
+
+    let direction: 'investigate' | 'keep';
+    let frameCue: ReaderSpan;
+    let operatorCue: ReaderSpan;
+    let basis: HopV55MentionBasisV1;
+    let act: QuestionActV1 | undefined;
+    if (openAct?.action) {
+      direction = 'investigate';
+      frameCue = { start: openAct.cue.start, end: openAct.action.end };
+      operatorCue = { ...openAct.action };
+      basis = 'act';
+      act = openAct;
+    } else {
+      const prefix = text.slice(clauseStart, start);
+      const operatorMatches = [...prefix.matchAll(new RegExp(PRESERVATION_OPERATOR_PATTERN.source, 'gu'))];
+      const lastOperator = operatorMatches.at(-1);
+      if (!lastOperator) continue;
+      const operatorStart = clauseStart + (lastOperator.index ?? 0);
+      const operatorEnd = operatorStart + lastOperator[0].length;
+      const classification = classifyDirection(text, start, end, acts);
+      if (classification.direction !== 'keep' || classification.requirement !== 'required') continue;
+      direction = 'keep';
+      frameCue = { start: operatorStart, end: operatorEnd };
+      operatorCue = frameCue;
+      basis = 'operator';
+    }
+
+    const source = originalSourceAt(originalQuestion, sourceRanges, start, end);
+    if (!source.text) continue;
+    const malformed = !/^(?:\d{1,3}(?: \d{3})+|\d+)(?:[.,]\d+)?$/u.test(quantityRaw);
+    const unresolved = malformed
+      ? 'La quantité de procédé citée est mal formée et reste non interprétée; aucun entier tronqué n’est substitué.'
+      : direction === 'investigate'
+        ? 'La question porte sur un objet de procédé; aucune ligne exacte n’est reliée et aucune dose ni opération n’est déduite.'
+        : 'La contrainte de conservation vise un objet de procédé; aucune ligne exacte n’est reliée et aucune opération n’est appliquée.';
+    const reading = requiredCriterion({
+      originalQuestion, sourceRanges, text, start, end, term: source.text, direction, requirement: 'required', dimension: 'process', unresolved,
+      meta: { basis, ...(act ? { actId: act.id, actKind: act.kind } : {}), cue: frameCue },
+    });
+    readings.push({ reading, operatorCue });
+  }
+  return readings;
+}
+
 function unresolvedIntentCriteria(
   text: string,
   originalQuestion: string,
   sourceRanges: readonly SourceRange[],
   acts?: QuestionActIndex,
+  protectedProcessCues: readonly ReaderSpan[] = [],
 ): ParsedCriterionReading[] {
   const directCues: Array<{ term: string; direction: HopV55Direction }> = [
     ...['sans', 'without', 'no', 'not', 'pas de', 'aucun', 'aucune', 'eviter', 'avoid', 'exclure', 'exclude']
@@ -1260,6 +1370,7 @@ function unresolvedIntentCriteria(
   const directionalOperations = directCues.filter(cue => cue.direction === 'increase' || cue.direction === 'decrease');
   const criteria = new Map<string, ParsedCriterionReading>();
   for (const cue of cues) {
+    if (protectedProcessCues.some(span => spansOverlap(span, cue))) continue;
     if (isClaimedByAct(acts, cue)) continue;
     const before = prefixForMention(text, cue.start);
     const immediatelyFollowing = text.slice(cue.end).trimStart();
@@ -1372,13 +1483,59 @@ function unresolvedIntentCriteria(
   return [...criteria.values()];
 }
 
+const CITED_QUANTITY_VALUE = new RegExp(String.raw`${MASS_START}(?:kg|g)(?:\s*\/\s*h?l)?\b`, 'gu');
+const CITED_QUANTITY_MATERIAL = /^\s+(?:de|du|des|d)\s+(?:(?:la|le|les|l)\s+)?(?!(?:moins|less|plus|more)\b)[\p{L}\p{N}][\p{L}\p{N}-]*/u;
+
+/** What the reader actually read as an operation: active gesture words (normalized) and operation drafts (original). */
+interface QuantityOwners {
+  gestureStarts: readonly number[];
+  operationSpans: readonly ReaderSpan[];
+}
+
+/**
+ * A mass or dose the brasseur cites stays visible as an exact context note when no other reading
+ * carries it (process object, process question, sensory criterion) and no read operation owns it:
+ * neither an active gesture before it in its clause (the dose reader reads from the verb to the
+ * quantity) nor an operation draft over its words. A gesture read after it, on another material,
+ * leaves the note in place; the note only speaks for its own words.
+ * It is never a target, a dose to apply or a link to the current programme; only its words are kept.
+ */
+function citedQuantityCriteria(text: string, originalQuestion: string, sourceRanges: readonly SourceRange[],
+  claimed: readonly ParsedCriterionReading[], owners: QuantityOwners): ParsedCriterionReading[] {
+  const readings: ParsedCriterionReading[] = [];
+  // Like processClauseEnd, a point between two digits (« 1.5 g ») does not end the clause.
+  const decimalSafe = text.replace(/(?<=\d)\.(?=\d)/gu, '0');
+  for (const match of text.matchAll(CITED_QUANTITY_VALUE)) {
+    if (!faithfulMassRange(match, originalQuestion, sourceRanges)) continue;
+    const start = match.index ?? 0;
+    const clauseStart = lastBoundaryBefore(decimalSafe, start);
+    const clauseEnd = processClauseEnd(text, start);
+    if (owners.gestureStarts.some(gestureStart => gestureStart >= clauseStart && gestureStart < start)) continue;
+    const material = CITED_QUANTITY_MATERIAL.exec(text.slice(start + match[0].length, clauseEnd));
+    const end = start + match[0].length + (material?.[0].length ?? 0);
+    const source = originalSourceAt(originalQuestion, sourceRanges, start, end);
+    if (!source.text) continue;
+    if (owners.operationSpans.some(span => span.start < source.end && source.start < span.end)) continue;
+    if (claimed.some(row => row.draft.source.start < source.end && source.start < row.draft.source.end)) continue;
+    readings.push(optionalCriterion({ originalQuestion, sourceRanges, start, end, term: source.text, dimension: 'process',
+      qualification: 'Quantité citée comme contexte; aucune cible, aucune quantité à appliquer ni aucune opération n’est déduite de cette mention.',
+      meta: { basis: 'contextNote' } }));
+  }
+  return readings;
+}
+
 function readCriteria(text: string, originalQuestion: string, sourceRanges: readonly SourceRange[],
-  acts: QuestionActIndex = readQuestionActIndex(text, originalQuestion, sourceRanges)): ParsedCriterionReading[] {
+  acts: QuestionActIndex = readQuestionActIndex(text, originalQuestion, sourceRanges),
+  owners: QuantityOwners = { gestureStarts: [], operationSpans: [] }): ParsedCriterionReading[] {
+  const processReadings = processConservationCriteria(text, originalQuestion, sourceRanges, acts);
+  const protectedProcessCues = processReadings.map(row => row.operatorCue);
+  const unresolved = unresolvedIntentCriteria(text, originalQuestion, sourceRanges, acts, protectedProcessCues);
   const byId = new Map<string, ParsedCriterionReading>();
   [...readFamilyCriteria(text, originalQuestion, sourceRanges, acts), ...readDimensionCriteria(text, originalQuestion, sourceRanges, acts),
-    ...unresolvedIntentCriteria(text, originalQuestion, sourceRanges, acts), ...acts.compensationReadings, ...acts.materialReadings]
+    ...processReadings.map(row => row.reading), ...unresolved, ...acts.compensationReadings, ...acts.materialReadings]
     .sort((left, right) => left.draft.source.start - right.draft.source.start)
     .forEach(row => byId.set(row.draft.id, row));
+  citedQuantityCriteria(text, originalQuestion, sourceRanges, [...byId.values()], owners).forEach(row => byId.set(row.draft.id, row));
   const readings = [...byId.values()].sort((left, right) => left.draft.source.start - right.draft.source.start);
   proposeLexicalAliases(readings, text, originalQuestion, sourceRanges);
   attachExplicitPairing(readings, text, originalQuestion, sourceRanges);
@@ -1619,8 +1776,8 @@ function hasPhysicalMoveOperand(text: string, end: number, materialMentions: rea
   return bridgeWords.length <= 8 && bridgeWords.every(word => directObjectConnectors.has(word));
 }
 
-function firstActiveGesture(text: string, materialMentions: readonly MaterialMention[],
-  acts: QuestionActReadingV1 = readActs(text)): Gesture | null {
+function activeGestureMatches(text: string, materialMentions: readonly MaterialMention[],
+  acts: QuestionActReadingV1): Array<ReaderSpan & { kind: GestureKind }> {
   const candidates: Array<{ kind: GestureKind; word: string }> = [
     { kind: 'replace', word: 'remplacer' }, { kind: 'replace', word: 'remplace' }, { kind: 'replace', word: 'replace' },
     { kind: 'move', word: 'déplacer' }, { kind: 'move', word: 'déplace' }, { kind: 'move', word: 'transférer' },
@@ -1634,7 +1791,7 @@ function firstActiveGesture(text: string, materialMentions: readonly MaterialMen
     { kind: 'dose', word: 'diminuer' }, { kind: 'dose', word: 'diminue' }, { kind: 'dose', word: 'baisser' },
     { kind: 'dose', word: 'baisse' }, { kind: 'dose', word: 'lower' },
   ];
-  const active = candidates.flatMap(candidate => phraseMatches(text, candidate.word)
+  return candidates.flatMap(candidate => phraseMatches(text, candidate.word)
     .filter(match => {
       const before = prefixForMention(text, match.start), after = text.slice(match.end, match.end + 24);
       if (candidate.kind === 'move' && !hasPhysicalMoveOperand(text, match.end, materialMentions)) return false;
@@ -1648,6 +1805,11 @@ function firstActiveGesture(text: string, materialMentions: readonly MaterialMen
     })
     .map(match => ({ ...match, kind: candidate.kind })))
     .sort((a, b) => a.start - b.start);
+}
+
+function firstActiveGesture(text: string, materialMentions: readonly MaterialMention[],
+  acts: QuestionActReadingV1 = readActs(text)): Gesture | null {
+  const active = activeGestureMatches(text, materialMentions, acts);
   if (!active.length) return null;
   const kinds = [...new Set(active.map(row => row.kind))];
   if (kinds.length > 1) return { kind: 'replace', verbStart: -1, verbEnd: -1 };
@@ -1860,7 +2022,10 @@ export function readHopV55QuestionCoreV1(
     sourceRanges: normalizedQuestion.sourceRanges,
     materialMentions: materialMentions.map(({ start, end }) => ({ start, end })) });
   const actIndex = readQuestionActIndex(normalized, originalQuestion, normalizedQuestion.sourceRanges);
-  const parsedCriteria = readCriteria(normalized, originalQuestion, normalizedQuestion.sourceRanges, actIndex);
+  const parsedCriteria = readCriteria(normalized, originalQuestion, normalizedQuestion.sourceRanges, actIndex, {
+    gestureStarts: activeGestureMatches(normalized, materialMentions, actIndex.reading).map(row => row.start),
+    operationSpans: operationDrafts.flatMap(operation => operation.sourceSpan ? [operation.sourceSpan] : []),
+  });
   const criteria = parsedCriteria.filter((row): row is CriterionReading => row.draft.direction !== null && row.draft.requirement === 'required'
     && 'domainCriterion' in row);
   const criterionDrafts = parsedCriteria.map(row => structuredClone(row.draft));

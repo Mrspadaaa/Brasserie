@@ -35,6 +35,7 @@ function plainTerm(value: string): string {
 }
 
 function propertyOf(annotation: HopV55SemanticAnnotationV1): Property {
+  if (annotation.dimension === 'process') return 'unresolved';
   if (annotation.inquiry === 'characterization') return 'materialCharacter';
   if (annotation.sense === 'reportedObservation' && annotation.subject?.kind === 'material') return 'materialCharacter';
   if (annotation.familyId || annotation.dimension === 'aroma' || annotation.mentionKind === 'partnerPreference') return 'aroma';
@@ -47,6 +48,12 @@ function propertyOf(annotation: HopV55SemanticAnnotationV1): Property {
 }
 
 function roleOf(annotation: HopV55SemanticAnnotationV1): RoleDirection {
+  if (annotation.dimension === 'process') {
+    if (annotation.sense === 'investigation') return { role: 'investigation', direction: 'investigate', required: true, basisKind: 'none' };
+    if (annotation.sense === 'guard' && annotation.guard === 'preserve') {
+      return { role: 'constraint', direction: 'keep', required: true, basisKind: 'current' };
+    }
+  }
   switch (annotation.sense) {
     // Canonical sense, high or low level alike: the strategy-service convention `targetAsIncrease` never reaches PropertyV3.
     case 'qualitativeTarget': return { role: 'target', direction: null, required: true, basisKind: 'qualitativeTarget' };
@@ -65,6 +72,12 @@ function roleOf(annotation: HopV55SemanticAnnotationV1): RoleDirection {
 }
 
 function basisText(annotation: HopV55SemanticAnnotationV1, linked: boolean): string {
+  if (annotation.dimension === 'process' && annotation.sense === 'investigation') {
+    return 'Question de procédé conservée; aucune référence exacte de ligne ne répond à la demande et aucune dose ni opération n’est déduite.';
+  }
+  if (annotation.dimension === 'process' && annotation.sense === 'guard' && annotation.guard === 'preserve') {
+    return 'Contrainte de conservation déclarée; aucune ligne n’est reliée par référence exacte et aucune opération n’est appliquée.';
+  }
   if (annotation.origin === 'brasseur') return 'Annotation corrigée par le brasseur; source et qualificatif exacts sont conservés.';
   switch (annotation.sense) {
     case 'qualitativeTarget':
@@ -93,6 +106,9 @@ function qualifierOf(annotation: HopV55SemanticAnnotationV1): string | null {
 
 function subjectOf(annotation: HopV55SemanticAnnotationV1, property: Property, role: RoleDirection,
   prepared: PreparedBrewingScenarioContext): HopPropertyAdviceIntentV3['subject'] {
+  if (annotation.dimension === 'process') {
+    return { kind: 'process', label: annotation.source.text, materialId: null, sensoryContext: 'unspecified' };
+  }
   if (annotation.inquiry === 'characterization') {
     return { kind: 'material', label: annotation.subject?.source?.text ?? annotation.term, materialId: null, sensoryContext: 'unspecified' };
   }
@@ -132,14 +148,16 @@ export function hopV55PropertyIntentsFromSemanticReadingV1(reading: HopV55Semant
       ? shared ? structuredClone(shared.subject) : { kind: 'unspecified' as const, label: 'Objet de la compensation à préciser depuis la demande exacte.',
         materialId: null, sensoryContext: 'unspecified' as const }
       : subjectOf(annotation, property, role, prepared);
-    const metric = annotation.inquiry === 'compensation' ? shared?.metric ?? 'unspecified' : hopV55PropertyAdviceMetricForTerm(property, annotation.term);
+    const metric = annotation.dimension === 'process' ? 'unspecified'
+      : annotation.inquiry === 'compensation' ? shared?.metric ?? 'unspecified' : hopV55PropertyAdviceMetricForTerm(property, annotation.term);
     const partnerNote = annotation.partner ? ` Relation d’accord conservée avec le contexte exact « ${annotation.partner.text} ».` : '';
     const intent: HopPropertyAdviceIntentV3 = {
       id: annotation.id, property, label: annotation.term,
       ...(annotation.familyId ? { familyId: annotation.familyId } : {}),
       ...(annotation.partner ? { partner: { kind: 'freeContext' as const, text: annotation.partner.text } } : {}),
       role: role.role, direction: role.direction, qualification: qualifierOf(annotation), required: role.required,
-      comparisonBasis: { kind: role.basisKind, assertionIds: role.basisKind === 'current' ? hopV55PropertyAdviceCurrentAssertionIds(prepared, property) : [] },
+      comparisonBasis: { kind: role.basisKind, assertionIds: role.basisKind === 'current' && annotation.dimension !== 'process'
+        ? hopV55PropertyAdviceCurrentAssertionIds(prepared, property) : [] },
       metric, subject, sourceSpans: [structuredClone(annotation.source)],
       interpretationOrigin: annotation.origin === 'brasseur' ? 'user' : 'proposal',
       basis: basisText(annotation, !!shared) + partnerNote,

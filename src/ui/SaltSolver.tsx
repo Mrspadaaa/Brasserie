@@ -9,7 +9,7 @@ import { WaterFeedback } from "./water/WaterFeedback";
 import { WaterSummary } from "./water/WaterSummary";
 import "./water/workshop.css";
 import { formatDecimal } from "./numericInput";
-export type { WaterState, WaterBrewContext } from "./water/types";
+export type { WaterState, WaterBrewContext, WaterChangeIntent } from "./water/types";
 
 /** Water workshop: navigation and composition only; domain and controls live separately. */
 export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
@@ -30,10 +30,10 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
         open={targetOpen}
         onClose={() => setTargetOpen(false)}
         value={state.customTarget}
-        onSave={(t) => set({ customTarget: t, ratioOverride: undefined })}
+        onSave={(t) => set({ customTarget: t, ratioOverride: undefined }, "profile-choice")}
         onRemove={
           state.customTarget
-            ? () => set({ customTarget: undefined, ratioOverride: undefined })
+            ? () => set({ customTarget: undefined, ratioOverride: undefined }, "profile-choice")
             : undefined
         }
       />

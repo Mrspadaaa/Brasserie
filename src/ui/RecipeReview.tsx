@@ -88,7 +88,8 @@ export const RecipeReview: React.FC<RecipeReviewProps> = ({ buildText, data, cla
     try {
       const res = await AiClient.run<Review>({
         task: 'reviewRecipe',
-        tier: 'max',
+        // 3.8 en réflexion basse : en Max, la relecture prenait 22 à 72 s au banc réel #91 (#100).
+        tier: 'fast',
         context: JSON.parse(snapshot)
       });
 

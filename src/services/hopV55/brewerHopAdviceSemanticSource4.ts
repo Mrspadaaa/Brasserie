@@ -10,6 +10,13 @@ export {
   readHopV55DecisionReadingArchiveV4MetadataV1,
 } from './decisionArchive.js';
 
+// Explicit Wizard V4 profile, implemented only by decisionArchive (owner67); re-exported, never re-implemented.
+export {
+  createHopV55DecisionReadingArchiveV4ForWizardV1,
+  readHopV55DecisionReadingArchiveForWizardV1,
+  readHopV55DecisionReadingArchiveV4MetadataForWizardV1,
+} from './decisionArchive.js';
+
 export {
   HOP_V55_SEMANTIC_QUALIFIER_SENSES,
   HOP_V55_SEMANTIC_SENSE_RULES,
@@ -54,6 +61,10 @@ export type {
   HopV55DecisionReadingArchiveV4SemanticMetadataV1,
   HopV55DecisionReadingArchiveV4MetadataV1,
   HopV55DecisionReadingArchiveV4MetadataReadV1,
+  HopV55WizardDecisionReadingArchiveV4,
+  HopV55WizardDecisionReadingArchiveV4MetadataV1,
+  HopV55WizardDecisionReadingArchiveReadV1,
+  HopV55WizardDecisionReadingArchiveMetadataReadV1,
 } from './decisionArchive.js';
 export type {
   HopV55SemanticAnnotationV1,

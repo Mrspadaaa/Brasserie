@@ -133,19 +133,20 @@ export function HopRecipeGuide({ recipe, onChange, onChooseYeast, onBusyChange, 
               {availableLots.map(l => <option key={l.id} value={l.id}>{l.name}{l.referenceOnly ? ' · référence documentaire' : ''}</option>)}
             </select>
           </HopField>}
-          {hop.stage === 'dryHop' && <HopField label={`Phase du houblonnage à cru ${index + 1}`}>
+          {/* In the creator (contextOnly), moment, duration, temperature and phase are edited on the hop line itself: one editor per value. */}
+          {!contextOnly && hop.stage === 'dryHop' && <HopField label={`Phase du houblonnage à cru ${index + 1}`}>
             <select className={inputClass} value={hop.aromaTiming ?? ''} onChange={e => patchHop(index, { aromaTiming: e.target.value as HopTiming || undefined })}>
               <option value="">Phase à préciser</option><option value="fermentation">Pendant la fermentation active</option><option value="postFermentation">Après la fermentation</option>
             </select>
           </HopField>}
-          {hop.stage === 'dryHop' && !hop.aromaTiming && <p className="text-sm text-cave-400">{hop.dayOffset != null ? `J+${hop.dayOffset} indique un jour, pas l’état de la fermentation.` : 'Le jour et la phase de fermentation sont deux informations différentes.'}</p>}
+          {!contextOnly && hop.stage === 'dryHop' && !hop.aromaTiming && <p className="text-sm text-cave-400">{hop.dayOffset != null ? `J+${hop.dayOffset} indique un jour, pas l’état de la fermentation.` : 'Le jour et la phase de fermentation sont deux informations différentes.'}</p>}
           {hop.stage === 'firstWort' && <p className="text-sm text-cave-400">Premier moût : la durée chaude dépend du programme d’ébullition ; aucun contact aromatique à cru n’est déduit.</p>}
-          {hop.stage === 'boil' && <HopField label={`Minutes avant la fin pour l’ajout ${index + 1}`}><NumberInput className={inputClass} min={0} max={recipe.boilMin} value={hop.timeMin} emptyValue={undefined} onValue={timeMin => patchHop(index, { timeMin })} /></HopField>}
-          {hop.stage === 'whirlpool' && <div className="grid gap-3 sm:grid-cols-2">
+          {!contextOnly && hop.stage === 'boil' && <HopField label={`Minutes avant la fin pour l’ajout ${index + 1}`}><NumberInput className={inputClass} min={0} max={recipe.boilMin} value={hop.timeMin} emptyValue={undefined} onValue={timeMin => patchHop(index, { timeMin })} /></HopField>}
+          {!contextOnly && hop.stage === 'whirlpool' && <div className="grid gap-3 sm:grid-cols-2">
             <HopField label={`Durée au whirlpool de l’ajout ${index + 1} (min)`}><NumberInput className={inputClass} min={0} value={hop.timeMin} emptyValue={undefined} onValue={timeMin => patchHop(index, { timeMin })} /></HopField>
             <HopField label={`Température du whirlpool de l’ajout ${index + 1} (°C)`}><NumberInput className={inputClass} min={0} max={100} value={hop.tempC} emptyValue={undefined} onValue={tempC => patchHop(index, { tempC })} /></HopField>
           </div>}
-          {hop.stage === 'dryHop' && <div className="grid gap-3 sm:grid-cols-2">
+          {!contextOnly && hop.stage === 'dryHop' && <div className="grid gap-3 sm:grid-cols-2">
             <HopField label={`Durée à cru de l’ajout ${index + 1} (h)`}><NumberInput className={inputClass} min={0} value={hop.aromaContactHours} emptyValue={undefined} onValue={aromaContactHours => patchHop(index, { aromaContactHours })} /></HopField>
             <HopField label={`Température à cru de l’ajout ${index + 1} (°C)`}><NumberInput className={inputClass} min={0} max={40} value={hop.aromaTemperatureC} emptyValue={undefined} onValue={aromaTemperatureC => patchHop(index, { aromaTemperatureC })} /></HopField>
           </div>}

@@ -9,17 +9,23 @@ import { cleanContext } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
 import { publicTurn } from './brewerChat.js';
 import { jobError, publicJob } from './brewerJobs.js';
-import { validateHopAdviceV1ChatInput } from './brewerHopAdviceSemanticAdapter.js';
+import {
+  validateHopAdviceV1ChatInput,
+  validateHopAdviceV1ChatInputForWizardV1,
+} from './brewerHopAdviceSemanticAdapter.js';
 import {
   HOP_ADVICE_PROTOCOL_V1,
   HOP_ADVICE_V1_COLLECTIONS,
   HOP_ADVICE_V1_FUNCTIONS,
   hasHopAdviceV1Stamp,
   hopAdviceV1InputDigest,
+  hopAdviceV1InputDigestForWizardV1,
   hopAdviceV1ThreadKey,
   isHopAdviceV1JobInCurrentGeneration,
   parseHopAdviceV1Wire,
+  parseHopAdviceV1WireForWizardV1,
   validateHopAdviceV1RetrySource,
+  validateHopAdviceV1RetrySourceForWizardV1,
   type HopAdviceV1ActivityReceipt,
   type HopAdviceV1ActivityRequest,
   type HopAdviceV1MarkReadReceipt,
@@ -30,7 +36,8 @@ import {
   type HopAdviceV1RetryRequest,
   type HopAdviceV1SubmitReceipt,
   type HopAdviceV1UnsupportedJob,
-  type HopAdviceV1AnyWireInput
+  type HopAdviceV1AnyWireInput,
+  type HopAdviceV1WizardWireInputV1
 } from './brewerHopAdviceLaneV1.js';
 
 const hash = (value: string) => createHash('sha256').update(value, 'utf8').digest('hex');
@@ -43,7 +50,33 @@ const v1PublicTurn = (turn: any): HopAdviceV1PublicTurn => ({
   ...publicTurn(turn), protocol: HOP_ADVICE_PROTOCOL_V1.name
 });
 
+type HopAdviceV1ServerWireInput = HopAdviceV1AnyWireInput | HopAdviceV1WizardWireInputV1;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** Profile selection comes only from the real RequestV3 archive identity, never a job/UI label. */
+function hasWizardSourceCandidate(wire: unknown): boolean {
+  if (!isRecord(wire) || !isRecord(wire.hopAdvice)
+    || !isRecord(wire.hopAdvice.sourceView) || !isRecord(wire.hopAdvice.sourceView.archiveIdentity)) return false;
+  const source = wire.hopAdvice.sourceView.archiveIdentity.source;
+  return isRecord(source) && (source.kind === 'wizardDraft'
+    || (typeof source.format === 'string' && source.format.startsWith('hop-v55-wizard-source-v')));
+}
+
 function normalizeWire(raw: unknown, ownerUid: string) {
+  if (hasWizardSourceCandidate(raw)) {
+    const parsed = parseHopAdviceV1WireForWizardV1(raw);
+    const input = validateHopAdviceV1ChatInputForWizardV1(parsed, ownerUid).input;
+    const wireInput = cleanContext(parsed.wireInput) as HopAdviceV1WizardWireInputV1;
+    if (stableJson(wireInput) !== stableJson(parsed.wireInput))
+      throw new Error('La transmission Wizard contient un champ qui ne peut pas être conservé à l’identique.');
+    if (input.mode !== parsed.wireInput.analysisMode || stableJson(input.scope) !== stableJson(parsed.wireInput.scope))
+      throw new Error('Le mode ou le scope Wizard ne correspond pas à la transmission reçue.');
+    return { input, wireInput, digest: hopAdviceV1InputDigestForWizardV1(wireInput) };
+  }
+
   const parsed = parseHopAdviceV1Wire(raw);
   const input = validateHopAdviceV1ChatInput(parsed, ownerUid).input;
   const wireInput = cleanContext(parsed.wireInput) as HopAdviceV1AnyWireInput;
@@ -86,16 +119,26 @@ async function enqueueBrewerHopAdviceV1(uid: string, raw: unknown, retryOf?: str
       if (priorJob.generation !== generation)
         throw new HttpsError('failed-precondition', 'La question source appartient à une ancienne génération; aucune reprise n’a été créée.', { reason: 'chat-reset', generation });
       try {
-        validateHopAdviceV1RetrySource({
+        const retryOptions = {
           sourceJob: priorJob,
           sourceDocumentId: retryOf,
           ownerUid: uid,
           expectedThreadId: threadId,
           currentGeneration: generation,
           requestedGeneration: input.generation,
-          canonicalize: (parsed) => validateHopAdviceV1ChatInput(parsed, uid).input,
-          stableJson
-        });
+          stableJson,
+        };
+        if (hasWizardSourceCandidate(priorJob.wireInput)) {
+          validateHopAdviceV1RetrySourceForWizardV1({
+            ...retryOptions,
+            canonicalize: (parsed) => validateHopAdviceV1ChatInputForWizardV1(parsed, uid).input,
+          });
+        } else {
+          validateHopAdviceV1RetrySource({
+            ...retryOptions,
+            canonicalize: (parsed) => validateHopAdviceV1ChatInput(parsed, uid).input,
+          });
+        }
       } catch {
         throw new HttpsError('failed-precondition', 'La source assistée est altérée ou appartient à une ancienne génération; aucune reprise n’a été créée.', { reason: 'chat-reset', generation });
       }
@@ -142,7 +185,7 @@ async function enqueueBrewerHopAdviceV1(uid: string, raw: unknown, retryOf?: str
   });
 }
 
-export const askBrewerHopAdviceV1 = onCall<HopAdviceV1AnyWireInput, Promise<HopAdviceV1SubmitReceipt>>(
+export const askBrewerHopAdviceV1 = onCall<HopAdviceV1ServerWireInput, Promise<HopAdviceV1SubmitReceipt>>(
   { region: 'europe-west6', timeoutSeconds: 30, maxInstances: 3 },
   (request) => enqueueBrewerHopAdviceV1(requireBrewer(request), request.data)
 );
@@ -251,23 +294,31 @@ export const retryBrewerHopAdviceQuestionV1 = onCall<HopAdviceV1RetryRequest, Pr
       throw new HttpsError('not-found', 'Question assistée introuvable dans son protocole.');
     if (job.status !== 'error' || !job.wireInput)
       throw new HttpsError('failed-precondition', 'Cette lecture assistée ne peut pas être relancée.');
-    let validatedSource: ReturnType<typeof validateHopAdviceV1RetrySource>;
+    let wireInput: HopAdviceV1AnyWireInput | HopAdviceV1WizardWireInputV1;
     try {
-      validatedSource = validateHopAdviceV1RetrySource({
+      const retryOptions = {
         sourceJob: job,
         sourceDocumentId: id,
         ownerUid: uid,
         expectedThreadId: job.threadId,
         currentGeneration: job.generation,
         requestedGeneration: request.data.generation == null ? undefined : request.data.generation,
-        canonicalize: (parsed) => validateHopAdviceV1ChatInput(parsed, uid).input,
-        stableJson
-      });
+        stableJson,
+      };
+      const validatedSource = hasWizardSourceCandidate(job.wireInput)
+        ? validateHopAdviceV1RetrySourceForWizardV1({
+            ...retryOptions,
+            canonicalize: (parsed) => validateHopAdviceV1ChatInputForWizardV1(parsed, uid).input,
+          })
+        : validateHopAdviceV1RetrySource({
+            ...retryOptions,
+            canonicalize: (parsed) => validateHopAdviceV1ChatInput(parsed, uid).input,
+          });
+      wireInput = { ...validatedSource.wireInput, operationId,
+        ...(request.data.generation == null ? {} : { generation: request.data.generation }) } as HopAdviceV1AnyWireInput | HopAdviceV1WizardWireInputV1;
     } catch {
       throw new HttpsError('failed-precondition', 'La question source est altérée ou n’appartient plus à la génération courante; aucune reprise n’a été créée.', { reason: 'chat-reset' });
     }
-    const wireInput = { ...validatedSource.wireInput, operationId,
-      ...(request.data.generation == null ? {} : { generation: request.data.generation }) };
     return enqueueBrewerHopAdviceV1(uid, wireInput, id);
   }
 );

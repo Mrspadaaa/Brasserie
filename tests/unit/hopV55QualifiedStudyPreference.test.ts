@@ -8,8 +8,8 @@ import { captureHopAdvicePreference } from '../../src/domain/hopDecision/adviceP
 import { prepareBrewingScenarioContext } from '../../src/domain/brewingScenarioContext';
 import { makeHopAdviceJourneyFixture } from '../fixtures/hopAdviceJourney';
 import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
-import { readHopV55Question } from '../../src/services/hopV55/decision';
-import { createHopV55DecisionReadingArchiveV2 } from '../../src/services/hopV55/decisionArchive';
+import { createHopV55DecisionReadingArchiveV4 } from '../../src/services/hopV55/decisionArchive';
+import { readHopV55QuestionSemanticV1 } from '../../src/services/hopV55/questionSemanticReading';
 import { createHopV55QualifiedStudyPreparationV1, saveHopV55QualifiedStudy,
   type HopV55QualifiedStudyPreparationV1 } from '../../src/services/hopV55/qualifiedStudyWorkspace';
 import { appendHopV55QualifiedStudyPreference, appendHopV55QualifiedStudyPreferenceCommand,
@@ -17,6 +17,12 @@ import { appendHopV55QualifiedStudyPreference, appendHopV55QualifiedStudyPrefere
 import type { HopV55Workspace } from '../../src/services/hopV55/contracts';
 import { createHopV55WorkspaceRepository, type HopV55WorkspaceDatabaseAdapter,
   type HopV55WorkspaceEnvelopeV1, type HopV55WorkspaceTable } from '../../src/services/hopV55/workspaceRepository';
+
+function v3EventKinds(reads: readonly HopAdviceEventRead[]) {
+  const events = reads.filter((event): event is HopAdviceEventV3 => !('status' in event) && event.eventFormatVersion === 3);
+  if (events.length !== reads.length) throw new Error('Cette fixture doit relire uniquement les événements advice V3 connus.');
+  return events.map(event => event.kind);
+}
 
 class MemoryTable implements HopV55WorkspaceTable<HopV55WorkspaceEnvelopeV1> {
   rows = new Map<string, HopV55WorkspaceEnvelopeV1>();
@@ -110,8 +116,8 @@ function journey() {
   const fixture = makeHopAdviceJourneyFixture('planning');
   const study = answerQualifiedHopAdvice(fixture);
   const context = prepareBrewingScenarioContext(makeHopV55FixtureContext('unknown'));
-  const reading = readHopV55Question(fixture.intent.originalQuestion, context);
-  const archive = createHopV55DecisionReadingArchiveV2({ id: 'reading-q09-preference-stage', ownerKey, workspaceId,
+  const reading = readHopV55QuestionSemanticV1(fixture.intent.originalQuestion, context);
+  const archive = createHopV55DecisionReadingArchiveV4({ id: 'reading-q09-preference-stage', ownerKey, workspaceId,
     recordedAt: '2026-10-03T14:00:00.000Z', reading, source: { kind: 'exploration' }, runtimeReference: 'runtime-q09-preference-stage' });
   const dossierId = 'dossier-q09-preference-stage';
   const studySavedEventId = 'study-saved-q09-preference-stage';
@@ -120,7 +126,7 @@ function journey() {
     sourceReadingReference: archive.contentReference, preparedReference: 'prepared-q09-preference-stage',
     createCommand: { kind: 'advice', ownerKey, dossierId, eventId: studySavedEventId, recordedAt, study } });
   const workspace: HopV55Workspace = { format: 'hop-v55-workspace-v1', id: workspaceId, ownerKey, revision: 0,
-    title: 'Préférence stratégie synthétique', intent: { question: fixture.intent.originalQuestion, criteria: [] },
+    title: 'Préférence stratégie synthétique', intent: { question: reading.intent.question, criteria: reading.intent.criteria },
     decisionReadings: [archive], scenarioIds: [], referenceHypotheses: [], copies: [],
     updatedAt: '2026-10-03T14:00:00.000Z' };
   const option = study.responseSnapshot.result.options[0];
@@ -188,7 +194,7 @@ describe('Staging CAS et append idempotent de strategyPreferred Q09', () => {
     const workspace = await row.workspaces.read(row.ownerKey, row.workspaceId);
     expect(workspace?.qualifiedStudyPreferenceCommands).toBeUndefined();
     expect(workspace?.qualifiedStudyLinks).toHaveLength(1);
-    expect((await row.repository.readEvents(row.ownerKey, row.preparation.dossierId)).map(event => event.kind)).toEqual(['studySaved']);
+    expect(v3EventKinds(await row.repository.readEvents(row.ownerKey, row.preparation.dossierId))).toEqual(['studySaved']);
     expect(row.repository.appendCalls).toBe(0);
   });
 
@@ -272,7 +278,7 @@ describe('Staging CAS et append idempotent de strategyPreferred Q09', () => {
       command: staleCommand, validateFreshness: async () => ({ status: 'current' }) })).rejects.toMatchObject({ code: 'staleRevision' });
     const workspace = await row.workspaces.read(row.ownerKey, row.workspaceId);
     expect(workspace?.qualifiedStudyPreferenceCommands).toEqual([staleCommand]);
-    expect((await row.repository.readEvents(row.ownerKey, row.preparation.dossierId)).map(event => event.kind)).toEqual(['studySaved']);
+    expect(v3EventKinds(await row.repository.readEvents(row.ownerKey, row.preparation.dossierId))).toEqual(['studySaved']);
     expect(row.repository.appendCalls).toBe(0);
   });
 
@@ -295,6 +301,31 @@ describe('Staging CAS et append idempotent de strategyPreferred Q09', () => {
     expect(unrelated.qualifiedStudyPreferenceCommands?.[0]).toEqual(future);
     expect(unrelated.qualifiedStudyLinks).toEqual([created.link]);
     expect(() => appendHopV55QualifiedStudyPreferenceCommand(unrelated, row.command)).toThrow(/future|lecture/i);
+  });
+
+  it('reprend un CAS concurrent pendant le staging : nouvelle lecture, nouvelle fraîcheur, une seule commande', async () => {
+    const row = journey();
+    await saveStudy(row);
+    let failNextStage = true;
+    const workspaces = {
+      read: row.workspaces.read,
+      async save(next: HopV55Workspace, expectedRevision: number | null) {
+        if (failNextStage && next.qualifiedStudyPreferenceCommands?.length) {
+          failNextStage = false;
+          throw Object.assign(new Error('Révision workspace changée par un autre onglet.'), { code: 'staleRevision' });
+        }
+        return row.workspaces.save(next, expectedRevision);
+      },
+    };
+    const phases: string[] = [];
+    const result = await appendHopV55QualifiedStudyPreference({ workspaces, qualifiedStudies: row.repository,
+      command: row.command, validateFreshness: async ({ phase }) => { phases.push(phase); return { status: 'current' }; } });
+    expect(result.status).toBe('appended');
+    expect(result.eventAdvice3).toEqual(row.command.event);
+    expect(phases).toEqual(['beforeStage', 'beforeStage', 'beforeAppend']);
+    const staged = await row.workspaces.read(row.ownerKey, row.workspaceId);
+    expect(staged?.qualifiedStudyPreferenceCommands).toEqual([row.command]);
+    expect(row.repository.appendCalls).toBe(1);
   });
 
   it('refuse un staging sans le CAS préalable du lien d’étude conseil V3', async () => {

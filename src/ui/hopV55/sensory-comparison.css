@@ -35,7 +35,8 @@
   line-height: 1.2;
   cursor: pointer;
 }
-.hv55-sensory-mode button[aria-pressed="true"] { background: var(--hvs-forest); color: #fff; }
+/* Scoped to win over page.css `.hop-v55 button[aria-pressed=true]` (same specificity, loaded later). */
+.hv55-sensory-comparison .hv55-sensory-mode button[aria-pressed="true"] { background: var(--hvs-forest); color: #fff; }
 .hv55-sensory-choose { border-color: var(--hvs-line); background: var(--hvs-paper); color: var(--hvs-forest); white-space: nowrap; }
 .hv55-sensory-choose[aria-pressed="true"] { border-color: var(--hvs-forest); background: #e3eee2; font-weight: 700; }
 .hv55-sensory-mode button:focus-visible,
@@ -96,15 +97,21 @@
 .hv55-sensory-chart-group-heading h3 { margin: 0; font-size: 13px; }
 .hv55-sensory-chart-group-heading p { margin: 1px 0 4px; color: var(--hvs-muted); font-size: 11px; overflow-wrap: anywhere; }
 .hv55-sensory-bars { display: grid; gap: 1px; }
-.hv55-sensory-bar-row { display: grid; grid-template-columns: minmax(105px, 8em) minmax(0, 1fr); grid-template-areas: "label track" "values values"; gap: 3px 8px; min-width: 0; margin: 0; padding: 5px 0; border-bottom: 1px dashed var(--hvs-line); }
-.hv55-sensory-axis-label { grid-area: label; min-width: 0; font-size: 12px; line-height: 1.2; overflow-wrap: anywhere; }
-.hv55-sensory-axis-label small { display: block; margin-top: 2px; color: var(--hvs-muted); font-size: 10px; }
+/* Mobile first: the nuance name sits above a full-width track; side by side from 700px. */
+.hv55-sensory-bar-row { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "label" "track" "values"; gap: 3px 8px; min-width: 0; margin: 0; padding: 6px 0; border-bottom: 1px dashed var(--hvs-line); }
+.hv55-sensory-axis-label { grid-area: label; min-width: 0; font-size: 13px; line-height: 1.25; overflow-wrap: normal; }
+.hv55-sensory-axis-label small { display: block; margin-top: 2px; color: var(--hvs-muted); font-size: 11px; }
 .hv55-sensory-track-wrap { grid-area: track; min-width: 0; padding-top: 2px; }
-.hv55-sensory-track { position: relative; min-height: 24px; border-radius: 5px; background: #f1efe6; overflow: visible; }
+/* One lane per candidate: the mark at the start of the lane identifies it without relying on colour. */
+.hv55-sensory-track { display: grid; gap: 2px; min-width: 0; }
+.hv55-sensory-lane { display: flex; align-items: center; gap: 4px; min-height: 14px; }
+.hv55-sensory-lane-mark { flex: none; width: 16px; font-size: 11px; font-weight: 800; line-height: 1; text-align: center; }
+.hv55-sensory-lane-track { position: relative; flex: 1 1 auto; align-self: stretch; min-width: 0; min-height: 14px; border-radius: 4px; background: #f1efe6; }
+.hv55-sensory-lane-status { position: absolute; top: 50%; left: 4px; transform: translateY(-50%); color: var(--hvs-muted); font-size: 10px; font-style: italic; line-height: 1; white-space: nowrap; }
 .hv55-sensory-tick { position: absolute; top: 0; bottom: 0; width: 1px; background: #d4cfc2; }
 .hv55-sensory-range,
 .hv55-sensory-point,
-.hv55-sensory-central { position: absolute; transform: translateY(-50%); }
+.hv55-sensory-central { position: absolute; top: 50%; transform: translateY(-50%); }
 .hv55-sensory-range { height: 3px; min-width: 0; border-radius: 2px; background: var(--hv55-sensory-series); }
 .hv55-sensory-observed { background: var(--hv55-sensory-series, var(--hvs-forest)); }
 .hv55-sensory-hypothetical { background: repeating-linear-gradient(90deg, var(--hv55-sensory-series, var(--hvs-forest)) 0 5px, transparent 5px 8px); }
@@ -112,24 +119,48 @@
 .hv55-sensory-degenerate-range { height: 8px; border-radius: 0; }
 .hv55-sensory-point,
 .hv55-sensory-central { z-index: 1; color: var(--hvs-forest); font-size: 11px; line-height: 1; font-weight: 800; transform: translate(-50%, -50%); }
-.hv55-sensory-track-scale { display: flex; justify-content: space-between; color: var(--hvs-muted); font-size: 10px; line-height: 1.1; }
-.hv55-sensory-bar-values { grid-area: values; display: flex; flex-wrap: wrap; gap: 2px 10px; padding-left: 2px; font-size: 11px; overflow-wrap: anywhere; }
-.hv55-sensory-bar-values > span { display: inline-flex; align-items: baseline; gap: 2px; min-width: 0; }
+.hv55-sensory-track-scale { display: flex; justify-content: space-between; padding-left: 20px; color: var(--hvs-muted); font-size: 10px; line-height: 1.1; }
+.hv55-sensory-bar-values { grid-area: values; display: flex; flex-wrap: wrap; gap: 2px 14px; padding-left: 2px; font-size: 12px; }
+.hv55-sensory-bar-values > span { display: inline-flex; align-items: baseline; gap: 3px; min-width: 0; }
+/* Quick reading: rounded, marked ≈, never broken inside a number. */
+.hv55-sensory-value-quick { font-variant-numeric: tabular-nums; }
+.hv55-sensory-quick-note { margin: 4px 0 2px; color: var(--hvs-muted); font-size: 11px; }
 .hv55-sensory-empty { margin: 6px 0; border: 1px dashed var(--hvs-line); border-radius: 7px; padding: 7px; color: var(--hvs-muted); font-size: 12px; }
 
 .hv55-sensory-radar-group { margin-top: 8px; }
 .hv55-sensory-radar { display: block; width: min(100%, 440px); height: auto; margin: 0 auto; overflow: visible; }
 .hv55-sensory-radar-ring { fill: none; stroke: #d9d4c7; stroke-width: 1; }
 .hv55-sensory-radar-axis { stroke: #c9c3b2; stroke-width: 1; }
-.hv55-sensory-radar-label { fill: var(--hvs-ink); font-size: 10px; }
-.hv55-sensory-radar-extent { stroke: var(--hv55-sensory-series); stroke-width: 2; }
+/* SVG user units: with the 440 viewBox, 15 units render about 11px on a 390px phone. */
+.hv55-sensory-radar-label { fill: var(--hvs-ink); font-size: 15px; font-weight: 600; }
+.hv55-sensory-radar-extent { stroke: var(--hv55-sensory-series); stroke-width: 2.2; }
 .hv55-sensory-radar-reading.hv55-sensory-hypothetical .hv55-sensory-radar-extent { stroke-dasharray: 5 3; }
 .hv55-sensory-radar-reading.hv55-sensory-target .hv55-sensory-radar-extent { stroke-dasharray: 1 3; }
-.hv55-sensory-radar-range-end { fill: var(--hvs-paper); stroke: var(--hv55-sensory-series); stroke-width: 1.5; }
-.hv55-sensory-radar-point { fill: var(--hv55-sensory-series, var(--hvs-forest)); stroke: var(--hvs-paper); stroke-width: 1; font-size: 10px; font-weight: 800; paint-order: stroke; }
+.hv55-sensory-radar-range-end { stroke: var(--hv55-sensory-series); stroke-width: 1.6; }
+.hv55-sensory-radar-range-cap { fill: var(--hv55-sensory-series, var(--hvs-forest)); stroke: var(--hvs-paper); stroke-width: 2; paint-order: stroke; font-size: 12px; font-weight: 700; }
+.hv55-sensory-radar-point { fill: var(--hv55-sensory-series, var(--hvs-forest)); stroke: var(--hvs-paper); stroke-width: 2.5; font-size: 14px; font-weight: 800; paint-order: stroke; }
 .hv55-sensory-radar-central-line { stroke: var(--hv55-sensory-series, var(--hvs-forest)); stroke-width: 1.7; }
 .hv55-sensory-gaps { margin: 2px 0 5px; padding-left: 18px; color: var(--hvs-muted); font-size: 11px; overflow-wrap: anywhere; }
 .hv55-sensory-radar-note { margin: 3px 0 6px; color: var(--hvs-muted); font-size: 11px; }
+.hv55-sensory-radar-reader { margin-top: 4px; border-top: 1px dashed var(--hvs-line); padding-top: 4px; }
+.hv55-sensory-radar-reader-axes { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 2px; }
+.hv55-sensory-radar-reader-axes button { min-height: 28px; border: 1px solid var(--hvs-line); border-radius: 999px; background: var(--hvs-paper); color: var(--hvs-ink); padding: 3px 9px; font: inherit; font-size: 12px; line-height: 1.2; cursor: pointer; }
+.hv55-sensory-radar-reader-axes button[aria-pressed="true"] { border-color: var(--hvs-forest); background: #e3eee2; font-weight: 700; }
+.hv55-sensory-radar-reader-axes button:focus-visible { outline: 2px solid var(--hvs-forest); outline-offset: 2px; }
+.hv55-sensory-reader-row { border-bottom: 0; }
+/* Overview of the radar mode: which frames draw a shape, which are read per axis, which stay in the table. */
+.hv55-sensory-frame-summary { margin: 6px 0 2px; color: var(--hvs-ink); font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.hv55-sensory-chart-group-heading h4 { margin: 0; font-size: 12px; }
+/* Frames below three nuances: the bar lanes, never a spoke or a line presented as a profile. */
+.hv55-sensory-axis-reading { min-width: 0; margin-top: 8px; border-top: 1px solid var(--hvs-line); padding-top: 5px; }
+.hv55-sensory-axis-reading > h3 { margin: 0; font-size: 13px; }
+.hv55-sensory-axis-reading-note { margin: 2px 0 4px; color: var(--hvs-muted); font-size: 11px; }
+.hv55-sensory-axis-frame { margin: 4px 0 6px; border-top-style: dashed; padding-top: 3px; }
+.hv55-sensory-frame-hint { margin: 2px 0 0; font-size: 11px; }
+.hv55-sensory-unplotted { min-width: 0; margin: 6px 0 2px; border-top: 1px dashed var(--hvs-line); padding-top: 4px; font-size: 11px; }
+.hv55-sensory-unplotted > strong { display: block; font-size: 11px; }
+.hv55-sensory-unplotted ul { margin: 2px 0; padding-left: 16px; overflow-wrap: anywhere; }
+.hv55-sensory-unplotted li > span { font-weight: 600; }
 
 .hv55-sensory-table-region { max-width: 100%; margin-top: 8px; overflow: auto; overscroll-behavior-x: contain; border-top: 1px solid var(--hvs-line); }
 .hv55-sensory-table-region table { width: 100%; border-collapse: collapse; font-size: 12px; }

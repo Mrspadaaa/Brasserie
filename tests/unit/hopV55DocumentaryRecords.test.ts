@@ -79,31 +79,18 @@ class MemoryDatabase implements HopV55WorkspaceDatabaseAdapter {
   close() { /* Memory-only service contract test. */ }
 }
 
-const question = 'Ma bière est trop sucrée. Quel équilibre le houblon peut-il examiner ?';
+const question = 'Je veux moins de sucre dans ma bière.';
 const ownerKey = 'owner-documentary-records-v2';
 const workspaceId = 'workspace-documentary-records-v2';
 
 function makeSweetnessIntents(): HopPropertyAdviceIntent[] {
-  const observationStart = question.indexOf('trop sucrée');
-  const investigationStart = question.indexOf('équilibre');
+  const start = question.indexOf('moins de sucre');
   const subject = { kind: 'beer' as const, label: 'Bière synthétique du test', materialId: null, sensoryContext: 'beer' as const };
-  return [
-    { id: 'intent-sweetness-reported', property: 'sweetness', label: 'trop sucrée', role: 'reportedObservation', direction: null,
-      qualification: 'Excès perçu rapporté, aucune mesure analytique.', required: true,
-      comparisonBasis: { kind: 'current', assertionIds: [] }, metric: 'sensory', subject: structuredClone(subject),
-      sourceSpans: [{ start: observationStart, end: observationStart + 'trop sucrée'.length, text: 'trop sucrée' }],
-      interpretationOrigin: 'user', basis: 'Rapport de fixture explicite, pas une mesure.', relatedIntentIds: ['intent-sweetness-goal', 'intent-sweetness-investigation'] },
-    { id: 'intent-sweetness-goal', property: 'sweetness', label: 'réduire la douceur perçue', role: 'target', direction: 'decrease',
-      qualification: 'Comparer une baisse qualitative, sans valeur actuelle supposée.', required: true,
-      comparisonBasis: { kind: 'current', assertionIds: [] }, metric: 'sensory', subject: structuredClone(subject),
-      sourceSpans: [{ start: observationStart, end: observationStart + 'trop sucrée'.length, text: 'trop sucrée' }],
-      interpretationOrigin: 'user', basis: 'Objectif qualitatif explicitement corrigé par le brasseur.', relatedIntentIds: ['intent-sweetness-reported', 'intent-sweetness-investigation'] },
-    { id: 'intent-sweetness-investigation', property: 'sweetness', label: 'équilibre', role: 'investigation', direction: 'investigate',
-      qualification: 'Examiner les voies sans décider qu’une cible est atteinte.', required: true,
-      comparisonBasis: { kind: 'none', assertionIds: [] }, metric: 'sensory', subject: structuredClone(subject),
-      sourceSpans: [{ start: investigationStart, end: investigationStart + 'équilibre'.length, text: 'équilibre' }],
-      interpretationOrigin: 'user', basis: 'Question de fixture distincte de l’observation rapportée.', relatedIntentIds: ['intent-sweetness-goal'] },
-  ];
+  return [{ id: 'intent-sweetness-goal', property: 'sweetness', label: 'moins de sucre', role: 'target', direction: 'decrease',
+    qualification: 'Préférence qualitative explicite; aucune quantité ou mesure actuelle.', required: true,
+    comparisonBasis: { kind: 'current', assertionIds: [] }, metric: 'sensory', subject,
+    sourceSpans: [{ start, end: start + 'moins de sucre'.length, text: 'moins de sucre' }],
+    interpretationOrigin: 'user', basis: 'Cible explicite de cette fixture V1/V2 représentable.', relatedIntentIds: [] }];
 }
 
 function makeRecords(scope: { ownerKey?: string; workspaceId?: string } = {}) {
@@ -120,7 +107,11 @@ function makeRecords(scope: { ownerKey?: string; workspaceId?: string } = {}) {
     source: { kind: 'recipe', id: context.recipe!.id }, runtimeReference: 'runtime-sweetness-v1' });
   const v1Draft = prepareHopV55DocumentaryRequest({ reading: parsedReading, prepared, requestId: 'request-sweetness-v1',
     ownerKey: recordOwnerKey, workspaceId: recordWorkspaceId, sourceReadingReference: readingArchive.contentReference });
-  const v1Answer = buildV1AnswerRecord({ draft: v1Draft, prepared, answerRecordId: 'answer-sweetness-v1' });
+  const publicCriterionIds = new Set(parsedReading.response.intent.criteria?.map(row => row.id) ?? []);
+  if (!v1Draft.request.needs.some(need => need.kind === 'balancePerceivedSweetness'
+    && need.criterionIds.length > 0 && need.criterionIds.every(id => publicCriterionIds.has(id)))) {
+    throw new Error('La fixture V1 doit obtenir son besoin et ses routes depuis un critère public explicitement représentable.');
+  }  const v1Answer = buildV1AnswerRecord({ draft: v1Draft, prepared, answerRecordId: 'answer-sweetness-v1' });
   const v1Route = v1Answer.answerSnapshot.routes[0];
   if (!v1Route) throw new Error('La réponse V1 de fixture doit avoir une route documentaire conservable.');
   const v1Dossier = createV1DossierRecord({ answerRecord: v1Answer, dossierId: 'dossier-sweetness-v1',
@@ -456,13 +447,7 @@ describe('Enveloppes documentaires V1/V2 dans les mêmes collections workspace',
   it('upgrade V2→V3 explicite, dossier V3 exact, refus des raccourcis et downgrade CAS', async () => {
     const journey = makeRecords();
     const reading = readHopV55Question(question, journey.prepared);
-    const v3Intents = journey.v2Draft.requestSnapshot.propertyIntents.map((intent): HopPropertyAdviceIntentV3 => {
-      if (intent.id !== 'intent-sweetness-investigation') return structuredClone(intent);
-      return { ...structuredClone(intent),
-        relatedIntentIds: [...new Set([...intent.relatedIntentIds, 'intent-sweetness-reported'])],
-        investigation: { kind: 'comparePerceptualCompensation', observationIntentIds: ['intent-sweetness-reported'] },
-      };
-    });
+    const v3Intents = journey.v2Draft.requestSnapshot.propertyIntents.map((intent): HopPropertyAdviceIntentV3 => structuredClone(intent));
     const draftV3 = upgradeHopV55PropertyAdviceRequestDraftV2ToV3({ draft: journey.v2Draft,
       reading, prepared: journey.prepared, requestId: 'request-sweetness-v3',
       sourceReadingReference: journey.readingArchive.contentReference,
@@ -470,9 +455,11 @@ describe('Enveloppes documentaires V1/V2 dans les mêmes collections workspace',
         recordedAt: '2026-10-03T12:00:00.000Z', recordedBy: { origin: 'user', label: 'Brasseur de fixture' } },
       propertyIntents: v3Intents });
     expect(draftV3.requestSnapshot.format).toBe('hop-documentary-request-v3');
-    expect(draftV3.requestSnapshot.propertyIntents.find(intent => intent.id === 'intent-sweetness-investigation'))
-      .toMatchObject({ role: 'investigation', direction: 'investigate',
-        investigation: { kind: 'comparePerceptualCompensation', observationIntentIds: ['intent-sweetness-reported'] } });
+    expect(draftV3.requestSnapshot.originalQuestion).toBe(question);
+    expect(draftV3.requestSnapshot.propertyIntents).toMatchObject([
+      expect.objectContaining({ id: 'intent-sweetness-goal', role: 'target', direction: 'decrease',
+        sourceSpans: [{ text: 'moins de sucre', start: question.indexOf('moins de sucre'), end: question.indexOf('moins de sucre') + 'moins de sucre'.length }] }),
+    ]);
     const answerSnapshotV3 = propertyAdviceDomain.buildHopPropertyAdviceV3(draftV3.requestSnapshot);
     const upgradeLineage = { sourceAnswerRecordReference: journey.v2Answer.reference,
       sourceAnswerReference: journey.v2Answer.answerReference,

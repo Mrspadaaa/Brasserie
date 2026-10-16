@@ -8,6 +8,14 @@ import { hopAdviceContentReference } from './hopAdviceContentReference.js';
 import { BATCH_FIELDS, RECIPE_FIELDS, pick, validateScope } from './brewerContext.js';
 import { normalizeRecipe } from './brewerTools.js';
 import type { BrewerContext } from './companionTypes.js';
+import {
+  BREWER_HOP_ADVICE_WIZARD_SOURCE_FORMAT_V1,
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  mapBrewerHopAdviceWizardSourceToScopeV1,
+  readBrewerHopAdviceWizardSourceV1,
+  type BrewerHopAdviceWizardCanonicalSnapshotV1,
+  type BrewerHopAdviceWizardSourceV1,
+} from './brewerHopAdviceWizardSourceV1.js';
 
 export const BREWER_HOP_ADVICE_CONTEXT_PROJECTION_FORMAT = 'brewer-hop-advice-context-projection-v1' as const;
 export const BREWER_HOP_ADVICE_CONTEXT_LAUNCH_FORMAT = 'brewer-hop-advice-context-launch-v1' as const;
@@ -169,6 +177,11 @@ export function mapBrewerHopAdviceLaunchSourceToScopeV1(ownerKey: string, worksp
   return validateScope({ kind: 'draft', id: `hop-v55-${digest}` });
 }
 
+/** The one formula of a loaded draft source; Wizard checks reuse it on the wire draft. */
+function normalizedDraftSourceReference(recipe: Row): string {
+  return hopAdviceContentReference('brewer-hop-advice-normalized-draft-source-v1', recipe);
+}
+
 function effectiveSource(scope: BrewerHopAdviceContextScopeV1, context: BrewerContext): BrewerHopAdviceEffectiveSourceV1 | null {
   const recipe = context.recipe == null ? undefined : normalizeRecipe(pick(context.recipe, RECIPE_FIELDS));
   const batch = context.batch == null ? undefined : pick(context.batch, BATCH_FIELDS);
@@ -193,8 +206,7 @@ function effectiveSource(scope: BrewerHopAdviceContextScopeV1, context: BrewerCo
   if (scope.kind === 'draft') {
     // Draft IDs are the actual declared draft/copy IDs supplied by Page, never recipe IDs invented here.
     if (!isRecord(recipe) || batch != null) return null;
-    return { kind: 'draft', id: scope.id, label,
-      snapshotReference: hopAdviceContentReference('brewer-hop-advice-normalized-draft-source-v1', recipe) };
+    return { kind: 'draft', id: scope.id, label, snapshotReference: normalizedDraftSourceReference(recipe) };
   }
   if (recipe != null || batch != null) return null;
   return { kind: 'app', id: scope.id, label, snapshotReference: null };
@@ -454,5 +466,129 @@ export function isBrewerHopAdviceContextLaunchClaim(value: unknown): value is Br
     return same(mapBrewerHopAdviceLaunchSourceToScopeV1(value.ownerKey, value.workspaceId, value.source), value.scope)
       && same(value.scope, value.expected.scope);
   } catch { return false; }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Explicit Wizard V1 profile. Same claim format, keys and formulas; only the source slot carries the
+// versioned Wizard child, and the draft scope derives from its stable origin. Classic sources, their
+// mapper and the classic claim guard above are not widened: a Wizard child never passes them.
+
+const WIZARD_SOURCE_FORMAT_NAMESPACE = /^hop-v55-wizard-source-v[1-9][0-9]*$/;
+const LAUNCH_CLAIM_KEYS = ['format', 'ownerKey', 'workspaceId', 'sourceReadingReference', 'source',
+  'sourceRuntimeReference', 'scope', 'expected'] as const;
+
+export type BrewerHopAdviceWizardDraftScopeV1 = { kind: 'draft'; id: string };
+
+/** Launch claim V1 whose source is the known Wizard child; ownerKey/workspaceId are those of its origin. */
+export type BrewerHopAdviceWizardContextLaunchV1 = Omit<BrewerHopAdviceContextLaunchClaimV1, 'source' | 'scope'> & {
+  source: BrewerHopAdviceWizardSourceV1;
+  scope: BrewerHopAdviceWizardDraftScopeV1;
+};
+
+export type BrewerHopAdviceWizardSourceReadV1 = ReturnType<typeof readBrewerHopAdviceWizardSourceV1>;
+
+export type BrewerHopAdviceWizardContextLaunchReadV1 =
+  | { status: 'readOnly'; claim: BrewerHopAdviceWizardContextLaunchV1 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+
+/**
+ * Codec read narrowed to the Wizard namespace: only a later `hop-v55-wizard-source-vN` stays an opaque
+ * future child. Any other format (classic, foreign, v0) is invalid here, never a "future Wizard".
+ */
+export function readBrewerHopAdviceWizardSourceForWizardV1(raw: unknown): BrewerHopAdviceWizardSourceReadV1 {
+  const read = readBrewerHopAdviceWizardSourceV1(raw);
+  if (read.status !== 'unsupportedReadOnly') return read;
+  const format = isRecord(raw) ? raw.format : undefined;
+  if (typeof format !== 'string' || !WIZARD_SOURCE_FORMAT_NAMESPACE.test(format) || format === BREWER_HOP_ADVICE_WIZARD_SOURCE_FORMAT_V1) {
+    return { status: 'invalid', reason: 'Format de source étranger à la namespace Wizard; il n’est pas classé futur.' };
+  }
+  return read;
+}
+
+/** Reference of the effective draft source computed exactly as a worker would on a context loaded from this draft. */
+export function brewerHopAdviceEffectiveDraftReferenceForWizardV1(draft: unknown): string {
+  if (draft == null || typeof draft !== 'object' || Array.isArray(draft)) throw Error('Brouillon Wizard absent ou non objet.');
+  // Same projection as effectiveSource applies to a context recipe loaded from this draft.
+  const recipe = normalizeRecipe(pick(draft, RECIPE_FIELDS));
+  if (!isRecord(recipe)) throw Error('Brouillon Wizard non projetable comme source de contexte.');
+  return normalizedDraftSourceReference(recipe);
+}
+
+/** Read a Wizard claim: corrupted known fields are invalid before a future source child is classified. */
+export function readBrewerHopAdviceContextLaunchClaimForWizardV1(value: unknown): BrewerHopAdviceWizardContextLaunchReadV1 {
+  const invalid = (reason: string): BrewerHopAdviceWizardContextLaunchReadV1 => ({ status: 'invalid', reason });
+  try {
+    if (!isRecord(value) || !exactKeys(value, LAUNCH_CLAIM_KEYS) || value.format !== BREWER_HOP_ADVICE_CONTEXT_LAUNCH_FORMAT) {
+      return invalid('Claim de lancement Wizard hors format V1 fermé.');
+    }
+    if (!isText(value.ownerKey) || !isText(value.workspaceId) || !isText(value.sourceReadingReference)
+      || !isText(value.sourceRuntimeReference)) return invalid('Identité du claim Wizard invalide.');
+    if (!validScope(value.scope) || value.scope.kind !== 'draft') return invalid('Le profil Wizard exige un scope draft.');
+    if (!isProjection(value.expected) || !same(value.scope, value.expected.scope)
+      || value.expected.source.kind !== 'draft' || value.expected.source.id !== value.scope.id) {
+      return invalid('Projection attendue absente ou détachée du scope draft Wizard.');
+    }
+    const source = readBrewerHopAdviceWizardSourceForWizardV1(value.source);
+    if (source.status === 'invalid') return invalid(source.reason);
+    const raw = value.source as Row;
+    // Known origin claims are checked even when the child version is future.
+    if (raw.ownerKey !== undefined && raw.ownerKey !== value.ownerKey
+      || raw.workspaceId !== undefined && raw.workspaceId !== value.workspaceId) {
+      return invalid('La source Wizard appartient à un autre owner ou workspace que le claim.');
+    }
+    if (source.status === 'unsupportedReadOnly') return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: source.reason };
+    if (source.source.ownerKey !== value.ownerKey || source.source.workspaceId !== value.workspaceId) {
+      return invalid('La source Wizard appartient à un autre owner ou workspace que le claim.');
+    }
+    if (!same(mapBrewerHopAdviceWizardSourceToScopeV1(source.source), value.scope)) {
+      return invalid('Le scope draft ne dérive pas de l’origine Wizard owner/workspace/draft.');
+    }
+    return { status: 'readOnly', claim: clone(value) as unknown as BrewerHopAdviceWizardContextLaunchV1 };
+  } catch (error) {
+    return invalid(error instanceof Error ? error.message : 'Claim Wizard illisible.');
+  }
+}
+
+/** Strict guard for a known Wizard claim; a future Wizard child is not a launchable claim. */
+export function isBrewerHopAdviceContextLaunchClaimForWizardV1(value: unknown): value is BrewerHopAdviceWizardContextLaunchV1 {
+  return readBrewerHopAdviceContextLaunchClaimForWizardV1(value).status === 'readOnly';
+}
+
+/**
+ * Build the claim from the canonical snapshot actually held locally. The snapshot verifies the source
+ * contentReference, and the expected projection must describe this same snapshot rather than a saved
+ * Recipe of the same ID. Owner and workspace are the origin's; nothing here grants authority.
+ */
+export function createBrewerHopAdviceContextLaunchForWizardV1(input: {
+  source: BrewerHopAdviceWizardSourceV1;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+  sourceReadingReference: string;
+  sourceRuntimeReference: string;
+  expected: BrewerHopAdviceContextProjectionV1;
+}): BrewerHopAdviceWizardContextLaunchV1 {
+  if (!isRecord(input) || !exactKeys(input, ['source', 'snapshot', 'sourceReadingReference', 'sourceRuntimeReference', 'expected'])) {
+    throw Error('Entrée de lancement Wizard invalide.');
+  }
+  const source = readBrewerHopAdviceWizardSourceForWizardV1(input.source);
+  if (source.status !== 'readOnly') throw Error('Seule une source Wizard V1 connue peut lancer un conseil.');
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(source.source, input.snapshot);
+  if (!isProjection(input.expected) || input.expected.source.kind !== 'draft'
+    || input.expected.source.snapshotReference !== brewerHopAdviceEffectiveDraftReferenceForWizardV1(input.snapshot.recipe)) {
+    throw Error('La projection attendue ne décrit pas le snapshot Wizard canonique transmis.');
+  }
+  const claim = {
+    format: BREWER_HOP_ADVICE_CONTEXT_LAUNCH_FORMAT,
+    ownerKey: source.source.ownerKey,
+    workspaceId: source.source.workspaceId,
+    sourceReadingReference: input.sourceReadingReference,
+    source: clone(source.source),
+    sourceRuntimeReference: input.sourceRuntimeReference,
+    scope: mapBrewerHopAdviceWizardSourceToScopeV1(source.source),
+    expected: clone(input.expected),
+  };
+  const read = readBrewerHopAdviceContextLaunchClaimForWizardV1(claim);
+  if (read.status !== 'readOnly') throw Error(read.status === 'invalid' ? read.reason : 'Claim Wizard non lançable.');
+  return read.claim;
 }
 

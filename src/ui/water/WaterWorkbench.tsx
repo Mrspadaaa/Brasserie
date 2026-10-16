@@ -29,6 +29,8 @@ type Props = Pick<
   | "state"
   | "source"
   | "set"
+  | "chooseProfile"
+  | "profileMode"
   | "setDose"
   | "setAcidDose"
   | "beginEdit"
@@ -59,6 +61,8 @@ export function WaterWorkbench({
   state,
   source,
   set,
+  chooseProfile,
+  profileMode,
   setDose,
   setAcidDose,
   beginEdit,
@@ -191,9 +195,8 @@ export function WaterWorkbench({
               <Combobox
                 id="w-style"
                 value={style.code}
-                onChange={(code) =>
-                  set({ styleCode: code, ratioOverride: undefined })
-                }
+                // A committed option is a choice, including the profile already shown.
+                onChange={chooseProfile}
                 options={STYLE_WATERS.map((s) => ({
                   value: s.code,
                   label: s.code === "—" ? s.name : `${s.code} — ${s.name}`,
@@ -230,6 +233,14 @@ export function WaterWorkbench({
             Doser
           </button>
         </div>
+
+        {profileMode && !state.customTarget && <p role="status" data-water-profile-mode={profileMode} className="px-1 text-2xs leading-snug text-cave-400">
+          {profileMode === "style"
+            ? "Profil suivi : il change avec le style de bière. Le choisir dans la liste le garde."
+            : profileMode === "choice"
+              ? "Profil choisi : il reste en place si le style de bière change."
+              : "Profil enregistré sans provenance : il reste en place si le style de bière change."}
+        </p>}
 
         {!sourceComplete && <p role="status" className="rounded-control border border-attention/50 bg-cave-900 px-2 py-1.5 text-xs leading-snug text-attention">
           Analyse source incomplète : {unknownIons.map(ion => ION_SYMBOL_SHORT[ion]).join(', ')} inconnus. Les valeurs touchées et le bilan des cibles restent inconnus ; le dosage automatique est désactivé.

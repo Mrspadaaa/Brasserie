@@ -5,9 +5,17 @@ import {
   type HopAdviceV1ClientEntry,
   type HopAdviceV1Scope,
   type HopAdviceV1WireInput,
+  type HopAdviceV1WizardWireInputV1,
 } from '../../functions/src/brewerHopAdviceTransportV1';
 import type { BrewerChatInput, BrewerJob, BrewerReply, BrewerScope, BrewerTurn } from '../../functions/src/companionTypes';
-import { createBrewerJobStore, type BrewerJobStatusInput, type BrewerJobStoreTransport } from './brewerJobs';
+import { createBrewerJobStore, createHopV55SemanticJobStoreV3, type BrewerJobStatusInput, type BrewerJobStoreTransport,
+  type HopV55SemanticJobSendInputV3, type HopV55SemanticJobStoreClientV3, type HopV55SemanticJobStoreOptionsV3,
+  type HopV55SemanticJobStoreTransportV3 } from './brewerJobs';
+import { createHopV55SemanticWizardJobStoreV1, type HopV55SemanticWizardJobStoreClientV1,
+  type HopV55SemanticWizardJobStoreTransportV1, type HopV55SemanticWizardJobSendInputV1 } from './brewerJobs';
+import type { HopV55SemanticWizardJobStoreV1, HopV55SemanticWizardJobSnapshotV1,
+  HopV55SemanticWizardWireAuthorizationResultV1 } from './hopV55/semanticAdoptionApplicationHost';
+import { hopAdviceContentReference } from '../domain/hopDecision/adviceContentReference';
 
 export type BrewerHopAdviceHistoryV1 = BrewerTurn[] & { generation?: number; draft?: unknown;
   unsupportedReadOnly?: Array<{ source: string; snapshot: unknown; reason: string; operationId?: string; input?: BrewerChatInput }> };
@@ -192,4 +200,172 @@ export function createBrewerHopAdviceRuntimeFactory(transport: BrewerHopAdviceV1
   (input: BrewerHopAdviceRuntimeScopeInput) => BrewerHopAdviceRuntimeV1 {
   assertTransport(transport);
   return (input) => createBrewerHopAdviceRuntime({ ...input, transport });
+}
+
+export type BrewerHopAdviceSemanticRuntimeV3 = {
+  format: 'hop-v55-semantic-companion-runtime-v3';
+  protocol: 'hopAdviceRequest3';
+  ownerKey: string;
+  workspaceId: string;
+  scope: BrewerScope;
+  storeNamespace: string;
+  providerKind: HopV55SemanticJobStoreOptionsV3['providerKind'];
+  jobs: HopV55SemanticJobStoreClientV3;
+  /** Read only the server generation for this exact scope; history turns stay inside the adapter. */
+  readGeneration(scope: BrewerScope): Promise<number>;
+  dispose(): void;
+};
+
+export interface BrewerHopAdviceSemanticRuntimeInputV3 {
+  ownerKey: string;
+  workspaceId: string;
+  scope: BrewerScope;
+  providerKind: HopV55SemanticJobStoreOptionsV3['providerKind'];
+  transport: HopV55SemanticJobStoreTransportV3;
+  readGeneration(scope: BrewerScope): Promise<number>;
+}
+
+/** Request3 has a separate local namespace: draft never aliases a saved recipe or Request2 row. */
+export function hopAdviceSemanticV3ClientPartitionKey(ownerKey: string, workspaceId: string, scope: BrewerScope): string {
+  if (!isRecord(scope) || !['recipe', 'batch', 'draft', 'app'].includes(String(scope.kind))
+    || typeof scope.id !== 'string' || !scope.id.trim() || scope.id.trim() !== scope.id
+    || Object.keys(scope).length !== 2) throw new Error('Scope Request3 normalisé et exact requis.');
+  if (typeof ownerKey !== 'string' || !ownerKey.trim() || ownerKey.trim() !== ownerKey
+    || typeof workspaceId !== 'string' || !workspaceId.trim() || workspaceId.trim() !== workspaceId) {
+    throw new Error('Owner et workspace exacts requis pour la partition Request3.');
+  }
+  return JSON.stringify(['laffinee', 'hopAdviceRequest3', 3, ownerKey, workspaceId, scope.kind, scope.id]);
+}
+
+/** Explicit Request3 runtime. It never reuses a V1 store or Firebase default unless its factory is injected. */
+export function createBrewerHopAdviceSemanticRuntimeV3(input: BrewerHopAdviceSemanticRuntimeInputV3): BrewerHopAdviceSemanticRuntimeV3 {
+  const { ownerKey, workspaceId, scope, providerKind, transport, readGeneration } = input;
+  const storeNamespace = hopAdviceSemanticV3ClientPartitionKey(ownerKey, workspaceId, scope);
+  const readCurrentGeneration = async (requestedScope: BrewerScope): Promise<number> => {
+    if (hopAdviceSemanticV3ClientPartitionKey(ownerKey, workspaceId, requestedScope) !== storeNamespace) {
+      throw new Error('La lecture de génération vise une autre partition Request3.');
+    }
+    const generation = await readGeneration(structuredClone(requestedScope));
+    if (!Number.isSafeInteger(generation) || generation < 0) throw new Error('La génération Request3 courante est invalide.');
+    return generation;
+  };
+  const guardGenerationAndAuthority = async (send: HopV55SemanticJobSendInputV3): Promise<HopV55SemanticJobSendInputV3> => {
+    const currentGeneration = await readCurrentGeneration(scope);
+    if (currentGeneration !== send.generation) {
+      throw new Error(`La conversation serveur est à la génération ${currentGeneration}; le ticket Request3 cite ${send.generation}.`);
+    }
+    const authorization = await send.authorizeBeforeEachEmission();
+    if (authorization.status !== 'authorized' || authorization.operationId !== send.operationId
+      || authorization.generation !== send.generation || authorization.ticketReference !== send.ticketReference
+      || authorization.wireReference !== send.wireReference || JSON.stringify(authorization.wire) !== JSON.stringify(send.wire)) {
+      throw new Error(authorization.status === 'authorized'
+        ? 'Le garde final ne confirme pas le ticket/wire exacts Request3.' : authorization.reason);
+    }
+    return { ...send, wire: structuredClone(authorization.wire) };
+  };
+  const guardedTransport: HopV55SemanticJobStoreTransportV3 = {
+    async submit(send) { return transport.submit(await guardGenerationAndAuthority(send)); },
+    async retry(send) { return transport.retry(await guardGenerationAndAuthority(send)); },
+    read: inputValue => transport.read(inputValue),
+  };
+  const jobs = createHopV55SemanticJobStoreV3({ ownerKey, workspaceId, scope, storeNamespace, providerKind, transport: guardedTransport });
+  return { format: 'hop-v55-semantic-companion-runtime-v3', protocol: 'hopAdviceRequest3', ownerKey, workspaceId,
+    scope: structuredClone(scope), storeNamespace, providerKind, jobs,
+    readGeneration: readCurrentGeneration,
+    dispose() { jobs.dispose(); } };
+}
+
+export type BrewerHopAdviceSemanticRuntimeWizardV1 = {
+  format: 'hop-v55-semantic-companion-runtime-wizard-v1';
+  protocol: 'hopAdviceWizardRequest3V1';
+  ownerKey: string;
+  workspaceId: string;
+  scope: BrewerScope;
+  storeNamespace: string;
+  providerKind: HopV55SemanticWizardJobStoreV1['providerKind'];
+  jobs: HopV55SemanticWizardJobStoreClientV1;
+  readGeneration(scope: BrewerScope): Promise<number>;
+  dispose(): void;
+};
+
+export interface BrewerHopAdviceSemanticRuntimeWizardV1Input {
+  ownerKey: string;
+  workspaceId: string;
+  scope: BrewerScope;
+  providerKind: HopV55SemanticWizardJobStoreV1['providerKind'];
+  transport: HopV55SemanticWizardJobStoreTransportV1;
+  readGeneration(scope: BrewerScope): Promise<number>;
+}
+
+export function hopAdviceWizardClientPartitionKey(ownerKey: string, workspaceId: string, scope: BrewerScope): string {
+  if (typeof ownerKey !== 'string' || !ownerKey.trim() || ownerKey.trim() !== ownerKey
+    || typeof workspaceId !== 'string' || !workspaceId.trim() || workspaceId.trim() !== workspaceId
+    || scope.kind !== 'draft' || typeof scope.id !== 'string' || !scope.id.trim() || scope.id.trim() !== scope.id) {
+    throw new Error('Partition Wizard explicite requise : owner, workspace et scope draft exacts.');
+  }
+  return JSON.stringify(['laffinee', 'hopAdviceWizardRequest3V1', 1, ownerKey, workspaceId, scope.kind, scope.id]);
+}
+
+/** Distinct Wizard runtime over the typed job lifecycle; every action retains its archived wire guard. */
+export function createBrewerHopAdviceSemanticRuntimeWizardV1(
+  input: BrewerHopAdviceSemanticRuntimeWizardV1Input,
+): BrewerHopAdviceSemanticRuntimeWizardV1 {
+  const { ownerKey, workspaceId, scope, providerKind, transport } = input;
+  const storeNamespace = hopAdviceWizardClientPartitionKey(ownerKey, workspaceId, scope);
+  const snapshotBase = (send: Pick<HopV55SemanticWizardJobSendInputV1,
+    'operationId' | 'generation' | 'ticketReference' | 'wireReference'>): Omit<HopV55SemanticWizardJobSnapshotV1, 'status'> => ({
+      format: 'hop-v55-semantic-job-snapshot-wizard-v1', operationId: send.operationId,
+      generation: send.generation, ticketReference: send.ticketReference, wireReference: send.wireReference,
+    });
+  const failed = (send: Pick<HopV55SemanticWizardJobSendInputV1,
+    'operationId' | 'generation' | 'ticketReference' | 'wireReference'>, reason: string,
+    status: HopV55SemanticWizardJobSnapshotV1['status'] = 'failed'): HopV55SemanticWizardJobSnapshotV1 => ({
+      ...snapshotBase(send), status, reason,
+    });
+  const sameWire = (left: HopAdviceV1WizardWireInputV1, right: HopAdviceV1WizardWireInputV1): boolean => {
+    try { return hopAdviceContentReference('hop-v55-wizard-runtime-wire-equality-v1', left)
+      === hopAdviceContentReference('hop-v55-wizard-runtime-wire-equality-v1', right); }
+    catch { return false; }
+  };
+  const readCurrentGeneration = async (requested: BrewerScope): Promise<number> => {
+    if (hopAdviceWizardClientPartitionKey(ownerKey, workspaceId, requested) !== storeNamespace) {
+      throw new Error('La lecture de génération vise une autre partition Wizard.');
+    }
+    const generation = await input.readGeneration(structuredClone(requested));
+    if (!Number.isSafeInteger(generation) || generation < 0) throw new Error('La génération Wizard courante est invalide.');
+    return generation;
+  };
+  const authorize = async (send: HopV55SemanticWizardJobSendInputV1): Promise<HopV55SemanticWizardJobSendInputV1 | HopV55SemanticWizardJobSnapshotV1> => {
+    const generation = await readCurrentGeneration(scope);
+    if (generation !== send.generation) return failed(send,
+      `La génération courante est ${generation}; le ticket Wizard cite ${send.generation}.`);
+    const decision: HopV55SemanticWizardWireAuthorizationResultV1 = await send.authorizeBeforeEachEmission();
+    if (decision.status !== 'authorized') return failed(send, decision.reason,
+      decision.status === 'unsupportedReadOnly' ? 'unsupportedReadOnly' : 'failed');
+    if (decision.operationId !== send.operationId || decision.generation !== send.generation
+      || decision.ticketReference !== send.ticketReference || decision.wireReference !== send.wireReference
+      || !sameWire(decision.wire, send.wire)) {
+      return failed(send, 'Le garde Wizard ne confirme pas operationId, génération, ticket et wire exacts.');
+    }
+    return { ...send, wire: structuredClone(decision.wire) };
+  };
+  const guarded: HopV55SemanticWizardJobStoreTransportV1 = {
+    async submit(send) {
+      const checked = await authorize(send);
+      return 'status' in checked ? checked : transport.submit(checked);
+    },
+    async retry(send) {
+      const checked = await authorize(send);
+      return 'status' in checked ? checked : transport.retry(checked);
+    },
+    async read(readInput) {
+      const checked = await authorize({ ...readInput, authorizeBeforeEachEmission: readInput.authorizeBeforeRead });
+      if ('status' in checked) return checked;
+      return transport.read({ ...readInput, wire: checked.wire });
+    },
+  };
+  const jobs = createHopV55SemanticWizardJobStoreV1({ ownerKey, workspaceId, scope, storeNamespace, providerKind, transport: guarded });
+  return { format: 'hop-v55-semantic-companion-runtime-wizard-v1', protocol: 'hopAdviceWizardRequest3V1',
+    ownerKey, workspaceId, scope: structuredClone(scope), storeNamespace, providerKind, jobs,
+    readGeneration: readCurrentGeneration, dispose() {} };
 }

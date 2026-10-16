@@ -184,6 +184,7 @@ function subjectOf(core: CoreText, row: HopV55ParsedMentionV1, sense: HopV55Sema
 function lexiconOf(row: HopV55ParsedMentionV1): HopV55SemanticLexiconV1 {
   const key = row.meta?.lexiconKey;
   if (row.meta?.inquiry === 'compensation') return { status: 'notAProperty' };
+  if (row.draft.dimension === 'process') return { status: 'notAProperty' };
   if (row.meta?.alias) return { status: 'proposedAlias', canonicalTerm: row.meta.alias, ...(key ? { key } : {}) };
   return row.draft.familyId || row.draft.dimension ? { status: 'lexicon', ...(key ? { key } : {}) } : { status: 'outOfLexicon' };
 }

@@ -587,12 +587,13 @@
   padding: 7px 10px;
 }
 
-.hv-nuance__primary {
+/* Scoped to win over page.css `.hop-v55 button` background (1.01:1 otherwise). */
+.hv-nuance .hv-nuance__primary {
   background: var(--nuance-forest-dark);
   color: #fffdf7 !important;
 }
 
-.hv-nuance__secondary {
+.hv-nuance .hv-nuance__secondary {
   background: #f9f8f0;
   color: var(--nuance-forest-dark) !important;
 }

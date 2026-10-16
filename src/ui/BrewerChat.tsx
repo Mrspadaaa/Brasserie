@@ -1,5 +1,5 @@
 import { Textarea } from './Input';
-import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import {
   MessageCircle,
   ChevronRight,
@@ -15,6 +15,7 @@ import {
 import { Sheet } from './Sheet';
 import { BrewerChat as api, brewerChatError } from '../services/brewerChat';
 import type { BrewerChatInput, BrewerHistory, BrewerScope, BrewerTurn } from '../services/brewerChat';
+import type { HopAdviceV1ClientEntryV3, HopAdviceV1WizardClientEntryV1 } from '../../functions/src/brewerHopAdviceTransportV1';
 import type { BrewerMode, BrewerProduct } from '../../functions/src/companionTypes';
 import { stableBrewerHopAdviceJson } from '../../functions/src/brewerHopAdviceProposal';
 import {
@@ -30,7 +31,15 @@ import './brewer-chat.css';
 import { BrewerProposalCard } from './BrewerProposalCard';
 import { brewerLauncher } from '../services/brewerLauncher';
 import type { BrewerProposal } from '../../functions/src/companionTypes';
-import type { HopV55AssistedCompanionSession } from './hopV55/assistedAdviceUiContracts';
+import type { HopV55AssistedCompanionSession, HopV55SemanticCompanionRuntimeV3, HopV55SemanticCompanionRuntimeWizardV1,
+  HopV55SemanticCompanionSessionV3, HopV55SemanticCompanionSessionWizardV1 } from './hopV55/assistedAdviceUiContracts';
+import type { HopV55AssistedAdviceRecordV2, HopV55AssistedAdviceWizardRecordV1 } from '../services/hopV55/assistedSemanticAdviceArchiveV2';
+import type { HopV55SemanticJobSnapshotV3, HopV55SemanticSubmissionResultV3,
+  HopV55SemanticWizardSubmissionResultV1 } from '../services/hopV55/semanticAdoptionApplicationHost';
+import type { HopV55SemanticAdoptionHeadV1, HopV55SemanticAdoptionPlanV1,
+  HopV55SemanticAdoptionReceiptV1 } from '../services/hopV55/assistedSemanticAdviceAdoptionV6';
+import type { HopV55SemanticJobActivityV3 } from '../services/brewerJobs';
+import { hopAdviceSemanticV3ClientPartitionKey, hopAdviceWizardClientPartitionKey } from '../services/brewerHopAdviceRuntime';
 
 export type BrewerChatAssistedAdvice = Pick<HopV55AssistedCompanionSession,
   'id' | 'request' | 'onBeforeSend' | 'onAssistedTurn'>;
@@ -62,6 +71,8 @@ export interface BrewerChatAssistedRuntime {
   reset(scope: BrewerScope, generation: number, operationId: string): Promise<{ generation: number }>;
   jobs: BrewerChatAssistedJobStore;
 }
+
+export type BrewerChatSemanticRuntimeV3 = HopV55SemanticCompanionRuntimeV3;
 
 interface AssistedTicket {
   requestKey: string;
@@ -125,7 +136,7 @@ const EMPTY_ACTIVITY: BrewerChatJobActivity = { jobs: [], connectionError: '' };
 const emptySnapshot = () => EMPTY_ACTIVITY;
 const emptySubscribe = () => () => {};
 
-interface Props {
+interface CommonProps {
   scope: BrewerScope;
   label: string;
   phase?: string;
@@ -139,11 +150,46 @@ interface Props {
   initialOpen?: boolean;
   initialQuestion?: string;
   suggestedPrompts?: Array<{ label: string; question: string }>;
-  assistedAdvice?: BrewerChatAssistedAdvice;
-  assistedRuntime?: BrewerChatAssistedRuntime;
   hideLauncher?: boolean;
   onClose?: () => void;
 }
+
+interface LegacyProps extends CommonProps {
+  protocol?: 'hopAdviceReadonlyV1';
+  assistedAdvice?: BrewerChatAssistedAdvice;
+  assistedRuntime?: BrewerChatAssistedRuntime;
+  semanticSession?: never;
+  semanticRuntime?: never;
+  wizardSession?: never;
+  wizardRuntime?: never;
+}
+
+interface SemanticProps extends CommonProps {
+  protocol: 'hopAdviceRequest3';
+  semanticSession: HopV55SemanticCompanionSessionV3;
+  semanticRuntime?: BrewerChatSemanticRuntimeV3;
+  assistedAdvice?: never;
+  assistedRuntime?: never;
+  wizardSession?: never;
+  wizardRuntime?: never;
+}
+
+/** Unsaved recipe-creator draft: its own session, runtime and local protocol; the wire stays Request3. */
+interface WizardSemanticProps extends CommonProps {
+  protocol: 'hopAdviceWizardRequest3V1';
+  wizardSession: HopV55SemanticCompanionSessionWizardV1;
+  wizardRuntime?: HopV55SemanticCompanionRuntimeWizardV1;
+  semanticSession?: never;
+  semanticRuntime?: never;
+  assistedAdvice?: never;
+  assistedRuntime?: never;
+}
+type Props = LegacyProps | SemanticProps | WizardSemanticProps;
+
+/** One companion surface, two explicit lanes; no lane is cast into the other. */
+type SemanticLaneV1 =
+  | { kind: 'classic'; session: HopV55SemanticCompanionSessionV3; runtime?: BrewerChatSemanticRuntimeV3 }
+  | { kind: 'wizard'; session: HopV55SemanticCompanionSessionWizardV1; runtime?: HopV55SemanticCompanionRuntimeWizardV1 };
 const merge = (a: BrewerTurn[], b: BrewerTurn[]) =>
   [
     ...new Map(
@@ -181,7 +227,7 @@ const prompts = (kind: string, phase = '') =>
 const responseModes: Array<{ value: BrewerMode; label: string; description: string }> = [
   { value: 'fast', label: 'Rapide', description: 'Conseil concis, vérifié avec Flash' },
   { value: 'auto', label: 'Auto', description: 'Flash adapte ses recherches et vérifie le conseil' },
-  { value: 'deep', label: 'Approfondi', description: 'Analyse Pro à ta demande · budget plus élevé' }
+  { value: 'deep', label: 'Approfondi', description: 'Réflexion plus poussée · budget plus élevé' }
 ];
 const modePreference = (): BrewerMode => {
   try {
@@ -195,6 +241,18 @@ const modePreference = (): BrewerMode => {
 
 /** Keying by scope prevents async responses and text drafts leaking into another recipe. */
 export function BrewerChat(props: Props) {
+  if (props.protocol === 'hopAdviceRequest3') {
+    return <SemanticCompanionChat key={`${props.scope.kind}:${props.scope.id}:${props.semanticSession.id}`}
+      scope={props.scope} label={props.label} phase={props.phase} draft={props.draft} localJournal={props.localJournal}
+      initialOpen={props.initialOpen} onClose={props.onClose}
+      lane={{ kind: 'classic', session: props.semanticSession, runtime: props.semanticRuntime }} />;
+  }
+  if (props.protocol === 'hopAdviceWizardRequest3V1') {
+    return <SemanticCompanionChat key={`${props.scope.kind}:${props.scope.id}:${props.wizardSession.id}`}
+      scope={props.scope} label={props.label} phase={props.phase}
+      initialOpen={props.initialOpen} onClose={props.onClose}
+      lane={{ kind: 'wizard', session: props.wizardSession, runtime: props.wizardRuntime }} />;
+  }
   return <ScopedChat key={`${props.scope.kind}:${props.scope.id}`} {...props} />;
 }
 function ScopedChat({
@@ -215,7 +273,7 @@ function ScopedChat({
   assistedRuntime,
   hideLauncher = false,
   onClose
-}: Props) {
+}: LegacyProps) {
   const [savedDraft, setSavedDraft] = useState<unknown>();
   const draft = currentDraft ?? savedDraft;
   const [open, setOpen] = useState(initialOpen),
@@ -1156,6 +1214,603 @@ function ScopedChat({
       </Sheet>
     </>
   );
+}
+
+const EMPTY_SEMANTIC_ACTIVITY_V3: HopV55SemanticJobActivityV3 = {
+  format: 'hop-v55-semantic-job-activity-v3', jobs: [], connectionError: '',
+};
+const emptySemanticActivityV3 = () => EMPTY_SEMANTIC_ACTIVITY_V3;
+
+function semanticRuntimeMatchesV3(session: HopV55SemanticCompanionSessionV3,
+  runtime: HopV55SemanticCompanionRuntimeV3 | undefined): runtime is HopV55SemanticCompanionRuntimeV3 {
+  if (!runtime || runtime.format !== 'hop-v55-semantic-companion-runtime-v3' || runtime.protocol !== 'hopAdviceRequest3'
+    || runtime.ownerKey !== session.ownerKey || runtime.workspaceId !== session.workspaceId
+    || runtime.providerKind !== runtime.jobs.providerKind || runtime.jobs.kind !== 'hopAdviceRequest3'
+    || typeof runtime.readGeneration !== 'function'
+    || !sameScopeExactly(runtime.scope, session.scope)) return false;
+  try { return runtime.storeNamespace === hopAdviceSemanticV3ClientPartitionKey(session.ownerKey, session.workspaceId, session.scope); }
+  catch { return false; }
+}
+
+/** The Wizard runtime must be the distinct Wizard lane of this exact owner, dossier and draft scope. */
+function semanticRuntimeMatchesWizardV1(session: HopV55SemanticCompanionSessionWizardV1,
+  runtime: HopV55SemanticCompanionRuntimeWizardV1 | undefined): runtime is HopV55SemanticCompanionRuntimeWizardV1 {
+  if (!runtime || runtime.format !== 'hop-v55-semantic-companion-runtime-wizard-v1' || runtime.protocol !== 'hopAdviceWizardRequest3V1'
+    || runtime.ownerKey !== session.ownerKey || runtime.workspaceId !== session.workspaceId
+    || runtime.providerKind !== runtime.jobs.providerKind || runtime.jobs.kind !== 'hopAdviceWizardRequest3V1'
+    || typeof runtime.readGeneration !== 'function' || session.scope.kind !== 'draft'
+    || !sameScopeExactly(runtime.scope, session.scope)) return false;
+  try {
+    const partition = hopAdviceWizardClientPartitionKey(session.ownerKey, session.workspaceId, session.scope);
+    return runtime.storeNamespace === partition && runtime.jobs.storeNamespace === partition;
+  } catch { return false; }
+}
+
+/** The wire carries the snapshot sealed with this reading, never the editor's later state nor a saved Recipe. */
+function semanticEntryWizardV1(input: {
+  session: HopV55SemanticCompanionSessionWizardV1;
+  operationId: string;
+  generation: number;
+  mode: BrewerMode;
+  phase?: string;
+}): HopAdviceV1WizardClientEntryV1 {
+  const { session, operationId, generation, mode, phase } = input;
+  return { operationId, question: session.request.question, generation, ...(phase === undefined ? {} : { phase }),
+    hopAdvice: session.request, analysisMode: mode, scope: { kind: 'draft', id: session.scope.id }, draft: session.snapshot.recipe };
+}
+
+function semanticEntryV3(input: {
+  session: HopV55SemanticCompanionSessionV3;
+  operationId: string;
+  generation: number;
+  mode: BrewerMode;
+  phase?: string;
+  draft?: unknown;
+  localJournal?: unknown;
+}): HopAdviceV1ClientEntryV3 {
+  const { session, operationId, generation, mode, phase, draft, localJournal } = input;
+  const common = { operationId, question: session.request.question, generation,
+    ...(phase === undefined ? {} : { phase }), hopAdvice: session.request, analysisMode: mode };
+  const scope = session.scope;
+  switch (scope.kind) {
+    case 'draft':
+      if (draft === undefined) throw new Error('Le brouillon exact de cette lecture n’est plus disponible; aucune demande n’est reconstruite.');
+      if (localJournal !== undefined) throw new Error('Un brouillon ne transmet pas de journal de brassin.');
+      return { ...common, scope: { kind: 'draft', id: scope.id }, draft };
+    case 'batch':
+      if (draft !== undefined) throw new Error('Une lecture de brassin n’emporte pas de brouillon de recette.');
+      return { ...common, scope: { kind: 'batch', id: scope.id }, ...(localJournal === undefined ? {} : { localJournal }) };
+    case 'recipe':
+      if (draft !== undefined || localJournal !== undefined) throw new Error('Une portée recipe/app ne transmet ni draft ni journal.');
+      return { ...common, scope: { kind: 'recipe', id: scope.id } };
+    case 'app':
+      if (draft !== undefined || localJournal !== undefined) throw new Error('Une portée recipe/app ne transmet ni draft ni journal.');
+      return { ...common, scope: { kind: 'app', id: scope.id } };
+  }
+}
+
+type SemanticSubmissionResultAnyV1 = HopV55SemanticSubmissionResultV3 | HopV55SemanticWizardSubmissionResultV1;
+/** Both lanes archive the same verified V6 turn shape for display; their records stay distinct types. */
+type SemanticRecordViewV1 = HopV55AssistedAdviceRecordV2 | HopV55AssistedAdviceWizardRecordV1;
+/** Local progress of the current operation: the classic store snapshot, or the Wizard submission result. */
+interface SemanticProgressV1 {
+  operationId: string;
+  generation: number;
+  status: 'pending' | 'received' | 'failed' | 'unsupportedReadOnly';
+  reason?: string;
+}
+
+function semanticResultMessage(result: SemanticSubmissionResultAnyV1): string | undefined {
+  return 'reason' in result ? result.reason : undefined;
+}
+
+type SemanticRowV3 = Record<string, unknown>;
+const semanticRowV3 = (value: unknown): SemanticRowV3 | undefined =>
+  value && typeof value === 'object' && !Array.isArray(value) ? value as SemanticRowV3 : undefined;
+const semanticRowsV3 = (value: unknown): SemanticRowV3[] =>
+  Array.isArray(value) ? value.flatMap(row => { const read = semanticRowV3(row); return read ? [read] : []; }) : [];
+const semanticTextV3 = (value: unknown): string | undefined => typeof value === 'string' && value.trim() ? value : undefined;
+const semanticTextsV3 = (value: unknown): string[] =>
+  Array.isArray(value) ? value.filter((row): row is string => typeof row === 'string' && !!row.trim()) : [];
+
+interface SemanticChoiceV3 {
+  key: string;
+  optionId: string;
+  proposalId: string;
+  title: string;
+  rationale?: string;
+  conditions: string[];
+  tradeoffs: string[];
+  suggestion: string;
+  motive?: string;
+  evidence: Array<{ id: string; label?: string }>;
+  /** Only an added property intent enters the documentary answer; other links stay readable with this reason. */
+  refusal?: string;
+}
+
+/** Display of a strictly received V6 record: the choices are its sealed option→suggestion links, nothing else. */
+function semanticChoicesV3(record: SemanticRecordViewV1) {
+  const proposal = semanticRowV3(semanticRowV3((record.turn as { hopAdviceProposal?: unknown }).hopAdviceProposal)?.proposal);
+  const answer = semanticRowV3(proposal?.answer);
+  const options = new Map(semanticRowsV3(answer?.options).map(row => [semanticTextV3(row.id) ?? '', row] as const));
+  const intents = new Map(semanticRowsV3(proposal?.propertyIntentProposals).map(row => [semanticTextV3(row.proposalId) ?? '', row] as const));
+  const revisions = new Map(semanticRowsV3(proposal?.semanticRevisionProposals).map(row => [semanticTextV3(row.proposalId) ?? '', row] as const));
+  const labels = new Map(record.fullEvidence.map(evidence => [evidence.id, evidence.label] as const));
+  const choices: SemanticChoiceV3[] = semanticRowsV3(proposal?.optionProposalLinks).flatMap(link => {
+    const optionId = semanticTextV3(link.optionId);
+    const proposalId = semanticTextV3(link.proposalId);
+    if (!optionId || !proposalId) return [];
+    const option = options.get(optionId);
+    const intent = intents.get(proposalId);
+    const revision = revisions.get(proposalId);
+    const intentLabel = semanticTextV3(semanticRowV3(intent?.intent)?.label);
+    const revisionText = semanticRowsV3(revision?.sourceSpans).flatMap(span => semanticTextV3(span.text) ?? []).join(' · ');
+    return [{
+      key: `${optionId}\u0000${proposalId}`, optionId, proposalId,
+      title: semanticTextV3(option?.title) ?? 'Option de la réponse',
+      rationale: semanticTextV3(option?.rationale),
+      conditions: semanticTextsV3(option?.conditions), tradeoffs: semanticTextsV3(option?.tradeoffs),
+      suggestion: intent ? `${intent.kind === 'add' ? 'Ajouter' : 'Réviser'} : ${intentLabel ?? 'intention proposée'}`
+        : revision ? `Relire la question : ${revisionText || 'fragment proposé'}` : 'Suggestion absente de cette réponse',
+      motive: semanticTextV3(intent?.motive ?? revision?.motive),
+      evidence: semanticTextsV3(link.evidenceIds).map(id => ({ id, label: labels.get(id) })),
+      refusal: intent?.kind === 'add' ? undefined
+        : intent ? 'Une révision d’intention passe par la correction de la réponse documentaire, pas par ce choix.'
+          : 'Une révision de la lecture d’origine reste consultable; elle ne s’ajoute pas à la réponse documentaire.',
+    }];
+  });
+  const unknowns = semanticRowsV3(answer?.unknowns).flatMap(row => {
+    const question = semanticTextV3(row.question);
+    return question ? [{ id: semanticTextV3(row.id) ?? question, question, changesChoice: semanticTextV3(row.changesChoice) }] : [];
+  });
+  return { choices, unknowns };
+}
+
+function semanticHeadLabelV3(head: HopV55SemanticAdoptionHeadV1): string {
+  return head.kind === 'none' ? 'Première version documentaire de cette lecture'
+    : head.kind === 'recordV3' ? 'Nouvelle version qui reprend la réponse documentaire actuelle'
+      : 'Nouvelle version de la réponse documentaire actuelle';
+}
+function semanticHeadReferenceV3(head: HopV55SemanticAdoptionHeadV1): string {
+  return head.kind === 'none' ? 'none' : head.kind === 'recordV3' ? `recordV3 ${head.reference}`
+    : `recordV4 ${head.reference} · ${head.ledgerReference}`;
+}
+const semanticInstantV3 = (value: string) => new Date(value).toLocaleString('fr-CH',
+  { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+/**
+ * Read-only view of an archived semantic answer (classic or Wizard record): the same answer, evidence, options,
+ * tradeoffs and unknowns as the companion, rebuilt from the strictly read record only. No session, runtime, choice
+ * control or command is attached; the context it came from is stated by the caller.
+ */
+export function HopV55SemanticArchivedAnswerV1({ record }: { record: SemanticRecordViewV1 }) {
+  if (record.semantic.kind !== 'verifiedV6') {
+    return <p role="status" className="brewer-chat-status">Réponse conservée en lecture seule, sans conversion : {record.semantic.reason}</p>;
+  }
+  const view = semanticChoicesV3(record);
+  return <article className="brewer-chat-turn" data-testid="semantic-archived-answer">
+    <p className="brewer-chat-question">{record.turn.question}</p>
+    <div className={`brewer-chat-answer is-${record.turn.advice.level}`}>
+      <div className="brewer-chat-answer-meta"><span><Sparkles size={14} /> Réponse liée à cette lecture · conservée</span>
+        <time dateTime={record.recordedAt}>{semanticInstantV3(record.recordedAt)}</time></div>
+      <h3>{record.turn.advice.summary}</h3>
+      {record.turn.advice.action ? <p className="brewer-chat-action">{record.turn.advice.action}</p> : null}
+      {record.turn.advice.why ? <p>{record.turn.advice.why}</p> : null}
+      {record.turn.advice.watch ? <p className="brewer-chat-watch"><strong>À surveiller</strong>{record.turn.advice.watch}</p> : null}
+      <details className="brewer-chat-proof"><summary><CheckCheck size={15} /> Réponse et preuves conservées</summary>
+        <p>{record.turn.contextLabel} · {record.turn.model}</p>
+        <p>Format de la réponse vérifié : <code>V6</code>.</p>
+        {record.fullEvidence.map(evidence => <div key={evidence.id}><strong><Calculator size={14} /> {evidence.label}</strong>
+          {evidence.facts.map((fact, index) => <p key={index}>{fact}</p>)}
+          {evidence.limits.map((limit, index) => <small key={index}>{limit}</small>)}
+          {evidence.sources?.filter(source => /^https:\/\//.test(source.url)).map(source => <a key={source.url}
+            href={source.url} target="_blank" rel="noopener noreferrer">{source.title}<ArrowUpRight size={12} /></a>)}
+        </div>)}
+      </details>
+      {view.choices.length ? <div className="brewer-work-card" data-testid="semantic-archived-options">
+        <strong>Options de cette réponse</strong>
+        {view.choices.map(choice => <div key={choice.key}>
+          <p><strong>{choice.title}</strong> → {choice.suggestion}</p>
+          {choice.rationale ? <p>{choice.rationale}</p> : null}
+          {choice.motive ? <p>Motif de la suggestion : {choice.motive}</p> : null}
+          {choice.conditions.length ? <p>Conditions : {choice.conditions.join(' · ')}</p> : null}
+          {choice.tradeoffs.length ? <p>Compromis : {choice.tradeoffs.join(' · ')}</p> : null}
+          <p>Preuves liées : {choice.evidence.length
+            ? choice.evidence.map(row => row.label ?? 'preuve sans libellé').join(' · ') : 'aucune, hypothèse non calculée'}</p>
+        </div>)}
+      </div> : <p className="brewer-chat-status">Cette réponse ne relie aucune option à une suggestion.</p>}
+      {view.unknowns.length ? <div className="brewer-chat-watch"><strong>Ce qui reste inconnu</strong>
+        <ul>{view.unknowns.map(row => <li key={row.id}>{row.question}{row.changesChoice ? ` — ${row.changesChoice}` : ''}</li>)}</ul>
+      </div> : null}
+      <p className="brewer-chat-status">Relecture d’archive : rien n’est envoyé, appliqué ou enregistré depuis cette vue.</p>
+    </div>
+  </article>;
+}
+
+type SemanticPreviewArgsV1 = Parameters<HopV55SemanticCompanionSessionWizardV1['preview']>[0];
+
+function SemanticCompanionChat({ scope, label, phase, draft, localJournal, initialOpen = false, lane, onClose }: {
+  scope: BrewerScope; label: string; phase?: string; draft?: unknown; localJournal?: unknown;
+  initialOpen?: boolean; onClose?: () => void; lane: SemanticLaneV1;
+}) {
+  const session = lane.session;
+  const [open, setOpen] = useState(initialOpen);
+  const [mode, setMode] = useState<BrewerMode>(modePreference);
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [record, setRecord] = useState<SemanticRecordViewV1 | undefined>(session.resumedRecord);
+  const [operationId, setOperationId] = useState(session.resumedOperationId ?? '');
+  const [wizardProgress, setWizardProgress] = useState<SemanticProgressV1>();
+  const recoveryStarted = useRef('');
+  const scopeReady = sameScopeExactly(session.scope, scope) && sameScopeExactly(session.request.contextLaunch.scope, scope);
+  const classicRuntime = lane.kind === 'classic' && scopeReady && semanticRuntimeMatchesV3(lane.session, lane.runtime) ? lane.runtime : undefined;
+  const wizardRuntime = lane.kind === 'wizard' && scopeReady && semanticRuntimeMatchesWizardV1(lane.session, lane.runtime) ? lane.runtime : undefined;
+  const runtimeReady = !!classicRuntime || !!wizardRuntime;
+  // Only the classic store exposes an activity feed; the Wizard lane follows its own submission results.
+  const activity = useSyncExternalStore(
+    classicRuntime ? classicRuntime.jobs.subscribe : emptySubscribe,
+    classicRuntime ? classicRuntime.jobs.snapshot : emptySemanticActivityV3,
+    classicRuntime ? classicRuntime.jobs.snapshot : emptySemanticActivityV3,
+  );
+  const classicJob = activity.jobs.find(row => row.operationId === operationId);
+  const progress: SemanticProgressV1 | undefined = lane.kind === 'classic'
+    ? classicJob ? { operationId: classicJob.operationId, generation: classicJob.generation, status: classicJob.status,
+      ...(classicJob.reason === undefined ? {} : { reason: classicJob.reason }) } : undefined
+    : wizardProgress && wizardProgress.operationId === operationId ? wizardProgress : undefined;
+  const previewLane = (args: SemanticPreviewArgsV1) => lane.kind === 'classic' ? lane.session.preview(args) : lane.session.preview(args);
+  const confirmLane = (plan: HopV55SemanticAdoptionPlanV1) => lane.kind === 'classic' ? lane.session.confirm(plan) : lane.session.confirm(plan);
+  const historyLane = (commandId: string) => lane.kind === 'classic' ? lane.session.readHistory(commandId) : lane.session.readHistory(commandId);
+  const verified = record?.semantic.kind === 'verifiedV6' ? record : undefined;
+  const semanticView = useMemo(() => verified ? semanticChoicesV3(verified) : undefined, [verified]);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [motive, setMotive] = useState('');
+  const [adopting, setAdopting] = useState(false);
+  const [refused, setRefused] = useState(false);
+  const [preview, setPreview] = useState<{ fingerprint: string; plan: HopV55SemanticAdoptionPlanV1 }>();
+  const [adoption, setAdoption] = useState<{ plan: HopV55SemanticAdoptionPlanV1; receipt: HopV55SemanticAdoptionReceiptV1;
+    mode: 'committed' | 'replay'; workspaceRevision: number; check?: string }>();
+  // One command per exact choice and motive: a retry keeps its IDs, any correction gets new ones.
+  const adoptionCommand = useRef<{ fingerprint: string; commandId: string; recordId: string; requestId: string } | undefined>(undefined);
+  const selectionFingerprint = stableBrewerHopAdviceJson({ keys: [...selectedKeys].sort(), motive: motive.trim() });
+  const selectionFingerprintRef = useRef(selectionFingerprint);
+  selectionFingerprintRef.current = selectionFingerprint;
+  const selectedChoices = (semanticView?.choices ?? []).filter(choice => selectedKeys.includes(choice.key) && !choice.refusal);
+
+  const notifyDurable = async () => {
+    try { await session.onDurableChange?.(); }
+    catch { /* The durable rows stay readable from the workshop history. */ }
+  };
+  // Any change of choice or motive invalidates the preview: confirmation needs a new one.
+  const changeSelection = (update: () => void) => { update(); setPreview(undefined); setRefused(false); };
+  const toggleChoice = (choice: SemanticChoiceV3) => changeSelection(() => setSelectedKeys(keys => keys.includes(choice.key)
+    ? keys.filter(key => key !== choice.key)
+    // A suggestion is adopted once; choosing it through another option replaces that link.
+    : [...keys.filter(key => !key.endsWith(`\u0000${choice.proposalId}`)), choice.key]));
+
+  const previewChoice = async () => {
+    if (!verified || adopting || !selectedChoices.length || !motive.trim()) return;
+    const fingerprint = selectionFingerprint;
+    if (adoptionCommand.current?.fingerprint !== fingerprint) {
+      const id = crypto.randomUUID();
+      adoptionCommand.current = { fingerprint, commandId: `semantic-adoption:${id}`, recordId: `semantic-answer:${id}`,
+        requestId: `semantic-request:${id}` };
+    }
+    const command = adoptionCommand.current;
+    const reason = motive.trim();
+    setAdopting(true); setError(''); setPreview(undefined); setRefused(false);
+    try {
+      const result = await previewLane({ operationId: verified.operationId, commandId: command.commandId,
+        recordId: command.recordId, requestId: command.requestId, reason,
+        selection: selectedChoices.map(choice => ({ optionId: choice.optionId, proposalId: choice.proposalId, reason })) });
+      if (result.status !== 'ready') { setError(result.reason); return; }
+      if (selectionFingerprintRef.current !== fingerprint) return;
+      setPreview({ fingerprint, plan: result.plan });
+    } catch (cause) { setError(brewerChatError(cause)); }
+    finally { setAdopting(false); }
+  };
+
+  const confirmChoice = async () => {
+    const current = preview;
+    if (!current || adopting || current.fingerprint !== selectionFingerprintRef.current) return;
+    setAdopting(true); setError('');
+    try {
+      const result = await confirmLane(current.plan);
+      if (result.status !== 'committed' && result.status !== 'replay') {
+        setError(result.reason);
+        // Source, head, generation or authority moved: this preview proves nothing anymore.
+        if (result.status !== 'pending') setPreview(undefined);
+        return;
+      }
+      if (result.receipt.commandId !== current.plan.commandId || result.recipeEffect !== 'none') {
+        setError('Le reçu ne correspond pas à cet aperçu; il reste dans l’historique sans être présenté comme confirmé.');
+        return;
+      }
+      setAdoption({ plan: current.plan, receipt: result.receipt, mode: result.status, workspaceRevision: result.workspaceRevision });
+      setPreview(undefined); setSelectedKeys([]); setMotive('');
+      await notifyDurable();
+      const history = await historyLane(result.receipt.commandId);
+      const check = history.status === 'readOnly' && history.commit.receipt.reference === result.receipt.reference
+        && history.record.reference === result.receipt.record.reference
+        ? 'Relecture : reçu, plan et version documentaire concordent.'
+        : `Relecture à reprendre : ${history.status === 'readOnly' ? 'le reçu relu diffère.' : history.reason}`;
+      setAdoption(previous => previous?.receipt.reference === result.receipt.reference ? { ...previous, check } : previous);
+    } catch (cause) { setError(brewerChatError(cause)); }
+    finally { setAdopting(false); }
+  };
+
+  const replayChoice = async () => {
+    const current = adoption;
+    if (!current || adopting) return;
+    setAdopting(true); setError('');
+    try {
+      const result = await confirmLane(current.plan);
+      if (result.status === 'replay' && result.receipt.reference === current.receipt.reference
+        && result.receipt.effectiveAt === current.receipt.effectiveAt) {
+        setAdoption({ ...current, mode: 'replay', check: 'Rejeu : même reçu et même instant d’effet, aucun second enregistrement.' });
+        await notifyDurable();
+      } else {
+        setError(result.status === 'replay' || result.status === 'committed'
+          ? 'Le rejeu n’a pas rendu le reçu original; l’historique reste la référence.' : result.reason);
+      }
+    } catch (cause) { setError(brewerChatError(cause)); }
+    finally { setAdopting(false); }
+  };
+
+  const refuseChoice = () => {
+    adoptionCommand.current = undefined;
+    setPreview(undefined); setSelectedKeys([]); setMotive(''); setError(''); setRefused(true);
+  };
+
+  const acceptResult = (result: SemanticSubmissionResultAnyV1) => {
+    if (result.status === 'received') {
+      setRecord(result.record);
+      setOperationId(result.ticket.operationId);
+      setWizardProgress(undefined);
+      setError('');
+      void notifyDurable();
+    } else if (result.status === 'pending') {
+      setOperationId(result.ticket.operationId);
+      if (lane.kind === 'wizard') setWizardProgress({ operationId: result.ticket.operationId,
+        generation: result.ticket.generation, status: 'pending' });
+      setError('');
+    } else {
+      const durable = 'durable' in result ? result.durable : undefined;
+      if (durable) setOperationId(durable.operationId);
+      else setOperationId('');
+      const message = semanticResultMessage(result);
+      // The Wizard store has no activity feed: its durable failure stays visible with the exact retry it allows.
+      if (lane.kind === 'wizard') setWizardProgress(durable ? { operationId: durable.operationId, generation: durable.generation,
+        status: result.status === 'unsupportedReadOnly' ? 'unsupportedReadOnly' : 'failed',
+        ...(message === undefined ? {} : { reason: message }) } : undefined);
+      if (message) setError(message);
+    }
+  };
+
+  const recover = async () => {
+    if (!runtimeReady) {
+      setError('Cette lecture assistée est indisponible. Aucun envoi ne partira par le compagnon standard.');
+      return;
+    }
+    const operation = operationId || session.resumedOperationId;
+    if (!operation) { setError('Aucun ticket enregistré n’est lié à cette lecture.'); return; }
+    setLoading(true); setError('');
+    try {
+      if (lane.kind === 'classic' && classicRuntime) acceptResult(await lane.session.recover({ operationId: operation, store: classicRuntime.jobs }));
+      else if (lane.kind === 'wizard' && wizardRuntime) acceptResult(await lane.session.recover({ operationId: operation, store: wizardRuntime.jobs }));
+    }
+    catch (cause) { setError(brewerChatError(cause)); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => {
+    if (!runtimeReady) {
+      setError('Le compagnon assisté est indisponible pour cette lecture.');
+      return;
+    }
+    if (classicRuntime) void classicRuntime.jobs.start();
+    if (session.resumedRecord) return;
+    if (!session.resumedOperationId || recoveryStarted.current === session.id) return;
+    recoveryStarted.current = session.id;
+    setOperationId(session.resumedOperationId);
+    void recover();
+  // A mounted resume reads only the exact persisted ticket; the host rechecks current authority.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [runtimeReady, session.id, session.resumedOperationId, session.resumedRecord, lane.runtime]);
+
+  const ask = async () => {
+    if (submitting || loading || operationId || session.resumedOperationId || record) return;
+    if (!runtimeReady) {
+      setError('Cette lecture assistée est indisponible. Aucune question ne sera envoyée au compagnon standard.');
+      return;
+    }
+    setSubmitting(true); setError('');
+    const nextOperationId = crypto.randomUUID();
+    try {
+      if (lane.kind === 'classic' && classicRuntime) {
+        const generation = await classicRuntime.readGeneration(scope);
+        if (!Number.isSafeInteger(generation) || generation < 0) throw new Error('La génération de conversation lue est invalide.');
+        const entry = semanticEntryV3({ session: lane.session, operationId: nextOperationId, generation, mode,
+          phase: phase ?? lane.session.context?.phase,
+          draft: scope.kind === 'draft' ? draft ?? lane.session.context?.recipe : undefined,
+          localJournal: scope.kind === 'batch' ? localJournal ?? lane.session.context?.journal : undefined });
+        setOperationId(nextOperationId);
+        acceptResult(await lane.session.submit({ entry, store: classicRuntime.jobs }));
+      } else if (lane.kind === 'wizard' && wizardRuntime) {
+        const generation = await wizardRuntime.readGeneration(scope);
+        if (!Number.isSafeInteger(generation) || generation < 0) throw new Error('La génération de conversation lue est invalide.');
+        const entry = semanticEntryWizardV1({ session: lane.session, operationId: nextOperationId, generation, mode,
+          phase: phase ?? lane.session.context?.phase });
+        setOperationId(nextOperationId);
+        acceptResult(await lane.session.submit({ entry, store: wizardRuntime.jobs }));
+      }
+    } catch (cause) { setError(brewerChatError(cause)); }
+    finally { setSubmitting(false); }
+  };
+
+  const retry = async () => {
+    if (!runtimeReady || !progress || progress.status !== 'failed' || submitting || loading) return;
+    setSubmitting(true); setError('');
+    try {
+      if (lane.kind === 'classic' && classicRuntime) acceptResult(await lane.session.retry({ operationId: progress.operationId,
+        generation: progress.generation, store: classicRuntime.jobs }));
+      else if (lane.kind === 'wizard' && wizardRuntime) acceptResult(await lane.session.retry({ operationId: progress.operationId,
+        generation: progress.generation, store: wizardRuntime.jobs }));
+    }
+    catch (cause) { setError(brewerChatError(cause)); }
+    finally { setSubmitting(false); }
+  };
+
+  const resubmit = async () => {
+    if (!runtimeReady || !operationId || submitting || loading || progress || record) return;
+    setSubmitting(true); setError('');
+    try {
+      if (lane.kind === 'classic' && classicRuntime) acceptResult(await lane.session.resubmit({ operationId, store: classicRuntime.jobs }));
+      else if (lane.kind === 'wizard' && wizardRuntime) acceptResult(await lane.session.resubmit({ operationId, store: wizardRuntime.jobs }));
+    }
+    catch (cause) { setError(brewerChatError(cause)); }
+    finally { setSubmitting(false); }
+  };
+
+  const locked = !!operationId || !!session.resumedOperationId || !!record;
+  return <Sheet open={open} onClose={() => { if (!submitting) { setOpen(false); onClose?.(); } }}
+    dismissible={!submitting} title="Compagnon brasseur" subtitle={label} className="brewer-chat-sheet"
+    footer={<form autoComplete="off" className="brewer-chat-compose" onSubmit={event => { event.preventDefault(); void ask(); }}>
+      <div className="brewer-chat-mode">
+        <fieldset disabled={locked || submitting || loading} aria-describedby={`brewer-mode-v3-${scope.id}`}>
+          <legend className="sr-only">Mode de réponse</legend>
+          {responseModes.map(option => <label key={option.value} data-mode={option.value}>
+            <input type="radio" name={`brewer-mode-v3-${scope.id}`} value={option.value} checked={mode === option.value}
+              onChange={() => { setMode(option.value); try { localStorage.setItem('brewer-chat-mode', option.value); } catch { /* Optional preference. */ } }} />
+            <span>{option.value === 'fast' ? <Zap size={14} /> : option.value === 'deep' ? <Sparkles size={14} /> : null}{option.label}</span>
+          </label>)}
+        </fieldset>
+        <small id={`brewer-mode-v3-${scope.id}`}>{responseModes.find(option => option.value === mode)!.description}</small>
+      </div>
+      <label className="sr-only" htmlFor={`brewer-question-v3-${scope.id}`}>Question de la lecture archivée</label>
+      <Textarea id={`brewer-question-v3-${scope.id}`} value={session.request.question} maxLength={4000} rows={2}
+        readOnly placeholder="Question de la lecture archivée" />
+      {session.resumedOperationId ? <p className="brewer-chat-status" role="status">Cette ouverture reprend le ticket archivé exact; la question et son périmètre sont verrouillés.</p> : null}
+      <button type="submit" disabled={!runtimeReady || locked || submitting || loading || session.request.question.length < 2}
+        aria-label="Envoyer la lecture assistée"><Send size={20} /><span>{submitting ? 'Envoi…' : 'Envoyer'}</span></button>
+    </form>}>
+    <div className="brewer-chat-context">
+      <span className="brewer-chat-dot" /><span>{lane.kind === 'wizard'
+        ? 'Brouillon en cours · version figée pour cette lecture · aucune modification de recette'
+        : 'Lecture enregistrée · contexte conservé · aucune modification de recette'}</span>
+      {operationId && !record ? <button type="button" className="brewer-chat-reset" aria-label="Récupérer la réponse exacte"
+        title="Récupérer la réponse exacte" disabled={loading || submitting} onClick={() => void recover()}><RotateCcw size={17} /></button> : null}
+    </div>
+    <details className="brewer-chat-proof"><summary>Détails de la lecture</summary><dl>
+      <div><dt>Version de l’envoi</dt><dd><code>{lane.kind === 'wizard' ? 'Request3 · brouillon' : 'Request3'}</code></dd></div>
+      <div><dt>Périmètre exact</dt><dd><code>{session.scope.kind}:{session.scope.id}</code></dd></div>
+      {lane.kind === 'wizard' ? <div><dt>Version du brouillon</dt><dd><code>{lane.session.snapshot.reference}</code></dd></div> : null}
+    </dl></details>
+    {!runtimeReady ? <p role="status" className="brewer-chat-status">Le transport dédié est indisponible. Aucune question ne sera envoyée par le compagnon standard.</p> : null}
+    {progress?.status === 'pending' ? <p role="status" className="brewer-chat-status">Question conservée sous son ticket exact; traitement en cours.</p> : null}
+    {progress?.status === 'unsupportedReadOnly' ? <p role="status" className="brewer-chat-status">Réponse future conservée en lecture seule : {progress.reason}</p> : null}
+    {progress?.status === 'failed' ? <div role="status" className="brewer-chat-status">
+      <p>{progress.reason ?? 'La lecture assistée n’a pas abouti.'}</p>
+      <button type="button" disabled={submitting || loading} onClick={() => void retry()}>Réessayer le même ticket</button>
+    </div> : null}
+    {operationId && !progress && !record ? <div className="brewer-chat-status" role="status">
+      <p>Le ticket local reste lié à cette question. La reprise réutilise les données d’envoi conservées sans reconstruire la demande.</p>
+      <button type="button" disabled={submitting || loading} onClick={() => void resubmit()}>Réémettre le ticket exact</button>
+    </div> : null}
+    {activity.connectionError ? <p role="status" className="brewer-chat-status">{activity.connectionError}</p> : null}
+    {record?.semantic.kind === 'verifiedV6' ? <article className="brewer-chat-turn" data-testid="semantic-v6-turn">
+      <p className="brewer-chat-question">{record.turn.question}</p>
+      <div className={`brewer-chat-answer is-${record.turn.advice.level}`}>
+        <div className="brewer-chat-answer-meta"><span><Sparkles size={14} /> Réponse liée à cette lecture</span>
+          <time dateTime={record.recordedAt}>{new Date(record.recordedAt).toLocaleString('fr-CH', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</time></div>
+        <h3>{record.turn.advice.summary}</h3><p className="brewer-chat-action">{record.turn.advice.action}</p>
+        {record.turn.advice.why ? <p>{record.turn.advice.why}</p> : null}
+        {record.turn.advice.watch ? <p className="brewer-chat-watch"><strong>À surveiller</strong>{record.turn.advice.watch}</p> : null}
+        {record.turn.advice.question ? <p className="brewer-chat-followup">{record.turn.advice.question}</p> : null}
+        <details className="brewer-chat-proof"><summary><CheckCheck size={15} /> Réponse et preuves reçues</summary>
+          <p>{record.turn.contextLabel} · {record.turn.model}</p>
+          <p>Format de la réponse vérifié : <code>V6</code>.</p>
+          {record.fullEvidence.map(evidence => <div key={evidence.id}><strong><Calculator size={14} /> {evidence.label}</strong>
+            {evidence.facts.map((fact, index) => <p key={index}>{fact}</p>)}
+            {evidence.limits.map((limit, index) => <small key={index}>{limit}</small>)}
+            {evidence.sources?.filter(source => /^https:\/\//.test(source.url)).map(source => <a key={source.url}
+              href={source.url} target="_blank" rel="noopener noreferrer">{source.title}<ArrowUpRight size={12} /></a>)}
+          </div>)}
+        </details>
+        <p className="brewer-chat-status">Proposition conservée dans la lecture assistée. Rien n’a été appliqué à la recette, au brassin ou au stock.</p>
+        {semanticView?.unknowns.length ? <div className="brewer-chat-watch"><strong>Ce qui reste inconnu</strong>
+          <ul>{semanticView.unknowns.map(row => <li key={row.id}>{row.question}{row.changesChoice ? ` — ${row.changesChoice}` : ''}</li>)}</ul>
+        </div> : null}
+      </div>
+    </article> : null}
+    {verified && semanticView?.choices.length ? <fieldset className="brewer-work-card" disabled={adopting} data-testid="semantic-v6-choices">
+      <legend>Choisir ce que tu retiens</legend>
+      {semanticView.choices.map(choice => <div key={choice.key}>
+        <label>
+          <input type="checkbox" checked={selectedKeys.includes(choice.key)} disabled={!!choice.refusal}
+            aria-label={`Retenir « ${choice.title} » avec « ${choice.suggestion} »`} onChange={() => toggleChoice(choice)} />
+          <span><strong>{choice.title}</strong> → {choice.suggestion}</span>
+        </label>
+        {choice.rationale ? <p>{choice.rationale}</p> : null}
+        {choice.motive ? <p>Motif de la suggestion : {choice.motive}</p> : null}
+        {choice.conditions.length ? <p>Conditions : {choice.conditions.join(' · ')}</p> : null}
+        {choice.tradeoffs.length ? <p>Compromis : {choice.tradeoffs.join(' · ')}</p> : null}
+        <p>Preuves liées : {choice.evidence.length
+          ? choice.evidence.map(row => row.label ?? 'preuve sans libellé').join(' · ') : 'aucune, hypothèse non calculée'}</p>
+        {choice.refusal ? <p role="status">{choice.refusal}</p> : null}
+      </div>)}
+      <label className="sr-only" htmlFor={`semantic-motive-${session.id}`}>Motif de ton choix</label>
+      <Textarea id={`semantic-motive-${session.id}`} className="w-full" rows={2} value={motive} placeholder="Pourquoi retiens-tu ce choix ?"
+        onChange={event => { const value = event.target.value; changeSelection(() => setMotive(value)); }} />
+      <p className="brewer-chat-status">Seront conservés : la lecture d’origine, cette réponse et ses preuves. Confirmer ajoute une version documentaire de ta demande; recette, brouillon, stock et brassin ne changent pas.</p>
+      <div className="brewer-work-actions">
+        <button type="button" disabled={adopting || !selectedChoices.length || !motive.trim()} onClick={() => void previewChoice()}>Prévisualiser ce choix</button>
+        <button type="button" disabled={adopting} onClick={refuseChoice}>Refuser cette proposition</button>
+      </div>
+    </fieldset> : verified ? <p className="brewer-chat-status">Cette réponse ne relie aucune option à une suggestion; elle reste consultable sans choix à confirmer.</p> : null}
+    {preview && preview.fingerprint === selectionFingerprint ? <section className="brewer-work-card" aria-label="Aperçu avant confirmation">
+      <strong>Aperçu · rien n’est encore enregistré</strong>
+      <ul>{preview.plan.selection.map(row => <li key={row.proposalId}>{row.activeIntent.label}</li>)}</ul>
+      <p>Motif : {preview.plan.reason}</p>
+      <p>{semanticHeadLabelV3(preview.plan.expectedHead)} · aucun effet sur la recette, le brouillon, le stock ou le brassin.</p>
+      <div className="brewer-work-actions">
+        <button type="button" disabled={adopting} onClick={() => void confirmChoice()}>Confirmer ce choix</button>
+      </div>
+      <details className="brewer-chat-proof"><summary>Provenance de l’aperçu</summary><dl>
+        <div><dt>Commande</dt><dd><code>{preview.plan.commandId}</code></dd></div>
+        <div><dt>Version prévue</dt><dd><code>{preview.plan.recordId}</code></dd></div>
+        <div><dt>Demande</dt><dd><code>{preview.plan.requestId}</code></dd></div>
+        <div><dt>Tête attendue</dt><dd><code>{semanticHeadReferenceV3(preview.plan.expectedHead)}</code></dd></div>
+        <div><dt>Plan</dt><dd><code>{preview.plan.reference}</code></dd></div>
+        <div><dt>Réponse</dt><dd><code>{preview.plan.envelopeReference}</code></dd></div>
+        <div><dt>Ticket</dt><dd><code>{preview.plan.ticket.ticketId}</code> · <code>{preview.plan.ticket.operationId}</code> · génération {preview.plan.ticket.generation}</dd></div>
+        <div><dt>Périmètre</dt><dd><code>{JSON.stringify(preview.plan.candidatePolicy)}</code></dd></div>
+      </dl></details>
+    </section> : null}
+    {adoption ? <section className="brewer-work-card" aria-label="Reçu de confirmation">
+      <strong>{adoption.mode === 'replay' ? 'Choix déjà confirmé · même reçu' : 'Choix confirmé dans la réponse documentaire'}</strong>
+      <p>Effectif le <time dateTime={adoption.receipt.effectiveAt}>{semanticInstantV3(adoption.receipt.effectiveAt)}</time> · aucun effet sur la recette, le brouillon, le stock ou le brassin.</p>
+      <p role="status">{adoption.check ?? 'Relecture du reçu en cours…'}</p>
+      <div className="brewer-work-actions">
+        <button type="button" disabled={adopting} onClick={() => void replayChoice()}>Rejouer la même confirmation</button>
+      </div>
+      <details className="brewer-chat-proof"><summary>Provenance du reçu</summary><dl>
+        <div><dt>Commande</dt><dd><code>{adoption.receipt.commandId}</code></dd></div>
+        <div><dt>Reçu</dt><dd><code>{adoption.receipt.reference}</code></dd></div>
+        <div><dt>Empreinte</dt><dd><code>{adoption.receipt.fingerprint}</code></dd></div>
+        <div><dt>Version documentaire</dt><dd><code>{adoption.receipt.record.id}</code> · <code>{adoption.receipt.record.reference}</code></dd></div>
+        <div><dt>Demande</dt><dd><code>{adoption.plan.requestId}</code></dd></div>
+        <div><dt>Tête attendue</dt><dd><code>{semanticHeadReferenceV3(adoption.receipt.expectedHead)}</code></dd></div>
+        <div><dt>Effet recette</dt><dd><code>{adoption.receipt.recipeEffect}</code></dd></div>
+        <div><dt>Révision du dossier</dt><dd><code>{adoption.workspaceRevision}</code></dd></div>
+      </dl></details>
+    </section> : null}
+    {refused ? <p role="status" className="brewer-chat-status">Proposition refusée : la réponse reste conservée telle quelle, sans nouvelle version documentaire.</p> : null}
+    {record?.semantic.kind === 'opaqueReadOnly' ? <p role="status" className="brewer-chat-status">
+      Réponse conservée en lecture seule : {record.semantic.reason}
+    </p> : null}
+    {error ? <p role="alert" className="brewer-chat-error">{error}</p> : null}
+  </Sheet>;
 }
 
 function BrewerWorkCard({

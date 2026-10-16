@@ -2,7 +2,8 @@ import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import { MaltDetails } from '../ui/MaltDetails';
 import './recipe-wizard.css';
-import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { NumberInput } from '../ui/NumberInput';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
 import {
@@ -25,8 +26,8 @@ import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
 import { recipeFieldIssues, recipeReadiness, recipeSaveIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
 import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCandidateSheet, mergeYeastCandidateSheet, readRecipeDraft, readYeastDocumentaryView, serializeRecipeDraft,
-  tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, yeastWithAdoptedDocumentary,
-  type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
+  tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
+  recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
 import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
 import { defaultBrewVolume } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
@@ -42,6 +43,7 @@ import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
 import { HopRecipeGuide as SyncHopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
+import { HopRecipeSnapshot } from '../ui/hopIndex/HopRecipeSnapshot';
 import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/FermentationWorkshop';
 import { YeastRecipeContext as SyncYeastRecipeContext, YeastRecipeHeading as SyncYeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
 import { YeastRecipeChoice as SyncYeastRecipeChoice, startYeastChoiceChange, type YeastChoiceChange, type YeastChoiceIntent } from '../ui/YeastRecipeChoice';
@@ -56,10 +58,9 @@ import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOv
 import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 import { StorageService } from '../services/storage';
-import type { HopRecipeWorkbenchSession } from '../ui/hopIndex/HopRecipeWorkbench';
-import { HopWorkshop as SyncHopWorkshop } from '../ui/hopIndex/HopWorkshop';
-import { HopRecipeWorkbench as SyncHopRecipeWorkbench } from '../ui/hopIndex/HopRecipeWorkbench';
-import { HopRecipeSnapshot } from '../ui/hopIndex/HopRecipeSnapshot';
+import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
+import { assertHopV55RecipeDraftApplicationTarget } from '../services/hopV55/recipeDraftApplication';
+import { appendHopV55RecipeColdContactAssociation, compareHopV55RecipeColdContactAssociationSourceV1, hopV55RecipeColdSourceReference } from '../services/hopV55/recipeColdContactAssociation';
 import { YeastIngredientPicker as SyncYeastIngredientPicker } from '../ui/YeastIngredientPicker';
 import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
@@ -97,7 +98,7 @@ import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '
 import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesign';
 import { useStorageValue } from '../hooks/useLiveData';
 import { Combobox } from '../ui/Combobox';
-import { SaltSolver, WaterState } from '../ui/SaltSolver';
+import { SaltSolver, WaterState, type WaterChangeIntent } from '../ui/SaltSolver';
 import { BrewerChat } from '../ui/BrewerChat';
 import { RECIPE_FIELDS } from '../../functions/src/brewerContext';
 import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
@@ -107,6 +108,9 @@ import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSh
 import { BrewSheetWithCompanion as SyncBrewSheet } from '../ui/BrewSheetWithCompanion';
 import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
 import { evaluateNoloRecipe } from '../domain/nolo';
+import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
+  retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
+  type WaterProfileMode } from '../domain/wizardSourceValues';
 import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
 
 // Vitest exercises the wizard with immediate, cross-step assertions. Keep
@@ -114,9 +118,10 @@ import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft
 // route-level boundaries below and defers these panels until their step or
 // disclosure is reached.
 const syncWizardPanels = import.meta.env.MODE === 'test';
+// The V5.5 hop workbench owns its local dossiers and scenario engine; it stays
+// a separate chunk in every mode and is awaited by its step, tests included.
+const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
-const HopWorkshop = syncWizardPanels ? SyncHopWorkshop : lazy(() => import('../ui/hopIndex/HopWorkshop').then(({ HopWorkshop: Panel }) => ({ default: Panel })));
-const HopRecipeWorkbench = syncWizardPanels ? SyncHopRecipeWorkbench : lazy(() => import('../ui/hopIndex/HopRecipeWorkbench').then(({ HopRecipeWorkbench: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
 const YeastRecipeChoice = syncWizardPanels ? SyncYeastRecipeChoice : lazy(() => import('../ui/YeastRecipeChoice').then(({ YeastRecipeChoice: Panel }) => ({ default: Panel })));
 const YeastRecipeContext = syncWizardPanels ? SyncYeastRecipeContext : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeContext: Panel }) => ({ default: Panel })));
@@ -163,6 +168,59 @@ function customSaltSplit(plan: Partial<WaterPlan>): WaterState['saltSplit'] {
     Object.keys(normal[side]).length === Object.keys(split[side]).length &&
     Object.entries(split[side]).every(([k, g]) => Math.abs((normal[side][k] ?? 0) - g) < 1e-9));
   return same ? undefined : split;
+}
+
+/** Branches already projected, keyed by their source; editor state is replaced on change, never mutated in place. */
+const declaredBranches = new WeakMap<object, unknown>();
+
+/**
+ * An optional field left unset is absent, never an own property holding `undefined`: the JSON snapshot guards of
+ * the hop step refuse those. Only plain objects (prototype Object or null) lose such properties, at every depth
+ * reached through plain objects and arrays. Everything else is kept as is: 0, false, '', null and NaN sentinels;
+ * array length, order, holes and `undefined` items; Dates, functions and class instances by reference. A value that
+ * is not JSON thus stays visible to the strict guards instead of being made valid. Pure and copy-on-write: nothing
+ * is mutated, and an unchanged branch keeps its identity, so live editor state stays referentially stable.
+ */
+function withoutUnsetFields<T>(value: T, ancestors: object[] = []): T {
+  if (!value || typeof value !== 'object') return value;
+  const source = value as object;
+  if (ancestors.includes(source)) return value; // A cycle stays a cycle; the strict guard names it.
+  if (declaredBranches.has(source)) return declaredBranches.get(source) as T;
+  ancestors.push(source);
+  let declared: unknown = source;
+  if (Array.isArray(source)) {
+    let copy: unknown[] | undefined;
+    source.forEach((item, index) => { // Holes are not visited, and slice() keeps them as holes.
+      const next = withoutUnsetFields(item, ancestors);
+      if (next !== item) (copy = copy ?? source.slice())[index] = next;
+    });
+    declared = copy ?? source;
+  } else {
+    const prototype = Object.getPrototypeOf(source);
+    if (prototype === Object.prototype || prototype === null) {
+      const kept: Array<[string, unknown]> = [];
+      let changed = false;
+      for (const [key, item] of Object.entries(source)) {
+        if (item === undefined) { changed = true; continue; }
+        const next = withoutUnsetFields(item, ancestors);
+        if (next !== item) changed = true;
+        kept.push([key, next]);
+      }
+      if (changed) {
+        const copy = Object.create(prototype) as Record<string, unknown>;
+        for (const [key, item] of kept) Object.defineProperty(copy, key, { value: item, enumerable: true, writable: true, configurable: true });
+        declared = copy;
+      }
+    }
+  }
+  ancestors.pop();
+  declaredBranches.set(source, declared);
+  return declared as T;
+}
+
+/** The Recipe the wizard declares (build()): what is set is kept exactly, what is unset is absent. */
+function declaredRecipe(recipe: Recipe): Recipe {
+  return withoutUnsetFields(recipe);
 }
 
 /**
@@ -361,6 +419,11 @@ interface BrewWizardProps {
   localOnly?: boolean;
   /** Stable, account-scoped key supplied by the app; isolated component previews need no persistence. */
   draftKey?: string;
+  /**
+   * Explicit local account partition for the V5.5 hop workbench, supplied by
+   * the app. It is never parsed from `draftKey`; without it the workbench stays closed.
+   */
+  ownerKey?: string;
   stockItems: StockItem[];
   config: AppConfig;
   knownStyles: string[];
@@ -392,9 +455,65 @@ interface BrewWizardProps {
   onSaveWaterSource: (source: WaterSource) => void;
 }
 
-export const BrewWizard: React.FC<BrewWizardProps> = ({
+/**
+ * A local draft is reopened silently only when it started from the saved recipe shown now.
+ * Otherwise the brewer chooses first: nothing is resumed, rewritten or saved before that choice.
+ */
+export const BrewWizard: React.FC<BrewWizardProps> = props => {
+  const [initialDraftState] = useState(() => readRecipeDraftState(props.draftKey));
+  const [serverBase] = useState(() => recipeServerBase(props.seed?.recipe));
+  const [resumeCheck] = useState(() => recipeDraftResumeCheck(initialDraftState, props.seed?.recipe));
+  const [choice, setChoice] = useState<'draft' | 'saved'>();
+  if ((resumeCheck === 'changed' || resumeCheck === 'unverified') && !choice && initialDraftState.status === 'available')
+    return <DraftFreshnessChoice reason={resumeCheck} draft={initialDraftState.draft} savedName={props.seed?.recipe?.name ?? ''}
+      onClose={props.onClose} onChoose={setChoice} />;
+  return <BrewWizardEditor {...props} initialDraftState={choice === 'saved' ? { status: 'absent' } : initialDraftState}
+    serverBase={serverBase} draftSetAside={choice === 'saved'} />;
+};
+
+const DraftFreshnessChoice: React.FC<{ reason: 'changed' | 'unverified'; draft: RecipeWizardDraft; savedName: string;
+  onClose: () => void; onChoose: (choice: 'draft' | 'saved') => void }> = ({ reason, draft, savedName, onClose, onChoose }) => {
+  const draftStep = STEPS.find(item => item.id === draft.step)?.label ?? draft.step;
+  return (
+    <PageShell title={`Modifier « ${savedName} »`} subtitle="Brouillon de cet appareil" onClose={onClose} compactDock className="recipe-wizard">
+      <section aria-labelledby="wz-draft-choice-title" className="space-y-2">
+        <h2 id="wz-draft-choice-title" className="text-sm font-semibold text-cave-50">
+          {reason === 'changed' ? 'La recette enregistrée a changé' : 'Brouillon à vérifier'}
+        </h2>
+        <p className="text-sm text-cave-200">{reason === 'changed'
+          ? 'Elle a été modifiée ailleurs depuis le début de ce brouillon (autre appareil ou restauration). Choisis la version à ouvrir.'
+          : 'Ce brouillon ne dit pas de quelle version enregistrée il part : impossible de savoir si elle a changé depuis. Choisis la version à ouvrir.'}</p>
+        <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 gap-y-0.5 text-sm">
+          <dt className="text-cave-400">Enregistrée</dt><dd className="min-w-0 text-cave-50">« {savedName} »</dd>
+          <dt className="text-cave-400">Brouillon</dt><dd className="min-w-0 text-cave-50">« {draft.recipe.name} » · arrêté à l’étape {draftStep}</dd>
+        </dl>
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 pt-1">
+          <button type="button" autoFocus aria-describedby="wz-draft-saved-hint" onClick={() => onChoose('saved')}
+            className="recipe-primary-action min-h-touch-lg px-2 rounded-control bg-ebc-straw text-cave-950 text-sm font-semibold transition-colors hover:brightness-105">
+            Ouvrir la version enregistrée
+          </button>
+          <p id="wz-draft-saved-hint" className="text-xs text-cave-400">Le brouillon reste sur cet appareil jusqu’à ta première modification.</p>
+          <button type="button" aria-describedby="wz-draft-resume-hint" onClick={() => onChoose('draft')}
+            className="min-h-touch px-2 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850">
+            Reprendre le brouillon
+          </button>
+          <p id="wz-draft-resume-hint" className="text-xs text-cave-400">À l’enregistrement, il remplacera la version enregistrée.</p>
+        </div>
+      </section>
+    </PageShell>
+  );
+};
+
+const BrewWizardEditor: React.FC<BrewWizardProps & {
+  initialDraftState: RecipeDraftReadState;
+  /** Fingerprint of the saved recipe shown now; written with every draft. */
+  serverBase?: string;
+  /** The brewer opened the saved version: the older draft stays until the first change replaces it. */
+  draftSetAside: boolean;
+}> = ({
   seed,
   draftKey,
+  ownerKey,
   localOnly = false,
   stockItems,
   config,
@@ -405,9 +524,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   onSave,
   writeError,
   onDismissWriteError,
-  onSaveWaterSource
+  onSaveWaterSource,
+  initialDraftState,
+  serverBase,
+  draftSetAside
 }) => {
-  const [restoredDraft] = useState(() => readRecipeDraft(draftKey));
+  const restoredDraft = initialDraftState.status === 'available' ? initialDraftState.draft : undefined;
+  const draftReadOnly = initialDraftState.status === 'readOnly';
   // Accepted documentary sheets belong to the Wizard, not the mounted step.
   const [candidateSheets, setCandidateSheets] = useState<YeastCandidateSheets>(() => restoredDraft?.candidateSheets ?? {});
   const candidateSheetsRef = useRef(candidateSheets);
@@ -443,21 +566,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     return () => cancelAnimationFrame(frame);
   }, [writeMessage]);
   const [saving, setSaving] = useState(false);
-  const [draftNotice, setDraftNotice] = useState(restoredDraft ? 'Brouillon repris sur cet appareil.' : '');
+  const [draftNotice, setDraftNotice] = useState(restoredDraft ? 'Brouillon repris sur cet appareil.'
+    : draftSetAside ? 'Version enregistrée ouverte. Le brouillon reste sur cet appareil jusqu’à ta première modification.' : '');
+  const [draftAside, setDraftAside] = useState(draftSetAside);
   const [draftError, setDraftError] = useState('');
   const [discarding, setDiscarding] = useState(false);
   const draftFinished = useRef(false);
   const [hopGuideBusy, setHopGuideBusy] = useState(false);
-  const [hopWorkshopOpen, setHopWorkshopOpen] = useState(false);
-  const [hopRecipeToolsOpen, setHopRecipeToolsOpen] = useState(false);
-  const hopWorkbenchSession = useRef<HopRecipeWorkbenchSession | undefined>(undefined);
-  const hopSimulationRevision = useRef(0);
-  const [hopSimulationRequest, setHopSimulationRequest] = useState<{ index: number; revision: number }>();
-  const simulateHop = (index: number) => {
-    setHopRecipeToolsOpen(true);
-    setHopSimulationRequest({ index, revision: ++hopSimulationRevision.current });
-    requestAnimationFrame(() => document.getElementById('recipe-hop-simulation')?.scrollIntoView({ block: 'start' }));
-  };
+  // Manual hop lines are the correction path under the V5.5 workbench; a field
+  // correction request opens this disclosure through its native toggle.
+  const [hopLinesOpen, setHopLinesOpen] = useState(false);
+  // The lot, COA and contact-conditions editor renders only once its disclosure is opened.
+  const [hopContextOpen, setHopContextOpen] = useState(false);
   const [yeastFocus, setYeastFocus] = useState<{ goal: import('../domain/yeastRecipeDesign').YeastRecipeGoal; yeastId?: string }>();
   const yeastSelectionEpoch = useRef(0);
   useEffect(() => { if (step !== 'levure') setYeastFocus(undefined); }, [step]);
@@ -535,13 +655,29 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
-  const [recipeWaterSource, setRecipeWaterSource] = useState<WaterSource | undefined>(base?.waterPlan?.sourceSnapshot);
-  const waterSource =
-    recipeWaterSource ??
-    config.waterSources?.find((w) => w.id === base?.waterPlan?.sourceId) ??
+  // Only a snapshot naming the plan's own reference is its analysis (a legacy plan without reference keeps its snapshot).
+  const [recipeWaterSource, setRecipeWaterSource] = useState<WaterSource | undefined>(() => frozenWaterSource(base?.waterPlan));
+  // The plan names its analysis exactly: a declared value, blank included, is never read as an omission. The
+  // built-in default is found by its identity, like any configured source; a blank identifier resolves nothing.
+  const waterReferencePlan = declaredWaterSourceId(details.waterPlan) !== undefined ? details.waterPlan : base?.waterPlan;
+  const waterSourceReference = declaredWaterSourceId(waterReferencePlan);
+  const waterReferenceBlank = waterSourceReference !== undefined && isBlankWaterSourceId(waterSourceReference);
+  const referencedWaterSource = waterSourceReference === undefined || waterReferenceBlank ? undefined :
+    config.waterSources?.find((w) => w.id === waterSourceReference) ??
+    (waterSourceReference === DEFAULT_WATER_SOURCE.id ? DEFAULT_WATER_SOURCE : undefined);
+  // An analysis neither frozen nor found stays unresolved: the active source only serves provisional
+  // calculations, and becomes this recipe's analysis through an explicit choice only.
+  const waterSourceUnresolved = !recipeWaterSource && waterSourceReference !== undefined && !referencedWaterSource;
+  // The configured water a brewer may explicitly retain, and the provisional water of an unresolved reference.
+  const configuredWaterSource =
     config.waterSources?.find((w) => w.id === config.activeWaterSourceId) ??
     config.waterSources?.[0] ??
     DEFAULT_WATER_SOURCE;
+  const waterSource = recipeWaterSource ?? referencedWaterSource ?? configuredWaterSource;
+  // An analysis without usable identity only reaches this state through a plan that omits its reference (legacy
+  // recipe or import): it stays the recipe's own analysis, its identity stays absent instead of becoming a declared
+  // blank reference, and only an explicit gesture replaces it. A declared blank reference never resolves to it.
+  const anonymousWaterAnalysis = !!recipeWaterSource && !hasUsableWaterIdentity(recipeWaterSource);
 
   const [waterDraft, setWater] = useState<WaterState>(() => restoredDraft?.water ?? ({
     roLimitL: base?.waterPlan?.roLimitL,
@@ -580,7 +716,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   }));
   const automaticWater = useMemo(() => {
     const state = constrainRo(waterDraft);
-    if (!state.autoTreatment || state.mashWaterL <= 0) return { water: state, error: '' };
+    // Automatic doses are refitted against the recipe's own analysis only.
+    if (!state.autoTreatment || state.mashWaterL <= 0 || waterSourceUnresolved) return { water: state, error: '' };
     try {
       const { plan } = replanRecipeWater({
         style, volumeL, fermentables, hops, boilMin, nolo:details.nolo,
@@ -596,17 +733,21 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     } catch (e) {
       return { water: state, error: (e as Error).message };
     }
-  }, [waterDraft, waterSource, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
+  }, [waterDraft, waterSource, waterSourceUnresolved, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
   const water = automaticWater.water;
 
-  // Follow the beer style until an explicit water profile is chosen. Saved
-  // profiles (including the neutral profile) and numeric targets stay intentional.
-  const waterProfileAuto = useRef(restoredDraft?.waterProfileAuto ?? (!base?.waterPlan?.targetProfileId && !base?.waterPlan?.targetIons));
+  // Follow the beer style until an explicit water profile is chosen. The mode is the recorded origin of the saved
+  // profile; a profile without one (older plans, imported codes) is kept, whatever its value. A local draft keeps
+  // its own flag, and the origin its build() recorded tells a known choice from an unknown one.
+  const [initialWaterProfileMode] = useState<WaterProfileMode>(() => restoredDraft?.waterProfileAuto === true ? 'style'
+    : restoredDraft?.waterProfileAuto === false ? waterProfileModeOf(base?.waterPlan) === 'choice' ? 'choice' : 'legacy'
+    : waterProfileModeOf(base?.waterPlan));
+  const waterProfileMode = useRef<WaterProfileMode>(initialWaterProfileMode);
   const changeStyle = (next: string) => {
     setStyle(next);
     const resolved=resolveBrewingStyle(next,undefined,styles);
     setDetails(d=>({...d,styleRef:resolved?.ref}));
-    if (waterProfileAuto.current && resolved) {
+    if (waterProfileMode.current === 'style' && resolved) {
       setWater(w => ({ ...w, styleCode: styleWaterForReference(next,resolved.ref,styles).code, ratioOverride: undefined }));
     }
   };
@@ -649,17 +790,21 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const color = useMemo(() => Number.isFinite(volumeL) ? computeBeerColor(grains, volumeL) : null, [grains, volumeL]);
 
   const efficiency = details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75;
-  // Preserve the author's stated targets until their calculation inputs change.
-  const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency, details.yeastDesign?.process ?? 'unspecified']);
+  // Preserve the author's stated targets until the recipe they describe changes.
+  const fermentationProcess = details.yeastDesign?.process ?? 'unspecified';
+  const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency, fermentationProcess]);
   const [targetBasis, setTargetBasis] = useState(restoredDraft?.targetBasis ?? metricKey);
-  const keepTargets = metricKey === targetBasis;
   // Yeast/process changes can invalidate fermentation estimates, never a supplied OG or IBU.
   let originalMetricInputs: unknown[] = [];
   try { const parsed = JSON.parse(targetBasis); if (Array.isArray(parsed)) originalMetricInputs = parsed; } catch { /* Old malformed drafts have no retained targets. */ }
-  const currentMetricInputs = [volumeL, boilMin, fermentables, hops, yeast, efficiency];
+  const currentMetricInputs = [volumeL, boilMin, fermentables, hops, yeast, efficiency, fermentationProcess];
   const sameInputs = (indices: number[]) => indices.every(index => JSON.stringify(originalMetricInputs[index]) === JSON.stringify(currentMetricInputs[index]));
   const keepOgTarget = sameInputs([0, 2, 5]);
   const keepIbuTarget = sameInputs([0, 1, 2, 3, 5]);
+  // Sourced facts about the same yeast refine its FG/ABV estimate. Only what is pitched, its identity or the
+  // recipe's own attenuation hypothesis makes the stated FG/ABV targets stale.
+  const keepTargets = metricKey === targetBasis ||
+    sameInputs([0, 1, 2, 3, 5, 6]) && sameYeastForTargets(originalMetricInputs[4], yeast);
   const ogPredicted = useMemo(
     () => {
       if (!details.nolo?.enabled) return yeastRecipeComputedOg({ fermentables, volumeL, efficiencyPct: efficiency });
@@ -838,14 +983,18 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const waterRecapForReview = noloWaterUnverified && !water.acidOverride
     ? { ...waterRecap, wortIons: undefined }
     : waterRecap;
+  // Provisional water computed from another source stays on screen; review and exports carry no such treatment.
+  const waterRecapForRecord = waterSourceUnresolved ? undefined : waterRecapForReview;
 
   /** Une saisie manuelle de volume fige les volumes : le grain ne les pilote plus. */
-  const onWaterChange = (next: WaterState) => {
+  const onWaterChange = (next: WaterState, intent?: WaterChangeIntent) => {
     if (water.autoTreatment && next.autoTreatment === false && !noloWaterUnverified) {
       next = { ...next, acidOverride: { mash: waterAcid.mash, sparge: waterAcid.sparge } };
     }
-    if (next.styleCode !== water.styleCode || next.customTarget !== water.customTarget) {
-      waterProfileAuto.current = false;
+    // Committing a target is the brewer's choice even when it keeps the displayed profile; any other edit
+    // counts only when it changes the profile or the numeric target.
+    if (intent === 'profile-choice' || next.styleCode !== water.styleCode || next.customTarget !== water.customTarget) {
+      waterProfileMode.current = 'choice';
     }
     if (next.mashWaterL !== water.mashWaterL || next.spargeWaterL !== water.spargeWaterL) {
       setVolumesEdited(true);
@@ -1056,20 +1205,46 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setFermentables(fermentables.map((f, i) => (i === index ? { ...f, ...patch } : f)));
 
   /**
+   * Admission of the water analysis a partial import brings without a reference: decided against what the recipe
+   * holds, before any change, and shown in the preview with the same rule.
+   */
+  const waterImportAdmission = (r: ImportedRecipe) =>
+    r.complete ? 'none' as const : admitImportedWaterSnapshot(waterSourceReference, recipeWaterSource, r.waterPlan);
+  const reviewImport = (r: ImportedRecipe): string[] => {
+    const admission = waterImportAdmission(r);
+    const imported = r.waterPlan?.sourceSnapshot;
+    const importedLabel = imported?.name ? ` (${imported.name})` : '';
+    const held = recipeWaterSource?.name ?? referencedWaterSource?.name ?? waterSourceReference;
+    if (admission === 'kept') return [`L’analyse d’eau importée${importedLabel} n’a pas l’identifiant vérifiable de celle de cette recette : elle n’est pas reprise. La recette garde son analyse${held ? ` « ${held} »` : ''}${waterSourceReference !== undefined ? ', sa référence' : ''} et ses calculs.`];
+    if (admission === 'update') return [`L’analyse d’eau importée${importedLabel} porte le même identifiant que celle de la recette : elle la met à jour et ses calculs seront refaits.`];
+    if (admission === 'new') return [hasUsableWaterIdentity(imported)
+      ? `L’analyse d’eau importée${importedLabel} deviendra l’analyse de cette recette.`
+      : `L’analyse d’eau importée${importedLabel} n’a pas d’identifiant : elle deviendra l’analyse de cette recette, sans lien avec une source de ton carnet.`];
+    return [];
+  };
+
+  /**
    * Reprend une recette collée.
    *
    * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
    * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
    */
-  const applyImport = (r: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'yeastDesign'>) => {
+  const applyImport = (incoming: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'yeastDesign' | 'hopV55Applications' | 'hopV55ColdEvidenceAssociations'>) => {
+    // Before any setter: omitting `sourceId` neither removes nor replaces the source the recipe holds. An analysis that
+    // does not carry its exact identity is left out with what was calculated from it; everything else still applies.
+    const r: ImportedRecipe = waterImportAdmission(incoming) === 'kept'
+      ? { ...incoming, waterPlan: withoutImportedAnalysis(incoming.waterPlan!) } : incoming;
     const has = (key: string) => r.complete || (r.present.includes(key) &&
       (!Array.isArray(r[key]) || r[key].length > 0));
     const content = readRecipeFields(r);
     setDetails(previous => ({ ...(r.complete ? content : {
       ...previous, ...content,
       mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
-      waterPlan: content.waterPlan ? { ...previous.waterPlan, ...content.waterPlan } : previous.waterPlan
-    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide, yeastDesign: internal.yeastDesign } : {}) }));
+      waterPlan: content.waterPlan ? mergeImportedWaterPlan(previous.waterPlan, content.waterPlan) as Recipe['waterPlan'] : previous.waterPlan
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide, yeastDesign: internal.yeastDesign } : {}),
+    // V5.5 application traces are the append-only history of this recipe ID; an import or adaptation never erases them.
+    hopV55Applications: internal?.hopV55Applications ?? previous.hopV55Applications,
+    hopV55ColdEvidenceAssociations: internal?.hopV55ColdEvidenceAssociations ?? previous.hopV55ColdEvidenceAssociations }));
     if (r.name != null) setName(r.name);
     if (r.style != null) setStyle(r.style);
     if (r.volumeL != null) setVolumeL(r.volumeL);
@@ -1089,13 +1264,20 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         r.dryHopNote ? 'HOUBLONNAGE À CRU — ' + r.dryHopNote : null].filter(v => v != null).join('\n\n'));
     }
     const plan = r.waterPlan;
+    // A complete recipe, local round trips included, brings its recorded mode. A partial import never proves a
+    // provenance: a profile or target it declares is kept, without being recorded as the brewer's choice.
     if (r.complete) {
-      waterProfileAuto.current = !plan?.targetProfileId && !plan?.targetIons && !r.waterTarget;
+      waterProfileMode.current = r.waterTarget ? 'legacy' : waterProfileModeOf(plan);
     } else if (plan?.targetProfileId != null || plan?.targetIons || r.waterTarget) {
-      waterProfileAuto.current = false;
+      waterProfileMode.current = 'legacy';
     }
-    if (plan?.sourceSnapshot) setRecipeWaterSource(plan.sourceSnapshot);
-    else if (plan?.sourceId) setRecipeWaterSource(config.waterSources?.find(source => source.id === plan.sourceId));
+    // A declared reference, blank included, replaces the previous analysis: only its own snapshot or the configured
+    // source of that exact identity resolves it. An omitted one keeps the legacy reading of the plan.
+    const importedSourceId = declaredWaterSourceId(plan);
+    if (importedSourceId !== undefined) {
+      setRecipeWaterSource(frozenWaterSource(plan) ?? (isBlankWaterSourceId(importedSourceId) ? undefined
+        : config.waterSources?.find(source => source.id === importedSourceId)));
+    } else if (plan?.sourceSnapshot) setRecipeWaterSource(plan.sourceSnapshot);
     else if (r.complete) setRecipeWaterSource(undefined);
     const mashL = plan?.mashWaterL ?? r.mashWaterL;
     const spargeL = plan?.spargeWaterL ?? r.spargeWaterL;
@@ -1108,7 +1290,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 0, spargeWaterL: 0,
         allSaltsInMash: true
       } as WaterState : { ...w };
-      if (r.style != null && waterProfileAuto.current && !next.customTarget) next.styleCode = styleWaterForReference(r.style).code;
+      if (r.style != null && waterProfileMode.current === 'style' && !next.customTarget) next.styleCode = styleWaterForReference(r.style).code;
       if (mashL != null) next.mashWaterL = mashL;
       if (spargeL != null) next.spargeWaterL = spargeL;
       else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
@@ -1162,6 +1344,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         name: ingName,
         stockItemRef: item?.ref,
         // L'alpha vient de l'article de stock — c'est celui du lot acheté.
+        // Sans alpha de stock, 0 = inconnu (recipeValidation.ts) : le champ
+        // reste vide avec le repère ambre, aucun IBU n'en est tiré.
         alpha: item?.alphaPct ?? 0,
         ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
@@ -1176,6 +1360,79 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   const patchHop = (index: number, patch: Partial<HopIngredient>) =>
     setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
 
+  /**
+   * Writes a V5.5 application already proven against this exact draft (owner,
+   * ID and content) by the hop step. Only the hop lines change, as in the J4
+   * adapter that drops prediction and trial links; nothing is saved here.
+   */
+  const applyHopV55Change = (change: HopV55RecipeDraftChange) => {
+    if (draftReadOnly) throw new Error('Ce brouillon est conservé en lecture seule; aucune application ne le remplace.');
+    if (!ownerKey) throw new Error('Le profil propriétaire du brouillon est absent.');
+    if (change.draftId !== draftRecipeId) throw new Error('Cette application vise un autre brouillon; le brouillon courant n’est pas modifié.');
+    const current = latestWizardDraft.current;
+    assertHopV55RecipeDraftApplicationTarget(change.application, current.recipe, { ownerKey, draftId: draftRecipeId });
+    const nextDetails = { ...current.details, hopPredictionIds: undefined, hopTrialId: undefined, hopV55Applications: change.hopV55Applications };
+    const nextDraft = { ...current, details: nextDetails,
+      recipe: { ...current.recipe, hops: change.hops, hopPredictionIds: undefined, hopTrialId: undefined, hopV55Applications: change.hopV55Applications } };
+    const committed = serializeRecipeDraft(nextDraft);
+    if (draftKey) {
+      try { writeRecipeDraft(draftKey, committed); }
+      catch (cause) {
+        // Storage is the commit point: nothing changes on screen. Name the problem and the way out before the browser detail.
+        if (cause instanceof RecipeDraftWriteBlockedError) throw cause;
+        throw new Error(`Programme non appliqué : le brouillon ne peut pas être conservé sur cet appareil (stockage local plein ou bloqué). Libère de l’espace, puis appuie de nouveau sur « Appliquer au brouillon de recette ». Détail : ${cause instanceof Error ? cause.message : String(cause)}`);
+      }
+    }
+    latestWizardDraft.current = nextDraft;
+    latestDraft.current = committed;
+    // An explicit brewer write: the draft now exists and any set-aside draft has been replaced.
+    contentChanged.current = true;
+    setDraftAside(false);
+    setHops(change.hops);
+    setDetails(nextDetails);
+    setDraftError('');
+    setDraftNotice(draftKey ? 'Programme appliqué et brouillon conservé sur cet appareil.' : 'Programme appliqué dans cet éditeur.');
+  };
+
+  /** Persist cold-contact provenance alone; it never changes hops, IBU or any other recipe field. */
+  const conserveHopV55ColdEvidence = async (change: HopV55RecipeColdContactChange): Promise<void> => {
+    if (draftReadOnly) throw new Error('Ce brouillon est conservé en lecture seule; aucune association ne le remplace.');
+    if (!ownerKey) throw new Error('Le profil propriétaire du brouillon est absent.');
+    if (change.draftId !== draftRecipeId) throw new Error('Cette association vise un autre brouillon; le brouillon courant n’est pas modifié.');
+
+    const current = latestWizardDraft.current;
+    const sourceRecipeReference = hopV55RecipeColdSourceReference(current.recipe);
+    const freshness = compareHopV55RecipeColdContactAssociationSourceV1({
+      association: change.association,
+      applicationRecord: change.applicationRecord,
+      current: { ownerKey, recipeId: draftRecipeId, sourceRecipeReference, sourceBinding: change.currentSourceBinding },
+    });
+    if (freshness.status !== 'current') {
+      throw new Error('La source de cette preuve froide a changé; rien n’a été conservé. Relis le contact depuis le contexte courant.');
+    }
+
+    // The association helper validates its known seal, J4 witness (if any),
+    // identity and duplicate-ID collision before the durable write.
+    const coldAssociations = appendHopV55RecipeColdContactAssociation(
+      current.recipe.hopV55ColdEvidenceAssociations, change.association, change.applicationRecord);
+    const nextDetails = { ...current.details, hopV55ColdEvidenceAssociations: coldAssociations };
+    const nextDraft: RecipeWizardDraft = {
+      ...current,
+      details: nextDetails,
+      recipe: { ...current.recipe, hopV55ColdEvidenceAssociations: coldAssociations },
+    };
+    const committed = serializeRecipeDraft(nextDraft);
+    if (draftKey) writeRecipeDraft(draftKey, committed);
+
+    // Storage is the commit point: React refs/state change only after its write succeeds.
+    latestWizardDraft.current = nextDraft;
+    latestDraft.current = committed;
+    contentChanged.current = true;
+    setDraftAside(false);
+    setDetails(nextDetails);
+    setDraftError('');
+    setDraftNotice(draftKey ? 'Preuve de contact à froid conservée dans le brouillon.' : 'Preuve de contact à froid conservée dans cette édition.');
+  };
   const selectYeast = (selectedName: string, item?: StockItem) => {
     const current = latestWizardDraft.current.recipe.yeast;
     const sameStock = !!item && current.stockItemRef === item.ref;
@@ -1206,7 +1463,19 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     setYeast(result.yeast);
   };
 
-  const build = (): Recipe => ({
+  // Retained acid: a manual override, else the calculation on the recipe's own analysis. Without a known analysis
+  // the plan keeps its retained doses rather than a calculation made against another water.
+  const plannedWaterAcid = (details.nolo?.enabled && details.nolo.process === 'coldExtraction' || waterSourceUnresolved) && !water.acidOverride
+    ? details.waterPlan?.acid : noloWaterUnverified && !water.acidOverride ? undefined : waterAcid;
+  // Calculated water survives only under the reference it was computed for; a blank reference or a foreign snapshot
+  // leaves it unknown.
+  const unresolvedWaterCache = waterSourceUnresolved ? retainedWaterCache(waterCacheBelongsToReference(details.waterPlan) ? details.waterPlan : undefined, {
+    diRatioPct: water.diRatioPct, spargeDiRatioPct: water.spargeDiRatioPct, mashWaterL: water.mashWaterL,
+    spargeWaterL: water.spargeWaterL, ...waterRecap.split, acid: plannedWaterAcid }) : undefined;
+
+  // Every reader of the draft (hop step snapshot, save, local draft) receives the same declared Recipe: an optional
+  // field the source or the brewer left unset stays absent instead of becoming an own `undefined`.
+  const build = (): Recipe => declaredRecipe({
     id: draftRecipeId,
     version: base?.version,
     parentRecipeId: base?.parentRecipeId,
@@ -1218,10 +1487,13 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     volumeL,
     brewDate,
     boilMin,
-    ogTarget: (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? null,
+    // A stated target the recipe still describes is written as stated, null and 0 included; only an absent or
+    // stale target falls back to the estimate rule. NOLO keeps its own rules.
+    ogTarget: !details.nolo?.enabled && keepOgTarget && details.ogTarget === null ? null
+      : (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? null,
     // La densité finale tient compte de ce que la levure ne peut PAS manger.
-    fgTarget: details.nolo?.enabled ? null : (keepTargets ? details.fgTarget : undefined) ?? fgPredicted ?? null,
-    abvTarget: details.nolo?.enabled ? details.nolo.targetAbvPct : keepTargets && details.abvTarget != null ? details.abvTarget :
+    fgTarget: details.nolo?.enabled ? null : keepTargets && details.fgTarget !== undefined ? details.fgTarget : fgPredicted ?? null,
+    abvTarget: details.nolo?.enabled ? details.nolo.targetAbvPct : keepTargets && details.abvTarget !== undefined ? details.abvTarget :
       abvPredicted,
     ibuTarget: (keepIbuTarget ? details.ibuTarget : undefined) ?? ibu ?? undefined,
     colorEbc: details.colorEbc,
@@ -1252,6 +1524,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     hopSolverIntent: details.hopSolverIntent,
     hopAromaTarget: details.hopAromaTarget,
     hopPredictionIds: details.hopPredictionIds,
+    hopV55Applications: details.hopV55Applications,
+    hopV55ColdEvidenceAssociations: details.hopV55ColdEvidenceAssociations,
     adjuncts: details.adjuncts,
     mash: {
       steps: mashSteps,
@@ -1269,13 +1543,16 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       autoTreatment: water.autoTreatment,
       saltOverrides: water.saltOverrides,
       ratioOverride: water.ratioOverride,
-      sourceId: waterSource.id,
-      sourceSnapshot: { ...waterSource },
-      treatmentVersion: 2,
+      // An unresolved analysis keeps its reference and no borrowed snapshot; an anonymous legacy analysis keeps its
+      // reference omitted rather than declaring its blank id.
+      sourceId: waterSourceUnresolved ? waterSourceReference : anonymousWaterAnalysis ? undefined : waterSource.id,
+      sourceSnapshot: waterSourceUnresolved ? undefined : { ...waterSource },
+      treatmentVersion: unresolvedWaterCache ? unresolvedWaterCache.treatmentVersion : 2,
       acidOverride: water.acidOverride,
       diRatioPct: water.diRatioPct,
       spargeDiRatioPct: water.spargeDiRatioPct,
       targetProfileId: water.styleCode,
+      targetProfileOrigin: waterProfileOrigin(waterProfileMode.current),
       /*
        * ⚠️ La cible chiffrée et les DEUX eaux, figées avec le plan. Sans elles,
        * la fiche recette ne peut rien redessiner : il lui faudrait retrouver la
@@ -1284,8 +1561,8 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        */
       targetIons: water.customTarget?.ions,
       targetName: water.customTarget?.name,
-      startIons: noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.startIons,
-      wortIons: noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.wortIons,
+      startIons: unresolvedWaterCache ? unresolvedWaterCache.startIons : noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.startIons,
+      wortIons: unresolvedWaterCache ? unresolvedWaterCache.wortIons : noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.wortIons,
       mashWaterL: water.mashWaterL,
       spargeWaterL: water.spargeWaterL,
       allSaltsInMash: water.allSaltsInMash !== false,
@@ -1296,8 +1573,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
        * Le brasseur arrivait à la cuve avec ses sels pesés et sans sa dose
        * d'acide, que la minuterie du jour ne pouvait pas lui rappeler.
        */
-      acid: details.nolo?.enabled && details.nolo.process === 'coldExtraction' && !water.acidOverride ? details.waterPlan?.acid :
-        noloWaterUnverified && !water.acidOverride ? undefined : waterAcid,
+      acid: plannedWaterAcid,
       disabled: water.disabled,
       targetPh: details.waterPlan?.targetPh ?? 5.4,
       // Les pH relevés à la cuve : la seule boucle de retour du modèle.
@@ -1395,9 +1671,26 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     </button>
     {equipmentNotice && <p role="alert" className="text-ebc-amber">{equipmentNotice}</p>}
   </aside>;
+  const waterSourceNotice = !(details.nolo?.enabled && details.nolo.process === 'secondRunnings') && (waterSourceUnresolved ?
+    <aside aria-label="Analyse d’eau à retrouver" className="rounded-control border border-ebc-amber/40 bg-ebc-amber/10 p-2 space-y-2 text-sm text-cave-200">
+      {waterReferenceBlank
+        ? <p role="status">La référence d’analyse d’eau de cette recette est vide : elle ne désigne aucune analyse et reste telle quelle. Les calculs affichés utilisent provisoirement « {waterSource.name} », qui n’est pas enregistrée comme analyse de cette recette sans ton choix.</p>
+        : <p role="status">L’analyse d’eau « {waterSourceReference} » de cette recette est introuvable. Les calculs affichés utilisent provisoirement « {waterSource.name} », qui n’est pas enregistrée comme analyse de cette recette sans ton choix.</p>}
+      <button type="button" className="equipment-button" onClick={() => setRecipeWaterSource({ ...waterSource })}>
+        Retenir « {waterSource.name} » pour cette recette
+      </button>
+    </aside>
+    : anonymousWaterAnalysis &&
+    <aside aria-label="Analyse d’eau sans identifiant" className="rounded-control border border-ebc-amber/40 bg-ebc-amber/10 p-2 space-y-2 text-sm text-cave-200">
+      <p role="status">L’analyse d’eau enregistrée avec cette recette{waterSource.name ? ` (« ${waterSource.name} »)` : ''} n’a pas d’identifiant : elle reste l’analyse de la recette et sert à ses calculs, sans être liée à une source de ton carnet. La remplacer remplace aussi ses calculs.</p>
+      <button type="button" className="equipment-button" onClick={() => setRecipeWaterSource({ ...configuredWaterSource })}>
+        Retenir « {configuredWaterSource.name} » pour cette recette
+      </button>
+    </aside>);
   const readiness = recipeReadiness(build());
   const fieldIssues = [...readiness.invalid, ...readiness.missing];
   const visibleIssues = validationRequested ? fieldIssues : [];
+  const hopIssueCount = visibleIssues.filter(issue => issue.step === 'houblons').length;
   const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
 
   const requestCorrection = (issues: RecipeFieldIssue[]) => {
@@ -1425,9 +1718,78 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   }, [focusIssue, step]);
 
   const wizardDraftSnapshot: RecipeWizardDraft = { recipe: { ...build(), name, style }, details, step, water: waterDraft,
-    volumesEdited, waterProfileAuto: waterProfileAuto.current, targetBasis, mashRatioOverride, candidateSheets };
+    volumesEdited, waterProfileAuto: waterProfileMode.current === 'style', targetBasis, mashRatioOverride, candidateSheets,
+    ...(serverBase ? { serverBase } : {}) };
   const serializedDraft = serializeRecipeDraft(wizardDraftSnapshot);
-  const firstDraft = useRef(serializedDraft);
+  /*
+   * Opening or moving between steps creates no draft (#97, D7): only a change rendered during one of the
+   * brewer's gestures in the content does. A gesture lasts from pointerdown to pointerup (hold, drag), from
+   * keydown to keyup (arrows, key repeat), or the time of a click, input or change event, plus the render it
+   * triggers (two microtasks: React flushes a discrete update in a microtask queued by the handler). A decision
+   * applied after an answer arrives is marked as its own gesture (`applyBrewerDecision`). Changes
+   * rendered outside a gesture — derived values settling after opening, completions from local references in a
+   * later effect — move the comparison baseline instead, even after a touch. Once a real change exists, the draft
+   * holds the whole state. The step is left out of the comparison and is kept up to date once a draft exists.
+   */
+  const firstStep = useRef(step);
+  const contentBaseline = useRef<string | undefined>(undefined);
+  const contentChanged = useRef(false);
+  // `closed`: a step change ends the gesture that caused it; what the new step then settles on its own (completions
+  // flushed right after a discrete event) is automatic. Any new gesture event reopens it.
+  const gesture = useRef({ pointer: false, key: false, pending: 0, closed: false });
+  const committedStep = useRef(step);
+  const inGesture = () => !gesture.current.closed
+    && (gesture.current.pointer || gesture.current.key || gesture.current.pending > 0);
+  const holdUntilRendered = () => {
+    gesture.current.closed = false;
+    gesture.current.pending += 1;
+    queueMicrotask(() => queueMicrotask(() => { gesture.current.pending -= 1; }));
+  };
+  const startsGesture = (event: React.SyntheticEvent) =>
+    !(event.target instanceof Element && event.target.closest('.recipe-step-actions, summary'));
+  const gestureHandlers = {
+    onPointerDownCapture: (event: React.PointerEvent) => {
+      if (startsGesture(event)) { gesture.current.closed = false; gesture.current.pointer = true; }
+    },
+    // Tab and Escape only move focus or close a list, never change content by themselves. Enter acts at once, like a
+    // click (a list option of the style and ingredient pickers is chosen on its keydown, a button fires on it): its
+    // window is the render it triggers, not the time the key stays down, so a step it opens settles outside it.
+    onKeyDownCapture: (event: React.KeyboardEvent) => {
+      if (!startsGesture(event) || ['Tab', 'Escape', 'Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return;
+      if (event.key === 'Enter') holdUntilRendered();
+      else { gesture.current.closed = false; gesture.current.key = true; }
+    },
+    onClickCapture: (event: React.MouseEvent) => { if (startsGesture(event)) holdUntilRendered(); },
+    onInputCapture: (event: React.FormEvent) => { if (startsGesture(event)) holdUntilRendered(); },
+    onChangeCapture: (event: React.FormEvent) => { if (startsGesture(event)) holdUntilRendered(); },
+  };
+  /*
+   * A brewer's decision that lands once an answer arrives (a companion proposal validated, a reference associated
+   * after its lookup) comes after its gesture has ended: it is rendered at once, inside a gesture of its own.
+   */
+  const applyBrewerDecision = (apply: () => void) => {
+    gesture.current.closed = false;
+    gesture.current.pending += 1;
+    try { flushSync(apply); } finally { gesture.current.pending -= 1; }
+  };
+  useEffect(() => {
+    const current = gesture.current;
+    const releasePointer = () => { if (current.pointer) { current.pointer = false; holdUntilRendered(); } };
+    const releaseKey = () => { if (current.key) { current.key = false; holdUntilRendered(); } };
+    window.addEventListener('pointerup', releasePointer, true);
+    window.addEventListener('pointercancel', releasePointer, true);
+    window.addEventListener('keyup', releaseKey, true);
+    window.addEventListener('blur', releaseKey);
+    window.addEventListener('blur', releasePointer);
+    return () => {
+      window.removeEventListener('pointerup', releasePointer, true);
+      window.removeEventListener('pointercancel', releasePointer, true);
+      window.removeEventListener('keyup', releaseKey, true);
+      window.removeEventListener('blur', releaseKey);
+      window.removeEventListener('blur', releasePointer);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the gesture state lives in a ref
+  }, []);
   const latestDraft = useRef(serializedDraft);
   latestDraft.current = serializedDraft;
   const latestWizardDraft = useRef(wizardDraftSnapshot);
@@ -1567,26 +1929,42 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
     return applyFermentationRecipe(next, 'levure', false, intent === 'pitching');
   };
 
+  /** Attributes the content committed now: the brewer's change during a gesture, otherwise a new automatic baseline. */
+  const attributeContent = () => {
+    if (restoredDraft || contentChanged.current) return;
+    const draft = latestWizardDraft.current;
+    const content = draft.step === firstStep.current ? latestDraft.current : serializeRecipeDraft({ ...draft, step: firstStep.current });
+    if (contentBaseline.current === undefined || !inGesture()) contentBaseline.current = content;
+    else if (content !== contentBaseline.current) contentChanged.current = true;
+    if (draft.step !== committedStep.current) { committedStep.current = draft.step; gesture.current.closed = true; }
+  };
+  // Layout effect: runs in the commit of the gesture's own render, before the write effect below reads the result.
+  useLayoutEffect(attributeContent, [serializedDraft, restoredDraft]);
+
   useEffect(() => {
-    if (!draftKey || draftFinished.current || (!restoredDraft && serializedDraft === firstDraft.current)) return;
+    if (draftReadOnly || !draftKey || draftFinished.current || (!restoredDraft && !contentChanged.current)) return;
     try {
       writeRecipeDraft(draftKey, serializedDraft);
       setDraftNotice(restoredDraft ? 'Brouillon repris sur cet appareil.' : 'Brouillon conservé sur cet appareil.');
+      setDraftAside(false);
       setDraftError('');
     } catch { setDraftError('Le brouillon ne peut pas être conservé sur cet appareil. Garde cette page ouverte pour terminer la recette.'); }
-  }, [draftKey, serializedDraft, restoredDraft]);
+  }, [draftKey, serializedDraft, restoredDraft, draftReadOnly]);
 
   useEffect(() => {
-    if (!draftKey) return;
+    if (draftReadOnly || !draftKey) return;
     const flush = () => {
-      if (draftFinished.current || (!restoredDraft && latestDraft.current === firstDraft.current)) return;
+      // A hold or drag still in progress when the page is hidden keeps its change.
+      if (!restoredDraft && !contentChanged.current && inGesture()) attributeContent();
+      if (draftFinished.current || (!restoredDraft && !contentChanged.current)) return;
       try { writeRecipeDraft(draftKey, latestDraft.current); } catch { /* The active editor displays the storage error. */ }
     };
     window.addEventListener('pagehide', flush);
     return () => { window.removeEventListener('pagehide', flush); flush(); };
-  }, [draftKey, restoredDraft]);
+  }, [draftKey, restoredDraft, draftReadOnly]);
 
   const discardDraft = () => {
+    if (draftReadOnly) return;
     try {
       clearRecipeDraft(draftKey);
       draftFinished.current = true;
@@ -1595,7 +1973,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
   };
 
   const submitRecipe = (thenBrew: boolean) => {
-    if (saving) return;
+    if (saving || draftReadOnly) return;
     const recipe = build();
     const issues = thenBrew ? recipeFieldIssues(recipe) : recipeSaveIssues(recipe);
     if (issues.length) { requestCorrection(issues); return; }
@@ -1650,7 +2028,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       <button
         type="button"
         onClick={() => setImporting(true)}
-        disabled={saving}
+        disabled={saving || draftReadOnly}
         aria-label="Coller une recette"
         className="w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"
       >
@@ -1672,13 +2050,14 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
 
   return (
     <PageShell
-      title={seed?.recipe ? `Modifier « ${seed.recipe.name} »` : 'Nouvelle recette'}
+      title={draftReadOnly ? 'Brouillon en lecture seule' : seed?.recipe ? `Modifier « ${seed.recipe.name} »` : 'Nouvelle recette'}
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
+      compactDock
       className="recipe-wizard"
       scrollKey={step}
-      wide={step === 'levure' && !details.nolo?.enabled}
+      wide={step === 'levure' && !details.nolo?.enabled || step === 'houblons'}
       /*
        * Le fil d'étapes vit dans l'en-tête. Sur ordinateur, `PageShell` affiche
        * déjà le nom de l'étape en sous-titre : la piste seule suffit ici, et
@@ -1694,7 +2073,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <button
               type="button"
               onClick={() => submitRecipe(false)}
-              disabled={saving}
+              disabled={saving || draftReadOnly}
               className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
                          text-sm font-semibold transition-colors hover:brightness-105"
             >
@@ -1703,7 +2082,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             <button
               type="button"
               onClick={() => submitRecipe(true)}
-              disabled={saving}
+              disabled={saving || draftReadOnly}
               className="min-h-touch px-3 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
             >
               Enregistrer et préparer un brassin
@@ -1712,10 +2091,16 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         ) : undefined
       }
     >
-      <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
+      {draftReadOnly ? <section role="alert" aria-label="Brouillon conservé en lecture seule" className="rounded-control border border-cave-700 p-3">
+        <h2 className="text-sm font-semibold">Brouillon conservé en lecture seule</h2>
+        <p className="text-sm text-cave-200">Ce brouillon utilise un format plus récent ou illisible. Son contenu reste conservé ; aucune modification, application ou sauvegarde ne le remplace.</p>
+        {initialDraftState.status === 'readOnly' && 'raw' in initialDraftState && initialDraftState.raw ? <details className="mt-2"><summary className="text-xs">Lire le contenu conservé</summary><pre className="mt-2 whitespace-pre-wrap break-all text-xs">{initialDraftState.raw}</pre></details> : null}
+        <button type="button" onClick={onClose} className="mt-2 text-xs underline">Revenir aux recettes</button>
+      </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3"
+        {...gestureHandlers}>
       {(draftNotice || draftError) && draftKey && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
         <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>
-        {!discarding ? <button type="button" aria-label="Abandonner le brouillon" onClick={() => setDiscarding(true)} className="text-cave-200 underline underline-offset-2">Abandonner</button>
+        {draftAside ? null : !discarding ? <button type="button" aria-label="Abandonner le brouillon" onClick={() => setDiscarding(true)} className="text-cave-200 underline underline-offset-2">Abandonner</button>
           : <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
       </div>}
       {visibleIssues.length > 0 && <div id="wz-validation" role="alert" tabIndex={-1} className="border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
@@ -1774,7 +2159,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       )}
 
       {!localOnly && <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
-        onDraftApply={value => {
+        onDraftApply={value => applyBrewerDecision(() => {
           // The companion receives only its authorized context fields. Preserve
           // local metadata (including the brew date), without restoring fields
           // explicitly removed from the server-owned part of the recipe.
@@ -1782,7 +2167,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           const next = { ...localFields, ...value };
           applyImport({...next, mashSteps:next.mash?.steps ?? [], present:Object.keys(next), complete:true} as ImportedRecipe, next);
           setStep(step);
-        }} />}
+        })} />}
       {/* ---------------------------------------------------- ÉTAPE 1 */}
         {['fermentescibles', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
           scope={step === 'fermentescibles' ? 'malt' : undefined}
@@ -2036,7 +2421,23 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
           title="Houblons"
         >
           <div className="space-y-2 sm:space-y-3">
+            {/*
+              Le bilan de houblonnage et l'accès aux lignes restent en tête de
+              l'étape : à l'ouverture, le brasseur lit ses IBU et corrige une
+              ligne sans défiler sous tout l'atelier V5.5.
+            */}
             <HopRecipeSnapshot recipe={{ ...build(), ogTarget: boilOg ?? undefined }} />
+            {/*
+              Les lignes écrites à la main restent le geste de correction : un
+              alpha de lot, une durée ou une phase à cru que la V5.5 refuse
+              d'inventer se corrigent ici, sans quitter la recette. Une
+              demande de correction ouvre ce volet par sa bascule native.
+            */}
+            <details id="recipe-hop-lines" className="recipe-hop-lines border-t border-cave-700 pt-2 scroll-mt-20" open={hopLinesOpen} onToggle={e => setHopLinesOpen(e.currentTarget.open)}>
+              <summary className="flex items-center justify-between gap-2 cursor-pointer min-h-touch text-cave-200" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>
+                <span>Corriger les lignes de houblon · {hops.length}{hopIssueCount ? ` · ${hopIssueCount} à corriger` : ''}</span>
+              </summary>
+              <div className="space-y-2 sm:space-y-3 pt-2">
             <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons</h3>
             <SegmentedControl
               label="Moment d’ajout"
@@ -2053,7 +2454,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               recipe={build()}
               onChange={addHop}
               onBusyChange={setHopGuideBusy}
-              onReference={variety => addHop(variety.name, undefined, variety)}
+              onReference={variety => applyBrewerDecision(() => addHop(variety.name, undefined, variety))}
               onCreate={(n) => {
                 const created = onCreateStockItem(n, 'Houblon', 'g');
                 addHop(created.name, created);
@@ -2099,7 +2500,6 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                               label={(st) => HOP_STAGE[st].label}
                               tone={(st) => HOP_STAGE[st].tone}
                             />
-                            <button type="button" className="text-xs text-cave-50 underline underline-offset-2" onClick={() => simulateHop(i)} aria-label={`Simuler l’ajout ${i + 1} de ${h.name}`}>Simuler</button>
                             {!style.ask && (
                               <span className="text-sm text-cave-400 truncate">
                                 {describeMoment(h)}
@@ -2182,7 +2582,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                                 emptyValue={0}
                                 min={0}
                                 max={100}
-                                value={h.alpha}
+                                value={h.alpha === 0 ? undefined : h.alpha}
                                 onValue={(v) => patchHop(i, { alpha: v })}
                                 missing={style.bitters && !h.alpha}
                               />
@@ -2286,52 +2686,39 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
                 onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
                 hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} />
             </Suspense>
-            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
-              <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
-            </Suspense>
-            <details id="recipe-hop-simulation" className="recipe-hop-tools border-t border-cave-700 scroll-mt-20" open={hopRecipeToolsOpen} onToggle={e => setHopRecipeToolsOpen(e.currentTarget.open)}>
-              <summary className="flex items-center justify-between gap-2 text-cave-200">
-                <span>Comparer et simuler les houblons</span>
-                <span className="font-mono tabular-nums text-cave-50">{ibu ?? '—'} IBU</span>
-              </summary>
-              {hopRecipeToolsOpen && <Suspense fallback={<p role="status" className="px-2 py-3 text-sm text-cave-400">Chargement du simulateur houblon…</p>}>
-                <HopRecipeWorkbench recipe={{ ...build(), ogTarget: boilOg ?? undefined }} session={hopWorkbenchSession} focusRequest={hopSimulationRequest} onFocusHandled={() => setHopSimulationRequest(undefined)} onNavigate={setStep} onBusyChange={setHopGuideBusy}
-                  onPlanYeast={(goal, yeastId) => { setYeastFocus({ goal, yeastId }); setStep('levure'); }}
-                  onChange={next => { setHops(next.hops); setDetails(previous => ({ ...previous, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds })); }} />
-              </Suspense>}
-            </details>
-            <details className="border-t border-cave-700 pt-2" open={hopWorkshopOpen} onToggle={e => setHopWorkshopOpen(e.currentTarget.open)}>
-              <summary className="cursor-pointer min-h-touch text-water" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>Recherche avancée · arômes, essais et analyses</summary>
-              {hopWorkshopOpen && <Suspense fallback={<p role="status" className="px-2 py-3 text-sm text-cave-400">Chargement de l’atelier aromatique…</p>}>
-                <HopWorkshop
+            <details className="recipe-hop-context border-t border-cave-700 pt-2" open={hopContextOpen} onToggle={e => setHopContextOpen(e.currentTarget.open)}>
+              <summary className="cursor-pointer min-h-touch text-water" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>Lots, COA et conditions de contact</summary>
+              {hopContextOpen && <Suspense fallback={<p role="status" className="px-2 py-3 text-sm text-cave-400">Chargement des lots et conditions de contact…</p>}>
+                <HopRecipeGuide
+                  contextOnly
                   recipe={build()}
-                  onChooseYeast={() => setStep('levure')}
-                  onEditAdditions={() => document.getElementById('recipe-hop-additions')?.scrollIntoView({ block: 'start' })}
                   onBusyChange={setHopGuideBusy}
-                  onChange={next => {
+                  onChooseYeast={() => setStep('levure')}
+                  onChange={next => applyBrewerDecision(() => {
                     setHops(next.hops);
                     setYeast(next.yeast);
-                    setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId, hopSolverIntent: next.hopSolverIntent, hopPredictionIds: next.hopPredictionIds }));
-                  }}
-                  contextEditor={
-                    <details>
-                      <summary className="cursor-pointer min-h-touch text-water">Lots, COA et conditions de contact</summary>
-                      <HopRecipeGuide
-                        contextOnly
-                        recipe={build()}
-                        onBusyChange={setHopGuideBusy}
-                        onChooseYeast={() => setStep('levure')}
-                        onChange={next => {
-                          setHops(next.hops);
-                          setYeast(next.yeast);
-                          setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
-                        }}
-                      />
-                    </details>
-                  }
+                    setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
+                  })}
                 />
               </Suspense>}
             </details>
+              </div>
+            </details>
+            {/*
+              L'atelier Houblons V5.5 est le parcours principal de cette étape.
+              Il lit le brouillon exact en cours d'écriture — valeurs non
+              enregistrées ou manquantes comprises —, garde ses études,
+              prévisions et essais dans son dossier local, et ne change la
+              recette qu'après « Appliquer au brouillon ». L'enregistrement
+              reste celui du récapitulatif.
+            */}
+            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Ouverture de l’atelier Houblons V5.5…</p>}>
+              <HopV55RecipeStep ownerKey={ownerKey} recipe={build()} localOnly={localOnly} onApply={applyHopV55Change}
+                onConserveColdEvidence={conserveHopV55ColdEvidence} onCorrectContext={setStep} />
+            </Suspense>
+            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
+              <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
+            </Suspense>
           </div>
         </Section>
       )}
@@ -2618,6 +3005,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
       {step === 'eau' && (
         <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
           {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
+          {waterSourceNotice}
           {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?(noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>):<SaltSolver
             source={waterSource}
             onSourceChange={(source) => {
@@ -2654,6 +3042,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             }}
             state={water}
             onChange={onWaterChange}
+            profileMode={waterProfileMode.current}
             noSparge={spargeType === 'none'}
             onNoSpargeChange={setNoSparge}
           />}
@@ -2721,6 +3110,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             : readiness.status === 'incomplete' ? `À compléter · ${readiness.missing.length} repère${readiness.missing.length > 1 ? 's' : ''} avant brassin · enregistrement possible`
             : 'Données prêtes pour le brassin'}
         </div>
+        {waterSourceNotice}
         {/*
           Un seul geste pour aller chercher tout ce qui manque encore — couleurs,
           potentiels, alphas, atténuation. Le bouton disparaît de lui-même quand
@@ -2739,7 +3129,7 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
             recipe: { ...build(), id: undefined },
             estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
               efficiencyPct: efficiency, volumes: suggestedVolumes },
-            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecapForReview,
+            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecapForRecord,
             conventions: { ions: 'mg/L dans les eaux de traitement, avant extraction et ébullition',
               salts: 'grammes réellement retenus, répartis entre empâtage et rinçage',
               acid: 'doses retenues, concentration indiquée dans le nom du produit',
@@ -2819,21 +3209,21 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
               yeast,
               mashSteps,
               fermentation: ferment,
-              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecapForReview ? {
-                ...waterRecapForReview,
-                sourceName: waterRecapForReview.sourceName,
-                styleName: waterRecapForReview.styleName,
-                mashWaterL: waterRecapForReview.mashWaterL,
-                spargeWaterL: waterRecapForReview.spargeWaterL,
-                mashOsmoseeL: waterRecapForReview.mashOsmoseeL,
-                spargeOsmoseeL: waterRecapForReview.spargeOsmoseeL,
-                wortIons: waterRecapForReview.wortIons,
-                doses: waterRecapForReview.doses,
-                acidId: waterRecapForReview.acidId,
-                mashAcid: waterRecapForReview.mashAcid,
-                spargeAcid: waterRecapForReview.spargeAcid,
-                ra: waterRecapForReview.ra,
-                mashPh: waterRecapForReview.mashPh
+              water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecapForRecord ? {
+                ...waterRecapForRecord,
+                sourceName: waterRecapForRecord.sourceName,
+                styleName: waterRecapForRecord.styleName,
+                mashWaterL: waterRecapForRecord.mashWaterL,
+                spargeWaterL: waterRecapForRecord.spargeWaterL,
+                mashOsmoseeL: waterRecapForRecord.mashOsmoseeL,
+                spargeOsmoseeL: waterRecapForRecord.spargeOsmoseeL,
+                wortIons: waterRecapForRecord.wortIons,
+                doses: waterRecapForRecord.doses,
+                acidId: waterRecapForRecord.acidId,
+                mashAcid: waterRecapForRecord.mashAcid,
+                spargeAcid: waterRecapForRecord.spargeAcid,
+                ra: waterRecapForRecord.ra,
+                mashPh: waterRecapForRecord.mashPh
               }:undefined,
               notes
             })
@@ -2888,8 +3278,9 @@ export const BrewWizard: React.FC<BrewWizardProps> = ({
         open
         onClose={() => setImporting(false)}
         onApply={applyImport}
+        reviewImport={reviewImport}
       /></Suspense>}
-      </fieldset>
+      </fieldset>}
     </PageShell>
   );
 };

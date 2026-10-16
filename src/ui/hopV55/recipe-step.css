@@ -1,0 +1,35 @@
+/* V5.5 hop workbench hosted natively in the recipe wizard's hop step. */
+.recipe-hop-v55{min-width:0;max-width:100%;border:1px solid #d7d7c8;border-radius:10px;background:#f5f2e9;color:#20352b;overflow-wrap:anywhere}
+.recipe-hop-v55-scope{padding:8px 12px;border-bottom:1px solid #d7d7c8;border-radius:10px 10px 0 0;background:#fffefa;font-size:13px;line-height:1.45}
+.recipe-hop-v55-scope p{margin:4px 0}
+.recipe-hop-v55>[role=status]{margin:0;padding:10px 12px;font-size:13px}
+.recipe-hop-v55>.hop-v55{min-height:0;padding-bottom:12px;border-radius:0 0 10px 10px}
+/* The wizard header and step rail already stick; nested sticky bars would cover them. */
+.recipe-hop-v55 .hv-nav,.recipe-hop-v55 .hv-question{position:static}
+.recipe-hop-v55 .hv-top{padding:10px 12px}
+.recipe-hop-v55 .hv-context span{color:#405642}
+.recipe-hop-v55 .hv-main{max-width:none}
+.recipe-hop-v55-closed{border:1px solid #d9aaa1;border-radius:10px;background:#fff1ed;color:#8c1e20;padding:10px 12px;font-size:14px;overflow-wrap:anywhere}
+.recipe-hop-v55-closed p{margin:4px 0}
+.recipe-hop-v55-closed button{min-height:36px;padding:5px 9px;background:#fffefa;color:#8c1e20;border:1px solid #c2978f;border-radius:7px;font-weight:600}
+
+/* Explicit application of the selected program to the open draft. */
+.hv-draft-application h3{margin-top:0}
+.hv-draft-alpha{display:grid;gap:10px;margin-top:10px;padding:10px;border:1px solid #d9c39a;border-radius:8px;background:#fbf4e4;min-width:0}
+.hv-draft-alpha-row{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0;margin:0;padding:8px 0 0;border:0;border-top:1px solid #e3d3b3}
+.hv-draft-alpha-row legend{padding:0;font-size:13px;font-weight:700}
+.hv-draft-alpha>button{justify-self:start}
+.hv-draft-preview{margin-top:10px;padding:10px;border:1px solid #b9cbb1;border-radius:8px;background:#fffefa;min-width:0}
+.hv-draft-preview h4{margin:0 0 4px;font-size:13px}
+.hv-draft-preview ul{margin:4px 0;padding-left:18px}
+.hv-draft-preview li{margin:4px 0;font-variant-numeric:tabular-nums}
+@media(min-width:850px){.hv-draft-alpha-row{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);align-items:end}.hv-draft-alpha-row legend,.hv-draft-alpha-row small{grid-column:1/-1}}
+
+.recipe-hop-v55-cold{min-height:0;padding:10px 12px;border-top:1px solid #d7d7c8;border-radius:0 0 10px 10px}
+.recipe-hop-v55-cold>summary{font-weight:700;cursor:pointer;min-height:36px;padding:8px 0}
+.recipe-hop-v55-cold .hv-section-title{flex-wrap:wrap}
+.recipe-hop-v55-cold .hv-reading{display:grid;gap:8px;white-space:normal;text-align:left;margin:10px 0}
+.recipe-hop-v55-cold .hv-reading>div{display:grid;grid-template-columns:minmax(100px,1fr) minmax(0,2fr);gap:8px;border-bottom:1px solid #d7d7c8;padding-bottom:6px}
+.recipe-hop-v55-cold .hv-reading dt{font-weight:600}
+.recipe-hop-v55-cold .hv-reading dd{margin:0}
+.recipe-hop-v55-cold .hv-cold-export{display:inline-block;min-height:36px;padding:8px 0;font-size:13px}

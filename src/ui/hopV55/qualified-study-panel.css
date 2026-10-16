@@ -91,8 +91,9 @@
 .hv-qualified-option__scope { color: #3c5c4c; font-weight: 700; }
 .hv-qualified-option section { margin-top: 8px; }
 .hv-qualified-option h5 { margin: 0 0 4px; font-size: .8rem; }
-.hv-qualified-button { min-height: 40px; padding: 7px 12px; border: 1px solid var(--qs-forest); border-radius: 6px; color: #fffefa !important; background: var(--qs-forest); font-size: .84rem; font-weight: 750; }
-.hv-qualified-button--quiet { color: var(--qs-forest) !important; background: #fffefa; }
+/* Scoped to win over page.css `.hop-v55 button` (0,1,1): white on white (1:1) and 30 px otherwise. */
+.hop-v55 .hv-qualified-button { min-height: 40px; padding: 7px 12px; border: 1px solid var(--qs-forest); border-radius: 6px; color: #fffefa !important; background: var(--qs-forest); font-size: .84rem; font-weight: 750; }
+.hop-v55 .hv-qualified-button--quiet { color: var(--qs-forest) !important; background: #fffefa; }
 .hv-qualified-button:disabled { cursor: not-allowed; opacity: .55; }
 .hv-qualified-preference { margin-top: 12px; border-left: 4px solid var(--qs-amber); }
 .hv-qualified-save { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding: 10px; border: 1px solid var(--qs-line); border-radius: 8px; background: #f6f8f2; }

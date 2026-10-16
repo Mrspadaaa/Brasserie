@@ -1,0 +1,66 @@
+{
+  "id": "bulletin-photo",
+  "level": "simple : bulletin de livraison sans prix, légèrement de travers",
+  "facture": {
+    "vendor": "Malterie Fictive du Jura",
+    "documentType": "delivery_note",
+    "paymentEvidence": [
+      "unknown"
+    ],
+    "date": "18.09.2026",
+    "currency": "",
+    "invoiceNumber": [
+      "",
+      "BL-2026-0918"
+    ],
+    "orderNumber": "CMD-55102",
+    "amountHT": null,
+    "tvaRate": null,
+    "tvaAmount": null,
+    "amountTTC": null,
+    "items": [
+      {
+        "name": "Malt Pilsner 25 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 4,
+        "unit": "sac",
+        "price": null,
+        "amountTTC": null
+      },
+      {
+        "name": "Malt Vienne 25 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "sac",
+        "price": null,
+        "amountTTC": null
+      },
+      {
+        "name": "Houblon Perle pellets 1 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 2,
+        "unit": "piece",
+        "price": null,
+        "amountTTC": null
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "delivery_note"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/bulletin-photo.png",
+  "mimeType": "image/png",
+  "note": "FIXTURE DE TEST – document fictif"
+}

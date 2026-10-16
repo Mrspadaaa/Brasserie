@@ -12,6 +12,7 @@ import type {
   HopPropertyAdviceRequest,
   HopPropertyAdviceStrategy,
 } from '../../domain/hopDecision/propertyAdviceSchema';
+import { isHopProcessContextNoteIntent } from '../../domain/hopDecision/propertyAdvice';
 import { Input, Textarea } from '../Input';
 import './property-advice-decision.css';
 
@@ -190,6 +191,12 @@ const normalized = (value: string): string => value.trim().replace(/\s+/g, ' ').
 /** Mise à jour structurelle d’un request de la même version (aucune conversion de format). */
 const withRequest = <R extends CoreRequest>(request: R, change: Partial<CoreRequest>): R => ({ ...request, ...change });
 
+/** The stored reading may already start with its own label; the header shows that label once. The data stays untouched. */
+function interpretationBody(text: string, label: string): string {
+  const repeated = text.match(new RegExp(`^\\s*${label}\\s*:\\s*`, 'u'));
+  return repeated ? text.slice(repeated[0].length) : text;
+}
+
 function scrollToElement(element: Element | null) {
   if (!element) return;
   const run = () => (element as HTMLElement).scrollIntoView?.({ block: 'start', behavior: 'smooth' });
@@ -202,9 +209,13 @@ function compensationText(answer: CoreAnswer, intent: CoreIntent): string {
   return `Comparer des compensations perceptives · constats comparés : ${labels.join(' · ') || 'aucun'} · ni une baisse ni un choix d’amertume`;
 }
 
+function roleLabelOf(intent: CoreIntent): string {
+  return isHopProcessContextNoteIntent(intent) ? 'Note de contexte' : roleLabels[intent.role];
+}
+
 function intentText(intent: CoreIntent): string {
   const compensation = intent.investigation?.kind === 'comparePerceptualCompensation' ? ' · comparaison de compensations' : '';
-  return `${propertyLabels[intent.property]} · ${roleLabels[intent.role]}${compensation} · ${intent.label}${intent.qualification ? ` · ${intent.qualification}` : ''}`;
+  return `${propertyLabels[intent.property]} · ${roleLabelOf(intent)}${compensation} · ${intent.label}${intent.qualification ? ` · ${intent.qualification}` : ''}`;
 }
 
 function directionText(intent: CoreIntent): string {
@@ -657,7 +668,10 @@ export function PropertyAdviceDecisionCore<A extends CoreAnswer, R extends CoreR
     <header className="hv-property-header">
       <div><p className="hv-property-eyebrow">Conseil documentaire · {adapter.versionLabel}</p>
         <h2 id={`${rootId}-title`}>Réponse documentaire</h2>
-        <p><b>Lecture {view.requestSnapshot.interpretation.origin === 'user' ? 'déclarée' : 'proposée'} :</b> {view.requestSnapshot.interpretation.text}</p>
+        {(() => {
+          const label = view.requestSnapshot.interpretation.origin === 'user' ? 'Lecture déclarée' : 'Lecture proposée';
+          return <p><b>{label} :</b> {interpretationBody(view.requestSnapshot.interpretation.text, label)}</p>;
+        })()}
         {renderContextNotice?.(displayEntry, canCorrect, openCorrection)}
         <div className="hv-property-quick">
           {view.strategies.length ? <button type="button" className="hv-property-chip-button" onClick={() => scrollToElement(strategiesRef.current)}>

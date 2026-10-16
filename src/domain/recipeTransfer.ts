@@ -11,6 +11,7 @@ import { noloInputBasis, type NoloInput } from '../../functions/src/noloCore';
 import { noloScenarioBasis } from '../../functions/src/noloScenario';
 import { noloInput } from './nolo';
 import { noloToolContext } from './noloToolContext';
+import { readHopV55RecipeColdContactAssociationV1 } from '../services/hopV55/recipeColdContactAssociation';
 
 /** A readable, versioned text format. Labels, units and validation share one schema.
  * Only this small indentation format is parsed here; arbitrary recipes go through
@@ -62,6 +63,11 @@ acidId.labels = {
   lactique: 'Acide lactique 80 %',
   phosphorique: 'Acide phosphorique 75 %',
   maltAcidule: 'Malt acidulé'
+};
+const profileOrigin = t('Origine du profil cible', ['style', 'choice']);
+profileOrigin.labels = {
+  style: 'Suit le style de bière',
+  choice: 'Choisi par le brasseur'
 };
 const temp = (label: string) => n(label, -273.15, 1000);
 const pct = (label: string) => n(label, 0, 100);
@@ -196,6 +202,7 @@ export const recipeFields = {
     diRatioPct: pct('Osmosée empâtage (%)'),
     spargeDiRatioPct: pct('Osmosée rinçage (%)'),
     targetProfileId: t('Code du profil cible'),
+    targetProfileOrigin: profileOrigin,
     targetName: t('Nom de la cible'),
     targetIons: o('Cible (ppm)', ions),
     startIons: o('Départ dilué', ions),
@@ -245,7 +252,7 @@ export const recipeFields = {
   parentRecipeId: t('Recette d’origine')
 } satisfies Record<
   // Index IDs and local axis definitions travel with a database backup, not a standalone recipe.
-  Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide'>,
+  Exclude<keyof Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'hopV55Applications' | 'hopV55ColdEvidenceAssociations'>,
   Field
 >;
 
@@ -272,14 +279,53 @@ const estimates = o('Estimations au moment de la copie', {
   bicarbonateReferenceNote: t('Statut du repère HCO₃'),
   waterDiagnosticNote: t('Limite du diagnostic de l’eau')
 });
-const root = o('', { ...recipeFields, estimates });
-export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide'>;
+const transferArchive = o('Archives V5.5 non réattribuées', { coldContactEvidenceSummary: t('Index lisible de preuves de contact à froid') });
+const root = o('', { ...recipeFields, transferArchive, estimates });
+export type RecipeContent = Omit<Recipe, 'id' | 'batchRef' | 'favorite' | 'archivedAt' | 'malts' | 'water' | 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'hopV55ColdEvidenceAssociations'>;
+type RecipeTextInput = RecipeContent & Pick<Partial<Recipe>, 'hopV55ColdEvidenceAssociations'>;
 export const RECIPE_TEXT_HEADER = 'L’AFFINÉE — RECETTE v1';
+export const RECIPE_TEXT_HEADER_V2 = 'L’AFFINÉE — RECETTE v2';
 
+/** Portable text exports expose only a readable index. Source-bound closures stay in the complete recipe backup. */
+function coldContactTransferSummary(value: unknown): string | undefined {
+  if (value === undefined || Array.isArray(value) && value.length === 0) return undefined;
+  if (!Array.isArray(value)) return 'Historique froid illisible; son contenu brut reste dans la sauvegarde complète et n’est pas réattribué par ce texte.';
+
+  const known: Array<{ association: string; evidence: string; origin: string; recordedAt: string; application: string }> = [];
+  let unreadable = 0;
+  for (const raw of value) {
+    const read = readHopV55RecipeColdContactAssociationV1(raw);
+    if (read.status !== 'readOnly') { unreadable++; continue; }
+    const association = read.association;
+    known.push({
+      association: association.reference,
+      evidence: association.evidenceReference,
+      origin: association.origin.kind === 'localCalculation'
+        ? 'calcul local V5.5' : 'tour d’assistance, preuve ' + association.origin.evidenceId,
+      recordedAt: association.recordedAt,
+      application: association.applicationRecordReference === null
+        ? 'sans application J4'
+        : 'liée à un reçu J4 exact, détails dans la sauvegarde complète',
+    });
+  }
+
+  const summary = [
+    'Index de ' + value.length + ' entrée(s) d’association froide, liée à sa source et conservée comme historique.',
+    'Ce texte portable ne réattribue aucune preuve à la recette importée; la sauvegarde complète conserve la closure scellée et les formats futurs.',
+  ];
+  const visible = known.slice(0, 20);
+  for (const row of visible) summary.push(
+    'Archive source-liée · ' + row.origin + ' · ' + row.recordedAt + ' · ' + row.application + '.',
+    'Référence association ' + row.association + ' · preuve ' + row.evidence + '.',
+  );
+  if (known.length > visible.length) summary.push((known.length - visible.length) + ' autres associations lisibles : détails complets dans la sauvegarde intégrale.');
+  if (unreadable) summary.push(unreadable + ' entrée(s) future(s) ou illisible(s) : octets conservés dans la sauvegarde intégrale, non interprétés ici.');
+  return summary.join('\n');
+}
 /** Shared boundary for text and AI data: finite values, known keys and enums only.
  * Strict mode rejects damaged exports instead of silently dropping their fields. */
 export function readRecipeFields(value: unknown, strict = false): Partial<RecipeContent> {
-  const { estimates: _, ...recipe } = (readField(root, value, strict, 'Recette') ?? {}) as Record<string, unknown>;
+  const { estimates: _, transferArchive: _transferArchive, ...recipe } = (readField(root, value, strict, 'Recette') ?? {}) as Record<string, unknown>;
   const yeast = recipe.yeast as YeastSpec | undefined;
   if (yeast?.pitching?.product && yeast.pitching.product.referenceId !== yeast.hopIndexId) {
     if (strict) throw new Error('Produit d’ensemencement lié à une autre référence de levure.');
@@ -412,7 +458,7 @@ function readField(field: Field, value: unknown, strict: boolean, path: string):
 }
 
 export function writeRecipeText(
-  recipe: RecipeContent,
+  recipe: RecipeTextInput,
   calculated?: Record<string, unknown>
 ): string {
   if (recipe.yeast?.localDocumentary !== undefined && recipe.yeast.adoptedDocumentary !== undefined)
@@ -422,11 +468,14 @@ export function writeRecipeText(
     throw new Error('La fiche documentaire adoptée est invalide ou liée à une autre souche.');
   if (recipe.yeast?.localDocumentary !== undefined && !readYeastLocalDocumentary(recipe.yeast.localDocumentary))
     throw new Error('La fiche documentaire locale est invalide.');
+  const coldContactSummary = coldContactTransferSummary(recipe.hopV55ColdEvidenceAssociations);
   const clean = readField(root, {
-    ...recipe, estimates: { ...calculated, ...recipeWaterExport(recipe) }
+    ...recipe,
+    ...(coldContactSummary ? { transferArchive: { coldContactEvidenceSummary: coldContactSummary } } : {}),
+    estimates: { ...calculated, ...recipeWaterExport(recipe) }
   }, false, 'Recette');
   rebindNoloCopy(recipe, clean);
-  const lines = [RECIPE_TEXT_HEADER, ''];
+  const lines = [coldContactSummary ? RECIPE_TEXT_HEADER_V2 : RECIPE_TEXT_HEADER, ''];
   function emit(field: Field, value: unknown, indent: number, label: string) {
     if (value === undefined) return;
     const prefix = ' '.repeat(indent) + label;
@@ -462,7 +511,8 @@ export function readRecipeText(raw: string): RecipeContent | null {
   if (!text.trimStart().startsWith('L’AFFINÉE — RECETTE v')) return null;
   if (text.length > 2_000_000) throw new Error('Recette trop volumineuse.');
   const lines = text.trimStart().split('\n');
-  if (lines.shift() !== RECIPE_TEXT_HEADER)
+  const header = lines.shift();
+  if (header !== RECIPE_TEXT_HEADER && header !== RECIPE_TEXT_HEADER_V2)
     throw new Error('Version de recette non prise en charge.');
   if (lines[0] === '') lines.shift();
   let i = 0;
@@ -511,7 +561,12 @@ export function readRecipeText(raw: string): RecipeContent | null {
     throw new Error('Fin de recette manquante. Recopie le texte complet.');
   const parsed = parse(root, 0);
   if (i !== lines.length) throw new Error('Fin de recette invalide.');
-  const { estimates: _, ...recipe } = readRecipeFields(parsed, true) as any;
+  const transferSummary = (parsed as any).transferArchive?.coldContactEvidenceSummary;
+  if (header === RECIPE_TEXT_HEADER_V2 && (typeof transferSummary !== 'string' || !transferSummary.trim()))
+    throw new Error('Annexe de preuves froides absente du format v2.');
+  if (header === RECIPE_TEXT_HEADER && transferSummary !== undefined)
+    throw new Error('Annexe de preuves froides exige le format v2.');
+  const { estimates: _, transferArchive: _transferArchive, ...recipe } = readRecipeFields(parsed, true) as any;
   for (const key of [
     'name',
     'style',
@@ -544,8 +599,9 @@ export function readRecipeText(raw: string): RecipeContent | null {
   recipe.fermentation?.forEach((s) => require(s, ['name', 'kind']));
   if (recipe.waterPlan) {
     const w = recipe.waterPlan;
+    // A legacy plan may omit its reference only when it carries its own analysis (an anonymous snapshot).
     require(w, [
-      'sourceId',
+      ...(w.sourceSnapshot ? [] : ['sourceId']),
       'diRatioPct',
       'mashWaterL',
       'spargeWaterL',

@@ -1,14 +1,17 @@
 import { createHash } from 'node:crypto';
 import { HOP_ADVICE_PROTOCOL_V1, HOP_ADVICE_V1_COLLECTIONS } from './brewerHopAdviceTransportV1.js';
 import type { HopAdviceAnalysisMode, HopAdviceV1Scope, HopAdviceV1AnyWireInput,
-  HopAdviceV1WireInputV2, HopAdviceV1WireInputV3 } from './brewerHopAdviceTransportV1.js';
+  HopAdviceV1WireInputV2, HopAdviceV1WireInputV3, HopAdviceV1WizardWireInputV1 } from './brewerHopAdviceTransportV1.js';
 import { BREWER_HOP_ADVICE_REQUEST_FORMAT } from './brewerHopAdviceProposal.js';
 import {
   BREWER_HOP_ADVICE_REQUEST_FORMAT_V3,
   assertBrewerHopAdviceRequestV3,
+  assertBrewerHopAdviceRequestV3ForWizardV1,
   measureBrewerHopAdviceSemanticJsonWire,
   type BrewerHopAdviceRequestV3,
+  type BrewerHopAdviceWizardRequestV3,
 } from './brewerHopAdviceSemanticV3.js';
+import { assertBrewerHopAdviceWizardSourceMatchesSnapshotV1 } from './brewerHopAdviceWizardSourceV1.js';
 export { HOP_ADVICE_PROTOCOL_V1, HOP_ADVICE_V1_COLLECTIONS, HOP_ADVICE_V1_FUNCTIONS } from './brewerHopAdviceTransportV1.js';
 export type {
   HopAdviceAnalysisMode,
@@ -33,7 +36,9 @@ export type {
   HopAdviceV1UnsupportedJob,
   HopAdviceV1Scope,
   HopAdviceV1WireInput,
-  HopAdviceV1AnyWireInput
+  HopAdviceV1AnyWireInput,
+  HopAdviceV1WizardClientEntryV1,
+  HopAdviceV1WizardWireInputV1
 } from './brewerHopAdviceTransportV1.js';
 
 /**
@@ -52,6 +57,16 @@ interface ParsedHopAdviceV1WireCommon {
 export type ParsedHopAdviceV1Wire =
   | (ParsedHopAdviceV1WireCommon & { requestVersion: 'request-v2'; wireInput: HopAdviceV1WireInputV2 })
   | (ParsedHopAdviceV1WireCommon & { requestVersion: 'request-v3'; wireInput: HopAdviceV1WireInputV3; semanticRequest: BrewerHopAdviceRequestV3 });
+
+/** Wizard V1 parse result: not a member of the classic union; its draft is the verified wire snapshot recipe. */
+export type ParsedHopAdviceV1WireForWizardV1 = ParsedHopAdviceV1WireCommon & {
+  requestVersion: 'request-v3';
+  sourceProfile: 'wizardV1';
+  wireInput: HopAdviceV1WizardWireInputV1;
+  semanticRequest: BrewerHopAdviceWizardRequestV3;
+  /** Exactly `wireInput.draft`; its canonical reference is the Wizard source contentReference. */
+  wizardDraft: unknown;
+};
 
 export interface HopAdviceV1CanonicalChatInput {
   scope: HopAdviceV1Scope;
@@ -101,7 +116,8 @@ function assertJsonValues(value: unknown, seen = new Set<object>()): void {
  * Check the complete original request before extraction, normalization or
  * handoff validation. Unknown top-level properties fail closed.
  */
-export function parseHopAdviceV1Wire(raw: unknown): ParsedHopAdviceV1Wire {
+/** Transport envelope shared by every request version, checked on the untouched decoded request. */
+function parseWireEnvelope(raw: unknown): ParsedHopAdviceV1WireCommon {
   let json: string | undefined;
   try { json = JSON.stringify(raw); } catch { /* reported below */ }
   if (typeof json !== 'string') throw new Error('Le contenu du conseil n’est pas un JSON valide.');
@@ -120,33 +136,72 @@ export function parseHopAdviceV1Wire(raw: unknown): ParsedHopAdviceV1Wire {
   if (!isRecord(raw.hopAdvice)) throw new Error('Transmission de lecture assistée manquante.');
   const { mode: _wireMode, analysisMode, ...rest } = raw;
   const chatInput = { ...rest, mode: analysisMode as HopAdviceAnalysisMode };
-  const requestFormat = raw.hopAdvice.format;
-  // Preserve the old lane parser's loose projection for source compatibility;
-  // admission/worker still run the strict RequestV2 validator before effects.
-  if (requestFormat === undefined || requestFormat === BREWER_HOP_ADVICE_REQUEST_FORMAT) {
-    return { requestVersion: 'request-v2', wireInput: raw as unknown as HopAdviceV1WireInputV2, originalBytes, chatInput };
-  }
-  if (requestFormat !== BREWER_HOP_ADVICE_REQUEST_FORMAT_V3)
-    throw new Error('Version du handoff assisté absente ou non prise en charge.');
+  return { originalBytes, chatInput };
+}
+
+/** Same exact JSON measure and depth bound for every semantic V3 wire, before any request validation. */
+function assertSemanticWireMeasure(raw: unknown, originalBytes: number): void {
   const measured = measureBrewerHopAdviceSemanticJsonWire(raw);
   if (measured.utf8Bytes !== originalBytes || measured.utf8Bytes > 100_000)
     throw new Error('Wire sémantique trop volumineux ou mesure JSON incohérente.');
   if (measured.maxDepth > 18) throw new Error('Wire sémantique trop profond.');
-  assertBrewerHopAdviceRequestV3(raw.hopAdvice);
-  const semanticRequest = raw.hopAdvice as unknown as BrewerHopAdviceRequestV3;
-  if (raw.question !== semanticRequest.question
+}
+
+export function parseHopAdviceV1Wire(raw: unknown): ParsedHopAdviceV1Wire {
+  const { originalBytes, chatInput } = parseWireEnvelope(raw);
+  const wire = raw as Record<string, unknown> & { hopAdvice: Record<string, unknown> };
+  const requestFormat = wire.hopAdvice.format;
+  // Preserve the old lane parser's loose projection for source compatibility;
+  // admission/worker still run the strict RequestV2 validator before effects.
+  if (requestFormat === undefined || requestFormat === BREWER_HOP_ADVICE_REQUEST_FORMAT) {
+    return { requestVersion: 'request-v2', wireInput: wire as unknown as HopAdviceV1WireInputV2, originalBytes, chatInput };
+  }
+  if (requestFormat !== BREWER_HOP_ADVICE_REQUEST_FORMAT_V3)
+    throw new Error('Version du handoff assisté absente ou non prise en charge.');
+  assertSemanticWireMeasure(wire, originalBytes);
+  assertBrewerHopAdviceRequestV3(wire.hopAdvice);
+  const semanticRequest = wire.hopAdvice as unknown as BrewerHopAdviceRequestV3;
+  if (wire.question !== semanticRequest.question
     || semanticRequest.sourceReadingReference !== semanticRequest.sourceView.archiveIdentity.contentReference)
     throw new Error('La question V1, la vue sémantique et la référence source doivent correspondre exactement.');
-  const scopeKind = isRecord(raw.scope) ? raw.scope.kind : undefined;
-  if (scopeKind === 'draft' && (!Object.prototype.hasOwnProperty.call(raw, 'draft')
-      || Object.prototype.hasOwnProperty.call(raw, 'localJournal'))
-    || scopeKind === 'batch' && Object.prototype.hasOwnProperty.call(raw, 'draft')
+  const scopeKind = isRecord(wire.scope) ? wire.scope.kind : undefined;
+  if (scopeKind === 'draft' && (!Object.prototype.hasOwnProperty.call(wire, 'draft')
+      || Object.prototype.hasOwnProperty.call(wire, 'localJournal'))
+    || scopeKind === 'batch' && Object.prototype.hasOwnProperty.call(wire, 'draft')
     || (scopeKind === 'recipe' || scopeKind === 'app')
-      && (Object.prototype.hasOwnProperty.call(raw, 'draft') || Object.prototype.hasOwnProperty.call(raw, 'localJournal'))) {
+      && (Object.prototype.hasOwnProperty.call(wire, 'draft') || Object.prototype.hasOwnProperty.call(wire, 'localJournal'))) {
     throw new Error('Les champs source du wire sémantique ne correspondent pas à son scope.');
   }
-  return { requestVersion: 'request-v3', wireInput: raw as unknown as HopAdviceV1WireInputV3,
+  return { requestVersion: 'request-v3', wireInput: wire as unknown as HopAdviceV1WireInputV3,
     semanticRequest, originalBytes, chatInput };
+}
+
+/**
+ * Explicit Wizard V1 parse of the same callable wire. Only RequestV3 under scope draft is admitted; the
+ * scope must be the request's origin scope, and the draft must be the canonical snapshot recipe named by
+ * the Wizard source contentReference. RequestV2, other scopes, classic sources and future children fail.
+ */
+export function parseHopAdviceV1WireForWizardV1(raw: unknown): ParsedHopAdviceV1WireForWizardV1 {
+  const { originalBytes, chatInput } = parseWireEnvelope(raw);
+  const wire = raw as Record<string, unknown> & { hopAdvice: Record<string, unknown> };
+  if (wire.hopAdvice.format !== BREWER_HOP_ADVICE_REQUEST_FORMAT_V3)
+    throw new Error('Le profil Wizard exige exactement une RequestV3; aucune RequestV2 ni version future n’est admise.');
+  assertSemanticWireMeasure(wire, originalBytes);
+  assertBrewerHopAdviceRequestV3ForWizardV1(wire.hopAdvice);
+  const semanticRequest = wire.hopAdvice as unknown as BrewerHopAdviceWizardRequestV3;
+  if (wire.question !== semanticRequest.question
+    || semanticRequest.sourceReadingReference !== semanticRequest.sourceView.archiveIdentity.contentReference)
+    throw new Error('La question V1, la vue sémantique et la référence source doivent correspondre exactement.');
+  const scope = wire.scope;
+  if (!isRecord(scope) || Object.keys(scope).length !== 2 || scope.kind !== 'draft'
+    || scope.id !== semanticRequest.contextLaunch.scope.id
+    || !Object.prototype.hasOwnProperty.call(wire, 'draft') || Object.prototype.hasOwnProperty.call(wire, 'localJournal')) {
+    throw new Error('Le wire Wizard exige le scope draft de son origine et son brouillon, sans journal.');
+  }
+  const source = semanticRequest.contextLaunch.source;
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(source, { recipe: wire.draft, reference: source.contentReference });
+  return { requestVersion: 'request-v3', sourceProfile: 'wizardV1', wireInput: wire as unknown as HopAdviceV1WizardWireInputV1,
+    semanticRequest, wizardDraft: wire.draft, originalBytes, chatInput };
 }
 
 /** Legacy admission must reject both the marker and an attached handoff. */
@@ -164,10 +219,19 @@ function sorted(value: any): any {
   return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, child]) => [key, sorted(child)]));
 }
 
-export function hopAdviceV1InputDigest(wireInput: HopAdviceV1AnyWireInput): string {
+function inputDigest(wireInput: unknown): string {
   return createHash('sha256')
     .update(JSON.stringify(sorted({ protocol: HOP_ADVICE_PROTOCOL_V1, wireInput })), 'utf8')
     .digest('hex');
+}
+
+export function hopAdviceV1InputDigest(wireInput: HopAdviceV1AnyWireInput): string {
+  return inputDigest(wireInput);
+}
+
+/** Same digest formula over the Wizard wire; the type keeps it out of the classic V2/V3 union. */
+export function hopAdviceV1InputDigestForWizardV1(wireInput: HopAdviceV1WizardWireInputV1): string {
+  return inputDigest(wireInput);
 }
 
 export function hasHopAdviceV1Stamp(job: unknown): boolean {
@@ -196,6 +260,16 @@ export function validateHopAdviceV1Job(job: unknown): ParsedHopAdviceV1Wire {
   return parsed;
 }
 
+/** Wizard job snapshot: same stamp and digest, re-parsed only by the explicit Wizard profile. */
+export function validateHopAdviceV1JobForWizardV1(job: unknown): ParsedHopAdviceV1WireForWizardV1 {
+  if (!hasHopAdviceV1Stamp(job)) throw new Error('Version de lecture assistée absente ou non prise en charge.');
+  const record = job as Record<string, any>;
+  const parsed = parseHopAdviceV1WireForWizardV1(record.wireInput);
+  if (record.inputDigest !== hopAdviceV1InputDigestForWizardV1(parsed.wireInput))
+    throw new Error('Transmission de lecture assistée altérée depuis sa réception.');
+  return parsed;
+}
+
 /** Bind fields used outside `input` back to the exact authenticated wire snapshot. */
 export function assertHopAdviceV1JobBinding(
   job: unknown,
@@ -220,17 +294,34 @@ export function assertHopAdviceV1JobBinding(
 }
 
 /** Authoritative retry gate: validate the untouched source before the caller changes its wire. */
-export function validateHopAdviceV1RetrySource<TInput extends HopAdviceV1CanonicalChatInput>(options: {
+type HopAdviceV1RetrySourceOptions<TParsed, TInput> = {
   sourceJob: unknown;
   sourceDocumentId: string;
   ownerUid: string;
   expectedThreadId: string;
   currentGeneration: number;
   requestedGeneration?: unknown;
-  canonicalize: (parsed: ParsedHopAdviceV1Wire) => TInput;
+  canonicalize: (parsed: TParsed) => TInput;
   stableJson: (value: unknown) => string;
-}): { wireInput: HopAdviceV1AnyWireInput; input: TInput } {
-  const parsed = validateHopAdviceV1Job(options.sourceJob);
+};
+
+export function validateHopAdviceV1RetrySource<TInput extends HopAdviceV1CanonicalChatInput>(
+  options: HopAdviceV1RetrySourceOptions<ParsedHopAdviceV1Wire, TInput>,
+): { wireInput: HopAdviceV1AnyWireInput; input: TInput } {
+  return validateRetrySource(options, validateHopAdviceV1Job);
+}
+
+/** Wizard retry gate: the same checks, with the untouched source job re-read by the Wizard profile only. */
+export function validateHopAdviceV1RetrySourceForWizardV1<TInput extends HopAdviceV1CanonicalChatInput>(
+  options: HopAdviceV1RetrySourceOptions<ParsedHopAdviceV1WireForWizardV1, TInput>,
+): { wireInput: HopAdviceV1WizardWireInputV1; input: TInput } {
+  return validateRetrySource(options, validateHopAdviceV1JobForWizardV1);
+}
+
+function validateRetrySource<TParsed extends { wireInput: unknown }, TInput extends HopAdviceV1CanonicalChatInput>(
+  options: HopAdviceV1RetrySourceOptions<TParsed, TInput>, validateJob: (job: unknown) => TParsed,
+): { wireInput: TParsed['wireInput']; input: TInput } {
+  const parsed = validateJob(options.sourceJob);
   const input = options.canonicalize(parsed);
   assertHopAdviceV1JobBinding(options.sourceJob, input, options.sourceDocumentId);
   const job = options.sourceJob as Record<string, any>;

@@ -312,8 +312,14 @@ export interface WaterPlan {
   /** Refit unpinned salt and acid doses when the recipe inputs change. */
   autoTreatment?: boolean;
   saltOverrides?: { mash?: Partial<Record<SaltId, number>>; sparge?: Partial<Record<SaltId, number>> };
+  /**
+   * Exact identity of the analysis used by this recipe. A blank value (empty or whitespace-only) is kept as given:
+   * it names no analysis and stays unresolved until the brewer explicitly retains one; it is never an omission.
+   * Absent only on legacy plans whose own snapshot has no usable identity: that anonymous snapshot stays the
+   * recipe's analysis and is never given a declared blank reference.
+   */
   sourceId: string;
-  /** Analysis used for this recipe; later source edits must not change it. */
+  /** Analysis used for this recipe; later source edits must not change it. Its `id` is the `sourceId` it freezes. */
   sourceSnapshot?: WaterSource;
   /** v2 stores weighted treatment water AFTER the retained acid doses. */
   treatmentVersion?: 2;
@@ -331,6 +337,12 @@ export interface WaterPlan {
   spargeDiRatioPct?: number;
   /** Profil visé — un classique nommé, ou une cible personnelle. */
   targetProfileId?: string;
+  /**
+   * Provenance de `targetProfileId` : `style` tant que l'assistant suit la suggestion du style de
+   * bière, `choice` après un choix connu du brasseur. Absente sur les plans antérieurs et sur les
+   * codes importés sans provenance : le profil y est lu comme gardé, jamais comme suivi.
+   */
+  targetProfileOrigin?: 'style' | 'choice';
   /**
    * Cible CHIFFRÉE, quand la recette donne son eau en ppm plutôt qu'un style.
    * Présente, elle prime sur `targetProfileId`.
@@ -466,6 +478,14 @@ export interface Recipe {
   hopAromaTarget?: Record<string, import('../../functions/src/hopIndexSchema').HopRange>;
   hopSolverIntent?: import('../../functions/src/hopSolverSchema').HopSolverIntent;
   hopPredictionIds?: string[];
+  /**
+   * Append-only, sealed V5.5 hop applications (`hop-v55-recipe-draft-application-v1`):
+   * references to the local workspace, scenario and previews, never the workspace
+   * itself. Future or unreadable rows stay raw and read-only.
+   */
+  hopV55Applications?: unknown[];
+  /** Append-only cold-contact evidence associations; source-bound history, never a hop application. */
+  hopV55ColdEvidenceAssociations?: unknown[];
   adjuncts?: AdjunctIngredient[];
   yeast: YeastSpec;
   /** Frozen guide and adopted fermentation settings, independent of later catalogue edits. */

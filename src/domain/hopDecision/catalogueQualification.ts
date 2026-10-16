@@ -367,11 +367,13 @@ function qualifySlot(variant: HopCatalogueVariant, slot: ObservationSlot, eviden
     : qualification === 'qualifiedDocumentary' ? 'documentaryOnly'
       : calculationMeasurement ? raw.analyte === 'alpha' ? 'modelExplorationOnly' : 'documentaryOnly'
         : 'notPassedToCalculationView';
+  const modelCandidate = makeModelCandidate(variant, slot, fingerprint, qualification);
   return {
     variantId: variant.variantId, recordScope: slot.recordScope, recordId: slot.recordId,
     location: slot.location, locationIndex: slot.locationIndex, observationFingerprint: fingerprint, raw,
-    qualification, effectiveBasis, calculationDisposition: disposition, calculationMeasurement,
-    modelCandidate: makeModelCandidate(variant, slot, fingerprint, qualification),
+    qualification, effectiveBasis, calculationDisposition: disposition,
+    ...(calculationMeasurement !== undefined ? { calculationMeasurement } : {}),
+    ...(modelCandidate !== undefined ? { modelCandidate } : {}),
     evidence: evidence.map(row => structuredClone(row)), evidenceIds, reasons,
   };
 }
@@ -590,12 +592,14 @@ function commonCalculationMaterial(variants: HopCatalogueVariant[], facts: HopQu
   const commonLotAnalysis = withShared('lot.analysis', first.lot?.analysis);
   const commonDeclared = withShared('declaredAnalysis', first.declaredAnalysis);
   const sameAlphaModel = sameOptionalIdentity(materials.map(item => item.alphaForModel));
+  const commonAvailableGrams = materials.every(item => item.availableGrams === first.availableGrams)
+    ? first.availableGrams : null;
   const result: HopDecisionMaterial = {
     id: first.id,
     name: materials.every(item => item.name === first.name) ? first.name : first.id,
     form: first.form,
     ...(first.stockItemRef ? { stockItemRef: first.stockItemRef } : {}),
-    availableGrams: materials.every(item => item.availableGrams === first.availableGrams) ? first.availableGrams : null,
+    ...(commonAvailableGrams !== undefined ? { availableGrams: commonAvailableGrams } : {}),
     ...(sameAlphaModel && first.alphaForModel ? { alphaForModel: structuredClone(first.alphaForModel) } : {}),
     declaredAnalysis: commonDeclared,
     ...(first.variety ? { variety: {

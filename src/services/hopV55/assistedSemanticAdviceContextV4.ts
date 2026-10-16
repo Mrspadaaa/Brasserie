@@ -3,9 +3,14 @@ import type { HopPropertyAdviceRequestV3 } from '../../domain/hopDecision/proper
 import type { PreparedBrewingScenarioContext } from '../../domain/brewingScenarioContext';
 import {
   compareBrewerHopAdviceContextBindings,
+  createBrewerHopAdviceContextLaunchForWizardV1,
   isBrewerHopAdviceContextLaunchClaim,
   mapBrewerHopAdviceLaunchSourceToScopeV1,
   projectBrewerHopAdviceContext,
+  readBrewerHopAdviceContextLaunchClaimForWizardV1,
+  brewerHopAdviceEffectiveDraftReferenceForWizardV1,
+  type BrewerHopAdviceWizardDraftScopeV1,
+  type BrewerHopAdviceWizardContextLaunchV1,
   type BrewerHopAdviceContextLaunchClaimV1,
   type BrewerHopAdviceContextProjectionV1,
   type BrewerHopAdviceContextScopeV1,
@@ -13,12 +18,15 @@ import {
 } from '../../../functions/src/brewerHopAdviceContextBinding';
 import { hopDecisionReference } from '../../domain/hopDecision/measurements';
 import { prepareBrewingScenarioContext } from '../../domain/brewingScenarioContext';
+import { canonicalizeHopV55RecipeDraft } from './recipeStepContext';
 import { resolveHopV55AdoptedContext } from './adoptedContextResolution';
 import {
   readHopV55DecisionReadingArchive,
+  readHopV55DecisionReadingArchiveForWizardV1,
   HOP_V55_DECISION_READING_FORMAT_V4,
   prepareHopV55PropertyAdviceFromSemanticReadingV1,
   type HopV55DecisionReadingArchiveV4,
+  type HopV55WizardDecisionReadingArchiveV4,
   type HopV55PropertyAdviceRequestDraftV3,
 } from './brewerHopAdviceSemanticSource4';
 import {
@@ -26,14 +34,23 @@ import {
   assertBrewerHopAdviceProposalV5MatchesSource,
   readBrewerHopAdviceProposalEnvelopeV5,
   readBrewerHopAdviceRequestV3,
+  createBrewerHopAdviceRequestV3ForWizardV1,
   verifyBrewerHopAdviceSemanticEvidenceV5,
+  type BrewerHopAdviceWizardRequestV3,
   type BrewerHopAdviceProposalEnvelopeV5,
 } from '../../../functions/src/brewerHopAdviceSemanticV3';
+import {
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  mapBrewerHopAdviceWizardSourceToScopeV1,
+  type BrewerHopAdviceWizardCanonicalSnapshotV1,
+  type BrewerHopAdviceWizardOriginV1,
+} from '../../../functions/src/brewerHopAdviceWizardSourceV1';
 import { readAssistedColdContactEvidence, type AssistedColdContactEvidence } from './assistedColdContactEvidence';
 import { readHopV55FutureRecipeDraft } from './futureRecipeDraft';
 import { getHopV55ReferenceProjection } from './referenceWorkspace';
 import { hopV55ScenarioRuntimeReference } from './scenarioCommit';
-import type { HopV55Workspace } from './contracts';
+import type { HopV55Workspace, HopV55WizardSourceSnapshotV1 } from './contracts';
+import { readHopV55WizardSourceSnapshotForArchiveV1 } from './workspaceRepository';
 import {
   createHopV55AssistedSemanticAdviceRequestV3FromArchive,
   type BuildHopV55AssistedSemanticAdviceRequestV3Result,
@@ -73,6 +90,27 @@ export interface PrepareHopV55SemanticContextLaunchInput {
   context: BrewerContext;
 }
 
+/** Current Wizard source is separate from the persisted Recipe source and from its Page identity claim. */
+export interface PrepareHopV55SemanticContextLaunchInputForWizardV1 {
+  archiveWizard: HopV55WizardDecisionReadingArchiveV4;
+  workspace: HopV55Workspace;
+  origin: BrewerHopAdviceWizardOriginV1;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+  scopeAtPageLaunch: BrewerHopAdviceWizardDraftScopeV1;
+  context: BrewerContext;
+  livePrepared: PreparedBrewingScenarioContext;
+}
+
+export type PrepareHopV55SemanticAssistedAdviceLaunchForWizardV1Result =
+  | { status: 'ready'; sourceArchive: HopV55WizardDecisionReadingArchiveV4;
+      sourceSnapshot: HopV55WizardSourceSnapshotV1; sourceReadingReference: string;
+      context: BrewerContext; prepared: PreparedBrewingScenarioContext;
+      scope: BrewerHopAdviceWizardDraftScopeV1; projection: BrewerHopAdviceContextProjectionV1;
+      contextLaunch: BrewerHopAdviceWizardContextLaunchV1; request: BrewerHopAdviceWizardRequestV3 }
+  | { status: 'stale'; reason: string }
+  | { status: 'invalid'; reason: string }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string };
+
 export type CompareHopV55SemanticAdviceContextAtReceptionResult = {
   /** Whether the immutable server turn corresponds to its original launch under A. */
   history:
@@ -102,22 +140,28 @@ type HopV55SemanticColdEvidenceView = {
   coldContactEvidence: AssistedColdContactEvidence[];
 };
 
-export type ReceiveHopV55AssistedSemanticAdviceProposalV5Result = HopV55SemanticColdEvidenceView & (
+/** Envelope shape shared by the closed semantic outputs (V5, V6): same request, projection, suggestions, answer, evidence. */
+export type HopV55SemanticEnvelopeLikeV1 = Omit<BrewerHopAdviceProposalEnvelopeV5, 'format' | 'proposal'> & {
+  format: string;
+  proposal: BrewerHopAdviceProposalEnvelopeV5['proposal'];
+};
+
+export type ReceiveHopV55AssistedSemanticEnvelopeResultV1<E extends HopV55SemanticEnvelopeLikeV1> = HopV55SemanticColdEvidenceView & (
   | {
       status: 'readOnly';
-      envelope: BrewerHopAdviceProposalEnvelopeV5;
+      envelope: E;
       sourceReadingReference: string;
       contextCheck: CompareHopV55SemanticAdviceContextAtReceptionResult;
       /** Server mapper output for source-bound suggestion checks; never a client baseline or a qualified action. */
-      sourcePropertyProjection: BrewerHopAdviceProposalEnvelopeV5['sourcePropertyProjection'];
+      sourcePropertyProjection: E['sourcePropertyProjection'];
       readerBaseline: HopV55SemanticAdviceReaderBaselineResultV1;
       /** Source annotations and model suggestions are separate, immutable review inputs. */
       suggestions: {
-        annotationReviews: BrewerHopAdviceProposalEnvelopeV5['proposal']['annotationReviews'];
-        propertyIntentProposals: BrewerHopAdviceProposalEnvelopeV5['proposal']['propertyIntentProposals'];
-        semanticRevisionProposals: BrewerHopAdviceProposalEnvelopeV5['proposal']['semanticRevisionProposals'];
+        annotationReviews: E['proposal']['annotationReviews'];
+        propertyIntentProposals: E['proposal']['propertyIntentProposals'];
+        semanticRevisionProposals: E['proposal']['semanticRevisionProposals'];
       };
-      answer: BrewerHopAdviceProposalEnvelopeV5['proposal']['answer'];
+      answer: E['proposal']['answer'];
       /** The runtime owner must still gate ticket, operationId and generation before any current use. */
       runtimeGate: { status: 'notChecked'; requiredChecks: readonly ['ticket identity', 'operationId', 'generation'] };
     }
@@ -125,6 +169,30 @@ export type ReceiveHopV55AssistedSemanticAdviceProposalV5Result = HopV55Semantic
   | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
   | { status: 'invalid'; reason: string }
 );
+
+export type ReceiveHopV55AssistedSemanticAdviceProposalV5Result = ReceiveHopV55AssistedSemanticEnvelopeResultV1<BrewerHopAdviceProposalEnvelopeV5>;
+
+/** Strict reader, source match and evidence verifier of one closed output version; nothing is converted between versions. */
+export interface HopV55SemanticEnvelopeCodecV1<E extends HopV55SemanticEnvelopeLikeV1> {
+  label: string;
+  read(value: unknown):
+    | { status: 'readOnly'; envelope: E }
+    | { status: 'legacyReadOnly'; format: string; snapshot: unknown }
+    | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+    | { status: 'invalid'; reason: string };
+  matchesSource(envelope: unknown, request: unknown): void;
+  verify(envelope: E, turnEvidence: readonly BrewerEvidence[]): void;
+}
+
+const V5_CODEC: HopV55SemanticEnvelopeCodecV1<BrewerHopAdviceProposalEnvelopeV5> = {
+  label: 'V5',
+  read(value) {
+    const read = readBrewerHopAdviceProposalEnvelopeV5(value);
+    return read.status === 'legacyReadOnly' ? { status: 'legacyReadOnly', format: 'brewer-hop-advice-proposal-v4', snapshot: read.snapshot } : read;
+  },
+  matchesSource: (envelope, request) => assertBrewerHopAdviceProposalV5MatchesSource(envelope, request),
+  verify: (envelope, turnEvidence) => verifyBrewerHopAdviceSemanticEvidenceV5(envelope, turnEvidence),
+};
 
 export interface ReceiveHopV55AssistedSemanticAdviceProposalV5Input {
   request: unknown;
@@ -301,6 +369,92 @@ export function prepareHopV55SemanticAssistedAdviceLaunchV1(
   return createHopV55AssistedSemanticAdviceRequestV3FromArchive({ sourceArchive: archive, contextLaunch: launch });
 }
 
+/** Wizard Request3 launch built from the durable Wizard snapshot and the live draft context supplied by RecipeStep. */
+export function prepareHopV55SemanticAssistedAdviceLaunchForWizardV1(
+  input: PrepareHopV55SemanticContextLaunchInputForWizardV1,
+): PrepareHopV55SemanticAssistedAdviceLaunchForWizardV1Result {
+  try {
+    if (!input.workspace || input.workspace.ownerKey !== input.origin.ownerKey || input.workspace.id !== input.origin.workspaceId) {
+      return { status: 'invalid', reason: 'Workspace lu par owner67 différent de l’origine Wizard.' };
+    }
+    const archiveRead = readHopV55DecisionReadingArchiveForWizardV1(input.archiveWizard);
+    if (archiveRead.status === 'invalidRecord') return { status: 'invalid', reason: archiveRead.reason };
+    if (archiveRead.status === 'unsupportedFormat') {
+      return { status: 'unsupportedReadOnly', snapshot: archiveRead.raw, reason: archiveRead.format };
+    }
+    const archive = archiveRead.archive;
+    if (archive.ownerKey !== input.origin.ownerKey || archive.workspaceId !== input.origin.workspaceId
+      || archive.source.ownerKey !== input.origin.ownerKey || archive.source.workspaceId !== input.origin.workspaceId
+      || archive.source.draftId !== input.origin.draftId) {
+      return { status: 'invalid', reason: 'Archive V4, source Wizard et origine owner67 divergent.' };
+    }
+    const storedSnapshot = readHopV55WizardSourceSnapshotForArchiveV1({ workspace: input.workspace, archive });
+    const storedCanonicalSnapshot: BrewerHopAdviceWizardCanonicalSnapshotV1 = {
+      recipe: structuredClone(storedSnapshot.draft), reference: storedSnapshot.source.contentReference,
+    };
+    assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(archive.source, storedCanonicalSnapshot);
+    if (!same(input.snapshot, storedCanonicalSnapshot)) {
+      return { status: 'stale', reason: 'Le snapshot courant du Wizard diffère de celui lié à l’archive; relis le brouillon avant Request3.' };
+    }
+    if (!input.context.recipe || input.context.batch) {
+      return { status: 'stale', reason: 'Le contexte vivant ne contient pas uniquement la source recette Wizard attendue.' };
+    }
+    const liveSnapshot = canonicalizeHopV55RecipeDraft({ ownerKey: input.origin.ownerKey,
+      draftId: input.origin.draftId, draft: input.context.recipe });
+    if (!same(liveSnapshot, storedCanonicalSnapshot)) {
+      return { status: 'stale', reason: 'Le contexte vivant n’a pas été chargé depuis le snapshot Wizard lié à cette archive.' };
+    }
+    const recomputedPrepared = prepareBrewingScenarioContext(input.context);
+    if (!same(recomputedPrepared, input.livePrepared)) {
+      return { status: 'stale', reason: 'Prepared n’est pas le résultat exact du contexte Wizard vivant.' };
+    }
+    const scope = mapBrewerHopAdviceWizardSourceToScopeV1(archive.source);
+    if (!same(scope, input.scopeAtPageLaunch)) {
+      return { status: 'stale', reason: 'Le scope de lancement ne dérive plus de l’origine Wizard durable.' };
+    }
+    const projected = projectBrewerHopAdviceContext({ scope, context: input.context, runtime: recomputedPrepared.runtime });
+    if (projected.status !== 'ready') {
+      return projected.status === 'conflict'
+        ? { status: 'stale', reason: projected.reason }
+        : { status: 'invalid', reason: projected.reason };
+    }
+    const effectiveDraftReference = brewerHopAdviceEffectiveDraftReferenceForWizardV1(storedCanonicalSnapshot.recipe);
+    if (projected.projection.source.kind !== 'draft' || projected.projection.source.id !== scope.id
+      || projected.projection.source.snapshotReference !== effectiveDraftReference) {
+      return { status: 'stale', reason: 'La projection physique n’est pas liée au draft canonique Wizard de cette archive.' };
+    }
+    const contextLaunch = createBrewerHopAdviceContextLaunchForWizardV1({ source: archive.source,
+      snapshot: storedCanonicalSnapshot, sourceReadingReference: archive.contentReference,
+      sourceRuntimeReference: hopV55ScenarioRuntimeReference(recomputedPrepared.runtime), expected: projected.projection });
+    const launchRead = readBrewerHopAdviceContextLaunchClaimForWizardV1(contextLaunch);
+    if (launchRead.status !== 'readOnly') {
+      return launchRead.status === 'unsupportedReadOnly'
+        ? { status: 'unsupportedReadOnly', snapshot: launchRead.snapshot, reason: launchRead.reason }
+        : { status: 'invalid', reason: launchRead.reason };
+    }
+    const request = createBrewerHopAdviceRequestV3ForWizardV1({
+      sourceArchive: archive, contextLaunch: launchRead.claim, snapshot: storedCanonicalSnapshot,
+    });
+    return { status: 'ready', sourceArchive: structuredClone(archive), sourceSnapshot: structuredClone(storedSnapshot),
+      sourceReadingReference: archive.contentReference, context: structuredClone(input.context), prepared: recomputedPrepared,
+      scope, projection: projected.projection, contextLaunch: launchRead.claim, request };
+  } catch (error) {
+    return { status: 'invalid', reason: error instanceof Error ? error.message : 'Préparation Wizard Request3 invalide.' };
+  }
+}
+
+export type ReadHopV55SemanticCurrentPageContextResultV1 = PageContextProjectionResult;
+
+/**
+ * Fresh Page read used to qualify a confirmation: exact archive, physical projection and the one canonical
+ * Prepared. Same checks as the reception comparison; no runtime hash is compared and nothing is persisted.
+ */
+export function readHopV55SemanticCurrentPageContextV1(
+  input: PrepareHopV55SemanticContextLaunchInput,
+): ReadHopV55SemanticCurrentPageContextResultV1 {
+  return projectHopV55SemanticPageContext(input, false);
+}
+
 /** Revalidate current archive/source/physical projection without comparing its old unsplit runtime hash. */
 export function prepareHopV55SemanticCurrentPageContextV1(
   input: PrepareHopV55SemanticContextLaunchInput
@@ -413,6 +567,14 @@ function coldEvidenceView(turnEvidence: readonly BrewerEvidence[]): HopV55Semant
 export function receiveHopV55AssistedSemanticAdviceProposalV5(
   input: ReceiveHopV55AssistedSemanticAdviceProposalV5Input,
 ): ReceiveHopV55AssistedSemanticAdviceProposalV5Result {
+  return receiveHopV55AssistedSemanticEnvelopeV1(input, V5_CODEC);
+}
+
+/** Same exact archive/view/request/ticket/evidence/A→Page qualification for one closed output version. */
+export function receiveHopV55AssistedSemanticEnvelopeV1<E extends HopV55SemanticEnvelopeLikeV1>(
+  input: ReceiveHopV55AssistedSemanticAdviceProposalV5Input,
+  codec: HopV55SemanticEnvelopeCodecV1<E>,
+): ReceiveHopV55AssistedSemanticEnvelopeResultV1<E> {
   const proofView = coldEvidenceView(input.turnEvidence);
   let requestRead: ReturnType<typeof readBrewerHopAdviceRequestV3>;
   try { requestRead = readBrewerHopAdviceRequestV3(input.request); }
@@ -427,13 +589,13 @@ export function receiveHopV55AssistedSemanticAdviceProposalV5(
   }
   if (requestRead.status !== 'readOnly') return { ...proofView, status: 'invalid', reason: requestRead.reason };
 
-  let envelopeRead: ReturnType<typeof readBrewerHopAdviceProposalEnvelopeV5>;
-  try { envelopeRead = readBrewerHopAdviceProposalEnvelopeV5(input.envelope); }
+  let envelopeRead: ReturnType<HopV55SemanticEnvelopeCodecV1<E>['read']>;
+  try { envelopeRead = codec.read(input.envelope); }
   catch (error) {
-    return { ...proofView, status: 'invalid', reason: error instanceof Error ? error.message : 'Enveloppe V5 illisible.' };
+    return { ...proofView, status: 'invalid', reason: error instanceof Error ? error.message : `Enveloppe ${codec.label} illisible.` };
   }
   if (envelopeRead.status === 'legacyReadOnly') {
-    return { ...proofView, status: 'legacyReadOnly', format: 'brewer-hop-advice-proposal-v4', snapshot: structuredClone(envelopeRead.snapshot) };
+    return { ...proofView, status: 'legacyReadOnly', format: envelopeRead.format, snapshot: structuredClone(envelopeRead.snapshot) };
   }
   if (envelopeRead.status === 'unsupportedReadOnly') {
     return { ...proofView, status: 'unsupportedReadOnly', snapshot: structuredClone(envelopeRead.snapshot), reason: envelopeRead.reason };
@@ -442,9 +604,9 @@ export function receiveHopV55AssistedSemanticAdviceProposalV5(
 
   const request = requestRead.request;
   const envelope = structuredClone(envelopeRead.envelope);
-  try { assertBrewerHopAdviceProposalV5MatchesSource(envelope, request); }
+  try { codec.matchesSource(envelope, request); }
   catch (error) {
-    return { ...proofView, status: 'invalid', reason: error instanceof Error ? error.message : 'La réponse V5 diffère du RequestV3 du ticket.' };
+    return { ...proofView, status: 'invalid', reason: error instanceof Error ? error.message : `La réponse ${codec.label} diffère du RequestV3 du ticket.` };
   }
 
   let sourceArchive: HopV55DecisionReadingArchiveV4;
@@ -497,9 +659,9 @@ export function receiveHopV55AssistedSemanticAdviceProposalV5(
     if (!same(envelope.requestSnapshot, request)
       || !same(envelope.requestSnapshot.sourceView, request.sourceView)
       || !same(envelope.requestSnapshot.contextLaunch, request.contextLaunch)) {
-      return { ...proofView, status: 'invalid', reason: 'La réponse V5 n’est pas celle de la RequestV3 conservée dans ce ticket.' };
+      return { ...proofView, status: 'invalid', reason: `La réponse ${codec.label} n’est pas celle de la RequestV3 conservée dans ce ticket.` };
     }
-    verifyBrewerHopAdviceSemanticEvidenceV5(envelope, input.turnEvidence);
+    codec.verify(envelope, input.turnEvidence);
   } catch (error) {
     return { ...proofView, status: 'invalid', reason: error instanceof Error ? error.message : 'Référence RequestV3 illisible.' };
   }

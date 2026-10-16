@@ -30,7 +30,7 @@ import {
   styleFromTargetIons,
 } from "../../domain/waterStyles";
 
-import { SaltSolverProps, WaterState } from "./types";
+import { SaltSolverProps, WaterChangeIntent, WaterState } from "./types";
 import { RADAR_IONS } from "./constants";
 import { waterProfileTarget, waterTreatmentTarget } from "../../domain/water/profileTarget";
 import { calculateSpargeTreatment } from "../../domain/water/acid";
@@ -86,6 +86,7 @@ export function useWaterWorkshop({
   onMashRatioChange,
   state,
   onChange,
+  profileMode,
   noSparge,
   onNoSpargeChange,
 }: SaltSolverProps) {
@@ -96,7 +97,7 @@ export function useWaterWorkshop({
     context: string;
   } | null>(null);
   const editing = useRef<NonNullable<typeof lastEdit> | null>(null);
-  const set = (patch: Partial<WaterState>) => {
+  const set = (patch: Partial<WaterState>, intent?: WaterChangeIntent) => {
     setLastEdit(null);
     onChange({
       ...state,
@@ -105,8 +106,11 @@ export function useWaterWorkshop({
       patch.allSaltsInMash !== state.allSaltsInMash
         ? { saltSplit: undefined }
         : {}),
-    });
+    }, intent);
   };
+  /** A committed profile is the brewer's choice, the current one included. */
+  const chooseProfile = (code: string) =>
+    set({ styleCode: code, ratioOverride: undefined }, "profile-choice");
   const setDose = (id: SaltId, value: number) => {
     if (state.disabled.includes(id) || !Number.isFinite(value)) return;
     const doses = { ...state.doses, [id]: Math.max(0, value) };
@@ -581,9 +585,11 @@ export function useWaterWorkshop({
     onMashRatioChange,
     state,
     onChange,
+    profileMode,
     noSparge,
     onNoSpargeChange,
     set,
+    chooseProfile,
     setDose,
     setAcidDose,
     manualImpact,

@@ -1,6 +1,7 @@
 import { httpsCallable, HttpsCallableResult } from 'firebase/functions';
 import { functions } from './firebase';
 import { yeastLookupResultError } from '../../functions/src/yeastLookupResult';
+import { AI_CLIENT_TIMEOUT_MS } from '../../functions/src/aiTaskDeadline';
 
 /**
  * Client des deux niveaux d'IA.
@@ -88,7 +89,11 @@ async function toBase64(file: File | Blob): Promise<{ data: string; mimeType: st
   return { data: payload, mimeType };
 }
 
-const callAiTask = httpsCallable<Record<string, unknown>, AiResponse>(functions, 'aiTask');
+/**
+ * Le client attend plus longtemps que le serveur (`aiTaskDeadline.ts`) : sans cette option, Firebase abandonne à
+ * 70 s pendant que la Function continue, et que Google facture.
+ */
+const callAiTask = httpsCallable<Record<string, unknown>, AiResponse>(functions, 'aiTask', { timeout: AI_CLIENT_TIMEOUT_MS });
 
 export const AiClient = {
   /**
@@ -127,7 +132,7 @@ export const AiClient = {
 
   /** Traduit les erreurs Firebase en message compréhensible. */
   humanize(err: any): string {
-    const code = err?.code ?? '';
+    const code = typeof err?.code === 'string' ? err.code : '';
     if (code.includes('unauthenticated')) {
       return 'Session expirée. Reconnecte-toi pour utiliser l’IA.';
     }
@@ -141,13 +146,19 @@ export const AiClient = {
       );
     }
     if (code.includes('deadline-exceeded')) {
-      return "L'analyse a dépassé le temps imparti. Réessaie en niveau Rapide.";
+      // The server ends its own task first (aiTaskDeadline.ts): this one is a stalled network or Function.
+      return 'Le serveur IA n’a pas répondu à temps. L’appel a pu être compté dans le budget IA ; réessaie plus tard.';
     }
     if (code.includes('resource-exhausted')) {
-      return 'Quota Gemini atteint. Réessaie plus tard.';
+      return 'Quota IA atteint. Réessaie plus tard.';
     }
     if (code.includes('unavailable') || code.includes('internal')) {
       return 'Service IA momentanément indisponible.';
+    }
+    // An HTTP error without a body reaches us as its bare code (« unknown », « not-found »…).
+    const bare = code.replace(/^functions\//, '');
+    if (bare && (!err?.message || err.message === bare)) {
+      return `Le serveur IA a répondu sans détail exploitable (code « ${bare} »). Réessaie dans quelques instants ; la saisie manuelle reste disponible.`;
     }
     return err?.message || "L'analyse a échoué.";
   }

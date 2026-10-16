@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, lazy } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useContext, lazy } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
@@ -6,6 +6,7 @@ import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
 import { FloatingActions } from './ui/FloatingActions';
+import { ModalOpenerContext } from './ui/ModalShell';
 
 import type { WizardSeed } from './pages/BrewWizard';
 
@@ -54,8 +55,9 @@ import { User } from 'firebase/auth';
 
 import { DeferredSurface, LazySurface } from './ui/LazySurface';
 import { Sheet } from './ui/Sheet';
-import { PageShell } from './pages/PageShell';
+import { ActionDock, PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
+import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
@@ -107,6 +109,12 @@ function devLocalUser(): User | null {
 }
 
 export const App: React.FC = () => {
+  // Relayed as provided by the entry point (default: unavailable). App installs no transport and never derives a
+  // provider from the UID, a URL or a flag; a malformed declaration is relayed as unavailable with its reason.
+  // The Host's classic lane and the recipe creator's Wizard lane each open only for a factory declared here.
+  const providedSemanticAdviceCapability = useContext(HopV55SemanticAdviceCapabilityContext);
+  const semanticAdviceCapability = useMemo(() => qualifyHopV55SemanticAdviceCapabilityV3(providedSemanticAdviceCapability),
+    [providedSemanticAdviceCapability]);
   // Official Firebase Authentication State
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -157,7 +165,38 @@ export const App: React.FC = () => {
    * lequel, et le brasseur repassait par un menu pour la seule action qu'il
    * venait de choisir.
    */
-  const [quickAction, setQuickAction] = useState<QuickActionScreen | null>(null);
+  const [quickAction, setQuickActionState] = useState<QuickActionScreen | null>(null);
+  const quickActionOpener = useRef<HTMLElement | null>(null);
+  const actionLauncherRef = useRef<HTMLButtonElement | null>(null);
+  // Capture avant que la surface ne masque le lanceur et ne retire son focus.
+  const setQuickAction = React.useCallback((screen: QuickActionScreen | null, opener?: HTMLElement | null) => {
+    if (screen) {
+      const target = opener?.isConnected ? opener : document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      if (!target?.closest('[role="dialog"], [role="alertdialog"]')) {
+        quickActionOpener.current = target === document.body ? null : target;
+      }
+    }
+    setQuickActionState(screen);
+  }, []);
+  const quickActionWasOpen = useRef(false);
+  useEffect(() => {
+    const wasOpen = quickActionWasOpen.current;
+    quickActionWasOpen.current = quickAction !== null;
+    if (!wasOpen || quickAction !== null) return;
+    const opener = quickActionOpener.current;
+    if (!opener?.isConnected) return;
+    // Laisser les focus scopes et leur DOM de fermeture terminer avant le retour.
+    const restore = () => {
+      if (document.querySelector('[role="dialog"][aria-modal="true"], [role="alertdialog"]')) return;
+      if (opener.closest('[inert], [aria-hidden="true"]')) return;
+      if (document.activeElement === document.body && opener.isConnected) opener.focus({ preventScroll: true });
+      observer.disconnect();
+    };
+    const observer = new MutationObserver(restore);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['inert', 'aria-hidden'] });
+    const frame = requestAnimationFrame(restore);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [quickAction]);
   const [brewRecipeId, setBrewRecipeId] = useState<string>();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number } | null>(null);
@@ -696,7 +735,7 @@ export const App: React.FC = () => {
       />
 
       {/* Main Content Area */}
-      <main data-floating-actions-gap className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
+      <main data-floating-actions-gap="nav" className="flex-1 max-w-4xl w-full mx-auto px-2 xs:px-3">
         <LazySurface resetKey={activeTab}>
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -794,34 +833,43 @@ export const App: React.FC = () => {
         </LazySurface>
       </main>
 
-      {/* Bottom Navigation Bar */}
-      <BottomNav
-        activeTab={activeTab}
-        onChangeTab={(tab) => {
-          // Le sous-onglet du nouvel écran se remontera tout seul ; on le vide
-          // en attendant pour ne pas garder celui de l'onglet qu'on quitte.
-          setSubTab(null);
-          setActiveTab(tab);
-        }}
-        criticalStockCount={criticalStockCount}
-      />
+      {/* Bottom Navigation Bar, et la case réservée au bouton d'action à sa droite :
+          sur les onglets, le bouton ne flotte pas au-dessus du contenu défilant. */}
+      <div className="app-bottom-dock">
+        <BottomNav
+          activeTab={activeTab}
+          onChangeTab={(tab) => {
+            // Le sous-onglet du nouvel écran se remontera tout seul ; on le vide
+            // en attendant pour ne pas garder celui de l'onglet qu'on quitte.
+            setSubTab(null);
+            setActiveTab(tab);
+          }}
+          criticalStockCount={criticalStockCount}
+        />
+        <div aria-hidden="true" className="app-bottom-dock-cell fixed bottom-0 right-0 z-40 bg-cave-900 pb-safe">
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-cave-800" />
+          <ActionDock kind="nav" className="h-10 w-16 ml-1 mr-3" />
+        </div>
+      </div>
 
-      {/* Le geste flottant : présent sur les onglets ET sur les pages plein écran. */}
+      {/* Le geste d'action : présent sur les onglets ET sur les pages plein écran,
+          posé sur la case que la barre ou la page lui réserve. */}
       <FloatingActions
+        launcherRef={actionLauncherRef}
         // `quickAction` et `newTransaction` ne créent rien de propre à l'écran :
         // ils rouvraient le sommaire des saisies que le menu liste déjà en clair.
         action={view.view === 'tabs' && !['quickAction', 'newTransaction'].includes(fabAction.intent) ? fabAction : null}
         onAction={runFabAction}
         companionLabel={companionLabel}
         anchor={view.view === 'tabs' ? 'nav' : 'page'}
-        onInvoice={() => setQuickAction('scan')}
-        onSale={() => setQuickAction('quick-sale')}
+        onInvoice={() => setQuickAction('scan', actionLauncherRef.current)}
+        onSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
         onRecipe={() => openWizard()}
-        onBrew={() => setQuickAction('brew-batch')}
+        onBrew={() => setQuickAction('brew-batch', actionLauncherRef.current)}
       />
 
       {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
-      <DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
+      <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
         isOpen={quickAction !== null}
         initialScreen={quickAction ?? 'menu'}
         onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); }}
@@ -831,7 +879,7 @@ export const App: React.FC = () => {
         geminiApiKey={config.geminiApiKey}
         onSuccessMessage={showToast}
         onOpenCreateBatch={() => openWizard()}
-      /></DeferredSurface>
+      /></DeferredSurface></ModalOpenerContext.Provider>
 
       {/* Settings Modal */}
       <DeferredSurface active={isSettingsOpen} fallback={<Sheet open={isSettingsOpen} title="Chargement…" onClose={() => setIsSettingsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><SettingsModal
@@ -867,6 +915,7 @@ export const App: React.FC = () => {
           Elles se ferment au geste retour du téléphone, contrairement aux
           modales qu'elles remplacent. */}
 
+      <HopV55SemanticAdviceCapabilityContext.Provider value={semanticAdviceCapability}>
       <LazySurface resetKey={view.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
       {routedRecipe && (
         <RecipeSurface
@@ -920,6 +969,7 @@ export const App: React.FC = () => {
         <BrewWizard
           key={`${currentUser.uid}:${wizardDraftId}`}
           draftKey={`${currentUser.uid}:${wizardDraftId}`}
+          ownerKey={currentUser.uid}
           localOnly={isDevLocal}
           seed={wizardSeed}
           stockItems={allStockItems}
@@ -934,6 +984,7 @@ export const App: React.FC = () => {
         />
       )}
       </LazySurface>
+      </HopV55SemanticAdviceCapabilityContext.Provider>
     </div>
   );
 };

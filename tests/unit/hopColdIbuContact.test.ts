@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { assessQualifiedColdHopContact, bindColdHopProgramContact, assertColdHopContactAssessmentCurrent,
-  compareQualifiedColdHopContacts, type AssessQualifiedColdHopContactInput, type HopColdBeerContext } from '../../src/domain/hopDecision/coldIbuContact';
+  compareQualifiedColdHopContacts, HOP_COLD_CONTACT_COMPARISON_LABELS, HOP_COLD_CONTACT_USE_LABELS, coldContactUseLabel,
+  describeColdContactComparison, type AssessQualifiedColdHopContactInput,
+  type HopColdBeerContext } from '../../src/domain/hopDecision/coldIbuContact';
 import { getColdHopBuCalibration, interpolateColdHopBuReference } from '../../src/domain/hopDecision/coldIbuReference';
 import { previewHopProgramChanges, applyHopProgramProposal, restoreHopProgramDraft } from '../../src/domain/hopDecision/programs';
 import type { HopDecisionMaterial, HopDecisionProgram } from '../../src/domain/hopDecision/types';
@@ -89,6 +91,7 @@ describe('référence BU froide liée à un contact explicite de programme', () 
   });
 
   it('ne fusionne ni ajouts séquentiels ni traitements, matières ou états différents', () => {
+    const wording = { dayOffset:/jour d’ajout/, contactHours:/durée de contact/, materialId:/identités de matière/, status:/statut prévu ou effectué/ } as const;
     for (const property of ['dayOffset','contactHours','materialId','status'] as const) {
       const input = fixture(), row = input.program.additions[0];
       input.program.additions = [{...row,id:'part-a',grams:29.3},{...row,id:'part-b',grams:29.3}];
@@ -99,6 +102,9 @@ describe('référence BU froide liée à un contact explicite de programme', () 
       const result=assessQualifiedColdHopContact(bindAgain(input));
       expect(result.programBinding.status).toBe('unsupportedCompositeContact');
       expect(result.programBinding.compositeReasons.length).toBeGreaterThan(0);
+      const composite=result.programBinding.compositeReasons.join('\n');
+      expect(composite).toMatch(wording[property]);
+      expect(composite).not.toMatch(/\b(?:use|status|dayOffset|contactHours|temperatureC)\b/);
       expect(result.referenceResult.valueBU).toBeNull();
       expect(result.targetAssessment.valueBU).toBeNull();
     }
@@ -111,6 +117,95 @@ describe('référence BU froide liée à un contact explicite de programme', () 
     expect(result.domainComparisons.filter(row=>row.status==='different').map(row=>row.property)).toEqual(expect.arrayContaining(['materialForm','durationHours']));
     expect(result.targetAssessment).toMatchObject({status:'conditionsDiffer',valueBU:null});
     expect(result.inputSnapshot.program.additions[0].contactHours).toBe(48);
+  });
+
+  it('nomme pour le brasseur un écart connu et une donnée inconnue, sans clé interne ni valeur inventée', () => {
+    const input=fixture(), row=input.program.additions[0];
+    row.use='fermentation'; row.contactHours=48; row.temperatureC=19;
+    delete input.context!.abvPct; input.context!.yeastStatus='unknown';
+    const result=assessQualifiedColdHopContact(bindAgain(input));
+    // Structured identifiers, values and units stay in the comparison rows.
+    expect(result.domainComparisons.map(row=>row.property)).toEqual(['employment','durationHours','reportedMeanTemperatures','materialForm',
+      'volumeBasis','abvPct','filteredBeforeContact','yeastHandling','contactMode','materialPreparation','beerDescription']);
+    const byProperty=new Map(result.domainComparisons.map(row=>[row.property,row]));
+    expect(byProperty.get('employment')).toMatchObject({status:'different',actual:['fermentation'],reference:'postFermentation'});
+    expect(byProperty.get('durationHours')).toMatchObject({status:'different',actual:[48],reference:24});
+    expect(byProperty.get('reportedMeanTemperatures')).toMatchObject({status:'different',actual:[19],reference:{min:13.3,max:15}});
+    expect(byProperty.get('abvPct')).toMatchObject({status:'unknown',actual:null,reference:4.75});
+    expect(byProperty.get('yeastHandling')).toMatchObject({status:'unknown',actual:'unknown',reference:'removedBeforeContact'});
+    for (const {property} of result.domainComparisons) expect(HOP_COLD_CONTACT_COMPARISON_LABELS[property]).toMatch(/^\p{Lu}[\p{L} ’]+$/u);
+
+    const reasons=result.targetAssessment.reasons;
+    for (const reason of reasons) for (const {property} of result.domainComparisons) expect(reason).not.toContain(property);
+    const reasonFor=(label: string) => { const found=reasons.filter(reason=>reason.startsWith(`${label} :`)); expect(found).toHaveLength(1); return found[0]; };
+    const usage=reasonFor('Moment d’usage'), duration=reasonFor('Durée de contact'), temperature=reasonFor('Température du contact');
+    expect(usage).toMatch(/pendant la fermentation.*après la fermentation/);
+    expect(duration).toMatch(/48 h.*24 h/);
+    expect(temperature).toMatch(/moyennes rapportées.*19 °C.*13,3–15 °C/);
+    for (const known of [usage,duration,temperature]) expect(known).not.toMatch(/inconnue/);
+    const alcohol=reasonFor('Teneur en alcool'), yeast=reasonFor('Traitement de la levure');
+    for (const unknown of [alcohol,yeast]) {
+      expect(unknown).toMatch(/donnée inconnue/);
+      // Unknown is neither a deviation nor a value: no number, no declared/published pair, no implied absence.
+      expect(unknown).not.toMatch(/écart|déclaré :|\d|absente?|retirée|présente/);
+    }
+    expect(reasons).toContainEqual(expect.stringMatching(/sensorielle.*amertume/));
+    expect(reasons).toContainEqual(expect.stringMatching(/ne prouve pas son absence/));
+    expect(result.targetAssessment).toMatchObject({status:'conditionsDiffer',valueBU:null});
+  });
+
+  it('garde octet pour octet les raisons A1 hachées dans l’évaluation', () => {
+    const input=fixture(), row=input.program.additions[0];
+    row.use='fermentation'; row.contactHours=48; row.temperatureC=19;
+    delete input.context!.abvPct; input.context!.yeastStatus='unknown';
+    // Any change here changes assessment.reference; display wording belongs to the panel.
+    expect(assessQualifiedColdHopContact(bindAgain(input)).targetAssessment.reasons).toEqual([
+      'Moment d’usage : écart au protocole publié (déclaré : pendant la fermentation; publié : après la fermentation).',
+      'Durée de contact : écart au protocole publié (déclaré : 48 h; publié : 24 h).',
+      'Température du contact : hors de la plage des températures moyennes rapportées par la publication (déclaré : 19 °C; publié : 13,3–15 °C).',
+      'Un écart compare seulement aux conditions du protocole publié; il ne prouve ni une cause sensorielle ni un résultat d’amertume dans cette bière.',
+      'Teneur en alcool : donnée inconnue, non renseignée dans le contexte de bière lu.',
+      'Traitement de la levure : donnée inconnue, non renseignée ou déclarée inconnue dans le contexte de bière lu.',
+      'Une donnée inconnue n’est pas renseignée ou résolue dans les données lues; cela ne prouve pas son absence dans la bière réelle.',
+      'La calibration décrit son expérience, pas cette bière : une ressemblance de coordonnées ne prouve pas le transfert. Aucun IBU cible n’est calculé.',
+      'La base fournie est conservée avec son origine; le contraste au contrôle publié ne lui est pas ajouté.',
+    ]);
+  });
+
+  it('décrit chaque condition pour le panneau sans clé visible ni mutation de la ligne conservée', () => {
+    const input=fixture(), row=input.program.additions[0];
+    row.contactHours=48; row.temperatureC=19; delete input.context!.abvPct;
+    const result=assessQualifiedColdHopContact(bindAgain(input)), stored=structuredClone(result);
+    const shown=new Map(result.domainComparisons.map(row=>[row.property,describeColdContactComparison(row)]));
+    expect(shown.get('employment')).toEqual({label:'Moment d’usage',declared:'après la fermentation',published:'après la fermentation',publishedLabel:'publié'});
+    expect(shown.get('durationHours')).toMatchObject({label:'Durée de contact',declared:'48 h',published:'24 h'});
+    expect(shown.get('reportedMeanTemperatures')).toEqual({label:'Température du contact',declared:'19 °C',published:'13,3–15 °C',
+      publishedLabel:'moyennes observées publiées'});
+    // Unknown keeps the published reference but invents no declared value.
+    expect(shown.get('abvPct')).toEqual({label:'Teneur en alcool',declared:null,published:'4,75 % vol.',publishedLabel:'publié'});
+    expect(shown.get('materialPreparation')).toMatchObject({declared:input.context!.materialPreparation});
+    for (const [property,display] of shown) expect(JSON.stringify(display)).not.toContain(property);
+    expect(result).toEqual(stored);
+    const future={property:'futureCondition',status:'different' as const,actual:'valeur future',reference:'référence future',reason:'Raison future conservée.'};
+    expect(describeColdContactComparison(future)).toMatchObject({label:'Condition du protocole',declared:'valeur future'});
+    expect(JSON.stringify(describeColdContactComparison(future))).not.toContain('futureCondition');
+    expect(HOP_COLD_CONTACT_USE_LABELS).toMatchObject({fermentation:'pendant la fermentation',postFermentation:'après la fermentation'});
+    expect(coldContactUseLabel('postFermentation')).toBe('après la fermentation');
+    for (const unknownUse of ['toString','dryHop',null]) expect(coldContactUseLabel(unknownUse)).toBeNull();
+  });
+
+  it('garde une condition seulement inconnue distincte d’un écart et d’une absence', () => {
+    const input=fixture(); delete input.context;
+    const result=assessQualifiedColdHopContact(input);
+    expect(result.domainComparisons.filter(row=>row.status==='different')).toEqual([]);
+    expect(result.domainComparisons.find(row=>row.property==='filteredBeforeContact')).toMatchObject({status:'unknown',actual:null,reference:true});
+    expect(result.targetAssessment).toMatchObject({status:'insufficientData',valueBU:null,initialBitterness:null});
+    const reasons=result.targetAssessment.reasons, text=reasons.join('\n');
+    expect(reasons).toContainEqual(expect.stringMatching(/^Filtration avant contact : donnée inconnue/));
+    expect(reasons).toContainEqual(expect.stringMatching(/^Mode de contact : donnée inconnue/));
+    expect(reasons).toContainEqual(expect.stringMatching(/ne prouve pas son absence/));
+    expect(text).not.toMatch(/écart au protocole|hors de la plage|non filtrée|levure présente|agité|sensorielle/);
+    for (const {property} of result.domainComparisons) expect(text).not.toContain(property);
   });
 
   it('les moyennes de température ne deviennent pas une loi thermique', () => {

@@ -1,0 +1,530 @@
+{
+  "format": "hop-v55-recipe-cold-evidence-association-v1",
+  "id": "legacy-cold-contact-association",
+  "ownerKey": "legacy-owner",
+  "recipeId": "hop-v55-fixture-recipe-planning",
+  "sourceRecipeReference": "{\"abvTarget\":null,\"fermentables\":[],\"fermentation\":[{\"days\":7,\"kind\":\"primaire\",\"name\":\"Phase synthétique\",\"tempC\":19}],\"fgTarget\":null,\"hops\":[{\"alpha\":0,\"hopVarietyId\":\"hop-v55-fixture-identity-a\",\"name\":\"Identité fictive A\",\"stage\":\"boil\",\"timeMin\":5,\"weightG\":40},{\"alpha\":0,\"aromaContactHours\":48,\"aromaTemperatureC\":19,\"aromaTiming\":\"fermentation\",\"dayOffset\":3,\"hopVarietyId\":\"hop-v55-fixture-identity-b\",\"name\":\"Identité fictive B\",\"stage\":\"dryHop\",\"weightG\":30}],\"id\":\"hop-v55-fixture-recipe-planning\",\"name\":\"Recette synthétique avant brassage\",\"notes\":[],\"notesCreation\":\"Fixture synthétique. Les quantités, le timing à cru, le contact 48 h et la cible 19 °C décrivent un plan d’exercice; alpha=0 remplit le champ historique requis et n’est pas une mesure.\",\"ogTarget\":null,\"steps\":[],\"style\":\"Style non renseigné\",\"totalGristKg\":0,\"volumeL\":20,\"yeast\":{\"hopIndexId\":\"hop-v55-fixture-culture-neutral\",\"name\":\"Culture fictive neutre\"}}",
+  "evidenceSnapshot": {
+    "format": "hop-cold-contact-evidence-v1",
+    "sourceBinding": {
+      "ownerKey": "legacy-owner",
+      "scopeReference": "legacy-scope",
+      "programReference": "hop-decision-v1:{\"additions\":[{\"contactHours\":48,\"dayOffset\":8,\"grams\":58.6,\"id\":\"legacy-contact-line\",\"materialId\":\"legacy-contact-material\",\"status\":\"planned\",\"temperatureC\":19,\"use\":\"fermentation\"}],\"id\":\"legacy-contact-program\",\"revision\":1,\"stage\":\"conditioning\",\"volumeL\":20,\"wortGravity\":null}",
+      "qualificationReference": "hop-cold-contact-qualification-input-v1:sha256:31579c4f2746f8e5316661823242f35eec060643a2bd866b080ff8b0df70ea1e",
+      "contextReference": "hop-cold-contact-beer-context-v1:sha256:74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+      "contactReference": "hop-cold-contact-binding-v1:sha256:ac658cadb441e51b308f30b8fe475c82bfd93ab344516edfa12179ff3b943471"
+    },
+    "assessment": {
+      "format": "hop-cold-contact-assessment-v1",
+      "inputSnapshot": {
+        "program": {
+          "id": "legacy-contact-program",
+          "revision": 1,
+          "stage": "conditioning",
+          "volumeL": 20,
+          "wortGravity": null,
+          "additions": [
+            {
+              "id": "legacy-contact-line",
+              "materialId": "legacy-contact-material",
+              "grams": 58.6,
+              "use": "fermentation",
+              "status": "planned",
+              "contactHours": 48,
+              "temperatureC": 19,
+              "dayOffset": 8
+            }
+          ]
+        },
+        "contact": {
+          "format": "hop-cold-contact-binding-v1",
+          "contactId": "legacy-contact-id",
+          "programId": "legacy-contact-program",
+          "programRevision": 1,
+          "programReference": "hop-decision-v1:{\"additions\":[{\"contactHours\":48,\"dayOffset\":8,\"grams\":58.6,\"id\":\"legacy-contact-line\",\"materialId\":\"legacy-contact-material\",\"status\":\"planned\",\"temperatureC\":19,\"use\":\"fermentation\"}],\"id\":\"legacy-contact-program\",\"revision\":1,\"stage\":\"conditioning\",\"volumeL\":20,\"wortGravity\":null}",
+          "additionIds": [
+            "legacy-contact-line"
+          ],
+          "grouping": {
+            "kind": "singleHomogeneousContact",
+            "origin": "userDeclaration",
+            "reason": "Contact synthétique unique déclaré."
+          },
+          "reference": "hop-cold-contact-binding-v1:sha256:ac658cadb441e51b308f30b8fe475c82bfd93ab344516edfa12179ff3b943471"
+        },
+        "qualificationInput": {
+          "variants": [
+            {
+              "variantId": "fixture:legacy-contact-material",
+              "scope": "assignment",
+              "recordId": "legacy-contact-material",
+              "origin": {
+                "kind": "assignment"
+              },
+              "material": {
+                "id": "legacy-contact-material",
+                "name": "Matière synthétique hors catalogue",
+                "form": "cone",
+                "availableGrams": 1000
+              }
+            }
+          ]
+        },
+        "context": null
+      },
+      "qualificationSnapshot": {
+        "version": "hop-catalogue-qualification-v1",
+        "groups": [
+          {
+            "key": "[\"assignment\",\"legacy-contact-material\"]",
+            "scope": "assignment",
+            "recordId": "legacy-contact-material",
+            "status": "ready",
+            "selectedVariantId": "fixture:legacy-contact-material",
+            "equivalentVariantIds": [],
+            "rawVariants": [
+              {
+                "variantId": "fixture:legacy-contact-material",
+                "scope": "assignment",
+                "recordId": "legacy-contact-material",
+                "origin": {
+                  "kind": "assignment"
+                },
+                "material": {
+                  "id": "legacy-contact-material",
+                  "name": "Matière synthétique hors catalogue",
+                  "form": "cone",
+                  "availableGrams": 1000
+                }
+              }
+            ],
+            "observations": [],
+            "supplementalFacts": [],
+            "calculationMaterial": {
+              "id": "legacy-contact-material",
+              "name": "Matière synthétique hors catalogue",
+              "form": "cone",
+              "availableGrams": 1000,
+              "declaredAnalysis": []
+            },
+            "calculationProjection": {
+              "material": {
+                "id": "legacy-contact-material",
+                "name": "Matière synthétique hors catalogue",
+                "form": "cone",
+                "availableGrams": 1000,
+                "declaredAnalysis": []
+              },
+              "fallbackBlockedAnalytes": [],
+              "fallbackBlockReasons": []
+            },
+            "calculationVariants": [
+              {
+                "variantId": "fixture:legacy-contact-material",
+                "material": {
+                  "id": "legacy-contact-material",
+                  "name": "Matière synthétique hors catalogue",
+                  "form": "cone",
+                  "availableGrams": 1000,
+                  "declaredAnalysis": []
+                },
+                "fallbackBlockedAnalytes": [],
+                "fallbackBlockReasons": [],
+                "disposition": "selected"
+              }
+            ],
+            "commonCalculationMaterial": {
+              "id": "legacy-contact-material",
+              "name": "Matière synthétique hors catalogue",
+              "form": "cone",
+              "availableGrams": 1000,
+              "declaredAnalysis": []
+            },
+            "commonCalculationProjection": {
+              "material": {
+                "id": "legacy-contact-material",
+                "name": "Matière synthétique hors catalogue",
+                "form": "cone",
+                "availableGrams": 1000,
+                "declaredAnalysis": []
+              },
+              "fallbackBlockedAnalytes": [],
+              "fallbackBlockReasons": []
+            },
+            "commonCalculationReasons": [
+              "Une seule variante source est présente."
+            ],
+            "fallbackBlockedAnalytes": [],
+            "fallbackBlockReasons": [],
+            "blockers": []
+          }
+        ],
+        "modelCandidates": [],
+        "limitations": [
+          "Le calcul actif utilise calculationMaterial pour ready/equivalent; sur collision, commonCalculationMaterial ne convient qu’aux actions qui ne dépendent pas des faits analytiques écartés. Résoudre explicitement toute variante conditionnelle avant de l’employer.",
+          "Ne jamais passer rawVariants aux fonctions HopDecision : cela réintroduirait une base non qualifiée par un autre chemin analytique.",
+          "Les alpha modèle documentaires sont des candidats non sélectionnés; ce module ne crée pas alphaForModel.",
+          "Cette projection ne vérifie pas le contenu scientifique des sources fournies comme preuves; elle vérifie seulement leurs liaisons structurées.",
+          "Les attributs supplémentaires hors HopMeasurement restent raw-only jusqu’à extension de schéma validée."
+        ]
+      },
+      "referenceResult": {
+        "format": "cold-hop-bu-reference-result-v1",
+        "version": "hop-cold-bu-reference-v2",
+        "calibrationSnapshot": {
+          "format": "cold-hop-bu-calibration-v1",
+          "calibrationId": "static-dry-hop-bu-reference-lafontaine-2018",
+          "version": "lafontaine-2018-table5-v1",
+          "output": {
+            "analyte": "spectrophotometricBU",
+            "unit": "BU",
+            "method": "ASBC Beer 23A"
+          },
+          "source": {
+            "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+            "author": "S. R. Lafontaine; Thomas H. Shellhammer",
+            "year": 2018,
+            "kind": "research",
+            "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+            "locator": "Methods: Experimental design; Table 5, dry-hop rate (g/hL) and beer BU."
+          },
+          "sourceReadingLevel": "primaryFullText",
+          "conditions": {
+            "hop": {
+              "variety": "Cascade",
+              "lotDescription": "Lot de récolte 2015",
+              "form": "whole-cone",
+              "preparation": "Cônes entiers broyés et homogénéisés."
+            },
+            "beer": {
+              "description": "Bière pâle filtrée; base préparée décrite à 19,8 BU.",
+              "abvPct": 4.75,
+              "filtered": true,
+              "yeastStatus": "removedBeforeContact",
+              "preparedBaseBU": 19.8,
+              "treatmentVolumeL": 80,
+              "vesselCount": 2,
+              "vesselVolumeL": 40
+            },
+            "contact": {
+              "mode": "static",
+              "durationHours": 24,
+              "meanObservedTemperatureC": {
+                "min": 13.3,
+                "max": 15
+              },
+              "temperatureSummaryOnly": true
+            }
+          },
+          "control": {
+            "doseGPerHL": 0,
+            "valueBU": 17
+          },
+          "points": [
+            {
+              "doseGPerHL": 0,
+              "valueBU": 17
+            },
+            {
+              "doseGPerHL": 200,
+              "valueBU": 19.4
+            },
+            {
+              "doseGPerHL": 386,
+              "valueBU": 21
+            },
+            {
+              "doseGPerHL": 800,
+              "valueBU": 25
+            },
+            {
+              "doseGPerHL": 1600,
+              "valueBU": 26
+            }
+          ],
+          "uncertainty": "notReported",
+          "limitations": [
+            "Réponse BU observée pour ce protocole de houblonnage statique, ce lot Cascade et cette bière; ce n’est pas une calibration de la bière de l’utilisateur.",
+            "La température 13,3–15 °C est la plage des moyennes observées; elle ne définit pas une loi de réponse à la température.",
+            "Le protocole rapporte environ 19,8 BU pour la base préparée, tandis que le contrôle Table 5 vaut 17 BU; les références restent distinctes.",
+            "La Table 5 ne rapporte pas d’intervalle prédictif BU. L’interpolation est une convention de référence linéaire par segments, non une équation ajustée par les auteurs.",
+            "Les évaluations sensorielles de l’article portent sur l’arôme; aucun score d’intensité sensorielle d’amertume n’est estimé."
+          ]
+        },
+        "calibrationReference": "cold-hop-bu-calibration-v1:sha256:1260f6c76448d6f948d0544e723bc45476152629c33d84b13ab8de998548f6fa",
+        "doseInput": {
+          "value": 2.93,
+          "unit": "g/L"
+        },
+        "doseExactGPerHL": {
+          "numerator": "293",
+          "denominator": "1"
+        },
+        "arithmetic": "exactDecimal-v1",
+        "domainGPerHL": {
+          "min": 0,
+          "max": 1600
+        },
+        "controlBU": 17,
+        "source": {
+          "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+          "author": "S. R. Lafontaine; Thomas H. Shellhammer",
+          "year": 2018,
+          "kind": "research",
+          "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+          "locator": "Methods: Experimental design; Table 5, dry-hop rate (g/hL) and beer BU."
+        },
+        "method": "ASBC Beer 23A",
+        "algorithm": "piecewiseLinearInterpolation",
+        "uncertainty": "notReported",
+        "limitations": [
+          "Réponse BU observée pour ce protocole de houblonnage statique, ce lot Cascade et cette bière; ce n’est pas une calibration de la bière de l’utilisateur.",
+          "La température 13,3–15 °C est la plage des moyennes observées; elle ne définit pas une loi de réponse à la température.",
+          "Le protocole rapporte environ 19,8 BU pour la base préparée, tandis que le contrôle Table 5 vaut 17 BU; les références restent distinctes.",
+          "La Table 5 ne rapporte pas d’intervalle prédictif BU. L’interpolation est une convention de référence linéaire par segments, non une équation ajustée par les auteurs.",
+          "Les évaluations sensorielles de l’article portent sur l’arôme; aucun score d’intensité sensorielle d’amertume n’est estimé."
+        ],
+        "doseEffectiveGPerHL": 293,
+        "status": "interpolation",
+        "valueBU": 20.2,
+        "contrastToControlBU": 3.2,
+        "nodesUsed": [
+          {
+            "doseGPerHL": 200,
+            "valueBU": 19.4
+          },
+          {
+            "doseGPerHL": 386,
+            "valueBU": 21
+          }
+        ],
+        "reference": "cold-hop-bu-reference-result-v1:sha256:2c3809b193d581006206ea136e43450d33cdec23c61eaa38706cd2a5612f8062"
+      },
+      "programBinding": {
+        "contact": {
+          "format": "hop-cold-contact-binding-v1",
+          "contactId": "legacy-contact-id",
+          "programId": "legacy-contact-program",
+          "programRevision": 1,
+          "programReference": "hop-decision-v1:{\"additions\":[{\"contactHours\":48,\"dayOffset\":8,\"grams\":58.6,\"id\":\"legacy-contact-line\",\"materialId\":\"legacy-contact-material\",\"status\":\"planned\",\"temperatureC\":19,\"use\":\"fermentation\"}],\"id\":\"legacy-contact-program\",\"revision\":1,\"stage\":\"conditioning\",\"volumeL\":20,\"wortGravity\":null}",
+          "additionIds": [
+            "legacy-contact-line"
+          ],
+          "grouping": {
+            "kind": "singleHomogeneousContact",
+            "origin": "userDeclaration",
+            "reason": "Contact synthétique unique déclaré."
+          },
+          "reference": "hop-cold-contact-binding-v1:sha256:ac658cadb441e51b308f30b8fe475c82bfd93ab344516edfa12179ff3b943471"
+        },
+        "selectedAdditions": [
+          {
+            "id": "legacy-contact-line",
+            "materialId": "legacy-contact-material",
+            "grams": 58.6,
+            "use": "fermentation",
+            "status": "planned",
+            "contactHours": 48,
+            "temperatureC": 19,
+            "dayOffset": 8
+          }
+        ],
+        "materials": [
+          {
+            "id": "legacy-contact-material",
+            "name": "Matière synthétique hors catalogue",
+            "form": "cone",
+            "availableGrams": 1000,
+            "declaredAnalysis": []
+          }
+        ],
+        "unresolvedMaterialIds": [],
+        "status": "bound",
+        "totalMassGrams": 58.6,
+        "knownMassSubtotalGrams": 58.6,
+        "missingMassAdditionIds": [],
+        "volumeL": 20,
+        "doseGL": 2.93,
+        "massArithmetic": {
+          "method": "exactDecimalSum-v1",
+          "knownSubtotal": {
+            "numerator": "293",
+            "denominator": "5"
+          },
+          "complete": true
+        },
+        "quantityOrigins": {
+          "mass": "selectedProgramAdditions",
+          "volume": "program.volumeL"
+        },
+        "compositeReasons": [],
+        "coordinateAssumptions": [
+          "La masse cumulée et le volume fournis servent à une coordonnée dans la référence, sans convertir la forme de la matière ni calibrer la bière cible.",
+          "Seules les lignes explicitement rattachées à ce contact sont cumulées; le passé et les autres contacts restent séparés."
+        ]
+      },
+      "domainComparisons": [
+        {
+          "property": "employment",
+          "actual": [
+            "fermentation"
+          ],
+          "reference": "postFermentation",
+          "status": "different",
+          "reason": "L’emploi déclaré situe le scénario; il ne prouve pas une opération déjà effectuée."
+        },
+        {
+          "property": "durationHours",
+          "actual": [
+            48
+          ],
+          "reference": 24,
+          "status": "different",
+          "reason": "Cette courbe ne comporte pas de cinétique selon la durée."
+        },
+        {
+          "property": "reportedMeanTemperatures",
+          "actual": [
+            19
+          ],
+          "reference": {
+            "min": 13.3,
+            "max": 15
+          },
+          "status": "different",
+          "reason": "Comparaison aux moyennes publiées seulement : être dans cet intervalle ne valide ni une température cible ni une cinétique."
+        },
+        {
+          "property": "materialForm",
+          "actual": [
+            {
+              "materialId": "legacy-contact-material",
+              "form": "cone"
+            }
+          ],
+          "reference": "cone",
+          "status": "numericallyComparable",
+          "reason": "La masse est une coordonnée comparative; aucune conversion physique entre formes ou humidités n’est implicite."
+        },
+        {
+          "property": "volumeBasis",
+          "actual": null,
+          "reference": "beerAtContact",
+          "status": "unknown",
+          "reason": "Le dénominateur est la valeur fournie par le programme, pas un volume mesuré inventé."
+        },
+        {
+          "property": "abvPct",
+          "actual": null,
+          "reference": 4.75,
+          "status": "unknown",
+          "reason": "Une même teneur en alcool ne démontre pas la même matrice."
+        },
+        {
+          "property": "filteredBeforeContact",
+          "actual": null,
+          "reference": true,
+          "status": "unknown",
+          "reason": "La filtration rapportée ne prouve pas à elle seule une absence de cellules viables."
+        },
+        {
+          "property": "yeastHandling",
+          "actual": null,
+          "reference": "removedBeforeContact",
+          "status": "unknown",
+          "reason": "Il s’agit du traitement rapporté, pas d’une mesure de viabilité."
+        },
+        {
+          "property": "contactMode",
+          "actual": null,
+          "reference": "static",
+          "status": "unknown",
+          "reason": "Aucune équivalence statique/agité ni facteur de transfert n’est présumé."
+        },
+        {
+          "property": "materialPreparation",
+          "actual": null,
+          "reference": "Cônes entiers broyés et homogénéisés.",
+          "status": "unknown",
+          "reason": "Description conservée, sans interprétation de texte ni correspondance déduite d’un nom."
+        },
+        {
+          "property": "beerDescription",
+          "actual": null,
+          "reference": "Bière pâle filtrée; base préparée décrite à 19,8 BU.",
+          "status": "unknown",
+          "reason": "Description conservée, sans interprétation de texte ni correspondance déduite d’un nom."
+        }
+      ],
+      "targetAssessment": {
+        "status": "conditionsDiffer",
+        "quantity": "spectrophotometricBU",
+        "unit": "BU",
+        "valueBU": null,
+        "initialBitterness": null,
+        "reasons": [
+          "employment diffère de la référence publiée.",
+          "durationHours diffère de la référence publiée.",
+          "reportedMeanTemperatures diffère de la référence publiée.",
+          "volumeBasis n’est pas renseigné ou résolu.",
+          "abvPct n’est pas renseigné ou résolu.",
+          "filteredBeforeContact n’est pas renseigné ou résolu.",
+          "yeastHandling n’est pas renseigné ou résolu.",
+          "contactMode n’est pas renseigné ou résolu.",
+          "materialPreparation n’est pas renseigné ou résolu.",
+          "beerDescription n’est pas renseigné ou résolu.",
+          "La calibration décrit son expérience, pas cette bière : une ressemblance de coordonnées ne prouve pas le transfert. Aucun IBU cible n’est calculé."
+        ]
+      },
+      "limitations": [
+        "Analyse autonome en mémoire; aucune persistance ou écriture de recette/brassin/stock.",
+        "Les statuts planned/performed restent ceux de l’entrée; la courbe ne simule aucune exécution.",
+        "Les BU de référence, l’équivalent iso-alpha historique et la perception restent des quantités distinctes."
+      ],
+      "reference": "hop-cold-contact-assessment-v1:sha256:7f7ada9838c410a9a9f68f2efd7801b0779511324e87de1b1b5e44c49d189ce8"
+    },
+    "protocolSupplement": {
+      "format": "cold-bu-protocol-supplement-v1",
+      "calibrationReference": "cold-hop-bu-calibration-v1:sha256:1260f6c76448d6f948d0544e723bc45476152629c33d84b13ab8de998548f6fa",
+      "source": {
+        "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+        "author": "S. R. Lafontaine; Thomas H. Shellhammer",
+        "year": 2018,
+        "kind": "research",
+        "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+        "locator": "Methods: Experimental design; Table 5, dry-hop rate (g/hL) and beer BU."
+      },
+      "sourceReadingLevel": "primaryFullText",
+      "hopStorage": {
+        "subject": "hops",
+        "atmosphere": "nitrogen",
+        "temperatureC": -20,
+        "durationHours": null
+      },
+      "beerSampling": {
+        "subject": "filteredBeer",
+        "stage": "beforeSampling",
+        "dissolvedOxygen": {
+          "relation": "lessThan",
+          "value": 110,
+          "unit": "µg/L"
+        }
+      },
+      "limitations": [
+        "Le stockage sous azote à −20 °C concerne le houblon ; la durée de stockage n’est pas rapportée ici.",
+        "Le seuil d’oxygène dissous concerne la bière filtrée avant prélèvement ; ce n’est pas une mesure de la bière cible ni une garantie sur toute la durée du contact.",
+        "Ces conditions complètent la référence publiée sans modifier ni la calibration BU historique ni son empreinte."
+      ],
+      "reference": "cold-bu-protocol-supplement-v1:sha256:93bd9d034ed4fd590f62862aad691d8c17621c0165c674bd03adbbea77217a48"
+    },
+    "reference": "hop-cold-contact-evidence-v1:sha256:f403b342d730511c5b093f37e876f22e7173474f62ffc2e4549d95cada51e75a"
+  },
+  "evidenceReference": "hop-cold-contact-evidence-v1:sha256:f403b342d730511c5b093f37e876f22e7173474f62ffc2e4549d95cada51e75a",
+  "origin": {
+    "kind": "localCalculation"
+  },
+  "applicationRecordReference": null,
+  "applicationWitness": null,
+  "recordedAt": "2026-10-06T00:00:00.000Z",
+  "reference": "hop-v55-recipe-cold-evidence-association-v1:sha256:3d6a27d811df1a51199b8f1cf0fcc8083d10a06088ea351703e9539c2edf95f4"
+}

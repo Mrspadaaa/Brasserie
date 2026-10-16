@@ -183,7 +183,8 @@ describe('Provision mensuelle Gemini, sans aucun réseau', () => {
     const results = await Promise.allSettled(Array.from({ length: 3 }, () => runWithMonthlyAiBudget(model, searchRequest, provider)));
     expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1);
     expect(provider).toHaveBeenCalledOnce();
-    expect(month().reservedMicroChf).toBe(quote.reservedMicroChf);
+    // #100.5: unproven Search is charged at its full allowance and the reservation is settled, not kept.
+    expect(month()).toMatchObject({ reservedMicroChf: 0, usedMicroChf: 194 + 20 * GEMINI_SEARCH_COST_POLICY.microChfPerQuery });
   });
   it('compte les requêtes uniques non vides, pas un forfait par appel grounded', async () => {
     const result = searchResponse([' houblon citra 100g suisse ', '', 'houblon citra 100g suisse', '  ', 'houblon citra 1kg suisse']);
@@ -195,19 +196,48 @@ describe('Provision mensuelle Gemini, sans aucun réseau', () => {
     expect(call).toMatchObject({ searchQueriesReserved: 20, searchQueryMicroChf: 17_500, searchQueries: 2, searchMicroChf: 35_000, tokenMicroChf: 194, exceededReservation: false });
     expect(JSON.stringify(call)).not.toContain('houblon');
   });
-  it.each([undefined, null, 'query', ['query', null], { query: 'houblon' }])('garde toute la réserve si métadonnées Search ambiguës : %j', async queries => {
+  // #100.5 (D100): an unproven Search count no longer keeps the reservation forever. Tokens are charged as
+  // observed, Search at its full allowance (never zero), and the month is settled.
+  const provisioned = 194 + 20 * GEMINI_SEARCH_COST_POLICY.microChfPerQuery;
+  it.each([undefined, null, 'query', ['query', null], { query: 'houblon' }])('solde avec la provision Search entière si métadonnées ambiguës : %j', async queries => {
     await runWithMonthlyAiBudget(model, searchRequest, async () => searchResponse(queries));
-    expect(month()).toMatchObject({ usedMicroChf: 0, reservedMicroChf: quoteGeminiCost(model, searchRequest).reservedMicroChf });
+    expect(month()).toMatchObject({ usedMicroChf: provisioned, reservedMicroChf: 0 });
   });
-  it('garde la réserve si la réponse ne déclare aucune métadonnée Search', async () => {
+  it('solde avec la provision Search entière si la réponse ne déclare aucune métadonnée Search', async () => {
     await runWithMonthlyAiBudget(model, searchRequest, async () => response);
-    expect(month().reservedMicroChf).toBe(quoteGeminiCost(model, searchRequest).reservedMicroChf);
+    expect(month()).toMatchObject({ usedMicroChf: provisioned, reservedMicroChf: 0 });
   });
-  it('accepte zéro recherche uniquement quand le fournisseur renvoie un tableau explicite valide', () => {
+  it('compte zéro recherche seulement sur un tableau explicite valide, sinon la provision entière', () => {
     const quote = quoteGeminiCost(model, searchRequest);
     expect(observedGeminiCost(quote, searchResponse([]))).toBe(194);
     expect(observedGeminiCost(quote, searchResponse(['', ' ']))).toBe(194);
-    expect(observedGeminiCost(quote, { ...response, candidates: [{ groundingMetadata: { webSearchQueries: [] } }, {}] })).toBeNull();
+    expect(observedGeminiCost(quote, { ...response, candidates: [{ groundingMetadata: { webSearchQueries: [] } }, {}] })).toBe(provisioned);
+  });
+  it('appel ancré sans recherche déclarée : jetons comptés, provision imputée et marquée, réserve soldée', async () => {
+    const answered = { ...response, candidates: [{ content: { parts: [{ text: '{"found":true}' }] }, finishReason: 'STOP' }] };
+    const quote = quoteGeminiCost(model, searchRequest);
+    expect(observedGeminiCostDetails(quote, answered)).toEqual({ chargedMicroChf: provisioned, tokenMicroChf: 194, searchQueries: 20,
+      searchMicroChf: 20 * GEMINI_SEARCH_COST_POLICY.microChfPerQuery, searchQueriesProvisioned: true });
+    await runWithMonthlyAiBudget(model, searchRequest, async () => answered, { daily: true });
+    expect(month()).toMatchObject({ usedMicroChf: provisioned, reservedMicroChf: 0 });
+    const call = [...state.docs.entries()].find(([path]) => path.includes('/calls/'))![1];
+    expect(call).toMatchObject({ status: 'completed', tokenMicroChf: 194, searchQueries: 20, searchQueriesProvisioned: true });
+    expect(state.docs.get('brewerAiUsage/2026-09-09').usage.tokens).toBe(150);
+  });
+  it('une réponse inutilisable est soldée au coût observé, marquée « unusable », puis refusée', async () => {
+    const unusable = new Error('Réponse coupée');
+    const provider = vi.fn(async () => response);
+    await expect(runWithMonthlyAiBudget(model, request, provider, { daily: true, inspect: () => unusable })).rejects.toBe(unusable);
+    expect(provider).toHaveBeenCalledOnce();
+    expect(month()).toMatchObject({ usedMicroChf: 194, reservedMicroChf: 0 });
+    const call = [...state.docs.entries()].find(([path]) => path.includes('/calls/'))![1];
+    expect(call).toMatchObject({ status: 'unusable', chargedMicroChf: 194 });
+    expect(await runWithMonthlyAiBudget(model, request, provider, { inspect: () => undefined })).toEqual(response);
+  });
+  it('une réponse inutilisable sans usage garde sa réserve : coût incertain', async () => {
+    const unusable = new Error('Réponse coupée');
+    await expect(runWithMonthlyAiBudget(model, request, async () => ({ candidates: [] }), { inspect: () => unusable })).rejects.toBe(unusable);
+    expect(month()).toMatchObject({ usedMicroChf: 0, reservedMicroChf: quoteGeminiCost(model, request).reservedMicroChf });
   });
   it('impute un fan-out supérieur à la provision sans le tronquer et bloque le prochain appel', async () => {
     const quote = quoteGeminiCost(model, searchRequest);

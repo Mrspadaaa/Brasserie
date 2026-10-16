@@ -18,8 +18,13 @@ const equal = (left: unknown, right: unknown) => hopDecisionReference(left) === 
 const requireReason = (reason: string) => { if (typeof reason !== 'string' || !reason.trim()) throw Error('Conserver le motif explicite de ce geste.'); };
 
 function assertCurrentStudy(study: HopAdviceStudyV3, currentStudy: HopAdviceStudyV3, qualificationInput: HopQualifiedAssemblyInput) {
-  if (study.reference !== hopAdviceStudyReference(study) || currentStudy.reference !== hopAdviceStudyReference(currentStudy)
-    || study.reference !== currentStudy.reference || !equal(qualificationInput, currentStudy.requestSnapshot.qualificationInput)) {
+  const studyReference = hopAdviceStudyReference(study);
+  // One object passed twice in this synchronous check has one fingerprint; distinct objects are each hashed.
+  const currentReference = currentStudy === study ? studyReference : hopAdviceStudyReference(currentStudy);
+  const currentQualification = currentStudy.requestSnapshot.qualificationInput;
+  if (study.reference !== studyReference || currentStudy.reference !== currentReference
+    || study.reference !== currentStudy.reference
+    || qualificationInput !== currentQualification && !equal(qualificationInput, currentQualification)) {
     throw Error('La lecture, la situation ou ses données ont changé ; conserver l’ancien conseil et produire une nouvelle étude explicite.');
   }
   // This explicit command checks a new decision; historical reads never execute this adapter.

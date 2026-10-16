@@ -563,7 +563,6 @@ ul.hv-context__error {
   padding-top: 12px;
 }
 
-.hv-context__primary,
 .hv-context__secondary,
 .hv-context__text-button {
   border-radius: 6px;
@@ -573,7 +572,8 @@ ul.hv-context__error {
   padding: 6px 12px;
 }
 
-.hv-context__primary {
+/* Scoped to win over page.css `.hop-v55 button` (0,1,1): white on white (1.01:1) and 30 px otherwise. */
+.hop-v55 .hv-context__primary {
   background: var(--hop-forest-dark, #1b3e30);
   border: 1px solid #173729;
   border-radius: 7px;
@@ -581,11 +581,12 @@ ul.hv-context__error {
   font-size: 0.9rem;
   font-weight: 750;
   justify-self: start;
+  line-height: 1.25;
   min-height: 38px;
   padding: 8px 14px;
 }
 
-.hv-context__primary:hover:not(:disabled) {
+.hop-v55 .hv-context__primary:hover:not(:disabled) {
   background: #315d47;
 }
 
@@ -792,7 +793,7 @@ ul.hv-context__error {
     transform: rotate(90deg);
   }
 
-  .hv-context__primary,
+  .hop-v55 .hv-context__primary,
   .hv-context__lens > .hv-context__secondary {
     justify-self: stretch;
     width: 100%;

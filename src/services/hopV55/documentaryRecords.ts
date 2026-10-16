@@ -24,8 +24,10 @@ import {
   HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT,
   HOP_V55_PROPERTY_ADVICE_DOSSIER_RECORD_V4_FORMAT,
   readHopV55PropertyAdviceAnswerRecordV4,
+  readHopV55PropertyAdviceAnswerRecordV4ForWizardV1,
   readHopV55PropertyAdviceDossierRecordV4,
   type HopV55PropertyAdviceAnswerRecordV4,
+  type HopV55PropertyAdviceAnswerRecordV4ForWizardV1,
   type HopV55PropertyAdviceDossierRecordV4,
 } from './propertyAdviceRecordsV4';
 
@@ -86,6 +88,42 @@ export function readHopV55DocumentaryAnswerRecord(value: unknown): HopV55Documen
     if (value.format.startsWith('hop-v55-documentary-answer-record-')) return unsupported(value, 'answer');
   }
   throw new Error('Enveloppe de réponse documentaire invalide.');
+}
+
+/** Same V4 envelope and seal; only the preparation source slot is the explicit six-field Wizard source. */
+export type HopV55DocumentaryAnswerRecordWithWizardV1 = HopV55DocumentaryAnswerRecord | HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
+
+export type HopV55DocumentaryAnswerRecordReadWithWizardV1 =
+  | { status: 'readOnly'; version: 'v1' | 'v2' | 'v3' | 'v4'; profile?: 'wizardV1'; record: HopV55DocumentaryAnswerRecordWithWizardV1 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string };
+
+const WIZARD_SOURCE_FORMAT_NAMESPACE = 'hop-v55-wizard-source-';
+
+/**
+ * Structural Wizard admission: the V4 envelope itself declares a Wizard source (kind or format namespace)
+ * in its preparation. No UID, label, UI flag or isolated source object selects this profile.
+ */
+export function isHopV55DocumentaryAnswerWizardProfileV1(value: unknown): boolean {
+  if (!isRecord(value) || value.format !== HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT || !isRecord(value.preparation)) return false;
+  const source = value.preparation.source;
+  return isRecord(source) && (source.kind === 'wizardDraft'
+    || typeof source.format === 'string' && source.format.startsWith(WIZARD_SOURCE_FORMAT_NAMESPACE));
+}
+
+/**
+ * Modern answer dispatch for the workspace repository. A structurally Wizard V4 row is read only by the
+ * strict Wizard reader: a known corrupt row throws before any future handling, a future Wizard child stays
+ * raw read-only, and no classic fallback follows a Wizard refusal. Every other row keeps the pinned
+ * classic dispatch above, which still never promotes a Wizard row.
+ */
+export function readHopV55DocumentaryAnswerRecordWithWizardV1(value: unknown): HopV55DocumentaryAnswerRecordReadWithWizardV1 {
+  if (isHopV55DocumentaryAnswerWizardProfileV1(value)) {
+    const read = readHopV55PropertyAdviceAnswerRecordV4ForWizardV1(value);
+    return read.status === 'readOnly'
+      ? { status: 'readOnly', version: 'v4', profile: 'wizardV1', record: read.record }
+      : { status: 'unsupportedReadOnly', snapshot: read.snapshot, reason: read.reason };
+  }
+  return readHopV55DocumentaryAnswerRecord(value);
 }
 
 /** V1 dossier snapshots remain bound to V1 Answer records; V2 keeps its strategy-specific DTO. */

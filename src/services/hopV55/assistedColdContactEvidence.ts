@@ -1,26 +1,14 @@
-import {
-  HOP_COLD_BU_REFERENCE_FORMAT,
-  HOP_COLD_BU_REFERENCE_VERSION,
-  coldHopBuCalibrationReference,
-  coldHopBuReferenceResultReference,
-  type ColdHopBuReferenceResult,
-} from '../../domain/hopDecision/coldIbuReference';
+import type { ColdHopBuReferenceResult } from '../../domain/hopDecision/coldIbuReference';
 import {
   coldDecimal,
   coldDecimalToNumber,
   compareColdDecimals,
   divideColdDecimals,
-  subtractColdDecimals,
   type ColdDecimalFraction,
 } from '../../domain/hopDecision/coldIbuDecimal';
+import { readColdHopBuReferenceResultV2 } from '../../domain/hopDecision/coldContactEvidence';
 
 const COLD_CONTACT_TOOL = 'cold_contact_bitterness_reference';
-const RESULT_KEYS = [
-  'format', 'version', 'reference', 'calibrationSnapshot', 'calibrationReference', 'doseInput',
-  'doseEffectiveGPerHL', 'doseExactGPerHL', 'arithmetic', 'domainGPerHL', 'status', 'valueBU',
-  'controlBU', 'contrastToControlBU', 'nodesUsed', 'source', 'method', 'algorithm', 'uncertainty', 'limitations',
-].sort();
-
 export type AssistedColdContactEvidence =
   | {
       status: 'ready';
@@ -45,34 +33,11 @@ export type AssistedColdContactEvidence =
   | { status: 'unsupportedFormat'; evidenceId: string; format: unknown; version: unknown; raw: unknown }
   | { status: 'invalid'; evidenceId?: string; reason: string };
 
-type ColdEvidenceInput = { id: string; name: string; data: unknown };
 type RecordValue = Record<string, unknown>;
 
 const isRecord = (value: unknown): value is RecordValue => !!value && typeof value === 'object' && !Array.isArray(value);
-const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 const isNonemptyString = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
 const exactKeys = (value: RecordValue, keys: readonly string[]) => Object.keys(value).sort().join('|') === [...keys].sort().join('|');
-
-function stableJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
-  if (isRecord(value)) return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
-  return JSON.stringify(value) ?? 'undefined';
-}
-
-function same(left: unknown, right: unknown): boolean {
-  return stableJson(left) === stableJson(right);
-}
-
-function validNode(value: unknown): value is { doseGPerHL: number; valueBU: number } {
-  return isRecord(value) && exactKeys(value, ['doseGPerHL', 'valueBU'])
-    && isFiniteNumber(value.doseGPerHL) && value.doseGPerHL >= 0
-    && isFiniteNumber(value.valueBU) && value.valueBU >= 0;
-}
-
-function withinOneUlp(left: number, right: number): boolean {
-  const tolerance = Math.max(Number.MIN_VALUE, Number.EPSILON * Math.max(Math.abs(left), Math.abs(right)));
-  return Object.is(left, right) || Math.abs(left - right) <= tolerance;
-}
 
 function exactDoseCoordinate(value: unknown): ColdDecimalFraction | undefined {
   if (!isRecord(value) || !exactKeys(value, ['numerator', 'denominator'])
@@ -85,127 +50,6 @@ function exactDoseCoordinate(value: unknown): ColdDecimalFraction | undefined {
   const divisor = left || 1n;
   if (numerator / divisor !== numerator || denominator / divisor !== denominator) return undefined;
   return { numerator, denominator };
-}
-
-function validateKnownResult(value: unknown): ColdHopBuReferenceResult | string {
-  if (!isRecord(value) || !exactKeys(value, RESULT_KEYS)) return 'Structure du résultat froid incomplète ou étendue.';
-  if (value.format !== HOP_COLD_BU_REFERENCE_FORMAT || value.version !== HOP_COLD_BU_REFERENCE_VERSION) {
-    return 'Format froid non pris en charge.';
-  }
-
-  const result = value as unknown as ColdHopBuReferenceResult;
-  if (!isRecord(result.doseInput) || !exactKeys(result.doseInput as unknown as RecordValue, ['value', 'unit'])
-    || !['g/L', 'g/hL'].includes(result.doseInput.unit)
-    || result.doseInput.value !== null && (!isFiniteNumber(result.doseInput.value) || result.doseInput.value < 0)) {
-    return 'Dose d’entrée froide invalide.';
-  }
-  if (!isRecord(result.domainGPerHL) || !exactKeys(result.domainGPerHL as unknown as RecordValue, ['min', 'max'])
-    || !isFiniteNumber(result.domainGPerHL.min) || !isFiniteNumber(result.domainGPerHL.max)
-    || result.domainGPerHL.min < 0 || result.domainGPerHL.min > result.domainGPerHL.max) {
-    return 'Domaine froid invalide.';
-  }
-  if (result.arithmetic !== 'exactDecimal-v1' || result.algorithm !== 'piecewiseLinearInterpolation'
-    || result.uncertainty !== 'notReported' || !isNonemptyString(result.method)
-    || !isNonemptyString(result.reference) || !isNonemptyString(result.calibrationReference)
-    || !isFiniteNumber(result.controlBU) || result.controlBU < 0
-    || !Array.isArray(result.nodesUsed) || !result.nodesUsed.every(validNode)
-    || !Array.isArray(result.limitations) || result.limitations.some((entry) => !isNonemptyString(entry))) {
-    return 'Métadonnées, nombres ou unités du résultat froid invalides.';
-  }
-
-  let calibrationReference: string;
-  try {
-    calibrationReference = coldHopBuCalibrationReference(result.calibrationSnapshot);
-  } catch {
-    return 'Snapshot de calibration froide invalide.';
-  }
-  const calibration = result.calibrationSnapshot;
-  const points = calibration.points;
-  if (calibrationReference !== result.calibrationReference
-    || !same(result.source, calibration.source)
-    || result.method !== calibration.output.method
-    || result.controlBU !== calibration.control.valueBU
-    || result.domainGPerHL.min !== points[0].doseGPerHL
-    || result.domainGPerHL.max !== points[points.length - 1].doseGPerHL) {
-    return 'Calibration, source, méthode, témoin ou domaine incohérent.';
-  }
-
-  const unknownDose = result.doseInput.value === null;
-  let exactCoordinate: ColdDecimalFraction | null = null;
-  if (unknownDose) {
-    if (result.doseExactGPerHL !== null || result.doseEffectiveGPerHL !== null) return 'Dose inconnue avec coordonnée renseignée.';
-  } else {
-    exactCoordinate = exactDoseCoordinate(result.doseExactGPerHL) ?? null;
-    if (!exactCoordinate
-      || !isFiniteNumber(result.doseEffectiveGPerHL) || result.doseEffectiveGPerHL < 0) {
-      return 'Coordonnée exacte ou dose effective invalide.';
-    }
-    try {
-      // Check displayed numbers against the exact coordinate; never rebuild the coordinate from rounded input.
-      const displayedEffective = coldDecimalToNumber(exactCoordinate);
-      const displayedInput = coldDecimalToNumber(result.doseInput.unit === 'g/L'
-        ? divideColdDecimals(exactCoordinate, coldDecimal(100)) : exactCoordinate);
-      if (result.doseEffectiveGPerHL !== displayedEffective || result.doseInput.value !== displayedInput) {
-        return 'Dose affichée et coordonnée exacte ne correspondent pas.';
-      }
-    } catch {
-      return 'Vérification de dose froide invalide.';
-    }
-  }
-
-  if (unknownDose) {
-    if (result.status !== 'doseUnknown' || result.valueBU !== null || result.contrastToControlBU !== null || result.nodesUsed.length !== 0) {
-      return 'Une dose inconnue ne peut produire de BU, de contraste ou de nœud.';
-    }
-    const expectedLimits = [...calibration.limitations, 'Dose inconnue : la courbe et son domaine restent consultables, aucune BU n’est imputée.'];
-    if (!same(result.limitations, expectedLimits)) return 'Limites de dose inconnue incohérentes.';
-  } else {
-    const coordinate = exactCoordinate!;
-    const min = coldDecimal(result.domainGPerHL.min);
-    const max = coldDecimal(result.domainGPerHL.max);
-    const comparisonToMin = compareColdDecimals(coordinate, min);
-    const comparisonToMax = compareColdDecimals(coordinate, max);
-
-    if (result.status === 'outOfDomain') {
-      const expectedLimit = `Dose hors domaine publié ${result.domainGPerHL.min}–${result.domainGPerHL.max} g/hL : aucune extrapolation ou saturation appliquée.`;
-      if (comparisonToMin >= 0 && comparisonToMax <= 0 || result.valueBU !== null || result.contrastToControlBU !== null
-        || result.nodesUsed.length !== 0 || !same(result.limitations, [...calibration.limitations, expectedLimit])) {
-        return 'Résultat hors domaine incohérent ou extrapolé.';
-      }
-    } else if (result.status === 'publishedObservation' || result.status === 'interpolation') {
-      if (comparisonToMin < 0 || comparisonToMax > 0 || !isFiniteNumber(result.valueBU) || result.valueBU < 0
-        || !isFiniteNumber(result.contrastToControlBU) || !same(result.limitations, calibration.limitations)) {
-        return 'Résultat numérique hors domaine ou non fini.';
-      }
-      const contrastFromDisplayedValue = coldDecimalToNumber(subtractColdDecimals(coldDecimal(result.valueBU), coldDecimal(result.controlBU)));
-      if (!withinOneUlp(result.contrastToControlBU, contrastFromDisplayedValue)) return 'Contraste au témoin incohérent avec la valeur BU.';
-
-      if (result.status === 'publishedObservation') {
-        const pointIndex = points.findIndex((point) => compareColdDecimals(coldDecimal(point.doseGPerHL), coordinate) === 0);
-        if (pointIndex < 0 || result.nodesUsed.length !== 1 || !same(result.nodesUsed[0], points[pointIndex])
-          || result.valueBU !== points[pointIndex].valueBU) return 'Observation publiée sans nœud exact correspondant.';
-      } else {
-        if (points.some((point) => compareColdDecimals(coldDecimal(point.doseGPerHL), coordinate) === 0)
-          || result.nodesUsed.length !== 2) return 'Interpolation froide sans deux nœuds intérieurs.';
-        const leftIndex = points.findIndex((point) => same(point, result.nodesUsed[0]));
-        const rightIndex = points.findIndex((point) => same(point, result.nodesUsed[1]));
-        if (leftIndex < 0 || rightIndex !== leftIndex + 1
-          || compareColdDecimals(coldDecimal(result.nodesUsed[0].doseGPerHL), coordinate) >= 0
-          || compareColdDecimals(coordinate, coldDecimal(result.nodesUsed[1].doseGPerHL)) >= 0) {
-          return 'Nœuds d’interpolation non adjacents ou ne cadrant pas la dose.';
-        }
-      }
-    } else {
-      return 'Statut de résultat froid inconnu.';
-    }
-  }
-
-  try {
-    if (coldHopBuReferenceResultReference(result) !== result.reference) return 'Empreinte du résultat froid invalide.';
-  } catch {
-    return 'Empreinte du résultat froid invalide.';
-  }
-  return result;
 }
 
 function numberFr(value: number): string {
@@ -293,33 +137,10 @@ export function readAssistedColdContactEvidence(input: unknown): AssistedColdCon
   if (!evidenceId) return { status: 'invalid', reason: 'Identifiant de preuve manquant.' };
   if (!isRecord(input.data)) return { status: 'invalid', evidenceId, reason: 'Payload froid absent ou non structuré.' };
 
-  const raw = input.data;
-  const recognizedFormatPrefix = typeof raw.format === 'string' && raw.format.startsWith('cold-hop-bu-reference-result-');
-  if (recognizedFormatPrefix && raw.format !== HOP_COLD_BU_REFERENCE_FORMAT) {
-    try {
-      return { status: 'unsupportedFormat', evidenceId, format: raw.format, version: raw.version, raw: structuredClone(raw) };
-    } catch {
-      return { status: 'invalid', evidenceId, reason: 'Payload futur impossible à préserver comme snapshot.' };
-    }
-  }
-  if (raw.format !== HOP_COLD_BU_REFERENCE_FORMAT) return { status: 'invalid', evidenceId, reason: 'Format de payload inattendu pour l’outil froid.' };
-  if (raw.version !== HOP_COLD_BU_REFERENCE_VERSION) {
-    if (!isNonemptyString(raw.version)) return { status: 'invalid', evidenceId, reason: 'Version du résultat froid absente.' };
-    try {
-      return { status: 'unsupportedFormat', evidenceId, format: raw.format, version: raw.version, raw: structuredClone(raw) };
-    } catch {
-      return { status: 'invalid', evidenceId, reason: 'Version froide non prise en charge et payload impossible à préserver.' };
-    }
-  }
-
-  const validated = validateKnownResult(raw);
-  if (typeof validated === 'string') return { status: 'invalid', evidenceId, reason: validated };
-  let snapshot: ColdHopBuReferenceResult;
-  try {
-    snapshot = structuredClone(validated);
-  } catch {
-    return { status: 'invalid', evidenceId, reason: 'Snapshot froid impossible à cloner.' };
-  }
+  const read = readColdHopBuReferenceResultV2(input.data);
+  if (read.status === 'unsupportedFormat') return { status: 'unsupportedFormat', evidenceId, format: read.format, version: read.version, raw: read.raw };
+  if (read.status === 'invalid') return { status: 'invalid', evidenceId, reason: read.reason };
+  const snapshot = read.result;
   const display = factsFor(snapshot);
   if (snapshot.status === 'doseUnknown' || snapshot.status === 'outOfDomain') {
     return {

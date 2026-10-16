@@ -1,10 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as documentaryDomain from '../../src/domain/hopDecision/documentaryAnswer';
+import { buildHopPropertyAdviceV3 } from '../../src/domain/hopDecision/propertyAdvice';
+import { assertHopPropertyAdviceAnswerV3, assertHopPropertyAdviceRequestV3 } from '../../src/domain/hopDecision/propertyAdviceSchema';
 import { prepareBrewingScenarioContext } from '../../src/domain/brewingScenarioContext';
 import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
 import { readHopV55Question, type HopV55QuestionReading } from '../../src/services/hopV55/decision';
 import { applyHopV55DecisionCriteriaCorrection } from '../../src/services/hopV55/decisionCorrection';
-import { createHopV55DecisionReadingArchiveV2, readHopV55DecisionReadingArchive } from '../../src/services/hopV55/decisionArchive';
+import { createHopV55DecisionReadingArchiveV2, createHopV55DecisionReadingArchiveV4,
+  readHopV55DecisionReadingArchive } from '../../src/services/hopV55/decisionArchive';
+import { readHopV55QuestionSemanticV1 } from '../../src/services/hopV55/questionSemanticReading';
+import { prepareHopV55PropertyAdviceFromSemanticReadingV1 } from '../../src/services/hopV55/propertyAdviceSemanticPreparationV3';
+import { hopV55ScenarioRuntimeReference } from '../../src/services/hopV55/scenarioCommit';
 import type { HopV55Workspace } from '../../src/services/hopV55/contracts';
 import {
   createHopV55WorkspaceRepository,
@@ -21,6 +27,8 @@ import {
   resumeHopV55DocumentaryRequestDraft,
   reviseHopV55DocumentaryRequest,
 } from '../../src/services/hopV55/documentaryDecision';
+
+const v1BalanceQuestion = 'Je veux moins de sucre dans ma bière.';
 
 function fixture(mode: 'planning' | 'nolo' = 'planning', style?: string) {
   const context = makeHopV55FixtureContext(mode);
@@ -73,7 +81,7 @@ class MemoryDatabase implements HopV55WorkspaceDatabaseAdapter {
 
 describe('raccord V5.5 vers la réponse documentaire SYNTH01', () => {
   it('conserve la question et les critères; propose le besoin sucrosité depuis le critère, jamais depuis le nom de style', () => {
-    const question = 'Ma bière est trop sucrée. Quel équilibre le houblon peut-il examiner ?';
+    const question = v1BalanceQuestion;
     const { prepared } = fixture('planning', 'Pastry Stout');
     const reading = read(question, prepared);
     const beforeReading = structuredClone(reading);
@@ -328,9 +336,43 @@ describe('raccord V5.5 vers la réponse documentaire SYNTH01', () => {
       .toThrow(/question, les critères/i);
   });
 
+  it('garde la question originale de constat/compensation dans le parcours sémantique V4→PropertyV3', () => {
+    const question = 'Ma patry stout est trop sucré comment compensé ça avec mon houblons.';
+    const { context, prepared } = fixture('planning');
+    const semantic = readHopV55QuestionSemanticV1(question, prepared);
+    const archive = createHopV55DecisionReadingArchiveV4({ id: 'reading:semantic-compensation-v4', ownerKey: 'owner:fixture',
+      workspaceId: 'workspace:fixture', recordedAt: '2026-10-04T10:00:00.000Z', reading: semantic,
+      source: { kind: 'recipe', id: context.recipe!.id }, runtimeReference: hopV55ScenarioRuntimeReference(prepared.runtime) });
+    const archived = readHopV55DecisionReadingArchive(archive);
+    expect(archived.status).toBe('available');
+    if (archived.status !== 'available' || archived.archive.format !== 'hop-v55-decision-reading-v4') {
+      throw new Error('La preuve de compensation doit consommer une lecture sémantique V4 relue.');
+    }
+    const draft = prepareHopV55PropertyAdviceFromSemanticReadingV1({ reading: archived.archive.reading, prepared,
+      requestId: 'request:semantic-compensation-v3', ownerKey: 'owner:fixture', workspaceId: 'workspace:fixture',
+      sourceReadingReference: archive.contentReference,
+      candidatePolicy: { kind: 'explicit', materialIds: [], basis: 'Aucune matière choisie dans cette preuve.' } });
+    const answer = buildHopPropertyAdviceV3(draft.requestSnapshot);
+    assertHopPropertyAdviceRequestV3(draft.requestSnapshot);
+    assertHopPropertyAdviceAnswerV3(answer);
+    const observation = draft.requestSnapshot.propertyIntents.find(row => row.property === 'sweetness' && row.role === 'reportedObservation');
+    const compensation = draft.requestSnapshot.propertyIntents.find(row => row.investigation?.kind === 'comparePerceptualCompensation');
+
+    expect(draft.sourceReadingReference).toBe(archive.contentReference);
+    expect(draft.requestSnapshot.originalQuestion).toBe(question);
+    expect(observation).toMatchObject({ role: 'reportedObservation', direction: null, required: false,
+      comparisonBasis: { kind: 'current', assertionIds: [] } });
+    expect(compensation).toMatchObject({ role: 'investigation', direction: 'investigate',
+      relatedIntentIds: [observation?.id], investigation: { kind: 'comparePerceptualCompensation', observationIntentIds: [observation?.id] } });
+    expect(draft.requestSnapshot.propertyIntents.some(row => row.direction === 'decrease' || row.property === 'bitterness')).toBe(false);
+    for (const intent of draft.requestSnapshot.propertyIntents) for (const span of intent.sourceSpans) {
+      expect(question.slice(span.start, span.end)).toBe(span.text);
+    }
+    expect(answer.requestSnapshot).toEqual(draft.requestSnapshot);
+  });
   it('lie le dossier aux références canoniques attendues et conserve les dossiers futurs en lecture seule', () => {
     const { prepared } = fixture('planning');
-    const reading = read('Ma bière est trop sucrée; quel équilibre peut être examiné ?', prepared);
+    const reading = read(v1BalanceQuestion, prepared);
     const draft = prepareHopV55DocumentaryRequest({ reading, prepared, requestId: 'request:dossier', ownerKey: 'owner:fixture',
       workspaceId: 'workspace:fixture', sourceReadingReference: 'reading:dossier' });
     const answerRecord = buildHopV55DocumentaryAnswerRecord({ draft, prepared, answerRecordId: 'answer:dossier' });
@@ -355,7 +397,7 @@ describe('raccord V5.5 vers la réponse documentaire SYNTH01', () => {
 
   it('scelle la provenance de réinterprétation dans l’enveloppe sans la verser dans les faits ou l’interprétation', () => {
     const { prepared } = fixture('planning');
-    const reading = read('Ma bière est trop sucrée; quel équilibre peut être examiné ?', prepared);
+    const reading = read(v1BalanceQuestion, prepared);
     const draft = prepareHopV55DocumentaryRequest({ reading, prepared, requestId: 'request:revision', ownerKey: 'owner:fixture',
       workspaceId: 'workspace:fixture', sourceReadingReference: 'reading:revision' });
     const source = buildHopV55DocumentaryAnswerRecord({ draft, prepared, answerRecordId: 'answer:revision-source' });

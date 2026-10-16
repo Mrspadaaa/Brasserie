@@ -289,7 +289,9 @@ function validProgramOrigin(value: unknown): value is HopV55ExplorationTrialProg
     && isText(value.draftId) && Number.isSafeInteger(value.revision) && value.revision > 0 && isText(value.reference);
   if (value.kind === 'adoptedReference') return onlyKeys(value, ['kind', 'identity']) && isRow(value.identity)
     && onlyKeys(value.identity, ['id', 'version', 'contentReference'])
-    && isText(value.identity.id) && Number.isSafeInteger(value.identity.version) && value.identity.version > 0
+    // The NR journal identity carries its version as text (BrewingReferenceIdentityV1); a positive integer stays readable.
+    && isText(value.identity.id)
+    && (isText(value.identity.version) || Number.isSafeInteger(value.identity.version) && value.identity.version > 0)
     && isText(value.identity.contentReference);
   return false;
 }
@@ -501,7 +503,7 @@ function validatePreparationInput(entry: HopV55ExplorationTrialEntryV1, program:
   const input: unknown = entry.preparationInput;
   if (!isRow(input) || !onlyKeys(input, ['branch', 'program', 'materials', 'intent', 'operations', 'expectedProgramReference'])
     || !isRow(input.branch) || !isText(input.branch.id) || !isText(input.branch.label)
-    || !isRow(input.intent) || !isText(input.intent.question) || typeof input.intent.interpretation !== 'string'
+    || !isRow(input.intent) || typeof input.intent.question !== 'string' || typeof input.intent.interpretation !== 'string'
     || !Array.isArray(input.intent.criteria) || !Array.isArray(input.operations) || !Array.isArray(input.materials)
     || !isRow(input.program) || !exactValue(input.program, program) || !exactValue(input.materials, materials)
     || !exactValue(input.operations, entry.preparation.operations)
@@ -1105,7 +1107,7 @@ export function appendHopV55ExplorationTrialReceiptRecord(workspace: HopV55Works
   }
   if (!(workspace.snapshotIntents ?? []).some(row => row.scenarioId === receipt.scenarioId
     && row.snapshotReference === receipt.snapshotReference
-    && row.decisionReadingReference === preparation.preparation.readingReference)) {
+    && (row.decisionReadingReference ?? null) === preparation.preparation.readingReference)) {
     throw new HopV55ExplorationTrialError('invalidInput', 'Le reçu doit relier le snapshot J5 et la lecture source exacts.');
   }
   const rows = workspace.explorationTrialReceipts ?? [];
@@ -1191,7 +1193,7 @@ export function assertHopV55ExplorationTrialWorkspaceCollections(workspace: Pick
     }
     if (!(workspace.scenarioPreparations ?? []).some(row => row.id === receipt.scenarioPreparationId && row.scenarioId === receipt.scenarioId)
       || !(workspace.snapshotIntents ?? []).some(row => row.scenarioId === receipt.scenarioId
-        && row.snapshotReference === receipt.snapshotReference && row.decisionReadingReference === preparation.readingReference)) {
+        && row.snapshotReference === receipt.snapshotReference && (row.decisionReadingReference ?? null) === preparation.readingReference)) {
       throw new HopV55ExplorationTrialError('invalidInput', 'Le reçu ne correspond pas au staging J5/snapshot exact conservé.');
     }
     receiptIds.add(receipt.id); receiptReferences.add(receipt.reference); receivedPreparationReferences.add(receipt.preparationReference);

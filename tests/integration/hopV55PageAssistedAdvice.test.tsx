@@ -507,6 +507,7 @@ describe('Page V5.5 — lancement et archive du compagnon assisté', () => {
     const response = assistedTurn(session, ticketRead.value, input.operationId);
     await act(async () => { await session.onAssistedTurn(response); });
 
+    await act(async () => { await import('../../src/ui/hopV55/AssistedAdvicePanel'); });
     expect(await screen.findByRole('heading', { name: 'Proposition à examiner' })).toBeInTheDocument();
     expect(screen.getByText(/La confirmation conserve d’abord la reprise V4 exacte/)).toBeInTheDocument();
     const reason = screen.getByRole('textbox', { name: /^Motif de confirmation/ });

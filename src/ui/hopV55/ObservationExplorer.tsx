@@ -18,6 +18,7 @@ import { Input, Textarea } from '../Input';
 import { NumberInput } from '../NumberInput';
 import { HopV55SensoryComparison } from './SensoryComparison';
 import './observation-explorer.css';
+import { hopV55DoseText } from './readings';
 
 export interface HopV55ObservationFrameChoice {
   id: string;
@@ -477,7 +478,7 @@ function StoredInputs({ projection }: { projection: BrewingObservationProjection
         {observed.used.length ? <ul>{observed.used.map(row => {
           const addition = observed.knownAdditions.find(value => value.id === row.additionId);
           return <li key={`${row.additionId}-${row.factReference}`}><strong>{addition?.name ?? 'Ajout réalisé'}</strong> · {numberText(row.grams)} g · contact {formatHours(row.elapsedHours)}{row.ended ? ' terminé' : ' actif'}
-            {addition ? <small>Entrée modèle : {addition.triplet.timing ? TIMING_LABEL[addition.triplet.timing] : 'moment inconnu'} · dose {addition.triplet.doseGL === null ? 'inconnue' : `${numberText(addition.triplet.doseGL)} g/L`}
+            {addition ? <small>Entrée modèle : {addition.triplet.timing ? TIMING_LABEL[addition.triplet.timing] : 'moment inconnu'} · dose {addition.triplet.doseGL === null ? 'inconnue' : hopV55DoseText(addition.triplet.doseGL)}
               · température {addition.triplet.temperatureC === null ? 'inconnue' : `${numberText(addition.triplet.temperatureC)} °C`} · contact {addition.triplet.contactHours === null ? 'inconnu' : formatHours(addition.triplet.contactHours)}
               {addition.triplet.matrixId ? ` · matrice ${addition.triplet.matrixId}` : ' · matrice non renseignée'}</small> : null}
             <details className="hv55-observation-details"><summary>Identités exactes du fait et du contact</summary>

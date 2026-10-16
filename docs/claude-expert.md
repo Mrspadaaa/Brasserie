@@ -8,35 +8,41 @@ privées des deux fournisseurs ne sont pas copiées d'un côté à l'autre.
 
 ## Préparer et lancer
 
-### Profils CLI Pro et Team
+### Profil Team, profil Pro conservé
 
-Deux profils natifs sont préparés. `pro` définit `CLAUDE_CONFIG_DIR` dans
-l'environnement du seul processus enfant vers `~/.claude-pro`. `team`
-conserve le dossier existant `~/.claude`, ses conversations et la disposition
-par défaut de ses métadonnées publiques : aucun override de ce répertoire.
-Aucun credential n'est
-copié et aucune variable globale n'est modifiée.
+Consigne humaine du 6 octobre : les prochains travaux Claude utilisent
+uniquement Team. Aucun lancement, préflight ni repli Pro, y compris après une
+vraie limite Team : conserver le travail et remonter le retour natif au
+contrôleur, sans changer de compte, de modèle ni d'effort. L'annonce d'un quota
+« quasi illimité » n'est pas une mesure native.
+
+`team` conserve le dossier existant `~/.claude`, ses conversations et la
+disposition par défaut de ses métadonnées publiques : aucun override de ce
+répertoire. Le profil personnel `pro` (`CLAUDE_CONFIG_DIR` vers `~/.claude-pro`,
+dans l'environnement du seul processus enfant) reste en place avec ses
+artefacts ; ses credentials et sa configuration ne sont ni modifiés ni
+supprimés. Les commandes humaines Pro `status` et `login` restent disponibles.
+Les nouveaux lots, sessions interactives et préflights Pro sont refusés avant
+toute découverte du CLI ou inspection du compte. Les leases Pro historiques
+restent lisibles et protégées. Aucun credential n'est copié et aucune variable
+globale n'est modifiée.
 
 Depuis le dépôt :
 
 ```powershell
 node scripts/claude-account.mjs team status
-node scripts/claude-account.mjs pro login
-node scripts/claude-account.mjs pro status
 node scripts/claude-account.mjs team
-node scripts/claude-account.mjs pro
 ```
 
-La commande login est effectuée par l'humain, qui sélectionne son abonnement
-Pro personnel. Les commandes sans sous-commande ouvrent le CLI interactif
-Opus 5.5/xhigh après contrôle du profil. La connexion Team actuellement utilisée
-ne doit pas être remplacée pour connecter Pro.
+La commande sans sous-commande ouvre le CLI interactif Opus 5.5/xhigh après
+contrôle du profil. Elle passe par la même admission machine que les lots (voir
+« Coordination de plusieurs lots ») : sa portée (fichiers, `/resume` interne)
+n'étant pas déclarable, elle est exclusive, refusée si un lot est actif et
+bloquant tout autre lot jusqu'à sa fermeture. `status` ne réserve rien ; une
+commande `login`, toujours humaine, réserve exclusivement son profil sans
+compter comme lot Opus et est refusée tant qu'un lot utilise ce profil.
 
-Les lots utilisent `--account team` (défaut) ou `--account pro` explicitement.
-Le choix de ce drapeau revient automatiquement aux pilotes, selon le lot et
-les quotas fiables de chaque profil. Il ne demande ni sélection manuelle du
-compte ni nouvelle connexion à chaque changement. La connexion initiale de Pro
-reste humaine ; une session expirée ou révoquée exige une nouvelle authentification.
+Les lots utilisent `--account team` (défaut).
 Le préflight vérifie le plan exact et le dossier réellement annoncé par le
 client, puis expose le profil, l'adresse et l'organisation publics. Même adresse
 ou même organisation ne suffit pas à accepter le mauvais plan. Un profil absent
@@ -45,9 +51,9 @@ Les quotas et historiques se relisent dans le profil choisi. Une reprise reste
 attachée à son profil et à son UUID ; aucune copie de credentials ou d'historique
 entre profils pour la forcer.
 
-La présence de deux profils connectables ne modifie pas les verrous de travail
-ni les conditions humaines d'activation de plusieurs ponts. Le lot Team déjà
-lancé continue dans son processus existant.
+Ni deux profils connectables, ni un libellé ou marqueur d'interface n'activent
+plusieurs lots : seule l'activation enregistrée par le contrôleur le fait. Un
+lot déjà lancé continue dans son processus existant.
 
 Référence : [plusieurs comptes dans le CLI officiel](https://code.claude.com/docs/en/authentication#log-in-with-multiple-accounts).
 
@@ -96,7 +102,9 @@ Ne pas utiliser `--bare`, qui change le mode d'authentification. Le diagnostic
 CLI ne confirme pas les crédits supplémentaires : vérifier leur désactivation
 dans Claude Usage avant un travail susceptible de dépasser le quota, en réutilisant
 une mesure récente fiable. Si le quota manque, conserver le travail et reprendre
-plus tard ; aucune bascule vers une clé/API facturée.
+plus tard ; aucune bascule vers une clé/API facturée, vers Pro, un autre modèle
+ou un autre effort. Le retour de quota reste le retour natif : aucun tour génératif
+de diagnostic ni pause déduite d'un pourcentage.
 
 `node scripts/claude-expert.mjs --diagnose` lit seulement la version et
 `auth status --json`. Il affiche le chemin du CLI et l'identité publique
@@ -123,13 +131,120 @@ ensemble 32 Mio ; ces protections ne sont pas des objectifs de taille.
 Le plafond par défaut est de 30 tours en revue, 60 en réalisation, ajustable par
 `--max-turns` selon le besoin. Une valeur explicite reste exacte. Un arrêt
 `error_max_turns` indique cette limite locale, pas l'épuisement de l'abonnement.
-Un seul processus de travail du pont Claude à la fois sur le PC, toutes missions
-confondues. Ne pas arrêter une session tierce pour contourner ce verrou.
+Sur le PC, un lot du pont Claude à la fois par défaut. Après qualification et
+activation explicite par le contrôleur, jusqu'à deux lots Team Opus 5.5/xhigh
+simultanés, avec conversations, sorties et fichiers modifiables disjoints (voir
+« Coordination de plusieurs lots »). Une troisième admission, une ressource en
+collision ou un état ambigu est refusé avant lancement. Ne supprimer aucun
+verrou ou lease actif et ne pas arrêter une session tierce pour contourner un refus.
 
 Le mode edit travaille sur des copies ; le report vérifie les empreintes des
 originaux. Un résultat `blocked`, une interruption ou un conflit ne vaut pas
 autorisation d'intégrer. Examiner les diffs, rendre et jouer le parcours après
 report. Le navigateur n'est pas fourni au Claude isolé.
+
+## Coordination de plusieurs lots
+
+`scripts/claude-coordination.mjs` admet chaque lot (`claude-expert.mjs`,
+`claude-frontend.mjs`) et chaque session `claude-account.mjs` avant toute
+archive ou processus. État machine sous `%TEMP%/laffinee-claude-coordination/` :
+mutex court `mutex.lock`, leases `active/<id>.json`, leases terminées
+`released/`, activations et mutex récupérés `history/`. Rien n'est supprimé
+automatiquement. Tous les ponts doivent partager le même `%TEMP%`, comme
+l'ancien verrou ; `--dry-run` affiche la racine utilisée et un instantané
+d'admission (`coordination`), qui ne réserve rien.
+
+**Ressources réservées** de l'admission jusqu'au report terminé ou à une
+récupération explicite :
+
+- conversation `session:<UUID>` exclusive. Une session neuve reçoit son UUID
+  avant le spawn (`--session-id`, documenté par la référence CLI officielle ;
+  fixable par `--session-id <UUID>` au lanceur) ; une reprise réserve l'UUID de
+  `--resume`. `session.json` enregistre `reservedSessionId` et
+  `sessionMatchesReservation` ; un écart bloque la publication, conserve le
+  résultat, les copies et le manifeste de récupération, et retient les originaux
+  modifiables jusqu'à inspection explicite (`claude_session_mismatch`) ;
+- sortie et ses fichiers associés (`.progress`, `.recovery`, `.expert`,
+  `.artifacts`), exclusifs ;
+- originaux modifiables, exclusifs : ce sont les cibles réelles du report, pas
+  les copies. Deux copies différentes d'un même original entrent en conflit ;
+- références en lecture seule, partagées : plusieurs lots peuvent les lire,
+  mais un lot qui les modifierait est refusé ;
+- profil, partagé par les lots, exclusif pour `login`.
+
+Le Sol parent (`solThread`) est seulement enregistré : plusieurs lots d'un même
+Sol sont admis si leurs ressources sont disjointes. La session interactive ne
+peut pas déclarer ses ressources : elle est exclusive.
+
+**Domaine d'identité : fichier physique.** Chemin réel natif (liens
+symboliques, jonctions, noms courts 8.3, casse Windows, chemins relatifs, points
+et espaces finaux) plus identité volume/index du fichier (liens durs). Le même
+chemin logique dans deux worktrees désigne deux fichiers physiques distincts :
+pas de conflit au pont, la convergence se traite à l'intégration Git selon
+l'ownership attribué par Sol.
+
+**Capacité.** Un lot par défaut. Deux seulement avec une activation valide et
+non expirée, et seulement si tous les lots comptés sont Team /
+`claude-opus-5-5` / `xhigh` ; plafond codé à deux. Une activation illisible,
+élargie ou expirée vaut un. Aucun libellé, marqueur d'interface ou compte
+connecté n'en tient lieu.
+
+**Activation par le contrôleur**, après réception de la qualification locale et
+selon son propre registre (`agent-checks.json` n'est pas modifié par le pont) :
+
+```powershell
+node scripts/claude-coordination.mjs status
+node scripts/claude-coordination.mjs activate --until "<fin ISO8601 de la fenêtre autorisée>" --authorized-by "<référence de la décision humaine>" --evidence "<rapport de qualification>"
+node scripts/claude-coordination.mjs deactivate
+```
+
+La fin respecte toujours la fenêtre autorisée et l'arrêt coordonné du projet.
+L'activation dure au plus 72 h, se renouvelle explicitement et ne survit pas
+implicitement à un arrêt de maintenance : la désactiver avant l'arrêt et ne la
+réactiver qu'après nouvelle décision. Les lots déjà admis ne sont jamais
+interrompus par une désactivation ; seules les nouvelles admissions sont limitées.
+
+**Verrou historique.** `%TEMP%/laffinee-claude-frontend.lock` reste la barrière
+des anciens lanceurs : tant qu'une lease existe, la coordination y maintient
+son marqueur, qui fait refuser l'ancienne version. Un verrou numérique (ancien
+lanceur), vide (création interrompue) ou inconnu fait refuser toute admission,
+sans modification. La migration se fait donc à une frontière où les anciens
+lanceurs sont arrêtés et leurs artefacts conservés.
+
+**Cycle d'une lease.** `admitted` → `spawning` (écrit avant le spawn) →
+`running` (PID et heure de création du processus Claude) → libérée après report
+ou réponse. Si des brouillons modifiés n'ont pas été reportés (blocage, budget,
+quota, conflit, report partiel), la lease devient `retained` : capacité et
+conversation sont libérées pour une reprise, les originaux restent réservés.
+Une libération n'agit que sur la lease de son propriétaire (jeton).
+
+**Récupération, toujours manuelle :**
+
+```powershell
+node scripts/claude-coordination.mjs status
+node scripts/claude-coordination.mjs recover --lease <id>
+node scripts/claude-coordination.mjs recover --lease <id> --confirm-no-child
+node scripts/claude-coordination.mjs release --lease <id> --reason "<inspection des copies>"
+node scripts/claude-coordination.mjs recover-mutex
+```
+
+`recover` exige que le propriétaire et, s'il est enregistré, le processus Claude
+soient absents ou remplacés (PID présent mais heure de création différente) ;
+un état vivant ou non résolu est refusé. Une lease `spawning` sans PID exige la
+vérification humaine `--confirm-no-child`. La lease récupérée devient `retained`
+si elle réservait des originaux. `release` libère une lease `retained` après
+inspection de l'archive et du manifeste, avec motif conservé. `recover-mutex`
+suit la même preuve ; un `recovery.lock` résiduel se vérifie manuellement.
+
+Pour reprendre un lot interrompu sur les mêmes fichiers : inspecter, `release`,
+puis relancer avec `--resume <UUID>` et une nouvelle sortie.
+
+Limites : protocole coopératif local, pas une frontière contre un processus
+malveillant ; un enfant Claude orphelin après un arrêt brutal du lanceur garde
+sa lease jusqu'à récupération. Les tests locaux utilisent des processus Node
+inertes : ils ne prouvent ni deux sessions natives simultanées, ni la portée
+native de `--session-id`, à confirmer par `sessionMatchesReservation` lors des
+premiers lots réels, après activation.
 
 ## Aide native Sonnet optionnelle
 
@@ -247,8 +362,10 @@ fichiers : examiner d'abord les copies sauvegardées et leur manifeste, prépare
 les entrées exactes de la suite et préserver les originaux. Un `sourceDiffers`
 à `false` signifie que la source n'a pas changé depuis le lancement ; cela ne
 signifie pas que la copie produite est identique à cette source.
-Un verrou résiduel demande vérification du processus et de l'archive ; il n'est
-pas supprimé automatiquement. Un manifeste `recovery.json` signale des copies,
+Un verrou historique, un mutex ou une lease résiduels demandent vérification du
+processus (PID et heure de création) et de l'archive ; ils ne sont pas supprimés
+automatiquement (voir « Coordination de plusieurs lots »). Après un arrêt de
+maintenance, aucune reprise n'est automatique. Un manifeste `recovery.json` signale des copies,
 pas leur validation ou leur report. Ce qui n'est jamais arrivé du serveur n'est
 pas récupérable ; sauvegarder les dossiers contre une perte de disque.
 

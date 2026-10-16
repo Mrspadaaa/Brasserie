@@ -40,10 +40,22 @@ preuves ou qualité du code. Conserver incertitudes, négations, nombres et unit
 
 ## Contexte, agents et qualité
 
-- Pour une mission coordonnée avec Sol, appliquer `.claude/roles/expert.md` :
-  source unique du rôle, injectée automatiquement par le pont isolé. Ne pas la
-  relire si elle est déjà injectée. Le skill `sol-orchestrator` prépare le
-  transfert ; `docs/claude-expert.md` décrit ses commandes et ses artefacts.
+- Depuis le 2026-10-08, aucun agent OpenAI (Codex, Sol, Astra, Luna, Root) :
+  rien ne leur est transmis. Opus pilote, conçoit, intègre et qualifie ; Haiku
+  (`claude-haiku-5-5`) exécute lectures, recherches, tests, fixtures et captures,
+  et Opus relit ce qu'il produit. Le pont Claude/Sol (`scripts/claude-expert.mjs`,
+  skill `sol-orchestrator`, `.claude/roles/expert.md`, `docs/claude-expert.md`)
+  est caduc ; `node scripts/claude-account.mjs team` reste le lanceur Team.
+- Le moins d'intervention humaine possible : ne pas bloquer sur des questions
+  à l'utilisateur. Trancher selon les documents, le code et ses choix connus
+  (option prudente et réversible par défaut), ou faire trancher par une
+  session arbitre neuve (Opus, ou Fable pour les choix lourds), puis journaliser.
+  Seuls les gestes irréversibles ou externes attendent son accord, regroupés
+  sans bloquer : déploiement, push/PR/merge, données réelles, Gemini facturé
+  en production, suppression, comptes et réglages.
+- Les tickets sont les issues GitHub de `Mrspadaaa/Brasserie`. Les registres de
+  `work/` et les reçus d'anciens agents sont des indices datés : une action en
+  attente attribuée à Sol, Astra, Luna ou au contrôleur revient au pilote Opus.
 
 - Préserver le modèle et l'effort choisis par l'utilisateur. L'économie porte
   sur les répétitions, le contexte inutile et les appels sans résultat utile.
@@ -66,6 +78,19 @@ preuves ou qualité du code. Conserver incertitudes, négations, nombres et unit
 
 ## Vérifications et sorties
 
+- Fini veut dire utilisable : branché dans l'app, atteint par un vrai parcours,
+  typé, testé, build vert. Un reçu, un registre « qualifié », une couche
+  V3/V4/V5.5 ou un test vert ne le prouvent pas. Classer l'existant fini /
+  inachevé récupérable (manque précis) / inutilisable ; finir ou brancher plutôt
+  qu'ajouter une couche parallèle ; ne rien supprimer sans accord.
+- Les tests d'intégration et les validations se font sur un vrai rendu de page
+  dans Chrome (parcours joué, captures regardées), pas seulement avec
+  Vitest/jsdom ou en lisant le code. D'abord en local : fixtures (scripts
+  `puppeteer-core`), puis émulateurs Firebase ; l'app en ligne plus tard, en
+  lecture seule.
+- Gemini jamais dans un test unitaire ni dans `npm test` : toujours simulé.
+  Appels réels seulement dans des tests spéciaux dédiés, lancés explicitement,
+  très limités et journalisés.
 - Utiliser les scripts de package.json selon le risque : `npm test -- <fichier>`,
   `npm run build`, et les contrôles de parcours concernés. Signaler les contrôles
   impossibles et leurs motifs. Une capture non regardée ne valide pas une interface.

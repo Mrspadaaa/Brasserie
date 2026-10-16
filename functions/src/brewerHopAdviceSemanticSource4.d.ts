@@ -1,8 +1,10 @@
 /**
  * Serialized TypeScript boundary for an exact bundled source4 bridge.
  * Runtime readers and builders come only from the frozen public modules via
- * scripts/build-brewerHopAdviceSemanticSource4.mjs; this declaration validates nothing.
+ * scripts/build-brewerHopAdviceSemanticSource4Portable.mjs; this declaration validates nothing.
  */
+import type { BrewerHopAdviceWizardSourceV1 } from './brewerHopAdviceWizardSourceV1.js';
+
 export type HopV55SemanticSenseV1 = 'qualitativeTarget' | 'directedChange' | 'guard' | 'exclusion'
   | 'reportedObservation' | 'investigation' | 'nonDecision' | 'mention';
 export declare const HOP_V55_SEMANTIC_SENSE_RULES: Record<HopV55SemanticSenseV1, {
@@ -188,3 +190,64 @@ export type HopV55DecisionReadingArchiveV4MetadataReadV1 =
   | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
   | { status: 'invalid'; reason: string };
 export declare function readHopV55DecisionReadingArchiveV4MetadataV1(value: unknown): HopV55DecisionReadingArchiveV4MetadataReadV1;
+
+/**
+ * Explicit Wizard V4 profile owned by decisionArchive (owner67): same V4 envelope and contentReference
+ * formula, source slot typed as the Wizard child. The classic aliases/readers above stay classic.
+ */
+export interface HopV55WizardDecisionReadingArchiveV4 {
+  format: 'hop-v55-decision-reading-v4';
+  id: string;
+  ownerKey: string;
+  workspaceId: string;
+  recordedAt: string;
+  reading: HopV55SemanticQuestionReadingV1;
+  source: BrewerHopAdviceWizardSourceV1;
+  runtimeReference: string;
+  scopeLedger?: unknown;
+  transition?: unknown;
+  lineage?: unknown;
+  programPreparation?: unknown;
+  contentReference: string;
+  [key: string]: unknown;
+}
+export interface HopV55WizardDecisionReadingArchiveV4MetadataV1 {
+  archiveIdentity: {
+    archiveFormat: 'hop-v55-decision-reading-v4';
+    id: string;
+    ownerKey: string;
+    workspaceId: string;
+    recordedAt: string;
+    source: BrewerHopAdviceWizardSourceV1;
+    runtimeReference: string;
+    contentReference: string;
+  };
+  semantic: HopV55DecisionReadingArchiveV4SemanticMetadataV1;
+  scopeLedger?: HopV55QuestionScopeLedgerV1;
+  transition?: HopV55QuestionScopeTransitionV1;
+  lineage?: HopV55DecisionReadingArchiveV4['lineage'];
+  programPreparation?: HopV55DecisionReadingArchiveV4['programPreparation'];
+}
+export type HopV55WizardDecisionReadingArchiveReadV1 =
+  | { status: 'available'; archive: HopV55WizardDecisionReadingArchiveV4 }
+  | { status: 'unsupportedFormat'; format: string; raw: unknown }
+  | { status: 'invalidRecord'; reason: string };
+export type HopV55WizardDecisionReadingArchiveMetadataReadV1 =
+  | { status: 'readOnly'; metadata: HopV55WizardDecisionReadingArchiveV4MetadataV1 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+export declare function createHopV55DecisionReadingArchiveV4ForWizardV1(input: {
+  id: string;
+  ownerKey: string;
+  workspaceId: string;
+  recordedAt: string;
+  reading: HopV55SemanticQuestionReadingV1;
+  source: BrewerHopAdviceWizardSourceV1;
+  runtimeReference: string;
+  scopeLedger?: HopV55QuestionScopeLedgerV1;
+  transition?: HopV55QuestionScopeTransitionV1;
+  lineage?: unknown;
+  programPreparation?: unknown;
+}): HopV55WizardDecisionReadingArchiveV4;
+export declare function readHopV55DecisionReadingArchiveForWizardV1(value: unknown): HopV55WizardDecisionReadingArchiveReadV1;
+export declare function readHopV55DecisionReadingArchiveV4MetadataForWizardV1(value: unknown): HopV55WizardDecisionReadingArchiveMetadataReadV1;

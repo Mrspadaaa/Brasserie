@@ -23,6 +23,9 @@ export const GEMINI_SEARCH_COST_POLICY = {
   microChfPerQuery: 17_500 // 14 USD / 1,000 queries × 1.25 CHF/USD
 } as const;
 const MODEL_CONTEXT = 1_048_576;
+/** Every new call goes to gemini-3.8-flash (models.ts), so its cost is quoted at the 3.8 rate.
+ * Older models keep their rates only to read past usage and settlements; none is called anymore.
+ */
 const PRICES: Record<string, { input: number; output: number; largeInput?: number; largeOutput?: number; audioInput?: number }> = {
   'gemini-3.5-flash-lite': { input: 300_000, output: 2_500_000 },
   'gemini-3.1-flash-lite': { input: 250_000, audioInput: 500_000, output: 1_500_000 },
@@ -115,6 +118,8 @@ export interface GeminiObservedCost {
   tokenMicroChf: number;
   searchQueries: number;
   searchMicroChf: number;
+  /** Search was not proven by the response: its full reserved allowance is charged instead. */
+  searchQueriesProvisioned?: true;
 }
 /** This adapter consumes a complete generateContent response, never individual
  * streaming chunks. Missing search metadata is uncertain, including when the
@@ -128,19 +133,24 @@ export function observedGeminiSearchQueries(quote: GeminiCostQuote, response: an
   if (!Array.isArray(queries) || queries.some(query => typeof query !== 'string')) return null;
   return new Set(queries.map(query => query.trim()).filter(Boolean)).size;
 }
+/** Tokens are charged as reported. Unproven Search (#100: a grounded call
+ * without `webSearchQueries`) is charged at its full reserved allowance, never
+ * zero, so the reservation is settled instead of being kept forever. Only
+ * missing token usage leaves the cost unknown (null).
+ */
 export function observedGeminiCostDetails(quote: GeminiCostQuote, response: any): GeminiObservedCost | null {
   const usage = response?.usageMetadata;
   if (!usage || !nonnegative(usage.promptTokenCount) || !nonnegative(usage.candidatesTokenCount) ||
       !nonnegative(usage.thoughtsTokenCount ?? 0) || !nonnegative(usage.totalTokenCount)) return null;
-  const searchQueries = observedGeminiSearchQueries(quote, response);
-  if (searchQueries === null) return null;
+  const proven = observedGeminiSearchQueries(quote, response);
+  const searchQueries = proven ?? quote.searchQueriesReserved;
   const output = Math.max(usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0), usage.totalTokenCount - usage.promptTokenCount);
   // Cached input is deliberately charged at the undiscounted input rate.
   const tokenMicroChf = amount(quote.model, usage.promptTokenCount, output, quote.audioInput);
   const searchMicroChf = searchQueries * GEMINI_SEARCH_COST_POLICY.microChfPerQuery;
   const chargedMicroChf = tokenMicroChf + searchMicroChf;
   if (!Number.isSafeInteger(chargedMicroChf)) return null;
-  return { chargedMicroChf, tokenMicroChf, searchQueries, searchMicroChf };
+  return { chargedMicroChf, tokenMicroChf, searchQueries, searchMicroChf, ...(proven === null ? { searchQueriesProvisioned: true as const } : {}) };
 }
 export function observedGeminiCost(quote: GeminiCostQuote, response: any): number | null {
   return observedGeminiCostDetails(quote, response)?.chargedMicroChf ?? null;

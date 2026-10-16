@@ -33,6 +33,7 @@ import type { HopV55Workspace } from '../../services/hopV55/contracts';
 import { HopV55ExplorationProfileArchive } from './ContextualExploration';
 import { HOP_V55_LEXICAL_NEGATION_PREFIXES, HOP_V55_LEXICAL_RULE_SOURCE } from './contextualExplorationModel';
 import './nuance-explorer.css';
+import { hopV55DoseText } from './readings';
 
 export interface HopV55NuanceExplorerProps {
   prepared: PreparedBrewingScenarioContext;
@@ -1061,9 +1062,11 @@ export function HopV55NuanceExplorer({
             {!candidate.input.additions.length ? <p>Aucun ajout de houblon déclaré.</p> : null}
             {candidate.input.additions.map((addition) => <p key={addition.id} className="hv-nuance__addition">
               <b>{addition.name || 'Ajout sans nom'}</b>
-              {': dose '}{addition.triplet.doseGL == null ? 'inconnue' : numberText(addition.triplet.doseGL) + ' g/L'}
+              {': dose '}{addition.triplet.doseGL == null ? 'inconnue' : hopV55DoseText(addition.triplet.doseGL)}
               {', '}{timingDisplay(addition.triplet.timing)}
-              {addition.triplet.temperatureC == null ? ', température inconnue' : ' à ' + numberText(addition.triplet.temperatureC) + ' °C'}
+              {/* A boil needs no declared temperature: only other moments report it as unknown. */}
+              {addition.triplet.temperatureC == null ? addition.triplet.timing === 'boil' ? '' : ', température inconnue'
+                : ' à ' + numberText(addition.triplet.temperatureC) + '\u00a0°C'}
               {', '}{contactDurationDisplay(addition.triplet.contactHours)}.
             </p>)}
             <details className="hv-nuance__details"><summary>Origine technique de cette variante</summary>

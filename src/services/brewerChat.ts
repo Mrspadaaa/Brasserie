@@ -161,8 +161,6 @@ export function brewerChatError(error: unknown) {
     return 'La conversation a été réinitialisée. Rouvre le compagnon pour repartir à zéro.';
   if (reason === 'proposal-stale')
     return (error as Error).message || 'Les champs ont changé. Demande une proposition actualisée.';
-  if ((error as { details?: { reason?: string } })?.details?.reason === 'pro-unavailable')
-    return 'Le modèle d’analyse est momentanément indisponible. Ta question est conservée ; réessaie dans un instant.';
   const code = String((error as { code?: string })?.code ?? '');
   if (/unauthenticated|permission-denied/.test(code))
     return 'Connecte-toi à la brasserie pour discuter avec le compagnon.';

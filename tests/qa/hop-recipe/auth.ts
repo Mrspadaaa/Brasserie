@@ -1,6 +1,6 @@
 // Adapter for the isolated QA build, never an application authentication route.
 export { app, auth, firebaseConfig } from '../../../src/services/firebase';
-const user = { uid: '__HOP_RECIPE_QA_ONLY__', email: 'qa@localhost', displayName: 'Banc local', photoURL: null };
+const user = { uid: 'qa-hop-recipe-user', email: 'qa@localhost', displayName: 'Banc local', photoURL: null };
 export const AUTHORIZED_ACCOUNTS = ['qa@localhost'];
 export const FirebaseAuthService = {
   onUserChange(cb: (user: any) => void) { const timer = setTimeout(() => cb(user), 0); return () => clearTimeout(timer); },

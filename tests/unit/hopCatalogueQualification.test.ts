@@ -196,7 +196,14 @@ describe('qualification pure des variantes du catalogue houblon', () => {
     const result = qualifyHopCatalogueVariants({ variants: [variant('invalid-source-row', material('variety:cascade', [invalid]))] });
     const group = groupFor(result, 'variety', 'cascade');
 
-    expect(group.observations[0]).toMatchObject({ qualification: 'invalidObservation', raw: invalid, calculationMeasurement: undefined });
+    const observation = group.observations[0];
+    expect(observation.qualification).toBe('invalidObservation');
+    expect(observation.raw).toEqual(invalid);
+    expect(observation.calculationMeasurement).toBeUndefined();
+    expect(Object.prototype.hasOwnProperty.call(observation, 'calculationMeasurement')).toBe(false);
+    expect(observation.modelCandidate).toBeUndefined();
+    expect(Object.prototype.hasOwnProperty.call(observation, 'modelCandidate')).toBe(false);
+    expect(observation.calculationDisposition).toBe('notPassedToCalculationView');
     expect(group.rawVariants[0].material.variety?.analysis[0]).toEqual(invalid);
     expect(group.calculationMaterial?.variety?.analysis).toEqual([]);
     expect(result.modelCandidates).toEqual([]);

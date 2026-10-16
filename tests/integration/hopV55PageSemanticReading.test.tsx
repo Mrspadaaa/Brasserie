@@ -22,12 +22,18 @@ vi.mock('../../src/ui/hopV55/HypothesisEditor', () => ({ HopV55HypothesisEditor:
 vi.mock('../../src/ui/hopV55/BiologicalInputsEditor', () => ({ BiologicalInputsEditor: () => null }));
 vi.mock('../../src/ui/hopV55/SensoryComparison', () => ({ HopV55SensoryComparison: () => null }));
 vi.mock('../../src/ui/hopV55/NuanceExplorer', () => ({ HopV55NuanceExplorer: () => null }));
-vi.mock('../../src/ui/hopV55/PropertyAdviceDecisionV3', () => ({ HopV55PropertyAdviceDecisionV3: () => null }));
+// Off by default: only the documentary-header case below renders the real V3 answer.
+const realV3 = vi.hoisted(() => ({ enabled: false }));
+vi.mock('../../src/ui/hopV55/PropertyAdviceDecisionV3', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../src/ui/hopV55/PropertyAdviceDecisionV3')>();
+  return { HopV55PropertyAdviceDecisionV3: (props: React.ComponentProps<typeof actual.HopV55PropertyAdviceDecisionV3>) =>
+    realV3.enabled ? React.createElement(actual.HopV55PropertyAdviceDecisionV3, props) : null };
+});
 vi.mock('../../src/ui/hopV55/PropertyAdviceDecisionV4', () => ({ HopV55PropertyAdviceDecisionV4: () => null }));
 vi.mock('../../src/ui/hopV55/PropertyAdviceReexaminationPanelV4', () => ({ HopV55PropertyAdviceReexaminationPanelV4: () => null }));
 vi.mock('../../src/ui/hopV55/AssistedAdvicePanel', () => ({ AssistedAdvicePanel: () => null }));
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); realV3.enabled = false; });
 
 const ownerKey = 'fixture:semantic-page-owner';
 const question = 'Je veux garder le floral et ne pas augmenter l’amertume.';
@@ -247,5 +253,91 @@ describe('Page V5.5 — lecture sémantique V4', () => {
     expect(openAssisted).not.toHaveBeenCalled();
     expect(harness.stored()!.assistedAdviceTickets).toBeUndefined();
     expect(harness.stored()!.assistedAdviceRecords).toBeUndefined();
+  });
+});
+
+describe('Page V5.5 — question à quantité décimale dans la vraie Page', () => {
+  it('garde la quantité exacte de la question et n’affiche qu’une fois « Lecture proposée » dans la réponse documentaire', async () => {
+    realV3.enabled = true;
+    const harness = pageHarness();
+    render(<HopV55Page services={harness.services} />);
+    const decimalQuestion = 'Faut-il garder 17,625 g de Cascade · cônes en fermentation à 18 °C pendant 72 h ?';
+    await readQuestionInPage(decimalQuestion);
+    await waitFor(() => expect(harness.stored()?.decisionReadings).toHaveLength(1));
+    const header = (await screen.findByRole('heading', { name: 'Réponse documentaire' })).closest('header')!;
+    const reading = within(header).getByText((_, node) => node?.tagName === 'P' && /^Lecture proposée\s*:/u.test(node.textContent ?? ''));
+    // RED before the display fix: « Lecture proposée : Lecture proposée : Question à examiner : … ».
+    expect(reading.textContent?.match(/Lecture proposée/gu)).toHaveLength(1);
+    expect(reading).toHaveTextContent('17,625 g de Cascade');
+    const tags = screen.getByText('Demande conservée').closest('.hv-intent')!;
+    expect(tags).toHaveTextContent('17,625 g de Cascade · cônes en fermentation à 18 °C pendant 72 h');
+    expect(tags.textContent).not.toMatch(/Cible[^·]*·\s*17(?![,\d])/u);
+  });
+
+  it('garde la quantité d’une consigne comme contexte cité, distinct de la cible sensorielle, dans l’archive et dans la Page', async () => {
+    realV3.enabled = true;
+    const harness = pageHarness();
+    render(<HopV55Page services={harness.services} />);
+    const instruction = 'Je veux garder le floral de la Cascade à 17,625 g.';
+    await readQuestionInPage(instruction);
+    await waitFor(() => expect(harness.stored()?.decisionReadings).toHaveLength(1));
+    const [archive] = availableArchives(harness.stored()!);
+    if (archive.format !== 'hop-v55-decision-reading-v4') throw new Error('Une nouvelle lecture doit être archivée en V4.');
+    expect(archive.reading.annotations).toEqual(expect.arrayContaining([
+      expect.objectContaining({ sense: 'guard', term: 'floral' }),
+      expect.objectContaining({ sense: 'mention', mentionKind: 'contextNote', direction: null, source: expect.objectContaining({ text: '17,625 g' }) }),
+    ]));
+    const tags = (await screen.findByText('Demande conservée')).closest('.hv-intent')!;
+    await waitFor(() => expect(tags).toHaveTextContent('17,625 g'));
+    expect(tags).toHaveTextContent('floral');
+    expect(tags.textContent).not.toMatch(/Cible[^·]*·\s*17/u);
+    // A cited quantity is a context note, not a reported observation: chip and proposed reading say so.
+    expect(within(tags).getByText('Contexte · 17,625 g')).toBeInTheDocument();
+    expect(tags.textContent).not.toMatch(/Constat[^·]*·\s*17,625/u);
+    const header = (await screen.findByRole('heading', { name: 'Réponse documentaire' })).closest('header')!;
+    expect(header).toHaveTextContent('Note de contexte : 17,625 g');
+    expect(header.textContent).not.toMatch(/Constat rapporté : 17,625/u);
+    const answer = header.closest('section')!;
+    expect(answer.textContent).not.toMatch(/Observation rapportée[^·.]*[·:]\s*17,625/u);
+    expect(answer).toHaveTextContent('Note de contexte · 17,625 g');
+  });
+
+  it('garde « Constat » pour un constat sur un sujet de procédé, dans la puce, la lecture et la portée', async () => {
+    realV3.enabled = true;
+    const harness = pageHarness();
+    render(<HopV55Page services={harness.services} />);
+    await readQuestionInPage('J’ai constaté que la dose était trop forte.');
+    await waitFor(() => expect(harness.stored()?.decisionReadings).toHaveLength(1));
+    const tags = (await screen.findByText('Demande conservée')).closest('.hv-intent')!;
+    await waitFor(() => expect(tags).toHaveTextContent('Constat · dose'));
+    expect(tags.textContent).not.toMatch(/Contexte · dose/u);
+    const header = (await screen.findByRole('heading', { name: 'Réponse documentaire' })).closest('header')!;
+    expect(header).toHaveTextContent('Constat rapporté : dose');
+    const answer = header.closest('section')!;
+    expect(answer.textContent).not.toMatch(/Note de contexte/u);
+    expect(answer).toHaveTextContent('Observation rapportée · dose');
+  });
+
+  // Run-7 (V2 Chrome) — a reopened reading shows its own question above its chips, never the dossier's latest question.
+  it('relit une lecture archivée sous sa propre question, distincte de la dernière question du dossier', async () => {
+    realV3.enabled = true;
+    const harness = pageHarness();
+    render(<HopV55Page services={harness.services} />);
+    const first = 'J’ai constaté que la dose était trop forte.';
+    const latest = 'Je veux garder le floral de la Cascade à 17,625 g.';
+    await readQuestionInPage(first);
+    await waitFor(() => expect(harness.stored()?.decisionReadings).toHaveLength(1));
+    await readQuestionInPage(latest);
+    await waitFor(() => expect(harness.stored()?.decisionReadings).toHaveLength(2));
+    await waitFor(() => expect(screen.getByText('Demande conservée').closest('.hv-intent')).toHaveTextContent('Contexte · 17,625 g'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Historique' }));
+    fireEvent.click(screen.getByText(/Lectures et préparations de question · 2/));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Relire cette lecture' })[0]);
+    await screen.findByText('Lecture et préparation exactes rouvertes. Aucun service de lecture ou calcul relancé.');
+    const kept = (await screen.findByText('Demande conservée')).closest('.hv-intent')!;
+    await waitFor(() => expect(kept).toHaveTextContent('Constat · dose'));
+    expect(kept.querySelector('p')).toHaveTextContent(first);
+    expect(kept.textContent).not.toContain(latest);
   });
 });

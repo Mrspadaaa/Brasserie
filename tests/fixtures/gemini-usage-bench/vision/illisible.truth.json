@@ -1,0 +1,75 @@
+{
+  "id": "illisible",
+  "level": "tri : ticket flou et sombre, illisible",
+  "facture": {
+    "vendor": "Droguerie du Pont",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "05.10.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "6602",
+      "Ticket 6602",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 23.96,
+    "tvaRate": 0.081,
+    "tvaAmount": 1.94,
+    "amountTTC": 25.9,
+    "items": [
+      {
+        "name": "Acide citrique 1 kg",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 9.8,
+        "amountTTC": 9.8
+      },
+      {
+        "name": "Percarbonate 1 kg",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 7.9,
+        "amountTTC": 7.9
+      },
+      {
+        "name": "Eponges (5)",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 8.2,
+        "amountTTC": 8.2
+      }
+    ],
+    "unreadable": true
+  },
+  "triage": {
+    "kind": [
+      "unreadable"
+    ],
+    "documentCount": 1,
+    "readable": false,
+    "currencies": [],
+    "route": "refuse"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/illisible.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

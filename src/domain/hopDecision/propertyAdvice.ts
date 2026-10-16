@@ -28,6 +28,19 @@ const isContext = (intent: Intent) => intent.role === 'reportedObservation' || i
 const isAromaPreservationGuard = (intent: Intent) => intent.property === 'aroma'
   && intent.direction === 'keep';
 
+/** Basis written by the V3 semantic preparation for a cited `mention/contextNote`; it must stay identical there. */
+export const HOP_PROPERTY_ADVICE_CONTEXT_NOTE_BASIS = 'Note de contexte citée; ni cible ni mesure n’est déduite.';
+
+/**
+ * A process note cited as context (a quantity such as « 17,625 g », or a process term such as « dry hop »), not an
+ * observation reported by the brasseur. Role and schema are unchanged; only the context-note basis tells it apart, so a
+ * reported process observation (« la dose était trop forte ») stays one. Its label is « Note de contexte »: it claims no quantity.
+ */
+export function isHopProcessContextNoteIntent(intent: { role: string; basis?: string; subject?: { kind: string } | null }): boolean {
+  return intent.role === 'reportedObservation' && intent.subject?.kind === 'process'
+    && typeof intent.basis === 'string' && intent.basis.startsWith(HOP_PROPERTY_ADVICE_CONTEXT_NOTE_BASIS);
+}
+
 /** A pure qualitative comparison. It neither parses the question nor authorizes an operation. */
 export function buildHopPropertyAdvice(request: HopPropertyAdviceRequest,
   corpus: HopDocumentaryCorpus = getHopPropertyAdviceCorpus()): HopPropertyAdviceAnswer {
@@ -133,13 +146,15 @@ function buildPropertyAdvice(request: HopPropertyAdviceRequest | HopPropertyAdvi
     const leads: Record<Intent['role'], string> = { target: 'Objectif', reportedObservation: 'Observation rapportée sur son sujet déclaré',
       measurement: 'Mesure liée aux assertions fournies', investigation: 'Question à examiner, sans effet constaté déduit',
       preference: 'Préférence déclarée', constraint: 'Contrainte déclarée' };
+    const lead = isHopProcessContextNoteIntent(intent)
+      ? 'Note de contexte citée, sans constat ni opération déduits' : leads[intent.role];
     const proposed = intent.interpretationOrigin === 'proposal' ? 'Lecture proposée : ' : '';
     const frame = intent.comparisonBasis.kind === 'qualitativeTarget'
       ? ' Cible qualitative, sans niveau actuel ni valeur numérique déduits.'
       : intent.comparisonBasis.kind === 'current' && !intent.comparisonBasis.assertionIds.length
         ? ' La base actuelle n’est pas qualifiée ; elle ne reçoit aucune valeur par défaut.' : '';
     interpretationArgs.set(intent.id, argument(`intent:${intent.id}`, intent.interpretationOrigin === 'proposal' ? 'proposedReading' : kinds[intent.role],
-      `${proposed}${leads[intent.role]} : ${intentText(intent)}.${frame}`, [intent.id], [], intent.comparisonBasis.assertionIds));
+      `${proposed}${lead} : ${intentText(intent)}.${frame}`, [intent.id], [], intent.comparisonBasis.assertionIds));
   }
 
   function mappedSource(value: unknown) {

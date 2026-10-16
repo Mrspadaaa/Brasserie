@@ -169,82 +169,236 @@
   padding: 4px 6px 8px;
 }
 
-.hop-v55-explorer__map {
-  display: block;
-  height: auto;
+/* Documentary territory: nested zones around a centre (catalogue or chosen family). The inner zone holds the
+   families described in the same loaded sheets; the outer zone holds the others. Place encodes that documentary
+   relation only, never a distance or an intensity. Words and numbers are never broken inside the regions:
+   the host page may inherit `overflow-wrap: anywhere`, so it is reset here with an explicit specificity. */
+.hop-v55-explorer .hop-v55-explorer__map {
+  display: grid;
+  gap: 8px;
   margin: 0 auto;
-  max-height: 310px;
-  max-width: 460px;
-  overflow: visible;
+  max-width: 760px;
+  overflow-wrap: normal;
   width: 100%;
+  word-break: normal;
 }
 
-.hop-v55-explorer__map-hub {
-  fill: #e1e8dd;
-  stroke: #698171;
-  stroke-width: 1.5;
+.hop-v55-explorer .hop-v55-explorer__map-legend {
+  color: var(--hop-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
-.hop-v55-explorer__map-hub-title {
-  fill: var(--hop-forest-dark);
-  font-size: 13px;
-  font-weight: 750;
+.hop-v55-explorer .hop-v55-explorer__map-zone {
+  border-radius: 18px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px;
 }
 
-.hop-v55-explorer__map-hub-caption {
-  fill: var(--hop-muted);
-  font-size: 9px;
+.hop-v55-explorer .hop-v55-explorer__map-zone.is-outer {
+  background: #f4f3ea;
+  border: 1px dashed #b9c3b6;
 }
 
-.hop-v55-explorer__map-link {
-  stroke: #aebcb0;
-  stroke-dasharray: 3 4;
-  stroke-width: 1.3;
+.hop-v55-explorer .hop-v55-explorer__map-zone.is-inner {
+  background: #e9efe5;
+  border: 1.5px solid #8fa592;
 }
 
-.hop-v55-explorer__map-link.is-dashed {
-  stroke: #8d9d90;
-  stroke-dasharray: 2 5;
-}
-
-.hop-v55-explorer__map-node {
-  cursor: pointer;
-}
-
-.hop-v55-explorer__map-dot {
-  fill: #fdfbf3;
-  stroke: var(--hop-forest);
-  stroke-width: 2;
-  transition: fill 120ms ease, stroke-width 120ms ease, transform 120ms ease;
-}
-
-.hop-v55-explorer__map-node:hover .hop-v55-explorer__map-dot,
-.hop-v55-explorer__map-node.is-active .hop-v55-explorer__map-dot {
-  fill: #d9e5d7;
-  stroke-width: 3;
-}
-
-.hop-v55-explorer__map-node.is-unknown .hop-v55-explorer__map-dot {
-  stroke-dasharray: 3 2;
-}
-
-.hop-v55-explorer__map-number {
-  fill: var(--hop-forest-dark);
-  font-size: 12px;
+.hop-v55-explorer .hop-v55-explorer__map-zone-title {
+  color: var(--hop-forest-dark);
+  font-size: 0.74rem;
   font-weight: 800;
-  pointer-events: none;
+  letter-spacing: 0.03em;
+  margin: 0;
+  text-transform: uppercase;
 }
 
-.hop-v55-explorer__map-index {
-  fill: var(--hop-muted);
-  font-size: 8px;
+.hop-v55-explorer .hop-v55-explorer__map-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-empty {
+  color: var(--hop-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-chip,
+.hop-v55-explorer .hop-v55-explorer__map-unknown {
+  align-items: center;
+  background: #fdfbf3;
+  border: 1.5px solid var(--hop-forest);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 40px;
+  min-width: 0;
+  padding: 4px 10px 4px 5px;
+  text-align: left;
+  transition: background-color 120ms ease, border-color 120ms ease;
+  white-space: normal;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-chip.is-linked {
+  border-width: 2px;
+  background: #fffef8;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-chip:hover,
+.hop-v55-explorer .hop-v55-explorer__map-unknown:hover,
+.hop-v55-explorer .hop-v55-explorer__map-unknown.is-active {
+  background: #d9e5d7;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-center {
+  align-items: center;
+  background: #fffdf7;
+  border: 2px solid var(--hop-forest-dark);
+  border-radius: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  justify-content: center;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-center:focus-visible {
+  outline: 3px solid var(--hop-gold);
+  outline-offset: 2px;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-center .hop-v55-explorer__map-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-axis {
+  color: var(--hop-muted);
+  flex-basis: 100%;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-unknown {
+  border-color: #6f6a4e;
+  border-radius: 12px;
+  border-style: dashed;
+  justify-self: stretch;
+}
+
+/* Index and counts are single tokens: they never wrap between digits. */
+.hop-v55-explorer .hop-v55-explorer__map-index {
+  align-items: center;
+  background: var(--hop-forest);
+  border-radius: 999px;
+  color: #fffdf7;
+  display: inline-flex;
+  flex: none;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  height: 26px;
+  justify-content: center;
+  min-width: 26px;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-unknown .hop-v55-explorer__map-index {
+  background: #6f6a4e;
+  border: 1px dashed #fffdf7;
+  font-size: 0.85rem;
+}
+
+/* Names wrap between words only; a word is never cut in the middle. */
+.hop-v55-explorer .hop-v55-explorer__map-name {
+  color: var(--hop-ink);
+  flex: 0 1 auto;
+  font-size: 0.82rem;
   font-weight: 700;
-  pointer-events: none;
+  hyphens: manual;
+  line-height: 1.2;
+  min-width: min-content;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
-.hop-v55-explorer__map-node:focus-visible .hop-v55-explorer__map-dot {
-  stroke: var(--hop-gold);
-  stroke-width: 4;
+.hop-v55-explorer .hop-v55-explorer__map-name small {
+  color: #615b42;
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-tally {
+  align-items: baseline;
+  display: inline-flex;
+  flex: none;
+  gap: 3px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-tally small {
+  color: var(--hop-muted);
+  font-size: 0.68rem;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-count {
+  color: var(--hop-forest-dark);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.hop-v55-explorer .hop-v55-explorer__map-zone-title .hop-v55-explorer__map-count {
+  font-size: inherit;
+}
+
+.hop-v55-explorer .hop-v55-explorer__neighbours {
+  border-top: 1px solid #d7dccf;
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.hop-v55-explorer .hop-v55-explorer__neighbours p {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin: 0 0 6px;
+}
+
+.hop-v55-explorer .hop-v55-explorer__neighbours ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hop-v55-explorer .hop-v55-explorer__neighbours li {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  gap: 4px 8px;
+  justify-content: space-between;
+}
+
+.hop-v55-explorer .hop-v55-explorer__pair-evidence {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
 }
 
 .hop-v55-explorer__map-note,
@@ -482,7 +636,7 @@
   margin: 3px 0 0;
 }
 
-.hop-v55-explorer__select {
+.hop-v55-explorer button.hop-v55-explorer__select[type='button'] {
   background: var(--hop-forest);
   border: 1px solid var(--hop-forest-dark);
   border-radius: 6px;
@@ -494,7 +648,11 @@
   padding: 5px 8px;
 }
 
-.hop-v55-explorer__select.is-selected {
+.hop-v55-explorer button.hop-v55-explorer__select[type='button']:hover {
+  background: var(--hop-forest-dark);
+}
+
+.hop-v55-explorer button.hop-v55-explorer__select[type='button'].is-selected {
   background: #e6eee4;
   color: var(--hop-forest-dark) !important;
 }
@@ -590,11 +748,17 @@
   padding: 12px;
 }
 
+/* Sticky under the Page view bar (.hv-nav, sticky top 0, 43 px measured; same 52 px offset as .hv-question in
+   page.css). The panel never exceeds the visible area above the shell action bar (≈ 53 px + floating button,
+   72 px reserved), so its lower actions such as « Simuler et comparer cet essai » stay reachable by scrolling it. */
 .hop-v55-explorer__crucible {
   background: #e8ede4;
   border-color: #a9b9aa;
   position: sticky;
-  top: 12px;
+  top: 52px;
+  max-height: calc(100dvh - 52px - 72px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .hop-v55-explorer__crucible-heading {
@@ -745,7 +909,8 @@
   padding: 8px 9px;
 }
 
-.hop-v55-explorer__compose {
+/* Scoped to win over page.css `.hop-v55 button` (0,1,1): white on white (1.01:1) and 30 px otherwise. */
+.hop-v55 .hop-v55-explorer__compose {
   background: var(--hop-forest-dark);
   border: 1px solid #173729;
   border-radius: 7px;
@@ -757,7 +922,7 @@
   width: 100%;
 }
 
-.hop-v55-explorer__compose:hover {
+.hop-v55 .hop-v55-explorer__compose:hover {
   background: #315d47;
 }
 
@@ -782,6 +947,8 @@
   .hop-v55-explorer__crucible {
     order: -1;
     position: static;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
@@ -820,7 +987,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hop-v55-explorer__map-dot {
+  .hop-v55-explorer .hop-v55-explorer__map-chip,
+  .hop-v55-explorer .hop-v55-explorer__map-unknown {
     transition: none;
   }
 }

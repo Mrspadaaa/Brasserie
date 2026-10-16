@@ -1,0 +1,108 @@
+{
+  "id": "ticket-etranger",
+  "level": "très compliqué : ticket allemand en EUR, deux taux, paiement converti en CHF",
+  "facture": {
+    "vendor": "Brauhandel Hochrhein",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "03.10.2026",
+    "currency": "EUR",
+    "invoiceNumber": [
+      "20817",
+      "Bon-Nr. 20817",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 49.78,
+    "tvaRate": null,
+    "tvaAmount": 6.19,
+    "amountTTC": 55.97,
+    "items": [
+      {
+        "name": "Weizenmalz 5 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 13.9,
+        "amountTTC": 13.9
+      },
+      {
+        "name": "Hallertauer Tradition 100 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 5.45,
+        "amountTTC": 10.9
+      },
+      {
+        "name": "Hefe WB-06",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 4.29,
+        "amountTTC": 4.29
+      },
+      {
+        "name": "Gaerroehrchen",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 1.95,
+        "amountTTC": 3.9
+      },
+      {
+        "name": "Kronkorken 26 mm 200 St.",
+        "kind": [
+          "packaging",
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 6.99,
+        "amountTTC": 6.99
+      },
+      {
+        "name": "Flaschenbuerste",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 15.99,
+        "amountTTC": 15.99
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "EUR",
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/ticket-etranger.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

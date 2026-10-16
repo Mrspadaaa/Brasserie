@@ -3,10 +3,15 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { prepareBrewingScenarioContext } from '../../src/domain/brewingScenarioContext';
-import { buildHopPropertyAdvice } from '../../src/domain/hopDecision/propertyAdvice';
-import { assertHopPropertyAdviceAnswer, assertHopPropertyAdviceRequest, type HopPropertyAdviceIntent } from '../../src/domain/hopDecision/propertyAdviceSchema';
+import { buildHopPropertyAdvice, buildHopPropertyAdviceV3 } from '../../src/domain/hopDecision/propertyAdvice';
+import { assertHopPropertyAdviceAnswer, assertHopPropertyAdviceRequest, assertHopPropertyAdviceAnswerV3, assertHopPropertyAdviceRequestV3, type HopPropertyAdviceIntent, type HopPropertyAdviceRequestV3 } from '../../src/domain/hopDecision/propertyAdviceSchema';
 import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
-import { readHopV55Question } from '../../src/services/hopV55/decision';
+import { readHopV55Question, type HopV55QuestionReading } from '../../src/services/hopV55/decision';
+import { createHopV55DecisionReadingArchiveV4, readHopV55DecisionReadingArchive } from '../../src/services/hopV55/decisionArchive';
+import { readHopV55QuestionSemanticV1 } from '../../src/services/hopV55/questionSemanticReading';
+import { prepareHopV55PropertyAdviceFromSemanticReadingV1 } from '../../src/services/hopV55/propertyAdviceSemanticPreparationV3';
+import { hopV55ScenarioRuntimeReference } from '../../src/services/hopV55/scenarioCommit';
+import { assertHopPropertyAdviceRequestV3, assertHopPropertyAdviceAnswerV3 } from '../../src/domain/hopDecision/propertyAdviceSchema';
 import { prepareHopV55PropertyAdviceRequestDraft } from '../../src/services/hopV55/propertyAdvicePreparation';
 import type { BrewingScenarioCultureContext } from '../../src/domain/brewingScenario';
 
@@ -131,6 +136,37 @@ function evaluateCase(input: { id: string; text: string; mode?: 'planning'|'ferm
   }
 }
 
+function evaluateSemanticCase(input: { id: string; text: string; mode?: 'planning'|'fermenting'|'unknown'|'unknownCulture'|'nolo'|'sour';
+  culture?: BrewingScenarioCultureContext; candidatePolicy?: HopPropertyAdviceRequestV3['candidatePolicy'] }) {
+  const context = prepareBrewingScenarioContext(makeHopV55FixtureContext(input.mode ?? 'planning'), input.culture ? { culture: input.culture } : undefined);
+  const semantic = readHopV55QuestionSemanticV1(input.text, context);
+  const archive = createHopV55DecisionReadingArchiveV4({ id: `family-reading-v4:${input.id}`,
+    ownerKey: 'owner:property-families-fixture', workspaceId: 'workspace:property-families-fixture',
+    recordedAt: '2026-10-04T10:00:00.000Z', reading: semantic, source: { kind: 'exploration' },
+    runtimeReference: hopV55ScenarioRuntimeReference(context.runtime) });
+  const archived = readHopV55DecisionReadingArchive(archive);
+  if (archived.status !== 'available' || archived.archive.format !== 'hop-v55-decision-reading-v4') {
+    throw new Error(`La fixture ${input.id} doit passer par une archive sémantique V4 relue.`);
+  }
+  try {
+    const draft = prepareHopV55PropertyAdviceFromSemanticReadingV1({ reading: archived.archive.reading, prepared: context,
+      requestId: `families-v3:${input.id}`, ownerKey: 'owner:property-families-fixture',
+      workspaceId: 'workspace:property-families-fixture', sourceReadingReference: archive.contentReference,
+      candidatePolicy: input.candidatePolicy ?? explicitNone });
+    const answer = buildHopPropertyAdviceV3(draft.requestSnapshot);
+    assertHopPropertyAdviceRequestV3(draft.requestSnapshot); assertHopPropertyAdviceAnswerV3(answer);
+    return { id: input.id, question: input.text, reading: archived.archive.reading, archive, requestDraft: draft, answer,
+      routeEvidence: { archiveFormat: archived.archive.format, annotationCount: archived.archive.reading.annotations.length,
+        operationDraftCount: archived.archive.reading.operationDrafts?.length ?? 0,
+        actionKind: archived.archive.reading.response?.actionKind ?? null } };
+  } catch (error) {
+    return { id: input.id, question: input.text, reading: archived.archive.reading, archive,
+      preparationError: error instanceof Error ? error.message : String(error),
+      routeEvidence: { archiveFormat: archived.archive.format, annotationCount: archived.archive.reading.annotations.length,
+        operationDraftCount: archived.archive.reading.operationDrafts?.length ?? 0,
+        actionKind: archived.archive.reading.response?.actionKind ?? null } };
+  }
+}
 function measurementCase(input: { id: string; question: string; field: string; value: number; unit: string;
   metric: HopPropertyAdviceIntent['metric']; property: HopPropertyAdviceIntent['property']; dimension?: 'acidity' | 'other' }) {
   const context = prepareBrewingScenarioContext(makeHopV55FixtureContext('sour'));
@@ -193,7 +229,7 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
         nativeRoute: 'src/ui/hopV55/Page.tsx: propertyAdviceEnabled=false; if activated, route requires criterionDrafts and excludes operationDrafts and understandProducts.' },
       cases, propertyControls: controls, measurements: measurementResults,
     };
-    const outDir = resolve(process.cwd(), 'work/houblons-v55-integration-app-2026-10-02/luna-catalogue-usage/property-families');
+    const outDir = resolve(process.cwd(), 'work/final-fixes-2026-10-04/regression-triage/generated/property-families-v2');
     mkdirSync(outDir, { recursive: true });
     const currentPath = resolve(outDir, 'family-evidence.json');
     const archiveByDigest = (content: Buffer) => {
@@ -216,9 +252,9 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
   });
 
   it('distingue une cible de douceur d’un excès rapporté et conserve la cible qualitative d’amertume légère', () => {
-    const q10 = evaluateCase(originalQuestions[9]);
-    const q11 = evaluateCase(originalQuestions[10]);
-    const q05 = evaluateCase(originalQuestions[4]);
+    const q10 = evaluateSemanticCase(originalQuestions[9]);
+    const q11 = evaluateSemanticCase(originalQuestions[10]);
+    const q05 = evaluateSemanticCase(originalQuestions[4]);
     const pastry = 'requestDraft' in q10 ? q10.requestDraft.requestSnapshot.propertyIntents.find(row => row.property === 'sweetness') : undefined;
     const champagne = 'requestDraft' in q11 ? q11.requestDraft.requestSnapshot.propertyIntents.find(row => row.property === 'sweetness') : undefined;
     const lightBitterness = 'requestDraft' in q11 ? q11.requestDraft.requestSnapshot.propertyIntents.find(row => row.property === 'bitterness') : undefined;
@@ -233,16 +269,16 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
 
   it('refuse de présenter les preuves générées comme couverture des objectifs et relations qui manquent', () => {
     const q03 = evaluateCase(originalQuestions[2]);
-    const q08 = evaluateCase(originalQuestions[7]);
+    const q08 = evaluateSemanticCase(originalQuestions[7]);
     const q08Control = evaluateCase({ ...propertyControls[1], correction: linkedBananaCorrection });
-    const q09 = evaluateCase({ ...originalQuestions[8], mode: 'unknownCulture' });
-    const q10 = evaluateCase(originalQuestions[9]);
-    const q11 = evaluateCase(originalQuestions[10]);
-    const q11Control = evaluateQ11SpellingControl();
+    const q09 = evaluateSemanticCase({ ...originalQuestions[8], mode: 'unknownCulture' });
+    const q10 = evaluateSemanticCase(originalQuestions[9]);
+    const q11 = evaluateSemanticCase(originalQuestions[10]);
+    const q11Control = q11;
     const q10Control = evaluateQ10CompensationControl();
-    const qNolo = evaluateCase(familyQuestions[0]);
+    const qNolo = evaluateSemanticCase(familyQuestions[0]);
     const q07Control = evaluateQ07PropertyControl();
-    const qHouse = evaluateCase({ ...familyQuestions[2], candidatePolicy: missingScope });
+    const qHouse = evaluateSemanticCase({ ...familyQuestions[2], candidatePolicy: missingScope });
     expect.soft('requestDraft' in q03).toBe(false); // Fragment « HyperBoost, Cryo Hops… » sans objectif ni geste formulé.
     const linked = 'requestDraft' in q08Control ? q08Control.requestDraft.requestSnapshot.propertyIntents : [];
     const banana = linked.find(row => row.label.toLocaleLowerCase('fr').includes('banane'));
@@ -293,7 +329,7 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
       .filter(effect => effect.intentId === resinExclusion.id) : [];
     expect.soft(resinExclusion).toMatchObject({ property: 'aroma', role: 'constraint', direction: 'exclude' });
     expect.soft(resinEffects.every(effect => effect.status !== 'hypothesis' && !/apport à examiner/u.test(effect.text))).toBe(true);
-    const sourUnknown = evaluateCase(familyQuestions[1]);
+    const sourUnknown = evaluateSemanticCase(familyQuestions[1]);
     const sourUnknownTexts = 'answer' in sourUnknown ? sourUnknown.answer.strategies.flatMap(row => row.effects.map(effect => effect.text)) : [];
     expect.soft(sourUnknownTexts.some(text => text.includes('conduite d’acidification déclarée'))).toBe(false);
     const house = 'requestDraft' in qHouse ? qHouse.requestDraft.requestSnapshot : undefined;
@@ -307,8 +343,8 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
   });
 
   it('préserve culture unknown/mixed et n’assimile pas acidulé à un pH', () => {
-    const unknown = evaluateCase(familyQuestions[1]);
-    const mixed = evaluateCase(familyQuestions[3]);
+    const unknown = evaluateSemanticCase(familyQuestions[1]);
+    const mixed = evaluateSemanticCase(familyQuestions[3]);
     const unknownRequest = 'requestDraft' in unknown ? unknown.requestDraft.requestSnapshot : undefined;
     const mixedRequest = 'requestDraft' in mixed ? mixed.requestDraft.requestSnapshot : undefined;
     expect(unknownRequest?.context.assertions.find(row => row.id === 'context-culture')).toMatchObject({ state: 'unknown', value: null });
@@ -322,6 +358,16 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
     expect(mixedRequest?.propertyIntents.some(row => row.property === 'bioContribution' && row.role === 'investigation')).toBe(true);
   });
 
+  it('garde le refus V2 pour une cible qualitative obligatoire sans direction', () => {
+    const champagne = evaluateCase(originalQuestions[10]);
+    const nolo = evaluateCase(familyQuestions[0]);
+    expect(champagne).toHaveProperty('preparationError');
+    expect('preparationError' in champagne && champagne.preparationError).toContain('lecture sémantique V4 et son adaptateur PropertyV3 sont requis');
+    expect('requestDraft' in champagne).toBe(false);
+    expect(nolo).toHaveProperty('preparationError');
+    expect('preparationError' in nolo && nolo.preparationError).toContain('lecture sémantique V4 et son adaptateur PropertyV3 sont requis');
+    expect('requestDraft' in nolo).toBe(false);
+  });
   it('qualifie seulement un fait unique compatible pour pH/BU et refuse les métriques incomplètes', () => {
     const results = measurements.map(measurementCase);
     const pH = results[0]; const bu = results[1]; const unsupported = results.slice(2);
@@ -346,7 +392,7 @@ describe('familles de demandes originales traversées par le conseil V2', () => 
   });
 
   it('relie les effets et compromis à toutes les intentions actives sans créer de résultat quantifié', () => {
-    const q11 = evaluateQ11SpellingControl();
+    const q11 = evaluateSemanticCase(originalQuestions[10]);
     if (!('answer' in q11) || !('requestDraft' in q11)) throw new Error('La fixture Q11 n’a pas atteint le builder canonique.');
     const activeIds = q11.requestDraft.requestSnapshot.propertyIntents.filter(row => row.role !== 'reportedObservation' && row.role !== 'measurement')
       .map(row => row.id);

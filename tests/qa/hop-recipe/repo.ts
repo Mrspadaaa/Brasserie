@@ -18,7 +18,7 @@ export class DocumentWriteError extends Error {
 export const isConfirmedWriteRejection=(error:unknown):error is DocumentWriteError=>error instanceof DocumentWriteError&&error.status==='rejected';
 const key = '__HOP_RECIPE_QA_ONLY__';
 let rows: Record<string, Record<string, any>> = JSON.parse(localStorage.getItem(key) || '{}');
-const emptyRows = {};
+const emptyRows: (typeof rows)[string] = {};
 const readCache = new WeakMap<object, any[]>();
 let ready = false, failure: string | null = null;
 const listeners = new Set<() => void>();
