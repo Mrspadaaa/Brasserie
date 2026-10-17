@@ -54,7 +54,7 @@ répond (« Y aller »), ou dit « Non documenté » et ce qui manque.
 
 ## Critique indépendante
 
-Verdict à l'aveugle d'une session Fable 5.1 (, 18.10) : 5 bloquants, tous corrigés. Le principal : un rang chiffré tiré des seuls descripteurs n'était pas crédible pour la stout. L'écran regroupe désormais : en amertume, assez en stock puis alpha ; en arôme, typique (origine citée par le guide BJCP), compatible, hors style.
+Verdict à l'aveugle d'une session Fable 5.1 (`work/refonte-frontend/phase7/ux-verdict-fable.md`, dossier de travail local, 18.10) : 5 bloquants, tous corrigés. Le principal : un rang chiffré tiré des seuls descripteurs n'était pas crédible pour la stout. L'écran regroupe désormais : en amertume, assez en stock puis alpha ; en arôme, typique (origine citée par le guide BJCP), compatible, hors style.
 
 ## Limites connues
 
