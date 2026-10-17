@@ -68,3 +68,6 @@ AUDIT-EAU-BRIEF*.md
 
 # Personal pilot dossier: deployed as a protected server asset, never exported to Git.
 functions/reports/nolo-scenarios-2026.md
+
+# Prototype houblons : données intermédiaires, reconstruites par prototypes/houblons/build-data.mjs
+prototypes/houblons/data.json
