@@ -582,6 +582,9 @@ interface RecipeAutoCompleteProps {
   onHops: (v: HopIngredient[]) => void;
   yeast: YeastSpec;
   onYeast: (v: YeastSpec) => void | RecipeYeastAcceptance;
+  /** Completions this component applies on its own; the parent tells them apart from the brewer's acceptances.
+   * Synchronous only (`() => undefined` refuses an async function). */
+  onAutomatic?: (apply: () => undefined) => void;
   onLearnIngredient?: LearnIngredient;
   stockItems?: StockItem[];
 }
@@ -640,6 +643,7 @@ function IngredientCompletion({
   onHops,
   yeast: originalYeast,
   onYeast,
+  onAutomatic = apply => apply(),
   onLearnIngredient,
   stockItems = EMPTY_STOCK,
   active = true,
@@ -719,9 +723,11 @@ function IngredientCompletion({
     if (reviewScope) return;
     const local = completeFromLocalReferences(fermentables, hops, yeast, stockItems, saved);
     // A step-scoped completion can hydrate only the ingredient being edited.
-    if ((!scope || scope === 'malt') && JSON.stringify(local.fermentables) !== JSON.stringify(fermentables)) onFermentables(local.fermentables);
-    if ((!scope || scope === 'houblon') && JSON.stringify(local.hops) !== JSON.stringify(hops)) onHops(local.hops);
-    if ((!scope || scope === 'levure') && JSON.stringify(local.yeast) !== JSON.stringify(yeast)) onYeast(local.yeast);
+    onAutomatic(() => {
+      if ((!scope || scope === 'malt') && JSON.stringify(local.fermentables) !== JSON.stringify(fermentables)) onFermentables(local.fermentables);
+      if ((!scope || scope === 'houblon') && JSON.stringify(local.hops) !== JSON.stringify(hops)) onHops(local.hops);
+      if ((!scope || scope === 'levure') && JSON.stringify(local.yeast) !== JSON.stringify(yeast)) onYeast(local.yeast);
+    });
   }, [basis, stockItems, saved, reviewScope]);
   useEffect(() => () => { request.current += 1; }, []);
 

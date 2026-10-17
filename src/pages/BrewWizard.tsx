@@ -2,8 +2,7 @@ import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
 import { MaltDetails } from '../ui/MaltDetails';
 import './recipe-wizard.css';
-import React, { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { flushSync } from 'react-dom';
+import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
 import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
 import {
@@ -532,14 +531,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const restoredDraft = initialDraftState.status === 'available' ? initialDraftState.draft : undefined;
   const draftReadOnly = initialDraftState.status === 'readOnly';
   // Accepted documentary sheets belong to the Wizard, not the mounted step.
-  const [candidateSheets, setCandidateSheets] = useState<YeastCandidateSheets>(() => restoredDraft?.candidateSheets ?? {});
+  const [candidateSheets, setCandidateSheetsRaw] = useState<YeastCandidateSheets>(() => restoredDraft?.candidateSheets ?? {});
   const candidateSheetsRef = useRef(candidateSheets);
   candidateSheetsRef.current = candidateSheets;
   const [candidateSheetsWarning, setCandidateSheetsWarning] = useState(restoredDraft?.candidateSheetsReadWarning);
   const [yeastChange, setYeastChange] = useState<YeastChoiceChange>();
   const base = restoredDraft?.recipe ?? seed?.recipe;
   const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
-  const [details, setDetails] = useState<Partial<Recipe>>(restoredDraft?.details ?? base ?? {});
+  const [details, setDetailsRaw] = useState<Partial<Recipe>>(restoredDraft?.details ?? base ?? {});
   const configuredBrewhouse = useMemo(() => {
     const profile=config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
     return profile ? currentInstallation(profile) : undefined;
@@ -590,10 +589,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [importing, setImporting] = useState(false);
 
   // --- Étape 1 : identité ---------------------------------------------------
-  const [name, setName] = useState(base?.name ?? seed?.title ?? '');
-  const [style, setStyle] = useState(base?.style ?? '');
+  const [name, setNameRaw] = useState(base?.name ?? seed?.title ?? '');
+  const [style, setStyleRaw] = useState(base?.style ?? '');
   const matchingStyles = useMemo(() => matchBrewingStyles(style, styles), [style, styles]);
-  const [volumeL, setVolumeL] = useState(base?.volumeL ?? defaultBrewVolume(brewhouse));
+  const [volumeL, setVolumeLRaw] = useState(base?.volumeL ?? defaultBrewVolume(brewhouse));
   const [equipmentNotice,setEquipmentNotice]=useState('');
   /**
    * Carbonatation visée, en volumes de CO2.
@@ -601,12 +600,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * Lue à l’import (« force carbonate to 2.5 volumes ») : c’est une consigne
    * chiffrée du procédé, qui se perdait dans le texte libre.
    */
-  const [carboTarget, setCarboTarget] = useState<string>(base?.carboTarget ?? '');
-  const [brewDate, setBrewDate] = useState(base?.brewDate ?? '');
-  const [boilMin, setBoilMin] = useState(base?.boilMin ?? 60);
+  const [carboTarget, setCarboTargetRaw] = useState<string>(base?.carboTarget ?? '');
+  const [brewDate, setBrewDateRaw] = useState(base?.brewDate ?? '');
+  const [boilMin, setBoilMinRaw] = useState(base?.boilMin ?? 60);
 
   // --- Étape 2 : fermentescibles -------------------------------------------
-  const [fermentables, setFermentables] = useState<Fermentable[]>(
+  const [fermentables, setFermentablesRaw] = useState<Fermentable[]>(
     () => base?.fermentables ?? (base?.malts ?? []).map(asGrain)
   );
   const [addKind, setAddKind] = useState<FermentableKind>('grain');
@@ -635,28 +634,28 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   }, [focusHop]);
 
   // --- Étape 3 : houblons ---------------------------------------------------
-  const [hops, setHops] = useState<HopIngredient[]>(base?.hops ?? []);
+  const [hops, setHopsRaw] = useState<HopIngredient[]>(base?.hops ?? []);
   const [hopStage, setHopStage] = useState<HopStage>('boil');
 
   // --- Étape 4 : levure -----------------------------------------------------
-  const [yeast, setYeast] = useState<YeastSpec>(
+  const [yeast, setYeastRaw] = useState<YeastSpec>(
     base?.yeast ?? { name: '' }
   );
 
   // --- Étape 5 : paliers et fermentation ------------------------------------
-  const [mashSteps, setMashSteps] = useState<TempStep[]>(
+  const [mashSteps, setMashStepsRaw] = useState<TempStep[]>(
     () => base?.mash?.steps ?? mashProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
   );
-  const [spargeType, setSpargeType] = useState<'fly' | 'batch' | 'none'>(
+  const [spargeType, setSpargeTypeRaw] = useState<'fly' | 'batch' | 'none'>(
     base?.mash?.spargeType ?? 'batch'
   );
-  const [ferment, setFerment] = useState<FermentationStep[]>(
+  const [ferment, setFermentRaw] = useState<FermentationStep[]>(
     () => base?.fermentation ?? fermentProgramForStyle(base?.style ?? '',base?.styleRef,styles).steps
   );
 
   // --- Étape 6 : eau et sels ------------------------------------------------
   // Only a snapshot naming the plan's own reference is its analysis (a legacy plan without reference keeps its snapshot).
-  const [recipeWaterSource, setRecipeWaterSource] = useState<WaterSource | undefined>(() => frozenWaterSource(base?.waterPlan));
+  const [recipeWaterSource, setRecipeWaterSourceRaw] = useState<WaterSource | undefined>(() => frozenWaterSource(base?.waterPlan));
   // The plan names its analysis exactly: a declared value, blank included, is never read as an omission. The
   // built-in default is found by its identity, like any configured source; a blank identifier resolves nothing.
   const waterReferencePlan = declaredWaterSourceId(details.waterPlan) !== undefined ? details.waterPlan : base?.waterPlan;
@@ -679,7 +678,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // blank reference, and only an explicit gesture replaces it. A declared blank reference never resolves to it.
   const anonymousWaterAnalysis = !!recipeWaterSource && !hasUsableWaterIdentity(recipeWaterSource);
 
-  const [waterDraft, setWater] = useState<WaterState>(() => restoredDraft?.water ?? ({
+  const [waterDraft, setWaterRaw] = useState<WaterState>(() => restoredDraft?.water ?? ({
     roLimitL: base?.waterPlan?.roLimitL,
     autoTreatment: base?.waterPlan?.autoTreatment,
     saltOverrides: base?.waterPlan?.saltOverrides,
@@ -760,7 +759,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * malt, changer le volume ou passer en BIAB laissait des volumes périmés — et
    * comme les sels se dosent au litre, des doses fausses.
    */
-  const [volumesEdited, setVolumesEdited] = useState(
+  const [volumesEdited, setVolumesEditedRaw] = useState(
     () => restoredDraft?.volumesEdited ?? base?.installation?.manualWaterSplit ?? (base?.waterPlan?.mashWaterL ?? 0) > 0
   );
 
@@ -773,12 +772,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    * laisser hors d'atteinte, c'était figer le volume de rinçage sur une valeur
    * que le brasseur ne reconnaissait pas.
    */
-  const [mashRatioOverride, setMashRatioOverride] = useState<number | null>(
+  const [mashRatioOverride, setMashRatioOverrideRaw] = useState<number | null>(
     restoredDraft ? restoredDraft.mashRatioOverride : base?.nolo?.planning?.simulation ? null :
       base?.installation?.manualWaterSplit === false ? null : base?.mash?.ratioLPerKg ?? null
   );
 
-  const [notes, setNotes] = useState(base?.instructions ?? seed?.description ?? '');
+  const [notes, setNotesRaw] = useState(base?.instructions ?? seed?.description ?? '');
 
   // --- Calculs en direct ----------------------------------------------------
 
@@ -793,7 +792,47 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // Preserve the author's stated targets until the recipe they describe changes.
   const fermentationProcess = details.yeastDesign?.process ?? 'unspecified';
   const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency, fermentationProcess]);
-  const [targetBasis, setTargetBasis] = useState(restoredDraft?.targetBasis ?? metricKey);
+  const [targetBasis, setTargetBasisRaw] = useState(restoredDraft?.targetBasis ?? metricKey);
+  /*
+   * #97 (ARB-97): a change of the brewer is any write to the recipe state above outside `applyAutomatic`. Each one
+   * counts in `brewerEdits`, set in the same call as its value and so rendered in the same commit: no clock, no
+   * gesture window. The raw setters are referenced only by their wrappers below.
+   */
+  const automatic = useRef(0);
+  const [brewerEdits, setBrewerEdits] = useState(0);
+  // The same count at once, rendered or not: whether the brewer wrote anything since a save started.
+  const brewerWrites = useRef(0);
+  /** Runs writes that do not come from the brewer (derived settings, local completions): they move the comparison
+   * baseline instead of creating the draft. Synchronous only: `() => undefined` refuses an async function, whose
+   * writes after an await would count as the brewer's. */
+  const applyAutomatic = useCallback((apply: () => undefined) => {
+    automatic.current += 1;
+    try { apply(); } finally { automatic.current -= 1; }
+  }, []);
+  const brewerSetter = useCallback(<T,>(set: Dispatch<SetStateAction<T>>) => (value: SetStateAction<T>) => {
+    if (automatic.current === 0) { brewerWrites.current += 1; setBrewerEdits(edits => edits + 1); }
+    set(value);
+  }, []);
+  const setCandidateSheets = useMemo(() => brewerSetter(setCandidateSheetsRaw), [brewerSetter]);
+  const setDetails = useMemo(() => brewerSetter(setDetailsRaw), [brewerSetter]);
+  const setName = useMemo(() => brewerSetter(setNameRaw), [brewerSetter]);
+  const setStyle = useMemo(() => brewerSetter(setStyleRaw), [brewerSetter]);
+  const setVolumeL = useMemo(() => brewerSetter(setVolumeLRaw), [brewerSetter]);
+  const setCarboTarget = useMemo(() => brewerSetter(setCarboTargetRaw), [brewerSetter]);
+  const setBrewDate = useMemo(() => brewerSetter(setBrewDateRaw), [brewerSetter]);
+  const setBoilMin = useMemo(() => brewerSetter(setBoilMinRaw), [brewerSetter]);
+  const setFermentables = useMemo(() => brewerSetter(setFermentablesRaw), [brewerSetter]);
+  const setHops = useMemo(() => brewerSetter(setHopsRaw), [brewerSetter]);
+  const setYeast = useMemo(() => brewerSetter(setYeastRaw), [brewerSetter]);
+  const setMashSteps = useMemo(() => brewerSetter(setMashStepsRaw), [brewerSetter]);
+  const setSpargeType = useMemo(() => brewerSetter(setSpargeTypeRaw), [brewerSetter]);
+  const setFerment = useMemo(() => brewerSetter(setFermentRaw), [brewerSetter]);
+  const setRecipeWaterSource = useMemo(() => brewerSetter(setRecipeWaterSourceRaw), [brewerSetter]);
+  const setWater = useMemo(() => brewerSetter(setWaterRaw), [brewerSetter]);
+  const setVolumesEdited = useMemo(() => brewerSetter(setVolumesEditedRaw), [brewerSetter]);
+  const setMashRatioOverride = useMemo(() => brewerSetter(setMashRatioOverrideRaw), [brewerSetter]);
+  const setNotes = useMemo(() => brewerSetter(setNotesRaw), [brewerSetter]);
+  const setTargetBasis = useMemo(() => brewerSetter(setTargetBasisRaw), [brewerSetter]);
   // Yeast/process changes can invalidate fermentation estimates, never a supplied OG or IBU.
   let originalMetricInputs: unknown[] = [];
   try { const parsed = JSON.parse(targetBasis); if (Array.isArray(parsed)) originalMetricInputs = parsed; } catch { /* Old malformed drafts have no retained targets. */ }
@@ -882,11 +921,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       boilMin,
       kettleHopG
     );
-    setWater((w) =>
-      w.mashWaterL === v.mashWaterL && w.spargeWaterL === v.spargeWaterL
-        ? w
-        : { ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }
-    );
+    // Automatic setting of the water volumes: never a change of the brewer.
+    applyAutomatic(() => {
+      setWater((w) =>
+        w.mashWaterL === v.mashWaterL && w.spargeWaterL === v.spargeWaterL
+          ? w
+          : { ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }
+      );
+    });
   }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited,details.nolo?.process]);
 
   /**
@@ -1717,79 +1759,24 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     return () => cancelAnimationFrame(frame);
   }, [focusIssue, step]);
 
+  // Each recipe state read here is written through a `brewerSetter` wrapper: a state added with a bare setter would
+  // escape `brewerEdits`, and the brewer's change to it would only move the baseline (#97, D8). Props, stored knowledge
+  // and `serverBase` have no setter here and follow the baseline by design.
   const wizardDraftSnapshot: RecipeWizardDraft = { recipe: { ...build(), name, style }, details, step, water: waterDraft,
     volumesEdited, waterProfileAuto: waterProfileMode.current === 'style', targetBasis, mashRatioOverride, candidateSheets,
     ...(serverBase ? { serverBase } : {}) };
   const serializedDraft = serializeRecipeDraft(wizardDraftSnapshot);
   /*
-   * Opening or moving between steps creates no draft (#97, D7): only a change rendered during one of the
-   * brewer's gestures in the content does. A gesture lasts from pointerdown to pointerup (hold, drag), from
-   * keydown to keyup (arrows, key repeat), or the time of a click, input or change event, plus the render it
-   * triggers (two microtasks: React flushes a discrete update in a microtask queued by the handler). A decision
-   * applied after an answer arrives is marked as its own gesture (`applyBrewerDecision`). Changes
-   * rendered outside a gesture — derived values settling after opening, completions from local references in a
-   * later effect — move the comparison baseline instead, even after a touch. Once a real change exists, the draft
-   * holds the whole state. The step is left out of the comparison and is kept up to date once a draft exists.
+   * Opening or moving between steps creates no draft (#97, D8): only a change of the brewer does, that is a write to
+   * the recipe state outside `applyAutomatic` (`brewerEdits` changes in the same commit). Writes under
+   * `applyAutomatic` — derived values settling after opening, completions from local references — and stored
+   * knowledge refreshed without a setter move the comparison baseline instead, even after a touch. Once a real change
+   * exists, the draft holds the whole state. The step is left out of the comparison and is kept up to date once a
+   * draft exists.
    */
   const firstStep = useRef(step);
   const contentBaseline = useRef<string | undefined>(undefined);
   const contentChanged = useRef(false);
-  // `closed`: a step change ends the gesture that caused it; what the new step then settles on its own (completions
-  // flushed right after a discrete event) is automatic. Any new gesture event reopens it.
-  const gesture = useRef({ pointer: false, key: false, pending: 0, closed: false });
-  const committedStep = useRef(step);
-  const inGesture = () => !gesture.current.closed
-    && (gesture.current.pointer || gesture.current.key || gesture.current.pending > 0);
-  const holdUntilRendered = () => {
-    gesture.current.closed = false;
-    gesture.current.pending += 1;
-    queueMicrotask(() => queueMicrotask(() => { gesture.current.pending -= 1; }));
-  };
-  const startsGesture = (event: React.SyntheticEvent) =>
-    !(event.target instanceof Element && event.target.closest('.recipe-step-actions, summary'));
-  const gestureHandlers = {
-    onPointerDownCapture: (event: React.PointerEvent) => {
-      if (startsGesture(event)) { gesture.current.closed = false; gesture.current.pointer = true; }
-    },
-    // Tab and Escape only move focus or close a list, never change content by themselves. Enter acts at once, like a
-    // click (a list option of the style and ingredient pickers is chosen on its keydown, a button fires on it): its
-    // window is the render it triggers, not the time the key stays down, so a step it opens settles outside it.
-    onKeyDownCapture: (event: React.KeyboardEvent) => {
-      if (!startsGesture(event) || ['Tab', 'Escape', 'Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return;
-      if (event.key === 'Enter') holdUntilRendered();
-      else { gesture.current.closed = false; gesture.current.key = true; }
-    },
-    onClickCapture: (event: React.MouseEvent) => { if (startsGesture(event)) holdUntilRendered(); },
-    onInputCapture: (event: React.FormEvent) => { if (startsGesture(event)) holdUntilRendered(); },
-    onChangeCapture: (event: React.FormEvent) => { if (startsGesture(event)) holdUntilRendered(); },
-  };
-  /*
-   * A brewer's decision that lands once an answer arrives (a companion proposal validated, a reference associated
-   * after its lookup) comes after its gesture has ended: it is rendered at once, inside a gesture of its own.
-   */
-  const applyBrewerDecision = (apply: () => void) => {
-    gesture.current.closed = false;
-    gesture.current.pending += 1;
-    try { flushSync(apply); } finally { gesture.current.pending -= 1; }
-  };
-  useEffect(() => {
-    const current = gesture.current;
-    const releasePointer = () => { if (current.pointer) { current.pointer = false; holdUntilRendered(); } };
-    const releaseKey = () => { if (current.key) { current.key = false; holdUntilRendered(); } };
-    window.addEventListener('pointerup', releasePointer, true);
-    window.addEventListener('pointercancel', releasePointer, true);
-    window.addEventListener('keyup', releaseKey, true);
-    window.addEventListener('blur', releaseKey);
-    window.addEventListener('blur', releasePointer);
-    return () => {
-      window.removeEventListener('pointerup', releasePointer, true);
-      window.removeEventListener('pointercancel', releasePointer, true);
-      window.removeEventListener('keyup', releaseKey, true);
-      window.removeEventListener('blur', releaseKey);
-      window.removeEventListener('blur', releasePointer);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- the gesture state lives in a ref
-  }, []);
   const latestDraft = useRef(serializedDraft);
   latestDraft.current = serializedDraft;
   const latestWizardDraft = useRef(wizardDraftSnapshot);
@@ -1929,22 +1916,28 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     return applyFermentationRecipe(next, 'levure', false, intent === 'pitching');
   };
 
-  /** Attributes the content committed now: the brewer's change during a gesture, otherwise a new automatic baseline. */
+  /** Attributes the content committed now: the brewer's change if `brewerEdits` moved in this commit, otherwise a new
+   * automatic baseline. */
+  const seenEdits = useRef(brewerEdits);
   const attributeContent = () => {
+    const brewer = brewerEdits !== seenEdits.current;
+    seenEdits.current = brewerEdits;
     if (restoredDraft || contentChanged.current) return;
     const draft = latestWizardDraft.current;
     const content = draft.step === firstStep.current ? latestDraft.current : serializeRecipeDraft({ ...draft, step: firstStep.current });
-    if (contentBaseline.current === undefined || !inGesture()) contentBaseline.current = content;
+    if (contentBaseline.current === undefined || !brewer) contentBaseline.current = content;
     else if (content !== contentBaseline.current) contentChanged.current = true;
-    if (draft.step !== committedStep.current) { committedStep.current = draft.step; gesture.current.closed = true; }
   };
-  // Layout effect: runs in the commit of the gesture's own render, before the write effect below reads the result.
-  useLayoutEffect(attributeContent, [serializedDraft, restoredDraft]);
+  // Layout effect: runs in the commit of the change, before the write effect below reads the result.
+  useLayoutEffect(attributeContent, [serializedDraft, restoredDraft, brewerEdits]);
+  /** The draft this editor last wrote: a save may clear it even if settings applied automatically changed it since. */
+  const lastWrittenDraft = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (draftReadOnly || !draftKey || draftFinished.current || (!restoredDraft && !contentChanged.current)) return;
     try {
       writeRecipeDraft(draftKey, serializedDraft);
+      lastWrittenDraft.current = serializedDraft;
       setDraftNotice(restoredDraft ? 'Brouillon repris sur cet appareil.' : 'Brouillon conservé sur cet appareil.');
       setDraftAside(false);
       setDraftError('');
@@ -1954,10 +1947,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   useEffect(() => {
     if (draftReadOnly || !draftKey) return;
     const flush = () => {
-      // A hold or drag still in progress when the page is hidden keeps its change.
-      if (!restoredDraft && !contentChanged.current && inGesture()) attributeContent();
       if (draftFinished.current || (!restoredDraft && !contentChanged.current)) return;
-      try { writeRecipeDraft(draftKey, latestDraft.current); } catch { /* The active editor displays the storage error. */ }
+      try { writeRecipeDraft(draftKey, latestDraft.current); lastWrittenDraft.current = latestDraft.current; } catch { /* The active editor displays the storage error. */ }
     };
     window.addEventListener('pagehide', flush);
     return () => { window.removeEventListener('pagehide', flush); flush(); };
@@ -1980,12 +1971,21 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     if (saveError && saveError === writeError) onDismissWriteError?.();
     setSaveError('');
     const submittedDraft = latestDraft.current;
+    // The brewer's writes already rendered: one called before the click but rendered after it is not in the saved
+    // recipe, and keeps its draft.
+    const writesAtSubmit = seenEdits.current;
     const finish = () => {
-      draftFinished.current = latestDraft.current === submittedDraft;
+      // Settings applied automatically while saving (completions, props renewed by the App) do not keep the draft; a
+      // change of the brewer since the click, or not rendered yet, does (#97, D8).
+      const automaticOnly = brewerWrites.current === writesAtSubmit;
+      const rendered = brewerWrites.current === seenEdits.current;
+      draftFinished.current = automaticOnly || rendered && latestDraft.current === submittedDraft;
       try {
-        const currentDraft = readRecipeDraft(draftKey);
-        // An older editor must never erase changes made after reopening this draft.
-        if (currentDraft && serializeRecipeDraft(currentDraft) === submittedDraft) clearRecipeDraft(draftKey);
+        const stored = readRecipeDraft(draftKey);
+        const storedDraft = stored && serializeRecipeDraft(stored);
+        // An older editor must never erase changes made after reopening this draft: only what this editor submitted,
+        // or then wrote on its own, is cleared.
+        if (storedDraft && (storedDraft === submittedDraft || automaticOnly && storedDraft === lastWrittenDraft.current)) clearRecipeDraft(draftKey);
       } catch { /* The recipe itself was saved successfully. */ }
       setSaving(false);
     };
@@ -2096,8 +2096,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         <p className="text-sm text-cave-200">Ce brouillon utilise un format plus récent ou illisible. Son contenu reste conservé ; aucune modification, application ou sauvegarde ne le remplace.</p>
         {initialDraftState.status === 'readOnly' && 'raw' in initialDraftState && initialDraftState.raw ? <details className="mt-2"><summary className="text-xs">Lire le contenu conservé</summary><pre className="mt-2 whitespace-pre-wrap break-all text-xs">{initialDraftState.raw}</pre></details> : null}
         <button type="button" onClick={onClose} className="mt-2 text-xs underline">Revenir aux recettes</button>
-      </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3"
-        {...gestureHandlers}>
+      </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
       {(draftNotice || draftError) && draftKey && <div className="recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-xs text-cave-400">
         <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>
         {draftAside ? null : !discarding ? <button type="button" aria-label="Abandonner le brouillon" onClick={() => setDiscarding(true)} className="text-cave-200 underline underline-offset-2">Abandonner</button>
@@ -2159,7 +2158,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       )}
 
       {!localOnly && <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
-        onDraftApply={value => applyBrewerDecision(() => {
+        onDraftApply={value => {
           // The companion receives only its authorized context fields. Preserve
           // local metadata (including the brew date), without restoring fields
           // explicitly removed from the server-owned part of the recipe.
@@ -2167,12 +2166,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           const next = { ...localFields, ...value };
           applyImport({...next, mashSteps:next.mash?.steps ?? [], present:Object.keys(next), complete:true} as ImportedRecipe, next);
           setStep(step);
-        })} />}
+        }} />}
       {/* ---------------------------------------------------- ÉTAPE 1 */}
         {['fermentescibles', 'recap'].includes(step)&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
           scope={step === 'fermentescibles' ? 'malt' : undefined}
           onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
-          hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast}/></Suspense>}
+          hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} onAutomatic={applyAutomatic}/></Suspense>}
       {step === 'identite' && (
         <>
           {/*
@@ -2454,7 +2453,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               recipe={build()}
               onChange={addHop}
               onBusyChange={setHopGuideBusy}
-              onReference={variety => applyBrewerDecision(() => addHop(variety.name, undefined, variety))}
+              onReference={variety => addHop(variety.name, undefined, variety)}
               onCreate={(n) => {
                 const created = onCreateStockItem(n, 'Houblon', 'g');
                 addHop(created.name, created);
@@ -2684,7 +2683,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des fiches de houblon…</p>}>
               <RecipeAutoComplete active nolo={details.nolo?.enabled} scope="houblon"
                 onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
-                hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} />
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} onAutomatic={applyAutomatic} />
             </Suspense>
             <details className="recipe-hop-context border-t border-cave-700 pt-2" open={hopContextOpen} onToggle={e => setHopContextOpen(e.currentTarget.open)}>
               <summary className="cursor-pointer min-h-touch text-water" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>Lots, COA et conditions de contact</summary>
@@ -2694,11 +2693,11 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                   recipe={build()}
                   onBusyChange={setHopGuideBusy}
                   onChooseYeast={() => setStep('levure')}
-                  onChange={next => applyBrewerDecision(() => {
+                  onChange={next => {
                     setHops(next.hops);
                     setYeast(next.yeast);
                     setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
-                  })}
+                  }}
                 />
               </Suspense>}
             </details>

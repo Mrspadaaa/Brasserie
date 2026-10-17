@@ -385,3 +385,34 @@ describe('Compléter les données manquantes avec l’IA', () => {
     expect(screen.getByText(/à saisir à la main/i)).toBeInTheDocument();
   });
 });
+
+// #97 (ARB-97) : le créateur distingue un complément appliqué seul d'une acceptation du brasseur.
+it('le complément local passe par onAutomatic, le clic « Reprendre ces valeurs » non', async () => {
+  run.mockResolvedValue(FICHE({ colorEbc: 6, potentialPpg: 38 }));
+  let automatic = false;
+  const calls: { kind: string; automatic: boolean }[] = [];
+  const onAutomatic = vi.fn((apply: () => void) => { automatic = true; try { apply(); } finally { automatic = false; } });
+  const vu: { f: Fermentable[]; h: HopIngredient[] } = { f: [], h: [] };
+  const stock: any[] = [{ id: 'doc-a', ref: 'H-A', name: 'Cascade', category: 'Houblon', unit: 'g', currentStock: 30, minStock: 0, reorder: false, alphaPct: 6 }];
+  const Hote: React.FC = () => {
+    const [f, setF] = useState<Fermentable[]>([GRAIN_SANS_COULEUR]);
+    const [h, setH] = useState<HopIngredient[]>([{ name: 'Cascade', stockItemRef: 'H-A', weightG: 10, alpha: 0, stage: 'boil', timeMin: 15 }]);
+    const [y, setY] = useState<YeastSpec>({ name: '', form: 'sèche', qty: 1, unit: 'sachet' });
+    vu.f = f; vu.h = h;
+    return <RecipeAutoComplete onAutomatic={onAutomatic} stockItems={stock}
+      fermentables={f} onFermentables={v => { calls.push({ kind: 'malt', automatic }); setF(v); }}
+      hops={h} onHops={v => { calls.push({ kind: 'houblon', automatic }); setH(v); }}
+      yeast={y} onYeast={v => { calls.push({ kind: 'levure', automatic }); setY(v); }} />;
+  };
+  render(<Hote />);
+  await waitFor(() => expect(vu.h[0].alpha).toBe(6));
+  expect(onAutomatic).toHaveBeenCalled();
+  expect(calls).toContainEqual({ kind: 'houblon', automatic: true });
+  expect(calls.every(call => call.automatic)).toBe(true);
+  calls.length = 0;
+  fireEvent.click(screen.getByRole('button', { name: /Compléter les données/ }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Reprendre ces valeurs' }));
+  expect(vu.f[0]).toMatchObject({ colorEbc: 6, potentialPpg: 38 });
+  // The brewer's acceptance writes first, outside onAutomatic; a later local completion may follow it.
+  expect(calls.slice(0, 2)).toEqual([{ kind: 'malt', automatic: false }, { kind: 'houblon', automatic: false }]);
+});

@@ -25,6 +25,7 @@
  *           --chains (ajoute les chaînes d'agents)  --temperature prod|omit  --out <dossier>
  *           --cells usage/variante/modèle/réflexion[/cas+cas],…  (cellules explicites ; modèle 3.8, lite ou chaîne)
  *           --launch Rn  (requis en réel sous H9 : colonne « Lancement » de la section #91 du journal)
+ *           --cases-file a.json[,b.json]  (cas lus dans ces fichiers au lieu des fixtures ; chemins d'images relatifs au dossier courant)
  * Vision et agents (AI07-B) : variante `lecture` (une lecture du justificatif), chaînes `lite>controle-3.8` et
  * `triage-lite>3.8` (prototypes de banc), usage `triage` ; images et vérités dans tests/fixtures/gemini-usage-bench/vision/.
  *
@@ -1639,10 +1640,14 @@ function parseArgs(argv: string[]) {
   if (argv.includes('--h9') && argv.includes('--h12')) throw new BenchRefusal('--h9 et --h12 sont exclusives. Aucun appel.');
   const budget = value('--budget');
   if (budget !== undefined && !(/^\d+$/.test(budget) && Number(budget) >= 1 && Number(budget) <= 60)) throw new BenchRefusal('--budget : entier de 1 à 60 appels. Aucun appel.');
+  // Sans chemin, les fixtures par défaut seraient lues en silence à la place du fichier voulu.
+  const casesFile = value('--cases-file');
+  if (argv.includes('--cases-file') && (!casesFile || casesFile.startsWith('--'))) throw new BenchRefusal('--cases-file : chemin du fichier de cas manquant. Aucun appel.');
   return {
     simulate: argv.includes('--simulate'), estimate: argv.includes('--estimate'), listCriteria: argv.includes('--list-criteria'), drift: argv.includes('--drift'),
     envelope: argv.includes('--h12') ? 'H12' as const : argv.includes('--h9') ? 'H9' as const : undefined,
     out: value('--out'), temperature: temperature as 'prod' | 'omit', launch, budget: value('--budget') === undefined ? undefined : Number(value('--budget')),
+    casesFiles: casesFile ? list('--cases-file', []) : undefined,
     plan: { usages: list('--usages', USAGES.map(usage => usage.id)), cases: value('--cases') ? list('--cases', []) : undefined, models, thinking, repeat,
       chains: argv.includes('--chains'), cells: value('--cells') ? list('--cells', []).map(parseCell) : undefined } as PlanOptions
   };
@@ -1661,7 +1666,7 @@ async function main() {
     return drift.length ? 1 : 0;
   }
   if (drift.length) throw new BenchRefusal(`Le banc ne reflète plus la production (${drift.length} repère(s) absent(s), ex. « ${drift[0]} »). Mettre le banc à jour. Aucun appel.`);
-  const plan = buildPlan(args.plan);
+  const plan = buildPlan(args.plan, args.casesFiles ? loadCases(args.casesFiles) : undefined);
   if (!plan.runs.length) throw new BenchRefusal('Plan vide. Aucun appel.');
   // Budget du lancement : le plan au pire est tronqué ; un tour ne part ensuite que s'il tient dans le reste (boucle principale).
   const fullCalls = plan.calls;

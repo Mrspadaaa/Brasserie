@@ -16,6 +16,7 @@
  * Usage, depuis la racine du dépôt :
  *   node scripts/check-recipe-hop-v55-emulator.mjs --out <dossier-preuves> [--widths 390,1280]
  *        [--cases persistance,alpha,brouillon-futur,programme-froid,brouillon-fraicheur] [--lock <dossier-verrou>] [--port 5174] [--keep-tmp]
+ *        [--cpu-throttle 6]   (processeur ralenti ×N dans Chrome, pour un téléphone lent)
  * Le mode `--inner` est lancé par `firebase emulators:exec`, jamais à la main.
  */
 import assert from 'node:assert/strict';
@@ -164,7 +165,8 @@ async function outer() {
     }, null, 2));
     const env = { ...process.env, JAVA_HOME, PATH: `${join(JAVA_HOME, 'bin')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}`,
       EMU_OUT: out, EMU_TMP: tmp, EMU_WIDTHS: option('widths', '390,1280'), EMU_CASES: option('cases', Object.keys(CASES).join(',')),
-      EMU_PORT: option('port', '5174'), EMU_RULES_SHA: rules.sha };
+      EMU_PORT: option('port', '5174'), EMU_RULES_SHA: rules.sha,
+      EMU_CPU_THROTTLE: option('cpu-throttle', '1') };
     for (const secret of ['GEMINI_API_KEY', 'GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY']) delete env[secret];
     const inner = `"${process.execPath}" "${SELF}" --inner`;
     const cli = join(ROOT, 'node_modules/firebase-tools/lib/bin/firebase.js');
@@ -230,6 +232,7 @@ async function combobox(page, selector, text, match) {
 
 /** Scroll the target under the sticky bars, then capture the viewport. */
 async function shoot(c, label, selector, block = 'start') {
+  if (c.shots === false) return null;
   if (selector) await c.page.evaluate((sel, where) => {
     const el = document.querySelector(sel); if (!el) return;
     el.scrollIntoView({ block: where, inline: 'nearest' });
@@ -319,12 +322,17 @@ async function saveFromRecap(c, name) {
   await c.page.waitForSelector('.recipe-wizard [aria-label="État de la recette"]', { visible: true, timeout: 30000 });
   await sleep(1200);
   const state = await textOf(c.page, '.recipe-wizard [aria-label="État de la recette"]');
+  await c.page.evaluate(() => window.__draftTrace?.push({ op: 'clic Enregistrer', t: Math.round(performance.now() - window.__draftT0) }));
   await click(c.page, '.recipe-wizard footer button', 'Enregistrer la recette');
   await c.page.waitForSelector(`button[aria-label="Ouvrir la recette ${name}"]`, { visible: true, timeout: 45000 });
+  // The list under the creator shows the recipe from the local cache before the save settles; the creator closes once it
+  // has (and has cleared its draft). Reloading earlier keeps the draft on purpose: the outcome is not known yet.
+  await c.page.waitForFunction(() => !document.querySelector('.recipe-wizard'), { timeout: 45000 });
   return state;
 }
 async function reloadApp(c) {
-  await c.page.reload({ waitUntil: 'domcontentloaded' });
+  // The dev server can be slow to answer on a loaded machine; a reload is not a check.
+  await c.page.reload({ waitUntil: 'domcontentloaded', timeout: 90000 });
   await waitApp(c);
 }
 async function openRecipePage(c, name) {
@@ -1090,6 +1098,30 @@ async function reopenSaved(c, name) {
   return (await textOf(c.page, '.recipe-wizard #wz-draft-choice-title')) ?? 'éditeur';
 }
 const draftBase = draft => draft ? JSON.parse(draft.raw)?.draft?.serverBase ?? null : null;
+/** Activates a visible creator button from the keyboard (focus, then Enter), as a brewer without a pointer does. */
+async function enterOnButton(c, text) {
+  const button = await c.page.waitForFunction(wanted => [...document.querySelectorAll('.recipe-wizard button')]
+    .find(b => b.getClientRects().length && getComputedStyle(b).visibility !== 'hidden' && b.innerText.trim().replace(/\s+/g, ' ') === wanted), { timeout: 30000 }, text);
+  await button.evaluate(e => { e.scrollIntoView({ block: 'center' }); e.focus(); });
+  await c.page.keyboard.press('Enter');
+}
+const atRecap = c => c.page.evaluate(() => [...document.querySelectorAll('.recipe-wizard button')]
+  .some(b => b.getClientRects().length && /Enregistrer la recette/u.test(b.innerText)));
+/** SO₄ ⇄ Cl ratio of the water step, as its range input holds it. */
+const ratioValue = c => c.page.waitForSelector('.recipe-wizard .ratio-track input[type="range"]', { timeout: 30000 })
+  .then(input => input.evaluate(e => e.value)).catch(() => null);
+/** Presses the ratio track at a fraction of its width, like a finger on the track. */
+async function pressTrack(c, fraction) {
+  const track = await c.page.waitForSelector('.recipe-wizard .ratio-track', { visible: true, timeout: 30000 });
+  await track.evaluate(e => e.scrollIntoView({ block: 'center' }));
+  const box = await track.boundingBox();
+  if (!box) return; // Hidden again while scrolling: the unchanged ratio then fails the check instead of stopping the run.
+  await c.page.mouse.move(box.x + box.width * fraction, box.y + box.height / 2);
+  await c.page.mouse.down();
+  await sleep(150);
+  await c.page.mouse.up();
+  await sleep(600);
+}
 const malt = c => c.page.$eval('.recipe-wizard #wz-fermentable-0', e => e.value).then(frNumber);
 const docColdIds = doc => (doc?.data.hopV55ColdEvidenceAssociations ?? []).map(entry => entry.id);
 
@@ -1098,19 +1130,48 @@ const docColdIds = doc => (doc?.data.hopV55ColdEvidenceAssociations ?? []).map(e
  * Functions puis par l'écriture d'un « autre appareil » (Admin SDK). Rien n'est repris ni écrit sans choix explicite ;
  * la seule navigation ne crée aucun brouillon.
  */
+/** Diagnostic: every write or removal of a local draft in this page, with time, step and the caller's stack. */
+const traceDrafts = c => c.page.evaluate(() => {
+  const trace = window.__draftTrace = [];
+  const t0 = window.__draftT0 = performance.now();
+  for (const op of ['setItem', 'removeItem']) {
+    const native = Storage.prototype[op];
+    Storage.prototype[op] = function (key, ...rest) {
+      if (String(key).startsWith('laffinee_recipe_draft_v1')) {
+        let step = null; try { step = JSON.parse(rest[0])?.draft?.step ?? null; } catch { /* removal */ }
+        trace.push({ op, key: String(key).slice(-24), t: Math.round(performance.now() - t0), size: rest[0]?.length ?? null, step,
+          stack: new Error().stack.split('\n').slice(2, 10).map(line => line.trim().replace(/https?:\/\/[^/]+\//, '').slice(0, 140)) });
+      }
+      return native.call(this, key, ...rest);
+    };
+  }
+});
 async function caseDraftFreshness(c) {
   const name = `EMU fraîcheur ${c.width}`;
+  await traceDrafts(c);
   const started = await startRecipe(c, name);
   await saveFromRecap(c, name);
+  const creationTrace = await c.page.evaluate(() => window.__draftTrace);
+  writeFileSync(join(c.out, `${c.width}-diag-trace-creation.json`), JSON.stringify(creationTrace, null, 2));
+  c.step('#97 diagnostic : écritures du brouillon de création', { ops: creationTrace.map(row => `${row.t} ${row.op} ${row.step ?? ''}`).slice(-12) });
   const doc0 = (await waitFor(async () => { const rows = await recipesNamed(c.db, name); return rows.length ? rows : null; }, 'recette #97 enregistrée'))[0];
   c.recipeIds.push(doc0.id);
   c.step('#97 recette enregistrée', { started, id: doc0.id, malt: doc0.data.fermentables?.map(f => `${f.name} ${f.weightKg} kg`) });
 
   // (b) Ouvrir puis parcourir les étapes sans rien modifier.
   c.check(await reopenSaved(c, name) === 'éditeur', '#97 sans brouillon : l’éditeur s’ouvre directement');
-  for (const label of ['Fermentescibles', 'Houblons', 'Levure', 'Identité']) await gotoStep(c, label);
+  const navigation = [];
+  for (const label of ['Fermentescibles', 'Houblons', 'Levure', 'Identité']) {
+    await gotoStep(c, label);
+    navigation.push(`${label} : ${await localDraft(c, name) ? 'brouillon' : 'aucun'}`);
+  }
   await sleep(800);
-  c.check(await localDraft(c, name) === null, '#97 (b) navigation seule entre étapes : aucun brouillon local');
+  const navigationDraft = await localDraft(c, name);
+  // Diagnostic of a draft nobody wrote: the draft and the saved document, whole, beside the report.
+  if (navigationDraft) writeFileSync(join(c.out, `${c.width}-diag-brouillon-navigation.json`),
+    JSON.stringify({ draft: JSON.parse(navigationDraft.raw), saved: doc0.data }, null, 2));
+  c.check(navigationDraft === null, '#97 (b) navigation seule entre étapes : aucun brouillon local', { navigation });
+  await shoot(c, '97-03-navigation-seule', '.recipe-wizard');
   await closeCreator(c);
   c.check(await localDraft(c, name) === null, '#97 (b) fermer après la seule navigation : aucun brouillon local');
 
@@ -1118,7 +1179,13 @@ async function caseDraftFreshness(c) {
   await reopenSaved(c, name);
   await gotoStep(c, 'Fermentescibles');
   await typeInto(c, '.recipe-wizard #wz-fermentable-0', '6');
-  const draft1 = await waitFor(async () => { const d = await localDraft(c, name); return d && /"weightKg":6[,}]/.test(d.raw) ? d : null; }, 'brouillon modifié');
+  const draft1 = await waitFor(async () => { const d = await localDraft(c, name); return d && /"weightKg":6[,}]/.test(d.raw) ? d : null; }, 'brouillon modifié')
+    .catch(async error => {
+      c.step('#97 diagnostic : brouillon modifié attendu', { malt: await malt(c).catch(() => null),
+        field: await c.page.$eval('.recipe-wizard #wz-fermentable-0', e => e.value).catch(() => null),
+        draftWeight: (await localDraft(c, name))?.raw.match(/"weightKg":[^,}]*/)?.[0] ?? null });
+      throw error;
+    });
   await closeCreator(c);
   c.check(/^recipe-server:sha256:[0-9a-f]{64}$/.test(draftBase(draft1) ?? ''), '#97 (a) le brouillon garde l’empreinte de la version enregistrée de départ', { base: draftBase(draft1) });
   c.check((await recipesNamed(c.db, name))[0].updateTime === doc0.updateTime, '#97 le brouillon local n’écrit rien au serveur');
@@ -1175,6 +1242,15 @@ async function caseDraftFreshness(c) {
   await sleep(1200);
   c.check((await localDraft(c, name))?.raw === draft2.raw && !!(await textOf(c.page, '.recipe-wizard .recipe-draft-status'))?.includes('Version enregistrée ouverte'),
     '#97 V3 B2 : toucher sans saisie puis toutes les étapes, Récapitulatif compris : brouillon mis de côté intact');
+  await shoot(c, '97-04-b2-toutes-etapes', '.recipe-wizard .recipe-draft-status');
+  // Revue ciblée, B2-r : Entrée sur un bouton de navigation du contenu, puis complément automatique du Récapitulatif.
+  await gotoStep(c, 'Eau et sels');
+  await enterOnButton(c, 'Retour à la fiche de brassage');
+  await sleep(1200);
+  c.check(await atRecap(c) && (await localDraft(c, name))?.raw === draft2.raw
+    && !!(await textOf(c.page, '.recipe-wizard .recipe-draft-status'))?.includes('Version enregistrée ouverte'),
+    '#97 V3 B2-r : Entrée sur « Retour à la fiche de brassage » puis Récapitulatif : brouillon mis de côté intact');
+  await shoot(c, '97-05-b2r-recapitulatif', '.recipe-wizard .recipe-draft-status');
   await gotoStep(c, 'Fermentescibles');
   const savedMalt = await malt(c);
   c.check(savedMalt === 5 && (await localDraft(c, name))?.raw === draft2.raw, '#97 « Ouvrir la version enregistrée » : valeur du serveur, brouillon gardé tant que rien n’est modifié', { savedMalt, notice });
@@ -1192,12 +1268,19 @@ async function caseDraftFreshness(c) {
   const leftoverRecipe = leftoverDraft.recipe ?? {};
   c.check(cleared, '#97 après enregistrement : brouillon local effacé', leftover ? { step: leftoverDraft.step, base: draftBase(leftover),
     differs: Object.keys({ ...leftoverRecipe, ...doc3.data }).filter(key => canonical(leftoverRecipe[key]) !== canonical(doc3.data[key])).slice(0, 12) } : {});
+  await shoot(c, '97-06-enregistree-brouillon-efface');
 
-  // V3 n°1, B1 : gestes sans clic ni saisie (flèche au clavier, appui long) → fermer → rouvrir : modifications conservées.
+  // V3 n°1, B1 : gestes sans clic ni saisie (flèche au clavier, appui long, piste) → fermer → rouvrir : modifications conservées.
   c.check(await reopenSaved(c, name) === 'éditeur', '#97 V3 B1 : réouverture sans brouillon');
+  await gotoStep(c, 'Eau et sels');
+  await enterOnButton(c, 'Retour à la fiche de brassage');
+  await sleep(1200);
+  c.check(await atRecap(c) && await localDraft(c, name) === null,
+    '#97 V3 B2-r : Entrée sur « Retour à la fiche de brassage » puis Récapitulatif : aucun brouillon');
   await gotoStep(c, 'Paliers');
   const sparge = '.recipe-wizard [role="radiogroup"][aria-label="Type de rinçage"]';
   const spargeChecked = () => textOf(c.page, `${sparge} [role="radio"][aria-checked="true"]`);
+  await c.page.waitForSelector(`${sparge} [role="radio"][aria-checked="true"]`, { visible: true, timeout: 30000 });
   const spargeBefore = await spargeChecked();
   await c.page.focus(`${sparge} [role="radio"][aria-checked="true"]`);
   await c.page.keyboard.press('ArrowRight');
@@ -1214,10 +1297,21 @@ async function caseDraftFreshness(c) {
   await c.page.mouse.up();
   await sleep(600);
   const maltAfter = await malt(c);
+  await gotoStep(c, 'Eau et sels');
+  // The track is shown only when the water analysis knows sulfate and chloride (WaterWorkbench) and, at 390, not in every layout;
+  // when it is not visible, it is logged as not played.
+  const hasTrack = await c.page.waitForSelector('.recipe-wizard .ratio-track', { visible: true, timeout: 8000 }).then(() => true).catch(() => false);
+  const ratioBefore = hasTrack ? await ratioValue(c) : null;
+  if (hasTrack) await pressTrack(c, 0.85);
+  const ratioAfter = hasTrack ? await ratioValue(c) : null;
   await closeCreator(c);
   const heldDraft = await localDraft(c, name);
-  c.step('#97 V3 B1 : gestes joués', { spargeBefore, spargeAfter, maltBefore, maltAfter, draft: !!heldDraft });
+  const heldRatio = heldDraft ? JSON.parse(heldDraft.raw)?.draft?.water?.ratioOverride ?? null : null;
+  c.step('#97 V3 B1 : gestes joués', { spargeBefore, spargeAfter, maltBefore, maltAfter, ratioBefore, ratioAfter, heldRatio, draft: !!heldDraft });
   c.check(spargeAfter !== spargeBefore && maltAfter > maltBefore && !!heldDraft, '#97 V3 B1 : flèche et appui long changent la recette et créent le brouillon', { spargeBefore, spargeAfter, maltBefore, maltAfter });
+  if (hasTrack) c.check(ratioAfter !== null && ratioAfter !== ratioBefore && heldRatio !== null, '#97 V3 B1 : appui sur la piste SO₄ ⇄ Cl : rapport changé et conservé dans le brouillon', { ratioBefore, ratioAfter, heldRatio });
+  else if (c.width >= 1280) c.check(false, '#97 V3 B1 : piste SO₄ ⇄ Cl visible à l’étape « Eau et sels » (1280)');
+  else c.step('#97 V3 B1 : piste SO₄ ⇄ Cl non visible à cette largeur : non jouée');
   c.check(await reopenSaved(c, name) === 'éditeur' && !!(await textOf(c.page, '.recipe-wizard .recipe-draft-status'))?.includes('Brouillon repris sur cet appareil.'),
     '#97 V3 B1 : réouverture, serveur inchangé : brouillon repris en silence');
   await gotoStep(c, 'Paliers');
@@ -1225,6 +1319,51 @@ async function caseDraftFreshness(c) {
   await gotoStep(c, 'Fermentescibles');
   const maltReopened = await malt(c);
   c.check(spargeReopened === spargeAfter && maltReopened === maltAfter, '#97 V3 B1 : flèche et appui long conservés après fermer puis rouvrir', { spargeReopened, maltReopened });
+  await shoot(c, '97-07-b1-rouverte', '.recipe-wizard .recipe-draft-status');
+  await gotoStep(c, 'Eau et sels');
+  const ratioReopened = hasTrack ? await ratioValue(c) : null;
+  if (hasTrack) c.check(ratioReopened === ratioAfter, '#97 V3 B1 : piste SO₄ ⇄ Cl conservée après fermer puis rouvrir', { ratioAfter, ratioReopened });
+  await abandonEditDraft(c);
+
+  // Revue ciblée, B1-r : un style choisi par Entrée dans la liste crée à lui seul le brouillon, gardé après fermer puis rouvrir.
+  c.check(await reopenSaved(c, name) === 'éditeur', '#97 V3 B1-r : réouverture sans brouillon après « Abandonner »');
+  await gotoStep(c, 'Identité');
+  const styleField = '.recipe-wizard [aria-label="Style de la bière"]';
+  const styleValue = () => c.page.$eval(styleField, e => e.value).catch(() => null);
+  const styleBefore = await styleValue();
+  await c.page.$eval(styleField, e => { e.scrollIntoView({ block: 'center' }); e.focus(); e.select(); });
+  await c.page.keyboard.type('Sai', { delay: 80 });
+  await sleep(600);
+  const styleOptions = await c.page.$$eval('[role="option"]', list => list.filter(o => o.getClientRects().length).map(o => o.innerText.trim()).slice(0, 4));
+  const expanded = await c.page.$eval(styleField, e => e.getAttribute('aria-expanded')).catch(() => null);
+  // What the page holds after the choice: draft keys, the editor notice, the focused element (diagnostic of B1-r).
+  const draftState = () => c.page.evaluate(() => ({
+    titleVisible: !!document.querySelector('.recipe-wizard #wz-title')?.getClientRects().length,
+    loading: [...document.querySelectorAll('[role="status"]')].filter(e => e.getClientRects().length && /Chargement/u.test(e.innerText)).map(e => e.innerText.slice(0, 60)),
+    notice: document.querySelector('.recipe-wizard .recipe-draft-status')?.innerText ?? null,
+    active: `${document.activeElement?.tagName}:${document.activeElement?.getAttribute('aria-label') ?? ''}`,
+    drafts: Object.keys(localStorage).filter(k => k.startsWith('laffinee_recipe_draft_v1')).map(k => {
+      try { const d = JSON.parse(localStorage.getItem(k))?.draft; return `${k.slice(-12)} ${d?.recipe?.name} · ${d?.recipe?.style} · ${d?.step}`; } catch { return `${k.slice(-12)} illisible`; }
+    }),
+  }));
+  await c.page.keyboard.press('Enter');
+  const at0 = await draftState();
+  await sleep(100);
+  const soon = await draftState();
+  await sleep(700);
+  const later = await draftState();
+  const styleAfter = await styleValue();
+  const styleDraft = await localDraft(c, name);
+  const draftStyle = styleDraft ? JSON.parse(styleDraft.raw)?.draft?.recipe?.style ?? null : null;
+  c.check(!!styleAfter && styleAfter !== styleBefore && draftStyle === styleAfter, '#97 V3 B1-r : style choisi par Entrée dans la liste : brouillon écrit',
+    { styleBefore, styleAfter, draftStyle, styleOptions, expanded, at0, soon, later });
+  await closeCreator(c);
+  c.check(await reopenSaved(c, name) === 'éditeur' && !!(await textOf(c.page, '.recipe-wizard .recipe-draft-status'))?.includes('Brouillon repris sur cet appareil.'),
+    '#97 V3 B1-r : réouverture, serveur inchangé : brouillon repris en silence');
+  await gotoStep(c, 'Identité');
+  const styleReopened = await styleValue();
+  c.check(styleReopened === styleAfter, '#97 V3 B1-r : style choisi par Entrée conservé après fermer puis rouvrir', { styleAfter, styleReopened });
+  await shoot(c, '97-08-b1r-rouverte', '.recipe-wizard .recipe-draft-status');
   await abandonEditDraft(c);
 }
 
@@ -1270,7 +1409,8 @@ async function inner() {
   assert.equal(process.env.FIRESTORE_EMULATOR_HOST, `127.0.0.1:${EMULATOR_PORTS.firestore}`, 'Firestore émulé requis');
   assert.equal(process.env.FIREBASE_AUTH_EMULATOR_HOST, `127.0.0.1:${EMULATOR_PORTS.auth}`, 'Auth émulée requise');
   assert.equal(process.env.GEMINI_API_KEY, undefined, 'Aucune clé Gemini dans ce parcours');
-  const report = { project: PROJECT, rulesSha: process.env.EMU_RULES_SHA, widths, cases, runs: [], checks: [], blocked: [], rewrites: [], pids: {} };
+  const cpuThrottle = Math.max(1, Number(process.env.EMU_CPU_THROTTLE) || 1);
+  const report = { project: PROJECT, rulesSha: process.env.EMU_RULES_SHA, widths, cases, cpuThrottle, runs: [], checks: [], blocked: [], rewrites: [], pids: {} };
   const write = () => writeFileSync(join(out, 'report.json'), JSON.stringify(report, null, 2));
   const { initializeApp } = await import(pathToFileURL(join(ROOT, 'functions/node_modules/firebase-admin/lib/esm/app/index.js')).href);
   const { getFirestore } = await import(pathToFileURL(join(ROOT, 'functions/node_modules/firebase-admin/lib/esm/firestore/index.js')).href);
@@ -1300,38 +1440,45 @@ async function inner() {
     for (const width of widths) {
       const mobile = width < 600;
       const context = await browser.createBrowserContext();
-      const page = await context.newPage();
       const entry = { width, steps: [], captures: [], errors: [] };
       report.runs.push(entry);
-      page.on('pageerror', error => entry.errors.push(`pageerror: ${error.message.slice(0, 300)}`));
-      page.on('console', message => { if (message.type() === 'error') entry.errors.push(`console: ${message.text().slice(0, 300)}`); });
-      page.on('requestfailed', request => entry.errors.push(`requestfailed: ${request.method()} ${request.url().slice(0, 200)} ${request.failure()?.errorText ?? ''}`));
-      await page.setRequestInterception(true);
-      page.on('request', async request => {
-        const url = request.url();
-        if (!(/^(data|blob):/.test(url) || /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(url))) {
-          report.blocked.push(`${width} ${url.slice(0, 160)}`); return request.abort();
-        }
-        const rewrite = url.startsWith(base) ? EMULATOR_REWRITES.find(row => new URL(url).pathname === row.path) : null;
-        if (!rewrite) return request.continue();
-        try {
-          const response = await fetch(url);
-          const body = await response.text();
-          const count = body.match(rewrite.pattern)?.length ?? 0;
-          report.rewrites.push({ width, path: rewrite.path, count, expected: rewrite.expected });
-          await request.respond({ status: response.status, contentType: response.headers.get('content-type') ?? 'text/javascript',
-            headers: { 'cache-control': 'no-cache' }, body: body.replace(rewrite.pattern, rewrite.replacement) });
-        } catch (error) {
-          report.rewrites.push({ width, path: rewrite.path, error: String(error).slice(0, 200) });
-          await request.abort().catch(() => {});
-        }
-      });
-      await page.evaluateOnNewDocument(() => {
-        try { if (!localStorage.getItem('laffinee_ui_state')) localStorage.setItem('laffinee_ui_state', JSON.stringify({ app_active_tab: 'production', production_subtab: 'recipes' })); }
-        catch { /* opaque origin before navigation */ }
-      });
-      await page.setViewport({ width, height: mobile ? 844 : 900, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: 1 });
-      const c = { page, width, base, out, db, entry, recipeIds, uid: null,
+      /** A configured tab of this width; a fresh one per case (R-m10: one tab grew to 2.7 GB over several cases). */
+      const openTab = async () => {
+        const page = await context.newPage();
+        page.on('pageerror', error => entry.errors.push(`pageerror: ${error.message.slice(0, 300)}`));
+        page.on('console', message => { if (message.type() === 'error') entry.errors.push(`console: ${message.text().slice(0, 300)}`); });
+        page.on('requestfailed', request => entry.errors.push(`requestfailed: ${request.method()} ${request.url().slice(0, 200)} ${request.failure()?.errorText ?? ''}`));
+        await page.setRequestInterception(true);
+        page.on('request', async request => {
+          const url = request.url();
+          if (!(/^(data|blob):/.test(url) || /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(url))) {
+            report.blocked.push(`${width} ${url.slice(0, 160)}`); return request.abort();
+          }
+          const rewrite = url.startsWith(base) ? EMULATOR_REWRITES.find(row => new URL(url).pathname === row.path) : null;
+          if (!rewrite) return request.continue();
+          try {
+            const response = await fetch(url);
+            const body = await response.text();
+            const count = body.match(rewrite.pattern)?.length ?? 0;
+            report.rewrites.push({ width, path: rewrite.path, count, expected: rewrite.expected });
+            await request.respond({ status: response.status, contentType: response.headers.get('content-type') ?? 'text/javascript',
+              headers: { 'cache-control': 'no-cache' }, body: body.replace(rewrite.pattern, rewrite.replacement) });
+          } catch (error) {
+            report.rewrites.push({ width, path: rewrite.path, error: String(error).slice(0, 200) });
+            await request.abort().catch(() => {});
+          }
+        });
+        await page.evaluateOnNewDocument(() => {
+          try { if (!localStorage.getItem('laffinee_ui_state')) localStorage.setItem('laffinee_ui_state', JSON.stringify({ app_active_tab: 'production', production_subtab: 'recipes' })); }
+          catch { /* opaque origin before navigation */ }
+        });
+        await page.setViewport({ width, height: mobile ? 844 : 900, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: 1 });
+        // A slow phone: Chrome runs the page's scripts N times slower (renders included); 1 leaves the CPU as is.
+        if (cpuThrottle > 1) await page.emulateCPUThrottling(cpuThrottle);
+        return page;
+      };
+      // Captures are taken on normal runs only: a slowed run checks behaviour.
+      const c = { page: await openTab(), width, base, out, db, entry, recipeIds, uid: null, shots: cpuThrottle === 1,
         step: (label, data = {}) => { entry.steps.push({ label, ...data }); console.log(`${width} · ${label}`); write(); },
         check: (ok, label, data = {}) => { report.checks.push({ width, ok: !!ok, label, ...(ok ? {} : { data }) }); console.log(`${ok ? 'OK ' : 'KO '} ${width} · ${label}`); if (!ok) failed = true; write(); } };
       try {
@@ -1347,12 +1494,19 @@ async function inner() {
           fixturesSeeded = true;
           await reloadApp(c);
         }
-        for (const name of cases) {
+        for (const [index, name] of cases.entries()) {
+          if (index > 0) {
+            await c.page.close().catch(() => {});
+            c.page = await openTab();
+            await c.page.goto(base, { waitUntil: 'domcontentloaded', timeout: 90000 });
+            await waitApp(c);
+            c.step(`onglet neuf pour ${name}`);
+          }
           try { await CASES[name](c); }
           catch (error) {
             failed = true;
             c.step(`ARRÊT ${name}`, { error: String(error?.stack ?? error).slice(0, 1600), statuses: await statuses(c) });
-            await page.screenshot({ path: join(out, `${width}-99-arret-${name}.png`) }).catch(() => {});
+            await c.page.screenshot({ path: join(out, `${width}-99-arret-${name}.png`) }).catch(() => {});
             await reloadApp(c).catch(() => {});
             await abandonNewDraft(c).catch(error => c.step(`abandon du brouillon impossible après ${name}`, { error: String(error).slice(0, 300) }));
           }
@@ -1360,7 +1514,7 @@ async function inner() {
       } catch (error) {
         failed = true;
         c.step('ARRÊT', { error: String(error?.stack ?? error).slice(0, 900) });
-        await page.screenshot({ path: join(out, `${width}-99-arret.png`) }).catch(() => {});
+        await c.page.screenshot({ path: join(out, `${width}-99-arret.png`) }).catch(() => {});
       }
       await context.close();
     }
