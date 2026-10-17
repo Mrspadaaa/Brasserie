@@ -33,8 +33,9 @@ const witness = process.argv.includes('--witness');
 const out = path.resolve(arg('out', path.join(process.env.TEMP || '/tmp', 'hop-one-tap')));
 fs.mkdirSync(out, { recursive: true });
 
-const browser = await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--mute-audio'] });
-const ctx = await adapter.setup?.({ repo });
+// En mode production, aucun navigateur n'est lancé : le contrôle s'attache au Chrome QA du brasseur.
+const browser = adapter.attach ? null : await puppeteer.launch({ executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--mute-audio'] });
+const ctx = adapter.attach ? null : await adapter.setup?.({ repo });
 const stock = adapter.stock; // [{ name, pattern?, grams }] : houblons en stock (quantité > 0)
 const catalogueOnly = adapter.catalogueOnly ?? []; // noms de houblons absents du stock
 const need = Math.min(5, stock.length);
@@ -107,6 +108,39 @@ async function candidates(page) {
     }
     return list;
   }, adapter.scope ?? null, maxCandidates);
+}
+
+// Mode production (adaptateur « attach ») : onglet du brasseur, lecture seule, pas d'état neuf ;
+// état d'arrivée puis, au plus, un toucher sur une commande sans écriture (adapter.safeTaps).
+if (adapter.attach) {
+  let live, page;
+  try {
+    live = await puppeteer.connect({ browserURL: adapter.browserURL, defaultViewport: null });
+    page = await adapter.findPage(live);
+  } catch (e) {
+    console.log(`PRODUCTION NON JOUÉE : ${e.message.split('\n')[0]} (Chrome QA attendu sur ${adapter.browserURL}, ouvert et connecté par le brasseur)`);
+    live?.disconnect();
+    process.exit(1);
+  }
+  try {
+    const vp = await page.evaluate(() => [innerWidth, innerHeight]);
+    let m = await measure(page);
+    let v = verdict(m), label = 'aucun toucher', taps = 0;
+    await page.screenshot({ path: path.join(out, 'production-0.png') });
+    if (!v.pass) {
+      const hit = await page.evaluate((labels) => {
+        const b = [...document.querySelectorAll('button, [role="button"], summary')].find((e) => labels.some((l) => (e.getAttribute('aria-label') || e.innerText || '').trim().replace(/\s+/g, ' ').startsWith(l)));
+        if (b) { b.click(); return (b.getAttribute('aria-label') || b.innerText).trim().slice(0, 60); }
+        return null;
+      }, adapter.safeTaps);
+      if (hit) { await new Promise((r) => setTimeout(r, Number(adapter.settleMs ?? 1200))); m = await measure(page); v = verdict(m); label = hit; taps = 1; await page.screenshot({ path: path.join(out, 'production-1.png') }); }
+    }
+    const s = `production ${vp.join(' × ')} : ${taps} toucher(s) « ${label} », ${v.visibleWithQuantity} houblons du stock visibles avec quantité (${need} exigés) ; captures ${out}`;
+    if (vp[0] > 500) console.log('AVERTISSEMENT : fenêtre de ' + vp[0] + ' px ; le critère se juge à 390 px (mode appareil de Chrome).');
+    if (v.pass === !witness) console.log((witness ? 'WITNESS OK ' : 'ONE-TAP OK ') + s);
+    else { console.log((witness ? 'WITNESS FAILED ' : 'ONE-TAP FAIL ') + s); process.exitCode = 1; }
+  } finally { live.disconnect(); }
+  process.exit();
 }
 
 const states = [];

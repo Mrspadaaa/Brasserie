@@ -23,6 +23,7 @@ import { todayISO } from '../../../src/domain/finance/ledger';
 import { predictHopRecipe } from '../../../functions/src/hopRecipePrediction';
 import { predictHopTriplet } from '../../../functions/src/hopPredictionCore';
 import fixture from '../../fixtures/hopScientific/test-houb.json';
+import productionSnapshot from '../../fixtures/production/houblons-2026-10-17.json';
 import yeastCatalogue from '../../../src/data/yeastCatalogueBootstrap.json';
 import dosePack from '../../../src/data/hopDoseStudyBootstrap.json';
 import {nuagePilots} from '../../fixtures/nuagePilots';
@@ -32,7 +33,13 @@ import '../../../src/index.css';
 
 async function start() {
   const appRoot=createRoot(document.getElementById('root')!);
-  const varieties = await loadGuideVarieties();
+  const guide = await loadGuideVarieties();
+  // ?catalogue=production : catalogue limité aux variétés présentes en production (instantané en
+  // lecture seule du 17.10.2026). Le banc ne montre alors jamais plus que ce que voit le brasseur.
+  const productionNames = new Set(productionSnapshot.hopVarieties.map(v => v.name.toLowerCase()));
+  const varieties = new URLSearchParams(location.search).get('catalogue') === 'production'
+    ? guide.filter(v => productionNames.has(v.name.toLowerCase()))
+    : guide;
   const knowledge = guidePredictionKnowledge(yeastCatalogue.filter(y => ['lalbrew-diamond', 'fermentis-us05', 'lalbrew-verdant-ipa'].includes(y.id)) as HopKnowledge[]);
   const mobilePoc = new URLSearchParams(location.search).get('ux-poc');
   if (mobilePoc === 'reset' || !localStorage.getItem('__HOP_RECIPE_QA_ONLY__')) seedQa({ hopVarieties: varieties, hopKnowledge: knowledge,

@@ -68,7 +68,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outlin
 .p-top { height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-bottom: 1px solid var(--line); flex: none; }
 .p-top b { font-size: 14px; }
 .p-top .back { color: var(--dim); font-size: 18px; width: 16px; }
-.p-top .exit { margin-left: auto; background: var(--box) !important; border-radius: 6px; padding: 3px 8px !important; font-size: 12px; }
+.p-top .exit { margin-left: auto; min-height: 28px; background: var(--box) !important; border-radius: 6px; padding: 3px 8px !important; font-size: 12px; }
 .p-rail { height: 28px; display: flex; align-items: center; padding: 0 10px; gap: 6px; color: var(--dim); font-size: 11.5px; white-space: nowrap; overflow: hidden; border-bottom: 1px solid var(--line); flex: none; }
 .p-rail b { color: var(--ink); border-bottom: 2px solid var(--hi); }
 .p-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
@@ -396,7 +396,9 @@ flowchart TD
     const scroll = [body ? body.scrollTop : 0, sb ? sb.scrollTop : 0];
     phone.className = 'phone' + (S.full ? ' full' : '') + (S.annot ? ' annot' : '');
     const listHere = S.dir === 'A' ? list() : `<button class="openlist" data-act="open" data-note="1 toucher · C002">Mes houblons pour cette stout <span>${STOCK.length} en stock</span></button>`;
-    phone.innerHTML = top() + `<div class="p-body" id="pbody">${strip()}${adds()}${S.dir === 'A' && S.adds.length ? '<div class="sec"><span>Mes houblons pour cette stout</span></div>' : ''}${listHere}</div>` +
+    // Une feuille ouverte est modale : le contenu du dessous devient inerte.
+    const modal = (S.dir === 'B' && S.sheet === 'list') || S.sheet === 'replace';
+    phone.innerHTML = top() + `<div class="p-body" id="pbody"${modal ? ' inert' : ''}>${strip()}${adds()}${S.dir === 'A' && S.adds.length ? '<div class="sec"><span>Mes houblons pour cette stout</span></div>' : ''}${listHere}</div>` +
       (S.dir === 'B' && S.sheet === 'list' ? sheetList() : '') + (S.sheet === 'replace' ? sheetReplace() : '') +
       (S.sel.length >= 2 ? compare() : '') +
       (S.undo ? `<div class="snack" role="status"><span>${S.undo.msg}</span><button data-act="undo">Annuler</button></div>` : '');

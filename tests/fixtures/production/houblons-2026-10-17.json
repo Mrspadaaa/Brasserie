@@ -1,0 +1,43 @@
+{
+  "source": "Firestore brasserie-l-affinee, lecture seule par le serveur MCP Firebase, 17.10.2026 23:40 (stockItems category=Houblon, hopVarieties complet). Aucune donnée personnelle : fournisseur = commerce.",
+  "hopVarieties": [
+    { "id": "hopsteiner-ana", "name": "Ariana", "origin": "Allemagne", "form": "unknown", "alpha": [9, 13] },
+    { "id": "hopsteiner-cpo", "name": "Calypso", "origin": "États-Unis", "form": "unknown", "alpha": [12, 14] },
+    { "id": "hopsteiner-cas", "name": "Cascade", "origin": "États-Unis", "form": "unknown", "alpha": [4.5, 7] },
+    { "id": "cascade-cones-lafontaine", "name": "Cascade · cônes", "origin": "États-Unis", "form": "cone", "alpha": null },
+    { "id": "hopsteiner-fug", "name": "Fuggle", "origin": "Royaume-Uni", "form": "unknown", "alpha": [3, 6] },
+    { "id": "hopsteiner-glc", "name": "Glacier", "origin": "États-Unis", "form": "unknown", "alpha": [3.5, 9.5] },
+    { "id": "hopsteiner-hbc", "name": "Hallertau Blanc", "origin": "Allemagne", "form": "unknown", "alpha": [9, 12] },
+    { "id": "hopsteiner-hal", "name": "Hallertauer Mittelfrüh", "origin": "Allemagne", "form": "unknown", "alpha": [3, 5.5] },
+    { "id": "ych-idaho7", "name": "Idaho 7", "origin": "États-Unis", "form": "unknown", "alpha": null },
+    { "id": "hopsteiner-lot", "name": "Lotus", "origin": "États-Unis", "form": "unknown", "alpha": [13, 17] },
+    { "id": "nz-nectaron", "name": "Nectaron", "origin": null, "form": "unknown", "alpha": null },
+    { "id": "lallemand-simcoe", "name": "Simcoe", "origin": null, "form": "unknown", "alpha": null }
+  ],
+  "stockItems": [
+    { "path": "FICHE-Houblon%3Aariana", "name": "Ariana", "currentStock": 0, "unit": "g", "alphaPct": 11.5 },
+    { "path": "FICHE-Houblon%3Afuggle", "name": "Fuggle", "currentStock": 0, "unit": "g", "alphaPct": 4.5 },
+    { "path": "FICHE-Houblon%3Ahallertau%20blanc", "name": "Hallertau Blanc", "currentStock": 0, "unit": "g", "alphaPct": 10.5 },
+    { "path": "FICHE-Houblon%3Aidaho%207", "name": "Idaho 7", "currentStock": 0, "unit": "g", "alphaPct": 14 },
+    { "path": "FICHE-Houblon%3Alotus", "name": "Lotus", "currentStock": 0, "unit": "g", "alphaPct": 15 },
+    { "path": "FICHE-Houblon%3Anectaron", "name": "Nectaron", "currentStock": 0, "unit": "g", "alphaPct": 11 },
+    { "path": "FICHE-Houblon%3Asimcoe", "name": "Simcoe", "currentStock": 0, "unit": "g", "alphaPct": 13 },
+    { "path": "HOP-CASC-7333", "id": "RM-1788403927333-ib9l", "name": "Cascade", "currentStock": 60, "minStock": 100, "reorder": true, "unit": "g", "alphaPct": 6.5, "supplier": "Brau-Rauchshop" },
+    { "path": "MP-015", "id": "MP-8", "name": "Houblon Target 11.3%", "currentStock": 5, "unit": "g", "alphaPct": 11.3, "supplier": "Brau-Rauchshop" },
+    { "path": "MP-016", "id": "MP-9", "name": "Houblon Goldings East Kent 5.5%", "currentStock": 0, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-017", "id": "MP-10", "name": "Houblon Galaxy 17.2%", "currentStock": 60, "unit": "g", "alphaPct": 17.2, "supplier": "Brau-Rauchshop" },
+    { "path": "MP-018", "id": "MP-11", "name": "Houblon Nelson Sauvin 9.6%", "currentStock": 100, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-019", "id": "MP-12", "name": "Houblon Sabro 13.4%", "currentStock": 30, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-020", "id": "MP-13", "name": "Houblon Hallertauer Blanc 9.5% CH", "currentStock": 30, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-021", "id": "MP-14", "name": "Houblon Motueka 8.1%", "currentStock": 20, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-022", "id": "MP-15", "name": "Houblon Idaho 7 12.7%", "currentStock": 20, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-023", "id": "MP-16", "name": "Houblon Cryo Hops Citra 24.8%", "currentStock": 65, "unit": "g", "supplier": "Brau-Rauchshop" },
+    { "path": "MP-033", "id": "Nuget", "name": "Nuget", "currentStock": 0, "unit": "g", "alphaPct": 13 }
+  ],
+  "defauts": [
+    "Simcoe, Idaho 7 et Nectaron du catalogue n'ont aucune analyse (alpha absent).",
+    "Cascade · cônes n'a qu'une plage de géraniol.",
+    "7 articles n'ont l'alpha que dans le nom.",
+    "Aucun article n'est relié à une variété (pas de hopVarietyId)."
+  ]
+}

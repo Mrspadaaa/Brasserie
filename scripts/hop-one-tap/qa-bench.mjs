@@ -53,7 +53,8 @@ export async function open(page, { ctx }) {
   await page.evaluateOnNewDocument(() => {
     try { if (!localStorage.getItem('laffinee_ui_state')) localStorage.setItem('laffinee_ui_state', JSON.stringify({ app_active_tab: 'production', production_subtab: 'recipes' })); } catch { /* about:blank */ }
   });
-  await page.goto(ctx.base, { waitUntil: 'domcontentloaded' });
+  // QA_CATALOGUE=production : catalogue limité à l'instantané de production (tests/fixtures/production/).
+  await page.goto(ctx.base + (process.env.QA_CATALOGUE === 'production' ? '/?catalogue=production' : '/'), { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__hopQa?.ready(), { timeout: 30000 });
   await page.waitForFunction(() => document.body.innerText.includes('Recettes'), { timeout: 30000 });
   await page.evaluate((rows) => {
