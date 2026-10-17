@@ -24,13 +24,24 @@ async function waitForOriginal(work: Promise<void>) {
     await Promise.race([work, new Promise<never>((_, reject) => { timer = setTimeout(() => reject(Error('Confirmation du justificatif en attente. Le brouillon est conservé ; réessaie lorsque la connexion est rétablie.')), 15_000); })]);
   } finally { if (timer) clearTimeout(timer); }
 }
+/** Without a network, Firestore and fetch answer in English (« client is offline », « Failed to fetch »). */
+function offlineOriginalError(error: unknown): Error | undefined {
+  // Only network failures: the French « en attente » timeout is accurate (the upload may still complete) and stays.
+  const offline = (error as { code?: string })?.code === 'unavailable'
+    || (error instanceof Error && /client is offline|failed to fetch|networkerror|network request failed|load failed/i.test(error.message));
+  return offline ? Object.assign(Error('Hors connexion : l’original n’a pas pu être envoyé sur Drive, donc rien n’est enregistré. Réessaie une fois en ligne.'), { code: 'unavailable' }) : undefined;
+}
 /** Upload and verify one private Drive original, then confirm its tiny immutable
  * Firestore reference. Read-back safely recovers an uncertain metadata write. */
 export async function saveFinanceDocumentConfirmed(prepared: PreparedFinanceDocument, year = new Date().getFullYear()): Promise<void> {
+  try { await confirmOriginal(prepared, year); }
+  catch (error) { throw offlineOriginalError(error) ?? error; }
+}
+async function confirmOriginal(prepared: PreparedFinanceDocument, year: number): Promise<void> {
   const checked = prepareFinanceDocument(prepared.id, prepared.parts.join(''), prepared.fileName, prepared.mimeType);
   const { id, fileName, mimeType, parts } = checked;
   const existingWork = pendingOriginals.get(id);
-  if (existingWork) { await waitForOriginal(existingWork); return saveFinanceDocumentConfirmed(checked, year); }
+  if (existingWork) { await waitForOriginal(existingWork); return confirmOriginal(checked, year); }
   const work = (async () => {
     if (import.meta.env.DEV && typeof location !== 'undefined' && new URLSearchParams(location.search).has('dev-local')) {
       const existing = FirestoreRepo.find('financeDocuments', id);

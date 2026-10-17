@@ -11,6 +11,7 @@ import { Button } from '../components/ui/Button';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Combobox } from './Combobox';
 import { useSyncedDraft } from '../hooks/useLiveData';
+import { canonicalStockCategory } from '../services/stockLineMatching';
 import './stocks.css';
 
 interface StockDetailSheetProps {
@@ -47,11 +48,13 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
   const unitOptions = Suggestions.knownUnits().map(value => ({ value, label: value }));
   const categoryOptions = Suggestions.knownCategories().map(value => ({ value, label: value }));
   const vendorOptions = Suggestions.vendors().map(v => ({ value: v.name, label: v.name }));
-  const malt = draft.category === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(draft.category);
-  const technical = malt || draft.category === 'Houblon' || draft.category === 'Levure';
+  // Un article créé par une ancienne lecture peut porter « malt » ou « houblon » : il garde ses champs techniques.
+  const category = canonicalStockCategory(draft.category);
+  const malt = category === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(category);
+  const technical = malt || category === 'Houblon' || category === 'Levure';
 
   return <>
-    <Sheet open onClose={onClose} title={item.name} subtitle={`${item.category} · ${item.ref}`} className="sm:max-w-2xl sm:mx-auto"
+    <Sheet open onClose={onClose} title={item.name} subtitle={`${canonicalStockCategory(item.category)} · ${item.ref}`} className="sm:max-w-2xl sm:mx-auto"
       footer={<div className="flex gap-2">
         <Button onClick={onClose} full>Annuler</Button>
         <Button intent="primary" full disabled={!canSave} onClick={save}>Enregistrer</Button>
@@ -128,11 +131,11 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
 
           {technical && <details className="border-y border-cave-800 py-1">
             <summary className="text-cave-200">Caractéristiques techniques
-              {draft.category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {draft.alphaPct} %</span>}
+              {category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {draft.alphaPct} %</span>}
               {malt && draft.colorEbc != null && <span className="text-cave-400"> · {draft.colorEbc} EBC</span>}
             </summary>
             <div className="space-y-2 pt-1 pb-2">
-              {draft.category === 'Houblon' && <Field label="Acide alpha (%)" htmlFor="stock-alpha">
+              {category === 'Houblon' && <Field label="Acide alpha (%)" htmlFor="stock-alpha">
                 <NumberInput id="stock-alpha" value={draft.alphaPct} min={0} max={100} emptyValue={undefined}
                   onValue={alphaPct => setDraft({ ...draft, alphaPct })} className={inputClass}/>
               </Field>}
@@ -146,7 +149,7 @@ export const StockDetailSheet: React.FC<StockDetailSheetProps> = ({
                     onValue={potentialPpg => setDraft({ ...draft, potentialPpg })} className={inputClass}/>
                 </Field>
               </div>}
-              {draft.category === 'Levure' && <>
+              {category === 'Levure' && <>
                 <div className="grid grid-cols-2 gap-2">
                   <Field label="Laboratoire" htmlFor="stock-lab"><TextInput id="stock-lab" name="stock_sheet_yeast_lab" value={draft.yeastLab ?? ''} onChange={yeastLab => setDraft({ ...draft, yeastLab })}/></Field>
                   <Field label="Souche" htmlFor="stock-strain"><TextInput id="stock-strain" name="stock_sheet_yeast_strain" value={draft.yeastStrain ?? ''} onChange={yeastStrain => setDraft({ ...draft, yeastStrain })}/></Field>

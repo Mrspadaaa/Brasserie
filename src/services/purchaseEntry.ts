@@ -6,7 +6,9 @@ import { Units } from './units';
 import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
 import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
 import { planOccurrences } from '../domain/finance/forecast';
-import { todayISO } from '../domain/finance/ledger';
+import { isoDate, todayISO } from '../domain/finance/ledger';
+import { normalize } from './search';
+import { canonicalStockCategory } from './stockLineMatching';
 
 export interface PurchaseLineDraft {
   id:string; description:string; kind:FinanceLineKind|'maintenance'; amount?:number;
@@ -33,12 +35,58 @@ export function purchaseIsoDate(raw:string):string {
   const date=new Date(Date.UTC(+match[3],+match[2]-1,+match[1]));
   return date.getUTCFullYear()===+match[3] && date.getUTCMonth()===+match[2]-1 && date.getUTCDate()===+match[1] ? `${match[3]}-${match[2]}-${match[1]}` : '';
 }
+const LEGAL_FORMS=new Set(['sa','ag','gmbh','sarl','sagl','snc','sas','srl','spa','ltd','llc','inc','kg','co','cie','ohg','ug','se','bv','nv','plc']);
+/** « MALTERIE DU BANC » et « Malterie du Banc SA » désignent le même fournisseur : casse, accents, ponctuation et
+ * forme juridique finale ne comptent pas (« Moulin Co Brasserie » garde son « co »). Les initiales séparées (« S.à r.l. »)
+ * forment une seule forme juridique. */
+export function purchaseVendorKey(vendor:string):string {
+  const tokens=normalize(vendor).split(/[^a-z0-9]+/).filter(Boolean);
+  const merged=tokens.reduce<string[]>((out,token,index)=>{if(token.length===1&&index>0&&tokens[index-1].length===1)out[out.length-1]+=token;else out.push(token);return out;},[]);
+  while(merged.length>1&&LEGAL_FORMS.has(merged[merged.length-1]))merged.pop();
+  return merged.join(' ');
+}
+/** « MB-131 », « mb 131 » et « MB.131 » sont le même numéro de facture ; une lecture « MB-1O1 » vaut « MB-101 ». */
+const invoiceKey=(invoice:string|undefined)=>normalize(invoice??'').replace(/[^a-z0-9]/g,'').replace(/o/g,'0').replace(/[il]/g,'1');
+/** Deux numéros renseignés et différents : deux factures, donc deux achats (abonnement, commande répétée). */
+const otherInvoice=(draft:PurchaseDraft,tx:FinanceTransaction)=>{const mine=invoiceKey(draft.invoiceNumber),theirs=invoiceKey(tx.finance?.invoiceNumber);return Boolean(mine&&theirs&&mine!==theirs);};
+const DAY=86_400_000;
+const lineReferences=(lines:Array<{sourceReference?:string}>)=>new Set(lines.map(line=>(line.sourceReference??'').toLowerCase().replace(/[^a-z0-9]/g,'')).filter(Boolean));
+/** `rank` : même fichier 0, même facture 1, même jour et total 2, même achat vu ailleurs 3. */
+interface DuplicateMatch { reasons:string[]; rank:number; gap:number }
+/**
+ * Pourquoi ce brouillon ressemble à une dépense déjà enregistrée ; rien : achat distinct.
+ * Les cas exacts (même fichier, même facture, même jour) restent. S'y ajoute le même achat vu ailleurs, comme la
+ * commande en ligne d'une facture : même fournisseur normalisé et même total au centime, avec des références
+ * d'articles en commun (le récapitulatif n'a souvent ni date ni numéro) ou, sans elles, des dates proches ; jamais
+ * deux factures aux numéros différents. `gap` : écart en jours entre les dates, sinon âge de la dépense.
+ */
+function duplicateMatch(draft:PurchaseDraft,tx:FinanceTransaction,today:()=>string):DuplicateMatch|undefined {
+  if (tx.id===`TX-${draft.submissionId}` || tx.finance?.voidedAt) return undefined;
+  const vendor=draft.vendor.trim().toLowerCase(), invoice=invoiceKey(draft.invoiceNumber);
+  const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
+  // Sans date lue, l'âge de la dépense (saisie, sinon date) borne le rapprochement : une commande d'il y a un an n'est pas ce récapitulatif.
+  const since=(tx.finance?.recordedAt??'').slice(0,10)||to, gap=()=>days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
+  if (draft.documentHash && tx.finance?.sourceDocumentHash===draft.documentHash) return {reasons:['Même fichier déjà joint'],rank:0,gap:gap()};
+  if (invoice && invoiceKey(tx.finance?.invoiceNumber)===invoice && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:[`Même facture n° ${draft.invoiceNumber.trim()}`],rank:1,gap:gap()};
+  if (vendor && tx.date===draft.date && cents(tx.amountTTC)===cents(draft.amount??0) && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:['Même fournisseur, même date et même total'],rank:2,gap:gap()};
+  // Seule une dépense au même total est comparée plus loin : une vente au nom d'un client homonyme n'est pas un achat.
+  if (tx.finance?.kind!=='expense' || !isMoney(draft.amount) || draft.amount<=0 || cents(tx.amountTTC)!==cents(draft.amount) || otherInvoice(draft,tx)) return undefined;
+  const key=purchaseVendorKey(draft.vendor);
+  if (!key || purchaseVendorKey(tx.finance.vendor??'')!==key) return undefined;
+  const mine=lineReferences(draft.lines), theirs=lineReferences(tx.finance?.lines??[]), shared=[...mine].filter(ref=>theirs.has(ref)).length;
+  const sameItems=shared>0 && shared*2>=Math.min(mine.size,theirs.size);
+  if (sameItems ? gap()>60 : days===undefined || days>14) return undefined;
+  return {reasons:['Même fournisseur et même total',...(sameItems?[`${shared} référence${shared>1?'s':''} d’article en commun`]:[]),days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`],rank:3,gap:gap()};
+}
+export function purchaseDuplicateReasons(draft:PurchaseDraft,tx:FinanceTransaction):string[] {
+  return duplicateMatch(draft,tx,todayISO)?.reasons??[];
+}
+/** Dépenses proches, la plus forte d'abord : règle la plus sûre, puis plus petit écart de dates. */
 export function purchaseDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):FinanceTransaction[] {
-  return transactions.filter(tx=>tx.id!==`TX-${draft.submissionId}` && !tx.finance?.voidedAt && (
-    (draft.documentHash && tx.finance?.sourceDocumentHash===draft.documentHash) ||
-    (draft.invoiceNumber.trim() && tx.finance?.invoiceNumber?.toLowerCase()===draft.invoiceNumber.trim().toLowerCase() && tx.finance?.vendor?.toLowerCase()===draft.vendor.trim().toLowerCase()) ||
-    (draft.vendor.trim() && tx.date===draft.date && cents(tx.amountTTC)===cents(draft.amount??0) && tx.finance?.vendor?.toLowerCase()===draft.vendor.trim().toLowerCase())
-  ));
+  let day='';
+  const today=()=>day||(day=todayISO());
+  return transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];})
+    .sort((a,b)=>a.match.rank-b.match.rank||a.match.gap-b.match.gap).map(entry=>entry.tx);
 }
 /** Checks every mutation first. No stock/equipment is created during matching. */
 export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof StorageService.getStocks>,transactions:FinanceTransaction[]=[]):string[] {
@@ -105,10 +153,40 @@ export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string>
   validatePurchaseCommit(draft);
   if(draft.proofDataUrl) {
     const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf');
-    await saveFinanceDocumentConfirmed(proof,+purchaseIsoDate(draft.date).slice(0,4));
+    await confirmProof(proof,+purchaseIsoDate(draft.date).slice(0,4));
     confirmedProofs.set(draft,{dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
   }
   return savePurchase(draft);
+}
+/** Sans réseau, le SDK répond en anglais (« client is offline ») : le brasseur doit lire ce qui s'est passé et quoi faire. */
+async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year:number) {
+  try { await saveFinanceDocumentConfirmed(proof,year); }
+  catch(error) {
+    // `financeDocuments` marque déjà ainsi l'échec réseau de Drive ; le SDK, lui, répond « unavailable ».
+    if((error as {code?:string})?.code!=='unavailable') throw error;
+    throw Object.assign(Error('Hors connexion : le justificatif n’a pas pu être envoyé sur ton Drive, donc rien n’est enregistré. Ta saisie reste ouverte : réessaie une fois en ligne.'),{code:'unavailable'});
+  }
+}
+const acceptsProof=(tx:FinanceTransaction)=>tx.finance?.kind==='expense' && !tx.finance.voidedAt && !tx.finance.proofDocumentId && !tx.proofUrl;
+/** Le justificatif lu peut rejoindre cette dépense : même achat au même total, dépense sans original, pas un avoir et
+ * pas une autre facture (numéros différents). */
+export function purchaseProofAttachable(draft:PurchaseDraft,tx:FinanceTransaction):boolean {
+  return Boolean(draft.proofDataUrl) && draft.sourceDocumentType!=='credit_note' && acceptsProof(tx) && isMoney(draft.amount) && cents(draft.amount)===cents(tx.amountTTC) && !otherInvoice(draft,tx) && purchaseDuplicateReasons(draft,tx).length>0;
+}
+/**
+ * Le même achat est déjà enregistré sans original : le justificatif lu lui est joint. Aucune nouvelle dépense, aucun
+ * stock, aucun paiement. L'original est confirmé sur Drive avant le lien, comme pour un nouvel achat.
+ */
+export async function attachProofToPurchase(draft:PurchaseDraft,transactionId:string):Promise<void> {
+  const tx=StorageService.getTransactions().find(item=>item.id===transactionId);
+  if(!tx || !purchaseProofAttachable(draft,tx)) throw Error('Ce justificatif ne peut pas rejoindre cette dépense (original déjà joint, autre total ou avoir). Rien n’a été rattaché.');
+  const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl!,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf');
+  await confirmProof(proof,+(isoDate(tx.date)??todayISO()).slice(0,4));
+  // L'envoi prend du temps : la dépense relue est celle qu'on complète, jamais l'instantané d'avant l'envoi.
+  const current=StorageService.getTransactions().find(item=>item.id===transactionId);
+  if(!current?.finance || !purchaseProofAttachable(draft,current)) throw Error('Cette dépense a changé pendant l’envoi. Rien n’a été rattaché ; rouvre-la pour vérifier.');
+  StorageService.updateTransaction({...current,proofFileName:proof.fileName,proofType:proof.mimeType,finance:{...current.finance,proofDocumentId:proof.id,sourceDocumentHash:current.finance.sourceDocumentHash??draft.documentHash}});
+  await FirestoreRepo.waitForDocument<FinanceTransaction>('transactions',current.id,15000,saved=>saved.finance?.proofDocumentId===proof.id);
 }
 /** A timeout only resumes readback. Replay is released by a proven rejection + absent server document. */
 export async function confirmPurchase(draft:PurchaseDraft):Promise<void> {
@@ -141,7 +219,7 @@ export function savePurchase(draft:PurchaseDraft):string {
     if (line.stockAction==='new') {
       stockRef=`MP-${draft.submissionId}-${index}`;
       const type=line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const;
-      newStocks.push({ type,item:{id:stockRef,ref:stockRef,name:line.description.trim(),category:line.stockCategory?.trim()||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:line.unit.trim(),currentStock:line.quantity,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined} });
+      newStocks.push({ type,item:{id:stockRef,ref:stockRef,name:line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:line.unit.trim(),currentStock:line.quantity,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined} });
       receipts.push({ref:stockRef,qty:line.quantity,unit:line.unit,lineId:line.id,type});
     } else if (line.stockAction==='existing') {
       const item=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef)!;
