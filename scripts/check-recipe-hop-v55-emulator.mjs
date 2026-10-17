@@ -17,6 +17,8 @@
  *   node scripts/check-recipe-hop-v55-emulator.mjs --out <dossier-preuves> [--widths 390,1280]
  *        [--cases persistance,alpha,brouillon-futur,programme-froid,brouillon-fraicheur] [--lock <dossier-verrou>] [--port 5174] [--keep-tmp]
  *        [--cpu-throttle 6]   (processeur ralenti ×N dans Chrome, pour un téléphone lent)
+ *        [--diag-memoire]     (diagnostic : `page.metrics()` de l'onglet à chaque étape, contrôle, navigation et toutes
+ *                              les 5 s, dans `<out>/diag-memoire.jsonl` ; inactif par défaut)
  * Le mode `--inner` est lancé par `firebase emulators:exec`, jamais à la main.
  */
 import assert from 'node:assert/strict';
@@ -166,7 +168,7 @@ async function outer() {
     const env = { ...process.env, JAVA_HOME, PATH: `${join(JAVA_HOME, 'bin')}${process.platform === 'win32' ? ';' : ':'}${process.env.PATH}`,
       EMU_OUT: out, EMU_TMP: tmp, EMU_WIDTHS: option('widths', '390,1280'), EMU_CASES: option('cases', Object.keys(CASES).join(',')),
       EMU_PORT: option('port', '5174'), EMU_RULES_SHA: rules.sha,
-      EMU_CPU_THROTTLE: option('cpu-throttle', '1') };
+      EMU_CPU_THROTTLE: option('cpu-throttle', '1'), EMU_DIAG_MEMOIRE: flag('diag-memoire') ? '1' : '' };
     for (const secret of ['GEMINI_API_KEY', 'GOOGLE_APPLICATION_CREDENTIALS', 'GOOGLE_API_KEY']) delete env[secret];
     const inner = `"${process.execPath}" "${SELF}" --inner`;
     const cli = join(ROOT, 'node_modules/firebase-tools/lib/bin/firebase.js');
@@ -1412,6 +1414,62 @@ async function inner() {
   const cpuThrottle = Math.max(1, Number(process.env.EMU_CPU_THROTTLE) || 1);
   const report = { project: PROJECT, rulesSha: process.env.EMU_RULES_SHA, widths, cases, cpuThrottle, runs: [], checks: [], blocked: [], rewrites: [], pids: {} };
   const write = () => writeFileSync(join(out, 'report.json'), JSON.stringify(report, null, 2));
+  // --diag-memoire only: metrics of the App tab (JS heap, DOM nodes, documents) with the last step or check reached.
+  const diag = process.env.EMU_DIAG_MEMOIRE === '1';
+  let diagLast = 'début', diagTimer = null;
+  /** Attached DOM: the heaviest subtree from <body> down, and the most frequent tags and classes inside it. */
+  const diagDom = page => page.evaluate(() => {
+    const size = e => e.getElementsByTagName('*').length;
+    const name = e => `${e.tagName.toLowerCase()}${e.id ? `#${e.id}` : ''}${e.dataset?.testid ? `[${e.dataset.testid}]` : ''}`
+      + (typeof e.className === 'string' && e.className.trim() ? `.${e.className.trim().split(/\s+/).slice(0, 2).join('.')}` : '');
+    const chain = [];
+    let node = document.body;
+    for (;;) {
+      const total = size(node);
+      chain.push(`${name(node)} ${total}`);
+      const [heaviest] = [...node.children].map(child => [child, size(child)]).sort((a, b) => b[1] - a[1]);
+      if (!heaviest || heaviest[1] < 500 || heaviest[1] < total * 0.6) break;
+      node = heaviest[0];
+    }
+    const top = (keys, n) => {
+      const counts = new Map();
+      for (const key of keys) counts.set(key, (counts.get(key) ?? 0) + 1);
+      return [...counts].sort((a, b) => b[1] - a[1]).slice(0, n);
+    };
+    const inside = [...node.getElementsByTagName('*')];
+    return { attached: size(document), chain, children: [...node.children].map(child => `${name(child)} ${size(child)}`).slice(0, 8),
+      tags: top(inside.map(e => e.tagName.toLowerCase()), 6), classes: top(inside.map(e => typeof e.className === 'string' ? e.className.trim().split(/\s+/)[0] : '').filter(Boolean), 6) };
+  });
+  /** Live JS memory by allocating function, module and 4-frame stack (Chrome's sampling heap profiler, one per tab). */
+  const diagProfilers = new WeakMap();
+  const diagAllocations = profile => {
+    const byFunction = new Map(), byModule = new Map(), byStack = new Map();
+    const add = (map, key, bytes) => map.set(key, (map.get(key) ?? 0) + bytes);
+    const walk = (node, parents) => {
+      const { functionName, url, lineNumber } = node.callFrame;
+      const module = url ? url.replace(/^https?:\/\/[^/]+/u, '').replace(/\?.*$/u, '') : '(natif)';
+      const frame = `${functionName || '(anonyme)'} ${module}:${lineNumber + 1}`;
+      const path = [frame, ...parents].slice(0, 4);
+      if (node.selfSize) { add(byFunction, frame, node.selfSize); add(byModule, module, node.selfSize); add(byStack, path.join(' ← '), node.selfSize); }
+      for (const child of node.children) walk(child, path);
+    };
+    walk(profile.head, []);
+    const top = (map, n) => [...map].sort((a, b) => b[1] - a[1]).slice(0, n).map(([key, bytes]) => `${(bytes / 1048576).toFixed(1)} Mo ${key}`);
+    return { functions: top(byFunction, 10), modules: top(byModule, 8), stacks: top(byStack, 6) };
+  };
+  const diagSample = (page, reason, width) => {
+    if (!diag || !page || page.isClosed()) return;
+    const deep = reason === 'step' || reason === 'check';
+    const profiler = deep ? diagProfilers.get(page) : null;
+    Promise.all([page.metrics(), deep ? diagDom(page).catch(error => ({ error: String(error).slice(0, 200) })) : null,
+      profiler ? profiler.send('HeapProfiler.getSamplingProfile').then(({ profile }) => diagAllocations(profile)).catch(error => ({ error: String(error).slice(0, 200) })) : null])
+      .then(([m, dom, allocations]) =>
+      appendFileSync(join(out, 'diag-memoire.jsonl'), `${JSON.stringify({ t: new Date().toISOString(), width, reason,
+        last: diagLast, url: page.url().slice(0, 120), heapUsedMB: +(m.JSHeapUsedSize / 1048576).toFixed(1),
+        heapTotalMB: +(m.JSHeapTotalSize / 1048576).toFixed(1), nodes: m.Nodes, documents: m.Documents, frames: m.Frames,
+        listeners: m.JSEventListeners, layouts: m.LayoutCount, styleRecalcs: m.RecalcStyleCount, taskS: +m.TaskDuration.toFixed(1),
+        ...(dom ? { dom } : {}), ...(allocations ? { allocations } : {}) })}\n`)).catch(() => {});
+  };
   const { initializeApp } = await import(pathToFileURL(join(ROOT, 'functions/node_modules/firebase-admin/lib/esm/app/index.js')).href);
   const { getFirestore } = await import(pathToFileURL(join(ROOT, 'functions/node_modules/firebase-admin/lib/esm/firestore/index.js')).href);
   initializeApp({ projectId: PROJECT });
@@ -1475,12 +1533,31 @@ async function inner() {
         await page.setViewport({ width, height: mobile ? 844 : 900, isMobile: mobile, hasTouch: mobile, deviceScaleFactor: 1 });
         // A slow phone: Chrome runs the page's scripts N times slower (renders included); 1 leaves the CPU as is.
         if (cpuThrottle > 1) await page.emulateCPUThrottling(cpuThrottle);
+        if (diag) {
+          page.on('framenavigated', frame => {
+            if (frame !== page.mainFrame()) return;
+            diagLast = `navigation ${frame.url().slice(0, 80)}`;
+            diagSample(page, 'navigation', width);
+          });
+          const profiler = await page.createCDPSession();
+          await profiler.send('HeapProfiler.enable');
+          await profiler.send('HeapProfiler.startSampling', { samplingInterval: 131072 });
+          diagProfilers.set(page, profiler);
+        }
         return page;
       };
       // Captures are taken on normal runs only: a slowed run checks behaviour.
       const c = { page: await openTab(), width, base, out, db, entry, recipeIds, uid: null, shots: cpuThrottle === 1,
         step: (label, data = {}) => { entry.steps.push({ label, ...data }); console.log(`${width} · ${label}`); write(); },
         check: (ok, label, data = {}) => { report.checks.push({ width, ok: !!ok, label, ...(ok ? {} : { data }) }); console.log(`${ok ? 'OK ' : 'KO '} ${width} · ${label}`); if (!ok) failed = true; write(); } };
+      if (diag) {
+        for (const kind of ['step', 'check']) {
+          const recorded = c[kind];
+          c[kind] = (...args) => { recorded(...args); diagLast = String(kind === 'step' ? args[0] : args[1]).slice(0, 120); diagSample(c.page, kind, width); };
+        }
+        clearInterval(diagTimer);
+        diagTimer = setInterval(() => diagSample(c.page, '5s', width), 5000);
+      }
       try {
         c.uid = await signIn(c);
         c.step('connexion émulée', { uid: c.uid });
@@ -1540,6 +1617,7 @@ async function inner() {
     }
     if (report.blocked.length) console.log(`requêtes bloquées hors localhost : ${report.blocked.length}`);
   } finally {
+    clearInterval(diagTimer);
     if (browser) await browser.close().catch(() => {});
     killTree(vite.pid);
     await sleep(1000);
