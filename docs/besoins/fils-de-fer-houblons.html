@@ -1,0 +1,487 @@
+<title>Fils de fer houblons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Mise en page : une colonne de lecture ; au centre, un téléphone 390 × 844 en boîtes grises,
+   jouable au doigt ; à côté, les notes de la direction. Basse fidélité voulue : gris, une seule
+   couleur d'action, police système. L'apparence finale vient en phase 7. */
+:root {
+  --bg: #141617; --fg: #e7e9ea; --muted: #9ba2a7; --line: #33383c; --panel: #1b1e20;
+  --scr: #1f2224; --box: #2b2f32; --box2: #383d41; --ink: #eceeef; --dim: #a3aaaf;
+  --hi: #d8b25c; --hi-ink: #1a1608; --warn: #e48467; --ok: #8fbf8a; --note: #5f82d4; --note-ink: #ffffff;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --bg: #f2f3f3; --fg: #1b1d1e; --muted: #5a6268; --line: #cdd2d5; --panel: #ffffff;
+  --scr: #e8eaeb; --box: #d8dcde; --box2: #c6ccd0; --ink: #17191a; --dim: #565e64;
+  --hi: #8a6614; --hi-ink: #ffffff; --warn: #b0452a; --ok: #3d7638; --note: #3559b0; --note-ink: #ffffff;
+  color-scheme: light; } }
+:root[data-theme="light"] {
+  --bg: #f2f3f3; --fg: #1b1d1e; --muted: #5a6268; --line: #cdd2d5; --panel: #ffffff;
+  --scr: #e8eaeb; --box: #d8dcde; --box2: #c6ccd0; --ink: #17191a; --dim: #565e64;
+  --hi: #8a6614; --hi-ink: #ffffff; --warn: #b0452a; --ok: #3d7638; --note: #3559b0; --note-ink: #ffffff;
+  color-scheme: light;
+}
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); line-height: 1.45; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 20px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+h1, h2 { text-wrap: balance; margin: 0; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.1rem; }
+p { margin: 0; max-width: 68ch; }
+.lead { color: var(--muted); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--hi); outline-offset: 1px; }
+
+/* Tâche et réglages */
+.task { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 12px; }
+.task h2 { font-size: 1.2rem; }
+.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; }
+.steps li.done { color: var(--ok); }
+.steps li .when { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: 6px; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { background: none; border: 0; padding: 7px 12px; min-height: 32px; }
+.seg button[aria-pressed="true"] { background: var(--hi); color: var(--hi-ink); font-weight: 600; }
+.btn { background: var(--box); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; min-height: 32px; }
+.btn.main { background: var(--hi); color: var(--hi-ink); border-color: var(--hi); font-weight: 600; }
+.count { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 14px; padding: 6px 10px; border: 1px dashed var(--line); border-radius: 8px; }
+.check { display: inline-flex; gap: 6px; align-items: center; min-height: 32px; }
+.check input { width: 18px; height: 18px; accent-color: var(--hi); }
+
+/* Scène : téléphone + notes */
+.stage { display: grid; grid-template-columns: minmax(0, 392px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 760px) { .stage { grid-template-columns: minmax(0, 1fr); } }
+.notes { display: grid; gap: 14px; min-width: 0; }
+.notes h3 { margin: 0 0 4px; font-size: .95rem; }
+.notes ul { margin: 0; padding-left: 1.2em; display: grid; gap: 3px; }
+.notes .k { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* Le téléphone (basse fidélité) */
+.phone { position: relative; width: min(390px, 100%); height: 844px; overflow: hidden; background: var(--scr); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 22px; display: flex; flex-direction: column; font-size: 13px; line-height: 1.3; }
+.phone.full { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 0; z-index: 50;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+.phone button { border: 0; background: none; padding: 0; color: inherit; }
+.p-top { height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-bottom: 1px solid var(--line); flex: none; }
+.p-top b { font-size: 14px; }
+.p-top .back { color: var(--dim); font-size: 18px; width: 16px; }
+.p-top .exit { margin-left: auto; background: var(--box) !important; border-radius: 6px; padding: 3px 8px !important; font-size: 12px; }
+.p-rail { height: 28px; display: flex; align-items: center; padding: 0 10px; gap: 6px; color: var(--dim); font-size: 11.5px; white-space: nowrap; overflow: hidden; border-bottom: 1px solid var(--line); flex: none; }
+.p-rail b { color: var(--ink); border-bottom: 2px solid var(--hi); }
+.p-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+.strip { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 10px; background: var(--box); font-variant-numeric: tabular-nums; }
+.strip .v { font-family: var(--mono); font-weight: 600; }
+.strip .gauge { width: 54px; height: 6px; background: var(--box2); border-radius: 3px; overflow: hidden; flex: none; }
+.strip .gauge i { display: block; height: 100%; background: var(--hi); }
+.strip .aro { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.empty { height: 28px; display: flex; align-items: center; padding: 0 10px; color: var(--dim); }
+.sec { height: 28px; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; font-weight: 600; font-size: 12px; color: var(--dim); text-transform: uppercase; letter-spacing: .04em; }
+.filters { height: 32px; display: flex; gap: 6px; align-items: center; padding: 0 10px; }
+.filters button { height: 26px; padding: 0 9px !important; border-radius: 13px; background: var(--box) !important; font-size: 12px; white-space: nowrap; }
+.filters button[aria-pressed="true"] { background: var(--hi) !important; color: var(--hi-ink); font-weight: 600; }
+.group { padding: 6px 10px 2px; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .04em; }
+.row { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr) 34px; height: 36px; align-items: stretch; border-bottom: 1px solid var(--line); }
+.row.on { background: var(--box); }
+.row .chk { display: grid; place-items: center; }
+.row .chk span { width: 18px; height: 18px; border: 1.5px solid var(--dim); border-radius: 4px; display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.row.on .chk span { background: var(--hi); border-color: var(--hi); color: var(--hi-ink); }
+.row .main { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 6px; align-items: center; text-align: left; padding-right: 4px !important; }
+.row .rk { font-family: var(--mono); color: var(--dim); font-size: 12px; }
+.row .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .nm small { font-weight: 400; color: var(--dim); }
+.row .qty { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.row .qty.buy { color: var(--dim); font-family: var(--sans); font-size: 12px; }
+.row .qty .added { color: var(--ok); font-family: var(--sans); font-size: 11px; margin-right: 4px; }
+.row .why { color: var(--dim); font-size: 15px; }
+.whyline { padding: 6px 10px 8px 44px; background: var(--box); border-bottom: 1px solid var(--line); font-size: 12px; display: grid; gap: 2px; }
+.whyline .base { color: var(--dim); font-size: 11px; }
+.openlist { margin: 10px; width: calc(100% - 20px); min-height: 44px; border: 1.5px dashed var(--dim) !important; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px !important; font-weight: 600; }
+.openlist span { font-weight: 400; color: var(--dim); }
+.add { position: relative; padding: 6px 10px; border-bottom: 1px solid var(--line); display: grid; gap: 5px; }
+.add .l1, .add .l2 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.add .nm { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.add .dose { display: inline-flex; align-items: center; gap: 2px; background: var(--box); border-radius: 6px; }
+.add .dose button { width: 26px; height: 26px; font-size: 16px; }
+.add .dose input { width: 38px; height: 24px; border: 0; background: var(--scr); color: var(--ink); font-family: var(--mono); text-align: right; border-radius: 4px; font-size: 13px; }
+.add .dose .u { color: var(--dim); padding-right: 2px; }
+.add .ibu { font-family: var(--mono); width: 62px; text-align: right; font-variant-numeric: tabular-nums; }
+.add .ibu.aroma { font-family: var(--sans); color: var(--dim); font-size: 12px; }
+.add .mom { height: 24px; min-width: 30px; padding: 0 5px !important; border-radius: 5px; background: var(--box) !important; font-size: 12px; font-family: var(--mono); }
+.add .mom[aria-pressed="true"] { background: var(--box2) !important; outline: 1.5px solid var(--hi); }
+.add .rep { margin-left: auto; height: 24px; padding: 0 8px !important; border-radius: 5px; border: 1px solid var(--dim) !important; font-size: 12px; }
+.add .del { width: 24px; height: 24px; color: var(--dim); font-size: 16px; }
+.add .lack { color: var(--warn); font-size: 12px; }
+.add .pro { color: var(--dim); font-size: 12px; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; top: 64px; background: var(--scr); border-top: 1px solid var(--dim); border-radius: 12px 12px 0 0; display: flex; flex-direction: column; z-index: 10; box-shadow: 0 -6px 18px rgba(0,0,0,.28); }
+.sheet .sh { height: 36px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; border-bottom: 1px solid var(--line); font-weight: 600; }
+.sheet .sh button { font-weight: 400; color: var(--dim); padding: 4px 6px !important; }
+.sheet .sb { flex: 1; overflow-y: auto; }
+.sheet .sub { padding: 6px 10px; color: var(--dim); font-size: 12px; }
+.cand { width: 100%; text-align: left; display: grid; gap: 2px; padding: 7px 10px !important; border-bottom: 1px solid var(--line) !important; }
+.cand .c1 { display: flex; gap: 8px; align-items: baseline; }
+.cand .c1 b { flex: 1; }
+.cand .c1 .d { font-family: var(--mono); }
+.cand .st { font-size: 12px; }
+.cand .st.ok { color: var(--ok); } .cand .st.lack { color: var(--warn); } .cand .st.buy { color: var(--dim); }
+.cand .c2 { font-size: 12px; color: var(--dim); }
+.cmp { position: absolute; left: 0; right: 0; bottom: 0; max-height: 52%; background: var(--panel); border-top: 2px solid var(--hi); z-index: 20; display: flex; flex-direction: column; box-shadow: 0 -6px 18px rgba(0,0,0,.3); }
+.cmp .sh { height: 34px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-weight: 600; }
+.cmp .sh .sp { flex: 1; }
+.cmp .sh button { font-weight: 400; color: var(--dim); font-size: 12px; padding: 3px 6px !important; }
+.cmp .tb { overflow: auto; flex: 1; }
+.cmp table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; font-variant-numeric: tabular-nums; }
+.cmp th, .cmp td { padding: 4px 4px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+.cmp th:first-child, .cmp td:first-child { width: 70px; color: var(--dim); font-weight: 400; padding-left: 10px; }
+.cmp thead th { font-weight: 700; color: var(--ink); }
+.cmp td.n { font-family: var(--mono); }
+.cmp td .best { color: var(--ok); }
+.cmp .addc { height: 24px; padding: 0 6px !important; border-radius: 5px; background: var(--box) !important; font-size: 12px; }
+.snack { position: absolute; left: 10px; right: 10px; bottom: 12px; z-index: 30; background: var(--ink); color: var(--scr); border-radius: 8px; height: 36px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; }
+.snack button { color: var(--hi) !important; font-weight: 700; }
+.phone.annot [data-note] { position: relative; }
+.phone.annot [data-note]::after { content: attr(data-note); position: absolute; right: 2px; top: -6px; z-index: 40; pointer-events: none;
+  font: 600 9.5px/1 var(--mono); background: var(--note); color: var(--note-ink); padding: 2px 4px; border-radius: 3px; white-space: nowrap; }
+
+/* Schéma et tableaux */
+.diagram { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; }
+.tablewrap { overflow-x: auto; }
+table.ref { border-collapse: collapse; font-size: 13px; min-width: 520px; }
+table.ref th, table.ref td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+table.ref th { color: var(--muted); font-weight: 600; }
+table.ref td:first-child { font-family: var(--mono); white-space: nowrap; }
+.limits { display: grid; gap: 6px; margin: 0; padding-left: 1.2em; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<main class="wrap">
+  <header style="display:grid;gap:6px">
+    <h1>Fils de fer houblons</h1>
+    <p class="lead">Deux façons de ranger l’étape Houblons d’une recette, à essayer au doigt. Boîtes grises : on juge l’usage, pas l’apparence. Ton vrai stock de production du 17.10.</p>
+  </header>
+
+  <section class="task" aria-labelledby="task-title">
+    <h2 id="task-title">Tâche : trouve ton meilleur houblon pour la stout.</h2>
+    <ol class="steps" id="steps">
+      <li id="st-add">Ajoute ton meilleur houblon pour cette stout.</li>
+      <li id="st-cmp">Compare 2 houblons côte à côte.</li>
+      <li id="st-rep">Remplace un ajout par un houblon que tu as en quantité suffisante.</li>
+    </ol>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Direction">
+        <button id="dirA" aria-pressed="true">A · Liste sur l’étape</button>
+        <button id="dirB" aria-pressed="false">B · Liste en un toucher</button>
+      </div>
+      <span class="count" id="count">Touchers : 0</span>
+      <button class="btn" id="reset">Recommencer</button>
+      <button class="btn main" id="full">Plein écran</button>
+      <label class="check"><input type="checkbox" id="annot"> Repères (questions, règles)</label>
+    </div>
+  </section>
+
+  <div class="stage">
+    <div class="phone" id="phone" aria-label="Maquette de l’étape Houblons, 390 × 844"></div>
+    <aside class="notes" id="notes"></aside>
+  </div>
+
+  <section style="display:grid;gap:10px">
+    <h2>Le parcours, toucher par toucher</h2>
+    <p class="lead">Trait plein : visible par défaut. Pointillé : à la demande. Les chiffres comptent les touchers depuis l’étape Houblons.</p>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  B0["B seulement : étape Houblons, mes ajouts"] -->|"1 toucher : Mes houblons"| E
+  E["Étape Houblons : mes houblons classés pour la stout, stock d’abord, quantité"] -->|"1 toucher sur la ligne"| A["Ajout créé : dose et moment sur la ligne"]
+  A -->|"− / + ou moment"| S["IBU et arôme à jour, moins d’1 s"]
+  E -->|"2 cases cochées"| C["Comparaison côte à côte : seulement les écarts"]
+  E -->|"1 toucher : 4 premiers"| C
+  A -->|"1 toucher : Remplacer"| R["Remplaçants : dose à IBU égal, gagné, perdu, stock"]
+  R -->|"1 toucher"| A
+  E -.->|"ⓘ"| W["Raison du rang et sa base"]
+  C -.->|"Tout afficher"| D["Toutes les valeurs"]
+  E -.->|"+ Catalogue"| K["Houblons à acheter, classés"]
+</pre></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>Repères : chaque élément et sa raison</h2>
+    <div class="tablewrap"><table class="ref">
+      <thead><tr><th>Élément</th><th>Ce qu’il montre par défaut</th><th>Questions</th><th>Règles</th></tr></thead>
+      <tbody>
+        <tr><td>Liste classée</td><td>Rang, nom, quantité en stock. Rien d’autre sur la ligne.</td><td>Q01, Q03, Q21, Q24</td><td>U1, U2, U3</td></tr>
+        <tr><td>ⓘ</td><td>Rien. Ouvre la raison du rang, l’alpha, les arômes et la base.</td><td>Q01, Q16</td><td>U2</td></tr>
+        <tr><td>Case à cocher</td><td>Comparaison automatique dès 2 houblons.</td><td>Q02, Q16</td><td>critère 3 touchers</td></tr>
+        <tr><td>Ligne d’ajout</td><td>Dose, moment, IBU, 2 arômes, manque de stock.</td><td>Q15, Q17, Q24</td><td>U2, U6</td></tr>
+        <tr><td>Bandeau IBU</td><td>IBU total, cible, arôme dominant du programme.</td><td>Q15, Q20</td><td>U1</td></tr>
+        <tr><td>Remplacer</td><td>Remplaçants classés, dose à IBU égal, gagné et perdu.</td><td>Q05, Q06, Q18</td><td>U2, U3</td></tr>
+        <tr><td>+ Catalogue</td><td>Houblons à acheter, après le stock.</td><td>Q06, Q30</td><td>U2</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <h2>Ce que ces fils de fer ne règlent pas</h2>
+    <ul class="limits">
+      <li>Le classement est un exemple. L’app n’a aucune donnée d’usage pour la stout aujourd’hui (Q01, Q21) ; la règle de classement se décide dans les specs (phase 6).</li>
+      <li>Stock : tes 9 houblons avec une quantité en production le 17.10. L’alpha vient de la fiche, ou du nom de l’article quand la fiche n’en a pas.</li>
+      <li>IBU : formule de Tinseth, 20 L, densité 1,060, cible d’exemple 40 IBU. Les arômes sont des descripteurs d’exemple.</li>
+      <li>Comparer 4 houblons choisis un à un demande 4 touchers, un par houblon. Les 4 premiers se comparent en 1 toucher ; 2 ou 3 houblons au choix, en 2 ou 3 touchers.</li>
+      <li>Couleurs, typographie, icônes et largeur bureau : phase 7.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(() => {
+  // Stock de production (lecture seule, 17.10.2026) ; houblons à 0 g = catalogue « à acheter ».
+  // rank = rang d'exemple pour une stout sèche ou amère ; why = raison courte (à la demande).
+  const HOPS = [
+    { id: 'target', name: 'Target', g: 5, a: 11.3, origin: 'Angleterre', aroma: ['résine', 'épice', 'sauge'], rank: 1, why: 'Amérisant anglais : la résine et l’épice tiennent face au torréfié.' },
+    { id: 'cascade', name: 'Cascade', g: 60, a: 6.5, origin: 'États-Unis', aroma: ['pamplemousse', 'floral'], rank: 2, why: 'Classique des stouts américaines ; l’agrume s’accorde au torréfié.' },
+    { id: 'galaxy', name: 'Galaxy', g: 60, a: 17.2, origin: 'Australie', aroma: ['passion', 'pêche'], rank: 3, why: 'Alpha élevé : peu de matière pour l’amertume. Son fruit se perd dans le torréfié.' },
+    { id: 'citra', name: 'Citra', form: 'cryo', g: 65, a: 24.8, origin: 'États-Unis', aroma: ['pamplemousse', 'mangue'], rank: 4, why: 'Très concentré : amertume nette avec peu de matière végétale.' },
+    { id: 'idaho7', name: 'Idaho 7', g: 20, a: 12.7, origin: 'États-Unis', aroma: ['pin', 'thé noir', 'tropical'], rank: 5, why: 'Pin et thé noir compatibles avec le torréfié ; peu de stock.' },
+    { id: 'nelson', name: 'Nelson Sauvin', g: 100, a: 9.6, origin: 'Nouvelle-Zélande', aroma: ['raisin blanc', 'groseille'], rank: 6, why: 'Le raisin blanc se lit mal sur une stout sèche.' },
+    { id: 'sabro', name: 'Sabro', g: 30, a: 13.4, origin: 'États-Unis', aroma: ['coco', 'mandarine', 'cèdre'], rank: 7, why: 'Coco et cèdre : plutôt pour une stout pâtissière.' },
+    { id: 'motueka', name: 'Motueka', g: 20, a: 8.1, origin: 'Nouvelle-Zélande', aroma: ['citron vert'], rank: 8, why: 'Citron vert frais, en décalage avec le torréfié.' },
+    { id: 'hblanc', name: 'Hallertau Blanc', g: 30, a: 9.5, origin: 'Allemagne', aroma: ['vin blanc', 'passion'], rank: 9, why: 'Notes de vin blanc fines, masquées par le torréfié.' },
+    { id: 'ekg', name: 'East Kent Goldings', g: 0, a: 5.5, origin: 'Angleterre', aroma: ['miel', 'épice', 'terre'], rank: 1, why: 'Le houblon des stouts anglaises : terre, miel, épice.' },
+    { id: 'fuggle', name: 'Fuggle', g: 0, a: 4.5, origin: 'Angleterre', aroma: ['terre', 'bois'], rank: 2, why: 'Terreux et boisé, classique des stouts irlandaises.' },
+    { id: 'nugget', name: 'Nugget', g: 0, a: 13, origin: 'États-Unis', aroma: ['résine', 'herbe', 'épice'], rank: 3, why: 'Amérisant résineux, courant dans les stouts.' },
+    { id: 'simcoe', name: 'Simcoe', g: 0, a: 13, origin: 'États-Unis', aroma: ['pin', 'passion'], rank: 4, why: 'Pin et résine ; fruit discret dans le torréfié.' },
+  ];
+  const H = Object.fromEntries(HOPS.map((h) => [h.id, h]));
+  const STOCK = HOPS.filter((h) => h.g > 0).sort((x, y) => x.rank - y.rank);
+  const CAT = HOPS.filter((h) => h.g === 0).sort((x, y) => x.rank - y.rank);
+  const TARGET = 40, VOL = 20, OG = 1.060;
+  const MOMENTS = [60, 30, 10, 0, 'cru'];
+  const BIG = 1.65 * Math.pow(0.000125, OG - 1);
+  const util = (m) => (typeof m === 'number' && m > 0 ? BIG * (1 - Math.exp(-0.04 * m)) / 4.15 : 0);
+  const ibu = (h, g, m) => util(m) * (h.a / 100) * g * 1000 / VOL;
+  const doseFor = (h, target, m) => (util(m) ? target / (util(m) * (h.a / 100) * 1000 / VOL) : 0);
+  const fmt = (n, d = 0) => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: d });
+  const mlabel = (m) => (m === 'cru' ? 'cru' : m + '′');
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const fresh = () => ({ adds: [], sel: [], cat: false, sheet: null, rep: -1, why: null, undo: null, all: false, touches: 0, done: {} });
+  let S = Object.assign(fresh(), { dir: 'A', annot: false, full: false });
+  try { const d = localStorage.getItem('fdf-dir'); if (d === 'A' || d === 'B') S.dir = d; } catch (e) { /* stockage indisponible */ }
+
+  const phone = document.getElementById('phone');
+  let refocus = false;
+  const used = (id, except = -1) => S.adds.reduce((s, a, i) => (a.id === id && i !== except ? s + a.g : s), 0);
+  const totalIbu = () => S.adds.reduce((s, a) => s + ibu(H[a.id], a.g, a.m), 0);
+  const rankOf = (h) => (h.g > 0 ? STOCK.indexOf(h) + 1 : STOCK.length + CAT.indexOf(h) + 1);
+  function programAroma() {
+    const w = {};
+    for (const a of S.adds) {
+      const k = a.m === 'cru' ? 1 : a.m === 0 ? 0.8 : a.m <= 10 ? 0.5 : a.m <= 30 ? 0.2 : 0.05;
+      H[a.id].aroma.slice(0, 2).forEach((t, i) => { w[t] = (w[t] || 0) + a.g * k * (i ? 0.7 : 1); });
+    }
+    return Object.entries(w).sort((x, y) => y[1] - x[1]).slice(0, 2).map((e) => e[0]);
+  }
+
+  // Premier ajout : amérisant à 60′, dose pour atteindre la cible. Ensuite : arôme à 10′, 1 g/L.
+  // La dose n'est pas plafonnée au stock : la ligne montre ce qui manque.
+  function addHop(id) {
+    const h = H[id];
+    const hasBitter = S.adds.some((a) => typeof a.m === 'number' && a.m >= 30);
+    const m = hasBitter ? 10 : 60;
+    const g = hasBitter ? VOL : Math.max(1, Math.ceil(doseFor(h, Math.max(1, TARGET - totalIbu()), 60)));
+    S.adds.push({ id, g, m });
+  }
+
+  // ---------- rendu du téléphone ----------
+  function top() {
+    return `<div class="p-top"><span class="back" aria-hidden="true">‹</span><b>Stout amère · 20 L</b>` +
+      (S.full ? `<button class="exit" data-act="exitfull">Quitter le plein écran</button>` : '') + `</div>` +
+      `<div class="p-rail" aria-hidden="true">Identité · Malts · Eau · <b>Houblons</b> · Levure · Fermentation</div>`;
+  }
+  function strip() {
+    const t = totalIbu(), aro = programAroma();
+    return `<div class="strip" data-note="Q15 Q20 · U1"><span>IBU</span><span class="v">${fmt(t)}</span><span style="color:var(--dim)">/ ${TARGET}</span>` +
+      `<span class="gauge"><i style="width:${Math.min(100, t / TARGET * 100)}%"></i></span>` +
+      `<span class="aro">${aro.length ? 'arôme : ' + aro.join(', ') : ''}</span></div>`;
+  }
+  function addLine(a, i) {
+    const h = H[a.id], v = ibu(h, a.g, a.m), lack = Math.max(0, used(a.id) - h.g);
+    return `<div class="add"${i === 0 ? ' data-note="Q15 Q17 Q24"' : ''}>` +
+      `<div class="l1"><span class="nm">${esc(h.name)}${h.form ? ' ' + h.form : ''}</span>` +
+      `<span class="dose"><button data-act="minus" data-i="${i}" aria-label="Moins 1 g">−</button>` +
+      `<input id="dose-${i}" data-i="${i}" type="text" inputmode="decimal" autocomplete="off" value="${fmt(a.g)}" aria-label="Dose de ${esc(h.name)} en grammes"><span class="u">g</span>` +
+      `<button data-act="plus" data-i="${i}" aria-label="Plus 1 g">+</button></span>` +
+      `<span class="ibu${util(a.m) ? '' : ' aroma'}">${util(a.m) ? fmt(v, 1) + ' IBU' : 'arôme'}</span></div>` +
+      `<div class="l2">${MOMENTS.map((m) => `<button class="mom" data-act="mom" data-i="${i}" data-m="${m}" aria-pressed="${a.m === m}">${mlabel(m)}</button>`).join('')}` +
+      `<button class="rep" data-act="rep" data-i="${i}"${i === 0 ? ' data-note="Q05 Q06 Q18"' : ''}>Remplacer</button>` +
+      `<button class="del" data-act="del" data-i="${i}" aria-label="Retirer ${esc(h.name)}">×</button></div>` +
+      (lack ? `<div class="lack">En stock : ${fmt(h.g)} g · il manque ${fmt(lack)} g</div>` : '') +
+      `<div class="pro">${h.aroma.slice(0, 2).join(', ')}</div></div>`;
+  }
+  function adds() {
+    if (!S.adds.length) return `<div class="empty" data-note="U1">Aucun houblon. Touche une ligne pour l’ajouter.</div>`;
+    return `<div class="sec"><span>Mes ajouts</span></div>` + S.adds.map(addLine).join('');
+  }
+  function row(h, first) {
+    const on = S.sel.includes(h.id), u = used(h.id);
+    const qty = h.g > 0 ? `${u ? '<span class="added">ajouté</span>' : ''}${fmt(h.g)} g` : 'à acheter';
+    return `<div class="row${on ? ' on' : ''}"${first ? ' data-note="Q01 Q03 Q24 · U2"' : ''}>` +
+      `<button class="chk" data-act="sel" data-id="${h.id}" aria-pressed="${on}" aria-label="Comparer ${esc(h.name)}"><span>${on ? '✓' : ''}</span></button>` +
+      `<button class="main" data-act="add" data-id="${h.id}" aria-label="Ajouter ${esc(h.name)}"><span class="rk">${rankOf(h)}</span>` +
+      `<span class="nm">${esc(h.name)}${h.form ? ' <small>' + h.form + '</small>' : ''}</span><span class="qty${h.g ? '' : ' buy'}">${qty}</span></button>` +
+      `<button class="why" data-act="why" data-id="${h.id}" aria-expanded="${S.why === h.id}" aria-label="Pourquoi ce rang">ⓘ</button></div>` +
+      (S.why === h.id ? `<div class="whyline"><span>${esc(h.why)}</span><span class="base">α ${fmt(h.a, 1)} % · ${h.aroma.join(', ')} · ${esc(h.origin)} · rang d’exemple, usage stout non documenté</span></div>` : '');
+  }
+  function list() {
+    return `<div class="filters" data-note="Q01 Q21 · U3">` +
+      `<button data-act="stock" aria-pressed="${!S.cat}">Mon stock · ${STOCK.length}</button>` +
+      `<button data-act="cat" aria-pressed="${S.cat}">+ Catalogue</button>` +
+      `<button data-act="top4" aria-pressed="false" data-note="Q02">Comparer les 4 premiers</button></div>` +
+      STOCK.map((h, i) => row(h, i === 0)).join('') +
+      (S.cat ? `<div class="group">À acheter, classés</div>` + CAT.map((h) => row(h, false)).join('') : '') +
+      (S.sel.length >= 2 ? '<div style="height:52%"></div>' : '<div style="height:24px"></div>');
+  }
+  function sheetList() {
+    return `<div class="sheet" role="dialog" aria-label="Mes houblons pour cette stout"><div class="sh"><span>Mes houblons · stout, du + au −</span>` +
+      `<button data-act="close">Fermer</button></div><div class="sb" id="sb">${list()}</div></div>`;
+  }
+  function sheetReplace() {
+    const a = S.adds[S.rep]; if (!a) return '';
+    const h = H[a.id], keep = ibu(h, a.g, a.m);
+    const cands = [...STOCK, ...CAT].filter((x) => x.id !== h.id).map((x) => {
+      const g = util(a.m) ? Math.max(1, Math.round(doseFor(x, keep, a.m))) : a.g;
+      const free = x.g - used(x.id, S.rep);
+      const st = x.g === 0 ? 'buy' : free >= g ? 'ok' : 'lack';
+      const gain = x.aroma.filter((t) => !h.aroma.includes(t)).slice(0, 2);
+      const lost = h.aroma.filter((t) => !x.aroma.includes(t)).slice(0, 2);
+      return { x, g, st, free, gain, lost };
+    }).sort((p, q) => ({ ok: 0, lack: 1, buy: 2 }[p.st] - { ok: 0, lack: 1, buy: 2 }[q.st]) || rankOf(p.x) - rankOf(q.x));
+    return `<div class="sheet" role="dialog" aria-label="Remplacer ${esc(h.name)}"><div class="sh"><span>Remplacer ${esc(h.name)} · ${fmt(a.g)} g à ${mlabel(a.m)}</span>` +
+      `<button data-act="close">Fermer</button></div><div class="sb">` +
+      `<div class="sub">${util(a.m) ? `Dose pour garder ${fmt(keep, 1)} IBU. En stock d’abord.` : 'Même dose : ajout d’arôme. En stock d’abord.'}</div>` +
+      cands.map((c) => `<button class="cand" data-act="apply" data-id="${c.x.id}" data-g="${c.g}">` +
+        `<span class="c1"><b>${esc(c.x.name)}${c.x.form ? ' ' + c.x.form : ''}</b><span class="d">${fmt(c.g)} g</span>` +
+        `<span class="st ${c.st}">${c.st === 'ok' ? '✓ en stock' : c.st === 'lack' ? `manque ${fmt(c.g - Math.max(0, c.free))} g` : 'à acheter'}</span></span>` +
+        `<span class="c2">gagné : ${c.gain.join(', ') || '—'} · perdu : ${c.lost.join(', ') || '—'}</span></button>`).join('') +
+      `</div></div>`;
+  }
+  function compare() {
+    const hs = S.sel.map((id) => H[id]);
+    const ib = hs.map((h) => ibu(h, 20, 60)), maxIb = Math.max(...ib);
+    const rows = [
+      ['Rang', hs.map((h) => String(rankOf(h))), true],
+      ['En stock', hs.map((h) => (h.g ? fmt(h.g) + ' g' : 'à acheter')), true],
+      ['α', hs.map((h) => fmt(h.a, 1) + ' %'), true],
+      ['20 g à 60′', hs.map((h, i) => `<span class="${ib[i] === maxIb ? 'best' : ''}">${fmt(ib[i])} IBU</span>`), true],
+      ['Arôme', hs.map((h) => h.aroma.slice(0, 2).join(', ')), false],
+    ];
+    const extra = [
+      ['Origine', hs.map((h) => esc(h.origin)), false],
+      ['Forme', hs.map((h) => h.form || 'pellet'), false],
+      ['Pour la stout', hs.map((h) => esc(h.why)), false],
+    ];
+    const shown = (S.all ? rows.concat(extra) : rows).filter((r) => S.all || new Set(r[1]).size > 1);
+    const hidden = rows.length - shown.filter((r) => rows.includes(r)).length;
+    return `<div class="cmp" role="region" aria-label="Comparaison" data-note="Q02 Q16"><div class="sh"><span>Comparer · ${hs.length}</span><span class="sp"></span>` +
+      `<button data-act="all">${S.all ? 'Écarts seulement' : 'Tout afficher'}</button><button data-act="clearsel">Fermer</button></div>` +
+      `<div class="tb"><table><thead><tr><th></th>${hs.map((h) => `<th>${esc(h.name)}${h.form ? ' ' + h.form : ''}</th>`).join('')}</tr></thead><tbody>` +
+      shown.map((r) => `<tr><td>${r[0]}</td>${r[1].map((v) => `<td class="${r[2] ? 'n' : ''}">${v}</td>`).join('')}</tr>`).join('') +
+      (hidden && !S.all ? `<tr><td colspan="${hs.length + 1}" style="color:var(--dim)">${hidden} ligne${hidden > 1 ? 's' : ''} identique${hidden > 1 ? 's' : ''} masquée${hidden > 1 ? 's' : ''}</td></tr>` : '') +
+      `<tr><td></td>${hs.map((h) => `<td><button class="addc" data-act="add" data-id="${h.id}">Ajouter</button></td>`).join('')}</tr>` +
+      `</tbody></table></div></div>`;
+  }
+
+  function render(focusId) {
+    const body = phone.querySelector('#pbody'), sb = phone.querySelector('#sb');
+    const scroll = [body ? body.scrollTop : 0, sb ? sb.scrollTop : 0];
+    phone.className = 'phone' + (S.full ? ' full' : '') + (S.annot ? ' annot' : '');
+    const listHere = S.dir === 'A' ? list() : `<button class="openlist" data-act="open" data-note="1 toucher · C002">Mes houblons pour cette stout <span>${STOCK.length} en stock</span></button>`;
+    phone.innerHTML = top() + `<div class="p-body" id="pbody">${strip()}${adds()}${S.dir === 'A' && S.adds.length ? '<div class="sec"><span>Mes houblons pour cette stout</span></div>' : ''}${listHere}</div>` +
+      (S.dir === 'B' && S.sheet === 'list' ? sheetList() : '') + (S.sheet === 'replace' ? sheetReplace() : '') +
+      (S.sel.length >= 2 ? compare() : '') +
+      (S.undo ? `<div class="snack" role="status"><span>${S.undo.msg}</span><button data-act="undo">Annuler</button></div>` : '');
+    const nb = phone.querySelector('#pbody'), ns = phone.querySelector('#sb');
+    if (nb) nb.scrollTop = scroll[0];
+    if (ns) ns.scrollTop = scroll[1];
+    if (focusId) { const f = document.getElementById(focusId); if (f) { refocus = true; f.focus(); refocus = false; const n = f.value.length; f.setSelectionRange(n, n); } }
+    panel();
+  }
+
+  function panel() {
+    document.getElementById('count').textContent = 'Touchers : ' + S.touches;
+    for (const [k, id] of [['add', 'st-add'], ['cmp', 'st-cmp'], ['rep', 'st-rep']]) {
+      const li = document.getElementById(id), d = S.done[k];
+      li.classList.toggle('done', d != null);
+      const old = li.querySelector('.when'); if (old) old.remove();
+      if (d != null) { const s = document.createElement('span'); s.className = 'when'; s.textContent = `fait au toucher ${d}`; li.append(s); }
+    }
+    document.getElementById('dirA').setAttribute('aria-pressed', S.dir === 'A');
+    document.getElementById('dirB').setAttribute('aria-pressed', S.dir === 'B');
+    document.getElementById('notes').innerHTML = S.dir === 'A' ? NOTES_A : NOTES_B;
+  }
+
+  const NOTES_A = `<div><h3>A · Liste sur l’étape</h3><p>La liste classée est l’étape elle-même : rien à ouvrir. Tes 9 houblons tiennent sans défiler sous le bandeau IBU.</p></div>
+    <div><h3>Touchers</h3><ul><li>Voir mes houblons classés : <b>0</b></li><li>Ajouter le meilleur : <b>1</b></li><li>Comparer 2 au choix : <b>2</b> · les 4 premiers : <b>1</b></li><li>Remplacer un ajout : <b>2</b></li></ul></div>
+    <div><h3>Visible par défaut</h3><ul><li>Ligne : rang, nom, quantité.</li><li>Ajout : dose, moment, IBU, 2 arômes, manque de stock.</li><li>Bandeau : IBU total et arôme dominant.</li></ul></div>
+    <div><h3>À la demande</h3><ul><li>ⓘ : raison du rang, alpha, arômes, base.</li><li>+ Catalogue : houblons à acheter.</li><li>Comparaison : Tout afficher.</li></ul></div>
+    <p class="k">Risque : avec beaucoup d’ajouts, la liste descend sous le pli.</p>`;
+  const NOTES_B = `<div><h3>B · Liste en un toucher</h3><p>L’étape garde ta recette en tête. Un seul bouton ouvre tes houblons classés dans une feuille ; un toucher sur une ligne ajoute et referme.</p></div>
+    <div><h3>Touchers</h3><ul><li>Voir mes houblons classés : <b>1</b></li><li>Ajouter le meilleur : <b>2</b></li><li>Comparer 2 au choix : <b>3</b> · les 4 premiers : <b>2</b></li><li>Remplacer un ajout : <b>2</b></li></ul></div>
+    <div><h3>Visible par défaut</h3><ul><li>Étape : bandeau IBU, mes ajouts, un bouton.</li><li>Feuille : rang, nom, quantité.</li></ul></div>
+    <div><h3>À la demande</h3><ul><li>ⓘ : raison du rang, alpha, arômes, base.</li><li>+ Catalogue : houblons à acheter.</li><li>Comparaison : Tout afficher.</li></ul></div>
+    <p class="k">Risque : un toucher de plus pour chaque ajout.</p>`;
+
+  function act(a, d) {
+    const keepUndo = a === 'undo';
+    if (!keepUndo) S.undo = null;
+    if (a === 'add') { addHop(d.id); if (S.done.add == null) S.done.add = S.touches; if (S.dir === 'B') S.sheet = null; }
+    else if (a === 'sel') {
+      const i = S.sel.indexOf(d.id);
+      if (i >= 0) S.sel.splice(i, 1); else { if (S.sel.length >= 4) S.sel.shift(); S.sel.push(d.id); }
+      if (S.sel.length >= 2 && S.done.cmp == null) S.done.cmp = S.touches;
+    }
+    else if (a === 'top4') { S.sel = (S.cat ? STOCK.concat(CAT) : STOCK).slice(0, 4).map((h) => h.id); if (S.done.cmp == null) S.done.cmp = S.touches; }
+    else if (a === 'why') S.why = S.why === d.id ? null : d.id;
+    else if (a === 'stock') S.cat = false;
+    else if (a === 'cat') S.cat = true;
+    else if (a === 'open') S.sheet = 'list';
+    else if (a === 'close') S.sheet = null;
+    else if (a === 'clearsel') S.sel = [];
+    else if (a === 'all') S.all = !S.all;
+    else if (a === 'minus') S.adds[+d.i].g = Math.max(1, S.adds[+d.i].g - 1);
+    else if (a === 'plus') S.adds[+d.i].g += 1;
+    else if (a === 'mom') S.adds[+d.i].m = d.m === 'cru' ? 'cru' : Number(d.m);
+    else if (a === 'del') { S.undo = { adds: structuredClone(S.adds), msg: 'Ajout retiré' }; S.adds.splice(+d.i, 1); }
+    else if (a === 'rep') { S.sheet = 'replace'; S.rep = +d.i; }
+    else if (a === 'apply') {
+      S.undo = { adds: structuredClone(S.adds), msg: `${H[S.adds[S.rep].id].name} remplacé par ${H[d.id].name}` };
+      S.adds[S.rep] = { id: d.id, g: Number(d.g), m: S.adds[S.rep].m }; S.sheet = null;
+      if (S.done.rep == null) S.done.rep = S.touches;
+    }
+    else if (a === 'undo') { if (S.undo) S.adds = S.undo.adds; S.undo = null; }
+    else if (a === 'exitfull') S.full = false;
+  }
+
+  phone.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-act]'); if (!t || !phone.contains(t)) return;
+    if (t.dataset.act !== 'exitfull') S.touches++;
+    act(t.dataset.act, t.dataset); render();
+  });
+  phone.addEventListener('input', (e) => {
+    const f = e.target; if (!f.matches('input[data-i]')) return;
+    const v = parseFloat(f.value.replace(',', '.'));
+    if (Number.isFinite(v) && v > 0) { S.adds[+f.dataset.i].g = Math.round(v * 10) / 10; render(f.id); }
+  });
+  // Un toucher dans le champ de dose compte une fois ; le retour du focus après rendu ne compte pas.
+  phone.addEventListener('focusin', (e) => { if (!refocus && e.target.matches('input[data-i]')) { S.touches++; panel(); } });
+
+  const setDir = (d) => { S = Object.assign(fresh(), { dir: d, annot: S.annot, full: S.full }); try { localStorage.setItem('fdf-dir', d); } catch (e) { /* stockage indisponible */ } render(); };
+  document.getElementById('dirA').addEventListener('click', () => setDir('A'));
+  document.getElementById('dirB').addEventListener('click', () => setDir('B'));
+  document.getElementById('reset').addEventListener('click', () => setDir(S.dir));
+  document.getElementById('full').addEventListener('click', () => { S.full = true; render(); });
+  document.getElementById('annot').addEventListener('change', (e) => { S.annot = e.target.checked; render(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.full) { S.full = false; render(); } });
+  render();
+})();
+</script>
