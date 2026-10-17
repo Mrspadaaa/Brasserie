@@ -1,0 +1,64 @@
+{
+  "tool": "measure-hop-step.mjs (premier passage)",
+  "at": "2026-10-17T20:32:12.574Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "style": "American Stout",
+  "controls": [
+    {
+      "kind": "summary",
+      "text": "Corriger les lignes de houblon · 0",
+      "top": 298,
+      "h": 28,
+      "w": 356
+    },
+    {
+      "kind": "button",
+      "text": "Ma bière",
+      "top": 528,
+      "h": 30,
+      "w": 81
+    },
+    {
+      "kind": "button",
+      "text": "Lire ma question",
+      "top": 704,
+      "h": 30,
+      "w": 122
+    },
+    {
+      "kind": "button",
+      "text": "Chercher une matière",
+      "top": 704,
+      "h": 30,
+      "w": 163
+    },
+    {
+      "kind": "button",
+      "text": "Demander au compagnon",
+      "top": 740,
+      "h": 30,
+      "w": 170
+    }
+  ],
+  "blocs": [
+    {
+      "t": "Brouillon conservé sur cet appareil.",
+      "top": 77
+    },
+    {
+      "t": "Amertume et répartition",
+      "top": 148
+    },
+    {
+      "t": "Atelier Houblons V5.5 · brouillon en cours",
+      "top": 347
+    },
+    {
+      "t": "Ta question",
+      "top": 586
+    }
+  ]
+}
