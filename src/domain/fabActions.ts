@@ -35,6 +35,8 @@ export interface FabAction {
   intent: FabIntent;
   /** Lu par les lecteurs d'écran, et affiché au survol. */
   label: string;
+  /** Seconde ligne dans le menu ; « Sur cet écran » par défaut. */
+  hint?: string;
 }
 
 /** Sous-onglets connus, par onglet. `null` = l'onglet n'en a pas. */
@@ -48,7 +50,10 @@ export type SubTabOf = {
 
 export type AnySubTab = SubTabOf[keyof SubTabOf];
 
-const A = (intent: FabIntent, label: string): FabAction => ({ intent, label });
+const A = (intent: FabIntent, label: string, hint?: string): FabAction => ({ intent, label, hint });
+
+/** Le formulaire ouvert est celui d'une dépense : la seconde ligne le dit avant l'appui. */
+const NEW_TRANSACTION = A('newTransaction', 'Nouvelle écriture', 'Dépense saisie à la main');
 
 /**
  * Le tableau complet. Chaque onglet donne soit une action unique, soit une
@@ -57,8 +62,10 @@ const A = (intent: FabIntent, label: string): FabAction => ({ intent, label });
 const ACTIONS: {
   [K in TabType]: FabAction | Record<NonNullable<SubTabOf[K]>, FabAction>;
 } = {
-  dashboard: A('quickAction', 'Saisir un achat, une vente ou un brassin'),
-  finances: A('newTransaction', 'Nouvelle écriture'),
+  // #114 : sur le tableau de bord comme sur Finances, le + crée d'abord une
+  // écriture comptable ; vente, facture, recette et brassin restent dessous.
+  dashboard: NEW_TRANSACTION,
+  finances: NEW_TRANSACTION,
 
   production: {
     batches: A('newBatch', 'Nouveau brassin'),

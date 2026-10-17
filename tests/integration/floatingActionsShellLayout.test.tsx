@@ -15,14 +15,16 @@ import { ActionDock, PageShell } from '../../src/pages/PageShell';
 import { brewerJobs } from '../../src/services/brewerJobs';
 
 /*
- * Régression du recouvrement du lanceur global (FAB) : à 390 px, le bouton
- * flottant recevait le toucher destiné à un sélecteur passé dessous au défilement.
+ * Lanceur global (FAB). Sur les onglets, il suit une case hors de toute zone
+ * défilante ; clavier ouvert sur une page, une case de l'en-tête. Sur une page
+ * plein écran clavier fermé, il FLOTTE en bas à droite (#114 : plus de bande de
+ * pied pour lui), et la fin du contenu réserve sa place : à 390 px, le bouton
+ * flottant recevait le toucher d'un sélecteur resté dessous en fin de page.
  *
- * jsdom ne calcule aucune géométrie : ces tests vérifient la LOGIQUE de la zone
- * réservée — le lanceur suit une case hors de toute zone défilante, sur les
- * onglets comme sur une page plein écran, y compris clavier ouvert — et les
- * contrats menu/focus/inert/Escape. Les rectangles positifs et le hit-test
- * (`elementFromPoint`) restent à mesurer dans la vraie App, à 390 et 1280.
+ * jsdom ne calcule aucune géométrie : ces tests vérifient la LOGIQUE des cases
+ * et de la réserve, et les contrats menu/focus/inert/Escape. Les rectangles et
+ * le hit-test (`elementFromPoint`) se mesurent dans la vraie App, à 390 et 1280
+ * (`scripts/check-fix114-ui.mjs`).
  *
  * jsdom applique en revanche `display` depuis une feuille injectée : les cas
  * d'un hôte qui masque l'en-tête du cadre, ou d'une feuille d'écran qui masque
@@ -136,27 +138,30 @@ function phoneWithKeyboard() {
 }
 
 describe('Lanceur global · case réservée hors de la zone défilante', () => {
-  it('réserve, dans une page plein écran, une case du pied hors défilement où le lanceur se pose', () => {
+  it('#114 : flotte en bas à droite d’une page plein écran, sans bande de pied, et réserve la fin du contenu', ({ task }) => {
+    hostStyle(readFloatingActionsCss(task.file?.filepath));
     const calls = callbacks();
     render(<PageOnly calls={calls} />);
     const pageMain = screen.getByRole('main', { name: 'Atelier Houblons' });
-    // Avant correction : aucun pied sans contenu de page, le bouton flottait au-dessus du défilement.
-    const footer = document.querySelector('footer');
-    expect(footer, 'La page réserve une rangée d’action hors de la zone défilante.').not.toBeNull();
-    const dock = footer!.querySelector('[data-action-dock="page"]');
-    expect(dock).not.toBeNull();
-    expect(pageMain.contains(footer)).toBe(false);
+    // Avant #114 : un pied réduit à la case du lanceur, bande basse sur chaque page.
+    expect(document.querySelector('footer'), 'Aucune bande de pied pour le seul lanceur.').toBeNull();
+    expect(document.querySelector('[data-action-dock]')).toBeNull();
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'none');
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-docked', 'false');
+    expect(launcherRoot().style.getPropertyValue('--floating-actions-bottom')).toBe('calc(var(--page-footer-height, 0px) + 1rem)');
+    const gap = pageMain.querySelector<HTMLElement>('[data-floating-actions-gap="page"]')!;
+    expect(getComputedStyle(gap).paddingBottom, 'Le dernier champ défile au-dessus du bouton flottant.')
+      .toBe('calc(4.5rem + env(safe-area-inset-bottom, 0px))');
     for (const control of [
       screen.getByRole('combobox', { name: 'Nature du constat (page)' }),
       screen.getByRole('combobox', { name: 'Dimension' }),
       screen.getByRole('textbox', { name: 'Conditions déclarées' })
-    ]) expect(pageMain.contains(control), 'Les contrôles restent dans le défilement, jamais dans la rangée du lanceur.').toBe(true);
-    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'page');
+    ]) expect(pageMain.contains(control)).toBe(true);
     expect(pageMain.contains(launcherRoot())).toBe(false);
     expect(launcherRoot().closest('[inert]')).toBeNull();
   });
 
-  it('suit la case de la barre d’onglets, puis celle du pied de page, sans jamais entrer dans un contenu défilant', () => {
+  it('suit la case de la barre d’onglets, puis flotte sur la page plein écran, sans jamais entrer dans un contenu défilant', () => {
     const calls = callbacks();
     const view = render(<Shell page={false} calls={calls} />);
     const button = launcherButton();
@@ -167,12 +172,12 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     expect(screen.getByRole('main', { name: 'Onglet Matériel' }).contains(navDock)).toBe(false);
 
     view.rerender(<Shell page calls={calls} />);
-    expect(root).toHaveAttribute('data-floating-actions-dock', 'page');
-    const pageDock = document.querySelector('[data-action-dock="page"]')!;
-    expect(pageDock, 'La page plein écran réserve sa case au lanceur.').not.toBeNull();
-    expect(pageDock.closest('footer'), 'La case est dans le pied, hors du défilement.').not.toBeNull();
+    // La case des onglets reste montée sous la page : le lanceur ne la suit pas.
+    expect(root).toHaveAttribute('data-floating-actions-dock', 'none');
+    expect(root).toHaveAttribute('data-floating-actions-docked', 'false');
+    expect(document.querySelector('[data-action-dock^="page"]'), 'Aucune case de pied (#114).').toBeNull();
+    expect(document.querySelector('[data-page-shell] footer')).toBeNull();
     const pageMain = screen.getByRole('main', { name: 'Atelier Houblons' });
-    expect(pageMain.contains(pageDock)).toBe(false);
     expect(pageMain.contains(screen.getByRole('combobox', { name: 'Nature du constat (page)' }))).toBe(true);
     expect(pageMain.contains(screen.getByRole('textbox', { name: 'Conditions déclarées' }))).toBe(true);
     expect(pageMain.contains(root)).toBe(false);
@@ -209,7 +214,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     expect(screen.queryByRole('menu')).toBeNull();
   });
 
-  it('clavier ouvert, ne confie pas la case à un en-tête qu’un hôte masque : elle passe au pied, rendue, et le lanceur ne flotte pas', () => {
+  it('clavier ouvert, ne confie pas la case à un en-tête qu’un hôte masque : aucune bande de pied, le lanceur garde son ancrage flottant', () => {
     const calls = callbacks();
     phoneWithKeyboard();
     layoutRenderedDocks();
@@ -218,23 +223,18 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     render(<PageOnly calls={calls} className="cadre-sans-entete" />);
     const header = document.querySelector('[data-page-shell] > header')!;
     expect(rendered(header), 'Garde : la règle d’hôte masque bien l’en-tête dans cet environnement.').toBe(false);
-    const docks = document.querySelectorAll<HTMLElement>('[data-action-dock]');
-    expect(docks).toHaveLength(1);
-    const dock = docks[0];
-    // Avant correction : la case restait dans l'en-tête masqué, sans boîte, et le lanceur reprenait son repli flottant.
-    expect(header.contains(dock), 'Un en-tête masqué ne reçoit pas la seule case du lanceur.').toBe(false);
-    expect(rendered(dock), 'La case attribuée est affichée.').toBe(true);
-    expect(dock.closest('footer'), 'Elle passe au pied, hors défilement.').not.toBeNull();
-    expect(dock).toHaveAttribute('data-action-dock', 'page-compact');
+    // Un en-tête masqué ne reçoit pas de case sans boîte ; #114 : pas de pied minimal non plus.
+    expect(document.querySelectorAll('[data-action-dock]')).toHaveLength(0);
+    expect(document.querySelector('footer')).toBeNull();
     const pageMain = screen.getByRole('main', { name: 'Atelier Houblons' });
-    expect(pageMain.contains(dock)).toBe(false);
     for (const control of [
       screen.getByRole('combobox', { name: 'Nature du constat (page)' }),
       screen.getByRole('combobox', { name: 'Dimension' }),
       screen.getByRole('textbox', { name: 'Conditions déclarées' })
     ]) expect(pageMain.contains(control)).toBe(true);
-    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'page-compact');
-    expect(launcherRoot(), 'Aucun repli flottant au-dessus des champs.').toHaveAttribute('data-floating-actions-docked', 'true');
+    // Ancré en bas de la fenêtre, le lanceur reste sous le clavier pendant la saisie.
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'none');
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-docked', 'false');
 
     fireEvent.click(launcherButton());
     expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
@@ -245,7 +245,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
   it('reste rendu et actionnable sous une feuille d’écran qui le masquait par son nom, pastille ou non ; seule une vraie modale l’efface', async ({ task }) => {
     const floatingActionsCss = readFloatingActionsCss(task.file?.filepath);
     const calls = callbacks();
-    // Règle de W `src/pages/recipe-wizard.css:3` (CSSOM du build QA : bouton présent, 0×0), puis la feuille du lanceur.
+    // Ancienne règle de `src/pages/recipe-wizard.css:3` (retirée par #114), puis la feuille du lanceur.
     hostStyle(`body:has(.recipe-wizard) button[aria-label='Actions rapides'] { display: none; }\n${floatingActionsCss}`);
     const witness = document.createElement('button');
     witness.setAttribute('aria-label', 'Actions rapides');
@@ -256,10 +256,10 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     witness.remove(); wizardWitness.remove();
 
     render(<PageOnly calls={calls} footer className="recipe-wizard" />);
-    // Avant correction : la règle masquait le bouton (inaccessible), sa case du pied restait vide.
+    // Avant correction : la règle masquait le bouton, inaccessible dans le créateur.
     const button = launcherButton();
     const root = launcherRoot();
-    expect(rendered(button), 'Le lanceur occupe sa case, elle n’est pas vide.').toBe(true);
+    expect(rendered(button), 'Le lanceur reste affiché dans le créateur.').toBe(true);
     expect(root.closest('[inert]')).toBeNull();
     button.focus();
     expect(button).toHaveFocus();
@@ -280,35 +280,33 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     expect(rendered(button)).toBe(true);
   });
 
-  it('pose le lanceur sans second aplat à côté de l’action principale du pied, et seul quand le pied est vide', () => {
+  it('#114 : flotte au-dessus du pied qui porte les actions de la page, sans s’y loger', () => {
     const calls = callbacks();
     const view = render(<Shell page footer calls={calls} />);
     const footer = screen.getByRole('button', { name: 'Enregistrer la recette' }).closest('footer')!;
-    expect(footer.querySelector('[data-action-dock="page"]')).not.toBeNull();
-    expect(footer).not.toHaveAttribute('data-action-dock-only');
+    expect(footer.querySelector('[data-action-dock]'), 'Le pied ne garde que les actions de la page.').toBeNull();
+    expect(footer.contains(launcherRoot())).toBe(false);
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-docked', 'false');
+    // Ancré au-dessus du pied publié par la page, sans second aplat paille près de son action principale.
+    expect(launcherRoot().style.getPropertyValue('--floating-actions-bottom')).toBe('calc(var(--page-footer-height, 0px) + 1rem)');
     expect(launcherRoot()).toHaveAttribute('data-floating-actions-tone', 'quiet');
 
     view.rerender(<Shell page calls={calls} />);
-    const dockOnly = document.querySelector('footer')!;
-    expect(dockOnly).toHaveAttribute('data-action-dock-only', 'true');
+    expect(document.querySelector('footer'), 'Sans action de page, aucun pied.').toBeNull();
     expect(launcherRoot()).toHaveAttribute('data-floating-actions-tone', 'primary');
   });
 
-  it('V4 (bande basse) : un pied réduit à la case du lanceur reste compact quand la page le demande, sans changer un pied d’actions', () => {
+  it('#114 : `compactDock` ne crée plus de bande basse, et un pied d’actions reste celui de la page', () => {
     const calls = callbacks();
     const view = render(<PageOnly calls={calls} compactDock />);
-    const dockOnly = document.querySelector('footer')!;
-    expect(dockOnly).toHaveAttribute('data-action-dock-only', 'true');
-    expect(dockOnly.querySelector('[data-action-dock="page-compact"]')).not.toBeNull();
-    expect(dockOnly.querySelector('[data-action-dock="page"]')).toBeNull();
-    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'page-compact');
-    expect(launcherRoot()).toHaveAttribute('data-floating-actions-tone', 'primary');
+    expect(document.querySelector('footer')).toBeNull();
+    expect(document.querySelector('[data-action-dock]')).toBeNull();
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'none');
 
-    // A footer carrying the page's actions keeps the ordinary case beside them.
     view.rerender(<PageOnly calls={calls} compactDock footer />);
     const withActions = screen.getByRole('button', { name: 'Enregistrer la recette' }).closest('footer')!;
-    expect(withActions.querySelector('[data-action-dock="page"]')).not.toBeNull();
-    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'page');
+    expect(withActions.querySelector('[data-action-dock]')).toBeNull();
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'none');
   });
 
   it('ne réserve rien dans une page sans lanceur monté', () => {
@@ -382,11 +380,11 @@ describe('Lanceur global · menu, focus et callbacks conservés', () => {
     for (const fn of [calls.screen, calls.invoice, calls.sale, calls.recipe, calls.brew, calls.closePage]) expect(fn).not.toHaveBeenCalled();
   });
 
-  it('garde le compte des réponses du compagnon dans le nom du lanceur ancré', async () => {
+  it('garde le compte des réponses du compagnon dans le nom du lanceur flottant', async () => {
     const calls = callbacks();
     render(<Shell page calls={calls} />);
     await act(async () => { brewerJobs.merge([doneJob()]); });
     expect(screen.getByRole('button', { name: 'Actions rapides · 1 réponse du compagnon' })).toBeInTheDocument();
-    expect(launcherRoot()).toHaveAttribute('data-floating-actions-dock', 'page');
+    expect(launcherRoot()).toHaveAttribute('data-floating-actions-docked', 'false');
   });
 });

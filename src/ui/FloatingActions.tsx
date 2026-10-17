@@ -16,17 +16,17 @@ import './floating-actions.css';
  * portait quel bouton. Ici, le même geste au même endroit ouvre les six
  * actions, et l'action de l'écran courant reste la première de la liste.
  *
- * ⚠️ Le bouton ne flotte plus au-dessus du contenu. Il se pose sur une case que
- * la mise en page réserve hors de toute zone défilante (`ActionDock`, dans
- * `PageShell.tsx`) : à droite de la barre d'onglets, dans le pied d'une page
- * plein écran, ou dans son en-tête quand le clavier est ouvert. Flottant, il
- * recevait le toucher destiné à un champ passé dessous au défilement — la
- * flèche d'un sélecteur, à 390 px. Sans case montée (composant isolé), il garde
- * l'ancien ancrage `anchor` en repli.
+ * ⚠️ Sur les onglets, le bouton se pose sur la case réservée à droite de la
+ * barre (`ActionDock`, dans `PageShell.tsx`), hors de toute zone défilante.
+ * Sur une page plein écran, il FLOTTE en bas à droite, au-dessus du pied de la
+ * page s'il y en a un (#114 : une case de pied coûtait une bande basse sur
+ * chaque page). La page réserve en fin de contenu la place du bouton : son
+ * dernier champ défile au-dessus de lui au lieu de lui céder son toucher.
+ * Clavier ouvert, il passe dans une case de l'en-tête.
  *
  * ⚠️ Le bouton porte son `display` en ligne. Une feuille d'écran le masquait par
- * son nom (`body:has(.recipe-wizard) button[aria-label='Actions rapides']`) : sa
- * case restait vide, et comme la pastille du compagnon change ce nom, le bouton
+ * son nom (`body:has(.recipe-wizard) button[aria-label='Actions rapides']`, règle
+ * retirée par #114) : comme la pastille du compagnon change ce nom, le bouton
  * apparaissait ou non selon les réponses en attente. Seules une modale ou une
  * feuille ouverte l'effacent, en masquant la racine (`floating-actions.css`).
  *
@@ -62,6 +62,8 @@ interface Item {
   tone: string;
   count?: number;
   busy?: boolean;
+  /** L'action principale de l'écran, en tête et mise en avant. */
+  strong?: boolean;
   run: () => void;
 }
 
@@ -128,7 +130,10 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const menuId = React.useId();
   const { jobs } = useBrewerJobs();
   useActionLauncherRegistration();
-  const { dock } = useActionDock();
+  const { dock: reserved, pageFooter } = useActionDock();
+  // Sur une page plein écran, la case des onglets reste montée sous la page :
+  // le bouton ne la suit pas, il flotte au-dessus de la page.
+  const dock = anchor === 'page' && reserved?.kind === 'nav' ? null : reserved;
   const geometry = useDockGeometry(dock?.element);
 
   // Mêmes comptes que la boîte des conversations, pour que la pastille du
@@ -150,7 +155,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
   const groups: Item[][] = [];
   if (action) {
     groups.push([{
-      key: 'screen', label: action.label, hint: 'Sur cet écran',
+      key: 'screen', label: action.label, hint: action.hint ?? 'Sur cet écran', strong: true,
       Icon: action.intent === 'copyShoppingList' ? ClipboardList : Plus,
       tone: 'text-ebc-straw', run: onAction
     }]);
@@ -210,13 +215,14 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     items[(next + items.length) % items.length].focus();
   };
 
-  /* Sur sa case, le bouton en prend la place exacte ; sans case, l'ancien ancrage sert de repli. */
+  /* Sur sa case, le bouton en prend la place exacte ; sans case, il flotte (48 px, `floating-actions.css`),
+     décollé de 16 px du bas — zone sûre ou pied de la page compris. */
   const fallbackBottom = anchor === 'page'
-    ? 'calc(var(--page-footer-height, 0px) + .5rem)'
+    ? 'calc(var(--page-footer-height, 0px) + 1rem)'
     : 'calc(var(--main-navigation-height, 2.5rem) + .5rem)';
-  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 32;
-  /* Dans une rangée qui porte déjà l'action principale de la page, pas de second aplat paille. */
-  const quiet = !!dock?.quiet;
+  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 24;
+  /* Flottant juste au-dessus d'un pied qui porte déjà l'action principale de la page : pas de second aplat paille. */
+  const quiet = !geometry && anchor === 'page' && pageFooter;
 
   return (
     <div
@@ -251,12 +257,12 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
               flèches, et la tabulation le referme pour rendre la main au bouton. */}
           {groups.map((group, index) => (
             <div key={group[0].key} className={index ? 'border-t border-cave-800' : undefined}>
-              {group.map(({ key, label, hint, Icon, tone, count, busy, run }) => (
+              {group.map(({ key, label, hint, Icon, tone, count, busy, strong, run }) => (
                 <button key={key} type="button" role="menuitem" tabIndex={-1} className={ROW} onClick={choose(run)}>
                   <Icon size={16} aria-hidden="true"
                     className={`shrink-0 ${tone} ${busy ? 'motion-safe:animate-spin' : ''}`} />
                   <span className="min-w-0 flex-1">
-                    {label}
+                    <span className={strong ? 'font-semibold text-cave-50' : undefined}>{label}</span>
                     {hint && <span className="block text-footnote text-cave-400">{hint}</span>}
                   </span>
                   {!!count && (
@@ -273,11 +279,10 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       )}
 
       {/*
-        La case fixe la taille : 64 px de large partout — la commande qu'on vise
-        ganté, en pénombre, une main sur la cuve —, à la hauteur de la barre qui
-        la porte (40 px sur les onglets, 44 px en pied de page). Clavier ouvert,
-        la case compacte (en-tête, ou pied si l'hôte masque l'en-tête) la réduit
-        à 40×32. L'atelier de l'eau la docke lui-même près de ses onglets, à 40 px.
+        La case fixe la taille : 64 × 40 px à droite des onglets — la commande
+        qu'on vise ganté, en pénombre, une main sur la cuve. Clavier ouvert, la
+        case de l'en-tête la réduit à 40×32. L'atelier de l'eau la docke lui-même
+        près de ses onglets, à 40 px. Flottant sur une page : rond de 48 px.
       */}
       <button
         ref={(node) => { buttonRef.current = node; if (launcherRef) launcherRef.current = node; }}
@@ -303,7 +308,7 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50
                    ${quiet
                      ? 'bg-cave-850 text-ebc-straw ring-1 ring-inset ring-ebc-straw/60'
-                     : 'bg-ebc-straw text-cave-950 shadow-lift'}`}
+                     : 'bg-ebc-straw text-cave-950'} shadow-lift`}
       >
         <Plus strokeWidth={2.5} aria-hidden="true"
           className={`floating-actions-icon motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />

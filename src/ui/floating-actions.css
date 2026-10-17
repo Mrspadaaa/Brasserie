@@ -4,18 +4,28 @@
    onglets pour dégager les champs de pesée — sans qu'un style en ligne gagne
    contre sa règle. */
 .floating-actions {
-  right: var(--floating-actions-right, 0.75rem);
-  bottom: var(--floating-actions-bottom, 0.5rem);
+  right: var(--floating-actions-right, 1rem);
+  bottom: var(--floating-actions-bottom, 1rem);
 }
 
+/* Sans case (page plein écran, clavier fermé), le bouton flotte : rond de 48 px,
+   décollé de 16 px des bords. */
 .floating-actions > button {
-  width: var(--floating-actions-width, 4rem);
-  height: var(--floating-actions-height, 4rem);
+  width: var(--floating-actions-width, 3rem);
+  height: var(--floating-actions-height, 3rem);
+}
+
+/* Flottant, il porte une ombre franche et décalée : `shadow-lift` se perdait sur
+   le fond de page, et le bouton seul dans le coin se lisait comme un pied (#114).
+   La variable de `shadow-lift` est remplacée, pas `box-shadow` : l'anneau du ton
+   discret passe aussi par `box-shadow` et doit rester. */
+.floating-actions[data-floating-actions-docked="false"] > button {
+  --tw-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.9), 0 4px 8px -2px rgba(0, 0, 0, 0.7);
 }
 
 .floating-actions .floating-actions-icon {
-  width: var(--floating-actions-icon, 2rem);
-  height: var(--floating-actions-icon, 2rem);
+  width: var(--floating-actions-icon, 1.5rem);
+  height: var(--floating-actions-icon, 1.5rem);
 }
 
 /* Onglets : le bouton prend la case réservée à droite de la barre, à sa hauteur.
@@ -31,10 +41,31 @@
 }
 
 /* Fin de liste sur les onglets : la dernière ligne dégage la barre et sa case.
-   Le bouton ne flotte plus : aucune réserve supplémentaire pour lui. Une page
-   plein écran (`="page"`) n'en a pas besoin, son pied est hors défilement. */
+   Le bouton n'y flotte pas : aucune réserve supplémentaire pour lui. */
 [data-floating-actions-gap="nav"] {
   padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 0.75rem);
+}
+
+/* Page plein écran : le bouton flotte par-dessus le contenu (#114). La fin du
+   contenu réserve sa place, sans plus — 48 px, 16 px de décalage, 8 px d'air,
+   zone sûre — pour que le dernier champ défile AU-DESSUS du bouton et reçoive
+   le toucher ; la même marge garde un champ atteint au clavier hors de dessous. */
+body:has(.floating-actions[data-floating-actions-docked="false"]) [data-floating-actions-gap="page"] {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+body:has(.floating-actions[data-floating-actions-docked="false"]) [data-page-shell] > main {
+  scroll-padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Avec un pied, c'est lui qui porte la zone sûre et le bouton se pose dessus :
+   elle n'est pas comptée une seconde fois. */
+body:has(.floating-actions[data-floating-actions-docked="false"]) [data-page-shell]:has(> footer) [data-floating-actions-gap="page"] {
+  padding-bottom: 4.5rem;
+}
+
+body:has(.floating-actions[data-floating-actions-docked="false"]) [data-page-shell]:has(> footer) > main {
+  scroll-padding-bottom: 4.5rem;
 }
 
 /* Ancienne réserve, gardée telle quelle pour une surface qui porterait encore
@@ -54,11 +85,19 @@ body:has([data-vaul-drawer][data-state='open']) .floating-actions {
 }
 
 /* L'atelier de l'eau docke lui-même le bouton dans sa rangée d'onglets
-   (`water/workshop.css`). La case du pied de page serait alors vide : elle se
-   retire, et le pied qui ne portait qu'elle aussi. Même borne que l'atelier. */
+   (`water/workshop.css`). La case d'en-tête, clavier ouvert, serait alors
+   vide : elle se retire, et la fin du contenu ne réserve rien pour un bouton
+   posé en haut (12 px, la marge ordinaire). Même borne que l'atelier. */
 @media (max-width: 639px) {
-  body:has([data-water-step="sels"]) [data-action-dock^="page"],
-  body:has([data-water-step="sels"]) footer[data-action-dock-only] {
+  body:has([data-water-step="sels"]) [data-action-dock^="page"] {
     display: none;
+  }
+
+  body:has([data-water-step="sels"]) [data-page-shell] [data-floating-actions-gap="page"] {
+    padding-bottom: 12px;
+  }
+
+  body:has([data-water-step="sels"]):has(.floating-actions) [data-page-shell] > main {
+    scroll-padding-bottom: 0;
   }
 }

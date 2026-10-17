@@ -6,24 +6,27 @@ import './page-shell.css';
 /*
  * Zones d'action réservées au lanceur global (`FloatingActions`).
  *
- * ⚠️ Ce que ça règle : le bouton d'action flottait au-dessus du contenu
- * défilant. Une marge de fin de liste ne protégeait que le DERNIER élément :
- * un champ intermédiaire pouvait glisser sous le bouton, qui recevait alors le
- * toucher destiné au champ (sélecteur « Nature du constat » à 390 px). Le
- * lanceur se pose désormais dans une case que la mise en page réserve HORS de
- * toute zone défilante — à côté de la barre d'onglets, dans le pied d'une page
- * plein écran, ou dans son en-tête clavier ouvert (dans un pied compact si
- * l'hôte masque cet en-tête). Aucun contenu ne peut donc passer dessous.
+ * Sur les onglets, le lanceur se pose dans une case réservée à droite de la
+ * barre, hors de toute zone défilante ; clavier ouvert sur une page plein
+ * écran, dans une case de son en-tête.
+ *
+ * ⚠️ Page plein écran, clavier fermé : le lanceur FLOTTE en bas à droite,
+ * par-dessus le contenu (#114, choix du brasseur). La case du pied qu'il
+ * occupait coûtait une bande basse sur chaque page, même sans action de page.
+ * En contrepartie, la fin du contenu réserve sa hauteur
+ * (`data-floating-actions-gap="page"`, `floating-actions.css`) : le dernier
+ * champ défile au-dessus du bouton et reçoit son toucher. Un champ
+ * intermédiaire peut passer dessous au défilement (sélecteur « Nature du
+ * constat » à 390 px) ; il suffit de faire défiler pour le dégager.
  *
  * Le registre vit ici, sans dépendance lourde, pour que chaque page puisse
  * réserver sa case sans importer le compagnon ni ses services.
  */
-export type ActionDockKind = 'nav' | 'page' | 'page-compact';
+export type ActionDockKind = 'nav' | 'page-compact';
 export interface ActionDockEntry {
   element: HTMLElement;
   kind: ActionDockKind;
   priority: number;
-  quiet: boolean;
   order: number;
 }
 export interface ActionDockSnapshot {
@@ -31,13 +34,16 @@ export interface ActionDockSnapshot {
   dock: ActionDockEntry | null;
   /** Un lanceur est monté : une page ne réserve sa case que pour lui. */
   launcher: boolean;
+  /** Une page montre son pied d'actions : le lanceur qui flotte au-dessus s'y présente sans aplat paille. */
+  pageFooter: boolean;
 }
 const actionDocks = new Set<ActionDockEntry>();
 const actionDockListeners = new Set<() => void>();
 let actionDockOrder = 0;
 let actionDockPriority = 0;
 let actionLaunchers = 0;
-let actionDockSnapshot: ActionDockSnapshot = { dock: null, launcher: false };
+let pageFooters = 0;
+let actionDockSnapshot: ActionDockSnapshot = { dock: null, launcher: false, pageFooter: false };
 
 function publishActionDocks() {
   let dock: ActionDockEntry | null = null;
@@ -46,7 +52,10 @@ function publishActionDocks() {
     if (!dock || entry.priority > dock.priority || (entry.priority === dock.priority && entry.order > dock.order)) dock = entry;
   }
   const launcher = actionLaunchers > 0;
-  if (dock !== actionDockSnapshot.dock || launcher !== actionDockSnapshot.launcher) actionDockSnapshot = { dock, launcher };
+  const pageFooter = pageFooters > 0;
+  if (dock !== actionDockSnapshot.dock || launcher !== actionDockSnapshot.launcher || pageFooter !== actionDockSnapshot.pageFooter) {
+    actionDockSnapshot = { dock, launcher, pageFooter };
+  }
   actionDockListeners.forEach(listener => listener());
 }
 const subscribeActionDocks = (listener: () => void) => {
@@ -80,24 +89,21 @@ function useActionLauncherPresent(): boolean {
 /**
  * Case vide réservée par la mise en page ; le lanceur fixe se pose exactement
  * dessus. Elle n'est ni focalisable ni cliquable : seul le lanceur l'est.
- * `quiet` : la rangée porte déjà l'action principale de la page (Enregistrer…),
- * le lanceur s'y présente alors sans aplat paille.
  */
-export function ActionDock({ kind, priority = 0, quiet = false, className = '' }: {
+export function ActionDock({ kind, priority = 0, className = '' }: {
   kind: ActionDockKind;
   priority?: number;
-  quiet?: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     const element = ref.current;
     if (!element) return;
-    const entry: ActionDockEntry = { element, kind, priority, quiet, order: ++actionDockOrder };
+    const entry: ActionDockEntry = { element, kind, priority, order: ++actionDockOrder };
     actionDocks.add(entry);
     publishActionDocks();
     return () => { actionDocks.delete(entry); publishActionDocks(); };
-  }, [kind, priority, quiet]);
+  }, [kind, priority]);
   return <div ref={ref} aria-hidden="true" data-action-dock={kind} className={`pointer-events-none ${className}`} />;
 }
 
@@ -251,9 +257,8 @@ interface PageShellProps {
   /** Barre collée en bas — validation, étape suivante. */
   footer?: React.ReactNode;
   /**
-   * Quand le pied ne porte aucune action de la page, la case du lanceur prend
-   * sa taille compacte (bande basse de 41 px au lieu de 57, mesurée à 390). Choix de la
-   * page : un formulaire long dont chaque ligne compte, comme le créateur.
+   * Sans effet depuis #114 : le lanceur ne réserve plus de case dans le pied,
+   * il flotte au-dessus de la page.
    */
   compactDock?: boolean;
   /**
@@ -275,7 +280,6 @@ export const PageShell: React.FC<PageShellProps> = ({
   actions,
   progress,
   footer,
-  compactDock = false,
   mobileHeader,
   wide = false,
   className = '',
@@ -301,24 +305,22 @@ export const PageShell: React.FC<PageShellProps> = ({
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
   /*
-   * Case du lanceur global. En pied de page, à côté des actions de la page,
-   * elle coûte une rangée mais garantit qu'aucun champ ne glisse dessous.
-   * Clavier ouvert, il reste environ 300 px : la case passe dans l'en-tête,
-   * où elle ne prend que de la largeur.
+   * Case du lanceur global, clavier ouvert seulement : il reste environ
+   * 300 px, et un bouton flottant se poserait sur le champ que le navigateur
+   * amène juste au-dessus du clavier. La case passe dans l'en-tête, où elle ne
+   * prend que de la largeur. Clavier fermé, le lanceur flotte (voir en tête).
    */
   const launcherPresent = useActionLauncherPresent();
   const [dockPriority] = useState(nextActionDockPriority);
   const headerRef = useRef<HTMLElement>(null);
   /*
    * ⚠️ Un hôte peut masquer l'en-tête du cadre pour poser le sien dans son
-   * contenu défilant. Une case posée là n'aurait aucune taille : le lanceur
-   * retomberait sur son ancrage flottant, au-dessus des champs. L'en-tête ne
-   * reçoit donc la case que s'il est rendu ; sinon, clavier ouvert, la case
-   * compacte descend dans un pied minimal, juste au-dessus du clavier.
+   * contenu défilant. Une case posée là n'aurait aucune taille. L'en-tête ne
+   * reçoit donc la case que s'il est rendu ; sinon le lanceur garde son
+   * ancrage flottant, en bas de la fenêtre, sous le clavier.
    */
   const [headerRendered, setHeaderRendered] = useState(true);
   const dockInHeader = launcherPresent && tight && headerRendered;
-  const dockInFooter = launcherPresent && !dockInHeader;
 
   useLayoutEffect(() => {
     const header = headerRef.current;
@@ -443,7 +445,13 @@ export const PageShell: React.FC<PageShellProps> = ({
 
   const isTypingOnMobile = coarse && isFieldFocused;
   const footerShown = !!footer && !isTypingOnMobile;
-  const dockCompact = tight || (compactDock && !footerShown);
+
+  useLayoutEffect(() => {
+    if (!footerShown) return;
+    pageFooters += 1;
+    publishActionDocks();
+    return () => { pageFooters -= 1; publishActionDocks(); };
+  }, [footerShown]);
 
   /*
    * Hauteur du pied, publiée pour ce qui flotte au-dessus de la page —
@@ -475,7 +483,7 @@ export const PageShell: React.FC<PageShellProps> = ({
       observer.disconnect();
       restore();
     };
-  }, [footerShown, dockInFooter]);
+  }, [footerShown]);
 
   return (
     <div
@@ -588,8 +596,8 @@ export const PageShell: React.FC<PageShellProps> = ({
         </div>
       </header>
 
-      {/* Le pied et la case du lanceur sont hors de cette zone défilante :
-          aucune marge supplémentaire n'est nécessaire en fin de contenu. */}
+      {/* Le pied est hors de cette zone défilante. Le lanceur flotte au-dessus :
+          `data-floating-actions-gap="page"` lui réserve la fin du contenu. */}
       <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || title}
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw focus-visible:-outline-offset-2">
         <div
@@ -606,33 +614,25 @@ export const PageShell: React.FC<PageShellProps> = ({
         </div>
       </main>
 
-      {(footerShown || dockInFooter) && (
+      {footerShown && (
         <footer
           ref={footerRef}
-          data-action-dock-only={!footerShown || undefined}
           className={`shrink-0 border-t border-cave-800 bg-cave-950/95 backdrop-blur-sm ${
             // Clavier ouvert, le clavier couvre déjà la zone sûre du bas.
             tight ? '' : 'pb-safe'
           }`}
         >
+          {/* Imbrication conservée : des pages règlent `footer > div`. */}
           <div className="flex items-end">
             <div className="min-w-0 flex-1">
-              {footerShown && (
-                <div
-                  className={`${frame} mx-auto ${
-                    tight ? 'px-2.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
-                  }`}
-                >
-                  {footer}
-                </div>
-              )}
+              <div
+                className={`${frame} mx-auto ${
+                  tight ? 'px-2.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
+                }`}
+              >
+                {footer}
+              </div>
             </div>
-            {/* Clavier ouvert, la case garde sa taille compacte même ici : la
-                rangée ne coûte que 37 px au-dessus du clavier. */}
-            {dockInFooter && (
-              <ActionDock kind={dockCompact ? 'page-compact' : 'page'} quiet={footerShown} priority={dockPriority}
-                className={dockCompact ? 'shrink-0 h-8 w-10 my-0.5 mr-1.5' : 'shrink-0 h-11 w-16 my-1 ml-1 mr-3'} />
-            )}
           </div>
         </footer>
       )}

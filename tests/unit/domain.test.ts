@@ -287,7 +287,8 @@ describe('Bouton d’action contextuel', () => {
 
   it('les onglets sans sous-onglet ont une action unique', () => {
     expect(fabActionFor('finances').intent).toBe('newTransaction');
-    expect(fabActionFor('dashboard').intent).toBe('quickAction');
+    // #114 : le + du tableau de bord crée d'abord une écriture comptable, comme sur Finances.
+    expect(fabActionFor('dashboard').intent).toBe('newTransaction');
   });
 
   it('un sous-onglet inconnu retombe sur la saisie rapide au lieu de planter', () => {
