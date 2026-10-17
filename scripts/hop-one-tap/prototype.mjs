@@ -21,7 +21,8 @@ export function setup({ repo }) {
 
 export async function open(page, { ctx }) {
   await page.goto('file:///' + ctx.file.replace(/\\/g, '/'), { waitUntil: 'networkidle0' });
-  if (process.env.PROTO_STYLE) await page.evaluate((s) => { window.__proto.state.style = s; }, process.env.PROTO_STYLE);
+  // Style choisi, puis un rendu (toucher neutre sur « Mon stock ») pour l'afficher.
+  if (process.env.PROTO_STYLE) { await page.evaluate((s) => { window.__proto.state.style = s; }, process.env.PROTO_STYLE); await page.click('#app [data-act="stock"]'); }
   await page.evaluate(() => document.fonts?.ready);
 }
 

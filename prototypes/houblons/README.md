@@ -25,7 +25,7 @@ partir de `app.html` (données intégrées, une seule page).
 | Produits | `src/domain/hopDecision/products.ts` | Cryo 40–50 % du poids T-90 ; HyperBoost 0,8–1 % en dry hop |
 | IBU | `src/services/brewingMath.ts` (`hopIbu`) | Même formule : Tinseth, 1er moût × 1,1, whirlpool atténué par la température |
 
-Taille : 187 ko, 37 ko compressés (budget de démarrage B1 : 350 ko).
+Taille : 43 ko compressés (budget de démarrage B1 : 350 ko).
 
 ## Contrôles
 
@@ -43,7 +43,7 @@ répond (« Y aller »), ou dit « Non documenté » et ce qui manque.
 
 | Question | Où | Visible par défaut |
 |---|---|---|
-| Q01, Q03, Q21, Q23 | Liste « Mes houblons pour cette bière » ; style dans l'en-tête | rang, nom, quantité ; « non documenté » si le style n'a pas d'usages |
+| Q01, Q03, Q21, Q23 | Liste « Mes houblons » ; style dans l'en-tête | nom, quantité, « manque X g » ou classe de style ; rang chiffré seulement si le style a des usages documentés, sinon des groupes et « classement estimé » |
 | Q02, Q16 | Cases à cocher, « Comparer les 4 premiers », ⓘ | colonnes, seulement les écarts ; « Tout afficher » à la demande |
 | Q04 | « Mes questions » → comparaison Nugget | descripteurs de Nugget et direction du style ; intensité en bière torréfiée : non documentée |
 | Q05, Q06, Q18 | « Remplacer » sur une ligne d'ajout | dose au même IBU, gagné, perdu, stock |
@@ -51,6 +51,10 @@ répond (« Y aller »), ou dit « Non documenté » et ce qui manque.
 | Q14 | « Mes questions » et ligne d'un ajout Cryo | règles fabricant (Cryo, HyperBoost) |
 | Q15, Q17, Q20, Q24, Q25, Q29 | Lignes d'ajout et bandeau IBU | IBU par ligne et total, arôme dominant, stock et manque, alpha et sa source |
 | Q07, Q08, Q11, Q13, Q19, Q26, Q27, Q28, Q30 | « Mes questions » | **non documenté**, avec la donnée manquante |
+
+## Critique indépendante
+
+Verdict à l'aveugle d'une session Fable 5.1 (, 18.10) : 5 bloquants, tous corrigés. Le principal : un rang chiffré tiré des seuls descripteurs n'était pas crédible pour la stout. L'écran regroupe désormais : en amertume, assez en stock puis alpha ; en arôme, typique (origine citée par le guide BJCP), compatible, hors style.
 
 ## Limites connues
 

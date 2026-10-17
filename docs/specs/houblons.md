@@ -66,18 +66,32 @@ items, catalogue.
 **Groups**: group 1 contains the hops in stock (quantity > 0 g). Group 2
 contains the catalogue hops. Group 2 is shown on request only.
 
-**Order inside a group** (first key first):
+**Style class** of each hop:
+- typical: documented style usage, or an origin that the BJCP 2021 guideline
+  names for the style and more wanted than unwanted descriptors;
+- compatible: more wanted than unwanted descriptors;
+- out of style: no wanted descriptor, or more unwanted ones.
 
-1. Style usage: typical, then occasional, then not documented.
-2. Fit to the style direction: (descriptors in wanted families − descriptors in
-   unwanted families) / (number of descriptors of the hop + 2). The "+ 2" stops a
-   hop with 1 descriptor from getting a full score. The style direction comes
-   from the BJCP 2021 guidelines (hop aroma and flavour of each style).
-3. Fit to the role of the addition: for a boil addition of 30 minutes or more,
-   higher alpha first. For other additions, key 2 only.
-4. Name, in alphabetical order.
+The style direction (wanted and unwanted descriptor families, origins) comes from
+the BJCP 2021 guidelines (hop aroma and flavour of each style).
 
-**Shown by default** (one line for each hop): rank, name, quantity in stock.
+**Fit** = (descriptors in wanted families − descriptors in unwanted families) /
+(number of descriptors of the hop + 2). The "+ 2" stops a hop with 1 descriptor
+from getting a full score.
+
+**Order**, by the role of the next addition:
+- bittering: first the hops with enough stock for the dose that reaches the IBU
+  target, then the others; inside each group, documented usage, then higher
+  alpha, then the origin of the style, then fit;
+- aroma: groups typical, compatible, out of style; inside each group, fit, then
+  quantity in stock.
+
+**Rank numbers** appear only when the style has documented usage. Without it, the
+list shows groups, not ranks, and one line says "estimated ranking" (independent
+review of 18 October 2026: a numbered rank from descriptors only is not credible).
+
+**Shown by default** (one line for each hop): name, quantity in stock, and either
+the missing quantity for the target dose or the style class.
 **On request** (one tap on the line information control): reason of the rank,
 its source, alpha, descriptors.
 
@@ -133,7 +147,8 @@ its source (C019, C049).
 
 **Aroma**: for each addition, the 2 main descriptors and their weight. The
 weight depends on the timing: dry hop 1, whirlpool 0.8, boil 10 minutes or
-less 0.5, boil 30 minutes or less 0.2, longer boil 0.05. The total aroma is the
+less 0.5, boil 15 minutes or less 0.3. A longer boil gives bitterness only; the
+line says "bitterness only" and the total says "little aroma". The total aroma is the
 sum of the weights for each descriptor. The screen calls it an estimate. If a
 dose-response model exists for the variety (`functions/src/hopExtrapolationCore.ts`),
 it replaces the estimate.

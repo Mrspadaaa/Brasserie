@@ -19,13 +19,14 @@ flowchart TD
   G --> J[Sort each group]
   I --> J
   J --> K{Style usage data for this style family?}
-  K -- yes --> L[Key 1: typical, occasional, not documented]
-  K -- no --> M[Key 1: not documented for all; label each reason]
-  L --> N[Key 2: share of descriptors in the BJCP style direction]
+  K -- yes --> L[Rank numbers shown]
+  K -- no --> M[Groups only, line: estimated ranking]
+  L --> N{Role of the next addition}
   M --> N
-  N --> O[Key 3: boil 30 min or more: higher alpha first]
-  O --> P[Key 4: name]
-  P --> Q[Show by default: rank, name, quantity]
+  N -- bittering --> O[Groups: enough stock, too little; then alpha, origin, fit]
+  N -- aroma --> P[Groups: typical, compatible, out of style; then fit, quantity]
+  O --> Q[Show by default: name, quantity, missing grams or style class]
+  P --> Q
   Q -.on request.-> R[Reason of the rank, source, alpha, descriptors]
 ```
 
@@ -46,7 +47,7 @@ flowchart TD
 
   K[Brewer changes dose or timing of an addition] --> L[Recalculate the addition IBU locally]
   L --> M[Sum the additions: total IBU; dry hop as a range]
-  K --> N[Aroma weight: dry hop 1, whirlpool 0.8, boil 10 min or less 0.5, boil 30 min or less 0.2, longer 0.05]
+  K --> N[Aroma weight: dry hop 1, whirlpool 0.8, boil 10 min or less 0.5, boil 15 min or less 0.3, longer 0]
   N --> O{Dose-response model for this variety?}
   O -- yes --> P[hopExtrapolationCore: modelled profile]
   O -- no --> Q[Descriptor estimate, labelled as an estimate]

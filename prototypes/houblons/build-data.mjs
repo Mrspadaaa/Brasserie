@@ -71,6 +71,7 @@ const varieties = bm.map((v) => {
     alpha: range(v, 'alpha'), beta: range(v, 'beta'), oil: range(v, 'totalOil'),
     myrcene: range(v, 'myrcene'), humulene: range(v, 'humulene'), caryophyllene: range(v, 'caryophyllene'), farnesene: range(v, 'farnesene'),
     tags: tags.map((t) => FR[t] || t).slice(0, 8), fam: Object.keys(fams), famTags: fams, nTags: tags.length,
+    tf: tags.slice(0, 14).map((t) => [FR[t] || t, tagFamily.get(t) || null]),
     usage: u ? u.families : [], usageSource: u?.source || null,
     url: (v.descriptions?.[0]?.source?.reference) || null,
   };
@@ -79,17 +80,18 @@ const varieties = bm.map((v) => {
 // Directions de style : BJCP 2021, descripteurs houblon cités par le guide (relevé du 18.10.2026).
 const bjcp = (code, slug) => `https://www.bjcp.org/style/2021/${code.replace(/[A-Z]$/, '')}/${code}/${slug}/`;
 const styles = [
-  { id: 'stout-export', label: 'Stout export', group: 'stout', wanted: ['terreux', 'herbace', 'floral'], unwanted: [], ibu: [50, 70], note: 'Foreign Extra Stout, houblons anglais typiques', source: 'BJCP 2021, 16D', url: bjcp('16D', 'foreign-extra-stout') },
+  { id: 'stout-export', label: 'Stout export', group: 'stout', wanted: ['terreux', 'herbace', 'floral'], unwanted: [], ibu: [50, 70], note: 'Foreign Extra Stout, houblons anglais typiques', origins: ['Royaume-Uni'], source: 'BJCP 2021, 16D', url: bjcp('16D', 'foreign-extra-stout') },
   { id: 'stout-irlandaise', label: 'Stout sèche (irlandaise)', group: 'stout', wanted: ['terreux', 'floral'], unwanted: [], ibu: [25, 45], note: 'arôme houblon faible, facultatif', source: 'BJCP 2021, 15B', url: bjcp('15B', 'irish-stout') },
   { id: 'stout-douce', label: 'Stout douce, milk, pastry', group: 'stout', wanted: ['floral', 'terreux'], unwanted: [], ibu: [20, 40], note: 'arôme houblon faible, facultatif', source: 'BJCP 2021, 16A', url: bjcp('16A', 'sweet-stout') },
-  { id: 'stout-americaine', label: 'Stout américaine', group: 'stout', wanted: ['agrumes', 'resine'], unwanted: [], ibu: [35, 75], note: 'houblons américains', source: 'BJCP 2021, 20B', url: bjcp('20B', 'american-stout') },
-  { id: 'stout-imperiale', label: 'Stout impériale', group: 'stout', wanted: ['terreux', 'floral', 'agrumes', 'resine'], unwanted: [], ibu: [50, 90], note: 'caractère anglais ou américain', source: 'BJCP 2021, 20C', url: bjcp('20C', 'imperial-stout') },
-  { id: 'ipa-americaine', label: 'IPA américaine', group: 'ipa', usage: ['ipa', 'american-ipa'], wanted: ['agrumes', 'floral', 'resine', 'epice', 'tropical', 'noyau', 'baies', 'fruite'], unwanted: [], ibu: [40, 70], note: 'houblons américains ou du Nouveau Monde', source: 'BJCP 2021, 21A', url: bjcp('21A', 'american-ipa') },
+  { id: 'stout-americaine', label: 'Stout américaine', group: 'stout', wanted: ['agrumes', 'resine'], unwanted: [], ibu: [35, 75], note: 'houblons américains', origins: ['États-Unis'], source: 'BJCP 2021, 20B', url: bjcp('20B', 'american-stout') },
+  { id: 'stout-imperiale', label: 'Stout impériale', group: 'stout', wanted: ['terreux', 'floral', 'agrumes', 'resine'], unwanted: [], ibu: [50, 90], note: 'caractère anglais ou américain', origins: ['Royaume-Uni', 'États-Unis'], source: 'BJCP 2021, 20C', url: bjcp('20C', 'imperial-stout') },
+  { id: 'ipa-americaine', label: 'IPA américaine', group: 'ipa', usage: ['ipa', 'american-ipa'], wanted: ['agrumes', 'floral', 'resine', 'epice', 'tropical', 'noyau', 'baies', 'fruite'], unwanted: [], ibu: [40, 70], note: 'houblons américains ou du Nouveau Monde', origins: ['États-Unis', 'Nouvelle-Zélande', 'Australie'], source: 'BJCP 2021, 21A', url: bjcp('21A', 'american-ipa') },
   { id: 'neipa', label: 'IPA trouble (NEIPA)', group: 'ipa', usage: ['hazy-ipa'], wanted: ['noyau', 'tropical', 'agrumes', 'fruite'], unwanted: ['vegetal', 'herbace'], ibu: [25, 60], note: 'caractère herbacé ou végétal exclu', source: 'BJCP 2021, 21C', url: bjcp('21C', 'hazy-ipa') },
   { id: 'lager-tcheque', label: 'Lager blonde tchèque', group: 'lager', wanted: ['epice', 'floral', 'herbace', 'noble'], unwanted: [], ibu: [30, 45], note: 'bouquet épicé, floral ou herbacé', source: 'BJCP 2021, 3B', url: bjcp('3B', 'czech-premium-pale-lager') },
   { id: 'pils', label: 'Pils allemande', group: 'lager', wanted: ['floral', 'epice', 'herbace', 'noble'], unwanted: [], ibu: [22, 40], note: 'houblons floraux, épicés ou herbacés', source: 'BJCP 2021, 5D', url: bjcp('5D', 'german-pils') },
   { id: 'blanche', label: 'Blanche (witbier)', group: 'ble', wanted: ['epice', 'herbace', 'terreux'], unwanted: [], ibu: [8, 20], note: 'houblon discret, jamais au-dessus des épices', source: 'BJCP 2021, 24A', url: bjcp('24A', 'witbier') },
   { id: 'saison', label: 'Saison', group: 'belge', wanted: ['epice', 'floral', 'terreux', 'fruite'], unwanted: [], ibu: [20, 35], note: 'caractère continental', source: 'BJCP 2021, 25B', url: bjcp('25B', 'saison') },
+  { id: 'autre', label: 'Autre style', group: 'autre', wanted: [], unwanted: [], ibu: [20, 40], note: 'aucune direction houblon documentée', source: 'aucune source', url: null },
 ];
 
 // Stock de production : lien article → variété par le nom (aucun lien n'existe en base, #120).
