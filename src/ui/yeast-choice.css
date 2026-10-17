@@ -92,6 +92,8 @@
 .yeast-choice .yc-compare-chips li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .yeast-choice .yc-compare-chips button { display: grid; place-items: center; flex: 0 0 auto; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; }
 .yeast-choice .yc-compare-tray-actions { display: flex; align-items: center; gap: 10px; }
+/* Collé en bas de page, le tiroir passe sous le lanceur flottant (#114) : « Vider » se range à sa gauche. */
+body:has(.floating-actions[data-floating-actions-docked="false"]) .yeast-choice .yc-compare-tray-actions { padding-right: 3.25rem; }
 .yeast-choice .yc-compare-open { flex: 1; min-height: 42px; border-color: theme('colors.area.production'); background: theme('colors.area.production'); color: theme('colors.cave.950'); font-weight: 700; }
 .yeast-choice .yc-compare-open[aria-expanded='true'] { background: theme('colors.cave.850'); color: theme('colors.cave.50'); }
 
@@ -194,8 +196,11 @@
 .yeast-choice .yc-personal-entry input { width: 100%; min-width: 0; }
 .yeast-choice .yc-stock-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-bottom: 6px; }
 .yeast-choice .yc-stock-quick > span { color: theme('colors.cave.400'); font-size: .75rem; }
-.yeast-choice .yc-stock-quick button { display: inline-flex; align-items: baseline; gap: 5px; min-height: 28px; max-width: 100%; padding: 2px 6px; background: theme('colors.cave.850'); border: 1px solid theme('colors.cave.700'); border-radius: 6px; color: theme('colors.cave.50'); font-size: .75rem; }
-.yeast-choice .yc-stock-quick small { flex-shrink: 0; color: theme('colors.cave.400'); font-size: .75rem; }
+/* Un détail long (labo, code, réf., quantité) passe sous le nom au lieu de
+   l'écraser : un détail rigide réduisait le nom à une lettre par ligne (#114). */
+.yeast-choice .yc-stock-quick button { display: inline-flex; flex-wrap: wrap; align-items: baseline; column-gap: 5px; min-height: 28px; max-width: 100%; padding: 2px 6px; background: theme('colors.cave.850'); border: 1px solid theme('colors.cave.700'); border-radius: 6px; color: theme('colors.cave.50'); font-size: .75rem; text-align: left; }
+.yeast-choice .yc-stock-quick button > * { min-width: 0; overflow-wrap: anywhere; }
+.yeast-choice .yc-stock-quick small { color: theme('colors.cave.400'); font-size: .75rem; }
 .yeast-choice .yc-search-first { color: theme('colors.cave.200'); font-size: .8125rem; }
 .yeast-choice .yc-goal-row { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
 .yeast-choice .yc-goal-row label { font-size: .8125rem; }

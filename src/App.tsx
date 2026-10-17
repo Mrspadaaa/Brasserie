@@ -445,6 +445,9 @@ export const App: React.FC = () => {
         setCreateRequest({ kind: fabAction.intent, at: Date.now() });
         break;
       case 'newTransaction':
+        // Le formulaire d'écriture directement, sans repasser par le sommaire.
+        setQuickAction('quick-expense', actionLauncherRef.current);
+        break;
       case 'quickAction':
       default:
         setQuickAction('menu');
@@ -856,9 +859,9 @@ export const App: React.FC = () => {
           posé sur la case que la barre ou la page lui réserve. */}
       <FloatingActions
         launcherRef={actionLauncherRef}
-        // `quickAction` et `newTransaction` ne créent rien de propre à l'écran :
-        // ils rouvraient le sommaire des saisies que le menu liste déjà en clair.
-        action={view.view === 'tabs' && !['quickAction', 'newTransaction'].includes(fabAction.intent) ? fabAction : null}
+        // `quickAction` ne crée rien de propre à l'écran : il rouvrirait le
+        // sommaire des saisies que le menu liste déjà en clair.
+        action={view.view === 'tabs' && fabAction.intent !== 'quickAction' ? fabAction : null}
         onAction={runFabAction}
         companionLabel={companionLabel}
         anchor={view.view === 'tabs' ? 'nav' : 'page'}
