@@ -43,7 +43,10 @@ témoin négatif : il échoue sur l'app actuelle. Un contrôle qui ne peut pas
   Témoins : `--selftest` (8 cas).
 - Le contrôle s'applique aux issues étiquetées « interface ». Mesuré : #76,
   fermée le 12.10 avec un verdict bloquant, aurait été refusée pour 5 raisons.
-  L'étiquette est posée en phase 5 sur les tickets d'écran.
+  L'étiquette est posée en phase 5 sur les tickets d'écran **houblons** : la banque
+  de questions ne couvre que les houblons. Les autres zones (levure,
+  justificatifs, finances) recevront l'étiquette avec leur propre banque, sinon
+  leurs tickets ne pourraient plus se fermer.
 
 ## 2. Les contrôles automatiques
 
