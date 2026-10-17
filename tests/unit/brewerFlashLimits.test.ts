@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 describe('Délais de l’équipe Flash', () => {
-  it('partage les 45 secondes de l’analyse avec son repli et n’ouvre pas un troisième essai', async () => {
+  it('partage les 45 secondes de l’analyse avec sa nouvelle tentative sur 3.8 et n’ouvre pas un troisième essai', async () => {
     const signals: AbortSignal[] = [];
     const generate = vi.fn<Generate>((_model, _body, signal) => {
       signals.push(signal);
@@ -54,10 +54,10 @@ describe('Délais de l’équipe Flash', () => {
     await vi.advanceTimersByTimeAsync(15_000);
     await expect(result).resolves.toMatchObject({ error: { name: 'TimeoutError' } });
     expect(generate).toHaveBeenCalledTimes(2);
-    expect(generate.mock.calls.every(([model]) => model.includes('flash'))).toBe(true);
+    expect(generate.mock.calls.map(([model]) => model)).toEqual(['gemini-3.8-flash', 'gemini-3.8-flash']);
   });
 
-  it('partage les 45 secondes de recherche avec son repli puis conclut sans inventer de source', async () => {
+  it('partage les 45 secondes de recherche avec sa nouvelle tentative puis conclut sans inventer de source', async () => {
     const researchSignals: AbortSignal[] = [];
     let analyses = 0;
     const generate = vi.fn<Generate>(async (_model, body, signal) => {
@@ -81,9 +81,13 @@ describe('Délais de l’équipe Flash', () => {
       ])
     } });
     expect(researchSignals).toHaveLength(2);
+    // The reference lookup starts on Flash-Lite (#91, décision 68); its new attempt, cut by the same deadline, is the last.
+    expect(generate.mock.calls.filter(([, body]) => (body.tools as any[])?.some(entry => entry.googleSearch)).map(([model]) => model))
+      .toEqual(['gemini-3.5-flash-lite', 'gemini-3.8-flash']);
+    expect(new Set(generate.mock.calls.map(([model]) => model))).toEqual(new Set(['gemini-3.8-flash', 'gemini-3.5-flash-lite']));
   });
 
-  it('partage les 30 secondes de relecture entre les modèles de repli', async () => {
+  it('partage les 30 secondes de relecture entre les deux tentatives sur 3.8', async () => {
     const reviewSignals: AbortSignal[] = [];
     const generate = vi.fn<Generate>(async (_model, body, signal) => {
       if ((body.generationConfig as any)?.responseMimeType === 'application/json') {
@@ -99,6 +103,7 @@ describe('Délais de l’équipe Flash', () => {
     await vi.advanceTimersByTimeAsync(10_000);
     await expect(result).resolves.toMatchObject({ error: { name: 'TimeoutError' } });
     expect(reviewSignals).toHaveLength(2);
+    expect(new Set(generate.mock.calls.map(([model]) => model))).toEqual(new Set(['gemini-3.8-flash']));
   });
 
   it('la limite globale interrompt un rôle avant son délai individuel', async () => {

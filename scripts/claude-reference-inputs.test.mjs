@@ -1,13 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import * as bridge from './claude-frontend.mjs';
 import { createClaudeArchive } from './claude-artifacts.mjs';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
+const editRule = (workspace, file) => {
+  const absolute = resolve(workspace, file).replaceAll('\\', '/');
+  return `Edit(${process.platform === 'win32' ? `//${absolute[0].toLowerCase()}${absolute.slice(2)}` : `//${absolute.replace(/^\/+/, '')}`})`;
+};
 function fixture(t) {
   const root = mkdtempSync(join(tmpdir(), 'laffinee-claude-reference-'));
   t.after(() => {
@@ -46,14 +50,17 @@ test('explicit readonly inputs reach the same preflight manifest, archive and re
   assert.equal(reference.readOnly, true);
   assert.equal(reference.sha256, digest(original));
   assert.equal(reference.size, original.length);
+  const previewWorkspace = bridge.claudeWorkspaceForOutput(parsed.output);
+  assert.equal(existsSync(previewWorkspace), false);
   const archive = createClaudeArchive({ output: parsed.output, brief: 'Continuer', sources: input.sources,
     sourceCwd: root, configured: { accountProfile: 'team' } });
+  assert.equal(archive.workspace, previewWorkspace);
   bridge.stageSources(archive.workspace, input.sources);
   assert.deepEqual(readFileSync(join(archive.workspace, reference.staged)), original);
   assert.deepEqual(JSON.parse(readFileSync(join(archive.root, 'request.json'))).sources, input.manifest);
-  const args = bridge.claudeArguments({ mode: 'edit', files: input.files, referenceFiles: input.referenceFiles });
-  assert.deepEqual(permissionArgs(args, '--allowedTools'), ['Read', 'Edit(./src/reader.ts)']);
-  assert(permissionArgs(args, '--disallowedTools').includes('Edit(./references/recovered.txt)'));
+  const args = bridge.claudeArguments({ workspace: archive.workspace, mode: 'edit', files: input.files, referenceFiles: input.referenceFiles });
+  assert.deepEqual(permissionArgs(args, '--allowedTools'), ['Read', editRule(archive.workspace, 'src/reader.ts')]);
+  assert(permissionArgs(args, '--disallowedTools').includes(editRule(archive.workspace, 'references/recovered.txt')));
   assert(args.includes('--restricted'));
   assert.equal(args[args.indexOf('--model') + 1], 'claude-opus-5-5');
   assert.equal(args[args.indexOf('--effort') + 1], 'xhigh');
@@ -108,8 +115,10 @@ test('a references-only review has Read and no editing grant; references-only ed
   const { root } = fixture(t);
   const parsed = bridge.parseLauncherOptions(['--cwd', root, '--brief', join(root, 'brief.txt'),
     '--output', join(root, 'result.json'), '--reference-file', 'references/recovered.txt']);
+  const previewWorkspace = bridge.claudeWorkspaceForOutput(parsed.output);
+  assert.equal(existsSync(previewWorkspace), false);
   const input = bridge.prepareClaudeInputs(parsed);
-  const args = bridge.claudeArguments({ mode: 'review', files: input.files, referenceFiles: input.referenceFiles });
+  const args = bridge.claudeArguments({ workspace: previewWorkspace, mode: 'review', files: input.files, referenceFiles: input.referenceFiles });
   assert.equal(args[args.indexOf('--tools') + 1], 'Read');
   assert.deepEqual(permissionArgs(args, '--allowedTools'), ['Read']);
   assert.throws(() => bridge.prepareClaudeInputs({ ...parsed, mode: 'edit' }), /liste explicite/);

@@ -8,10 +8,22 @@ import {
 import type { HopAdviceAssertion } from '../../domain/hopDecision/adviceSchema';
 import type { PreparedBrewingScenarioContext } from '../../domain/brewingScenarioContext';
 import {
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  type BrewerHopAdviceWizardCanonicalSnapshotV1,
+  type BrewerHopAdviceWizardOriginV1,
+  type BrewerHopAdviceWizardSourceV1,
+} from '../../../functions/src/brewerHopAdviceWizardSourceV1';
+import {
+  HOP_V55_DECISION_READING_FORMAT_V4,
   readHopV55DecisionReadingArchive,
+  readHopV55DecisionReadingArchiveForWizardV1,
   type HopV55DecisionReadingArchive,
+  type HopV55DecisionReadingArchiveV4,
   type HopV55DecisionReadingSource,
+  type HopV55WizardDecisionReadingArchiveV4,
 } from './decisionArchive';
+import { assertHopV55SemanticQuestionReadingV1 } from './decisionSemanticProjection';
+import { hopV55PropertyIntentsFromSemanticReadingV1 } from './propertyAdviceSemanticPreparationV3';
 import {
   readHopV55AdoptedContextBinding,
   type HopV55AdoptedContextBindingV1,
@@ -36,13 +48,17 @@ import {
   createHopV55PropertyAdviceV4ReadingContext,
   readHopV55PropertyAdviceAnnotationLedgerV1,
   readHopV55PropertyAdviceAnswerRecordV4,
+  readHopV55PropertyAdviceAnswerRecordV4ForWizardV1,
   sealHopV55PropertyAdviceAnnotationLedgerV1,
   sealHopV55PropertyAdviceLedgerEntryV1,
   HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT,
   type HopV55PropertyAdviceAnnotationLedgerV1,
+  type HopV55PropertyAdviceAnswerRecordV4ForWizardV1,
   type HopV55PropertyAdviceAnswerRecordV4,
   type HopV55PropertyAdviceCorrectionV4Draft,
+  type HopV55PropertyAdviceCorrectionV4DraftForWizardV1,
   type HopV55PropertyAdviceLedgerEntryV1,
+  type HopV55PropertyAdvicePreparationV4,
   type HopV55PropertyAdviceV4Actor,
   type HopV55PropertyAdviceV4ReadingContext,
   type HopV55PropertyAdviceV4Transition,
@@ -56,6 +72,7 @@ export type HopV55PropertyAdviceLedgerActionV4 =
   | { kind: 'add'; sourceAnnotation: HopPropertyAdviceIntentV3; activeIntent: HopPropertyAdviceIntentV3; reason: string };
 
 export type HopV55PropertyAdviceV4SourceRecord = HopV55PropertyAdviceAnswerRecordV3 | HopV55PropertyAdviceAnswerRecordV4;
+export type HopV55PropertyAdviceV4SourceRecordForWizardV1 = HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
 
 export interface PrepareHopV55PropertyAdviceCorrectionV4Input {
   sourceRecord: HopV55PropertyAdviceV4SourceRecord;
@@ -76,6 +93,19 @@ export type PrepareHopV55PropertyAdviceCorrectionV4Result =
   | { status: 'ready'; requestDraftV3: HopV55PropertyAdviceRequestDraftV3; recordDraft: HopV55PropertyAdviceCorrectionV4Draft }
   | { status: 'allRejected'; recordDraft: HopV55PropertyAdviceCorrectionV4Draft };
 
+export interface PrepareHopV55PropertyAdviceCorrectionV4ForWizardV1Input
+  extends Omit<PrepareHopV55PropertyAdviceCorrectionV4Input, 'sourceRecord' | 'sourceReadingArchive'> {
+  sourceRecord: HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
+  sourceReadingArchive: HopV55WizardDecisionReadingArchiveV4;
+  origin: BrewerHopAdviceWizardOriginV1;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+}
+
+export type PrepareHopV55PropertyAdviceCorrectionV4ForWizardV1Result =
+  | { status: 'ready'; requestDraftV3: HopV55PropertyAdviceRequestDraftV3;
+      recordDraft: HopV55PropertyAdviceCorrectionV4DraftForWizardV1 }
+  | { status: 'allRejected'; recordDraft: HopV55PropertyAdviceCorrectionV4DraftForWizardV1 };
+
 export interface ResumeHopV55PropertyAdviceCorrectionV4Input {
   record: unknown;
   sourceReadingArchive: unknown;
@@ -86,6 +116,21 @@ export type ResumeHopV55PropertyAdviceCorrectionV4Result =
   | { status: 'ready'; record: HopV55PropertyAdviceAnswerRecordV4; requestDraftV3: HopV55PropertyAdviceRequestDraftV3 }
   | { status: 'allRejected'; record: HopV55PropertyAdviceAnswerRecordV4 }
   | { status: 'stale'; record: HopV55PropertyAdviceAnswerRecordV4; reason: string }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string };
+
+export interface ResumeHopV55PropertyAdviceCorrectionV4ForWizardV1Input {
+  record: unknown;
+  sourceReadingArchive: HopV55WizardDecisionReadingArchiveV4;
+  origin: BrewerHopAdviceWizardOriginV1;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+  prepared: PreparedBrewingScenarioContext;
+}
+
+export type ResumeHopV55PropertyAdviceCorrectionV4ForWizardV1Result =
+  | { status: 'ready'; record: HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
+      requestDraftV3: HopV55PropertyAdviceRequestDraftV3 }
+  | { status: 'allRejected'; record: HopV55PropertyAdviceAnswerRecordV4ForWizardV1 }
+  | { status: 'stale'; record: HopV55PropertyAdviceAnswerRecordV4ForWizardV1; reason: string }
   | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string };
 
 export const HOP_V55_PROPERTY_ADVICE_REEXAMINATION_PREVIEW_V1_FORMAT =
@@ -192,8 +237,15 @@ function assertActor(value: HopV55PropertyAdviceV4Actor, label: string): void {
   }
 }
 
-function assertTransition(input: PrepareHopV55PropertyAdviceCorrectionV4Input,
-  source: HopV55PropertyAdviceV4SourceRecord, archive: HopV55DecisionReadingArchive): void {
+type HopV55PropertyAdviceV4SourceRecordAny = HopV55PropertyAdviceV4SourceRecord | HopV55PropertyAdviceV4SourceRecordForWizardV1;
+type HopV55PropertyAdviceCorrectionInputCommonV4 = Omit<PrepareHopV55PropertyAdviceCorrectionV4Input, 'sourceRecord' | 'sourceReadingArchive'> & {
+  sourceRecord: HopV55PropertyAdviceV4SourceRecordAny;
+  sourceReadingArchive: unknown;
+};
+
+function assertTransition(input: Pick<PrepareHopV55PropertyAdviceCorrectionV4Input, 'recordId' | 'transition' | 'requestId'>,
+  source: HopV55PropertyAdviceV4SourceRecordAny,
+  archive: Pick<HopV55DecisionReadingArchive, 'contentReference' | 'reading'>): void {
   const transition = input.transition;
   if (!text(input.recordId) || input.recordId === source.id || !text(transition.actId)
     || !text(transition.reason) || !isoInstant(transition.recordedAt)) {
@@ -245,6 +297,12 @@ function loadSourceRecord(value: HopV55PropertyAdviceV4SourceRecord): HopV55Prop
   return read.record;
 }
 
+function loadSourceRecordForWizardV1(value: unknown): HopV55PropertyAdviceV4SourceRecordForWizardV1 {
+  const read = readHopV55PropertyAdviceAnswerRecordV4ForWizardV1(value);
+  if (read.status !== 'readOnly') throw new Error(`La tête V4 Wizard n’est pas éditable : ${read.reason}`);
+  return read.record;
+}
+
 function readArchive(value: unknown, ownerKey: string, workspaceId: string): HopV55DecisionReadingArchive {
   const read = readHopV55DecisionReadingArchive(value);
   if (read.status !== 'available') throw new Error(`L’archive de lecture source est indisponible : ${read.status}.`);
@@ -252,6 +310,27 @@ function readArchive(value: unknown, ownerKey: string, workspaceId: string): Hop
     throw new Error('L’archive de lecture V4 appartient à un autre propriétaire ou workspace.');
   }
   return read.archive;
+}
+
+function readArchiveForWizardV1(input: {
+  value: unknown;
+  ownerKey: string;
+  workspaceId: string;
+  origin: BrewerHopAdviceWizardOriginV1;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+}): HopV55WizardDecisionReadingArchiveV4 {
+  const read = readHopV55DecisionReadingArchiveForWizardV1(input.value);
+  if (read.status !== 'available') throw new Error(read.status === 'invalidRecord'
+    ? `Archive Wizard invalide : ${read.reason}` : 'Archive Wizard future conservée en lecture seule.');
+  const archive = read.archive;
+  if (archive.ownerKey !== input.ownerKey || archive.workspaceId !== input.workspaceId
+    || archive.ownerKey !== input.origin.ownerKey || archive.workspaceId !== input.origin.workspaceId
+    || archive.source.ownerKey !== input.origin.ownerKey || archive.source.workspaceId !== input.origin.workspaceId
+    || archive.source.draftId !== input.origin.draftId) {
+    throw new Error('Archive, owner/workspace et origine Wizard ne décrivent pas la même source exacte.');
+  }
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(archive.source, input.snapshot);
+  return archive;
 }
 
 function activeEntries(ledger: HopV55PropertyAdviceAnnotationLedgerV1): Map<string, HopV55PropertyAdviceLedgerEntryV1> {
@@ -429,7 +508,8 @@ function readingContextFromRequest(request: HopPropertyAdviceRequestV3): HopV55P
   };
 }
 
-function sourceBase(input: PrepareHopV55PropertyAdviceCorrectionV4Input, source: HopV55PropertyAdviceV4SourceRecord): {
+function sourceBase(input: Pick<PrepareHopV55PropertyAdviceCorrectionV4Input, 'transition'>,
+  source: HopV55PropertyAdviceV4SourceRecordAny): {
   ledger: HopV55PropertyAdviceAnnotationLedgerV1;
   sourceActive: HopPropertyAdviceIntentV3[];
   readingContext: HopV55PropertyAdviceV4ReadingContext;
@@ -758,12 +838,16 @@ function assertCurrentLinksWithExplicitRebindings(input: {
   assertHopV55PropertyAdviceCurrentLinksRemainValid({ context: input.previousContext, propertyIntents: strictIntents }, input.nextContext);
 }
 
-function prepareCorrectionV4Internal(input: PrepareHopV55PropertyAdviceCorrectionV4Input, options?: {
+function prepareCorrectionV4Internal<TSource extends HopV55DecisionReadingSource | BrewerHopAdviceWizardSourceV1>(
+  input: HopV55PropertyAdviceCorrectionInputCommonV4,
+  source: HopV55PropertyAdviceV4SourceRecordAny,
+  archive: HopV55PropertyAdviceCorrectionArchiveForSourceV1<TSource>,
+  options?: {
   explicitAssertionIds?: ReadonlyMap<string, ReadonlySet<string>>;
   allowNoOpRevisionIds?: ReadonlySet<string>;
-}): PrepareHopV55PropertyAdviceCorrectionV4Result {
-  const source = loadSourceRecord(input.sourceRecord);
-  const archive = readArchive(input.sourceReadingArchive, source.ownerKey, source.workspaceId);
+}): { status: 'ready'; requestDraftV3: HopV55PropertyAdviceRequestDraftV3;
+      recordDraft: HopV55PropertyAdviceCorrectionDraftForSourceV1<TSource> }
+  | { status: 'allRejected'; recordDraft: HopV55PropertyAdviceCorrectionDraftForSourceV1<TSource> } {
   assertTransition(input, source, archive);
   const question = archive.reading.intent.question;
   if ((source.format === HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT ? source.originalQuestion
@@ -836,7 +920,7 @@ function prepareCorrectionV4Internal(input: PrepareHopV55PropertyAdviceCorrectio
 
   const preparedReference = hopV55PropertyAdvicePreparedReferenceV4({ prepared: input.prepared,
     readingContext, ledger, ...(binding ? { cultureBinding: binding } : {}) });
-  const recordDraft: HopV55PropertyAdviceCorrectionV4Draft = {
+  const recordDraft: HopV55PropertyAdviceCorrectionDraftForSourceV1<TSource> = {
     format: HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT, id: input.recordId,
     ownerKey: source.ownerKey, workspaceId: source.workspaceId, sourceReadingReference: archive.contentReference,
     originalQuestion: question, transition: clone(input.transition), ledger,
@@ -852,7 +936,231 @@ function prepareCorrectionV4Internal(input: PrepareHopV55PropertyAdviceCorrectio
 
 /** Strict correction path; it does not accept any reexamination link-bypass metadata. */
 export function prepareCorrectionV4(input: PrepareHopV55PropertyAdviceCorrectionV4Input): PrepareHopV55PropertyAdviceCorrectionV4Result {
-  return prepareCorrectionV4Internal(input);
+  const source = loadSourceRecord(input.sourceRecord);
+  const archiveRead = readArchive(input.sourceReadingArchive, source.ownerKey, source.workspaceId);
+  // The strict classic reader accepts its historical archives for V3 → V4 correction.
+  // Wizard sources remain excluded by readArchive and use prepareCorrectionV4ForWizardV1.
+  return prepareCorrectionV4Internal(input, source, archiveRead);
+}
+
+/** Strict Wizard correction/revision/reexamination; V3/classic parent records are not promoted here. */
+export function prepareCorrectionV4ForWizardV1(
+  input: PrepareHopV55PropertyAdviceCorrectionV4ForWizardV1Input,
+): PrepareHopV55PropertyAdviceCorrectionV4ForWizardV1Result {
+  const source = loadSourceRecordForWizardV1(input.sourceRecord);
+  if (source.ownerKey !== input.origin.ownerKey || source.workspaceId !== input.origin.workspaceId) {
+    throw new Error('Owner/workspace du record parent différent de l’origine Wizard.');
+  }
+  const archive = readArchiveForWizardV1({ value: input.sourceReadingArchive, ownerKey: source.ownerKey,
+    workspaceId: source.workspaceId, origin: input.origin, snapshot: input.snapshot });
+  return prepareCorrectionV4Internal(input, source, archive);
+}
+
+export type HopV55PropertyAdviceAdditionV4 = Extract<HopV55PropertyAdviceLedgerActionV4, { kind: 'add' }>;
+
+export interface PrepareInitialHopV55PropertyAdviceV4Input {
+  /** Exact archive4 kept by the host; its semantic reading is read strictly, never rebuilt from a view. */
+  sourceReadingArchive: unknown;
+  /** Owner/workspace bound to the authorized host principal; the archive must belong to them. */
+  ownerKey: string;
+  workspaceId: string;
+  /** Fresh Prepared already qualified by the caller for this archive and scope. */
+  prepared: PreparedBrewingScenarioContext;
+  recordId: string;
+  requestId: string;
+  /** Explicit host policy; this service never defaults it. */
+  candidatePolicy: HopPropertyAdviceRequestV3['candidatePolicy'];
+  /** Explicit host NR binding, or null when none is adopted. */
+  cultureBinding: HopV55AdoptedContextBindingV1 | null;
+  /** `create` without any parent field, from an explicit user gesture. */
+  transition: HopV55PropertyAdviceV4Transition;
+  /**
+   * Confirmed selection only. Each keeps the qualified proposal intent as its immutable source
+   * (interpretationOrigin `proposal`) and a user-confirmed active intent with the same ID and fragments.
+   */
+  additions: readonly HopV55PropertyAdviceAdditionV4[];
+}
+
+export type PrepareInitialHopV55PropertyAdviceV4Result =
+  | { status: 'ready'; requestDraftV3: HopV55PropertyAdviceRequestDraftV3; recordDraft: HopV55PropertyAdviceCorrectionV4Draft }
+  /** No qualifiable line yet: nothing is sealed, and this is not an all-rejected answer. */
+  | { status: 'pending'; reason: string };
+
+export interface PrepareInitialHopV55PropertyAdviceV4ForWizardV1Input
+  extends Omit<PrepareInitialHopV55PropertyAdviceV4Input, 'sourceReadingArchive'> {
+  sourceReadingArchive: HopV55WizardDecisionReadingArchiveV4;
+  origin: BrewerHopAdviceWizardOriginV1;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+}
+
+export type PrepareInitialHopV55PropertyAdviceV4ForWizardV1Result =
+  | { status: 'ready'; requestDraftV3: HopV55PropertyAdviceRequestDraftV3;
+      recordDraft: HopV55PropertyAdviceCorrectionV4DraftForWizardV1 }
+  | { status: 'pending'; reason: string };
+
+/** Base lines from the canonical mapper plus confirmed additions, sealed once as the final collection. */
+function initialLedgerV4(input: {
+  base: readonly HopPropertyAdviceIntentV3[];
+  additions: readonly HopV55PropertyAdviceAdditionV4[];
+  question: string;
+  sourceReadingReference: string;
+  transition: HopV55PropertyAdviceV4Transition;
+}): HopV55PropertyAdviceAnnotationLedgerV1 {
+  const { transition } = input;
+  const decision = (kind: 'initialize' | 'add', reason: string) => ({ kind, actId: transition.actId, reason,
+    recordedAt: transition.recordedAt, recordedBy: clone(transition.actor) });
+  const entries = [
+    // Initialization records who opened the ledger; each base interpretation keeps its own origin.
+    ...input.base.map(annotation => sealHopV55PropertyAdviceLedgerEntryV1({
+      entryId: makeEntryId(transition.actId, annotation.id, 'initialize'), annotationId: annotation.id,
+      sourceAnnotation: clone(annotation), sourceKind: 'initial', disposition: 'active', activeIntent: clone(annotation),
+      decision: decision('initialize', transition.reason),
+    })),
+    ...input.additions.map(action => {
+      assertAnchor(input.question, action.sourceAnnotation, action.activeIntent);
+      return sealHopV55PropertyAdviceLedgerEntryV1({
+        entryId: makeEntryId(transition.actId, action.sourceAnnotation.id, 'add'), annotationId: action.sourceAnnotation.id,
+        sourceAnnotation: clone(action.sourceAnnotation), sourceKind: 'added', additionActId: transition.actId,
+        sourceQuestionReference: input.sourceReadingReference, disposition: 'active', activeIntent: clone(action.activeIntent),
+        decision: decision('add', action.reason),
+      });
+    }),
+  ];
+  const ledger = sealHopV55PropertyAdviceAnnotationLedgerV1({
+    sourceAnnotations: [...input.base, ...input.additions.map(action => action.sourceAnnotation)].map(clone),
+    entries, originalQuestion: input.question,
+  });
+  // Source links outside the final set (an unselected suggestion, a foreign ID) are refused here.
+  assertHopV55PropertyAdviceAnnotationLedgerV1(ledger, input.question);
+  return ledger;
+}
+
+/**
+ * Initial V4 preparation for a chain without any record yet (`transition.kind: create`, no parent).
+ * It reads the real archive4, derives base lines through the canonical semantic mapper and the
+ * qualified Prepared, adds only the confirmed selection, then seals the final ledger and the record
+ * draft with its canonical documentary RequestV3. An existing V3/V4 head keeps prepareCorrectionV4.
+ */
+type HopV55PropertyAdvicePreparationForSourceV1<TSource> =
+  Omit<HopV55PropertyAdvicePreparationV4, 'source'> & { source: TSource };
+type HopV55PropertyAdviceCorrectionDraftForSourceV1<TSource> =
+  Omit<HopV55PropertyAdviceCorrectionV4Draft, 'preparation'> & {
+    preparation: HopV55PropertyAdvicePreparationForSourceV1<TSource>;
+  };
+
+type HopV55PropertyAdviceArchiveWithSourceV1<TArchive, TSource> =
+  TArchive extends unknown ? Omit<TArchive, 'source'> & { source: TSource } : never;
+
+/** Correction keeps every version already accepted by the strict classic archive reader. */
+type HopV55PropertyAdviceCorrectionArchiveForSourceV1<TSource> =
+  HopV55PropertyAdviceArchiveWithSourceV1<HopV55DecisionReadingArchive, TSource>;
+
+type HopV55PropertyAdviceInitialArchiveForSourceV1<TSource> =
+  Omit<HopV55DecisionReadingArchiveV4, 'source'> & { source: TSource };
+
+function assertInitialPropertyAdviceInputV4(input: PrepareInitialHopV55PropertyAdviceV4Input): void {
+  const transition = input.transition;
+  if (!text(input.ownerKey) || !text(input.workspaceId)) throw new Error('Une création V4 exige l’owner et le workspace de l’hôte.');
+  if (!text(input.recordId) || !text(input.requestId) || !transition || !text(transition.actId)
+    || !text(transition.reason) || !isoInstant(transition.recordedAt)) {
+    throw new Error('Une création V4 exige un ID de record, un ID de requête, un acte, un motif et un instant exacts.');
+  }
+  if (transition.kind !== 'create' || transition.parentRecordReference !== undefined || transition.parentReadingReference !== undefined) {
+    throw new Error('La préparation initiale V4 attend une transition create sans parent; une tête existante suit upgrade, révision ou réexamen.');
+  }
+  assertActor(transition.actor, 'Acteur de création');
+  if (transition.actor.origin !== 'user') throw new Error('Une création V4 confirme une sélection par un geste explicite du brasseur.');
+}
+
+function prepareInitialPropertyAdviceV4FromArchive<TSource extends HopV55DecisionReadingSource | BrewerHopAdviceWizardSourceV1>(
+  input: PrepareInitialHopV55PropertyAdviceV4Input,
+  archive: HopV55PropertyAdviceInitialArchiveForSourceV1<TSource>,
+): { status: 'ready'; requestDraftV3: HopV55PropertyAdviceRequestDraftV3;
+      recordDraft: HopV55PropertyAdviceCorrectionDraftForSourceV1<TSource> }
+  | { status: 'pending'; reason: string } {
+  const transition = input.transition;
+  assertHopV55SemanticQuestionReadingV1(archive.reading);
+  const question = archive.reading.intent.question;
+  const base = hopV55PropertyIntentsFromSemanticReadingV1(archive.reading, input.prepared);
+  const binding = assertBinding(input.cultureBinding, input.ownerKey, input.workspaceId);
+
+  const baseIds = new Set(base.map(intent => intent.id));
+  const addedIds = new Set<string>();
+  for (const action of input.additions) {
+    if (!action || action.kind !== 'add' || !action.sourceAnnotation || !action.activeIntent) throw new Error('Un ajout V4 initial doit être une action add complète.');
+    const id = action.sourceAnnotation.id;
+    if (!text(id) || baseIds.has(id) || addedIds.has(id)) {
+      throw new Error(`L’ajout ${String(id)} entre en collision avec une annotation de base ou un autre ajout; aucun renommage n’est fait.`);
+    }
+    addedIds.add(id);
+    if (!text(action.reason)) throw new Error(`L’ajout ${id} exige le motif explicite du brasseur.`);
+    if (action.sourceAnnotation.interpretationOrigin !== 'proposal') {
+      throw new Error(`L’ajout ${id} conserve la proposition qualifiée d’origine (interpretationOrigin proposal) comme source.`);
+    }
+    if (action.activeIntent.interpretationOrigin !== 'user') throw new Error(`L’intention confirmée ${id} doit porter interpretationOrigin=user.`);
+    if (action.sourceAnnotation.role === 'measurement' || action.activeIntent.role === 'measurement') {
+      throw new Error(`L’ajout ${id} ne peut pas introduire une mesure; une mesure vient de la lecture source ou d’une observation consignée.`);
+    }
+  }
+  if (!base.length && !input.additions.length) {
+    return { status: 'pending', reason: 'Aucune ligne qualifiable : ni intention de base, ni ajout confirmé. Rien n’est scellé.' };
+  }
+
+  const context = buildHopV55PropertyAdviceRequestContext(input.prepared);
+  // A confirmed `current` basis may only cite facts of this fresh frame; nothing is rebound silently.
+  assertHopV55PropertyAdviceCurrentLinksRemainValid({ context, propertyIntents: input.additions.map(action => action.activeIntent) }, context);
+  const ledger = initialLedgerV4({ base, additions: input.additions, question,
+    sourceReadingReference: archive.contentReference, transition });
+  const active = activeProjection(ledger);
+  const readingContext = withCultureBinding(createHopV55PropertyAdviceV4ReadingContext({
+    interpretation: { id: `interpretation-${input.requestId}`, version: 'hop-v55-property-advice-reading-v4',
+      text: buildHopV55PropertyAdviceInterpretation(active), origin: 'proposal' },
+    candidatePolicy: clone(input.candidatePolicy), context, exclusions: [],
+  }, question), binding, question);
+  const preparedReference = hopV55PropertyAdvicePreparedReferenceV4({ prepared: input.prepared,
+    readingContext, ledger, ...(binding ? { cultureBinding: binding } : {}) });
+  const recordDraft: HopV55PropertyAdviceCorrectionDraftForSourceV1<TSource> = {
+    format: HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT, id: input.recordId,
+    ownerKey: input.ownerKey, workspaceId: input.workspaceId, sourceReadingReference: archive.contentReference,
+    originalQuestion: question, transition: clone(transition), ledger,
+    preparation: { preparedReference, source: clone(archive.source), ...(binding ? { cultureBinding: binding } : {}) },
+    readingContext,
+  };
+  const requestDraft = requestDraftV3({ requestId: input.requestId, ownerKey: input.ownerKey, workspaceId: input.workspaceId,
+    sourceReadingReference: archive.contentReference, preparedReference, question, readingContext, active, prepared: input.prepared });
+  return { status: 'ready', requestDraftV3: requestDraft, recordDraft };
+}
+
+export function prepareInitialPropertyAdviceV4(input: PrepareInitialHopV55PropertyAdviceV4Input): PrepareInitialHopV55PropertyAdviceV4Result {
+  assertInitialPropertyAdviceInputV4(input);
+  const read = readArchive(input.sourceReadingArchive, input.ownerKey, input.workspaceId);
+  if (read.format !== HOP_V55_DECISION_READING_FORMAT_V4
+    || (read as HopV55DecisionReadingArchiveV4).reading.format !== 'hop-v55-question-semantic-reading-v1') {
+    throw new Error('La préparation initiale V4 lit seulement une archive4 sémantique V1 exacte.');
+  }
+  return prepareInitialPropertyAdviceV4FromArchive(input, read as HopV55DecisionReadingArchiveV4);
+}
+
+/** Explicit Wizard source preparation; archive, origin and full live-draft snapshot are linked before V4 mapping. */
+export function prepareInitialPropertyAdviceV4ForWizardV1(
+  input: PrepareInitialHopV55PropertyAdviceV4ForWizardV1Input,
+): PrepareInitialHopV55PropertyAdviceV4ForWizardV1Result {
+  assertInitialPropertyAdviceInputV4(input);
+  if (input.ownerKey !== input.origin.ownerKey || input.workspaceId !== input.origin.workspaceId) {
+    throw new Error('Owner/workspace de la création Wizard différents de l’origine du brouillon.');
+  }
+  const read = readHopV55DecisionReadingArchiveForWizardV1(input.sourceReadingArchive);
+  if (read.status !== 'available') {
+    throw new Error(read.status === 'invalidRecord' ? read.reason : 'Archive Wizard future ou non interprétable; aucune préparation n’est produite.');
+  }
+  const archive = read.archive;
+  if (archive.ownerKey !== input.origin.ownerKey || archive.workspaceId !== input.origin.workspaceId
+    || archive.source.ownerKey !== input.origin.ownerKey || archive.source.workspaceId !== input.origin.workspaceId
+    || archive.source.draftId !== input.origin.draftId) {
+    throw new Error('Archive Wizard, owner/workspace et origine draft ne décrivent pas la même source exacte.');
+  }
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(archive.source, input.snapshot);
+  return prepareInitialPropertyAdviceV4FromArchive(input, archive);
 }
 
 function stripAdoptedCultureAssertion(context: HopV55PropertyAdviceV4ReadingContext['context']): HopV55PropertyAdviceV4ReadingContext['context'] {
@@ -1062,7 +1370,11 @@ export function prepareVerifiedReexaminationV4(
       transition: input.transition, actions: input.actions, readingContext: verified.readingContext,
       cultureBinding: input.cultureBinding,
     };
-    const result = prepareCorrectionV4Internal(preparedInput, { explicitAssertionIds, allowNoOpRevisionIds });
+    const source = loadSourceRecord(preparedInput.sourceRecord);
+    // Same strict classic reader as prepareCorrectionV4: historical V1-V4 archives stay reexaminable, Wizard ones do not.
+    const archiveRead = readArchive(preparedInput.sourceReadingArchive, source.ownerKey, source.workspaceId);
+    const result = prepareCorrectionV4Internal(preparedInput, source, archiveRead,
+      { explicitAssertionIds, allowNoOpRevisionIds });
     return result.status === 'allRejected'
       ? { status: 'allRejected', recordDraft: result.recordDraft, previewReference: verified.preview.reference }
       : { status: 'ready', requestDraftV3: result.requestDraftV3, recordDraft: result.recordDraft,
@@ -1111,6 +1423,50 @@ export function resumeV4(input: ResumeHopV55PropertyAdviceCorrectionV4Input): Re
   assertHopV55PropertyAdviceRequestDraftV3(requestDraftV3);
   if (hopV55PropertyAdviceRequestDraftReferenceV3(body) !== record.outcome.requestDraftReference) {
     return { status: 'unsupportedReadOnly', snapshot: input.record, reason: 'La référence de requestDraft V3 du record V4 est incohérente.' };
+  }
+  return { status: 'ready', record, requestDraftV3 };
+}
+
+/** Read-only Wizard V4 resume; it validates the historical source and never reparses or rebuilds an answer. */
+export function resumeV4ForWizardV1(
+  input: ResumeHopV55PropertyAdviceCorrectionV4ForWizardV1Input,
+): ResumeHopV55PropertyAdviceCorrectionV4ForWizardV1Result {
+  const read = readHopV55PropertyAdviceAnswerRecordV4ForWizardV1(input.record);
+  if (read.status !== 'readOnly') return read;
+  const record = read.record;
+  let archive: HopV55WizardDecisionReadingArchiveV4;
+  try {
+    archive = readArchiveForWizardV1({ value: input.sourceReadingArchive, ownerKey: record.ownerKey,
+      workspaceId: record.workspaceId, origin: input.origin, snapshot: input.snapshot });
+  } catch (error) {
+    return { status: 'unsupportedReadOnly', snapshot: input.record,
+      reason: error instanceof Error ? error.message : 'Archive Wizard source indisponible.' };
+  }
+  if (archive.contentReference !== record.sourceReadingReference || archive.reading.intent.question !== record.originalQuestion
+    || !exact(archive.source, record.preparation.source)) {
+    return { status: 'unsupportedReadOnly', snapshot: input.record,
+      reason: 'L’archive Wizard ne correspond plus à la référence source V4 exacte.' };
+  }
+  const ledgerRead = readHopV55PropertyAdviceAnnotationLedgerV1(record.ledger, record.originalQuestion);
+  if (ledgerRead.status !== 'readOnly') return { status: 'unsupportedReadOnly', snapshot: input.record, reason: ledgerRead.reason };
+  const expected = hopV55PropertyAdvicePreparedReferenceV4({ prepared: input.prepared, readingContext: record.readingContext,
+    ledger: ledgerRead.ledger, ...(record.preparation.cultureBinding ? { cultureBinding: record.preparation.cultureBinding } : {}) });
+  if (expected !== record.preparation.preparedReference) {
+    return { status: 'stale', record, reason: 'Le contexte Prepared ou le binding NR a changé; réexamine avant toute nouvelle réponse.' };
+  }
+  if (record.outcome.kind === 'allRejected') return { status: 'allRejected', record };
+  const answer = record.outcome.answerSnapshot;
+  const body: Omit<HopV55PropertyAdviceRequestDraftV3, 'reference' | 'revisionContext' | 'reexaminationSource'> = {
+    format: 'hop-v55-property-advice-request-draft-v3', id: answer.requestSnapshot.id,
+    ownerKey: record.ownerKey, workspaceId: record.workspaceId,
+    sourceReadingReference: record.sourceReadingReference, preparedReference: record.preparation.preparedReference,
+    requestSnapshot: clone(answer.requestSnapshot),
+  };
+  const requestDraftV3: HopV55PropertyAdviceRequestDraftV3 = { ...body, reference: record.outcome.requestDraftReference };
+  assertHopV55PropertyAdviceRequestDraftV3(requestDraftV3);
+  if (hopV55PropertyAdviceRequestDraftReferenceV3(body) !== record.outcome.requestDraftReference) {
+    return { status: 'unsupportedReadOnly', snapshot: input.record,
+      reason: 'La référence de requestDraft V3 du record Wizard V4 est incohérente.' };
   }
   return { status: 'ready', record, requestDraftV3 };
 }

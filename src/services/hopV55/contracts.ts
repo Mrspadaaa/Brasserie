@@ -12,7 +12,7 @@ import type { HopV55ProgramCopy } from './programCopy';
 import type { HopV55ReferenceComparisonDTO } from './referenceComparison';
 import type { HopV55ScenarioPreparationV1 } from './scenarioCommit';
 import type { HopV55FullRecipeCopyRecomputePayload } from './candidateScenario';
-import type { HopV55DecisionReadingArchive, HopV55DecisionReadingSource } from './decisionArchive';
+import type { HopV55DecisionReadingArchive, HopV55DecisionReadingSource, HopV55WizardDecisionReadingArchiveV4 } from './decisionArchive';
 import type { HopV55DocumentaryAnswerHistoryEntry, HopV55DocumentaryDossierHistoryEntry } from './documentaryRecords';
 import type { HopV55FutureRecipeDraftV1, HopV55FutureRecipeMaterializationReceiptV1 } from './futureRecipeDraft';
 import type { HopV55ObservationAnchorRecordV1, HopV55ObservationProjectionRecordV1 } from './observationSession';
@@ -25,6 +25,30 @@ import type {
   HopV55PropertyAdviceReexaminationCommandReceiptHistoryEntry,
   HopV55PropertyAdviceReexaminationCommandStagingHistoryEntry,
 } from './propertyAdviceReexaminationCommand';
+import type { HopV55SemanticAdoptionCommitHistoryEntryV1 } from './semanticAdoptionController';
+
+import type {
+  BrewerHopAdviceWizardSourceV1,
+  BrewerHopAdviceWizardCanonicalSnapshotV1,
+} from '../../../functions/src/brewerHopAdviceWizardSourceV1';
+
+/** Stable Wizard origin, independent of its canonical content versions and of live authority. */
+export interface HopV55WizardWorkspaceOriginV1 {
+  format: 'hop-v55-workspace-wizard-origin-v1';
+  kind: 'wizardDraft';
+  ownerKey: string;
+  workspaceId: string;
+  draftId: string;
+}
+/** Exact immutable canonical snapshot; its own seal is distinct from source.contentReference. */
+export interface HopV55WizardSourceSnapshotV1 {
+  format: 'hop-v55-wizard-source-snapshot-v1';
+  source: BrewerHopAdviceWizardSourceV1;
+  draft: BrewerHopAdviceWizardCanonicalSnapshotV1['recipe'];
+  reference: string;
+}
+export type HopV55StoredDecisionReadingArchive =
+  HopV55DecisionReadingArchive | HopV55WizardDecisionReadingArchiveV4;
 
 export interface HopV55Intent {
   question: string;
@@ -72,7 +96,11 @@ export interface HopV55Workspace {
   sourceRecipeId?: string;
   sourceBatchId?: string;
   /** Immutable archived reading captured before its scenario is calculated. */
-  decisionReadings?: HopV55DecisionReadingArchive[];
+  decisionReadings?: HopV55StoredDecisionReadingArchive[];
+  /** Immutable origin supplied at creation; no saved Recipe or future-draft alias is fabricated. */
+  wizardOrigin?: HopV55WizardWorkspaceOriginV1;
+  /** Append-only exact canonical versions; future children stay raw/read-only. */
+  wizardSourceSnapshots?: unknown[];
   /** Documentary answers, sealed against their reading and source; never operational writes. */
   documentaryAnswers?: HopV55DocumentaryAnswerHistoryEntry[];
   /** Exact selected documentary dossiers, sealed against an answer already archived here. */
@@ -121,6 +149,12 @@ export interface HopV55Workspace {
   assistedAdviceTickets?: unknown[];
   /** Runtime-owned immutable receipts paired to a ticket persisted by an earlier CAS. */
   assistedAdviceRecords?: unknown[];
+  /** Semantic launches saved before submit; V3 seals the brewer's candidate policy. */
+  assistedSemanticAdviceTickets?: unknown[];
+  /** Real public semantic turns; their exact tickets were persisted by an earlier CAS. */
+  assistedSemanticAdviceRecords?: unknown[];
+  /** Exact V6 commits; their V4 records and receipts are persisted in this same workspace CAS. */
+  semanticAdoptionCommits?: HopV55SemanticAdoptionCommitHistoryEntryV1[];
   nuanceStudies?: Array<{ id: string; scenarioId: string; snapshotReference: string; projection: BrewingNuanceProjection;
     context: BrewingSensoryComparisonContext; reference: BrewingSensoryComparisonReference }>;
   snapshotIntents?: Array<{ scenarioId: string; snapshotReference: string; intent: HopV55Intent; decisionReadingReference?: string }>;

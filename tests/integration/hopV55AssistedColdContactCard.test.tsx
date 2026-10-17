@@ -53,9 +53,39 @@ describe('carte de référence BU au contact froid', () => {
       expect(metric).not.toHaveTextContent(/\d+\s*BU/);
       const dose = screen.getByLabelText('Référence BU de contact à froid').querySelector('.hv-assisted-cold-contact__metrics')!;
       if (item.label === 'Dose inconnue') expect(within(dose).getByText('Inconnue · g/L')).toBeInTheDocument();
-      else expect(within(dose).getByText('16,0001 g/L')).toBeInTheDocument();
+      else expect(within(dose).getByText('16 g/L (16,0001 g/L exacts)')).toBeInTheDocument();
       view.unmount();
     }
+  });
+
+  it('#75 · lit les doses calculées depuis les masses selon la règle unique, avec la coordonnée scellée', () => {
+    const evidence = read(interpolateColdHopBuFromMass({ massesGrams: [40], volumeL: 30 }));
+    expect(evidence.status).toBe('ready');
+    if (evidence.status !== 'ready') return;
+    render(<AssistedColdContactCard evidence={evidence} />);
+    const values = screen.getByLabelText('Référence BU de contact à froid').querySelector('.hv-assisted-cold-contact__metrics')!;
+    const value = (term: string) => [...values.querySelectorAll('dt')].find(dt => dt.textContent === term)?.nextElementSibling?.textContent;
+    expect.soft(value('Dose saisie · affichage arrondi')).toBe('1,333\u00a0g/L (4/3\u00a0g/L exacts)');
+    expect.soft(value('Dose effective')).toBe('133,333\u00a0g/hL (400/3\u00a0g/hL exacts)');
+    expect(values.textContent).not.toMatch(/\d,\d{7,}/);
+  });
+
+  it('#75 · lit les BU d’une dose non ronde comme la preuve froide de la recette (4 décimales), sans flottant brut', () => {
+    const evidence = read(interpolateColdHopBuFromMass({ massesGrams: [30], volumeL: 21 }));
+    expect(evidence.status).toBe('ready');
+    if (evidence.status !== 'ready') return;
+    render(<AssistedColdContactCard evidence={evidence} />);
+    const card = screen.getByLabelText('Référence BU de contact à froid');
+    const result = screen.getByLabelText('BU du protocole de référence');
+    const values = card.querySelector('.hv-assisted-cold-contact__metrics')!;
+    const value = (term: string) => [...values.querySelectorAll('dt')].find(dt => dt.textContent === term)?.nextElementSibling?.textContent;
+    expect.soft(result.querySelector('strong')?.textContent).toBe('18,7143\u00a0BU');
+    expect.soft(value('Contraste au témoin')).toBe('1,7143\u00a0BU');
+    expect.soft(value('Témoin publié · 0 g/hL')).toBe('17\u00a0BU');
+    expect.soft(value('Domaine de la courbe')).toMatch(/^0–1.600\xa0g\/hL$/u);
+    expect.soft(value('Dose effective')).toBe('142,857\u00a0g/hL (1000/7\u00a0g/hL exacts)');
+    // The exact values stay available in the facts and the snapshot disclosures.
+    expect(`${result.textContent}${values.textContent}`).not.toMatch(/\d,\d{5,}/);
   });
 
   it('garde visible l’avertissement quand une coordonnée positive s’affiche arrondie à zéro', () => {

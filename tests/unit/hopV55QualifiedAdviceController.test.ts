@@ -8,8 +8,10 @@ import * as qualifiedAdviceDomain from '../../src/domain/hopDecision/qualifiedAd
 import * as advicePreferenceAdapter from '../../src/domain/hopDecision/adviceProgramAdapter';
 import { makeHopAdviceJourneyFixture, addDocumentedAdviceCandidate } from '../fixtures/hopAdviceJourney';
 import { readHopV55Question } from '../../src/services/hopV55/decision';
+import { readHopV55QuestionSemanticV1 } from '../../src/services/hopV55/questionSemanticReading';
 import * as decisionReader from '../../src/services/hopV55/decision';
-import { createHopV55DecisionReadingArchiveV2, createHopV55DecisionReadingArchiveV3,
+import * as catalogueLoader from '../../src/domain/hopDecision/catalogueLoader';
+import { createHopV55DecisionReadingArchiveV2, createHopV55DecisionReadingArchiveV3, createHopV55DecisionReadingArchiveV4,
   type HopV55DecisionReadingArchive, type HopV55DecisionReadingSource } from '../../src/services/hopV55/decisionArchive';
 import { createHopV55QuestionScopeLedgerV1, readHopV55QuestionWithScopesV1 } from '../../src/services/hopV55/questionScopeReading';
 import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
@@ -17,9 +19,12 @@ import { hopV55ScenarioRuntimeReference } from '../../src/services/hopV55/scenar
 import type { HopV55Services, HopV55Workspace, HopV55WorkspaceRepository } from '../../src/services/hopV55/contracts';
 import { createHopV55WorkspaceRepository, type HopV55WorkspaceDatabaseAdapter, type HopV55WorkspaceEnvelopeV1,
   type HopV55WorkspaceTable } from '../../src/services/hopV55/workspaceRepository';
+import { withHopV55QualifiedAdvicePreparationSession } from '../../src/services/hopV55/qualifiedStudyPreparation';
+import { createHopV55QualifiedStudyPreferenceCommandV1 } from '../../src/services/hopV55/qualifiedStudyPreference';
 import { createHopV55QualifiedAdviceController, type HopV55QualifiedAdviceControllerHost,
   type HopV55QualifiedAdvicePreferenceRequest, type HopV55QualifiedAdviceSaveRequest } from '../../src/services/hopV55/qualifiedAdviceController';
-import { readHopV55QualifiedStudyLink, readHopV55QualifiedStudyPreparation } from '../../src/services/hopV55/qualifiedStudyWorkspace';
+import { createHopV55QualifiedStudyPreparationV1, readHopV55QualifiedStudyLink,
+  readHopV55QualifiedStudyPreparation } from '../../src/services/hopV55/qualifiedStudyWorkspace';
 import type { HopDecisionLocalRepository } from '../../src/services/hopDecisionLocalRepository';
 import { hopV55Workspace } from '../fixtures/hopV55';
 
@@ -106,7 +111,7 @@ class MemoryAdviceRepository implements HopDecisionLocalRepository {
   close() { /* Memory fixture only. */ }
 }
 
-function intentDimensions(reading: ReturnType<typeof readHopV55Question>) {
+function intentDimensions(reading: ReturnType<typeof readHopV55Question> | ReturnType<typeof readHopV55QuestionSemanticV1>) {
   return (reading.response?.intent.criteria ?? []).flatMap(criterion => {
     const description = criterion.description.toLocaleLowerCase('fr');
     if (/fruit|citron|ar[oô]me/iu.test(description)) return [{ criterionId: criterion.id, dimension: 'aroma' as const,
@@ -124,7 +129,7 @@ async function makeHarness(options: { scopeArchive?: boolean; question?: string;
   const prepared = prepareBrewingScenarioContext(context);
   const question = options.question ?? operationQuestion;
   const parsed = options.scopeArchive ? readHopV55QuestionWithScopesV1(question, prepared)
-    : { reading: readHopV55Question(question, prepared), scopeDrafts: [] };
+    : { reading: readHopV55QuestionSemanticV1(question, prepared), scopeDrafts: [] };
   const reading = parsed.reading;
   if (!reading.response || reading.response.actionKind !== 'exploreStrategies') {
     throw new Error('La lecture fixture Q09/Q01 doit conduire à exploreStrategies.');
@@ -141,8 +146,8 @@ async function makeHarness(options: { scopeArchive?: boolean; question?: string;
     archive = createHopV55DecisionReadingArchiveV3({ id: 'reading:q09-controller-v3', ownerKey, workspaceId,
       recordedAt, reading, source, runtimeReference, scopeLedger, transition });
   } else {
-    archive = createHopV55DecisionReadingArchiveV2({ id: 'reading:q09-controller-v2', ownerKey, workspaceId,
-      recordedAt, reading, source, runtimeReference });
+    archive = createHopV55DecisionReadingArchiveV4({ id: 'reading:q09-controller-v4', ownerKey, workspaceId,
+      recordedAt, reading: reading as Parameters<typeof createHopV55DecisionReadingArchiveV4>[0]['reading'], source, runtimeReference });
   }
   const workspace = hopV55Workspace(ownerKey, workspaceId);
   workspace.title = 'Q09 · conseil local synthétique';
@@ -316,8 +321,9 @@ describe('contrôleur Q09 de conseil qualifié', () => {
     expect((await h.qualifiedStudies.readEvents(ownerKey, preparation.dossierId)).map(event => event.kind))
       .toEqual(['studySaved', 'strategyPreferred']);
 
-    const nextReading = createHopV55DecisionReadingArchiveV2({ id: 'reading:q09-controller-next', ownerKey, workspaceId,
-      recordedAt: '2026-10-03T21:13:00.000Z', reading: h.reading, source: h.source,
+    const nextReading = createHopV55DecisionReadingArchiveV4({ id: 'reading:q09-controller-next', ownerKey, workspaceId,
+      recordedAt: '2026-10-03T21:13:00.000Z',
+      reading: h.reading as Parameters<typeof createHopV55DecisionReadingArchiveV4>[0]['reading'], source: h.source,
       runtimeReference: h.runtimeReference });
     await h.rawRepository.save({ ...staged, decisionReadings: [...(staged.decisionReadings ?? []), nextReading] }, staged.revision);
     h.setReading(nextReading);
@@ -354,5 +360,129 @@ describe('contrôleur Q09 de conseil qualifié', () => {
     expect(h.qualifiedStudies.createCalls).toBe(0);
     expect(h.qualifiedStudies.appendCalls).toBe(0);
     expect(builder).toHaveBeenCalledTimes(builderCalls);
+  });
+  it('ne persiste pas une préférence lorsque la lecture active a changé avant le staging', async () => {
+    const h = await makeHarness({ scopeArchive: true, question: q09Question });
+    const controller = createHopV55QualifiedAdviceController(h.host);
+    const preparation = await controller.prepareAdvice({ action: { kind: 'exploreStrategies', situation: {
+      stage: 'planning', program: null, materialIds: [], assertions: [], criterionDimensions: [], exclusions: [],
+    } }, explicitFutureStage: { kind: 'futureExploration', stage: 'planning', basis: 'Exploration future de fixture.' } });
+    const saved = await controller.saveAdviceStudy(saveRequest(preparation));
+    if (preparation.createCommand.kind !== 'advice') throw new Error('Étude advice exacte attendue.');
+    const option = preparation.createCommand.study.responseSnapshot.result.options[0];
+    if (!option) throw new Error('Option advice exacte attendue.');
+    const request = preferenceRequest(saved, option.id, option.reference);
+    const nextReading = createHopV55DecisionReadingArchiveV2({ id: 'reading:q09-controller-pref-stale', ownerKey, workspaceId,
+      recordedAt: '2026-10-03T21:16:00.000Z', reading: h.reading, source: h.source, runtimeReference: h.runtimeReference });
+    h.setReading(nextReading);
+    const capture = vi.spyOn(advicePreferenceAdapter, 'captureHopAdvicePreference');
+
+    await expect(controller.preferAdvice(request)).rejects.toMatchObject({ code: 'staleRevision' });
+    expect(capture).toHaveBeenCalledTimes(1);
+    expect(h.preferenceReceived).not.toHaveBeenCalled();
+    expect(h.qualifiedStudies.appendCalls).toBe(0);
+    expect((await h.stored()).qualifiedStudyPreferenceCommands).toBeUndefined();
+  });
+  it('refuse une lecture active changée pendant l’inspection sans relire le workspace', async () => {
+    const h = await makeHarness({ scopeArchive: true, question: q09Question });
+    const controller = createHopV55QualifiedAdviceController(h.host);
+    const preparation = await controller.prepareAdvice({ action: { kind: 'exploreStrategies', situation: {
+      stage: 'planning', program: null, materialIds: [], assertions: [], criterionDimensions: [], exclusions: [],
+    } }, explicitFutureStage: { kind: 'futureExploration', stage: 'planning', basis: 'Exploration future de fixture.' } });
+    const nextReading = createHopV55DecisionReadingArchiveV2({ id: 'reading:q09-controller-active-changed', ownerKey, workspaceId,
+      recordedAt: '2026-10-03T21:15:00.000Z', reading: h.reading, source: h.source, runtimeReference: h.runtimeReference });
+    const originalWorkspace = h.host.workspace;
+    let workspaceReads = 0;
+    h.host.workspace = async () => { workspaceReads++; return originalWorkspace(); };
+    const originalContext = h.host.context;
+    h.host.context = async () => { const current = await originalContext(); h.setReading(nextReading); return current; };
+
+    const result = await controller.freshness({ preparation, phase: 'beforeCreate' });
+    expect(result).toMatchObject({ status: 'historical' });
+    expect(workspaceReads).toBe(1);
+    expect((await h.stored()).qualifiedStudyPreparations).toEqual([preparation]);
+    expect(h.qualifiedStudies.createCalls).toBe(0);
+  });
+  it('réutilise l’assemblage pur dans la même opération si source/runtime/action et entrées restent exacts', async () => {
+    const h = await makeHarness({ scopeArchive: true, question: q09Question });
+    const workspace = await h.rawRepository.read(ownerKey, workspaceId);
+    if (!workspace) throw new Error('Workspace exact attendu.');
+    const input = {
+      workspace, ownerKey, workspaceId, sourceReadingReference: h.archive.contentReference,
+      expectedRuntimeReference: h.runtimeReference,
+      sourceContext: h.host.sourceContext(h.context, h.prepared, workspace),
+      prepared: h.prepared,
+      action: { kind: 'exploreStrategies' as const, situation: {
+        stage: 'planning' as const, program: null, materialIds: [], assertions: [], criterionDimensions: [], exclusions: [],
+      } },
+      explicitFutureStage: { kind: 'futureExploration' as const, stage: 'planning' as const, basis: 'Session de test explicite.' },
+      catalogueInput: { saved: { varieties: structuredClone(h.context.hopIndex?.varieties ?? []), lots: [] } },
+    };
+    const loader = vi.spyOn(catalogueLoader, 'loadHopCatalogueQualificationInput');
+    let closedSession: import('../../src/services/hopV55/qualifiedStudyPreparation').HopV55QualifiedAdvicePreparationSessionV1 | undefined;
+    await withHopV55QualifiedAdvicePreparationSession(async session => {
+      closedSession = session;
+      const first = await session.inspect(input);
+      const identical = await session.inspect(input);
+      expect(first.status).toBe('ready');
+      expect(identical).toEqual(first);
+      expect(loader).toHaveBeenCalledTimes(1);
+
+      // A valid append-only preference advances the workspace revision, but it does not change
+      // the inputs to catalogue assembly. The surrounding call still rechecks the fresh workspace.
+      const stagedStudy = qualifiedAdviceDomain.answerQualifiedHopAdvice(h.fixture);
+      const stagedDossierId = 'dossier:q09-assembly-cache';
+      const stagedPreparation = createHopV55QualifiedStudyPreparationV1({
+        id: 'preparation:q09-assembly-cache', ownerKey, workspaceId,
+        sourceReadingReference: h.archive.contentReference, preparedReference: 'prepared:q09-assembly-cache',
+        createCommand: { kind: 'advice', ownerKey, dossierId: stagedDossierId,
+          eventId: 'study-saved:q09-assembly-cache', recordedAt, study: stagedStudy },
+      });
+      const stagedOption = stagedStudy.responseSnapshot.result.options[0];
+      if (!stagedOption) throw new Error('Une option de préférence exacte est requise.');
+      const stagedEvent = advicePreferenceAdapter.captureHopAdvicePreference({
+        identity: { ownerKey, dossierId: stagedDossierId, eventId: 'preference-event:q09-assembly-cache',
+          expectedRevision: 1, recordedAt },
+        study: stagedStudy, currentStudy: stagedStudy,
+        qualificationInput: stagedStudy.requestSnapshot.qualificationInput,
+        preferenceId: 'preference:q09-assembly-cache', optionId: stagedOption.id,
+        reason: 'Préférence de fixture append-only; source et données de conseil inchangées.',
+      });
+      const stagedCommand = createHopV55QualifiedStudyPreferenceCommandV1({ preparation: stagedPreparation, event: stagedEvent });
+      const preferenceRevision = { ...input, workspace: { ...input.workspace,
+        revision: input.workspace.revision + 1, qualifiedStudyPreferenceCommands: [stagedCommand] } };
+      const afterPreferenceAppend = await session.inspect(preferenceRevision);
+      expect(afterPreferenceAppend).toEqual(first);
+      expect(loader).toHaveBeenCalledTimes(1);
+
+      const savedVarieties = input.catalogueInput.saved?.varieties;
+      if (!savedVarieties?.length) throw new Error('Variétés sauvegardées de la fixture attendues.');
+      savedVarieties[0].name += ' · modifié après capture';
+      const mutated = await session.inspect(preferenceRevision);
+      expect(mutated.status).toBe('ready');
+      expect(loader).toHaveBeenCalledTimes(2);
+      if (first.status !== 'ready' || mutated.status !== 'ready') throw new Error('Lectures d’inspection attendues.');
+      expect(mutated.qualificationInputReference).not.toBe(first.qualificationInputReference);
+
+      const changedAction = { ...preferenceRevision,
+        action: { ...preferenceRevision.action, situation: { ...preferenceRevision.action.situation,
+          materialIds: [h.candidate.id] } } };
+      const changedActionResult = await session.inspect(changedAction);
+      expect(changedActionResult.status).toBe('ready');
+      expect(loader).toHaveBeenCalledTimes(3);
+
+      const wrongOwner = await session.inspect({ ...changedAction, ownerKey: 'foreign-owner' });
+      expect(wrongOwner).toMatchObject({ status: 'refused', code: 'invalidWorkspace' });
+      const wrongSource = await session.inspect({ ...changedAction, sourceReadingReference: 'reading:absente' });
+      expect(wrongSource).toMatchObject({ status: 'refused', code: 'sourceReadingMissing' });
+      const staleRuntime = await session.inspect({ ...changedAction, expectedRuntimeReference: 'runtime:stale' });
+      expect(staleRuntime).toMatchObject({ status: 'refused', code: 'runtimeReferenceStale' });
+      expect(loader).toHaveBeenCalledTimes(3);
+    });
+    expect(() => closedSession!.inspect(input)).toThrow(/fermée/);
+
+    const separateOperation = await withHopV55QualifiedAdvicePreparationSession(session => session.inspect(input));
+    expect(separateOperation.status).toBe('ready');
+    expect(loader).toHaveBeenCalledTimes(4);
   });
 });

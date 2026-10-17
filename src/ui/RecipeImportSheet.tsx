@@ -37,9 +37,14 @@ interface RecipeImportSheetProps {
   open: boolean;
   onClose: () => void;
   onApply: (recipe: ImportedRecipe) => void;
+  /**
+   * What the host will keep or replace when this read is applied, said before « Reprendre ». The reader does not know
+   * the recipe being edited; only its host can tell, for instance, that an analysis will not replace its own.
+   */
+  reviewImport?: (recipe: ImportedRecipe) => string[];
 }
 
-export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onClose, onApply }) => {
+export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onClose, onApply, reviewImport }) => {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ImportedRecipe | null>(null);
@@ -86,7 +91,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
       try {
         res = await AiClient.run<unknown>({
           task: 'importRecipe',
-          tier: 'max',
+          // 3.8 en réflexion basse : en Max, l'import dépassait 100 s au banc réel #91 (#100).
+          tier: 'fast',
           instruction: raw || 'Lis la recette sur ce document.',
           file
         });
@@ -94,13 +100,20 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
         res = { ok: false, error: e instanceof Error ? e.message : 'Lecture indisponible' };
       }
       if (token !== request.current) return;
-      if (res.ok && res.data) setResult(normalizeRecipeImport(res.data, 'ia'));
-      else if (raw) {
+      if (res.ok && res.data) {
+        const imported = normalizeRecipeImport(res.data, 'ia');
+        // Impossible numbers already removed by the server (recipeImportResult.ts) are said, not hidden.
+        const removed = (res.data as { importWarnings?: unknown }).importWarnings;
+        if (Array.isArray(removed)) imported.warnings.unshift(...removed.filter((w): w is string => typeof w === 'string'));
+        setResult(imported);
+      } else if (raw) {
         const local = parseLocalRecipe(raw);
         local.warnings.unshift(
           'Lecture locale : seules les valeurs reconnues sont structurées. Le texte complet est conservé dans les notes de création.'
         );
         setResult(local);
+        // The AI call may have been counted (delay, cut answer): say it above the local reading, not only its fallback.
+        if (res.error) setError(res.error);
       } else setError(res.error ?? 'Lecture impossible.');
     } catch (e) {
       if (token === request.current)
@@ -112,6 +125,17 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
   const grains = result?.fermentables.filter((f) => f.kind === 'grain') ?? [];
   const others = result?.fermentables.filter((f) => f.kind !== 'grain') ?? [];
+  const admissionNotes = result && reviewImport ? reviewImport(result) : [];
+  const admissionList = admissionNotes.length > 0 && (
+    <ul className="space-y-1">
+      {admissionNotes.map((note, i) => (
+        <li key={i} data-import-admission className="flex items-start gap-2 text-sm text-ebc-amber leading-snug">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>{note}</span>
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <Sheet
@@ -233,6 +257,14 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
 
       {result && (
         <div className="space-y-2">
+          {/* --- L'IA a échoué : la lecture locale suit, l'échec reste dit -- */}
+          {error && (
+            <p role="alert" className="flex items-start gap-2 text-sm text-alert-strong leading-snug">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </p>
+          )}
+
           {/* --- Ce qui a été lu -------------------------------------------- */}
           <div className="panel p-2">
             <h3 className="text-base font-semibold text-cave-50">{result.name || 'Sans nom'}</h3>
@@ -329,7 +361,8 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
                           {HOP_STAGE[h.stage].label}
                         </span>
                         <span className="text-sm text-cave-400 truncate">
-                          {describeMoment(h)}
+                          {/* An absent boil time is not « 0 min » (it may have been removed as impossible, #100). */}
+                          {h.stage === 'boil' && !Number.isFinite(h.timeMin) ? 'durée à préciser' : describeMoment(h)}
                           {h.alpha ? ` · ${formatDecimal(h.alpha)} %` : ' · alpha inconnu'}
                         </span>
                       </span>
@@ -436,6 +469,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
             >
               <h3 className="font-semibold text-cave-50">Eau, sels et acides</h3>
               {result.waterPlan.sourceSnapshot && <p>{result.waterPlan.sourceSnapshot.name}</p>}
+              {admissionList}
               {(['mash', 'sparge'] as const).map((side) => (
                 <div key={side}>
                   <p className="text-cave-50">
@@ -458,6 +492,7 @@ export const RecipeImportSheet: React.FC<RecipeImportSheetProps> = ({ open, onCl
               ))}
             </section>
           )}
+          {!result.waterPlan && admissionList}
           {result.waterTarget && (
             <p className="text-sm text-cave-200">
               Cible d’eau :{' '}

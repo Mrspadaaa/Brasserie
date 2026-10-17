@@ -84,6 +84,14 @@ const clickUnique = async (selector, description) => {
   await live[0].evaluate(e => e.scrollIntoView({ block: 'center', inline: 'center' }));
   await live[0].click();
 };
+// Under the V5.5 hop workbench, the manual hop lines are the correction path behind their native disclosure.
+const openHopLines = async () => {
+  await page.waitForSelector('.recipe-wizard #recipe-hop-lines > summary', { visible: true });
+  if (!(await page.$eval('.recipe-wizard #recipe-hop-lines', element => element.open))) {
+    await clickUnique('.recipe-wizard #recipe-hop-lines > summary', 'Ouvrir « Corriger les lignes de houblon »');
+  }
+  await page.waitForSelector('.recipe-wizard #recipe-hop-lines[open]');
+};
 const clickExactLabel = async (selector, label, description = label) => {
   const matches = await page.$$(selector);
   const live = [];
@@ -217,6 +225,7 @@ async function runJourney() {
       await capture(`journey-${width}-${zoomEquivalent ? 'css640-equivalent' : 'libelle'}-recette-longue`, '.recipe-wizard');
 
       await clickUnique('.recipe-wizard nav[aria-label="Étapes"] button[aria-label="Houblons"]', `Ouvrir Houblons (${viewportLabel})`);
+      await openHopLines();
       const longHopName = 'Houblon du jardin botanique — récolte expérimentale 2026';
       const longHopPicker = '.recipe-wizard [aria-label^="Ajouter un houblon"]';
       await page.waitForSelector(longHopPicker, { visible: true });
@@ -243,6 +252,7 @@ async function runJourney() {
       await page.locator('.recipe-wizard #wz-title').fill('');
     }
     await clickUnique('.recipe-wizard nav[aria-label="Étapes"] button[aria-label="Houblons"]', 'Ouvrir Houblons vierges');
+    await openHopLines();
     const blankHopPicker = '.recipe-wizard [aria-label^="Ajouter un houblon"]';
     await page.waitForSelector(blankHopPicker, { visible: true });
     const hopContextLoadingText = 'Chargement des repères levure…';
@@ -272,6 +282,7 @@ async function runJourney() {
       const navigationStart = runPerformance ? await page.evaluate(() => window.__recipeJourneyMetrics.navigation.length) : null;
       await clickUnique(`.recipe-wizard nav[aria-label="Étapes"] button[aria-label="${step}"]`, `Ouvrir ${step} pour mesurer`);
       await page.waitForFunction(expected => document.querySelector('.recipe-wizard nav[aria-label="Étapes"] [aria-current="step"]')?.getAttribute('aria-label') === expected, {}, step);
+      if (step === 'Houblons') await openHopLines();
       if (runPerformance) {
         await page.waitForFunction(start => window.__recipeJourneyMetrics.navigation.length > start, {}, navigationStart);
         const samples = await page.evaluate(start => window.__recipeJourneyMetrics.navigation.slice(start), navigationStart);
@@ -380,23 +391,16 @@ async function runJourney() {
     await page.waitForSelector('.recipe-wizard #wz-hop-1', { visible: true });
     await page.locator('.recipe-wizard #wz-hop-1').fill('40');
     await page.waitForFunction(() => document.querySelectorAll('.recipe-wizard li.panel').length === 2);
-    const hopVisuals = await page.$eval('.recipe-wizard .recipe-hop-tools', element => !!element);
-    assert(hopVisuals, 'The local hop comparison and simulation panel is mounted');
-    await clickTextContains('.recipe-wizard .recipe-hop-tools summary', 'Comparer et simuler les houblons');
-    await page.waitForSelector('.recipe-wizard .recipe-hop-tools[open] [role="tablist"][aria-label="Outils de houblonnage"]', { visible: true });
-    await clickExactLabel('.recipe-wizard .recipe-hop-tools [role="tab"]', 'Simuler', 'Ouvrir la simulation des houblons');
-    await page.waitForSelector('.recipe-wizard .recipe-hop-tools fieldset[aria-label="Simulation de houblonnage"]', { visible: true });
-    await clickTextContains('.recipe-wizard details > summary', 'Recherche avancée · arômes, essais et analyses', 'Ouvrir l’atelier aromatique');
-    await page.waitForFunction(() => !document.body.innerText.includes('Chargement de l’atelier aromatique…'), { timeout: 12000 });
-    await page.waitForSelector('.recipe-wizard [aria-label="Étapes de l’atelier aromatique"] button[aria-current="page"]', { visible: true });
-    assert.equal(await page.$eval('.recipe-wizard [aria-label="Étapes de l’atelier aromatique"] button[aria-current="page"]', element => element.textContent.trim()), 'Simuler mes ajouts', 'The hop workshop opens on its explicit local simulation view');
+    // The native V5.5 hop workbench replaced the former comparison/simulation tools and the aromatic workshop of this step.
+    await page.waitForSelector('.recipe-wizard [data-testid="recipe-hop-v55"] [data-testid="hop-v55"]', { timeout: 12000 });
+    assert.equal(await page.$('.recipe-wizard .recipe-hop-tools'), null, 'The former comparison/simulation panel is no longer mounted');
     await page.waitForFunction(() => [...document.querySelectorAll('.recipe-wizard details > summary')].some(summary => summary.getClientRects().length && summary.textContent.replace(/\s+/g, ' ').includes('Lots, COA et conditions de contact')), { timeout: 12000 });
     const lotSummaries = await page.$$('.recipe-wizard summary');
     const lotSummary = [];
     for (const summary of lotSummaries) if (await summary.evaluate(e => e.getClientRects().length && e.textContent.replace(/\s+/g, ' ').includes('Lots, COA et conditions de contact'))) lotSummary.push(summary);
     assert.equal(lotSummary.length, 1, 'The hop batch/COA editor stays reachable');
     await lotSummary[0].click();
-    await page.waitForSelector('.recipe-wizard [aria-label="Étapes de l’atelier aromatique"] button[aria-current="page"]', { visible: true });
+    // The lot/COA editor now lives under the correction lines of the step, outside the former aromatic workshop.
     await page.waitForFunction(() => [...document.querySelectorAll('.recipe-wizard label')].some(label =>
       label.textContent.replace(/\s+/g, ' ').trim() === 'Référence documentaire de l’ajout 2' && label.getClientRects().length));
     const sourceReview = await page.evaluate(() => {
@@ -440,61 +444,75 @@ async function runJourney() {
     await capture(`journey-${width}-houblons`, '.recipe-wizard #recipe-hop-additions');
 
     await measureInputSeries('Levure', '.recipe-wizard [aria-label="Rechercher une levure"]', ['SafAle','US-05','Diamond','Verdant','WLP095','SafAle US-05','Lallemand','Verdant IPA'], 'Recherche de levure');
-    const yeastHeadingBefore = await page.$eval('.recipe-wizard .yc-current h3', element => element.textContent.trim());
-    assert.equal(yeastHeadingBefore, 'Choisir une levure', 'Typing searches the yeast catalogue without automatically changing the recipe');
-    const yeastStyle = '.recipe-wizard .yc-catalogue [aria-label="Filtrer les levures par style"]';
-    await page.waitForSelector(yeastStyle, { visible: true });
+    // Current yeast step: strain station (search, chosen identity), pitching, objectives and conduct stations.
+    // Searching, filtering, picking a profile or tuning a trial never changes the recipe without an explicit choice.
+    const yeastStation = '.recipe-wizard .yc-strain-station';
+    const yeastHeading = `${yeastStation} .yc-station-heading h3`;
+    const yeastIdentity = `${yeastStation} .yc-identity-card strong`;
+    const yeastName = () => page.evaluate(selector => document.querySelector(selector)?.textContent.trim() ?? null, yeastIdentity);
+    const yeastSearch = `${yeastStation} .yeast-picker-search`;
+    const yeastStyle = `${yeastStation} .yc-catalogue [aria-label="Filtrer les levures par style"]`;
+    const openYeastFilters = async () => {
+      await page.waitForSelector(`${yeastStation} details.yc-filters > summary`, { visible: true });
+      if (!(await page.$eval(`${yeastStation} details.yc-filters`, element => element.open))) await clickUnique(`${yeastStation} details.yc-filters > summary`, 'Ouvrir les filtres de levure');
+      await page.waitForSelector(yeastStyle, { visible: true });
+    };
+    const openStation = async (fold, description) => {
+      const toggle = `.recipe-wizard [data-station-toggle="${fold}"]`;
+      await page.waitForSelector(toggle, { visible: true });
+      if (await page.$eval(toggle, element => element.getAttribute('aria-expanded')) !== 'true') await clickUnique(toggle, description);
+      await page.waitForFunction(selector => document.querySelector(selector)?.getAttribute('aria-expanded') === 'true', {}, toggle);
+    };
+    assert.equal(await page.$eval(yeastHeading, element => element.textContent.trim()), 'Levure · choisir', 'Typing searches the yeast catalogue without automatically changing the recipe');
+    assert.equal(await yeastName(), null, 'No yeast identity appears before an explicit choice');
+    await openYeastFilters();
     await selectNativeOptionByKeyboard(yeastStyle, 'lager', 'Lager family filter');
-    await page.locator('.recipe-wizard .yeast-picker-search').fill('Diamond Lager');
+    await page.locator(yeastSearch).fill('Diamond Lager');
     await page.waitForFunction(() => [...document.querySelectorAll('.recipe-wizard .yc-list li')].some(row => row.querySelector('.yc-identity strong')?.textContent.trim() === 'Diamond Lager'), { timeout: 10000 });
-    assert.equal(await page.$eval('.recipe-wizard .yc-current h3', element => element.textContent.trim()), 'Choisir une levure', 'Changing the Lager family and search query does not select a product');
-    const diamondChoice = '.recipe-wizard .yc-list button[aria-label="Choisir Diamond Lager dans la recette"]';
+    assert.equal(await page.$eval(yeastHeading, element => element.textContent.trim()), 'Levure · choisir', 'Changing the Lager family and search query does not select a product');
+    const diamondChoice = '.recipe-wizard .yc-list button[aria-label="Choisir Diamond Lager pour le brouillon"]';
     await page.waitForSelector(diamondChoice, { visible: true });
     await clickUnique(diamondChoice, 'Choisir explicitement Diamond Lager pour l’essai Lager');
-    await page.waitForFunction(() => document.querySelector('.recipe-wizard .yc-current h3')?.textContent.trim() === 'Diamond Lager');
-    const lagerGoal = '.recipe-wizard .yc-plan .yc-goal-row select';
+    await page.waitForFunction(selector => document.querySelector(selector)?.textContent.trim() === 'Diamond Lager', {}, yeastIdentity);
+    await openStation('objectives', 'Ouvrir les objectifs de la levure');
+    const lagerGoal = '.recipe-wizard .yc-goal-station .yc-goal-row select';
     await page.waitForSelector(lagerGoal, { visible: true });
     const goalOptions = await page.$$eval(`${lagerGoal} option`, options => options.map(option => ({ value: option.value, label: option.textContent.trim() })));
     assert(goalOptions.some(option => option.value === 'low-sulfur' && option.label === 'Soufre en retrait'), 'The Lager yeast plan exposes its explicit low-sulfur profile');
     await selectNativeOptionByKeyboard(lagerGoal, 'low-sulfur', 'Lager low-sulfur goal');
-    assert(await page.$eval('.recipe-wizard .yc-plan .yc-proposal', element => element.hidden), 'Selecting a profile by keyboard does not propose or apply a fermentation plan by itself');
-    await clickExactLabel('.recipe-wizard .yc-plan .yc-goal-row button', 'Proposer une conduite', 'Proposer explicitement un essai de conduite Lager');
-    await page.waitForFunction(() => { const proposal = document.querySelector('.recipe-wizard .yc-plan .yc-proposal'); return proposal && !proposal.hidden; });
-    assert.match(await page.$eval('.recipe-wizard .yc-plan .yc-proposal', element => element.innerText), /Non appliqué/u, 'The explicit Lager proposal is labelled as an unapplied trial');
-    await capture(`journey-${width}-lager-essai`, '.recipe-wizard .yc-plan .yc-proposal');
+    assert.equal(await page.$('.recipe-wizard .yc-plan .yc-proposal-result'), null, 'Selecting a profile by keyboard does not propose or apply a fermentation plan by itself');
+    await clickExactLabel('.recipe-wizard .yc-goal-station .yc-goal-row button', 'Proposer une conduite', 'Proposer explicitement un essai de conduite Lager');
+    await page.waitForSelector('.recipe-wizard .yc-plan .yc-proposal-result', { visible: true });
+    assert.match(await page.$eval('.recipe-wizard .yc-conduct-station', element => element.innerText), /Non appliqué/u, 'The explicit Lager proposal is labelled as an unapplied trial');
+    assert.equal(await yeastName(), 'Diamond Lager', 'The Lager proposal keeps the chosen strain');
+    await capture(`journey-${width}-lager-essai`, '.recipe-wizard .yc-plan .yc-proposal-result');
 
-    await clickExactLabel('.recipe-wizard .yc-current .yc-actions button', 'Changer / comparer', 'Revenir aux références après l’essai Lager');
-    await page.waitForSelector(yeastStyle, { visible: true });
-    await page.select(yeastStyle, 'clean-ale');
-    assert.equal(await page.$eval(yeastStyle, element => element.value), 'clean-ale', 'Restore the recipe-aligned American Ale family before searching the Wyeast reference');
-    const yeastSearch = '.recipe-wizard [aria-label="Rechercher une levure"]';
-    const yeastReadOnly = await page.$eval(yeastSearch, element => element.readOnly);
-    if (yeastReadOnly) { const field = page.locator(yeastSearch); await field.click(); await field.click(); }
+    // With a chosen strain, « Chercher une autre levure » searches the whole catalogue without replacing it.
+    assert.equal(await page.$eval(yeastSearch, element => element.getAttribute('aria-label')), 'Chercher une autre levure', 'With a chosen yeast, the search offers another reference');
     await page.locator(yeastSearch).fill('Wyeast 1056');
-    const exactYeastChoice = '.recipe-wizard button[aria-label="Choisir 1056 American Ale® dans la recette"]';
-    await page.waitForFunction(() => document.querySelector('button[aria-label="Choisir 1056 American Ale® dans la recette"]') || [...document.querySelectorAll('.yeast-picker button')].some(button => button.textContent.trim() === 'Chercher dans tout le catalogue'), { timeout: 7000 });
-    if (!(await page.$(exactYeastChoice))) {
-      const catalogueSearch = await page.$$('.yeast-picker button');
-      const expandSearch = [];
-      for (const button of catalogueSearch) if (await button.evaluate(element => element.getClientRects().length && element.textContent.trim() === 'Chercher dans tout le catalogue')) expandSearch.push(button);
-      assert.equal(expandSearch.length, 1, 'A single explicit whole-catalogue action is offered for Wyeast 1056');
-      await expandSearch[0].click();
-    }
-    await page.waitForSelector(exactYeastChoice, { visible: true });
-    assert.equal(await page.$eval('.recipe-wizard .yc-current h3', element => element.textContent.trim()), 'Diamond Lager', 'Searching the whole catalogue does not replace the existing yeast without an explicit choice');
-    assert.equal(await page.$eval('.recipe-wizard .yc-list li strong', element => element.textContent.trim()), '1056 American Ale®', 'The searched catalogue result is the exact printed Wyeast product');
-    const candidateEvidence = await page.$eval(exactYeastChoice, element => element.closest('li')?.innerText ?? element.innerText);
-    assert.match(candidateEvidence, /16\s*–\s*22\s*°C/u, 'The Wyeast 1056 candidate shows its manufacturer temperature before selection');
+    await openYeastFilters();
+    await page.select(yeastStyle, 'clean-ale');
+    assert.equal(await page.$eval(yeastStyle, element => element.value), 'clean-ale', 'Restore the recipe-aligned American Ale family before choosing the Wyeast reference');
+    const exactYeastChoice = '.recipe-wizard .yc-list button[aria-label="Choisir 1056 American Ale® pour le brouillon"]';
+    await page.waitForSelector(exactYeastChoice, { visible: true, timeout: 10000 });
+    assert.equal(await yeastName(), 'Diamond Lager', 'Searching the whole catalogue does not replace the existing yeast without an explicit choice');
+    assert.equal(await page.$eval(exactYeastChoice, element => element.closest('li')?.querySelector('.yc-identity strong')?.textContent.trim()), '1056 American Ale®', 'The searched catalogue result is the exact printed Wyeast product');
+    const candidateRow = await page.$eval(exactYeastChoice, element => element.closest('li')?.innerText ?? '');
+    assert.match(candidateRow, /16\s*–\s*22\s*°C/u, 'The Wyeast 1056 candidate shows its manufacturer temperature before selection');
+    await clickUnique('.recipe-wizard .yc-list button[aria-label="Consulter 1056 American Ale®"]', 'Consulter la fiche Wyeast 1056 avant de la choisir');
+    await page.waitForFunction(selector => document.querySelector(selector)?.closest('li')?.querySelector('.yc-consult:not([hidden])')?.innerText.trim(), {}, exactYeastChoice);
+    const candidateEvidence = await page.$eval(exactYeastChoice, element => element.closest('li')?.innerText ?? '');
     assert.match(candidateEvidence, /73\s*–\s*77\s*%/u, 'The Wyeast 1056 candidate shows its manufacturer attenuation before selection');
-    await capture(`journey-${width}-levure-1056-candidate`, '.recipe-wizard .yc-list li');
+    await capture(`journey-${width}-levure-1056-candidate`, '.recipe-wizard .yc-list li[data-candidate-id="wyeast-1056"]');
     await clickUnique(exactYeastChoice, 'Choisir Wyeast 1056');
-    await page.waitForFunction(() => document.querySelector('.recipe-wizard .yc-current h3')?.textContent.trim() === '1056 American Ale®');
+    await page.waitForFunction(selector => document.querySelector(selector)?.textContent.trim() === '1056 American Ale®', {}, yeastIdentity);
+    if (!(await page.$eval('.recipe-wizard details.yc-strain-reading', element => element.open))) await clickUnique('.recipe-wizard details.yc-strain-reading > summary', 'Ouvrir le profil, l’estimation et les sources du brouillon');
     await page.waitForFunction(() => document.querySelector('.recipe-wizard .yc-evidence-values')?.textContent.includes('16–22') && document.querySelector('.recipe-wizard .yc-evidence-values')?.textContent.includes('73–77'));
     const yeastEvidence = await page.$eval('.recipe-wizard .yc-evidence-values', element => element.innerText);
     assert.match(yeastEvidence, /16\s*–\s*22\s*°C/u, 'Selected Wyeast 1056 temperature evidence is visible');
     assert.match(yeastEvidence, /73\s*–\s*77\s*%/u, 'Selected Wyeast 1056 attenuation evidence is visible');
-    await capture(`journey-${width}-levure-1056`, '.recipe-wizard .yc-current');
-    await clickExactLabel('.recipe-wizard .yc-dossier > summary', 'Fiche, sources et données de la souche', 'Ouvrir le dossier Wyeast 1056');
+    await capture(`journey-${width}-levure-1056`, yeastStation);
+    await clickExactLabel('.recipe-wizard .yc-dossier > summary', 'Repères pratiques, sources et programme détaillé', 'Ouvrir le dossier Wyeast 1056');
     await page.waitForSelector('.recipe-wizard .yeast-strain-details[data-yeast-information="wyeast-1056"]', { visible: true });
     await clickExactLabel('.recipe-wizard .yeast-strain-details > summary', 'Fiche de la souche · repères pratiques', 'Ouvrir la fiche pratique Wyeast 1056');
     const manufacturerFacts = await page.$eval('.recipe-wizard .yeast-strain-details[data-yeast-information="wyeast-1056"]', element => element.innerText);
@@ -503,19 +521,26 @@ async function runJourney() {
     assert.match(manufacturerFacts, /16\s*–\s*22\s*°C/u, 'The dossier exposes Wyeast 1056 manufacturer temperature');
     await clickExactLabel('.recipe-wizard .yeast-strain-details details > summary', 'Conditions et sources des repères', 'Ouvrir les sources du dossier');
     await capture(`journey-${width}-levure-1056-dossier`, '.recipe-wizard .yeast-strain-details');
-    const pitchDetails = '.recipe-wizard details.yc-pitch';
-    if (!(await page.$eval(pitchDetails, element => element.open))) await clickUnique(`${pitchDetails} > summary`, 'Ouvrir la dose de levure');
-    await page.waitForSelector('.recipe-wizard #wz-yeast-qty', { visible: true });
+    await page.waitForSelector('.recipe-wizard .yc-pitch-station #wz-yeast-qty', { visible: true });
     await page.locator('.recipe-wizard #wz-yeast-qty').fill('100');
     const yeastUnit = '.recipe-wizard #wz-yeast-unit';
     const unitOptions = await page.$$eval(`${yeastUnit} option`, nodes => nodes.map(option => option.value || option.textContent.trim()));
     assert(unitOptions.includes('mL'), 'A millilitre yeast-dose unit is available for the liquid reference');
     await page.select(yeastUnit, 'mL');
-    await clickExactLabel('.recipe-wizard .yc-plan button', 'Régler / simuler', 'Ouvrir la simulation de fermentation');
-    await page.waitForSelector('.recipe-wizard .yc-proposal[aria-label="Scénario de levure"]', { visible: true });
-    const adjustmentsSummary = '.recipe-wizard .yc-adjustments > summary';
+    await openStation('conduct', 'Ouvrir la conduite de fermentation');
+    // The Lager trial carried to the new strain is frozen by the dose change: resume current data before tuning the scenario.
+    const staleTrial = await page.evaluate(() => [...document.querySelectorAll('.recipe-wizard .yc-decision button')]
+      .some(button => button.getClientRects().length && button.textContent.trim() === 'Reprendre les données actuelles'));
+    if (staleTrial) {
+      await clickExactLabel('.recipe-wizard .yc-decision button', 'Reprendre les données actuelles', 'Reprendre les données actuelles avant le scénario');
+      // An absent fieldset must not count as enabled: wait for the proposal to exist and be active.
+      await page.waitForFunction(() => {
+        const proposal = document.querySelector('.recipe-wizard .yc-conduct-station fieldset.yc-proposal');
+        return !!proposal && !proposal.disabled;
+      });
+    }
     const adjustmentsOpen = await page.$eval('.recipe-wizard .yc-adjustments', element => element.open);
-    if (!adjustmentsOpen) await clickTextContains(adjustmentsSummary, 'Hypothèses et réglages complémentaires');
+    if (!adjustmentsOpen) await clickTextContains('.recipe-wizard .yc-adjustments > summary', 'Hypothèses et réglages complémentaires');
     await page.waitForSelector('.recipe-wizard [aria-label="Atténuation retenue pour le scénario"]', { visible: true });
     await page.locator('.recipe-wizard [aria-label="Atténuation retenue pour le scénario"]').fill('78');
     await page.locator('.recipe-wizard [aria-label="Température principale du scénario"]').fill('20');
@@ -530,8 +555,13 @@ async function runJourney() {
     assert.match(yeastPreview, /Densité finale/u);
     assert.match(yeastPreview, /Alcool estimé/u);
     assert(!/À préciser/u.test(yeastPreview), 'A complete malt bill makes the yeast scenario projection numerical');
+    assert.equal(await page.$eval('.recipe-wizard [aria-label="Atténuation retenue pour le scénario"]', element => element.value), '78', 'The scenario attenuation is editable');
+    const scenarioFg = await page.$$eval('.recipe-wizard .yc-preview-pair figure[aria-label="Densité finale"] output', outputs => outputs.map(output => output.textContent.trim()));
+    assert.notEqual(scenarioFg[0], scenarioFg[1], `The 78 % scenario attenuation reaches the final-gravity projection: ${scenarioFg.join(' / ')}`);
+    assert.doesNotMatch(await page.$eval('.recipe-wizard .yc-decision', element => element.innerText), /a changé/u, 'The tuned scenario is current, not a frozen trial');
+    assert.equal(await yeastName(), '1056 American Ale®', 'The scenario stays an unapplied trial on the chosen strain');
     routes.push({ step: 'Levure', evidence: yeastEvidence, manufacturerFacts: manufacturerFacts.slice(0, 1200), preview: yeastPreview });
-    await capture(`journey-${width}-levure-simulation`, '.recipe-wizard .yc-proposal');
+    await capture(`journey-${width}-levure-simulation`, '.recipe-wizard .yc-decision');
 
     if (captureOnly) {
       const widthErrors = errors.slice(errorStart), widthResponses = responses.slice(responseStart), widthRemote = remote.slice(remoteStart), widthBlocked = blocked.slice(blockedStart);
@@ -685,6 +715,7 @@ async function runJourney() {
     const incompleteName = `QA incomplète ${width}`;
     await page.locator('.recipe-wizard #wz-title').fill(incompleteName);
     await clickUnique('.recipe-wizard nav[aria-label="Étapes"] button[aria-label="Houblons"]', 'Ouvrir Houblons pour le test incomplet');
+    await openHopLines();
     const partialPicker = '.recipe-wizard [aria-label^="Ajouter un houblon"]';
     const partialReadOnly = await page.$eval(partialPicker, element => element.readOnly);
     if (partialReadOnly) { const field = page.locator(partialPicker); await field.click(); await field.click(); }
@@ -723,24 +754,12 @@ async function runJourney() {
     await clickUnique('.recipe-wizard nav[aria-label="Étapes"] button[aria-label="Levure"]', 'Ouvrir Levure pour le test incomplet');
     const partialYeastSearch = '.recipe-wizard [aria-label="Rechercher une levure"]';
     await page.waitForSelector(partialYeastSearch, { visible: true, timeout: 12000 });
-    const partialYeastReadOnly = await page.$eval(partialYeastSearch, element => element.readOnly);
-    if (partialYeastReadOnly) { const field = page.locator(partialYeastSearch); await field.click(); await field.click(); }
     await page.locator(partialYeastSearch).fill('Wyeast 1056');
-    const partialYeastChoice = '.recipe-wizard button[aria-label="Choisir 1056 American Ale® dans la recette"]';
-    await page.waitForFunction(() => document.querySelector('button[aria-label="Choisir 1056 American Ale® dans la recette"]') || [...document.querySelectorAll('.yeast-picker button')].some(button => button.textContent.trim() === 'Chercher dans tout le catalogue'), { timeout: 7000 });
-    if (!(await page.$(partialYeastChoice))) {
-      const catalogueSearch = await page.$$('.yeast-picker button');
-      const expandSearch = [];
-      for (const button of catalogueSearch) if (await button.evaluate(element => element.getClientRects().length && element.textContent.trim() === 'Chercher dans tout le catalogue')) expandSearch.push(button);
-      assert.equal(expandSearch.length, 1, 'A single explicit whole-catalogue action is offered for the incomplete Wyeast choice');
-      await expandSearch[0].click();
-    }
-    await page.waitForSelector(partialYeastChoice, { visible: true });
+    const partialYeastChoice = '.recipe-wizard .yc-list button[aria-label="Choisir 1056 American Ale® pour le brouillon"]';
+    await page.waitForSelector(partialYeastChoice, { visible: true, timeout: 10000 });
     await clickUnique(partialYeastChoice, 'Choisir Wyeast 1056 pour la recette incomplète');
-    await page.waitForFunction(() => document.querySelector('.recipe-wizard .yc-current h3')?.textContent.trim() === '1056 American Ale®');
-    const partialPitchDetails = '.recipe-wizard details.yc-pitch';
-    if (!(await page.$eval(partialPitchDetails, element => element.open))) await clickUnique(`${partialPitchDetails} > summary`, 'Ouvrir la dose de levure');
-    await page.waitForSelector('.recipe-wizard #wz-yeast-qty', { visible: true });
+    await page.waitForFunction(() => document.querySelector('.recipe-wizard .yc-strain-station .yc-identity-card strong')?.textContent.trim() === '1056 American Ale®');
+    await page.waitForSelector('.recipe-wizard .yc-pitch-station #wz-yeast-qty', { visible: true });
     await page.locator('.recipe-wizard #wz-yeast-qty').fill('0');
     await clickUnique('.recipe-wizard nav[aria-label="Étapes"] button[aria-label="Récapitulatif"]', 'Ouvrir le récapitulatif incomplet');
     await page.waitForSelector('.recipe-wizard [aria-label="État de la recette"]', { visible: true });
@@ -921,6 +940,7 @@ try {
   routes.push(await snapshot('creation-vierge-identite'));
   await capture('baseline-creation-identite-375', '.recipe-wizard #wz-title');
   await clickUnique('.recipe-wizard nav[aria-label="Étapes"] button[aria-label="Houblons"]', 'Ouvrir l’étape Houblons');
+  await openHopLines();
   await page.waitForFunction(() => document.querySelector('.recipe-wizard [aria-label^="Ajouter un houblon"]'));
   routes.push(await snapshot('creation-vierge-houblons'));
   await capture('baseline-creation-houblons-375', '.recipe-wizard [aria-label^="Ajouter un houblon"]');
@@ -934,6 +954,7 @@ try {
     const navigationStart = await page.evaluate(() => window.__recipeJourneyMetrics.navigation.length);
     await clickUnique(`.recipe-wizard nav[aria-label="Étapes"] button[aria-label="${step}"]`, `Ouvrir l’étape ${step} pour la mesure`);
     await page.waitForFunction(expected => document.querySelector('.recipe-wizard nav[aria-label="Étapes"] [aria-current="step"]')?.getAttribute('aria-label') === expected, {}, step);
+    if (step === 'Houblons') await openHopLines();
     await page.waitForFunction(start => window.__recipeJourneyMetrics.navigation.length > start, {}, navigationStart);
     const navigationSample = await page.evaluate(start => window.__recipeJourneyMetrics.navigation[start], navigationStart);
     setupNavigation.push({ phase: 'setup', step, durationMs: Number(navigationSample.toFixed(1)) });

@@ -1,0 +1,95 @@
+{
+  "id": "ticket-froisse-ombre",
+  "level": "très compliqué : froissé, plis, ombre de main, perspective, deux taux",
+  "facture": {
+    "vendor": "Cave et Brasserie du Rhone",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "12.10.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "7731",
+      "Ticket 7731",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 186.83,
+    "tvaRate": null,
+    "tvaAmount": 9.77,
+    "amountTTC": 196.6,
+    "items": [
+      {
+        "name": "Malt Pilsner 25 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 52,
+        "amountTTC": 52
+      },
+      {
+        "name": "Houblon Saaz 500 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 24.5,
+        "amountTTC": 24.5
+      },
+      {
+        "name": "Levure W-34/70 11.5 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 4,
+        "unit": "",
+        "price": 5.9,
+        "amountTTC": 23.6
+      },
+      {
+        "name": "Fut inox 20 L",
+        "kind": [
+          "equipment",
+          "packaging"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 89,
+        "amountTTC": 89
+      },
+      {
+        "name": "Joints de fut (5)",
+        "kind": [
+          "equipment",
+          "maintenance",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 7.5,
+        "amountTTC": 7.5
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision-2/ticket-froisse-ombre.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

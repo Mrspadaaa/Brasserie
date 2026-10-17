@@ -1,3 +1,8 @@
+import {
+  readBrewerHopAdviceWizardSourceV1,
+  assertBrewerHopAdviceWizardSourceV1,
+  type BrewerHopAdviceWizardSourceV1,
+} from '../../../functions/src/brewerHopAdviceWizardSourceV1';
 import { hopAdviceContentReference } from '../../domain/hopDecision/adviceContentReference';
 import { assertHopStrategyAdviceResult } from '../../domain/hopDecision/adviceSchema';
 import { HOP_DECISION_VERSION, type HopCommercialProduct, type HopDecisionMaterial, type HopDecisionProgram, type HopProgramAddition, type HopProgramChange, type HopReplacementBasis, type HopUse } from '../../domain/hopDecision/types';
@@ -131,6 +136,25 @@ export interface HopV55DecisionReadingArchiveV4MetadataV1 {
   programPreparation?: HopV55ArchivedDecisionProgramPreparationV1;
 }
 
+/** Wizard is admitted only by the explicit V4 profile; classic source aliases remain closed. */
+export type HopV55WizardDecisionReadingArchiveV4 = Omit<HopV55DecisionReadingArchiveV4, 'source'> & {
+  source: BrewerHopAdviceWizardSourceV1;
+};
+export type HopV55WizardDecisionReadingArchiveV4MetadataV1 =
+  Omit<HopV55DecisionReadingArchiveV4MetadataV1, 'archiveIdentity'> & {
+    archiveIdentity: Omit<HopV55DecisionReadingArchiveV4MetadataIdentityV1, 'source'> & {
+      source: BrewerHopAdviceWizardSourceV1;
+    };
+  };
+export type HopV55WizardDecisionReadingArchiveReadV1 =
+  | { status: 'available'; archive: HopV55WizardDecisionReadingArchiveV4 }
+  | { status: 'unsupportedFormat'; format: string; raw: unknown }
+  | { status: 'invalidRecord'; reason: string };
+export type HopV55WizardDecisionReadingArchiveMetadataReadV1 =
+  | { status: 'readOnly'; metadata: HopV55WizardDecisionReadingArchiveV4MetadataV1 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+
 export type HopV55DecisionReadingArchiveV4MetadataReadV1 =
   | { status: 'readOnly'; metadata: HopV55DecisionReadingArchiveV4MetadataV1 }
   | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
@@ -148,6 +172,11 @@ type DecisionReadingContentV1 = Omit<HopV55DecisionReadingArchiveV1, 'contentRef
 type DecisionReadingContentV2 = Omit<HopV55DecisionReadingArchiveV2, 'contentReference'>;
 type DecisionReadingContentV3 = Omit<HopV55DecisionReadingArchiveV3, 'contentReference'>;
 type DecisionReadingContentV4 = Omit<HopV55DecisionReadingArchiveV4, 'contentReference'>;
+type WizardDecisionReadingContentV4 = Omit<HopV55WizardDecisionReadingArchiveV4, 'contentReference'>;
+type WizardDecisionReadingEnvelopeV4 = Omit<WizardDecisionReadingContentV4, 'source' | 'reading'> & {
+  source: unknown;
+  reading: Record<string, unknown>;
+};
 
 const contentReferenceV1 = (content: DecisionReadingContentV1) =>
   hopAdviceContentReference(HOP_V55_DECISION_READING_FORMAT, content);
@@ -155,7 +184,7 @@ const contentReferenceV2 = (content: DecisionReadingContentV2) =>
   hopAdviceContentReference(HOP_V55_DECISION_READING_FORMAT_V2, content);
 const contentReferenceV3 = (content: DecisionReadingContentV3) =>
   hopAdviceContentReference(HOP_V55_DECISION_READING_FORMAT_V3, content);
-const contentReferenceV4 = (content: DecisionReadingContentV4) =>
+const contentReferenceV4 = (content: DecisionReadingContentV4 | WizardDecisionReadingContentV4) =>
   hopAdviceContentReference(HOP_V55_DECISION_READING_FORMAT_V4, content);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -546,15 +575,32 @@ function validateLineage(value: unknown, ownReference?: string): boolean {
  * is classified, so a malformed known wrapper never hides behind a future body.
  */
 function validateEnvelopeV4MetadataFields(identity: Record<string, unknown>,
-  metadata: { scopeLedger?: unknown; transition?: unknown; lineage?: unknown }): boolean {
+  metadata: { scopeLedger?: unknown; transition?: unknown; lineage?: unknown },
+  admitSource: (source: unknown, identity: Record<string, unknown>) => boolean = validateSource): boolean {
   if (identity.format !== HOP_V55_DECISION_READING_FORMAT_V4
     || !isText(identity.id) || !isText(identity.ownerKey) || !isText(identity.workspaceId)
     || !isText(identity.recordedAt) || !Number.isFinite(Date.parse(identity.recordedAt))
-    || !validateSource(identity.source) || !isText(identity.runtimeReference)) return false;
+    || !admitSource(identity.source, identity) || !isText(identity.runtimeReference)) return false;
   if (metadata.lineage !== undefined && !validateLineage(metadata.lineage)) return false;
   if ((metadata.scopeLedger === undefined) !== (metadata.transition === undefined)) return false;
   if (metadata.transition !== undefined && !validateScopeTransition(metadata.transition)) return false;
   return metadata.scopeLedger === undefined || isRecord(metadata.scopeLedger);
+}
+
+function wizardSourceMatchesArchiveIdentity(source: unknown, identity: Record<string, unknown>): boolean {
+  const read = readBrewerHopAdviceWizardSourceV1(source);
+  if (read.status === 'invalid' || !isRecord(source)) return false;
+  // Known identity claims cannot hide behind an unknown child version.
+  if (source.ownerKey !== undefined && source.ownerKey !== identity.ownerKey
+    || source.workspaceId !== undefined && source.workspaceId !== identity.workspaceId) return false;
+  return read.status !== 'readOnly' || read.source.ownerKey === identity.ownerKey
+    && read.source.workspaceId === identity.workspaceId;
+}
+
+function validateWizardEnvelopeV4(value: unknown): value is WizardDecisionReadingEnvelopeV4 {
+  return isRecord(value) && onlyKeys(value, ['format', 'id', 'ownerKey', 'workspaceId', 'recordedAt', 'reading',
+    'source', 'runtimeReference', 'scopeLedger', 'transition', 'lineage', 'programPreparation'])
+    && isRecord(value.reading) && validateEnvelopeV4MetadataFields(value, value, wizardSourceMatchesArchiveIdentity);
 }
 
 function validateEnvelopeV4(value: unknown): value is DecisionReadingContentV4 {
@@ -602,9 +648,12 @@ function validateContentV4(value: unknown): value is DecisionReadingContentV4 {
  * or a response. This checks declared metadata schemas and links only; the
  * omitted response means the full archive contentReference cannot be recomputed.
  */
-export function readHopV55DecisionReadingArchiveV4MetadataV1(value: unknown): HopV55DecisionReadingArchiveV4MetadataReadV1 {
-  const invalid = (reason: string): HopV55DecisionReadingArchiveV4MetadataReadV1 => ({ status: 'invalid', reason });
-  const unsupported = (reason: string): HopV55DecisionReadingArchiveV4MetadataReadV1 => ({
+function readV4MetadataWithSourceProfile(value: unknown, profile: 'classic'): HopV55DecisionReadingArchiveV4MetadataReadV1;
+function readV4MetadataWithSourceProfile(value: unknown, profile: 'wizardV1'): HopV55WizardDecisionReadingArchiveMetadataReadV1;
+function readV4MetadataWithSourceProfile(value: unknown, profile: 'classic' | 'wizardV1'):
+  HopV55DecisionReadingArchiveV4MetadataReadV1 | HopV55WizardDecisionReadingArchiveMetadataReadV1 {
+  const invalid = (reason: string): { status: 'invalid'; reason: string } => ({ status: 'invalid', reason });
+  const unsupported = (reason: string): { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string } => ({
     status: 'unsupportedReadOnly', snapshot: structuredClone(value), reason,
   });
   if (!isRecord(value) || !onlyKeys(value, ['archiveIdentity', 'semantic', 'scopeLedger', 'transition', 'lineage', 'programPreparation'])
@@ -645,7 +694,8 @@ export function readHopV55DecisionReadingArchiveV4MetadataV1(value: unknown): Ho
     ...(Object.prototype.hasOwnProperty.call(value, 'lineage') ? { lineage: value.lineage } : {}),
     ...(Object.prototype.hasOwnProperty.call(value, 'programPreparation') ? { programPreparation: value.programPreparation } : {}),
   };
-  if (!validateEnvelopeV4MetadataFields(identityFields, metadata)) {
+  if (!validateEnvelopeV4MetadataFields(identityFields, metadata,
+    profile === 'wizardV1' ? wizardSourceMatchesArchiveIdentity : validateSource)) {
     return invalid('Métadonnées V4 connues invalides : identité, source, filiation, transition ou association des portées.');
   }
   if (semantic.sourceFormat.startsWith('hop-v55-question-semantic-reading-')
@@ -672,7 +722,22 @@ export function readHopV55DecisionReadingArchiveV4MetadataV1(value: unknown): Ho
   if (!validateV4ScopeMetadata(metadata, question, semanticReading)) {
     return invalid('Ledger de portées, ses références ou sa transition ne correspondent pas à la lecture sémantique.');
   }
+  if (profile === 'wizardV1') {
+    const source = readBrewerHopAdviceWizardSourceV1(identity.source);
+    if (source.status === 'unsupportedReadOnly') return unsupported(source.reason);
+    if (source.status !== 'readOnly') return invalid('Source Wizard V1 invalide.');
+    return { status: 'readOnly', metadata: structuredClone(value) as unknown as HopV55WizardDecisionReadingArchiveV4MetadataV1 };
+  }
   return { status: 'readOnly', metadata: structuredClone(value) as unknown as HopV55DecisionReadingArchiveV4MetadataV1 };
+}
+
+export function readHopV55DecisionReadingArchiveV4MetadataV1(value: unknown): HopV55DecisionReadingArchiveV4MetadataReadV1 {
+  return readV4MetadataWithSourceProfile(value, 'classic');
+}
+
+export function readHopV55DecisionReadingArchiveV4MetadataForWizardV1(value: unknown):
+  HopV55WizardDecisionReadingArchiveMetadataReadV1 {
+  return readV4MetadataWithSourceProfile(value, 'wizardV1');
 }
 
 function sameScopeActor(left: unknown, right: unknown): boolean {
@@ -795,6 +860,29 @@ export function createHopV55DecisionReadingArchiveV4(input: {
   return { ...content, contentReference };
 }
 
+/** Explicit Wizard builder; no classic builder or shared source predicate is widened. */
+export function createHopV55DecisionReadingArchiveV4ForWizardV1(
+  input: Omit<Parameters<typeof createHopV55DecisionReadingArchiveV4>[0], 'source'> & {
+    source: BrewerHopAdviceWizardSourceV1;
+  },
+): HopV55WizardDecisionReadingArchiveV4 {
+  assertBrewerHopAdviceWizardSourceV1(input.source);
+  const content: WizardDecisionReadingContentV4 = {
+    format: HOP_V55_DECISION_READING_FORMAT_V4,
+    id: input.id, ownerKey: input.ownerKey, workspaceId: input.workspaceId, recordedAt: input.recordedAt,
+    reading: structuredClone(input.reading), source: structuredClone(input.source), runtimeReference: input.runtimeReference,
+    ...(input.scopeLedger ? { scopeLedger: structuredClone(input.scopeLedger) } : {}),
+    ...(input.transition ? { transition: structuredClone(input.transition) } : {}),
+    ...(input.lineage ? { lineage: structuredClone(input.lineage) } : {}),
+    ...(input.programPreparation ? { programPreparation: structuredClone(input.programPreparation) } : {}),
+  };
+  const archive = { ...content, contentReference: contentReferenceV4(content) };
+  const read = readHopV55DecisionReadingArchiveForWizardV1(archive);
+  if (read.status !== 'available') throw Error('Archive Wizard V4 invalide ou non prise en charge : '
+    + (read.status === 'invalidRecord' ? read.reason : read.format));
+  return read.archive;
+}
+
 function invalidArchive(reason: string): HopV55DecisionReadingRead {
   return { status: 'invalidRecord', reason };
 }
@@ -882,6 +970,54 @@ function readV4(value: Record<string, unknown>): HopV55DecisionReadingRead {
     return invalidArchive('Une lecture V4 ne peut pas se référencer elle-même.');
   }
   return { status: 'available', archive: structuredClone({ ...(content as unknown as DecisionReadingContentV4), contentReference: suppliedReference }) as HopV55DecisionReadingArchiveV4 };
+}
+
+/** Reads only the declared Wizard V4 profile; unknown child bytes stay read-only. */
+export function readHopV55DecisionReadingArchiveForWizardV1(value: unknown): HopV55WizardDecisionReadingArchiveReadV1 {
+  const invalid = (reason: string): HopV55WizardDecisionReadingArchiveReadV1 => ({ status: 'invalidRecord', reason });
+  if (!isRecord(value) || typeof value.format !== 'string') return invalid('Archive Wizard illisible.');
+  if (value.format !== HOP_V55_DECISION_READING_FORMAT_V4) {
+    if (READING_FORMATS.includes(value.format as typeof READING_FORMATS[number])
+      || !value.format.startsWith('hop-v55-decision-reading-')) return invalid('Le profil Wizard exige une archive V4.');
+    return { status: 'unsupportedFormat', format: value.format, raw: structuredClone(value) };
+  }
+  if (!onlyKeys(value, ['format', 'id', 'ownerKey', 'workspaceId', 'recordedAt', 'reading', 'source', 'runtimeReference',
+    'scopeLedger', 'transition', 'lineage', 'programPreparation', 'contentReference']) || !isText(value.contentReference)) {
+    return invalid('Archive Wizard V4 incomplète ou avec champs inconnus.');
+  }
+  const { contentReference: reference, ...content } = value;
+  try {
+    if (contentReferenceV4(content as unknown as WizardDecisionReadingContentV4) !== reference) {
+      return invalid('Le contenu Wizard V4 diverge de sa référence.');
+    }
+  } catch { return invalid('Archive Wizard non sérialisable.'); }
+  if (!validateWizardEnvelopeV4(content)) return invalid('Enveloppe Wizard V4 connue invalide.');
+  const source = readBrewerHopAdviceWizardSourceV1(content.source);
+  if (source.status === 'invalid') return invalid(source.reason);
+  if (isText(content.reading.format) && content.reading.format.startsWith('hop-v55-question-semantic-reading-')
+    && content.reading.format !== 'hop-v55-question-semantic-reading-v1') {
+    return { status: 'unsupportedFormat', format: content.reading.format, raw: structuredClone(value) };
+  }
+  if (!validateV4SemanticReading(content.reading)) return invalid('Lecture sémantique connue invalide.');
+  const question = content.reading.intent.question;
+  if (!validateV4NonScopeMetadata(content, question, reference)) return invalid('Filiation ou programme Wizard V4 invalide.');
+  if (isRecord(content.scopeLedger) && isText(content.scopeLedger.format)
+    && content.scopeLedger.format.startsWith('hop-v55-question-scope-ledger-')
+    && content.scopeLedger.format !== 'hop-v55-question-scope-ledger-v1') {
+    return { status: 'unsupportedFormat', format: content.scopeLedger.format, raw: structuredClone(value) };
+  }
+  if (!validateV4ScopeMetadata(content, question, content.reading)) return invalid('Portées Wizard V4 invalides.');
+  if (content.lineage?.parentReadingReference === reference
+    || content.transition?.kind === 'reviseScopes' && content.transition.parentReadingReference === reference) {
+    return invalid('Une archive Wizard V4 ne peut pas être son propre parent.');
+  }
+  if (source.status === 'unsupportedReadOnly') return {
+    status: 'unsupportedFormat', format: isRecord(content.source) && isText(content.source.format)
+      ? content.source.format : 'source-Wizard-future', raw: structuredClone(value),
+  };
+  return { status: 'available', archive: structuredClone({
+    ...content, reading: content.reading, source: source.source, contentReference: reference,
+  }) };
 }
 
 /**

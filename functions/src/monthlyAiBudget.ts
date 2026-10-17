@@ -8,11 +8,14 @@ import { aiBudgetMonth, GEMINI_COST_POLICY, GEMINI_SEARCH_COST_POLICY, monthlyLi
 /** Every provider request passes here. Reservations from concurrent scans, chat
  * workers and other tasks contend on ONE month document, before any network call.
  * Uncertain failures keep their reservation; settlement never retries Gemini.
+ * `inspect` refuses a complete but unusable answer (#100: cut by the output cap):
+ * Google bills it, so it is settled at its observed cost as `unusable`, never as
+ * `completed`, and its error is thrown to the caller.
  */
 export async function runWithMonthlyAiBudget<T>(
   model: string, body: Record<string, unknown>,
   generate: (body: Record<string, unknown>) => Promise<T>,
-  options: { daily?: boolean } = {}
+  options: { daily?: boolean; inspect?: (result: T) => Error | undefined } = {}
 ): Promise<T> {
   const quote = quoteGeminiCost(model, body), db = getFirestore(), at = Date.now(), month = aiBudgetMonth(at);
   const monthRef = db.doc(`brewerAiCosts/${month}`), callId = randomUUID();
@@ -50,7 +53,7 @@ export async function runWithMonthlyAiBudget<T>(
     if (error instanceof BrewerBudgetError) throw error;
     throw new BrewerBudgetError('ai-budget-unavailable', 'Le budget mensuel ne peut pas être réservé. Aucun appel Gemini transmis.');
   }
-  const settle = async (observed: GeminiObservedCost | null, tokens: number | null, rejected = false) => {
+  const settle = async (observed: GeminiObservedCost | null, tokens: number | null, status: 'completed' | 'rejected' | 'unusable' = 'completed') => {
     if (observed === null) return; // Missing usage is an uncertain cost, never zero.
     const charged = observed.chargedMicroChf;
     await db.runTransaction(async tx => {
@@ -61,18 +64,21 @@ export async function runWithMonthlyAiBudget<T>(
       tx.update(monthRef, { usedMicroChf: usage.usedMicroChf + charged, reservedMicroChf: usage.reservedMicroChf - quote.reservedMicroChf, updatedAt: Date.now() });
       // Provider search fan-out can exceed its allowance. Record every observed
       // query even then; the next reservation sees the full cost and may stop.
-      tx.update(callRef, { status: rejected ? 'rejected' : 'completed', ...observed,
+      tx.update(callRef, { status, ...observed,
         exceededReservation: charged > quote.reservedMicroChf, finishedAt: Date.now() });
       if (options.daily && tokens !== null) tx.update(dailyRef, { 'usage.tokens': Math.max(0, daily!.data()!.usage.tokens - tokenReserve + tokens) });
     }).catch(() => logger.warn('monthly-ai-reservation-kept', { month, callId }));
   };
+  let result: T;
   try {
-    const result = await generate(quote.body), reported = (result as any)?.usageMetadata?.totalTokenCount;
-    await settle(observedGeminiCostDetails(quote, result), Number.isSafeInteger(reported) && reported >= 0 ? reported : null);
-    return result;
+    result = await generate(quote.body);
   } catch (error) {
     if (isGeminiRequestUncharged(error))
-      await settle({ chargedMicroChf: 0, tokenMicroChf: 0, searchQueries: 0, searchMicroChf: 0 }, 0, true);
+      await settle({ chargedMicroChf: 0, tokenMicroChf: 0, searchQueries: 0, searchMicroChf: 0 }, 0, 'rejected');
     throw error;
   }
+  const reported = (result as any)?.usageMetadata?.totalTokenCount, unusable = options.inspect?.(result);
+  await settle(observedGeminiCostDetails(quote, result), Number.isSafeInteger(reported) && reported >= 0 ? reported : null, unusable ? 'unusable' : 'completed');
+  if (unusable) throw unusable;
+  return result;
 }

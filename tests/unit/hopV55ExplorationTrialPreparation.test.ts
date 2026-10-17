@@ -15,6 +15,7 @@ import {
   createHopV55ExplorationTrialProgramCopyRebaseV1,
   createHopV55ExplorationTrialReceiptV1,
   prepareHopV55ExplorationTrialV1,
+  readHopV55ExplorationTrialOriginContextV1,
   readHopV55ExplorationTrialPreparationV1,
   readHopV55ExplorationTrialReceiptV1,
   type HopV55ExplorationTrialCaptureV1,
@@ -53,11 +54,12 @@ function readingArchive(runtime = runtimeReference) {
     source: { kind: 'recipe', id: source.recipeId }, runtimeReference: runtime });
 }
 
-function preparedEntry(overrides: HopV55ExplorationTrialEntryV1['overrides'] = { volumeL: 25, yeastId: 'yeast:ale' }): HopV55ExplorationTrialEntryV1 {
+function preparedEntry(overrides: HopV55ExplorationTrialEntryV1['overrides'] = { volumeL: 25, yeastId: 'yeast:ale' },
+  options: { question?: string; readingReference?: string | null } = {}): HopV55ExplorationTrialEntryV1 {
   const operation = { id: 'operation:add-hallertau', label: 'Ajouter Hallertau au premier moût', kind: 'add' as const,
     additionId: 'scenario-hop:first-wort', materialId: material.id, grams: 8, use: 'firstWort' as const };
   const preparationInput = { branch: { id: 'branch:hallertau', label: 'Hallertau au premier moût' },
-    program, materials: [material], intent: { question: 'Ajouter Hallertau au premier moût.', interpretation: 'Essai préparé explicitement.', criteria: [] },
+    program, materials: [material], intent: { question: options.question ?? 'Ajouter Hallertau au premier moût.', interpretation: 'Essai préparé explicitement.', criteria: [] },
     operations: [operation] };
   const preparation = prepareHopV55DecisionProgram(preparationInput);
   if (preparation.status !== 'ready' || !preparation.branch) throw new Error('La préparation J1 de fixture doit être prête.');
@@ -71,7 +73,8 @@ function preparedEntry(overrides: HopV55ExplorationTrialEntryV1['overrides'] = {
   ];
   const programOrigin = { kind: 'physicalSource' as const, reference: sourceReference };
   const originContext = createHopV55ExplorationTrialOriginContextV1({ ownerKey, workspaceId, source, sourceReference,
-    runtimeReference, cultureBindingReference: null, readingReference: readingArchive().contentReference,
+    runtimeReference, cultureBindingReference: null,
+    readingReference: options.readingReference === undefined ? readingArchive().contentReference : options.readingReference,
     programOrigin, programReference });
   return { format: HOP_V55_EXPLORATION_TRIAL_ENTRY_V1_FORMAT, commandId: 'exploration-command:exact',
     originProgramReference: programReference, originContext,
@@ -176,6 +179,54 @@ describe('hop-v55 exploration trial preparation', () => {
       recordedAt: '2026-10-04T10:02:00.000Z' }, entry: comparisonEntry, readComparison: reader }))
       .toMatchObject({ status: 'refused', code: 'comparisonInvalid' });
     expect(reader).toHaveBeenCalledWith({ snapshot, sourceMaterial, alternativeMaterial: comparisonMaterial });
+  });
+
+  it('refuse un J1 dont la matière, l’opération ou le programme ont changé depuis la préparation exacte', () => {
+    const identity = (suffix: string) => ({ id: 'exploration-command:exact', scenarioId: `scenario:${suffix}`,
+      scenarioPreparationId: `prep:${suffix}`, eventId: `event:${suffix}`, recordedAt: '2026-10-04T10:02:00.000Z' });
+    const exact = preparedEntry();
+    expect(prepareHopV55ExplorationTrialV1({ ...capture(readingArchive(), exact), identity: identity('exact'), entry: exact }))
+      .toMatchObject({ status: 'ready' });
+
+    const incoherent: Array<[string, (entry: HopV55ExplorationTrialEntryV1) => void]> = [
+      ['matière', entry => { entry.preparationInput.materials = [{ ...material, name: 'Hallertau renommé' }]; }],
+      ['opération', entry => { (entry.preparationInput.operations[0] as { grams: number }).grams = 9; }],
+      ['programme', entry => { entry.preparationInput.program = { ...program, revision: 2 }; }],
+    ];
+    for (const [label, alter] of incoherent) {
+      const entry = preparedEntry();
+      alter(entry);
+      expect(prepareHopV55ExplorationTrialV1({ ...capture(readingArchive(), entry), identity: identity(label), entry }), label)
+        .toMatchObject({ status: 'refused', reason: expect.stringMatching(/^L’entrée J1 exacte doit rester liée/) });
+    }
+  });
+
+  it('scelle le cadre d’une référence adoptée avec l’identité NR exacte du journal, version textuelle comprise', () => {
+    // BrewingReferenceIdentityV1.version is text in the reference journal (« 1 »), never a number.
+    const identity = { id: 'reference:no-recipe', version: '1', contentReference: 'brewing-reference-version-v1:sha256:fixture' };
+    const frame = createHopV55ExplorationTrialOriginContextV1({ ownerKey, workspaceId, source: { kind: 'exploration' },
+      sourceReference: null, runtimeReference, cultureBindingReference: 'binding:no-recipe', readingReference: null,
+      programOrigin: { kind: 'adoptedReference', identity }, programReference });
+    expect(frame.programOrigin).toEqual({ kind: 'adoptedReference', identity });
+    expect(readHopV55ExplorationTrialOriginContextV1(frame)).toMatchObject({ status: 'current' });
+    const { format: _format, reference: _reference, ...frameInput } = frame;
+    const withVersion = (version: unknown) => ({ ...frameInput, programOrigin: { kind: 'adoptedReference', identity: { ...identity, version } } }) as never;
+    // A positive integer written before this contract alignment stays readable.
+    expect(readHopV55ExplorationTrialOriginContextV1(createHopV55ExplorationTrialOriginContextV1(withVersion(1)))).toMatchObject({ status: 'current' });
+    for (const version of ['', '   ', ' 1', 0, -1, 1.5, { value: '1' }, null]) {
+      expect(() => createHopV55ExplorationTrialOriginContextV1(withVersion(version)), JSON.stringify(version)).toThrow();
+    }
+  });
+
+  it('accepte une question faite d’espaces comme une question vide, sans la réécrire, quand la composition est explicite', () => {
+    for (const question of ['', '   ']) {
+      const entry = preparedEntry(undefined, { question, readingReference: null });
+      const result = prepareHopV55ExplorationTrialV1({ ...capture(readingArchive(), entry), readingArchive: null,
+        intent: { question, criteria: [] }, identity: { id: entry.commandId, scenarioId: 'scenario:blank',
+          scenarioPreparationId: 'prep:blank', eventId: 'event:blank', recordedAt: '2026-10-04T10:02:00.000Z' }, entry });
+      expect(result, JSON.stringify(question)).toMatchObject({ status: 'ready' });
+      if (result.status === 'ready') expect(result.preparation.entry.preparationInput.intent.question).toBe(question);
+    }
   });
 
   it('scelle le rebase explicite d’une copie sur le programme physique, sans écraser le résultat J1', () => {

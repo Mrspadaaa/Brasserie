@@ -395,9 +395,9 @@ function readDeliberations(text: string, clauses: readonly QuestionClauseV1[]): 
     const lead = /^\s*(?:(?:plutot|vraiment|encore|aussi|alors|d\s+abord|rather|really|also)\s+)*(?:(?:de|d|to)\s+)?/u.exec(text.slice(cue.end));
     const action = wordAt(text, cue.end + (lead?.[0].length ?? 0));
     const flavor = action ? questionChangeFlavor(text.slice(action.start, action.end)) : undefined;
-    if (!action || !flavor || action.start >= clause.span.end) continue;
+    if (!action || action.start >= clause.span.end) continue;
     acts.push({ id: actId('deliberation', cue), kind: 'deliberation', clause: clause.span, cue,
-      scope: complementScope(text, action.start, clause), action, flavor, relatedActIds: [] });
+      scope: complementScope(text, action.start, clause), action, ...(flavor ? { flavor } : {}), relatedActIds: [] });
   }
   return acts;
 }

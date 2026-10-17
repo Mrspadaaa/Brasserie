@@ -2,11 +2,11 @@ import React from 'react';
 import { Beer, ClipboardList, FileText, LoaderCircle, MessageCircle, MessagesSquare, Plus, TrendingUp, Wheat } from 'lucide-react';
 import type { FabAction } from '../domain/fabActions';
 import { isBrewerWorking, useBrewerJobs } from '../services/brewerJobs';
-import { useDensity } from './useViewport';
+import { useActionDock, useActionLauncherRegistration } from '../pages/PageShell';
 import './floating-actions.css';
 
 /**
- * Le geste flottant de l'application : un bouton, partout, et tout ce qu'on
+ * Le geste d'action de l'application : un bouton, partout, et tout ce qu'on
  * lance dix fois par semaine.
  *
  * ⚠️ Ce que ça règle : le bouton d'action avait disparu du Tableau de bord et
@@ -15,6 +15,20 @@ import './floating-actions.css';
  * la vente, trois pour le compagnon. Le brasseur devait savoir quel écran
  * portait quel bouton. Ici, le même geste au même endroit ouvre les six
  * actions, et l'action de l'écran courant reste la première de la liste.
+ *
+ * ⚠️ Le bouton ne flotte plus au-dessus du contenu. Il se pose sur une case que
+ * la mise en page réserve hors de toute zone défilante (`ActionDock`, dans
+ * `PageShell.tsx`) : à droite de la barre d'onglets, dans le pied d'une page
+ * plein écran, ou dans son en-tête quand le clavier est ouvert. Flottant, il
+ * recevait le toucher destiné à un champ passé dessous au défilement — la
+ * flèche d'un sélecteur, à 390 px. Sans case montée (composant isolé), il garde
+ * l'ancien ancrage `anchor` en repli.
+ *
+ * ⚠️ Le bouton porte son `display` en ligne. Une feuille d'écran le masquait par
+ * son nom (`body:has(.recipe-wizard) button[aria-label='Actions rapides']`) : sa
+ * case restait vide, et comme la pastille du compagnon change ce nom, le bouton
+ * apparaissait ou non selon les réponses en attente. Seules une modale ou une
+ * feuille ouverte l'effacent, en masquant la racine (`floating-actions.css`).
  *
  * ⚠️ `data-page-overlay` n'est pas décoratif : `PageShell` rend `inert` toutes
  * les branches voisines de la page plein écran ouverte, et cet attribut est la
@@ -33,8 +47,9 @@ export interface FloatingActionsProps {
   onSale: () => void;
   onRecipe: () => void;
   onBrew: () => void;
-  /** Barre d'onglets, ou pied de page plein écran. */
+  /** Ancrage de repli quand aucune case n'est réservée : barre d'onglets, ou pied de page plein écran. */
   anchor: 'nav' | 'page';
+  launcherRef?: React.MutableRefObject<HTMLButtonElement | null>;
 }
 
 interface Item {
@@ -50,21 +65,71 @@ interface Item {
   run: () => void;
 }
 
+/** Position et taille de la case réservée, en px depuis le bas et la droite de la fenêtre. */
+interface DockGeometry {
+  right: number;
+  bottom: number;
+  width: number;
+  height: number;
+}
+
 const ROW = 'w-full flex items-center gap-2 px-2 py-1 min-h-touch-lg text-left text-2xs text-cave-200 ' +
   'hover:bg-cave-850 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-cave-50';
 
+/** Suit la case réservée : sa taille, et sa place quand la page se déplace (clavier, pied qui change). */
+function useDockGeometry(element: HTMLElement | undefined): DockGeometry | null {
+  const [geometry, setGeometry] = React.useState<DockGeometry | null>(null);
+  React.useLayoutEffect(() => {
+    if (!element) { setGeometry(null); return; }
+    const measure = () => {
+      const rect = element.getBoundingClientRect();
+      // Case masquée (un écran docke le bouton lui-même) : on ne la suit pas.
+      if (!(rect.width > 0 && rect.height > 0)) { setGeometry(null); return; }
+      const root = document.documentElement;
+      const next: DockGeometry = {
+        right: Math.max(0, Math.round(root.clientWidth - rect.right)),
+        bottom: Math.max(0, Math.round(root.clientHeight - rect.bottom)),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height)
+      };
+      setGeometry((previous) => previous && previous.right === next.right && previous.bottom === next.bottom &&
+        previous.width === next.width && previous.height === next.height ? previous : next);
+    };
+    measure();
+    const frame = requestAnimationFrame(measure);
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    observer?.observe(element);
+    if (element.parentElement) observer?.observe(element.parentElement);
+    // Une page qui se relève au-dessus du clavier déplace sa case sans la redimensionner.
+    const page = element.closest<HTMLElement>('[data-page-shell]');
+    if (page) observer?.observe(page);
+    const viewport = typeof window !== 'undefined' ? window.visualViewport : undefined;
+    window.addEventListener('resize', measure);
+    viewport?.addEventListener('resize', measure);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+      viewport?.removeEventListener('resize', measure);
+    };
+  }, [element]);
+  return geometry;
+}
+
 export const FloatingActions: React.FC<FloatingActionsProps> = ({
-  action, onAction, companionLabel, onInvoice, onSale, onRecipe, onBrew, anchor
+  action, onAction, companionLabel, onInvoice, onSale, onRecipe, onBrew, anchor, launcherRef
 }) => {
   const [open, setOpen] = React.useState(false);
-  /* Docké en haut d'écran — atelier de l'eau — le menu s'ouvre vers le bas. */
+  /* Docké en haut d'écran — atelier de l'eau, en-tête clavier ouvert — le menu s'ouvre vers le bas. */
   const [placement, setPlacement] = React.useState<'top' | 'bottom'>('top');
   const rootRef = React.useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const menuRef = React.useRef<HTMLDivElement>(null);
   const menuId = React.useId();
   const { jobs } = useBrewerJobs();
-  const density = useDensity();
+  useActionLauncherRegistration();
+  const { dock } = useActionDock();
+  const geometry = useDockGeometry(dock?.element);
 
   // Mêmes comptes que la boîte des conversations, pour que la pastille du
   // bouton et le résumé de l'écran ne racontent jamais deux choses.
@@ -79,7 +144,8 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     if (focusButton) buttonRef.current?.focus();
   };
 
-  const choose = (run: () => void) => () => { setOpen(false); run(); };
+  // Le menu disparaît avant la nouvelle surface : son opener doit rester connecté.
+  const choose = (run: () => void) => () => { close(); run(); };
 
   const groups: Item[][] = [];
   if (action) {
@@ -125,9 +191,6 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     if (open) menuRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
   }, [open]);
 
-  /* Clavier ouvert, il reste environ 300 px : rien ne flotte par-dessus. */
-  if (density === 'tight') return null;
-
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') { event.preventDefault(); close(); return; }
     // La tabulation referme le menu ; le focus revient alors sur le bouton,
@@ -147,15 +210,30 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
     items[(next + items.length) % items.length].focus();
   };
 
+  /* Sur sa case, le bouton en prend la place exacte ; sans case, l'ancien ancrage sert de repli. */
+  const fallbackBottom = anchor === 'page'
+    ? 'calc(var(--page-footer-height, 0px) + .5rem)'
+    : 'calc(var(--main-navigation-height, 2.5rem) + .5rem)';
+  const iconSize = geometry ? Math.min(32, Math.round(Math.min(geometry.width, geometry.height) * 0.55)) : 32;
+  /* Dans une rangée qui porte déjà l'action principale de la page, pas de second aplat paille. */
+  const quiet = !!dock?.quiet;
+
   return (
     <div
       ref={rootRef}
       data-page-overlay
-      className="floating-actions fixed right-3 z-[51]"
+      data-floating-actions-dock={dock?.kind ?? 'none'}
+      data-floating-actions-docked={geometry ? 'true' : 'false'}
+      data-floating-actions-tone={quiet ? 'quiet' : 'primary'}
+      className="floating-actions fixed z-[51]"
       style={{
-        '--floating-actions-bottom': anchor === 'page'
-          ? 'calc(var(--page-footer-height, 0px) + .5rem)'
-          : 'calc(var(--main-navigation-height, 2.5rem) + .5rem)'
+        '--floating-actions-bottom': geometry ? `${geometry.bottom}px` : fallbackBottom,
+        ...(geometry ? {
+          '--floating-actions-right': `${geometry.right}px`,
+          '--floating-actions-width': `${geometry.width}px`,
+          '--floating-actions-height': `${geometry.height}px`
+        } : {}),
+        '--floating-actions-icon': `${iconSize}px`
       } as React.CSSProperties}
     >
       {open && (
@@ -195,14 +273,14 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
       )}
 
       {/*
-        64 px, sur téléphone comme sur ordinateur. C'est la seule commande de
-        l'application qu'on vise ganté, en pénombre, une main sur la cuve : elle
-        mérite sa dérogation à l'échelle compacte, que les listes et les champs
-        conservent autour d'elle. Dockée dans l'atelier de l'eau, elle revient
-        à 40 px pour ne pas manger les champs de pesée.
+        La case fixe la taille : 64 px de large partout — la commande qu'on vise
+        ganté, en pénombre, une main sur la cuve —, à la hauteur de la barre qui
+        la porte (40 px sur les onglets, 44 px en pied de page). Clavier ouvert,
+        la case compacte (en-tête, ou pied si l'hôte masque l'en-tête) la réduit
+        à 40×32. L'atelier de l'eau la docke lui-même près de ses onglets, à 40 px.
       */}
       <button
-        ref={buttonRef}
+        ref={(node) => { buttonRef.current = node; if (launcherRef) launcherRef.current = node; }}
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
@@ -218,13 +296,17 @@ export const FloatingActions: React.FC<FloatingActionsProps> = ({
           setPlacement(rect && rect.top < window.innerHeight / 2 ? 'bottom' : 'top');
           setOpen(true);
         }}
-        className="relative w-16 h-16 rounded-full bg-ebc-straw text-cave-950 shadow-lift
-                   flex items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
+        // En ligne : aucune règle d'écran ne retire le bouton de sa case (voir en tête).
+        style={{ display: 'flex' }}
+        className={`relative rounded-full items-center justify-center select-none touch-manipulation [-webkit-touch-callout:none]
                    motion-safe:transition-transform motion-safe:active:scale-95
-                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50"
+                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cave-50
+                   ${quiet
+                     ? 'bg-cave-850 text-ebc-straw ring-1 ring-inset ring-ebc-straw/60'
+                     : 'bg-ebc-straw text-cave-950 shadow-lift'}`}
       >
         <Plus strokeWidth={2.5} aria-hidden="true"
-          className={`w-8 h-8 motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
+          className={`floating-actions-icon motion-safe:transition-transform ${open ? 'rotate-45' : ''}`} />
         {waiting > 0 && (
           <span aria-hidden="true"
             className="absolute -top-1 -right-1 min-w-4 min-h-4 px-1 rounded-full

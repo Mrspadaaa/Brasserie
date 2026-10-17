@@ -139,6 +139,18 @@ const fillDimension = (name: string, definition: string, term: string) => {
 afterEach(() => cleanup());
 
 describe('HopV55NuanceExplorer', () => {
+  it('#75 : la dose d’une variante s’écrit à 3 décimales avec sa valeur complète ; une ébullition n’a pas de température inconnue', () => {
+    const boilInput = structuredClone(pearInput);
+    boilInput.additions[0].triplet = { ...boilInput.additions[0].triplet, doseGL: 2 / 3, timing: 'boil', temperatureC: null, contactHours: 1 };
+    const boilResult = { ...result, baseline: branch('baseline', 'Référence · branche J5', pear, boilInput), branches: [] } as unknown as BrewingScenarioResult;
+    const view = render(<HopV55NuanceExplorer prepared={prepared} result={boilResult} snapshotReference={snapshotReference}
+      workspace={makeWorkspace()} getWorkspace={async () => makeWorkspace()} onSave={async (workspace) => workspace} />);
+    const addition = view.container.querySelector('.hv-nuance__addition');
+    expect(addition).toHaveTextContent('dose 0,667 g/L (2/3 g/L exacts), pendant l’ébullition, contact 1 h.');
+    expect(addition?.textContent).not.toMatch(/0,6666/u);
+    expect(addition).not.toHaveTextContent('température inconnue');
+  });
+
   it('affiche le profil exact lié à la branche séparément de la dernière version du profil', () => {
     const first = createHopV55ExplorationProfile({ label: 'Profil branche V1', status: 'hypothesis', description: 'Hypothèse gelée.', criteria: [] },
       { recordedAt: '2026-10-04T08:00:00.000Z', profileId: 'profile:nuance-branch', newId: () => 'unused' });

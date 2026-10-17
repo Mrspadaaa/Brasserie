@@ -1,0 +1,15 @@
+.hv55-branch-assumptions { min-width: 0; margin: 4px 0 0; border-top: 1px solid var(--hv55-cmp-line, var(--hvs-line, #d2d8d2)); }
+.hv55-branch-assumptions > summary { padding: 4px 2px; cursor: pointer; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+.hv55-branch-assumptions-content { min-width: 0; padding: 0 4px 6px; font-size: 12px; overflow-wrap: anywhere; }
+.hv55-branch-assumptions-content > p { margin: 2px 0 5px; }
+.hv55-branch-assumptions-content h4 { margin: 6px 0 2px; font-size: 12px; }
+.hv55-branch-assumptions-content ul { margin: 2px 0 6px; padding-left: 18px; }
+.hv55-branch-assumptions-row { margin: 4px 0; padding: 4px 6px; border-left: 2px solid var(--hv55-cmp-line, var(--hvs-line, #d2d8d2)); }
+.hv55-branch-assumptions-row dl { display: grid; grid-template-columns: minmax(5.5em, max-content) minmax(0, 1fr); gap: 2px 7px; margin: 3px 0; }
+.hv55-branch-assumptions-row dt { color: var(--hv55-cmp-muted, var(--hvs-muted, inherit)); }
+.hv55-branch-assumptions-row dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.hv55-branch-assumptions code { overflow-wrap: anywhere; white-space: normal; }
+
+/* Keep the candidate name and choose action above its independent read-only detail. */
+.hv55-sensory-candidate.hv55-sensory-candidate-with-details { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; align-content: start; }
+.hv55-sensory-candidate-with-details > .hv55-branch-assumptions { grid-column: 1 / -1; min-width: 0; }

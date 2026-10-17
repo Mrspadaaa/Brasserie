@@ -11,6 +11,10 @@ const source4Root = resolve(root, 'src/services/hopV55');
 const sharedDomainRoot = resolve(root, 'src/domain');
 const source4Output = resolve(root, 'functions/lib/brewerHopAdviceSemanticSource4.js');
 const source4ManifestPath = resolve(root, 'source4-portable-bundle-manifest-01.json');
+// decisionArchive imports the one pure Wizard source codec from Functions. Inside this bundle, the
+// codec's declaration-only reference helper resolves to the exact shared domain implementation.
+const wizardSourceCodec = resolve(root, 'functions/src/brewerHopAdviceWizardSourceV1.ts');
+const sharedContentReference = resolve(sharedDomainRoot, 'hopDecision/adviceContentReference.ts');
 
 const source4Result = await build({
   absWorkingDir: root,
@@ -26,6 +30,8 @@ const source4Result = await build({
   plugins: [{
     name: 'source4-typescript-relative-imports',
     setup(bundler) {
+      bundler.onResolve({ filter: /^\.\/hopAdviceContentReference\.js$/ }, args =>
+        resolve(args.importer) === wizardSourceCodec ? { path: sharedContentReference } : undefined);
       bundler.onResolve({ filter: /^\.[^/].*\.js$/ }, args => {
         if (!args.importer.startsWith(source4Root) && !args.importer.startsWith(sharedDomainRoot)) return undefined;
         const tsPath = resolve(dirname(args.importer), args.path.replace(/\.js$/, '.ts'));

@@ -72,6 +72,7 @@
   .hv-assisted-cold-contact__header { flex-wrap: wrap; }
   .hv-assisted-cold-contact__status { white-space: normal; }
   .hv-assisted-cold-contact__metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hv-assisted-cold-contact__metrics > div:first-child { grid-column: 1 / -1; } /* #75 : la dose et sa valeur exacte sur une ligne */
   .hv-assisted-cold-contact__metrics dd { font-size: .8rem; }
 }
 

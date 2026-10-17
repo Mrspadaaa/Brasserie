@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AiClient } from '../services/aiClient';
+import { withManualEntry } from './manualEntry';
 import { Sparkles, Check, AlertTriangle, Loader2 } from 'lucide-react';
 
 /**
@@ -170,7 +171,7 @@ export const AiAssist: React.FC<AiAssistProps> = ({
       {error && (
         <p className="flex items-start gap-2 text-sm text-ebc-amber leading-snug">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{error} — à saisir à la main.</span>
+          <span>{withManualEntry(error)}</span>
         </p>
       )}
 

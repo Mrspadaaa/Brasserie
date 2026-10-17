@@ -20,11 +20,20 @@ import {
   type HopAdviceV1Scope,
   type HopAdviceV1SubmitReceipt,
   type HopAdviceV1WireInput,
+  type HopAdviceV1WizardWireInputV1,
 } from '../../functions/src/brewerHopAdviceTransportV1';
 import type { BrewerAdvice, BrewerEvidence, BrewerJob, BrewerPending, BrewerProduct, BrewerProposal, BrewerReply, BrewerScope, BrewerTurn } from '../../functions/src/companionTypes';
 import { BREWER_HOP_ADVICE_REQUEST_FORMAT } from '../../functions/src/brewerHopAdviceProposal';
-import { BREWER_HOP_ADVICE_CONTEXT_LAUNCH_FORMAT, BREWER_HOP_ADVICE_CONTEXT_PROJECTION_FORMAT } from '../../functions/src/brewerHopAdviceContextBinding';
+import { BREWER_HOP_ADVICE_CONTEXT_LAUNCH_FORMAT, BREWER_HOP_ADVICE_CONTEXT_PROJECTION_FORMAT,
+  brewerHopAdviceEffectiveDraftReferenceForWizardV1, readBrewerHopAdviceContextLaunchClaimForWizardV1 } from '../../functions/src/brewerHopAdviceContextBinding';
 import type { BrewerHopAdviceRequest } from '../../functions/src/brewerHopAdviceProposal';
+import { hopAdviceContentReference } from '../domain/hopDecision/adviceContentReference';
+import { assertBrewerHopAdviceRequestV3ForWizardV1, readBrewerHopAdviceRequestV3,
+  readBrewerHopAdviceRequestV3ForWizardV1, measureBrewerHopAdviceSemanticJsonWire,
+  type BrewerHopAdviceWizardRequestV3 } from '../../functions/src/brewerHopAdviceSemanticV3';
+import type { HopAdviceV1WireInputV3 } from '../../functions/src/brewerHopAdviceTransportV1';
+import { assertBrewerHopAdviceWizardSourceMatchesSnapshotV1, mapBrewerHopAdviceWizardSourceToScopeV1 }
+  from '../../functions/src/brewerHopAdviceWizardSourceV1';
 
 export type BrewerHopAdviceV1CallableName =
   | typeof HOP_ADVICE_V1_FUNCTIONS.ask
@@ -76,6 +85,18 @@ export interface BrewerHopAdviceV1Api {
   markRead(request: HopAdviceV1MarkReadRequest): Promise<BrewerHopAdviceV1Read<HopAdviceV1MarkReadReceipt>>;
 }
 
+/** Additive Request3 client surface. The legacy `ask`/`askWire` contract remains Request2-only. */
+export type BrewerHopAdviceApiV3 = Omit<BrewerHopAdviceV1Api, 'ask' | 'askWire'> & {
+  readonly protocol: 'hopAdviceRequest3';
+  askWireV3(input: HopAdviceV1WireInputV3): Promise<BrewerHopAdviceV1Read<HopAdviceV1SubmitReceipt>>;
+};
+
+/** Request3 Wizard client is a separate type; it has no V1/Request2 ask or generic Request3 wire method. */
+export type BrewerHopAdviceApiForWizardV1 = Omit<BrewerHopAdviceApiV3, 'askWireV3' | 'protocol'> & {
+  readonly protocol: 'hopAdviceWizardRequest3V1';
+  askWireForWizardV1(input: HopAdviceV1WizardWireInputV1): Promise<BrewerHopAdviceV1Read<HopAdviceV1SubmitReceipt>>;
+};
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
 const text = (value: unknown): value is string => typeof value === 'string' && value.trim().length > 0;
@@ -85,6 +106,14 @@ const onlyKeys = (value: Record<string, unknown>, allowed: readonly string[]) =>
 const exactKeys = (value: Record<string, unknown>, allowed: readonly string[]) => Object.keys(value).length === allowed.length
   && allowed.every((key) => Object.prototype.hasOwnProperty.call(value, key));
 const clone = <T>(value: T): T => structuredClone(value);
+function same(left: unknown, right: unknown): boolean {
+  try {
+    return hopAdviceContentReference('hop-v55-brewer-hop-advice-api-equality-v1', left)
+      === hopAdviceContentReference('hop-v55-brewer-hop-advice-api-equality-v1', right);
+  } catch {
+    return false;
+  }
+}
 
 function serializable(value: unknown, ancestors = new WeakSet<object>()): boolean {
   if (value === null || typeof value === 'string' || typeof value === 'boolean') return true;
@@ -500,6 +529,150 @@ export function createBrewerHopAdviceApiV1(input: { ownerKey: string; transport?
       const result = readMarkRead(raw);
       return result;
     },
+  };
+}
+
+type SemanticWireValidationV3 =
+  | { status: 'ready'; wire: HopAdviceV1WireInputV3 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+
+function validateSemanticWireV3(value: unknown): SemanticWireValidationV3 {
+  const allowedKeys = ['mode', 'analysisMode', 'scope', 'operationId', 'question', 'generation', 'phase', 'hopAdvice', 'draft', 'localJournal'];
+  if (!isRecord(value) || !onlyKeys(value, allowedKeys) || value.mode !== HOP_ADVICE_PROTOCOL_V1.name
+    || !['fast', 'auto', 'deep'].includes(String(value.analysisMode)) || !text(value.operationId)
+    || !text(value.question) || !integer(value.generation) || value.phase !== undefined && typeof value.phase !== 'string') {
+    return { status: 'invalid', reason: 'Wire Request3 exact absent ou mal formé.' };
+  }
+  try { assertScope(value.scope); } catch { return { status: 'invalid', reason: 'Scope du wire Request3 invalide.' }; }
+  const request = readBrewerHopAdviceRequestV3(value.hopAdvice);
+  if (request.status === 'unsupportedReadOnly') return { status: 'unsupportedReadOnly', snapshot: value, reason: request.reason };
+  if (request.status === 'legacyReadOnly') return { status: 'unsupportedReadOnly', snapshot: value,
+    reason: 'Une Request2 historique ne traverse pas le client Request3.' };
+  if (request.status !== 'readOnly') return { status: 'invalid', reason: request.reason };
+  if (request.request.question !== value.question || !sameScope(request.request.contextLaunch.scope, value.scope)) {
+    return { status: 'invalid', reason: 'Question ou source du wire différente de la Request3 exacte.' };
+  }
+  if (value.scope.kind === 'draft') {
+    if (value.draft === undefined || value.localJournal !== undefined) return { status: 'invalid', reason: 'Wire draft incomplet ou ambigu.' };
+  } else if (value.scope.kind === 'batch') {
+    if (value.draft !== undefined) return { status: 'invalid', reason: 'Wire batch porteur d’un draft inattendu.' };
+  } else if (value.draft !== undefined || value.localJournal !== undefined) {
+    return { status: 'invalid', reason: 'Wire recipe/app porteur d’un draft ou journal inattendu.' };
+  }
+  if (!serializable(value)) return { status: 'invalid', reason: 'Wire Request3 non sérialisable.' };
+  return { status: 'ready', wire: value as HopAdviceV1WireInputV3 };
+}
+
+/**
+ * Request3 is sent on the existing ask callable, unchanged. This façade has no Request2 builder and
+ * deliberately omits the historical `ask`/`askWire` methods from its public type.
+ */
+export function createBrewerHopAdviceApiV3(input: {
+  ownerKey: string; transport?: BrewerHopAdviceV1CallableTransport;
+}): BrewerHopAdviceApiV3 {
+  if (typeof input.ownerKey !== 'string' || !input.ownerKey.trim() || input.ownerKey.trim() !== input.ownerKey) {
+    throw new Error('ownerKey courant requis pour le client Request3.');
+  }
+  const transport = input.transport ?? firebaseCallableTransport;
+  assertCallableTransport(transport);
+  const legacyLifecycle = createBrewerHopAdviceApiV1({ ownerKey: input.ownerKey, transport });
+  const askWireV3 = async (value: HopAdviceV1WireInputV3): Promise<BrewerHopAdviceV1Read<HopAdviceV1SubmitReceipt>> => {
+    const validated = validateSemanticWireV3(value);
+    if (validated.status === 'unsupportedReadOnly') return unsupported(validated.snapshot, validated.reason);
+    if (validated.status === 'invalid') return invalid(validated.reason);
+    const currentUser = await transport.currentUserKey();
+    if (currentUser !== input.ownerKey) throw new Error('Session Firebase différente de l’ownerKey courant pour Request3.');
+    // Preserve the exact durable ticket wire. Never rebuild it through the Request2 alias.
+    const raw = await transport.invoke(HOP_ADVICE_V1_FUNCTIONS.ask, validated.wire);
+    return readSubmitReceipt(raw, { scope: validated.wire.scope, operationId: validated.wire.operationId,
+      question: validated.wire.question, generation: validated.wire.generation ?? 0 });
+  };
+  return {
+    protocol: 'hopAdviceRequest3', ownerKey: input.ownerKey, userKey: legacyLifecycle.userKey, askWireV3,
+    retry: legacyLifecycle.retry, history: legacyLifecycle.history, status: legacyLifecycle.status,
+    reset: legacyLifecycle.reset, activity: legacyLifecycle.activity, markRead: legacyLifecycle.markRead,
+  };
+}
+
+type SemanticWizardWireValidationV1 =
+  | { status: 'ready'; wire: HopAdviceV1WizardWireInputV1; request: BrewerHopAdviceWizardRequestV3 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+
+function validateSemanticWizardWireV1(value: unknown): SemanticWizardWireValidationV1 {
+  const allowed = ['mode', 'analysisMode', 'scope', 'operationId', 'question', 'generation', 'phase', 'hopAdvice', 'draft'];
+  if (!isRecord(value) || !onlyKeys(value, allowed) || value.mode !== HOP_ADVICE_PROTOCOL_V1.name
+    || !['fast', 'auto', 'deep'].includes(String(value.analysisMode)) || !text(value.operationId)
+    || !text(value.question) || !integer(value.generation) || value.phase !== undefined && typeof value.phase !== 'string') {
+    return { status: 'invalid', reason: 'Wire Wizard Request3 exact absent ou mal formé.' };
+  }
+  if (!isRecord(value.scope) || !exactKeys(value.scope, ['kind', 'id']) || value.scope.kind !== 'draft' || !text(value.scope.id)
+    || !Object.prototype.hasOwnProperty.call(value, 'draft')) {
+    return { status: 'invalid', reason: 'Wire Wizard exige exactement un scope draft et le champ draft canonique.' };
+  }
+  const requestRead = readBrewerHopAdviceRequestV3ForWizardV1(value.hopAdvice);
+  if (requestRead.status === 'unsupportedReadOnly') {
+    return { status: 'unsupportedReadOnly', snapshot: value, reason: requestRead.reason };
+  }
+  if (requestRead.status !== 'readOnly') return { status: 'invalid', reason: requestRead.reason };
+  const request = requestRead.request;
+  const launchRead = readBrewerHopAdviceContextLaunchClaimForWizardV1(request.contextLaunch);
+  if (launchRead.status === 'unsupportedReadOnly') {
+    return { status: 'unsupportedReadOnly', snapshot: value, reason: launchRead.reason };
+  }
+  if (launchRead.status !== 'readOnly') return { status: 'invalid', reason: launchRead.reason };
+  const launch = launchRead.claim;
+  if (value.question !== request.question || !same(value.scope, launch.scope)
+    || request.sourceReadingReference !== request.sourceView.archiveIdentity.contentReference
+    || launch.sourceReadingReference !== request.sourceReadingReference
+    || !same(request.sourceView.archiveIdentity.source, launch.source)
+    || request.sourceView.archiveIdentity.ownerKey !== launch.ownerKey
+    || request.sourceView.archiveIdentity.workspaceId !== launch.workspaceId
+    || !same(mapBrewerHopAdviceWizardSourceToScopeV1(launch.source), launch.scope)) {
+    return { status: 'invalid', reason: 'Scope, source reading, owner/workspace ou question du wire Wizard divergent.' };
+  }
+  try {
+    assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(launch.source,
+      { recipe: value.draft, reference: launch.source.contentReference });
+    if (launch.expected.source.kind !== 'draft'
+      || launch.expected.source.snapshotReference !== brewerHopAdviceEffectiveDraftReferenceForWizardV1(value.draft)) {
+      return { status: 'invalid', reason: 'Projection attendue du wire Wizard différente du draft canonique transmis.' };
+    }
+    if (!serializable(value)) return { status: 'invalid', reason: 'Wire Wizard non sérialisable.' };
+    const size = measureBrewerHopAdviceSemanticJsonWire(value);
+    if (size.utf8Bytes > 100_000 || size.maxDepth > 18) {
+      return { status: 'invalid', reason: `Wire Wizard hors limite UTF-8/profondeur (${size.utf8Bytes} octets, profondeur ${size.maxDepth}).` };
+    }
+  } catch (error) {
+    return { status: 'invalid', reason: error instanceof Error ? error.message : 'Liaison draft Wizard invalide.' };
+  }
+  return { status: 'ready', wire: value as unknown as HopAdviceV1WizardWireInputV1, request };
+}
+
+/** Same callable, explicit Wizard V1 admission. Request2 and classic Request3 methods are absent. */
+export function createBrewerHopAdviceApiForWizardV1(input: {
+  ownerKey: string; transport?: BrewerHopAdviceV1CallableTransport;
+}): BrewerHopAdviceApiForWizardV1 {
+  if (!text(input.ownerKey)) throw new Error('Owner courant requis pour le client Wizard V1.');
+  const transport = input.transport ?? firebaseCallableTransport;
+  assertCallableTransport(transport);
+  const lifecycle = createBrewerHopAdviceApiV1({ ownerKey: input.ownerKey, transport });
+  const askWireForWizardV1 = async (value: HopAdviceV1WizardWireInputV1): Promise<BrewerHopAdviceV1Read<HopAdviceV1SubmitReceipt>> => {
+    const validated = validateSemanticWizardWireV1(value);
+    if (validated.status === 'unsupportedReadOnly') return unsupported(validated.snapshot, validated.reason);
+    if (validated.status === 'invalid') return invalid(validated.reason);
+    const currentUser = await transport.currentUserKey();
+    if (currentUser !== input.ownerKey) throw new Error('Session Auth différente de l’owner courant pour le wire Wizard.');
+    const raw = await transport.invoke(HOP_ADVICE_V1_FUNCTIONS.ask, validated.wire);
+    return readSubmitReceipt(raw, { scope: validated.wire.scope, operationId: validated.wire.operationId,
+      question: validated.wire.question, generation: validated.wire.generation ?? 0 });
+  };
+  return {
+    protocol: 'hopAdviceWizardRequest3V1', ownerKey: input.ownerKey, userKey: lifecycle.userKey,
+    askWireForWizardV1,
+    retry: lifecycle.retry, history: lifecycle.history, status: lifecycle.status, reset: lifecycle.reset,
+    activity: lifecycle.activity, markRead: lifecycle.markRead,
   };
 }
 

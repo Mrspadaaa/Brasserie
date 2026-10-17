@@ -71,6 +71,12 @@ export interface WaterBrewContext {
   boilMin?: number;
 }
 
+/**
+ * Why a water change was emitted. `profile-choice`: the brewer committed a target (listed profile or numeric
+ * target), which is a choice even when the committed value equals the displayed one. Other edits carry no intent.
+ */
+export type WaterChangeIntent = 'profile-choice';
+
 export interface SaltSolverProps {
   source: WaterSource;
   onSourceChange: (source: WaterSource) => void;
@@ -82,7 +88,9 @@ export interface SaltSolverProps {
 
   onMashRatioChange?: (lPerKg: number) => void;
   state: WaterState;
-  onChange: (next: WaterState) => void;
+  onChange: (next: WaterState, intent?: WaterChangeIntent) => void;
+  /** How the recipe holds its target profile, when the host knows it: followed from the beer style, chosen, or kept without provenance. */
+  profileMode?: 'style' | 'choice' | 'legacy';
 
   noSparge: boolean;
   onNoSpargeChange: (next: boolean) => void;

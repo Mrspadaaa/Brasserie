@@ -136,10 +136,10 @@
 .hv-doc-correction-editor textarea,
 .hv-doc-correction-reason textarea,
 .hv-doc-need-editor textarea { min-height: 58px; resize: vertical; }
-.hv-doc-primary,
 .hv-doc-secondary,
 .hv-doc-text-button { min-height: 34px; padding: 5px 9px; border: 1px solid var(--doc-forest); border-radius: 5px; font-size: .78rem; font-weight: 700; }
-.hv-doc-primary { width: fit-content; color: white !important; background: var(--doc-forest); }
+/* Scoped to win over page.css `.hop-v55 button` (0,1,1): white on white (1.01:1) and 30 px otherwise. */
+.hop-v55 .hv-doc-primary { min-height: 34px; padding: 5px 9px; border: 1px solid var(--doc-forest); border-radius: 5px; font-size: .78rem; font-weight: 700; width: fit-content; color: white !important; background: var(--doc-forest); }
 .hv-doc-secondary { color: var(--doc-forest) !important; background: white; }
 .hv-doc-text-button { border-color: transparent; color: var(--doc-forest) !important; background: transparent; text-decoration: underline; }
 .hv-doc-primary:disabled,
@@ -210,7 +210,7 @@
   .hv-doc-access-grid { grid-template-columns: minmax(0, 1fr); }
   .hv-doc-route-heading { display: grid; }
   .hv-doc-section-heading { display: grid; }
-  .hv-doc-primary,
+  .hop-v55 .hv-doc-primary,
   .hv-doc-secondary { width: 100%; }
   .hv-doc-pending { align-items: stretch; flex-direction: column; }
 }

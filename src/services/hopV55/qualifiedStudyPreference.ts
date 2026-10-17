@@ -1,12 +1,13 @@
 import { hopAdviceContentReference } from '../../domain/hopDecision/adviceContentReference';
-import { hopAdviceEventContentReference, hopAdviceStudyReference, readHopAdviceDossier, readHopAdviceEvent,
+import { hopAdviceEventContentReference, readHopAdviceDossier, readHopAdviceEvent,
   type HopAdviceDossierV3, type HopAdviceEventRead, type HopAdviceEventV3 } from '../../domain/hopDecision/adviceDossier';
 import type { HopDecisionLocalRepository } from '../hopDecisionLocalRepository';
 import { readHopV55DecisionReadingArchive } from './decisionArchive';
-import { readHopV55QualifiedStudyLink, readHopV55QualifiedStudyPreparation,
-  type HopV55QualifiedStudyFreshness, type HopV55QualifiedStudyLinkV1,
+import { decodeHopV55QualifiedStudyPreparationRow, readHopV55QualifiedStudyCollectionsIndexV1, readHopV55QualifiedStudyLink,
+  type HopV55QualifiedStudyCollectionsIndexV1, type HopV55QualifiedStudyFreshness, type HopV55QualifiedStudyLinkV1,
   type HopV55QualifiedStudyPreparationRecord } from './qualifiedStudyWorkspace';
 import type { HopV55Workspace, HopV55WorkspaceRepository } from './contracts';
+import { HopV55OperationValidationScope } from './operationScopedQualifiedValidation';
 
 export const HOP_V55_QUALIFIED_STUDY_PREFERENCE_V1_FORMAT = 'hop-v55-qualified-study-preference-command-v1' as const;
 export type HopV55StrategyPreferredEventV3 = Extract<HopAdviceEventV3, { kind: 'strategyPreferred' }>;
@@ -163,24 +164,39 @@ function opaqueScope(value: unknown, ownerKey: string, workspaceId: string, sour
   }
 }
 
+/** Opaque strict-validation token; unrecognized or cross-workspace tokens fall back to decoding. */
+export type HopV55QualifiedStudyPreferenceValidatedContextV1 = HopV55QualifiedStudyCollectionsIndexV1;
+
 export function assertHopV55QualifiedStudyPreferenceCommands(workspace: Pick<HopV55Workspace,
-  'id' | 'ownerKey' | 'decisionReadings' | 'qualifiedStudyPreparations' | 'qualifiedStudyLinks' | 'qualifiedStudyPreferenceCommands'>): void {
+  'id' | 'ownerKey' | 'decisionReadings' | 'qualifiedStudyPreparations' | 'qualifiedStudyLinks' | 'qualifiedStudyPreferenceCommands'>,
+  validated?: HopV55QualifiedStudyPreferenceValidatedContextV1): void {
   const rows = workspace.qualifiedStudyPreferenceCommands ?? [];
   if (!Array.isArray(rows)) throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Historique des préparations de préférence invalide.');
-  const sourceReferences = new Set((workspace.decisionReadings ?? []).flatMap(raw => {
+  const indexed = validated && 'revision' in workspace && 'decisionReadings' in workspace
+    ? readHopV55QualifiedStudyCollectionsIndexV1(validated, workspace as HopV55Workspace) : undefined;
+  const sourceReferences = indexed?.sourceReadingReferences ?? new Set((workspace.decisionReadings ?? []).flatMap(raw => {
     const read = readHopV55DecisionReadingArchive(raw);
     return read.status === 'available' && read.archive.ownerKey === workspace.ownerKey
       && read.archive.workspaceId === workspace.id ? [read.archive.contentReference] : [];
   }));
-  const preparations = new Map<string, HopV55QualifiedStudyPreparationRecord>();
-  for (const raw of workspace.qualifiedStudyPreparations ?? []) {
-    const read = readHopV55QualifiedStudyPreparation(raw);
-    if (read.status === 'available') preparations.set(read.preparation.reference, read.preparation);
-  }
-  const links = new Map<string, HopV55QualifiedStudyLinkV1>();
-  for (const raw of workspace.qualifiedStudyLinks ?? []) {
-    const read = readHopV55QualifiedStudyLink(raw);
-    if (read.status === 'available') links.set(read.link.preparationReference, read.link);
+  let preparations: ReadonlyMap<string, HopV55QualifiedStudyPreparationRecord>;
+  let links: ReadonlyMap<string, HopV55QualifiedStudyLinkV1>;
+  if (indexed) {
+    preparations = indexed.preparationsByReference;
+    links = indexed.linksByPreparationReference;
+  } else {
+    const decodedPreparations = new Map<string, HopV55QualifiedStudyPreparationRecord>();
+    for (const raw of workspace.qualifiedStudyPreparations ?? []) {
+      const read = decodeHopV55QualifiedStudyPreparationRow(raw, { revalidate: true });
+      if (read.status === 'available') decodedPreparations.set(read.preparation.reference, read.preparation);
+    }
+    const decodedLinks = new Map<string, HopV55QualifiedStudyLinkV1>();
+    for (const raw of workspace.qualifiedStudyLinks ?? []) {
+      const read = readHopV55QualifiedStudyLink(raw);
+      if (read.status === 'available') decodedLinks.set(read.link.preparationReference, read.link);
+    }
+    preparations = decodedPreparations;
+    links = decodedLinks;
   }
   const ids = new Set<string>(), references = new Set<string>(), eventIds = new Set<string>(), preferenceIds = new Set<string>();
   const futureSources = new Set<string>();
@@ -225,7 +241,7 @@ export function assertHopV55QualifiedStudyPreferenceCommands(workspace: Pick<Hop
 }
 
 export function appendHopV55QualifiedStudyPreferenceCommand(workspace: HopV55Workspace,
-  command: HopV55QualifiedStudyPreferenceCommandV1): HopV55Workspace {
+  command: HopV55QualifiedStudyPreferenceCommandV1, scope?: HopV55OperationValidationScope): HopV55Workspace {
   assertCommand(command);
   if (workspace.ownerKey !== command.ownerKey || workspace.id !== command.workspaceId) {
     throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Owner/workspace du staging différent.');
@@ -252,7 +268,8 @@ export function appendHopV55QualifiedStudyPreferenceCommand(workspace: HopV55Wor
     throw new HopV55QualifiedStudyPreferenceError('unsupportedFormat', 'Une commande future de préférence reste en lecture seule.');
   }
   const preparation = (workspace.qualifiedStudyPreparations ?? []).flatMap(raw => {
-    const read = readHopV55QualifiedStudyPreparation(raw);
+    // Strict decode without a copy: only identities and references are compared here.
+    const read = decodeHopV55QualifiedStudyPreparationRow(raw, { scope });
     return read.status === 'available' && read.preparation.reference === command.preparationReference ? [read.preparation] : [];
   })[0];
   const link = (workspace.qualifiedStudyLinks ?? []).flatMap(raw => {
@@ -274,17 +291,28 @@ export function appendHopV55QualifiedStudyPreferenceCommand(workspace: HopV55Wor
   ] };
 }
 
-export function assertHopV55QualifiedStudyPreferenceAppendOnly(previous: HopV55Workspace, next: HopV55Workspace): void {
+/**
+ * `previousIndex` may carry the collections index validated for `previous` in
+ * the same synchronous step; rows absent from it are decoded strictly.
+ */
+export function assertHopV55QualifiedStudyPreferenceAppendOnly(previous: HopV55Workspace, next: HopV55Workspace,
+  options: { previousIndex?: HopV55QualifiedStudyCollectionsIndexV1 } = {}): void {
   const prior = previous.qualifiedStudyPreferenceCommands ?? [], incoming = next.qualifiedStudyPreferenceCommands ?? [];
   if (incoming.length < prior.length || prior.some((row, index) => !sameExact(row, incoming[index]))) {
     throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Les commandes préparées de préférence sont immuables et append-only.');
   }
   const priorReadingReferences = new Set((previous.decisionReadings ?? []).map(row => row.contentReference));
+  const validated = options.previousIndex
+    ? readHopV55QualifiedStudyCollectionsIndexV1(options.previousIndex, previous) : undefined;
   const priorPreparations = new Set((previous.qualifiedStudyPreparations ?? []).flatMap(raw => {
-    const read = readHopV55QualifiedStudyPreparation(raw);
+    const known = isRow(raw) ? validated?.preparations.get(raw) : undefined;
+    if (known) return [known.reference];
+    const read = decodeHopV55QualifiedStudyPreparationRow(raw);
     return read.status === 'available' ? [read.preparation.reference] : [];
   }));
   const priorLinks = new Set((previous.qualifiedStudyLinks ?? []).flatMap(raw => {
+    const known = isRow(raw) ? validated?.links.get(raw) : undefined;
+    if (known) return [known.preparationReference];
     const read = readHopV55QualifiedStudyLink(raw);
     return read.status === 'available' ? [read.link.preparationReference] : [];
   }));
@@ -321,9 +349,11 @@ function validateStoredCommand(workspace: HopV55Workspace, command: HopV55Qualif
   }
 }
 
-function validateLinkedWorkspace(workspace: HopV55Workspace, command: HopV55QualifiedStudyPreferenceCommandV1) {
+function validateLinkedWorkspace(workspace: HopV55Workspace, command: HopV55QualifiedStudyPreferenceCommandV1,
+  scope: HopV55OperationValidationScope) {
   validateStoredCommand(workspace, command);
-  const preparationRead = (workspace.qualifiedStudyPreparations ?? []).map(readHopV55QualifiedStudyPreparation)
+  // Strict decode of this freshly read private workspace; the row is only read below.
+  const preparationRead = (workspace.qualifiedStudyPreparations ?? []).map(row => decodeHopV55QualifiedStudyPreparationRow(row, { scope }))
     .find(row => row.status === 'available' && row.preparation.reference === command.preparationReference);
   const linkRead = (workspace.qualifiedStudyLinks ?? []).map(readHopV55QualifiedStudyLink)
     .find(row => row.status === 'available' && row.link.preparationReference === command.preparationReference);
@@ -350,9 +380,10 @@ async function readCurrentAdvice(repository: HopDecisionLocalRepository, command
   if (!rawDossier) throw new HopV55QualifiedStudyPreferenceError('notFound', 'Dossier conseil local introuvable pour sa préférence.');
   const dossierRead = readHopAdviceDossier(rawDossier);
   if ('status' in dossierRead) throw new HopV55QualifiedStudyPreferenceError('unsupportedFormat', 'Dossier conseil futur conservé en lecture seule.');
+  // readHopAdviceDossier has just recomputed the study fingerprint and compared it with study.reference.
   if (dossierRead.formatVersion !== 3 || dossierRead.ownerKey !== command.ownerKey || dossierRead.dossierId !== command.dossierId
     || dossierRead.supersedesDossierId !== preparation.createCommand.supersedesDossierId
-    || hopAdviceStudyReference(dossierRead.study) !== command.studyReference) {
+    || dossierRead.study.reference !== command.studyReference) {
     throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'Le dossier actuel ne correspond plus au lien d’étude conseil préparé.');
   }
   const eventReads = await repository.readEvents(command.ownerKey, command.dossierId);
@@ -381,93 +412,106 @@ export async function appendHopV55QualifiedStudyPreference(input: {
   command: HopV55QualifiedStudyPreferenceCommandV1;
   validateFreshness: HopV55QualifiedStudyPreferenceFreshnessValidator;
   maxStageAttempts?: number;
+  scope?: HopV55OperationValidationScope;
 }): Promise<PersistHopV55QualifiedStudyPreferenceResult> {
-  assertCommand(input.command);
-  if (typeof input.validateFreshness !== 'function') throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Une vérification de fraîcheur explicite est requise.');
-  const maxAttempts = input.maxStageAttempts ?? 4;
-  if (!Number.isSafeInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 8) {
-    throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Nombre de reprises CAS de staging invalide.');
-  }
+  const scope = input.scope ?? new HopV55OperationValidationScope();
+  try {
+    let command: HopV55QualifiedStudyPreferenceCommandV1;
+    try { command = clone(input.command); }
+    catch (error) { assertCommand(input.command); throw error; }
+    assertCommand(command);
+    if (typeof input.validateFreshness !== 'function') throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Une vérification de fraîcheur explicite est requise.');
+    const maxAttempts = input.maxStageAttempts ?? 4;
+    if (!Number.isSafeInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 8) {
+      throw new HopV55QualifiedStudyPreferenceError('invalidInput', 'Nombre de reprises CAS de staging invalide.');
+    }
 
-  let staged = false;
-  let lastError: unknown;
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const workspace = await input.workspaces.read(input.command.ownerKey, input.command.workspaceId);
-    if (!workspace) throw new HopV55QualifiedStudyPreferenceError('notFound', 'Workspace source de la préférence introuvable.');
-    const alreadyStaged = (workspace.qualifiedStudyPreferenceCommands ?? []).map(readHopV55QualifiedStudyPreferenceCommand)
-      .find(read => read.status === 'available' && read.command.id === input.command.id);
-    if (alreadyStaged?.status === 'available') {
-      if (alreadyStaged.command.reference !== input.command.reference || !sameExact(alreadyStaged.command, input.command)) {
-        throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'EventId de préférence déjà préparé avec un contenu différent.');
+    let staged = false;
+    let stagedWorkspace: HopV55Workspace | undefined;
+    let lastError: unknown;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const workspace = await input.workspaces.read(command.ownerKey, command.workspaceId);
+      if (!workspace) throw new HopV55QualifiedStudyPreferenceError('notFound', 'Workspace source de la préférence introuvable.');
+      const alreadyStaged = (workspace.qualifiedStudyPreferenceCommands ?? []).map(readHopV55QualifiedStudyPreferenceCommand)
+        .find(read => read.status === 'available' && read.command.id === command.id);
+      if (alreadyStaged?.status === 'available') {
+        if (alreadyStaged.command.reference !== command.reference || !sameExact(alreadyStaged.command, command)) {
+          throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'EventId de préférence déjà préparé avec un contenu différent.');
+        }
+        staged = true;
+        stagedWorkspace = workspace;
+        break;
       }
-      staged = true;
-      break;
+      const beforeStage = normalizeFreshness(await input.validateFreshness({ command: clone(command), phase: 'beforeStage' }));
+      if (beforeStage.status !== 'current') {
+        throw new HopV55QualifiedStudyPreferenceError('staleRevision', beforeStage.reason || 'Le contexte est historique; la préférence n’a pas été préparée.');
+      }
+      const next = appendHopV55QualifiedStudyPreferenceCommand(workspace, command, scope);
+      try {
+        stagedWorkspace = await input.workspaces.save(next, workspace.revision);
+        staged = true;
+        break;
+      } catch (error) {
+        if ((error as { code?: unknown })?.code === 'staleRevision') { lastError = error; continue; }
+        throw error;
+      }
     }
-    const beforeStage = normalizeFreshness(await input.validateFreshness({ command: input.command, phase: 'beforeStage' }));
-    if (beforeStage.status !== 'current') {
-      throw new HopV55QualifiedStudyPreferenceError('staleRevision', beforeStage.reason || 'Le contexte est historique; la préférence n’a pas été préparée.');
+    if (!staged) throw new HopV55QualifiedStudyPreferenceError('staleRevision',
+      `La commande de préférence exacte reste en attente d’un CAS workspace : ${(lastError as Error | undefined)?.message ?? 'révision modifiée'}`);
+
+    // A successful CAS returns its exact, strictly validated committed workspace. The staged command
+    // is append-only, so re-reading the same large study row here would repeat validation without
+    // adding a stronger guarantee; already-staged retries use their fresh initial read above.
+    const workspace = stagedWorkspace;
+    if (!workspace) throw new HopV55QualifiedStudyPreferenceError('invalidStoredRecord',
+      'Le CAS de staging n’a pas renvoyé le workspace strictement validé.');
+    const { preparation, link } = validateLinkedWorkspace(workspace, command, scope);
+    const before = await readCurrentAdvice(input.qualifiedStudies, command, preparation);
+    const matchingEvent = before.events.find(event => event.eventId === command.event.eventId);
+    if (matchingEvent) {
+      if (!exactEvent(matchingEvent, command.event)) {
+        throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'EventId déjà commis avec un contenu de préférence différent.');
+      }
+      const matchingPreference = before.events.find(event => event.kind === 'strategyPreferred'
+        && event.payload.preferenceId === command.preferenceId);
+      if (!matchingPreference || matchingPreference.eventId !== command.event.eventId) {
+        throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'La préférence persistée ne correspond pas à son eventId exact.');
+      }
+      if (matchingEvent.kind !== 'strategyPreferred') {
+        throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'L’eventId exact ne contient pas strategyPreferred.');
+      }
+      const freshness = normalizeFreshness(await input.validateFreshness({ command: clone(command), phase: 'alreadyAppended' }));
+      return { status: freshness.status === 'historical' ? 'recoveredHistorical' : 'alreadyAppended',
+        repositoryStatus: 'duplicate', freshContext: freshness, command: command, link,
+        dossierAdvice3: before.dossier, eventAdvice3: matchingEvent, eventsAdvice3: before.events };
     }
-    const next = appendHopV55QualifiedStudyPreferenceCommand(workspace, input.command);
+    if (before.events.some(event => event.kind === 'strategyPreferred' && event.payload.preferenceId === command.preferenceId)) {
+      throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'Ce preferenceId existe déjà avec une autre commande ou un autre eventId.');
+    }
+    const freshness = normalizeFreshness(await input.validateFreshness({ command: clone(command), phase: 'beforeAppend' }));
+    if (freshness.status !== 'current') {
+      throw new HopV55QualifiedStudyPreferenceError('staleRevision', freshness.reason || 'La source est historique; la préférence reste préparée sans événement domaine.');
+    }
+    if (command.event.expectedRevision !== before.dossier.revision) {
+      throw new HopV55QualifiedStudyPreferenceError('staleRevision', 'La préférence exacte attend une autre révision dossier; elle ne sera ni reconstruite ni déplacée.');
+    }
     try {
-      await input.workspaces.save(next, workspace.revision);
-      staged = true;
-      break;
+      const result = await input.qualifiedStudies.append({ ownerKey: command.ownerKey,
+        dossierId: command.dossierId, event: clone(command.event) });
+      const after = await readCurrentAdvice(input.qualifiedStudies, command, preparation);
+      const committed = after.events.find(event => event.eventId === command.event.eventId);
+      if (!committed || !exactEvent(committed, command.event)) {
+        throw new HopV55QualifiedStudyPreferenceError('invalidStoredRecord', 'L’append n’a pas produit l’événement exact et relisible.');
+      }
+      if (committed.kind !== 'strategyPreferred') {
+        throw new HopV55QualifiedStudyPreferenceError('invalidStoredRecord', 'L’event relu n’est pas strategyPreferred.');
+      }
+      return { status: result.status === 'duplicate' ? 'alreadyAppended' : 'appended',
+        repositoryStatus: result.status, freshContext: freshness, command: command, link,
+        dossierAdvice3: after.dossier, eventAdvice3: committed, eventsAdvice3: after.events };
     } catch (error) {
-      if ((error as { code?: unknown })?.code === 'staleRevision') { lastError = error; continue; }
+      if (error instanceof HopV55QualifiedStudyPreferenceError) throw error;
       throw error;
     }
-  }
-  if (!staged) throw new HopV55QualifiedStudyPreferenceError('staleRevision',
-    `La commande de préférence exacte reste en attente d’un CAS workspace : ${(lastError as Error | undefined)?.message ?? 'révision modifiée'}`);
-
-  const workspace = await input.workspaces.read(input.command.ownerKey, input.command.workspaceId);
-  if (!workspace) throw new HopV55QualifiedStudyPreferenceError('notFound', 'Workspace source de la préférence introuvable après staging.');
-  const { preparation, link } = validateLinkedWorkspace(workspace, input.command);
-  const before = await readCurrentAdvice(input.qualifiedStudies, input.command, preparation);
-  const matchingEvent = before.events.find(event => event.eventId === input.command.event.eventId);
-  if (matchingEvent) {
-    if (!exactEvent(matchingEvent, input.command.event)) {
-      throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'EventId déjà commis avec un contenu de préférence différent.');
-    }
-    const matchingPreference = before.events.find(event => event.kind === 'strategyPreferred'
-      && event.payload.preferenceId === input.command.preferenceId);
-    if (!matchingPreference || matchingPreference.eventId !== input.command.event.eventId) {
-      throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'La préférence persistée ne correspond pas à son eventId exact.');
-    }
-    if (matchingEvent.kind !== 'strategyPreferred') {
-      throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'L’eventId exact ne contient pas strategyPreferred.');
-    }
-    const freshness = normalizeFreshness(await input.validateFreshness({ command: input.command, phase: 'alreadyAppended' }));
-    return { status: freshness.status === 'historical' ? 'recoveredHistorical' : 'alreadyAppended',
-      repositoryStatus: 'duplicate', freshContext: freshness, command: input.command, link,
-      dossierAdvice3: before.dossier, eventAdvice3: matchingEvent, eventsAdvice3: before.events };
-  }
-  if (before.events.some(event => event.kind === 'strategyPreferred' && event.payload.preferenceId === input.command.preferenceId)) {
-    throw new HopV55QualifiedStudyPreferenceError('eventConflict', 'Ce preferenceId existe déjà avec une autre commande ou un autre eventId.');
-  }
-  const freshness = normalizeFreshness(await input.validateFreshness({ command: input.command, phase: 'beforeAppend' }));
-  if (freshness.status !== 'current') {
-    throw new HopV55QualifiedStudyPreferenceError('staleRevision', freshness.reason || 'La source est historique; la préférence reste préparée sans événement domaine.');
-  }
-  if (input.command.event.expectedRevision !== before.dossier.revision) {
-    throw new HopV55QualifiedStudyPreferenceError('staleRevision', 'La préférence exacte attend une autre révision dossier; elle ne sera ni reconstruite ni déplacée.');
-  }
-  try {
-    const result = await input.qualifiedStudies.append({ ownerKey: input.command.ownerKey,
-      dossierId: input.command.dossierId, event: clone(input.command.event) });
-    const after = await readCurrentAdvice(input.qualifiedStudies, input.command, preparation);
-    const committed = after.events.find(event => event.eventId === input.command.event.eventId);
-    if (!committed || !exactEvent(committed, input.command.event)) {
-      throw new HopV55QualifiedStudyPreferenceError('invalidStoredRecord', 'L’append n’a pas produit l’événement exact et relisible.');
-    }
-    if (committed.kind !== 'strategyPreferred') {
-      throw new HopV55QualifiedStudyPreferenceError('invalidStoredRecord', 'L’event relu n’est pas strategyPreferred.');
-    }
-    return { status: result.status === 'duplicate' ? 'alreadyAppended' : 'appended',
-      repositoryStatus: result.status, freshContext: freshness, command: input.command, link,
-      dossierAdvice3: after.dossier, eventAdvice3: committed, eventsAdvice3: after.events };
-  } catch (error) {
-    if (error instanceof HopV55QualifiedStudyPreferenceError) throw error;
-    throw error;
-  }
+  } finally { if (!input.scope) scope.close(); }
 }

@@ -7,6 +7,14 @@ import type {
   BrewerScope,
   BrewerTurn
 } from '../../functions/src/companionTypes';
+import type {
+  HopV55SemanticJobSnapshotV3,
+  HopV55SemanticJobStoreV3,
+  HopV55SemanticWireAuthorizationResultV3,
+  HopV55SemanticWizardJobSnapshotV1,
+  HopV55SemanticWizardJobStoreV1,
+} from './hopV55/semanticAdoptionApplicationHost';
+import { hopAdviceContentReference } from '../domain/hopDecision/adviceContentReference';
 
 export type ClientBrewerJob = BrewerJob & {
   input?: BrewerChatInput;
@@ -43,6 +51,114 @@ export interface BrewerJobStoreOptions {
   sameScope(left: BrewerScope, right: BrewerScope): boolean;
   /** Assisted histories keep the exact request until their local receipt is attached. */
   retainInputUntilRead?: boolean;
+}
+
+export type HopV55SemanticJobSendInputV3 = Parameters<HopV55SemanticJobStoreV3['submit']>[0];
+export type HopV55SemanticJobReadInputV3 = Parameters<HopV55SemanticJobStoreV3['read']>[0];
+
+/** Injectable Request3 transport. It never receives BrewerChatInput or rebuilds the wire. */
+export interface HopV55SemanticJobStoreTransportV3 {
+  submit(input: HopV55SemanticJobSendInputV3): Promise<HopV55SemanticJobSnapshotV3>;
+  retry(input: HopV55SemanticJobSendInputV3): Promise<HopV55SemanticJobSnapshotV3>;
+  read(input: HopV55SemanticJobReadInputV3): Promise<HopV55SemanticJobSnapshotV3 | null>;
+}
+
+export interface HopV55SemanticJobActivityV3 {
+  format: 'hop-v55-semantic-job-activity-v3';
+  jobs: HopV55SemanticJobSnapshotV3[];
+  connectionError: string;
+}
+
+/** Browser projection over durable V3 tickets. It stores only current progress in memory; the workspace ticket owns wire recovery. */
+export interface HopV55SemanticJobStoreClientV3 extends HopV55SemanticJobStoreV3 {
+  readonly storeNamespace: string;
+  subscribe(listener: () => void): () => void;
+  snapshot(): HopV55SemanticJobActivityV3;
+  start(): void | Promise<void>;
+  refresh(): void | Promise<void>;
+  forget(scope: BrewerScope, generation: number): void;
+  dispose(): void;
+}
+
+export interface HopV55SemanticJobStoreOptionsV3 {
+  ownerKey: string;
+  workspaceId: string;
+  scope: BrewerScope;
+  storeNamespace: string;
+  providerKind: HopV55SemanticJobStoreV3['providerKind'];
+  transport: HopV55SemanticJobStoreTransportV3;
+}
+
+export type HopV55SemanticWizardJobSendInputV1 = Parameters<HopV55SemanticWizardJobStoreV1['submit']>[0];
+export type HopV55SemanticWizardJobReadInputV1 = Parameters<HopV55SemanticWizardJobStoreV1['read']>[0];
+
+/** Transport lane for the explicit Wizard Request3 profile; no classic wire or Request2 adapter is accepted. */
+export interface HopV55SemanticWizardJobStoreTransportV1 {
+  submit(input: HopV55SemanticWizardJobSendInputV1): Promise<HopV55SemanticWizardJobSnapshotV1>;
+  retry(input: HopV55SemanticWizardJobSendInputV1): Promise<HopV55SemanticWizardJobSnapshotV1>;
+  read(input: HopV55SemanticWizardJobReadInputV1): Promise<HopV55SemanticWizardJobSnapshotV1 | null>;
+}
+
+export interface HopV55SemanticWizardJobStoreOptionsV1 {
+  ownerKey: string;
+  workspaceId: string;
+  scope: BrewerScope;
+  storeNamespace: string;
+  providerKind: HopV55SemanticWizardJobStoreV1['providerKind'];
+  transport: HopV55SemanticWizardJobStoreTransportV1;
+}
+
+export type HopV55SemanticWizardJobStoreClientV1 = HopV55SemanticWizardJobStoreV1 & { readonly storeNamespace: string };
+
+/** Explicit Wizard job client. Durable ticket storage stays in workspace; this façade never rebuilds its wire. */
+export function createHopV55SemanticWizardJobStoreV1(options: HopV55SemanticWizardJobStoreOptionsV1): HopV55SemanticWizardJobStoreClientV1 {
+  if (!options || !isNormalized(options.ownerKey) || !isNormalized(options.workspaceId) || !isNormalized(options.storeNamespace)
+    || !options.scope || options.scope.kind !== 'draft' || !isNormalized(options.scope.id)
+    || !options.transport || typeof options.transport.submit !== 'function' || typeof options.transport.retry !== 'function'
+    || typeof options.transport.read !== 'function') {
+    throw new Error('Un store Wizard explicite exige owner/workspace/scope et transport complets.');
+  }
+  const active = new Set<string>();
+  const operationKey = (operationId: string, generation: number) => `${options.storeNamespace}\u0000${operationId}\u0000${generation}`;
+  async function run(kind: 'submit' | 'retry', input: HopV55SemanticWizardJobSendInputV1) {
+    if (input.wire.scope.kind !== 'draft' || input.wire.scope.id !== options.scope.id
+      || input.wire.operationId !== input.operationId || input.wire.generation !== input.generation
+      || input.wire.question !== input.wire.hopAdvice.question) throw new Error('Wire Wizard hors opération/génération/scope capturés.');
+    const key = operationKey(input.operationId, input.generation);
+    if (active.has(key)) throw new Error('Une émission Wizard identique est déjà en cours; réutilise son ticket durable.');
+    active.add(key);
+    try {
+      const snapshot = await options.transport[kind]({ ...input, wire: structuredClone(input.wire),
+        authorizeBeforeEachEmission: input.authorizeBeforeEachEmission });
+      if (snapshot.operationId !== input.operationId || snapshot.generation !== input.generation
+        || snapshot.ticketReference !== input.ticketReference || snapshot.wireReference !== input.wireReference) {
+        throw new Error('Réponse du transport Wizard liée à une autre fermeture durable.');
+      }
+      return structuredClone(snapshot);
+    } finally { active.delete(key); }
+  }
+  return {
+    kind: 'hopAdviceWizardRequest3V1', providerKind: options.providerKind, storeNamespace: options.storeNamespace,
+    submit(input) { return run('submit', input); },
+    retry(input) { return run('retry', input); },
+    read(input) {
+      if (input.ownerKey !== options.ownerKey || input.workspaceId !== options.workspaceId
+        || input.operationId.trim() !== input.operationId || input.question.trim() !== input.question
+        || input.ticketReference.trim() !== input.ticketReference || input.wireReference.trim() !== input.wireReference
+        || input.generation < 0 || !Number.isSafeInteger(input.generation)
+        || input.wire.scope.kind !== 'draft' || input.wire.scope.id !== options.scope.id
+        || input.wire.operationId !== input.operationId || input.wire.generation !== input.generation
+        || input.wire.question !== input.question || input.wire.hopAdvice.question !== input.question
+        || typeof input.authorizeBeforeRead !== 'function') {
+        throw new Error('Lecture de job Wizard hors owner/workspace/identité exacte.');
+      }
+      return options.transport.read({ ...input, wire: structuredClone(input.wire), authorizeBeforeRead: input.authorizeBeforeRead });
+    },
+  };
+}
+
+function isNormalized(value: string): boolean {
+  return typeof value === 'string' && !!value.trim() && value.trim() === value;
 }
 
 const defaultScopeIdentity = (scope: BrewerScope) => `${scope.kind === 'draft' ? 'recipe' : scope.kind}:${scope.id}`;
@@ -390,6 +506,162 @@ export function createBrewerJobStore(options?: BrewerJobStoreOptions) {
     }
   };
 }
+
+const SEMANTIC_JOB_SNAPSHOT_V3_FORMAT = 'hop-v55-semantic-job-snapshot-v3' as const;
+const sameSemanticValue = (left: unknown, right: unknown): boolean => {
+  try { return hopAdviceContentReference('hop-v55-semantic-job-store-equality-v1', left)
+    === hopAdviceContentReference('hop-v55-semantic-job-store-equality-v1', right); }
+  catch { return false; }
+};
+
+function semanticText(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0 && value.trim() === value;
+}
+
+function exactSemanticScope(left: unknown, right: BrewerScope): boolean {
+  return !!left && typeof left === 'object' && !Array.isArray(left)
+    && (left as { kind?: unknown }).kind === right.kind && (left as { id?: unknown }).id === right.id
+    && Object.keys(left).length === 2;
+}
+
+function assertSemanticJobSnapshotV3(value: unknown, expected: {
+  operationId: string; generation: number; ticketReference: string; wireReference: string;
+  scope: BrewerScope; question: string;
+}): asserts value is HopV55SemanticJobSnapshotV3 {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Snapshot de job Request3 absent.');
+  const row = value as Record<string, unknown>;
+  if (row.format !== SEMANTIC_JOB_SNAPSHOT_V3_FORMAT || row.operationId !== expected.operationId
+    || row.generation !== expected.generation || row.ticketReference !== expected.ticketReference
+    || row.wireReference !== expected.wireReference
+    || !['pending', 'received', 'failed', 'unsupportedReadOnly'].includes(String(row.status))) {
+    throw new Error('Snapshot de job différent du ticket, wire ou génération Request3 exacts.');
+  }
+  if (row.job !== undefined) {
+    const job = row.job as Record<string, unknown>;
+    if (!job || typeof job !== 'object' || job.operationId !== expected.operationId
+      || job.generation !== expected.generation || job.question !== expected.question
+      || !exactSemanticScope(job.scope, expected.scope)) {
+      throw new Error('Job public différent de la source, question ou génération Request3.');
+    }
+  }
+  if (row.status === 'received' && (row.job === undefined || row.turn === undefined)) {
+    throw new Error('Un job reçu exige son job public et le tour opaque du même retour.');
+  }
+  if (row.reason !== undefined && typeof row.reason !== 'string') throw new Error('Motif du job Request3 invalide.');
+}
+
+/**
+ * A V3 broker store is deliberately separate from `createBrewerJobStore`: its payload is not
+ * `BrewerChatInput`, it has no default transport and no ordinary-chat fallback. The durable workspace
+ * ticket owns the full wire; this view keeps the exact ticket/wire references for recovery.
+ */
+export function createHopV55SemanticJobStoreV3(options: HopV55SemanticJobStoreOptionsV3): HopV55SemanticJobStoreClientV3 {
+  if (!options || !semanticText(options.ownerKey) || !semanticText(options.workspaceId)
+    || !semanticText(options.storeNamespace) || !['fixture', 'authorizedRequest3'].includes(options.providerKind)
+    || !options.transport || typeof options.transport.submit !== 'function' || typeof options.transport.retry !== 'function'
+    || typeof options.transport.read !== 'function') {
+    throw new Error('Le store Request3 exige owner/workspace, namespace, provider et transport complet explicites.');
+  }
+  const scope = structuredClone(options.scope);
+  if (!scope || !['recipe', 'batch', 'draft', 'app'].includes(scope.kind)
+    || !semanticText(scope.id) || Object.keys(scope).length !== 2) throw new Error('Scope exact du store Request3 invalide.');
+  let state: HopV55SemanticJobActivityV3 = { format: 'hop-v55-semantic-job-activity-v3', jobs: [], connectionError: '' };
+  let started = false;
+  let disposed = false;
+  const listeners = new Set<() => void>();
+  const emit = (jobs: HopV55SemanticJobSnapshotV3[], connectionError = '') => {
+    if (disposed) return;
+    state = { format: 'hop-v55-semantic-job-activity-v3', jobs: jobs.map(row => structuredClone(row)), connectionError };
+    listeners.forEach(listener => listener());
+  };
+  const merge = (snapshot: HopV55SemanticJobSnapshotV3) => {
+    const current = state.jobs.find(row => row.operationId === snapshot.operationId);
+    if (current && (current.ticketReference !== snapshot.ticketReference || current.wireReference !== snapshot.wireReference)) {
+      throw new Error('operationId Request3 déjà associé à une autre fermeture durable.');
+    }
+    const next = state.jobs.filter(row => row.operationId !== snapshot.operationId);
+    next.push(structuredClone(snapshot));
+    next.sort((left, right) => (left.job?.createdAt ?? 0) - (right.job?.createdAt ?? 0));
+    emit(next);
+  };
+  const failedSnapshot = (input: HopV55SemanticJobSendInputV3, reason: string,
+    status: 'failed' | 'unsupportedReadOnly' = 'failed'): HopV55SemanticJobSnapshotV3 => ({
+      format: SEMANTIC_JOB_SNAPSHOT_V3_FORMAT,
+      operationId: input.operationId,
+      generation: input.generation,
+      ticketReference: input.ticketReference,
+      wireReference: input.wireReference,
+      status,
+      reason,
+    });
+  async function send(method: 'submit' | 'retry', input: HopV55SemanticJobSendInputV3): Promise<HopV55SemanticJobSnapshotV3> {
+    if (disposed) throw new Error('Le store Request3 est fermé.');
+    if (!semanticText(input.operationId) || !Number.isSafeInteger(input.generation) || input.generation < 0
+      || !semanticText(input.ticketReference) || !semanticText(input.wireReference)
+      || input.wire.operationId !== input.operationId || input.wire.generation !== input.generation
+      || input.wire.question !== input.wire.hopAdvice.question || !exactSemanticScope(input.wire.scope, scope)
+      || typeof input.authorizeBeforeEachEmission !== 'function') {
+      throw new Error('Entrée de job Request3 différente du scope ou ticket du store.');
+    }
+    const authorization: HopV55SemanticWireAuthorizationResultV3 = await input.authorizeBeforeEachEmission();
+    if (authorization.status !== 'authorized') {
+      const blocked = failedSnapshot(input, authorization.reason,
+        authorization.status === 'unsupportedReadOnly' ? 'unsupportedReadOnly' : 'failed');
+      merge(blocked);
+      return blocked;
+    }
+    if (authorization.operationId !== input.operationId || authorization.generation !== input.generation
+      || authorization.ticketReference !== input.ticketReference || authorization.wireReference !== input.wireReference
+      || !sameSemanticValue(authorization.wire, input.wire)) {
+      throw new Error('Le garde avant émission n’a pas relu le ticket/wire Request3 exacts.');
+    }
+    // There is no callback, input projection or async boundary between the last guard and this call.
+    const sentInput: HopV55SemanticJobSendInputV3 = { ...input, wire: structuredClone(authorization.wire) };
+    const snapshot = await options.transport[method](sentInput);
+    assertSemanticJobSnapshotV3(snapshot, { operationId: input.operationId, generation: input.generation,
+      ticketReference: input.ticketReference, wireReference: input.wireReference, scope, question: input.wire.question });
+    merge(snapshot);
+    return structuredClone(snapshot);
+  }
+  const store: HopV55SemanticJobStoreClientV3 = {
+    kind: 'hopAdviceRequest3',
+    providerKind: options.providerKind,
+    storeNamespace: options.storeNamespace,
+    subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); },
+    snapshot: () => state,
+    start() { started = true; },
+    async refresh() {
+      // A refresh without a ticket-bound host session cannot authorize a Request3 recovery.
+      if (!started || disposed) return;
+    },
+    forget(requestedScope, generation) {
+      if (!exactSemanticScope(requestedScope, scope)) return;
+      emit(state.jobs.filter(row => row.generation >= generation));
+    },
+    submit(input) { return send('submit', input); },
+    retry(input) { return send('retry', input); },
+    async read(input) {
+      if (disposed || input.ownerKey !== options.ownerKey || input.workspaceId !== options.workspaceId
+        || !semanticText(input.operationId) || !Number.isSafeInteger(input.generation) || input.generation < 0
+        || !semanticText(input.question) || !semanticText(input.ticketReference) || !semanticText(input.wireReference)) {
+        throw new Error('Lecture de job Request3 hors owner/workspace/ticket du store.');
+      }
+      const snapshot = await options.transport.read(input);
+      if (!snapshot) return null;
+      if (snapshot.ticketReference !== input.ticketReference || snapshot.wireReference !== input.wireReference) {
+        throw new Error('La lecture de job Request3 ne correspond pas à son ticket/wire exacts.');
+      }
+      assertSemanticJobSnapshotV3(snapshot, { operationId: input.operationId, generation: input.generation,
+        ticketReference: input.ticketReference, wireReference: snapshot.wireReference, scope,
+        question: input.question });
+      merge(snapshot);
+      return structuredClone(snapshot);
+    },
+    dispose() { disposed = true; started = false; listeners.clear(); state = { format: 'hop-v55-semantic-job-activity-v3', jobs: [], connectionError: '' }; },
+  };
+  return store;
+}
+
 export const brewerJobs = createBrewerJobStore();
 export const useBrewerJobs = () => useSyncExternalStore(brewerJobs.subscribe, brewerJobs.snapshot);
 

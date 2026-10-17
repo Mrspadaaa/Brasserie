@@ -332,11 +332,12 @@ function validateStudyV3ForCreate(study: HopAdviceStudyV3): void {
     || study.responseSnapshot.version !== HOP_DECISION_VERSION || study.responseSnapshot.result.version !== HOP_ADVICE_VERSION) {
     invalid('L’étude de conseil utilise une version de qualification, calcul ou conseil non reconnue.');
   }
-  if (study.requestSnapshot.intent && hopAdviceCanonicalReference('hop-advice-intent-v1', study.requestSnapshot.intent)
+  const requestIntentReference = hopAdviceCanonicalReference('hop-advice-intent-v1', study.requestSnapshot.intent);
+  if (study.requestSnapshot.intent && requestIntentReference
     !== hopAdviceCanonicalReference('hop-advice-intent-v1', study.serviceInput.intent)
     || hopAdviceCanonicalReference('hop-advice-situation-v1', study.requestSnapshot.action.situation)
       !== hopAdviceCanonicalReference('hop-advice-situation-v1', study.serviceInput.action.situation)
-    || hopAdviceCanonicalReference('hop-advice-intent-v1', study.requestSnapshot.intent)
+    || requestIntentReference
       !== hopAdviceCanonicalReference('hop-advice-intent-v1', study.responseSnapshot.intent)) invalid('L’entrée de service/réponse ne correspond pas à l’intention et à la situation originales.');
   const assembly = study.requestSnapshot.qualificationInput.assembly;
   if (assembly !== undefined && (!record(assembly) || assembly.version !== SUPPORTED_ASSEMBLY_VERSION)) {
@@ -381,7 +382,8 @@ function validateStudyV3ForCreate(study: HopAdviceStudyV3): void {
   if ((study.responseSnapshot as any).actionKind !== 'exploreStrategies'
     || adviceResult.inputReference !== adviceInputReferenceFromServiceInput(study.serviceInput)
     || adviceResult.stage !== study.serviceInput.action.situation.stage) invalid('La réponse de conseil ne correspond pas à l’entrée réellement exécutée.');
-  if (adviceResult.reference !== schemaHopAdviceResultReference(omitReference(adviceResult))) invalid('Référence du résultat de conseil incohérente.');
+  // The result reference was recomputed from this same result by assertHopStrategyAdviceResult
+  // in validateStudyV3Structure above; recomputing the identical fingerprint adds no check.
 }
 
 function assertProgram(value: unknown): asserts value is HopDecisionProgram {
@@ -668,15 +670,34 @@ function validateDossierV3(dossier: HopAdviceDossierV3): void {
   validateStudyV3Structure(dossier.study);
 }
 
-export function createHopAdviceDossier(input: CreateHopAdviceDossierInput): CreatedHopAdviceDossier {
+function validateCreateInput(input: CreateHopAdviceDossierInput): void {
   if (!record(input) || !nonempty(input.ownerKey) || !nonempty(input.dossierId) || !nonempty(input.eventId)
     || !isIsoDate(input.recordedAt) || input.supersedesDossierId !== undefined
       && (!nonempty(input.supersedesDossierId) || input.supersedesDossierId === input.dossierId)) invalid('Identité ou horodatage de dossier conseil invalide.');
   validateStudyV3ForCreate(input.study);
-  const study = clone(input.study);
-  const event = createHopAdviceEvent({ ownerKey: input.ownerKey, dossierId: input.dossierId, eventId: input.eventId,
+}
+
+function studySavedCommand(input: CreateHopAdviceDossierInput): HopAdviceEventCommand<'studySaved'> {
+  return { ownerKey: input.ownerKey, dossierId: input.dossierId, eventId: input.eventId,
     expectedRevision: 0, recordedAt: input.recordedAt, kind: 'studySaved',
-    payload: { snapshotFormatVersion: 3, ...(input.supersedesDossierId ? { supersedesDossierId: input.supersedesDossierId } : {}) } });
+    payload: { snapshotFormatVersion: 3, ...(input.supersedesDossierId ? { supersedesDossierId: input.supersedesDossierId } : {}) } };
+}
+
+/**
+ * Runs exactly the checks of createHopAdviceDossier without materialising a
+ * dossier copy. The returned study reference is the one validateStudyV3Structure
+ * has just recomputed from the study content and compared with study.reference.
+ */
+export function assertHopAdviceDossierCreateInput(input: CreateHopAdviceDossierInput): string {
+  validateCreateInput(input);
+  createHopAdviceEvent(studySavedCommand(input));
+  return input.study.reference;
+}
+
+export function createHopAdviceDossier(input: CreateHopAdviceDossierInput): CreatedHopAdviceDossier {
+  validateCreateInput(input);
+  const study = clone(input.study);
+  const event = createHopAdviceEvent(studySavedCommand(input));
   return {
     dossier: { formatVersion: 3, ownerKey: input.ownerKey, dossierId: input.dossierId, revision: 1,
       createdAt: input.recordedAt, updatedAt: input.recordedAt, lastEventId: input.eventId, state: 'studySaved', study,

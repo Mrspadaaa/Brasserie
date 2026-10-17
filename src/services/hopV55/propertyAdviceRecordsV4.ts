@@ -1,4 +1,5 @@
 import {
+  HOP_PROPERTY_ADVICE_ANSWER_V3_VERSION,
   assertHopPropertyAdviceAnswerV3,
   assertHopPropertyAdviceDossierV3,
   createHopPropertyAdviceDossierV3,
@@ -13,6 +14,10 @@ import {
 } from '../../domain/hopDecision/propertyAdviceSchema';
 import { assertHopDocumentaryRequest } from '../../domain/hopDecision/documentaryAnswerSchema';
 import { hopAdviceContentReference } from '../../domain/hopDecision/adviceContentReference';
+import {
+  readBrewerHopAdviceWizardSourceV1,
+  type BrewerHopAdviceWizardSourceV1,
+} from '../../../functions/src/brewerHopAdviceWizardSourceV1';
 import type { HopV55DecisionReadingSource } from './decisionArchive';
 import { readHopV55AdoptedContextBinding,
   type HopV55AdoptedContextBindingV1 } from './adoptedContextResolution';
@@ -83,6 +88,10 @@ export interface HopV55PropertyAdvicePreparationV4 {
   cultureBinding?: HopV55AdoptedContextBindingV1;
 }
 
+/** The Wizard profile stores its six-field source descriptor, never a SourceView or archive metadata. */
+export type HopV55PropertyAdvicePreparationV4ForWizardV1 =
+  Omit<HopV55PropertyAdvicePreparationV4, 'source'> & { source: BrewerHopAdviceWizardSourceV1 };
+
 /** Reading provenance retained even when every annotation is rejected. */
 export interface HopV55PropertyAdviceV4ReadingContext {
   interpretation: HopPropertyAdviceAnswerV3['requestSnapshot']['interpretation'];
@@ -106,8 +115,18 @@ export interface HopV55PropertyAdviceAnswerRecordV4 {
   reference: string;
 }
 
+/** Same V4 envelope and reference formula; the source slot stays explicitly Wizard-typed. */
+export type HopV55PropertyAdviceAnswerRecordV4ForWizardV1 =
+  Omit<HopV55PropertyAdviceAnswerRecordV4, 'preparation'> & {
+    preparation: HopV55PropertyAdvicePreparationV4ForWizardV1;
+  };
+
 /** Intermediate emitted by V4 preparation. Records owns the final issue and envelope seal. */
 export type HopV55PropertyAdviceCorrectionV4Draft = Omit<HopV55PropertyAdviceAnswerRecordV4, 'outcome' | 'reference'>;
+export type HopV55PropertyAdviceCorrectionV4DraftForWizardV1 =
+  Omit<HopV55PropertyAdviceCorrectionV4Draft, 'preparation'> & {
+    preparation: HopV55PropertyAdvicePreparationV4ForWizardV1;
+  };
 
 export function assertHopV55PropertyAdviceV4ReadingContext(value: unknown, originalQuestion: string): asserts value is HopV55PropertyAdviceV4ReadingContext {
   if (!isRow(value)) throw new Error('readingContext V4 absent.');
@@ -411,8 +430,10 @@ function activeProjection(ledger: HopV55PropertyAdviceAnnotationLedgerV1): HopPr
 }
 
 function answerRecordReference(record: Omit<HopV55PropertyAdviceAnswerRecordV4, 'reference'>
-  | HopV55PropertyAdviceAnswerRecordV4): string {
-  const { reference: _reference, ...body } = record as HopV55PropertyAdviceAnswerRecordV4;
+  | HopV55PropertyAdviceAnswerRecordV4
+  | Omit<HopV55PropertyAdviceAnswerRecordV4ForWizardV1, 'reference'>
+  | HopV55PropertyAdviceAnswerRecordV4ForWizardV1): string {
+  const { reference: _reference, ...body } = record as PropertyAdviceV4AnswerRecordAny;
   return hopAdviceContentReference(HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT, body);
 }
 
@@ -422,7 +443,9 @@ function dossierRecordReference(record: Omit<HopV55PropertyAdviceDossierRecordV4
   return hopAdviceContentReference(HOP_V55_PROPERTY_ADVICE_DOSSIER_RECORD_V4_FORMAT, body);
 }
 
-function assertTransition(value: unknown, record: Pick<HopV55PropertyAdviceAnswerRecordV4, 'sourceReadingReference'>): asserts value is HopV55PropertyAdviceV4Transition {
+type PropertyAdviceV4AnswerRecordAny = HopV55PropertyAdviceAnswerRecordV4 | HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
+
+function assertTransition(value: unknown, record: Pick<PropertyAdviceV4AnswerRecordAny, 'sourceReadingReference'>): asserts value is HopV55PropertyAdviceV4Transition {
   if (!isRow(value)) throw new Error('Transition V4 absente.');
   onlyKeys(value, ['actId', 'kind', 'parentRecordReference', 'parentReadingReference', 'reason', 'actor', 'recordedAt'], 'Transition V4');
   if (!text(value.actId) || !['create', 'upgradeV3', 'revise', 'reexamine'].includes(value.kind)
@@ -439,7 +462,7 @@ function assertTransition(value: unknown, record: Pick<HopV55PropertyAdviceAnswe
   }
 }
 
-function assertPreparation(value: unknown, record: Pick<HopV55PropertyAdviceAnswerRecordV4, 'ownerKey' | 'workspaceId'>): asserts value is HopV55PropertyAdvicePreparationV4 {
+function assertPreparation(value: unknown, record: Pick<PropertyAdviceV4AnswerRecordAny, 'ownerKey' | 'workspaceId'>): asserts value is HopV55PropertyAdvicePreparationV4 {
   if (!isRow(value)) throw new Error('Préparation V4 absente.');
   onlyKeys(value, ['preparedReference', 'source', 'cultureBinding'], 'Préparation V4');
   if (!text(value.preparedReference) || !isRow(value.source) || !text(value.source.kind)) throw new Error('Source ou preparedReference V4 absent.');
@@ -466,7 +489,56 @@ function assertPreparation(value: unknown, record: Pick<HopV55PropertyAdviceAnsw
   }
 }
 
-function assertAnswerRecordV4Outer(record: HopV55PropertyAdviceAnswerRecordV4): 'domainAnswer' | 'allRejected' | 'unsupported' {
+/** Strict Wizard preparation read. Future Wizard children stay opaque after known bindings validate. */
+function assertPreparationForWizardV1(value: unknown,
+  record: Pick<PropertyAdviceV4AnswerRecordAny, 'ownerKey' | 'workspaceId'>): 'readOnly' | 'unsupportedReadOnly' {
+  if (!isRow(value)) throw new Error('Préparation V4 Wizard absente.');
+  onlyKeys(value, ['preparedReference', 'source', 'cultureBinding'], 'Préparation V4 Wizard');
+  if (!text(value.preparedReference)) throw new Error('preparedReference V4 Wizard absent.');
+  const sourceRead = readBrewerHopAdviceWizardSourceV1(value.source);
+  if (sourceRead.status === 'invalid') throw new Error(`Source Wizard V4 invalide : ${sourceRead.reason}`);
+  const source = sourceRead.status === 'readOnly' ? sourceRead.source : sourceRead.snapshot;
+  if (isRow(source)) {
+    if (source.ownerKey !== undefined && source.ownerKey !== record.ownerKey
+      || source.workspaceId !== undefined && source.workspaceId !== record.workspaceId) {
+      throw new Error('La source Wizard V4 appartient à un autre owner/workspace que le record.');
+    }
+  }
+  if (value.cultureBinding !== undefined) {
+    const read = readHopV55AdoptedContextBinding(value.cultureBinding);
+    if (read.status !== 'available' || read.binding.ownerKey !== record.ownerKey || read.binding.workspaceId !== record.workspaceId) {
+      throw new Error(`Binding culturel adopté V4 Wizard invalide ou étranger : ${read.status === 'invalid' ? read.reason : 'owner/workspace différent'}.`);
+    }
+  }
+  return sourceRead.status === 'readOnly' ? 'readOnly' : 'unsupportedReadOnly';
+}
+
+function isKnownNestedDomainAnswerV3Format(outcome: Extract<HopV55PropertyAdviceOutcomeV4, { kind: 'domainAnswer' }>): boolean {
+  const snapshot: unknown = outcome.answerSnapshot;
+  return isRow(snapshot) && snapshot.format === HOP_PROPERTY_ADVICE_ANSWER_V3_VERSION;
+}
+
+/**
+ * Known nested V3 domain answer: structure, relations, corpus and hash are checked whatever the source
+ * profile or ledger version. Only the comparison to the active ledger projection needs a known ledger;
+ * no projection is derived from a future ledger. A future request/corpus inside the V3 answer stays
+ * opaque as decided by the V3 reader.
+ */
+function assertKnownNestedDomainAnswerV3(outcome: Extract<HopV55PropertyAdviceOutcomeV4, { kind: 'domainAnswer' }>,
+  ledger: HopV55PropertyAdviceAnnotationLedgerV1 | null): 'readOnly' | 'unsupported' {
+  if (!isKnownNestedDomainAnswerV3Format(outcome)) return 'unsupported';
+  const nested = readHopPropertyAdviceAnswerV3(outcome.answerSnapshot);
+  if (nested.status !== 'readOnly') return 'unsupported';
+  assertHopPropertyAdviceAnswerV3(outcome.answerSnapshot);
+  if (outcome.answerReference !== hopPropertyAdviceAnswerReferenceV3(outcome.answerSnapshot)
+    || ledger && !sameExact(outcome.answerSnapshot.requestSnapshot.propertyIntents, activeProjection(ledger))) {
+    throw new Error('Réponse de domaine V3 et projection active ledger V4 divergentes.');
+  }
+  return 'readOnly';
+}
+
+function assertAnswerRecordV4Outer(record: PropertyAdviceV4AnswerRecordAny,
+  profile: 'classic' | 'wizardV1' = 'classic'): 'domainAnswer' | 'allRejected' | 'unsupported' {
   if (record.format !== HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT || !text(record.id)
     || !text(record.ownerKey) || !text(record.workspaceId) || !text(record.sourceReadingReference)
     || typeof record.originalQuestion !== 'string' || !record.originalQuestion.trim() || !text(record.reference)) {
@@ -475,12 +547,24 @@ function assertAnswerRecordV4Outer(record: HopV55PropertyAdviceAnswerRecordV4): 
   onlyKeys(record, ['format', 'id', 'ownerKey', 'workspaceId', 'sourceReadingReference', 'originalQuestion', 'transition',
     'ledger', 'preparation', 'readingContext', 'outcome', 'reference'], 'Enveloppe de réponse V4');
   assertTransition(record.transition, record);
-  assertPreparation(record.preparation, record);
+  let unsupportedSourceProfile = false;
+  if (profile === 'wizardV1') {
+    unsupportedSourceProfile = assertPreparationForWizardV1(record.preparation, record) === 'unsupportedReadOnly';
+  } else {
+    const preparation = isRow(record.preparation) ? record.preparation : undefined;
+    const sourceValue: unknown = preparation?.source;
+    const sourceFormat = isRow(sourceValue) ? sourceValue.format : undefined;
+    const isWizardNamespace = typeof sourceFormat === 'string'
+      && /^hop-v55-wizard-source-v[1-9][0-9]*$/u.test(sourceFormat);
+    if (isWizardNamespace) {
+      assertPreparationForWizardV1(record.preparation, record);
+      unsupportedSourceProfile = true;
+    }
+    else assertPreparation(record.preparation, record);
+  }
   const ledgerRead = readHopV55PropertyAdviceAnnotationLedgerV1(record.ledger, record.originalQuestion);
   const ledgerAvailable = ledgerRead.status === 'readOnly';
   assertHopV55PropertyAdviceV4ReadingContext(record.readingContext, record.originalQuestion);
-  const firstById = new Map<string, HopV55PropertyAdviceLedgerEntryV1>();
-  for (const entry of record.ledger.entries) if (!firstById.has(entry.annotationId)) firstById.set(entry.annotationId, entry);
   if (!isRow(record.outcome) || !text(record.outcome.kind)) throw new Error('Issue de réponse V4 absente.');
   let kind: 'domainAnswer' | 'allRejected' | 'unsupported';
   if (record.outcome.kind === 'allRejected') {
@@ -520,30 +604,39 @@ function assertAnswerRecordV4Outer(record: HopV55PropertyAdviceAnswerRecordV4): 
       kind = ledgerAvailable ? 'domainAnswer' : 'unsupported';
     } else kind = 'unsupported';
   } else kind = 'unsupported';
-  for (const [annotationId, first] of firstById) {
-    if (first.sourceKind === 'added' && first.additionActId !== first.decision.actId) {
-      throw new Error(`Annotation ajoutée ${annotationId} non liée à son acte explicite.`);
+  // Ledger V1 fields are read only from the strictly validated V1 ledger; a future ledger stays raw:
+  // no entries, sources or active projection are read or derived from it.
+  if (ledgerRead.status === 'readOnly') {
+    const firstById = new Map<string, HopV55PropertyAdviceLedgerEntryV1>();
+    for (const entry of ledgerRead.ledger.entries) if (!firstById.has(entry.annotationId)) firstById.set(entry.annotationId, entry);
+    for (const [annotationId, first] of firstById) {
+      if (first.sourceKind === 'added' && first.additionActId !== first.decision.actId) {
+        throw new Error(`Annotation ajoutée ${annotationId} non liée à son acte explicite.`);
+      }
     }
   }
   if (answerRecordReference(record) !== record.reference) throw new Error('Référence SHA de l’enveloppe V4 altérée.');
+  // A known nested V3 answer is validated before any future classification by the source child or the ledger.
+  const knownV3Domain = record.outcome.kind === 'domainAnswer' && isKnownNestedDomainAnswerV3Format(record.outcome)
+    ? assertKnownNestedDomainAnswerV3(record.outcome, ledgerRead.status === 'readOnly' ? ledgerRead.ledger : null)
+    : undefined;
+  if (unsupportedSourceProfile) return 'unsupported';
   if (kind !== 'domainAnswer' || record.outcome.kind !== 'domainAnswer') return kind;
   if (!ledgerAvailable) return 'unsupported';
-  const domainOutcome = record.outcome;
-  const nested = readHopPropertyAdviceAnswerV3(domainOutcome.answerSnapshot);
-  if (nested.status === 'readOnly') {
-    assertHopPropertyAdviceAnswerV3(domainOutcome.answerSnapshot);
-    if (domainOutcome.answerReference !== hopPropertyAdviceAnswerReferenceV3(domainOutcome.answerSnapshot)
-      || !sameExact(domainOutcome.answerSnapshot.requestSnapshot.propertyIntents, activeProjection(record.ledger))) {
-      throw new Error('Réponse de domaine V3 et projection active ledger V4 divergentes.');
-    }
-    return 'domainAnswer';
-  }
+  if (knownV3Domain !== undefined) return knownV3Domain === 'readOnly' ? 'domainAnswer' : 'unsupported';
+  // Any other nested format keeps the former reader call on this current path (legacy V1/V2 checks or opaque future).
+  readHopPropertyAdviceAnswerV3(record.outcome.answerSnapshot);
   return 'unsupported';
 }
 
 function assertAnswerRecordV4(record: HopV55PropertyAdviceAnswerRecordV4): void {
-  const outcome = assertAnswerRecordV4Outer(record);
+  const outcome = assertAnswerRecordV4Outer(record, 'classic');
   if (outcome === 'unsupported') throw new Error('Issue ou snapshot domaine futur; aucun writer V4 ne peut le produire.');
+}
+
+function assertAnswerRecordV4ForWizardV1(record: HopV55PropertyAdviceAnswerRecordV4ForWizardV1): void {
+  const outcome = assertAnswerRecordV4Outer(record, 'wizardV1');
+  if (outcome === 'unsupported') throw new Error('Le writer V4 Wizard ne produit pas de source ou snapshot futur opaque.');
 }
 
 export function createHopV55PropertyAdviceAnswerRecordV4(input: {
@@ -554,6 +647,18 @@ export function createHopV55PropertyAdviceAnswerRecordV4(input: {
   const record = { ...clone(input.draft), outcome: clone(input.outcome), reference: '' } as HopV55PropertyAdviceAnswerRecordV4;
   record.reference = answerRecordReference(record);
   assertAnswerRecordV4(record);
+  return clone(record);
+}
+
+/** Same V4 envelope/seal with an explicit, exact six-field Wizard source; legacy writer stays closed. */
+export function createHopV55PropertyAdviceAnswerRecordV4ForWizardV1(input: {
+  draft: HopV55PropertyAdviceCorrectionV4DraftForWizardV1;
+  outcome: HopV55PropertyAdviceOutcomeV4;
+}): HopV55PropertyAdviceAnswerRecordV4ForWizardV1 {
+  if (!isRow(input.draft) || !isRow(input.outcome)) throw new Error('Draft V4 Wizard et issue explicite requis.');
+  const record = { ...clone(input.draft), outcome: clone(input.outcome), reference: '' } as HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
+  record.reference = answerRecordReference(record);
+  assertAnswerRecordV4ForWizardV1(record);
   return clone(record);
 }
 
@@ -569,6 +674,23 @@ export function readHopV55PropertyAdviceAnswerRecordV4(value: unknown): HopV55Pr
     return { status: 'readOnly', record: clone(value) as unknown as HopV55PropertyAdviceAnswerRecordV4 };
   }
   return { status: 'readOnly', record: clone(value) as unknown as HopV55PropertyAdviceAnswerRecordV4 };
+}
+
+/** Read only the explicit Wizard V1 source profile; classic V4/V3 rows are never cast into it. */
+export function readHopV55PropertyAdviceAnswerRecordV4ForWizardV1(value: unknown):
+  HopV55PropertyAdviceRecordV4Read<HopV55PropertyAdviceAnswerRecordV4ForWizardV1> {
+  if (isRow(value) && typeof value.format === 'string' && value.format.startsWith('hop-v55-documentary-answer-record-')
+    && value.format !== HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT) {
+    return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: 'Enveloppe documentaire non V4 Wizard conservée telle quelle.' };
+  }
+  if (!isRow(value) || value.format !== HOP_V55_PROPERTY_ADVICE_ANSWER_RECORD_V4_FORMAT) {
+    throw new Error('Enveloppe de réponse V4 Wizard invalide.');
+  }
+  const outcome = assertAnswerRecordV4Outer(value as unknown as HopV55PropertyAdviceAnswerRecordV4ForWizardV1, 'wizardV1');
+  if (outcome === 'unsupported') {
+    return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: 'Source Wizard future ou issue V4 future conservée après validation de l’enveloppe connue.' };
+  }
+  return { status: 'readOnly', record: clone(value) as unknown as HopV55PropertyAdviceAnswerRecordV4ForWizardV1 };
 }
 
 function assertDossierRecordV4Outer(record: HopV55PropertyAdviceDossierRecordV4): void {

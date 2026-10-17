@@ -43,6 +43,19 @@ export interface TaskDef {
   schema: Record<string, unknown>;
   /** Niveau par défaut si le client n'en impose pas. */
   defaultTier: AiTier;
+  /**
+   * Réglage imposé quelle que soit la demande du client : une app restée en
+   * cache peut encore envoyer Max. Banc réel #91 (13 octobre 2026) : en
+   * réflexion haute, l'import dépassait 100 s et la relecture prenait 22 à
+   * 72 s, sans aucun cas réussi de plus qu'en réflexion basse.
+   */
+  tier?: AiTier;
+  /**
+   * Plafond de sortie au réglage Rapide ; 4 500 jetons sans précision. Une
+   * fiche ne doit pas le dépasser (boucle numérique de la levure, #100) ; une
+   * longue recette, si : elle n'a jamais bouclé au banc #91.
+   */
+  maxOutputTokens?: number;
   /** La tâche accepte-t-elle une pièce jointe (photo, PDF) ? */
   acceptsFile: boolean;
   /**
@@ -89,6 +102,8 @@ const S = (properties: Record<string, unknown>, required: string[]) => ({
 
 const str = { type: 'STRING' };
 const num = { type: 'NUMBER' };
+/** Nombre borné. Les bornes des fiches d'ingrédient suivent `sanitizeFacts` (src/domain/ingredientFacts.ts). */
+const bounded = (type: 'NUMBER' | 'INTEGER', minimum: number, maximum: number) => ({ type, minimum, maximum });
 const arr = (items: unknown) => ({ type: 'ARRAY', items });
 const yeastTechnicalFactProperties = {
   key: {type:'STRING',enum:[...YEAST_FACT_KEYS]}, reported:str,
@@ -259,7 +274,14 @@ ${NE_RIEN_INVENTER} Ne devine pas ce qui est hors champ.`,
 
   // --- 3. Import de recette (remplace le parseur regex) --------------------
   importRecipe: {
+    // Réglage Rapide imposé (#100) : `low` importe juste en 9 à 10 s au banc #91 ;
+    // `medium` y a rendu `timeMin: 6e-323`, `high` dépassait 100 s.
     defaultTier: 'fast',
+    tier: 'fast',
+    // Avant #100, le niveau Max laissait 12 000 jetons. Une recette PDF en a
+    // rendu 476 en `low` (appel réel 5) ; 8 000 gardent de la marge pour une
+    // longue recette (nombreux ajouts, eau, déroulé détaillé). V3 REV-D100, m3.
+    maxOutputTokens: 8000,
     acceptsFile: true,
     // Ancrée : une recette cite souvent un malt ou une levure sans en donner
     // les caractéristiques. Le modèle va les chercher plutôt que de laisser
@@ -790,7 +812,11 @@ concernés. Si la réponse n'est pas dans les données, dis-le : "answer" vide e
    *      raisonner sur des valeurs qu'il aurait supposées.
    */
   reviewRecipe: {
-    defaultTier: 'max',
+    // Réglage Rapide imposé (#100) : `low` relit juste en 3 à 7 s au banc #91.
+    defaultTier: 'fast',
+    tier: 'fast',
+    // Une longue recette appelle de nombreuses remarques : même plafond que l'import.
+    maxOutputTokens: 8000,
     acceptsFile: false,
     system: `${BRASSERIE}
 
@@ -870,6 +896,10 @@ CONVERSIONS. Les malteurs européens donnent l'EBC, les américains le degré
 Lovibond : EBC ≈ °L × 1.97. Le potentiel se donne parfois en rendement fin
 (« fine grind, dry basis, 80 % ») : PPG ≈ rendement × 46.
 
+NOMBRES. Écris chaque nombre sous sa forme la plus courte (18, 4.5), sans zéros
+de remplissage. tempMinC et tempMaxC sont des degrés entiers ; une valeur
+publiée avec décimale garde sa forme exacte dans technicalFacts.
+
 RÈGLE ABSOLUE. Le champ "source" est obligatoire et doit nommer d'où vient la
 donnée (« Fermentis — fiche technique SafAle US-05 »). Un champ dont tu n'as
 pas trouvé la valeur publiée doit rester ABSENT : mieux vaut une case vide que
@@ -917,8 +947,8 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
 
         // Strain-specific, optional, documentary NOLO facts. No new callable.
         fermentation: S({
-          version: { type:'NUMBER', description:'Version du document, toujours 1.' }, strainName:str, retrievedAt:str, conditions:str,
-          source:S({title:str, author:str, reference:str, year:{type:'NUMBER',nullable:true}, kind:{type:'STRING',enum:['manufacturer','research']}, locator:str}, ['title','author','reference','year','kind','locator']),
+          version: { ...bounded('INTEGER', 1, 1), description:'Version du document, toujours 1.' }, strainName:str, retrievedAt:str, conditions:str,
+          source:S({title:str, author:str, reference:str, year:{type:'INTEGER',nullable:true}, kind:{type:'STRING',enum:['manufacturer','research']}, locator:str}, ['title','author','reference','year','kind','locator']),
           sugars:S(Object.fromEntries(['glucose','fructose','sucrose','maltose','maltotriose'].map(k=>[k,{type:'STRING',enum:['yes','no','unknown']}])), []),
           pof:{type:'STRING',enum:['positive','negative','unknown']}, hydrolysis:{type:'STRING',enum:['positive','negative','unknown']},
           pitchGL:S({min:num,max:num},['min','max']), temperatureC:S({min:num,max:num},['min','max']), durationDays:S({min:num,max:num},['min','max'])
@@ -928,21 +958,23 @@ unités ni domaine, aucun coefficient sensoriel ou intervalle de confiance inven
         lab: str,
         strain: str,
         form: { type: 'STRING', enum: ['sèche', 'liquide', 'levain'] },
-        attenuationPct: num,
-        tempMinC: num,
-        tempMaxC: num,
+        attenuationPct: bounded('NUMBER', 0, 100),
+        // Banc réel #91 : en NUMBER, 3.8 et 3.5 Flash-Lite ont bouclé sur `"tempMinC": 18.000…`
+        // jusqu'au plafond de sortie (S-04). Des degrés entiers n'ont plus de décimales à répéter.
+        tempMinC: bounded('INTEGER', -5, 60),
+        tempMaxC: bounded('INTEGER', -5, 60),
         flocculation: str,
-        alcoholTolerancePct: num,
+        alcoholTolerancePct: bounded('NUMBER', 0, 40),
 
         // Malt
-        colorEbc: num,
-        potentialPpg: num,
+        colorEbc: bounded('NUMBER', 0, 5000),
+        potentialPpg: bounded('NUMBER', 1, 50),
         grainType: str,
-        diastaticPower: num,
+        diastaticPower: bounded('NUMBER', 0, 1000),
 
         // Houblon
-        alphaPct: num,
-        betaPct: num,
+        alphaPct: bounded('NUMBER', 0.01, 100),
+        betaPct: bounded('NUMBER', 0, 100),
         usage: str,
         aroma: str,
         substitutes: arr(str)

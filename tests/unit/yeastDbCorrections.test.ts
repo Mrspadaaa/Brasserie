@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createHmac } from 'node:crypto';
+import { AI_TASK_DEADLINE_MS } from '../../functions/src/aiTaskDeadline';
+import { BrewerBudgetError } from '../../functions/src/brewerLimits';
 
 const state = vi.hoisted(() => ({ docs: new Map<string, any>(), commits: 0 }));
-const aiProvider = vi.hoisted(() => ({ content: '' }));
+const aiProvider = vi.hoisted(() => ({ content: '', finishReason: 'STOP', sent: [] as Array<{ model: string; body: any; signal?: AbortSignal }>,
+  chain: ['test-model'], failures: [] as Array<() => unknown> }));
 const ref = (path: string) => ({ path, get: async () => ({ exists: state.docs.has(path), data: () => structuredClone(state.docs.get(path)) }) });
 vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js', () => ({
   FieldValue: { serverTimestamp: () => 'SERVER_TIMESTAMP' },
@@ -26,11 +29,19 @@ vi.mock('../../functions/node_modules/firebase-admin/lib/esm/firestore/index.js'
 }));
 vi.mock('../../functions/src/brewSession.js', () => ({ requireBrewer: () => 'qa-user' }));
 vi.mock('../../functions/src/ai.js', () => ({ GEMINI_API_KEY: { value: () => 'unused-test-secret' } }));
-vi.mock('../../functions/src/brewerHarness.js', () => ({ geminiTransport: () => async () => ({
-  candidates: [{ finishReason: 'STOP', content: { parts: [{ text: aiProvider.content }] } }]
-}) }));
-vi.mock('../../functions/src/monthlyAiBudget.js', () => ({ runWithMonthlyAiBudget: (_model: unknown, _body: unknown, generate: (body: unknown) => Promise<unknown>) => generate(_body) }));
-vi.mock('../../functions/src/models.js', () => ({ modelChain: () => ['test-model'] }));
+vi.mock('../../functions/src/brewerHarness.js', () => ({ geminiTransport: () => async (model: string, body: any, signal?: AbortSignal) => {
+  aiProvider.sent.push({ model, body, signal });
+  const failure = aiProvider.failures.shift();
+  if (failure) throw failure();
+  return { candidates: [{ finishReason: aiProvider.finishReason, content: { parts: [{ text: aiProvider.content }] } }] };
+} }));
+// Same contract as the real gate: an answer refused by `inspect` is thrown after its cost is known.
+vi.mock('../../functions/src/monthlyAiBudget.js', () => ({ runWithMonthlyAiBudget: async (_model: unknown, _body: unknown, generate: (body: unknown) => Promise<unknown>, options?: { inspect?: (result: unknown) => Error | undefined }) => {
+  const result = await generate(_body), unusable = options?.inspect?.(result);
+  if (unusable) throw unusable;
+  return result;
+} }));
+vi.mock('../../functions/src/models.js', async (importOriginal) => ({ ...(await importOriginal<typeof import('../../functions/src/models')>()), modelChain: () => aiProvider.chain }));
 
 import { applyYeastDbCorrection, proposeYeastDbCorrection, yeastDbCorrectionRevision, type YeastDbCorrectionProposal, type YeastDbCorrectionTarget } from '../../functions/src/yeastDbCorrections';
 import { assertHopKnowledge, type HopYeast } from '../../functions/src/hopPredictionSchema';
@@ -103,7 +114,10 @@ const proposal = (target: YeastDbCorrectionTarget, data: any, changes: YeastDbCo
   return { ...unsigned, proposedByUid: 'qa-user', signature: createHmac('sha256', 'unused-test-secret').update(stableJson({ uid: 'qa-user', proposal: unsigned })).digest('hex') };
 };
 
-beforeEach(() => { state.docs.clear(); state.commits = 0; aiProvider.content = ''; });
+beforeEach(() => {
+  state.docs.clear(); state.commits = 0; aiProvider.content = ''; aiProvider.finishReason = 'STOP'; aiProvider.sent = [];
+  aiProvider.chain = ['test-model']; aiProvider.failures = []; vi.restoreAllMocks();
+});
 
 describe('correction IA des fiches canoniques', () => {
   it('corrige un champ stock déjà renseigné sans toucher à la quantité, et garde reçu + audit atomiques', async () => {
@@ -277,6 +291,103 @@ describe('correction IA des fiches canoniques', () => {
     expect(productProposal.changes[0].reason).toContain('n’a pas été archivé ni vérifié indépendamment');
     expect(productProposal.changes[0].reason).not.toMatch(/^La fiche consultée/);
     expect(state.docs.get('yeastProducts/product-01')).toEqual(productDoc());
+  });
+
+  it('envoie la relecture IA au réglage Rapide de 3.8 : réflexion basse, température 0, sortie partagée avec la réflexion', async () => {
+    aiProvider.content = JSON.stringify({ found: true, name: 'SafAle US-05', sourceUrl: 'https://example.test/lookup/us05', retrievedAt: checkedAt,
+      lab: 'Fermentis Brewing', technicalFacts: [] });
+    state.docs.set('stockItems/US05-LOT-A', stock());
+    await proposeYeastDbCorrection.run({ data: {
+      target: { scope: 'stock', ref: 'US05-LOT-A' }, request: 'Vérifie le laboratoire déjà enregistré.'
+    } } as any);
+    expect(aiProvider.sent).toHaveLength(1);
+    expect(aiProvider.sent[0].model).toBe('test-model');
+    expect(aiProvider.sent[0].body.generationConfig).toMatchObject({
+      // #100.1 (D100): the yeast sheet output is capped low; 12000 let a numeric loop run for 69 s.
+      responseMimeType: 'application/json', temperature: 0, maxOutputTokens: 4500, thinkingConfig: { thinkingLevel: 'low' }
+    });
+    expect(aiProvider.sent[0].body.tools).toEqual([{ googleSearch: {} }]);
+    expect(aiProvider.sent[0].body.generationConfig.responseSchema.properties.tempMinC).toMatchObject({ type: 'INTEGER' });
+  });
+
+  it('refuse une fiche levure dégénérée par un message clair, sans rien proposer', async () => {
+    aiProvider.content = `{"found":true,"name":"SafAle US-05","technicalFacts":[],"tempMinC": 18.${'0'.repeat(300)}`;
+    aiProvider.finishReason = 'MAX_TOKENS';
+    state.docs.set('stockItems/US05-LOT-A', stock());
+    await expect(proposeYeastDbCorrection.run({ data: {
+      target: { scope: 'stock', ref: 'US05-LOT-A' }, request: 'Vérifie le laboratoire déjà enregistré.'
+    } } as any)).rejects.toMatchObject({ code: 'failed-precondition', message: expect.stringMatching(/nombre répété sans fin/) });
+    expect(aiProvider.sent).toHaveLength(1);
+  });
+
+  describe('délai aligné sur aiTask (V3 REV-D100, m6)', () => {
+    const labCheck = () => proposeYeastDbCorrection.run({ data: {
+      target: { scope: 'stock', ref: 'US05-LOT-A' }, request: 'Vérifie le laboratoire déjà enregistré.'
+    } } as any);
+    const outage = () => new Error('Gemini HTTP 503 · server');
+
+    it('ne relance pas après un dépassement de délai et dit que l’appel a pu être compté', async () => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.failures = [() => new DOMException('The operation was aborted due to timeout', 'TimeoutError')];
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      await expect(labCheck()).rejects.toMatchObject({ code: 'deadline-exceeded', message: expect.stringMatching(/délai.*L’appel a pu être compté/) });
+      expect(aiProvider.sent).toHaveLength(1);
+      expect(aiProvider.sent[0].signal).toBeInstanceOf(AbortSignal);
+    });
+
+    it('borne la génération sous la limite de sa Function : pas de nouvelle tentative sans 30 s restantes', async () => {
+      let now = Date.now();
+      vi.spyOn(Date, 'now').mockImplementation(() => now);
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.failures = [() => { now += 100_000; return outage(); }];
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      await expect(labCheck()).rejects.toMatchObject({ code: 'deadline-exceeded' });
+      expect(aiProvider.sent).toHaveLength(1);
+      // The Function outlives the whole generation budget, Firestore writes included.
+      expect((proposeYeastDbCorrection as any).__endpoint.timeoutSeconds * 1000).toBeGreaterThanOrEqual(AI_TASK_DEADLINE_MS + 20_000);
+    });
+
+    it('garde sa nouvelle tentative après une panne passagère quand le temps le permet', async () => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.failures = [outage];
+      aiProvider.content = JSON.stringify({ found: true, name: 'SafAle US-05', sourceUrl: 'https://example.test/lookup/us05', retrievedAt: checkedAt,
+        lab: 'Fermentis Brewing', technicalFacts: [] });
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      await labCheck();
+      expect(aiProvider.sent).toHaveLength(2);
+    });
+
+    it('ses messages d’échec ne nomment pas le fournisseur (DESIGN.md)', async () => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.content = '{"found":true}'; aiProvider.finishReason = 'SAFETY';
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      const failure = await labCheck().then(() => undefined, (error: Error) => error);
+      expect(failure?.message).toMatch(/proposition complète/);
+      expect(failure?.message).not.toMatch(/Gemini|Google/);
+    });
+
+    // Author review (code-review high, 16.10): a budget refusal reached the brewer as « INTERNAL », or was retried.
+    it.each([
+      ['ai-paused', 'L’IA est suspendue dans « Limites IA ».'],
+      ['ai-budget-unavailable', 'Le suivi mensuel IA est indisponible.']
+    ] as const)('un refus du budget (%s) est dit tel quel, sans nouvelle tentative', async (code, message) => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.failures = [() => new BrewerBudgetError(code, message)];
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      await expect(labCheck()).rejects.toMatchObject({ code: 'failed-precondition', message });
+      expect(aiProvider.sent).toHaveLength(1);
+    });
+
+    it('une réponse illisible deux fois rend un message français, jamais l’erreur brute du parseur', async () => {
+      aiProvider.chain = ['test-model', 'test-model'];
+      aiProvider.content = '{"found":true,"name":';
+      state.docs.set('stockItems/US05-LOT-A', stock());
+      const failure = await labCheck().then(() => undefined, (error: Error) => error);
+      expect(aiProvider.sent).toHaveLength(2);
+      expect(failure).toMatchObject({ code: 'unavailable' });
+      expect(failure?.message).toMatch(/^La recherche documentaire n’a pas abouti/);
+      expect(failure?.message).not.toMatch(/JSON|Unexpected|token/i);
+    });
   });
 
   it('conserve les bornes attenuation min=max sans les adopter comme points lors de la sauvegarde', async () => {

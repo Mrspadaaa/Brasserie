@@ -37,6 +37,14 @@ function mount(recipe: Recipe, save = vi.fn()) {
     onLearnIngredient={vi.fn()} onSaveWaterSource={vi.fn()}/>) };
 }
 
+/** #97: opening or moving between steps creates no draft; a neutral edit (renamed, then restored) leaves the current one. */
+function leaveDraftWithoutChange() {
+  const title = document.getElementById('wz-title') as HTMLInputElement;
+  const name = title.value;
+  fireEvent.change(title, { target: { value: `${name} ·` } });
+  fireEvent.change(title, { target: { value: name } });
+}
+
 async function saveCurrent(save: ReturnType<typeof vi.fn>): Promise<Recipe> {
   allerEtape(/^Récapitulatif$/);
   fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette', exact: true }));
@@ -167,8 +175,9 @@ describe('application NOLO du Wizard avec une ancienne recette sans plan d’eau
     first.unmount();
 
     const editor = mount(saved);
+    leaveDraftWithoutChange();
     allerEtape(/^Paliers$/);
-    await waitFor(() => expect(readRecipeDraft('qa-nolo-wizard-lona')).toBeDefined());
+    await waitFor(() => expect(readRecipeDraft('qa-nolo-wizard-lona')?.step).toBe('paliers'));
     editor.unmount();
     const draft = readRecipeDraft('qa-nolo-wizard-lona')!;
     draft.mashRatioOverride = 10;
@@ -193,8 +202,9 @@ describe('application NOLO du Wizard avec une ancienne recette sans plan d’eau
     first.unmount();
 
     const editor = mount(saved);
+    leaveDraftWithoutChange();
     allerEtape(/^Paliers$/);
-    await waitFor(() => expect(readRecipeDraft('qa-nolo-wizard-lona')).toBeDefined());
+    await waitFor(() => expect(readRecipeDraft('qa-nolo-wizard-lona')?.step).toBe('paliers'));
     editor.unmount();
     const draft = readRecipeDraft('qa-nolo-wizard-lona')!;
     draft.water.acidOverride = { sparge: 1 };
@@ -224,8 +234,9 @@ describe('application NOLO du Wizard avec une ancienne recette sans plan d’eau
     expect(screen.getByText(/Rinçage acidifié seul/)).toBeInTheDocument();
     manualReading.unmount();
     const zeroEditor = mount(corrected);
+    leaveDraftWithoutChange();
     allerEtape(/^Paliers$/);
-    await waitFor(() => expect(readRecipeDraft('qa-nolo-wizard-lona')).toBeDefined());
+    await waitFor(() => expect(readRecipeDraft('qa-nolo-wizard-lona')?.step).toBe('paliers'));
     zeroEditor.unmount();
     const zeroDraft = readRecipeDraft('qa-nolo-wizard-lona')!;
     zeroDraft.water.acidOverride = { mash: 0, sparge: 1 };

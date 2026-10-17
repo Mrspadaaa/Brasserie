@@ -1,5 +1,6 @@
 import React from 'react';
 import type { AssistedColdContactEvidence } from '../../services/hopV55/assistedColdContactEvidence';
+import { hopV55DoseReading, hopV55DoseText } from './readings';
 import './assisted-cold-contact-card.css';
 
 export interface AssistedColdContactCardProps {
@@ -8,11 +9,24 @@ export interface AssistedColdContactCardProps {
 
 type AvailableEvidence = Extract<AssistedColdContactEvidence, { status: 'ready' | 'missing' }>;
 
-const numberFr = (value: number): string => new Intl.NumberFormat('fr-CH', { maximumSignificantDigits: 21 }).format(value);
+// #75: BU and curve readings like the recipe's cold-contact panel (RecipeColdContactEvidencePanel.tsx:25-26): at most
+// 4 decimals, number and unit together. The exact values stay in the facts and the snapshot disclosures below.
+const numberFr = (value: number): string => value.toLocaleString('fr-CH', { maximumFractionDigits: 4 });
 const jsonText = (value: unknown): string => {
   try { return JSON.stringify(value, null, 2) ?? String(value); }
   catch { return String(value); }
 };
+
+/**
+ * #75: the effective dose reads like every V5.5 dose (3 decimals); when that rounding hides digits, the sealed exact
+ * coordinate follows, as in the recipe's cold-contact panel. The reader has already checked it against the dose.
+ */
+function effectiveDoseText(gPerHL: number, exact: AvailableEvidence['snapshot']['doseExactGPerHL']): string {
+  if (!exact) return hopV55DoseText(gPerHL, 'g/hL');
+  const rounded = `${hopV55DoseReading(gPerHL)}\u00a0g/hL`;
+  return BigInt(exact.numerator) * 1000n % BigInt(exact.denominator) === 0n
+    ? rounded : `${rounded} (${exact.numerator}/${exact.denominator}\u00a0g/hL exacts)`;
+}
 
 function statusLabel(evidence: AvailableEvidence): { text: string; tone: 'ready' | 'missing' } {
   if (evidence.status === 'missing') return { text: evidence.reason === 'doseUnknown' ? 'Dose inconnue' : 'Dose hors domaine publié', tone: 'missing' };
@@ -25,10 +39,10 @@ function AvailableContactEvidence({ evidence }: { evidence: AvailableEvidence })
   const roundedDoseFact = evidence.facts.find(fact => fact.includes('La coordonnée exacte conservée dans la preuve gouverne le domaine;'));
   const referenceValue = snapshot.valueBU === null
     ? 'Aucune valeur BU disponible'
-    : `${numberFr(snapshot.valueBU)} ${snapshot.calibrationSnapshot.output.unit}`;
+    : `${numberFr(snapshot.valueBU)}\u00a0${snapshot.calibrationSnapshot.output.unit}`;
   const doseValue = snapshot.doseInput.value === null
     ? `Inconnue · ${snapshot.doseInput.unit}`
-    : `${numberFr(snapshot.doseInput.value)} ${snapshot.doseInput.unit}`;
+    : hopV55DoseText(snapshot.doseInput.value, snapshot.doseInput.unit);
 
   return <section className={`hv-assisted-cold-contact is-${status.tone}`} aria-label="Référence BU de contact à froid">
     <header className="hv-assisted-cold-contact__header">
@@ -51,11 +65,11 @@ function AvailableContactEvidence({ evidence }: { evidence: AvailableEvidence })
     <dl className="hv-assisted-cold-contact__metrics">
       <div><dt>{roundedDoseFact ? 'Dose saisie · affichage arrondi' : 'Dose du contact'}</dt><dd>{doseValue}</dd></div>
       {snapshot.doseEffectiveGPerHL !== null
-        ? <div><dt>Dose effective</dt><dd>{numberFr(snapshot.doseEffectiveGPerHL)} g/hL</dd></div> : null}
-      <div><dt>Témoin publié · 0 g/hL</dt><dd>{numberFr(snapshot.controlBU)} {snapshot.calibrationSnapshot.output.unit}</dd></div>
+        ? <div><dt>Dose effective</dt><dd>{effectiveDoseText(snapshot.doseEffectiveGPerHL, snapshot.doseExactGPerHL)}</dd></div> : null}
+      <div><dt>Témoin publié · 0 g/hL</dt><dd>{`${numberFr(snapshot.controlBU)}\u00a0${snapshot.calibrationSnapshot.output.unit}`}</dd></div>
       <div><dt>Contraste au témoin</dt><dd>{snapshot.contrastToControlBU === null
-        ? 'Non calculé' : `${numberFr(snapshot.contrastToControlBU)} BU`}</dd></div>
-      <div><dt>Domaine de la courbe</dt><dd>{numberFr(snapshot.domainGPerHL.min)}–{numberFr(snapshot.domainGPerHL.max)} g/hL</dd></div>
+        ? 'Non calculé' : `${numberFr(snapshot.contrastToControlBU)}\u00a0BU`}</dd></div>
+      <div><dt>Domaine de la courbe</dt><dd>{`${numberFr(snapshot.domainGPerHL.min)}–${numberFr(snapshot.domainGPerHL.max)}\u00a0g/hL`}</dd></div>
     </dl>
     {roundedDoseFact ? <p className="hv-assisted-cold-contact__rounding-note">{roundedDoseFact}</p> : null}
 

@@ -75,7 +75,7 @@ async function readR20(harness: Awaited<ReturnType<typeof pageHarness>>) {
   await waitFor(() => expect(document.querySelector('.hv-property-eyebrow')).toHaveTextContent('Conseil documentaire · V3'));
   // Re-read the selected legacy archive in the active source. Do not submit
   // the same text as a brand-new V4 question or replace its source identity.
-  fireEvent.click(screen.getByRole('button', { name: 'Relire cette demande dans le contexte actif' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Réexaminer ces annotations dans le contexte actif' }));
   await waitFor(async () => {
     const current = await harness.stored();
     expect(current?.decisionReadings).toHaveLength(2);
@@ -83,10 +83,21 @@ async function readR20(harness: Awaited<ReturnType<typeof pageHarness>>) {
   });
   const current = await harness.stored();
   const currentArchive = current?.decisionReadings?.[1] && readHopV55DecisionReadingArchive(current.decisionReadings[1]);
-  if (!currentArchive || currentArchive.status !== 'available'
+  if (!current || !currentArchive || currentArchive.status !== 'available'
     || currentArchive.archive.format !== 'hop-v55-decision-reading-v2' && currentArchive.archive.format !== 'hop-v55-decision-reading-v3') {
-    throw new Error('Le réexamen legacy doit conserver un archive V2/V3 distinct; il ne doit pas réinterpréter l’archive en V4.');
+    throw new Error('Le réexamen V3 doit conserver un successeur V2/V3 distinct; il ne doit pas réinterpréter ou rétrograder l’archive.');
   }
+  expect(currentArchive.archive.contentReference).not.toBe(seededArchive.archive.contentReference);
+  expect(currentArchive.archive.source).toEqual(seededArchive.archive.source);
+  expect(currentArchive.archive.reading.intent.question).toBe(r20);
+  expect(current.decisionReadings![0]).toEqual(seededArchive.archive);
+  expect(current.documentaryAnswers![0]).toEqual(seeded.documentaryAnswers![0]);
+  const reexaminedRecord = v3Record(current, currentArchive.archive.contentReference);
+  expect(reexaminedRecord.reexaminationContext).toMatchObject({
+    sourceAnswerRecordReference: seededRecord.record.reference,
+    sourceAnswerReference: seededRecord.record.answerReference,
+    sourceReadingReference: seededArchive.archive.contentReference,
+  });
   if (!(document.body.textContent ?? '').includes('Conseil documentaire · V3')) {
     const stored = await harness.stored();
     const heads = [...document.querySelectorAll('h1,h2,h3,h4')].map(element => element.textContent?.trim()).filter(Boolean);

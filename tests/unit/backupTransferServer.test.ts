@@ -173,6 +173,36 @@ describe('Sauvegarde serveur paginée', () => {
     expect(rows.find(row => row.id === 'R-016').data.note).toBe('é'.repeat(320_000));
     expect(rows.some(row => row.id === 'new')).toBe(false);
   });
+  it('round-trip une trace V5.5 brute, y compris une petite entrée de format futur', async () => {
+    const history = [
+      { format: 'hop-v55-recipe-draft-application-v999', id: 'future-row', futurePayload: { keep: [1, 'opaque', { marker: true }] } },
+      { format: 'hop-v55-recipe-draft-application-v1', id: 'unreadable-row', incomplete: { preserve: true } },
+    ];
+    const coldAssociations = [{ format: 'hop-v55-recipe-cold-evidence-association-v999', id: 'cold-future-row',
+      opaquePayload: { fixtureOnly: true, source: { opaque: 'kept' } } }];
+    const savedRecipe = { ...recipe('R-V55'), data: { ...recipe('R-V55').data,
+      hopV55Applications: history, hopV55ColdEvidenceAssociations: coldAssociations } };
+    mock.docs.set(`recipes/${savedRecipe.id}`, savedRecipe.data);
+
+    const exportSession = await call({ action: 'startExport' });
+    const page = await call({ action: 'exportPage', sessionId: exportSession.sessionId, pageIndex: 0 });
+    const payload = JSON.parse(page.json);
+    expect(payload.collections.recipes.find((row: any) => row.id === savedRecipe.id).data.hopV55Applications).toEqual(history);
+    expect(payload.collections.recipes.find((row: any) => row.id === savedRecipe.id).data.hopV55ColdEvidenceAssociations).toEqual(coldAssociations);
+    expect(page.done).toBe(true);
+
+    mock.docs.clear(); mock.snapshots.clear(); mock.writes.length = 0;
+    const pages = [page.json];
+    const totalDocuments = page.totalDocuments;
+    const digest = hash(JSON.stringify({ exportedAt: payload.exportedAt, pages: pages.map(hash), totalDocuments }));
+    const restoreSession = await call({ action: 'startRestore', operationId: 'restore-v55-application-roundtrip-123',
+      pageCount: pages.length, totalDocuments, exportedAt: payload.exportedAt, digest });
+    await call({ action: 'uploadRestorePage', sessionId: restoreSession.sessionId, pageIndex: 0, json: page.json, sha256: page.sha256 });
+    await validate(restoreSession.sessionId);
+    await apply(restoreSession.sessionId);
+
+    expect(mock.docs.get(`recipes/${savedRecipe.id}`)).toEqual(savedRecipe.data);
+  });
   it('refuse une autre identité, les sauts de page et les sessions expirées', async () => {
     const start = await call({ action: 'startExport' });
     await expect(call({ action: 'exportPage', sessionId: start.sessionId, pageIndex: 0 }, 'other')).rejects.toMatchObject({ code: 'permission-denied' });
@@ -292,6 +322,17 @@ describe('Restauration volumineuse, validation et reprise', () => {
     await expect(validate(start.sessionId)).rejects.toThrow('manquent');
     const page = makePages([recipe('R3')])[0];
     await expect(call({ action: 'uploadRestorePage', sessionId: start.sessionId, pageIndex: 0, json: page, sha256: '0'.repeat(64) })).rejects.toThrow('empreinte incorrecte');
+  });
+  it('refuse un conteneur de traces V5.5 non-tableau avant toute donnée métier', async () => {
+    const invalid = { ...recipe('R-invalid-trace'), data: { ...recipe('R-invalid-trace').data,
+      hopV55Applications: { format: 'hop-v55-recipe-draft-application-v999', future: true } } };
+    await expect(upload([invalid], 'restore-invalid-v55-applications-123')).rejects.toMatchObject({ code: 'invalid-argument' });
+    expect(businessPaths()).toEqual([]);
+
+    const invalidCold = { ...recipe('R-invalid-cold-trace'), data: { ...recipe('R-invalid-cold-trace').data,
+      hopV55ColdEvidenceAssociations: { format: 'hop-v55-recipe-cold-evidence-association-v999', future: true } } };
+    await expect(upload([invalidCold], 'restore-invalid-cold-associations-123')).rejects.toMatchObject({ code: 'invalid-argument' });
+    expect(businessPaths()).toEqual([]);
   });
   it('accepte une répétition de téléversement et retrouve une opération sans doublon', async () => {
     const entry = recipe('R1'), pages = makePages([entry]);

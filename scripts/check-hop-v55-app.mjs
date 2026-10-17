@@ -12,12 +12,13 @@ import { buildHopV55AppQa } from './build-hop-v55-app-qa.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const mission = resolve(root, 'work/houblons-v55-integration-app-2026-10-02');
-const evidenceRoot = resolve(mission, 'luna-explorer/app-qa');
+// Evidence (captures, report, last-run pointer) may go to a caller's own log folder; the build stays in `mission`.
+const evidenceRoot = resolve(process.env.HOP_V55_APP_QA_OUTPUT || resolve(mission, 'luna-explorer/app-qa'));
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const selectedFlow = process.env.HOP_V55_APP_QA_FLOW || 'full';
 const expectedManifestSha256 = process.env.HOP_V55_APP_QA_EXPECTED_MANIFEST_SHA256;
 const explicitBuildDirectory = process.env.HOP_V55_APP_QA_BUILD_DIR;
-assert(['full', 'host-copy-alert'].includes(selectedFlow), 'Parcours QA inconnu.');
+assert(['full', 'host-copy-alert', 'reexamen-v4'].includes(selectedFlow), 'Parcours QA inconnu.');
 if (selectedFlow !== 'full') assert.equal(process.env.HOP_V55_APP_QA_SKIP_BUILD, '1', 'Un parcours ciblé doit utiliser un build QA gelé.');
 if (selectedFlow === 'host-copy-alert') assert(explicitBuildDirectory, 'Le parcours ciblé exige le chemin explicite de son gel QA.');
 await mkdir(evidenceRoot, { recursive: true });
@@ -569,6 +570,88 @@ async function runHostCopyAlertJourney(page, record, width) {
   return record;
 }
 
+/**
+ * reexamen-v4 : a documentary answer stored by an older app on a historical V2 archive (seeded by the real domain
+ * and repository through the QA bench) is reexamined in the current context from the Page history, then reread
+ * after a full reload. Only local Dexie data is written; no callable or model is involved.
+ */
+async function runReexaminationV4Journey(page, record, width) {
+  const seeded = await page.evaluate(() => window.__hopV55Qa.seedHistoricalPropertyAdvice());
+  assert.deepEqual(seeded.readingFormats, ['hop-v55-decision-reading-v2'], 'La réponse historique repose sur une archive V2.');
+  assert.equal(seeded.answerCount, 2, 'Réponse V3 et sa reprise V4 conservées.');
+  const parentReference = seeded.answerReferences.at(-1);
+  record.steps.push('seed historique : réponse V3 → V4 sur archive V2, écrite par le vrai dépôt local');
+  const openHistoricalAnswers = async (count) => {
+    await clickButton(page, 'Atelier Houblons V5.5', { exact: true });
+    await waitForText(page, '.hv-context strong', 'Explorer sans recette');
+    await clickButton(page, 'Historique', { exact: true, scope: '.hv-nav' });
+    await page.waitForSelector('.hv-workspaces', { visible: true, timeout: 20000 });
+    await clickButton(page, seeded.title, { exact: false, scope: '.hv-workspaces' });
+    await clickButton(page, 'Historique', { exact: true, scope: '.hv-nav' });
+    await chooseSummary(page, 'Réponses et dossiers documentaires · ' + count, true);
+  };
+  const openAnswer = async (reference) => {
+    const handle = await page.waitForFunction(reference => [...document.querySelectorAll('button')].find(button =>
+      button.getClientRects().length > 0 && (button.textContent ?? '').includes('Relire cette correction documentaire')
+        && (button.closest('article')?.textContent ?? '').includes(reference)) ?? null, { timeout: 18000 }, reference);
+    const button = handle.asElement();
+    assert(button, 'Version historique absente de l’historique Page : ' + reference);
+    await button.evaluate(node => node.scrollIntoView({ block: 'center', inline: 'nearest' }));
+    await button.click();
+    await handle.dispose();
+  };
+
+  await openHistoricalAnswers(2);
+  await openAnswer(parentReference);
+  await waitForText(page, 'h3', 'Repartir de cette version dans le contexte actuel', 30000);
+  record.steps.push('historique Page : version V4 issue de l’archive V2 rouverte');
+  record.captures.push(await capture(page, 'app-' + width + '-reexamen-v4-version-historique', width, runDirectory));
+
+  await clickButton(page, 'Préparer un aperçu du contexte frais', { exact: true });
+  await waitForText(page, '.hv-reex-v4__before-after', 'Avant et après confirmation', 30000);
+  const blocking = await page.$$eval('.hv-reex-v4__todo li, .hv-reex-v4 [role="alert"]', nodes => nodes
+    .filter(node => node.getClientRects().length > 0).map(node => (node.textContent ?? '').trim()));
+  assert.deepEqual(blocking, [], 'L’aperçu du contexte frais ne doit laisser ni erreur ni point à compléter : ' + JSON.stringify(blocking));
+  await page.$eval('.hv-reex-v4__before-after', node => node.scrollIntoView({ block: 'start', inline: 'nearest' }));
+  record.steps.push('aperçu du contexte frais préparé sans écriture ni point bloquant');
+  record.captures.push(await capture(page, 'app-' + width + '-reexamen-v4-apercu', width, runDirectory));
+
+  const before = await page.evaluate(id => window.__hopV55Qa.localWorkspaces().then(rows => rows.find(row => row.id === id)), seeded.workspaceId);
+  assert.equal(before?.documentaryAnswers?.length, 2, 'L’aperçu n’écrit aucune version.');
+  await fill(page, 'textarea[aria-label="Motif du réexamen réconcilié"]', 'Réexamen QA d’une réponse historique (archive V2) dans le contexte actuel.');
+  await clickButton(page, 'Confirmer la nouvelle lecture', { exact: true, scope: '.hv-reex-v4__confirm' });
+  // The Page activates the confirmed child, which may replace the panel and its success line: wait for the write.
+  const outcome = await page.waitForFunction(async id => {
+    const alert = document.querySelector('.hv-reex-v4__error');
+    if (alert && alert.getClientRects().length) return { error: (alert.textContent ?? '').trim() };
+    const row = (await window.__hopV55Qa.localWorkspaces()).find(item => item.id === id);
+    return (row?.documentaryAnswers?.length ?? 0) >= 3 ? { saved: true } : null;
+  }, { timeout: 30000, polling: 500 }, seeded.workspaceId).then(handle => handle.jsonValue());
+  assert(!outcome.error, 'Confirmation du réexamen refusée : ' + outcome.error);
+  const after = await page.evaluate(id => window.__hopV55Qa.localWorkspaces().then(rows => rows.find(row => row.id === id)), seeded.workspaceId);
+  assert.equal(after?.documentaryAnswers?.length, 3, 'Une seule nouvelle version est enregistrée.');
+  assert.deepEqual(after.documentaryAnswers.slice(0, 2), before.documentaryAnswers, 'Les versions d’origine restent intactes.');
+  const successorFormats = after.decisionReadings.map(row => row.format);
+  assert(successorFormats.length === 2 && successorFormats.every(format => format === 'hop-v55-decision-reading-v2'),
+    'La nouvelle lecture garde le format V2 de son parent : ' + JSON.stringify(successorFormats));
+  const childReference = after.documentaryAnswers.at(-1).reference;
+  await page.evaluate(() => (document.querySelector('.hv-reex-v4__success') ?? document.querySelector('.hv-property-advice.hv4'))
+    ?.scrollIntoView({ block: 'start', inline: 'nearest' }));
+  record.steps.push('confirmation : une version enfant enregistrée, parent et archive V2 conservés');
+  record.captures.push(await capture(page, 'app-' + width + '-reexamen-v4-confirme', width, runDirectory));
+
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.waitForFunction(() => window.__hopV55Qa?.ready?.(), { timeout: 30000 });
+  await openHistoricalAnswers(3);
+  await openAnswer(childReference);
+  await waitForText(page, '.hv-property-advice.hv4', 'Contexte relu pour cette version', 30000);
+  record.steps.push('rechargement complet : la version réexaminée se relit depuis l’historique');
+  record.captures.push(await capture(page, 'app-' + width + '-reexamen-v4-relu-apres-rechargement', width, runDirectory));
+  const finalState = await snapshotQa(page);
+  assertNoRemoteServiceCalls(finalState, width);
+  assert.deepEqual(record.errors, [], 'Console error/pageerror pendant le réexamen V4 à ' + width + ' px.');
+}
+
 async function testWidth(width) {
   const context = await browser.createBrowserContext();
   const page = await context.newPage();
@@ -611,6 +694,10 @@ async function testWidth(width) {
     assert.equal(await page.title(), 'L’Affinée · QA local de l’atelier V5.5');
     if (selectedFlow === 'host-copy-alert') {
       await runHostCopyAlertJourney(page, record, width);
+      return { record, context, page };
+    }
+    if (selectedFlow === 'reexamen-v4') {
+      await runReexaminationV4Journey(page, record, width);
       return { record, context, page };
     }
 

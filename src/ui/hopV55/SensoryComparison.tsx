@@ -1,4 +1,4 @@
-import React, { useId, useMemo } from 'react';
+import React, { useId, useMemo, useState } from 'react';
 import { assertBrewingScenarioResult } from '../../domain/brewingScenario';
 import {
   assertBrewingSensoryComparison,
@@ -10,6 +10,7 @@ import {
 } from '../../domain/brewingSensory';
 import type { HopRange, HopSource } from '../../../functions/src/hopIndexSchema';
 import type { BrewingScenarioBranchResult, BrewingScenarioResult } from '../../domain/brewingScenario';
+import { BranchAssumptionsDisclosure, branchForCandidate } from './BranchAssumptionsDisclosure';
 import './sensory-comparison.css';
 
 export type HopV55SensoryComparisonProps = {
@@ -43,6 +44,10 @@ const CANDIDATE_SERIES = [
   { color: '#6b4fa0', marker: '✚' },
   { color: '#4c4f49', marker: '✕' }
 ] as const;
+/** Hollow counterparts mark the upper bound of a range, so a bound never reads as a central value. */
+const RANGE_CAPS = ['○', '△', '□', '◇', '✛', '×'] as const;
+/** A closed profile shape needs three spokes of one frame: one spoke draws a point and two spokes a line. */
+const PROFILE_MIN_AXES = 3;
 
 const VALUE_STATUS: Record<BrewingSensoryNumericStatus, string> = {
   observed: 'Observé', hypothetical: 'Projection hypothétique', target: 'Cible'
@@ -113,8 +118,12 @@ function candidateStatusSummary(comparison: BrewingSensoryComparisonDTO, candida
   return statuses.length ? statuses.join(' · ') : 'Aucune valeur sur les nuances choisies';
 }
 
+/** Identity follows `candidateOrder`; past six candidates a cycle number keeps it unique without capping the comparison. */
 function candidateSeries(index: number) {
-  return CANDIDATE_SERIES[index % CANDIDATE_SERIES.length];
+  const base = CANDIDATE_SERIES[index % CANDIDATE_SERIES.length];
+  const cycle = Math.floor(index / CANDIDATE_SERIES.length);
+  const suffix = cycle ? String(cycle + 1) : '';
+  return { color: base.color, marker: `${base.marker}${suffix}`, cap: `${RANGE_CAPS[index % RANGE_CAPS.length]}${suffix}` };
 }
 
 function hasPlannedAdditions(branch: BrewingScenarioBranchResult): boolean {
@@ -186,6 +195,33 @@ function exactValueText(dimension: SensoryDimension, value: BrewingSensoryCompar
   return 'Statut absent.';
 }
 
+/** Decimals of a quick reading: about one hundredth of the scale span. */
+function quickDecimals(span: number): number {
+  return span > 0 ? Math.min(6, Math.max(0, Math.ceil(-Math.log10(span / 100)))) : 2;
+}
+
+function roundTo(value: number, decimals: number): number {
+  return Number(value.toFixed(decimals));
+}
+
+/** Rounded reading for the eye, status first; `≈` marks every rounded number. The exact text, unit and provenance
+ * stay in the table and for assistive technologies; no central value is ever added. */
+function quickValueText(dimension: SensoryDimension, value: BrewingSensoryComparisonValue | undefined): string {
+  if (!isNumericValue(value)) return numericStatus(value);
+  const domain = dimension.definition.scale?.domain;
+  let decimals = quickDecimals(domain ? domain.max - domain.min : 0);
+  const show = (number: number) => {
+    const rounded = roundTo(number, decimals);
+    return `${rounded !== number ? '≈ ' : ''}${formatNumber(rounded)}`;
+  };
+  if ('value' in value) return `${VALUE_STATUS[value.status]} ${show(value.value)}`;
+  const range = value.range;
+  while (decimals < 6 && range.min !== range.max && roundTo(range.min, decimals) === roundTo(range.max, decimals)) decimals += 1;
+  const min = roundTo(range.min, decimals), max = roundTo(range.max, decimals);
+  const bounds = `${min !== range.min || max !== range.max ? '≈ ' : ''}${formatNumber(min)}–${formatNumber(max)}`;
+  return `${VALUE_STATUS[value.status]} ${bounds} · ${value.central === undefined ? 'centrale non fournie' : `centrale ${show(value.central)}`}`;
+}
+
 function numericStatus(value: BrewingSensoryComparisonValue | undefined): string {
   if (!value) return 'Absente du DTO';
   if (isNumericValue(value)) return VALUE_STATUS[value.status];
@@ -195,12 +231,22 @@ function numericStatus(value: BrewingSensoryComparisonValue | undefined): string
   return VALUE_STATUS[value.status];
 }
 
-function scaleGroupKey(definition: Definition): string | null {
-  if (!definition.metric || !definition.scale || !definition.scale.domain || !(definition.scale.domain.max > definition.scale.domain.min)) return null;
-  return JSON.stringify([
-    definition.metric.id, definition.metric.version,
-    definition.scale.id, definition.scale.version
-  ]);
+type Frame =
+  | { plottable: true; key: string; metric: NonNullable<Definition['metric']>; scale: NonNullable<Definition['scale']> }
+  | { plottable: false; reason: string };
+
+/** A frame is the exact metric and scale identity. Equal bounds, an equal unit word or a shared label never join
+ * two frames; anything outside a sensory frame keeps its reason and stays in the exact table. */
+function frameOf(definition: Definition): Frame {
+  const { metric, scale } = definition;
+  if (!metric) return { plottable: false, reason: 'mention qualitative, sans métrique ni échelle chiffrée' };
+  if (metric.kind !== 'ordinalNote' && metric.kind !== 'modelIndex') {
+    return { plottable: false, reason: `mesure en ${metricUnitText(metric)} : grandeur physique gardée hors des profils sensoriels` };
+  }
+  if (!scale) return { plottable: false, reason: 'aucune échelle déclarée' };
+  if (!scale.domain) return { plottable: false, reason: 'domaine d’échelle non défini' };
+  if (!(scale.domain.max > scale.domain.min)) return { plottable: false, reason: 'bornes d’échelle inutilisables' };
+  return { plottable: true, key: JSON.stringify([metric.id, metric.version, scale.id, scale.version]), metric, scale };
 }
 
 function displayDimensionName(dimension: SensoryDimension): string {
@@ -254,9 +300,12 @@ function CandidateSelection({
         {candidates.map(candidate => {
           const index = comparison.candidateOrder.indexOf(candidate.id);
           const name = candidateDisplayName(comparison, candidate.id, candidate.name, result, dimensionIds);
+          const selectedBranch = result && candidateIds.includes(candidate.id)
+            ? branchForCandidate(result, candidate.id)
+            : undefined;
           const statusId = `${statusPrefixId}-candidate-status-${index}`;
           return (
-            <div className="hv55-sensory-candidate" key={candidate.id}>
+            <div className={`hv55-sensory-candidate${selectedBranch ? ' hv55-sensory-candidate-with-details' : ''}`} key={candidate.id}>
               <label className="hv55-sensory-toggle" title={`${name} · ${candidateStatusSummary(comparison, candidate.id, dimensionIds)}`}>
                 <input type="checkbox" aria-label={`Comparer ${name}`} aria-describedby={statusId}
                   checked={candidateIds.includes(candidate.id)} onChange={() => onToggleCandidate(candidate.id)} />
@@ -269,6 +318,7 @@ function CandidateSelection({
                   {selectedCandidateId === candidate.id ? 'Choix courant' : 'Choisir ce candidat'}
                 </button>
               )}
+              {selectedBranch && <BranchAssumptionsDisclosure branch={selectedBranch} label={name} />}
             </div>
           );
         })}
@@ -380,65 +430,109 @@ function ratio(value: number, domain: HopRange): number {
   return (value - domain.min) / (domain.max - domain.min);
 }
 
+/** Frame identity in words; the title is left out when it only repeats the single nuance named on its row. */
+function FrameHeading({ group, level = 3 }: { group: PlottableGroup; level?: 3 | 4 }) {
+  const Title = level === 3 ? 'h3' : 'h4';
+  const repeatsRow = group.dimensions.length === 1 && group.dimensions[0].definition.dimension.name === group.metric.name;
+  return (
+    <header className="hv55-sensory-chart-group-heading">
+      {!repeatsRow && <Title>{group.metric.name}</Title>}
+      <p>{METRIC_KIND_LABEL[group.metric.kind]} · {group.metric.meaning} · {metricUnitText(group.metric)} · échelle {domainText(group.scale.domain)}</p>
+    </header>
+  );
+}
+
+/** Selected nuances that no chart can place: each one is named with its reason, never omitted silently. */
+function UnplottedDimensions({ dimensions }: { dimensions: SensoryDimension[] }) {
+  const rows = dimensions.flatMap(dimension => {
+    const frame = frameOf(dimension.definition);
+    return frame.plottable === true ? [] : [{ dimension, reason: frame.reason }];
+  });
+  if (!rows.length) return null;
+  return (
+    <div className="hv55-sensory-unplotted">
+      <strong>Au tableau seulement · {rows.length} nuance{rows.length === 1 ? '' : 's'}</strong>
+      <ul aria-label="Nuances choisies lues seulement au tableau">
+        {rows.map(({ dimension, reason }) => (
+          <li key={dimension.referenceGroupId} data-unplotted-reference={dimension.referenceGroupId}>
+            <span>{dimension.definition.dimension.name}</span> · {reason}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function BarProfiles({ dimensions, candidates, comparison }: {
   dimensions: SensoryDimension[];
   candidates: Array<{ id: string; name: string }>;
   comparison: BrewingSensoryComparisonDTO;
 }) {
   const groups = groupPlottableDimensions(dimensions);
-  if (!groups.length) return <p className="hv55-sensory-empty">Aucune dimension sélectionnée ne possède une métrique sensorielle numérique et une échelle bornée exacte. Les valeurs, mentions, unités et sources restent dans le tableau.</p>;
   return (
-    <div className="hv55-sensory-bars" role="group" aria-label="Profils sensoriels en barres de plages">
-      {groups.map((group, groupIndex) => (
-        <section className="hv55-sensory-chart-group" key={group.key} data-metric-ref={group.metric.id} data-scale-ref={group.scale.id}>
-          <header className="hv55-sensory-chart-group-heading">
-            <h3>{group.metric.name}</h3>
-            <p>{METRIC_KIND_LABEL[group.metric.kind]} · {group.metric.meaning} · {metricUnitText(group.metric)} · échelle {domainText(group.scale.domain)}</p>
-          </header>
-          {group.dimensions.map(dimension => (
-            <SensoryBarRow key={dimension.referenceGroupId} dimension={dimension} candidates={candidates} comparison={comparison} />
+    <>
+      {groups.length ? (
+        <div className="hv55-sensory-bars" role="group" aria-label="Profils sensoriels en barres de plages">
+          {groups.map(group => (
+            <section className="hv55-sensory-chart-group" key={group.key} data-metric-ref={group.metric.id} data-scale-ref={group.scale.id}>
+              <FrameHeading group={group} />
+              {group.dimensions.map(dimension => (
+                <SensoryBarRow key={dimension.referenceGroupId} dimension={dimension} candidates={candidates} comparison={comparison} />
+              ))}
+            </section>
           ))}
-        </section>
-      ))}
-    </div>
+          <p className="hv55-sensory-quick-note">{QUICK_READING_NOTE}</p>
+        </div>
+      ) : <p className="hv55-sensory-empty">Aucune dimension sélectionnée ne possède une métrique sensorielle numérique et une échelle bornée exacte. Les valeurs, mentions, unités et sources restent dans le tableau.</p>}
+      <UnplottedDimensions dimensions={dimensions} />
+    </>
   );
 }
 
-function SensoryBarRow({ dimension, candidates, comparison }: {
+/** One lane per candidate: the lane mark identifies it even when a range has no central value. */
+function SensoryBarRow({ dimension, candidates, comparison, className = 'hv55-sensory-bar-row' }: {
   dimension: SensoryDimension;
   candidates: Array<{ id: string; name: string }>;
   comparison: BrewingSensoryComparisonDTO;
+  className?: string;
 }) {
   const domain = dimension.definition.scale!.domain!;
   const ticks = ticksFor(dimension);
   const candidateLabel = candidates.map(candidate => candidateTitle(dimension, valueFor(dimension, candidate.id), candidate.name)).join(' ');
-  const trackHeight = Math.max(24, 10 + candidates.length * 10);
   return (
-    <figure className="hv55-sensory-bar-row" data-reference-group={dimension.referenceGroupId}>
+    <figure className={className} data-reference-group={dimension.referenceGroupId}>
       <figcaption className="hv55-sensory-axis-label">
         <strong>{dimension.definition.dimension.name}</strong>
         <small>{identityText(dimension.definition.dimension)} · {unitText(dimension.definition)} · {domainText(domain)}</small>
       </figcaption>
       <div className="hv55-sensory-track-wrap">
-        <div className="hv55-sensory-track" style={{ minHeight: trackHeight }} role="img"
+        <div className="hv55-sensory-track" role="img"
           aria-label={`${dimension.definition.dimension.name}. ${dimension.definition.metric!.name}, ${metricUnitText(dimension.definition.metric)}, échelle ${domainText(domain)}. ${candidateLabel}`}>
-          {ticks.map(tick => <span aria-hidden="true" key={tick.value} className="hv55-sensory-tick" style={{ left: `${ratio(tick.value, domain) * 100}%` }} />)}
           {candidates.map(candidate => {
-            const reading = readingOf(valueFor(dimension, candidate.id));
-            if (!reading) return null;
-            const candidateIndex = comparison.candidateOrder.indexOf(candidate.id);
-            const series = candidateSeries(candidateIndex);
-            if (reading.kind === 'point') {
-              return <span key={candidate.id} className="hv55-sensory-point" aria-hidden="true" style={{ left: `${ratio(reading.value, domain) * 100}%`, top: 5 + candidates.indexOf(candidate) * 10, color: series.color }}>{series.marker}</span>;
+            const value = valueFor(dimension, candidate.id);
+            const reading = readingOf(value);
+            const series = candidateSeries(comparison.candidateOrder.indexOf(candidate.id));
+            let mark: React.ReactNode;
+            if (!reading) mark = <span className="hv55-sensory-lane-status">{numericStatus(value)}</span>;
+            else if (reading.kind === 'point') {
+              mark = <span className="hv55-sensory-point" style={{ left: `${ratio(reading.value, domain) * 100}%`, color: series.color }}>{series.marker}</span>;
+            } else {
+              const left = ratio(reading.range.min, domain) * 100;
+              const width = (ratio(reading.range.max, domain) - ratio(reading.range.min, domain)) * 100;
+              mark = <>
+                <span className={`hv55-sensory-range hv55-sensory-${reading.status}${width === 0 ? ' hv55-sensory-degenerate-range' : ''}`}
+                  style={{ left: `${left}%`, width: width === 0 ? '1px' : `${width}%`, '--hv55-sensory-series': series.color } as React.CSSProperties} />
+                {reading.central !== undefined && <span className="hv55-sensory-central"
+                  style={{ left: `${ratio(reading.central, domain) * 100}%`, color: series.color }}>{series.marker}</span>}
+              </>;
             }
-            const left = ratio(reading.range.min, domain) * 100;
-            const width = (ratio(reading.range.max, domain) - ratio(reading.range.min, domain)) * 100;
-            return <React.Fragment key={candidate.id}>
-              <span aria-hidden="true" className={`hv55-sensory-range hv55-sensory-${reading.status}${width === 0 ? ' hv55-sensory-degenerate-range' : ''}`}
-                style={{ left: `${left}%`, width: width === 0 ? '1px' : `${width}%`, top: 5 + candidates.indexOf(candidate) * 10, '--hv55-sensory-series': series.color } as React.CSSProperties} />
-              {reading.central !== undefined && <span aria-hidden="true" className="hv55-sensory-central"
-                style={{ left: `${ratio(reading.central, domain) * 100}%`, top: 5 + candidates.indexOf(candidate) * 10, color: series.color }}>{series.marker}</span>}
-            </React.Fragment>;
+            return <div className="hv55-sensory-lane" key={candidate.id} data-candidate-id={candidate.id} data-series-marker={series.marker} aria-hidden="true">
+              <span className="hv55-sensory-lane-mark" style={{ color: series.color }}>{series.marker}</span>
+              <span className="hv55-sensory-lane-track">
+                {ticks.map(tick => <span key={tick.value} className="hv55-sensory-tick" style={{ left: `${ratio(tick.value, domain) * 100}%` }} />)}
+                {mark}
+              </span>
+            </div>;
           })}
         </div>
         <div className="hv55-sensory-track-scale" aria-hidden="true"><span>{formatNumber(domain.min)}</span><span>{formatNumber(domain.max)}</span></div>
@@ -447,12 +541,18 @@ function SensoryBarRow({ dimension, candidates, comparison }: {
         {candidates.map(candidate => {
           const index = comparison.candidateOrder.indexOf(candidate.id);
           const value = valueFor(dimension, candidate.id);
-          return <span key={candidate.id}><CandidateMarker index={index} /> {candidate.name} : {exactValueText(dimension, value)}</span>;
+          return <span key={candidate.id} data-candidate-id={candidate.id} data-series-marker={candidateSeries(index).marker}>
+            <CandidateMarker index={index} />
+            <span className="hv55-sensory-value-quick" aria-hidden="true" title={exactValueText(dimension, value)}>{quickValueText(dimension, value)}</span>
+            <span className="hv55-sensory-sr-only">{candidate.name} : {exactValueText(dimension, value)}</span>
+          </span>;
         })}
       </div>
     </figure>
   );
 }
+
+const QUICK_READING_NOTE = '≈ : lecture arrondie au centième de l’échelle. Valeurs exactes, unités, statuts et provenances au tableau.';
 
 interface PlottableGroup {
   key: string;
@@ -464,39 +564,143 @@ interface PlottableGroup {
 function groupPlottableDimensions(dimensions: SensoryDimension[]): PlottableGroup[] {
   const groups = new Map<string, PlottableGroup>();
   for (const dimension of dimensions) {
-    const { metric, scale } = dimension.definition;
-    const key = scaleGroupKey(dimension.definition);
-    if (!key || !metric || !scale || (metric.kind !== 'ordinalNote' && metric.kind !== 'modelIndex')) continue;
-    const group = groups.get(key) ?? { key, metric, scale, dimensions: [] };
+    const frame = frameOf(dimension.definition);
+    if (!frame.plottable) continue;
+    const group = groups.get(frame.key) ?? { key: frame.key, metric: frame.metric, scale: frame.scale, dimensions: [] };
     group.dimensions.push(dimension);
-    groups.set(key, group);
+    groups.set(frame.key, group);
   }
   return [...groups.values()];
 }
 
 type RadarPoint = { x: number; y: number };
-function radarPoint(index: number, count: number, value: number, domain: HopRange): RadarPoint {
-  const center = 220, radius = 145;
-  const angle = -Math.PI / 2 + index * Math.PI * 2 / count;
-  const distance = radius * ratio(value, domain);
-  return { x: center + Math.cos(angle) * distance, y: center + Math.sin(angle) * distance };
+const RADAR_LANE_GAP = 6;
+const RADAR_TICK = 3.5;
+const RADAR_RADIUS = 120;
+const RADAR_LABEL_RADIUS = 136;
+const RADAR_LABEL_CHARS = 11;
+const RADAR_LINE_HEIGHT = 17;
+
+/** Whole words per line for SVG axis labels: a name is wrapped, never truncated nor cut inside a word. */
+function wrapLabel(text: string, maxChars: number): string[] {
+  const lines: string[] = [];
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const last = lines[lines.length - 1];
+    if (last !== undefined && `${last} ${word}`.length <= maxChars) lines[lines.length - 1] = `${last} ${word}`;
+    else lines.push(word);
+  }
+  return lines;
 }
 
-function RadarProfiles({ dimensions, candidates, comparison, titleBaseId }: {
+/** Each candidate runs on its own lane, offset across the axis; the distance along the axis still carries the value. */
+function laneOffset(lane: number, lanes: number): number {
+  return (lane - (lanes - 1) / 2) * RADAR_LANE_GAP;
+}
+
+function radarPoint(index: number, count: number, value: number, domain: HopRange, offset = 0): RadarPoint {
+  const center = 220, radius = RADAR_RADIUS;
+  const angle = -Math.PI / 2 + index * Math.PI * 2 / count;
+  const distance = radius * ratio(value, domain);
+  return { x: center + Math.cos(angle) * distance - Math.sin(angle) * offset, y: center + Math.sin(angle) * distance + Math.cos(angle) * offset };
+}
+
+/** Exact values of one radar axis, read with the same lanes as the bars; no hover is needed on a touch screen. */
+function RadarAxisReader({ axes, candidates, comparison }: {
+  axes: SensoryDimension[];
+  candidates: Array<{ id: string; name: string }>;
+  comparison: BrewingSensoryComparisonDTO;
+}) {
+  const [axisId, setAxisId] = useState<string | null>(null);
+  const axis = axes.find(row => row.referenceGroupId === axisId) ?? axes[0];
+  if (!axis) return null;
+  return (
+    <div className="hv55-sensory-radar-reader">
+      <div className="hv55-sensory-radar-reader-axes" role="group" aria-label="Lire les valeurs exactes d’un axe du radar">
+        {axes.map(row => (
+          <button type="button" key={row.referenceGroupId} aria-pressed={row.referenceGroupId === axis.referenceGroupId}
+            onClick={() => setAxisId(row.referenceGroupId)}>{row.definition.dimension.name}</button>
+        ))}
+      </div>
+      <SensoryBarRow dimension={axis} candidates={candidates} comparison={comparison} className="hv55-sensory-bar-row hv55-sensory-reader-row" />
+      <p className="hv55-sensory-quick-note">{QUICK_READING_NOTE}</p>
+    </div>
+  );
+}
+
+function plural(count: number, word: string): string {
+  return `${count} ${word}${count === 1 ? '' : 's'}`;
+}
+
+/** A profile shape is drawn only for a frame with at least three selected nuances. Smaller frames keep the same
+ * lanes as the bars; nothing is merged across frames to reach three spokes. */
+function RadarProfiles({ dimensions, allDimensions, candidates, comparison, titleBaseId }: {
   dimensions: SensoryDimension[];
+  allDimensions: SensoryDimension[];
   candidates: Array<{ id: string; name: string }>;
   comparison: BrewingSensoryComparisonDTO;
   titleBaseId: string;
 }) {
   const groups = groupPlottableDimensions(dimensions);
-  if (!groups.length) return <p className="hv55-sensory-empty">Aucun radar ne peut être tracé sans échelle exacte. Les mentions documentées, mesures, domaines inconnus et valeurs inconnues restent lisibles au tableau, sans point ajouté.</p>;
+  const profiles = groups.filter(group => group.dimensions.length >= PROFILE_MIN_AXES);
+  const axisFrames = groups.filter(group => group.dimensions.length < PROFILE_MIN_AXES);
+  const axisCount = axisFrames.reduce((count, group) => count + group.dimensions.length, 0);
+  const unplottedCount = dimensions.filter(dimension => !frameOf(dimension.definition).plottable).length;
+  const summary = [
+    profiles.length ? plural(profiles.length, 'forme') + ' de profil' : 'aucune forme de profil',
+    axisCount ? `${plural(axisCount, 'nuance')} en lecture par axe` : null,
+    unplottedCount ? `${plural(unplottedCount, 'nuance')} au tableau seulement` : null
+  ].filter(Boolean).join(' · ');
   return (
-    <div className="hv55-sensory-radars">
-      {groups.map((group, groupIndex) => (
-        <RadarProfile key={group.key} group={group} candidates={candidates} comparison={comparison}
-          titleId={`${titleBaseId}-title-${groupIndex}`} descriptionId={`${titleBaseId}-description-${groupIndex}`} />
-      ))}
-    </div>
+    <>
+      {groups.length ? (
+        <div className="hv55-sensory-radars">
+          <p className="hv55-sensory-frame-summary">Radar : {summary}.</p>
+          {profiles.map((group, groupIndex) => (
+            <RadarProfile key={group.key} group={group} candidates={candidates} comparison={comparison}
+              titleId={`${titleBaseId}-title-${groupIndex}`} descriptionId={`${titleBaseId}-description-${groupIndex}`} />
+          ))}
+          {axisFrames.length > 0 && <AxisReading frames={axisFrames} allDimensions={allDimensions} candidates={candidates} comparison={comparison} />}
+        </div>
+      ) : <p className="hv55-sensory-empty">Aucun radar ne peut être tracé sans échelle exacte. Les mentions documentées, mesures, domaines inconnus et valeurs inconnues restent lisibles au tableau, sans point ajouté.</p>}
+      <UnplottedDimensions dimensions={dimensions} />
+    </>
+  );
+}
+
+/** Frames with fewer than three selected nuances, in the radar mode: one lane per candidate as in the bars,
+ * never a lone spoke or a two-spoke line presented as a profile. */
+function AxisReading({ frames, allDimensions, candidates, comparison }: {
+  frames: PlottableGroup[];
+  allDimensions: SensoryDimension[];
+  candidates: Array<{ id: string; name: string }>;
+  comparison: BrewingSensoryComparisonDTO;
+}) {
+  const available = groupPlottableDimensions(allDimensions);
+  const count = frames.reduce((total, group) => total + group.dimensions.length, 0);
+  return (
+    <section className="hv55-sensory-axis-reading" data-profile-status="insufficient-axes">
+      <h3>Lecture par axe, sans forme de profil</h3>
+      <p className="hv55-sensory-axis-reading-note">
+        Une forme de profil exige au moins trois nuances de même métrique et de même échelle déclarées.
+        {count === 1 ? ' Cette nuance garde sa barre de plage sur son échelle propre' : ` Ces ${count} nuances gardent leur barre de plage sur leur échelle propre`}, sans tracé commun : des bornes égales ou un même mot d’unité ne prouvent pas une calibration commune.
+      </p>
+      {frames.map(group => {
+        const total = available.find(frame => frame.key === group.key)?.dimensions.length ?? group.dimensions.length;
+        return (
+          <section className="hv55-sensory-chart-group hv55-sensory-axis-frame" key={group.key}
+            data-metric-ref={group.metric.id} data-scale-ref={group.scale.id} data-axis-count={group.dimensions.length}>
+            <FrameHeading group={group} level={4} />
+            {group.dimensions.map(dimension => (
+              <SensoryBarRow key={dimension.referenceGroupId} dimension={dimension} candidates={candidates} comparison={comparison} />
+            ))}
+            {total >= PROFILE_MIN_AXES && <p className="hv55-sensory-frame-hint">
+              Ce cadre compte {total} nuances dans la comparaison : en choisir au moins trois dans « Nuances comparées » affiche sa forme.
+            </p>}
+          </section>
+        );
+      })}
+      <p className="hv55-sensory-quick-note">{QUICK_READING_NOTE}</p>
+    </section>
   );
 }
 
@@ -518,36 +722,38 @@ function RadarProfile({ group, candidates, comparison, titleId, descriptionId }:
   }));
   return (
     <section className="hv55-sensory-chart-group hv55-sensory-radar-group" data-metric-ref={group.metric.id} data-scale-ref={group.scale.id}>
-      <header className="hv55-sensory-chart-group-heading">
-        <h3>{group.metric.name}</h3>
-        <p>{METRIC_KIND_LABEL[group.metric.kind]} · {group.metric.meaning} · {metricUnitText(group.metric)} · échelle {domainText(domain)}</p>
-      </header>
+      <FrameHeading group={group} />
       <svg className="hv55-sensory-radar" viewBox="0 0 440 440" role="img" aria-labelledby={`${titleId} ${descriptionId}`}>
         <title id={titleId}>Radar · {group.metric.name} · {domainText(domain)}</title>
-        <desc id={descriptionId}>Les axes gardent la même métrique et la même échelle exacte. Les plages sont tracées sur leur axe. Une valeur absente interrompt les segments centraux ; une centrale absente n’est pas remplacée par le milieu de la plage.</desc>
-        {[0.25, 0.5, 0.75, 1].map(fraction => <circle key={fraction} cx="220" cy="220" r={145 * fraction} className="hv55-sensory-radar-ring" />)}
+        <desc id={descriptionId}>Les axes gardent la même métrique et la même échelle exacte. Les plages sont tracées sur leur axe, chaque candidat sur son propre couloir dans l’ordre de la légende. Une valeur absente interrompt les segments centraux ; une centrale absente n’est pas remplacée par le milieu de la plage.</desc>
+        {[0.25, 0.5, 0.75, 1].map(fraction => <circle key={fraction} cx="220" cy="220" r={RADAR_RADIUS * fraction} className="hv55-sensory-radar-ring" />)}
         {axes.map((axis, index) => {
           const angle = -Math.PI / 2 + index * Math.PI * 2 / total;
-          const endpoint = { x: 220 + Math.cos(angle) * 145, y: 220 + Math.sin(angle) * 145 };
-          const labelPoint = { x: 220 + Math.cos(angle) * 188, y: 220 + Math.sin(angle) * 188 };
+          const endpoint = { x: 220 + Math.cos(angle) * RADAR_RADIUS, y: 220 + Math.sin(angle) * RADAR_RADIUS };
+          const labelPoint = { x: 220 + Math.cos(angle) * RADAR_LABEL_RADIUS, y: 220 + Math.sin(angle) * RADAR_LABEL_RADIUS };
           const anchor = Math.cos(angle) > 0.28 ? 'start' : Math.cos(angle) < -0.28 ? 'end' : 'middle';
           const fullName = axis.definition.dimension.name;
-          const shortName = fullName.length > 15 ? `${fullName.slice(0, 14)}…` : fullName;
+          const lines = wrapLabel(fullName, RADAR_LABEL_CHARS);
+          const sin = Math.sin(angle);
+          const firstY = sin < -0.35 ? labelPoint.y - (lines.length - 1) * RADAR_LINE_HEIGHT
+            : sin > 0.35 ? labelPoint.y + 12 : labelPoint.y + 5 - ((lines.length - 1) * RADAR_LINE_HEIGHT) / 2;
           return <g key={axis.referenceGroupId}>
             <line x1="220" y1="220" x2={endpoint.x} y2={endpoint.y} className="hv55-sensory-radar-axis" />
-            <text x={labelPoint.x} y={labelPoint.y + 4} textAnchor={anchor} className="hv55-sensory-radar-label">
-              <title>{`${fullName} · ${domainText(domain)} ${metricUnitText(group.metric)}`}</title>{shortName}
+            <text x={labelPoint.x} y={firstY} textAnchor={anchor} className="hv55-sensory-radar-label">
+              <title>{`${fullName} · ${domainText(domain)} ${metricUnitText(group.metric)}`}</title>
+              {lines.map((line, lineIndex) => <tspan key={lineIndex} x={labelPoint.x} dy={lineIndex === 0 ? 0 : RADAR_LINE_HEIGHT}>{lineIndex < lines.length - 1 ? `${line} ` : line}</tspan>)}
             </text>
           </g>;
         })}
-        {candidates.map(candidate => {
+        {candidates.map((candidate, lane) => {
           const candidateIndex = comparison.candidateOrder.indexOf(candidate.id);
           const series = candidateSeries(candidateIndex);
+          const offset = laneOffset(lane, candidates.length);
           const readings = axes.map(axis => readingOf(valueFor(axis, candidate.id)));
           const centralPoints = readings.map((reading, index) => {
             if (!reading) return null;
             const central = reading.kind === 'point' ? reading.value : reading.central;
-            return central === undefined ? null : radarPoint(index, total, central, domain);
+            return central === undefined ? null : radarPoint(index, total, central, domain, offset);
           });
           const lines = axes.map((_axis, index) => {
             const next = index + 1;
@@ -559,23 +765,27 @@ function RadarProfile({ group, candidates, comparison, titleId, descriptionId }:
             const from = centralPoints[total - 1]!, to = centralPoints[0]!;
             lines.push({ from, to, index: total - 1 });
           }
-          return <g key={candidate.id} data-candidate-id={candidate.id} style={{ '--hv55-sensory-series': series.color } as React.CSSProperties}>
+          return <g key={candidate.id} data-candidate-id={candidate.id} data-series-marker={series.marker} style={{ '--hv55-sensory-series': series.color } as React.CSSProperties}>
             {readings.map((reading, index) => {
               if (!reading) return null;
               const axis = axes[index];
               if (reading.kind === 'point') {
-                const point = radarPoint(index, total, reading.value, domain);
+                const point = radarPoint(index, total, reading.value, domain, offset);
                 return <text key={axis.referenceGroupId} x={point.x} y={point.y + 4} textAnchor="middle" className="hv55-sensory-radar-point" aria-hidden="true">
                   <title>{candidateTitle(axis, valueFor(axis, candidate.id), candidate.name)}</title>{series.marker}
                 </text>;
               }
-              const start = radarPoint(index, total, reading.range.min, domain);
-              const end = radarPoint(index, total, reading.range.max, domain);
-              const central = reading.central === undefined ? null : radarPoint(index, total, reading.central, domain);
-              return <g key={axis.referenceGroupId} className={`hv55-sensory-radar-reading hv55-sensory-${reading.status}`}>
-                <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} className="hv55-sensory-radar-extent" />
-                <circle cx={start.x} cy={start.y} r="2.5" className="hv55-sensory-radar-range-end" />
-                {reading.range.max !== reading.range.min && <circle cx={end.x} cy={end.y} r="2.5" className="hv55-sensory-radar-range-end" />}
+              const angle = -Math.PI / 2 + index * Math.PI * 2 / total;
+              const across = { x: -Math.sin(angle) * RADAR_TICK, y: Math.cos(angle) * RADAR_TICK };
+              const start = radarPoint(index, total, reading.range.min, domain, offset);
+              const end = radarPoint(index, total, reading.range.max, domain, offset);
+              const central = reading.central === undefined ? null : radarPoint(index, total, reading.central, domain, offset);
+              return <g key={axis.referenceGroupId} data-reference-group={axis.referenceGroupId} className={`hv55-sensory-radar-reading hv55-sensory-${reading.status}`}>
+                <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} className="hv55-sensory-radar-extent">
+                  <title>{candidateTitle(axis, valueFor(axis, candidate.id), candidate.name)}</title>
+                </line>
+                {reading.range.max !== reading.range.min && <line x1={start.x - across.x} y1={start.y - across.y} x2={start.x + across.x} y2={start.y + across.y} className="hv55-sensory-radar-range-end" />}
+                <text x={end.x} y={end.y + 3} textAnchor="middle" className="hv55-sensory-radar-range-cap" aria-hidden="true">{series.cap}</text>
                 {central && <text x={central.x} y={central.y + 4} textAnchor="middle" className="hv55-sensory-radar-point" aria-hidden="true">
                   <title>{candidateTitle(axis, valueFor(axis, candidate.id), candidate.name)}</title>{series.marker}
                 </text>}
@@ -586,7 +796,8 @@ function RadarProfile({ group, candidates, comparison, titleId, descriptionId }:
         })}
       </svg>
       {gaps.length > 0 && <ul className="hv55-sensory-gaps" aria-label="Valeurs absentes du radar">{gaps}</ul>}
-      <p className="hv55-sensory-radar-note">Même métrique et échelle pour ces axes : {domainText(domain)} {metricUnitText(group.metric)}. Valeurs exactes, statut et sources au tableau.</p>
+      <p className="hv55-sensory-radar-note">Même métrique et échelle pour ces axes : {domainText(domain)} {metricUnitText(group.metric)}. Le contour relie seulement les points et centrales fournis ; il ne calcule ni somme, ni ressemblance, ni score. Symbole plein : point ou centrale fournie ; symbole creux : borne haute de la plage ; petit trait : borne basse. Les candidats sont décalés de part et d’autre de l’axe pour rester distincts. Valeurs exactes, statut et sources au tableau.</p>
+      <RadarAxisReader axes={axes} candidates={candidates} comparison={comparison} />
     </section>
   );
 }
@@ -678,7 +889,7 @@ export function HopV55SensoryComparison({
       </p>
 
       <div className="hv55-sensory-legend" aria-label="Légende des candidats sélectionnés">
-        {candidates.map(candidate => <span key={candidate.id}><span><CandidateMarker index={checked.candidateOrder.indexOf(candidate.id)} />{candidate.name}</span>
+        {candidates.map(candidate => <span key={candidate.id} data-candidate-id={candidate.id} data-series-marker={candidateSeries(checked.candidateOrder.indexOf(candidate.id)).marker}><span><CandidateMarker index={checked.candidateOrder.indexOf(candidate.id)} />{candidate.name}</span>
           <small>{candidateStatusSummary(checked, candidate.id, dimensionIds)}</small></span>)}
       </div>
       <div className="hv55-sensory-status-legend" aria-label="Statuts des valeurs chiffrées">
@@ -692,7 +903,7 @@ export function HopV55SensoryComparison({
         : dimensions.length === 0 ? <p className="hv55-sensory-empty">Sélectionne une nuance pour lire le profil.</p>
           : mode === 'bars'
             ? <BarProfiles dimensions={dimensions} candidates={candidates} comparison={checked} />
-            : <RadarProfiles dimensions={dimensions} candidates={candidates} comparison={checked} titleBaseId={chartTitleId} />}
+            : <RadarProfiles dimensions={dimensions} allDimensions={orderedDimensions} candidates={candidates} comparison={checked} titleBaseId={chartTitleId} />}
 
       <CandidateSelection comparison={checked} candidateIds={candidateIds} dimensionIds={dimensionIds} result={sourceResult} selectedCandidateId={selectedCandidateId}
         onToggleCandidate={onToggleCandidate} onChooseCandidate={onChooseCandidate} selectableCandidateIds={selectableCandidateIds} />

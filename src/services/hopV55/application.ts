@@ -50,7 +50,7 @@ interface PreviewFromRequestInput {
 }
 
 const blocked = (reason: string, recompute = false): HopV55BranchPreviewResult => ({ status: 'blocked', reason, recompute });
-const copyBlocked = (reason: string, recompute = false): HopV55CopyResult => ({ status: 'blocked', reason, recompute });
+const copyBlocked = (reason: string, recompute = false): Extract<HopV55CopyResult, { status: 'blocked' }> => ({ status: 'blocked', reason, recompute });
 const isRecord = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value);
 const sameContent = (left: unknown, right: unknown): boolean => hopDecisionReference(left) === hopDecisionReference(right);
 const safeHostId = (value: unknown): value is string => typeof value === 'string' && !!value.trim() && value.length <= 120
@@ -249,13 +249,11 @@ function previewIntegrityError(preview: HopV55ReadyPreview): string | undefined 
   return undefined;
 }
 
-/** Apply only to a detached Recipe value; storage, stock and batch writes belong to the host. */
-export function applyHopV55Copy(input: {
+/** Revalidate and apply J4 to its source draft without allocating another recipe identity. */
+export function applyHopV55RecipeDraft(input: {
   preview: HopV55ReadyPreview;
   context: BrewerContext;
-  copyId: string;
-  createdAt: string;
-}): HopV55CopyResult {
+}): { status: 'ready'; recipe: Recipe; previewReference: string } | Extract<HopV55CopyResult, { status: 'blocked' }> {
   const integrityError = previewIntegrityError(input.preview);
   if (integrityError) return copyBlocked(integrityError, true);
 
@@ -291,6 +289,20 @@ export function applyHopV55Copy(input: {
   if (applied.recipe.id !== recipe.id || hopDecisionReference(applied.recipe) !== hopDecisionReference(input.preview.recipePreview.draft.recipe)) {
     return copyBlocked('J4 n’a pas rendu le brouillon attendu depuis la Recipe source.', true);
   }
+  return { status: 'ready', recipe: structuredClone(applied.recipe), previewReference: applied.previewReference };
+}
+
+/** Apply only to a detached Recipe value; storage, stock and batch writes belong to the host. */
+export function applyHopV55Copy(input: {
+  preview: HopV55ReadyPreview;
+  context: BrewerContext;
+  copyId: string;
+  createdAt: string;
+}): HopV55CopyResult {
+  const applied = applyHopV55RecipeDraft(input);
+  if (applied.status === 'blocked') return applied;
+  const recipe = currentSourceRecipe(input.context);
+  if (!recipe) return copyBlocked('La recette source est indisponible.', true);
   if (!safeHostId(input.copyId) || input.copyId === recipe.id) return copyBlocked('L’identifiant fourni doit être non vide, sûr et différent de celui de la recette source.');
   if (typeof input.createdAt !== 'string' || !input.createdAt.trim() || !Number.isFinite(Date.parse(input.createdAt))) {
     return copyBlocked('La date de création fournie est invalide.');

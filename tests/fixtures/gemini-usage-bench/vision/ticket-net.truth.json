@@ -1,0 +1,92 @@
+{
+  "id": "ticket-net",
+  "level": "simple",
+  "facture": {
+    "vendor": "Comptoir du Brasseur",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "14.09.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "4471",
+      "Ticket 4471",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 37,
+    "tvaRate": 0.081,
+    "tvaAmount": 3,
+    "amountTTC": 40,
+    "items": [
+      {
+        "name": "Tuyau silicone 10 mm",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 5.9,
+        "amountTTC": 11.8
+      },
+      {
+        "name": "Pince Hoffmann",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 3.5,
+        "amountTTC": 3.5
+      },
+      {
+        "name": "Thermometre digital",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 18.9,
+        "amountTTC": 18.9
+      },
+      {
+        "name": "Brosse a bouteilles",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 5.8,
+        "amountTTC": 5.8
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/ticket-net.png",
+  "mimeType": "image/png",
+  "note": "FIXTURE DE TEST – document fictif"
+}

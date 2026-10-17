@@ -1,14 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { hopDescriptorEvidence, createHopExtrapolationCache } from '../../../functions/src/hopExtrapolationCore';
 import type { HopDescription, HopSource, HopVariety } from '../../../functions/src/hopIndexSchema';
 import type { HopAxis, HopYeast } from '../../../functions/src/hopPredictionSchema';
 import type { HopExtrapolation } from '../../../functions/src/hopExtrapolationSchema';
 import type { HopDecisionMaterial, HopDecisionProgram, HopUse } from '../../domain/hopDecision/types';
 import { programFingerprint } from '../../domain/hopDecision/programs';
+import { coldDecimal, coldDecimalToNumber, divideColdDecimals, sumColdDecimalNumbers } from '../../domain/hopDecision/coldIbuDecimal';
 import type { PreparedBrewingScenarioContext } from '../../domain/brewingScenarioContext';
 import { Input } from '../Input';
 import { formatDecimal, parseDecimal } from '../numericInput';
 import { HopV55ExactInput } from './ExactInput';
+import { hopV55DoseText } from './readings';
 import type { HopV55Intent } from '../../services/hopV55/contracts';
 import type { HopV55DecisionReadingArchiveV4 } from '../../services/hopV55/decisionArchive';
 import { readHopV55ExplorationTrialOriginContextV1 } from '../../services/hopV55/explorationTrialPreparation';
@@ -48,7 +50,8 @@ export interface HopV55ExplorerProps {
   intent: HopV55Intent;
   /** Legacy blend composer, used while the parent does not provide `onPrepareTrial`. */
   onCompose: (composition: HopV55Composition) => void;
-  selectionRequest?: { id: string; materialId?: string; materialIds?: string[]; yeastId?: string; terms?: string[] };
+  /** `scope`: dossier of the gesture; absent, the dossier open when the request is handled. */
+  selectionRequest?: { id: string; materialId?: string; materialIds?: string[]; yeastId?: string; terms?: string[]; scope?: string | null };
   /** Current or explicitly adopted hypothetical programme; defaults to the prepared current programme. `null` means none. */
   program?: HopDecisionProgram | null;
   /** Workspace exploration profiles exactly as stored; read without rebuilding or requalifying them. */
@@ -61,6 +64,23 @@ export interface HopV55ExplorerProps {
   onDeclareProfile?(profile: HopV55ExplorationProfileV1): void | Promise<void>;
   /** Simulates the canonical prepared branch through the parent's J5, comparison and copy contracts. */
   onPrepareTrial?(request: HopV55ExplorationTrialRequestV1): void | Promise<void>;
+  /** Reports what a trial hand-off became: lines added now, or identities waiting visibly for an exact frame. */
+  onSelectionHandled?(outcome: HopV55ExplorerSelectionOutcome): void;
+  /** Reports the names of waiting identities that have just entered the trial, still unsaved. */
+  onPendingTrialEntered?(names: string[]): void;
+  /** Dossier open now; a hand-off, waiting or not, only enters the trial of its own dossier. */
+  selectionScope?: string | null;
+  /** Opens the place where a reference programme can be adopted when no exact programme frames the trial. */
+  onDeclareReference?(): void;
+}
+
+/** Result of one explicit hand-off in trial mode; nothing is stored before « Préparer l’essai ». */
+export interface HopV55ExplorerSelectionOutcome {
+  requestId: string;
+  added: string[];
+  pending: string[];
+  /** Why the pending identities wait: no exact reference programme yet, or their loaded identity. */
+  waitingFor: 'reference' | 'loading' | null;
 }
 
 interface ModelReference {
@@ -97,7 +117,6 @@ const UNKNOWN_FOCUS = '__unknown__' as const;
 const ALL_FOCUS = '__all__' as const;
 const MATERIAL_PAGE_SIZE = 12;
 const FAMILY_PAGE_SIZE = 10;
-const MAP_FAMILY_LIMIT = 8;
 
 const formLabels = HOP_V55_FORM_LABELS;
 const useOptions = HOP_V55_USE_OPTIONS;
@@ -338,13 +357,20 @@ function formName(material: HopDecisionMaterial): string {
   return formLabels[material.form] ?? 'Forme inconnue';
 }
 
-function mapCoordinates(index: number, count: number): { x: number; y: number } {
-  const angle = -Math.PI / 2 + (2 * Math.PI * index) / Math.max(1, count);
-  return { x: 180 + Math.cos(angle) * 118, y: 124 + Math.sin(angle) * 76 };
+/** Documentary relation of one family to the focused family: same loaded descriptions, or same exact model term. */
+interface FamilyRelation {
+  family: DocumentaryFamily;
+  shared: ExplorerMaterial[];
+  sharedTerms: string[];
+}
+
+function plural(count: number, singular: string, pluralForm = `${singular}s`): string {
+  return `${count} ${count > 1 ? pluralForm : singular}`;
 }
 
 export function HopV55Explorer({
   prepared, intent, onCompose, selectionRequest, program: programProp, profiles, readingArchive, originContext, onDeclareProfile, onPrepareTrial,
+  onSelectionHandled, onDeclareReference, onPendingTrialEntered, selectionScope,
 }: HopV55ExplorerProps) {
   const { families, materials } = useMemo(() => buildCatalogue(prepared), [prepared.runtime.engineData, prepared.runtime.materials]);
   const materialById = useMemo(() => new Map(materials.map((row) => [row.material.id, row])), [materials]);
@@ -386,6 +412,20 @@ export function HopV55Explorer({
   const [sessionProfile, setSessionProfile] = useState<HopV55ExplorationProfileV1>();
   const [activeProfileKey, setActiveProfileKey] = useState('');
   const [trialLines, setTrialLines] = useState<HopV55TrialLineDraft[]>([]);
+  // Exact identities handed to the trial before an exact frame (or their loaded identity) exists,
+  // with the dossier open at the gesture (null: none yet).
+  const [pendingTrialIds, setPendingTrialIds] = useState<string[]>([]);
+  const [pendingScope, setPendingScope] = useState<string | null>(null);
+  const [pendingScopeNote, setPendingScopeNote] = useState('');
+  const scope = selectionScope ?? null;
+  // A neighbour drill-down belongs to the focus that opened it; another focus ignores it.
+  const [pairFocus, setPairFocus] = useState<{ focus: string; familyKey: string } | null>(null);
+  const mapCenterRef = useRef<HTMLDivElement>(null);
+  const [mapFocusRequest, setMapFocusRequest] = useState(0);
+  useEffect(() => {
+    // The chosen family leaves its zone for the centre: keyboard focus follows it instead of falling back to the page.
+    if (mapFocusRequest) mapCenterRef.current?.focus({ preventScroll: true });
+  }, [mapFocusRequest]);
 
   const addTrialMaterial = (materialId: string) => {
     if (!trialFrameReady || !currentOriginContext || !programReference) {
@@ -397,17 +437,67 @@ export function HopV55Explorer({
       kind: 'add', additionId: `exploration-hop:${newId()}`, materialId };
     setTrialLines((current) => current.some((row) => row.kind === 'add' && row.materialId === materialId) ? current : [...current, line]);
   };
+  // A hand-off belongs to the dossier of its gesture; anywhere else it is set aside visibly and nothing is saved.
+  const otherDossierNote = (ids: readonly string[], scopeNow: string | null) => {
+    const many = ids.length > 1;
+    const names = ids.map(id => materialById.get(id)?.material.name ?? id).join(', ');
+    return scopeNow
+      ? `${names} ${many ? 'ont été choisies' : 'a été choisie'} dans un autre dossier : ${many ? 'elles n’entrent' : 'elle n’entre'} pas dans cet essai. ${many ? 'Choisis-les' : 'Choisis-la'} de nouveau ici pour ${many ? 'les ajouter' : 'l’ajouter'}; rien n’a été enregistré.`
+      : `${names} ${many ? 'attendaient' : 'attendait'} l’essai d’un dossier fermé : ${many ? 'retirées' : 'retirée'} de l’attente; rien n’a été enregistré.`;
+  };
 
   useEffect(() => {
     if (!selectionRequest) return;
     setError('');
-    const requested = [...(selectionRequest.materialIds ?? []), ...(selectionRequest.materialId ? [selectionRequest.materialId] : [])].filter(id => materialById.has(id));
+    setPendingScopeNote('');
+    const handed = [...new Set([...(selectionRequest.materialIds ?? []), ...(selectionRequest.materialId ? [selectionRequest.materialId] : [])])];
+    const requestScope = selectionRequest.scope === undefined ? scope : selectionRequest.scope;
+    if (trialMode && handed.length && requestScope !== scope) {
+      // The parent's last request replays when the Explorer remounts in another dossier: it never enters this trial.
+      setPendingScopeNote(otherDossierNote(handed, scope));
+      return;
+    }
+    const requested = handed.filter(id => materialById.has(id));
     if (requested.length) setSelectedIds(current => [...new Set([...current, ...requested])]);
-    // A hand-off adds exact identities without mass, use or conditions.
-    if (requested.length && trialMode) requested.forEach(addTrialMaterial);
+    if (trialMode && handed.length) {
+      // A hand-off adds exact identities without mass, use or conditions. Without an exact frame or a
+      // loaded identity it waits visibly, instead of being dropped behind a disabled trial.
+      const added = trialFrameReady ? requested : [];
+      const pending = handed.filter(id => !added.includes(id));
+      added.forEach(addTrialMaterial);
+      if (pending.length) {
+        setPendingTrialIds(current => [...new Set([...current, ...pending])]);
+        setPendingScope(requestScope);
+      }
+      onSelectionHandled?.({ requestId: selectionRequest.id, added, pending,
+        waitingFor: !pending.length ? null : trialFrameReady ? 'loading' : 'reference' });
+    }
     if (selectionRequest.terms?.length) setQuery(selectionRequest.terms.join(' '));
     if (selectionRequest.yeastId) setYeastId(selectionRequest.yeastId);
   }, [selectionRequest?.id, selectionRequest?.materialId, selectionRequest?.yeastId]);
+
+  useEffect(() => {
+    // The wait belongs to the dossier of the gesture: a dossier created for it adopts it, another one never receives it.
+    if (!pendingTrialIds.length || pendingScope === scope) return;
+    if (pendingScope === null) {
+      setPendingScope(scope);
+      return;
+    }
+    setPendingScopeNote(otherDossierNote(pendingTrialIds, scope));
+    setPendingTrialIds([]);
+    setPendingScope(null);
+  }, [scope, pendingScope, pendingTrialIds]);
+
+  useEffect(() => {
+    // Once the exact frame exists, each waiting identity enters the trial once, still without mass or use.
+    if (!trialMode || !trialFrameReady || !pendingTrialIds.length) return;
+    if (pendingScope !== null && pendingScope !== scope) return;
+    const ready = pendingTrialIds.filter(id => materialById.has(id));
+    if (!ready.length) return;
+    ready.forEach(addTrialMaterial);
+    setPendingTrialIds(current => current.filter(id => !ready.includes(id)));
+    onPendingTrialEntered?.(ready.map(id => materialById.get(id)?.material.name ?? id));
+  }, [trialMode, trialFrameReady, pendingTrialIds, materialById, programReference, currentOriginContext?.reference, pendingScope, scope]);
 
   const profileHistory = useMemo(() => hopV55ExplorationProfileHistory(profiles), [profiles]);
   const sessionPersisted = !!sessionProfile && profileHistory.history.some((profile) => profile.reference === sessionProfile.reference);
@@ -442,23 +532,42 @@ export function HopV55Explorer({
     family.key,
     materials.filter((row) => evidenceForFamily(row, family.key).length > 0).length,
   ])), [families, materials]);
+  // Neighbours are documentary only: a loaded description matches both families, or both families declare the same
+  // exact term. Their order stays alphabetical; no similarity, distance or intensity is computed from these counts.
+  const familyRelations = useMemo<FamilyRelation[]>(() => {
+    if (!activeFamily) return [];
+    const focusTerms = new Set(activeFamily.terms.map(normalize));
+    return families.filter((family) => family.key !== activeFamily.key).map((family) => ({
+      family,
+      shared: materials.filter((row) => evidenceForFamily(row, activeFamily.key).length > 0 && evidenceForFamily(row, family.key).length > 0),
+      sharedTerms: family.terms.filter((term) => focusTerms.has(normalize(term))),
+    }));
+  }, [activeFamily, families, materials]);
+  const nearRelations = familyRelations.filter((row) => row.shared.length > 0 || row.sharedTerms.length > 0);
+  const farRelations = familyRelations.filter((row) => row.shared.length === 0 && row.sharedTerms.length === 0);
+  const pairRelation = activeFamily && pairFocus?.focus === activeFamily.key
+    ? nearRelations.find((row) => row.family.key === pairFocus.familyKey && row.shared.length > 0)
+    : undefined;
   const visibleFamilyRows = families.filter((family) => matchesSearch(familySearchText(family), query));
   const focusRows = activeFocus === UNKNOWN_FOCUS
     ? unknownRows
     : activeFamily
-      ? materials.filter((row) => evidenceForFamily(row, activeFamily.key).length > 0)
+      ? pairRelation ? pairRelation.shared : materials.filter((row) => evidenceForFamily(row, activeFamily.key).length > 0)
       : materials;
   const filteredMaterials = focusRows.filter((row) => matchesSearch(row.searchText, query));
   const visibleMaterials = filteredMaterials.slice(0, visibleMaterialCount);
   const visibleFamilies = visibleFamilyRows.slice(0, visibleFamilyCount);
-  const totalGrams = selectedIds.reduce((total, id) => total + (gramsById[id] ?? 0), 0);
+  // #75, display only: the entered decimals are summed and divided exactly, so 0,1 + 0,2 g reads 0,3 g and the dose
+  // carries no binary tail. The composition still transmits each entered mass unchanged.
+  const exactGrams = sumColdDecimalNumbers(selectedIds.map((id) => gramsById[id] ?? 0));
+  const totalGrams = coldDecimalToNumber(exactGrams);
   const totalMassKnown = selectedIds.length > 0 && selectedIds.every((id) => typeof gramsById[id] === 'number' && Number.isFinite(gramsById[id]));
   const validMasses = selectedIds.length > 0 && selectedIds.every((id) => {
     const grams = gramsById[id];
     return typeof grams === 'number' && Number.isFinite(grams) && grams > 0 && materialById.has(id);
   });
   const knownDose = validMasses && typeof volumeL === 'number' && Number.isFinite(volumeL) && volumeL > 0
-    ? totalGrams / volumeL
+    ? coldDecimalToNumber(divideColdDecimals(exactGrams, coldDecimal(volumeL)))
     : undefined;
   const yeastOptions = prepared.runtime.engineData.knowledge
     .filter((row): row is HopYeast => row.kind === 'yeast')
@@ -547,7 +656,9 @@ export function HopV55Explorer({
 
   const focusName = activeFocus === UNKNOWN_FOCUS
     ? 'Sans descripteur relié aux axes du modèle'
-    : activeFamily?.name ?? (activeFocus && activeFocus !== ALL_FOCUS ? 'Catégorie absente des données chargées' : 'Tout le catalogue');
+    : activeFamily
+      ? pairRelation ? `${activeFamily.name} et ${pairRelation.family.name}` : activeFamily.name
+      : activeFocus && activeFocus !== ALL_FOCUS ? 'Catégorie absente des données chargées' : 'Tout le catalogue';
 
   const compose = () => {
     if (selectedIds.length < 2) {
@@ -598,30 +709,43 @@ export function HopV55Explorer({
     });
   };
 
-  const mapFamilies = families.slice(0, MAP_FAMILY_LIMIT);
-  const mapNodes = [
-    ...mapFamilies.map((family, index) => ({
-      key: family.key,
-      number: dataIndex(index),
-      count: familyCounts.get(family.key) ?? 0,
-      label: family.name,
-      unknown: false,
-    })),
-    {
-      key: UNKNOWN_FOCUS,
-      number: '?',
-      count: unknownRows.length,
-      label: 'Sans descripteur relié aux axes du modèle',
-      unknown: true,
-    },
-  ];
-
-  const handleMapKey = (event: React.KeyboardEvent<SVGGElement>, key: FocusKey) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      setFocus(key);
-      setVisibleMaterialCount(MATERIAL_PAGE_SIZE);
-    }
+  const chooseMapFocus = (key: FocusKey, followFocus = true) => {
+    setFocus(key);
+    setVisibleMaterialCount(MATERIAL_PAGE_SIZE);
+    if (followFocus) setMapFocusRequest((count) => count + 1);
+  };
+  const matterCount = (count: number) => plural(count, 'matière');
+  const familyIndex = (family: DocumentaryFamily) => dataIndex(families.findIndex((candidate) => candidate.key === family.key));
+  /** One map region per family; its index stays the list index whatever the zone, filter or focus. */
+  const familyChip = (family: DocumentaryFamily, relation?: FamilyRelation): React.ReactElement => {
+    const count = familyCounts.get(family.key) ?? 0;
+    const linked = !!relation && (relation.shared.length > 0 || relation.sharedTerms.length > 0);
+    const label = !activeFamily
+      ? `${family.name} : ${matterCount(count)} portant des termes documentés`
+      : linked
+        ? `${family.name} : ${matterCount(relation!.shared.length)} décrite${relation!.shared.length > 1 ? 's' : ''} aussi avec ${activeFamily.name}${relation!.sharedTerms.length ? `, terme exact commun ${relation!.sharedTerms.join(', ')}` : ''} ; ${matterCount(count)} au total`
+        : `${family.name} : ${matterCount(count)}, aucune fiche commune trouvée avec ${activeFamily.name}`;
+    return (
+      <button
+        type="button"
+        key={family.key}
+        className={`hop-v55-explorer__map-chip${linked ? ' is-linked' : ''}`}
+        data-family-key={family.key}
+        data-family-index={familyIndex(family)}
+        aria-label={label}
+        onClick={() => chooseMapFocus(family.key)}
+      >
+        <span className="hop-v55-explorer__map-index" aria-hidden="true">{familyIndex(family)}</span>
+        <span className="hop-v55-explorer__map-name">
+          {family.name}
+          {linked && relation!.sharedTerms.length > 0 && <small>terme commun : {relation!.sharedTerms.join(', ')}</small>}
+        </span>
+        <span className="hop-v55-explorer__map-tally" aria-hidden="true">
+          <span className="hop-v55-explorer__map-count">{linked ? relation!.shared.length : count}</span>
+          <small>{linked ? 'en commun' : count > 1 ? 'fiches' : 'fiche'}</small>
+        </span>
+      </button>
+    );
   };
 
   return (
@@ -683,50 +807,76 @@ export function HopV55Explorer({
             </div>
 
             <div className="hop-v55-explorer__map-wrap">
-              <svg
-                className="hop-v55-explorer__map"
-                viewBox="0 0 360 260"
-                role="group"
-                aria-label="Carte cliquable des catégories documentaires"
-              >
-                <circle cx="180" cy="124" r="43" className="hop-v55-explorer__map-hub" />
-                <text x="180" y="121" textAnchor="middle" className="hop-v55-explorer__map-hub-title">Catalogue</text>
-                <text x="180" y="138" textAnchor="middle" className="hop-v55-explorer__map-hub-caption">par familles</text>
-                {mapNodes.map((node, index) => {
-                  const point = node.unknown ? { x: 180, y: 226 } : mapCoordinates(index, mapFamilies.length);
-                  const selected = activeFocus === node.key;
-                  return (
-                    <g
-                      key={node.key}
-                      className={`hop-v55-explorer__map-node${selected ? ' is-active' : ''}${node.unknown ? ' is-unknown' : ''}`}
-                      role="button"
-                      tabIndex={0}
-                      aria-pressed={selected}
-                      aria-label={node.unknown
-                        ? `${node.label} : ${node.count} matière${node.count > 1 ? 's' : ''} sans correspondance lexicale trouvée`
-                        : `${node.label} : ${node.count} matière${node.count > 1 ? 's' : ''} portant des termes documentés`}
-                      onClick={() => { setFocus(node.key); setVisibleMaterialCount(MATERIAL_PAGE_SIZE); }}
-                      onKeyDown={(event) => handleMapKey(event, node.key)}
-                    >
-                      {!node.unknown && <line x1="180" y1="124" x2={point.x} y2={point.y} className="hop-v55-explorer__map-link" />}
-                      {node.unknown && <line x1="180" y1="168" x2={point.x} y2={point.y - 22} className="hop-v55-explorer__map-link is-dashed" />}
-                      <circle cx={point.x} cy={point.y} r={node.unknown ? 21 : 19} className="hop-v55-explorer__map-dot" />
-                      <text x={point.x} y={point.y - 25} textAnchor="middle" className="hop-v55-explorer__map-index">{node.number}</text>
-                      <text x={point.x} y={point.y + 5} textAnchor="middle" className="hop-v55-explorer__map-number">{node.count}</text>
-                      <title>{`${node.label} · ${node.count} matière${node.count > 1 ? 's' : ''} avec une correspondance documentaire`}</title>
-                    </g>
-                  );
-                })}
-              </svg>
+              <div className="hop-v55-explorer__map" role="group" aria-label="Carte cliquable des catégories documentaires"
+                data-map-center={activeFamily ? activeFamily.key : 'catalogue'}>
+                <p className="hop-v55-explorer__map-legend">
+                  {activeFamily
+                    ? <>Au centre : <b>{activeFamily.name}</b>. Zone intérieure : familles décrites dans au moins une même fiche chargée, ou partageant un terme exact du modèle. Zone extérieure : aucune fiche commune trouvée.</>
+                    : <>Au centre : le catalogue chargé. Choisis une famille : elle passe au centre et ses voisines documentaires se placent autour d’elle.</>}
+                  {' '}L’ordre reste alphabétique ; une place ne mesure ni ressemblance, ni distance sensorielle, ni intensité.
+                </p>
+                <div className="hop-v55-explorer__map-zone is-outer" data-map-zone={activeFamily ? 'far' : 'families'}>
+                  <p className="hop-v55-explorer__map-zone-title">
+                    {activeFamily ? 'Sans fiche commune trouvée' : 'Familles documentées'}
+                    {' · '}<span className="hop-v55-explorer__map-count">{activeFamily ? farRelations.length : families.length}</span>
+                  </p>
+                  <div className="hop-v55-explorer__map-chips">
+                    {activeFamily
+                      ? farRelations.length ? farRelations.map((row) => familyChip(row.family, row))
+                        : <p className="hop-v55-explorer__map-empty">Toutes les autres familles partagent au moins une fiche ou un terme.</p>
+                      : families.length ? families.map((family) => familyChip(family))
+                        : <p className="hop-v55-explorer__map-empty">Aucune famille documentaire n’est chargée.</p>}
+                  </div>
+                  <div className="hop-v55-explorer__map-zone is-inner" data-map-zone={activeFamily ? 'near' : 'centre'}>
+                    {activeFamily && <>
+                      <p className="hop-v55-explorer__map-zone-title">
+                        Décrites dans les mêmes fiches · <span className="hop-v55-explorer__map-count">{nearRelations.length}</span>
+                      </p>
+                      <div className="hop-v55-explorer__map-chips">
+                        {nearRelations.length ? nearRelations.map((row) => familyChip(row.family, row))
+                          : <p className="hop-v55-explorer__map-empty">Aucune fiche chargée ne décrit aussi une autre famille, et aucun terme exact n’est partagé.</p>}
+                      </div>
+                    </>}
+                    <div className="hop-v55-explorer__map-center" data-map-zone="center" tabIndex={-1} ref={mapCenterRef}
+                      aria-label={activeFamily ? `Centre de la carte : ${activeFamily.name}` : 'Centre de la carte : catalogue chargé'}>
+                      {activeFamily ? <>
+                        <span className="hop-v55-explorer__map-index" aria-hidden="true">{familyIndex(activeFamily)}</span>
+                        <b className="hop-v55-explorer__map-name">{activeFamily.name}</b>
+                        <span className="hop-v55-explorer__map-tally">
+                          <span className="hop-v55-explorer__map-count">{familyCounts.get(activeFamily.key) ?? 0}</span>
+                          <small>{(familyCounts.get(activeFamily.key) ?? 0) > 1 ? 'fiches' : 'fiche'}</small>
+                        </span>
+                        <small className="hop-v55-explorer__map-axis">axe {activeFamily.axisId} · {activeFamily.version}</small>
+                        <button type="button" className="hop-v55-explorer__text-button" onClick={() => chooseMapFocus(ALL_FOCUS)}>Revenir au catalogue</button>
+                      </> : <>
+                        <b className="hop-v55-explorer__map-name">Catalogue</b>
+                        <span className="hop-v55-explorer__map-tally">
+                          <span className="hop-v55-explorer__map-count">{materials.length}</span>
+                          <small>{materials.length > 1 ? 'matières chargées' : 'matière chargée'}</small>
+                        </span>
+                      </>}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className={`hop-v55-explorer__map-unknown${activeFocus === UNKNOWN_FOCUS ? ' is-active' : ''}`}
+                  aria-pressed={activeFocus === UNKNOWN_FOCUS}
+                  aria-label={`Sans descripteur relié aux axes du modèle : ${matterCount(unknownRows.length)} sans correspondance lexicale trouvée, inconnu et non nul`}
+                  onClick={() => chooseMapFocus(UNKNOWN_FOCUS, false)}
+                >
+                  <span className="hop-v55-explorer__map-index" aria-hidden="true">?</span>
+                  <span className="hop-v55-explorer__map-name">Sans correspondance trouvée dans les descriptions chargées<small>inconnu, pas nul</small></span>
+                  <span className="hop-v55-explorer__map-tally">
+                    <span className="hop-v55-explorer__map-count">{unknownRows.length}</span>
+                    <small>{unknownRows.length > 1 ? 'fiches' : 'fiche'}</small>
+                  </span>
+                </button>
+              </div>
               <p className="hop-v55-explorer__map-note">
                 Le nombre indique des fiches avec une correspondance lexicale, jamais une intensité. « ? » regroupe les matières
                 sans correspondance trouvée : cela reste inconnu, pas nul.
               </p>
-              {families.length > MAP_FAMILY_LIMIT && (
-                <p className="hop-v55-explorer__limit-note">
-                  Carte limitée à {MAP_FAMILY_LIMIT} catégories sur {families.length} ; toutes restent disponibles dans la liste et la recherche.
-                </p>
-              )}
             </div>
 
             <div className="hop-v55-explorer__family-list" role="group" aria-label="Familles et termes documentaires">
@@ -785,7 +935,7 @@ export function HopV55Explorer({
               <div className="hop-v55-explorer__focus" aria-live="polite">
                 <div className="hop-v55-explorer__section-head">
                   <div>
-                    <p className="hop-v55-explorer__eyebrow">Focus documentaire · axe {activeFamily.axisId} v{activeFamily.version}</p>
+                    <p className="hop-v55-explorer__eyebrow">Focus documentaire · axe {activeFamily.axisId} · {activeFamily.version}</p>
                     <h4>{activeFamily.name}</h4>
                   </div>
                   <button type="button" className="hop-v55-explorer__text-button" onClick={() => setFocus(ALL_FOCUS)}>Retirer le focus</button>
@@ -803,6 +953,36 @@ export function HopV55Explorer({
                 <div className="hop-v55-explorer__citations">
                   {activeFamilySources.map((source, index) => <SourceCitation key={`${source.reference}-${index}`} source={source} />)}
                 </div>
+                <section className="hop-v55-explorer__neighbours" aria-label={`Voisins documentés de ${activeFamily.name}`}>
+                  <p><b>Voisins documentés</b> · une même fiche chargée décrit aussi l’autre famille, ou les deux familles déclarent le même terme exact. Ce n’est ni une ressemblance ni une intensité.</p>
+                  {nearRelations.length ? (
+                    <ul>
+                      {nearRelations.map((row) => {
+                        const open = pairRelation?.family.key === row.family.key;
+                        return (
+                          <li key={row.family.key}>
+                            <span>
+                              <b>{row.family.name}</b> · {plural(row.shared.length, 'fiche commune', 'fiches communes')}
+                              {row.sharedTerms.length > 0 && <> · terme exact commun : {row.sharedTerms.join(', ')}</>}
+                            </span>
+                            {row.shared.length > 0 && (
+                              <button type="button" className="hop-v55-explorer__text-button" aria-pressed={open}
+                                onClick={() => {
+                                  setPairFocus(open ? null : { focus: activeFamily.key, familyKey: row.family.key });
+                                  setVisibleMaterialCount(MATERIAL_PAGE_SIZE);
+                                }}>
+                                {open ? `Revenir à toutes les fiches ${activeFamily.name}`
+                                  : `Voir ${row.shared.length > 1 ? `les ${row.shared.length} fiches décrites` : 'la fiche décrite'} aussi avec ${row.family.name}`}
+                              </button>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <p className="hop-v55-explorer__limit-note">Aucun voisin documenté : aucune fiche chargée ne décrit aussi une autre famille, et aucun terme exact n’est partagé.</p>
+                  )}
+                </section>
               </div>
             )}
             {activeFocus === UNKNOWN_FOCUS && (
@@ -814,7 +994,7 @@ export function HopV55Explorer({
                   </div>
                   <button type="button" className="hop-v55-explorer__text-button" onClick={() => setFocus(ALL_FOCUS)}>Retirer le focus</button>
                 </div>
-                <p>Ces fiches restent choisissables. L’absence de correspondance lexicale ne signifie ni intensité nulle, ni propriété absente.</p>
+                <p>Aucune correspondance n’a été trouvée dans les descriptions chargées pour ces fiches. Elles restent choisissables ; cette absence ne signifie ni intensité nulle, ni propriété absente.</p>
               </div>
             )}
           </section>
@@ -899,7 +1079,14 @@ export function HopV55Explorer({
                           {isAlternative ? 'Alternative ✓' : 'Alternative'}
                         </button>
                       </div>
-                      {activeFamily ? (
+                      {activeFamily && pairRelation ? (
+                        <div className="hop-v55-explorer__pair-evidence">
+                          <p className="hop-v55-explorer__context-label">Pourquoi cette fiche décrit {activeFamily.name}</p>
+                          <MaterialEvidence descriptions={matchedDescriptions} />
+                          <p className="hop-v55-explorer__context-label">Pourquoi elle décrit aussi {pairRelation.family.name}</p>
+                          <MaterialEvidence descriptions={evidenceForFamily(row, pairRelation.family.key)} />
+                        </div>
+                      ) : activeFamily ? (
                         <MaterialEvidence descriptions={matchedDescriptions} emptyMessage="Aucune correspondance documentaire dans ce focus." />
                       ) : row.variety?.descriptions.length ? (
                         <details className="hop-v55-explorer__descriptions">
@@ -935,10 +1122,41 @@ export function HopV55Explorer({
                 ? `Format du cadre d’origine non pris en charge${originContextRead.format ? ` (${originContextRead.format})` : ''}; lignes d’essai désactivées.`
                 : 'Le cadre exact propriétaire/source/runtime/lecture/programme manque ou ne correspond pas au programme courant; lignes d’essai désactivées.'}
             </p> : null}
+            {pendingTrialIds.length ? <section aria-label="Attente de l’essai">
+              <p className="hop-v55-explorer__limit-note" role="status">
+                {pendingTrialIds.length > 1 ? `${pendingTrialIds.length} fiches attendent` : '1 fiche attend'}{' '}
+                {!trialFrameReady ? 'un programme de référence exact'
+                  : pendingTrialIds.length > 1 ? 'leur chargement dans l’exploration' : 'son chargement dans l’exploration'} avant d’entrer dans l’essai.
+                Rien n’est enregistré avant « Préparer l’essai ».
+              </p>
+              <ol className="hop-v55-explorer__crucible-list" aria-label="Matières en attente de l’essai">
+                {pendingTrialIds.map((materialId) => {
+                  const row = materialById.get(materialId);
+                  const name = row?.material.name ?? materialId;
+                  return (
+                    <li key={materialId}>
+                      <div className="hop-v55-explorer__crucible-row-head">
+                        <div>
+                          <b>{name}</b>
+                          <span>{row ? `${formName(row.material)} · identité et sources relues` : 'Fiche relue, pas encore chargée dans l’exploration'}</span>
+                        </div>
+                        <button type="button" className="hop-v55-explorer__remove" aria-label={`Retirer ${name} de l’attente`}
+                          onClick={() => setPendingTrialIds((current) => current.filter((id) => id !== materialId))}>Retirer</button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+              {!trialFrameReady && onDeclareReference ? (
+                <button type="button" className="hop-v55-explorer__text-button" onClick={onDeclareReference}>Déclarer une référence</button>
+              ) : null}
+            </section> : null}
+            {pendingScopeNote ? <p className="hop-v55-explorer__limit-note" role="status">{pendingScopeNote}</p> : null}
+            {error && <p className="hop-v55-explorer__error" role="alert">{error}</p>}
             <HopV55ExplorationTrialPanel
               program={program}
               originContext={currentOriginContext ?? null}
-              materials={runtimeMaterials}
+              materials={prepared.runtime.materials}
               intent={intent}
               lines={trialLines}
               onLinesChange={setTrialLines}
@@ -1037,9 +1255,9 @@ export function HopV55Explorer({
 
           <div className="hop-v55-explorer__dose" aria-live="polite">
             <span>Masse totale saisie</span>
-            <b>{totalMassKnown ? `${formatValue(totalGrams)} g` : 'À compléter'}</b>
+            <b>{totalMassKnown ? `${formatValue(totalGrams)}\u00a0g` : 'À compléter'}</b>
             <span>Dose réelle calculable</span>
-            <b>{knownDose === undefined ? 'À compléter' : `${formatValue(knownDose)} g/L`}</b>
+            <b>{knownDose === undefined ? 'À compléter' : hopV55DoseText(knownDose)}</b>
           </div>
           {error && <p className="hop-v55-explorer__error" role="alert">{error}</p>}
           <button type="button" className="hop-v55-explorer__compose" onClick={compose}>

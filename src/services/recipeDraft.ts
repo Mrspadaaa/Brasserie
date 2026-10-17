@@ -4,6 +4,7 @@ import type { WaterState } from '../ui/SaltSolver';
 import { readYeastDocumentaryBody, readYeastDocumentarySheet, readYeastLocalDocumentary,
   type YeastCandidateDocumentaryFields, type YeastDocumentaryBody, type YeastDocumentarySheet, type YeastLocalDocumentary } from '../../functions/src/yeastDocumentarySheet';
 import type { YeastTechnicalSelections } from '../../functions/src/yeastTechnicalFacts';
+import { sha256 } from '@noble/hashes/sha2.js';
 
 export type { YeastCandidateDocumentaryFields } from '../../functions/src/yeastDocumentarySheet';
 
@@ -29,6 +30,8 @@ export interface RecipeWizardDraft {
   candidateSheets?: YeastCandidateSheets;
   /** Ephemeral recovery warning; shown by the Wizard and excluded from local serialization. */
   candidateSheetsReadWarning?: string;
+  /** Fingerprint of the saved recipe this draft started from (`recipeServerBase`); absent on older drafts. */
+  serverBase?: string;
 }
 export type YeastCandidateSheetAcceptance =
   | { accepted: true; draft: RecipeWizardDraft; hopIndexId: string; revision: number }
@@ -36,6 +39,23 @@ export type YeastCandidateSheetAcceptance =
 
 const PREFIX = 'laffinee_recipe_draft_v1:';
 const MISSING = '__recipe_number_missing__';
+
+export type RecipeDraftReadOnlyReason = 'future-version' | 'unsupported-format' | 'invalid-envelope' | 'storage-unavailable';
+export type RecipeDraftReadState =
+  | { status: 'absent' }
+  | { status: 'available'; version: 1; draft: RecipeWizardDraft; raw: string }
+  | { status: 'readOnly'; reason: Exclude<RecipeDraftReadOnlyReason, 'storage-unavailable'>; raw: string; version?: unknown; format?: unknown }
+  | { status: 'readOnly'; reason: 'storage-unavailable' };
+
+export class RecipeDraftWriteBlockedError extends Error {
+  readonly code = 'recipe-draft-read-only';
+  constructor(readonly state: Extract<RecipeDraftReadState, { status: 'readOnly' }>) {
+    super(state.reason === 'storage-unavailable'
+      ? 'Le brouillon ne peut pas être relu sur cet appareil; son remplacement est refusé.'
+      : 'Le brouillon conservé utilise un format non pris en charge. Sa copie brute reste intacte; aucune sauvegarde ne l’a remplacée.');
+    this.name = 'RecipeDraftWriteBlockedError';
+  }
+}
 
 /** Strictly read the local candidate cache: only identity, revision and accepted facts are persisted. */
 export function readYeastCandidateSheets(value: unknown): YeastCandidateSheets | undefined {
@@ -441,11 +461,8 @@ export function serializeRecipeDraft(draft: RecipeWizardDraft): string {
     typeof value === 'number' && !Number.isFinite(value) ? { [MISSING]: true } : value);
 }
 
-export function readRecipeDraft(key: string | undefined): RecipeWizardDraft | undefined {
-  if (!key) return undefined;
+function decodeKnownRecipeDraft(raw: string): RecipeWizardDraft | undefined {
   try {
-    const raw = localStorage.getItem(PREFIX + key);
-    if (!raw) return undefined;
     const stored = JSON.parse(raw, (_key, value) => value && typeof value === 'object' &&
       Object.keys(value).length === 1 && value[MISSING] === true ? Number.NaN : value);
     const draft = stored?.draft;
@@ -453,14 +470,80 @@ export function readRecipeDraft(key: string | undefined): RecipeWizardDraft | un
     if (stored?.version !== 1 || !draft?.recipe || typeof draft.recipe.id !== 'string' ||
       typeof draft.recipe.name !== 'string' || !draft.details || !draft.water ||
       !['identite', 'fermentescibles', 'houblons', 'levure', 'paliers', 'eau', 'recap'].includes(draft.step)) return undefined;
-    const { candidateSheets: _unreadCandidateSheets, candidateSheetsReadWarning: _oldWarning, ...recoverableDraft } = draft;
+    const { candidateSheets: _unreadCandidateSheets, candidateSheetsReadWarning: _oldWarning, serverBase, ...recoverableDraft } = draft;
     const candidateSheetsInvalid = draft.candidateSheets !== undefined && !candidateSheets;
+    // An unreadable fingerprint makes the draft unverified, never silently current. It stays last,
+    // as in the Wizard snapshot, so that a read draft serializes back to the same bytes.
     return { ...recoverableDraft, ...(candidateSheets ? { candidateSheets } : {}),
-      ...(candidateSheetsInvalid ? { candidateSheetsReadWarning: 'Les fiches candidates de ce brouillon sont invalides et n’ont pas été restaurées. La recette et les autres étapes sont conservées; rechargez ou corrigez ces fiches avant de les réutiliser.' } : {}) };
+      ...(candidateSheetsInvalid ? { candidateSheetsReadWarning: 'Les fiches candidates de ce brouillon sont invalides et n’ont pas été restaurées. La recette et les autres étapes sont conservées; rechargez ou corrigez ces fiches avant de les réutiliser.' } : {}),
+      ...(typeof serverBase === 'string' ? { serverBase } : {}) };
   } catch { return undefined; }
 }
 
+/** Read the exact local envelope without collapsing a future or malformed draft into absence. */
+export function readRecipeDraftState(key: string | undefined): RecipeDraftReadState {
+  if (!key) return { status: 'absent' };
+  let raw: string | null;
+  try { raw = localStorage.getItem(PREFIX + key); }
+  catch { return { status: 'readOnly', reason: 'storage-unavailable' }; }
+  if (raw === null) return { status: 'absent' };
+
+  let envelope: unknown;
+  try { envelope = JSON.parse(raw); }
+  catch { return { status: 'readOnly', reason: 'invalid-envelope', raw }; }
+  if (!envelope || typeof envelope !== 'object' || Array.isArray(envelope))
+    return { status: 'readOnly', reason: 'invalid-envelope', raw };
+
+  const header = envelope as Record<string, unknown>;
+  if (typeof header.version === 'number' && header.version > 1)
+    return { status: 'readOnly', reason: 'future-version', raw, version: header.version,
+      ...(Object.prototype.hasOwnProperty.call(header, 'format') ? { format: header.format } : {}) };
+  if (Object.prototype.hasOwnProperty.call(header, 'format'))
+    return { status: 'readOnly', reason: 'unsupported-format', raw, version: header.version, format: header.format };
+  if (header.version !== 1) return { status: 'readOnly', reason: 'invalid-envelope', raw, version: header.version };
+  if (Object.keys(header).some(field => field !== 'version' && field !== 'draft'))
+    return { status: 'readOnly', reason: 'unsupported-format', raw, version: header.version };
+
+  const draft = decodeKnownRecipeDraft(raw);
+  return draft ? { status: 'available', version: 1, draft, raw }
+    : { status: 'readOnly', reason: 'invalid-envelope', raw, version: header.version };
+}
+
+/** Backward-compatible known-format reader. Future and invalid envelopes remain read-only. */
+export function readRecipeDraft(key: string | undefined): RecipeWizardDraft | undefined {
+  const state = readRecipeDraftState(key);
+  return state.status === 'available' ? state.draft : undefined;
+}
+
+/**
+ * Fingerprint of a saved recipe, kept in the draft as the server version it started from.
+ * The id is left out: a copy receives a fresh id each time it is opened.
+ */
+export function recipeServerBase(recipe: Recipe | undefined): string | undefined {
+  if (!recipe) return undefined;
+  const { id: _id, ...content } = recipe;
+  const canonical = JSON.stringify(content, (_key, value) =>
+    typeof value === 'number' && !Number.isFinite(value) ? { [MISSING]: String(value) }
+      : value && typeof value === 'object' && !Array.isArray(value)
+        ? Object.fromEntries(Object.keys(value).sort().map(field => [field, value[field]])) : value);
+  const digest = sha256(new TextEncoder().encode(canonical));
+  return `recipe-server:sha256:${Array.from(digest, byte => byte.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/**
+ * How a readable local draft may be reopened against the saved recipe: silently when it
+ * started from that version (or when nothing is saved yet), otherwise only by an explicit choice.
+ */
+export function recipeDraftResumeCheck(state: RecipeDraftReadState, savedRecipe: Recipe | undefined): 'none' | 'resume' | 'changed' | 'unverified' {
+  if (state.status !== 'available') return 'none';
+  if (!savedRecipe) return 'resume';
+  const { serverBase } = state.draft;
+  return serverBase === undefined ? 'unverified' : serverBase === recipeServerBase(savedRecipe) ? 'resume' : 'changed';
+}
+
 export function writeRecipeDraft(key: string, serialized: string): void {
+  const current = readRecipeDraftState(key);
+  if (current.status === 'readOnly') throw new RecipeDraftWriteBlockedError(current);
   localStorage.setItem(PREFIX + key, serialized);
 }
 

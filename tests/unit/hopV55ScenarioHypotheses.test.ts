@@ -1,4 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+// #81: counts the source fingerprints of the hypothesis options; the real hashing still runs.
+const hashing = vi.hoisted(() => ({ sourceCalls: 0 }));
+vi.mock('../../src/domain/hopDecision/adviceContentReference', async importOriginal => {
+  const actual = await importOriginal<typeof import('../../src/domain/hopDecision/adviceContentReference')>();
+  return { ...actual, hopAdviceContentReference: (prefix: string, value: unknown) => {
+    if (prefix === 'hop-v55-hypothesis-source-v1') hashing.sourceCalls += 1;
+    return actual.hopAdviceContentReference(prefix, value);
+  } };
+});
 import type { HopExtrapolation } from '../../functions/src/hopExtrapolationSchema';
 import type { HopSource, HopVariety } from '../../functions/src/hopIndexSchema';
 import type { HopYeast } from '../../functions/src/hopPredictionSchema';
@@ -85,6 +94,19 @@ describe('Révision des hypothèses et analogies J5', () => {
     expect(halfSaturation?.unit).toBe('g/L');
     expect(extraction?.unit).toBe('h');
     expect(options.modelParameters.some(row => row.parameter.kind === 'timing' && row.parameter.parameter === 'temperatureC')).toBe(false);
+  });
+
+  it('#81 : une source n’est empreinte qu’une fois par calcul des options, sans changer les sources exposées', () => {
+    const { prepared } = harness();
+    hashing.sourceCalls = 0;
+    const parameters = getHopV55ScenarioHypothesisOptions(prepared).modelParameters;
+    // Each parameter lists its own source and its model's sources: those of the model are shared by all its parameters.
+    expect(parameters.length).toBeGreaterThan(10);
+    expect(hashing.sourceCalls).toBeLessThan(2 * parameters.length);
+    for (const row of parameters) {
+      expect(row.sources.length).toBeGreaterThan(0);
+      expect(new Set(row.sources.map(source => JSON.stringify(source))).size).toBe(row.sources.length);
+    }
   });
 
   it('révise un modèle choisi sans remplacer programme, entrées bière ou autres hypothèses', () => {

@@ -77,6 +77,16 @@ export function parseBackup(json: string): BreweryBackup {
       if (!plain(row) || !validId(row.id) || !plain(row.data) || !Object.keys(row.data).length || seen.has(row.id)) throw new Error(`Document invalide ou dupliqué dans ${name}.`);
       seen.add(row.id);
       checkValue(row.data);
+      // This field is an opaque append-only trace: validate its optional list
+      // container, but keep every JSON row (including future formats) verbatim.
+      if (name === 'recipes' && Object.prototype.hasOwnProperty.call(row.data, 'hopV55Applications') && !Array.isArray(row.data.hopV55Applications)) {
+        throw new Error(`Historique d’applications V5.5 invalide dans recipes/${row.id}.`);
+      }
+      // Cold-contact association rows are provenance snapshots; validate only the optional JSON-list container.
+      if (name === 'recipes' && Object.prototype.hasOwnProperty.call(row.data, 'hopV55ColdEvidenceAssociations')
+        && !Array.isArray(row.data.hopV55ColdEvidenceAssociations)) {
+        throw new Error(`Historique d’associations froides V5.5 invalide dans recipes/${row.id}.`);
+      }
       if (name === 'recipes' && row.data.nolo !== undefined) assertNoloConfig(row.data.nolo);
       if (name === 'batches' && row.data.recipeSnapshot?.nolo !== undefined) assertNoloConfig(row.data.recipeSnapshot.nolo);
       if (name === 'batches' && row.data.nolo !== undefined) assertNoloConfig(row.data.nolo);

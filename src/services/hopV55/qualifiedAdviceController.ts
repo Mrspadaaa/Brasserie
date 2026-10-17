@@ -3,7 +3,7 @@ import { hopAdviceContentReference } from '../../domain/hopDecision/adviceConten
 import type { HopCatalogueLoaderInput } from '../../domain/hopDecision/catalogueLoader';
 import type { HopDecisionContext } from '../../domain/hopDecision/dossier';
 import { hopDecisionReference } from '../../domain/hopDecision/measurements';
-import { hopAdviceStudyReference, readHopAdviceDossier,
+import { readHopAdviceDossier,
   type HopAdviceDossierV3, type HopAdviceEventV3, type HopAdviceStudyV3 } from '../../domain/hopDecision/adviceDossier';
 import { captureHopAdvicePreference } from '../../domain/hopDecision/adviceProgramAdapter';
 import type { HopAdviceAction } from '../../domain/hopDecision/qualifiedAdvice';
@@ -13,7 +13,9 @@ import { readHopV55DecisionReadingArchive, type HopV55DecisionReadingArchive,
   type HopV55DecisionReadingSource } from './decisionArchive';
 import { isHopV55StructuredDecisionReadingArchive } from './decisionReadingAccessors';
 import { inspectHopV55QualifiedAdvicePreparedReferenceV1, prepareHopV55QualifiedAdviceStudyV1,
-  type HopV55QualifiedAdviceFutureStageV1, type HopV55QualifiedAdviceStudyPreparation } from './qualifiedStudyPreparation';
+  withHopV55QualifiedAdvicePreparationSession,
+  type HopV55QualifiedAdviceFutureStageV1, type HopV55QualifiedAdviceStudyPreparation,
+  type HopV55QualifiedAdvicePreparationSessionV1 } from './qualifiedStudyPreparation';
 import { appendHopV55QualifiedStudyPreference, createHopV55QualifiedStudyPreferenceCommandV1,
   readHopV55QualifiedStudyPreferenceCommand, type HopV55QualifiedStudyPreferenceCommandV1,
   type PersistHopV55QualifiedStudyPreferenceResult } from './qualifiedStudyPreference';
@@ -22,6 +24,7 @@ import { appendHopV55QualifiedStudyPreparationRecord, readHopV55QualifiedStudyPr
   createHopV55QualifiedStudyPreparationV2, type HopV55QualifiedStudyFreshnessInput,
   type HopV55QualifiedStudyPreparationRecord,
   type PersistHopV55QualifiedStudyResult } from './qualifiedStudyWorkspace';
+import { HopV55OperationValidationScope, sameCanonicalData } from './operationScopedQualifiedValidation';
 
 export interface HopV55QualifiedAdvicePrepareRequest {
   /** Caller supplies the complete typed situation, including `materialIds: []` and `program: null` when intended. */
@@ -90,6 +93,28 @@ export function hopV55QualifiedAdvicePreparationPendingKey(input: {
 export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdviceControllerHost) {
   const inFlightPreparations = new Map<string, Promise<HopV55QualifiedStudyPreparationRecord>>();
 
+  async function withOperation<T>(operation: (session: HopV55QualifiedAdvicePreparationSessionV1 & {
+    scope: HopV55OperationValidationScope;
+    prepareContext(context: BrewerContext): PreparedBrewingScenarioContext;
+  }) => Promise<T>): Promise<T> {
+    return withHopV55QualifiedAdvicePreparationSession(async assembly => {
+      const scope = new HopV55OperationValidationScope();
+      let cached: { context: BrewerContext; prepared: PreparedBrewingScenarioContext } | undefined;
+      const prepareContext = (context: BrewerContext) => {
+        // The host is still read on every guard. Only the pure preparation of
+        // exactly equal plain context data is reused within this one operation.
+        try { if (cached && sameCanonicalData(context, cached.context)) return structuredClone(cached.prepared); }
+        catch { /* Exotic input keeps the original preparation path. */ }
+        const prepared = prepareBrewingScenarioContext(context);
+        try { cached = { context: structuredClone(context), prepared: structuredClone(prepared) }; }
+        catch { cached = undefined; }
+        return prepared;
+      };
+      try { return await operation({ ...assembly, scope, prepareContext }); }
+      finally { cached = undefined; scope.close(); }
+    });
+  }
+
   function enabled() {
     if (!host.enabled()) throw Error('Le raccord de conseil stratégique qualifié attend sa réception.');
   }
@@ -124,9 +149,10 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
     return archived;
   }
 
-  function advicePreparation(workspace: HopV55Workspace, preparationReference: string): HopV55QualifiedStudyPreparationRecord {
+  function advicePreparation(workspace: HopV55Workspace, preparationReference: string,
+    scope?: HopV55OperationValidationScope): HopV55QualifiedStudyPreparationRecord {
     const raw = workspace.qualifiedStudyPreparations?.find(row => row.reference === preparationReference);
-    const decoded = raw && readHopV55QualifiedStudyPreparation(raw);
+    const decoded = raw && readHopV55QualifiedStudyPreparation(raw, { scope });
     if (!decoded || decoded.status !== 'available' || decoded.preparation.kind !== 'advice'
       || decoded.preparation.createCommand.kind !== 'advice' || decoded.preparation.formatVersion !== 3) {
       throw Error('La préparation advice exacte V3 n’est plus disponible dans le workspace.');
@@ -145,7 +171,8 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
     return structuredClone(preparation.createCommand.study.requestSnapshot.action);
   }
 
-  async function inspectAgainstCurrent(preparation: HopV55QualifiedStudyPreparationRecord) {
+  async function inspectAgainstCurrent(preparation: HopV55QualifiedStudyPreparationRecord,
+    inspect = inspectHopV55QualifiedAdvicePreparedReferenceV1, prepareContext = prepareBrewingScenarioContext) {
     const workspace = await host.workspace();
     workspaceScope(workspace, preparation.workspaceId);
     const archive = exactArchive(workspace, preparation.sourceReadingReference);
@@ -157,8 +184,8 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
       throw Error('La validation de fraîcheur reçue ne référence pas une préparation advice.');
     }
     const context = await host.context();
-    const prepared = prepareBrewingScenarioContext(context);
-    const inspected = await inspectHopV55QualifiedAdvicePreparedReferenceV1({ workspace,
+    const prepared = prepareContext(context);
+    const inspected = await inspect({ workspace,
       ownerKey: host.services.ownerKey, workspaceId: workspace.id,
       sourceReadingReference: archive.contentReference,
       expectedRuntimeReference: host.runtimeReference(prepared), sourceContext: host.sourceContext(context, prepared, workspace),
@@ -169,11 +196,11 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
       return { status: 'historical' as const, reason: inspected.status === 'refused' ? inspected.reason
         : 'Le contexte, le catalogue ou les choix du conseil ont changé; prépare une nouvelle étude.' };
     }
-    const latest = await host.workspace();
-    workspaceScope(latest, preparation.workspaceId);
-    const latestArchive = exactArchive(latest, archive.contentReference);
+    // The caller's next workspace write is a CAS against the revision it just read; that CAS
+    // catches persisted workspace changes during this inspection. Re-read the live Page selection
+    // after the async catalogue inspection so a changed active reading still refuses this attempt.
     if (host.historical() || host.reading()?.contentReference !== archive.contentReference
-      || !same(latestArchive.source, host.source(latest))) {
+      || !same(archive.source, host.source(workspace))) {
       return { status: 'historical' as const, reason: 'La lecture ou sa source a changé pendant la vérification sans réponse.' };
     }
     return { status: 'current' as const };
@@ -184,6 +211,16 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
       throw Error('Phase de fraîcheur advice inconnue.');
     }
     return inspectAgainstCurrent(input.preparation);
+  }
+
+  async function freshnessWithSession(session: HopV55QualifiedAdvicePreparationSessionV1 & {
+    prepareContext(context: BrewerContext): PreparedBrewingScenarioContext;
+  },
+    input: HopV55QualifiedStudyFreshnessInput) {
+    if (input.phase !== 'beforeCreate' && input.phase !== 'beforeLink' && input.phase !== 'alreadyLinked') {
+      throw Error('Phase de fraîcheur advice inconnue.');
+    }
+    return inspectAgainstCurrent(input.preparation, session.inspect, session.prepareContext);
   }
 
   async function inspectAdvice(request: HopV55QualifiedAdvicePrepareRequest) {
@@ -201,25 +238,26 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
   }
 
   async function prepareAdvice(request: HopV55QualifiedAdvicePrepareRequest) {
+    return withOperation(async session => {
     enabled();
     if (host.historical()) throw Error('Cette lecture est historique; réexamine sa demande avant de préparer un conseil actif.');
     const workspace = await host.workspace(); workspaceScope(workspace);
     const archive = currentArchive(workspace);
     const context = await host.context();
-    const prepared = prepareBrewingScenarioContext(context);
+    const prepared = session.prepareContext(context);
     const commonInput = { workspace, ownerKey: host.services.ownerKey, workspaceId: workspace.id,
       sourceReadingReference: archive.contentReference, expectedRuntimeReference: host.runtimeReference(prepared),
       sourceContext: host.sourceContext(context, prepared, workspace), prepared,
       action: structuredClone(request.action), catalogueInput: host.catalogueInput(context),
       ...(request.explicitFutureStage ? { explicitFutureStage: structuredClone(request.explicitFutureStage) } : {}) };
-    const inspected = await inspectHopV55QualifiedAdvicePreparedReferenceV1(commonInput);
+    const inspected = await session.inspect(commonInput);
     if (inspected.status !== 'ready') throw Error(inspected.reason);
     const key = hopV55QualifiedAdvicePreparationPendingKey({
       ownerKey: host.services.ownerKey, workspaceId: workspace.id,
       sourceReadingReference: archive.contentReference, preparedReference: inspected.preparedReference,
     });
     const existing = (workspace.qualifiedStudyPreparations ?? []).flatMap(raw => {
-      const decoded = readHopV55QualifiedStudyPreparation(raw);
+      const decoded = readHopV55QualifiedStudyPreparation(raw, { scope: session.scope });
       return decoded.status === 'available' && decoded.preparation.kind === 'advice'
         && decoded.preparation.sourceReadingReference === archive.contentReference
         && decoded.preparation.preparedReference === inspected.preparedReference ? [decoded.preparation] : [];
@@ -235,7 +273,7 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
       for (let attempt = 0; attempt < 3; attempt++) {
         const latest = await host.workspace(); workspaceScope(latest, workspace.id);
         const durable = (latest.qualifiedStudyPreparations ?? []).flatMap(raw => {
-          const decoded = readHopV55QualifiedStudyPreparation(raw);
+          const decoded = readHopV55QualifiedStudyPreparation(raw, { scope: session.scope });
           return decoded.status === 'available' && decoded.preparation.id === preparation.id ? [decoded.preparation] : [];
         })[0];
         if (durable) {
@@ -244,9 +282,9 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
           host.selected(durable);
           return durable;
         }
-        const current = await freshness({ preparation, phase: 'beforeCreate' });
+        const current = await freshnessWithSession(session, { preparation, phase: 'beforeCreate' });
         if (current.status !== 'current') throw Error(current.reason);
-        const next = appendHopV55QualifiedStudyPreparationRecord(latest, preparation);
+        const next = appendHopV55QualifiedStudyPreparationRecord(latest, preparation, { scope: session.scope });
         try {
           await host.save(next);
           host.pendingPreparations?.delete(key);
@@ -263,7 +301,7 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
 
     const work = (async () => {
       const token = key.slice(key.lastIndexOf(':') + 1);
-      const created = await prepareHopV55QualifiedAdviceStudyV1({ ...commonInput,
+      const created = await session.prepare({ ...commonInput,
         identity: { preparationId: `qualified-advice-preparation:${token}`, dossierId: `qualified-advice-study:${token}`,
           eventId: `qualified-advice-saved:${token}`, recordedAt: (host.now?.() ?? new Date().toISOString()) } });
       if (created.status !== 'ready') throw Error(created.reason);
@@ -279,16 +317,17 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
     inFlightPreparations.set(key, work);
     try { return await work; }
     finally { inFlightPreparations.delete(key); }
+    });
   }
 
-  async function preparationForSave(request: HopV55QualifiedAdviceSaveRequest) {
+  async function preparationForSave(request: HopV55QualifiedAdviceSaveRequest, scope?: HopV55OperationValidationScope) {
     if (request.kind !== 'advice' || !isText(request.sourceReadingReference)
       || !isText(request.studyReference) || request.expectedStudyReference !== request.studyReference) {
       throw Error('La sauvegarde doit viser exactement la lecture et le studyReference advice affichés.');
     }
     const workspace = await host.workspace(); workspaceScope(workspace);
     const candidates = (workspace.qualifiedStudyPreparations ?? []).flatMap(raw => {
-      const decoded = readHopV55QualifiedStudyPreparation(raw);
+      const decoded = readHopV55QualifiedStudyPreparation(raw, { scope });
       return decoded.status === 'available' && decoded.preparation.kind === 'advice'
         && decoded.preparation.sourceReadingReference === request.sourceReadingReference
         && decoded.preparation.studyReference === request.studyReference ? [decoded.preparation] : [];
@@ -304,14 +343,18 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
 
   async function saveAdviceStudy(request: HopV55QualifiedAdviceSaveRequest) {
     enabled();
-    const preparation = await preparationForSave(request);
-    const result = await saveHopV55QualifiedStudy({ workspaces: host.services.workspaces,
-      qualifiedStudies: host.services.qualifiedStudies, preparation, validateFreshness: freshness });
-    host.received(result);
-    return result;
+    return withOperation(async session => {
+      const preparation = await preparationForSave(request, session.scope);
+      const result = await saveHopV55QualifiedStudy({ workspaces: host.services.workspaces,
+        qualifiedStudies: host.services.qualifiedStudies, preparation, scope: session.scope,
+        validateFreshness: input => freshnessWithSession(session, input) });
+      host.received(result);
+      return result;
+    });
   }
 
-  function linkedPreparation(workspace: HopV55Workspace, request: HopV55QualifiedAdvicePreferenceRequest) {
+  function linkedPreparation(workspace: HopV55Workspace, request: HopV55QualifiedAdvicePreferenceRequest,
+    scope?: HopV55OperationValidationScope) {
     if (!isText(request.expectedLinkReference) || !isText(request.expectedDossierId)
       || !Number.isSafeInteger(request.expectedDossierRevision) || request.expectedDossierRevision < 1
       || !isText(request.expectedStudyReference) || !isText(request.expectedOptionId)
@@ -324,7 +367,7 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
     });
     if (links.length !== 1) throw Error('Le lien exact de l’étude advice n’est plus présent dans le workspace.');
     const link = links[0];
-    const preparation = advicePreparation(workspace, link.preparationReference);
+    const preparation = advicePreparation(workspace, link.preparationReference, scope);
     if (link.kind !== 'advice' || link.formatVersion !== 3 || preparation.dossierId !== request.expectedDossierId
       || preparation.studyReference !== request.expectedStudyReference || link.studyReference !== request.expectedStudyReference
       || link.sourceReadingReference !== preparation.sourceReadingReference) {
@@ -350,18 +393,20 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
   }
 
   async function preferAdvice(request: HopV55QualifiedAdvicePreferenceRequest): Promise<HopV55QualifiedAdvicePreferenceUpdate> {
+    return withOperation(async session => {
     enabled();
     const workspace = await host.workspace(); workspaceScope(workspace);
-    const { preparation, study } = linkedPreparation(workspace, request);
+    const { preparation, study } = linkedPreparation(workspace, request, session.scope);
     let command = commandForPreference(workspace, preparation, request);
     if (!command) {
-      const current = await inspectAgainstCurrent(preparation);
-      if (current.status !== 'current') throw Error(current.reason);
+      // appendHopV55QualifiedStudyPreference performs beforeStage and beforeAppend freshness checks
+      // before any durable command/event; a preliminary full inspection here repeats the same load.
       const rawDossier = await host.services.qualifiedStudies.read(host.services.ownerKey, preparation.dossierId);
       if (!rawDossier) throw Error('Le dossier advice lié n’est plus disponible.');
       const dossier = readHopAdviceDossier(rawDossier);
+      // readHopAdviceDossier has just recomputed the study fingerprint and compared it with study.reference.
       if ('status' in dossier || dossier.formatVersion !== 3 || dossier.dossierId !== request.expectedDossierId
-        || dossier.revision !== request.expectedDossierRevision || hopAdviceStudyReference(dossier.study) !== preparation.studyReference) {
+        || dossier.revision !== request.expectedDossierRevision || dossier.study.reference !== preparation.studyReference) {
         throw Error('La révision du dossier a changé; recharge ses options avant de choisir une préférence.');
       }
       const option = study.responseSnapshot.result.options.find(row => row.id === request.expectedOptionId
@@ -375,11 +420,12 @@ export function createHopV55QualifiedAdviceController(host: HopV55QualifiedAdvic
       command = createHopV55QualifiedStudyPreferenceCommandV1({ preparation, event });
     }
     const result = await appendHopV55QualifiedStudyPreference({ workspaces: host.services.workspaces,
-      qualifiedStudies: host.services.qualifiedStudies, command,
-      validateFreshness: async () => inspectAgainstCurrent(preparation) });
+      qualifiedStudies: host.services.qualifiedStudies, command, scope: session.scope,
+      validateFreshness: async () => inspectAgainstCurrent(preparation, session.inspect, session.prepareContext) });
     host.preferenceReceived?.(result);
     return { dossier: result.dossierAdvice3, event: result.eventAdvice3, events: result.eventsAdvice3,
       freshContext: result.freshContext };
+    });
   }
 
   return { inspectAdvice, prepareAdvice, saveAdviceStudy, preferAdvice, freshness };

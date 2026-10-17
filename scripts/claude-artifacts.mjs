@@ -8,8 +8,13 @@ export function claudeSourceManifest(sources) {
     ({ source, staged, size, sha256: digest, readOnly }));
 }
 
+// Single list shared by the freshness check and the coordination reservation.
+export function claudeOutputPaths(output) {
+  return [output, `${output}.progress.json`, `${output}.recovery.json`, `${output}.expert.json`, `${output}.artifacts`];
+}
+
 export function assertFreshClaudeOutput(output) {
-  for (const path of [output, `${output}.progress.json`, `${output}.recovery.json`, `${output}.expert.json`, `${output}.artifacts`]) {
+  for (const path of claudeOutputPaths(output)) {
     if (existsSync(path)) throw new Error(`Sortie déjà utilisée : ${path}. Conserver ce dossier et choisir une nouvelle sortie pour la suite.`);
   }
 }

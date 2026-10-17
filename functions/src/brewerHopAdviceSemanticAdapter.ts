@@ -11,24 +11,52 @@ import type { BrewerAdvice, BrewerContext, BrewerEvidence, BrewerScope } from '.
 import { BREWER_PLAYBOOK } from './brewerKnowledge.js';
 import { brewingScenarioArchiveApi, prepareBrewingScenarioContext } from './brewerTools.js';
 import {
+  brewerHopAdviceEffectiveDraftReferenceForWizardV1,
   compareBrewerHopAdviceContextBindings,
   projectBrewerHopAdviceContext,
+  type BrewerHopAdviceContextLaunchClaimV1,
+  type BrewerHopAdviceContextProjectionV1,
 } from './brewerHopAdviceContextBinding.js';
 import {
   BREWER_HOP_ADVICE_SEMANTIC_FINISH_DECLARATION_V5,
   BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V5,
   assertBrewerHopAdviceRequestV3,
+  assertBrewerHopAdviceRequestV3ForWizardV1,
   brewerHopAdviceProviderInputV3,
+  brewerHopAdviceProviderInputV3ForWizardV1,
   createBrewerHopAdviceProposalEnvelopeV5,
+  type BrewerHopAdviceProviderInputV3,
   type BrewerHopAdviceRequestV3,
   type BrewerHopAdviceSemanticProposalV5,
+  type BrewerHopAdviceWizardRequestV3,
+  type CreateBrewerHopAdviceProposalEnvelopeV5Input,
 } from './brewerHopAdviceSemanticV3.js';
-import type { ParsedHopAdviceV1Wire } from './brewerHopAdviceLaneV1.js';
+import {
+  BREWER_HOP_ADVICE_SEMANTIC_FINISH_DECLARATION_V6,
+  BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V6,
+  createBrewerHopAdviceProposalEnvelopeV6,
+  createBrewerHopAdviceProposalEnvelopeV6ForWizardV1,
+} from './brewerHopAdviceSemanticV6.js';
+import type { ParsedHopAdviceV1Wire, ParsedHopAdviceV1WireForWizardV1 } from './brewerHopAdviceLaneV1.js';
 import type { BrewerHarnessProfile } from './brewerHarness.js';
+import {
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  mapBrewerHopAdviceWizardSourceToScopeV1,
+} from './brewerHopAdviceWizardSourceV1.js';
 
 export type ValidatedHopAdviceV1Input =
   | { requestVersion: 'request-v2'; input: BrewerChatInput; request: BrewerHopAdviceRequest }
   | { requestVersion: 'request-v3'; input: BrewerChatInput; request: BrewerHopAdviceRequestV3 };
+
+/** Wizard V1 validation result; separate from the classic union, its draft is the verified wire snapshot. */
+export type ValidatedHopAdviceV1InputForWizardV1 = {
+  requestVersion: 'request-v3';
+  sourceProfile: 'wizardV1';
+  input: BrewerChatInput;
+  request: BrewerHopAdviceWizardRequestV3;
+  /** The wire `draft` exactly as received; the server context is loaded from it, never from a saved Recipe. */
+  wizardDraft: unknown;
+};
 
 /** Normalize only the common chat fields; each closed handoff stays in its own validated branch. */
 export function validateHopAdviceV1ChatInput(parsed: ParsedHopAdviceV1Wire, ownerUid?: string): ValidatedHopAdviceV1Input {
@@ -58,6 +86,40 @@ export function assertHopAdviceV1SemanticRequestBinding(request: BrewerHopAdvice
     || request.sourceReadingReference !== archiveIdentity.contentReference
     || contextLaunch.scope.kind !== scope.kind || contextLaunch.scope.id !== scope.id) {
     throw new Error('La RequestV3 n’appartient pas à l’owner, au workspace, à l’archive ou au scope V1 authentifié.');
+  }
+}
+
+/** Wizard chat fields: common fields only, with the authenticated owner required and the wire draft kept apart. */
+export function validateHopAdviceV1ChatInputForWizardV1(parsed: ParsedHopAdviceV1WireForWizardV1,
+  ownerUid: string): ValidatedHopAdviceV1InputForWizardV1 {
+  if (parsed.requestVersion !== 'request-v3' || parsed.sourceProfile !== 'wizardV1') {
+    throw new Error('Validation Wizard réservée au wire Wizard RequestV3.');
+  }
+  const { hopAdvice: _requestV3, ...chatFields } = parsed.chatInput;
+  const validated = validateChatInput(chatFields, { maxQuestionLength: 12000 });
+  const input: BrewerChatInput = { ...validated, question: parsed.semanticRequest.question };
+  assertHopAdviceV1SemanticRequestBindingForWizardV1(parsed.semanticRequest, input.scope, ownerUid);
+  return { requestVersion: 'request-v3', sourceProfile: 'wizardV1', input, request: parsed.semanticRequest,
+    wizardDraft: parsed.wizardDraft };
+}
+
+/**
+ * The classic binding plus the Wizard origin: its source belongs to the authenticated owner and the
+ * archive workspace, and the V1 scope is the draft scope derived from that origin alone.
+ */
+export function assertHopAdviceV1SemanticRequestBindingForWizardV1(request: BrewerHopAdviceWizardRequestV3,
+  scope: BrewerScope, ownerUid: string): void {
+  assertBrewerHopAdviceRequestV3ForWizardV1(request);
+  const { contextLaunch, sourceView } = request;
+  const archiveIdentity = sourceView.archiveIdentity;
+  const source = contextLaunch.source;
+  const originScope = mapBrewerHopAdviceWizardSourceToScopeV1(source);
+  if (contextLaunch.ownerKey !== ownerUid || archiveIdentity.ownerKey !== ownerUid || source.ownerKey !== ownerUid
+    || contextLaunch.workspaceId !== archiveIdentity.workspaceId || source.workspaceId !== archiveIdentity.workspaceId
+    || contextLaunch.sourceReadingReference !== archiveIdentity.contentReference
+    || request.sourceReadingReference !== archiveIdentity.contentReference
+    || scope.kind !== 'draft' || contextLaunch.scope.id !== scope.id || originScope.id !== scope.id) {
+    throw new Error('La RequestV3 Wizard n’appartient pas à l’owner, au workspace, à l’origine ou au scope draft authentifié.');
   }
 }
 
@@ -112,11 +174,109 @@ const SEMANTIC_V5_REVIEW = `La proposition v5 reste non adoptée. Vérifie que l
 
 const SEMANTIC_V5_REPAIR = `Corrige uniquement les défauts concrets de la relecture en produisant une proposition complète via ${BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V5}. Garde RequestV3 et la lecture source4 inchangées, conserve les IDs/spans exacts, et ne transforme aucune proposition en fait ou en action appliquée.`;
 
+export const BREWER_HOP_ADVICE_SEMANTIC_PROFILE_ID_V6 = 'hopAdviceSemanticProposalV6' as const;
+
+const SEMANTIC_V6_LINKS = `optionProposalLinks rattache une option de answer à une suggestion de cette même réponse par son proposalId (propertyIntentProposals ou semanticRevisionProposals, jamais intent.id), avec seulement des preuves déjà citées, calculées ou explorées par cette option; [] signale une hypothèse non calculée présentée comme telle. Ce lien n’adopte rien, n’active aucune garde proposée et ne prouve aucune causalité; relatedIds garde son sens (éléments source, questions ouvertes, matières) et ne cite pas de proposalId. Une suggestion absente du programme exact d’une branche n’entre dans aucune recette.`;
+const SEMANTIC_V6_SYSTEM = () => `${SEMANTIC_V5_SYSTEM.split(BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V5).join(BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V6)
+  .replace('l’enveloppe v5 reste la proposition corrigible', 'l’enveloppe v6 reste la proposition corrigible')}
+${SEMANTIC_V6_LINKS}`;
+const SEMANTIC_V6_REVIEW = `${SEMANTIC_V5_REVIEW.replace('La proposition v5', 'La proposition v6')} Vérifie que chaque optionProposalLinks vise une option et une suggestion existantes, ne cite que des preuves de cette option et n’est pas présenté comme une adoption ou une preuve causale.`;
+const SEMANTIC_V6_REPAIR = SEMANTIC_V5_REPAIR.split(BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V5).join(BREWER_HOP_ADVICE_SEMANTIC_FINISH_TOOL_V6);
+
+type SemanticProfileRequest = { contextLaunch: Pick<BrewerHopAdviceContextLaunchClaimV1, 'expected'> };
+
+type SemanticProfileOutput<TRequest> = {
+  id: string;
+  finish: BrewerHarnessProfile['finish'];
+  system: string;
+  review: string;
+  repair: string;
+  createEnvelope: (input: Omit<CreateBrewerHopAdviceProposalEnvelopeV5Input, 'request'> & { request: TRequest }) =>
+    { proposal: BrewerHopAdviceSemanticProposalV5 };
+};
+
+/** Request admission of one profile, pinned by each exported constructor; never chosen from a label or flag. */
+type SemanticAdmission<TRequest> = {
+  bind(request: TRequest, scope: BrewerScope, ownerUid: string): void;
+  providerInput(request: TRequest): BrewerHopAdviceProviderInputV3;
+  /** Checks the projection actually loaded by this worker before it is compared with the launch claim. */
+  assertLoaded?(projection: BrewerHopAdviceContextProjectionV1): void;
+};
+
+const CLASSIC_ADMISSION: SemanticAdmission<BrewerHopAdviceRequestV3> = {
+  bind(request, scope, ownerUid) {
+    assertBrewerHopAdviceRequestV3(request);
+    assertHopAdviceV1SemanticRequestBinding(request, scope, ownerUid);
+  },
+  providerInput: brewerHopAdviceProviderInputV3,
+};
+
+/**
+ * Wizard admission: the wire draft must be the snapshot named by the source, the launch claim must describe
+ * that same draft, and the context this worker actually loaded must be it too. A saved Recipe of the same
+ * ID, or any context richer than the wire, therefore fails before a provider call.
+ */
+function wizardAdmission(wizardDraft: unknown): SemanticAdmission<BrewerHopAdviceWizardRequestV3> {
+  let draftReference: string | undefined;
+  return {
+    bind(request, scope, ownerUid) {
+      assertHopAdviceV1SemanticRequestBindingForWizardV1(request, scope, ownerUid);
+      const source = request.contextLaunch.source;
+      assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(source, { recipe: wizardDraft, reference: source.contentReference });
+      draftReference = brewerHopAdviceEffectiveDraftReferenceForWizardV1(wizardDraft);
+      if (request.contextLaunch.expected.source.snapshotReference !== draftReference) {
+        throw new Error('Le lancement Wizard ne décrit pas le brouillon reçu sur le wire.');
+      }
+    },
+    providerInput: brewerHopAdviceProviderInputV3ForWizardV1,
+    assertLoaded(projection) {
+      if (draftReference === undefined || projection.source.kind !== 'draft' || projection.source.snapshotReference !== draftReference) {
+        throw new Error('Le contexte chargé n’est pas le brouillon Wizard du wire; aucune recette enregistrée du même identifiant ne le remplace.');
+      }
+    },
+  };
+}
+
 /** Read-only semantic profile on the canonical harness; the exact RequestV3 sourceView stays in the final envelope. */
 export function createBrewerHopAdviceSemanticProfileV5(request: BrewerHopAdviceRequestV3, context: BrewerContext,
   scope: BrewerScope, ownerUid: string): BrewerHarnessProfile {
-  assertBrewerHopAdviceRequestV3(request);
-  assertHopAdviceV1SemanticRequestBinding(request, scope, ownerUid);
+  return semanticProfile(request, context, scope, ownerUid, CLASSIC_ADMISSION, {
+    id: BREWER_HOP_ADVICE_SEMANTIC_PROFILE_ID_V5, finish: BREWER_HOP_ADVICE_SEMANTIC_FINISH_DECLARATION_V5,
+    system: SEMANTIC_V5_SYSTEM, review: SEMANTIC_V5_REVIEW, repair: SEMANTIC_V5_REPAIR,
+    createEnvelope: createBrewerHopAdviceProposalEnvelopeV5,
+  });
+}
+
+/** Same read-only profile and context binding; its final call is the explicit V6 output with option links. */
+export function createBrewerHopAdviceSemanticProfileV6(request: BrewerHopAdviceRequestV3, context: BrewerContext,
+  scope: BrewerScope, ownerUid: string): BrewerHarnessProfile {
+  return semanticProfile(request, context, scope, ownerUid, CLASSIC_ADMISSION, {
+    id: BREWER_HOP_ADVICE_SEMANTIC_PROFILE_ID_V6, finish: BREWER_HOP_ADVICE_SEMANTIC_FINISH_DECLARATION_V6,
+    system: SEMANTIC_V6_SYSTEM(), review: SEMANTIC_V6_REVIEW, repair: SEMANTIC_V6_REPAIR,
+    createEnvelope: createBrewerHopAdviceProposalEnvelopeV6,
+  });
+}
+
+/**
+ * Wizard V6 output on the same harness, tools and prompts. Request, scope and draft come only from the
+ * validated wire result; `context` must have been loaded from that wire draft and is re-checked here.
+ */
+export function createBrewerHopAdviceSemanticProfileV6ForWizardV1(validated: ValidatedHopAdviceV1InputForWizardV1,
+  context: BrewerContext, ownerUid: string): BrewerHarnessProfile {
+  if (!validated || validated.requestVersion !== 'request-v3' || validated.sourceProfile !== 'wizardV1') {
+    throw new Error('Profil Wizard réservé à une entrée validée par validateHopAdviceV1ChatInputForWizardV1.');
+  }
+  return semanticProfile(validated.request, context, validated.input.scope, ownerUid, wizardAdmission(validated.wizardDraft), {
+    id: BREWER_HOP_ADVICE_SEMANTIC_PROFILE_ID_V6, finish: BREWER_HOP_ADVICE_SEMANTIC_FINISH_DECLARATION_V6,
+    system: SEMANTIC_V6_SYSTEM(), review: SEMANTIC_V6_REVIEW, repair: SEMANTIC_V6_REPAIR,
+    createEnvelope: createBrewerHopAdviceProposalEnvelopeV6ForWizardV1,
+  });
+}
+
+function semanticProfile<TRequest extends SemanticProfileRequest>(request: TRequest, context: BrewerContext,
+  scope: BrewerScope, ownerUid: string, admission: SemanticAdmission<TRequest>,
+  output: SemanticProfileOutput<TRequest>): BrewerHarnessProfile {
+  admission.bind(request, scope, ownerUid);
 
   const declaredCulture = request.contextLaunch.expected.culture;
   if (declaredCulture.status === 'consumed') {
@@ -126,6 +286,7 @@ export function createBrewerHopAdviceSemanticProfileV5(request: BrewerHopAdviceR
   const projected = projectBrewerHopAdviceContext({ scope, context, runtime: prepared.runtime,
     ...(declaredCulture.status === 'declaredNotConsumed' ? { cultureUse: structuredClone(declaredCulture) } : {}) });
   if (projected.status !== 'ready') throw new Error(`Contexte sémantique assisté non qualifiable : ${projected.reason}`);
+  admission.assertLoaded?.(projected.projection);
   const compared = compareBrewerHopAdviceContextBindings(request.contextLaunch.expected, projected.projection);
   if (compared.status !== 'matched') {
     const labels = { scopeChanged: 'source choisie', sourceChanged: 'recette ou brassin', journalChanged: 'journal',
@@ -135,7 +296,7 @@ export function createBrewerHopAdviceSemanticProfileV5(request: BrewerHopAdviceR
   }
   const serverContext = { phase: context.phase, provenance: [...context.provenance], loadedAt: context.now,
     binding: structuredClone(projected.projection) };
-  const providerInput = brewerHopAdviceProviderInputV3(request);
+  const providerInput = admission.providerInput(request);
   const workingReference = declaredCulture.status === 'declaredNotConsumed' ? {
     reference: structuredClone(declaredCulture.reference), bindingReference: declaredCulture.bindingReference,
     status: 'declaredNotConsumed' as const,
@@ -143,16 +304,16 @@ export function createBrewerHopAdviceSemanticProfileV5(request: BrewerHopAdviceR
   } : undefined;
 
   return {
-    id: BREWER_HOP_ADVICE_SEMANTIC_PROFILE_ID_V5,
+    id: output.id,
     readTools: BREWER_HOP_ADVICE_READ_TOOLS,
-    finish: BREWER_HOP_ADVICE_SEMANTIC_FINISH_DECLARATION_V5,
-    system: () => SEMANTIC_V5_SYSTEM,
+    finish: output.finish,
+    system: () => output.system,
     promptData: {
       assistedReading: providerInput,
       ...(workingReference ? { declaredWorkingReference: workingReference } : {}),
     },
     complete(args, evidence) {
-      const envelope = createBrewerHopAdviceProposalEnvelopeV5({
+      const envelope = output.createEnvelope({
         request, prepared, raw: args, evidence,
         readers: {
           readScenario: (value, resolve) => brewingScenarioArchiveApi.readBrewingScenarioEvidence(value, resolve),
@@ -162,8 +323,8 @@ export function createBrewerHopAdviceSemanticProfileV5(request: BrewerHopAdviceR
       });
       return { advice: brewerAdviceFromSemanticProposalV5(envelope.proposal), payload: envelope };
     },
-    reviewGuidance: SEMANTIC_V5_REVIEW,
-    repairTask: SEMANTIC_V5_REPAIR,
+    reviewGuidance: output.review,
+    repairTask: output.repair,
   };
 }
 
@@ -173,6 +334,26 @@ export function brewerHopAdviceSemanticHarnessOptionsV5(request: BrewerHopAdvice
   { profile: BrewerHarnessProfile; catalogue?: BrewerCatalogueAccess } {
   return {
     profile: createBrewerHopAdviceSemanticProfileV5(request, context, providers.scope, providers.ownerUid),
+    ...(providers.catalogue ? { catalogue: readOnlyBrewerCatalogueAccess(providers.catalogue) } : {}),
+  };
+}
+
+/** Output V6 on the same read-only facade: no scenario store, catalogue writes refused by both barriers. */
+export function brewerHopAdviceSemanticHarnessOptionsV6(request: BrewerHopAdviceRequestV3, context: BrewerContext,
+  providers: { scope: BrewerScope; catalogue?: BrewerCatalogueAccess; ownerUid: string }):
+  { profile: BrewerHarnessProfile; catalogue?: BrewerCatalogueAccess } {
+  return {
+    profile: createBrewerHopAdviceSemanticProfileV6(request, context, providers.scope, providers.ownerUid),
+    ...(providers.catalogue ? { catalogue: readOnlyBrewerCatalogueAccess(providers.catalogue) } : {}),
+  };
+}
+
+/** Wizard V6 on the same read-only facade; the scope comes from the validated wire, not from a provider argument. */
+export function brewerHopAdviceSemanticHarnessOptionsV6ForWizardV1(validated: ValidatedHopAdviceV1InputForWizardV1,
+  context: BrewerContext, providers: { catalogue?: BrewerCatalogueAccess; ownerUid: string }):
+  { profile: BrewerHarnessProfile; catalogue?: BrewerCatalogueAccess } {
+  return {
+    profile: createBrewerHopAdviceSemanticProfileV6ForWizardV1(validated, context, providers.ownerUid),
     ...(providers.catalogue ? { catalogue: readOnlyBrewerCatalogueAccess(providers.catalogue) } : {}),
   };
 }

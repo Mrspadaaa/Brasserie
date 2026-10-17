@@ -9,7 +9,7 @@ import {
   BrewerBudgetError
 } from './brewerLimits.js';
 import type { BrewerAiLimits } from './brewerLimits.js';
-import { GeminiApiError } from './geminiErrors.js';
+import { GeminiApiError, isGeminiRequestUncharged } from './geminiErrors.js';
 import { aiBudgetMonth, GEMINI_COST_POLICY, monthlyLimit, pricesCurrent, readMonthlyUsage } from './geminiCosts.js';
 import { runWithMonthlyAiBudget } from './monthlyAiBudget.js';
 import { HOP_ADVICE_V1_COLLECTIONS } from './brewerHopAdviceLaneV1.js';
@@ -268,10 +268,10 @@ export function budgetedBrewerTransport(
         if (stopped.signal.aborted) throw stopped.signal.reason;
         return result;
       } catch (e) {
-        // Google explicitly rejected these requests before generation. Keep the
-        // attempted-call counter to bound loops, but release the unused tokens.
+        // Requests refused before sending, or explicitly rejected by Google before generation, cost nothing:
+        // keep the attempted-call counter to bound loops, but release the unused tokens.
         // Timeouts, transport failures and 5xx keep their conservative reservation.
-        if (e instanceof GeminiApiError && e.rejectedBeforeGeneration) await settle(0, 'rejected', e);
+        if (isGeminiRequestUncharged(e)) await settle(0, 'rejected', e instanceof GeminiApiError ? e : undefined);
         if (e instanceof BrewerBudgetError && ['ai-monthly-unconfigured', 'ai-monthly-limit', 'ai-cost-unavailable', 'ai-grounding-unavailable', 'ai-budget-unavailable'].includes(e.code)) await settle(0, 'rejected');
         if (stopped.signal.aborted) throw stopped.signal.reason;
         throw e;

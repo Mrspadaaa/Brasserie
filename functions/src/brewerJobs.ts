@@ -7,10 +7,10 @@ import { onTaskDispatched } from 'firebase-functions/v2/tasks';
 import { logger } from 'firebase-functions';
 import { requireBrewer } from './brewSession.js';
 import { GEMINI_API_KEY } from './ai.js';
-import { geminiTransport, runBrewerHarness, BrewerProUnavailableError } from './brewerHarness.js';
+import { geminiTransport, runBrewerHarness } from './brewerHarness.js';
 import { budgetedBrewerTransport } from './brewerBudget.js';
 import { BrewerBudgetError } from './brewerLimits.js';
-import { GeminiApiError } from './geminiErrors.js';
+import { GeminiApiError, GeminiRequestNotSentError } from './geminiErrors.js';
 import { BREWER_APP_SCREENS } from './brewerAppScreens.js';
 import { cleanContext, pick, validateChatInput } from './brewerContext.js';
 import { stableJson } from './backupCore.js';
@@ -28,9 +28,19 @@ import {
   validateHopAdviceV1Job
 } from './brewerHopAdviceLaneV1.js';
 import { brewerHopAdviceHarnessOptions, validateBrewerHopAdviceChatInput } from './brewerHopAdviceAdapter.js';
-import { assertHopAdviceV1SemanticRequestBinding, brewerHopAdviceSemanticHarnessOptionsV5,
-  validateHopAdviceV1ChatInput } from './brewerHopAdviceSemanticAdapter.js';
-import type { BrewerJob, BrewerStage } from './companionTypes.js';
+import {
+  assertHopAdviceV1SemanticRequestBinding,
+  assertHopAdviceV1SemanticRequestBindingForWizardV1,
+  brewerHopAdviceSemanticHarnessOptionsV6,
+  brewerHopAdviceSemanticHarnessOptionsV6ForWizardV1,
+  validateHopAdviceV1ChatInput,
+  validateHopAdviceV1ChatInputForWizardV1,
+  type ValidatedHopAdviceV1Input,
+  type ValidatedHopAdviceV1InputForWizardV1,
+} from './brewerHopAdviceSemanticAdapter.js';
+import { validateHopAdviceV1JobForWizardV1 } from './brewerHopAdviceLaneV1.js';
+import type { BrewerChatInput, BrewerJob, BrewerStage } from './companionTypes.js';
+import { BREWER_HOP_ADVICE_WIZARD_SOURCE_FORMAT_V1 } from './brewerHopAdviceWizardSourceV1.js';
 
 const hash = (s: string) => createHash('sha256').update(s).digest('hex');
 const terminal = (status: string) => ['done', 'error', 'cancelled'].includes(status);
@@ -69,15 +79,15 @@ export const publicJob = (job: any): BrewerJob => {
 };
 export function jobError(error: unknown): NonNullable<BrewerJob['error']> {
   if (error instanceof GeminiApiError) return error.publicError();
+  // Refused before sending (missing key, body not encodable for REST): nothing was charged and a retry cannot help.
+  if (error instanceof GeminiRequestNotSentError)
+    return {
+      code: 'request-not-sent',
+      message: 'La demande à Gemini n’a pas été envoyée : la configuration du service ou le format de la requête est invalide. Aucun coût n’est engagé.',
+      retryable: false
+    };
   if (error instanceof BrewerBudgetError)
     return { code: error.code, message: error.message, retryable: true };
-  if (error instanceof BrewerProUnavailableError)
-    return {
-      code: 'pro-unavailable',
-      message:
-        'Gemini 3.1 Pro est indisponible après plusieurs essais. Réessaie dans quelques instants.',
-      retryable: true
-    };
   const message = error instanceof Error ? error.message : '';
   if (/vérification|validé ce conseil/.test(message))
     return {
@@ -237,6 +247,54 @@ const brewerTaskOptions = {
     rateLimits: { maxConcurrentDispatches: 3 }
   } satisfies Parameters<typeof onTaskDispatched>[0];
 
+type ValidatedHopAdviceWorkerInput =
+  | { sourceProfile: 'classic'; validated: ValidatedHopAdviceV1Input }
+  | { sourceProfile: 'wizardV1'; validated: ValidatedHopAdviceV1InputForWizardV1 };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** A source candidate is taken only from the real RequestV3 archive identity. */
+function hasWizardSourceCandidate(job: unknown): boolean {
+  if (!isRecord(job) || !isRecord(job.wireInput) || !isRecord(job.wireInput.hopAdvice)
+    || !isRecord(job.wireInput.hopAdvice.sourceView)
+    || !isRecord(job.wireInput.hopAdvice.sourceView.archiveIdentity)) return false;
+  const source = job.wireInput.hopAdvice.sourceView.archiveIdentity.source;
+  return isRecord(source) && (source.kind === 'wizardDraft'
+    || source.format === BREWER_HOP_ADVICE_WIZARD_SOURCE_FORMAT_V1
+    || (typeof source.format === 'string' && source.format.startsWith('hop-v55-wizard-source-v')));
+}
+
+/** Re-run the protocol-specific job parser and owner admission; never try Wizard then fall back. */
+function validateHopAdviceWorkerInput(job: unknown): ValidatedHopAdviceWorkerInput {
+  const ownerUid = isRecord(job) && typeof job.uid === 'string' ? job.uid : undefined;
+  if (hasWizardSourceCandidate(job)) {
+    if (!ownerUid) throw new Error('Propriétaire du job Wizard absent.');
+    const parsed = validateHopAdviceV1JobForWizardV1(job);
+    const validated = validateHopAdviceV1ChatInputForWizardV1(parsed, ownerUid);
+    assertHopAdviceV1SemanticRequestBindingForWizardV1(validated.request, validated.input.scope, ownerUid);
+    return { sourceProfile: 'wizardV1', validated };
+  }
+
+  const parsed = validateHopAdviceV1Job(job);
+  const validated = validateHopAdviceV1ChatInput(parsed, ownerUid);
+  if (validated.requestVersion === 'request-v3') {
+    if (!ownerUid) throw new Error('Propriétaire du job RequestV3 absent.');
+    assertHopAdviceV1SemanticRequestBinding(validated.request, parsed.wireInput.scope, ownerUid);
+  }
+  return { sourceProfile: 'classic', validated };
+}
+
+function wizardContextInput(validated: ValidatedHopAdviceV1InputForWizardV1): BrewerChatInput {
+  if (validated.input.scope.kind !== 'draft') throw new Error('Le contexte Wizard doit garder le scope draft validé.');
+  return {
+    ...validated.input,
+    scope: { kind: 'draft', id: validated.input.scope.id },
+    draft: validated.wizardDraft,
+  };
+}
+
 /** Both handlers share the lease/fence/commit/error path; only the static lane differs. */
 export const processBrewerQuestion = onTaskDispatched(
   brewerTaskOptions,
@@ -261,11 +319,8 @@ async function processBrewerJobTask(request: any, lane: BrewerJobLane) {
       if (!job || terminal(job.status)) return null;
       try {
         if (assisted) {
-          const parsed = validateHopAdviceV1Job(job);
-          const validated = validateHopAdviceV1ChatInput(parsed, job.uid);
-          if (validated.requestVersion === 'request-v3')
-            assertHopAdviceV1SemanticRequestBinding(validated.request, parsed.wireInput.scope, job.uid);
-          const validatedInput = validated.input;
+          const workerInput = validateHopAdviceWorkerInput(job);
+          const validatedInput = workerInput.validated.input;
           assertHopAdviceV1JobBinding(job, validatedInput, id);
           if (stableJson(validatedInput) !== stableJson(job.input)) throw new Error('Le contenu canonique du job diffère du wire.');
         }
@@ -320,15 +375,16 @@ async function processBrewerJobTask(request: any, lane: BrewerJobLane) {
     let guarded: ReturnType<typeof budgetedBrewerTransport> | undefined;
     try {
       // Revalidate the claimed snapshot before context/provider setup; the job stamp is authoritative.
-      const parsed = assisted ? validateHopAdviceV1Job(job) : undefined;
-      const validated = assisted ? validateHopAdviceV1ChatInput(parsed!, job.uid) : undefined;
-      if (validated?.requestVersion === 'request-v3')
-        assertHopAdviceV1SemanticRequestBinding(validated.request, parsed!.wireInput.scope, job.uid);
+      const workerInput = assisted ? validateHopAdviceWorkerInput(job) : undefined;
+      const validated = workerInput?.validated;
       const input = validated ? validated.input : job.input;
       if (assisted) assertHopAdviceV1JobBinding(job, input, id);
       if (assisted && stableJson(input) !== stableJson(job.input)) throw new HttpsError('failed-precondition', 'La transmission de lecture assistée ne correspond plus au job.');
+      const contextInput = workerInput?.sourceProfile === 'wizardV1'
+        ? wizardContextInput(workerInput.validated)
+        : input;
       guarded = budgetedBrewerTransport(geminiTransport(GEMINI_API_KEY.value()), id, fence, lane);
-      const context = await loadBrewerContext(input),
+      const context = await loadBrewerContext(contextInput),
         session = (await lock.get()).data();
       await ref.update({ label: String(context.recipe?.name || context.batch?.name || context.workspace?.screen || 'Brouillon').slice(0, 160) });
       const past = assisted ? [] : await history(job.threadId, undefined, session?.resetAt, paths.chats);
@@ -336,23 +392,29 @@ async function processBrewerJobTask(request: any, lane: BrewerJobLane) {
         id, uid: job.uid, threadId: job.threadId, generation: job.generation, fence,
         namespace: job.catalogueNamespace ?? id, lane
       });
-      const v2Request = validated?.requestVersion === 'request-v2'
-        ? validateBrewerHopAdviceChatInput(validated.request, input) : undefined;
-      const assistedOptions = validated?.requestVersion === 'request-v2'
-        ? brewerHopAdviceHarnessOptions(v2Request!, context, { scope: input.scope, catalogue })
-        : validated?.requestVersion === 'request-v3'
-          ? brewerHopAdviceSemanticHarnessOptionsV5(validated.request, context,
-              { scope: input.scope, catalogue, ownerUid: job.uid })
-          : undefined;
+      const harnessOptions = !assisted
+        ? {
+            catalogue,
+            scenarios: createBrewerScenarioForJob(db, { id, uid: job.uid, threadId: job.threadId,
+              generation: job.generation, fence, namespace: job.catalogueNamespace ?? id }),
+            scenarioReceipts: job.scenarioReceipts ?? []
+          }
+        : workerInput?.sourceProfile === 'wizardV1'
+          ? brewerHopAdviceSemanticHarnessOptionsV6ForWizardV1(workerInput.validated, context,
+              { catalogue, ownerUid: job.uid })
+          : workerInput?.sourceProfile === 'classic' && workerInput.validated.requestVersion === 'request-v2'
+            ? brewerHopAdviceHarnessOptions(
+                validateBrewerHopAdviceChatInput(workerInput.validated.request, input), context,
+                { scope: input.scope, catalogue })
+            : workerInput?.sourceProfile === 'classic' && workerInput.validated.requestVersion === 'request-v3'
+              // Classic RequestV3 retains its existing explicit V6 profile.
+              ? brewerHopAdviceSemanticHarnessOptionsV6(workerInput.validated.request, context,
+                  { scope: input.scope, catalogue, ownerUid: job.uid })
+              : (() => { throw new HttpsError('failed-precondition', 'Entrée assistée validée absente; aucun profil de repli ne sera tenté.'); })();
       const result = await runBrewerHarness(context, job.question, past, guarded.generate, {
         mode: input.mode,
         loadHopIndex: loadBrewerHopContext,
-        ...(assistedOptions ?? {
-          catalogue,
-          scenarios: createBrewerScenarioForJob(db, { id, uid: job.uid, threadId: job.threadId,
-            generation: job.generation, fence, namespace: job.catalogueNamespace ?? id }),
-          scenarioReceipts: job.scenarioReceipts ?? []
-        }),
+        ...harnessOptions,
         onProgress: progress,
         onDiagnostic: (diagnostics) => updateJob({ diagnostics })
       });
@@ -387,7 +449,7 @@ async function processBrewerJobTask(request: any, lane: BrewerJobLane) {
       logger.info('brewer-answer', { jobId: id, lane, model: result.model, reviewModel: result.reviewModel, elapsedMs: Date.now() - job.startedAt, tools: result.trace.length });
     } catch (error) {
       const failure = jobError(error);
-      const retry = job.attempt < 2 && ['service-unavailable', 'pro-unavailable', 'deadline', 'gemini-server'].includes(failure.code);
+      const retry = job.attempt < 2 && ['service-unavailable', 'deadline', 'gemini-server'].includes(failure.code);
       const recorded = await db.runTransaction(async (tx) => {
         const [session, current] = await Promise.all([tx.get(lock), tx.get(ref)]);
         if (session.data()?.active?.fence !== fence || current.data()?.fence !== fence || current.data()?.status !== 'running') return false;

@@ -229,6 +229,16 @@ export const brewerToolDeclarations = [
   )
 ];
 
+/**
+ * A recipe keeps an unknown lot alpha as 0 (`recipeValidation.ts:50`); a `hops` proposal requires that number back.
+ * The value stays as stored, and the model is told which lines it means « unknown » for, never 0 %.
+ */
+function unknownAlphaLimits(hops: ReadonlyArray<{ name?: string; alpha?: number }> | undefined): string[] {
+  const unknown = (hops ?? []).flatMap((hop, index) =>
+    typeof hop.alpha === 'number' && Number.isFinite(hop.alpha) && hop.alpha > 0 ? [] : [`hop-${index} ${hop.name ?? ''}`.trim()]);
+  return unknown.length ? [`Alpha du lot inconnu (${unknown.join(', ')}) : alpha 0 signifie « inconnu », jamais 0 %, et l’amertume de ces lignes reste inconnue. Le demander au brasseur, ne pas l’inventer ; une proposition garde 0 tant qu’il n’est pas connu.`] : [];
+}
+
 export function runBrewerTool(
   name: string,
   a: Record<string, unknown>,
@@ -357,7 +367,8 @@ export function runBrewerTool(
       hopIndex: hopIndexOverview(c.hopIndex)
     };
     if (!(String(a.section) in sections)) throw new Error('Section inconnue.');
-    return result('Contexte de la brasserie', sections[String(a.section)], [], c.provenance);
+    return result('Contexte de la brasserie', sections[String(a.section)], [],
+      [...(c.provenance ?? []), ...(a.section === 'recipe' ? unknownAlphaLimits(r?.hops) : [])]);
   }
   if (name === 'lookup_hop_reference') {
     if (typeof a.query !== 'string' || !a.query.trim() || a.query.length > 200) throw Error('Nom ou identifiant de houblon requis.');
@@ -599,7 +610,8 @@ export function runBrewerTool(
         ingredients: { fermentables: r.fermentables, hops: r.hops, yeast: r.yeast }
       }, [], [
         'OG prévue ou mesurée sur le moût récupéré ; alcool et sucres évalués par le même bilan que l’écran NOLO.',
-        ...(scaled ? ['Volume hypothétique seulement, ingrédients non redimensionnés. Décrire une dilution ou un assemblage dans les opérations NOLO ; les anciennes analyses ne valident pas ce nouveau scénario.'] : [])
+        ...(scaled ? ['Volume hypothétique seulement, ingrédients non redimensionnés. Décrire une dilution ou un assemblage dans les opérations NOLO ; les anciennes analyses ne valident pas ce nouveau scénario.'] : []),
+        ...unknownAlphaLimits(r.hops)
       ]);
     }
     let scenario: Recipe = { ...structuredClone(r), id: 'simulation' };
@@ -695,6 +707,7 @@ export function runBrewerTool(
         ...(!fermentationProjection.fg.range ? fermentationProjection.fg.reasons : []),
         ...(!fermentationProjection.abv.range ? fermentationProjection.abv.reasons : []),
         ...boil.reasons,
+        ...unknownAlphaLimits(recipe.hops),
         'recommendedWater est un calcul de besoin, pas une quantité déjà saisie ou versée. Le preview reflète les doses proposées ; propose_changes recalcule le traitement si les entrées d’eau changent ou si autoTreatment est actif.',
         ...(scaled
           ? [

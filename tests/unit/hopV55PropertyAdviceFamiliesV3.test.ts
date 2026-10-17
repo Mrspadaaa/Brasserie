@@ -10,8 +10,11 @@ import { assertHopPropertyAdviceAnswerV3, assertHopPropertyAdviceRequestV3,
 import type { HopVariety } from '../../functions/src/hopIndexSchema';
 import type { BrewingScenarioCultureContext } from '../../src/domain/brewingScenario';
 import { makeHopV55FixtureContext } from '../../src/services/hopV55/fixtureRuntime';
-import { readHopV55Question } from '../../src/services/hopV55/decision';
-import { prepareHopV55PropertyAdviceRequestDraftV3 } from '../../src/services/hopV55/propertyAdvicePreparationV3';
+import { createHopV55DecisionReadingArchiveV4, readHopV55DecisionReadingArchive } from '../../src/services/hopV55/decisionArchive';
+import { readHopV55QuestionSemanticV1 } from '../../src/services/hopV55/questionSemanticReading';
+import { prepareHopV55PropertyAdviceFromSemanticReadingV1 } from '../../src/services/hopV55/propertyAdviceSemanticPreparationV3';
+import { hopV55ScenarioRuntimeReference } from '../../src/services/hopV55/scenarioCommit';
+import { sealHopV55PropertyAdviceRequestDraftV3FromIntents } from '../../src/services/hopV55/propertyAdvicePreparationV3';
 import { createHopV55PropertyAdviceControllerV3, type HopV55PropertyAdviceHostV3 } from '../../src/services/hopV55/propertyAdviceControllerV3';
 
 const ownerKey = 'owner:property-families-v3-fixture';
@@ -59,7 +62,7 @@ const correctedQuestions = [
   { id: 'control-q11-spelling', question: originalQuestions[10].text.replace('très fleural', 'très floral').replace('bio transformation', 'biotransformation') },
 ];
 
-const q10Compensation = 'Ma pastry stout est trop sucrée, comment compenser ça avec mon houblon ?';
+const q10Compensation = originalQuestions[9].text;
 const q10CauseOnly = 'Ma bière est trop sucrée; pourquoi ?';
 const q10SweetTarget = 'Je veux une bière avec une sensation sucrée.';
 
@@ -78,29 +81,41 @@ function exactSpan(question: string, text: string) {
   return { start, end: start + text.length, text };
 }
 
-function runV3Case(input: { id: string; question: string; prepared: PreparedBrewingScenarioContext;
-  candidatePolicy?: HopPropertyAdviceRequestV3['candidatePolicy']; propertyIntents?: readonly HopPropertyAdviceIntentV3[] }) {
-  const reading = readHopV55Question(input.question, input.prepared);
-  const routeEvidence = { v3GateEnabledAtSource: pageV3GateEnabled, readingFormat: 'hop-v55-decision-reading-v2',
-    criterionCount: reading.criterionDrafts.length,
-    operationCount: reading.operationDrafts?.length ?? 0, actionKind: reading.response?.actionKind ?? null,
-    automaticV3RouteAtCheckout: pageV3GateEnabled && reading.criterionDrafts.length > 0 && !reading.operationDrafts?.length
-      && reading.response?.actionKind !== 'understandProducts',
-    explicitV3RouteAtCheckout: pageV3GateEnabled && reading.criterionDrafts.length > 0
-      && reading.response?.actionKind !== 'understandProducts' };
-  try {
-    const draft = prepareHopV55PropertyAdviceRequestDraftV3({ reading, prepared: input.prepared,
-      requestId: `families-v3:${input.id}`, ownerKey, workspaceId, sourceReadingReference: `reading-v3:${input.id}`,
-      candidatePolicy: input.candidatePolicy ?? explicitNone, ...(input.propertyIntents ? { propertyIntents: input.propertyIntents } : {}) });
-    const answer = buildHopPropertyAdviceV3(draft.requestSnapshot);
-    assertHopPropertyAdviceAnswerV3(answer);
-    return { id: input.id, question: input.question, reading, routeEvidence, requestDraft: draft, answer };
-  } catch (error) {
-    return { id: input.id, question: input.question, reading, routeEvidence,
-      preparationOrBuilderError: error instanceof Error ? error.message : String(error) };
+function semanticArchive(question: string, prepared: PreparedBrewingScenarioContext, suffix: string) {
+  const semantic = readHopV55QuestionSemanticV1(question, prepared);
+  const archive = createHopV55DecisionReadingArchiveV4({ id: `family-reading-v4:${suffix}`, ownerKey, workspaceId,
+    recordedAt: '2026-10-04T10:30:00.000Z', reading: semantic, source: { kind: 'exploration' },
+    runtimeReference: hopV55ScenarioRuntimeReference(prepared.runtime) });
+  const reread = readHopV55DecisionReadingArchive(archive);
+  if (reread.status !== 'available' || reread.archive.format !== 'hop-v55-decision-reading-v4') {
+    throw new Error(`La question ${suffix} doit être relue depuis son archive sémantique V4 exacte.`);
   }
+  return { archive, reading: reread.archive.reading };
 }
 
+function runV3Case(input: { id: string; question: string; prepared: PreparedBrewingScenarioContext;
+  candidatePolicy?: HopPropertyAdviceRequestV3['candidatePolicy'] }) {
+  const archived = semanticArchive(input.question, input.prepared, input.id);
+  const routeEvidence = { v3GateEnabledAtSource: pageV3GateEnabled, readingFormat: archived.archive.format,
+    annotationCount: archived.reading.annotations.length, operationCount: archived.reading.operationDrafts?.length ?? 0,
+    actionKind: archived.reading.response?.actionKind ?? null,
+    automaticV3RouteAtCheckout: pageV3GateEnabled && archived.reading.annotations.length > 0
+      && !archived.reading.operationDrafts?.length && archived.reading.response?.actionKind !== 'understandProducts',
+    explicitV3RouteAtCheckout: pageV3GateEnabled && archived.reading.annotations.length > 0
+      && archived.reading.response?.actionKind !== 'understandProducts' };
+  try {
+    const draft = prepareHopV55PropertyAdviceFromSemanticReadingV1({ reading: archived.reading, prepared: input.prepared,
+      requestId: `families-v3:${input.id}`, ownerKey, workspaceId, sourceReadingReference: archived.archive.contentReference,
+      candidatePolicy: input.candidatePolicy ?? explicitNone });
+    const answer = buildHopPropertyAdviceV3(draft.requestSnapshot);
+    assertHopPropertyAdviceAnswerV3(answer);
+    return { id: input.id, question: input.question, reading: archived.reading, archive: archived.archive,
+      routeEvidence, requestDraft: draft, answer };
+  } catch (error) {
+    return { id: input.id, question: input.question, reading: archived.reading, archive: archived.archive,
+      routeEvidence, preparationOrBuilderError: error instanceof Error ? error.message : String(error) };
+  }
+}
 function q10TypedMeasurementProbe() {
   const question = `${q10Compensation} La mesure pH est 4,15 et la mesure BU est 18.`;
   const context = makePrepared('planning');
@@ -109,62 +124,39 @@ function q10TypedMeasurementProbe() {
     { id: 'v3-measured-bu', field: 'beer.amertume', status: 'observed' as const, origin: 'observation' as const, value: 18, unit: 'BU' },
   ];
   context.runtime.current!.beerContext!.facts.push(...syntheticFacts);
-  const reading = readHopV55Question(question, context);
-  const base = prepareHopV55PropertyAdviceRequestDraftV3({ reading, prepared: context, requestId: 'families-v3:q10-r05-base',
-    ownerKey, workspaceId, sourceReadingReference: 'reading-v3:q10-r05-base', candidatePolicy: explicitNone });
+  const base = runV3Case({ id: 'q10-r05-base', question, prepared: context });
+  if (!('requestDraft' in base) || !('archive' in base)) throw new Error('Le R05 doit partir de la lecture sémantique V4 de la demande composée.');
   const pHSpan = exactSpan(question, 'pH est 4,15');
   const buSpan = exactSpan(question, 'BU est 18');
   const measurements: HopPropertyAdviceIntentV3[] = [
     { id: 'v3-intent-measured-ph', property: 'acidity', label: pHSpan.text, role: 'measurement', direction: null,
       qualification: null, required: true, comparisonBasis: { kind: 'current', assertionIds: ['context-v3-measured-ph'] }, metric: 'pH',
       subject: { kind: 'beer', label: 'Bière de fixture', materialId: null, sensoryContext: 'beer' }, sourceSpans: [pHSpan],
-      interpretationOrigin: 'user', basis: 'Mesure pH synthétique, distincte du constat de sensation.', relatedIntentIds: [] },
+      interpretationOrigin: 'user', basis: 'Mesure pH synthétique explicitement transmise, distincte du constat de sensation.', relatedIntentIds: [] },
     { id: 'v3-intent-measured-bu', property: 'bitterness', label: buSpan.text, role: 'measurement', direction: null,
       qualification: null, required: true, comparisonBasis: { kind: 'current', assertionIds: ['context-v3-measured-bu'] }, metric: 'analyticalBU',
       subject: { kind: 'beer', label: 'Bière de fixture', materialId: null, sensoryContext: 'beer' }, sourceSpans: [buSpan],
-      interpretationOrigin: 'user', basis: 'Mesure BU synthétique, distincte de l’amertume perçue.', relatedIntentIds: [] },
+      interpretationOrigin: 'user', basis: 'Mesure BU synthétique explicitement transmise, distincte de l’amertume perçue.', relatedIntentIds: [] },
   ];
-  const draft = prepareHopV55PropertyAdviceRequestDraftV3({ reading, prepared: context, requestId: 'families-v3:q10-r05',
-    ownerKey, workspaceId, sourceReadingReference: 'reading-v3:q10-r05', candidatePolicy: explicitNone,
-    propertyIntents: [...base.requestSnapshot.propertyIntents, ...measurements] });
+  const draft = sealHopV55PropertyAdviceRequestDraftV3FromIntents({ question,
+    sourceAnnotations: base.reading.annotations.map(row => ({ id: row.id, source: row.source })),
+    propertyIntents: [...base.requestDraft.requestSnapshot.propertyIntents, ...measurements], prepared: context,
+    requestId: 'families-v3:q10-r05', ownerKey, workspaceId, sourceReadingReference: base.archive.contentReference,
+    candidatePolicy: explicitNone });
   const answer = buildHopPropertyAdviceV3(draft.requestSnapshot);
-  return { id: 'control-q10-r05-metrics', question, reading, requestDraft: draft, answer, syntheticFacts };
+  return { id: 'control-q10-r05-metrics', question, reading: base.reading, archive: base.archive,
+    requestDraft: draft, answer, syntheticFacts };
 }
 
 function q10ManualCauseOnly() {
   const prepared = makePrepared();
-  const reading = readHopV55Question(q10CauseOnly, prepared);
-  const base = prepareHopV55PropertyAdviceRequestDraftV3({ reading, prepared, requestId: 'families-v3:q10-cause-base',
-    ownerKey, workspaceId, sourceReadingReference: 'reading-v3:q10-cause-base', candidatePolicy: explicitNone });
-  const observation = base.requestSnapshot.propertyIntents.find(intent => intent.property === 'sweetness' && intent.role === 'reportedObservation');
-  if (!observation) throw new Error('Le contrôle cause seule exige le constat sensoriel sucré.');
-  const span = exactSpan(q10CauseOnly, 'pourquoi');
-  const cause: HopPropertyAdviceIntentV3 = { id: 'manual-q10-cause-not-compensation', property: 'sweetness', label: span.text,
-    role: 'investigation', direction: 'investigate', qualification: null, required: true,
-    comparisonBasis: { kind: 'none', assertionIds: [] }, metric: 'sensory',
-    subject: { kind: 'beer', label: 'Bière visée', materialId: null, sensoryContext: 'beer' }, sourceSpans: [span],
-    interpretationOrigin: 'user', basis: 'Question sur la cause, distincte d’une demande de compensation.', relatedIntentIds: [observation.id] };
-  return runV3Case({ id: 'control-q10-cause-only', question: q10CauseOnly, prepared,
-    propertyIntents: [...base.requestSnapshot.propertyIntents, cause] });
+  return runV3Case({ id: 'control-q10-cause-only', question: q10CauseOnly, prepared });
 }
 
-function q08ManualRelation() {
-  const question = correctedQuestions.find(row => row.id === 'control-q08-relation')!.question;
+function q08OriginalVerbatim() {
   const prepared = makePrepared();
-  const reading = readHopV55Question(question, prepared);
-  const base = prepareHopV55PropertyAdviceRequestDraftV3({ reading, prepared, requestId: 'families-v3:q08-relation-base',
-    ownerKey, workspaceId, sourceReadingReference: 'reading-v3:q08-relation-base', candidatePolicy: explicitNone });
-  const banana = base.requestSnapshot.propertyIntents.find(intent => intent.label.toLocaleLowerCase('fr').includes('banane'));
-  const target = base.requestSnapshot.propertyIntents.find(intent => intent.property === 'aroma' && intent.role === 'target');
-  if (!banana || !target) throw new Error('Le contrôle relationnel exige une cible et un partenaire réellement relus.');
-  const propertyIntents = base.requestSnapshot.propertyIntents.map(intent => intent.id === target.id ? {
-    ...structuredClone(intent), interpretationOrigin: 'user' as const,
-    basis: 'Relation d’accord confirmée explicitement avec l’intention partenaire sélectionnée.',
-    relatedIntentIds: [...new Set([...intent.relatedIntentIds, banana.id])],
-  } : structuredClone(intent));
-  return runV3Case({ id: 'control-q08-manual-relation', question, prepared, propertyIntents });
+  return runV3Case({ id: 'control-q08-original-verbatim', question: originalQuestions[7].text, prepared });
 }
-
 function isTypedCompensation(intent: HopPropertyAdviceIntentV3 | undefined): boolean {
   return intent?.investigation?.kind === 'comparePerceptualCompensation';
 }
@@ -213,22 +205,23 @@ describe('familles CONSEIL01 traversées par la chaîne V3', () => {
       prepared: makePrepared() });
     const q07Orthography = runV3Case({ id: 'control-q07-amertume', question: correctedQuestions.find(row => row.id === 'control-q07-amertume')!.question,
       prepared: makePrepared() });
-    const q08Relation = q08ManualRelation();
+    const q08Relation = q08OriginalVerbatim();
     const q10ManualCause = q10ManualCauseOnly();
     const r05 = q10TypedMeasurementProbe();
     const catalogue = await candidateScopeCases();
     const artifact = {
       format: 'hop-v55-property-advice-families-v3-evidence-v1',
       createdFor: 'CONSEIL01 V3 local fixture evidence; no Page activation, production writes or external calls',
-      provenance: { originalQuestions: questionSource, parser: 'src/services/hopV55/decision.ts::readHopV55Question',
-        preparation: 'src/services/hopV55/propertyAdvicePreparationV3.ts::prepareHopV55PropertyAdviceRequestDraftV3',
+      provenance: { originalQuestions: questionSource, parser: 'src/services/hopV55/questionSemanticReading.ts::readHopV55QuestionSemanticV1',
+        archive: 'src/services/hopV55/decisionArchive.ts::createHopV55DecisionReadingArchiveV4 + readHopV55DecisionReadingArchive',
+        preparation: 'src/services/hopV55/propertyAdviceSemanticPreparationV3.ts::prepareHopV55PropertyAdviceFromSemanticReadingV1',
         builder: 'src/domain/hopDecision/propertyAdvice.ts::buildHopPropertyAdviceV3',
         fixture: 'makeHopV55FixtureContext plus offline loadBrewingCatalogueReferences for the bounded discovery control',
         nativeRoute: `Page.tsx source literal propertyAdviceV3Enabled=${pageV3GateEnabled}; route fields are static code inspection, not browser evidence. The route requires criteria and excludes understandProducts; automatic routing also skips operation drafts.` },
       originals, families, supplemental,
       controls: { q10Normalized, q10Cause, q10Target, q10ManualCause, q11Orthography, q07Orthography, q08Relation, r05, catalogue },
     };
-    const outDir = resolve(process.cwd(), 'work/houblons-v55-integration-app-2026-10-02/luna-catalogue-usage/property-families');
+    const outDir = resolve(process.cwd(), 'work/final-fixes-2026-10-04/regression-triage/generated/property-families-v3');
     mkdirSync(outDir, { recursive: true });
     const currentPath = resolve(outDir, 'family-evidence-v3.json');
     if (existsSync(currentPath)) archiveJsonBytes(outDir, 'family-evidence-v3', readFileSync(currentPath));
@@ -241,13 +234,16 @@ describe('familles CONSEIL01 traversées par la chaîne V3', () => {
     expect(catalogue.sourceVarieties).toHaveLength(2);
   });
 
-  it('prépare Q10 comme constat + investigation perceptuelle typée, sans choisir un levier ou une cible', () => {
+  it('prépare la Q10 originale comme constat + investigation perceptuelle typée, sans choisir un levier ou une cible', () => {
     const preparedContext = makePrepared();
-    const reading = readHopV55Question(q10Compensation, preparedContext);
-    const draft = prepareHopV55PropertyAdviceRequestDraftV3({ reading, prepared: preparedContext,
-      requestId: 'v3-q10-compensation-contract', ownerKey, workspaceId, sourceReadingReference: 'reading:v3-q10-compensation-contract',
-      candidatePolicy: explicitNone });
+    const traversed = runV3Case({ id: 'q10-compensation-contract', question: q10Compensation, prepared: preparedContext });
+    if (!('requestDraft' in traversed) || !('answer' in traversed) || !('archive' in traversed)) {
+      throw new Error('Q10 doit traverser le lecteur V4, son archive exacte puis le builder PropertyV3.');
+    }
+    const draft = traversed.requestDraft;
     const request = draft.requestSnapshot;
+    expect(traversed.archive.contentReference).toBe(draft.sourceReadingReference);
+    expect(request.originalQuestion).toBe(q10Compensation);
     const observation = request.propertyIntents.find(intent => intent.role === 'reportedObservation' && intent.property === 'sweetness');
     const investigation = request.propertyIntents.find(isTypedCompensation);
     expect(observation).toMatchObject({ role: 'reportedObservation', property: 'sweetness', metric: 'sensory', direction: null,
@@ -259,7 +255,7 @@ describe('familles CONSEIL01 traversées par la chaîne V3', () => {
     expect(request.interpretation.text).toContain('Constat rapporté');
     expect(request.interpretation.text).not.toMatch(/À réduire\s*:?\s*sucrée/iu);
     expect(() => assertHopPropertyAdviceRequestV3(request)).not.toThrow();
-    const answer = buildHopPropertyAdviceV3(request);
+    const answer = traversed.answer;
     assertHopPropertyAdviceAnswerV3(answer);
     expect(answer.coverage.points.find(point => point.intentId === observation?.id)?.status).toBe('contextOnly');
     expect(answer.coverage.points.find(point => point.intentId === investigation?.id)?.status).toBe('answered');
@@ -377,6 +373,8 @@ describe('familles CONSEIL01 traversées par la chaîne V3', () => {
     expect.soft(tropicalTarget?.partner).toMatchObject({ kind: 'freeContext', text: 'mon goût de banane' });
     const q09Intents = 'requestDraft' in q09 ? q09.requestDraft.requestSnapshot.propertyIntents : [];
     expect.soft(q09Intents.some(intent => intent.label.toLocaleLowerCase('fr') === 'neipa' && intent.role === 'target')).toBe(false);
+    expect('requestDraft' in q11 && q11.requestDraft.sourceReadingReference).toBe('archive' in q11 ? q11.archive.contentReference : undefined);
+    expect('requestDraft' in q11 && q11.requestDraft.requestSnapshot.originalQuestion).toBe(originalQuestions[10].text);
     const q10Intents = 'requestDraft' in q10 ? q10.requestDraft.requestSnapshot.propertyIntents : [];
     expect.soft(q10Intents.some(intent => intent.investigation?.kind === 'comparePerceptualCompensation')).toBe(true);
     const q11Intents = 'requestDraft' in q11 ? q11.requestDraft.requestSnapshot.propertyIntents : [];

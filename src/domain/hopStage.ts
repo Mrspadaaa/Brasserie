@@ -43,7 +43,8 @@ export const HOP_STAGE: Record<HopStage, StageStyle> = {
     order: 1,
     bitters: true,
     ask: 'time',
-    tone: 'text-alert border-alert/40 bg-alert/10'
+    // Neutral: `alert` is reserved to ruptures and errors (DESIGN.md, sémantique).
+    tone: 'text-cave-50 border-cave-600 bg-cave-800'
   },
   whirlpool: {
     label: 'Whirlpool',

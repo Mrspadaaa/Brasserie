@@ -1,10 +1,22 @@
 /** Versioned source4 assistant handoff; request2/proposal4 are deliberately untouched. */
 import { hopAdviceContentReference } from './hopAdviceContentReference.js';
-import { readBrewerHopAdviceSourceViewMetadataV1 } from './brewerHopAdviceSourceViewMetadataV1.js';
 import {
+  readBrewerHopAdviceSourceViewMetadataV1,
+  readBrewerHopAdviceSourceViewMetadataV1ForWizardV1,
+} from './brewerHopAdviceSourceViewMetadataV1.js';
+import {
+  brewerHopAdviceEffectiveDraftReferenceForWizardV1,
   isBrewerHopAdviceContextLaunchClaim,
+  readBrewerHopAdviceContextLaunchClaimForWizardV1,
+  readBrewerHopAdviceWizardSourceForWizardV1,
   type BrewerHopAdviceContextLaunchClaimV1,
+  type BrewerHopAdviceWizardContextLaunchV1,
 } from './brewerHopAdviceContextBinding.js';
+import {
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  type BrewerHopAdviceWizardCanonicalSnapshotV1,
+  type BrewerHopAdviceWizardSourceV1,
+} from './brewerHopAdviceWizardSourceV1.js';
 // Shared answer/evidence rules take a neutral source: the V5 path never builds a RequestV2 or a ProposalV4.
 import {
   assertBrewerHopAdviceStoredAnswer,
@@ -35,8 +47,10 @@ import {
   assertHopV55SemanticQuestionReadingV1,
   hopV55PropertyIntentsFromSemanticReadingV1,
   readHopV55DecisionReadingArchive,
+  readHopV55DecisionReadingArchiveForWizardV1,
   type HopV55DecisionReadingSource,
   type HopV55DecisionReadingArchiveV4,
+  type HopV55WizardDecisionReadingArchiveV4,
   type HopV55SemanticAnnotationV1,
   type HopV55SemanticQuestionReadingV1,
   type HopV55SemanticSenseV1,
@@ -175,7 +189,22 @@ export type BrewerHopAdviceRequestV3 = {
   sourceView: BrewerHopAdviceSourceViewV1;
 };
 
-export type BrewerHopAdviceSourceViewV1 = {
+export type BrewerHopAdviceSourceViewV1 = BrewerHopAdviceSourceViewOfV1<HopV55DecisionReadingSource>;
+
+/** Same SourceView V1 body and reference formula; the archive identity names the explicit Wizard child. */
+export type BrewerHopAdviceWizardSourceViewV1 = BrewerHopAdviceSourceViewOfV1<BrewerHopAdviceWizardSourceV1>;
+
+/** Request V3 of the explicit Wizard profile: same keys, meanings and reference; no classic alias is widened. */
+export type BrewerHopAdviceWizardRequestV3 = {
+  format: typeof BREWER_HOP_ADVICE_REQUEST_FORMAT_V3;
+  question: string;
+  sourceReadingReference: string;
+  contextLaunch: BrewerHopAdviceWizardContextLaunchV1;
+  sourceView: BrewerHopAdviceWizardSourceViewV1;
+};
+
+/** One SourceView V1 shape, instantiated once per admitted source profile. */
+export type BrewerHopAdviceSourceViewOfV1<TSource> = {
   format: typeof BREWER_HOP_ADVICE_SOURCE_VIEW_FORMAT_V1;
   archiveIdentity: {
     archiveFormat: typeof HOP_V55_DECISION_READING_FORMAT_V4;
@@ -183,7 +212,7 @@ export type BrewerHopAdviceSourceViewV1 = {
     ownerKey: string;
     workspaceId: string;
     recordedAt: string;
-    source: HopV55DecisionReadingSource;
+    source: TSource;
     runtimeReference: string;
     contentReference: string;
   };
@@ -229,6 +258,12 @@ export type BrewerHopAdviceRequestV3Read =
   | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
   | { status: 'invalid'; reason: string };
 
+/** Wizard reader: no RequestV2 branch, since a RequestV2 never carries a Wizard source. */
+export type BrewerHopAdviceWizardRequestV3Read =
+  | { status: 'readOnly'; request: BrewerHopAdviceWizardRequestV3 }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+
 export type BrewerHopAdviceSemanticSourcePropertyProjectionV3 = {
   format: typeof BREWER_HOP_ADVICE_SOURCE_PROPERTY_PROJECTION_FORMAT_V3;
   sourceReadingReference: string;
@@ -239,6 +274,22 @@ export type BrewerHopAdviceSemanticSourcePropertyProjectionV3 = {
 type JsonPrimitive = null | string | number | boolean;
 type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 type Row = Record<string, unknown>;
+/**
+ * Source admission of one RequestV3 path. Never a caller option: every export pins its own profile, so
+ * classic V1–V3/Request2/V5 entries keep the classic sources and only `ForWizardV1` entries admit Wizard.
+ */
+type SourceProfileV3 = 'classic' | 'wizardV1';
+type AnyProfileRequestV3 = BrewerHopAdviceRequestV3 | BrewerHopAdviceWizardRequestV3;
+/** Validated V4 archive body as projected into a SourceView, whichever source profile admitted it. */
+type ValidatedArchiveOfV4<TSource> = {
+  format: typeof HOP_V55_DECISION_READING_FORMAT_V4;
+  id: string; ownerKey: string; workspaceId: string; recordedAt: string;
+  reading: HopV55SemanticQuestionReadingV1;
+  source: TSource;
+  runtimeReference: string;
+  scopeLedger?: unknown; transition?: unknown; lineage?: unknown; programPreparation?: unknown;
+  contentReference: string;
+};
 const hasOwn = (value: object, key: PropertyKey) => Object.prototype.hasOwnProperty.call(value, key);
 const isRow = (value: unknown): value is Row => !!value && typeof value === 'object' && !Array.isArray(value)
   && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null);
@@ -305,14 +356,29 @@ function validatedSourceArchive(value: unknown): HopV55DecisionReadingArchiveV4 
   return archive;
 }
 
-function sourceViewBody(view: BrewerHopAdviceSourceViewV1): Omit<BrewerHopAdviceSourceViewV1, 'reference'> {
+/** Wizard V4 archive through owner67's explicit reader only; a future child is never converted. */
+function validatedWizardSourceArchive(value: unknown): HopV55WizardDecisionReadingArchiveV4 {
+  assertJson(value, 'sourceArchive');
+  const result = readHopV55DecisionReadingArchiveForWizardV1(value);
+  if (result.status === 'unsupportedFormat') fail(`archive source future conservée sans conversion (${result.format})`);
+  if (result.status !== 'available') fail(result.reason);
+  const archive = result.archive;
+  if (readBrewerHopAdviceWizardSourceForWizardV1(archive.source).status !== 'readOnly'
+    || archive.source.ownerKey !== archive.ownerKey || archive.source.workspaceId !== archive.workspaceId) {
+    fail('archive Wizard sans source V1 connue de son owner/workspace');
+  }
+  assertHopV55SemanticQuestionReadingV1(archive.reading);
+  return archive;
+}
+
+function sourceViewBody<TSource>(view: BrewerHopAdviceSourceViewOfV1<TSource>): Omit<BrewerHopAdviceSourceViewOfV1<TSource>, 'reference'> {
   const { reference: _reference, ...body } = view;
   return body;
 }
 
-function sourceViewFromValidatedArchive(archive: HopV55DecisionReadingArchiveV4): BrewerHopAdviceSourceViewV1 {
+function sourceViewFromValidatedArchive<TSource>(archive: ValidatedArchiveOfV4<TSource>): BrewerHopAdviceSourceViewOfV1<TSource> {
   const { format: sourceFormat, response, ...semantic } = clone(archive.reading);
-  const body: Omit<BrewerHopAdviceSourceViewV1, 'reference'> = {
+  const body: Omit<BrewerHopAdviceSourceViewOfV1<TSource>, 'reference'> = {
     format: BREWER_HOP_ADVICE_SOURCE_VIEW_FORMAT_V1,
     archiveIdentity: {
       archiveFormat: archive.format, id: archive.id, ownerKey: archive.ownerKey, workspaceId: archive.workspaceId,
@@ -352,6 +418,22 @@ function assertSourceIdentity(value: unknown, label: string): asserts value is H
   fail(`${label}.kind inconnu`);
 }
 
+/**
+ * Wizard child of an identity slot. Known corruption, a foreign format and an owner/workspace claim of
+ * another identity are invalid; only an intact later Wizard version is returned as a future reason.
+ */
+function checkWizardSourceIdentity(value: unknown, owner: Row, label: string,
+  allowFutureChildren: boolean): string | undefined {
+  const read = readBrewerHopAdviceWizardSourceForWizardV1(value);
+  if (read.status === 'invalid') fail(`${label} Wizard invalide (${read.reason})`);
+  const raw = value as Row;
+  if (raw.ownerKey !== undefined && raw.ownerKey !== owner.ownerKey
+    || raw.workspaceId !== undefined && raw.workspaceId !== owner.workspaceId) fail(`${label} Wizard étrangère à l’owner/workspace déclaré`);
+  if (read.status === 'readOnly') return undefined;
+  if (!allowFutureChildren) fail(`${label} Wizard future/inconnue`);
+  return `Source Wizard imbriquée future/inconnue : ${String(raw.format)}`;
+}
+
 export function brewerHopAdviceSourceViewReferenceV1(view: BrewerHopAdviceSourceViewV1): string {
   assertBrewerHopAdviceSourceViewV1(view);
   return hopAdviceContentReference(BREWER_HOP_ADVICE_SOURCE_VIEW_FORMAT_V1, sourceViewBody(view));
@@ -373,7 +455,8 @@ type SourceViewFutureChild = { reason: string; semanticKnown: boolean };
  * identity or semantic reading stays opaque, and is reported only after the known keys, identity,
  * local derivation and exact view reference have been verified.
  */
-function checkSourceViewV1(value: unknown, allowFutureChildren: boolean): SourceViewFutureChild | undefined {
+function checkSourceViewV1(value: unknown, allowFutureChildren: boolean,
+  profile: SourceProfileV3 = 'classic'): SourceViewFutureChild | undefined {
   assertJson(value, 'sourceView');
   if (!isRow(value)) fail('sourceView illisible');
   exactKeys(value, ['format', 'archiveIdentity', 'semantic', 'scopeLedger', 'transition', 'lineage', 'programPreparation', 'localDerivations', 'reference'], 'sourceView');
@@ -386,7 +469,9 @@ function checkSourceViewV1(value: unknown, allowFutureChildren: boolean): Source
   text(identity.id, 'archiveIdentity.id', 200); text(identity.ownerKey, 'archiveIdentity.ownerKey', 200);
   text(identity.workspaceId, 'archiveIdentity.workspaceId', 200); text(identity.recordedAt, 'archiveIdentity.recordedAt', 100);
   if (!Number.isFinite(Date.parse(identity.recordedAt as string))) fail('archiveIdentity.recordedAt invalide');
-  assertSourceIdentity(identity.source, 'archiveIdentity.source');
+  let futureSource: string | undefined;
+  if (profile === 'wizardV1') futureSource = checkWizardSourceIdentity(identity.source, identity, 'archiveIdentity.source', allowFutureChildren);
+  else assertSourceIdentity(identity.source, 'archiveIdentity.source');
   text(identity.runtimeReference, 'archiveIdentity.runtimeReference', 300); text(identity.contentReference, 'archiveIdentity.contentReference', 300);
 
   const semantic = value.semantic;
@@ -424,11 +509,13 @@ function checkSourceViewV1(value: unknown, allowFutureChildren: boolean): Source
   }
   // The exact shared metadata reader checks schemas and links, never the absent archive body.
   // A future metadata child is classified only after the known view integrity above.
-  const metadata = readBrewerHopAdviceSourceViewMetadataV1(value);
+  const metadata = profile === 'wizardV1'
+    ? readBrewerHopAdviceSourceViewMetadataV1ForWizardV1(value) : readBrewerHopAdviceSourceViewMetadataV1(value);
   if (metadata.status === 'invalid') fail(metadata.reason);
   if (metadata.status === 'unsupportedReadOnly' && !allowFutureChildren) fail(metadata.reason);
   if (futureSemantic) return { reason: `Lecture source imbriquée future/inconnue : ${String(semantic.sourceFormat)}`, semanticKnown: false };
   if (futureArchive) return { reason: `Archive identifiée future/inconnue : ${String(identity.archiveFormat)}`, semanticKnown: true };
+  if (futureSource !== undefined) return { reason: futureSource, semanticKnown: true };
   if (metadata.status === 'unsupportedReadOnly') return { reason: metadata.reason, semanticKnown: true };
   return undefined;
 }
@@ -462,6 +549,102 @@ export function createBrewerHopAdviceRequestV3(input: { sourceArchive: unknown; 
   return deepFreeze(request);
 }
 
+// Explicit Wizard V1 SourceView/Request3 entries. Same bodies, formats and reference formulas as above.
+
+export function assertBrewerHopAdviceSourceViewV1ForWizardV1(value: unknown): asserts value is BrewerHopAdviceWizardSourceViewV1 {
+  checkSourceViewV1(value, false, 'wizardV1');
+}
+
+export function createBrewerHopAdviceSourceViewV1ForWizardV1(sourceArchive: unknown): BrewerHopAdviceWizardSourceViewV1 {
+  return deepFreeze(sourceViewFromValidatedArchive(validatedWizardSourceArchive(sourceArchive)));
+}
+
+export function brewerHopAdviceSourceViewReferenceV1ForWizardV1(view: BrewerHopAdviceWizardSourceViewV1): string {
+  assertBrewerHopAdviceSourceViewV1ForWizardV1(view);
+  return hopAdviceContentReference(BREWER_HOP_ADVICE_SOURCE_VIEW_FORMAT_V1, sourceViewBody(view));
+}
+
+export function assertBrewerHopAdviceSourceViewMatchesArchiveV1ForWizardV1(sourceView: unknown, sourceArchive: unknown): void {
+  assertBrewerHopAdviceSourceViewV1ForWizardV1(sourceView);
+  const projected = sourceViewFromValidatedArchive(validatedWizardSourceArchive(sourceArchive));
+  if (!sameJson(sourceView, projected)) fail('sourceView Wizard ne correspond pas à la projection exacte de l’archive locale complète');
+}
+
+/**
+ * The canonical snapshot proves the source contentReference here: a well-formed hash alone is not a
+ * verified link. The claim must describe that same snapshot, never a saved Recipe of the same ID.
+ */
+export function createBrewerHopAdviceRequestV3ForWizardV1(input: {
+  sourceArchive: unknown;
+  contextLaunch: unknown;
+  snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+}): BrewerHopAdviceWizardRequestV3 {
+  const sourceArchive = validatedWizardSourceArchive(input.sourceArchive);
+  const launch = readBrewerHopAdviceContextLaunchClaimForWizardV1(input.contextLaunch);
+  if (launch.status !== 'readOnly') fail(`contextLaunch Wizard non lançable (${launch.status === 'invalid' ? launch.reason : 'source future'})`);
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(sourceArchive.source, input.snapshot);
+  if (launch.claim.expected.source.snapshotReference !== brewerHopAdviceEffectiveDraftReferenceForWizardV1(input.snapshot.recipe)) {
+    fail('contextLaunch Wizard ne décrit pas le snapshot canonique transmis');
+  }
+  const request: BrewerHopAdviceWizardRequestV3 = {
+    format: BREWER_HOP_ADVICE_REQUEST_FORMAT_V3,
+    question: sourceArchive.reading.intent.question,
+    sourceReadingReference: sourceArchive.contentReference,
+    contextLaunch: launch.claim,
+    sourceView: sourceViewFromValidatedArchive(sourceArchive),
+  };
+  assertBrewerHopAdviceRequestV3ForWizardV1(request);
+  return deepFreeze(request);
+}
+
+export function assertBrewerHopAdviceRequestV3ForWizardV1(value: unknown): asserts value is BrewerHopAdviceWizardRequestV3 {
+  checkRequestV3(value, false, 'wizardV1');
+}
+
+export function readBrewerHopAdviceRequestV3ForWizardV1(value: unknown): BrewerHopAdviceWizardRequestV3Read {
+  if (!isRow(value)) return { status: 'invalid', reason: 'request illisible' };
+  if (value.format === BREWER_HOP_ADVICE_REQUEST_FORMAT) {
+    return { status: 'invalid', reason: 'Mélange connu refusé : une RequestV2 ne porte aucune source Wizard.' };
+  }
+  if (value.format !== BREWER_HOP_ADVICE_REQUEST_FORMAT_V3) {
+    return isFutureRequestFormat(value.format)
+      ? { status: 'unsupportedReadOnly', snapshot: clone(value), reason: `Format de request futur/inconnu : ${String(value.format)}` }
+      : { status: 'invalid', reason: 'format request absent/inconnu' };
+  }
+  try {
+    const future = checkRequestV3(value, true, 'wizardV1');
+    if (future !== undefined) return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: future };
+    return { status: 'readOnly', request: deepFreeze(clone(value)) as BrewerHopAdviceWizardRequestV3 };
+  } catch (error) {
+    return { status: 'invalid', reason: error instanceof Error ? error.message : 'RequestV3 Wizard invalide' };
+  }
+}
+
+export function brewerHopAdviceRequestV3ReferenceForWizardV1(requestValue: BrewerHopAdviceWizardRequestV3): string {
+  assertBrewerHopAdviceRequestV3ForWizardV1(requestValue);
+  return hopAdviceContentReference(BREWER_HOP_ADVICE_REQUEST_FORMAT_V3, requestValue);
+}
+
+export function brewerHopAdviceProviderInputV3ForWizardV1(requestValue: BrewerHopAdviceWizardRequestV3): BrewerHopAdviceProviderInputV3 {
+  assertBrewerHopAdviceRequestV3ForWizardV1(requestValue);
+  return providerInputFromKnownView(requestValue.question, requestValue.sourceReadingReference, requestValue.sourceView);
+}
+
+export function brewerHopAdviceProviderInputV3ReferenceForWizardV1(requestValue: BrewerHopAdviceWizardRequestV3): string {
+  return hopAdviceContentReference(BREWER_HOP_ADVICE_PROVIDER_INPUT_FORMAT_V3, brewerHopAdviceProviderInputV3ForWizardV1(requestValue));
+}
+
+/** Pinned per profile: the classic exports above never reach the Wizard branch, and conversely. */
+function assertRequestOfProfile(value: unknown, profile: SourceProfileV3): asserts value is AnyProfileRequestV3 {
+  checkRequestV3(value, false, profile);
+}
+
+function providerInputReferenceOfProfile(request: AnyProfileRequestV3, profile: SourceProfileV3): string {
+  return profile === 'wizardV1'
+    ? brewerHopAdviceProviderInputV3ReferenceForWizardV1(request as BrewerHopAdviceWizardRequestV3)
+    : brewerHopAdviceProviderInputV3Reference(request as BrewerHopAdviceRequestV3);
+}
+
 function deepFreeze<T>(value: T): T {
   if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
   Object.freeze(value);
@@ -474,29 +657,43 @@ function deepFreeze<T>(value: T): T {
  * semantic reading is reported only after the outer request and each relation it can still be checked
  * against hold; corruption of a known part is never classified as future compatibility.
  */
-function checkRequestV3(value: unknown, allowFutureChildren: boolean): string | undefined {
+function checkRequestV3(value: unknown, allowFutureChildren: boolean, profile: SourceProfileV3 = 'classic'): string | undefined {
   if (!isRow(value)) fail('request illisible');
   exactKeys(value, ['format', 'question', 'sourceReadingReference', 'contextLaunch', 'sourceView'], 'RequestV3');
   if (value.format !== BREWER_HOP_ADVICE_REQUEST_FORMAT_V3) fail('format request différent de V3');
   text(value.question, 'question', 12000);
   text(value.sourceReadingReference, 'sourceReadingReference', 200);
-  if (!isBrewerHopAdviceContextLaunchClaim(value.contextLaunch)) fail('contextLaunch V1 invalide');
-  const launch = value.contextLaunch;
+  const futureLaunch = checkContextLaunchOfProfile(value.contextLaunch, allowFutureChildren, profile);
+  const launch = value.contextLaunch as Pick<BrewerHopAdviceContextLaunchClaimV1, 'ownerKey' | 'workspaceId'
+    | 'sourceReadingReference' | 'sourceRuntimeReference'> & { source: unknown };
   const divergent = 'question/sourceView/contextLaunch owner/workspace/source/runtime/reference divergent';
   if (launch.sourceReadingReference !== value.sourceReadingReference) fail(divergent);
   if (allowFutureChildren && isRow(value.sourceView) && isFutureViewFormat(value.sourceView.format)) {
     assertJson(value.sourceView, 'sourceView');
     return `SourceView imbriquée future/inconnue : ${String(value.sourceView.format)}`;
   }
-  const future = checkSourceViewV1(value.sourceView, allowFutureChildren);
-  const view = value.sourceView as BrewerHopAdviceSourceViewV1;
+  const future = checkSourceViewV1(value.sourceView, allowFutureChildren, profile);
+  const view = value.sourceView as BrewerHopAdviceSourceViewOfV1<unknown>;
   if (value.sourceReadingReference !== view.archiveIdentity.contentReference
     || launch.ownerKey !== view.archiveIdentity.ownerKey || launch.workspaceId !== view.archiveIdentity.workspaceId
     || launch.sourceRuntimeReference !== view.archiveIdentity.runtimeReference || !sameJson(launch.source, view.archiveIdentity.source)) {
     fail(divergent);
   }
   if ((!future || future.semanticKnown) && value.question !== view.semantic.intent.question) fail(divergent);
-  return future?.reason;
+  return future?.reason ?? futureLaunch;
+}
+
+/** Classic claims through the closed classic guard; Wizard claims only through their explicit reader. */
+function checkContextLaunchOfProfile(value: unknown, allowFutureChildren: boolean, profile: SourceProfileV3): string | undefined {
+  if (profile === 'classic') {
+    if (!isBrewerHopAdviceContextLaunchClaim(value)) fail('contextLaunch V1 invalide');
+    return undefined;
+  }
+  const read = readBrewerHopAdviceContextLaunchClaimForWizardV1(value);
+  if (read.status === 'invalid') fail(`contextLaunch Wizard invalide (${read.reason})`);
+  if (read.status === 'readOnly') return undefined;
+  if (!allowFutureChildren) fail('contextLaunch Wizard porte une source future/inconnue');
+  return `Source Wizard du lancement future/inconnue : ${read.reason}`;
 }
 
 export function assertBrewerHopAdviceRequestV3(value: unknown): asserts value is BrewerHopAdviceRequestV3 {
@@ -504,14 +701,17 @@ export function assertBrewerHopAdviceRequestV3(value: unknown): asserts value is
 }
 
 /** Declared future child of a known RequestV3, from its nested formats only; integrity is checked separately. */
-function requestV3HasFutureChild(value: Row): boolean {
+function requestV3HasFutureChild(value: Row, profile: SourceProfileV3 = 'classic'): boolean {
   const view = value.sourceView;
   if (!isRow(view)) return false;
   if (isFutureViewFormat(view.format)) return true;
-  return view.format === BREWER_HOP_ADVICE_SOURCE_VIEW_FORMAT_V1
-    && (isRow(view.semantic) && isFutureReadingFormat(view.semantic.sourceFormat)
-      || isRow(view.archiveIdentity) && isFutureArchiveFormat(view.archiveIdentity.archiveFormat)
-      || readBrewerHopAdviceSourceViewMetadataV1(view).status === 'unsupportedReadOnly');
+  if (view.format !== BREWER_HOP_ADVICE_SOURCE_VIEW_FORMAT_V1) return false;
+  if (isRow(view.semantic) && isFutureReadingFormat(view.semantic.sourceFormat)
+    || isRow(view.archiveIdentity) && isFutureArchiveFormat(view.archiveIdentity.archiveFormat)) return true;
+  if (profile === 'classic') return readBrewerHopAdviceSourceViewMetadataV1(view).status === 'unsupportedReadOnly';
+  return isRow(view.archiveIdentity)
+      && readBrewerHopAdviceWizardSourceForWizardV1(view.archiveIdentity.source).status === 'unsupportedReadOnly'
+    || readBrewerHopAdviceSourceViewMetadataV1ForWizardV1(view).status === 'unsupportedReadOnly';
 }
 
 export function readBrewerHopAdviceRequestV3(value: unknown): BrewerHopAdviceRequestV3Read {
@@ -564,7 +764,7 @@ export function brewerHopAdviceProviderInputV3Reference(requestValue: BrewerHopA
   return hopAdviceContentReference(BREWER_HOP_ADVICE_PROVIDER_INPUT_FORMAT_V3, brewerHopAdviceProviderInputV3(requestValue));
 }
 
-function semanticReadingForProjection(view: BrewerHopAdviceSourceViewV1): HopV55SemanticQuestionReadingV1 {
+function semanticReadingForProjection(view: Pick<BrewerHopAdviceSourceViewV1, 'semantic'>): HopV55SemanticQuestionReadingV1 {
   return {
     format: view.semantic.sourceFormat, intent: clone(view.semantic.intent), annotations: clone(view.semantic.annotations),
     ...(view.semantic.operationDrafts === undefined ? {} : { operationDrafts: clone(view.semantic.operationDrafts) }),
@@ -642,6 +842,16 @@ function assertProjectionMatchesKnownSemantics(
 }
 
 export function assertBrewerHopAdviceSemanticSourcePropertyProjectionV3(value: unknown, requestValue?: BrewerHopAdviceRequestV3): asserts value is BrewerHopAdviceSemanticSourcePropertyProjectionV3 {
+  assertSourcePropertyProjection(value, requestValue, 'classic');
+}
+
+export function assertBrewerHopAdviceSemanticSourcePropertyProjectionV3ForWizardV1(value: unknown,
+  requestValue?: BrewerHopAdviceWizardRequestV3): asserts value is BrewerHopAdviceSemanticSourcePropertyProjectionV3 {
+  assertSourcePropertyProjection(value, requestValue, 'wizardV1');
+}
+
+function assertSourcePropertyProjection(value: unknown, requestValue: AnyProfileRequestV3 | undefined,
+  profile: SourceProfileV3): asserts value is BrewerHopAdviceSemanticSourcePropertyProjectionV3 {
   assertJson(value, 'projection source PropertyV3');
   if (!isRow(value)) fail('projection source PropertyV3 illisible');
   exactKeys(value, ['format', 'sourceReadingReference', 'propertyIntents', 'reference'], 'projection source PropertyV3');
@@ -652,7 +862,7 @@ export function assertBrewerHopAdviceSemanticSourcePropertyProjectionV3(value: u
   const ids = new Set(intents.map((intent) => intent?.id));
   if (ids.size !== intents.length || [...ids].some(id => !isText(id, 160))) fail('projection propriété: IDs absents ou répétés');
   if (requestValue) {
-    assertBrewerHopAdviceRequestV3(requestValue);
+    assertRequestOfProfile(requestValue, profile);
     assertProjectionMatchesKnownSemantics({ sourceReadingReference, propertyIntents: intents },
       requestValue.sourceReadingReference, requestValue.sourceView.semantic.annotations);
   }
@@ -665,13 +875,25 @@ export function createBrewerHopAdviceSemanticSourcePropertyProjectionV3(input: {
   request: BrewerHopAdviceRequestV3;
   prepared: unknown;
 }): BrewerHopAdviceSemanticSourcePropertyProjectionV3 {
-  assertBrewerHopAdviceRequestV3(input.request);
+  return createSourcePropertyProjection(input, 'classic');
+}
+
+export function createBrewerHopAdviceSemanticSourcePropertyProjectionV3ForWizardV1(input: {
+  request: BrewerHopAdviceWizardRequestV3;
+  prepared: unknown;
+}): BrewerHopAdviceSemanticSourcePropertyProjectionV3 {
+  return createSourcePropertyProjection(input, 'wizardV1');
+}
+
+function createSourcePropertyProjection(input: { request: AnyProfileRequestV3; prepared: unknown },
+  profile: SourceProfileV3): BrewerHopAdviceSemanticSourcePropertyProjectionV3 {
+  assertRequestOfProfile(input.request, profile);
   const reading = semanticReadingForProjection(input.request.sourceView);
   const propertyIntents = hopV55PropertyIntentsFromSemanticReadingV1(reading, input.prepared);
   const body = { format: BREWER_HOP_ADVICE_SOURCE_PROPERTY_PROJECTION_FORMAT_V3,
     sourceReadingReference: input.request.sourceReadingReference, propertyIntents };
   const projection = { ...body, reference: hopAdviceContentReference(BREWER_HOP_ADVICE_SOURCE_PROPERTY_PROJECTION_FORMAT_V3, body) };
-  assertBrewerHopAdviceSemanticSourcePropertyProjectionV3(projection, input.request);
+  assertSourcePropertyProjection(projection, input.request, profile);
   return deepFreeze(clone(projection));
 }
 
@@ -749,7 +971,8 @@ const SEMANTIC_ANNOTATION_PROPOSAL_KEYS = ['sense', 'term', 'requirement', 'dire
   'reportedProblem', 'lexicon', 'partner', 'relatedAnnotationIds'] as const;
 
 /** Only these already validated semantic fields are needed, even if an archive version is future. */
-type SemanticValidationSourceV1 = Pick<BrewerHopAdviceRequestV3, 'question' | 'contextLaunch'> & {
+type SemanticValidationSourceV1 = Pick<BrewerHopAdviceRequestV3, 'question'> & {
+  contextLaunch: Pick<BrewerHopAdviceContextLaunchClaimV1, 'expected'>;
   sourceView: Pick<BrewerHopAdviceSourceViewV1, 'semantic'>;
 };
 
@@ -771,7 +994,9 @@ function v5AnswerSource(request: SemanticValidationSourceV1): BrewerHopAdviceAns
   };
 }
 
-function createV5Answer(input: Omit<CreateBrewerHopAdviceProposalEnvelopeV5Input, 'prepared'>): BrewerHopAdviceAnswerSections & {
+function createV5Answer(input: Omit<CreateBrewerHopAdviceProposalEnvelopeV5Input, 'prepared' | 'request'> & {
+  request: SemanticValidationSourceV1;
+}): BrewerHopAdviceAnswerSections & {
   evidence: BrewerHopAdviceEvidenceV5; serverContext: BrewerHopAdviceServerContextV3;
 } {
   return createBrewerHopAdviceAnswer({
@@ -780,10 +1005,24 @@ function createV5Answer(input: Omit<CreateBrewerHopAdviceProposalEnvelopeV5Input
   });
 }
 
-function assertV5AncillaryInput(value: unknown): asserts value is Row {
-  assertJson(value, 'arguments du finish V5');
-  if (!isRow(value)) fail('Proposition sémantique V5 illisible');
-  exactKeys(value, V5_PROPOSAL_KEYS, 'Proposition sémantique V5');
+/**
+ * A closed semantic output version. V5 and V6 share RequestV3, the source projection, the suggestion,
+ * answer and evidence rules; each keeps its own format, proposal keys, finish and reference.
+ */
+export interface BrewerHopAdviceSemanticEnvelopeSpecV3 {
+  format: string;
+  label: string;
+  proposalKeys: readonly string[];
+}
+const V5_SPEC: BrewerHopAdviceSemanticEnvelopeSpecV3 = {
+  format: BREWER_HOP_ADVICE_PROPOSAL_FORMAT_V5, label: 'V5', proposalKeys: V5_PROPOSAL_KEYS,
+};
+export const BREWER_HOP_ADVICE_SEMANTIC_PROPOSAL_KEYS_V5: readonly string[] = V5_PROPOSAL_KEYS;
+
+function assertV5AncillaryInput(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3 = V5_SPEC): asserts value is Row {
+  assertJson(value, `arguments du finish ${spec.label}`);
+  if (!isRow(value)) fail(`Proposition sémantique ${spec.label} illisible`);
+  exactKeys(value, spec.proposalKeys, `Proposition sémantique ${spec.label}`);
   if (!Array.isArray(value.openQuestions) || value.openQuestions.length > 6) fail('openQuestions doit contenir au plus six éléments');
   value.openQuestions.forEach((raw, index) => {
     const label = `openQuestions[${index}]`;
@@ -1065,11 +1304,12 @@ function assertSemanticProposedFields(value: unknown, kind: 'revise' | 'reject' 
   return out as Partial<Omit<HopV55SemanticAnnotationV1, 'id' | 'source' | 'origin'>>;
 }
 
-function normalizeSemanticProposalWithAnswer(rawValue: unknown, request: BrewerHopAdviceRequestV3,
-  sourceProjection: BrewerHopAdviceSemanticSourcePropertyProjectionV3, sections: BrewerHopAdviceAnswerSections): BrewerHopAdviceSemanticProposalV5 {
-  assertV5AncillaryInput(rawValue);
-  assertBrewerHopAdviceRequestV3(request);
-  assertBrewerHopAdviceSemanticSourcePropertyProjectionV3(sourceProjection, request);
+function normalizeSemanticProposalWithAnswer(rawValue: unknown, request: AnyProfileRequestV3,
+  sourceProjection: BrewerHopAdviceSemanticSourcePropertyProjectionV3, sections: BrewerHopAdviceAnswerSections,
+  spec: BrewerHopAdviceSemanticEnvelopeSpecV3 = V5_SPEC, profile: SourceProfileV3 = 'classic'): BrewerHopAdviceSemanticProposalV5 {
+  assertV5AncillaryInput(rawValue, spec);
+  assertRequestOfProfile(request, profile);
+  assertSourcePropertyProjection(sourceProjection, request, profile);
   const sourceAnnotations = v5SourceAnnotations(request);
   const annotationReviews = (value: unknown): BrewerHopAdviceAnnotationReviewV5[] => {
     if (!Array.isArray(value) || value.length > 40) fail('annotationReviews doit contenir au plus 40 éléments');
@@ -1168,9 +1408,9 @@ export function normalizeBrewerHopAdviceSemanticProposalV5(raw: unknown, request
 
 function assertStoredSemanticProposalV5(value: unknown, request: SemanticValidationSourceV1,
   sourceProjection: BrewerHopAdviceSemanticSourcePropertyProjectionV3, evidence: unknown,
-  serverContext: unknown): asserts value is BrewerHopAdviceSemanticProposalV5 {
-  if (!isRow(value)) fail('proposal V5 archivée absente');
-  exactKeys(value, V5_PROPOSAL_KEYS, 'proposal V5 archivée');
+  serverContext: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3 = V5_SPEC): asserts value is BrewerHopAdviceSemanticProposalV5 {
+  if (!isRow(value)) fail(`proposal ${spec.label} archivée absente`);
+  exactKeys(value, spec.proposalKeys, `proposal ${spec.label} archivée`);
   const annotations = v5SourceAnnotations(request);
   if (!Array.isArray(value.annotationReviews) || value.annotationReviews.length > 40) fail('annotationReviews archivées invalides');
   const reviewed = new Set<string>();
@@ -1270,31 +1510,40 @@ const V5_ENVELOPE_KEYS = ['format', 'status', 'requestSnapshot', 'sourceProperty
 const isContentReference = (value: unknown, namespace: string): boolean => typeof value === 'string'
   && value.startsWith(`${namespace}:sha256:`) && /^[a-f0-9]{64}$/.test(value.slice(namespace.length + ':sha256:'.length));
 
-/** Keys, status and exact reference of a V5 envelope: known integrity whatever its nested request holds. */
-function assertProposalEnvelopeV5Outer(value: unknown): asserts value is Row {
-  assertJson(value, 'enveloppe proposal V5');
-  if (!isRow(value)) fail('enveloppe proposal V5 illisible');
-  exactKeys(value, V5_ENVELOPE_KEYS, 'enveloppe proposal V5');
-  if (value.format !== BREWER_HOP_ADVICE_PROPOSAL_FORMAT_V5 || value.status !== 'proposal') fail('format/statut proposal V5 invalide');
-  text(value.reference, 'proposalV5.reference', 180);
-  if (value.reference !== hopAdviceContentReference(BREWER_HOP_ADVICE_PROPOSAL_FORMAT_V5,
-    envelopeV5Body(value as unknown as BrewerHopAdviceProposalEnvelopeV5))) fail('reference proposal V5 altérée');
+/** Version-specific checks of a stored proposal, run only after the shared suggestion, answer and evidence rules passed. */
+export type BrewerHopAdviceSemanticProposalExtrasV3 = (proposal: BrewerHopAdviceSemanticProposalV5 & Row) => void;
+
+/** Keys, status and exact reference of a semantic envelope: known integrity whatever its nested request holds. */
+function assertProposalEnvelopeV5Outer(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3 = V5_SPEC): asserts value is Row {
+  assertJson(value, `enveloppe proposal ${spec.label}`);
+  if (!isRow(value)) fail(`enveloppe proposal ${spec.label} illisible`);
+  exactKeys(value, V5_ENVELOPE_KEYS, `enveloppe proposal ${spec.label}`);
+  if (value.format !== spec.format || value.status !== 'proposal') fail(`format/statut proposal ${spec.label} invalide`);
+  text(value.reference, `proposal${spec.label}.reference`, 180);
+  if (value.reference !== hopAdviceContentReference(spec.format,
+    envelopeV5Body(value as unknown as BrewerHopAdviceProposalEnvelopeV5))) fail(`reference proposal ${spec.label} altérée`);
+}
+
+function assertSemanticEnvelope(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3, profile: SourceProfileV3 = 'classic'): void {
+  assertProposalEnvelopeV5Outer(value, spec);
+  assertRequestOfProfile(value.requestSnapshot, profile);
+  assertSourcePropertyProjection(value.sourcePropertyProjection, value.requestSnapshot, profile);
+  if (value.providerInputReference !== providerInputReferenceOfProfile(value.requestSnapshot, profile)) fail('providerInputReference détachée de RequestV3');
+  if (!isRow(value.serverContext)) fail('serverContext absent');
+  assertStoredSemanticProposalV5(value.proposal, value.requestSnapshot, value.sourcePropertyProjection, value.evidence, value.serverContext, spec);
+  extras?.(value.proposal as BrewerHopAdviceSemanticProposalV5 & Row);
 }
 
 export function assertBrewerHopAdviceProposalEnvelopeV5(value: unknown): asserts value is BrewerHopAdviceProposalEnvelopeV5 {
-  assertProposalEnvelopeV5Outer(value);
-  assertBrewerHopAdviceRequestV3(value.requestSnapshot);
-  assertBrewerHopAdviceSemanticSourcePropertyProjectionV3(value.sourcePropertyProjection, value.requestSnapshot);
-  if (value.providerInputReference !== brewerHopAdviceProviderInputV3Reference(value.requestSnapshot)) fail('providerInputReference détachée de RequestV3');
-  if (!isRow(value.serverContext)) fail('serverContext absent');
-  assertStoredSemanticProposalV5(value.proposal, value.requestSnapshot, value.sourcePropertyProjection, value.evidence, value.serverContext);
+  assertSemanticEnvelope(value, V5_SPEC);
 }
 
 /** Whether the nested request of a V5 envelope declares a future format, or carries a future child. */
-function proposalV5HasFutureRequestChild(value: Row): boolean {
+function proposalV5HasFutureRequestChild(value: Row, profile: SourceProfileV3 = 'classic'): boolean {
   const request = value.requestSnapshot;
   return isRow(request) && (isFutureRequestFormat(request.format)
-    || request.format === BREWER_HOP_ADVICE_REQUEST_FORMAT_V3 && requestV3HasFutureChild(request));
+    || request.format === BREWER_HOP_ADVICE_REQUEST_FORMAT_V3 && requestV3HasFutureChild(request, profile));
 }
 
 /**
@@ -1302,18 +1551,19 @@ function proposalV5HasFutureRequestChild(value: Row): boolean {
  * reference, provider-input reference form, proposal keys, evidence and server context, plus every relation
  * to the known outer request. Proposal content and provider input depend on the future child and stay opaque.
  */
-function assertProposalEnvelopeV5AroundFutureChild(value: unknown): string {
-  assertProposalEnvelopeV5Outer(value);
+function assertProposalEnvelopeV5AroundFutureChild(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3 = V5_SPEC,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3, profile: SourceProfileV3 = 'classic'): string {
+  assertProposalEnvelopeV5Outer(value, spec);
   const projection = value.sourcePropertyProjection;
   assertBrewerHopAdviceSemanticSourcePropertyProjectionV3(projection);
   if (!isContentReference(value.providerInputReference, BREWER_HOP_ADVICE_PROVIDER_INPUT_FORMAT_V3)) fail('providerInputReference mal formée');
-  if (!isRow(value.proposal)) fail('proposal V5 archivée absente');
-  exactKeys(value.proposal, V5_PROPOSAL_KEYS, 'proposal V5 archivée');
+  if (!isRow(value.proposal)) fail(`proposal ${spec.label} archivée absente`);
+  exactKeys(value.proposal, spec.proposalKeys, `proposal ${spec.label} archivée`);
   const request = value.requestSnapshot as Row;
   let reason = `Request imbriquée future/inconnue : ${String(request.format)}`;
   let launch: { scope: unknown } | null = null;
   if (request.format === BREWER_HOP_ADVICE_REQUEST_FORMAT_V3) {
-    const future = checkRequestV3(request, true);
+    const future = checkRequestV3(request, true, profile);
     if (future === undefined) fail('RequestV3 imbriquée sans enfant futur confirmé');
     reason = future;
     if (projection.sourceReadingReference !== request.sourceReadingReference) fail('projection source détachée du sourceReadingReference RequestV3');
@@ -1340,9 +1590,36 @@ function assertProposalEnvelopeV5AroundFutureChild(value: unknown): string {
     if (value.providerInputReference !== hopAdviceContentReference(BREWER_HOP_ADVICE_PROVIDER_INPUT_FORMAT_V3, providerInput)) {
       fail('providerInputReference détachée des champs connus de RequestV3');
     }
-    assertStoredSemanticProposalV5(value.proposal, source, projection, value.evidence, value.serverContext);
+    assertStoredSemanticProposalV5(value.proposal, source, projection, value.evidence, value.serverContext, spec);
   }
+  // Version-specific links are contained in the known envelope and do not depend on a future SourceView.
+  // Validate them even when the source child stays opaque/read-only; only source-dependent V5 checks above wait.
+  extras?.(value.proposal as BrewerHopAdviceSemanticProposalV5 & Row);
   return reason;
+}
+
+export type BrewerHopAdviceSemanticEnvelopeReadV3 =
+  | { status: 'readOnly'; envelope: unknown }
+  | { status: 'unsupportedReadOnly'; snapshot: unknown; reason: string }
+  | { status: 'invalid'; reason: string };
+
+/** Staged read of one envelope whose format already equals `spec.format`; other formats are dispatched by the caller. */
+function readSemanticEnvelopeOfSpec(value: Row, spec: BrewerHopAdviceSemanticEnvelopeSpecV3,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3, profile: SourceProfileV3 = 'classic'): BrewerHopAdviceSemanticEnvelopeReadV3 {
+  const request = value.requestSnapshot;
+  if (isRow(request) && request.format === BREWER_HOP_ADVICE_REQUEST_FORMAT) {
+    return { status: 'invalid', reason: `Mélange connu refusé : une enveloppe Proposal${spec.label} ne peut pas contenir RequestV2.` };
+  }
+  try {
+    // Known outer integrity first: a future nested child never shields an altered known envelope.
+    if (proposalV5HasFutureRequestChild(value, profile)) {
+      return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: assertProposalEnvelopeV5AroundFutureChild(value, spec, extras, profile) };
+    }
+    assertSemanticEnvelope(value, spec, extras, profile);
+    return { status: 'readOnly', envelope: deepFreeze(clone(value)) };
+  } catch (error) {
+    return { status: 'invalid', reason: error instanceof Error ? error.message : `Proposal${spec.label} invalide` };
+  }
 }
 
 export function readBrewerHopAdviceProposalEnvelopeV5(value: unknown): BrewerHopAdviceProposalEnvelopeV5Read {
@@ -1356,20 +1633,87 @@ export function readBrewerHopAdviceProposalEnvelopeV5(value: unknown): BrewerHop
       ? { status: 'unsupportedReadOnly', snapshot: clone(value), reason: `Format proposal futur/inconnu : ${value.format}` }
       : { status: 'invalid', reason: 'format proposal absent/inconnu' };
   }
-  const request = value.requestSnapshot;
-  if (isRow(request) && request.format === BREWER_HOP_ADVICE_REQUEST_FORMAT) {
-    return { status: 'invalid', reason: 'Mélange connu refusé : une enveloppe ProposalV5 ne peut pas contenir RequestV2.' };
+  const read = readSemanticEnvelopeOfSpec(value, V5_SPEC);
+  return read.status === 'readOnly' ? { status: 'readOnly', envelope: read.envelope as BrewerHopAdviceProposalEnvelopeV5 } : read;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Shared pieces for the next closed output (V6). Each takes the caller's spec; none converts V6 to V5,
+// strips its fields or relaxes a V5 rule. V5 itself calls the same pieces with its own spec.
+
+/** Exact raw finish arguments of a semantic output version: V5 rules plus only the keys of `spec`. */
+export function assertBrewerHopAdviceSemanticRawInputV3(raw: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3): asserts raw is Row {
+  assertV5AncillaryInput(raw, spec);
+}
+
+/** Answer sections, sealed turn evidence and server context against this RequestV3's own source. */
+export function createBrewerHopAdviceSemanticAnswerV3(input: Omit<CreateBrewerHopAdviceProposalEnvelopeV5Input, 'prepared'>):
+  BrewerHopAdviceAnswerSections & { evidence: BrewerHopAdviceEvidenceV5; serverContext: BrewerHopAdviceServerContextV3 } {
+  assertBrewerHopAdviceRequestV3(input.request);
+  return createV5Answer(input);
+}
+
+/** Reviews and suggestions normalized with provenance fixed by code; the returned shape is shared by V5 and V6. */
+export function normalizeBrewerHopAdviceSemanticSuggestionsV3(input: {
+  spec: BrewerHopAdviceSemanticEnvelopeSpecV3;
+  raw: unknown;
+  request: BrewerHopAdviceRequestV3;
+  sourceProjection: BrewerHopAdviceSemanticSourcePropertyProjectionV3;
+  sections: BrewerHopAdviceAnswerSections;
+}): BrewerHopAdviceSemanticProposalV5 {
+  return normalizeSemanticProposalWithAnswer(input.raw, input.request, input.sourceProjection, input.sections, input.spec);
+}
+
+export function assertBrewerHopAdviceSemanticEnvelopeV3(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3): void {
+  assertSemanticEnvelope(value, spec, extras);
+}
+
+export function readBrewerHopAdviceSemanticEnvelopeV3(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3): BrewerHopAdviceSemanticEnvelopeReadV3 {
+  if (!isRow(value) || value.format !== spec.format) return { status: 'invalid', reason: `format proposal ${spec.label} attendu` };
+  return readSemanticEnvelopeOfSpec(value, spec, extras);
+}
+
+// Wizard V1 versions of the same shared pieces, for the explicit Wizard V6 output only. ProposalV5 stays
+// pinned to classic sources: its spec is refused here rather than silently admitted.
+
+function wizardOutputSpec(spec: BrewerHopAdviceSemanticEnvelopeSpecV3): BrewerHopAdviceSemanticEnvelopeSpecV3 {
+  if (!isRow(spec) || typeof spec.format !== 'string' || !spec.format.startsWith('brewer-hop-advice-proposal-')
+    || spec.format === BREWER_HOP_ADVICE_PROPOSAL_FORMAT_V5 || spec.format === BREWER_HOP_ADVICE_PROPOSAL_FORMAT) {
+    fail('ProposalV5 reste épinglée aux sources classiques; le profil Wizard exige une sortie versionnée explicite');
   }
-  try {
-    // Known outer integrity first: a future nested child never shields an altered known envelope.
-    if (proposalV5HasFutureRequestChild(value)) {
-      return { status: 'unsupportedReadOnly', snapshot: clone(value), reason: assertProposalEnvelopeV5AroundFutureChild(value) };
-    }
-    assertBrewerHopAdviceProposalEnvelopeV5(value);
-    return { status: 'readOnly', envelope: deepFreeze(clone(value)) };
-  } catch (error) {
-    return { status: 'invalid', reason: error instanceof Error ? error.message : 'ProposalV5 invalide' };
-  }
+  return spec;
+}
+
+export function createBrewerHopAdviceSemanticAnswerV3ForWizardV1(input: Omit<CreateBrewerHopAdviceProposalEnvelopeV5Input, 'prepared' | 'request'> & {
+  request: BrewerHopAdviceWizardRequestV3;
+}): BrewerHopAdviceAnswerSections & { evidence: BrewerHopAdviceEvidenceV5; serverContext: BrewerHopAdviceServerContextV3 } {
+  assertBrewerHopAdviceRequestV3ForWizardV1(input.request);
+  return createV5Answer(input);
+}
+
+export function normalizeBrewerHopAdviceSemanticSuggestionsV3ForWizardV1(input: {
+  spec: BrewerHopAdviceSemanticEnvelopeSpecV3;
+  raw: unknown;
+  request: BrewerHopAdviceWizardRequestV3;
+  sourceProjection: BrewerHopAdviceSemanticSourcePropertyProjectionV3;
+  sections: BrewerHopAdviceAnswerSections;
+}): BrewerHopAdviceSemanticProposalV5 {
+  return normalizeSemanticProposalWithAnswer(input.raw, input.request, input.sourceProjection, input.sections,
+    wizardOutputSpec(input.spec), 'wizardV1');
+}
+
+export function assertBrewerHopAdviceSemanticEnvelopeV3ForWizardV1(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3): void {
+  assertSemanticEnvelope(value, wizardOutputSpec(spec), extras, 'wizardV1');
+}
+
+export function readBrewerHopAdviceSemanticEnvelopeV3ForWizardV1(value: unknown, spec: BrewerHopAdviceSemanticEnvelopeSpecV3,
+  extras?: BrewerHopAdviceSemanticProposalExtrasV3): BrewerHopAdviceSemanticEnvelopeReadV3 {
+  const pinned = wizardOutputSpec(spec);
+  if (!isRow(value) || value.format !== pinned.format) return { status: 'invalid', reason: `format proposal ${pinned.label} attendu` };
+  return readSemanticEnvelopeOfSpec(value, pinned, extras, 'wizardV1');
 }
 
 export function verifyBrewerHopAdviceSemanticEvidenceV5(envelope: BrewerHopAdviceProposalEnvelopeV5,

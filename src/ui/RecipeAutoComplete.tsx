@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Sparkles, Loader2, AlertTriangle, Check } from 'lucide-react';
 import { Fermentable, HopIngredient, YeastSpec, StockItem } from '../types';
 import { AiClient } from '../services/aiClient';
+import { withManualEntry } from './manualEntry';
 import { readYeastFactValue, readYeastDocumentaryNotes, type YeastDocumentaryNote, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import {
   YEAST_DOCUMENTARY_UNITS, YEAST_SHEET_LABELS, YEAST_VALUE_KIND, YeastFlocculationEditor, YeastMeasuredFactEditor, YeastLinkedText, YeastObservationList,
@@ -553,7 +554,7 @@ export function YeastSheetAssistant({ subject, yeast, reference, revision, lates
       onEntry={onEntry} onAccept={onAccept} onVerify={verify} scopeText={scopeText} />;
   return <div className="yc-sheet-assistant">
     {!entry && <p className="yeast-small">Retrouver les données publiées, avec leurs sources et leurs limites. {scopeText}</p>}
-    {entry?.status === 'error' && <p role="alert" className="yeast-small"><AlertTriangle className="w-4 h-4 inline" aria-hidden="true" /> {entry.error} — à saisir à la main.</p>}
+    {entry?.status === 'error' && <p role="alert" className="yeast-small"><AlertTriangle className="w-4 h-4 inline" aria-hidden="true" /> {withManualEntry(entry.error ?? '')}</p>}
     {stale && <p role="status" className="yeast-small" data-review-stale>La fiche de {subject} a changé depuis cette recherche : proposition périmée, rien n’a été retenu.</p>}
     <button type="button" className="yc-sheet-search" onClick={search}><Sparkles className="w-4 h-4" aria-hidden="true" />{stale ? 'Relancer la recherche' : searchLabel}</button>
   </div>;
@@ -581,6 +582,9 @@ interface RecipeAutoCompleteProps {
   onHops: (v: HopIngredient[]) => void;
   yeast: YeastSpec;
   onYeast: (v: YeastSpec) => void | RecipeYeastAcceptance;
+  /** Completions this component applies on its own; the parent tells them apart from the brewer's acceptances.
+   * Synchronous only (`() => undefined` refuses an async function). */
+  onAutomatic?: (apply: () => undefined) => void;
   onLearnIngredient?: LearnIngredient;
   stockItems?: StockItem[];
 }
@@ -639,6 +643,7 @@ function IngredientCompletion({
   onHops,
   yeast: originalYeast,
   onYeast,
+  onAutomatic = apply => apply(),
   onLearnIngredient,
   stockItems = EMPTY_STOCK,
   active = true,
@@ -718,9 +723,11 @@ function IngredientCompletion({
     if (reviewScope) return;
     const local = completeFromLocalReferences(fermentables, hops, yeast, stockItems, saved);
     // A step-scoped completion can hydrate only the ingredient being edited.
-    if ((!scope || scope === 'malt') && JSON.stringify(local.fermentables) !== JSON.stringify(fermentables)) onFermentables(local.fermentables);
-    if ((!scope || scope === 'houblon') && JSON.stringify(local.hops) !== JSON.stringify(hops)) onHops(local.hops);
-    if ((!scope || scope === 'levure') && JSON.stringify(local.yeast) !== JSON.stringify(yeast)) onYeast(local.yeast);
+    onAutomatic(() => {
+      if ((!scope || scope === 'malt') && JSON.stringify(local.fermentables) !== JSON.stringify(fermentables)) onFermentables(local.fermentables);
+      if ((!scope || scope === 'houblon') && JSON.stringify(local.hops) !== JSON.stringify(hops)) onHops(local.hops);
+      if ((!scope || scope === 'levure') && JSON.stringify(local.yeast) !== JSON.stringify(yeast)) onYeast(local.yeast);
+    });
   }, [basis, stockItems, saved, reviewScope]);
   useEffect(() => () => { request.current += 1; }, []);
 
@@ -913,7 +920,7 @@ function IngredientCompletion({
       {error && (
         <p role="alert" className="flex items-start gap-2 text-sm text-cave-200 leading-snug">
           <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-          <span>{error} — à saisir à la main.</span>
+          <span>{withManualEntry(error)}</span>
         </p>
       )}
 

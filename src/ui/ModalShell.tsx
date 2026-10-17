@@ -3,7 +3,14 @@ import { useCoarsePointer, useKeyboardInset, useDensity } from './useViewport';
 
 let scrollLocks = 0;
 let bodyOverflow = '';
+export const ModalOpenerContext = React.createContext<HTMLElement | null>(null);
 const returnTargets = new WeakMap<HTMLElement, HTMLElement | null>();
+/** Preserve the connected opener when a loading sheet is replaced by a dialog. */
+export function transferModalReturnFocus(panel: HTMLElement, opener: HTMLElement | null) {
+  if (!opener?.isConnected) return;
+  const current = returnTargets.get(panel);
+  if (!current?.isConnected || current === document.body) returnTargets.set(panel, opener);
+}
 const topDialog = () => [...document.querySelectorAll<HTMLElement>('[role="dialog"]')]
   .filter(el => el.dataset.state !== 'closed' && !el.closest('[aria-hidden="true"], [inert]')).at(-1);
 const focusableElements = (panel: HTMLElement) => [...panel.querySelectorAll<HTMLElement>(
@@ -67,6 +74,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
   labelledBy,
   abovePage = false
 }) => {
+  const inheritedOpener = React.useContext(ModalOpenerContext);
   const coarse = useCoarsePointer();
   const keyboardInset = useKeyboardInset();
   // Un appareil hybride peut ouvrir le clavier avec un pointeur précis : le
@@ -84,6 +92,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
     if (!open) return;
     const panel = panelRef.current;
     if (!panel) return;
+    transferModalReturnFocus(panel, inheritedOpener);
     const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (!returnTargets.has(panel)) returnTargets.set(panel, active);
     if (topDialog() === panel && !panel.contains(document.activeElement)) panel.focus({ preventScroll: true });
@@ -123,7 +132,7 @@ export const ModalShell: React.FC<ModalShellProps> = ({
         }
       }
     };
-  }, [open]);
+  }, [open, inheritedOpener]);
 
   // Fige la page derrière : sans ça, le défilement traverse la modale.
   useEffect(() => {

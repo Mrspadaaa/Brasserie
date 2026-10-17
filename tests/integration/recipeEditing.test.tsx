@@ -527,7 +527,11 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('À compléter');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledOnce();
-    expect(save.mock.lastCall![0].hops[0]).toMatchObject({ stage: 'whirlpool', timeMin: undefined, tempC: undefined });
+    // Decision 5: an unset field is absent from the declared recipe (BrewWizard declaredRecipe), never an own undefined.
+    const whirlpool = save.mock.lastCall![0].hops[0];
+    expect(whirlpool).toMatchObject({ stage: 'whirlpool' });
+    expect(whirlpool).not.toHaveProperty('timeMin');
+    expect(whirlpool).not.toHaveProperty('tempC');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et préparer un brassin' }));
     expect(save).toHaveBeenCalledOnce();
     expect(screen.getByRole('alert')).toHaveTextContent('Durée de Citra : à compléter.');
@@ -543,10 +547,13 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('À compléter');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledOnce();
-    expect(save.mock.lastCall![0].hops).toMatchObject([
-      { stage: 'boil', timeMin: undefined },
-      { stage: 'whirlpool', timeMin: undefined, tempC: undefined },
-    ]);
+    // Decision 5: erased hot parameters are absent from the declared recipe, never own undefined values.
+    const [boil, whirlpool] = save.mock.lastCall![0].hops;
+    expect(boil).toMatchObject({ stage: 'boil' });
+    expect(boil).not.toHaveProperty('timeMin');
+    expect(whirlpool).toMatchObject({ stage: 'whirlpool' });
+    expect(whirlpool).not.toHaveProperty('timeMin');
+    expect(whirlpool).not.toHaveProperty('tempC');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer et préparer un brassin' }));
     expect(save).toHaveBeenCalledOnce();
     expect(screen.getByRole('alert')).toHaveTextContent('Durée de Citra : à compléter.');
@@ -564,9 +571,10 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getByRole('status', { name: 'État de la recette' })).toHaveTextContent('Données prêtes pour le brassin');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
     expect(save).toHaveBeenCalledOnce();
-    expect(save.mock.lastCall![0].hops[0]).toMatchObject({
-      alpha: 0, dayOffset: undefined, aromaContactHours: undefined, aromaTemperatureC: undefined,
-    });
+    // Decision 5: the erased dry-hop marks are absent from the declared recipe; an erased alpha stays 0 (unknown lot alpha).
+    const dryHop = save.mock.lastCall![0].hops[0];
+    expect(dryHop).toMatchObject({ alpha: 0 });
+    for (const field of ['dayOffset', 'aromaContactHours', 'aromaTemperatureC']) expect(dryHop).not.toHaveProperty(field);
   });
   it('ne transforme pas une dose négative en zéro et ramène le brasseur au champ à corriger', () => {
     const original: Recipe = { ...structuredClone(base), yeast: { name: 'Culture liquide rare', form: 'liquide', qty: 125, unit: 'mL', attenuationPct: 78 } };
@@ -611,7 +619,9 @@ describe('Recipe data entry regressions', () => {
     expect(saved.yeast.technicalFacts).toEqual([{ key: 'attenuation', reported: '77,25–82,75 %',
       range: { min: 77.25, max: 82.75 }, qualifier: 'range', unit: '%', origin: 'personal',
       source: 'https://example.test/lot-231', sourceUrl: 'https://example.test/lot-231', context: 'beer' }]);
-    expect(saved.fgTarget).toBeNull(); expect(saved.abvTarget).toBeNull();
+    // Decision 7 (human): documentary facts about the same yeast refine the estimate, never the author's FG/ABV targets
+    // (BrewWizard keepTargets with sameYeastForTargets); no central attenuation value is fabricated (asserted above).
+    expect(saved.fgTarget).toBe(original.fgTarget); expect(saved.abvTarget).toBe(original.abvTarget);
     expect(saved.yeast.technicalSelections?.attenuation).toEqual(saved.yeast.technicalFacts[0]);
     view.unmount(); wizard(saved); step(/^Levure$/);
     const reopened = openAttenuation();
@@ -705,6 +715,30 @@ describe('Recipe data entry regressions', () => {
     expect(screen.getAllByRole('button', { name: 'Compléter les données manquantes avec l’IA' })).toHaveLength(1);
     expect(screen.getByLabelText('Alpha de Amer test en pourcent')).toHaveClass('border-ebc-amber/60');
     expect(screen.getByLabelText('Alpha facultatif, hors du calcul IBU à cru de Cru test en pourcent')).toHaveClass('border-cave-700');
+  });
+  it('#32 : un alpha inconnu (0 hérité, ligne neuve sans alpha de stock) s’affiche vide avec le repère ambre, jamais « 0 »', () => {
+    const original: Recipe = { ...structuredClone(base), hops: [
+      { name: 'Ancien amer', weightG: 20, alpha: 0, stage: 'boil', timeMin: 10 },
+      { name: 'Ancien cru', weightG: 40, alpha: 0, stage: 'dryHop', dayOffset: 3 }
+    ] };
+    wizard(original, vi.fn(), []); step(/^Houblons$/);
+    const bitter = screen.getByLabelText('Alpha de Ancien amer en pourcent');
+    expect(bitter).toHaveValue('');
+    expect(bitter).toHaveClass('border-ebc-amber/60');
+    expect(screen.getByLabelText('Alpha facultatif, hors du calcul IBU à cru de Ancien cru en pourcent')).toHaveValue('');
+    const balance = screen.getByRole('region', { name: 'Bilan de houblonnage de la recette' });
+    expect(balance).toHaveTextContent('Ancien amer : alpha du lot');
+    expect(screen.getByText(/Pour calculer les IBU à chaud, documenter l’alpha du lot/)).toBeInTheDocument();
+    // A real lot alpha is shown as typed, and erasing it shows an empty field again.
+    change(bitter, '6,5');
+    expect(bitter).toHaveValue('6,5');
+    change(bitter, '');
+    fireEvent.blur(bitter);
+    expect(bitter).toHaveValue('');
+    // V4: the lines toggle no longer repeats the IBU the balance just above already shows.
+    const toggle = document.querySelector('#recipe-hop-lines > summary')!;
+    expect(toggle.textContent).toMatch(/^Corriger les lignes de houblon · 2/u);
+    expect(toggle.textContent).not.toMatch(/IBU/u);
   });
   it('remplace une levure homonyme quand sa référence de stock change', () => {
     const original = structuredClone(base);

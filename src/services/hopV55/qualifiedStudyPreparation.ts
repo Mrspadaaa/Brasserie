@@ -15,6 +15,7 @@ import { hopV55DecisionReadingScopesV1, isHopV55StructuredDecisionReadingArchive
   type HopV55StructuredDecisionReadingArchive } from './decisionReadingAccessors';
 import { projectHopV55QuestionScopeCoverageV1,
   type HopV55QuestionScopeCoverageV1, type HopV55QuestionScopeLedgerV1 } from './questionScopeReading';
+import { sameCanonicalData } from './operationScopedQualifiedValidation';
 import type { HopV55Workspace } from './contracts';
 import { hopV55ScenarioRuntimeReference } from './scenarioCommit';
 import {
@@ -286,7 +287,109 @@ type CoreResultV1 =
       qualificationInputReference: string; preparedReference: string }
   | { status: 'refused'; refusal: Extract<PrepareHopV55QualifiedAdviceStudyResultV1, { status: 'refused' }> };
 
-async function loadQualifiedAdviceCore(input: HopV55QualifiedAdviceStudyFreshnessInputV1): Promise<CoreResultV1> {
+export interface HopV55QualifiedAdvicePreparationSessionV1 {
+  inspect(input: HopV55QualifiedAdviceStudyFreshnessInputV1): Promise<InspectHopV55QualifiedAdvicePreparedReferenceResultV1>;
+  prepare(input: PrepareHopV55QualifiedAdviceStudyInputV1): Promise<PrepareHopV55QualifiedAdviceStudyResultV1>;
+}
+
+interface CatalogueAssemblyCacheEntryV1 {
+  scope: unknown;
+  input: HopCatalogueLoaderInput;
+  output: HopAssembledCatalogueInput;
+}
+
+function freezePlainCatalogueValue(value: unknown, seen = new WeakSet<object>()): boolean {
+  if (value === null || typeof value !== 'object') return true;
+  const row = value as object;
+  if (seen.has(row)) return true;
+  seen.add(row);
+  if (ArrayBuffer.isView(row) || row instanceof ArrayBuffer || row instanceof Map || row instanceof Set || row instanceof Date) return false;
+  const prototype = Object.getPrototypeOf(row);
+  if (Array.isArray(row) ? prototype !== Array.prototype : prototype !== Object.prototype && prototype !== null) return false;
+  for (const key of Reflect.ownKeys(row)) {
+    if (typeof key !== 'string') return false;
+    const descriptor = Object.getOwnPropertyDescriptor(row, key);
+    if (!descriptor || !('value' in descriptor)) return false;
+    if (!descriptor.enumerable) continue;
+    if (!freezePlainCatalogueValue(descriptor.value, seen)) return false;
+  }
+  Object.freeze(row);
+  return true;
+}
+
+function frozenCatalogueSnapshot<T>(value: T): T | undefined {
+  try {
+    const copy = structuredClone(value);
+    return freezePlainCatalogueValue(copy) ? copy : undefined;
+  } catch { return undefined; }
+}
+
+function sameCatalogueSnapshot(left: unknown, right: unknown): boolean {
+  try { return sameCanonicalData(left, right); }
+  catch { return false; }
+}
+
+/**
+ * An operation-local assembly cache. Callers always supply freshly read and validated scope and
+ * loader input. A workspace revision by itself is not an assembly dependency: each guard has
+ * already revalidated the exact archive/source/runtime, while a preference-command append can
+ * advance the revision without changing the pure catalogue assembly input.
+ * The private, frozen assembly is reused only when both dependency snapshots compare as exact data.
+ */
+function createCatalogueAssemblySessionV1() {
+  let open = true;
+  let cached: CatalogueAssemblyCacheEntryV1 | undefined;
+
+  const load = async (input: HopV55QualifiedAdviceStudyFreshnessInputV1): Promise<HopAssembledCatalogueInput> => {
+    if (!open) throw Error('Session d’assemblage Q09 fermée; ouvrir une nouvelle opération.');
+    const scopeSnapshot = frozenCatalogueSnapshot({
+      ownerKey: input.ownerKey, workspaceId: input.workspaceId,
+      sourceReadingReference: input.sourceReadingReference, expectedRuntimeReference: input.expectedRuntimeReference,
+      sourceContext: input.sourceContext, action: input.action, explicitFutureStage: input.explicitFutureStage ?? null,
+    });
+    const inputSnapshot = frozenCatalogueSnapshot(input.catalogueInput);
+    const sameScope = !!(scopeSnapshot && cached && sameCatalogueSnapshot(scopeSnapshot, cached.scope));
+    const sameInput = !!(inputSnapshot && cached && sameCatalogueSnapshot(inputSnapshot, cached.input));
+    if (scopeSnapshot && inputSnapshot && cached && sameScope && sameInput) {
+      return structuredClone(cached.output);
+    }
+
+    const loaderInput = inputSnapshot ? structuredClone(inputSnapshot) : structuredClone(input.catalogueInput);
+    const loaded = await loadHopCatalogueQualificationInput(loaderInput);
+    const outputSnapshot = frozenCatalogueSnapshot(loaded);
+    if (open && scopeSnapshot && inputSnapshot && outputSnapshot) {
+      cached = { scope: scopeSnapshot, input: inputSnapshot, output: outputSnapshot };
+    } else cached = undefined;
+    return loaded;
+  };
+
+  return {
+    load,
+    assertOpen() { if (!open) throw Error('Session d’assemblage Q09 fermée; ouvrir une nouvelle opération.'); },
+    close() { open = false; cached = undefined; },
+  };
+}
+
+export async function withHopV55QualifiedAdvicePreparationSession<T>(
+  operation: (session: HopV55QualifiedAdvicePreparationSessionV1) => Promise<T>,
+): Promise<T> {
+  if (typeof operation !== 'function') throw Error('Une opération Q09 explicite est requise.');
+  const assembly = createCatalogueAssemblySessionV1();
+  const session: HopV55QualifiedAdvicePreparationSessionV1 = Object.freeze({
+    inspect: input => {
+      assembly.assertOpen();
+      return inspectHopV55QualifiedAdvicePreparedReferenceInSessionV1(input, assembly.load);
+    },
+    prepare: input => {
+      assembly.assertOpen();
+      return prepareHopV55QualifiedAdviceStudyInSessionV1(input, assembly.load);
+    },
+  });
+  try { return await operation(session); }
+  finally { assembly.close(); }
+}
+
+async function loadQualifiedAdviceCore(input: HopV55QualifiedAdviceStudyFreshnessInputV1, loadAssembly?: (input: HopV55QualifiedAdviceStudyFreshnessInputV1) => Promise<HopAssembledCatalogueInput>): Promise<CoreResultV1> {
   if (!isRow(input) || !isRow(input.workspace) || !isText(input.ownerKey) || !isText(input.workspaceId)
     || !isText(input.sourceReadingReference) || !isText(input.expectedRuntimeReference)
     || !isRow(input.prepared) || !isRow(input.catalogueInput)
@@ -333,7 +436,7 @@ async function loadQualifiedAdviceCore(input: HopV55QualifiedAdviceStudyFreshnes
     code: 'stageMismatch', reason: 'Le stade de stratégie diffère du programme/batch source exact.' } };
 
   let qualificationInput: HopAssembledCatalogueInput;
-  try { qualificationInput = await loadHopCatalogueQualificationInput(structuredClone(input.catalogueInput)); }
+  try { qualificationInput = loadAssembly ? await loadAssembly(input) : await loadHopCatalogueQualificationInput(structuredClone(input.catalogueInput)); }
   catch (error) { return { status: 'refused', refusal: { status: 'refused', code: 'qualificationInputInvalid',
     reason: `Le snapshot de qualification ne peut pas être chargé : ${(error as Error).message}` } }; }
   const sourceContextReference = hopAdviceContentReference('hop-v55-qualified-advice-source-context-v1', input.sourceContext);
@@ -351,10 +454,11 @@ async function loadQualifiedAdviceCore(input: HopV55QualifiedAdviceStudyFreshnes
     qualificationInput, sourceContextReference, qualificationInputReference, preparedReference };
 }
 
-export async function inspectHopV55QualifiedAdvicePreparedReferenceV1(
+async function inspectHopV55QualifiedAdvicePreparedReferenceInSessionV1(
   input: HopV55QualifiedAdviceStudyFreshnessInputV1,
+  loadAssembly?: (input: HopV55QualifiedAdviceStudyFreshnessInputV1) => Promise<HopAssembledCatalogueInput>,
 ): Promise<InspectHopV55QualifiedAdvicePreparedReferenceResultV1> {
-  const loaded = await loadQualifiedAdviceCore(input);
+  const loaded = await loadQualifiedAdviceCore(input, loadAssembly);
   if (loaded.status !== 'ready') return loaded.refusal;
   return { status: 'ready', sourceReadingReference: loaded.core.archive.contentReference,
     sourceRuntimeReference: loaded.core.archive.runtimeReference, sourceContextReference: loaded.sourceContextReference,
@@ -364,10 +468,17 @@ export async function inspectHopV55QualifiedAdvicePreparedReferenceV1(
       scopeIds: loaded.core.scopeLedger.sourceScopes.map(scope => scope.id) } : {}) };
 }
 
-export async function prepareHopV55QualifiedAdviceStudyV1(
+export async function inspectHopV55QualifiedAdvicePreparedReferenceV1(
+  input: HopV55QualifiedAdviceStudyFreshnessInputV1,
+): Promise<InspectHopV55QualifiedAdvicePreparedReferenceResultV1> {
+  return inspectHopV55QualifiedAdvicePreparedReferenceInSessionV1(input);
+}
+
+async function prepareHopV55QualifiedAdviceStudyInSessionV1(
   input: PrepareHopV55QualifiedAdviceStudyInputV1,
+  loadAssembly?: (input: HopV55QualifiedAdviceStudyFreshnessInputV1) => Promise<HopAssembledCatalogueInput>,
 ): Promise<PrepareHopV55QualifiedAdviceStudyResultV1> {
-  const loaded = await loadQualifiedAdviceCore(input);
+  const loaded = await loadQualifiedAdviceCore(input, loadAssembly);
   if (loaded.status !== 'ready') return loaded.refusal;
   const identity = input.identity;
   if (!isText(identity?.preparationId) || !isText(identity.dossierId) || !isText(identity.eventId) || !validInstant(identity.recordedAt)) {
@@ -414,4 +525,10 @@ export async function prepareHopV55QualifiedAdviceStudyV1(
   };
   return { status: 'ready', result: { ...body,
     reference: hopAdviceContentReference(HOP_V55_QUALIFIED_ADVICE_STUDY_PREPARATION_V1_FORMAT, body) } };
+}
+
+export async function prepareHopV55QualifiedAdviceStudyV1(
+  input: PrepareHopV55QualifiedAdviceStudyInputV1,
+): Promise<PrepareHopV55QualifiedAdviceStudyResultV1> {
+  return prepareHopV55QualifiedAdviceStudyInSessionV1(input);
 }

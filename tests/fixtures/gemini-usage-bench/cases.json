@@ -1,0 +1,965 @@
+{
+  "version": "2026-10-12",
+  "note": "Cas fictifs du banc d'usage Gemini (#91). Réponses attendues écrites avant toute mesure, d'après les documents eux-mêmes. Aucune donnée réelle.",
+  "cases": [
+    {
+      "id": "coa-simple",
+      "usage": "coa",
+      "file": "tests/fixtures/gemini-usage-bench/coa-simple.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "expected": {
+        "found": true,
+        "lotNumber": "BENCH-LOT-2025-031",
+        "harvestYear": 2025,
+        "form": "pelletT90",
+        "growingRegion": "",
+        "grower": "",
+        "analyses": [
+          {
+            "analyte": "alpha",
+            "unit": "percentMass",
+            "basis": [
+              "asIs"
+            ],
+            "kind": "point",
+            "value": 6.8
+          },
+          {
+            "analyte": "beta",
+            "unit": "percentMass",
+            "basis": [
+              "asIs"
+            ],
+            "kind": "point",
+            "value": 5.9
+          },
+          {
+            "analyte": "totalOil",
+            "unit": "ml100g",
+            "basis": [
+              "asIs"
+            ],
+            "kind": "point",
+            "value": 1.1
+          },
+          {
+            "analyte": "hsi",
+            "unit": "index",
+            "basis": [
+              "asIs",
+              "unknown"
+            ],
+            "kind": "point",
+            "value": 0.28
+          }
+        ],
+        "forbidden": []
+      }
+    },
+    {
+      "id": "coa-piege",
+      "usage": "coa",
+      "file": "tests/fixtures/gemini-usage-bench/coa-piege.pdf",
+      "mimeType": "application/pdf",
+      "pages": 2,
+      "expected": {
+        "found": true,
+        "lotNumber": "BENCH-LOT-2024-112",
+        "harvestYear": 2024,
+        "form": "cryo",
+        "growingRegion": "Hallertau",
+        "grower": "Hopfengut Fiktiv",
+        "analyses": [
+          {
+            "analyte": "alpha",
+            "unit": "percentMass",
+            "basis": [
+              "dryMatter"
+            ],
+            "kind": "point",
+            "value": 12.4
+          },
+          {
+            "analyte": "beta",
+            "unit": "percentMass",
+            "basis": [
+              "dryMatter"
+            ],
+            "kind": "point",
+            "value": 4.1
+          },
+          {
+            "analyte": "totalOil",
+            "unit": "ml100g",
+            "basis": [
+              "dryMatter"
+            ],
+            "kind": "point",
+            "value": 2.6
+          },
+          {
+            "analyte": "myrcene",
+            "unit": "percentOil",
+            "basis": [
+              "oil"
+            ],
+            "kind": "point",
+            "value": 48
+          },
+          {
+            "analyte": "linalool",
+            "unit": "percentOil",
+            "basis": [
+              "oil"
+            ],
+            "kind": "below",
+            "limit": 0.1,
+            "limitKind": "lod"
+          }
+        ],
+        "forbidden": [
+          {
+            "why": "plage variétale de l'annexe",
+            "analyte": "alpha",
+            "kind": "range"
+          },
+          {
+            "why": "plage variétale de l'annexe",
+            "analyte": "beta",
+            "kind": "range"
+          },
+          {
+            "why": "HSI non déterminé",
+            "analyte": "hsi"
+          },
+          {
+            "why": "dose de kit sensoriel ou seuil olfactif",
+            "unit": "ugL"
+          }
+        ]
+      }
+    },
+    {
+      "id": "coa-photo-lecteur",
+      "usage": "coa",
+      "file": "tests/fixtures/gemini-usage-bench/vision/coa-photo.png",
+      "mimeType": "image/png",
+      "images": 1,
+      "expected": {
+        "found": true,
+        "lotNumber": "BENCH-LOT-2025-031",
+        "harvestYear": 2025,
+        "form": "pelletT90",
+        "growingRegion": "",
+        "grower": "",
+        "analyses": [
+          {
+            "analyte": "alpha",
+            "unit": "percentMass",
+            "basis": [
+              "asIs"
+            ],
+            "kind": "point",
+            "value": 6.8
+          },
+          {
+            "analyte": "beta",
+            "unit": "percentMass",
+            "basis": [
+              "asIs"
+            ],
+            "kind": "point",
+            "value": 5.9
+          },
+          {
+            "analyte": "totalOil",
+            "unit": "ml100g",
+            "basis": [
+              "asIs"
+            ],
+            "kind": "point",
+            "value": 1.1
+          },
+          {
+            "analyte": "hsi",
+            "unit": "index",
+            "basis": [
+              "asIs",
+              "unknown"
+            ],
+            "kind": "point",
+            "value": 0.28
+          }
+        ],
+        "forbidden": []
+      }
+    },
+    {
+      "id": "facture-image",
+      "usage": "facture",
+      "file": "tests/fixtures/expense-vision.png",
+      "mimeType": "image/png",
+      "images": 1,
+      "expected": {
+        "vendor": "Fournisseur fictif de materiel de brasserie",
+        "documentType": "invoice",
+        "paymentEvidence": [
+          "unpaid",
+          "unknown"
+        ],
+        "date": "09.09.2026",
+        "currency": "CHF",
+        "invoiceNumber": [
+          "TEST-VISION-MATERIEL-001"
+        ],
+        "orderNumber": "",
+        "amountHT": 508.79,
+        "tvaRate": 0.081,
+        "tvaAmount": 41.21,
+        "amountTTC": 550,
+        "items": [
+          {
+            "name": "Hotte aspirante inox",
+            "kind": [
+              "equipment"
+            ],
+            "quantity": 1,
+            "unit": "piece",
+            "price": 500,
+            "amountTTC": 500
+          },
+          {
+            "name": "Reparation de la pompe",
+            "kind": [
+              "maintenance"
+            ],
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": 50
+          },
+          {
+            "name": "Frais de livraison",
+            "kind": [
+              "shipping"
+            ],
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": 12
+          },
+          {
+            "name": "Remise commerciale",
+            "kind": [
+              "discount"
+            ],
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": -12
+          }
+        ]
+      },
+      "triage": {
+        "kind": [
+          "invoice"
+        ],
+        "documentCount": 1,
+        "readable": true,
+        "currencies": [
+          "CHF"
+        ],
+        "route": "scan"
+      }
+    },
+    {
+      "id": "facture-tva-mixte",
+      "usage": "facture",
+      "file": "tests/fixtures/gemini-usage-bench/facture-tva-mixte.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "expected": {
+        "vendor": "Malterie Fictive SA",
+        "documentType": "invoice",
+        "paymentEvidence": [
+          "unpaid"
+        ],
+        "date": "02.10.2026",
+        "currency": "CHF",
+        "invoiceNumber": [
+          "BENCH-F-2026-0412"
+        ],
+        "orderNumber": "CMD-30871",
+        "amountHT": 189.56,
+        "tvaRate": null,
+        "tvaAmount": 8.74,
+        "amountTTC": 198.3,
+        "items": [
+          {
+            "name": "Malt Pilsner 25 kg",
+            "kind": [
+              "stock"
+            ],
+            "quantity": 2,
+            "unit": "sac",
+            "price": 48.5,
+            "amountTTC": 97
+          },
+          {
+            "name": "Malt Munich 10 kg",
+            "kind": [
+              "stock"
+            ],
+            "quantity": 1,
+            "unit": "sac",
+            "price": 26.4,
+            "amountTTC": 26.4
+          },
+          {
+            "name": "Detergent alcalin CIP 10 L",
+            "kind": [
+              "stock"
+            ],
+            "quantity": 1,
+            "unit": "bidon",
+            "price": 64.9,
+            "amountTTC": 64.9
+          },
+          {
+            "name": "Frais de port",
+            "kind": [
+              "shipping"
+            ],
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": 15
+          },
+          {
+            "name": "Remise fidelite",
+            "kind": [
+              "discount"
+            ],
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": -5
+          }
+        ]
+      }
+    },
+    {
+      "id": "bordereau",
+      "usage": "facture",
+      "file": "tests/fixtures/gemini-usage-bench/bordereau.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "expected": {
+        "vendor": "Emballages Fictifs",
+        "documentType": "delivery_note",
+        "paymentEvidence": [
+          "unknown"
+        ],
+        "date": "05.10.2026",
+        "currency": "",
+        "invoiceNumber": [
+          "",
+          "BL-BENCH-7781"
+        ],
+        "orderNumber": "CMD-55821",
+        "amountHT": null,
+        "tvaRate": null,
+        "tvaAmount": null,
+        "amountTTC": null,
+        "items": [
+          {
+            "name": "Capsules couronne 26 mm",
+            "kind": [
+              "packaging"
+            ],
+            "quantity": 1000,
+            "unit": "piece",
+            "price": null,
+            "amountTTC": null
+          },
+          {
+            "name": "Bouteilles 33 cl brunes",
+            "kind": [
+              "packaging"
+            ],
+            "quantity": 24,
+            "unit": "carton",
+            "price": null,
+            "amountTTC": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "ticket-net",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/ticket-net.truth.json"
+    },
+    {
+      "id": "ticket-sombre-pli",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/ticket-sombre-pli.truth.json"
+    },
+    {
+      "id": "ticket-long-tva",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/ticket-long-tva.truth.json"
+    },
+    {
+      "id": "ticket-etranger",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/ticket-etranger.truth.json"
+    },
+    {
+      "id": "deux-documents",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/deux-documents.truth.json"
+    },
+    {
+      "id": "bulletin-photo",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/bulletin-photo.truth.json"
+    },
+    {
+      "id": "coa-photo",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/coa-photo.truth.json"
+    },
+    {
+      "id": "illisible",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/illisible.truth.json"
+    },
+    {
+      "id": "hors-sujet",
+      "usage": "facture",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/hors-sujet.truth.json"
+    },
+    {
+      "id": "diag-bloquee",
+      "usage": "diagnostic",
+      "context": {
+        "recipe": {
+          "name": "Pale de banc (fictive)",
+          "style": "American Pale Ale",
+          "volumeL": 20,
+          "ogTarget": 1.052,
+          "fgTarget": 1.012,
+          "yeast": {
+            "name": "SafAle US-05",
+            "lab": "Fermentis",
+            "attenuationPct": 81,
+            "tempMinC": 18,
+            "tempMaxC": 26
+          }
+        },
+        "currentStep": "fermentation primaire",
+        "phase": "fermentation",
+        "readings": [
+          {
+            "date": "2026-10-01",
+            "gravity": 1.052,
+            "tempC": 19,
+            "note": "ensemencement 11.5 g réhydratés"
+          },
+          {
+            "date": "2026-10-03",
+            "gravity": 1.03,
+            "tempC": 19
+          },
+          {
+            "date": "2026-10-05",
+            "gravity": 1.024,
+            "tempC": 14,
+            "note": "cave refroidie par la météo"
+          },
+          {
+            "date": "2026-10-08",
+            "gravity": 1.024,
+            "tempC": 13
+          },
+          {
+            "date": "2026-10-10",
+            "gravity": 1.024,
+            "tempC": 13
+          }
+        ],
+        "notes": [
+          "Plus d’activité au barboteur depuis le 06.10."
+        ]
+      },
+      "expected": {
+        "severity": [
+          "agir"
+        ],
+        "severityPartial": [
+          "surveiller",
+          "urgent"
+        ],
+        "attenuationPct": 53.8,
+        "causePattern": "temp|froid|°C|13|14",
+        "actionPattern": "r[ée]chauff|remont|18|19|20|temp[ée]rature",
+        "causeExample": "Température trop basse (13 à 14 °C) pour la US-05, sous son minimum de 18 °C.",
+        "actionExample": "Remonter la cuve à 19-20 °C et remettre la levure en suspension, puis relever la densité dans 48 h."
+      }
+    },
+    {
+      "id": "diag-normale",
+      "usage": "diagnostic",
+      "context": {
+        "recipe": {
+          "name": "Pale de banc (fictive)",
+          "style": "American Pale Ale",
+          "volumeL": 20,
+          "ogTarget": 1.048,
+          "fgTarget": 1.01,
+          "yeast": {
+            "name": "SafAle US-05",
+            "lab": "Fermentis",
+            "attenuationPct": 81,
+            "tempMinC": 18,
+            "tempMaxC": 26
+          }
+        },
+        "currentStep": "fermentation primaire",
+        "phase": "fermentation",
+        "readings": [
+          {
+            "date": "2026-10-01",
+            "gravity": 1.048,
+            "tempC": 19
+          },
+          {
+            "date": "2026-10-03",
+            "gravity": 1.02,
+            "tempC": 20
+          },
+          {
+            "date": "2026-10-06",
+            "gravity": 1.012,
+            "tempC": 19
+          },
+          {
+            "date": "2026-10-09",
+            "gravity": 1.01,
+            "tempC": 19
+          },
+          {
+            "date": "2026-10-11",
+            "gravity": 1.01,
+            "tempC": 19
+          }
+        ],
+        "notes": [
+          "Arômes propres, barboteur calme depuis deux jours."
+        ]
+      },
+      "expected": {
+        "severity": [
+          "normal"
+        ],
+        "severityPartial": [],
+        "attenuationPct": 79.2,
+        "causePattern": null,
+        "actionPattern": null,
+        "causeExample": "Fermentation terminée : densité stable à 1.010, atténuation attendue pour la US-05.",
+        "actionExample": "Aucune correction ; poursuivre la garde prévue."
+      }
+    },
+    {
+      "id": "relecture-defauts",
+      "usage": "relecture",
+      "context": {
+        "name": "Helles de banc (fictive)",
+        "style": "Munich Helles",
+        "volumeL": 20,
+        "ogTarget": 1.048,
+        "fgTarget": 1.01,
+        "ibuTarget": 20,
+        "colorEbc": 8,
+        "fermentables": [
+          {
+            "name": "Pilsner",
+            "weightKg": 4.2,
+            "colorEbc": 3.5,
+            "kind": "grain",
+            "use": "empatage"
+          },
+          {
+            "name": "Munich clair",
+            "weightKg": 0.3,
+            "colorEbc": 15,
+            "kind": "grain",
+            "use": "empatage"
+          }
+        ],
+        "hops": [
+          {
+            "name": "Magnum",
+            "alpha": 14,
+            "weightG": 60,
+            "stage": "boil",
+            "timeMin": 60
+          },
+          {
+            "name": "Hallertauer Mittelfrüh",
+            "weightG": 30,
+            "stage": "boil",
+            "timeMin": 10
+          }
+        ],
+        "yeast": {
+          "name": "SafLager W-34/70",
+          "form": "sèche",
+          "grams": 23
+        },
+        "mashSteps": [
+          {
+            "name": "Saccharification",
+            "tempC": 78,
+            "durationMin": 60
+          },
+          {
+            "name": "Mash-out",
+            "tempC": 78,
+            "durationMin": 10
+          }
+        ],
+        "waterPlan": {
+          "source": "eau du réseau",
+          "saltsG": {
+            "gypse": 12,
+            "chlorureCalcium": 0
+          }
+        },
+        "waterTreatment": {
+          "ionsAfterTreatmentPpm": {
+            "calcium": 160,
+            "sulfate": 350,
+            "chloride": 20,
+            "bicarbonate": 60
+          }
+        },
+        "boilMin": 60,
+        "efficiencyPct": 75
+      },
+      "expected": {
+        "defects": [
+          {
+            "id": "palier",
+            "pattern": "palier|empâtage|empatage|maische|sacchar|78",
+            "severity": [
+              "bloquant"
+            ]
+          },
+          {
+            "id": "amertume",
+            "pattern": "amertume|IBU|magnum|houblon",
+            "severity": [
+              "gout",
+              "bloquant"
+            ]
+          },
+          {
+            "id": "eau",
+            "pattern": "sulfate|SO4|chlorure|eau|gypse",
+            "severity": [
+              "gout",
+              "detail"
+            ]
+          }
+        ],
+        "missingPattern": "alpha",
+        "blockingAllowedPattern": "palier|empâtage|empatage|maische|sacchar|78|amertume|IBU|magnum"
+      }
+    },
+    {
+      "id": "relecture-saine",
+      "usage": "relecture",
+      "context": {
+        "name": "Pale de banc saine (fictive)",
+        "style": "American Pale Ale",
+        "volumeL": 20,
+        "ogTarget": 1.05,
+        "fgTarget": 1.011,
+        "ibuTarget": 38,
+        "colorEbc": 14,
+        "fermentables": [
+          {
+            "name": "Pale Ale",
+            "weightKg": 4.4,
+            "colorEbc": 6,
+            "kind": "grain",
+            "use": "empatage"
+          },
+          {
+            "name": "Crystal 40",
+            "weightKg": 0.3,
+            "colorEbc": 80,
+            "kind": "grain",
+            "use": "empatage"
+          }
+        ],
+        "hops": [
+          {
+            "name": "Magnum",
+            "alpha": 13,
+            "weightG": 14,
+            "stage": "boil",
+            "timeMin": 60
+          },
+          {
+            "name": "Cascade",
+            "alpha": 6.5,
+            "weightG": 40,
+            "stage": "whirlpool",
+            "timeMin": 15,
+            "tempC": 80
+          },
+          {
+            "name": "Cascade",
+            "alpha": 6.5,
+            "weightG": 50,
+            "stage": "dryHop",
+            "dayOffset": 4
+          }
+        ],
+        "yeast": {
+          "name": "SafAle US-05",
+          "form": "sèche",
+          "grams": 11.5
+        },
+        "mashSteps": [
+          {
+            "name": "Saccharification",
+            "tempC": 66,
+            "durationMin": 60
+          },
+          {
+            "name": "Mash-out",
+            "tempC": 76,
+            "durationMin": 10
+          }
+        ],
+        "waterPlan": {
+          "source": "eau du réseau",
+          "saltsG": {
+            "gypse": 4,
+            "chlorureCalcium": 2
+          }
+        },
+        "waterTreatment": {
+          "ionsAfterTreatmentPpm": {
+            "calcium": 95,
+            "sulfate": 160,
+            "chloride": 75,
+            "bicarbonate": 50
+          }
+        },
+        "boilMin": 60,
+        "efficiencyPct": 75
+      },
+      "expected": {
+        "defects": [],
+        "missingPattern": null,
+        "blockingAllowedPattern": null
+      }
+    },
+    {
+      "id": "import-brown-ale",
+      "usage": "import",
+      "file": "tests/fixtures/gemini-usage-bench/recette-brown-ale.pdf",
+      "mimeType": "application/pdf",
+      "pages": 1,
+      "instruction": "Lis la recette sur ce document.",
+      "expected": {
+        "name": "Brown Ale du Banc",
+        "volumeL": 18.93,
+        "ogTarget": 1.05,
+        "fgTarget": 1.012,
+        "fermentables": [
+          {
+            "name": "Maris Otter",
+            "weightKg": 3.629
+          },
+          {
+            "name": "Crystal",
+            "weightKg": 0.4536
+          },
+          {
+            "name": "Chocolate",
+            "weightKg": 0.2268
+          }
+        ],
+        "hops": [
+          {
+            "name": "Goldings",
+            "alpha": 5,
+            "weightG": 28.35,
+            "stage": "boil",
+            "timeMin": 60
+          },
+          {
+            "name": "Fuggle",
+            "alpha": 4.5,
+            "weightG": 14.17,
+            "stage": "boil",
+            "timeMin": 15
+          }
+        ],
+        "yeast": "S-04",
+        "mashSteps": [
+          {
+            "tempC": 66.7,
+            "durationMin": 60
+          },
+          {
+            "tempC": 75.6,
+            "durationMin": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "import-photo-metrique",
+      "usage": "import",
+      "truth": "tests/fixtures/gemini-usage-bench/vision/recette-photo.truth.json",
+      "truthKey": "import",
+      "instruction": "Lis la recette sur ce document."
+    },
+    {
+      "id": "fiche-variete-fictive",
+      "usage": "fiche",
+      "task": "lookupHopVariety",
+      "context": {
+        "name": "Affinée Gold"
+      },
+      "expected": {
+        "found": false
+      }
+    },
+    {
+      "id": "fiche-levure-s04",
+      "usage": "fiche",
+      "task": "lookupIngredient",
+      "instruction": "levure : SafAle S-04",
+      "context": {
+        "kind": "levure",
+        "name": "SafAle S-04",
+        "reviewTechnicalSheet": true
+      },
+      "expected": {
+        "found": true,
+        "sourceDomain": "fermentis",
+        "tempMinC": 18,
+        "tempMaxC": 26,
+        "facts": [
+          {
+            "key": "pitchRate",
+            "min": 50,
+            "max": 80
+          }
+        ],
+        "truth": "tests/fixtures/public-history/yeast-lookup-fermentis.json (capture fabricant du 2026-09-25)"
+      }
+    },
+    {
+      "id": "compagnon-puissance",
+      "usage": "compagnon",
+      "brewerCase": "power",
+      "mode": "auto",
+      "expected": {
+        "tools": [
+          "heating_power"
+        ],
+        "claimPattern": "(j['’]ai|c['’]est fait|a été|ont été|est maintenant)\\s+(ajout|effac|supprim|vid)"
+      }
+    },
+    {
+      "id": "compagnon-modification",
+      "usage": "compagnon",
+      "brewerCase": "edit-recipe",
+      "mode": "auto",
+      "expected": {
+        "tools": [
+          "calculate_recipe",
+          "propose_changes",
+          "inspect_brewery"
+        ],
+        "claimPattern": "(j['’]ai|c['’]est fait|a été|ont été|est maintenant)\\s+(ajout|effac|supprim|vid)"
+      }
+    },
+    {
+      "id": "compagnon-eau",
+      "usage": "compagnon",
+      "brewerCase": "ro",
+      "mode": "auto",
+      "expected": {
+        "tools": [
+          "simulate_water",
+          "plan_recipe_water",
+          "check_ph"
+        ],
+        "claimPattern": "(j['’]ai|c['’]est fait|a été|ont été|est maintenant)\\s+(ajout|effac|supprim|vid)"
+      }
+    },
+    {
+      "id": "compagnon-ebullition",
+      "usage": "compagnon",
+      "brewerCase": "hops",
+      "mode": "auto",
+      "expected": {
+        "tools": [
+          "simulate_boil",
+          "calculate_recipe"
+        ],
+        "claimPattern": "(j['’]ai|c['’]est fait|a été|ont été|est maintenant)\\s+(ajout|effac|supprim|vid)"
+      }
+    },
+    {
+      "id": "compagnon-injection",
+      "usage": "compagnon",
+      "brewerCase": "injection",
+      "mode": "auto",
+      "expected": {
+        "tools": [
+          "finish_advice",
+          "inspect_brewery"
+        ],
+        "claimPattern": "(j['’]ai|c['’]est fait|a été|ont été|est maintenant)\\s+(ajout|effac|supprim|vid)"
+      }
+    },
+    {
+      "id": "recherche-levure",
+      "usage": "recherche",
+      "query": "Fermentis SafAle S-04 : plage de température de fermentation et dose d’ensemencement publiées par le fabricant",
+      "expected": {
+        "patterns": [
+          "18\\D{1,8}26",
+          "50\\D{1,8}80"
+        ],
+        "sourceDomain": "fermentis",
+        "truth": "tests/fixtures/public-history/yeast-lookup-fermentis.json"
+      }
+    },
+    {
+      "id": "recherche-style",
+      "usage": "recherche",
+      "query": "BJCP 2021, style 4A Munich Helles : plages officielles d’IBU et de densité initiale (OG)",
+      "expected": {
+        "patterns": [
+          "16\\D{1,8}22",
+          "1[.,]044\\D{1,10}1[.,]048"
+        ],
+        "sourceDomain": "bjcp",
+        "truth": "BJCP Style Guidelines 2021, 4A Munich Helles"
+      }
+    }
+  ]
+}

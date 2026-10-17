@@ -12,31 +12,47 @@ import { getHopV55ReferenceProjection, readHopV55ReferenceJournal } from './refe
 import { readHopV55ReferenceComparison } from './referenceComparison';
 import { readHopV55ScenarioPreparation } from './scenarioCommit';
 import { readHopV55FullRecipeCopyRecomputePayload } from './candidateScenario';
-import { readHopV55DecisionReadingArchive, type HopV55DecisionReadingArchive, type HopV55DecisionReadingArchiveV4 } from './decisionArchive';
+import { readHopV55DecisionReadingArchive, readHopV55DecisionReadingArchiveForWizardV1,
+  type HopV55DecisionReadingArchiveV4, type HopV55WizardDecisionReadingArchiveV4 } from './decisionArchive';
+import {
+  createBrewerHopAdviceWizardSourceV1,
+  readBrewerHopAdviceWizardSourceV1,
+  assertBrewerHopAdviceWizardSourceMatchesSnapshotV1,
+  brewerHopAdviceWizardOriginV1,
+  type BrewerHopAdviceWizardCanonicalSnapshotV1,
+} from '../../../functions/src/brewerHopAdviceWizardSourceV1';
 import { hopV55DecisionReadingScopesV1 } from './decisionReadingAccessors';
 import type { HopV55DocumentaryAnswerRecordV1, HopV55DocumentaryRevisionContextV1 } from './documentaryDecision';
-import { readHopV55DocumentaryAnswerRecord, readHopV55DocumentaryDossierRecord,
-  type HopV55DocumentaryAnswerRecord, type HopV55DocumentaryDossierRecord } from './documentaryRecords';
+import { readHopV55DocumentaryAnswerRecordWithWizardV1, readHopV55DocumentaryDossierRecord,
+  type HopV55DocumentaryAnswerRecord, type HopV55DocumentaryAnswerRecordReadWithWizardV1,
+  type HopV55DocumentaryAnswerRecordWithWizardV1, type HopV55DocumentaryDossierRecord,
+  type HopV55DocumentaryRecordRead } from './documentaryRecords';
 import type { HopV55PropertyAdviceAnswerRecordV2 } from './propertyAdviceRecords';
 import type { HopV55PropertyAdviceAnswerRecordV3 } from './propertyAdviceRecordsV3';
-import type { HopV55PropertyAdviceAnswerRecordV4 } from './propertyAdviceRecordsV4';
+import type { HopV55PropertyAdviceAnswerRecordV4, HopV55PropertyAdviceAnswerRecordV4ForWizardV1 } from './propertyAdviceRecordsV4';
 import { readHopV55FutureRecipeDraft, readHopV55FutureRecipeMaterializationReceipt,
   type HopV55FutureRecipeDraftV1, type HopV55FutureRecipeMaterializationReceiptV1 } from './futureRecipeDraft';
 import { assertHopV55ObservationAppendOnly, assertHopV55ObservationCollections,
   HopV55ObservationSessionError } from './observationSession';
 import { assertHopV55ObservationSupportAppendOnly, assertHopV55ObservationSupportCollections } from './observationSupport';
 import { assertHopV55QualifiedStudyAppendOnly, assertHopV55QualifiedStudyWorkspaceCollections,
-  HopV55QualifiedStudyWorkspaceError } from './qualifiedStudyWorkspace';
+  HopV55QualifiedStudyWorkspaceError, type HopV55QualifiedStudyCollectionsIndexV1 } from './qualifiedStudyWorkspace';
+import type { HopV55QuestionScopeLedgerV1 } from './questionScopeReading';
+import { HopV55OperationValidationScope, sameCanonicalData } from './operationScopedQualifiedValidation';
 import { assertHopV55QualifiedStudyPreferenceAppendOnly, assertHopV55QualifiedStudyPreferenceCommands,
   HopV55QualifiedStudyPreferenceError } from './qualifiedStudyPreference';
 import { assertHopV55PropertyAdviceReexaminationCommandAppendOnly,
   assertHopV55PropertyAdviceReexaminationCommandWorkspace } from './propertyAdviceReexaminationCommand';
 import { assertHopV55AssistedAdviceWorkspaceAppendOnly, assertHopV55AssistedAdviceWorkspaceCollections } from './assistedAdviceWorkspace';
+import { assertHopV55SemanticAdviceArchiveAppendOnlyV1, assertHopV55SemanticAdviceArchiveCollectionsV1 } from './semanticAdoptionTurnSource';
+import { assertHopV55SemanticAdoptionCommitAppendOnlyV1,
+  assertHopV55SemanticAdoptionCommitHistoryV1 } from './semanticAdoptionController';
 import { assertHopV55ExplorationTrialAppendOnly, assertHopV55ExplorationTrialWorkspaceCollections,
   HopV55ExplorationTrialError } from './explorationTrialPreparation';
 import { assertHopV55ExplorationProfileAppendOnly, assertHopV55ExplorationProfileCollection } from './explorationProfiles';
 import type { HopV55AssistedAdviceBackendContractV1 } from './assistedAdviceArchive';
-import type { HopV55Workspace, HopV55WorkspaceRepository } from './contracts';
+import type { HopV55Workspace, HopV55WorkspaceRepository, HopV55WizardWorkspaceOriginV1,
+  HopV55WizardSourceSnapshotV1, HopV55StoredDecisionReadingArchive } from './contracts';
 
 export const DEFAULT_HOP_V55_WORKSPACE_DATABASE_NAME = 'laffinee-hop-v55-workspaces-v1';
 const DEXIE_SCHEMA_VERSION = 1;
@@ -66,7 +82,12 @@ export interface HopV55WorkspaceEnvelopeV1 {
 
 interface HopV55WorkspaceRow extends HopV55WorkspaceEnvelopeV1 {}
 
-/** Small adapter contract keeps CAS and corruption cases testable without a DOM. */
+/**
+ * Small adapter contract keeps CAS and corruption cases testable without a DOM.
+ * `get` and `toArray` must return detached rows: callers may mutate a returned row
+ * without changing the adapter's stored data. The repository validates that exact
+ * detached object before returning its workspace view.
+ */
 export interface HopV55WorkspaceTable<Row> {
   get(key: unknown): Promise<Row | undefined>;
   add(row: Row): Promise<unknown>;
@@ -167,9 +188,198 @@ function assertRecipe(value: unknown, label: string): asserts value is HopV55Wor
 function sameWorkspaceValue(left: unknown, right: unknown): boolean {
   if (left === right) return true;
   try {
+    // Equal plain data has equal canonical JSON; anything else keeps the fingerprint comparison.
+    if (sameCanonicalData(left, right)) return true;
     return hopAdviceContentReference('hop-v55-workspace-append-only-value-v1', left)
       === hopAdviceContentReference('hop-v55-workspace-append-only-value-v1', right);
   } catch { return false; }
+}
+
+/**
+ * What validateWorkspace proved about the exact object it received. It is
+ * only used in the same synchronous step, on that same unmodified object.
+ */
+interface ValidatedWorkspaceIndex {
+  qualified: HopV55QualifiedStudyCollectionsIndexV1;
+}
+
+function isWizardDecisionReadingArchive(archive: HopV55StoredDecisionReadingArchive):
+  archive is HopV55WizardDecisionReadingArchiveV4 {
+  return archive.format === 'hop-v55-decision-reading-v4' && archive.source.kind === 'wizardDraft';
+}
+
+function hasSemanticArchiveRows(workspace: HopV55Workspace): boolean {
+  // Empty collections have no closure/head to bind. Non-arrays must still be
+  // passed to the strict semantic validator; the base parse always checks the
+  // decision archives independently, even when this relation pass has no rows.
+  return [workspace.assistedSemanticAdviceTickets, workspace.assistedSemanticAdviceRecords, workspace.semanticAdoptionCommits]
+    .some(rows => rows !== undefined && (!Array.isArray(rows) || rows.length > 0));
+}
+
+export const HOP_V55_WIZARD_WORKSPACE_ORIGIN_V1_FORMAT = 'hop-v55-workspace-wizard-origin-v1' as const;
+export const HOP_V55_WIZARD_SOURCE_SNAPSHOT_V1_FORMAT = 'hop-v55-wizard-source-snapshot-v1' as const;
+type WizardStoredRead<T> =
+  | { status: 'available'; value: T }
+  | { status: 'unsupportedFormat'; format: string; raw: unknown }
+  | { status: 'invalidRecord'; reason: string };
+
+function isPlainWizardStoredRow(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value) || ![Object.prototype, null].includes(Object.getPrototypeOf(value))) return false;
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  return Reflect.ownKeys(value).every(key => typeof key === 'string' && descriptors[key].enumerable
+    && 'value' in descriptors[key]);
+}
+
+export function readHopV55WizardWorkspaceOriginV1(raw: unknown): WizardStoredRead<HopV55WizardWorkspaceOriginV1> {
+  if (!isPlainWizardStoredRow(raw) || typeof raw.format !== 'string') return { status: 'invalidRecord', reason: 'Origine Wizard illisible.' };
+  if (raw.format !== HOP_V55_WIZARD_WORKSPACE_ORIGIN_V1_FORMAT) {
+    return raw.format.startsWith('hop-v55-workspace-wizard-origin-')
+      ? { status: 'unsupportedFormat', format: raw.format, raw: clone(raw) }
+      : { status: 'invalidRecord', reason: 'Format d’origine Wizard invalide.' };
+  }
+  const identityPart = (value: unknown): value is string => isId(value) && value.trim() === value
+    && !/[\\\u0000-\u001f]/.test(value);
+  if (Object.keys(raw).length !== 5 || !onlyKeys(raw, ['format', 'kind', 'ownerKey', 'workspaceId', 'draftId']) || raw.kind !== 'wizardDraft'
+    || !identityPart(raw.ownerKey) || !identityPart(raw.workspaceId) || !identityPart(raw.draftId)) {
+    return { status: 'invalidRecord', reason: 'Origine Wizard connue invalide.' };
+  }
+  return { status: 'available', value: clone(raw) as unknown as HopV55WizardWorkspaceOriginV1 };
+}
+
+export function createHopV55WizardWorkspaceOriginV1(input: {
+  ownerKey: string; workspaceId: string; draftId: string;
+}): HopV55WizardWorkspaceOriginV1 {
+  const read = readHopV55WizardWorkspaceOriginV1({
+    format: HOP_V55_WIZARD_WORKSPACE_ORIGIN_V1_FORMAT, kind: 'wizardDraft',
+    ownerKey: input.ownerKey, workspaceId: input.workspaceId, draftId: input.draftId,
+  });
+  if (read.status !== 'available') throw new HopV55WorkspaceRepositoryError('invalidInput', 'Origine Wizard invalide.');
+  return read.value;
+}
+
+export function readHopV55WizardSourceSnapshotV1(raw: unknown): WizardStoredRead<HopV55WizardSourceSnapshotV1> {
+  const invalid = (reason: string): WizardStoredRead<HopV55WizardSourceSnapshotV1> => ({ status: 'invalidRecord', reason });
+  if (!isPlainWizardStoredRow(raw) || typeof raw.format !== 'string') return invalid('Snapshot Wizard illisible.');
+  if (raw.format !== HOP_V55_WIZARD_SOURCE_SNAPSHOT_V1_FORMAT) {
+    return raw.format.startsWith('hop-v55-wizard-source-snapshot-')
+      ? { status: 'unsupportedFormat', format: raw.format, raw: clone(raw) }
+      : invalid('Format de snapshot Wizard invalide.');
+  }
+  if (Object.keys(raw).length !== 4 || !onlyKeys(raw, ['format', 'source', 'draft', 'reference']) || !isText(raw.reference)) return invalid('Enveloppe de snapshot Wizard invalide.');
+  try {
+    const { reference, ...body } = raw;
+    if (hopAdviceContentReference(HOP_V55_WIZARD_SOURCE_SNAPSHOT_V1_FORMAT, body) !== reference) return invalid('Sceau de snapshot Wizard divergent.');
+    const source = readBrewerHopAdviceWizardSourceV1(raw.source);
+    if (source.status === 'invalid') return invalid(source.reason);
+    if (source.status === 'unsupportedReadOnly') return {
+      status: 'unsupportedFormat', format: isRecord(raw.source) && isText(raw.source.format)
+        ? raw.source.format : 'source-Wizard-future', raw: clone(raw),
+    };
+    assertBrewerHopAdviceWizardSourceMatchesSnapshotV1(source.source, {
+      recipe: raw.draft, reference: source.source.contentReference,
+    });
+    return { status: 'available', value: { format: HOP_V55_WIZARD_SOURCE_SNAPSHOT_V1_FORMAT,
+      source: clone(source.source), draft: clone(raw.draft), reference } };
+  } catch (error) { return invalid(error instanceof Error ? error.message : 'Snapshot Wizard non canonique.'); }
+}
+
+export function createHopV55WizardSourceSnapshotV1(input: {
+  origin: HopV55WizardWorkspaceOriginV1; snapshot: BrewerHopAdviceWizardCanonicalSnapshotV1;
+}): HopV55WizardSourceSnapshotV1 {
+  const origin = readHopV55WizardWorkspaceOriginV1(input.origin);
+  if (origin.status !== 'available') throw new HopV55WorkspaceRepositoryError('invalidInput', 'Origine connue requise pour snapshot Wizard.');
+  const source = createBrewerHopAdviceWizardSourceV1({
+    origin: { ownerKey: origin.value.ownerKey, workspaceId: origin.value.workspaceId, draftId: origin.value.draftId },
+    snapshot: input.snapshot,
+  });
+  const body = { format: HOP_V55_WIZARD_SOURCE_SNAPSHOT_V1_FORMAT, source, draft: clone(input.snapshot.recipe) };
+  const read = readHopV55WizardSourceSnapshotV1({
+    ...body, reference: hopAdviceContentReference(HOP_V55_WIZARD_SOURCE_SNAPSHOT_V1_FORMAT, body),
+  });
+  if (read.status !== 'available') throw new HopV55WorkspaceRepositoryError('invalidInput', 'Snapshot Wizard invalide.');
+  return read.value;
+}
+
+/** Validates durable origin/content relations only; live freshness stays with the Application host. */
+export function assertHopV55WizardWorkspaceCollectionsV1(workspace: Pick<HopV55Workspace,
+  'id' | 'ownerKey' | 'sourceRecipeId' | 'sourceBatchId'> & {
+    wizardOrigin?: unknown; wizardSourceSnapshots?: unknown;
+  }):
+  Map<string, HopV55WizardSourceSnapshotV1> {
+  const snapshots = new Map<string, HopV55WizardSourceSnapshotV1>();
+  const rawSnapshots = workspace.wizardSourceSnapshots;
+  if (rawSnapshots !== undefined && !Array.isArray(rawSnapshots)) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Collection de snapshots Wizard invalide.');
+  }
+  const snapshotRows = Array.isArray(rawSnapshots) ? rawSnapshots : [];
+  if (workspace.wizardOrigin === undefined) {
+    if (snapshotRows.length > 0) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Snapshots Wizard sans origine durable.');
+    return snapshots;
+  }
+  if (isRecord(workspace.wizardOrigin) && (workspace.wizardOrigin.ownerKey !== undefined
+    && workspace.wizardOrigin.ownerKey !== workspace.ownerKey || workspace.wizardOrigin.workspaceId !== undefined
+    && workspace.wizardOrigin.workspaceId !== workspace.id)) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Identité connue d’une origine Wizard étrangère.');
+  }
+  const origin = readHopV55WizardWorkspaceOriginV1(workspace.wizardOrigin);
+  if (origin.status !== 'available') throw new HopV55WorkspaceRepositoryError(
+    origin.status === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput',
+    origin.status === 'invalidRecord' ? origin.reason : 'Origine Wizard future conservée en lecture seule.');
+  if (origin.value.ownerKey !== workspace.ownerKey || origin.value.workspaceId !== workspace.id
+    || workspace.sourceRecipeId !== undefined || workspace.sourceBatchId !== undefined) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Origine Wizard étrangère ou substituée par une recette/brassin.');
+  }
+  const references = new Set<string>();
+  for (const raw of snapshotRows) {
+    if (isRecord(raw) && isRecord(raw.source) && (raw.source.ownerKey !== undefined
+      && raw.source.ownerKey !== origin.value.ownerKey || raw.source.workspaceId !== undefined
+      && raw.source.workspaceId !== origin.value.workspaceId || raw.source.draftId !== undefined
+      && raw.source.draftId !== origin.value.draftId)) {
+      throw new HopV55WorkspaceRepositoryError('invalidInput', 'Identité connue d’un snapshot Wizard étranger.');
+    }
+    const read = readHopV55WizardSourceSnapshotV1(raw);
+    if (read.status !== 'available') throw new HopV55WorkspaceRepositoryError(
+      read.status === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput',
+      read.status === 'invalidRecord' ? read.reason : 'Snapshot Wizard futur conservé en lecture seule.');
+    const row = read.value;
+    if (!sameWorkspaceValue(brewerHopAdviceWizardOriginV1(row.source), {
+      ownerKey: origin.value.ownerKey, workspaceId: origin.value.workspaceId, draftId: origin.value.draftId,
+    }) || snapshots.has(row.source.contentReference) || references.has(row.reference)) {
+      throw new HopV55WorkspaceRepositoryError('invalidInput', 'Snapshot Wizard étranger ou dupliqué.');
+    }
+    snapshots.set(row.source.contentReference, row);
+    references.add(row.reference);
+  }
+  return snapshots;
+}
+
+export function assertHopV55WizardWorkspaceAppendOnlyV1(previous: HopV55Workspace, next: HopV55Workspace): void {
+  if (!sameWorkspaceValue(previous.wizardOrigin, next.wizardOrigin)) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'L’origine Wizard est immutable depuis la création, absence incluse.');
+  }
+  const before = previous.wizardSourceSnapshots ?? [], after = next.wizardSourceSnapshots ?? [];
+  if (after.length < before.length || before.some((row, index) => !sameWorkspaceValue(row, after[index]))) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Les snapshots Wizard sont immuables et append-only.');
+  }
+}
+
+export function readHopV55WizardSourceSnapshotForArchiveV1(input: {
+  workspace: HopV55Workspace; archive: HopV55WizardDecisionReadingArchiveV4;
+}): HopV55WizardSourceSnapshotV1 {
+  const read = readHopV55DecisionReadingArchiveForWizardV1(input.archive);
+  if (read.status !== 'available' || read.archive.ownerKey !== input.workspace.ownerKey
+    || read.archive.workspaceId !== input.workspace.id) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Archive Wizard étrangère ou invalide.');
+  }
+  if (!(input.workspace.decisionReadings ?? []).some(row => row.contentReference === read.archive.contentReference
+    && sameWorkspaceValue(row, read.archive))) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Archive Wizard absente de l’historique durable exact.');
+  }
+  const snapshot = assertHopV55WizardWorkspaceCollectionsV1(input.workspace).get(read.archive.source.contentReference);
+  if (!snapshot || !sameWorkspaceValue(snapshot.source, read.archive.source)) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Archive Wizard sans snapshot canonique exact.');
+  }
+  return clone(snapshot);
 }
 
 function assertNuanceStudies(value: unknown, scenarioIds: Set<string>): void {
@@ -431,7 +641,7 @@ function isExactLocalRecipeCopySource(workspace: HopV55Workspace, source: unknow
 }
 
 function assertScenarioPreparations(value: unknown, workspace: HopV55Workspace, scenarioIds: Set<string>,
-  decisionReadings: Map<string, HopV55DecisionReadingArchive>, futureDrafts: Map<string, HopV55FutureRecipeDraftV1>): void {
+  decisionReadings: Map<string, HopV55StoredDecisionReadingArchive>, futureDrafts: Map<string, HopV55FutureRecipeDraftV1>): void {
   if (value === undefined) return;
   if (!Array.isArray(value)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Préparations J5 invalides.');
   const ids = new Set<string>(), eventIds = new Set<string>();
@@ -512,10 +722,10 @@ function assertCopyRecomputations(value: unknown): void {
  * annotations it declares; a scope revision cites an earlier V3/V4 parent.
  * V1–V3 archives keep their historical acceptance rules unchanged.
  */
-function assertSemanticReadingFiliation(archive: HopV55DecisionReadingArchiveV4,
-  earlier: ReadonlyMap<string, HopV55DecisionReadingArchive>): void {
+function assertSemanticReadingFiliation(archive: HopV55DecisionReadingArchiveV4 | HopV55WizardDecisionReadingArchiveV4,
+  earlier: ReadonlyMap<string, HopV55StoredDecisionReadingArchive>): void {
   const question = archive.reading.intent.question;
-  const parentOf = (reference: string, label: string): HopV55DecisionReadingArchive => {
+  const parentOf = (reference: string, label: string): HopV55StoredDecisionReadingArchive => {
     const parent = earlier.get(reference);
     if (!parent || parent.ownerKey !== archive.ownerKey || parent.workspaceId !== archive.workspaceId
       || parent.reading.intent.question !== question) {
@@ -560,8 +770,9 @@ function assertSemanticReadingFiliation(archive: HopV55DecisionReadingArchiveV4,
 }
 
 function assertDecisionReadings(value: unknown, workspace: HopV55Workspace,
-  futureDrafts: Map<string, HopV55FutureRecipeDraftV1>): Map<string, HopV55DecisionReadingArchive> {
-  const archives = new Map<string, HopV55DecisionReadingArchive>();
+  futureDrafts: Map<string, HopV55FutureRecipeDraftV1>,
+  wizardSnapshots: ReadonlyMap<string, HopV55WizardSourceSnapshotV1>): Map<string, HopV55StoredDecisionReadingArchive> {
+  const archives = new Map<string, HopV55StoredDecisionReadingArchive>();
   if (value === undefined) return archives;
   if (!Array.isArray(value)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Archives de lectures de décision invalides.');
   const ids = new Set<string>();
@@ -569,7 +780,8 @@ function assertDecisionReadings(value: unknown, workspace: HopV55Workspace,
   const expectedSource = workspace.sourceBatchId ? { kind: 'batch', id: workspace.sourceBatchId }
     : workspace.sourceRecipeId ? { kind: 'recipe', id: workspace.sourceRecipeId } : { kind: 'exploration' };
   for (const raw of value) {
-    const read = readHopV55DecisionReadingArchive(raw);
+    const isWizard = isRecord(raw) && isRecord(raw.source) && raw.source.kind === 'wizardDraft';
+    const read = isWizard ? readHopV55DecisionReadingArchiveForWizardV1(raw) : readHopV55DecisionReadingArchive(raw);
     if (read.status === 'unsupportedFormat') {
       throw new HopV55WorkspaceRepositoryError('unsupportedFormat', `Lecture de décision future conservée sans interprétation : ${read.format}`);
     }
@@ -577,7 +789,10 @@ function assertDecisionReadings(value: unknown, workspace: HopV55Workspace,
       throw new HopV55WorkspaceRepositoryError('invalidInput', `Archive de lecture de décision invalide : ${read.reason}`);
     }
     const archive = read.archive;
-    const sourceMatches = archive.source.kind === 'localFutureDraft'
+    const sourceMatches = archive.source.kind === 'wizardDraft'
+      ? wizardSnapshots.has(archive.source.contentReference)
+        && sameWorkspaceValue(wizardSnapshots.get(archive.source.contentReference)?.source, archive.source)
+      : archive.source.kind === 'localFutureDraft'
       ? archive.source.workspaceId === workspace.id && futureDrafts.has(futureDraftReferenceKey(
         archive.source.draftId, archive.source.revision, archive.source.contentReference))
       : archive.source.kind === 'localRecipeCopy' ? isExactLocalRecipeCopySource(workspace, archive.source)
@@ -597,7 +812,7 @@ function assertDecisionReadings(value: unknown, workspace: HopV55Workspace,
 }
 
 function assertOpaqueDocumentaryMetadata(raw: unknown, workspace: HopV55Workspace,
-  decisionReadings: Map<string, HopV55DecisionReadingArchive>, label: string): void {
+  decisionReadings: Map<string, HopV55StoredDecisionReadingArchive>, label: string): void {
   if (!isRecord(raw)) throw new HopV55WorkspaceRepositoryError('invalidInput', `${label} futur illisible.`);
   if (raw.ownerKey !== undefined && raw.ownerKey !== workspace.ownerKey
     || raw.workspaceId !== undefined && raw.workspaceId !== workspace.id) {
@@ -610,24 +825,31 @@ function assertOpaqueDocumentaryMetadata(raw: unknown, workspace: HopV55Workspac
 }
 
 type HopV55DocumentaryAnswerVersion = 'v1' | 'v2' | 'v3' | 'v4';
-type HopV55VersionedDocumentaryAnswer = { version: HopV55DocumentaryAnswerVersion; record: HopV55DocumentaryAnswerRecord };
+/** Same V4 envelope; `profile` is set only by the strict structural Wizard reader. */
+type HopV55PropertyAdviceAnswerRecordV4Any = HopV55PropertyAdviceAnswerRecordV4 | HopV55PropertyAdviceAnswerRecordV4ForWizardV1;
+type HopV55VersionedDocumentaryAnswer = { version: HopV55DocumentaryAnswerVersion; profile?: 'wizardV1';
+  record: HopV55DocumentaryAnswerRecordWithWizardV1 };
 
-function documentaryDomainAnswerReference(record: HopV55DocumentaryAnswerRecord,
+function documentaryDomainAnswerReference(record: HopV55DocumentaryAnswerRecordWithWizardV1,
   version: HopV55DocumentaryAnswerVersion): string | undefined {
   if (version === 'v4') {
-    const v4 = record as HopV55PropertyAdviceAnswerRecordV4;
+    const v4 = record as HopV55PropertyAdviceAnswerRecordV4Any;
     return v4.outcome.kind === 'domainAnswer' ? v4.outcome.answerReference : undefined;
   }
   return (record as { answerReference: string }).answerReference;
 }
 
 function assertV4AnswerTransition(input: {
-  record: HopV55PropertyAdviceAnswerRecordV4;
+  record: HopV55PropertyAdviceAnswerRecordV4Any;
+  profile?: 'wizardV1';
   latestForReading?: HopV55VersionedDocumentaryAnswer;
   recordsByReference: Map<string, HopV55VersionedDocumentaryAnswer>;
   workspace: HopV55Workspace;
 }): void {
   const { record, latestForReading, recordsByReference, workspace } = input;
+  if (input.profile === 'wizardV1' && record.transition.kind === 'upgradeV3') {
+    throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Une lecture Wizard ne convertit aucune tête V3 classique; aucun upgrade V3→V4 Wizard.');
+  }
   const transition = record.transition;
   const firstEntryById = new Map<string, HopV55PropertyAdviceAnswerRecordV4['ledger']['entries'][number]>();
   for (const entry of record.ledger.entries) if (!firstEntryById.has(entry.annotationId)) firstEntryById.set(entry.annotationId, entry);
@@ -693,6 +915,9 @@ function assertV4AnswerTransition(input: {
       throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un réexamen V4 doit ouvrir une lecture distincte sans reprendre sa tête par fallback.');
     }
     if (parent.version !== 'v4') throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Un réexamen V4 doit reprendre un record V4 explicite; la montée V3 reste upgradeV3.');
+    if (parent.profile !== input.profile) {
+      throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Un réexamen V4 ne relie pas un brouillon Wizard et une source Recipe/copie/brouillon futur.');
+    }
     assertLedgerContinuation((parent.record as HopV55PropertyAdviceAnswerRecordV4).ledger);
     return;
   }
@@ -717,17 +942,17 @@ function assertV4AnswerTransition(input: {
 }
 
 function assertDocumentaryAnswers(value: unknown, workspace: HopV55Workspace,
-  decisionReadings: Map<string, HopV55DecisionReadingArchive>): Map<string, HopV55VersionedDocumentaryAnswer> {
+  decisionReadings: Map<string, HopV55StoredDecisionReadingArchive>): Map<string, HopV55VersionedDocumentaryAnswer> {
   const records = new Map<string, HopV55VersionedDocumentaryAnswer>();
   if (value === undefined) return records;
   if (!Array.isArray(value)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Historique des réponses documentaires invalide.');
   const ids = new Set<string>(), references = new Set<string>();
-  const earlierAnswers = new Map<string, HopV55DocumentaryAnswerRecord>();
+  const earlierAnswers = new Map<string, HopV55DocumentaryAnswerRecordWithWizardV1>();
   const latestByReading = new Map<string, HopV55VersionedDocumentaryAnswer>();
   const futureFormatsByReading = new Set<string>();
   for (const raw of value) {
-    let read: ReturnType<typeof readHopV55DocumentaryAnswerRecord>;
-    try { read = readHopV55DocumentaryAnswerRecord(raw); }
+    let read: HopV55DocumentaryAnswerRecordReadWithWizardV1;
+    try { read = readHopV55DocumentaryAnswerRecordWithWizardV1(raw); }
     catch (error) { throw new HopV55WorkspaceRepositoryError('invalidInput', `Réponse documentaire invalide : ${(error as Error).message}`); }
     if (read.status === 'unsupportedReadOnly') {
       assertOpaqueDocumentaryMetadata(read.snapshot, workspace, decisionReadings, 'Réponse documentaire');
@@ -746,6 +971,7 @@ function assertDocumentaryAnswers(value: unknown, workspace: HopV55Workspace,
     }
     const record = read.record;
     const version = read.version;
+    const profile = read.profile;
     if (record.ownerKey !== workspace.ownerKey || record.workspaceId !== workspace.id) {
       throw new HopV55WorkspaceRepositoryError('invalidInput', 'La réponse documentaire appartient à un autre owner ou workspace.');
     }
@@ -755,7 +981,8 @@ function assertDocumentaryAnswers(value: unknown, workspace: HopV55Workspace,
     }
     const domainAnswerReference = documentaryDomainAnswerReference(record, version);
     if (version === 'v4') {
-      const recordV4 = record as HopV55PropertyAdviceAnswerRecordV4;
+      // Wizard and classic records share this check: preparation.source must equal the archived reading source.
+      const recordV4 = record as HopV55PropertyAdviceAnswerRecordV4Any;
       if (!isId(record.id) || !isText(record.reference) || recordV4.originalQuestion !== reading.reading.intent.question
         || !sameWorkspaceValue(recordV4.preparation.source, reading.source)
         || !recordV4.preparation.preparedReference
@@ -763,7 +990,7 @@ function assertDocumentaryAnswers(value: unknown, workspace: HopV55Workspace,
           || !isText(recordV4.outcome.answerReference) || recordV4.outcome.answerSnapshot?.reference !== recordV4.outcome.answerReference)) {
         throw new HopV55WorkspaceRepositoryError('invalidInput', 'Réponse documentaire V4, question source ou préparation exacte invalide.');
       }
-      const firstLedgerEntries = new Map<string, HopV55PropertyAdviceAnswerRecordV4['ledger']['entries'][number]>();
+      const firstLedgerEntries = new Map<string, HopV55PropertyAdviceAnswerRecordV4Any['ledger']['entries'][number]>();
       for (const entry of recordV4.ledger.entries) if (!firstLedgerEntries.has(entry.annotationId)) firstLedgerEntries.set(entry.annotationId, entry);
       for (const [annotationId, entry] of firstLedgerEntries) {
         if (entry.sourceKind !== 'added') continue;
@@ -801,7 +1028,7 @@ function assertDocumentaryAnswers(value: unknown, workspace: HopV55Workspace,
       throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Une lignée documentaire V1 doit passer explicitement par V2 avant V3.');
     }
     if (version === 'v4') {
-      try { assertV4AnswerTransition({ record: record as HopV55PropertyAdviceAnswerRecordV4,
+      try { assertV4AnswerTransition({ record: record as HopV55PropertyAdviceAnswerRecordV4Any, profile,
         latestForReading: previousForReading, recordsByReference: records, workspace }); }
       catch (error) {
         const code = error instanceof HopV55WorkspaceRepositoryError && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput';
@@ -845,14 +1072,15 @@ function assertDocumentaryAnswers(value: unknown, workspace: HopV55Workspace,
       }
     }
     ids.add(record.id); references.add(record.reference);
-    earlierAnswers.set(record.reference, record); latestByReading.set(record.sourceReadingReference, { version, record });
-    records.set(record.reference, { version, record });
+    const versioned: HopV55VersionedDocumentaryAnswer = profile === 'wizardV1' ? { version, profile, record } : { version, record };
+    earlierAnswers.set(record.reference, record); latestByReading.set(record.sourceReadingReference, versioned);
+    records.set(record.reference, versioned);
   }
   return records;
 }
 
 function assertDocumentaryDossiers(value: unknown, workspace: HopV55Workspace,
-  decisionReadings: Map<string, HopV55DecisionReadingArchive>,
+  decisionReadings: Map<string, HopV55StoredDecisionReadingArchive>,
   answers: Map<string, HopV55VersionedDocumentaryAnswer>): void {
   if (value === undefined) return;
   if (!Array.isArray(value)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Historique des dossiers documentaires invalide.');
@@ -882,6 +1110,9 @@ function assertDocumentaryDossiers(value: unknown, workspace: HopV55Workspace,
     }
     const reading = decisionReadings.get(record.sourceReadingReference);
     const answerEnvelope = answers.get(record.answerRecordReference);
+    if (answerEnvelope?.profile === 'wizardV1') {
+      throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Aucun dossier stratégie n’est défini pour une réponse V4 Wizard; elle reste un conseil documentaire.');
+    }
     const answer = answerEnvelope?.record;
     const answerReference = answer && answerEnvelope ? documentaryDomainAnswerReference(answer, answerEnvelope.version) : undefined;
     if (!reading || !answer || reading.ownerKey !== workspace.ownerKey || reading.workspaceId !== workspace.id
@@ -905,7 +1136,7 @@ function assertDocumentaryDossiers(value: unknown, workspace: HopV55Workspace,
       }
     }
     if (version === 'v4') {
-      const answerV4 = answer as HopV55PropertyAdviceAnswerRecordV4;
+      const answerV4 = answer as HopV55PropertyAdviceAnswerRecordV4Any;
       const dossierV4 = record as Extract<HopV55DocumentaryDossierRecord, { format: 'hop-v55-documentary-dossier-record-v4' }>;
       if (answerV4.outcome.kind !== 'domainAnswer' || dossierV4.ledgerReference !== answerV4.ledger.reference
         || dossierV4.dossierSnapshot.strategyId !== dossierV4.strategyId
@@ -923,7 +1154,7 @@ function assertDocumentaryDossiers(value: unknown, workspace: HopV55Workspace,
 
 function hasUnsupportedDocumentaryRecordForReading(
   rows: Array<HopV55DocumentaryAnswerRecord | HopV55DocumentaryDossierRecord | Record<string, unknown>>,
-  reader: typeof readHopV55DocumentaryAnswerRecord | typeof readHopV55DocumentaryDossierRecord,
+  reader: (value: unknown) => HopV55DocumentaryAnswerRecordReadWithWizardV1 | HopV55DocumentaryRecordRead<HopV55DocumentaryDossierRecord>,
   sourceReadingReference: string,
 ): boolean {
   return rows.some(raw => {
@@ -935,9 +1166,15 @@ function hasUnsupportedDocumentaryRecordForReading(
   });
 }
 
-function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): asserts value is HopV55Workspace {
+function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1,
+  scope?: HopV55OperationValidationScope): asserts value is HopV55Workspace {
+  validateWorkspaceIndexed(value, assistedAdviceContract, scope);
+}
+
+function validateWorkspaceIndexed(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1,
+  scope?: HopV55OperationValidationScope): ValidatedWorkspaceIndex {
   if (!isRecord(value) || !onlyKeys(value, ['format', 'id', 'ownerKey', 'revision', 'title', 'intent', 'sourceRecipeId', 'sourceBatchId',
-    'decisionReadings', 'futureDrafts', 'activeFutureDraftSource', 'futureRecipeMaterializations', 'futureRecipeSaveReceipts',
+    'decisionReadings', 'wizardOrigin', 'wizardSourceSnapshots', 'futureDrafts', 'activeFutureDraftSource', 'futureRecipeMaterializations', 'futureRecipeSaveReceipts',
     'documentaryAnswers', 'documentaryDossiers',
     'qualifiedStudyPreparations', 'qualifiedStudyLinks', 'qualifiedStudyPreferenceCommands',
     'propertyAdviceReexaminationCommandStaging', 'propertyAdviceReexaminationCommandReceipts',
@@ -946,7 +1183,8 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
     'explorationTrialPreparations', 'explorationTrialReceipts',
     'snapshotIntents', 'recipeSaveReceipts', 'serverScenarioReceipts', 'referenceComparisons', 'scenarioPreparations',
     'observationAnchors', 'observationProjections', 'observationSupportRecords', 'observationSupportSelections',
-    'assistedAdviceTickets', 'assistedAdviceRecords',
+    'assistedAdviceTickets', 'assistedAdviceRecords', 'assistedSemanticAdviceTickets', 'assistedSemanticAdviceRecords',
+    'semanticAdoptionCommits',
     'copies', 'fullCopyReceipts', 'copyRecomputations', 'programCopies', 'activeProgramCopyId', 'activeCopyId', 'updatedAt'])
     || value.format !== 'hop-v55-workspace-v1' || !isId(value.id) || !isText(value.ownerKey)
     || value.ownerKey.trim() !== value.ownerKey || !Number.isSafeInteger(value.revision) || (value.revision as number) < 0
@@ -979,25 +1217,33 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
   assertReferenceComparisons(value.referenceComparisons, value.ownerKey as string, scenarioIds);
   assertCopyRecomputations(value.copyRecomputations);
   const futureDraftHistory = assertFutureDrafts(value.futureDrafts);
-  const decisionReadings = assertDecisionReadings(value.decisionReadings, value as unknown as HopV55Workspace, futureDraftHistory.byReference);
+  const wizardSnapshots = assertHopV55WizardWorkspaceCollectionsV1(value as unknown as HopV55Workspace);
+  const decisionReadings = assertDecisionReadings(value.decisionReadings, value as unknown as HopV55Workspace,
+    futureDraftHistory.byReference, wizardSnapshots);
   const scopeLedgersByReading = new Map([...decisionReadings].flatMap(([reference, archive]) => {
-    const scopes = hopV55DecisionReadingScopesV1(archive);
+    const scopes = isWizardDecisionReadingArchive(archive)
+      ? archive.scopeLedger && archive.transition ? { scopeLedger: archive.scopeLedger, transition: archive.transition } : null
+      : hopV55DecisionReadingScopesV1(archive);
     return scopes ? [[reference, scopes.scopeLedger] as const] : [];
   }));
   const sourceRuntimeReferencesByReading = new Map([...decisionReadings].map(([reference, archive]) =>
     [reference, archive.runtimeReference] as const));
+  const sourceReadingReferences = new Set(decisionReadings.keys());
+  let qualified: HopV55QualifiedStudyCollectionsIndexV1;
   try {
-    assertHopV55QualifiedStudyWorkspaceCollections({ ownerKey: value.ownerKey as string, workspaceId: value.id as string,
-      sourceReadingReferences: new Set(decisionReadings.keys()),
+    qualified = assertHopV55QualifiedStudyWorkspaceCollections({ ownerKey: value.ownerKey as string, workspaceId: value.id as string,
+      sourceReadingReferences,
       scopeLedgersByReading,
       sourceRuntimeReferencesByReading,
-      preparations: value.qualifiedStudyPreparations, links: value.qualifiedStudyLinks });
+      preparations: value.qualifiedStudyPreparations, links: value.qualifiedStudyLinks,
+      workspace: value as unknown as HopV55Workspace, scope });
   } catch (error) {
     throw new HopV55WorkspaceRepositoryError(error instanceof HopV55QualifiedStudyWorkspaceError
       && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput',
     error instanceof Error ? error.message : 'Historique des études qualifiées invalide.');
   }
-  try { assertHopV55QualifiedStudyPreferenceCommands(value as unknown as HopV55Workspace); }
+  // Same synchronous pass on the same object: the rows and readings validated just above are reused.
+  try { assertHopV55QualifiedStudyPreferenceCommands(value as unknown as HopV55Workspace, qualified); }
   catch (error) {
     throw new HopV55WorkspaceRepositoryError(error instanceof HopV55QualifiedStudyPreferenceError
       && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput',
@@ -1126,6 +1372,19 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
     throw new HopV55WorkspaceRepositoryError(code, error instanceof Error ? error.message : 'Archives assistées invalides.');
   }
 
+  const semantic = value as unknown as HopV55Workspace;
+  const semanticClosures = { tickets: semantic.assistedSemanticAdviceTickets ?? [], records: semantic.assistedSemanticAdviceRecords ?? [] };
+  if (hasSemanticArchiveRows(semantic)) try {
+    assertHopV55SemanticAdviceArchiveCollectionsV1({ ownerKey: semantic.ownerKey, workspaceId: semantic.id,
+      tickets: semantic.assistedSemanticAdviceTickets, records: semantic.assistedSemanticAdviceRecords,
+      legacyTickets: semantic.assistedAdviceTickets, decisionReadings: semantic.decisionReadings });
+    assertHopV55SemanticAdoptionCommitHistoryV1({ commits: semantic.semanticAdoptionCommits,
+      documentaryAnswers: semantic.documentaryAnswers ?? [], ownerKey: semantic.ownerKey, workspaceId: semantic.id,
+      closures: semanticClosures });
+  } catch (error) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', error instanceof Error ? error.message : 'Archives sémantiques ou commits V6 invalides.');
+  }
+
   if (value.recipeSaveReceipts !== undefined) {
     if (!Array.isArray(value.recipeSaveReceipts)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Reçus de sauvegarde de recette invalides.');
     for (const receipt of value.recipeSaveReceipts) {
@@ -1136,29 +1395,43 @@ function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55Assist
       }
     }
   }
+  return { qualified };
 }
 
 function parseEnvelope(row: unknown, ownerKey: string, workspaceId?: string,
   assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): HopV55WorkspaceEnvelopeV1 {
+  return parseEnvelopeIndexed(row, ownerKey, workspaceId, assistedAdviceContract).envelope;
+}
+
+/** Strict parse of a stored row; the index describes that exact parsed object. */
+function parseEnvelopeIndexed(row: unknown, ownerKey: string, workspaceId?: string,
+  assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1, scope?: HopV55OperationValidationScope): { envelope: HopV55WorkspaceEnvelopeV1; index: ValidatedWorkspaceIndex } {
   if (!isRecord(row) || !onlyKeys(row, ['format', 'ownerKey', 'workspaceId', 'revision', 'workspace'])
     || row.format !== 'hop-v55-workspace-envelope-v1' || row.ownerKey !== ownerKey
     || !isId(row.workspaceId) || workspaceId !== undefined && row.workspaceId !== workspaceId
     || !Number.isSafeInteger(row.revision) || (row.revision as number) < 1) {
     throw new HopV55WorkspaceRepositoryError('invalidStoredRecord', 'Enveloppe v1 du workspace illisible ou incohérente.');
   }
-  try { validateWorkspace(row.workspace, assistedAdviceContract); }
+  let index: ValidatedWorkspaceIndex;
+  try { index = validateWorkspaceIndexed(row.workspace, assistedAdviceContract, scope); }
   catch (error) {
     if (error instanceof HopV55WorkspaceRepositoryError && error.code === 'unsupportedFormat') throw error;
     throw new HopV55WorkspaceRepositoryError('invalidStoredRecord', (error as Error).message);
   }
-  if (row.workspace.id !== row.workspaceId || row.workspace.ownerKey !== ownerKey || row.workspace.revision !== row.revision) {
+  const workspace = row.workspace as HopV55Workspace;
+  if (workspace.id !== row.workspaceId || workspace.ownerKey !== ownerKey || workspace.revision !== row.revision) {
     throw new HopV55WorkspaceRepositoryError('invalidStoredRecord', 'Les identités ou la révision de l’enveloppe divergent du workspace.');
   }
-  return row as unknown as HopV55WorkspaceEnvelopeV1;
+  return { envelope: row as unknown as HopV55WorkspaceEnvelopeV1, index };
 }
 
+/**
+ * `previousIndex` is the index returned by the strict parse of `previous` in the
+ * same synchronous step; it spares re-decoding those exact rows.
+ */
 function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Workspace,
-  assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1): void {
+  assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1, previousIndex?: ValidatedWorkspaceIndex): void {
+  assertHopV55WizardWorkspaceAppendOnlyV1(previous, next);
   try { assertHopV55ObservationAppendOnly(previous, next); }
   catch (error) {
     const code = error instanceof HopV55ObservationSessionError && error.code === 'unsupportedFormat' ? 'unsupportedFormat' : 'invalidInput';
@@ -1173,6 +1446,16 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
     const code = error instanceof Error && 'code' in error && (error as { code?: unknown }).code === 'unsupportedFormat'
       ? 'unsupportedFormat' : 'invalidInput';
     throw new HopV55WorkspaceRepositoryError(code, error instanceof Error ? error.message : 'Transition assistée invalide.');
+  }
+  if (hasSemanticArchiveRows(previous) || hasSemanticArchiveRows(next)) try {
+    assertHopV55SemanticAdviceArchiveAppendOnlyV1({ previous, next });
+    assertHopV55SemanticAdoptionCommitAppendOnlyV1({ previous: previous.semanticAdoptionCommits, next: next.semanticAdoptionCommits,
+      previousAnswers: previous.documentaryAnswers ?? [], nextAnswers: next.documentaryAnswers ?? [],
+      ownerKey: next.ownerKey, workspaceId: next.id,
+      previousClosures: { tickets: previous.assistedSemanticAdviceTickets ?? [], records: previous.assistedSemanticAdviceRecords ?? [] },
+      closures: { tickets: next.assistedSemanticAdviceTickets ?? [], records: next.assistedSemanticAdviceRecords ?? [] } });
+  } catch (error) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', error instanceof Error ? error.message : 'Transition sémantique V6 invalide.');
   }
   try { assertHopV55ExplorationTrialAppendOnly(previous, next); }
   catch (error) {
@@ -1193,27 +1476,28 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
   }
   for (const raw of nextAnswers.slice(priorAnswers.length)) {
     try {
-      const read = readHopV55DocumentaryAnswerRecord(raw);
+      // Strict structural Wizard V4 is a current format here; its future children stay read-only below.
+      const read = readHopV55DocumentaryAnswerRecordWithWizardV1(raw);
       if (read.status !== 'readOnly') {
         throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Une réponse documentaire future reste en lecture seule et ne peut pas être ajoutée comme format courant.');
       }
       if (!(previous.decisionReadings ?? []).some(archive => archive.contentReference === read.record.sourceReadingReference)) {
         throw new HopV55WorkspaceRepositoryError('invalidInput', 'L’archive de lecture doit être persistée par CAS avant sa réponse documentaire.');
       }
-      if (hasUnsupportedDocumentaryRecordForReading(priorAnswers, readHopV55DocumentaryAnswerRecord,
+      if (hasUnsupportedDocumentaryRecordForReading(priorAnswers, readHopV55DocumentaryAnswerRecordWithWizardV1,
         read.record.sourceReadingReference)) {
         throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Une réponse future existe déjà pour cette lecture; aucun nouveau résultat courant ne la remplace.');
       }
       const latestSameReading = [...priorAnswers].reverse().flatMap(row => {
-        const prior = readHopV55DocumentaryAnswerRecord(row);
+        const prior = readHopV55DocumentaryAnswerRecordWithWizardV1(row);
         return prior.status === 'readOnly' && prior.record.sourceReadingReference === read.record.sourceReadingReference
           ? [prior] : [];
       })[0];
       if (read.version === 'v4') {
-        const recordV4 = read.record as HopV55PropertyAdviceAnswerRecordV4;
+        const recordV4 = read.record as HopV55PropertyAdviceAnswerRecordV4Any;
         const transition = recordV4.transition;
         const parent = transition.parentRecordReference ? priorAnswers.flatMap(row => {
-          const prior = readHopV55DocumentaryAnswerRecord(row);
+          const prior = readHopV55DocumentaryAnswerRecordWithWizardV1(row);
           return prior.status === 'readOnly' && prior.record.reference === transition.parentRecordReference ? [prior] : [];
         })[0] : undefined;
         if (transition.kind === 'create') {
@@ -1253,7 +1537,7 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
         if (recordV1.revisionContext !== undefined) {
           const revision = recordV1.revisionContext;
           const sourceVersioned = priorAnswers.flatMap(row => {
-            const prior = readHopV55DocumentaryAnswerRecord(row);
+            const prior = readHopV55DocumentaryAnswerRecordWithWizardV1(row);
             return prior.status === 'readOnly' && prior.record.reference === revision.sourceAnswerRecordReference
               ? [prior] : [];
           })[0];
@@ -1275,7 +1559,7 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
         if (recordV2V3.revisionContext !== undefined) {
           const revision = recordV2V3.revisionContext;
           const sourceVersioned = priorAnswers.flatMap(row => {
-            const prior = readHopV55DocumentaryAnswerRecord(row);
+            const prior = readHopV55DocumentaryAnswerRecordWithWizardV1(row);
             return prior.status === 'readOnly' && prior.record.reference === revision.sourceAnswerRecordReference
               ? [prior] : [];
           })[0];
@@ -1297,7 +1581,7 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
         const reexamination = recordV2V3.reexaminationContext;
         if (reexamination !== undefined) {
           const sourceVersioned = priorAnswers.flatMap(row => {
-            const prior = readHopV55DocumentaryAnswerRecord(row);
+            const prior = readHopV55DocumentaryAnswerRecordWithWizardV1(row);
             return prior.status === 'readOnly' && prior.record.reference === reexamination.sourceAnswerRecordReference
               ? [prior] : [];
           })[0];
@@ -1318,7 +1602,7 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
   const priorAnswerRecordReferences = new Set<string>();
   for (const raw of priorAnswers) {
     try {
-      const read = readHopV55DocumentaryAnswerRecord(raw);
+      const read = readHopV55DocumentaryAnswerRecordWithWizardV1(raw);
       if (read.status === 'readOnly') priorAnswerRecordReferences.add(read.record.reference);
     } catch { /* A stored future/opaque answer remains preserved but cannot authorize a new dossier. */ }
   }
@@ -1338,7 +1622,7 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
         throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un dossier documentaire ne peut être ajouté qu’après l’enregistrement CAS de sa réponse exacte.');
       }
       const latestAnswer = [...priorAnswers].reverse().flatMap(row => {
-        const prior = readHopV55DocumentaryAnswerRecord(row);
+        const prior = readHopV55DocumentaryAnswerRecordWithWizardV1(row);
         return prior.status === 'readOnly' && prior.record.sourceReadingReference === read.record.sourceReadingReference
           ? [prior] : [];
       })[0];
@@ -1346,7 +1630,7 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
         || latestAnswer.version !== read.version) {
         throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un dossier ne peut pas réutiliser une réponse antérieure à la dernière révision de cette lecture.');
       }
-      if (hasUnsupportedDocumentaryRecordForReading(priorAnswers, readHopV55DocumentaryAnswerRecord,
+      if (hasUnsupportedDocumentaryRecordForReading(priorAnswers, readHopV55DocumentaryAnswerRecordWithWizardV1,
         read.record.sourceReadingReference)
         || hasUnsupportedDocumentaryRecordForReading(priorDossiers, readHopV55DocumentaryDossierRecord,
           read.record.sourceReadingReference)) {
@@ -1376,13 +1660,14 @@ function assertAppendOnlyTransition(previous: HopV55Workspace, next: HopV55Works
     || priorDecisionReadings.some((archive, index) => !sameWorkspaceValue(archive, nextDecisionReadings[index]))) {
     throw new HopV55WorkspaceRepositoryError('invalidInput', 'Les lectures de décision sont immuables et append-only.');
   }
-  try { assertHopV55QualifiedStudyAppendOnly(previous, next); }
-  catch (error) {
+  try {
+    assertHopV55QualifiedStudyAppendOnly(previous, next, previousIndex ? { previousIndex: previousIndex.qualified } : {});
+  } catch (error) {
     const code = error instanceof HopV55QualifiedStudyWorkspaceError && error.code === 'unsupportedFormat'
       ? 'unsupportedFormat' : 'invalidInput';
     throw new HopV55WorkspaceRepositoryError(code, error instanceof Error ? error.message : 'Transition d’étude qualifiée invalide.');
   }
-  try { assertHopV55QualifiedStudyPreferenceAppendOnly(previous, next); }
+  try { assertHopV55QualifiedStudyPreferenceAppendOnly(previous, next, previousIndex ? { previousIndex: previousIndex.qualified } : {}); }
   catch (error) {
     const code = error instanceof HopV55QualifiedStudyPreferenceError && error.code === 'unsupportedFormat'
       ? 'unsupportedFormat' : 'invalidInput';
@@ -1545,7 +1830,7 @@ export function createHopV55WorkspaceRepository(options: {
       return rows
         .map(row => parseEnvelope(row, ownerKey, undefined, options.assistedAdviceContract))
         .sort((a, b) => a.workspace.updatedAt.localeCompare(b.workspace.updatedAt) || a.workspaceId.localeCompare(b.workspaceId))
-        .map(row => clone(row.workspace));
+        .map(row => row.workspace);
     },
 
     async read(requestedOwnerKey, id) {
@@ -1553,60 +1838,72 @@ export function createHopV55WorkspaceRepository(options: {
       if (!isId(id)) throw new HopV55WorkspaceRepositoryError('invalidInput', 'Identifiant de workspace invalide.');
       const row = await database.workspaces.get([ownerKey, id]);
       if (!row) return null;
-      return clone(parseEnvelope(row, ownerKey, id, options.assistedAdviceContract).workspace);
+      return parseEnvelope(row, ownerKey, id, options.assistedAdviceContract).workspace;
     },
 
     async save(workspace, expectedRevision) {
-      const incoming = clone(workspace);
-      validateWorkspace(incoming, options.assistedAdviceContract);
-      requireOwner(incoming.ownerKey, ownerKey);
-      if (!Number.isSafeInteger(expectedRevision) && expectedRevision !== null || expectedRevision !== null && expectedRevision < 1) {
-        throw new HopV55WorkspaceRepositoryError('invalidInput', 'Révision attendue invalide.');
-      }
-      const inputRevision = expectedRevision ?? 0;
-      if (incoming.revision !== inputRevision) {
-        throw new HopV55WorkspaceRepositoryError('staleRevision', 'La copie éditée ne porte pas la révision attendue.');
-      }
-      if (expectedRevision === null && (incoming.fullCopyReceipts ?? []).some(isLegacyFullCopyReceipt)) {
-        throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un reçu historique V1 peut être relu dans un workspace existant, mais ne peut pas entrer dans une nouvelle écriture.');
-      }
-      if (expectedRevision === null && ((incoming.qualifiedStudyPreparations?.length ?? 0) > 0
-        || (incoming.qualifiedStudyLinks?.length ?? 0) > 0 || (incoming.qualifiedStudyPreferenceCommands?.length ?? 0) > 0)) {
-        throw new HopV55WorkspaceRepositoryError('invalidInput', 'Une préparation ou un lien d’étude qualifiée exige un workspace et une lecture source déjà persistés par CAS.');
-      }
-      if (expectedRevision === null && ((incoming.propertyAdviceReexaminationCommandStaging?.length ?? 0) > 0
-        || (incoming.propertyAdviceReexaminationCommandReceipts?.length ?? 0) > 0)) {
-        throw new HopV55WorkspaceRepositoryError('invalidInput', 'Une commande de réexamen V4 exige un workspace source déjà persisté.');
-      }
-      if (expectedRevision === null && ((incoming.assistedAdviceTickets?.length ?? 0) > 0
-        || (incoming.assistedAdviceRecords?.length ?? 0) > 0) && !options.assistedAdviceContract) {
-        throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Les archives assistées sont préservées, mais leur contrat absent interdit toute écriture.');
-      }
-      if (expectedRevision === null && (incoming.assistedAdviceRecords?.length ?? 0) > 0) {
-        throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un receipt assisté exige un ticket persisté dans un CAS antérieur.');
-      }
-      const nextRevision = inputRevision + 1;
-      const saved = { ...incoming, revision: nextRevision } satisfies HopV55Workspace;
-      const envelope: HopV55WorkspaceEnvelopeV1 = {
-        format: 'hop-v55-workspace-envelope-v1', ownerKey, workspaceId: saved.id, revision: nextRevision,
-        workspace: clone(saved),
-      };
-      return database.transaction('rw', database.workspaces, async () => {
-        const prior = await database.workspaces.get([ownerKey, saved.id]);
-        if (expectedRevision === null) {
-          if (prior) throw new HopV55WorkspaceRepositoryError('staleRevision', 'Ce workspace existe déjà; relire avant de le créer.');
-          await database.workspaces.add(clone(envelope) as HopV55WorkspaceRow);
-        } else {
-          if (!prior) throw new HopV55WorkspaceRepositoryError('notFound', 'Workspace introuvable pour cette révision.');
-          const current = parseEnvelope(prior, ownerKey, saved.id, options.assistedAdviceContract);
-          if (current.revision !== expectedRevision) {
-            throw new HopV55WorkspaceRepositoryError('staleRevision', 'Le workspace a changé depuis sa lecture.');
-          }
-          assertAppendOnlyTransition(current.workspace, incoming, options.assistedAdviceContract);
-          await database.workspaces.put(clone(envelope) as HopV55WorkspaceRow);
+      const scope = new HopV55OperationValidationScope();
+      try {
+        const incoming = clone(workspace);
+        validateWorkspace(incoming, options.assistedAdviceContract, scope);
+        requireOwner(incoming.ownerKey, ownerKey);
+        if (!Number.isSafeInteger(expectedRevision) && expectedRevision !== null || expectedRevision !== null && expectedRevision < 1) {
+          throw new HopV55WorkspaceRepositoryError('invalidInput', 'Révision attendue invalide.');
         }
-        return clone(saved);
-      });
+        const inputRevision = expectedRevision ?? 0;
+        if (incoming.revision !== inputRevision) {
+          throw new HopV55WorkspaceRepositoryError('staleRevision', 'La copie éditée ne porte pas la révision attendue.');
+        }
+        if (expectedRevision === null && (incoming.fullCopyReceipts ?? []).some(isLegacyFullCopyReceipt)) {
+          throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un reçu historique V1 peut être relu dans un workspace existant, mais ne peut pas entrer dans une nouvelle écriture.');
+        }
+        if (expectedRevision === null && ((incoming.qualifiedStudyPreparations?.length ?? 0) > 0
+          || (incoming.qualifiedStudyLinks?.length ?? 0) > 0 || (incoming.qualifiedStudyPreferenceCommands?.length ?? 0) > 0)) {
+          throw new HopV55WorkspaceRepositoryError('invalidInput', 'Une préparation ou un lien d’étude qualifiée exige un workspace et une lecture source déjà persistés par CAS.');
+        }
+        if (expectedRevision === null && ((incoming.propertyAdviceReexaminationCommandStaging?.length ?? 0) > 0
+          || (incoming.propertyAdviceReexaminationCommandReceipts?.length ?? 0) > 0)) {
+          throw new HopV55WorkspaceRepositoryError('invalidInput', 'Une commande de réexamen V4 exige un workspace source déjà persisté.');
+        }
+        if (expectedRevision === null && ((incoming.assistedAdviceTickets?.length ?? 0) > 0
+          || (incoming.assistedAdviceRecords?.length ?? 0) > 0) && !options.assistedAdviceContract) {
+          throw new HopV55WorkspaceRepositoryError('unsupportedFormat', 'Les archives assistées sont préservées, mais leur contrat absent interdit toute écriture.');
+        }
+        if (expectedRevision === null && (incoming.assistedAdviceRecords?.length ?? 0) > 0) {
+          throw new HopV55WorkspaceRepositoryError('invalidInput', 'Un receipt assisté exige un ticket persisté dans un CAS antérieur.');
+        }
+        if (expectedRevision === null && ((incoming.assistedSemanticAdviceTickets?.length ?? 0) > 0
+          || (incoming.assistedSemanticAdviceRecords?.length ?? 0) > 0 || (incoming.semanticAdoptionCommits?.length ?? 0) > 0)) {
+          throw new HopV55WorkspaceRepositoryError('invalidInput', 'Une fermeture sémantique ou un commit V6 exige une lecture source déjà persistée par CAS.');
+        }
+        const nextRevision = inputRevision + 1;
+        const saved = { ...incoming, revision: nextRevision } satisfies HopV55Workspace;
+        // `incoming` is this call's private copy and is never exposed; the adapter
+        // receives its own copy below and the caller receives another one.
+        const envelope: HopV55WorkspaceEnvelopeV1 = {
+          format: 'hop-v55-workspace-envelope-v1', ownerKey, workspaceId: saved.id, revision: nextRevision,
+          workspace: saved,
+        };
+        return await database.transaction('rw', database.workspaces, async () => {
+          const prior = await database.workspaces.get([ownerKey, saved.id]);
+          if (expectedRevision === null) {
+            if (prior) throw new HopV55WorkspaceRepositoryError('staleRevision', 'Ce workspace existe déjà; relire avant de le créer.');
+            await database.workspaces.add(clone(envelope) as HopV55WorkspaceRow);
+          } else {
+            if (!prior) throw new HopV55WorkspaceRepositoryError('notFound', 'Workspace introuvable pour cette révision.');
+            // Fresh read: strict parse. Its index is consumed synchronously by the append-only checks below.
+            const current = parseEnvelopeIndexed(prior, ownerKey, saved.id, options.assistedAdviceContract, scope);
+            if (current.envelope.revision !== expectedRevision) {
+              throw new HopV55WorkspaceRepositoryError('staleRevision', 'Le workspace a changé depuis sa lecture.');
+            }
+            assertAppendOnlyTransition(current.envelope.workspace, incoming, options.assistedAdviceContract, current.index);
+            await database.workspaces.put(clone(envelope) as HopV55WorkspaceRow);
+          }
+          // The stored envelope received a separate clone above; `saved` remains a private,
+          // detached result, so returning it does not alias either the caller or stored row.
+          return saved;
+        });
+      } finally { scope.close(); }
     },
 
     close() { database.close(); },

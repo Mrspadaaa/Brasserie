@@ -46,7 +46,9 @@ export default defineConfig({
       VITE_FIREBASE_AUTH_DOMAIN: 'localhost',
       VITE_USE_FIREBASE_EMULATORS: 'true',
       VITE_RECAPTCHA_SITE_KEY: '',
-      VITE_APPCHECK_DEBUG_TOKEN: ''
+      VITE_APPCHECK_DEBUG_TOKEN: '',
+      // A key inherited from the shell never reaches a worker; see tests/setup.gemini-guard.ts.
+      GEMINI_API_KEY: ''
     },
     globals: true,
     environment: 'node',
@@ -54,7 +56,7 @@ export default defineConfig({
     // The full 300-file suite can block Vitest's worker RPC on this Windows host
     // at default parallelism. Four workers ran every test without skipping any.
     maxWorkers: 4,
-    setupFiles: ['tests/setup.ts'],
+    setupFiles: ['tests/setup.ts', 'tests/setup.gemini-guard.ts'],
     environmentMatchGlobs: [['tests/integration/**', 'jsdom']],
     include: [
       'tests/unit/**/*.test.{ts,tsx}',

@@ -1,0 +1,186 @@
+{
+  "id": "deux-documents",
+  "level": "très compliqué : deux tickets sur une seule image",
+  "facture": {
+    "vendor": "Quincaillerie du Moulin",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "30.09.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "5120",
+      "Ticket 5120",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 25.35,
+    "tvaRate": 0.081,
+    "tvaAmount": 2.05,
+    "amountTTC": 27.4,
+    "items": [
+      {
+        "name": "Joint torique (10)",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 4.5,
+        "amountTTC": 4.5
+      },
+      {
+        "name": "Collier de serrage",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 2.2,
+        "amountTTC": 4.4
+      },
+      {
+        "name": "Robinet laiton",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 18.5,
+        "amountTTC": 18.5
+      }
+    ],
+    "alternatives": [
+      {
+        "vendor": "Quincaillerie du Moulin",
+        "documentType": "receipt",
+        "paymentEvidence": [
+          "paid",
+          "unknown"
+        ],
+        "date": "30.09.2026",
+        "currency": "CHF",
+        "invoiceNumber": [
+          "5120",
+          "Ticket 5120",
+          ""
+        ],
+        "orderNumber": "",
+        "amountHT": 25.35,
+        "tvaRate": 0.081,
+        "tvaAmount": 2.05,
+        "amountTTC": 27.4,
+        "items": [
+          {
+            "name": "Joint torique (10)",
+            "kind": [
+              "equipment",
+              "stock",
+              "other",
+              "unknown"
+            ],
+            "quantity": 1,
+            "unit": "",
+            "price": 4.5,
+            "amountTTC": 4.5
+          },
+          {
+            "name": "Collier de serrage",
+            "kind": [
+              "equipment",
+              "stock",
+              "other",
+              "unknown"
+            ],
+            "quantity": 2,
+            "unit": "",
+            "price": 2.2,
+            "amountTTC": 4.4
+          },
+          {
+            "name": "Robinet laiton",
+            "kind": [
+              "equipment",
+              "stock",
+              "other",
+              "unknown"
+            ],
+            "quantity": 1,
+            "unit": "",
+            "price": 18.5,
+            "amountTTC": 18.5
+          }
+        ]
+      },
+      {
+        "vendor": "Boulangerie des Tilleuls",
+        "documentType": "receipt",
+        "paymentEvidence": [
+          "paid",
+          "unknown"
+        ],
+        "date": "30.09.2026",
+        "currency": "CHF",
+        "invoiceNumber": [
+          "771",
+          "Ticket 771",
+          ""
+        ],
+        "orderNumber": "",
+        "amountHT": 8.38,
+        "tvaRate": 0.026,
+        "tvaAmount": 0.22,
+        "amountTTC": 8.6,
+        "items": [
+          {
+            "name": "Pain complet",
+            "kind": [
+              "other",
+              "unknown"
+            ],
+            "quantity": 1,
+            "unit": "",
+            "price": 4.8,
+            "amountTTC": 4.8
+          },
+          {
+            "name": "Croissant",
+            "kind": [
+              "other",
+              "unknown"
+            ],
+            "quantity": 2,
+            "unit": "",
+            "price": 1.9,
+            "amountTTC": 3.8
+          }
+        ]
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 2,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "refuse"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/deux-documents.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

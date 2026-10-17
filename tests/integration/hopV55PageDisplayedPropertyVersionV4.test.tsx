@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import * as propertyAdviceDomain from '../../src/domain/hopDecision/propertyAdvice';
 import * as brewingScenarioDomain from '../../src/domain/brewingScenario';
-import * as decisionService from '../../src/services/hopV55/decision';
+import * as questionScopeReading from '../../src/services/hopV55/questionScopeReading';
 import { readHopV55DecisionReadingArchive } from '../../src/services/hopV55/decisionArchive';
 import { readHopV55DocumentaryAnswerRecord } from '../../src/services/hopV55/documentaryRecords';
 import { readHopV55PropertyAdviceDossierRecordV4 } from '../../src/services/hopV55/propertyAdviceRecordsV4';
@@ -32,11 +32,15 @@ vi.mock('../../src/ui/hopV55/NuanceExplorer', () => ({ HopV55NuanceExplorer: () 
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
+// The V3/V4 decision panels are lazy chunks (Page.tsx:156, :165); their first load in a jsdom worker can exceed
+// Testing Library's 1 s default, as in hopV55PagePropertyAdviceV4.test.tsx:143. Assertions are unchanged.
+const LAZY_PANEL_TIMEOUT = 15000;
+
 function readQuestion() {
   return screen.findByRole('textbox', { name: 'Question au brasseur' }).then(async field => {
     fireEvent.change(field, { target: { value: r20 } });
     fireEvent.click(screen.getByRole('button', { name: 'Lire ma question' }));
-    await screen.findByText('Conseil documentaire · V3');
+    await screen.findByText('Conseil documentaire · V3', undefined, { timeout: LAZY_PANEL_TIMEOUT });
   });
 }
 
@@ -103,7 +107,7 @@ describe('Page V5.5 — identité de version affichée dans le réexamen V4 exte
   it('réexamine B affichée depuis A dans l’historique, conserve parent/registre/texte/dossiers et relit cette lignée sans recalcul', async () => {
     const harness = pageHarness({ ownerKey: ownerA, workspaceId: workspaceA, mode: 'planning' });
     await harness.initialize();
-    const parser = vi.spyOn(decisionService, 'readHopV55Question');
+    const parser = vi.spyOn(questionScopeReading, 'readHopV55QuestionSemanticWithScopesV1');
     const builder = vi.spyOn(propertyAdviceDomain, 'buildHopPropertyAdviceV3');
     const simulate = vi.spyOn(brewingScenarioDomain, 'simulateBrewingScenario');
     const view = render(<HopV55Page services={harness.services} />);
@@ -119,7 +123,7 @@ describe('Page V5.5 — identité de version affichée dans le réexamen V4 exte
     if (!sourceArchiveRaw) throw new Error('Archive source R20 brute attendue.');
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre les termes proposés et leurs décisions' }));
     await waitFor(async () => expect((await harness.stored())?.documentaryAnswers).toHaveLength(2));
-    await screen.findByText('Reprise d’une réponse antérieure');
+    await screen.findByText('Reprise d’une réponse antérieure', undefined, { timeout: LAZY_PANEL_TIMEOUT });
 
     const upgraded = latestAnswerV4((await harness.stored())!);
     expect(dispositionCounts(upgraded)).toEqual({ active: 5, rejected: 0 });
@@ -173,6 +177,11 @@ describe('Page V5.5 — identité de version affichée dans le réexamen V4 exte
     expect(workspaceAfterB.documentaryAnswers!.find(row => row.reference === A.reference)).toEqual(rawA);
     expect(workspaceAfterB.documentaryDossiers).toEqual([dossierRawA]);
     expect(parser).toHaveBeenCalledTimes(1);
+    const parserCall = parser.mock.calls[0];
+    if (!parserCall) throw new Error('La lecture sémantique R20 doit être appelée lors de la première lecture.');
+    expect(parserCall[0]).toBe(r20);
+    expect(parserCall[1]).toEqual(harness.prepared);
+
     expect(simulate).not.toHaveBeenCalled();
 
     // Reload first, then navigate globally to A as in the R21 reproduction.
@@ -255,7 +264,7 @@ describe('Page V5.5 — identité de version affichée dans le réexamen V4 exte
     const reexamHistorySummary = await screen.findByText(/Réponses et dossiers documentaires/);
     if (!reexamHistorySummary.closest('details')?.open) fireEvent.click(reexamHistorySummary);
     fireEvent.click(globalHistoryArticle(reexamined.reference));
-    await screen.findByText(/Contexte relu pour cette version/);
+    await screen.findByText(/Contexte relu pour cette version/, undefined, { timeout: LAZY_PANEL_TIMEOUT });
     expect(screen.getByText(reexamReason)).toBeInTheDocument();
     expect(screen.getAllByText(personalSummary).length).toBeGreaterThan(0);
     expect((await harness.stored())!.decisionReadings!.find(row => row.contentReference === sourceArchive.contentReference)).toEqual(sourceArchiveRaw);

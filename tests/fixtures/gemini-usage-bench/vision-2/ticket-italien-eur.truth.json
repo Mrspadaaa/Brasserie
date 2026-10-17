@@ -1,0 +1,76 @@
+{
+  "id": "ticket-italien-eur",
+  "level": "très compliqué : ticket italien en EUR, virgule décimale, IVA 22 %",
+  "facture": {
+    "vendor": "Enoteca del Borgo",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "06.10.2026",
+    "currency": "EUR",
+    "invoiceNumber": [
+      "0042-0117",
+      "DOC. N. 0042-0117",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 25.41,
+    "tvaRate": 0.22,
+    "tvaAmount": 5.59,
+    "amountTTC": 31,
+    "items": [
+      {
+        "name": "Birra artigianale IPA 33cl",
+        "kind": [
+          "other",
+          "stock",
+          "unknown"
+        ],
+        "quantity": 6,
+        "unit": "",
+        "price": 3.5,
+        "amountTTC": 21
+      },
+      {
+        "name": "Bicchieri degustazione",
+        "kind": [
+          "equipment",
+          "other",
+          "unknown"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 4.9,
+        "amountTTC": 9.8
+      },
+      {
+        "name": "Sacchetto",
+        "kind": [
+          "packaging",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 0.2,
+        "amountTTC": 0.2
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "EUR"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision-2/ticket-italien-eur.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

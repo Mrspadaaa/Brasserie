@@ -1,6 +1,6 @@
 // Compile the real application entry with the isolated test adapters.
 // This script is local-only and is not imported by the production Vite config.
-import { build } from 'vite';
+import { build, loadConfigFromFile } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createHash } from 'node:crypto';
 import { mkdir, mkdtemp, readFile, writeFile, readdir } from 'node:fs/promises';
@@ -12,6 +12,18 @@ const mission = resolve(root, 'work/houblons-v55-integration-app-2026-10-02');
 const normalize = path => path.replaceAll('\\', '/');
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 const rootLower = normalize(root).toLowerCase();
+
+/**
+ * Module aliases of the production build, read from vite.config.ts (as scripts/build-hop-recipe-qa.mjs does) so
+ * shared server sources such as './hopAdviceContentReference.js' resolve exactly like the shipped bundle. Only
+ * `resolve.alias` is taken; production plugins never join this build.
+ */
+async function productionAliases() {
+  const loaded = await loadConfigFromFile({ command: 'build', mode: 'production' }, resolve(root, 'vite.config.ts'), root, 'silent');
+  const alias = loaded?.config.resolve?.alias;
+  if (!alias) throw Error('vite.config.ts declares no production alias for the QA build.');
+  return Array.isArray(alias) ? alias : Object.entries(alias).map(([find, replacement]) => ({ find, replacement }));
+}
 
 export async function buildHopV55AppQa() {
   await mkdir(mission, { recursive: true });
@@ -71,6 +83,7 @@ export async function buildHopV55AppQa() {
     root,
     logLevel: 'warn',
     plugins: [fixturePlugin, react()],
+    resolve: { alias: await productionAliases() },
     define: {
       'import.meta.env.VITE_FIREBASE_PROJECT_ID': JSON.stringify('local-hop-v55-app-qa'),
       'import.meta.env.VITE_FIREBASE_API_KEY': JSON.stringify('local-qa-no-key'),

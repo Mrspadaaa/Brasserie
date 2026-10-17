@@ -25,6 +25,7 @@ import { ViewNavigation, MobileDetails } from '../../ui/ViewNavigation';
 import { SegmentedControl } from '../../ui/SegmentedControl';
 import { useMobileLayout } from '../../ui/useViewport';
 import '../../ui/stocks.css';
+import { canonicalStockCategory } from '../../services/stockLineMatching';
 
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
@@ -424,7 +425,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           className={`flex-1 ${mobile ? 'pb-16' : ''}`}
           items={visibleItems}
           keyOf={(i) => i.ref}
-          groupOf={(i) => i.category}
+          groupOf={(i) => canonicalStockCategory(i.category)}
           groupOrder={GROUP_ORDER}
           searchKeys={['name', 'ref', 'category', 'supplier']}
           isFavorite={(i) => !!i.favorite}

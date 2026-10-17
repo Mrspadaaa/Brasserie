@@ -192,7 +192,8 @@ describe('Cible de bière, levure personnelle et variantes explicites', () => {
 
   it('garde les IBU d’ébullition indépendants du sucre tardif et conserve la précision du calcul enregistré', () => {
     const props = { config: defaultConfig, stockItems: [], knownStyles: [], onClose: vi.fn(), onSaveWaterSource: vi.fn(), onLearnIngredient: vi.fn(), onCreateStockItem: vi.fn() };
-    const original = initialRecipe(); original.ogTarget = null;
+    // Cible d'OG absente : la règle de l'estimation s'applique ; une OG nulle déclarée reste nulle (contrat de première sauvegarde, brewWizardFirstSaveSourceContract).
+    const { ogTarget: _absentOg, ...withoutOg } = initialRecipe(); const original = withoutOg as ReturnType<typeof initialRecipe>;
     const first = vi.fn(), view = render(<BrewWizard {...props} seed={{ recipe: original }} onSave={first} />);
     allerEtape('Récapitulatif'); click('Enregistrer la recette'); expect(first).toHaveBeenCalledTimes(1);
     view.unmount();

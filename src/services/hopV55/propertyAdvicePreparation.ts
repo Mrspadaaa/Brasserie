@@ -8,6 +8,7 @@ import type {
   HopPropertyAdviceRequest,
   HopPropertyAdviceRole,
 } from '../../domain/hopDecision/propertyAdviceSchema';
+import { isHopProcessContextNoteIntent } from '../../domain/hopDecision/propertyAdvice';
 import type { BrewingScenarioBeerFact } from '../../domain/brewingScenario';
 import type { PreparedBrewingScenarioContext } from '../../domain/brewingScenarioContext';
 import type { HopV55QuestionCriterionV1, HopV55QuestionReading } from './decision';
@@ -640,7 +641,8 @@ export function buildHopV55PropertyAdviceInterpretation(intents: readonly HopPro
     const subject = `${intent.label}${intent.qualification ? ` (${intent.qualification})` : ''}`;
     let line: string;
     switch (intent.role) {
-      case 'reportedObservation': line = `Constat rapporté : ${subject}`; break;
+      case 'reportedObservation': line = isHopProcessContextNoteIntent(intent)
+        ? `Note de contexte : ${subject}` : `Constat rapporté : ${subject}`; break;
       case 'measurement': line = `Mesure déclarée : ${subject}`; break;
       case 'target':
         line = intent.direction === 'increase' ? `Cible : plus de ${subject}`
