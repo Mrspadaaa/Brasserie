@@ -97,6 +97,39 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## État (18.10, ~21:30) — lot 6 en fils de fer, 12 auteurs en vol
+
+- **Ses choix sur les planches du lot 5** (SPEC-BRASSEUR, SPEC OK 131/131) :
+  - Comparer p03, en Barres et en Radar (« J'aime beaucoup la variante 3 ») ;
+  - mais pas d'intervalle de confiance, pas d'arômes en Barres, pas de lien au style ;
+  - « pas encore meilleur que le site original » ;
+  - le trait noir de mon lot est pris pour un centre (D57 à D59).
+  - Suggestions : « vraiment difficile à lire », p06 s'il faut choisir (D60). Mon classement
+    indicatif la mettait dernière : à garder pour calibrer le jury.
+- **Méthode corrigée** (sa plainte « Pourquoi j'ai plus juste des maquettes fil de fer… ») :
+  - exploration en fils de fer statiques, 15 min par auteur, planche ;
+  - fidélité seulement pour la variante choisie ;
+  - écrit dans `docs/qualite/methode-conception-frontend.md` et en mémoire.
+  - Mesure : lot 1 7–12 min et ~150 k par auteur ; lots 3 à 5 50–85 min et 400–950 k.
+- **Fait** :
+  - contrôles indépendants des 22 variantes du lot 5 : LOT OK sauf Suggestions p07–p09, encore en
+    cours au moment d'écrire ;
+  - base v4.1 (vraie loupe façon Dock, D55 D56) LOT OK et publiée, version 6 de la page partagée ;
+  - outils `tournoi/outils/figer.mjs` (page rendue → HTML statique) et `capture-page.mjs` ;
+  - `controle-fil6.mjs` (D57 à D60), témoins négatifs p03 et p06 figés en échec (28 et 4).
+- **En vol (12 auteurs, ne pas relancer)** : lot 6 Comparer (`fils6-comparer`, p01–p11, départ
+  p03 figé) et lot 6 Suggestions (`fils6-suggestions`, p01–p11, départ p06 figé), deux variantes
+  par auteur.
+- **À leur retour** :
+  1. `node work/refonte-frontend/v4/tournoi/outils/controle-fil6.mjs <fils6-…>` et
+     `mots-premier-ecran.mjs` ;
+  2. le premier fil de fer qui passe sert de témoin positif ;
+  3. planches `planche.mjs <fils6-…> 390 --vue=comparer` (et comparer-radar, b,
+     suggestions-radar), regardées, envoyées au brasseur ;
+  4. son choix, puis intégration en fidélité dans la base (une seule fois).
+- **Données manquantes pour battre Beer Maverick** : cohumulone et farnésène, absents des 32 fiches
+  (#131) ; aucun substitut importé.
+
 ## Reprise après compaction (18.10, ~20:15) — agents en vol, rien à refaire
 
 - **En vol (9 agents, ne pas relancer)** :

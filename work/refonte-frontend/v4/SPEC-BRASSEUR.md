@@ -126,6 +126,17 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   houblons (« 0′ » et « Nugget » l'un sur l'autre) : « Avec deux houblons ça marche aussi un peu
   moins bien, parcontre c'est très positif, c'est vraiment dans la bonne direction » — 18.10, soir
   (D55, D56).
+- **Comparer, son choix sur la planche du lot 5a** (la rangée d'arômes de p10 entourée) :
+  « J'aime beaucoup la variante 3 mais ça manque d'intervalle de confiance, pourquoi il y a pas
+  la partie arôme saveur aussi en comparaison ? » ; « C'est pas trop mal globalement... Mais il
+  manque quelque info, notamment la relation avec le style. » ; « C'est mieux mais pas encore
+  meilleur que le site original » ; sur la planche des radars : « Je pense que c'est aussi la 3
+  même si ils sont tous un peu semblable » — 18.10, soir (D57 à D59 ; p03 retenu pour Barres et
+  Radar).
+- **Le fil de fer perdu** (planche des fiches du lot 4 à l'appui) : « Pourquoi j'ai plus juste des
+  maquettes fil de fer de ce type ? Qqch a dû être perdu dans le workflow et je comprends mieux
+  pourquoi ça prends du longtemps » — 18.10, soir (méthode : explorer en fil de fer, finir une
+  seule fois).
 - **Tickets** : « Fait une issue, mettre à jour les fichiers de houblons, donné de bio Transfo
   ect.. » ; « Hop mavrerick ne doit pas être là seul source. » (#131) ; « Autre ticket pour les
   levures, choisir une levure remplis aussi sa dose (gram, sachet) » (#132) ; « Aussi, je crois
@@ -217,6 +228,7 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
 | Fils de fer lot 1 (p10, p04, p08) | « C'est mieux et tu as bien évaluer les problème, pas assez dense. » | 18.10 |
 | Fils de fer lot 2 | « Un mélange entre p2 p3 p4 semblerait bien. » ; « P3 serait même le mieux de loin du lot. » ; « Un petit refinement de p3 est on est good de mon point de vu » | 18.10 |
 | Variantes de p3, lot 3 (étape, planche du soir) | « P2,3,8 sont vraiment bien, la 8 seulement pour la manière dont ont voit les étapes d'houblon. » | 18.10, soir |
+| Comparer, lot 5a (planches Barres et Radar) | « J'aime beaucoup la variante 3 » ; « C'est mieux mais pas encore meilleur que le site original » | 18.10, soir |
 
 ## 7. Sa façon de travailler avec nous
 

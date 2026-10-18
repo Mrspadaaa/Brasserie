@@ -79,13 +79,30 @@ La v2 a corrigé la densité, mais cinq erreurs sont revenues pendant le chantie
 | 3 | **Données** | Ce que le moteur et les fiches savent vraiment (sources, plages, manques) ; le moteur complété d'abord si l'écran en a besoin | tests du moteur ; rapport des manques | pilote |
 | 4 | **Contrôles** | Plaintes connues et plancher des références en contrôles, avec témoins négatif et positif ; contrat DOM écrit | chaque contrôle échoue sur le rejeté et passe sur le témoin | pilote |
 | 5 | Références et atelier | Planche de 2 ou 3 écrans réels par motif ; primitives depuis `src/ui` | capturées et regardées | Haiku collecte, pilote choisit |
-| 6 | **Lot de 11** | 4 tièdes, 5 chauds, 2 froids, sur la base (baseline gelée), la variation portant sur le composant étudié | `controle-lot.mjs` : LOT OK avant tout regard ; captures regardées | auteurs |
+| 6 | **Lot de 11 en fils de fer** | 4 tièdes, 5 chauds, 2 froids : **fils de fer gris** du seul composant étudié (une ou deux pages statiques, vrais mots et vrais chiffres lus dans le pack, rien d'autre de reconstruit), présentés en **planche** par vue ; 15 min par auteur | contrôles du sujet seulement (un écran, mots, plaintes du sujet) ; planche regardée | auteurs |
 | 7 | Jury | Filtre par paires, ★ indicatives | questions fermées (D38 : ≥ 3 partis visiblement différents sur le composant) | jury neuf |
 | 8 | **Publication au brasseur** | Toutes les variantes sur une page partagée, vue par vue, jouables, ★ marquées « indicatif » ; un ping | — | pilote |
 | 9 | **Son choix** | Ses mots cités dans `SPEC-BRASSEUR.md` ; ses nouvelles plaintes passent à l'étape 4 | `check-spec.mjs` | brasseur |
-| 10 | Base consolidée | Le choix intégré dans la base, contrôles du lot rejoués | LOT OK indépendant | pilote |
+| 10 | Base consolidée | **Seule la variante choisie** passe en fidélité : intégrée dans la base (générateur, toutes les pages, gestes, données du moteur), toute la batterie rejouée | LOT OK indépendant | pilote |
 | 11 | Tranche verticale puis trois versions | Écran complet dans `prototypes/`, puis 3 partis à 390, 412 et 1280 | build ; parcours joué dans Chrome ; `impeccable critique` | pilote, auteurs |
 | 12 | Porte B, intégration, rétro | Lien privé, 3 questions ; puis écran par écran dans l'app | Vitest, contrôles de parcours, a11y, build | brasseur, pilote |
+
+## Explorer en fil de fer, finir une seule fois
+
+Le brasseur (18.10, soir, devant la planche des fiches) : « Pourquoi j'ai plus juste des
+maquettes fil de fer de ce type ? Qqch a dû être perdu dans le workflow et je comprends mieux
+pourquoi ça prends du longtemps ». Mesure faite : le lot 1 (fils de fer gris, deux pages
+statiques, deux contrôles) coûtait 7 à 12 min et environ 150 k jetons par auteur. Depuis le
+lot 3, chaque variante recopiait le générateur de la base, reconstruisait toutes les pages
+(jusqu'à 12), jouait les gestes et passait toute la batterie : 50 à 85 min et 400 à 950 k
+jetons par auteur, soit 6 fois plus de temps pour 11 variantes dont une seule est gardée.
+Personne ne l'avait décidé : la règle du fil de fer est tombée au passage à la base consolidée.
+
+Règle : un lot d'exploration est un lot de **fils de fer** (étape 6) ; la fidélité (générateur,
+toutes les pages, gestes, moteur, batterie complète) ne se paie qu'**une fois**, pour la
+variante choisie (étape 10). Le contrôle « rien ne change hors du composant » (D26) se fait
+alors à l'intégration, pas sur chaque variante. Boîte de temps d'un auteur : 15 min ; au-delà,
+il livre ce qu'il a.
 
 ## Températures d'un lot (décision du brasseur : « 4 tiède, 5 chaude, 2 froide »)
 
