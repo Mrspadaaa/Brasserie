@@ -75,11 +75,16 @@ try {
   const n4 = await polygons(p); check(n4 === 4 && p.taps <= 3, `comparer 4 : ${p.taps} touchers, ${n4} profils superposés`);
   await p.screenshot({ path: path.join(out, 'comparer-4.png') });
   await p.close();
+  p = await open();
+  await tap(p, '.btn', 'Comparer les 4 premiers');
+  const n4b = await polygons(p); check(n4b === 4 && p.taps <= 3, `comparer les 4 premiers : ${p.taps} toucher, ${n4b} profils superposés`);
+  await p.close();
   // Choisir, puis simuler : ajout en 1 toucher, dose saisie au clavier, moment changé.
   p = await open();
   await tap(p, '.addb', 'Ajouter 35 g de Galaxy');
   check(p.taps === 1, `choisir : Galaxy ajouté en ${p.taps} toucher`);
   const ibu0 = await p.evaluate(() => window.__v3.prog().hot);
+  await tap(p, '.addh', 'Galaxy');
   await p.tap('.ed input');
   await wait(60);
   const t0 = Date.now();
@@ -100,7 +105,7 @@ try {
   await tap(p, '.addb', 'Ajouter 35 g de Galaxy');
   const before = await p.evaluate(() => window.__v3.prog().hot);
   p.taps = 0;
-  await tap(p, '.btn', 'Remplacer'); await tap(p, '.sub', '');
+  await tap(p, '.btn', 'Remplacer Galaxy'); await tap(p, '.sub', '');
   const after = await p.evaluate(() => ({ ibu: window.__v3.prog().hot, key: window.__v3.S.adds[0].key }));
   check(Math.abs(after.ibu - before) <= 0.5 && p.taps === 2, `remplacer : ${p.taps} touchers, ${before.toFixed(1)} → ${after.ibu.toFixed(1)} IBU (${after.key}, dose au dixième de gramme)`);
   await p.close();
