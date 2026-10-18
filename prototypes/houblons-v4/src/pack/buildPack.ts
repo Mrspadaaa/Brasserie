@@ -101,11 +101,17 @@ export function buildPack() {
     hops: trio.map((h) => ({ ...hopEntry(h),
       styleVerdicts: Object.fromEntries(s3b.order.filter((f) => s3b.families[f].status === 'attendue').map((f) => [f, valueVerdict(est2(h, f), s3b.families[f])])) })),
     pairs,
-    illustration: {
-      style: '3B', note: 'Même écart absolu de 8 points de floral (40 contre 48), lu sur la piste de la Czech Premium Pale Lager 3B (floral attendue, 33–68) et de l’American IPA 21A (repères ponctuels, sans incertitude).',
-      lager: { share: round(trackShare(8, s3b.families.floral), 3), verdict: gapVerdict({ range: { min: 40, max: 40 } }, { range: { min: 48, max: 48 } }, s3b.families.floral).verdict, threshold: round(s3b.families.floral.threshold) },
-      ipa: { share: round(trackShare(8, s21a.families.floral), 3), verdict: gapVerdict({ range: { min: 40, max: 40 } }, { range: { min: 48, max: 48 } }, s21a.families.floral).verdict, threshold: round(s21a.families.floral.threshold) },
-    },
+    illustration: (() => {
+      // « Un écart faible pour une ipa peut être très grand pour un autre style » : un cran du floral de la 3B, arrondi.
+      const gap = Math.round(s3b.families.floral.cran);
+      const a = { range: { min: 40, max: 40 } }, b = { range: { min: 40 + gap, max: 40 + gap } };
+      return {
+        style: '3B', gap,
+        note: `Écart d’exemple de ${gap} points de floral (40 contre ${40 + gap}), soit un cran du style étroit (Czech Premium Pale Lager 3B, floral attendue 33–68), lu sur la piste 3B et sur la piste de l’American IPA 21A. Ce n’est pas une mesure de houblon : repères ponctuels, sans incertitude.`,
+        lager: { share: round(trackShare(gap, s3b.families.floral), 3), verdict: gapVerdict(a, b, s3b.families.floral).verdict, threshold: round(s3b.families.floral.threshold) },
+        ipa: { share: round(trackShare(gap, s21a.families.floral), 3), verdict: gapVerdict(a, b, s21a.families.floral).verdict, threshold: round(s21a.families.floral.threshold) },
+      };
+    })(),
   };
 
   // S3 : American IPA, tout le stock classé par adéquation documentaire au style.
