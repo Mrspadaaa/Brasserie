@@ -148,6 +148,20 @@ Règle (`LEVEL_RULE`, testée) :
 - S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
   houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
 
+## Crans du style (`CRANS_RULE` ; `profilBiereCrans`, `cibleStyleCrans`, `profilApresCrans`)
+
+Décision du pilote : les objets 1, 2 et 4 se disent en crans du style (les niveaux 0–3
+absolus restent dans le pack, mais une voie de +15,9 en floral n'y change pas de classe).
+
+- Position = (valeur − bas de la bande) / cran (largeur effective / 3), entier le plus proche :
+  0 à 3 dans la bande, 4 au-dessus, −1 en dessous (bande qui ne part pas de 0), `null` non situé.
+- Valeur : dégustation par le milieu de sa classe V5.5 (16,5 ; 49,5 ; 83), sinon repère central.
+- Arrondi ambigu (partie décimale entre 0,4 et 0,6) : `display` « ≈ k ».
+- Cible : bande 0 à 3 crans (moins pour une bande plus étroite que le plancher) ; `visee` =
+  cible absolue de la direction (`targetAbsolute`) en crans.
+- Après une voie : même règle sur la valeur décalée ; `deltaCrans` = effet / cran, entier
+  signé, « ≈ » sous le seuil d'écart du style, « non établi » sans effet établi.
+
 ## Cas de figure (`work/refonte-frontend/v4/ecran-1/CAS.md`)
 
 - **S4, recette sans houblon** (K2) : la stout S1 sans ajout ni dégustation. IBU 0 face à

@@ -79,6 +79,59 @@ export function afterLevels(before: BeerLevel[], effect: Record<FamilyId, Family
   });
 }
 
+// ---------- Crans du style (décision du pilote : objets 1, 2 et 4 dits en crans du style) ----------
+export const CRANS_RULE = [
+  'Position en crans : (valeur − bas de la bande) / cran du style (cran = largeur effective / 3) ; entier le plus proche, de 0 à 3 dans la bande ; 4 = au-dessus de la bande ; −1 = sous la bande (seulement si la bande ne part pas de 0) ; null = non situé.',
+  'Valeur : la dégustation prime, par le milieu de sa classe V5.5 (faible 16,5, moyen 49,5, marqué 83) ; sinon le repère central V5.5 de la recette.',
+  'Arrondi ambigu : si la valeur exacte en crans tombe à 0,1 cran ou moins d’un demi-cran (k,4 à k,6), la position s’affiche « ≈ k » (approx).',
+  'Cible : la bande occupe 0 à 3 crans (moins pour une bande plus étroite que le plancher) ; « visée » = la cible absolue de la direction (targetAbsolute) en crans.',
+  'Après une voie : même règle sur la valeur décalée par l’effet établi ; deltaCrans = effet / cran, entier signé ; « ≈ » si l’effet reste sous le seuil d’écart du style (un quart de bande) ; « non établi » sans effet établi.',
+];
+export interface CransPosition { family: FamilyId; crans: number | null; exact: number | null; approx: boolean; display: string; source: BeerLevel['source'] }
+const midClass = (f: FamilyId, level: string) => { const a = axis(f); return level === 'faible' ? (a.scale.min + a.lowMax) / 2 : level === 'moyen' ? (a.lowMax + a.mediumMax) / 2 : (a.mediumMax + a.scale.max) / 2; };
+function position(f: FamilyId, value: number | null, scale: StyleScale, source: BeerLevel['source']): CransPosition {
+  const fs = scale.families[f];
+  if (value === null || !fs.band) return { family: f, crans: null, exact: null, approx: false, display: 'non situé', source: value === null ? 'non situé' : source };
+  const [lo, hi] = fs.band;
+  const exact = Math.round(((value - lo) / fs.cran) * 100) / 100;
+  if (value > hi) return { family: f, crans: 4, exact, approx: false, display: 'au-dessus', source };
+  if (value < lo) return { family: f, crans: -1, exact, approx: false, display: 'en dessous', source };
+  const top = Math.round((hi - lo) / fs.cran);
+  const crans = Math.min(top, Math.max(0, Math.round(exact)));
+  const frac = exact - Math.floor(exact);
+  const approx = frac >= 0.4 && frac <= 0.6;
+  return { family: f, crans, exact, approx, display: approx ? `≈ ${crans}` : String(crans), source };
+}
+/** Valeur 0–100 qui situe la bière sur une famille : dégustation (milieu de classe) d'abord, puis repère central. */
+function beerValue(b: BeerLevel): number | null {
+  if (b.source === 'dégustation' && b.basis?.perceived) return midClass(b.family, b.basis.perceived);
+  if (b.source === 'modèle' && b.basis?.central !== undefined) return b.basis.central;
+  return null;
+}
+export function beerCrans(beer: BeerLevel[], scale: StyleScale): CransPosition[] {
+  return beer.map((b) => position(b.family, beerValue(b), scale, b.source));
+}
+export interface TargetCrans { family: FamilyId; status: FamilyStatus; bande: { min: number; max: number } | null; visee?: number }
+export function targetCrans(scale: StyleScale, targets: { family: FamilyId; targetAbsolute: number | null }[] = []): TargetCrans[] {
+  return scale.order.map((f) => {
+    const fs = scale.families[f];
+    if (!fs.band) return { family: f, status: fs.status, bande: null };
+    const t = targets.find((x) => x.family === f);
+    const visee = t && t.targetAbsolute !== null ? position(f, t.targetAbsolute, scale, 'modèle').crans ?? undefined : undefined;
+    return { family: f, status: fs.status, bande: { min: 0, max: Math.round((fs.band[1] - fs.band[0]) / fs.cran) }, ...(visee !== undefined ? { visee } : {}) };
+  });
+}
+export interface AfterCrans extends CransPosition { deltaCrans: number | '≈' | 'non établi'; effet: number | null }
+export function afterCrans(beer: BeerLevel[], effect: Record<FamilyId, FamilyEffect>, scale: StyleScale): AfterCrans[] {
+  return beer.map((b) => {
+    const e = effect[b.family], v = beerValue(b), fs = scale.families[b.family];
+    if (!e.established || e.central === null) return { ...position(b.family, v, scale, b.source), deltaCrans: 'non établi', effet: null };
+    const pos = position(b.family, v === null ? null : Math.max(0, Math.min(100, v + e.central)), scale, b.source);
+    const delta = Math.abs(e.central) < fs.threshold ? '≈' : Math.round(e.central / fs.cran);
+    return { ...pos, deltaCrans: delta, effet: e.central };
+  });
+}
+
 export interface FicheLevel { family: FamilyId; name: string; status: FamilyStatus; level: 0 | 1 | 2; label: string; sources: number; of: number }
 /** Fiches d'un houblon sur les 12 familles, dans l'ordre du style. */
 export function ficheLevels(varietyId: string, scale: StyleScale): FicheLevel[] {

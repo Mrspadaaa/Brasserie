@@ -5,7 +5,7 @@ import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
-  shoppingList, NO_GOUTS, GOUTS_RULE,
+  shoppingList, NO_GOUTS, GOUTS_RULE, beerCrans, targetCrans, afterCrans, CRANS_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -132,9 +132,10 @@ export function buildPack() {
   // Les quatre objets de l'écran (work/refonte-frontend/v4/ecran-1/MODELE.md), en niveaux prêts à dessiner.
   const s16d = getStyleScale('16D');
   const beer1 = beerLevels(r1.before.profile, S1_TASTING, s16d);
-  S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect) }));
+  S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect), profilApresCrans: afterCrans(beer1, r1.voies[i].effect, s16d).map(({ family, crans, display, deltaCrans }) => ({ family, crans, display, deltaCrans })) }));
   const ficheKeys = [...new Set([...s1Recipe().additions.map((a) => a.hopKey), ...STOCK.map((s) => s.key)])];
-  Object.assign(S1, { echelles: LEVEL_RULE, profilBiere: beer1, cibleStyle: targetLevels(s16d),
+  Object.assign(S1, { echelles: LEVEL_RULE, echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beer1, s16d), cibleStyleCrans: targetCrans(s16d, r1.direction),
+    profilBiere: beer1, cibleStyle: targetLevels(s16d),
     profilFiches: ficheKeys.map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s16d).map(compactFiche) })) });
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
@@ -168,6 +169,7 @@ export function buildPack() {
     // (recette sans houblon, levure sans profil V5.5, aucune dégustation) ; pas de voies (pas de direction).
     echelles: LEVEL_RULE,
     profilBiere: beerLevels(recipeProfile(s2Recipe()).profile, null, s3b),
+    echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beerLevels(recipeProfile(s2Recipe()).profile, null, s3b), s3b), cibleStyleCrans: targetCrans(s3b),
     profilBiereNote: 'Recette 3B sans houblon, levure LalBrew Diamond sans profil V5.5 et sans dégustation : le modèle ne situe aucune famille. Une dégustation ou des ajouts la situeraient.',
     cibleStyle: targetLevels(s3b),
     profilFiches: [...trio.map((h) => h.key), ...STOCK.map((s) => s.key)].map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s3b).map(compactFiche) })),
@@ -198,6 +200,7 @@ export function buildPack() {
       achats: shoppingList(recipe), gouts: NO_GOUTS,
       tasting: null,
       echelles: LEVEL_RULE, profilBiere: beerLevels(prof.profile, null, s16d), cibleStyle: targetLevels(s16d),
+      echellesCrans: CRANS_RULE, profilBiereCrans: beerCrans(beerLevels(prof.profile, null, s16d), s16d), cibleStyleCrans: targetCrans(s16d),
       readingSummary: { counts: summary.counts, sentence: summary.sentence },
       voies: [], ...notes,
     };

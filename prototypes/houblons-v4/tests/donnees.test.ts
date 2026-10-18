@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { NO_GOUTS, citations, hopRef, shoppingList } from '../src/engine';
+import { NO_GOUTS, afterCrans, beerCrans, citations, hopRef, shoppingList, targetCrans } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -72,6 +72,37 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
     expect(resin.mention).toMatch(/^dégustation du brasseur, 18\.10 : « ma stout est trop résineuses/);
     expect(tastingMention({ ...S1_TASTING, batch: { id: 'B-12', date: '2026-09-30' } })).toBe('brassin du 30.09');
     expect(beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).filter((b) => b.source !== 'dégustation').every((b) => b.mention === undefined)).toBe(true);
+  });
+});
+
+describe('Crans du style (objets 1, 2 et 4)', () => {
+  const s16d = getStyleScale('16D');
+  const beer = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d);
+  const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+
+  it('la résine dégustée est au-dessus de la bande (4) ; le floral est à 0 cran ; les non situées restent null', () => {
+    const pos = beerCrans(beer, s16d);
+    expect(pos.map((p) => p.family)).toEqual(s16d.order);
+    expect(pos.find((p) => p.family === 'resin')).toMatchObject({ crans: 4, source: 'dégustation', display: 'au-dessus' });
+    expect(pos.find((p) => p.family === 'floral')).toMatchObject({ crans: 0, source: 'modèle' });
+    for (const p of pos.filter((x) => x.source === 'non situé')) expect(p).toMatchObject({ crans: null, display: 'non situé' });
+    for (const p of pos.filter((x) => x.crans !== null)) expect([-1, 0, 1, 2, 3, 4]).toContain(p.crans);
+  });
+
+  it('Golding fait passer le floral de 0 à 1 cran ; deltaCrans « ≈ » sous le seuil, « non établi » sans effet', () => {
+    const golding = r.voies.find((v) => v.actions.some((a) => a.hopKey === 'beermaverick-golding'))!;
+    const after = afterCrans(beer, golding.effect, s16d);
+    expect(after.find((a) => a.family === 'floral')).toMatchObject({ crans: 1, deltaCrans: 1 });
+    for (const v of r.voies) for (const a of afterCrans(beer, v.effect, s16d)) {
+      const e = v.effect[a.family];
+      if (!e.established) expect(a.deltaCrans).toBe('non établi');
+      else if (Math.abs(e.central!) < s16d.families[a.family].threshold) expect(a.deltaCrans).toBe('≈');
+      else expect(Number.isInteger(a.deltaCrans)).toBe(true);
+    }
+    const target = targetCrans(s16d, r.direction);
+    expect(target.find((t) => t.family === 'floral')).toMatchObject({ bande: { min: 0, max: 3 }, visee: 1 });
+    expect(target.find((t) => t.family === 'resin')).toMatchObject({ visee: 3 });
+    expect(targetCrans(getStyleScale('21C')).find((t) => t.family === 'green')!.bande).toEqual({ min: 0, max: 1 });
   });
 });
 
