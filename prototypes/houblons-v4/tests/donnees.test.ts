@@ -1,11 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { FAMILIES, QUICK_ADD_RULE, additionIbu, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
+import { FAMILIES, QUICK_ADD_RULE, additionIbu, quickAddKey, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
 describe('Ajout en un toucher (ajoutsRapides)', () => {
-  const keyOf = (r: QuickAdd) => [['usage attesté', 'cohérent', 'peu documenté', 'non documenté', 'hors style'].indexOf(r.fit), -r.supports.length, r.offStyle.length, -r.stock.free];
-  const ordered = (list: QuickAdd[]) => { for (let i = 1; i < list.length; i++) { const a = keyOf(list[i - 1]), b = keyOf(list[i]); const d = a.findIndex((x, j) => x !== b[j]); if (d >= 0) expect(a[d]).toBeLessThan(b[d]); } };
+  const keyOf = (r: QuickAdd) => [['usage attesté', 'cohérent', 'peu documenté', 'non documenté', 'hors style'].indexOf(r.fit), r.tastingConflicts.length ? 1 : 0, r.offStyleWeight, -r.supports.length, -r.stock.free];
+  const ordered = (list: QuickAdd[]) => { for (let i = 1; i < list.length; i++) { const a = keyOf(list[i - 1]), b = keyOf(list[i]); const d = a.findIndex((x, j) => x !== b[j]); if (d >= 0) expect(a[d]).toBeLessThan(b[d]); expect(quickAddKey(list[i - 1])).toEqual(a); } };
+
+  it('16D avec la dégustation : un houblon qui cite la famille « trop » ne passe pas devant un houblon qui ne la cite pas, à catégorie égale', () => {
+    const q = quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING);
+    expect(q.tastingTrop).toEqual(['resin']);
+    for (const list of [q.disponibles, q.epuises]) {
+      for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+        if (list[i].fit === list[j].fit && list[j].tastingConflicts.length === 0) expect(list[i].tastingConflicts).toEqual([]);
+      }
+      for (const r of list) expect(r.tags).toEqual(r.tastingConflicts.map(() => '+ boisé et résineux'));
+    }
+    const cascade = q.disponibles.find((r) => r.name === 'Cascade')!;
+    expect(cascade.tastingConflicts).toEqual(['resin']);
+    ordered(q.disponibles); ordered(q.epuises);
+  });
 
   it('16D : stock disponible d’abord, épuisés à part, classement selon la règle écrite, 10′ et 10 g plafonnés au stock libre', () => {
     const q = quickAdds(s1Recipe(), getStyleScale('16D'));

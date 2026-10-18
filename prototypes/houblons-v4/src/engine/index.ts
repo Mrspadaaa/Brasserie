@@ -9,7 +9,7 @@ export { hopProfile, styleFit, citations, describeFamilies, REFERENCE, stockKeys
 export { tastingFrom, situateBeer, levelRange, TASTING_USAGE, type Tasting, type TastingAxis, type PerceivedLevel, type SituatedFamily } from './tasting';
 export { offModelLeads, type OffModelLead } from './leads';
 export { readBeer, readingSummary, voiesSummary, gapSummary, type ReadingEntry, type ReadingVerdict } from './reading';
-export { quickAdds, QUICK_ADD_RULE, type QuickAdd } from './quickAdd';
+export { quickAdds, quickAddKey, QUICK_ADD_RULE, type QuickAdd } from './quickAdd';
 export { proposeVoies, compareVoies, compareRankKeys, applyVoie, RANKING, type Direction, type Voie, type VoieType, type Action, type VoieResult, type FamilyEffect, type DirectedTarget, type StyleOverflow } from './voies';
 export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from '../style/scale';
 export { valueVerdict, gapVerdict, trackPosition, trackShare, type ValueVerdict, type GapVerdict, type EstimateLike } from '../style/verdict';

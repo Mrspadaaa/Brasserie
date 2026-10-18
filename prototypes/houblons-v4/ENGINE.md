@@ -110,10 +110,14 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
 Règle (`QUICK_ADD_RULE`, testée dans `tests/donnees.test.ts`) :
 
 1. Candidats : les houblons du stock ; disponibles (stock libre > 0) d'abord, épuisés à part.
-2. Classement documentaire, comme `styleFit` (S3) : usage attesté, cohérent, peu documenté,
-   non documenté, hors style (famille indésirable citée) ; puis familles attendues citées
-   (plus d'abord), familles neutres citées (moins d'abord), stock libre, nom. Égalité de
-   toutes les clés : même rang. Aucun score.
+2. Classement lexicographique (décision du pilote, réversible ; `quickAddKey`) :
+   1. catégorie d'usage, comme `styleFit` (S3) : usage attesté, cohérent, peu documenté,
+      non documenté, hors style (famille indésirable citée) ;
+   2. conflit avec la dégustation : un houblon qui cite une famille que la dégustation juge
+      « trop » face au style passe derrière et porte son tag (« + boisé et résineux ») ;
+   3. le moins de familles neutres ou indésirables citées, pondérées (marqué 2, cité 1) ;
+   4. le plus de familles attendues citées ;
+   5. stock libre, puis nom. Égalité de toutes les clés : même rang. Aucun score.
 3. Moment et dose : si l'IBU de la recette est sous la bande du style, 60′ et la dose qui
    l'amène au milieu de la bande ; sinon 10′ et la plus petite dose de recherche du solveur
    V5.5 à 10′ (0,5 g/L, soit 10 g pour 20 L), plafonnée au stock libre.

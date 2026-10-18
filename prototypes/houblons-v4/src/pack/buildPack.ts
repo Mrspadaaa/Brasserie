@@ -106,7 +106,7 @@ export function buildPack() {
   const summary1 = readingSummary(reading1), voies1 = voiesSummary(r1);
   Object.assign(S1, { reading: reading1, readingSummary: { counts: summary1.counts, sentence: summary1.sentence, voies: voies1.byFamily, voiesSentence: voies1.sentence } });
   // Ajout en un toucher (comme l'étape Malts) : houblons du stock classés pour le style, règle écrite.
-  Object.assign(S1, { ajoutsRapides: { style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D')) } });
+  Object.assign(S1, { ajoutsRapides: { style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING) } });
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
   // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
