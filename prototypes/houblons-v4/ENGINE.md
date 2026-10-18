@@ -160,6 +160,23 @@ Règle (`LEVEL_RULE`, testée) :
 - **Mention d'un niveau dégusté** (`tastingMention`) : « brassin du jj.mm » si le brassin est
   connu, sinon « dégustation du brasseur, jj.mm : « sa phrase » ».
 
+## Achats, catalogue à acheter, goûts (`ecran-1/MODELE.md`, C-g et C-h)
+
+- **Le stock informe, il ne limite pas.** `ajoutsRapides.catalogue` : houblons hors stock,
+  marqués « à acheter », classés par la même règle (les 10 premiers ; `catalogueTotal` donne
+  le nombre). S5 n'en reprend pas, pour la taille du pack.
+- **Liste d'achats** (`shoppingList`, `achats` de S1, S4, S5) : par ajout, besoin, stock libre
+  restant, manque en g ; par variété, total et manque ; `totalManque`. Les voies portent
+  déjà leur manque en g (`stock.missing[].grams`).
+- **Goûts** (`gouts`, vides par défaut ; `GOUTS_RULE`) : variété exclue retirée du domaine de
+  recherche (voies, ajouts rapides) ; famille exclue traitée comme l'exclusion V5.5 (fiche qui
+  la cite = conflit ; `checkHopExclusions` sur la prédiction) sans bouger sa cible ; « aime »
+  sans poids. `S1.voiesSansHoublon` : classement recalculé si on exclut chaque variété des
+  voies. L'ordre relatif des voies restantes ne change pas, mais des voies auparavant
+  écartées par les plafonds peuvent entrer : ce n'est pas la règle « on retire et rien ne
+  bouge ».
+- **Taille du pack** : plafond relevé de 400 à 500 ko (décision réversible, à confirmer).
+
 ## IBU par moment (`ibuByMoment`, `momentCatalogue`)
 
 Pour le houblon de la recette (`S1.recetteHoublons`) et chaque ajout rapide (`ibuParMoment`) :

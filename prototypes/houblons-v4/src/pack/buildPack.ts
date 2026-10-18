@@ -5,6 +5,7 @@ import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
+  shoppingList, NO_GOUTS, GOUTS_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -113,6 +114,21 @@ export function buildPack() {
   // Houblons de la recette, avec l'IBU de leur dose à chaque moment (BrewingMath.hopIbu).
   Object.assign(S1, { recetteHoublons: s1Recipe().additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey,
     moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1Recipe().volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1Recipe()) })) });
+  // Liste d'achats (le stock informe, il ne limite pas) et goûts du brasseur (vides : aucun goût inventé).
+  // voiesSansHoublon : pour chaque variété des voies, le classement recalculé par le moteur si on l'exclut.
+  const s1Varieties = [...new Set(r1.voies.flatMap((v) => v.actions.map((a) => hopRef(a.hopKey)!.varietyId)))];
+  Object.assign(S1, {
+    achats: shoppingList(s1Recipe()), gouts: NO_GOUTS, goutsRule: GOUTS_RULE,
+    voiesSansHoublon: {
+      rule: 'Le moteur recalcule avec la variété exclue (domaine de recherche) : les voies qui l’utilisent disparaissent, l’ordre relatif des autres ne change pas (clés de classement indépendantes), mais des voies écartées par les plafonds (10 du stock, 4 à acheter, 2 par houblon, 2 assemblages) ou de nouveaux assemblages peuvent entrer.',
+      parVariete: s1Varieties.map((id) => {
+        const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, gouts: { aime: [], exclut: [{ type: 'variété', id, source: 'simulation' }] } });
+        const before = new Set(r1.voies.map((v) => v.id));
+        return { varietyId: id, name: CATALOGUE.find((c) => c.id === id)?.name ?? id,
+          voies: r.voies.map((v) => ({ rank: v.rank, label: v.label, ...(before.has(v.id) ? {} : { nouvelle: true }) })) };
+      }),
+    },
+  });
   // Les quatre objets de l'écran (work/refonte-frontend/v4/ecran-1/MODELE.md), en niveaux prêts à dessiner.
   const s16d = getStyleScale('16D');
   const beer1 = beerLevels(r1.before.profile, S1_TASTING, s16d);
@@ -170,7 +186,7 @@ export function buildPack() {
   };
 
   // S4 (K2) : la même stout, sans houblon, jamais brassée. S5 (K3) : la même stout, chargée par règle.
-  const caseScenario = (question: string, recipe: Recipe, notes: Record<string, string>) => {
+  const caseScenario = (question: string, recipe: Recipe, notes: Record<string, string>, catalogueLimit = 10) => {
     const prof = recipeProfile(recipe);
     const reading = readBeer(prof.profile, null, s16d), summary = readingSummary(reading);
     const ibuTotal = recipeIbu(recipe);
@@ -178,7 +194,8 @@ export function buildPack() {
       question, recipe, style: '16D', yeast: prof.yeast,
       ibu: round(ibuTotal.value), ibuStyle: s16d.ibu, ibuRange: { min: round(ibuTotal.min), max: round(ibuTotal.max) },
       recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe) })),
-      ajoutsRapides: { style: '16D', ...quickAdds(recipe, s16d, null) },
+      ajoutsRapides: { style: '16D', ...quickAdds(recipe, s16d, null, { catalogueLimit }) },
+      achats: shoppingList(recipe), gouts: NO_GOUTS,
       tasting: null,
       echelles: LEVEL_RULE, profilBiere: beerLevels(prof.profile, null, s16d), cibleStyle: targetLevels(s16d),
       readingSummary: { counts: summary.counts, sentence: summary.sentence },
@@ -196,7 +213,8 @@ export function buildPack() {
   const S5 = { ...caseScenario('Stout export chargée : chaque ajout, son IBU, le profil prévu.', s5, {
     profilNote: 'Pas de dégustation : profil prévu par le modèle seul, ou « non situé ».',
     voiesNote: 'Pas de voie : aucune direction posée.',
-  }), composition: LOADED_RECIPE_RULE };
+    catalogueNote: 'Catalogue à acheter non repris ici (voir S1 et S4, même règle) pour tenir la taille du pack.',
+  }, 0), composition: LOADED_RECIPE_RULE };
 
   // S3 : American IPA, tout le stock classé par adéquation documentaire au style.
   const S3 = {

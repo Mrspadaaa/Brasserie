@@ -10,6 +10,7 @@ import {
 import { getStyleScale, type StyleScale } from '../style/scale';
 import { valueVerdict } from '../style/verdict';
 import type { Tasting } from './tasting';
+import { goutsSets, type Gouts } from './gouts';
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -72,6 +73,8 @@ export interface VoieOptions {
   moments?: MomentId[]; assemblages?: boolean;
   /** Dégustation du brasseur : situe la bière et fixe la cible d'une famille jugée « trop » ou « peu ». */
   tasting?: Tasting | null;
+  /** Goûts du brasseur (vides par défaut) : voir GOUTS_RULE. */
+  gouts?: Gouts;
 }
 
 export const RANKING = [
@@ -151,15 +154,19 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   const used = (key: string, except?: string) => recipe.additions.filter((a) => a.hopKey === key && a.id !== except).reduce((s, a) => s + a.grams, 0);
   const free = (key: string, except?: string) => { const s = STOCK.find((x) => x.key === key); return s ? s.grams - used(key, except) : null; };
 
-  const stockHops = STOCK.filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.key);
+  // Goûts du brasseur : variétés exclues hors du domaine ; familles exclues ajoutées aux exclusions V5.5.
+  const { excludedVarieties, excludedFamilies } = goutsSets(options.gouts);
+  const allowed = (key: string) => !excludedVarieties.has(hopRef(key)?.varietyId ?? key);
+  const avoid = [...new Set([...minus, ...excludedFamilies])];
+  const stockHops = STOCK.filter((s) => (free(s.key) ?? 0) > 0 && allowed(s.key)).map((s) => s.key);
   // À acheter : variétés sans stock libre (épuisées comprises), classées par familles visées citées,
   // puis familles attendues par le style citées, puis usage attesté, puis nom.
   const available = new Set(STOCK.filter((s) => (free(s.key) ?? 0) > 0).map((s) => s.varietyId));
   const suggested = new Set(suggestedHopVarieties(CATALOGUE.map((c) => VARIETY_BY_ID.get(c.id)!), style.name).map((v) => v.id));
   const expected = style.documented ? FAMILIES.filter((f) => style.families[f].status === 'attendue') : [];
-  const buyPool = (requirePlus: boolean) => CATALOGUE.filter((c) => !available.has(c.id))
+  const buyPool = (requirePlus: boolean) => CATALOGUE.filter((c) => !available.has(c.id) && allowed(c.id))
     .map((c) => ({ c, plus: plus.filter((f) => cites(c.id, f)).length, fit: expected.filter((f) => cites(c.id, f)).length,
-      bad: minus.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && cites(c.id, f)) }))
+      bad: avoid.some((f) => cites(c.id, f)) || FAMILIES.some((f) => style.families[f].status === 'indésirable' && cites(c.id, f)) }))
     .filter((r) => !r.bad && (!requirePlus || r.plus > 0))
     .sort((a, b) => b.plus - a.plus || b.fit - a.fit || Number(suggested.has(b.c.id)) - Number(suggested.has(a.c.id)) || a.c.name.localeCompare(b.c.name, 'fr'))
     .slice(0, maxBuy).map((r) => STOCK.find((s) => s.varietyId === r.c.id && s.form !== 'cryo')?.key ?? r.c.id);
@@ -182,7 +189,8 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       if (replaced && replaced.addition.grams >= c.addition.grams) continue; // diminution du même houblon
       for (const f of minus) if (cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par ta direction.`);
       for (const f of FAMILIES) if (style.families[f].status === 'indésirable' && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} exclu par le style, cité dans une fiche.`);
-      for (const k of checkHopExclusions(predictTriplet(tripletOf(c.addition, next), {}), minus, AXES)) if (k.status === 'conflict') conflicts.push(`${h.name} : ${k.message}`);
+      for (const f of excludedFamilies) if (!minus.includes(f) && cites(h.varietyId, f)) conflicts.push(`${h.name} : ${FAMILY_NAMES[f].toLowerCase()} cité dans une fiche, exclu par tes goûts.`);
+      for (const k of checkHopExclusions(predictTriplet(tripletOf(c.addition, next), {}), avoid, AXES)) if (k.status === 'conflict') conflicts.push(`${h.name} : ${k.message}`);
       if (!(c.addition.grams > 0)) conflicts.push('Dose invalide.');
     }
     const ibu1 = recipeIbu(next);
@@ -256,6 +264,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
   // 2. Augmenter, diminuer, retirer un ajout existant.
   for (const a of recipe.additions) {
     for (const [type, k] of [['augmenter', 1.5], ['augmenter', 2], ['diminuer', 0.5], ['retirer', 0]] as const) {
+      if (type === 'augmenter' && !allowed(a.hopKey)) continue;
       const grams = round(a.grams * k);
       const b: Addition = { ...a, grams };
       const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)).filter((x) => x.grams > 0) };
@@ -276,7 +285,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
           [act('modifier', b, { previousGrams: round(a.grams) })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next));
       }
     }
-    for (const key of [...stockHops, ...buyPool(false)].filter((k) => k !== a.hopKey)) {
+    for (const key of [...stockHops, ...buyPool(false)].filter((k) => k !== a.hopKey && allowed(k))) {
       const ref = hopRef(key)!;
       let grams = a.grams;
       if (bitter) {

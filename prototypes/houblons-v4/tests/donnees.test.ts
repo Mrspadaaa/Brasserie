@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
+import { NO_GOUTS, citations, hopRef, shoppingList } from '../src/engine';
 import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
@@ -71,6 +72,42 @@ describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
     expect(resin.mention).toMatch(/^dégustation du brasseur, 18\.10 : « ma stout est trop résineuses/);
     expect(tastingMention({ ...S1_TASTING, batch: { id: 'B-12', date: '2026-09-30' } })).toBe('brassin du 30.09');
     expect(beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).filter((b) => b.source !== 'dégustation').every((b) => b.mention === undefined)).toBe(true);
+  });
+});
+
+describe('Achats, catalogue à acheter et goûts du brasseur', () => {
+  const s16d = getStyleScale('16D');
+
+  it('le stock informe, il ne limite pas : catalogue « à acheter » classé par la même règle, liste d’achats en g', () => {
+    const q = quickAdds(s1Recipe(), s16d, S1_TASTING);
+    expect(q.catalogue.length).toBe(10);
+    expect(q.catalogueTotal).toBeGreaterThan(250);
+    for (const r of q.catalogue) { expect(r.stock).toMatchObject({ grams: 0, free: 0, status: 'à acheter' }); expect(r.ibuParMoment).toHaveLength(IBU_MOMENTS.length); }
+    for (let i = 1; i < q.catalogue.length; i++) {
+      const a = quickAddKey(q.catalogue[i - 1]), b = quickAddKey(q.catalogue[i]); const d = a.findIndex((x, j) => x !== b[j]);
+      if (d >= 0) expect(a[d]).toBeLessThan(b[d]);
+    }
+    const achats = shoppingList(s1Recipe());
+    expect(achats.unite).toBe('g');
+    expect(achats.lignes[0]).toMatchObject({ hopKey: 'beermaverick-nugget', besoin: 46, stockLibre: 0, manque: 46 });
+    expect(achats.totalManque).toBe(46);
+    const s5 = shoppingList(loadedRecipe(s1Recipe(), s16d));
+    expect(s5.aAcheter.map((v) => v.hopKey)).toEqual(['beermaverick-nugget']);
+    for (const v of proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING }).voies) for (const m of v.stock.missing) expect(typeof m.grams).toBe('number');
+  });
+
+  it('goûts : vides par défaut ; une variété exclue disparaît, l’ordre relatif des autres voies ne change pas ; une famille exclue met en conflit', () => {
+    const base = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+    const withEmpty = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, gouts: NO_GOUTS });
+    expect(withEmpty.voies.map((v) => v.id)).toEqual(base.voies.map((v) => v.id));
+    const ex = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING, gouts: { aime: [], exclut: [{ type: 'variété', id: 'beermaverick-motueka', source: 'test' }] } });
+    expect(ex.voies.some((v) => v.actions.some((a) => a.hopKey === 'beermaverick-motueka'))).toBe(false);
+    const kept = ex.voies.map((v) => v.id).filter((id) => base.voies.some((w) => w.id === id));
+    expect(kept).toEqual(base.voies.map((v) => v.id).filter((id) => kept.includes(id)));
+    const fam = proposeVoies(s1Recipe(), { floral: 1 }, { gouts: { aime: [], exclut: [{ type: 'famille', id: 'citrus', source: 'test' }] }, limit: 40 });
+    for (const v of fam.voies.filter((x) => x.actions.some((a) => a.op === 'ajouter' && citations(hopRef(a.hopKey)!.varietyId).citrus.status === 'cité'))) expect(v.conflicts.join(' ')).toMatch(/exclu par tes goûts/);
+    const qa = quickAdds(s1Recipe(), s16d, null, { gouts: { aime: [], exclut: [{ type: 'variété', id: 'beermaverick-cascade', source: 'test' }] } });
+    expect([...qa.disponibles, ...qa.epuises, ...qa.catalogue].some((r) => r.key === 'beermaverick-cascade')).toBe(false);
   });
 });
 

@@ -33,6 +33,24 @@ export function loadedRecipe(base: Recipe, scale: StyleScale, bitteringKey = 'be
   return { ...base, additions: [{ id: 'a60', hopKey: bitteringKey, moment: 'b60', grams: round1(grams) }, ...additions] };
 }
 
+/** Liste d'achats : la recette d'abord, le stock informe (« je fais une recette puis j'achète »).
+ * Par ajout : besoin, stock libre restant avant cet ajout, manque (g) ; par variété : total. */
+export function shoppingList(recipe: Recipe) {
+  const left = new Map(STOCK.map((s) => [s.key, Math.max(0, s.grams)]));
+  const lignes = recipe.additions.map((a) => {
+    const free = left.get(a.hopKey) ?? 0;
+    left.set(a.hopKey, Math.max(0, free - a.grams));
+    return { additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey, moment: a.moment, besoin: round1(a.grams), stockLibre: round1(free), manque: round1(Math.max(0, a.grams - free)) };
+  });
+  const keys = [...new Set(recipe.additions.map((a) => a.hopKey))];
+  const parVariete = keys.map((k) => {
+    const besoin = recipe.additions.filter((a) => a.hopKey === k).reduce((s, a) => s + a.grams, 0);
+    const stock = Math.max(0, STOCK.find((s) => s.key === k)?.grams ?? 0);
+    return { hopKey: k, name: hopRef(k)?.name ?? k, besoin: round1(besoin), stock: round1(stock), manque: round1(Math.max(0, besoin - stock)), enStock: STOCK.some((s) => s.key === k) };
+  });
+  return { unite: 'g', lignes, parVariete, aAcheter: parVariete.filter((v) => v.manque > 0), totalManque: round1(parVariete.reduce((s, v) => s + v.manque, 0)) };
+}
+
 /** Ligne de recette prête à dessiner : type d'ajout, moment, dose, IBU à son moment, stock. */
 export function recipeLines(recipe: Recipe) {
   const type = (m: MomentId) => (MOMENTS[m].timing === 'whirlpool' ? 'whirlpool' : MOMENTS[m].timing === 'firstWort' ? 'premier moût' : MOMENTS[m].timing === 'boil' ? 'ébullition' : 'à froid');
