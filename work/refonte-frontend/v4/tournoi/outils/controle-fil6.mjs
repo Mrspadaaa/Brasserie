@@ -119,7 +119,10 @@ for (const id of ids) {
             return { n: (d.match(/[ML]/gi) || []).length, ferme: /z\s*$/i.test(d.trim()) };
           });
           const v = (e.getAttribute('data-valeurs') || '').split(',');
-          return { nom: e.getAttribute('data-serie'), vides: v.filter((x) => x.trim() === '').length, n: v.length, formes, inconnues: (e.getAttribute('data-inconnues') || '').split(',').filter(Boolean), valeurs: v.map((x) => (x.trim() === '' ? null : Number(x))) };
+          const traces = e.matches('path,polygon,polyline') ? [e] : [...e.querySelectorAll('path,polygon,polyline')];
+          const tirets = traces.some((x) => { const d = getComputedStyle(x).strokeDasharray; return d && d !== 'none'; });
+          const couleurs = traces.map((x) => getComputedStyle(x).stroke).filter((c) => c && c !== 'none');
+          return { nom: e.getAttribute('data-serie'), tirets, couleurs, vides: v.filter((x) => x.trim() === '').length, n: v.length, formes, inconnues: (e.getAttribute('data-inconnues') || '').split(',').filter(Boolean), valeurs: v.map((x) => (x.trim() === '' ? null : Number(x))) };
         }),
         // D65, D66 : libellés du radar (familles et noms d'échelle), familles sans donnée.
         familles: axes,
@@ -139,6 +142,18 @@ for (const id of ids) {
     for (const r of m.radars) for (const s of r.series) {
       if (s.vides) q('radar, série « ' + s.nom + ' » : ' + s.vides + ' valeur(s) vide(s), le tracé saute des axes (D62)');
       if (!s.formes.some((f) => f.ferme && f.n >= r.axes)) q('radar, série « ' + s.nom + ' » sans polygone fermé sur les ' + r.axes + ' axes (D62)');
+      // D39 (« Je m'attendais plus à qqch du genre mais plus cohérent ») : aucune série distinguée
+      // par un trait en tirets ou pointillés ; on distingue par le remplissage et la couleur.
+      if (s.tirets) q('radar, série « ' + s.nom + ' » en tirets ou pointillés (D39)');
+      // D40 bis : l'orangé d'alerte (#c2410c, teinte 21°) n'appartient qu'à ma bière hors du style ;
+      // aucune série ne prend une couleur saturée à 25° de teinte ou moins.
+      for (const c of s.couleurs) {
+        const m = c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); if (!m) continue;
+        const [r, g, b] = m.slice(1, 4).map((x) => x / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+        const sat = mx === 0 ? 0 : d / mx; if (sat < 0.35 || d === 0) continue;
+        let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h = (h * 60 + 360) % 360;
+        if (Math.abs(h - 21) <= 25 && !/bière|goût|dégust|alerte/i.test(s.nom)) { q('radar, série « ' + s.nom + ' » en ' + c + ', trop proche de l\'orangé d\'alerte (D40 bis)'); break; }
+      }
     }
     // D66 (« Pourquoi il y a cité ? ») : un nom d'échelle n'est jamais collé au libellé d'une
     // famille, où il se lit comme sa valeur ; 24 px au moins entre les deux.

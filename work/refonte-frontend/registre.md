@@ -97,6 +97,36 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Reprise après compaction (19.10, matin) — suite autonome, rien à refaire
+
+Le brasseur : « Je vais compacter ton contexte, continue sans mon intervention ». Rien ne
+s'intègre sans son choix (D50) ; on prépare ses choix.
+
+- **Fait depuis l'état du matin** :
+  - `controle-fil6.mjs` vérifie aussi D39 (aucune série en tirets) et D40 bis (aucune série
+    proche de l'orangé d'alerte) ;
+  - h2 corrigée (Hopsteiner en gris foncé), lot 9 FIL6 OK 12/12 ;
+  - les radars du lot 6 échouent sur D65 et D66, mais ils seront remplacés par le radar D3 de
+    la base à l'intégration : ne pas les corriger, le dire dans #138.
+- **En vol, ne pas relancer** :
+  - correction u4 (Nugget en tirets, D39) : `a8032ac75b058c97d` ;
+  - jury indicatif A (lots 8 et 11) `aed2293a19afa8bb7` → `ecran-1/JURY-NUIT-A.md` ;
+  - jury B (lots 9 et 10) `aab19b156f1852e8e` → `JURY-NUIT-B.md` ;
+  - jury C (lot 6) `af2122ae766757724` → `JURY-NUIT-C.md` ;
+  - #139, éditeur d'observations de l'app classé (fini / récupérable / inutilisable), lecture
+    seule : `ae2a1cb34b4aaff00`.
+- **À leur retour** :
+  - u4 : FIL6 OK, puis commit de fils11-substitution ;
+  - jurys : relire leurs ★ (indicatives, il a souvent choisi autrement que le pilote), les
+    poster dans #134 à #138 en commentaire « indicatif », les ajouter à la page de la nuit
+    (`scratchpad/nuit` : `etat.json`, `node sections.mjs`, `node build.mjs`, puis Artifact sur
+    `site/index.html`, même URL) ;
+  - #139 : commentaire dans le ticket avec le classement ;
+  - commit des JURY-NUIT-*.md et du registre.
+- **Ensuite, sans lui** (réversible, utile) :
+  - préparer l'intégration de la loupe la mieux notée sur une copie, sans toucher la base ;
+  - #131 : liste des sources de données houblons possibles, en note seulement, sans import.
+
 ## Matin du 19.10 — tout est rentré, à lui de choisir
 
 Page de la nuit : https://claude.ai/artifact/2VTRQP7nLXhX5GqDaAGAyU (une section par ticket).
