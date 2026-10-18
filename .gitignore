@@ -67,6 +67,7 @@ firestore.rules
 !/work/refonte-frontend/v4/ecran-1/base/consolide/*.html
 !/work/refonte-frontend/v4/ecran-1/base/generateur/*
 /work/refonte-frontend/**/_ecartes/
+/work/refonte-frontend/**/_v[0-9]*/
 /work/refonte-frontend/**/captures/
 /work/refonte-frontend/v4/tournoi/M1/_lots-1-2/
 /tmp/
