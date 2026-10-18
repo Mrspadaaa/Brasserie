@@ -97,6 +97,32 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Reprise après compaction (18.10, ~20:15) — agents en vol, rien à refaire
+
+- **En vol (9 agents, ne pas relancer)** :
+  - rail : `a17d51434443f441e` relancé pour la vraie loupe façon Dock (D55 : vide ≤ 80 px, ajouts
+    proposés ≤ 120 px plus bas) et pour plusieurs houblons sans chevauchement (D56, cas-k3) ;
+    base v4 en échec sur les deux.
+  - lot 5a Comparer : `afdcc0d66e5485739` (p01–p03), `aa8453e1576a8afad` (p04–p06),
+    `a7291edb1e9d4b617` (p07–p09), `ae30b17ff038764fa` (p10–p11).
+  - lot 5b Suggestions : `aa5d80d813672ee8b` (p01–p03), `a24ff062473f69124` (p04–p06),
+    `af514443688eac0ae` (p07–p09), `ada5ae5baa88c24fe` (p10–p11).
+- **Au retour du rail** : contrôle indépendant (commande en tête de la section « Reprise après
+  compaction (18.10, ~19:30) », ou celle du message à l'agent) ; regarder les captures
+  « pendant » ; republier la page partagée (`scratchpad/artifact-lot3/build.mjs
+  --src=<ecran-1>/base:consolide --src=<ecran-1>/fils3:p02,p03,p08 --sans-radar`, puis Artifact,
+  même file_path `site/index.html`, `root` = site, fichiers consolide/* et img/consolide-*) ;
+  commit de `base/consolide` et `base/generateur`.
+- **Au retour des lots 5a et 5b** : contrôle indépendant par lot (commandes en bas des deux
+  BRIEF-AUTEUR.md) ; regarder les captures de chaque variante ; jury léger facultatif (★
+  indicatives, notes dans `scratchpad/artifact-lot3/notes-lot5.json`) ; page
+  `node scratchpad/artifact-lot3/build-lot5.mjs <ecran-1>` (site-lot5, files-lot5.json ;
+  le tester avant) ; publier comme nouvel artefact ; donner le lien ; fermer le fil 664b425c de la
+  page partagée ; **attendre son choix (D50)**, le citer dans SPEC-BRASSEUR, puis intégrer.
+- **À faire juger avec le lot 5** : pastille « 10′ » suggérée sur les ajouts proposés ; « résine
+  2/4 » en orange d'alerte sur la carte de Nugget ; règle de tolérance D54 (à valider).
+- **Commits locaux** jusqu'à `2d49c44` ; rien de poussé.
+
 ## Avancement (18.10, ~19:30) — Comparer d'abord, Suggestions ensuite
 
 - **Nouveaux mots** (SPEC-BRASSEUR, 120 citations) : Beer Maverick est le **plancher** de
