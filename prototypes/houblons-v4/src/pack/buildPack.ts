@@ -4,7 +4,8 @@ import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
-  type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
+  beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE,
+  type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
 
@@ -61,6 +62,8 @@ function styleEntry(s: StyleScale) {
   };
 }
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
+/** Fiche compacte : niveau 0 non décrit, 1 cité, 2 marqué ; « sources sur of » fiches. Nom et statut : voir families et cibleStyle. */
+const compactFiche = ({ family, level, sources, of }: FicheLevel) => ({ family, level, sources, of });
 
 function voieEntry(v: Voie, directed: FamilyId[]) {
   return {
@@ -110,6 +113,13 @@ export function buildPack() {
   // Houblons de la recette, avec l'IBU de leur dose à chaque moment (BrewingMath.hopIbu).
   Object.assign(S1, { recetteHoublons: s1Recipe().additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey,
     moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1Recipe().volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1Recipe()) })) });
+  // Les quatre objets de l'écran (work/refonte-frontend/v4/ecran-1/MODELE.md), en niveaux prêts à dessiner.
+  const s16d = getStyleScale('16D');
+  const beer1 = beerLevels(r1.before.profile, S1_TASTING, s16d);
+  S1.voies.forEach((v, i) => Object.assign(v, { profilApres: afterLevels(beer1, r1.voies[i].effect) }));
+  const ficheKeys = [...new Set([...s1Recipe().additions.map((a) => a.hopKey), ...STOCK.map((s) => s.key)])];
+  Object.assign(S1, { echelles: LEVEL_RULE, profilBiere: beer1, cibleStyle: targetLevels(s16d),
+    profilFiches: ficheKeys.map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s16d).map(compactFiche) })) });
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
   // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
@@ -138,6 +148,14 @@ export function buildPack() {
       note: 'Profils à la référence : plages pleines, non situées ; seul l’écart entre houblons se lit.' },
     // Même forme que S1.ajoutsRapides, pour une recette 3B encore sans houblon (mode amertume).
     ajoutsRapides: { style: '3B', recipe: s2Recipe(), ...quickAdds(s2Recipe(), s3b) },
+    // Objets de l'écran pour 3B : cible et fiches oui ; profil de la bière calculé mais non situé
+    // (recette sans houblon, levure sans profil V5.5, aucune dégustation) ; pas de voies (pas de direction).
+    echelles: LEVEL_RULE,
+    profilBiere: beerLevels(recipeProfile(s2Recipe()).profile, null, s3b),
+    profilBiereNote: 'Recette 3B sans houblon, levure LalBrew Diamond sans profil V5.5 et sans dégustation : le modèle ne situe aucune famille. Une dégustation ou des ajouts la situeraient.',
+    cibleStyle: targetLevels(s3b),
+    profilFiches: [...trio.map((h) => h.key), ...STOCK.map((s) => s.key)].map((k) => ({ key: k, name: hopRef(k)!.name, families: ficheLevels(hopRef(k)!.varietyId, s3b).map(compactFiche) })),
+    profilApresNote: 'Pas de voies en S2 (aucune direction posée) : pas de profil après.',
     illustration: (() => {
       // « Un écart faible pour une ipa peut être très grand pour un autre style » : un cran du floral de la 3B, arrondi.
       const gap = Math.round(s3b.families.floral.cran);

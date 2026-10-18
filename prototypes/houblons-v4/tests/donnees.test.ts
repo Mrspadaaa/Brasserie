@@ -1,7 +1,46 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, ibuByMoment, momentCatalogue, quickAddKey, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
+import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, momentCatalogue, quickAddKey, targetLevels, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
+
+describe('Les quatre objets de l’écran (niveaux)', () => {
+  const s16d = getStyleScale('16D');
+  const beer = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d);
+
+  it('profil de ma bière : la dégustation prime sur le modèle ; une famille non située reste null ; intensité sur 0–3', () => {
+    expect(beer.map((b) => b.family)).toEqual(s16d.order);
+    expect(beer.find((b) => b.family === 'resin')).toMatchObject({ level: 3, source: 'dégustation' });
+    // Sans dégustation, la résine vient du modèle (repère central 6,5 → faible).
+    expect(beerLevels(recipeProfile(s1Recipe()).profile, null, s16d).find((b) => b.family === 'resin')).toMatchObject({ level: 1, source: 'modèle' });
+    for (const b of beer.filter((x) => x.source === 'non situé')) expect(b.level).toBeNull();
+    expect(beer.some((b) => b.source === 'non situé')).toBe(true);
+    for (const b of beer.filter((x) => x.level !== null)) expect([0, 1, 2, 3]).toContain(b.level);
+    expect(beer.filter((b) => b.level === 0)).toEqual([]); // aucune absence prouvée par le modèle ici
+  });
+
+  it('cible du style sur la même échelle ; profil après une voie ; fiches sur 0–2', () => {
+    const target = targetLevels(s16d);
+    expect(target.find((t) => t.family === 'floral')).toMatchObject({ min: 0, max: 2, status: 'attendue' });
+    expect(target.find((t) => t.family === 'resin')).toMatchObject({ min: 0, max: 1, status: 'neutre' });
+    expect(targetLevels(getStyleScale('3B')).find((t) => t.family === 'floral')).toMatchObject({ min: 2, max: 3 });
+    expect(targetLevels(getStyleScale('21C')).find((t) => t.family === 'green')).toMatchObject({ min: 0, max: 0 });
+    for (const t of target) { expect(t.min).toBeGreaterThanOrEqual(0); expect(t.max).toBeLessThanOrEqual(3); expect(t.min).toBeLessThanOrEqual(t.max); }
+    const r = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
+    for (const v of r.voies) {
+      const after = afterLevels(beer, v.effect);
+      for (const a of after) {
+        const b = beer.find((x) => x.family === a.family)!;
+        if (a.effet === 'non établi') expect(a.level).toBe(b.level);
+        if (a.level !== null) expect([0, 1, 2, 3]).toContain(a.level);
+      }
+      // La résine dégustée « marqué » ne change de classe qu'avec un effet assez grand : jamais ici.
+      expect(after.find((a) => a.family === 'resin')!.level).toBe(3);
+    }
+    for (const f of ficheLevels('beermaverick-nugget', s16d)) expect([0, 1, 2]).toContain(f.level);
+    expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'resin')).toMatchObject({ level: 2, sources: 2, of: 4 });
+    expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'stoneFruit')).toMatchObject({ level: 0, sources: 0 });
+  });
+});
 
 describe('IBU par moment (ibuParMoment)', () => {
   it('Nugget de la recette : IBU de BrewingMath par moment, IBU par gramme cohérent, à froid non modélisé', () => {

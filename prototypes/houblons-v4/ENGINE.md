@@ -127,6 +127,27 @@ Règle (`QUICK_ADD_RULE`, testée dans `tests/donnees.test.ts`) :
 
 Chaque entrée donne aussi le stock libre et les familles citées avec leur niveau.
 
+## Les quatre objets de l'écran (`levels.ts`, `work/refonte-frontend/v4/ecran-1/MODELE.md`)
+
+Règle (`LEVEL_RULE`, testée) :
+
+- **Intensité dans la bière, 0 à 3** (objets 1, 2, 4) : 0 absent, 1 faible, 2 moyen,
+  3 marqué, par les classes des axes V5.5 (0–33, 33–66, 66–100).
+- **Profil de ma bière** (`S1.profilBiere`, `beerLevels`) : la dégustation prime (faible 1,
+  moyen 2, marqué 3) ; sinon le repère central V5.5 de la recette, converti ; 0 seulement si
+  toute la plage du modèle reste sous le seuil « absent » (5) ; sinon `null`, « non situé ».
+- **Cible du style** (`S1.cibleStyle`, `targetLevels`) : bande convertie ; bas ≤ 5 → 0, sinon
+  la classe juste au-dessus du bas ; haut ≤ 5 → 0, sinon la classe qui contient le haut.
+  Hypothèse BJCP à valider.
+- **Profil après une voie** (`profilApres`, `afterLevels`) : le profil de ma bière décalé par
+  l'effet établi de la voie. Famille du modèle : niveau du repère décalé (jamais 0 sans preuve
+  d'absence). Famille dégustée : la classe perçue décalée ne change de niveau que si elle tombe
+  entière dans une autre classe. Sans effet établi : niveau inchangé, `effet: "non établi"`.
+- **Fiches d'un houblon, 0 à 2** (objet 3, `profilFiches`, `ficheLevels`) : 0 non décrit,
+  1 cité, 2 marqué, avec « N fiches sur M ». Ce n'est pas une intensité dans la bière.
+- S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
+  houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
+
 ## IBU par moment (`ibuByMoment`, `momentCatalogue`)
 
 Pour le houblon de la recette (`S1.recetteHoublons`) et chaque ajout rapide (`ibuParMoment`) :
