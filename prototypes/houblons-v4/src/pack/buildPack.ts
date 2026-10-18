@@ -3,7 +3,7 @@
 import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
-  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds,
+  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -107,6 +107,9 @@ export function buildPack() {
   Object.assign(S1, { reading: reading1, readingSummary: { counts: summary1.counts, sentence: summary1.sentence, voies: voies1.byFamily, voiesSentence: voies1.sentence } });
   // Ajout en un toucher (comme l'étape Malts) : houblons du stock classés pour le style, règle écrite.
   Object.assign(S1, { ajoutsRapides: { style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING) } });
+  // Houblons de la recette, avec l'IBU de leur dose à chaque moment (BrewingMath.hopIbu).
+  Object.assign(S1, { recetteHoublons: s1Recipe().additions.map((a) => ({ additionId: a.id, hopKey: a.hopKey, name: hopRef(a.hopKey)?.name ?? a.hopKey,
+    moment: a.moment, grams: a.grams, gramsPerLitre: round(a.grams / s1Recipe().volumeL, 2), ibuParMoment: ibuByMoment(a.hopKey, a.grams, s1Recipe()) })) });
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
   // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
@@ -181,6 +184,8 @@ export function buildPack() {
       ],
     },
     families: FAMILIES.map((f, i) => ({ id: f, name: FAMILY_NAMES[f], order: i })),
+    // Types d'ajout et « quand », dans l'ordre d'affichage (ébullition de 60 min des recettes du pack).
+    moments: momentCatalogue(60),
     styles,
     stock,
     catalogue,

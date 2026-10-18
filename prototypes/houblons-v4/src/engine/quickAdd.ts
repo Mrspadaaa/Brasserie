@@ -5,6 +5,7 @@ import { MOMENTS, additionIbu, gramsForIbu, recipeIbu, searchDoses, type MomentI
 import type { StyleScale } from '../style/scale';
 import { valueVerdict } from '../style/verdict';
 import type { Tasting } from './tasting';
+import { ibuByMoment, type IbuAtMoment } from './ibuMoments';
 
 /** Règle de l'ajout en un toucher (écrite dans ENGINE.md, testée) :
  * 1. Candidats : les houblons du stock ; disponibles (stock libre > 0) d'abord, épuisés à part.
@@ -36,6 +37,8 @@ export interface QuickAdd {
   dose: { grams: number; gramsPerLitre: number; rule: string } | null;
   ibuAdded: { value: number; min: number; max: number } | null;
   cited: { family: FamilyId; name: string; status: string; level: string; sources: number; of: number }[];
+  /** IBU à la dose proposée et par gramme, pour chaque moment que V5.5 sait traiter (BrewingMath.hopIbu). */
+  ibuParMoment: IbuAtMoment[];
 }
 const round = (x: number, n = 1) => Math.round(x * 10 ** n) / 10 ** n;
 const FIT_RANK: Record<FitClass, number> = { 'usage attesté': 0, cohérent: 1, 'peu documenté': 2, 'non documenté': 3, 'hors style': 4 };
@@ -71,6 +74,7 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
       moment, momentLabel: MOMENTS[moment].label, dose,
       ibuAdded: ibu && !ibu.unknown.length ? { value: round(ibu.value), min: round(ibu.min), max: round(ibu.max) } : null,
       cited: FAMILIES.filter((f) => desc[f].level !== 'non décrit').map((f) => ({ family: f, name: FAMILY_NAMES[f], status: scale.families[f].status, level: desc[f].level, sources: desc[f].sources, of: desc[f].of })),
+      ibuParMoment: ibuByMoment(s.key, dose?.grams ?? 0, recipe),
     };
   });
   const key = (r: QuickAdd) => quickAddKey(r);

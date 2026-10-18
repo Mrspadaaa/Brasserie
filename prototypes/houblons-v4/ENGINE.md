@@ -127,6 +127,16 @@ Règle (`QUICK_ADD_RULE`, testée dans `tests/donnees.test.ts`) :
 
 Chaque entrée donne aussi le stock libre et les familles citées avec leur niveau.
 
+## IBU par moment (`ibuByMoment`, `momentCatalogue`)
+
+Pour le houblon de la recette (`S1.recetteHoublons`) et chaque ajout rapide (`ibuParMoment`) :
+IBU à la dose proposée et IBU par gramme, par `BrewingMath.hopIbu`, aux moments premier
+moût, 60′, 30′, 15′, 10′, 5′, 0′, whirlpool (80 °C, 20 min supposés, Tinseth atténué par la
+température), dry hop actif et après fermentation. À 0′, Tinseth compte 0 IBU (le
+refroidissement n'est pas modélisé). À froid : `null` avec `raison` (pas d'IBU Tinseth ;
+humulinones dans un modèle séparé, non branché). `moments` du pack donne la liste canonique :
+libellé, code V5.5, unité du « quand » (minutes d'ébullition, °C et minutes, jour à cru).
+
 ## Hypothèses [H] et limites
 
 - Table mots → bandes, cran, seuil, plancher de 15 points, recouvrement de 50 % :

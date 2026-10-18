@@ -6,7 +6,7 @@ import { ENGINE_DATA, EXTRAPOLATION, POLICY, YEASTS, hopRef, type HopRef } from 
 import { FAMILIES, type FamilyId } from './families';
 
 // ---------- Moments ----------
-export type MomentId = 'fwh' | 'b60' | 'b30' | 'b15' | 'b10' | 'b5' | 'wp' | 'dryActive' | 'dryPost';
+export type MomentId = 'fwh' | 'b60' | 'b30' | 'b15' | 'b10' | 'b5' | 'b0' | 'wp' | 'dryActive' | 'dryPost';
 export interface Moment { id: MomentId; label: string; kind: 'amertume' | 'arôme'; timing: HopTiming; minutes?: number; estimated?: string }
 export const MOMENTS: Record<MomentId, Moment> = {
   fwh: { id: 'fwh', label: 'premier moût', kind: 'amertume', timing: 'firstWort' },
@@ -15,6 +15,7 @@ export const MOMENTS: Record<MomentId, Moment> = {
   b15: { id: 'b15', label: '15′', kind: 'amertume', timing: 'boil', minutes: 15 },
   b10: { id: 'b10', label: '10′', kind: 'arôme', timing: 'boil', minutes: 10 },
   b5: { id: 'b5', label: '5′', kind: 'arôme', timing: 'boil', minutes: 5 },
+  b0: { id: 'b0', label: '0′ (fin d’ébullition)', kind: 'arôme', timing: 'boil', minutes: 0 },
   wp: { id: 'wp', label: 'whirlpool', kind: 'arôme', timing: 'whirlpool' },
   dryActive: { id: 'dryActive', label: 'dry hop en fermentation active', kind: 'arôme', timing: 'fermentation',
     estimated: 'Dry hop en fermentation active : biotransformation possible, non quantifiée par le moteur.' },
@@ -41,7 +42,7 @@ export function tripletOf(a: Addition, recipe: Recipe, ref = hopRef(a.hopKey), d
 }
 
 // ---------- Amertume (BrewingMath.hopIbu, importé de l'app) ----------
-const IBU_STAGE = { fwh: 'firstWort', b60: 'boil', b30: 'boil', b15: 'boil', b10: 'boil', b5: 'boil', wp: 'whirlpool', dryActive: 'dryHop', dryPost: 'dryHop' } as const;
+const IBU_STAGE = { fwh: 'firstWort', b60: 'boil', b30: 'boil', b15: 'boil', b10: 'boil', b5: 'boil', b0: 'boil', wp: 'whirlpool', dryActive: 'dryHop', dryPost: 'dryHop' } as const;
 /** IBU d'un gramme de ce houblon à ce moment, pour un alpha donné (linéaire en masse). */
 export function ibuPerGram(alpha: number, moment: MomentId, recipe: Recipe): number {
   const m = MOMENTS[moment];

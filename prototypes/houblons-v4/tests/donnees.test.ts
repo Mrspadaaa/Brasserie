@@ -1,7 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { FAMILIES, QUICK_ADD_RULE, additionIbu, quickAddKey, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
+import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, ibuByMoment, momentCatalogue, quickAddKey, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
+
+describe('IBU par moment (ibuParMoment)', () => {
+  it('Nugget de la recette : IBU de BrewingMath par moment, IBU par gramme cohérent, à froid non modélisé', () => {
+    const r = s1Recipe();
+    const rows = ibuByMoment('beermaverick-nugget', 46, r);
+    expect(rows.map((x) => x.code)).toEqual(IBU_MOMENTS);
+    const at = (c: string) => rows.find((x) => x.code === c)!;
+    expect(at('b60').ibu!.value).toBeCloseTo(additionIbu(r.additions[0], r).value, 1);
+    for (const x of rows.filter((y) => y.modelled)) expect(x.ibu!.value).toBeCloseTo(46 * x.ibuPerGram!.value, 0);
+    expect(at('b60').ibu!.value).toBeGreaterThan(at('b10').ibu!.value);
+    expect(at('b10').ibu!.value).toBeGreaterThan(at('wp').ibu!.value);
+    expect(at('b0').ibu!.value).toBe(0);
+    for (const c of ['dryActive', 'dryPost']) expect(at(c)).toMatchObject({ modelled: false, ibu: null, ibuPerGram: null, raison: expect.stringMatching(/cru/) });
+    const cat = momentCatalogue(60);
+    expect(cat.find((m) => m.code === 'wp')!.when).toMatchObject({ temperatureC: 80, minutes: 20 });
+    expect(cat.find((m) => m.code === 'dryPost')!.when.unit).toBe('jour de houblonnage à cru');
+  });
+
+  it('chaque ajout rapide porte son IBU par moment à la dose proposée', () => {
+    const q = quickAdds(s1Recipe(), getStyleScale('16D'), S1_TASTING);
+    for (const e of q.disponibles) {
+      expect(e.ibuParMoment).toHaveLength(IBU_MOMENTS.length);
+      expect(e.ibuParMoment.find((x) => x.code === 'b10')!.ibu!.value).toBeCloseTo(e.ibuAdded!.value, 1);
+    }
+  });
+});
 
 describe('Ajout en un toucher (ajoutsRapides)', () => {
   const keyOf = (r: QuickAdd) => [['usage attesté', 'cohérent', 'peu documenté', 'non documenté', 'hors style'].indexOf(r.fit), r.tastingConflicts.length ? 1 : 0, r.offStyleWeight, -r.supports.length, -r.stock.free];
