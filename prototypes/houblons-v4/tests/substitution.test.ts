@@ -182,6 +182,22 @@ describe('Substitution de houblons : score, couverture, dose, classement', () =>
     expect(find(K('saaz-cz'), K('hallertau-mittelfruh'), { moment: 'b60' }).amertumeDeconseillee).toBeNull();
   });
 
+  it('la raison écrit l’α qui fait la dose : celui du lot, pour lire « α 9,6 % (lot) » avec « 62 g »', () => {
+    const r = substitutes(K('nugget'), { moment: 'b60', grams: 46, recipe: s1Recipe(), stockFirst: true });
+    const lus = r.remplacants.filter((x) => x.dose.regle === 'même IBU' && hopRef(x.key)!.alpha);
+    // Le témoin porte au moins un lot du stock (Nelson Sauvin, α de l'article) et une plage variétale.
+    expect(lus.filter((x) => hopRef(x.key)!.alpha!.min === hopRef(x.key)!.alpha!.max).length).toBeGreaterThan(0);
+    expect(lus.filter((x) => hopRef(x.key)!.alpha!.min !== hopRef(x.key)!.alpha!.max).length).toBeGreaterThan(0);
+    for (const s of lus) {
+      const ref = hopRef(s.key)!, orig = hopRef(K('nugget'))!;
+      const dit = (a: { value: number; min: number; max: number }) => `${String(Math.round(a.value * 10) / 10).replace('.', ',')} %${a.min === a.max ? ' (lot)' : ''}`;
+      const attendu = `α ${dit(ref.alpha!)} contre ${dit(orig.alpha!)}`;
+      expect(s.raison).toContain(attendu);
+      // Même IBU : dose × α du lot constant (IBU linéaire en α), à l'arrondi près.
+      expect(Math.abs(s.dose.grams * ref.alpha!.value - 46 * orig.alpha!.value) / (46 * orig.alpha!.value)).toBeLessThan(0.01);
+    }
+  });
+
   it('style : une famille indésirable gagnée met le remplaçant en conflit, derrière les autres', () => {
     // Hazy IPA (21C) : herbacé et végétal vert indésirables ; Citra n'en cite aucun.
     const r = substitutes('beermaverick-citra:cryo', { style: getStyleScale('21C') });

@@ -124,6 +124,8 @@ règle `SUBSTITUTION_RANKING` (exportée `RANKING` par le module), testée dans 
   sauf original lui-même aromatique), puis si « en stock d'abord » palier (≥ 80, ≥ 65, ≥ 50) et stock, puis
   score, puis nom.
 - Dose : même IBU au même moment (`ibuPerGram`), plage par l'α du remplaçant ; à froid, masse égale.
+  La raison écrit l'α qui fait la dose : celui du lot quand il est connu (« α 9,6 % (lot) contre 13 % (lot) »
+  avec 62 g), sinon le milieu de la plage variétale ; le score, lui, compare les plages variétales (19.10).
 - Pack : `fichesHoublons[].substitutsCalcules` (top 5 et 3 meilleurs du stock), règle dans
   `pack-fiches.json` → `meta.substitution`.
 - Témoin négatif : `V4_TEMOIN_NEGATIF=substitution` met les poids à zéro ; les témoins de bon sens et la

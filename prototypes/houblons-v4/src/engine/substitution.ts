@@ -233,7 +233,10 @@ function reasonOf(s: Omit<Substitute, 'rank' | 'raison'>, orig: Features, sub: F
     if (lost.length) parts.push(`perd ${names(lost.slice(0, 2))}`);
     if (won.length) parts.push(`gagne ${names(won.slice(0, 2))}`);
   }
-  if (orig.alpha && sub.alpha) parts.push(`α ${fr(mid(sub.alpha))} % contre ${fr(mid(orig.alpha))} %`);
+  // L'α qui fait la dose : celui du lot quand il est connu (sinon le milieu de la plage variétale),
+  // pour que « α 9,6 % (lot) » et « 62 g » se lisent ensemble ; le score, lui, compare les variétés.
+  const alphaDose = (r: HopRef) => r.alpha && `${fr(r.alpha.value)} %${r.alpha.min === r.alpha.max ? ' (lot)' : ''}`;
+  if (orig.alpha && sub.alpha && orig.ref.alpha && sub.ref.alpha) parts.push(`α ${alphaDose(sub.ref)} contre ${alphaDose(orig.ref)}`);
   if (s.conflitsStyle.length) parts.push(`indésirable au style : ${names(s.conflitsStyle)}`);
   if (s.amertumeDeconseillee) parts.push(s.amertumeDeconseillee);
   const text = parts.join(' ; ');
