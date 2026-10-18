@@ -76,6 +76,7 @@ const open = async (id, file) => {
   return page;
 };
 for (const id of ids) {
+  const premiers = [];
   const p = (m) => problems.push(id + ' : ' + m);
   for (const [file, partie] of parties) {
     if (!fs.existsSync(path.join(dir, id, file))) { p('D19 page ' + file + ' absente (partie « ' + partie + ' »)'); continue; }
@@ -109,6 +110,7 @@ for (const id of ids) {
         return {
           objet: radar.getAttribute('data-objet'),
           axes: (radar.getAttribute('data-axes') || '').split(',').map((x) => x.trim()).filter(Boolean),
+          inconnus: [...radar.querySelectorAll('[data-inconnu]')].map((e) => e.getAttribute('data-inconnu')),
           largeur: radar.getBoundingClientRect().width / W,
           series,
           petits: labels.filter((l) => l.fs < 11).map((l) => l.t),
@@ -125,14 +127,19 @@ for (const id of ids) {
       const n = ms.length > 1 ? ' (radar ' + (i + 1) + ')' : '';
       if (m.objet !== objet) p('D18 ' + file + n + ' : le radar montre « ' + m.objet + ' » au lieu de « ' + objet + ' » (objets mélangés)');
       if (!m.axes.length) { q('data-axes absent' + n + ' (familles dessinées, dans l\'ordre)'); continue; }
-      if (m.axes.length < 5) q(m.axes.length + ' axes' + n + ' : un radar en demande au moins 5');
+      // D48 (18.10, soir) : « Il y a pas 12 radar ? » ; « Ni là » (Ma bière à 7 axes, Comparer à
+      // 9) : les 12 familles partout, à la même place ; une famille sans valeur est un secteur
+      // marqué data-inconnu="<famille>" (hachuré), pas un axe retiré.
+      if (m.axes.length !== 12) p('D48 ' + file + n + ' : ' + m.axes.length + ' axes au lieu des 12 familles (une famille sans valeur reste à sa place, en secteur inconnu)');
+      premiers.push(file + n + ' → ' + m.axes[0]);
       if (!ordreRoue(m.axes)) q('axes hors de l\'ordre de la roue des arômes' + n + ' : ' + m.axes.join(','));
       const hors = m.series.filter((s) => s.nom !== 'zone');
       total += hors.length;
       if (hors.length > 2) q(hors.length + ' séries superposées' + n + ' : 2 au plus, petits multiples au-delà');
       for (const s of m.series) {
         if (s.v.length !== m.axes.length) q('série « ' + s.nom + ' »' + n + ' : ' + s.v.length + ' valeurs pour ' + m.axes.length + ' axes');
-        if (s.v.some((x) => x === null)) q('série « ' + s.nom + ' »' + n + ' : valeur vide sur un axe dessiné (polygone cassé ; retirer l\'axe)');
+        const videsNonMarques = m.axes.filter((f, k) => s.v[k] === null && !m.inconnus.includes(f));
+        if (videsNonMarques.length) q('série « ' + s.nom + ' »' + n + ' : valeur vide sans secteur inconnu marqué (data-inconnu) : ' + videsNonMarques.join(', '));
         if (s.v.some((x) => x !== null && (!Number.isFinite(x) || x < minV || x > maxV))) q('série « ' + s.nom + ' »' + n + ' : valeurs hors de ' + minV + ' à ' + maxV);
       }
       if (!hors.some((s) => s.filled)) q('aucune silhouette pleine translucide' + n + ' (opacité de remplissage 0,06 à 0,7)');
@@ -147,6 +154,15 @@ for (const id of ids) {
     }
     if (total < minS || total > maxS) p('D18 ' + file + ' : ' + total + ' série(s) hors zone sur la page, ' + minS + ' à ' + maxS + ' attendues');
   }
+  // D48 (suite) : la fiche aussi, et la même famille en haut de tous les radars de la variante.
+  if (fs.existsSync(path.join(dir, id, 'fiche.html'))) {
+    const page = await open(id, 'fiche.html');
+    const fa = await page.evaluate(() => [...document.querySelectorAll('svg[data-radar]')].filter((s) => s.getBoundingClientRect().width > 0).map((s) => (s.getAttribute('data-axes') || '').split(',').filter(Boolean)));
+    await page.close();
+    for (const a of fa) { if (a.length !== 12) p('D48 fiche.html : ' + a.length + ' axes au lieu des 12 familles'); premiers.push('fiche.html → ' + a[0]); }
+  }
+  const tetes = new Set(premiers.map((x) => x.split(' → ')[1]));
+  if (tetes.size > 1) p('D48 : les radars ne commencent pas par la même famille (' + premiers.join(' ; ') + ') : chaque famille doit rester à sa place');
   console.log(id + ' · parties et radars contrôlés');
 }
 await browser.close();

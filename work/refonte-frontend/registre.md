@@ -150,6 +150,13 @@ Voir `decisions.md` (D1 à D12).
   lot dédié à prévoir. Issue #130 (IBU, houblons libres ou en sac) créée pour après. Lot 4 :
   radars p01–p03, p05–p09 et fiches p08–p09 rentrés LOT OK (commande sans `--recette`, pack
   figé `scratchpad/pack-lot4`). Base consolidée en reprise (`aca844c5cdc3c873d`).
+- **18.10 soir, base v3** (`a6009e3d5c2ba7adf`) : radar unique SVG maison (d3-shape, d3-scale,
+  motion) au style des fiches, fiche p08 greffée (table des moments, roue N/4, feuille,
+  actions), balayage des voies ; contrôle indépendant LOT OK (`--recette --detail --palette
+  --radar --fiche --coherence --objets`) ; copie figée `base/_v3` ; publiée (artifact v3).
+  Refonte du rail en loupe lancée (`a17d51434443f441e`, brief `base/BRIEF-RAIL.md`, contrôle
+  `controle-rail.mjs` réécrit). Leçon : ne committer un dossier qu'une fois son auteur rentré
+  (ca26d69 et f0fe648 ont saisi des états intermédiaires de la v3).
 - **Moteur** (leaf A `a115e8520cde8e241`, réutilisable) : dernier commit `3f973ed2`, pack
   436 ko (plafond 500), `ENGINE-V4 OK (50 tests)`. Contient S1 à S5, crans du style,
   quatre objets, catalogue, achats, goûts, voiesSansHoublon, levure (double impact, leviers,
