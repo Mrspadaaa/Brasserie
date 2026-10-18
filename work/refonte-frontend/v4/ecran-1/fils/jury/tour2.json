@@ -1,0 +1,106 @@
+{
+  "tour": 2,
+  "date": "2026-10-18",
+  "methode": "30 images jugées une à une (R1 réponse la plus rapide, R2 position et geste sans texte, R3 moderne et non surchargé), cle.json lue après les 30 verdicts. Une victoire est constante si les deux ordres donnent le même fil ; sinon égalité.",
+  "brut": {
+    "01": { "R1": "G", "R2": "D", "R3": "G" },
+    "02": { "R1": "G", "R2": "D", "R3": "D" },
+    "03": { "R1": "D", "R2": "D", "R3": "G" },
+    "04": { "R1": "D", "R2": "D", "R3": "D" },
+    "05": { "R1": "G", "R2": "D", "R3": "G" },
+    "06": { "R1": "G", "R2": "G", "R3": "D" },
+    "07": { "R1": "D", "R2": "D", "R3": "G" },
+    "08": { "R1": "D", "R2": "D", "R3": "D" },
+    "09": { "R1": "G", "R2": "D", "R3": "G" },
+    "10": { "R1": "D", "R2": "D", "R3": "G" },
+    "11": { "R1": "D", "R2": "D", "R3": "D" },
+    "12": { "R1": "D", "R2": "D", "R3": "G" },
+    "13": { "R1": "G", "R2": "G", "R3": "D" },
+    "14": { "R1": "G", "R2": "G", "R3": "=" },
+    "15": { "R1": "G", "R2": "G", "R3": "G" },
+    "16": { "R1": "D", "R2": "G", "R3": "D" },
+    "17": { "R1": "D", "R2": "G", "R3": "G" },
+    "18": { "R1": "G", "R2": "G", "R3": "D" },
+    "19": { "R1": "G", "R2": "G", "R3": "G" },
+    "20": { "R1": "=", "R2": "G", "R3": "D" },
+    "21": { "R1": "D", "R2": "D", "R3": "G" },
+    "22": { "R1": "G", "R2": "G", "R3": "D" },
+    "23": { "R1": "G", "R2": "G", "R3": "=" },
+    "24": { "R1": "D", "R2": "G", "R3": "D" },
+    "25": { "R1": "G", "R2": "G", "R3": "D" },
+    "26": { "R1": "G", "R2": "G", "R3": "G" },
+    "27": { "R1": "G", "R2": "G", "R3": "D" },
+    "28": { "R1": "D", "R2": "D", "R3": "G" },
+    "29": { "R1": "D", "R2": "D", "R3": "=" },
+    "30": { "R1": "D", "R2": "D", "R3": "D" }
+  },
+  "par_paire": {
+    "p01-p04": { "R1": "p01", "R2": "p04", "R3": "p01" },
+    "p01-p08": { "R1": "p01", "R2": "p08", "R3": "p08" },
+    "p01-p09": { "R1": "p09", "R2": "p09", "R3": "p01" },
+    "p01-p10": { "R1": "p10", "R2": "p10", "R3": "p10" },
+    "p01-p11": { "R1": "=", "R2": "p11", "R3": "p01" },
+    "p04-p08": { "R1": "p04", "R2": "p04", "R3": "p08" },
+    "p04-p09": { "R1": "p09", "R2": "p09", "R3": "p04" },
+    "p04-p10": { "R1": "p10", "R2": "p10", "R3": "=" },
+    "p04-p11": { "R1": "p04", "R2": "p11", "R3": "p04" },
+    "p08-p09": { "R1": "p09", "R2": "p09", "R3": "p08" },
+    "p08-p10": { "R1": "p10", "R2": "p10", "R3": "p10" },
+    "p08-p11": { "R1": "p11", "R2": "p11", "R3": "p08" },
+    "p09-p10": { "R1": "p09", "R2": "p09", "R3": "p10" },
+    "p09-p11": { "R1": "p09", "R2": "p09", "R3": "=" },
+    "p10-p11": { "R1": "p10", "R2": "p10", "R3": "p10" }
+  },
+  "constants": {
+    "p10": { "victoires": 12, "egalites": 1, "defaites": 2, "par_question": { "R1": 4, "R2": 4, "R3": 4 } },
+    "p09": { "victoires": 10, "egalites": 1, "defaites": 4, "par_question": { "R1": 5, "R2": 5, "R3": 0 } },
+    "p04": { "victoires": 6, "egalites": 1, "defaites": 8, "par_question": { "R1": 2, "R2": 2, "R3": 2 } },
+    "p01": { "victoires": 5, "egalites": 1, "defaites": 9, "par_question": { "R1": 2, "R2": 0, "R3": 3 } },
+    "p08": { "victoires": 5, "egalites": 0, "defaites": 10, "par_question": { "R1": 0, "R2": 1, "R3": 4 } },
+    "p11": { "victoires": 4, "egalites": 2, "defaites": 9, "par_question": { "R1": 1, "R2": 3, "R3": 0 } }
+  },
+  "classement": ["p10", "p09", "p04", "p01", "p08", "p11"],
+  "classement_note": "p01 et p08 à égalité (5 victoires) : p01 devant par moins de défaites (9 contre 10).",
+  "incoherences": 2,
+  "incoherences_detail": {
+    "paires": "2 sur 15 (13 %)",
+    "verdicts": "2 sur 45 (4 %)",
+    "cas": [
+      "p01-p11, R1 : p01 dans un ordre, égalité dans l'autre.",
+      "p04-p10, R3 : p10 dans un ordre, égalité dans l'autre."
+    ]
+  },
+  "biais_position": "Sur 90 verdicts : 43 Gauche, 43 Droite, 4 Égal ; aucun biais de côté visible.",
+  "limites": "Le jury avait vu les 6 fils au tour 1 et les reconnaissait : l'aveugle portait sur la position, pas sur l'identité. Le faible taux d'incohérence mesure la stabilité de ce jugement, pas son exactitude ; les constats du tour 1 (mot « non situé » absent de p10, brouillard de p11) ont pu peser.",
+  "choix_des_trois": {
+    "regle": "Les 3 premiers, à condition que leurs partis diffèrent vraiment ; sinon le suivant.",
+    "examen": [
+      "p10 (1er) : bande du style commune à toutes les familles, en rangées. Retenu.",
+      "p09 (2e) : même parti que p10, la bande commune (« une seule dalle qui traverse les familles »), tourné à la verticale. Remplacé ; ses flèches de visée ▲ ▼ et sa réponse en deux moitiés égales passent dans p10.",
+      "p04 (3e) : une piste par famille, en tuiles, sous un bandeau-réponse. Retenu.",
+      "p01 (4e) : même parti que p04 (bandeau-réponse et une piste par famille), en liste au lieu de tuiles. Écarté.",
+      "p08 (5e) : dialogue, la demande envoyée devient une bulle puis le moteur répond. Parti nouveau, retenu."
+    ],
+    "variante": "Si l'on tient vertical et horizontal pour deux partis distincts, le trio devient p10, p09, p04."
+  },
+  "montrer": [
+    {
+      "id": "p10",
+      "parti": "Rail : une seule bande du style, commune à toutes les familles ; la réponse en titre.",
+      "reussit": "Seul fil qui gagne sur les trois questions (12 victoires constantes, 4 par question) : la colonne commune dit d'un coup qui est dans la bande et qui en sort, la réponse en titre se lit en premier, peu de chrome.",
+      "a_corriger": "État A à moitié vide à remplir, mot « non situé » à remettre sur résineux, « Moins résineux : aucune voie » au même poids que l'autre moitié (comme p09), flèches de visée ▲ ▼ à reprendre de p09, mini-jauge IBU lisible."
+    },
+    {
+      "id": "p04",
+      "parti": "Tuiles : bandeau-réponse noir, une tuile par famille avec sa propre piste.",
+      "reussit": "La réponse en deux moitiés égales dans un bandeau noir ; la sortie de bande de résineux est marquée par la seule couleur d'accent, visible sans lire ; registre des références claires (tuiles, grands rayons).",
+      "a_corriger": "Tuiles creuses (nom en haut, piste en bas, vide entre) à compacter, état A vide sous les puces, piste à bord net qui se lit comme une barre de progression : dessiner la bande comme une plage bornée, pas un remplissage."
+    },
+    {
+      "id": "p08",
+      "parti": "Dialogue : la lecture est la première réplique, la demande devient une bulle, le moteur répond par les voies.",
+      "reussit": "Le plus fort en R3 (4 victoires) : compact et dense en B sans surcharge ; la demande envoyée reste visible ; l'action principale est le seul aplat d'accent en A.",
+      "a_corriger": "La réponse ne ressort jamais (0 victoire en R1) : « 9 non situées » minuscule en A et réponse B au milieu de l'écran, à monter en tête ; sortie de bande de résineux gris sur gris, à marquer d'accent ; état A à moitié vide."
+    }
+  ]
+}

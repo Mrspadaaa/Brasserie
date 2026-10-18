@@ -1,0 +1,994 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Houblons, le relevé</title>
+<style>
+  :root { --encre: #111; --gris: #555; --gris2: #6e6e6e; --trait: #d4d4d4; --fond: #f5f5f5; --fond2: #ebebeb; --bande: #e2e2e2; --acc: #c2410c; --t1: 12px; --t2: 14px; --t3: 18px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; color: var(--encre); }
+  body { font: 400 var(--t2)/1.25 -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  button, input { font: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; min-height: 24px; min-width: 24px; text-align: left; }
+  :focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+  .ecran { width: 100%; max-width: 390px; margin: 0 auto; padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 6px; overflow-x: hidden; }
+  .petit { font-size: var(--t1); }
+  .gris { color: var(--gris2); }
+
+  /* ---------- Étape (modèle Malts) ---------- */
+  .barre { display: flex; align-items: center; gap: 8px; height: 32px; }
+  .retour { width: 28px; height: 28px; position: relative; flex: none; }
+  .retour::before { content: ''; position: absolute; left: 10px; top: 9px; width: 9px; height: 9px; border-left: 2px solid var(--encre); border-bottom: 2px solid var(--encre); transform: rotate(45deg); }
+  .titre { font-size: var(--t3); font-weight: 650; }
+  .style { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px 0 10px; border: 1px solid var(--trait); border-radius: 14px; }
+  .badge { font-size: var(--t1); padding: 2px 7px; border-radius: 10px; background: var(--fond2); color: var(--gris); }
+  .resume { border-radius: 18px !important; display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 2px 12px; min-height: 48px; padding: 6px 14px 4px; border: 1px solid var(--trait); border-radius: 22px; }
+  .resume > div { display: flex; align-items: baseline; gap: 4px; }
+  .resume b { font-size: var(--t3); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .resume .ibu { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 5px; }
+  .cle { font-size: var(--t1); color: var(--gris2); }
+  .delta { font-size: var(--t1); font-weight: 650; }
+  /* Jauge IBU empilée : un segment par ajout, bande du style en dessous (p10). */
+  .pile { grid-column: 1 / -1; position: relative; height: 12px; margin: 2px 0 4px; border-radius: 3px; background: #f0f0f0; }
+  .pile .bd { position: absolute; top: -3px; bottom: -3px; border-left: 1.5px solid var(--encre); border-right: 1.5px solid var(--encre); background: rgba(0,0,0,.05); }
+  .pile .sg { position: absolute; top: 2px; bottom: 2px; background: #3d3d3d; border-right: 1.5px solid #fff; }
+  .pile .sg.n1 { background: #777; } .pile .sg.n2 { background: #a3a3a3; } .pile .sg.n3 { background: #c4c4c4; }
+  .note-ibu { grid-column: 1 / -1; font-size: var(--t1); color: var(--acc); font-weight: 600; }
+
+  /* Frise : le temps de la recette, de l'ébullition à la fermentation (greffe p10). */
+  .frise { position: relative; display: flex; flex-direction: column; gap: 5px; }
+  .frise .axe { position: absolute; left: 47px; top: 14px; bottom: 14px; width: 2px; background: #cfcfcf; }
+  .noeud { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 2px; align-items: start; }
+  .rl { display: flex; align-items: center; justify-content: flex-end; gap: 4px; height: 36px; position: relative; z-index: 1; }
+  .rl .pt { width: 12px; height: 12px; margin-right: 1px; border-radius: 6px; background: #fff; border: 2px solid var(--encre); flex: none; }
+  .noeud.vide .rl .pt { border-style: dashed; border-color: var(--gris2); }
+  .noeud.ferm .rl .pt { background: var(--encre); }
+  .rl .quand { font-size: var(--t1); font-weight: 650; white-space: nowrap; min-height: 28px; padding: 0 2px; display: inline-flex; align-items: center; gap: 1px; }
+  .rl .quand.tourne::after { content: '⟳'; font-weight: 400; color: var(--gris2); font-size: var(--t1); }
+  .noeud > .champ { margin-top: 3px; }
+  .carte { background: var(--fond); border-radius: 12px; padding: 5px 8px 6px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .r1, .r2 { display: flex; align-items: center; gap: 6px; min-height: 30px; }
+  .r1 .nom { font-weight: 650; white-space: nowrap; }
+  .puce { display: inline-flex; align-items: center; gap: 3px; height: 28px; padding: 0 8px; border: 1px solid var(--trait); border-radius: 14px; background: #fff; white-space: nowrap; font-size: var(--t1); }
+  .puce.tourne::after { content: '⟳'; color: var(--gris2); }
+  .sepq::before { content: ' · '; }
+  .aere .r1, .aere .r2 { min-height: 36px; }
+  .aere .carte { padding: 7px 8px 8px; }
+  .cite { font-size: var(--t1); padding: 1px 7px; border-radius: 9px; border: 1px solid var(--acc); color: var(--acc); font-weight: 600; white-space: nowrap; }
+  .ibu-l { white-space: nowrap; } .ibu-l b { font-weight: 650; }
+  .taux { font-size: var(--t1); color: var(--gris2); white-space: nowrap; }
+  .st { font-size: var(--t1); white-space: nowrap; color: var(--gris2); }
+  .st.s-stock { display: none; }
+  .exc { font-size: var(--t1); color: var(--gris2); white-space: nowrap; font-weight: 400; }
+  .exc::before { content: ''; display: inline-block; width: 5px; height: 5px; border-radius: 3px; border: 1px solid var(--gris2); margin-right: 4px; vertical-align: 1px; }
+  .vide-t { font-size: var(--t1); color: var(--gris); }
+  .dose-c { font-size: var(--t1); color: var(--gris2); white-space: nowrap; }
+  .pas { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; }
+  .moins, .plus { width: 28px; height: 28px; border-radius: 14px; border: 1px solid var(--trait); background: #fff; position: relative; flex: none; }
+  .moins::before, .plus::before, .plus::after { content: ''; position: absolute; left: 8px; top: 12.5px; width: 10px; height: 1.6px; background: var(--encre); }
+  .plus::after { transform: rotate(90deg); }
+  .dose { min-width: 40px; text-align: center; font-weight: 650; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .x { width: 24px; height: 24px; position: relative; flex: none; }
+  .x::before, .x::after { content: ''; position: absolute; left: 6px; top: 11px; width: 12px; height: 1.6px; background: var(--gris2); transform: rotate(45deg); }
+  .x::after { transform: rotate(-45deg); }
+  .bio { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: var(--t1); padding-top: 2px; border-top: 1px dashed var(--trait); }
+  .bio b { font-weight: 650; }
+  .sig { padding: 1px 6px; border-radius: 9px; border: 1px solid var(--gris2); color: var(--gris); }
+  .sig.ne { border-style: dashed; }
+  .ajout-rap { display: flex; flex-direction: column; gap: 3px; }
+  .g-tete { display: flex; align-items: center; gap: 6px; }
+  .g-tete .quand-g { font-weight: 650; white-space: nowrap; }
+  .dose-c { font-weight: 400; }
+  
+  .champ { flex: 1; min-width: 0; height: 30px; padding: 0 10px; border: 1px solid var(--trait); border-radius: 10px; background: #fff; }
+  .champ::placeholder { color: var(--gris2); }
+  .bascule { display: inline-flex; padding: 2px; border-radius: 14px; background: var(--fond2); }
+  .bascule span { height: 24px; padding: 0 9px; display: inline-flex; align-items: center; border-radius: 12px; font-size: var(--t1); color: var(--gris); }
+  .bascule span.on { background: #fff; color: var(--encre); font-weight: 650; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+  .rap { display: grid; grid-template-columns: 1fr auto; gap: 4px; align-items: center; }
+  .ajout { height: 44px; display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 0 8px 0 5px; border-radius: 10px; background: var(--fond); }
+  .ajout .nb { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .ajout .nb2 { display: flex; align-items: center; gap: 6px; min-height: 12px; }
+  .sgn { display: inline-flex; gap: 1px; } .sgn i { width: 7px; height: 7px; border-radius: 1px; background: #e2e2e2; } .sgn i.c1 { background: #a8a8a8; } .sgn i.c2 { background: #3d3d3d; } .sgn i.sep { margin-left: 3px; } .sgn i.acc.c1, .sgn i.acc.c2 { background: var(--acc); }
+  .ajout b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ajout .ib { font-weight: 650; white-space: nowrap; }
+  .ajout .ib .n::before { content: '+'; }
+  .ajout .ib .dz { font-weight: 400; color: var(--gris); font-size: var(--t1); }
+  .ajout .ib { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
+  .ajout:has(.dz):has(.exc) { height: 50px; }
+  .ajout .ib .dz::after { content: ' →'; }
+  .plus-i { width: 22px; height: 22px; border-radius: 11px; background: var(--encre); position: relative; }
+  .plus-i::before, .plus-i::after { content: ''; position: absolute; left: 6px; top: 10.2px; width: 10px; height: 1.6px; background: #fff; }
+  .plus-i::after { transform: rotate(90deg); }
+  .conf { font-size: var(--t1); color: var(--acc); }
+  .gout { display: inline-flex; gap: 2px; }
+  .gout button { width: 26px; height: 26px; border-radius: 13px; border: 1px solid var(--trait); background: #fff; position: relative; }
+  .g-ex::before { content: ''; position: absolute; left: 6px; top: 6px; width: 10px; height: 10px; border-radius: 6px; border: 1.6px solid var(--gris2); }
+  .g-ex::after { content: ''; position: absolute; left: 6px; top: 11.5px; width: 13px; height: 1.6px; background: var(--gris2); transform: rotate(-45deg); }
+  .g-aime::before { content: '♡'; position: absolute; inset: 0; display: grid; place-items: center; color: var(--gris2); font-size: var(--t2); line-height: 1; }
+  .g-aime[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); }
+  .g-aime[aria-pressed="true"]::before { content: '♥'; color: #fff; }
+  .g-ex[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); }
+  .g-ex[aria-pressed="true"]::before { border-color: #fff; } .g-ex[aria-pressed="true"]::after { background: #fff; }
+  .aime-t { font-size: var(--t1); color: var(--gris); }
+  .exclus { display: flex; flex-wrap: wrap; gap: 4px; }
+  .ex-chip { font-size: var(--t1); height: 24px; padding: 0 8px; border-radius: 12px; border: 1px dashed var(--gris2); color: var(--gris); text-decoration: line-through; }
+  .levure { display: flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--trait); }
+  .levure b { font-weight: 650; }
+  .fente { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 10px; border: 1px dashed var(--trait); color: var(--gris2); font-size: var(--t1); }
+  .achats { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; min-height: 34px; padding: 4px 10px; border-radius: 10px; border: 1px solid var(--trait); width: 100%; }
+  .achats b { font-weight: 650; }
+  .achats .chev::after, .lecture .chev::after { content: '›'; color: var(--gris2); font-size: var(--t3); }
+  .achats ul { grid-column: 1 / -1; list-style: none; display: flex; flex-direction: column; gap: 2px; font-size: var(--t1); }
+  .lecture { width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 6px 10px 8px; border-radius: 14px; background: var(--fond); }
+  .l-tete { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .l-tete b { font-weight: 650; }
+  .trop { color: var(--acc); font-weight: 650; }
+  .trop::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 4px; background: var(--acc); vertical-align: 1px; }
+  .cpt { color: var(--gris); }
+  .l-tete { position: relative; padding-right: 18px; align-items: baseline; }
+  .l-tete .l-cpt { margin: 0; }
+  .l-cpt { display: flex; gap: 10px; font-size: var(--t1); color: var(--gris); margin-top: -2px; }
+  .l-cpt span + span::before { content: '·'; margin-right: 10px; }
+  .l-tete .chev { position: absolute; right: 0; top: -2px; }
+  .effet { font-size: var(--t1); color: var(--encre); font-weight: 600; }
+  .mini { display: block; }
+  .l-tab { display: flex; flex-direction: column; }
+  .l-r { display: grid; grid-template-columns: 1fr 196px 22px; align-items: center; height: 20px; }
+  .l-r.sep { margin-top: 4px; }
+  .l-r .att { font-weight: 650; } .l-r .acc { color: var(--acc); }
+  .l-r i { justify-self: center; width: 8px; height: 8px; border-radius: 4px; background: #a3a3a3; }
+  .l-r i.e-ns { background: none; border: 1.5px dashed #7a7a7a; width: 10px; height: 10px; }
+  .l-r i.e-trop { background: var(--acc); width: 10px; height: 10px; }
+  .l-rangs { display: grid; grid-template-columns: 1fr; row-gap: 2px; }
+  .l-rang { display: grid; grid-template-columns: 1fr 150px; align-items: center; height: 28px; }
+  .l-rang .att { font-weight: 650; } .l-rang .acc { color: var(--acc); font-weight: 650; }
+  .l-autres { display: flex; gap: 6px; justify-content: flex-end; align-items: center; height: 18px; }
+  .l-autres i { width: 10px; height: 10px; border-radius: 5px; background: #a3a3a3; }
+  .l-autres i.ns { background: none; border: 1.5px dashed #7a7a7a; }
+
+  /* ---------- Panneau d'analyse : trois parties ---------- */
+  .p-tete { display: flex; align-items: center; gap: 6px; height: 36px; }
+  .onglets { display: flex; padding: 2px; border-radius: 16px; background: var(--fond2); }
+  .onglets button { height: 30px; padding: 0 10px; border-radius: 14px; color: var(--gris); white-space: nowrap; }
+  .onglets button[aria-selected="true"] { background: #fff; color: var(--encre); font-weight: 650; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+  .lentille { margin-left: auto; display: inline-flex; padding: 2px; border-radius: 16px; background: var(--fond2); }
+  .lentille i { width: 30px; height: 30px; border-radius: 14px; display: grid; place-items: center; }
+  .lentille i.on { background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+  .lentille svg { display: block; }
+  .outils { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-height: 30px; }
+  .src { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 9px; border-radius: 14px; border: 1px solid var(--trait); font-size: var(--t1); }
+  .src[aria-pressed="true"] { border-color: var(--encre); background: var(--encre); color: #fff; }
+  .src i { width: 10px; height: 10px; border-radius: 5px; border: 2px solid currentColor; }
+  .src i.plein { background: currentColor; }
+  .src i.ns { border-style: dashed; }
+  /* Tableau des familles (âme de p3) */
+  .tab { display: flex; flex-direction: column; }
+  .t-tete { display: grid; grid-template-columns: 84px 184px 1fr; height: 18px; align-items: end; font-size: var(--t1); color: var(--gris2); white-space: nowrap; }
+  .t-tete span:nth-child(2) { text-align: center; }
+  .ctx { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; min-height: 34px; padding: 3px 8px; border-radius: 10px; background: var(--fond); font-size: var(--t1); }
+  .ctx b { font-size: var(--t2); font-weight: 650; margin-right: 4px; }
+  .ctx span { padding: 2px 8px; border-radius: 10px; background: #fff; border: 1px solid var(--trait); }
+  .rang { display: grid; grid-template-columns: 84px 1fr 44px; align-items: center; height: 46px; border-bottom: 1px solid #efefef; }
+  .rang.att .fn { font-weight: 650; }
+  .rang.sep { margin-top: 6px; }
+  .rang.terne { opacity: .25; }
+  .fn { text-align: left; height: 46px; display: flex; align-items: center; gap: 4px; }
+  .fn.acc { color: var(--acc); }
+  .piste { position: relative; height: 46px; touch-action: none; }
+  .piste svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .etat { display: grid; place-items: center; }
+  .etat .p-trop { font-size: var(--t1); color: #fff; background: var(--acc); padding: 2px 7px; border-radius: 10px; font-weight: 650; }
+  .etat .p-ok { width: 8px; height: 8px; border-radius: 4px; background: #a3a3a3; }
+  .etat .p-ns { width: 12px; height: 12px; border-radius: 6px; border: 1.5px dashed #7a7a7a; }
+  .detail { font-size: var(--t1); color: var(--gris); padding: 2px 0 6px 84px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--trait); background: #fff; font-weight: 600; white-space: nowrap; }
+  .chip.plus-d::before { content: '+ '; } .chip.moins-d::before { content: '− '; } .chip.autre::before { content: '+ …'; color: var(--gris2); }
+  .chip[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: #fff; }
+  .hors { font-size: var(--t1); color: var(--acc); font-weight: 650; }
+
+  /* Relevé en colonnes (suggestions et comparer) : une colonne par objet, comme des analyses successives */
+  .rep { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .rep button { min-height: 50px; padding: 4px 10px; border-radius: 12px; background: var(--fond); display: flex; flex-direction: column; justify-content: center; gap: 1px; }
+  .rep button b { font-weight: 650; }
+  .rep button span { font-size: var(--t1); color: var(--gris); }
+  .rep button[aria-pressed="true"] { background: var(--encre); color: #fff; }
+  .rep button[aria-pressed="true"] span { color: #ddd; }
+  .mat { display: grid; grid-template-columns: 64px 54px repeat(3, minmax(0, 1fr)); column-gap: 3px; }
+  .mat.c4 { grid-template-columns: 66px repeat(4, minmax(0, 1fr)); }
+  .mat > div { min-width: 0; }
+  .ct { display: flex; flex-direction: column; gap: 3px; padding: 5px 4px 6px; border-radius: 10px 10px 0 0; background: var(--fond); }
+  .ct.av { background: none; justify-content: flex-end; }
+  .ct .hn { display: flex; align-items: center; gap: 3px; font-weight: 650; white-space: nowrap; overflow: hidden; }
+  .ct .hn span { overflow: hidden; text-overflow: ellipsis; }
+  .ct .md { font-size: var(--t1); color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 3px; }
+  .ct .st { align-self: flex-start; }
+  .ct .ic { display: flex; gap: 2px; }
+  .ct { position: relative; }
+  
+  .mat.c4 .cn, .mat.c4 .cc { height: 44px; }
+  .mat .cn.ibu-r, .mat .cc.ibu-r { height: 44px; }
+  .ct .md.fx { display: flex; align-items: center; justify-content: space-between; }
+  .ct.pin { box-shadow: inset 0 0 0 1.5px var(--encre); }
+  .op { width: 14px; height: 14px; border-radius: 7px; border: 1.5px solid var(--encre); position: relative; flex: none; }
+  .op::before { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--t1); line-height: 1; }
+  .op-Ajouter::before, .op-Assembler::before { content: '+'; } .op-Remplacer::before { content: '⇄'; } .op-Diminuer::before, .op-Retirer::before { content: '−'; }
+  .op-lev::before { content: '✻'; }
+  .cn { font-weight: 650; display: flex; align-items: center; height: 52px; border-bottom: 1px solid #efefef; white-space: nowrap; overflow: hidden; }
+  .cn.n { font-weight: 400; }
+  .cn.att { background: linear-gradient(90deg, #ececec, #fff); padding-left: 4px; }
+  .cc { display: flex; align-items: center; gap: 3px; height: 52px; padding: 0 4px; border-bottom: 1px solid #efefef; }
+  .cc.v { background: #fafafa; }
+  .cc .dl { font-size: var(--t1); font-weight: 650; }
+  .cc .dl.ap { color: var(--gris2); font-weight: 400; }
+  .cc .nm { font-size: var(--t1); color: var(--gris2); }
+  .cc.ibu-r { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .cn.ibu-r { color: var(--gris2); font-weight: 400; }
+  .ne-row { grid-column: 3 / -1; display: flex; align-items: center; justify-content: center; height: 52px; font-size: var(--t1); color: var(--gris2); border-bottom: 1px solid #efefef; background: repeating-linear-gradient(135deg, #fff 0 5px, #f3f3f3 5px 10px); }
+  .ns-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; height: 30px; color: var(--gris); font-size: var(--t1); }
+  .ns-row i { width: 12px; height: 12px; border-radius: 6px; border: 1.5px dashed #7a7a7a; }
+  .rail { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .rail button { flex: none; height: 34px; padding: 0 10px; border-radius: 15px; border: 1px solid var(--trait); white-space: nowrap; font-size: var(--t1); }
+  .rail button.lev { border-style: dashed; }
+  .rail.choix { align-items: center; }
+  .cpt-c { font-size: var(--t1); font-weight: 650; padding: 0 4px; }
+  .plus-c::before { content: '+ '; }
+  .plus-c:disabled { opacity: .45; }
+  .cartes { display: grid; gap: 3px; margin-top: 4px; } .cartes.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .cartes.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cartes .ct { border-radius: 10px; }
+  .series { display: flex; flex-direction: column; gap: 4px; }
+  .hautes .sr { min-height: 78px; }
+  .sr { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px; min-height: 60px; padding: 4px 8px; border-radius: 12px; background: var(--fond); }
+  .sr > svg { display: none; }
+  .sr:not(:has(.sr-b)) { grid-template-columns: 16px 1fr; }
+  .sr:not(:has(.sr-b)) > svg { display: block; }
+  .sr.on { box-shadow: inset 0 0 0 1.5px var(--encre); background: #fff; }
+  .sr-b { display: grid; grid-template-columns: 16px 1fr; gap: 8px; align-items: center; min-height: 44px; }
+  .sr-c { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .sr-c b { font-weight: 650; }
+  .sr-d { font-size: var(--t1); color: var(--gris); display: flex; flex-wrap: wrap; gap: 0 4px; }
+  .sr-d span + span::before { content: '· '; }
+  .series .sr-d { flex-direction: column; }
+  .series .sr-d span + span::before { content: none; }
+  .sr-x { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .liste-h { display: flex; flex-direction: column; gap: 2px; font-size: var(--t1); padding: 4px 0; }
+  .dots { display: inline-flex; gap: 2px; }
+  .dots i { width: 9px; height: 9px; border-radius: 5px; background: var(--encre); }
+  .dots i.vide { background: #fff; border: 1.5px solid #9a9a9a; }
+  .dots i.nd { background: #fff; border: 1.5px dashed #9a9a9a; }
+  /* Radar */
+  .r-ser { display: flex; gap: 4px; flex-wrap: wrap; }
+  .r-ser button { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 9px; border-radius: 14px; border: 1px solid var(--trait); font-size: var(--t1); white-space: nowrap; }
+  .r-ser button[aria-pressed="false"] { opacity: .45; text-decoration: line-through; }
+  .r-ser svg { display: block; }
+  #radar { display: block; margin: 0 auto; }
+  .vide-t { font-size: var(--t1); color: var(--gris); padding: 8px 0; }
+  @media (prefers-reduced-motion: no-preference) { .rang, .cc, .ligne { transition: opacity .2s; } }
+</style>
+</head>
+<body>
+<main id="app" class="ecran"></main>
+<script>
+const D = {"scen":"S4","nom":"Stout export (nouvelle)","og":"1,066","ebc":70,"volume":20,"style":{"code":"16D","ibu":[50,70]},"ibuNote":"il manque l’amertume","familles":[{"id":"floral","nom":"Floral","long":"Floral","attendue":true},{"id":"herbal","nom":"Herbacé","long":"Herbacé aromatique","attendue":true},{"id":"earthy","nom":"Terreux","long":"Terreux","attendue":true},{"id":"citrus","nom":"Agrumes","long":"Agrumes","attendue":false},{"id":"tropical","nom":"Tropicaux","long":"Fruits tropicaux","attendue":false},{"id":"stoneFruit","nom":"Noyau","long":"Fruits à noyau","attendue":false},{"id":"pomeFruit","nom":"Pépins","long":"Pomme et poire","attendue":false},{"id":"berries","nom":"Baies","long":"Petits fruits","attendue":false},{"id":"melon","nom":"Melon","long":"Melon","attendue":false},{"id":"resin","nom":"Résineux","long":"Boisé et résineux","attendue":false},{"id":"spice","nom":"Épicé","long":"Épicé","attendue":false},{"id":"green","nom":"Végétal","long":"Végétal vert","attendue":false}],"lignes":[],"rapides":{"stock":[{"nom":"Motueka","cle":"beermaverick-motueka","moment":"b60","quand":"60′","g":74.2,"ibu":60,"statut":"manque","libre":20,"conflit":[],"fiche":[1,0,0,2,1,0,0,0,0,0,0,0],"par":{"fwh":{"ibu":66,"g":0.89},"b60":{"ibu":60,"g":0.81},"b30":{"ibu":46.1,"g":0.62},"b15":{"ibu":29.8,"g":0.4},"b10":{"ibu":21.8,"g":0.29},"b5":{"ibu":12,"g":0.16},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.12},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Cascade","cle":"beermaverick-cascade","moment":"b60","quand":"60′","g":92.4,"ibu":60,"statut":"manque","libre":60,"conflit":[],"fiche":[1,1,0,2,0,0,0,1,0,1,1,0],"par":{"fwh":{"ibu":66,"g":0.71},"b60":{"ibu":60,"g":0.65},"b30":{"ibu":46.1,"g":0.5},"b15":{"ibu":29.8,"g":0.32},"b10":{"ibu":21.8,"g":0.24},"b5":{"ibu":12,"g":0.13},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.1},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Target","cle":"beermaverick-target","moment":"b60","quand":"60′","g":53.2,"ibu":60,"statut":"manque","libre":5,"conflit":[],"fiche":[1,2,0,2,0,0,0,0,0,2,1,0],"par":{"fwh":{"ibu":66.1,"g":1.24},"b60":{"ibu":60,"g":1.13},"b30":{"ibu":46.1,"g":0.87},"b15":{"ibu":29.8,"g":0.56},"b10":{"ibu":21.8,"g":0.41},"b5":{"ibu":12,"g":0.23},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.17},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Citra cryo","cle":"beermaverick-citra:cryo","moment":"b60","quand":"60′","g":24.2,"ibu":59.9,"statut":"en stock","libre":65,"conflit":[],"fiche":[1,0,0,2,1,1,0,0,1,0,0,0],"par":{"fwh":{"ibu":65.9,"g":2.72},"b60":{"ibu":59.9,"g":2.48},"b30":{"ibu":46.1,"g":1.9},"b15":{"ibu":29.7,"g":1.23},"b10":{"ibu":21.7,"g":0.9},"b5":{"ibu":12,"g":0.49},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.38},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Sabro","cle":"beermaverick-sabro","moment":"b60","quand":"60′","g":44.8,"ibu":60,"statut":"manque","libre":30,"conflit":[],"fiche":[0,1,0,2,1,1,0,0,0,1,0,0],"par":{"fwh":{"ibu":66,"g":1.47},"b60":{"ibu":60,"g":1.34},"b30":{"ibu":46.1,"g":1.03},"b15":{"ibu":29.8,"g":0.66},"b10":{"ibu":21.7,"g":0.49},"b5":{"ibu":12,"g":0.27},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.2},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Idaho 7","cle":"beermaverick-idaho-7","moment":"b60","quand":"60′","g":47.3,"ibu":60,"statut":"manque","libre":20,"conflit":[],"fiche":[1,1,1,1,1,1,0,2,0,1,0,0],"par":{"fwh":{"ibu":66,"g":1.4},"b60":{"ibu":60,"g":1.27},"b30":{"ibu":46.1,"g":0.97},"b15":{"ibu":29.8,"g":0.63},"b10":{"ibu":21.8,"g":0.46},"b5":{"ibu":12,"g":0.25},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.19},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Nelson Sauvin","cle":"beermaverick-nelson-sauvin","moment":"b60","quand":"60′","g":62.6,"ibu":60,"statut":"en stock","libre":100,"conflit":[],"fiche":[0,0,0,1,0,0,0,0,0,0,1,0],"par":{"fwh":{"ibu":66,"g":1.05},"b60":{"ibu":60,"g":0.96},"b30":{"ibu":46.1,"g":0.74},"b15":{"ibu":29.8,"g":0.48},"b10":{"ibu":21.8,"g":0.35},"b5":{"ibu":12,"g":0.19},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.15},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Galaxy","cle":"beermaverick-galaxy","moment":"b60","quand":"60′","g":34.9,"ibu":60,"statut":"en stock","libre":60,"conflit":[],"fiche":[0,0,0,1,2,1,0,0,0,0,0,0],"par":{"fwh":{"ibu":66,"g":1.89},"b60":{"ibu":60,"g":1.72},"b30":{"ibu":46.1,"g":1.32},"b15":{"ibu":29.8,"g":0.85},"b10":{"ibu":21.7,"g":0.62},"b5":{"ibu":12,"g":0.34},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.26},"dryActive":null,"dryPost":null},"voie":null},{"nom":"Hallertau Blanc","cle":"beermaverick-hallertau-blanc","moment":"b60","quand":"60′","g":63.2,"ibu":60,"statut":"manque","libre":30,"conflit":[],"fiche":[0,0,0,1,2,0,0,1,0,0,1,0],"par":{"fwh":{"ibu":66,"g":1.04},"b60":{"ibu":60,"g":0.95},"b30":{"ibu":46.1,"g":0.73},"b15":{"ibu":29.8,"g":0.47},"b10":{"ibu":21.7,"g":0.34},"b5":{"ibu":12,"g":0.19},"b0":{"ibu":0,"g":0},"wp":{"ibu":9.1,"g":0.14},"dryActive":null,"dryPost":null},"voie":null}],"racheter":[{"nom":"East Kent Goldings","cle":"beermaverick-east-kent-goldings","moment":"b60","quand":"60′","g":109.2,"ibu":60,"statut":"à racheter","libre":0,"conflit":[],"fiche":[2,1,1,1,0,0,0,0,0,0,2,0],"par":{},"voie":null},{"nom":"Fuggle","cle":"beermaverick-fuggle","moment":"b60","quand":"60′","g":133.5,"ibu":60,"statut":"à racheter","libre":0,"conflit":[],"fiche":[0,2,1,0,0,0,0,0,0,2,1,2],"par":{},"voie":null},{"nom":"Simcoe","cle":"beermaverick-simcoe","moment":"b60","quand":"60′","g":46.2,"ibu":60,"statut":"à racheter","libre":0,"conflit":[],"fiche":[0,0,1,1,1,1,0,1,0,1,0,0],"par":{},"voie":null},{"nom":"Lotus","cle":"beermaverick-lotus","moment":"b60","quand":"60′","g":40,"ibu":59.9,"statut":"à racheter","libre":0,"conflit":[],"fiche":[1,0,0,2,2,0,0,2,0,0,0,0],"par":{},"voie":null},{"nom":"Nugget","cle":"beermaverick-nugget","moment":"b60","quand":"60′","g":46.2,"ibu":60,"statut":"à racheter","libre":0,"conflit":[],"fiche":[2,2,1,1,2,0,0,0,0,2,2,0],"par":{},"voie":null},{"nom":"Ariana","cle":"beermaverick-ariana","moment":"b60","quand":"60′","g":52.2,"ibu":60,"statut":"à racheter","libre":0,"conflit":[],"fiche":[2,1,0,2,2,1,1,2,0,1,0,0],"par":{},"voie":null},{"nom":"Nectaron","cle":"beermaverick-nectaron","moment":"b60","quand":"60′","g":54.6,"ibu":60,"statut":"à racheter","libre":0,"conflit":[],"fiche":[0,0,0,1,2,1,0,0,0,0,0,0],"par":{},"voie":null}],"acheter":[{"nom":"Saaz Late","cle":"beermaverick-saaz-late","moment":"b60","quand":"60′","g":126.5,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Spalt","cle":"beermaverick-spalt","moment":"b60","quand":"60′","g":146.5,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Whitbread Golding Variety (WGV)","cle":"beermaverick-whitbread-golding-variety-wgv","moment":"b60","quand":"60′","g":91.7,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Pahto","cle":"beermaverick-pahto","moment":"b60","quand":"60′","g":32.5,"ibu":60.1,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Wild Wolf","cle":"beermaverick-wild-wolf","moment":"b60","quand":"60′","g":72.8,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Yakima Cluster","cle":"beermaverick-yakima-cluster","moment":"b60","quand":"60′","g":84.6,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Marco Polo","cle":"beermaverick-marco-polo","moment":"b60","quand":"60′","g":48.1,"ibu":60.1,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Sun","cle":"beermaverick-sun","moment":"b60","quand":"60′","g":42.9,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Teamaker","cle":"beermaverick-teamaker","moment":"b60","quand":"60′","g":500.6,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null},{"nom":"Ultra","cle":"beermaverick-ultra","moment":"b60","quand":"60′","g":94.6,"ibu":60,"statut":"à acheter","libre":0,"conflit":[],"fiche":null,"par":{},"voie":null}]},"achats":{"liste":[]},"profil":[{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":0,"display":"≈ 0","source":"modèle","approx":true},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false},{"crans":null,"display":"non situé","source":"non situé","approx":false}],"cible":[{"statut":"attendue","bande":[0,3],"visee":null},{"statut":"attendue","bande":[0,3],"visee":null},{"statut":"attendue","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null},{"statut":"neutre","bande":[0,3],"visee":null}],"degustation":null,"resume":{"trop":0,"auStyle":1,"nonSitue":11,"phrase":"1 au style · 11 non situées"},"levure":{"nom":"SafAle US-05","statut":"caractérisée"},"signaux":{},"notes":{"voies":"Pas de voie : aucune dégustation ni direction ; commencer par l’amertume (ajouts rapides).","profil":"Rien de dégusté (jamais brassée) ; sans houblon, le modèle ne voit que le fond de levure US-05."},"moments":[{"code":"fwh","type":"premier moût","quand":"premier moût"},{"code":"b60","type":"ébullition","quand":"60′"},{"code":"b30","type":"ébullition","quand":"30′"},{"code":"b15","type":"ébullition","quand":"15′"},{"code":"b10","type":"ébullition","quand":"10′"},{"code":"b5","type":"ébullition","quand":"5′"},{"code":"b0","type":"ébullition","quand":"0′"},{"code":"wp","type":"whirlpool","quand":"80 °C"},{"code":"dryActive","type":"à froid","quand":"en fermentation"},{"code":"dryPost","type":"à froid","quand":"après fermentation"}],"gouts":{"aime":[],"exclut":[]},"fiches":[{"nom":"Nugget","niv":[{"n":2,"s":2,"m":4},{"n":2,"s":2,"m":4},{"n":1,"s":1,"m":4},{"n":1,"s":1,"m":4},{"n":2,"s":2,"m":4},{"n":0,"s":0,"m":4},{"n":0,"s":0,"m":4},{"n":0,"s":0,"m":4},{"n":0,"s":0,"m":4},{"n":2,"s":2,"m":4},{"n":2,"s":1,"m":4},{"n":0,"s":0,"m":4}],"cle":"beermaverick-nugget"},{"nom":"Ariana","niv":[{"n":2,"s":2,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":2,"s":2,"m":2},{"n":1,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":2,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-ariana"},{"nom":"Fuggle","niv":[{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":1,"s":1,"m":2},{"n":2,"s":2,"m":2}],"cle":"beermaverick-fuggle"},{"nom":"Hallertau Blanc","niv":[{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":2,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-hallertau-blanc"},{"nom":"Idaho 7","niv":[{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":2,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1}],"cle":"beermaverick-idaho-7"},{"nom":"Lotus","niv":[{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":2,"s":2,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-lotus"},{"nom":"Nectaron","niv":[{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":2,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1}],"cle":"beermaverick-nectaron"},{"nom":"Simcoe","niv":[{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1}],"cle":"beermaverick-simcoe"},{"nom":"Cascade","niv":[{"n":1,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-cascade"},{"nom":"Target","niv":[{"n":1,"s":1,"m":2},{"n":2,"s":2,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-target"},{"nom":"East Kent Goldings","niv":[{"n":2,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":1,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-east-kent-goldings"},{"nom":"Galaxy","niv":[{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":2,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1}],"cle":"beermaverick-galaxy"},{"nom":"Nelson Sauvin","niv":[{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-nelson-sauvin"},{"nom":"Sabro","niv":[{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":2,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1}],"cle":"beermaverick-sabro"},{"nom":"Motueka","niv":[{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":2,"s":2,"m":2},{"n":1,"s":1,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2},{"n":0,"s":0,"m":2}],"cle":"beermaverick-motueka"},{"nom":"Citra cryo","niv":[{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":2,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":1,"s":1,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1},{"n":0,"s":0,"m":1}],"cle":"beermaverick-citra:cryo"}],"stockG":{"Ariana":0,"Fuggle":0,"Hallertau Blanc":30,"Idaho 7":20,"Lotus":0,"Nectaron":0,"Simcoe":0,"Cascade":60,"Target":5,"East Kent Goldings":0,"Galaxy":60,"Nelson Sauvin":100,"Sabro":30,"Motueka":20,"Citra cryo":65,"Nugget":0}};
+const PAGE = {"scen":"S4","vue":"etape","fichier":"cas-k2.html"};
+/* Logique commune de p08 et p09 (lot 3, variantes de p3). Données : D (pack, un scénario),
+   PAGE (vue de départ). Aucun chiffre du moteur n'est calculé ici : IBU d'une ligne = IBU du
+   pack pour ce moment, mis à l'échelle de la dose (Tinseth est linéaire en masse) ; total =
+   somme des lignes ; crans, deltas et fiches viennent tels quels du pack. */
+const ACC = '#c2410c';
+const NS = 'http://www.w3.org/2000/svg';
+const $ = (s, r) => (r || document).querySelector(s);
+const ORD = D.familles.map((f) => f.id);
+const FAM = Object.fromEntries(D.familles.map((f, i) => [f.id, { ...f, i }]));
+const virg = (n, d = 1) => String(Math.round(n * 10 ** d) / 10 ** d).replace('.', ',');
+const ibuTxt = (v) => (v == null ? null : Math.abs(v) >= 1 || v === 0 ? String(Math.round(v)) : virg(v, 1));
+
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) {
+    const v = attrs[k];
+    if (v === false || v == null) continue;
+    if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false && k !== '') e.append(k instanceof Node ? k : String(k));
+  return e;
+}
+function sv(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs || {}) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* ---- Recette : types d'ajout et moments (liste canonique du pack) ---- */
+const MOM = Object.fromEntries(D.moments.map((m, i) => [m.code, { ...m, i }]));
+const TYPES = ['ébullition', 'whirlpool', 'à froid', 'premier moût'];
+const PREMIER = { 'ébullition': 'b60', whirlpool: 'wp', 'à froid': 'dryActive', 'premier moût': 'fwh' };
+const EBU = ['b60', 'b30', 'b15', 'b10', 'b5', 'b0'];
+function nouvelleLigne(src, id) {
+  return { id, nom: src.nom, cle: src.cle, moment: src.moment, g: src.g, g0: src.g, jour: src.jour || null, par: src.par, stock: src.stock, cite: src.cite || [], signaux: src.signaux || null, ajout: !!src.ajout, voie: src.voie ?? null };
+}
+const typeDe = (l) => MOM[l.moment].type;
+function cycleType(l) {
+  const t = TYPES[(TYPES.indexOf(typeDe(l)) + 1) % TYPES.length];
+  l.moment = PREMIER[t]; l.jour = null;
+}
+function cycleQuand(l) {
+  const t = typeDe(l);
+  if (t === 'ébullition') l.moment = EBU[(EBU.indexOf(l.moment) + 1) % EBU.length];
+  else if (t === 'à froid') { l.moment = l.moment === 'dryActive' ? 'dryPost' : 'dryActive'; l.jour = null; }
+}
+/* Texte du moment : le jour (J+3) puis le moment, séparés par un point dessiné en CSS. */
+const quandEl = (l) => (l.jour && typeDe(l) === 'à froid' ? [l.jour, h('span', { class: 'sepq' }, MOM[l.moment].quand)] : MOM[l.moment].quand);
+/* Recette chargée : on garde la place pour les ajouts (moins de détails autour). */
+const compact = (lignes) => lignes.length >= 4;
+/* Ce qui distingue chaque série d'un radar (sans calcul du moteur : on lit, on compare). */
+function ceQuiDistingueBiere() {
+  const n = (i) => FAM[ORD[i]].nom.toLowerCase();
+  const hors = ORD.map((id, i) => i).filter((i) => D.profil[i].crans != null && D.profil[i].crans > D.cible[i].bande[1]);
+  const ns = ORD.map((id, i) => i).filter((i) => D.profil[i].crans == null);
+  return { hors: hors.map((i) => n(i) + ' au-dessus' + (D.profil[i].source === 'dégustation' ? ', dégusté ' + D.degustation : '')), ns: ns.map(n), att: ORD.map((id, i) => i).filter((i) => FAM[ORD[i]].attendue).map(n) };
+}
+function viseesTxt(visee) {
+  return ORD.map((id, i) => [i, visee[id]]).filter(([, v]) => v != null).map(([i, v]) => {
+    const p = D.profil[i].crans;
+    return FAM[ORD[i]].nom.toLowerCase() + (p == null ? '' : v > p ? ' ↑' : v < p ? ' ↓' : ' =') + (v > D.cible[i].bande[1] ? ' hors style' : '');
+  });
+}
+const deltasVoie = (v) => v.apres.map((a, i) => [FAM[ORD[i]].nom.toLowerCase(), a.delta]).filter(([, d]) => typeof d === 'number' && d !== 0).map(([n, d]) => n + ' ' + (d > 0 ? '+' : '−') + Math.abs(d));
+function distingueHoublon(f, hs) {
+  const autres = hs.filter((x) => x !== f);
+  const seul = ORD.map((id, i) => i).filter((i) => f.niv[i].n > 0 && autres.every((x) => x.niv[i].n < f.niv[i].n)).map((i) => FAM[ORD[i]].nom.toLowerCase());
+  const marque = ORD.map((id, i) => i).filter((i) => f.niv[i].n === 2).map((i) => FAM[ORD[i]].nom.toLowerCase());
+  return { seul, marque };
+}
+const quandTxt = (l) => (l.jour && typeDe(l) === 'à froid' ? l.jour : MOM[l.moment].quand);
+function ibuLigne(l) {
+  const p = l.par && l.par[l.moment];
+  return p ? p.ibu * l.g / l.g0 : null;
+}
+const parG = (l) => { const p = l.par && l.par[l.moment]; return p ? p.g : null; };
+const totalIbu = (lignes) => lignes.reduce((s, l) => s + (ibuLigne(l) || 0), 0);
+const masse = (lignes) => lignes.reduce((s, l) => s + l.g, 0);
+
+/* ---- Houblons : origine (recette, stock, à racheter, à acheter) ---- */
+function origine(nom, lignes) {
+  if (lignes.some((l) => l.nom === nom)) return 'recette';
+  if (nom in D.stockG) return D.stockG[nom] > 0 ? 'en stock' : 'à racheter';
+  return 'à acheter';
+}
+const ficheDe = (nom) => D.fiches.find((f) => f.nom === nom) || null;
+
+/* ---- Voies (objet 4) : liste du moteur ; un houblon exclu fait reprendre la liste
+   recalculée du pack (voiesSansHoublon). ---- */
+function cleSans(nom) {
+  if (!D.sansHoublon) return null;
+  if (D.sansHoublon[nom]) return nom;
+  const k = Object.keys(D.sansHoublon).find((x) => nom.startsWith(x + ' ') || x.startsWith(nom));
+  return k || null;
+}
+const utilise = (v, e) => (v.houblons || []).some((hb) => hb === e || hb.startsWith(e + ' ') || e.startsWith(hb + ' '));
+function voiesPour(dir, exclus) {
+  if (!D.voies) return [];
+  let liste = D.voies.slice();
+  for (const e of exclus) {
+    const k = cleSans(e);
+    const sans = k ? D.sansHoublon[k] : null;
+    liste = liste.filter((v) => !(sans && sans.retirees.includes(v.rang)) && !utilise(v, e));
+    if (sans) for (const n of sans.nouvelles) {
+      const nom = n.label.split(' · ')[0].split(' ').slice(1).join(' ');
+      if ([...exclus].some((x) => nom.includes(x))) continue;
+      liste.splice(Math.min(n.rang - 1, liste.length), 0, { rang: 'n' + n.rang, label: n.label, nouvelle: true, verbe: n.label.split(' ')[0], houblons: [nom], floral: /^(Ajouter|Assembler)/.test(n.label), resine: /^(Remplacer|Diminuer|Retirer)/.test(n.label) });
+    }
+  }
+  if (dir === 'levure') return liste.filter((v) => v.levier && !v.floral && !v.resine);
+  return liste.filter((v) => (dir === 'floral' ? v.floral : v.resine));
+}
+
+/* ---- Radar commun : 12 axes dans l'ordre du style, échelle du pack (crans 0–4 ou
+   citations 0–2). Le 0 est posé sur un petit anneau, jamais au centre ; « non situé »
+   (vide) ne trace aucun sommet. ---- */
+const TRAITS = [
+  { c: '#111', w: 2.2, dash: null, m: 'rond' },
+  { c: ACC, w: 2.2, dash: null, m: 'creux' },
+  { c: '#5c5c5c', w: 1.6, dash: '5 3', m: 'carre' },
+  { c: '#8a8a8a', w: 1.6, dash: '2 3', m: 'tri' },
+];
+function radar(svg, o) {
+  svg.innerHTML = '';
+  svg.setAttribute('data-radar', '');
+  svg.setAttribute('data-objet', o.objet);
+  const N = 12, R = o.R, R0 = R * 0.17, cx = o.cx, cy = o.cy;
+  const rad = (v) => R0 + (v / o.max) * (R - R0);
+  const ang = (i) => -Math.PI / 2 + (i * 2 * Math.PI) / N;
+  const P = (i, v) => [cx + Math.cos(ang(i)) * rad(v), cy + Math.sin(ang(i)) * rad(v)];
+  const poly = (v) => Array.from({ length: N }, (_, i) => P(i, v).map((x) => x.toFixed(1)).join(',')).join(' ');
+  const fond = sv('g', {}, svg);
+  if (o.bande) {
+    // Zone du style : de 0 au haut de la bande ; au-dessus : anneau extérieur en tirets.
+    sv('polygon', { points: poly(o.max), fill: '#fff', stroke: '#bdbdbd', 'stroke-dasharray': '3 3' }, fond);
+  }
+  for (let v = 0; v <= o.max; v++) sv('polygon', { points: poly(v), fill: 'none', stroke: '#e3e3e3' }, fond);
+  for (let i = 0; i < N; i++) {
+    const a = P(i, 0), b = P(i, o.max);
+    sv('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: o.noms[i].gras ? '#c4c4c4' : '#e3e3e3', 'stroke-width': o.noms[i].gras ? 1.6 : 1 }, fond);
+  }
+  // Noms des familles autour.
+  o.noms.forEach((n, i) => {
+    const a = ang(i), q = [cx + Math.cos(a) * (R + 14), cy + Math.sin(a) * (R + 14)];
+    const t = sv('text', { x: q[0], y: q[1] + 4, 'font-size': o.fs || 12, 'text-anchor': Math.abs(Math.cos(a)) < 0.3 ? 'middle' : Math.cos(a) > 0 ? 'start' : 'end', fill: n.acc ? ACC : '#111', 'font-weight': n.gras ? 650 : 400 }, svg);
+    t.textContent = n.nom;
+    if (n.onclick) { t.setAttribute('role', 'button'); t.setAttribute('tabindex', '0'); t.style.cursor = 'pointer'; t.addEventListener('click', n.onclick); }
+  });
+  if (o.repere) {
+    const a = ang(5.5), rr = rad(o.max - 0.4);
+    const t = sv('text', { x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr + 4, 'font-size': o.fs || 12, fill: '#6e6e6e', 'text-anchor': 'middle' }, svg);
+    t.textContent = o.repere;
+  }
+  const ordre = [...o.series.entries()].sort((a, b) => (b[1].zone ? 1 : 0) - (a[1].zone ? 1 : 0));
+  for (const [k, s] of ordre) {
+    const g = sv('g', { 'data-serie': s.nom, 'data-valeurs': s.valeurs.map((v) => (v == null ? '' : v)).join(',') }, svg);
+    if (s.cache) { g.setAttribute('opacity', 0.08); }
+    else if (o.isole && o.isole !== s.nom && !s.zone) g.setAttribute('opacity', 0.18);
+    const tr = s.trait || TRAITS[k % TRAITS.length];
+    if (s.zone) {
+      // La série « cible » se dessine comme la zone du style.
+      const pts = s.valeurs.map((v, i) => P(i, v == null ? 0 : v).map((x) => x.toFixed(1)).join(',')).join(' ');
+      sv('polygon', { points: pts, fill: '#e9e9e9', stroke: '#8f8f8f', 'stroke-width': 1.2 }, g);
+      continue;
+    }
+    if (s.losanges) {
+      s.valeurs.forEach((v, i) => {
+        if (v == null) return;
+        const p = P(i, v);
+        sv('path', { d: `M${p[0]},${p[1] - 7}L${p[0] + 7},${p[1]}L${p[0]},${p[1] + 7}L${p[0] - 7},${p[1]}Z`, fill: '#fff', stroke: v > (o.bande ? o.bande[1] : 99) ? ACC : '#111', 'stroke-width': 2 }, g);
+      });
+      continue;
+    }
+    const v = s.valeurs;
+    if (v.every((x) => x != null) && s.rempli) sv('polygon', { points: v.map((x, i) => P(i, x).join(',')).join(' '), fill: tr.c, 'fill-opacity': 0.08, stroke: 'none' }, g);
+    for (let i = 0; i < N; i++) {
+      const j = (i + 1) % N;
+      if (v[i] == null || v[j] == null) continue;
+      const a = P(i, v[i]), b = P(j, v[j]);
+      sv('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: tr.c, 'stroke-width': tr.w, 'stroke-dasharray': tr.dash, 'stroke-linecap': 'round' }, g);
+    }
+    v.forEach((x, i) => {
+      if (x == null) {
+        if (s.nonSitue) { const p = P(i, o.max * 0.5); sv('circle', { cx: p[0], cy: p[1], r: 5, fill: 'none', stroke: '#8a8a8a', 'stroke-dasharray': '2 2' }, g); }
+        return;
+      }
+      const p = P(i, x), r = 4.2;
+      const hors = o.bande && x > o.bande[1];
+      const c = hors && k === 0 ? ACC : tr.c;
+      if (tr.m === 'rond') sv('circle', { cx: p[0], cy: p[1], r, fill: s.creux && s.creux[i] ? '#fff' : c, stroke: c, 'stroke-width': 2 }, g);
+      else if (tr.m === 'creux') sv('circle', { cx: p[0], cy: p[1], r, fill: '#fff', stroke: c, 'stroke-width': 2 }, g);
+      else if (tr.m === 'carre') sv('rect', { x: p[0] - r + 0.5, y: p[1] - r + 0.5, width: 2 * r - 1, height: 2 * r - 1, fill: '#fff', stroke: c, 'stroke-width': 1.8 }, g);
+      else sv('path', { d: `M${p[0]},${p[1] - r - 1}L${p[0] + r},${p[1] + r - 1}L${p[0] - r},${p[1] + r - 1}Z`, fill: '#fff', stroke: c, 'stroke-width': 1.8 }, g);
+    });
+  }
+}
+
+/* ================= p08 « Le relevé » ================= */
+const ST = {
+  vue: PAGE.vue, partie: PAGE.partie || 'biere', lentille: PAGE.lentille || 'barres',
+  lignes: D.lignes.map((l) => nouvelleLigne(l, l.id)), n: 0,
+  filtre: 'tout', gout: {}, achats: false, effet: null, ibuAvant: null,
+  src: null, ouverte: null,
+  visee: Object.fromEntries(D.cible.map((c, i) => [ORD[i], c.visee]).filter(([, v]) => v != null)),
+  dirs: new Set((D.directions || []).map((d) => d.id)), reponse: 'floral', epingle: null, hors: false, leviers: false,
+  comparer: ['Nugget', 'Motueka', 'Citra cryo', 'East Kent Goldings'], choix: false, cachees: new Set(),
+};
+for (const n of D.gouts.exclut) ST.gout[n] = 'exclu';
+for (const n of D.gouts.aime) ST.gout[n] = 'aime';
+const exclus = () => new Set(Object.keys(ST.gout).filter((k) => ST.gout[k] === 'exclu'));
+const app = $('#app');
+function rendre() {
+  const y = window.scrollY;
+  app.innerHTML = '';
+  if (ST.vue === 'etape') vueEtape(); else vuePanneau();
+  window.scrollTo(0, y);
+}
+const stCls = (s) => (s === 'en stock' ? 's-stock' : /^manque/.test(s) ? 's-manque' : 's-achat');
+
+/* ---------- Gestes de goût : aimer / exclure, là où un houblon apparaît ---------- */
+function gout(nom) {
+  const g = ST.gout[nom];
+  return h('span', { class: 'gout' },
+    h('button', { class: 'g-ex', 'data-role': 'gout', 'data-booster': 'goût', 'aria-pressed': String(g === 'exclu'), 'aria-label': (g === 'exclu' ? 'Ne plus exclure ' : 'Exclure ') + nom + ' (mes goûts)', onclick: (e) => { e.stopPropagation(); ST.gout[nom] = g === 'exclu' ? undefined : 'exclu'; if (!ST.gout[nom]) delete ST.gout[nom]; rendre(); } }),
+    h('button', { class: 'g-aime', 'data-role': 'gout', 'aria-pressed': String(g === 'aime'), 'aria-label': (g === 'aime' ? 'Ne plus aimer ' : 'Aimer ') + nom + ' (mes goûts)', onclick: (e) => { e.stopPropagation(); if (g === 'aime') delete ST.gout[nom]; else ST.gout[nom] = 'aime'; rendre(); } }));
+}
+function exclusChips() {
+  const ex = [...exclus()];
+  if (!ex.length) return null;
+  return h('div', { class: 'exclus' }, ex.map((n) => h('button', { class: 'ex-chip', 'aria-label': 'Ne plus exclure ' + n, onclick: () => { delete ST.gout[n]; rendre(); } }, n)));
+}
+
+/* ---------- Étape Houblons ---------- */
+function vueEtape() {
+  app.append(
+    h('header', { class: 'barre' },
+      h('button', { class: 'retour', 'aria-label': 'Retour à l\'étape Malts' }),
+      h('span', { class: 'titre' }, 'Houblons'), h('span', { class: 'gris' }, '3/7'),
+      h('button', { class: 'style', 'aria-label': 'Style 16D, échelles hypothétiques à valider ; changer de bière' }, D.style.code, h('span', { class: 'badge' }, 'hypothèse'))),
+    resume(), frise(), lecture());
+}
+function resume() {
+  const tot = totalIbu(ST.lignes), [lo, hi] = D.style.ibu, max = 90;
+  const pile = h('span', { class: 'pile', role: 'meter', 'aria-label': 'IBU ' + Math.round(tot) + ' face à la bande du style ' + lo + ' à ' + hi + ', un segment par ajout', 'aria-valuemin': 0, 'aria-valuemax': max, 'aria-valuenow': Math.round(tot) });
+  pile.append(h('i', { class: 'bd', style: `left:${(lo / max) * 100}%;width:${((hi - lo) / max) * 100}%` }));
+  let x = 0;
+  ST.lignes.forEach((l, k) => { const v = ibuLigne(l) || 0; if (!v) return; pile.append(h('i', { class: 'sg n' + Math.min(k, 3), style: `left:${(x / max) * 100}%;width:${(Math.min(v, max - x) / max) * 100}%` })); x += v; });
+  const d = ST.ibuAvant != null ? Math.round(tot) - Math.round(ST.ibuAvant) : 0;
+  return h('div', { class: 'resume', role: 'group', 'aria-label': 'Résumé de la recette' },
+    h('div', { class: 'ibu' }, h('span', { class: 'cle' }, 'IBU'), h('b', { 'aria-live': 'polite' }, String(Math.round(tot)))),
+    h('div', {}, h('span', { class: 'cle' }, 'OG'), h('b', {}, D.og)),
+    h('div', {}, h('span', { class: 'cle' }, 'EBC'), h('b', {}, String(D.ebc))),
+    h('div', {}, h('b', {}, virg(masse(ST.lignes), 1)), h('span', { class: 'cle' }, 'g')),
+    d ? h('span', { class: 'delta', style: 'grid-column:1/-1' }, (d > 0 ? '+' : '−') + Math.abs(d) + ' IBU') : null,
+    pile,
+    !ST.lignes.length && D.ibuNote ? h('span', { class: 'note-ibu' }, D.ibuNote) : null);
+}
+/* Libellé du rail : le moment de l'ajout (60′, 10′, 80 °C, J+3…). */
+function railTxt(l) {
+  const t = typeDe(l);
+  if (t === 'à froid') return l.jour || (l.moment === 'dryActive' ? 'actif' : 'après');
+  if (t === 'premier moût') return '1er moût';
+  return MOM[l.moment].quand;
+}
+/* Le stock n'informe que par l'exception (D23) : rien pour « en stock ». */
+function stockExc(s, manque, libre) {
+  if (!s || s === 'en stock') return null;
+  if (s === 'manque') return h('span', { class: 'exc' }, manque ? 'manque ' + manque + ' g' : 'manque');
+  return h('span', { class: 'exc' }, s);
+}
+function ligneEl(l) {
+  const ibu = ibuLigne(l), t = typeDe(l), pg = parG(l);
+  const avant = () => { ST.ibuAvant = ST.ibuAvant ?? totalIbu(ST.lignes); ST.effet = 'non établi'; };
+  return h('article', { class: 'noeud ligne' + (compact(ST.lignes) ? ' aere' : ''), 'data-role': 'ligne-houblon' },
+    h('span', { class: 'rl' }, h('button', { class: 'quand' + (t === 'ébullition' || t === 'à froid' ? ' tourne' : ''), 'data-role': 'quand', 'data-booster': 'moment', 'aria-label': 'Moment : ' + quandTxt(l) + ' ; toucher pour changer', onclick: () => { avant(); cycleQuand(l); rendre(); } }, railTxt(l)), h('i', { class: 'pt' })),
+    h('div', { class: 'carte' },
+      h('div', { class: 'r1' },
+        h('span', { class: 'nom' }, l.nom),
+        h('button', { class: 'puce tourne', 'data-role': 'type-ajout', 'data-booster': 'type d\'ajout', 'aria-label': 'Type d\'ajout : ' + t + ' ; toucher pour changer', onclick: () => { avant(); cycleType(l); rendre(); } }, t),
+        l.cite.map((c) => h('span', { class: 'cite' }, c)),
+        h('button', { class: 'x', 'aria-label': 'Retirer ' + l.nom, onclick: () => { avant(); ST.lignes = ST.lignes.filter((x) => x !== l); rendre(); } })),
+      h('div', { class: 'r2' },
+        h('span', { class: 'ibu-l' }, ibu == null ? 'sans IBU' : [h('b', {}, ibuTxt(ibu)), ' IBU']),
+        pg && !compact(ST.lignes) ? h('span', { class: 'taux' }, virg(pg, 2) + '/g') : null,
+        t === 'à froid' ? h('span', { class: 'taux' }, l.moment === 'dryActive' ? 'fermentation active' : 'après fermentation') : null,
+        stockExc(l.stock.statut, l.stock.manque, l.stock.libre),
+        h('span', { class: 'pas' },
+          h('button', { class: 'moins', 'aria-label': 'Moins 5 g de ' + l.nom, onclick: () => { avant(); l.g = Math.max(5, l.g - 5); rendre(); } }),
+          h('span', { class: 'dose' }, virg(l.g, 1) + ' g'),
+          h('button', { class: 'plus', 'data-booster': 'dose au pas', 'aria-label': 'Plus 5 g de ' + l.nom, onclick: () => { avant(); l.g += 5; rendre(); } }))),
+      // Biotransformation (D22) : sur l'ajout à froid en fermentation active, signaux sans chiffre.
+      l.moment === 'dryActive' ? h('div', { class: 'bio', 'data-role': 'biotransformation' },
+        h('b', {}, 'biotransformation possible, non quantifiée'),
+        (l.signaux || []).map((s) => h('span', { class: 'sig' + (s.statut === 'possible' ? '' : ' ne'), title: s.statut }, s.titre))) : null));
+}
+function signature(niv) {
+  if (!niv) return null;
+  return h('span', { class: 'sgn', 'aria-hidden': 'true' }, niv.map((n, i) => h('i', { class: 'c' + n + (i === 3 ? ' sep' : '') + (D.profil[i] && D.profil[i].crans > D.cible[i].bande[1] ? ' acc' : '') })));
+}
+/* Ajouts proposés : du stock d'abord, puis un à racheter et un à acheter (le stock ne limite pas). */
+function rapidesVisibles() {
+  const ex = exclus(), dans = new Set(ST.lignes.map((l) => l.nom));
+  const ok = (r) => !ex.has(r.nom) && !dans.has(r.nom);
+  const nb = Math.max(2, 5 - ST.lignes.length);
+  const st = D.rapides.stock.filter(ok), autres = [D.rapides.racheter.filter(ok)[0], D.rapides.acheter.filter(ok)[0]].filter(Boolean);
+  return [...st.slice(0, Math.max(1, nb - autres.length)), ...autres].slice(0, nb);
+}
+function ajouter(r) {
+  ST.ibuAvant = totalIbu(ST.lignes);
+  ST.lignes.push(nouvelleLigne({ ...r, stock: { statut: r.statut, libre: r.libre }, ajout: true }, 'n' + ++ST.n));
+  ST.effet = r.voie ? { voie: r.voie, nom: r.nom } : 'non établi';
+  rendre();
+}
+function groupeRapides() {
+  const champ = h('input', { class: 'champ', type: 'text', placeholder: 'Ajouter — houblon…', 'aria-label': 'Ajouter un houblon' });
+  if (compact(ST.lignes)) return h('div', { class: 'noeud vide' }, h('span', { class: 'rl' }, h('i', { class: 'pt' })), champ);
+  const liste = rapidesVisibles();
+  const quand = (liste[0] || D.rapides.stock[0] || {}).quand || '';
+  const commune = liste.length > 0 && liste.every((r) => r.g === liste[0].g);
+  return h('div', { class: 'noeud vide' }, h('span', { class: 'rl' }, h('span', { class: 'quand' }, quand), h('i', { class: 'pt' })),
+    h('div', { class: 'ajout-rap', 'aria-label': 'Ajouter en un toucher' },
+      h('div', { class: 'g-tete' }, commune ? h('span', { class: 'dose-c' }, virg(liste[0].g) + ' g') : null, champ),
+      liste.map((r) => h('div', { class: 'rap' },
+        h('button', { class: 'ajout', 'data-role': 'ajout-rapide', 'data-booster': 'ajout rapide', 'aria-label': 'Ajouter ' + r.nom + ' à ' + r.quand + ', ' + virg(r.g) + ' g, plus ' + ibuTxt(r.ibu) + ' IBU' + (r.statut === 'en stock' ? '' : ', ' + r.statut), onclick: () => ajouter(r) },
+          h('i', { class: 'plus-i' }), h('span', { class: 'nb' }, h('b', {}, r.nom, ST.gout[r.nom] === 'aime' ? h('span', { class: 'aime-t' }, ' aimé') : null),
+            signature(r.fiche)),
+          h('span', { class: 'ib' }, commune ? null : h('span', { class: 'dz' }, virg(r.g) + ' g'), h('span', { class: 'n' }, ibuTxt(r.ibu) + ' IBU'), r.conflit.length ? h('span', { class: 'conf' }, r.conflit[0]) : stockExc(r.statut))),
+        gout(r.nom))),
+      exclusChips()));
+}
+function frise() {
+  const lignes = ST.lignes.slice().sort((a, b) => MOM[a.moment].i - MOM[b.moment].i);
+  const momR = (D.rapides.stock[0] || D.rapides.racheter[0] || {}).moment || 'b10';
+  const sec = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, rangés sous leur moment, de l\'ébullition à la fermentation' }, h('i', { class: 'axe' }));
+  let posee = false;
+  const chaud = lignes.filter((l) => typeDe(l) !== 'à froid'), froid = lignes.filter((l) => typeDe(l) === 'à froid');
+  for (const l of chaud) {
+    if (!posee && MOM[l.moment].i > MOM[momR].i) { sec.append(groupeRapides()); posee = true; }
+    sec.append(ligneEl(l));
+  }
+  if (!posee) sec.append(groupeRapides());
+  if (!lignes.some((l) => typeDe(l) === 'whirlpool')) sec.append(h('div', { class: 'noeud vide' }, h('span', { class: 'rl' }, h('i', { class: 'pt' })), h('div', { class: 'fente' }, 'whirlpool')));
+  // La levure ouvre la fermentation : les ajouts à froid se rangent dessous (D22).
+  sec.append(h('div', { class: 'noeud ferm' }, h('span', { class: 'rl' }, h('i', { class: 'pt' })),
+    h('div', { class: 'levure', 'data-role': 'levure', 'aria-label': 'Levure de la recette : ' + D.levure.nom + ', ' + D.levure.statut }, h('b', {}, D.levure.nom), h('span', { class: 'gris petit' }, D.levure.statut))));
+  for (const l of froid) sec.append(ligneEl(l));
+  if (!froid.length) sec.append(h('div', { class: 'noeud vide' }, h('span', { class: 'rl' }, h('i', { class: 'pt' })), h('div', { class: 'fente' }, 'à froid')));
+  return sec;
+}
+/* Petit relevé : 12 colonnes, la zone du style et ma bière, sans libellé (coup d'œil). */
+function miniReleve(w, ht) {
+  const s = sv('svg', { class: 'mini', width: w, height: ht || 48, viewBox: `0 0 ${w} 40`, preserveAspectRatio: 'none', 'aria-hidden': 'true' });
+  const cw = (w - 11 * 4) / 12;
+  ORD.forEach((id, i) => {
+    const x = i * (cw + 4) + (i >= 3 ? 0 : 0), p = D.profil[i], c = D.cible[i];
+    const y = (k) => 36 - k * 7.5;
+    sv('rect', { x, y: y(4) - 2, width: cw, height: 7.5 + 2, fill: '#fff', stroke: '#cfcfcf', 'stroke-dasharray': '2 2' }, s);
+    sv('rect', { x, y: y(c.bande[1]) - 2, width: cw, height: (c.bande[1] - c.bande[0]) * 7.5 + 4, fill: FAM[id].attendue ? '#d0d0d0' : '#e6e6e6', rx: 2 }, s);
+    if (p.crans == null) sv('rect', { x: x + 2, y: y(3), width: cw - 4, height: 22, fill: 'none', stroke: '#8a8a8a', 'stroke-dasharray': '2 2', rx: 2 }, s);
+    else sv('circle', { cx: x + cw / 2, cy: y(p.crans), r: 4, fill: p.source === 'dégustation' ? (p.crans > c.bande[1] ? ACC : '#111') : '#fff', stroke: p.crans > c.bande[1] ? ACC : '#111', 'stroke-width': 1.8 }, s);
+  });
+  return s;
+}
+function miniPiste(i, W, H) {
+  const p = D.profil[i], c = D.cible[i], vi = ST.visee[ORD[i]], cw = W / 5, cy = H / 2;
+  const s = sv('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, 'aria-hidden': 'true' });
+  sv('rect', { x: 4 * cw + 1, y: cy - 5, width: cw - 2, height: 10, rx: 2, fill: '#fff', stroke: '#c9c9c9', 'stroke-dasharray': '2 2' }, s);
+  sv('rect', { x: 1, y: cy - 5, width: (c.bande[1] + 1) * cw - 2, height: 10, rx: 2, fill: FAM[ORD[i]].attendue ? '#d6d6d6' : '#e2e2e2' }, s);
+  const X = (k) => k * cw + cw / 2;
+  if (p.crans == null) sv('rect', { x: 1, y: cy - 5, width: 5 * cw - 2, height: 10, rx: 2, fill: 'url(#brume)' }, s);
+  if (vi != null && p.crans != null && vi !== p.crans) sv('line', { x1: X(p.crans), x2: X(vi), y1: cy, y2: cy, stroke: '#111', 'stroke-width': 1.2, 'stroke-dasharray': '2 2' }, s);
+  if (p.crans != null) { const hors = p.crans > c.bande[1]; sv('circle', { cx: X(p.crans), cy, r: 5, fill: p.source === 'dégustation' ? (hors ? ACC : '#111') : '#fff', stroke: hors ? ACC : '#111', 'stroke-width': 1.8 }, s); }
+  if (vi != null) sv('path', { d: `M${X(vi)},${cy - 6}L${X(vi) + 6},${cy}L${X(vi)},${cy + 6}L${X(vi) - 6},${cy}Z`, fill: 'none', stroke: vi > c.bande[1] ? ACC : '#111', 'stroke-width': 1.6 }, s);
+  return s;
+}
+function lectureRangs() {
+  // Recette chargée jamais située : le petit relevé des 12 familles suffit (l'écran reste d'un tenant).
+  if (compact(ST.lignes) && D.profil.every((p) => p.crans == null)) return h('span', { class: 'l-rangs' }, brume(), miniReleve(338, 76));
+  return h('span', { class: 'l-tab' }, brume(), ORD.map((id, i) => {
+    const p = D.profil[i], hors = p.crans != null && p.crans > D.cible[i].bande[1];
+    return h('span', { class: 'l-r' + (i === 3 ? ' sep' : '') },
+      h('span', { class: FAM[id].attendue ? 'att' : hors ? 'acc' : '' }, FAM[id].nom),
+      miniPiste(i, 196, 16),
+      h('i', { class: p.crans == null ? 'e-ns' : hors ? 'e-trop' : 'e-ok', 'aria-label': p.crans == null ? 'non situé' : hors ? 'trop' : 'au style' }));
+  }));
+}
+function lecture() {
+  const trop = ORD.filter((id, i) => D.profil[i].crans != null && D.profil[i].crans > D.cible[i].bande[1]);
+  let effet = null;
+  if (ST.effet && ST.effet !== 'non établi') {
+    const v = D.voies.find((x) => x.rang === ST.effet.voie);
+    const ds = v.apres.map((a, i) => [FAM[ORD[i]].nom.toLowerCase(), a.delta]).filter(([, d]) => typeof d === 'number' && d !== 0);
+    effet = 'Après ' + ST.effet.nom + ' : ' + ds.map(([n, d]) => n + ' ' + (d > 0 ? '+' : '−') + Math.abs(d) + (Math.abs(d) > 1 ? ' crans' : ' cran')).join(' · ');
+  } else if (ST.effet === 'non établi') effet = 'Effet du changement : non établi';
+  return h('button', { class: 'lecture', 'data-role': 'panneau', 'data-booster': 'ouvrir panneau', 'aria-label': 'Ma bière face au style : ouvrir l\'analyse', onclick: () => { ST.vue = 'panneau'; ST.partie = 'biere'; rendre(); window.scrollTo(0, 0); } },
+    h('span', { class: 'l-tete' }, h('b', {}, 'Ma bière'),
+      h('span', { class: 'l-cpt' }, D.resume.trop ? h('span', { class: 'trop' }, D.resume.trop + ' trop') : null, D.resume.auStyle ? h('span', {}, D.resume.auStyle + ' au style') : null, D.resume.nonSitue ? h('span', {}, D.resume.nonSitue + ' non situées') : null),
+      h('span', { class: 'chev' })),
+    lectureRangs(),
+    effet ? h('span', { class: 'effet', 'aria-live': 'polite' }, effet) : null);
+}
+
+/* ---------- Panneau : tête commune (onglets, lentille) ---------- */
+const ICO = {
+  barres: () => { const s = sv('svg', { width: 18, height: 18, viewBox: '0 0 18 18' }); [[2, 4, 12], [2, 9, 8], [2, 14, 14]].forEach(([x, y, w]) => sv('rect', { x, y: y - 1.5, width: w, height: 3, rx: 1.5, fill: '#111' }, s)); return s; },
+  radar: () => { const s = sv('svg', { width: 18, height: 18, viewBox: '0 0 18 18' }); sv('polygon', { points: '9,1.5 16,6.5 13.5,15.5 4.5,15.5 2,6.5', fill: 'none', stroke: '#111', 'stroke-width': 1.5 }, s); sv('polygon', { points: '9,6 12,8.5 11,12 7,12 6,8.5', fill: '#111' }, s); return s; },
+};
+function vuePanneau() {
+  const tabs = [['biere', 'Ma bière'], ['suggestions', 'Suggestions'], ['comparer', 'Comparer']];
+  app.append(h('div', { class: 'p-tete' },
+    h('button', { class: 'retour', 'aria-label': 'Retour à l\'étape Houblons', onclick: () => { ST.vue = 'etape'; rendre(); } }),
+    h('div', { class: 'onglets', role: 'tablist', 'aria-label': 'Parties du panneau d\'analyse' },
+      tabs.map(([k, t]) => h('button', { role: 'tab', 'aria-selected': String(ST.partie === k), 'data-booster': ST.partie === k ? null : 'onglet', onclick: () => { ST.partie = k; rendre(); } }, t))),
+    h('button', { class: 'lentille', role: 'switch', 'aria-checked': String(ST.lentille === 'radar'), 'aria-label': 'Lentille : barres ou radar (mêmes données)', 'data-booster': 'lentille radar', onclick: () => { ST.lentille = ST.lentille === 'radar' ? 'barres' : 'radar'; rendre(); } },
+      h('i', { class: ST.lentille === 'barres' ? 'on' : '' }, ICO.barres()), h('i', { class: ST.lentille === 'radar' ? 'on' : '' }, ICO.radar()))));
+  const sec = h('section', { class: 'partie', style: 'display:flex;flex-direction:column;gap:6px', 'data-partie': ST.partie, 'aria-label': tabs.find((t) => t[0] === ST.partie)[1] });
+  app.append(sec);
+  if (ST.partie === 'biere') partieBiere(sec);
+  else if (ST.partie === 'suggestions') partieSuggestions(sec);
+  else partieComparer(sec);
+}
+
+/* ---------- Partie 1 : Ma bière et la cible (objets 1 et 2, en crans du style) ---------- */
+const SRC = { 'dégustation': 'deg', 'modèle': 'mod', 'non situé': 'ns' };
+function sources() {
+  const mk = (k, txt, cls) => h('button', { class: 'src', 'aria-pressed': String(ST.src === k), 'data-booster': k === 'deg' ? 'compteur source' : null, 'aria-label': 'Montrer seulement : ' + txt, onclick: () => { ST.src = ST.src === k ? null : k; rendre(); } }, h('i', { class: cls }), txt);
+  return [mk('deg', 'dégusté ' + (D.degustation || ''), 'plein'), mk('mod', 'prévu', ''), mk('ns', 'non situé', 'ns')].filter((b) => !(b.textContent.startsWith('dégusté') && !D.degustation));
+}
+function piste(i) {
+  const id = ORD[i], p = D.profil[i], c = D.cible[i], vi = ST.visee[id];
+  const box = h('div', { class: 'piste', role: 'slider', tabindex: 0, 'aria-label': 'Ma visée en ' + FAM[id].long + ' (crans du style)', 'aria-valuemin': 0, 'aria-valuemax': 4, 'aria-valuenow': vi ?? '', 'aria-valuetext': vi == null ? 'aucune visée' : vi > c.bande[1] ? 'au-dessus du style' : vi + ' cran' });
+  if (id === 'floral') box.setAttribute('data-booster', 'visée');
+  const W = 230, cw = W / 5, cy = 20.5;
+  const s = sv('svg', { viewBox: `0 0 ${W} 41`, preserveAspectRatio: 'none' });
+  const X = (k) => k * cw + cw / 2;
+  sv('rect', { x: 4 * cw + 2, y: cy - 7, width: cw - 4, height: 14, rx: 3, fill: '#fff', stroke: '#c9c9c9', 'stroke-dasharray': '3 2' }, s);
+  sv('rect', { x: c.bande[0] * cw + 2, y: cy - 7, width: (c.bande[1] - c.bande[0] + 1) * cw - 4, height: 14, rx: 3, fill: FAM[id].attendue ? '#d6d6d6' : 'var(--bande)' }, s);
+  for (let k = 1; k <= 3; k++) sv('line', { x1: k * cw, x2: k * cw, y1: cy - 7, y2: cy + 7, stroke: '#fff', 'stroke-width': 1.5 }, s);
+  if (p.crans == null) {
+    sv('rect', { x: 2, y: cy - 7, width: 5 * cw - 4, height: 14, rx: 3, fill: 'url(#brume)' }, s);
+  }
+  if (vi != null && p.crans != null && vi !== p.crans) sv('line', { x1: X(p.crans), x2: X(vi), y1: cy, y2: cy, stroke: '#111', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' }, s);
+  if (p.crans != null) {
+    const hors = p.crans > c.bande[1], deg = p.source === 'dégustation';
+    sv('circle', { cx: X(p.crans), cy, r: 7, fill: deg ? (hors ? ACC : '#111') : '#fff', stroke: hors ? ACC : '#111', 'stroke-width': 2.2 }, s);
+  }
+  if (vi != null) {
+    const hv = vi > c.bande[1];
+    sv('path', { d: `M${X(vi)},${cy - 9}L${X(vi) + 9},${cy}L${X(vi)},${cy + 9}L${X(vi) - 9},${cy}Z`, fill: 'none', stroke: hv ? ACC : '#111', 'stroke-width': 2.2 }, s);
+  }
+  box.append(s);
+  const poser = (ev) => {
+    const r = box.getBoundingClientRect();
+    const k = Math.max(0, Math.min(4, Math.floor(((ev.clientX - r.left) / r.width) * 5)));
+    if (ST.visee[id] !== k) { ST.visee[id] = k; rendre(); }
+  };
+  // Glisser la visée ; un simple toucher la pose aussi (alternative WCAG 2.5.7).
+  box.addEventListener('pointerdown', (ev) => { box.setPointerCapture?.(ev.pointerId); poser(ev); });
+  box.addEventListener('keydown', (ev) => {
+    const v = ST.visee[id] ?? p.crans ?? 0;
+    if (ev.key === 'ArrowRight' || ev.key === 'ArrowUp') { ST.visee[id] = Math.min(4, v + 1); rendre(); }
+    if (ev.key === 'ArrowLeft' || ev.key === 'ArrowDown') { ST.visee[id] = Math.max(0, v - 1); rendre(); }
+  });
+  return box;
+}
+function etat(i) {
+  const p = D.profil[i], c = D.cible[i];
+  if (p.crans == null) return h('span', { class: 'p-ns', 'aria-label': 'non situé' });
+  if (p.crans > c.bande[1]) return h('span', { class: 'p-trop' }, 'trop');
+  return h('span', { class: 'p-ok', 'aria-label': 'au style' });
+}
+function brume() {
+  const s = sv('svg', { width: 0, height: 0, style: 'position:absolute' });
+  const d = sv('defs', {}, s), g = sv('pattern', { id: 'brume', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, d);
+  sv('rect', { width: 6, height: 6, fill: '#f1f1f1' }, g); sv('rect', { width: 3, height: 6, fill: '#dcdcdc' }, g);
+  return s;
+}
+/* L'objet 1 dit de quoi il est fait : les ajouts de la recette et la levure. */
+function contexte() {
+  return h('div', { class: 'ctx', 'aria-label': 'Ma bière : houblons de la recette et levure' }, h('b', {}, 'Ma bière'),
+    ST.lignes.map((l) => h('span', {}, l.nom + ' ' + (l.jour && typeDe(l) === 'à froid' ? l.jour : MOM[l.moment].quand.replace(/^20′ à /, '')) + ' ' + virg(l.g) + ' g')),
+    h('span', {}, D.levure.nom));
+}
+function partieBiere(sec) {
+  if (ST.lentille === 'radar') return radarBiere(sec);
+  sec.append(brume(), contexte(), h('div', { class: 'outils' }, sources()));
+  const tab = h('div', { class: 'tab', role: 'table', 'aria-label': 'Ma bière face à la zone du style, par famille' },
+    h('div', { class: 't-tete', role: 'row' }, h('span', {}), h('span', {}, 'zone du style'), h('span', {}, 'au-dessus')));
+  ORD.forEach((id, i) => {
+    const p = D.profil[i];
+    const terne = ST.src && SRC[p.source] !== ST.src;
+    const hors = p.crans != null && p.crans > D.cible[i].bande[1];
+    tab.append(h('div', { class: 'rang' + (FAM[id].attendue ? ' att' : '') + (i === 3 ? ' sep' : '') + (terne ? ' terne' : ''), role: 'row' },
+      h('button', { class: 'fn' + (hors ? ' acc' : ''), 'data-booster': i === 9 ? 'toucher famille' : null, 'aria-expanded': String(ST.ouverte === id), onclick: () => { ST.ouverte = ST.ouverte === id ? null : id; rendre(); } }, FAM[id].nom),
+      piste(i), h('div', { class: 'etat' }, etat(i))));
+    if (ST.ouverte === id) {
+      const vi = ST.visee[id];
+      tab.append(h('div', { class: 'detail' }, (p.source === 'dégustation' ? 'dégusté le ' + D.degustation : p.source === 'modèle' ? 'prévu par le modèle' : 'non situé : plage trop large') + (p.crans != null ? ' · ' + p.display + (p.crans <= 3 ? ' cran sur 3' : '') : '') + (vi != null ? ' · visée ' + (vi > 3 ? 'hors style' : vi) : '')));
+    }
+  });
+  sec.append(tab);
+  const hs = ORD.filter((id) => ST.visee[id] != null && ST.visee[id] > D.cible[ORD.indexOf(id)].bande[1]);
+  sec.append(h('div', { class: 'chips' },
+    (D.directions || []).map((d) => h('button', { class: 'chip ' + (d.signe > 0 ? 'plus-d' : 'moins-d'), 'aria-pressed': String(ST.dirs.has(d.id)), 'data-booster': d.id === 'floral' ? 'puce direction' : null, onclick: () => { ST.dirs.add(d.id); ST.reponse = d.id; ST.partie = 'suggestions'; rendre(); } }, d.nom)),
+    h('button', { class: 'chip autre', 'aria-label': 'Autre direction' }),
+    hs.length ? h('span', { class: 'hors', style: 'align-self:center' }, 'visée hors style') : null));
+}
+function radarBiere(sec) {
+  const series = [
+    { nom: 'ma bière', valeurs: D.profil.map((p) => p.crans), nonSitue: true, creux: D.profil.map((p) => p.source === 'modèle') },
+    { nom: 'cible', valeurs: D.cible.map((c) => c.bande[1]), zone: true },
+    { nom: 'ma visée', valeurs: ORD.map((id) => ST.visee[id] ?? null), losanges: true },
+  ];
+  const svg = sv('svg', { id: 'radar', width: 358, height: 290, viewBox: '0 0 358 290', role: 'img', 'aria-label': 'Radar : ma bière face à la zone du style, en crans' });
+  sec.append(svg);
+  radar(svg, { objet: 'biere-cible', max: 4, bande: [0, 3], R: 102, cx: 179, cy: 145, repere: 'au-dessus', isole: ST.isole, noms: ORD.map((id, i) => ({ nom: FAM[id].nom, gras: FAM[id].attendue, acc: D.profil[i].crans > 3 })),
+    series: series.map((s) => ({ ...s, cache: ST.cachees.has(s.nom) })) });
+  const d = ceQuiDistingueBiere();
+  sec.append(lignesSeries([
+    ['ma bière', 'Ma bière', 'rond', d.hors.length ? d.hors : ['au style partout où elle est située']],
+    ['cible', 'Zone du style', 'zone', ['attendues : ' + d.att.join(', ')]],
+    ['ma visée', 'Ma visée', 'losange', viseesTxt(ST.visee)],
+    [null, 'Non situées', 'ns', [d.ns.join(', ')]],
+    [null, 'Sources', 'rond', ['plein : dégusté le ' + D.degustation, 'creux : prévu par le modèle']],
+  ]), contexte(), h('div', { class: 'chips' }, (D.directions || []).map((d2) => h('button', { class: 'chip ' + (d2.signe > 0 ? 'plus-d' : 'moins-d'), 'aria-pressed': String(ST.dirs.has(d2.id)), onclick: () => { ST.dirs.add(d2.id); ST.reponse = d2.id; ST.partie = 'suggestions'; rendre(); } }, d2.nom))));
+}
+/* Une rangée par série : son signe, son nom, ce qui la distingue ; toucher isole la série. */
+function lignesSeries(defs) {
+  return h('div', { class: 'series' }, defs.map(([k, titre, m, det, extra], j) => {
+    const s = sv('svg', { width: 16, height: 16, viewBox: '0 0 14 14', 'aria-hidden': 'true' });
+    const tr = TRAITS[j % TRAITS.length];
+    if (m === 'zone') sv('rect', { x: 1, y: 3, width: 12, height: 8, fill: '#e9e9e9', stroke: '#8f8f8f' }, s);
+    else if (m === 'losange') sv('path', { d: 'M7,1L13,7L7,13L1,7Z', fill: '#fff', stroke: '#111', 'stroke-width': 1.8 }, s);
+    else if (m === 'ns') sv('circle', { cx: 7, cy: 7, r: 5, fill: 'none', stroke: '#7a7a7a', 'stroke-width': 1.5, 'stroke-dasharray': '2 2' }, s);
+    else if (m === 'carre' || tr.m === 'carre') sv('rect', { x: 2.5, y: 2.5, width: 9, height: 9, fill: '#fff', stroke: TRAITS[2].c, 'stroke-width': 2 }, s);
+    else if (m === 'tri' || tr.m === 'tri') sv('path', { d: 'M7,1.5L12.5,12L1.5,12Z', fill: '#fff', stroke: TRAITS[3].c, 'stroke-width': 2 }, s);
+    else sv('circle', { cx: 7, cy: 7, r: 5, fill: m === 'creux' ? '#fff' : tr.c, stroke: m === 'creux' ? TRAITS[1].c : tr.c, 'stroke-width': 2 }, s);
+    const on = k && ST.isole === k;
+    const corps = h('span', { class: 'sr-c' }, h('b', {}, titre), h('span', { class: 'sr-d' }, det.length ? det.map((x) => h('span', {}, x)) : h('span', {}, 'rien ne la distingue')));
+    if (!k) return h('div', { class: 'sr' }, s, corps, extra || null);
+    return h('div', { class: 'sr' + (on ? ' on' : '') },
+      h('button', { class: 'sr-b', 'aria-pressed': String(on), 'data-booster': j === 0 ? 'série' : null, 'aria-label': (on ? 'Voir toutes les séries' : 'Isoler la série ' + titre), onclick: () => { ST.isole = on ? null : k; rendre(); } }, s, corps),
+      extra || null);
+  }));
+}
+function serieChips(defs) {
+  return h('div', { class: 'r-ser' }, defs.map(([k, t, m], j) => {
+    const s = sv('svg', { width: 14, height: 14, viewBox: '0 0 14 14' });
+    const tr = TRAITS[j % TRAITS.length];
+    if (m === 'zone') sv('rect', { x: 1, y: 3, width: 12, height: 8, fill: '#e9e9e9', stroke: '#8f8f8f' }, s);
+    else if (m === 'losange') sv('path', { d: 'M7,1L13,7L7,13L1,7Z', fill: '#fff', stroke: '#111', 'stroke-width': 1.8 }, s);
+    else if (tr.m === 'carre' || m === 'carre') sv('rect', { x: 2.5, y: 2.5, width: 9, height: 9, fill: '#fff', stroke: tr.c, 'stroke-width': 1.8 }, s);
+    else if (tr.m === 'tri') sv('path', { d: 'M7,1.5L12.5,12L1.5,12Z', fill: '#fff', stroke: tr.c, 'stroke-width': 1.8 }, s);
+    else sv('circle', { cx: 7, cy: 7, r: 5, fill: tr.m === 'creux' ? '#fff' : tr.c, stroke: tr.c, 'stroke-width': 2 }, s);
+    return h('button', { 'aria-pressed': String(!ST.cachees.has(k)), 'data-booster': j === 0 ? 'série' : null, onclick: () => { ST.cachees.has(k) ? ST.cachees.delete(k) : ST.cachees.add(k); rendre(); } }, s, t);
+  }));
+}
+
+/* ---------- Partie 2 : Suggestions (objet 4) — une colonne par voie ---------- */
+function colonnes() {
+  const liste = voiesPour(ST.reponse, exclus()).filter((v) => !v.nouvelle);
+  let cols = liste.slice(0, 3);
+  if (ST.epingle && !cols.some((v) => v.rang === ST.epingle)) {
+    const v = D.voies.find((x) => x.rang === ST.epingle);
+    if (v) cols = [...cols.slice(0, 2), v];
+  }
+  return { cols, reste: voiesPour(ST.reponse, exclus()).filter((v) => !cols.includes(v)) };
+}
+function titreVoie(v) {
+  if (v.levure) return v.levure.replace(/^LalBrew /, '');
+  if (v.verbe === 'Remplacer') return '→ ' + v.houblons[0];
+  return v.houblons.join(' + ');
+}
+function cellule(av, ap, i, estAvant) {
+  // Mini-jauge en crans : 0 à 3 dans la zone, 4 au-dessus ; visée en contour.
+  const c = D.cible[i], vi = ST.visee[ORD[i]];
+  const s = sv('svg', { width: 54, height: 16, viewBox: '0 0 49 14', 'aria-hidden': 'true' });
+  const val = estAvant ? av : ap.crans;
+  const ne = !estAvant && ap.delta === 'non établi';
+  for (let k = 0; k <= 4; k++) {
+    const x = k * 10;
+    const dans = k >= c.bande[0] && k <= c.bande[1];
+    sv('rect', { x: x + 0.5, y: 2.5, width: 8.5, height: 9, rx: 1.5, fill: dans ? '#e2e2e2' : '#fff', stroke: dans ? 'none' : '#c4c4c4', 'stroke-dasharray': dans ? null : '2 1.5' }, s);
+    if (vi != null && k === vi) sv('rect', { x: x - 0.5, y: 1, width: 10.5, height: 12, rx: 2, fill: 'none', stroke: '#111', 'stroke-width': 1.4 }, s);
+  }
+  if (val != null) {
+    const hors = val > c.bande[1];
+    sv('rect', { x: val * 10 + 0.5, y: 2.5, width: 8.5, height: 9, rx: 1.5, fill: ne ? 'url(#brume)' : hors ? ACC : '#111' }, s);
+  } else sv('rect', { x: 0.5, y: 2.5, width: 48, height: 9, rx: 1.5, fill: 'url(#brume)' }, s);
+  return s;
+}
+function jaugeIbu(v) {
+  const [lo, hi] = D.style.ibu, s = sv('svg', { width: 26, height: 10, viewBox: '0 0 26 10', 'aria-hidden': 'true' });
+  const X = (x) => Math.max(1, Math.min(25, ((x - 30) / 60) * 26));
+  sv('rect', { x: 0, y: 3, width: 26, height: 4, rx: 2, fill: '#ececec' }, s);
+  sv('rect', { x: X(lo), y: 2, width: X(hi) - X(lo), height: 6, fill: '#cfcfcf' }, s);
+  sv('rect', { x: X(v) - 1, y: 0, width: 2, height: 10, fill: v < lo || v > hi ? ACC : '#111' }, s);
+  return s;
+}
+function enteteVoie(v, k) {
+  return h('div', { class: 'ct' + (v.rang === ST.epingle ? ' pin' : '') },
+    h('span', { class: 'hn' }, k != null ? marque(k) : null, h('span', {}, titreVoie(v))),
+    h('span', { class: 'md' }, h('i', { class: 'op ' + (v.levier ? 'op-lev' : 'op-' + v.verbe), 'aria-label': v.verbe }), [v.quand, v.dose].filter(Boolean).join(' · ') || v.verbe),
+    h('span', { class: 'st ' + stCls(v.stock) }, v.stock),
+    k != null ? h('span', { class: 'md' }, ibuTxt(v.ibu) + ' IBU') : null,
+    v.houblons[0] ? h('span', { class: 'ic' }, gout(v.houblons[0])) : null);
+}
+function marque(k) {
+  const tr = TRAITS[k % TRAITS.length], s = sv('svg', { width: 12, height: 12, viewBox: '0 0 14 14', 'aria-hidden': 'true' });
+  if (tr.m === 'carre') sv('rect', { x: 2.5, y: 2.5, width: 9, height: 9, fill: '#fff', stroke: tr.c, 'stroke-width': 2 }, s);
+  else if (tr.m === 'tri') sv('path', { d: 'M7,1.5L12.5,12L1.5,12Z', fill: '#fff', stroke: tr.c, 'stroke-width': 2 }, s);
+  else sv('circle', { cx: 7, cy: 7, r: 5, fill: tr.m === 'creux' ? '#fff' : tr.c, stroke: tr.c, 'stroke-width': 2 }, s);
+  return s;
+}
+function partieSuggestions(sec) {
+  sec.append(brume());
+  if (!D.voies) { sec.append(h('p', { class: 'vide-t' }, D.notes.voies || 'Aucune direction posée.')); return; }
+  const dirs = D.directions;
+  sec.append(h('div', { class: 'chips' },
+    dirs.map((d) => h('button', { class: 'chip ' + (d.signe > 0 ? 'plus-d' : 'moins-d'), 'aria-pressed': String(ST.dirs.has(d.id)), onclick: () => { ST.dirs.has(d.id) ? ST.dirs.delete(d.id) : ST.dirs.add(d.id); rendre(); } }, d.nom)),
+    h('button', { class: 'chip autre', 'aria-label': 'Autre direction' })));
+  sec.append(h('div', { class: 'rep' }, dirs.filter((d) => ST.dirs.has(d.id)).map((d) => h('button', { 'aria-pressed': String(ST.reponse === d.id), 'data-booster': ST.reponse === d.id ? null : 'réponse', onclick: () => { ST.reponse = d.id; ST.epingle = null; rendre(); } }, h('b', {}, d.label), h('span', {}, d.compte)))));
+  if (ST.lentille === 'radar') return radarVoies(sec);
+  const { cols, reste } = colonnes();
+  const m = h('div', { class: 'mat', role: 'table', 'aria-label': 'Ma bière avant et après chaque voie, face à la cible' });
+  m.append(h('div', {}), h('div', { class: 'ct av' }, h('span', { class: 'hn' }, 'Avant')));
+  for (const v of cols) m.append(enteteVoie(v));
+  m.append(h('div', { class: 'cn ibu-r' }, 'IBU'), h('div', { class: 'cc ibu-r' }, ibuTxt(totalIbu(ST.lignes)), jaugeIbu(totalIbu(ST.lignes))), ...cols.map((v) => h('div', { class: 'cc v ibu-r' }, ibuTxt(v.ibu), jaugeIbu(v.ibu))));
+  const vus = ORD.map((id, i) => i).filter((i) => D.profil[i].crans != null || cols.some((v) => typeof v.apres[i].delta === 'number'));
+  for (const i of vus) {
+    const id = ORD[i];
+    m.append(h('div', { class: 'cn' + (FAM[id].attendue ? ' att' : ' n'), style: D.profil[i].crans > 3 ? 'color:' + ACC : null }, FAM[id].nom));
+    m.append(h('div', { class: 'cc' }, cellule(D.profil[i].crans, null, i, true)));
+    const tousNE = cols.every((v) => v.apres[i].delta === 'non établi');
+    if (tousNE && D.profil[i].crans != null && D.profil[i].crans > 3) { m.append(h('div', { class: 'ne-row' }, 'effet non établi')); continue; }
+    for (const v of cols) {
+      const a = v.apres[i];
+      m.append(h('div', { class: 'cc v' }, cellule(null, a, i, false),
+        typeof a.delta === 'number' && a.delta !== 0 ? h('span', { class: 'dl' }, (a.delta > 0 ? '+' : '−') + Math.abs(a.delta)) : a.delta === '≈' ? h('span', { class: 'dl ap' }, '≈') : null));
+    }
+  }
+  const ns = ORD.filter((id, i) => !vus.includes(i));
+  if (ns.length) m.append(h('div', { class: 'ns-row' }, h('i', {}), ns.length + ' non situées'));
+  sec.append(m);
+  const lev = voiesPour('levure', exclus());
+  sec.append(h('div', { class: 'rail', role: 'group', 'aria-label': 'Autres voies du moteur' },
+    reste.filter((v) => !v.nouvelle).slice(0, 2).map((v) => h('button', { 'data-booster': 'épingler voie', 'aria-label': 'Voir la voie ' + v.rang + ' : ' + v.label, onclick: () => { ST.epingle = v.rang; rendre(); } }, v.rang + ' ' + titreVoie(v))),
+    ST.reponse === 'resin' ? h('button', { onclick: () => { ST.hors = !ST.hors; rendre(); } }, 'hors houblon') : null,
+    lev.length ? h('button', { class: 'lev', 'aria-label': 'Leviers levure du moteur', onclick: () => { ST.epingle = lev[0].rang; rendre(); } }, 'levure') : null,
+    [...exclus()].map((n) => h('button', { class: 'ex-chip', 'aria-label': 'Ne plus exclure ' + n, onclick: () => { delete ST.gout[n]; rendre(); } }, n))));
+  if (ST.hors) sec.append(h('div', { class: 'liste-h' }, D.horsModele.map((t) => h('span', {}, t))));
+}
+function radarVoies(sec) {
+  const { cols } = colonnes();
+  const series = [{ nom: 'avant', valeurs: D.profil.map((p) => p.crans) }, ...cols.map((v) => ({ nom: 'après ' + titreVoie(v), valeurs: v.apres.map((a) => a.crans) }))];
+  const svg = sv('svg', { id: 'radar', width: 358, height: 290, viewBox: '0 0 358 290', role: 'img', 'aria-label': 'Radar : ma bière avant et après les voies, en crans du style' });
+  sec.append(svg);
+  radar(svg, { objet: 'voies', max: 4, bande: [0, 3], R: 102, cx: 179, cy: 145, repere: 'au-dessus', isole: ST.isole, noms: ORD.map((id, i) => ({ nom: FAM[id].nom, gras: FAM[id].attendue, acc: D.profil[i].crans > 3 })),
+    series: series.map((s) => ({ ...s, cache: ST.cachees.has(s.nom) })) });
+  const d = ceQuiDistingueBiere();
+  sec.append(lignesSeries([
+    ['avant', 'Avant', 'rond', d.hors],
+    ...cols.map((v, k) => ['après ' + titreVoie(v), titreVoie(v), ['creux', 'carre', 'tri'][k], deltasVoie(v).length ? deltasVoie(v) : ['effet faible : ≈ partout'],
+      h('span', { class: 'sr-x' }, h('span', { class: 'st ' + stCls(v.stock) }, v.stock), h('span', { class: 'petit' }, ibuTxt(v.ibu) + ' IBU'), v.houblons[0] ? gout(v.houblons[0]) : null)]),
+  ]));
+}
+
+/* ---------- Partie 3 : Comparer des houblons (objet 3, fiches 0 à 2) ---------- */
+function partieComparer(sec) {
+  const hs = ST.comparer.map((n) => ficheDe(n)).filter(Boolean);
+  sec.append(choixHoublons());
+  if (ST.lentille === 'radar') return radarHoublons(sec, hs);
+  const m = h('div', { class: 'mat c4', role: 'table', 'aria-label': 'Ce que disent les fiches, par famille' });
+  m.append(h('div', { class: 'ct av' }));
+  for (const f of hs) m.append(enteteHoublon(f));
+  for (let k = hs.length; k < 4; k++) m.append(h('div', {}));
+  ORD.forEach((id, i) => {
+    m.append(h('div', { class: 'cn' + (FAM[id].attendue ? ' att' : ' n') }, FAM[id].nom));
+    for (const f of hs) {
+      const c = f.niv[i];
+      m.append(h('div', { class: 'cc', 'aria-label': f.nom + ', ' + FAM[id].long + ' : ' + (c.n === 0 ? 'non décrit' : c.n === 1 ? 'cité' : 'marqué') + (c.n ? ', ' + c.s + ' fiche sur ' + c.m : '') },
+        h('span', { class: 'dots' }, c.n === 0 ? h('i', { class: 'nd' }) : [h('i', {}), h('i', { class: c.n === 2 ? '' : 'vide' })]),
+        c.n ? h('span', { class: 'nm' }, c.s + '/' + c.m) : null));
+    }
+    for (let k = hs.length; k < 4; k++) m.append(h('div', { class: 'cc' }));
+  });
+  sec.append(m);
+}
+function enteteHoublon(f, k) {
+    const o = origine(f.nom, ST.lignes);
+    return h('div', { class: 'ct' + (ST.gout[f.nom] === 'exclu' ? ' ex' : '') },
+      h('span', { class: 'hn' }, k != null ? marque(k) : null, h('span', { style: ST.gout[f.nom] === 'exclu' ? 'text-decoration:line-through' : null }, f.nom)),
+      h('span', { class: 'st ' + (o === 'recette' ? 's-rec' : stCls(o)) }, o),
+      h('span', { class: 'md fx' }, f.niv[0].m + ' fiche' + (f.niv[0].m > 1 ? 's' : ''), h('button', { class: 'x', 'data-booster': 'retirer houblon', 'aria-label': 'Retirer ' + f.nom + ' de la comparaison', onclick: () => { ST.comparer = ST.comparer.filter((x) => x !== f.nom); rendre(); } })),
+      h('span', { class: 'ic' }, gout(f.nom)));
+}
+function choixHoublons() {
+  const deja = new Set(ST.comparer);
+  const noms = [...ST.lignes.map((l) => l.nom), ...D.rapides.stock.map((r) => r.nom), ...D.rapides.racheter.map((r) => r.nom)].filter((n, k, a) => a.indexOf(n) === k && !deja.has(n) && ficheDe(n));
+  return h('div', { class: 'rail choix', role: 'group', 'aria-label': 'Choisir des houblons à comparer (recette, stock, catalogue)' }, h('span', { class: 'cpt-c' }, ST.comparer.length + '/4'), noms.slice(0, 4).map((n) => h('button', { class: 'plus-c', 'data-booster': 'ajouter houblon', 'aria-label': (ST.comparer.length >= 4 ? 'Comparer ' + n + ' à la place de ' + ST.comparer[3] : 'Comparer aussi ' + n), onclick: () => { if (ST.comparer.length >= 4) ST.comparer.pop(); ST.comparer.push(n); rendre(); } }, n)));
+}
+function radarHoublons(sec, hs) {
+  const svg = sv('svg', { id: 'radar', width: 358, height: 316, viewBox: '0 0 358 316', role: 'img', 'aria-label': 'Radar : silhouettes des fiches des houblons choisis (0 non décrit, 1 cité, 2 marqué)' });
+  sec.append(svg);
+  radar(svg, { objet: 'houblons', max: 2, bande: null, R: 106, cx: 179, cy: 158, repere: null, isole: ST.isole, noms: ORD.map((id) => ({ nom: FAM[id].nom, gras: FAM[id].attendue })),
+    series: hs.map((f) => ({ nom: f.nom, valeurs: f.niv.map((c) => c.n), cache: ST.cachees.has(f.nom) })) });
+  sec.append(h('div', { class: 'hautes' }, lignesSeries(hs.map((f, k) => {
+    const d = distingueHoublon(f, hs);
+    return [f.nom, f.nom, ['rond', 'creux', 'carre', 'tri'][k], [d.seul.length ? 'seul : ' + d.seul.join(', ') : 'jamais seul en tête', d.marque.length ? 'marqué : ' + d.marque.join(', ') : 'rien de marqué'],
+      h('span', { class: 'sr-x' }, h('span', { class: 'st ' + stCls(origine(f.nom, ST.lignes)) }, origine(f.nom, ST.lignes)), h('span', { class: 'petit' }, f.niv[0].m + ' fiche' + (f.niv[0].m > 1 ? 's' : '')), gout(f.nom))];
+  }))));
+}
+rendre();
+</script>
+</body>
+</html>

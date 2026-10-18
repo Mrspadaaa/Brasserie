@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Houblons, pastille de moment</title>
+<style>
+  :root { --encre: #111; --gris: #555; --gris2: #6e6e6e; --trait: #d4d4d4; --fond: #f5f5f5; --fond2: #ebebeb; --acc: #c2410c; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; color: var(--encre); }
+  body { font: 400 14px/1.2 -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+  button, input, output { font: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; min-height: 24px; min-width: 24px; }
+  ul { list-style: none; }
+  :focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+  .ecran { width: 100%; max-width: 390px; margin: 0 auto; padding: 8px 16px 10px; display: flex; flex-direction: column; gap: 6px; overflow-x: hidden; }
+  .p { font-size: 12px; }
+  .gris { color: var(--gris2); }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* En-tête de l'étape */
+  .barre { display: flex; align-items: center; gap: 8px; height: 32px; }
+  .retour { width: 28px; height: 28px; position: relative; }
+  .retour::before { content: ''; position: absolute; left: 10px; top: 9px; width: 9px; height: 9px; border-left: 2px solid var(--encre); border-bottom: 2px solid var(--encre); transform: rotate(45deg); }
+  h1 { font-size: 19px; font-weight: 650; }
+  .etape { color: var(--gris2); }
+  .style { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px 0 10px; border: 1px solid var(--trait); border-radius: 14px; }
+  .badge { font-size: 12px; padding: 2px 7px; border-radius: 10px; background: var(--fond2); color: var(--gris); }
+
+  /* Résumé de la recette, comme l'étape Malts */
+  .resume { display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 12px; border: 1px solid var(--trait); border-radius: 20px; flex: none; }
+  .resume > div { display: flex; align-items: baseline; gap: 4px; }
+  .resume b, .resume output { font-size: 19px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .cle { font-size: 12px; color: var(--gris2); }
+  .ibu-bloc { position: relative; }
+  .delta { position: absolute; left: 30px; top: -12px; font-size: 12px; font-weight: 600; }
+  .jauge { position: relative; display: inline-block; width: 52px; height: 8px; margin-left: 4px; align-self: center; border-radius: 4px; background: #e4e4e4; }
+  .jauge .bde { position: absolute; left: 25%; width: 50%; top: 0; bottom: 0; background: #b9b9b9; }
+  .jauge .rep { position: absolute; top: -3px; width: 3px; height: 14px; margin-left: -1.5px; background: var(--encre); border-radius: 1px; }
+  .jauge.hors .rep { background: var(--acc); }
+  .note-acc { color: var(--acc); font-weight: 600; }
+  .note-ibu { display: flex; flex-direction: column; gap: 2px; padding: 6px 0 2px; border-radius: 10px; }
+
+  /* Éléments communs d'une ligne d'ajout */
+  .tag { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px; border: 1px solid var(--trait); border-radius: 13px; background: #fff; white-space: nowrap; }
+  .tourne::after { content: '⟳'; font-size: 12px; color: var(--gris2); display: inline-block; }
+  .tourne.roule::after { animation: tour 150ms ease-out; }
+  @keyframes tour { from { transform: rotate(-180deg); } }
+  .type { font-size: 12px; }
+  .pas { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; flex: none; }
+  .moins, .plus { width: 26px; height: 26px; border-radius: 13px; border: 1px solid var(--trait); background: #fff; position: relative; }
+  .moins::before, .plus::before, .plus::after { content: ''; position: absolute; left: 7px; top: 11.5px; width: 10px; height: 1.6px; background: var(--encre); }
+  .plus::after { transform: rotate(90deg); }
+  .dose { min-width: 44px; text-align: center; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .corbeille { width: 26px; height: 26px; position: relative; flex: none; }
+  .corbeille::before, .corbeille::after { content: ''; position: absolute; left: 7px; top: 12px; width: 12px; height: 1.6px; background: var(--gris2); transform: rotate(45deg); }
+  .corbeille::after { transform: rotate(-45deg); }
+  .l2 { display: flex; align-items: center; gap: 6px; font-size: 12px; min-height: 20px; }
+  .st { font-size: 12px; font-weight: 400; color: var(--gris2); white-space: nowrap; }
+  .pt-manque { width: 8px; height: 8px; border-radius: 4px; border: 1.5px dashed var(--gris2); flex: none; }
+  .cite { height: 20px; padding: 0 7px; border: 1px solid var(--acc); color: var(--acc); border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; white-space: nowrap; }
+  .effet { height: 20px; padding: 0 7px; border: 1px solid var(--encre); border-radius: 10px; display: inline-flex; align-items: center; white-space: nowrap; font-weight: 600; }
+  .effet.ne { border-style: dashed; border-color: var(--gris2); color: var(--gris); font-weight: 400; }
+  .ibu-l { margin-left: auto; color: var(--gris); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .bio { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gris); }
+  .bio { flex-wrap: wrap; }
+  .bio .quand-bio { font-weight: 650; color: var(--encre); }
+  .sigs { display: flex; flex-wrap: wrap; gap: 4px; }
+  .sig { padding: 2px 7px; border: 1px solid var(--gris2); border-radius: 10px; white-space: nowrap; }
+  .sig.ne { border-style: dashed; }
+  .mini { display: inline-flex; gap: 1px; align-items: center; flex: none; }
+  .mini .c { width: 5px; height: 10px; border-radius: 1px; background: #e6e6e6; }
+  .mini .c.ci { background: #ababab; }
+  .mini .c.m { background: #3d3d3d; }
+  .mini .c.acc.ci { background: var(--acc); opacity: .55; }
+  .mini .c.acc.m { background: var(--acc); }
+  .mini .c.sep { margin-left: 3px; }
+
+  /* Ajout en un toucher */
+  .rapides { display: flex; flex-direction: column; gap: 4px; }
+  .rapide-l { display: flex; align-items: center; gap: 4px; }
+  .rapide { flex: 1; min-width: 0; min-height: 44px; display: flex; align-items: center; gap: 7px; padding: 3px 8px 3px 5px; border-radius: 10px; background: var(--fond); text-align: left; }
+  .rapide .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .rapide .r1, .rapide .r2 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .rapide .r1 .st { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .rapide b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; min-width: 48px; }
+  .rapide .r2 .mini { margin-left: auto; }
+  .dose-r { font-size: 12px; color: var(--gris); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .dose-r.fl::after { content: ' →'; }
+  .col-ibu { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex: none; min-width: 60px; }
+  .ic-levure { width: 14px; height: 14px; border-radius: 7px; border: 1.5px solid var(--gris2); position: relative; flex: none; }
+  .ic-levure::after { content: ''; position: absolute; left: 6px; top: 2px; width: 4px; height: 4px; border-radius: 2px; background: var(--gris2); }
+  .rapide .qte { font-size: 12px; color: var(--gris2); white-space: nowrap; }
+  .rapide .plus-ibu { font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .plus-i { width: 22px; height: 22px; border-radius: 11px; background: var(--encre); position: relative; flex: none; }
+  .plus-i::before, .plus-i::after { content: ''; position: absolute; left: 6px; top: 10.2px; width: 10px; height: 1.6px; background: #fff; }
+  .plus-i::after { transform: rotate(90deg); }
+  .gout { width: 28px; height: 28px; flex: none; border-radius: 14px; position: relative; color: var(--gris2); }
+  .gout::before { content: '♡'; font-size: 14px; line-height: 28px; }
+  .gout.aime::before { content: '♥'; color: var(--encre); }
+  .voie, .rapide-l { position: relative; }
+  .voie .gout-choix, .rapide-l .gout-choix { position: absolute; right: 34px; top: 50%; transform: translateY(-50%); z-index: 2; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
+  .gout-choix { display: inline-flex; gap: 2px; padding: 2px; border-radius: 14px; background: var(--fond2); flex: none; }
+  .gout-choix button { height: 26px; padding: 0 8px; border-radius: 13px; font-size: 12px; }
+  .gout-choix button[aria-pressed="true"] { background: #fff; font-weight: 650; }
+  .seg { display: inline-flex; padding: 2px; border-radius: 15px; background: var(--fond2); flex: none; }
+  .seg button { height: 26px; padding: 0 11px; border-radius: 13px; font-size: 12px; color: var(--gris); }
+  .seg button[aria-checked="true"], .seg button[aria-selected="true"] { background: #fff; color: var(--encre); font-weight: 650; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+  .champ input { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--trait); border-radius: 10px; background: #fff; font-size: 14px; }
+  .champ input::placeholder { color: var(--gris2); }
+  .rangee { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+  .levure { display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; border-radius: 10px; background: var(--fond); white-space: nowrap; overflow: hidden; flex: 1 1 auto; }
+  .levure .cle { margin-right: 2px; }
+  .goutsl { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px; }
+  .goutsl button { height: 24px; padding: 0 8px; border-radius: 12px; border: 1px dashed var(--gris2); }
+
+  /* Ligne qui résume ma bière face à la cible et ouvre le panneau */
+  .pan { display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left; padding: 6px 0 0; border-top: 1px solid var(--trait); }
+  .pan .r1, .pan .r2 { display: flex; align-items: center; gap: 6px; min-height: 24px; width: 100%; }
+  .exc { color: var(--acc); font-weight: 650; }
+  .exc::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 4px; background: var(--acc); vertical-align: 1px; }
+  .ouvrir { margin-left: auto; width: 34px; height: 26px; border-radius: 13px; background: var(--encre); position: relative; flex: none; }
+  .ouvrir::after { content: ''; position: absolute; left: 12px; top: 9px; width: 7px; height: 7px; border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg); }
+  .cpt { color: var(--gris); white-space: nowrap; }
+  .cpt + .cpt::before { content: '·'; margin-right: 6px; color: var(--gris2); }
+  svg { display: block; }
+  svg text { font-family: inherit; }
+
+  /* Panneau : onglets des trois parties, lentille, tableaux */
+  .tete { display: flex; align-items: center; gap: 8px; height: 36px; }
+  .onglets { flex: 1; display: flex; padding: 2px; border-radius: 16px; background: var(--fond2); }
+  .onglets button { flex: 1; height: 30px; border-radius: 14px; color: var(--gris); white-space: nowrap; }
+  .onglets button[aria-selected="true"] { background: #fff; color: var(--encre); font-weight: 650; box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+  .partie { display: flex; flex-direction: column; gap: 6px; }
+  .bloc-lecture { display: flex; flex-direction: column; gap: 6px; }
+  .partie.entre { animation: monte 220ms ease-out; }
+  @keyframes monte { from { transform: translateY(16px); opacity: .5; } }
+  .titre { display: flex; align-items: center; gap: 8px; min-height: 30px; }
+  .titre .seg { margin-left: auto; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--trait); background: #fff; font-weight: 600; white-space: nowrap; }
+  .chip.dir-plus::before, .chip.ajt::before { content: '+ '; }
+  .chip.dir-moins::before { content: '− '; }
+  .chip.dir-autre::before { content: '+ …'; color: var(--gris2); }
+  .chip[aria-pressed="true"] { background: var(--encre); border-color: var(--encre); color: #fff; }
+  .chip.ajt { font-weight: 400; border-style: dashed; }
+  .chip.sel { display: inline-flex; align-items: center; gap: 0; height: 30px; padding: 0 0 0 10px; background: var(--fond); border-color: var(--fond); font-size: 12px; }
+  .chip.sel .gout { width: 26px; height: 26px; }
+  .chip.sel .gout::before { line-height: 26px; }
+  .objet { font-weight: 650; }
+  .cols { display: grid; align-items: start; column-gap: 4px; }
+  .col { display: flex; flex-direction: column; gap: 1px; min-width: 0; padding-left: 4px; position: relative; }
+  .col > .p { min-height: 15px; }
+  .col b svg { margin-right: 5px; }
+  .col b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .col b.exclu { color: var(--gris2); text-decoration: line-through; }
+  .col-act { display: flex; align-items: center; gap: 2px; margin-left: -6px; }
+  .col-act .x { width: 28px; height: 28px; position: relative; }
+  .col-act .x::before, .col-act .x::after { content: ''; position: absolute; left: 9px; top: 13px; width: 10px; height: 1.5px; background: var(--gris2); transform: rotate(45deg); }
+  .col-act .x::after { transform: rotate(-45deg); }
+  .col-act .x:disabled { opacity: .35; }
+  .col-act .gout-choix { position: absolute; z-index: 3; left: 0; top: 64px; }
+  .ctx { display: inline-flex; gap: 6px; margin-left: auto; }
+  .ctx-h { font-size: 12px; padding: 3px 8px; border-radius: 10px; background: var(--fond); white-space: nowrap; }
+  .chip.sel .x { width: 26px; height: 26px; position: relative; }
+  .chip.sel .x::before, .chip.sel .x::after { content: ''; position: absolute; left: 8px; top: 12px; width: 10px; height: 1.5px; background: var(--gris2); transform: rotate(45deg); }
+  .chip.sel .x::after { transform: rotate(-45deg); }
+  .moitie { min-height: 28px; text-align: left; font-weight: 650; }
+  .moitie::after { content: '›'; margin-left: 4px; color: var(--gris2); }
+  .moitie[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 3px; }
+  .lien { min-height: 30px; text-align: left; font-weight: 650; }
+  .lien::after { content: ' ›'; color: var(--gris2); }
+  .voies { display: flex; flex-direction: column; gap: 4px; }
+  .voie { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 6px; min-height: 57px; padding: 3px 10px 3px 4px; border-radius: 12px; background: var(--fond); }
+  .voie.on { box-shadow: inset 0 0 0 1.5px var(--encre); }
+  .coche { width: 22px; height: 22px; margin: 0 auto; accent-color: var(--encre); }
+  .corps { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .v1, .v2 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .v1 b { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .md { font-size: 12px; color: var(--gris); white-space: nowrap; }
+  .md + .md::before { content: '·'; margin-right: 6px; }
+  .op { width: 14px; height: 14px; border-radius: 7px; border: 1.5px solid var(--encre); position: relative; flex: none; }
+  .op::before { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; line-height: 1; }
+  .op-ajouter::before { content: '+'; }
+  .op-remplacer::before { content: '⇄'; }
+  .op-diminuer::before { content: '−'; }
+  .op-levure::before { content: '∿'; }
+  .bord, .faible, .aime-t { font-size: 12px; padding: 1px 7px; border-radius: 9px; background: #fff; border: 1px solid var(--trait); color: var(--gris); white-space: nowrap; }
+  .bord::before { content: '+ '; }
+  .faible { border-style: dashed; }
+  .droite { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .droite .h { display: flex; align-items: center; gap: 2px; }
+  .plus-ibu { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pistes { font-size: 12px; color: var(--gris); }
+  .series { display: flex; flex-direction: column; gap: 4px; }
+  .serie { width: 100%; min-height: 46px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 10px; background: var(--fond); text-align: left; }
+  .serie[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--encre); }
+  .serie b { white-space: nowrap; }
+  .serie .fams { font-size: 12px; color: var(--gris); min-width: 0; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .serie .fams.monte::before { content: '↑ '; color: var(--encre); }
+  @media (prefers-reduced-motion: reduce) { .partie.entre, .tourne.roule::after { animation: none; } }
+  /* p03 : la pastille de moment glisse sur une frise 60′ → à froid (greffe de p08) ; « + N IBU » en colonne (greffe de p11) */
+  .lignes { display: flex; flex-direction: column; gap: 6px; }
+  .ligne { background: var(--fond); border-radius: 12px; padding: 5px 8px 6px 10px; display: flex; flex-direction: column; gap: 3px; }
+  .l1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .l1 .nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .l-frise { display: flex; align-items: center; gap: 8px; }
+  .l-frise .ibu-l { width: 64px; flex: none; text-align: right; font-size: 12px; white-space: normal; line-height: 1.1; }
+  .frisette { position: relative; flex: 1; height: 30px; }
+  .frisette .seg-b, .frisette .seg-w, .frisette .seg-f { position: absolute; top: 14px; height: 0; }
+  .frisette .seg-b { left: 14px; width: calc((100% - 28px) * 0.4); border-top: 3px solid #b5b5b5; top: 13px; }
+  .frisette .seg-w { left: calc(14px + (100% - 28px) * 0.4); width: calc((100% - 28px) * 0.2); border-top: 2px dashed #b5b5b5; }
+  .frisette .seg-f { left: calc(14px + (100% - 28px) * 0.6); width: calc((100% - 28px) * 0.4); border-top: 2px dotted #8f8f8f; }
+  .frisette .cran { position: absolute; top: 3px; width: 24px; height: 24px; margin-left: -12px; border-radius: 6px; }
+  .frisette .cran::after { content: ''; position: absolute; left: 11px; top: 7px; width: 2px; height: 10px; background: #8f8f8f; }
+  .frisette .cran.hors::after { background: #b5b5b5; }
+  .pastille { position: absolute; top: 2px; height: 26px; min-width: 44px; margin-left: -22px; padding: 0 6px; border-radius: 13px; background: var(--encre); color: #fff; font-size: 12px; font-weight: 650; white-space: nowrap; touch-action: none; cursor: grab; transition: left 160ms ease-out; }
+  .droite-mini { margin-left: auto; }
+  .ajout { display: flex; flex-direction: column; gap: 4px; }
+  .ajout .champ { flex: 1; min-width: 0; }
+  .rapide .plus-ibu, .voie .plus-ibu { font-size: 14px; font-weight: 650; text-align: right; }
+  @media (prefers-reduced-motion: reduce) { .pastille { transition: none; } }
+
+  .rapide-c { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0; background: var(--fond); border-radius: 10px; padding: 2px 8px 4px 5px; }
+  .rapide-c .rapide { background: none; padding: 0; min-height: 34px; width: 100%; }
+  .rapide-c .rapide .plus-ibu { margin-left: auto; }
+  .r-frise { display: flex; align-items: center; gap: 8px; padding-left: 26px; }
+  .r-frise .frisette { height: 28px; }
+  .r-frise .frisette .cran { top: 2px; }
+  .r-frise .pastille { top: 2px; height: 24px; background: #5a5a5a; }
+  .r-frise .dose-r { width: 56px; text-align: right; flex: none; }
+  .ligne { gap: 5px; padding: 6px 8px 8px 10px; }
+  .frisette { height: 32px; }
+  .frisette .cran { top: 4px; }
+  .pastille { top: 3px; }
+  .ligne .l2 { min-height: 24px; }
+  .rapide-c { padding: 4px 8px 6px 5px; }
+  .r-fiches { padding: 1px 0 0 26px; }
+  .r-fiches .mini .c { width: 9px; height: 9px; }
+  .r-fiches .mini { gap: 2px; }
+  .ligne { gap: 6px; }
+
+</style>
+</head>
+<body data-variante="p03" data-vue="panneau" data-ouvre="biere" data-lentille="barres" data-dirs="">
+<main class="ecran" id="app"></main>
+<script>
+const D = {"scen":"S1","nom":"Stout export","code":"16D","ibuStyle":[50,70],"og":"1,066","ebc":70,"ordre":["floral","herbal","earthy","citrus","tropical","stoneFruit","pomeFruit","berries","melon","resin","spice","green"],"court":{"floral":"Floral","herbal":"Herbacé","earthy":"Terreux","citrus":"Agrumes","tropical":"Tropicaux","stoneFruit":"Noyau","pomeFruit":"Pépins","berries":"Baies","melon":"Melon","resin":"Résineux","spice":"Épicé","green":"Végétal"},"long":{"citrus":"Agrumes","tropical":"Fruits tropicaux","stoneFruit":"Fruits à noyau","pomeFruit":"Pomme et poire","berries":"Petits fruits","melon":"Melon","floral":"Floral","herbal":"Herbacé aromatique","resin":"Boisé et résineux","spice":"Épicé","green":"Végétal vert","earthy":"Terreux"},"attendues":["floral","herbal","earthy"],"profil":[{"crans":0,"display":"0","source":"modèle","approx":false,"exact":0.35},{"crans":0,"display":"0","source":"modèle","approx":false,"exact":0.31},{"crans":0,"display":"0","source":"modèle","approx":false,"exact":0.35},{"crans":1,"display":"1","source":"modèle","approx":false,"exact":0.74},{"crans":1,"display":"1","source":"modèle","approx":false,"exact":0.65},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":4,"display":"au-dessus","source":"dégustation","approx":false,"exact":8.3},{"crans":1,"display":"1","source":"modèle","approx":false,"exact":0.65},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null}],"cible":[{"min":0,"max":3,"visee":1,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":3,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"}],"degustation":{"date":"18.10"},"phrase":"Boisé et résineux trop marqué · 6 au style · 5 non situées","voiesResume":[{"fam":"floral","texte":"Plus floral : 8 voies, 2 faibles"},{"fam":"resin","texte":"Moins boisé et résineux : 6 voies, faibles"}],"lignes":[{"id":"a1","cle":"beermaverick-nugget","nom":"Nugget","moment":"b60","g":46,"jour":3,"ibuPG":{"fwh":1.43,"b60":1.3,"b30":1,"b15":0.64,"b10":0.47,"b5":0.26,"b0":0,"wp":0.2,"dryActive":null,"dryPost":null},"ibu0":{"moment":"b60","g":46,"v":59.7},"libre":0,"achat":false,"citation":"résine 2/4","fiche":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"signaux":[]}],"rapides":{"stock":[{"cle":"beermaverick-motueka","nom":"Motueka","groupe":"stock","moment":"b10","g":10,"ibu":2.9,"ibuPG":{"fwh":0.89,"b60":0.81,"b30":0.62,"b15":0.4,"b10":0.29,"b5":0.16,"b0":0,"wp":0.12,"dryActive":null,"dryPost":null},"libre":20,"statut":"suffisant","fiche":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"effet":{"rang":2,"crans":[1,0,0,2,2,null,null,null,null,4,1,null],"delta":[1,"non établi","non établi",2,2,"non établi","non établi","non établi","non établi","non établi","non établi","non établi"]}},{"cle":"beermaverick-citra:cryo","nom":"Citra cryo","groupe":"stock","moment":"b10","g":10,"ibu":9,"ibuPG":{"fwh":2.72,"b60":2.48,"b30":1.9,"b15":1.23,"b10":0.9,"b5":0.49,"b0":0,"wp":0.38,"dryActive":null,"dryPost":null},"libre":65,"statut":"suffisant","fiche":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"effet":{"rang":7,"crans":[1,0,0,2,2,null,null,null,null,4,1,null],"delta":[1,"non établi","non établi",2,2,2,"non établi","non établi",2,"non établi","non établi","non établi"]}},{"cle":"beermaverick-cascade","nom":"Cascade","groupe":"stock","moment":"b10","g":10,"ibu":2.4,"ibuPG":{"fwh":0.71,"b60":0.65,"b30":0.5,"b15":0.32,"b10":0.24,"b5":0.13,"b0":0,"wp":0.1,"dryActive":null,"dryPost":null},"libre":60,"statut":"suffisant","fiche":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"effet":null},{"cle":"beermaverick-target","nom":"Target","groupe":"stock","moment":"b10","g":5,"ibu":2,"ibuPG":{"fwh":1.24,"b60":1.13,"b30":0.87,"b15":0.56,"b10":0.41,"b5":0.23,"b0":0,"wp":0.17,"dryActive":null,"dryPost":null},"libre":5,"statut":"suffisant","fiche":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"effet":null},{"cle":"beermaverick-sabro","nom":"Sabro","groupe":"stock","moment":"b10","g":10,"ibu":4.9,"ibuPG":{"fwh":1.47,"b60":1.34,"b30":1.03,"b15":0.66,"b10":0.49,"b5":0.27,"b0":0,"wp":0.2,"dryActive":null,"dryPost":null},"libre":30,"statut":"suffisant","fiche":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"effet":null},{"cle":"beermaverick-idaho-7","nom":"Idaho 7","groupe":"stock","moment":"b10","g":10,"ibu":4.6,"ibuPG":{"fwh":1.4,"b60":1.27,"b30":0.97,"b15":0.63,"b10":0.46,"b5":0.25,"b0":0,"wp":0.19,"dryActive":null,"dryPost":null},"libre":20,"statut":"suffisant","fiche":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"effet":null},{"cle":"beermaverick-nelson-sauvin","nom":"Nelson Sauvin","groupe":"stock","moment":"b10","g":10,"ibu":3.5,"ibuPG":{"fwh":1.05,"b60":0.96,"b30":0.74,"b15":0.48,"b10":0.35,"b5":0.19,"b0":0,"wp":0.15,"dryActive":null,"dryPost":null},"libre":100,"statut":"suffisant","fiche":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"effet":null},{"cle":"beermaverick-galaxy","nom":"Galaxy","groupe":"stock","moment":"b10","g":10,"ibu":6.2,"ibuPG":{"fwh":1.89,"b60":1.72,"b30":1.32,"b15":0.85,"b10":0.62,"b5":0.34,"b0":0,"wp":0.26,"dryActive":null,"dryPost":null},"libre":60,"statut":"suffisant","fiche":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-hallertau-blanc","nom":"Hallertau Blanc","groupe":"stock","moment":"b10","g":10,"ibu":3.4,"ibuPG":{"fwh":1.04,"b60":0.95,"b30":0.73,"b15":0.47,"b10":0.34,"b5":0.19,"b0":0,"wp":0.14,"dryActive":null,"dryPost":null},"libre":30,"statut":"suffisant","fiche":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"effet":null}],"epuises":[{"cle":"beermaverick-east-kent-goldings","nom":"East Kent Goldings","groupe":"epuise","moment":"b10","g":10,"ibu":2,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"effet":{"rang":4,"crans":[1,1,1,2,1,null,null,null,null,4,2,null],"delta":[1,"≈",1,2,"non établi","non établi","non établi","non établi","non établi","non établi",2,"non établi"]}},{"cle":"beermaverick-lotus","nom":"Lotus","groupe":"epuise","moment":"b10","g":10,"ibu":5.4,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"effet":null},{"cle":"beermaverick-fuggle","nom":"Fuggle","groupe":"epuise","moment":"b10","g":10,"ibu":1.6,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"effet":null},{"cle":"beermaverick-simcoe","nom":"Simcoe","groupe":"epuise","moment":"b10","g":10,"ibu":4.7,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"effet":null},{"cle":"beermaverick-nugget","nom":"Nugget","groupe":"epuise","moment":"b10","g":10,"ibu":4.7,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"effet":null},{"cle":"beermaverick-ariana","nom":"Ariana","groupe":"epuise","moment":"b10","g":10,"ibu":4.2,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"effet":null},{"cle":"beermaverick-nectaron","nom":"Nectaron","groupe":"epuise","moment":"b10","g":10,"ibu":4,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"effet":null}],"catalogue":[{"cle":"beermaverick-saaz-late","nom":"Saaz Late","groupe":"catalogue","moment":"b10","g":10,"ibu":1.7,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-spalt","nom":"Spalt","groupe":"catalogue","moment":"b10","g":10,"ibu":1.5,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-whitbread-golding-variety-wgv","nom":"Whitbread Golding Variety (WGV)","groupe":"catalogue","moment":"b10","g":10,"ibu":2.4,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-pahto","nom":"Pahto","groupe":"catalogue","moment":"b10","g":10,"ibu":6.7,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-wild-wolf","nom":"Wild Wolf","groupe":"catalogue","moment":"b10","g":10,"ibu":3,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-yakima-cluster","nom":"Yakima Cluster","groupe":"catalogue","moment":"b10","g":10,"ibu":2.6,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,0,2,0,0,0,0,0,0,0,0,0],"n":[1,0,1,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-marco-polo","nom":"Marco Polo","groupe":"catalogue","moment":"b10","g":10,"ibu":4.5,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-sun","nom":"Sun","groupe":"catalogue","moment":"b10","g":10,"ibu":5.1,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[0,2,0,0,0,0,0,0,0,0,0,0],"n":[0,1,0,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-teamaker","nom":"Teamaker","groupe":"catalogue","moment":"b10","g":10,"ibu":0.4,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-ultra","nom":"Ultra","groupe":"catalogue","moment":"b10","g":10,"ibu":2.3,"ibuPG":{},"libre":0,"statut":"à acheter","fiche":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"effet":null}]},"rapidesMoment":"b10","tousRapidesNoms":["Motueka","Citra cryo","Cascade","Target","Sabro","Idaho 7","Nelson Sauvin","Galaxy","Hallertau Blanc","East Kent Goldings","Lotus","Fuggle","Simcoe","Nugget","Ariana","Nectaron","Saaz Late","Spalt","Whitbread Golding Variety (WGV)","Pahto","Wild Wolf","Yakima Cluster","Marco Polo","Sun","Teamaker","Ultra"],"voies":[{"rang":1,"label":"Ajouter Golding · 10′ · 10 g","verbe":"Ajouter","op":"ajouter","houblons":["Golding"],"cles":["beermaverick-golding"],"levure":false,"changeLevure":false,"moment":"10′","dose":"10 g","stock":"à acheter","ibuDrift":1.8,"ibuApres":61.5,"bords":["épicé"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,1,1,1,1,null,null,null,null,4,2,null],"delta":[1,"≈",1,"non établi","non établi","non établi","non établi","non établi","non établi","non établi",2,"non établi"]},{"rang":2,"label":"Ajouter Motueka · 10′ · 10 g","verbe":"Ajouter","op":"ajouter","houblons":["Motueka"],"cles":["beermaverick-motueka"],"levure":false,"changeLevure":false,"moment":"10′","dose":"10 g","stock":"en stock","ibuDrift":2.9,"ibuApres":62.7,"bords":["tropicaux","agrumes"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,0,0,2,2,null,null,null,null,4,1,null],"delta":[1,"non établi","non établi",2,2,"non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},{"rang":3,"label":"Ajouter Aurum · 10′ · 10 g","verbe":"Ajouter","op":"ajouter","houblons":["Aurum"],"cles":["beermaverick-aurum"],"levure":false,"changeLevure":false,"moment":"10′","dose":"10 g","stock":"à acheter","ibuDrift":1.7,"ibuApres":61.4,"bords":["épicé","agrumes"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,1,1,2,1,null,null,null,null,4,2,null],"delta":[1,"≈",1,2,"non établi","non établi","non établi","non établi","non établi","non établi",2,"non établi"]},{"rang":4,"label":"Ajouter East Kent Goldings · 10′ · 10 g","verbe":"Ajouter","op":"ajouter","houblons":["East Kent Goldings"],"cles":["beermaverick-east-kent-goldings"],"levure":false,"changeLevure":false,"moment":"10′","dose":"10 g","stock":"à acheter","ibuDrift":2,"ibuApres":61.7,"bords":["épicé","agrumes"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,1,1,2,1,null,null,null,null,4,2,null],"delta":[1,"≈",1,2,"non établi","non établi","non établi","non établi","non établi","non établi",2,"non établi"]},{"rang":5,"label":"Ajouter Columbus · 10′ · 10 g","verbe":"Ajouter","op":"ajouter","houblons":["Columbus"],"cles":["beermaverick-columbus"],"levure":false,"changeLevure":false,"moment":"10′","dose":"10 g","stock":"à acheter","ibuDrift":5.8,"ibuApres":65.5,"bords":["épicé","agrumes"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,1,1,2,1,null,null,null,null,4,2,null],"delta":[1,"≈",1,2,"non établi","non établi","non établi","non établi","non établi","non établi",2,"non établi"]},{"rang":6,"label":"Assembler Motueka + Citra cryo · 10′ · 5 g + 5 g","verbe":"Assembler","op":"ajouter","houblons":["Motueka","Citra cryo"],"cles":["beermaverick-motueka","beermaverick-citra:cryo"],"levure":false,"changeLevure":false,"moment":"10′","dose":"5 g + 5 g","stock":"en stock","ibuDrift":6,"ibuApres":65.7,"bords":["tropicaux","agrumes","noyau","melon"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,0,0,2,2,null,null,null,null,4,1,null],"delta":[1,"non établi","non établi",2,2,1,"non établi","non établi",1,"non établi","non établi","non établi"]},{"rang":7,"label":"Ajouter Citra cryo · 10′ · 10 g","verbe":"Ajouter","op":"ajouter","houblons":["Citra cryo"],"cles":["beermaverick-citra:cryo"],"levure":false,"changeLevure":false,"moment":"10′","dose":"10 g","stock":"en stock","ibuDrift":9,"ibuApres":68.7,"bords":["tropicaux","noyau","melon","agrumes"],"dir":{"floral":15.9,"resin":null},"faible":{"floral":false,"resin":true},"crans":[1,0,0,2,2,null,null,null,null,4,1,null],"delta":[1,"non établi","non établi",2,2,2,"non établi","non établi",2,"non établi","non établi","non établi"]},{"rang":8,"label":"Assembler Motueka + Nelson Sauvin · 10′ · 5 g + 5 g","verbe":"Assembler","op":"ajouter","houblons":["Motueka","Nelson Sauvin"],"cles":["beermaverick-motueka","beermaverick-nelson-sauvin"],"levure":false,"changeLevure":false,"moment":"10′","dose":"5 g + 5 g","stock":"en stock","ibuDrift":3.2,"ibuApres":62.9,"bords":["agrumes","tropicaux","épicé"],"dir":{"floral":7.9,"resin":null},"faible":{"floral":true,"resin":true},"crans":[1,0,0,2,1,null,null,null,null,4,1,null],"delta":["≈","non établi","non établi",2,1,"non établi","non établi","non établi","non établi","non établi",1,"non établi"]},{"rang":9,"label":"Remplacer Nugget par Motueka · 60′ · 74 g","verbe":"Remplacer","op":"remplacer","houblons":["Motueka"],"cles":["beermaverick-motueka"],"levure":false,"changeLevure":false,"moment":"60′","dose":"74 g","stock":"manque 54 g","ibuDrift":0.1,"ibuApres":59.9,"bords":[],"dir":{"floral":0.5,"resin":-2.6},"faible":{"floral":true,"resin":true},"crans":[0,0,0,1,1,null,null,null,null,4,0,null],"delta":["≈","≈","≈","≈","≈","non établi","non établi","non établi","non établi","≈","≈","non établi"]},{"rang":10,"label":"Remplacer Nugget par Citra cryo · 60′ · 24 g","verbe":"Remplacer","op":"remplacer","houblons":["Citra cryo"],"cles":["beermaverick-citra:cryo"],"levure":false,"changeLevure":false,"moment":"60′","dose":"24 g","stock":"en stock","ibuDrift":-0.3,"ibuApres":59.5,"bords":[],"dir":{"floral":-0.8,"resin":-2.6},"faible":{"floral":true,"resin":true},"crans":[0,0,0,1,1,null,null,null,null,4,0,null],"delta":["≈","≈","≈","≈","≈","≈","non établi","non établi","≈","≈","≈","non établi"]},{"rang":11,"label":"Remplacer Nugget par Nelson Sauvin · 60′ · 62 g","verbe":"Remplacer","op":"remplacer","houblons":["Nelson Sauvin"],"cles":["beermaverick-nelson-sauvin"],"levure":false,"changeLevure":false,"moment":"60′","dose":"62 g","stock":"en stock","ibuDrift":-0.3,"ibuApres":59.5,"bords":[],"dir":{"floral":-2.6,"resin":-2.6},"faible":{"floral":true,"resin":true},"crans":[0,0,0,1,0,null,null,null,null,4,1,null],"delta":["≈","≈","≈","≈","≈","non établi","non établi","non établi","non établi","≈","≈","non établi"]},{"rang":12,"label":"Remplacer Nugget par Galaxy · 60′ · 35 g","verbe":"Remplacer","op":"remplacer","houblons":["Galaxy"],"cles":["beermaverick-galaxy"],"levure":false,"changeLevure":false,"moment":"60′","dose":"35 g","stock":"en stock","ibuDrift":0.4,"ibuApres":60.1,"bords":[],"dir":{"floral":-2.6,"resin":-2.6},"faible":{"floral":true,"resin":true},"crans":[0,0,0,1,1,null,null,null,null,4,0,null],"delta":["≈","≈","≈","≈","≈","≈","non établi","non établi","non établi","≈","≈","non établi"]},{"rang":13,"label":"Remplacer Nugget par Hallertau Blanc · 60′ · 63 g","verbe":"Remplacer","op":"remplacer","houblons":["Hallertau Blanc"],"cles":["beermaverick-hallertau-blanc"],"levure":false,"changeLevure":false,"moment":"60′","dose":"63 g","stock":"manque 33 g","ibuDrift":0,"ibuApres":59.8,"bords":[],"dir":{"floral":-2.6,"resin":-2.6},"faible":{"floral":true,"resin":true},"crans":[0,0,0,1,1,null,null,null,null,4,1,null],"delta":["≈","≈","≈","≈","≈","non établi","non établi","≈","non établi","≈","≈","non établi"]},{"rang":14,"label":"Diminuer Nugget · 60′ · 46 → 38.5 g (bas de la bande d’IBU)","verbe":"Diminuer","op":"diminuer","houblons":["Nugget"],"cles":["beermaverick-nugget"],"levure":false,"changeLevure":false,"moment":"60′","dose":"46 → 38,5 g","stock":"en stock","ibuDrift":-9.7,"ibuApres":50,"bords":[],"dir":{"floral":-0.2,"resin":-0.2},"faible":{"floral":true,"resin":true},"crans":[0,0,0,1,1,null,null,null,null,4,1,null],"delta":["≈","≈","≈","≈","≈","non établi","non établi","non établi","non établi","≈","≈","non établi"]},{"rang":15,"label":"Houblonner à froid en fermentation active : Motueka, 20 g","verbe":"Levure","op":"levure","houblons":["Motueka"],"cles":["beermaverick-motueka"],"levure":true,"changeLevure":false,"moment":"à froid, fermentation active","dose":"20 g","stock":"en stock","ibuDrift":0,"ibuApres":59.7,"bords":["tropicaux","agrumes"],"dir":{"floral":27,"resin":null},"faible":{"floral":false,"resin":true},"crans":[2,0,0,4,4,null,null,null,null,4,1,null],"delta":[1,"non établi","non établi",3,3,"non établi","non établi","non établi","non établi","non établi","non établi","non établi"]},{"rang":16,"label":"Changer de levure : LalBrew Verdant IPA","verbe":"Levure","op":"levure","houblons":["LalBrew Verdant IPA"],"cles":[],"levure":true,"changeLevure":true,"moment":"toute la bière","dose":"","stock":"stock non suivi","ibuDrift":0,"ibuApres":59.7,"bords":["noyau","tropicaux","agrumes"],"dir":{"floral":null,"resin":null},"faible":{"floral":true,"resin":true},"crans":[0,0,0,2,3,null,null,null,null,4,1,null],"delta":["non établi","non établi","non établi",1,2,4,"non établi","non établi","non établi","non établi","non établi","non établi"]},{"rang":17,"label":"Changer de levure : LalBrew Pomona","verbe":"Levure","op":"levure","houblons":["LalBrew Pomona"],"cles":[],"levure":true,"changeLevure":true,"moment":"toute la bière","dose":"","stock":"stock non suivi","ibuDrift":0,"ibuApres":59.7,"bords":["noyau","tropicaux","agrumes"],"dir":{"floral":null,"resin":null},"faible":{"floral":true,"resin":true},"crans":[0,0,0,4,4,null,null,null,null,4,1,null],"delta":["non établi","non établi","non établi",3,3,4,"non établi","non établi","non établi","non établi","non établi","non établi"]}],"sansHoublon":{"Golding":{"retirees":[1],"nouvelles":[{"rang":5,"label":"Ajouter Celeia · 10′ · 10 g"}]},"Motueka":{"retirees":[2,6,8,9,15],"nouvelles":[{"rang":6,"label":"Assembler Citra cryo + Nelson Sauvin · 10′ · 5 g + 5 g"},{"rang":7,"label":"Assembler Citra cryo + Galaxy · 10′ · 5 g + 5 g"},{"rang":15,"label":"Houblonner à froid en fermentation active : Citra cryo, 40 g"},{"rang":16,"label":"Retirer Nugget · 60′"},{"rang":17,"label":"Remplacer Nugget par Target · 60′ · 53 g"}]},"Aurum":{"retirees":[3],"nouvelles":[{"rang":5,"label":"Ajouter Celeia · 10′ · 10 g"}]},"East Kent Goldings":{"retirees":[4],"nouvelles":[{"rang":5,"label":"Ajouter Celeia · 10′ · 10 g"}]},"Columbus":{"retirees":[5],"nouvelles":[{"rang":5,"label":"Ajouter Celeia · 10′ · 10 g"}]},"Citra":{"retirees":[6,7,10],"nouvelles":[{"rang":7,"label":"Assembler Motueka + Galaxy · 10′ · 5 g + 5 g"},{"rang":16,"label":"Retirer Nugget · 60′"},{"rang":17,"label":"Remplacer Nugget par Target · 60′ · 53 g"}]},"Nelson Sauvin":{"retirees":[8,11],"nouvelles":[{"rang":8,"label":"Assembler Motueka + Galaxy · 10′ · 5 g + 5 g"},{"rang":17,"label":"Retirer Nugget · 60′"}]},"Galaxy":{"retirees":[12],"nouvelles":[{"rang":17,"label":"Retirer Nugget · 60′"}]},"Hallertau Blanc":{"retirees":[13],"nouvelles":[{"rang":17,"label":"Retirer Nugget · 60′"}]},"Nugget":{"retirees":[],"nouvelles":[]}},"fiches":{"Nugget":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"Ariana":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"Fuggle":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"Hallertau Blanc":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"Idaho 7":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"Lotus":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"Nectaron":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Simcoe":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"Cascade":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"Target":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"East Kent Goldings":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"Galaxy":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Nelson Sauvin":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"Sabro":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"Motueka":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"Citra cryo":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"Saaz Late":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Spalt":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Whitbread Golding Variety (WGV)":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Pahto":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Wild Wolf":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Yakima Cluster":{"niv":[1,0,2,0,0,0,0,0,0,0,0,0],"n":[1,0,1,0,0,0,0,0,0,0,0,0],"of":1},"Marco Polo":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Sun":{"niv":[0,2,0,0,0,0,0,0,0,0,0,0],"n":[0,1,0,0,0,0,0,0,0,0,0,0],"of":1},"Teamaker":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Ultra":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1}},"comparerDefaut":["Nugget","Motueka","Citra cryo"],"cles":{"Ariana":"beermaverick-ariana","Fuggle":"beermaverick-fuggle","Hallertau Blanc":"beermaverick-hallertau-blanc","Idaho 7":"beermaverick-idaho-7","Lotus":"beermaverick-lotus","Nectaron":"beermaverick-nectaron","Simcoe":"beermaverick-simcoe","Cascade":"beermaverick-cascade","Target":"beermaverick-target","East Kent Goldings":"beermaverick-east-kent-goldings","Galaxy":"beermaverick-galaxy","Nelson Sauvin":"beermaverick-nelson-sauvin","Sabro":"beermaverick-sabro","Motueka":"beermaverick-motueka","Citra cryo":"beermaverick-citra:cryo","Nugget":"beermaverick-nugget","Saaz Late":"beermaverick-saaz-late","Spalt":"beermaverick-spalt","Whitbread Golding Variety (WGV)":"beermaverick-whitbread-golding-variety-wgv","Pahto":"beermaverick-pahto","Wild Wolf":"beermaverick-wild-wolf","Yakima Cluster":"beermaverick-yakima-cluster","Marco Polo":"beermaverick-marco-polo","Sun":"beermaverick-sun","Teamaker":"beermaverick-teamaker","Ultra":"beermaverick-ultra","Golding":"beermaverick-golding","Aurum":"beermaverick-aurum","Columbus":"beermaverick-columbus"},"groupes":{"Saaz Late":"catalogue","Spalt":"catalogue","Whitbread Golding Variety (WGV)":"catalogue","Pahto":"catalogue","Wild Wolf":"catalogue","Yakima Cluster":"catalogue","Marco Polo":"catalogue","Sun":"catalogue","Teamaker":"catalogue","Ultra":"catalogue","Ariana":"epuise","Fuggle":"epuise","Hallertau Blanc":"stock","Idaho 7":"stock","Lotus":"epuise","Nectaron":"epuise","Simcoe":"epuise","Cascade":"stock","Target":"stock","East Kent Goldings":"epuise","Galaxy":"stock","Nelson Sauvin":"stock","Sabro":"stock","Motueka":"stock","Citra cryo":"stock","Nugget":"epuise"},"candidats":[["Cascade","stock"],["Target","stock"],["Sabro","stock"],["Idaho 7","stock"],["Nelson Sauvin","stock"],["Galaxy","stock"],["Hallertau Blanc","stock"],["East Kent Goldings","epuise"],["Lotus","epuise"],["Fuggle","epuise"],["Simcoe","epuise"],["Ariana","epuise"],["Nectaron","epuise"],["Saaz Late","catalogue"],["Spalt","catalogue"],["Whitbread Golding Variety (WGV)","catalogue"],["Pahto","catalogue"],["Wild Wolf","catalogue"],["Yakima Cluster","catalogue"],["Marco Polo","catalogue"],["Sun","catalogue"],["Teamaker","catalogue"],["Ultra","catalogue"]],"horsModele":["Amertume dans le haut de la bande du style","Malt torréfié","Oxydation du houblon ou de la bière","Forte dose de houblon à l’ébullition"],"levure":{"nom":"SafAle US-05","statut":"caractérisée"},"notes":{"ibu":null,"profil":null,"voies":null}};
+/* Lot 3, variantes de p3 (p02, p03) : logique commune. Données : pack-mini-protos (const D).
+   Quatre objets (MODELE.md) : 1 ma bière et 2 la cible (crans du style), 3 les fiches des
+   houblons (citations 0 à 2), 4 les voies du moteur (avant / après en crans). Aucun chiffre
+   n'est calculé ici : sommes des IBU et dose × IBU par gramme du pack seulement. */
+const ACC = '#c2410c';
+const NS = 'http://www.w3.org/2000/svg';
+let REDUIT = false;
+try { REDUIT = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* rien */ }
+const lerp = (a, b, t) => a + (b - a) * t;
+const $ = (s, r) => (r || document).querySelector(s);
+const virgule = (n, d = 1) => String(Math.round(n * 10 ** d) / 10 ** d).replace('.', ',');
+const grammes = (g) => virgule(g, 1) + ' g';
+const ibuTexte = (v) => (Math.abs(v) < 1 && v !== 0 ? virgule(v, 1) : String(Math.round(v)));
+
+function sv(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs || {}) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const k in attrs || {}) {
+    const v = attrs[k];
+    if (v === false || v == null) continue;
+    if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) e.append(k instanceof Node ? k : String(k));
+  return e;
+}
+function anime(duree, pas, fin) {
+  if (REDUIT || duree <= 0) { pas(1); if (fin) fin(); return; }
+  const t0 = performance.now();
+  const f = (now) => {
+    const k = Math.min(1, (now - t0) / duree);
+    pas(1 - Math.pow(1 - k, 3));
+    if (k < 1) requestAnimationFrame(f); else if (fin) fin();
+  };
+  requestAnimationFrame(f);
+}
+const losange = (p, r) => `M${p[0]},${p[1] - r} L${p[0] + r},${p[1]} L${p[0]},${p[1] + r} L${p[0] - r},${p[1]}Z`;
+const fi = (f) => D.ordre.indexOf(f);
+/* Le nom d'un houblon porte sa clé du pack (data-houblon), une fois par occurrence. */
+const cleDe = (nom) => (D.cles && D.cles[nom]) || null;
+function nomsHoublons(noms) { return noms.flatMap((n, k) => [k ? ' + ' : null, h('span', { 'data-houblon': cleDe(n) }, n)]).filter((x) => x != null); }
+const nomCourt = (f) => D.court[f];
+
+/* Moments : la frise 60′ → à froid. Le type d'ajout et le moment se lisent sur la frise. */
+const MOMENTS = [
+  { code: 'b60', type: 'ébullition', quand: '60′', couloir: 0 },
+  { code: 'b10', type: 'ébullition', quand: '10′', couloir: 1 },
+  { code: 'b0', type: 'ébullition', quand: '0′', couloir: 2 },
+  { code: 'wp', type: 'whirlpool', quand: '80 °C', couloir: 3 },
+  { code: 'dryActive', type: 'à froid', quand: 'J+3', couloir: 4 },
+  { code: 'dryPost', type: 'à froid', quand: 'après', couloir: 4 },
+];
+const COULOIRS = ['60′', '10′', '0′', 'whirlpool', 'à froid'];
+const TYPES = ['ébullition', 'whirlpool', 'à froid'];
+const mom = (code) => MOMENTS.find((m) => m.code === code) || MOMENTS[0];
+const quand = (l) => (l.moment === 'dryActive' ? 'J+' + l.jour : mom(l.moment).quand);
+const quandLong = (l) => ({ b60: '60 minutes d\'ébullition', b10: '10 minutes d\'ébullition', b0: 'fin d\'ébullition', wp: 'whirlpool à 80 °C', dryActive: 'à froid, jour ' + l.jour + ', en fermentation active', dryPost: 'à froid, après fermentation' })[l.moment];
+
+/* État de l'écran. */
+const B = document.body.dataset;
+const ETAT = {
+  vue: B.vue, partie: B.ouvre || 'biere', lentille: B.lentille || 'barres',
+  lignes: D.lignes.map((l) => ({ ...l })),
+  gouts: { aime: new Set(), exclut: new Set() }, goutOuvert: null,
+  visee: {}, sel: null, filtreVoies: null, marques: null,
+  comp: D.comparerDefaut.slice(), effet: null, ibuAffiche: null, focusK: null, momentR: {}, focusSerie: null,
+};
+for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
+let VARIANTE = null;
+
+/* IBU : valeur du pack au moment et à la dose de la recette, sinon IBU par gramme du pack × dose. */
+function ibuLigne(l) {
+  const pg = l.ibuPG[l.moment];
+  if (pg == null) return null;
+  if (l.ibu0 && l.ibu0.v != null && l.ibu0.moment === l.moment && l.ibu0.g === l.g) return l.ibu0.v;
+  return pg * l.g;
+}
+const ibuTotal = () => ETAT.lignes.reduce((s, l) => s + (ibuLigne(l) || 0), 0);
+function ibuEl(l) {
+  const v = ibuLigne(l);
+  return v == null ? h('span', { class: 'ibu-l' }, 'IBU non modélisé') : h('span', { class: 'ibu-l' }, ibuTexte(v) + ' IBU');
+}
+/* Stock : il informe sans limiter (D21) et reste discret (D23) : seule l'exception s'écrit. */
+function etatsStock() {
+  const pris = {};
+  return ETAT.lignes.map((l) => {
+    if (l.achat) return { txt: 'à acheter', manque: l.g };
+    const deja = pris[l.cle] || 0;
+    pris[l.cle] = deja + l.g;
+    const reste = Math.max(0, l.libre - deja), manque = Math.max(0, l.g - reste);
+    if (reste <= 0 && manque > 0.05) return { txt: 'à racheter', manque };
+    return manque > 0.05 ? { txt: 'manque ' + grammes(manque), manque } : { txt: '', manque: 0 };
+  });
+}
+/* Effet d'un ajout : celui de la voie du moteur au même houblon, moment et dose ; sinon « non établi ». */
+function effetLigne(l) {
+  return l.effet && l.effetCle && l.effetCle.moment === l.moment && l.effetCle.g === l.g ? l.effet : null;
+}
+function effetCourant() {
+  const l = ETAT.effet && ETAT.lignes.find((x) => x.id === ETAT.effet);
+  return l ? effetLigne(l) : null;
+}
+function effetTag(l) {
+  if (!l.nouveau) return null;
+  const e = effetLigne(l);
+  if (!e) return h('span', { class: 'effet ne' }, 'effet non établi');
+  const idx = D.ordre.map((f, i) => i).filter((i) => typeof e.delta[i] === 'number' && e.delta[i] !== 0);
+  const i = idx.find((k) => D.attendues.includes(D.ordre[k])) ?? idx[0];
+  if (i == null) return h('span', { class: 'effet ne' }, '≈ inchangé');
+  return h('span', { class: 'effet', 'aria-label': 'Effet prévu : ' + D.long[D.ordre[i]] + ' ' + (e.delta[i] > 0 ? '+' : '−') + Math.abs(e.delta[i]) + ' cran' }, nomCourt(D.ordre[i]).toLowerCase() + ' ' + (e.delta[i] > 0 ? '+' : '−') + Math.abs(e.delta[i]));
+}
+
+/* Ajout à froid (MODELE, « La levure ») : en fermentation active, signaux de biotransformation
+   et de hop creep, sourcés dans le pack et sans chiffre ; l'effet reste « non quantifié ». */
+function bioEl(l) {
+  const actif = l.moment === 'dryActive';
+  return h('div', { class: 'bio' },
+    h('span', { class: 'quand-bio' }, actif ? 'fermentation active' : 'après fermentation'),
+    actif ? h('span', { class: 'sigs', 'data-role': 'biotransformation', 'aria-label': 'Avec ' + D.levure.nom + ' : biotransformation possible, non quantifiée' },
+      h('span', { class: 'sig' }, 'biotransformation possible, non quantifiée'),
+      l.signaux.map((x) => h('span', { class: 'sig' + (x.statut === 'possible' ? '' : ' ne'), title: x.titre + ' : ' + x.statut, 'aria-label': x.titre + ' : ' + x.statut }, x.court))) : null);
+}
+
+/* Citation utile : la fiche cite la famille que ma bière a au-dessus de la zone (résine en S1). */
+function citationTag(l) {
+  const i = fi('resin');
+  if (!l.citation || !(D.profil[i].crans > D.cible[i].max)) return null;
+  return h('span', { class: 'cite', 'aria-label': 'Résine citée par ' + l.citation.replace('résine ', '').replace('/', ' fiches sur ') }, l.citation);
+}
+
+/* Actions sur la recette. */
+let SEQ = 0;
+function ajouter(r, moment) {
+  const id = 'n' + (++SEQ);
+  ETAT.lignes.push({
+    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
+    libre: r.libre, achat: r.groupe === 'catalogue', citation: null, fiche: r.fiche, effet: r.effet, effetCle: { moment: r.moment, g: r.g }, nouveau: true, signaux: [],
+  });
+  ETAT.effet = id;
+  rendre(true);
+}
+function placer(l, code) { l.moment = code; rendre(true); }
+function momentSuivant(l) { const i = MOMENTS.findIndex((m) => m.code === l.moment); placer(l, MOMENTS[(i + 1) % MOMENTS.length].code); }
+function typeSuivant(l) {
+  const t = TYPES[(TYPES.indexOf(mom(l.moment).type) + 1) % TYPES.length];
+  placer(l, MOMENTS.find((m) => m.type === t).code);
+}
+function doser(l, d) { l.g = Math.max(0, Math.round((l.g + d) * 10) / 10); rendre(true); }
+function retirer(l) { ETAT.lignes = ETAT.lignes.filter((x) => x !== l); rendre(true); }
+
+/* Mes goûts (objet 5) : aimer, neutre, exclure, là où un houblon apparaît. */
+function goutDe(nom) { return ETAT.gouts.exclut.has(nom) ? 'exclure' : ETAT.gouts.aime.has(nom) ? 'aimer' : 'neutre'; }
+function goutBouton(nom, ctx, booster) {
+  const cle = ctx + ':' + nom;
+  const etat = goutDe(nom);
+  const els = [h('button', {
+    class: 'gout' + (etat === 'aimer' ? ' aime' : ''), 'data-role': 'gout', 'data-booster': booster || null, 'data-k': 'g' + cle,
+    'aria-expanded': String(ETAT.goutOuvert === cle), 'aria-label': 'Mon goût pour ' + nom + ' : ' + etat,
+    onclick: (e) => { e.stopPropagation(); ETAT.goutOuvert = ETAT.goutOuvert === cle ? null : cle; rendre(false); },
+  })];
+  if (ETAT.goutOuvert === cle) {
+    els.push(h('span', { class: 'gout-choix', role: 'group', 'aria-label': 'Mon goût pour ' + nom },
+      ['aimer', 'neutre', 'exclure'].map((c) => h('button', {
+        'aria-pressed': String(etat === c), 'data-k': 'gc' + cle + c,
+        onclick: (e) => { e.stopPropagation(); noterGout(nom, c); },
+      }, c))));
+  }
+  return els;
+}
+function noterGout(nom, c) {
+  ETAT.gouts.aime.delete(nom); ETAT.gouts.exclut.delete(nom);
+  if (c === 'aimer') ETAT.gouts.aime.add(nom);
+  if (c === 'exclure') ETAT.gouts.exclut.add(nom);
+  ETAT.goutOuvert = null; ETAT.marques = null;
+  rendre(false);
+}
+function goutsLigne() {
+  const tous = [...ETAT.gouts.exclut].map((n) => [n, 'exclu']).concat([...ETAT.gouts.aime].map((n) => [n, 'aimé']));
+  if (!tous.length) return null;
+  return h('div', { class: 'goutsl', 'aria-label': 'Mes goûts' }, h('span', { class: 'gris' }, 'Mes goûts'),
+    tous.map(([n, s]) => h('button', { 'aria-label': n + ' ' + s + ', remettre neutre', onclick: () => noterGout(n, 'neutre') }, s === 'exclu' ? '⊘ ' : '♥ ', h('span', { 'data-houblon': cleDe(n) }, n))));
+}
+
+/* Ajouts proposés par le moteur : stock d'abord ; « Tout » montre aussi à racheter et à acheter. */
+function rapidesVisibles(n) {
+  const pris = new Set(ETAT.lignes.map((l) => l.cle));
+  const ok = (r) => !pris.has(r.cle) && !ETAT.gouts.exclut.has(r.nom);
+  const st = D.rapides.stock.filter(ok), ep = D.rapides.epuises.filter(ok), ca = D.rapides.catalogue.filter(ok);
+  const autres = [ca[0]].filter(Boolean);
+  return [...st.slice(0, n - autres.length), ...autres];
+}
+function stockEl(txt) { return txt ? h('span', { class: 'st' }, txt) : null; }
+function statutRapide(r) {
+  if (r.groupe === 'catalogue') return stockEl('à acheter');
+  if (r.groupe === 'epuise') return stockEl('à racheter');
+  // Proposition plus grande que le stock : un repère discret, le détail au lecteur d'écran.
+  if (r.libre < r.g) return h('span', { class: 'pt-manque', role: 'img', 'aria-label': 'stock : manque ' + grammes(r.g - r.libre), title: 'manque ' + grammes(r.g - r.libre) });
+  return null;
+}
+function miniProfil(fiche, nom) {
+  const cites = D.ordre.filter((f, i) => fiche.niv[i] > 0).map((f) => nomCourt(f).toLowerCase());
+  const w = h('span', { class: 'mini', role: 'img', 'aria-label': 'Fiches de ' + nom + ' : ' + (cites.join(', ') || 'non décrit') });
+  D.ordre.forEach((f, i) => {
+    const lv = fiche.niv[i];
+    const trop = D.profil[i].crans === 4;
+    w.append(h('i', { class: 'c' + (lv === 2 ? ' m' : lv === 1 ? ' ci' : '') + (trop && lv ? ' acc' : '') + (i === D.attendues.length ? ' sep' : '') }));
+  });
+  return w;
+}
+/* Un ajout proposé : « 10 g → + 3 IBU » (D16, « genre 5g -> 20ibu en plus »), son stock, ses fiches.
+   colonne : les IBU en colonne à droite (p03, greffe de p11) ; sinon dans la ligne (p02). */
+function rapideLigne(r, premier, colonne) {
+  const ibu = r.ibu == null ? 'IBU non modélisé' : '+' + ibuTexte(r.ibu) + ' IBU';
+  const corps = colonne
+    ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
+      h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
+    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)),
+      h('span', { class: 'r2' }, h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
+  return h('li', { class: 'rapide-l' },
+    h('button', {
+      class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
+      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + mom(r.moment).quand + ' : ' + ibu,
+      onclick: () => ajouter(r),
+    }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), corps),
+    goutBouton(r.nom, 'r', premier ? 'goût' : null));
+}
+
+/* Pièces de l'étape. */
+function enTete() {
+  return h('header', { class: 'barre' },
+    h('button', { class: 'retour', 'aria-label': 'Retour à l\'étape Malts' }),
+    h('h1', {}, 'Houblons'), h('span', { class: 'etape' }, '3/7'),
+    h('button', { class: 'style', 'aria-label': 'Style ' + D.code + ', échelles hypothétiques à valider ; changer de bière' }, D.code, h('span', { class: 'badge' }, 'hypothèse')));
+}
+function resume() {
+  const [lo, hi] = D.ibuStyle;
+  return h('div', { class: 'resume', role: 'group', 'aria-label': 'Résumé de la recette' },
+    h('div', { class: 'ibu-bloc' }, h('span', { class: 'cle' }, 'IBU'), h('output', { id: 'ibu', 'aria-live': 'polite' }, String(Math.round(ETAT.ibuAffiche ?? ibuTotal()))),
+      h('span', { id: 'ibu-delta', class: 'delta', 'aria-live': 'polite' }),
+      h('span', { class: 'jauge', role: 'meter', 'aria-label': 'IBU face à la bande du style, ' + lo + ' à ' + hi, 'aria-valuemin': lo - (hi - lo) / 2, 'aria-valuemax': hi + (hi - lo) / 2, 'aria-valuenow': Math.round(ibuTotal()) }, h('i', { class: 'bde' }), h('i', { class: 'rep' }))),
+    h('div', {}, h('span', { class: 'cle' }, 'OG'), h('b', {}, D.og)),
+    h('div', {}, h('span', { class: 'cle' }, 'EBC'), h('b', {}, String(D.ebc))));
+}
+function majIbu(animer) {
+  const out = $('#ibu');
+  if (!out) return;
+  const cible = ibuTotal(), de = ETAT.ibuAffiche ?? cible;
+  ETAT.ibuAffiche = cible;
+  const [lo, hi] = D.ibuStyle, a0 = lo - (hi - lo) / 2, a1 = hi + (hi - lo) / 2;
+  const pos = (v) => Math.max(0, Math.min(100, (v - a0) / (a1 - a0) * 100));
+  const j = $('.jauge');
+  if (j) j.classList.toggle('hors', cible < lo || cible > hi);
+  anime(animer ? 250 : 0, (k) => {
+    const v = lerp(de, cible, k);
+    out.textContent = Math.round(v);
+    document.querySelectorAll('.jauge .rep').forEach((r) => { r.style.left = pos(v) + '%'; });
+  });
+  const delta = Math.round(cible) - Math.round(de), dl = $('#ibu-delta');
+  if (animer && delta && dl) { dl.textContent = (delta > 0 ? '+' : '−') + Math.abs(delta); setTimeout(() => { if (dl.isConnected) dl.textContent = ''; }, 2000); }
+}
+function noteIbu() {
+  if (!D.notes.ibu) return null;
+  // Jauge à la largeur de son conteneur (pourcentages) : 0 à 90 IBU, bande du style, IBU actuel.
+  const [lo, hi] = D.ibuStyle, max = hi + (hi - lo), pc = (v) => (2 + Math.max(0, Math.min(1, v / max)) * 96).toFixed(2) + '%';
+  const v = ibuTotal();
+  const s = sv('svg', { width: '100%', height: 26, role: 'img', 'aria-label': 'IBU ' + Math.round(v) + ' face à la bande du style, ' + lo + ' à ' + hi });
+  sv('rect', { x: '2%', y: 9, width: '96%', height: 8, rx: 4, fill: '#ececec' }, s);
+  sv('rect', { x: pc(lo), y: 9, width: ((hi - lo) / max * 96).toFixed(2) + '%', height: 8, fill: '#bdbdbd' }, s);
+  sv('rect', { x: pc(v), y: 3, width: 4, height: 20, rx: 1, fill: v < lo || v > hi ? ACC : '#111', transform: 'translate(-2,0)' }, s);
+  return h('div', { class: 'note-ibu' }, h('p', { class: 'note-acc p' }, D.notes.ibu), s);
+}
+function levure() {
+  return h('div', { class: 'levure', 'data-role': 'levure', 'aria-label': 'Levure de la recette : ' + D.levure.nom + ', ' + D.levure.statut },
+    h('span', { class: 'ic-levure', 'aria-hidden': 'true' }), h('span', {}, D.levure.nom), h('span', { class: 'p gris' }, D.levure.statut));
+}
+function champ(quandR) {
+  return h('label', { class: 'champ' }, h('input', { type: 'text', placeholder: 'Ajouter' + (quandR ? ' à ' + quandR : '') + ' — houblon…', 'aria-label': 'Ajouter un houblon' + (quandR ? ' à ' + quandR : '') + ' : stock ou catalogue' }));
+}
+function phraseParts() {
+  const parts = D.phrase.split(' · ');
+  return { exc: parts.filter((p) => !/^\d/.test(p)), cpts: parts.filter((p) => /^\d/.test(p)) };
+}
+/* La ligne qui résume ma bière face à la cible (objets 1 et 2) et ouvre le panneau ; aperçu en crans. */
+function panLigne() {
+  const { exc, cpts } = phraseParts();
+  return h('button', { class: 'pan', 'data-role': 'panneau', 'data-booster': 'ouvrir panneau', 'aria-label': D.phrase + ' : ouvrir Ma bière et la cible', onclick: () => ouvrir('biere') },
+    h('span', { class: 'r1' }, exc.map((t) => h('span', { class: 'exc' }, t)), exc.length ? null : cpts.map((t) => h('span', { class: 'cpt' }, t)), h('span', { class: 'ouvrir', 'aria-hidden': 'true' })),
+    apercu());
+}
+function marqueBiere(parent, p, i, c, r) {
+  const P = D.profil[i];
+  if (P.crans == null) return;
+  const deg = P.source === 'dégustation', trop = P.crans > D.cible[i].max;
+  sv('circle', { cx: c[0], cy: c[1], r, fill: deg ? (trop ? ACC : '#111') : '#fff', stroke: trop ? ACC : '#111', 'stroke-width': 1.6, 'stroke-dasharray': P.approx ? '2 1.5' : null }, parent);
+}
+function apercu() {
+  const situees = D.profil.filter((p) => p.crans != null).length;
+  if (!situees) return null;
+  const fams = situees >= D.ordre.length / 2 ? D.ordre.map((f, i) => i) : D.ordre.map((f, i) => i).filter((i) => D.attendues.includes(D.ordre[i]) || D.profil[i].crans != null);
+  const rows = Math.ceil(fams.length / 2), rh = 32;
+  const s = sv('svg', { width: 358, height: rows * rh + 2, class: 'apercu', role: 'img', 'aria-label': 'Aperçu en crans du style : ma bière face à la zone du style' });
+  const eff = effetCourant();
+  fams.forEach((i, n) => {
+    const f = D.ordre[i];
+    const col = n < rows ? 0 : 1, row = n % rows, X = col * 184, y = row * rh + rh / 2 + 1;
+    const C = D.cible[i], P = D.profil[i], sw = 21, x0 = X + 66;
+    const xs = (v) => x0 + (v + 0.5) * sw;
+    sv('text', { x: X, y: y + 4, 'font-size': 12, 'font-weight': D.attendues.includes(f) ? 650 : 400, fill: P.crans === 4 ? ACC : '#111' }, s).textContent = nomCourt(f);
+    sv('rect', { x: x0, y: y - 4, width: 5 * sw, height: 8, rx: 4, fill: '#f0f0f0' }, s);
+    sv('rect', { x: xs(C.min - 0.5) , y: y - 4, width: (C.max - C.min + 1) * sw, height: 8, rx: 4, fill: P.crans == null ? 'none' : '#d0d0d0', stroke: P.crans == null ? '#b0b0b0' : null, 'stroke-dasharray': P.crans == null ? '2 2' : null }, s);
+    if (eff && eff.crans[i] != null && P.crans != null && typeof eff.delta[i] === 'number' && eff.delta[i] !== 0) {
+      sv('line', { x1: xs(P.crans), y1: y, x2: xs(eff.crans[i]), y2: y, stroke: '#111', 'stroke-width': 1.5, 'stroke-dasharray': '2 2' }, s);
+      sv('circle', { cx: xs(eff.crans[i]), cy: y, r: 5, fill: '#111' }, s);
+    }
+    marqueBiere(s, P, i, [xs(P.crans), y], 5);
+  });
+  return s;
+}
+
+/* ---------- Panneau : trois parties nommées, à un toucher l'une de l'autre ---------- */
+const PARTIES = [['biere', 'Ma bière'], ['suggestions', 'Suggestions'], ['comparer', 'Comparer']];
+function ouvrir(partie) { ETAT.vue = 'panneau'; ETAT.partie = partie; ETAT.goutOuvert = null; ETAT.entre = true; rendre(false); }
+function tetePanneau() {
+  return h('div', { class: 'tete' },
+    h('button', { class: 'retour', 'aria-label': 'Revenir à l\'étape Houblons', onclick: () => { ETAT.vue = 'etape'; rendre(false); } }),
+    h('div', { class: 'onglets', role: 'tablist', 'aria-label': 'Parties du panneau d\'analyse' },
+      PARTIES.map(([k, t]) => h('button', {
+        role: 'tab', 'aria-selected': String(ETAT.partie === k), 'data-k': 't' + k,
+        'data-booster': ETAT.partie === k ? null : 'onglet ' + t.toLowerCase(),
+        onclick: () => { if (ETAT.partie !== k) ouvrir(k); },
+      }, t))));
+}
+let LENTILLE_CB = null;
+function lentille() {
+  const seg = h('span', { class: 'seg', role: 'radiogroup', 'aria-label': 'Lentille : barres ou radar', 'data-booster': 'lentille radar' },
+    [['barres', 'Barres'], ['radar', 'Radar']].map(([k, t]) => h('button', { role: 'radio', 'aria-checked': String(ETAT.lentille === k), 'data-l': k }, t)));
+  const vers = (l) => {
+    if (l === ETAT.lentille) return;
+    ETAT.lentille = l;
+    seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.l === l)));
+    if (LENTILLE_CB) LENTILLE_CB(l);
+  };
+  seg.addEventListener('click', (e) => { const b = e.target.closest('button'); vers(b && b.dataset.l !== ETAT.lentille ? b.dataset.l : ETAT.lentille === 'radar' ? 'barres' : 'radar'); });
+  seg.addEventListener('keydown', (e) => { if (['ArrowLeft', 'ArrowRight'].includes(e.key)) { e.preventDefault(); vers(ETAT.lentille === 'radar' ? 'barres' : 'radar'); seg.querySelector('[aria-checked="true"]').focus(); } });
+  return seg;
+}
+function panneau(app) {
+  app.append(tetePanneau(), resume());
+  const part = h('section', { class: 'partie' + (ETAT.entre ? ' entre' : ''), 'data-partie': ETAT.partie, 'aria-label': PARTIES.find((p) => p[0] === ETAT.partie)[1] });
+  ETAT.entre = false;
+  app.append(part);
+  LENTILLE_CB = null;
+  ({ biere: partieBiere, suggestions: partieSuggestions, comparer: partieComparer })[ETAT.partie](part);
+}
+
+/* Sous un radar : une rangée par série (ce qui la distingue) ; la toucher isole la série. */
+function trait(st) {
+  const s = sv('svg', { width: 18, height: 10, style: 'display:inline-block;vertical-align:middle;flex:none', 'aria-hidden': 'true' });
+  if (st.zone) sv('rect', { x: 0, y: 1, width: 18, height: 8, rx: 2, fill: '#ececec', stroke: '#bdbdbd' }, s);
+  else if (st.point) sv('circle', { cx: 9, cy: 5, r: 4, fill: st.point === 'plein' ? (st.acc ? ACC : '#111') : '#fff', stroke: st.point === 'pointille' ? '#7a7a7a' : st.acc ? ACC : '#111', 'stroke-width': 1.5, 'stroke-dasharray': st.point === 'pointille' ? '2 1.5' : null }, s);
+  else sv('line', { x1: 0, y1: 5, x2: 18, y2: 5, stroke: st.stroke, 'stroke-width': st.w ? Math.min(st.w, 4) : 2, 'stroke-dasharray': st.dash || null }, s);
+  return s;
+}
+function rangeesSeries(rangees, redessiner) {
+  return h('ul', { class: 'series', 'aria-label': 'Séries du radar' }, rangees.map((r, n) => h('li', {},
+    h('button', {
+      class: 'serie', 'aria-pressed': String(ETAT.focusSerie === r.nom), 'data-booster': n === 0 ? 'série' : null, 'data-k': 's' + (r.cleK || r.nom),
+      'aria-label': 'Isoler la série ' + r.nom + ' sur le radar',
+      onclick: () => { ETAT.focusSerie = ETAT.focusSerie === r.nom ? null : r.nom; redessiner(); },
+    }, trait(r.st), h('b', {}, r.houblons ? nomsHoublons(r.houblons) : r.titre), r.cle ? h('span', { class: 'cle' }, r.cle) : null, h('span', { class: 'fams' + (r.fleche ? ' monte' : '') }, r.texte)))));
+}
+const listeFams = (idx) => idx.map((i) => nomCourt(D.ordre[i]).toLowerCase()).join(', ');
+
+/* Radar générique (parties 2 et 3) : 12 axes dans l'ordre du style, séries data-serie / data-valeurs. */
+function radar(objet, series, o) {
+  const W = 358, H = o.H || 330, cx = W / 2, cy = H / 2 + 4, R = o.R || 104;
+  const s = sv('svg', { width: W, height: H, 'data-radar': '', 'data-objet': objet, role: 'img', 'aria-label': o.label });
+  const u = (v) => (v - o.min + o.pad) / (o.max - o.min + 2 * o.pad);
+  const P = (i, v) => { const a = i * Math.PI / 6, r = u(v) * R; return [cx + Math.sin(a) * r, cy - Math.cos(a) * r]; };
+  for (const v of o.anneaux) sv('polygon', { points: D.ordre.map((f, i) => P(i, v).join(',')).join(' '), fill: 'none', stroke: '#dedede', 'stroke-width': 1, 'stroke-dasharray': v === o.min && o.zeroPointille ? '2 2' : null }, s);
+  if (o.bande) sv('polygon', { points: D.ordre.map((f, i) => P(i, o.bande[i] + 0.5).join(',')).join(' '), fill: '#ececec', stroke: '#bdbdbd', 'stroke-width': 1 }, s);
+  D.ordre.forEach((f, i) => {
+    const e = P(i, o.max + o.pad * 0.6);
+    sv('line', { x1: cx, y1: cy, x2: e[0], y2: e[1], stroke: D.attendues.includes(f) ? '#9a9a9a' : '#dcdcdc', 'stroke-width': D.attendues.includes(f) ? 1.5 : 1 }, s);
+    const a = i * Math.PI / 6, sn = Math.sin(a), cs = Math.cos(a), q = [cx + sn * (R + 10), cy - cs * (R + 10)];
+    const t = sv('text', { x: q[0], y: q[1] + (cs > 0.5 ? -2 : cs < -0.5 ? 12 : 4), 'font-size': 12, 'text-anchor': sn > 0.25 ? 'start' : sn < -0.25 ? 'end' : 'middle', 'font-weight': D.attendues.includes(f) ? 650 : 400, fill: (o.accent || [])[i] ? ACC : '#111' }, s);
+    t.textContent = nomCourt(f);
+  });
+  for (const se of series) {
+    const g = sv('g', { 'data-serie': se.nom, 'data-valeurs': se.valeurs.map((v) => (v == null ? '' : v)).join(','), opacity: ETAT.focusSerie && ETAT.focusSerie !== se.nom ? 0.18 : 1 }, s);
+    const pts = se.valeurs.map((v, i) => (v == null ? null : P(i, v)));
+    const plein = pts.every(Boolean);
+    if (plein) sv('polygon', { points: pts.map((p) => p.join(',')).join(' '), fill: se.fill || 'none', 'fill-opacity': se.fillOp || 1, stroke: se.stroke, 'stroke-width': se.w || 1.8, 'stroke-dasharray': se.dash || null }, g);
+    else {
+      let d = '';
+      pts.forEach((p, i) => { if (!p) return; const prev = pts[(i + 11) % 12]; d += (prev && i > 0 ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); });
+      if (pts[0] && pts[11]) d += 'L' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
+      sv('path', { d, fill: 'none', stroke: se.stroke, 'stroke-width': se.w || 1.8, 'stroke-dasharray': se.dash || null }, g);
+    }
+    pts.forEach((p, i) => { if (p && se.point) se.point(g, p, i); });
+  }
+  if (o.apres) o.apres(s, P);
+  return s;
+}
+
+/* ---------- Partie 1 : Ma bière et la cible (objets 1 et 2), barres ↔ radar en morphing ---------- */
+class Biere {
+  constructor(svg) {
+    this.svg = svg; this.t = ETAT.lentille === 'radar' ? 1 : 0; this.drag = null;
+    const rows = []; let y = 22;
+    D.ordre.forEach((f, i) => { const att = D.attendues.includes(f); if (i === D.attendues.length) y += 8; const rh = att ? 48 : 39; rows.push({ y: y + rh / 2, rh, att }); y += rh; });
+    this.rows = rows; this.H = y + 4; this.Hr = 332;
+    this.construire();
+    svg.addEventListener('pointermove', (e) => this.bouge(e));
+    svg.addEventListener('pointerup', (e) => this.lache(e));
+    svg.addEventListener('pointercancel', () => { this.drag = null; });
+  }
+  /* Le radar a sa propre hauteur (Hr) : la vue se resserre pendant le morphing. */
+  R() { return { cx: 179, cy: this.Hr / 2 + 4, R: 112 }; }
+  P(i, v, t = this.t) {
+    const r = this.rows[i], R = this.R(), a = i * Math.PI / 6, u = (v + 1) / 5.5;
+    const bx = 92 + (v + 0.5) * 38;
+    return [lerp(bx, R.cx + Math.sin(a) * u * R.R, t), lerp(r.y, R.cy - Math.cos(a) * u * R.R, t)];
+  }
+  construire() {
+    const s = this.svg;
+    s.innerHTML = '';
+    s.setAttribute('data-objet', 'biere-cible');
+    this.entete = sv('g', { 'font-size': 12, fill: '#6e6e6e', 'text-anchor': 'middle' }, s);
+    [[0, '0'], [3, '3']].forEach(([v, t]) => { sv('text', { x: 92 + (v + 0.5) * 38, y: 12 }, this.entete).textContent = t; });
+    sv('text', { x: 92 + 2 * 38, y: 12 }, this.entete).textContent = 'zone du style';
+    sv('line', { x1: 92, y1: 17, x2: 92 + 4 * 38, y2: 17, stroke: '#bdbdbd' }, this.entete);
+    this.polyBande = sv('polygon', { fill: '#ececec', stroke: '#bdbdbd', 'stroke-width': 1, 'data-serie': 'cible', 'data-valeurs': D.cible.map((c) => c.max).join(',') }, s);
+    this.cheminBiere = sv('path', { fill: 'none', stroke: '#111', 'stroke-width': 1.6, 'data-serie': 'ma bière', 'data-valeurs': D.profil.map((p) => (p.crans == null ? '' : p.crans)).join(',') }, s);
+    this.g = D.ordre.map((f, i) => {
+      const o = {}, P = D.profil[i], C = D.cible[i], att = D.attendues.includes(f);
+      o.g = sv('g', { 'data-fam': f }, s);
+      o.piste = sv('line', { stroke: P.crans == null ? '#c4c4c4' : '#ececec', 'stroke-linecap': 'round', 'stroke-dasharray': P.crans == null ? '3 3' : null }, o.g);
+      o.bande = sv('line', { stroke: P.crans == null ? 'none' : att ? '#bdbdbd' : '#cfcfcf' }, o.g);
+      o.b2 = sv('line', { stroke: '#555', 'stroke-width': 1.5 }, o.g);
+      if (P.crans != null && P.crans > C.max) { o.dep = sv('line', { stroke: ACC, 'stroke-linecap': 'round' }, o.g); o.fleche = sv('path', { fill: ACC }, o.g); }
+      o.vl = sv('line', { stroke: '#111', 'stroke-width': 1.5, 'stroke-dasharray': '3 2' }, o.g);
+      o.vd = sv('path', { fill: '#fff', stroke: '#111', 'stroke-width': 1.8 }, o.g);
+      o.hs = sv('text', { 'font-size': 12, 'font-weight': 650, fill: '#111', 'text-anchor': 'middle' }, o.g);
+      o.m = sv('g', {}, o.g);
+      o.nom = sv('text', { 'font-size': att ? 14 : 12, 'font-weight': att ? 650 : 400, fill: P.crans != null && P.crans > C.max ? ACC : '#111' }, o.g);
+      o.nom.textContent = nomCourt(f);
+      o.src = sv('text', { 'font-size': 12, 'text-anchor': 'end', fill: P.crans != null && P.crans > C.max ? ACC : '#6e6e6e', 'font-weight': P.source === 'dégustation' ? 650 : 400 }, o.g);
+      o.ns = P.crans == null ? sv('circle', { r: 4.5, fill: 'none', stroke: '#7a7a7a', 'stroke-width': 1.5, 'stroke-dasharray': '2.2 1.6' }, o.g) : null;
+      o.chiffres = sv('g', { 'font-size': 12, fill: '#6e6e6e', 'text-anchor': 'middle' }, o.g);
+      o.zone = sv('rect', { fill: 'transparent', role: 'button', tabindex: 0, 'data-k': 'z' + f, 'data-booster': i === fi('resin') ? 'toucher famille' : null,
+        'aria-label': D.long[f] + ' : ' + P.display + (P.source !== 'non situé' ? ', ' + (P.source === 'dégustation' ? 'dégusté' : 'prévu par le modèle') : '') + ' ; zone du style ' + C.min + ' à ' + C.max + ' crans ; flèches pour poser ma visée' }, o.g);
+      o.zone.addEventListener('click', () => { ETAT.sel = ETAT.sel === f ? null : f; this.dessiner(); });
+      o.zone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); ETAT.sel = ETAT.sel === f ? null : f; this.dessiner(); }
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const v0 = ETAT.visee[f] ?? P.crans ?? 0; this.viser(i, Math.max(0, Math.min(4, v0 + (e.key === 'ArrowRight' ? 1 : -1))), true); }
+      });
+      o.slots = [0, 1, 2, 3, 4].map((k) => {
+        const z = sv('rect', { fill: 'transparent', 'data-booster': f === 'floral' && k === 2 ? 'cible à glisser' : null, 'aria-hidden': 'true' }, o.g);
+        z.addEventListener('pointerdown', (e) => { this.drag = { i, k, x: e.clientX, y: e.clientY, bouge: false }; try { s.setPointerCapture(e.pointerId); } catch (x) { /* rien */ } e.preventDefault(); });
+        return z;
+      });
+      return o;
+    });
+  }
+  local(e) { const r = this.svg.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  bouge(e) {
+    const d = this.drag;
+    if (!d) return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6) d.bouge = true;
+    if (!d.bouge) return;
+    const q = this.local(e);
+    let best = 0, bd = 1e9;
+    for (let k = 0; k <= 4; k++) { const p = this.P(d.i, k); const dd = Math.hypot(p[0] - q[0], p[1] - q[1]); if (dd < bd) { bd = dd; best = k; } }
+    ETAT.visee[D.ordre[d.i]] = best;
+    this.dessiner();
+  }
+  lache() {
+    const d = this.drag;
+    this.drag = null;
+    if (!d) return;
+    if (d.bouge) { rendre(false); return; }
+    this.viser(d.i, d.k, false);
+  }
+  viser(i, k, garder) {
+    const f = D.ordre[i], p = D.profil[i].crans;
+    if (!garder && (ETAT.visee[f] === k || k === p)) delete ETAT.visee[f]; else ETAT.visee[f] = k;
+    ETAT.focusK = 'z' + f;
+    rendre(false);
+  }
+  dessiner() {
+    const t = this.t, R = this.R();
+    this.svg.setAttribute('height', lerp(this.H, this.Hr, t));
+    if (t > 0.5) this.svg.setAttribute('data-radar', ''); else this.svg.removeAttribute('data-radar');
+    this.svg.style.touchAction = t < 0.5 ? 'pan-y' : 'none';
+    const ptsB = [];
+    let d = '';
+    D.ordre.forEach((f, i) => {
+      const o = this.g[i], Pf = D.profil[i], C = D.cible[i], row = this.rows[i];
+      const P = (v) => this.P(i, v);
+      const p0 = P(-0.5), pD = P(4.5);
+      const L = Math.hypot(pD[0] - p0[0], pD[1] - p0[1]) || 1, dir = [(pD[0] - p0[0]) / L, (pD[1] - p0[1]) / L], n = [-dir[1], dir[0]];
+      const ep = row.att ? 12 : 9;
+      const set = (el, a, b, w) => { el.setAttribute('x1', a[0]); el.setAttribute('y1', a[1]); el.setAttribute('x2', b[0]); el.setAttribute('y2', b[1]); if (w != null) el.setAttribute('stroke-width', w); };
+      set(o.piste, p0, pD, lerp(ep, 2, t));
+      const pb = P(C.min - 0.5), ph = P(C.max + 0.5);
+      set(o.bande, pb, ph, lerp(ep, 3, t));
+      const k = lerp(ep / 2 + 3, 4, t);
+      set(o.b2, [ph[0] - n[0] * k, ph[1] - n[1] * k], [ph[0] + n[0] * k, ph[1] + n[1] * k]);
+      ptsB.push(ph);
+      if (o.dep) {
+        const e1 = P(4.3);
+        set(o.dep, ph, e1, lerp(ep - 3, 3, t));
+        const a = [e1[0] + dir[0] * 2, e1[1] + dir[1] * 2];
+        o.fleche.setAttribute('d', `M${a[0] + dir[0] * 7},${a[1] + dir[1] * 7} L${a[0] + n[0] * 5},${a[1] + n[1] * 5} L${a[0] - n[0] * 5},${a[1] - n[1] * 5}Z`);
+      }
+      o.m.innerHTML = '';
+      if (Pf.crans != null) {
+        const c = P(Pf.crans);
+        marqueBiere(o.m, Pf, i, c, row.att ? 5.5 : 4.5);
+        d += (d && D.profil[(i + 11) % 12].crans != null && i > 0 ? 'L' : 'M') + c[0].toFixed(1) + ',' + c[1].toFixed(1);
+        if (i === 11 && D.profil[0].crans != null) { const c0 = P(D.profil[0].crans); d += 'L' + c0[0].toFixed(1) + ',' + c0[1].toFixed(1); }
+      }
+      const vi = ETAT.visee[f];
+      if (vi != null) {
+        const de = Pf.crans != null ? P(Pf.crans) : p0, a = P(vi);
+        set(o.vl, de, a); o.vd.setAttribute('d', losange(a, 6));
+        o.vl.style.display = o.vd.style.display = '';
+        o.hs.textContent = vi > C.max ? 'hors style' : '';
+        o.hs.setAttribute('x', a[0]); o.hs.setAttribute('y', a[1] - 9);
+      } else { o.vl.style.display = o.vd.style.display = 'none'; o.hs.textContent = ''; }
+      // Nom, source et zones : de la rangée au sommet du radar.
+      const an = i * Math.PI / 6, sn = Math.sin(an), cs = Math.cos(an);
+      const w = (o.w = o.w || o.nom.getComputedTextLength() || 50);
+      const q = [R.cx + sn * (R.R + 10), R.cy - cs * (R.R + 10)];
+      const left = sn > 0.25 ? q[0] : sn < -0.25 ? q[0] - w : q[0] - w / 2;
+      const base = cs > 0.5 ? q[1] - 4 : cs < -0.5 ? q[1] + 12 : q[1] + 4;
+      o.nom.setAttribute('x', lerp(0, left, t)); o.nom.setAttribute('y', lerp(row.y + (row.att ? 5 : 4), base, t));
+      const sel = ETAT.sel === f;
+      o.src.textContent = Pf.source === 'dégustation' ? 'dégusté' + (sel && D.degustation ? ' ' + D.degustation.date : '') : Pf.source === 'modèle' ? (sel ? 'prévu, modèle' : 'prévu') : '';
+      o.src.setAttribute('x', 358); o.src.setAttribute('y', row.y + 4);
+      o.src.setAttribute('opacity', 1 - t);
+      if (o.ns) { o.ns.setAttribute('cx', lerp(350, left + w / 2, t)); o.ns.setAttribute('cy', lerp(row.y, base + 9, t)); }
+      const zb = { x: 0, y: row.y - row.rh / 2, w: 88, h: row.rh }, zr = { x: left - 6, y: base - 16, w: w + 12, h: 24 };
+      o.zone.setAttribute('x', lerp(zb.x, zr.x, t)); o.zone.setAttribute('y', lerp(zb.y, zr.y, t));
+      o.zone.setAttribute('width', lerp(zb.w, zr.w, t)); o.zone.setAttribute('height', lerp(zb.h, zr.h, t));
+      o.slots.forEach((z, kk) => { const c = P(kk), sw = lerp(38, 22, t), sh = lerp(row.rh, 22, t); z.setAttribute('x', c[0] - sw / 2); z.setAttribute('y', c[1] - sh / 2); z.setAttribute('width', sw); z.setAttribute('height', sh); });
+      o.chiffres.innerHTML = '';
+      if (sel) for (let kk = 0; kk <= C.max; kk++) { const c = P(kk); sv('text', { x: c[0] - n[0] * (k + 8), y: c[1] - n[1] * (k + 8) + 4 }, o.chiffres).textContent = String(kk); }
+      o.g.setAttribute('opacity', ETAT.sel && !sel ? 0.45 : 1);
+    });
+    this.entete.setAttribute('opacity', 1 - t);
+    this.polyBande.setAttribute('points', ptsB.map((p) => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' '));
+    const fs = ETAT.focusSerie;
+    this.polyBande.setAttribute('opacity', t * (fs === 'ma bière' ? 0.3 : 1));
+    this.cheminBiere.setAttribute('d', d || 'M0,0');
+    this.cheminBiere.setAttribute('opacity', t * (fs === 'cible' ? 0.2 : 1));
+    this.g.forEach((o) => o.m.setAttribute('opacity', fs === 'cible' && t > 0.5 ? 0.2 : 1));
+  }
+  basculer(l) { const de = this.t, a = l === 'radar' ? 1 : 0; anime(300, (k) => { this.t = lerp(de, a, k); this.dessiner(); }); }
+}
+const dirsActives = () => Object.keys(ETAT.visee);
+function chipsDirection(onToggle) {
+  const fams = [...new Set([...D.voiesResume.map((v) => v.fam), ...dirsActives()])];
+  return h('div', { class: 'chips', role: 'group', 'aria-label': 'Direction demandée' },
+    fams.map((f, n) => {
+      const i = fi(f), vi = ETAT.visee[f] ?? D.cible[i].visee ?? D.cible[i].max, p = D.profil[i].crans ?? 0;
+      const plus = vi > p;
+      return h('button', {
+        class: 'chip dir-' + (plus ? 'plus' : 'moins'), 'aria-pressed': String(f in ETAT.visee), 'data-k': 'c' + f,
+        'data-booster': n === 0 ? 'puce direction' : null, 'aria-label': (plus ? 'Plus ' : 'Moins ') + D.long[f].toLowerCase(),
+        onclick: () => { if (f in ETAT.visee) delete ETAT.visee[f]; else ETAT.visee[f] = D.cible[i].visee ?? (plus ? p + 1 : D.cible[i].max); ETAT.filtreVoies = null; ETAT.marques = null; if (onToggle) onToggle(); else rendre(false); },
+      }, nomCourt(f).toLowerCase());
+    }),
+    h('button', { class: 'chip dir-autre', 'aria-label': 'Autres directions : glisser la visée sur une famille' }));
+}
+function partieBiere(part) {
+  const { exc, cpts } = phraseParts();
+  part.append(h('div', { class: 'titre' }, h('span', {}, exc.map((t) => h('span', { class: 'exc' }, t + ' ')), cpts.length && !exc.length ? cpts.join(' · ') : null), lentille()));
+  part.append(h('div', { class: 'rangee' }, exc.length ? cpts.map((t) => h('span', { class: 'cpt' }, t)) : null,
+    h('span', { class: 'ctx', 'aria-label': 'Houblons de ma bière' }, ETAT.lignes.map((l) => h('span', { class: 'ctx-h' }, h('span', { 'data-houblon': l.cle }, l.nom), ' ' + quand(l) + ' ' + grammes(l.g))))));
+  const svg = sv('svg', { width: 358, role: 'group', 'aria-label': 'Ma bière face à la zone du style, en crans ; poser ma visée en touchant un cran' });
+  // Bloc radar (svg + rangées), marqué data-composant="radar" quand la lentille est Radar.
+  const bloc = h('div', { class: 'bloc-lecture' });
+  part.append(bloc);
+  bloc.append(svg);
+  const B2 = new Biere(svg);
+  B2.dessiner();
+  const zoneS = h('div');
+  bloc.append(zoneS);
+  const series = () => {
+    if (ETAT.lentille === 'radar') bloc.setAttribute('data-composant', 'radar'); else bloc.removeAttribute('data-composant');
+    zoneS.innerHTML = '';
+    if (ETAT.lentille !== 'radar') return;
+    const idx = D.ordre.map((f, i) => i);
+    const deg = idx.filter((i) => D.profil[i].source === 'dégustation'), mod = idx.filter((i) => D.profil[i].source === 'modèle');
+    const dessus = (i) => D.profil[i].crans > D.cible[i].max;
+    const rg = [
+      ...(deg.length ? [{ nom: 'ma bière', cleK: 'deg', titre: 'Dégusté' + (D.degustation ? ' ' + D.degustation.date : ''), st: { point: 'plein', acc: deg.some(dessus) }, cle: deg.some(dessus) ? 'au-dessus' : null, texte: listeFams(deg) }] : []),
+      ...(mod.length ? [{ nom: 'ma bière', cleK: 'mod', titre: 'Prévu', st: { point: 'creux' }, texte: listeFams(mod) }] : []),
+      { nom: 'cible', titre: 'Cible', st: { zone: true }, cle: 'attendues', texte: listeFams(D.attendues.map(fi)) },
+      ...(D.profil.some((p) => p.crans == null) ? [{ nom: 'non situé', titre: 'Non situées', st: { point: 'pointille' }, texte: listeFams(D.ordre.map((f, i) => i).filter((i) => D.profil[i].crans == null)) }] : []),
+    ];
+    const vis = dirsActives();
+    if (vis.length) rg.push({ nom: 'visée', titre: 'Ma visée', st: { stroke: '#111', dash: '3 2' }, texte: vis.map((f) => nomCourt(f).toLowerCase() + ' ' + ETAT.visee[f]).join(', ') });
+    zoneS.append(rangeesSeries(rg, () => { B2.dessiner(); series(); }));
+  };
+  series();
+  LENTILLE_CB = (l) => { B2.basculer(l); series(); };
+  part.append(chipsDirection());
+  const dirs = dirsActives();
+  const liens = D.voiesResume.filter((v) => dirs.includes(v.fam));
+  if (liens.length) part.append(h('div', { class: 'rangee', style: 'flex-wrap:wrap' }, liens.map((v) => h('button', { class: 'lien', onclick: () => { ETAT.filtreVoies = v.fam; ouvrir('suggestions'); } }, v.texte))));
+  else part.append(h('div', { class: 'rangee p gris' }, 'Prévu avec ' + D.levure.nom + ', ' + D.levure.statut));
+}
+
+/* ---------- Partie 2 : Suggestions (objet 4), avant / après face à la cible ---------- */
+const voieParRang = (r) => D.voies.find((v) => v.rang === r);
+function voiesListe() {
+  const ex = [...ETAT.gouts.exclut];
+  // Variété exclue : le moteur retire ses voies et peut en faire entrer de nouvelles (voiesSansHoublon).
+  const retirees = new Set(ex.flatMap((n) => (D.sansHoublon[n] ? D.sansHoublon[n].retirees : [])));
+  let base = D.voies.filter((v) => !retirees.has(v.rang) && !v.houblons.some((n) => ETAT.gouts.exclut.has(n)));
+  if (ex.length === 1 && D.sansHoublon[ex[0]]) for (const x of D.sansHoublon[ex[0]].nouvelles) base.splice(Math.max(0, x.rang - 1), 0, { nouvelle: true, label: x.label.replace(/./g, ','), rang: 'n' + x.rang, houblons: [] });
+  const dirs = dirsActives();
+  const f = ETAT.filtreVoies || (dirs.includes('floral') && !dirs.includes('resin') ? 'floral' : dirs.includes('resin') && !dirs.includes('floral') ? 'resin' : null);
+  if (f === 'floral') base = base.filter((v) => v.nouvelle || v.dir.floral > 0);
+  if (f === 'resin') base = base.filter((v) => !v.nouvelle && v.dir.resin < 0);
+  return { liste: base.slice(0, 3), fam: f || (dirs.includes('floral') ? 'floral' : 'resin') };
+}
+function marquees(liste) {
+  const connues = liste.filter((v) => !v.nouvelle);
+  if (ETAT.marques == null) return connues.slice(0, 2);
+  return connues.filter((v) => ETAT.marques.includes(v.rang));
+}
+function carteVoie(v, n, fam, marq) {
+  if (v.nouvelle) return h('li', { class: 'voie' }, h('span'), h('span', { class: 'corps' }, h('span', { class: 'v1' }, h('b', {}, v.label)), h('span', { class: 'v2' }, h('span', { class: 'faible' }, 'nouvelle, effet non établi'))), h('span'));
+  const on = marq.includes(v);
+  const nom = v.houblons.join(' + ');
+  return h('li', { class: 'voie' + (on ? ' on' : '') },
+    h('input', {
+      type: 'checkbox', class: 'coche', checked: on || null, 'data-k': 'v' + v.rang, 'data-booster': n === 1 ? 'marquer voie' : null,
+      'aria-label': 'Voir avant / après : ' + v.label,
+      onchange: () => {
+        const cur = marq.map((x) => x.rang);
+        ETAT.marques = on ? cur.filter((r) => r !== v.rang) : [...cur, v.rang].slice(-3);
+        rendre(false);
+      },
+    }),
+    h('span', { class: 'corps' },
+      h('span', { class: 'v1' }, h('i', { class: 'op op-' + v.op, 'aria-label': v.verbe }), h('b', {}, v.cles.length ? nomsHoublons(v.houblons) : nom), h('span', { class: 'md' }, v.moment), h('span', { class: 'md' }, v.dose.replace(/\./g, ','))),
+      h('span', { class: 'v2' }, ETAT.gouts.aime.has(v.houblons[0]) ? h('span', { class: 'aime-t' }, '♥ aimé') : null, v.bords.map((b) => h('span', { class: 'bord' }, b)), v.faible[fam] ? h('span', { class: 'faible' }, 'faible') : null)),
+    h('span', { class: 'droite' },
+      h('span', { class: 'h' }, stockEl(v.stock === 'en stock' ? '' : v.stock.replace(/\./g, ',')), goutBouton(v.houblons[0], 'v', n === 0 ? 'goût voie' : null)),
+      h('span', { class: 'plus-ibu' }, (v.ibuDrift >= 0 ? '+' : '−') + ibuTexte(Math.abs(v.ibuDrift)) + ' IBU')));
+}
+function styleApres(k) { return [{ stroke: '#111' }, { stroke: '#111', dash: '5 3' }, { stroke: '#6e6e6e', dash: '2 2' }][k]; }
+function matriceVoies(marq) {
+  const cols = [{ nom: 'avant', crans: D.profil.map((p) => p.crans), avant: true }, ...marq.map((v) => ({ nom: v.houblons.join(' + '), houblons: v.cles.length ? v.houblons : null, crans: v.crans, delta: v.delta }))];
+  const nameW = 72, colW = (358 - nameW) / cols.length, sw = Math.min(14, (colW - 10) / 5);
+  const rows = []; let y = 26;
+  D.ordre.forEach((f, i) => { const att = D.attendues.includes(f); if (i === D.attendues.length) y += 6; const rh = att ? 32 : 28; rows.push({ y: y + rh / 2, att }); y += rh; });
+  const s = sv('svg', { width: 358, height: y + 2, role: 'img', 'aria-label': 'Avant et après des voies marquées, en crans du style' });
+  cols.forEach((c, k) => {
+    const cx = nameW + k * colW + colW / 2;
+    const t = sv('text', { x: cx, y: 13, 'font-size': 12, 'text-anchor': 'middle', 'font-weight': c.avant ? 400 : 650, fill: c.avant ? '#6e6e6e' : '#111' }, s);
+    if (c.houblons && c.houblons.length > 1) c.houblons.forEach((n, j) => { if (j) sv('tspan', {}, t).textContent = ' + '; sv('tspan', { 'data-houblon': cleDe(n) }, t).textContent = n; });
+    else {
+      if (c.houblons) t.setAttribute('data-houblon', cleDe(c.houblons[0]));
+      let txt = c.nom; t.textContent = txt;
+      while (t.getComputedTextLength() > colW - 4 && txt.length > 4) { txt = txt.slice(0, -2); t.textContent = txt + '…'; }
+    }
+    if (!c.avant) sv('line', { x1: cx - 10, y1: 19, x2: cx + 10, y2: 19, stroke: styleApres(k - 1).stroke, 'stroke-width': 2, 'stroke-dasharray': styleApres(k - 1).dash || null }, s);
+  });
+  D.ordre.forEach((f, i) => {
+    const r = rows[i], C = D.cible[i], P = D.profil[i];
+    if (r.att) sv('rect', { x: 0, y: r.y - 13, width: 358, height: 26, rx: 6, fill: '#f5f5f5' }, s);
+    sv('text', { x: 4, y: r.y + 4, 'font-size': 12, 'font-weight': r.att ? 650 : 400, fill: P.crans === 4 ? ACC : '#111' }, s).textContent = nomCourt(f);
+    cols.forEach((c, k) => {
+      const x0 = nameW + k * colW + (colW - 5 * sw) / 2, xs = (v) => x0 + (v + 0.5) * sw;
+      const situe = c.crans[i] != null || P.crans != null;
+      sv('rect', { x: x0, y: r.y - 3, width: 5 * sw, height: 6, rx: 3, fill: situe ? '#f0f0f0' : 'none', stroke: situe ? null : '#b5b5b5', 'stroke-dasharray': situe ? null : '2 2' }, s);
+      if (situe) sv('rect', { x: xs(C.min - 0.5), y: r.y - 3, width: (C.max - C.min + 1) * sw, height: 6, rx: 3, fill: '#d2d2d2' }, s);
+      const vi = ETAT.visee[f];
+      if (vi != null) sv('path', { d: losange([xs(vi), r.y], 5), fill: 'none', stroke: '#111', 'stroke-width': 1.3 }, s);
+      if (c.avant) { marqueBiere(s, P, i, [xs(P.crans), r.y], 4); return; }
+      if (c.crans[i] == null) return;
+      const dl = c.delta[i];
+      if (typeof dl === 'number' && dl !== 0) {
+        if (P.crans != null) { sv('line', { x1: xs(P.crans), y1: r.y, x2: xs(c.crans[i]), y2: r.y, stroke: '#9a9a9a', 'stroke-width': 1.5 }, s); sv('circle', { cx: xs(P.crans), cy: r.y, r: 2.5, fill: '#9a9a9a' }, s); }
+        sv('circle', { cx: xs(c.crans[i]), cy: r.y, r: 4.5, fill: c.crans[i] > C.max ? ACC : '#111' }, s);
+      } else if (dl === '≈' || dl === 0) sv('circle', { cx: xs(c.crans[i]), cy: r.y, r: 4, fill: '#9a9a9a' }, s);
+      else sv('circle', { cx: xs(c.crans[i]), cy: r.y, r: 4, fill: '#fff', stroke: '#8a8a8a', 'stroke-width': 1.3, 'stroke-dasharray': '2 1.5' }, s);
+    });
+  });
+  return s;
+}
+function partieSuggestions(part) {
+  const dirs = dirsActives();
+  part.append(h('div', { class: 'titre' }, chipsDirection(), lentille()));
+  if (!dirs.length || !D.voies.length) {
+    part.append(h('p', { class: 'rangee gris' }, D.notes.voies || 'Une direction ouvre les voies du moteur.'));
+    return;
+  }
+  const { liste, fam } = voiesListe();
+  const res = D.voiesResume.filter((v) => dirs.includes(v.fam));
+  part.append(h('div', { class: 'reponse' }, res.map((v) => h('button', {
+    class: 'moitie', 'aria-pressed': String(ETAT.filtreVoies === v.fam), 'data-k': 'm' + v.fam, 'data-booster': v.fam === 'resin' ? 'compteur voies' : null,
+    onclick: () => { ETAT.filtreVoies = ETAT.filtreVoies === v.fam ? null : v.fam; ETAT.marques = null; rendre(false); },
+  }, v.texte))));
+  const marq = marquees(liste);
+  part.append(h('ul', { class: 'voies', 'aria-label': 'Voies du moteur' }, liste.map((v, n) => carteVoie(v, n, fam, marq))));
+  const g = goutsLigne();
+  if (g) part.append(g);
+  if (fam === 'resin' && ETAT.filtreVoies === 'resin' && D.horsModele.length) part.append(h('p', { class: 'pistes' }, 'Hors houblon : ' + D.horsModele.join(' ; ').toLowerCase()));
+  const zone = h('div', { class: 'vue-voies' });
+  part.append(zone);
+  const dessiner = () => {
+    zone.innerHTML = '';
+    if (ETAT.lentille === 'radar') zone.setAttribute('data-composant', 'radar'); else zone.removeAttribute('data-composant');
+    if (ETAT.lentille === 'radar') {
+      const series = [{ nom: 'avant', valeurs: D.profil.map((p) => p.crans), stroke: '#8f8f8f', w: 4, point: (gg, p, i) => marqueBiere(gg, D.profil[i], i, p, 4) },
+        ...marq.map((v, k) => ({ nom: 'après ' + v.houblons.join(' + '), valeurs: v.crans, ...styleApres(k), w: 1.8 }))];
+      zone.append(radar('voies', series, { min: 0, max: 4, pad: 0.6, anneaux: [0, 4], bande: D.cible.map((c) => c.max), H: 300, R: 98, label: 'Radar des voies : avant et après, en crans du style', accent: D.profil.map((p) => p.crans === 4),
+        apres: (s, P) => { for (const f of dirs) { const i = fi(f); sv('path', { d: losange(P(i, ETAT.visee[f]), 6), fill: '#fff', stroke: '#111', 'stroke-width': 1.6 }, s); } } }));
+      zone.append(rangeesSeries([{ nom: 'avant', titre: 'Avant', st: { stroke: '#8f8f8f', w: 4 }, texte: '' }, ...marq.map((v, k) => {
+        const monte = D.ordre.map((f, i) => i).filter((i) => typeof v.delta[i] === 'number' && v.delta[i] > 0);
+        const baisse = D.ordre.map((f, i) => i).filter((i) => typeof v.delta[i] === 'number' && v.delta[i] < 0);
+        return { nom: 'après ' + v.houblons.join(' + '), titre: v.houblons.join(' + '), houblons: v.cles.length ? v.houblons : null, st: styleApres(k), fleche: monte.length > 0, texte: (monte.length ? listeFams(monte) : '') + (baisse.length ? ' ↓ ' + listeFams(baisse) : '') || '≈' };
+      })], dessiner));
+    } else zone.append(matriceVoies(marq));
+  };
+  dessiner();
+  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); anime(160, (k) => { zone.style.opacity = k; }); });
+}
+
+/* ---------- Partie 3 : Comparer des houblons (objet 3), ce que disent les fiches ---------- */
+const NOM_W = 72;
+function matriceFiches(noms) {
+  const colW = (358 - NOM_W) / noms.length;
+  const rows = []; let y = 4;
+  D.ordre.forEach((f, i) => { const att = D.attendues.includes(f); if (i === D.attendues.length) y += 6; const rh = att ? 43 : 41; rows.push({ y: y + rh / 2, att }); y += rh; });
+  const s = sv('svg', { width: 358, height: y + 2, role: 'img', 'aria-label': 'Ce que disent les fiches, famille par famille : non décrit, cité ou marqué' });
+  D.ordre.forEach((f, i) => {
+    const r = rows[i];
+    if (r.att) sv('rect', { x: 0, y: r.y - 15, width: 358, height: 30, rx: 6, fill: '#f5f5f5' }, s);
+    sv('text', { x: 4, y: r.y + 4, 'font-size': 12, 'font-weight': r.att ? 650 : 400 }, s).textContent = nomCourt(f);
+    noms.forEach((n, k) => {
+      const F = D.fiches[n], x0 = NOM_W + k * colW + 4, bw = colW - 40;
+      const lv = F.niv[i];
+      if (!lv) { sv('rect', { x: x0, y: r.y - 4, width: bw, height: 8, rx: 4, fill: 'none', stroke: '#b5b5b5', 'stroke-dasharray': '2 2' }, s); return; }
+      sv('rect', { x: x0, y: r.y - 4, width: bw, height: 8, rx: 4, fill: '#ededed' }, s);
+      sv('rect', { x: x0, y: r.y - 4, width: lv === 2 ? bw : bw / 2, height: 8, rx: 4, fill: lv === 2 ? '#3d3d3d' : '#9a9a9a' }, s);
+      sv('text', { x: x0 + bw + 4, y: r.y + 4, 'font-size': 12, fill: '#555' }, s).textContent = F.n[i] + '/' + F.of;
+    });
+  });
+  return s;
+}
+/* En-tête des colonnes : le houblon, son groupe de stock, mon goût et le retrait. */
+const STYLES_FICHES = [{ stroke: '#111', fill: '#111', fillOp: 0.08 }, { stroke: '#111', dash: '5 3' }, { stroke: '#6e6e6e', dash: '2 2' }, { stroke: '#8f8f8f', w: 3 }];
+function enteteFiches(noms) {
+  const mot = { stock: '', epuise: 'à racheter', catalogue: 'à acheter' };
+  return h('div', { class: 'cols', style: 'grid-template-columns:' + NOM_W + 'px repeat(' + noms.length + ', 1fr)', role: 'group', 'aria-label': 'Houblons comparés' },
+    h('span'),
+    noms.map((n, k) => h('span', { class: 'col' },
+      h('b', { class: ETAT.gouts.exclut.has(n) ? 'exclu' : null }, ETAT.lentille === 'radar' ? trait(STYLES_FICHES[k]) : null, h('span', { 'data-houblon': cleDe(n) }, n)),
+      h('span', { class: 'p gris' }, mot[D.groupes[n]] || ''),
+      h('span', { class: 'col-act' }, goutBouton(n, 'c', null),
+        h('button', { class: 'x', 'aria-label': 'Retirer ' + n + ' du comparatif', disabled: noms.length <= 2 || null, onclick: () => { ETAT.comp = ETAT.comp.filter((x) => x !== n); rendre(false); } })))));
+}
+function partieComparer(part) {
+  const noms = ETAT.comp.filter((n) => D.fiches[n]).slice(0, 4);
+  part.append(h('div', { class: 'titre' }, h('span', { class: 'objet' }, 'Ce que disent les fiches'), lentille()));
+  part.append(enteteFiches(noms));
+  const cand = noms.length < 4 ? [['stock', 'en stock'], ['epuise', 'à racheter'], ['catalogue', 'à acheter']].map(([g, mot]) => {
+    const c = D.candidats.find(([n, gg]) => gg === g && !noms.includes(n) && D.fiches[n]);
+    return c && h('button', { class: 'chip ajt', 'data-k': 'a' + c[0], 'data-booster': g === 'stock' ? 'ajouter au comparatif' : null, 'data-houblon': cleDe(c[0]), 'aria-label': 'Comparer aussi ' + c[0] + ', ' + mot, onclick: () => { ETAT.comp.push(c[0]); rendre(false); } }, c[0]);
+  }).filter(Boolean) : [];
+  if (cand.length) part.append(h('div', { class: 'chips cand' }, cand));
+  const zone = h('div', { class: 'vue-fiches' });
+  part.append(zone);
+  const dessiner = () => {
+    zone.innerHTML = '';
+    if (ETAT.lentille === 'radar') zone.setAttribute('data-composant', 'radar'); else zone.removeAttribute('data-composant');
+    if (ETAT.lentille === 'radar') {
+      zone.append(radar('houblons', noms.map((n, k) => ({ nom: n, valeurs: D.fiches[n].niv, ...STYLES_FICHES[k] })), { min: 0, max: 2, pad: 0.5, anneaux: [0, 1, 2], zeroPointille: true, H: 318, R: 100, label: 'Radar des fiches : citations de 0 (non décrit) à 2 (marqué)' }));
+      // Ce qui distingue chaque houblon : les familles où sa fiche dit plus que toutes les autres.
+      zone.append(h('p', { class: 'cle' }, 'Se distingue par'));
+      zone.append(rangeesSeries(noms.map((n, k) => {
+        const propre = D.ordre.map((f, i) => i).filter((i) => noms.every((m) => m === n || D.fiches[n].niv[i] > D.fiches[m].niv[i]));
+        return { nom: n, titre: n, houblons: [n], st: STYLES_FICHES[k], texte: propre.length ? listeFams(propre) : 'rien en propre' };
+      }).concat((() => {
+        const vide = D.ordre.map((f, i) => i).filter((i) => noms.every((m) => !D.fiches[m].niv[i]));
+        return vide.length ? [{ nom: 'non décrit', titre: 'Non décrit', st: { point: 'pointille' }, texte: listeFams(vide) }] : [];
+      })()), dessiner));
+    } else zone.append(matriceFiches(noms));
+  };
+  dessiner();
+  LENTILLE_CB = () => anime(160, (k) => { zone.style.opacity = 1 - k; }, () => { dessiner(); part.querySelector('.cols').replaceWith(enteteFiches(noms)); anime(160, (k) => { zone.style.opacity = k; }); });
+}
+
+/* ---------- Rendu ---------- */
+function rendre(animerIbu) {
+  const app = $('#app');
+  const actif = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.k : null;
+  app.innerHTML = '';
+  document.body.dataset.vue = ETAT.vue;
+  if (ETAT.vue === 'etape') VARIANTE.etape(app); else panneau(app);
+  majIbu(animerIbu);
+  const k = ETAT.focusK || actif;
+  ETAT.focusK = null;
+  if (k) { const e = app.querySelector('[data-k="' + CSS.escape(k) + '"]'); if (e) e.focus({ preventScroll: true }); }
+}
+function demarrer() { rendre(false); }
+
+/* p03 = p3 + la pastille de moment qui glisse sur une frise 60′ → à froid (greffe de p08) et
+   les « + N IBU » sur chaque houblon proposé (greffe de p11). La liste des ajouts reste celle
+   de p3 ; chaque ligne porte sa frise : la pastille dit le moment, le tag dit le type. Les
+   ajouts proposés ont la même frise : on choisit le moment avant d'ajouter, l'IBU suit. */
+const crans6 = (k) => 'calc(14px + (100% - 28px) * ' + (k / (MOMENTS.length - 1)) + ')';
+/* Toucher = moment suivant ; glisser = placer ; toucher un cran = placer. Après un glisser, le
+   clic qui suit tomberait sur le cran redessiné sous le doigt : on l'ignore. */
+let IGNORE_CLIC = 0;
+document.addEventListener('click', (e) => { if (performance.now() < IGNORE_CLIC) { e.stopPropagation(); e.preventDefault(); } }, true);
+function frisette(o) {
+  const mi = MOMENTS.findIndex((m) => m.code === o.moment);
+  const wrap = h('div', { class: 'frisette', role: 'group', 'aria-label': 'Moment de ' + o.nom + ' sur la frise, de 60′ à à froid' },
+    h('span', { class: 'seg-b' }), h('span', { class: 'seg-w' }), h('span', { class: 'seg-f' }));
+  MOMENTS.forEach((m, k) => wrap.append(h('button', {
+    class: 'cran' + (m.couloir >= 3 ? ' hors' : ''), style: 'left:' + crans6(k), 'aria-label': 'Placer ' + o.nom + ' à ' + (m.code === 'dryActive' ? 'J+' + o.jour + ' en fermentation active' : m.code === 'dryPost' ? 'à froid après fermentation' : m.quand),
+    onclick: () => o.placer(m.code),
+  })));
+  const pas = h('button', {
+    class: 'pastille', style: 'left:' + crans6(mi), 'data-role': o.role || null, 'data-k': o.k, 'data-booster': o.booster || null,
+    'aria-label': 'Moment : ' + quandLong(o) + ' ; toucher pour passer au suivant, glisser pour placer',
+    onclick: () => { ETAT.focusK = o.k; o.suivant(); },
+  }, quand(o));
+  let drag = null;
+  pas.addEventListener('pointerdown', (e) => { drag = { x0: e.clientX, bouge: false }; try { pas.setPointerCapture(e.pointerId); } catch (x) { /* rien */ } });
+  pas.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    if (Math.abs(e.clientX - drag.x0) > 6) drag.bouge = true;
+    if (!drag.bouge) return;
+    const r = wrap.getBoundingClientRect();
+    pas.style.left = Math.max(14, Math.min(r.width - 14, e.clientX - r.left)) + 'px';
+  });
+  pas.addEventListener('pointerup', (e) => {
+    const d = drag;
+    drag = null;
+    if (!d || !d.bouge) return;
+    const r = wrap.getBoundingClientRect();
+    const frac = (Math.max(14, Math.min(r.width - 14, e.clientX - r.left)) - 14) / (r.width - 28);
+    IGNORE_CLIC = performance.now() + 400;
+    ETAT.focusK = o.k;
+    o.placer(MOMENTS[Math.round(frac * (MOMENTS.length - 1))].code);
+  });
+  pas.addEventListener('pointercancel', () => { if (drag && drag.bouge) rendre(false); drag = null; });
+  wrap.append(pas);
+  return wrap;
+}
+function lignePastille(l, i, st) {
+  const premier = i === 0;
+  const m = mom(l.moment);
+  return h('li', { class: 'ligne', 'data-role': 'ligne-houblon' },
+    h('div', { class: 'l1' },
+      h('b', { class: 'nom', 'data-houblon': l.cle }, l.nom),
+      h('button', {
+        class: 'tag tourne type', 'data-role': 'type-ajout', 'data-k': 't' + l.id, 'data-booster': premier ? 'type d\'ajout' : null,
+        'aria-label': 'Type d\'ajout : ' + m.type + ', toucher pour passer au suivant', onclick: () => { ETAT.focusK = 't' + l.id; typeSuivant(l); },
+      }, m.type),
+      h('span', { class: 'pas' },
+        h('button', { class: 'moins', 'aria-label': 'Retirer 2 g de ' + l.nom, onclick: () => doser(l, -2) }),
+        h('output', { class: 'dose' }, grammes(l.g)),
+        h('button', { class: 'plus', 'data-k': 'd' + l.id, 'data-booster': premier ? 'dose au pas' : null, 'aria-label': 'Ajouter 2 g de ' + l.nom, onclick: () => { ETAT.focusK = 'd' + l.id; doser(l, 2); } })),
+      h('button', { class: 'corbeille', 'aria-label': 'Retirer ' + l.nom + ' de la recette', onclick: () => retirer(l) })),
+    h('div', { class: 'l-frise' },
+      frisette({ ...l, k: 'q' + l.id, role: 'quand', booster: premier ? 'pastille moment' : null, placer: (c) => placer(l, c), suivant: () => momentSuivant(l) }),
+      ibuEl(l)),
+    h('div', { class: 'l2' },
+      stockEl(st.txt),
+      citationTag(l),
+      effetTag(l),
+      h('span', { class: 'droite-mini' }, miniProfil(l.fiche, l.nom))),
+    m.type === 'à froid' ? bioEl(l) : null);
+}
+/* Ajout proposé : « + N IBU » en tête (greffe de p11), et sa frise pour choisir le moment. */
+function rapidePastille(r, premier) {
+  const code = ETAT.momentR[r.cle] || r.moment;
+  const pg = r.ibuPG[code];
+  const v = code === r.moment ? r.ibu : pg == null ? null : pg * r.g;
+  const ibu = v == null ? 'IBU non modélisé' : '+' + ibuTexte(v) + ' IBU';
+  const o = { moment: code, nom: r.nom, jour: 3, id: r.cle };
+  return h('li', { class: 'rapide-l' },
+    h('div', { class: 'rapide-c' },
+      h('button', {
+        class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
+        'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + quand(o) + ' : ' + ibu,
+        onclick: () => ajouter(r, code),
+      }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r), h('b', { class: 'plus-ibu' }, ibu)),
+      h('div', { class: 'r-frise' },
+        frisette({ ...o, k: 'm' + r.cle, booster: premier ? 'moment proposé' : null, placer: (c) => { ETAT.momentR[r.cle] = c; rendre(false); },
+          suivant: () => { const i = MOMENTS.findIndex((m) => m.code === code); ETAT.momentR[r.cle] = MOMENTS[(i + 1) % MOMENTS.length].code; rendre(false); } }),
+        h('span', { class: 'dose-r' }, grammes(r.g))),
+      h('div', { class: 'r-fiches' }, miniProfil(r.fiche, r.nom))),
+    goutBouton(r.nom, 'r', premier ? 'goût' : null));
+}
+VARIANTE = {
+  etape(app) {
+    app.append(enTete(), resume());
+    const et = etatsStock();
+    const n = ETAT.lignes.length;
+    app.append(h('section', { class: 'recette', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette' },
+      h('ul', { class: 'lignes' }, ETAT.lignes.map((l, i) => lignePastille(l, i, et[i])))));
+    app.append(h('section', { class: 'ajout', 'aria-label': 'Ajouts proposés par le moteur' },
+      noteIbu(),
+      champ(),
+      h('ul', { class: 'rapides' }, rapidesVisibles(n ? Math.max(1, 4 - n) : 5).map((r, k) => rapidePastille(r, k === 0)))));
+    app.append(...[levure(), goutsLigne(), panLigne()].filter(Boolean));
+  },
+};
+
+demarrer();
+</script>
+</body>
+</html>

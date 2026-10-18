@@ -1,0 +1,167 @@
+{
+  "tour": 1,
+  "date": "2026-10-18",
+  "sources": [
+    "ecran-1/CADRAGE.md",
+    "ecran-1/PRIORITE.md",
+    "SPEC-BRASSEUR.md §3 et §6",
+    "reference/brasseur-2026-10-18/README.md, clyhealth-3.png",
+    "fils/captures/planche-oeil.png (lu seul, d'abord)",
+    "fils/captures/planche-390.png, pNN-390.png, pNN-b-390.png"
+  ],
+  "oeil": {
+    "p01": {
+      "A": "Carte noire « 3 au style · 9 non situées », seul gros texte ; puis trois pistes grises et trois puces orange.",
+      "B": "Carte noire « Plus floral : 14 voies », « Moins résineux : aucune voie » en petit dessous ; le gros bouton orange « Comparer (2) » tire aussi l'œil.",
+      "reponse_dabord": { "A": true, "B": true }
+    },
+    "p02": {
+      "A": "« Stout export » en titre ; la réponse est une ligne grise du poids des rangées, noyée.",
+      "B": "« Stout export », puis les puces noires et le bouton orange ; la réponse n'est qu'une ligne grise fine sous l'en-tête.",
+      "reponse_dabord": { "A": false, "B": false }
+    },
+    "p03": {
+      "A": "« Stout export » et la pastille noire 16D ; la réponse est dans un bandeau gris pâle au poids des rangées.",
+      "B": "« Stout export », puis la barre bleue de résineux et les puces bleues du bas ; les deux lignes de réponse restent pâles.",
+      "reponse_dabord": { "A": false, "B": false }
+    },
+    "p04": {
+      "A": "Bandeau noir « 3 au style · 9 non situées » sous le titre, puis trois grosses tuiles.",
+      "B": "Bandeau noir en deux moitiés « Plus floral : 14 voies » | « Moins résineux : aucune voie », puis les puces bleues pleines.",
+      "reponse_dabord": { "A": true, "B": true }
+    },
+    "p05": {
+      "A": "« 3 au style · 9 non situées » en grand titre, puis trois grands verres gris.",
+      "B": "« Plus floral : 14 voies » en grand, « Moins résineux » pâle dessous ; puis les verres et le bouton orange.",
+      "reponse_dabord": { "A": true, "B": true }
+    },
+    "p06": {
+      "A": "Une carte titrée « 3 au style · 9 non situées », trois pistes, trois puces orange.",
+      "B": "Les pistes d'abord ; « Plus floral : 14 voies » n'arrive qu'au milieu, dans la seconde carte, avec le bouton orange.",
+      "reponse_dabord": { "A": true, "B": false }
+    },
+    "p07": {
+      "A": "Trois grands tubes verticaux ; « 3 au style » lisible, « 9 non situées » illisible à cette taille.",
+      "B": "« 14 voies » en gros dans une tuile, « aucune voie » plus petit à côté ; puis les tubes.",
+      "reponse_dabord": { "A": false, "B": true }
+    },
+    "p08": {
+      "A": "« Stout export », puis « 3 au style » ; « 9 non situées » illisible ; la puce orange pleine « + floral » est la tache la plus forte.",
+      "B": "Les pistes et la bulle noire « + floral − résineux » d'abord ; « 14 voies » n'arrive qu'au milieu.",
+      "reponse_dabord": { "A": false, "B": false }
+    },
+    "p09": {
+      "A": "Bandeau noir « 3 au style | 9 non situées », chiffres en gros, puis une grande dalle grise.",
+      "B": "Bandeau noir « 14 voies | aucune voie » en gros ; dessous, une colonne perce le plafond (flèches ▲ ▼).",
+      "reponse_dabord": { "A": true, "B": true }
+    },
+    "p10": {
+      "A": "Titre « 3 au style / 9 non situées » sur deux lignes, puis une colonne grise traversée de traits.",
+      "B": "Titre « Plus floral : 14 voies › / Moins résineux : aucune voie › », puis la colonne d'où le trait résineux déborde.",
+      "reponse_dabord": { "A": true, "B": true }
+    },
+    "p11": {
+      "A": "« 3 au style · 9 non situées » en tête, mais la boussole et son brouillard tirent l'œil au milieu.",
+      "B": "Les deux lignes de réponse en tête ; la flèche ★→ et les puces orange pleines de la boussole dominent.",
+      "reponse_dabord": { "A": true, "B": true }
+    }
+  },
+  "questions": {
+    "p01": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": { "Q5": "A : toute la moitié basse est vide sous les puces." }
+    },
+    "p02": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": { "Q5": "A : plus de la moitié de l'écran vide ; B : un tiers vide." }
+    },
+    "p03": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": { "Q5": "A : vide d'environ 45 % entre les rangées et le quai bas." }
+    },
+    "p04": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": { "Q5": "Tuiles creuses (nom en haut, piste en bas, vide entre) ; A : bas d'écran vide." }
+    },
+    "p05": {
+      "Q1": false, "Q2": false, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": {
+        "Q1": "Tags d'effet de bord tronqués : Motueka sans « + tropical », Aurum sans « + agrumes » ; Golding et Aurum deviennent identiques (+ épicé, à acheter), alors que le tag est ce qui distingue les voies.",
+        "Q2": "La brume de la bière commence au bord même de la bande : verre plein à ras, lu comme un niveau de remplissage plutôt que « dans la bande ».",
+        "Q5": "A : verres hauts pour trois valeurs, puis moitié basse vide."
+      }
+    },
+    "p06": {
+      "Q1": false, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": {
+        "Q1": "Même troncature des tags que p05 : Golding et Aurum identiques.",
+        "Q5": "A : plus de la moitié de l'écran vide."
+      }
+    },
+    "p07": {
+      "Q1": false, "Q2": true, "Q3": true, "Q4": false, "Q5": false,
+      "motifs": {
+        "Q1": "B : les puces « + floral » et « − résineux » disparaissent, remplacées par des soulignés sans signe ; on ne voit plus que résineux est à baisser.",
+        "Q4": "Trois tubes d'environ 800 px et neuf faders : une console d'instrument ; « 9 non situées » est le plus petit texte de l'écran.",
+        "Q5": "A : trois valeurs sur deux tiers de l'écran."
+      }
+    },
+    "p08": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": { "Q5": "A : moitié basse vide." }
+    },
+    "p09": {
+      "Q1": true, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": {
+        "Q5": "A : dalle d'environ 860 px pour trois nuages, vide au-dessus du plafond et sous « 9 autres ».",
+        "remarque": "« 50–70 » écrit à côté de la mini-jauge IBU : chiffre que le dessin dit déjà (mineur)."
+      }
+    },
+    "p10": {
+      "Q1": false, "Q2": true, "Q3": true, "Q4": true, "Q5": false,
+      "motifs": {
+        "Q1": "B : résineux sans « non situé » ; seul le débordement du trait le distingue, ce qui ne sépare pas « trop » de « non situé ».",
+        "Q5": "A : environ 55 % de l'écran vide."
+      }
+    },
+    "p11": {
+      "Q1": false, "Q2": true, "Q3": true, "Q4": false, "Q5": false,
+      "motifs": {
+        "Q1": "B : « non situé » remplacé par un brouillard (un signe, pas la phrase canonique du plan 1) ; à arbitrer avec le récit 5.",
+        "Q4": "Le brouillard, c'est-à-dire ce qu'on ne sait pas, est la masse la plus sombre de l'écran ; anneaux de radar façon instrument.",
+        "Q5": "A : la boussole occupe environ 40 % de l'écran pour trois puces."
+      }
+    }
+  },
+  "decompte_oui": {
+    "regle": "oui = reponse_dabord (A, B) + Q1 à Q5, sur 7 ; égalités départagées par le parti de structure (un seul fil par parti), puis par Q1 (contenu intact) avant la présentation.",
+    "p01": 6, "p02": 4, "p03": 4, "p04": 6, "p05": 4, "p06": 4,
+    "p07": 3, "p08": 4, "p09": 6, "p10": 5, "p11": 4
+  },
+  "partis": {
+    "p01": "carte-réponse + rangées à piste",
+    "p02": "carte-réponse + rangées à piste (tableau à pastilles)",
+    "p03": "conversation (rangées groupées + quai bas)",
+    "p04": "tuiles 2 × 2",
+    "p05": "colonnes verticales (verres)",
+    "p06": "dialogue (fil de messages)",
+    "p07": "colonnes verticales (égaliseur)",
+    "p08": "dialogue (fil de réponse)",
+    "p09": "colonnes verticales sous un plafond commun",
+    "p10": "rail : une colonne de bande commune à toutes les familles",
+    "p11": "boussole de direction"
+  },
+  "retenus": ["p01", "p04", "p09", "p10", "p08", "p11"],
+  "ecartes": [
+    { "id": "p02", "raison": "Même parti que p01 (réponse puis rangées à piste) et moins bon : la réponse, ligne grise au poids des rangées, ne ressort au coup d'œil ni en A ni en B." },
+    { "id": "p03", "raison": "La réponse a le poids des rangées et ne ressort pas au coup d'œil ; le parti « conversation » ne se voit pas à l'écran, et le dialogue est mieux porté par p08, où la demande envoyée devient une bulle." },
+    { "id": "p05", "raison": "Même parti vertical que p09, qui est meilleur ; tags d'effet de bord tronqués (Golding et Aurum identiques) et verre plein à ras, lu comme un niveau." },
+    { "id": "p06", "raison": "Même parti dialogue que p08 ; tags tronqués (Golding et Aurum identiques), et en B la réponse passe sous les pistes." },
+    { "id": "p07", "raison": "Le moins de oui (3) : en B les puces de direction disparaissent, console de tubes géants à effet instrument, « 9 non situées » minuscule ; parti vertical déjà porté par p09." }
+  ],
+  "defauts_communs": [
+    "État A creux : le plan 1 tient dans la moitié haute ; le reste est vide ou pris par un dessin agrandi (tubes, dalle, boussole) sans information de plus. Q5 est donc non pour les 11 fils.",
+    "En A, les trois pistes sont trois copies du même dessin, et une piste à bord net se lit comme une barre de progression (« 65 % de floral ») : seul le cas hors bande (résineux en B) prouve que le dessin parle.",
+    "La mini-jauge IBU et le badge « hypothèse » sont illisibles au coup d'œil (quelques pixels à 40 %), et la moitié « Moins résineux : aucune voie » est partout rétrogradée en gris, alors qu'elle répond à la moitié de la demande."
+  ]
+}

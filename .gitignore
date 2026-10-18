@@ -49,7 +49,24 @@ firestore.rules
 # Artefacts de travail : audits, brouillons, dumps, couverture.
 # Les preuves publiques nécessaires aux tests sont rangées sous tests/fixtures/.
 # Les archives brutes, conversations et copies de travail restent locales.
-/work/
+# Exception (#119, 18.10.2026) : la mission houblons v4 versionne ses textes (demandes du
+# brasseur, décisions, registre, contrôles, briefs) et les pages retenues ; ses captures,
+# images de référence et variantes écartées restent locales.
+/work/*
+!/work/refonte-frontend/
+/work/refonte-frontend/**
+!/work/refonte-frontend/**/
+!/work/refonte-frontend/*.md
+!/work/refonte-frontend/v4/**/*.md
+!/work/refonte-frontend/v4/**/*.mjs
+!/work/refonte-frontend/v4/**/jury/*.json
+!/work/refonte-frontend/v4/ecran-1/fils3/p02/*.html
+!/work/refonte-frontend/v4/ecran-1/fils3/p03/*.html
+!/work/refonte-frontend/v4/ecran-1/fils3/p08/*.html
+!/work/refonte-frontend/v4/ecran-1/fils3/generateur-*/*
+/work/refonte-frontend/**/_ecartes/
+/work/refonte-frontend/**/captures/
+/work/refonte-frontend/v4/tournoi/M1/_lots-1-2/
 /tmp/
 .cov/
 scratch_guidance.txt
