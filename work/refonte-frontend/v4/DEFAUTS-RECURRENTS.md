@@ -86,6 +86,11 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 | D41 | « On a un 10' qui sort de null part. C'est pas encore ça, les possible ajoute d'houblon sont vraiment à la bonne place ? » (18.10, soir) | `controle-rail.mjs` : aucun ajout proposé dans une étape du rail ; minutes écrites sur le rail = durée, 0′ ou moment d'une ligne de la recette | 0 | base v2 → 2 échecs (3 ajouts dans le rail, « 10′ » orphelin) |
 | D42 | « Pourquoi celui choisi à de l'ombre ? » (18.10, soir) | `controle-rail.mjs` : aucune ombre au repos ; un geste interrompu (touchcancel) rend la carte à son repos | 0 | témoin positif avant correction (sans pointercancel) → 2 échecs |
 
+| D43 | « Que de j+3 » (commentaire sur la page partagée, 18.10, soir) | `controle-rail.mjs` : sur cas-k3, `data-action="jour-plus"` / `"jour-moins"` changent J+N | efficace | base v2 → échec (les −/+ ne changeaient rien) |
+| D44 | « Que du j+3 SI on est en dehors du boil » ; « Le slider fonctionne pour le boil mais pas pour les autres étape, pas dechelle pour les autres que des choix fix » | `controle-rail.mjs` : deux lâchers dans le segment whirlpool donnent deux réglages (°C ou min) ; deux lâchers en fermentation, deux jours | différents | base v2 → 2 échecs ; ancien témoin → 2 échecs |
+| D45 | « le passage entre 10' et 5' de fait très mal car on doit passe au dessus des houblons... » | `controle-rail.mjs` : graduations d'ébullition régulières (écart-type / moyenne ≤ 0,25) | régulier | base v2 → échec (9 à 100 px) |
+| D46 | « Et le slider est clancky pas fluide du tout » ; « Probablement lié au recalcule de l'ibu pas forcément utile à la volée instantané.. » | `controle-rail.mjs` : sur 10 pas de 6 px, la carte bouge ≥ 9 fois, écart au doigt ≤ 4 px ; l'IBU se recalcule au lâcher | fluide | base v2 → échec (1 sur 10) ; ancien témoin → échec |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :

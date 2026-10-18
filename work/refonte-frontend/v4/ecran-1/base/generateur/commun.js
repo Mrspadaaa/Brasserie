@@ -50,10 +50,11 @@ const nomCourt = (f) => D.court[f];
 /* Moments du rail du brassage : premier moût ; ébullition par tranches de 5′, de la durée de la
    recette (D.ebullition, pack ebullitionMinutes) à 0′ ; whirlpool ; à froid, en fermentation active
    ou après (la phase est un choix du brasseur, le jour est libre). « vide » nomme l'étape vide. */
-/* La durée d'ébullition est une variable de la recette (pack ebullitionMinutes = valeur de départ),
-   réglable sur l'étape de 5 à 240′ par 5 ; le rail et les moments en dépendent. */
+/* La durée d'ébullition est une variable de la recette (D37, révisé : « C'est defini ailleur dans
+   l'application... ») : l'étape la lit et l'affiche avec un renvoi, sans la régler ; le rail et les
+   moments s'adaptent à toute durée de 5 à 240′ (tables du pack). */
 const EBU_MIN = 5, EBU_MAX = 240;
-let EBU = D.ebullition || 60, MOMENTS = [], REPERES = new Set();
+let EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, D.ebullition || 60)), MOMENTS = [], REPERES = new Set();
 function construireMoments() {
   MOMENTS = [
     { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
@@ -62,19 +63,17 @@ function construireMoments() {
     { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
     { code: 'dryPost', type: 'à froid', quand: 'après', vide: 'post-fermentation' },
   ];
-  // Repères écrits : la durée d'ébullition, 60′ et 0′ ; les autres tranches sont des graduations.
-  REPERES = new Set([EBU, 60, 0]);
+  // Minutes écrites sur le rail (D41) : la durée d'ébullition et 0′ ; ailleurs, seules les lignes
+  // de la recette disent leur minute ; les autres tranches sont des graduations muettes.
+  REPERES = new Set([EBU, 0]);
 }
 construireMoments();
-/* Changer la durée : les lignes au-delà se ramènent au début de l'ébullition, et le disent. */
-function changerEbu(v) {
-  EBU = Math.max(EBU_MIN, Math.min(EBU_MAX, Math.round(v / 5) * 5));
-  construireMoments();
+/* Une ligne au-delà de la durée de la recette se ramène au début de l'ébullition, et le dit. */
+function borneLignes() {
   for (const l of ETAT.lignes) {
     const m = /^b(\d+)$/.exec(l.moment);
     if (m && Number(m[1]) > EBU) { l.moment = 'b' + EBU; l.ramene = true; }
   }
-  rendre(true);
 }
 /* Moment d'un ajout proposé, borné à la durée d'ébullition choisie. */
 const momentBorne = (code) => { const m = /^b(\d+)$/.exec(code); return m && Number(m[1]) > EBU ? 'b' + EBU : code; };
@@ -104,6 +103,7 @@ const ETAT = {
   voieRadar: null, compGrand: null,
 };
 for (const f of (B.dirs ? B.dirs.split(',') : [])) ETAT.visee[f] = D.cible[fi(f)].visee;
+borneLignes();
 /* D33 : le focus ne se replace qu'après une action au clavier (au doigt, la vue web du téléphone
    l'entourerait de jaune) ; le contour reste réservé à :focus-visible. */
 for (const f of (B.dirs ? B.dirs.split(',') : [])) if (D.continu && D.continu.viseeDir[f] != null) ETAT.viseeAbs[f] = D.continu.viseeDir[f];
@@ -277,21 +277,22 @@ function miniProfil(fiche, nom) {
   });
   return w;
 }
-/* Un ajout proposé : « 10 g → + 3 IBU » (D16, « genre 5g -> 20ibu en plus »), son stock, ses fiches.
-   colonne : les IBU en colonne à droite (p03, greffe de p11) ; sinon dans la ligne (p02). */
-function rapideLigne(r, premier, colonne) {
+/* Un moment en clair : « 10′ », « premier moût », « whirlpool », « à froid ». */
+const libMoment = (c) => (c === 'fwh' ? 'premier moût' : c === 'wp' ? 'whirlpool' : /^dry/.test(c) ? 'à froid' : c.slice(1) + '′');
+/* Un ajout proposé (D41) : hors du rail, dans la zone d'ajout ; il dit son moment SUGGÉRÉ, son α,
+   son rôle, « 10 g → + 3 IBU » (D16) et ses arômes en couleur ; un toucher l'ajoute et la ligne se
+   pose à ce moment sur le rail, où on la glisse. */
+function rapideLigne(r, premier) {
   const mb = momentBorne(r.moment);
   const v = mb === r.moment ? r.ibu : ibuLigne({ ...r, moment: mb, ibu0: null, wpT: 80, wpMin: 20 });
   const ibu = v === undefined ? 'IBU à recalculer' : v == null ? 'aucun IBU' : '+' + ibuTexte(v) + ' IBU';
-  const corps = colonne
-    ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
-      h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
-    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
-      h('span', { class: 'r2' }, h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
+  const corps = [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
+    h('span', { class: 'r2' }, h('span', { class: 'sugg', 'data-role': 'quand', title: 'moment suggéré par le moteur' }, libMoment(mb), h('span', { class: 'sugg-m' }, ' suggéré')),
+      h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
   return h('li', { class: 'rapide-l' },
     h('button', {
       class: 'rapide', 'data-role': 'ajout-rapide', 'data-booster': premier ? 'ajout rapide' : null, 'data-k': 'r' + r.cle,
-      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + mom(r.moment).quand + ' : ' + ibu,
+      'aria-label': 'Ajouter ' + r.nom + ', ' + grammes(r.g) + ' à ' + libMoment(mb) + ' (moment suggéré) : ' + ibu,
       onclick: () => ajouter(r, mb),
     }, h('span', { class: 'plus-i', 'aria-hidden': 'true' }), corps),
     goutBouton(r.nom, 'r', premier ? 'goût' : null));

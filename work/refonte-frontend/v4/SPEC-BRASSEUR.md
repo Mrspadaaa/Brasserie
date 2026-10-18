@@ -82,6 +82,12 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
 - **La base v2** (sa capture, 18.10, soir) : « C'est defini ailleur dans l'application... » ;
   « On a un 10' qui sort de null part. C'est pas encore ça, les possible ajoute d'houblon sont
   vraiment à la bonne place ? Pourquoi celui choisi à de l'ombre ? » (D37 révisé, D41, D42).
+- **Le rail, hors ébullition et au doigt** (18.10, soir) : « Que de j+3 » (commentaire) ; « Que du
+  j+3 SI on est en dehors du boil, le passage entre 10' et 5' de fait très mal car on doit passe
+  au dessus des houblons... » ; « Le slider fonctionne pour le boil mais pas pour les autres
+  étape, pas dechelle pour les autres que des choix fix » ; « Et le slider est clancky pas
+  fluide du tout » ; « Probablement lié au recalcule de l'ibu pas forcément utile à la volée
+  instantané.. » (D43 à D46).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry

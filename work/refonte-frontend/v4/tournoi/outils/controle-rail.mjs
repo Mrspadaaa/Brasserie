@@ -182,6 +182,98 @@ async function dureeLue(page, p) {
   if (e.champ || e.plusMoins) p('D37 : l\'ébullition se modifie sur l\'étape alors qu\'elle est « defini ailleur dans l\'application » (champ ou −/+) : un renvoi suffit');
   if (!e.renvoi) p('D37 : pas de renvoi vers l\'endroit où se règle l\'ébullition (lien ou data-action="renvoi-ebullition")');
 }
+// D43 (18.10, soir, commentaire sur la page partagée) : « Que de j+3 ». Sur la base v2, les
+// boutons −/+ du jour existaient mais le jour restait à J+3. Sur cas-k3.html, la ligne à froid
+// porte data-action="jour-plus" et "jour-moins" : un toucher sur « plus » fait passer J+3 à J+4,
+// « moins » le ramène ; le jour reste libre (J+0 à J+14, pack dryHopJour).
+async function jourLibre(id, p) {
+  const f = path.join(dir, id, 'cas-k3.html');
+  if (!fs.existsSync(f)) return;
+  const q = await browser.newPage();
+  await q.setViewport({ width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  await q.goto(pathToFileURL(f).href, { waitUntil: 'networkidle0', timeout: 30000 });
+  await wait(300);
+  const jour = () => q.evaluate(() => { const l = [...document.querySelectorAll('[data-role="ligne-houblon"]')].find((x) => /J\s*\+\s*\d+/.test(x.innerText)); const m = l && l.innerText.match(/J\s*\+\s*(\d+)/); return m ? Number(m[1]) : null; });
+  const j0 = await jour();
+  if (j0 === null) { p('D43 : cas-k3.html sans ajout à froid daté (J+N)'); await q.close(); return; }
+  for (const [action, attendu] of [['jour-plus', j0 + 1], ['jour-moins', j0]]) {
+    const b = await q.$('[data-role="ligne-houblon"] [data-action="' + action + '"]');
+    if (!b) { p('D43 : pas de geste data-action="' + action + '" sur la ligne à froid'); break; }
+    try { await b.tap(); } catch { await b.click(); }
+    await wait(350);
+    const j = await jour();
+    if (j !== attendu) { p('D43 : « ' + action + ' » laisse le jour à J+' + j + ' (J+' + attendu + ' attendu)'); break; }
+  }
+  await q.close();
+}
+// D44 (18.10, soir) : « Que du j+3 SI on est en dehors du boil » ; « Le slider fonctionne pour
+// le boil mais pas pour les autres étape, pas dechelle pour les autres que des choix fix ».
+// Après l'ébullition, le rail continue avec ses propres échelles : whirlpool (température et/ou
+// durée), fermentation et post-fermentation (jour). Lâcher la ligne à deux endroits d'un même
+// segment donne deux réglages différents : « 85 °C » / « 75 °C » ou « 20 min » / « 35 min » au
+// whirlpool ; « J+2 » / « J+6 » en fermentation.
+// D45 : « le passage entre 10' et 5' de fait très mal car on doit passe au dessus des
+// houblons... » : sur le segment d'ébullition, l'échelle de temps est régulière (écart entre
+// graduations successives b<N> : écart-type / moyenne ≤ 0,25) : aucun bloc ne s'intercale.
+async function echelles(page, p) {
+  const lacher = async (y) => {
+    const a = await etat(page);
+    if (!a.poignee) return null;
+    const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
+    for (let i = 1; i <= 14; i++) { await t.move(a.poignee.x, a.poignee.y + ((y - a.poignee.y) * i) / 14); await wait(25); }
+    await t.end();
+    await wait(450);
+    return (await etat(page, a.cle)).quand || '';
+  };
+  const e = await etat(page);
+  const y = (c) => e.etapes.find((x) => x.code === c)?.y;
+  // D45 : régularité de l'échelle d'ébullition.
+  const ticks = e.etapes.filter((x) => /^b\d+$/.test(x.code)).sort((a, b) => a.y - b.y);
+  if (ticks.length >= 4) {
+    const gaps = ticks.slice(1).map((t, i) => t.y - ticks[i].y).filter((g) => g > 0);
+    const m = gaps.reduce((s, g) => s + g, 0) / gaps.length;
+    const sd = Math.sqrt(gaps.reduce((s, g) => s + (g - m) ** 2, 0) / gaps.length);
+    if (m > 0 && sd / m > 0.25) p('D45 : échelle d\'ébullition irrégulière (écart des graduations de ' + Math.round(Math.min(...gaps)) + ' à ' + Math.round(Math.max(...gaps)) + ' px) : un bloc s\'intercale entre deux minutes');
+  }
+  // D44 : whirlpool puis fermentation.
+  const segments = [
+    ['wp', 'levure', /(\d+)\s*°C|(\d+)\s*min/i, 'whirlpool'],
+    ['dryActive', 'dryPost', /J\s*\+\s*(\d+)/i, 'fermentation'],
+  ];
+  for (const [deb, fin, re, nom] of segments) {
+    const y0 = y(deb), y1 = y(fin) ?? (y0 !== undefined ? y0 + 80 : undefined);
+    if (y0 === undefined) { p('D44 : le rail n\'a pas de segment ' + nom + ' (data-etape="' + deb + '")'); continue; }
+    const q1 = await lacher(y0 + (y1 - y0) * 0.3);
+    const q2 = await lacher(y0 + (y1 - y0) * 0.75);
+    const v1 = (q1 || '').match(re), v2 = (q2 || '').match(re);
+    if (!v1 || !v2) p('D44 : lâchée dans le segment ' + nom + ', la ligne ne dit pas son réglage (« ' + q1 + ' », « ' + q2 + ' »)');
+    else if (v1[0] === v2[0]) p('D44 : deux endroits du segment ' + nom + ' donnent le même réglage (« ' + v1[0] + ' ») : choix figé, pas d\'échelle');
+  }
+}
+// D46 (18.10, soir) : « Et le slider est clancky pas fluide du tout ». La base v2 déplaçait la
+// carte par réordonnancement : rien avant un demi-cran, puis des sauts de tranche en tranche.
+// Désormais la carte suit le doigt : sur 10 déplacements de 6 px, elle bouge à chaque fois
+// (au moins 9 sur 10) et son écart au doigt reste constant (± 4 px) ; l'accroche aux tranches
+// se fait au lâcher, pendant le geste seule la valeur affichée change de tranche.
+async function fluide(page, p) {
+  const a = await etat(page);
+  if (!a.poignee) return;
+  const t = await page.touchscreen.touchStart(a.poignee.x, a.poignee.y);
+  await t.move(a.poignee.x, a.poignee.y + 2); await wait(60);
+  const haut = () => page.evaluate(() => { const g = document.querySelector('[data-glisse]'); return g ? g.getBoundingClientRect().top : null; });
+  let prec = await haut(), bouge = 0, ecarts = [];
+  for (let i = 1; i <= 10; i++) {
+    await t.move(a.poignee.x, a.poignee.y + 2 + i * 6); await wait(40);
+    const h = await haut();
+    if (h !== null && prec !== null) { if (Math.abs(h - prec) > 0.5) bouge++; ecarts.push(h - prec - 6); }
+    prec = h;
+  }
+  await t.end();
+  await wait(300);
+  if (!ecarts.length) { p('D46 : pendant le geste, rien ne porte data-glisse : impossible de suivre la carte'); return; }
+  const pire = Math.max(...ecarts.map(Math.abs));
+  if (bouge < 9 || pire > 4) p('D46 : la carte ne suit pas le doigt (' + bouge + ' mouvements sur 10, écart jusqu\'à ' + Math.round(pire) + ' px) : geste saccadé');
+}
 async function dureesRecette(id, p) {
   for (const c of [45, 200]) {
     const f = path.join(dir, id, 'cas-ebu' + c + '.html');
@@ -266,12 +358,21 @@ for (const id of ids) {
   await geste(page, p);
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
   await wait(300);
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+  await wait(300);
+  await fluide(page, p);
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+  await wait(300);
+  await echelles(page, p);
+  await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+  await wait(300);
   await dureeLue(page, p);
   for (const x of await railRecette(page)) p('D41 : ' + x);
   const client = await page.target().createCDPSession();
   await interruption(page, client, p);
   await page.close();
   await dureesRecette(id, p);
+  await jourLibre(id, p);
   // D36 : ébullition de 120′.
   const f120 = path.join(dir, id, 'cas-ebu120.html');
   if (!fs.existsSync(f120)) p('D36 : cas-ebu120.html absente (la même recette avec une ébullition de 120′)');
