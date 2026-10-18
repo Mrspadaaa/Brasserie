@@ -157,6 +157,12 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   (p04 ; d3-shape et d3-scale, environ 9 ko, licence ISC, rendu SVG par React), le même rendu que
   p03 sans ECharts (335 ko pour un seul type de graphe) ; ApexCharts écarté pour sa licence
   (payante au-delà de 2 M$ de revenus ou pour un produit utilisé par d'autres).
+- **Pour la nuit** : « Plusieurs versions de radar graph. De suggestions Aussi de ma bière et de mon
+  houblons. Fait des fils de fere, et un ladder de comparaison et un ranking ect... » ; « Aussi des
+  vrais comparaison... » ; « Et un système pour la substitution de houblons. Introduir ça. » ;
+  « Fait des ticket de replis les pour que je puisse suivre une fois le lendemain » ; sur les
+  données : « Parcontre ça manque pas que certaines données sont manquantes.. » — 18.10, soir
+  (lots 9 à 11, tickets #134 à #139).
 - **Le fil de fer perdu** (planche des fiches du lot 4 à l'appui) : « Pourquoi j'ai plus juste des
   maquettes fil de fer de ce type ? Qqch a dû être perdu dans le workflow et je comprends mieux
   pourquoi ça prends du longtemps » — 18.10, soir (méthode : explorer en fil de fer, finir une
