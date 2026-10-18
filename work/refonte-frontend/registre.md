@@ -97,6 +97,40 @@ Voir `decisions.md` (D1 à D12).
 | 18.10 | Commentaire : porte B refusée (D17), cause et suite | #119 |
 | 18.10 03:05 | Phase 5, 60 écritures (détail horodaté : `phase5/journal-github.json`) : étiquette « interface » créée ; épopée #122 et tickets #123 à #129 créés ; 41 issues fermées comme caduques avec raison et lien (#21 #22 #23 #25 #27 #35 #36 #38 #39 #41 #43 #45 #46 #47 #49 #55 #57 #59 #60 #61 #67 #68 #70 #72 #73 #78 #79 #84 #85 #86 #87 #88 #90 #92 #94 #95 #98 #99 #101 #103 #107) ; #42 renommée et commentée ; #44 commentée (gardée) ; étiquette « interface » sur #115 et #119 ; rattachement commenté sur #115, #116, #120, #121 | #122 à #129, 41 issues |
 
+## Nuit du 18 au 19.10 — programme autonome (le brasseur dort, quota illimité)
+
+Sa demande : « Plusieurs versions de radar graph. De suggestions Aussi de ma bière et de mon
+houblons. Fait des fils de fere, et un ladder de comparaison et un ranking ect... » ; « Aussi des
+vrais comparaison... » ; « Et un système pour la substitution de houblons. Introduir ça. » ;
+« Fait des ticket de replis les pour que je puisse suivre une fois le lendemain ».
+
+- **Tickets** : #134 rail (lot 8), #135 radars par objet (lot 9), #136 échelles, classements et
+  vraies comparaisons (lot 10), #137 substitution (moteur, puis lot 11), #138 choix du lot 6,
+  #139 grille de dégustation. Ils sont liés depuis #119. Chaque résultat va en commentaire dans
+  son ticket : planche, verdicts de contrôle, ce qui reste à choisir.
+- **En vol, à ne pas relancer** :
+  - radar D3 dans toute la base : `ae8318c6ab251d5e4` ;
+  - lot 8 rail : p01 `a2ff0d7c8d24aee38`, p02 `a45f53c1f35bdf4d5`, p03 `a8d6562ba529db648`,
+    p04 `a16a04cb1130a4c04` ;
+  - lot 9 radars : m1–m2 `a236ad56fe39a2e86`, m3–m4 `afbed688e16b5f201`, s1–s2
+    `aa337ace1fae1e10b`, s3–s4 `ad2649cfd02597813`, h1–h2 `ac9e16c642c60e3f2`, h3–h4
+    `a252923e3691e2d95` ;
+  - lot 10 : e1–e2 `aefeb6b129a6e901f`, r1–r2 `ac231104cb7d2f26e`, c1–c2 `a5a61081afe64d5a7` ;
+  - moteur de substitution : `af3c5daef710e2cee`.
+- **À chaque retour** :
+  - contrôle indépendant :
+    - lots 9 et 10 : `controle-fil6.mjs <dossier> --objet=libre` ;
+    - lot 8 : `controle-rail.mjs fils8-rail pNN` ;
+    - base radar : lot complet de la base ;
+    - substitution : `npx vitest run` et `tsc` dans prototypes/houblons-v4 ;
+  - planche (`planche.mjs <dossier> 390`), regardée ;
+  - commentaire dans le ticket, avec la planche jointe à la page partagée ou en lien vers le
+    fichier ;
+  - commit du dossier rentré.
+- **Après le moteur de substitution** : lot 11, écrans de substitution en fils de fer (depuis la
+  fiche, depuis la recette, en rupture de stock, libre), ticket #137.
+- **Rien n'est intégré** sans son choix (D50). Pas de push.
+
 ## État (18.10, ~23:00) — lots 6 et 7 rentrés, rail en vol
 
 - **Lot 6** : les 11 fils de fer de chaque objet passent `controle-fil6.mjs`. Comparer et

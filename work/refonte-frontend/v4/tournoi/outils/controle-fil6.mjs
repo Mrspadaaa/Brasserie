@@ -20,10 +20,14 @@ const STYLE = PACK.styles['16D'];
 const FAMILLES = Object.keys(STYLE.families);
 
 const dir = path.resolve(process.argv[2] || '.');
-const objet = (process.argv.find((a) => a.startsWith('--objet=')) || '').slice(8) || (/sugg/.test(dir) ? 'suggestions' : 'comparer');
+// --objet=libre : une page vue.html (ou --pages=a.html,b.html), contrôles communs seulement
+// (texte de 12 px au moins, radars fermés D62) ; utile aux lots de vues nouvelles (radars par
+// objet, échelles, classements, substitution).
+const objet = (process.argv.find((a) => a.startsWith('--objet=')) || '').slice(8) || (/sugg/.test(dir) ? 'suggestions' : /comparer/.test(dir) ? 'comparer' : 'libre');
 const only = process.argv.slice(3).filter((a) => !a.startsWith('--'));
-const PAGES = objet === 'comparer' ? ['comparer.html', 'comparer-radar.html'] : ['etat-b.html', 'suggestions-radar.html'];
-const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => /^p\d+$/.test(d)))
+const pagesArg = (process.argv.find((a) => a.startsWith('--pages=')) || '').slice(8);
+const PAGES = pagesArg ? pagesArg.split(',') : objet === 'comparer' ? ['comparer.html', 'comparer-radar.html'] : objet === 'suggestions' ? ['etat-b.html', 'suggestions-radar.html'] : ['vue.html'];
+const ids = (only.length ? only : fs.readdirSync(dir).filter((d) => /^[a-z]\d+$/.test(d)))
   .filter((d) => fs.existsSync(path.join(dir, d, PAGES[0]))).sort();
 
 const fiche = (nom) => FICHES.find((f) => f.name === nom);
