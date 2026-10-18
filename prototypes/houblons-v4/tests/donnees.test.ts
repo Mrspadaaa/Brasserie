@@ -101,6 +101,18 @@ describe('Données citées, niveaux de citation, dégustation (D25)', () => {
     expect(r.direction.find((d) => d.family === 'resin')!.note).toBeNull();
   });
 
+  it('cible : la dégustation « trop » fixe le retour dans la bande ; sans dégustation, repère du modèle moins un cran', () => {
+    const tasted = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING }).direction;
+    expect(tasted.find((d) => d.family === 'resin')).toMatchObject({ targetAbsolute: 30, targetFrom: 'dégustation' });
+    expect(tasted.find((d) => d.family === 'floral')!.targetFrom).toBe('modèle');
+    const plain = proposeVoies(s1Recipe(), S1_DIRECTION).direction.find((d) => d.family === 'resin')!;
+    expect(plain).toMatchObject({ targetAbsolute: 0, targetFrom: 'modèle' });
+    // « peu » : bord bas de la bande (floral attendu 33–68 en 3B, perçu faible).
+    const lager = { ...s1Recipe(), styleCode: '3B' };
+    const weak = tastingFrom({ floral: 'faible' }, { origin: 'test', date: '2026-10-18', quote: null, source: 'test' });
+    expect(proposeVoies(lager, { floral: 1 }, { tasting: weak }).direction[0]).toMatchObject({ targetAbsolute: 33, targetFrom: 'dégustation' });
+  });
+
   it('trois niveaux : non décrit, cité, marqué ; un « non décrit » reste « non décrit », jamais 0', () => {
     const d = describeFamilies('beermaverick-nugget');
     expect(d.stoneFruit).toMatchObject({ level: 'non décrit', sources: 0, of: 4 });

@@ -86,13 +86,13 @@ export function buildPack() {
   const catalogue = Object.entries(CATALOGUE_IDS).flatMap(([style, ids]) => ids.map((id) => ({ ...hopEntry(hopProfile(`beermaverick-${id}`)), forStyle: style })));
 
   // S1 : stout export, « plus floral, moins résineux ».
-  const r1 = proposeVoies(s1Recipe(), S1_DIRECTION);
+  const r1 = proposeVoies(s1Recipe(), S1_DIRECTION, { tasting: S1_TASTING });
   const directed = r1.direction.map((d) => d.family);
   const S1 = {
     question: 'Ma stout export est trop résineuse ; je la veux plus florale.',
     recipe: r1.recipe, style: '16D', yeast: r1.yeast, ibu: r1.ibu, matrix: r1.matrix,
     before: profile(r1.before.profile),
-    direction: r1.direction.map((d) => ({ family: d.family, name: d.name, crans: d.crans, status: d.status, delta: d.delta, cran: d.cran, width: d.width, targetAbsolute: d.targetAbsolute, note: d.note })),
+    direction: r1.direction.map((d) => ({ family: d.family, name: d.name, crans: d.crans, status: d.status, delta: d.delta, cran: d.cran, width: d.width, targetAbsolute: d.targetAbsolute, targetFrom: d.targetFrom, note: d.note })),
     ranking: r1.ranking, evaluated: r1.evaluated, notes: r1.notes, skipped: r1.skipped,
     voies: r1.voies.map((v) => voieEntry(v, directed)),
     // Dégustation du brasseur : seulement ce qu'il a dit (aucune valeur inventée).

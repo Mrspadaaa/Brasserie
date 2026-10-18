@@ -63,7 +63,9 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
   à 0–100. **Cran** = `w/3`. **Seuil d'écart** = `w/4`. **Recouvrement** ≥ 50 % de la plus
   étroite des deux plages : « ≈ », quel que soit le zoom.
 - **Direction** : variation visée = crans × cran du style, relative à la recette (le
-  niveau absolu peut rester inconnu). « moins X » baisse la cible **et** exclut les
+  niveau absolu peut rester inconnu). Cible absolue (`targetAbsolute`, `targetFrom`) : si la
+  dégustation juge la famille « trop » ou « peu » face au style, retour dans la bande (bord le
+  plus proche, `targetFrom: "dégustation"`) ; sinon repère central du modèle ± crans. « moins X » baisse la cible **et** exclut les
   houblons dont une fiche cite X (règle V5.5).
 - **Effet d'une voie** : somme signée des apports V5.5 des ajouts changés, apport =
   repère central de l'ajout à sa dose moins celui à dose nulle (fond de levure). Seules

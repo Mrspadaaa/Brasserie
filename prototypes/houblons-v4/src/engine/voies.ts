@@ -8,6 +8,8 @@ import {
   type Addition, type FamilyEstimate, type MatrixContext, type MomentId, type Profile, type Recipe, type RecipeProfile, type YeastInfo,
 } from './recipe';
 import { getStyleScale, type StyleScale } from '../style/scale';
+import { valueVerdict } from '../style/verdict';
+import type { Tasting } from './tasting';
 
 /** Direction relative à la recette : nombre de crans par famille (+1 « plus floral », −1 « moins résineux »). */
 export type Direction = Partial<Record<FamilyId, number>>;
@@ -31,7 +33,10 @@ export interface DirectedTarget {
   family: FamilyId; name: string; crans: number; status: string;
   /** Variation visée, en points : crans × cran du style. */
   delta: number; cran: number; width: number;
-  current: FamilyEstimate; targetAbsolute: number | null; note: string | null;
+  current: FamilyEstimate; targetAbsolute: number | null;
+  /** « dégustation » : retour dans la bande du style ; « modèle » : repère central ± crans ; null : inconnu. */
+  targetFrom: 'dégustation' | 'modèle' | null;
+  note: string | null;
 }
 export interface Voie {
   id: string; type: VoieType; label: string; domain: 'stock' | 'à acheter';
@@ -65,6 +70,8 @@ export interface VoieOptions {
   /** Voies à acheter retenues, classées avec celles du stock (défaut 4). */ buyLimit?: number;
   /** Voies au plus par houblon ou couple de houblons (défaut 2). */ perHop?: number;
   moments?: MomentId[]; assemblages?: boolean;
+  /** Dégustation du brasseur : situe la bière et fixe la cible d'une famille jugée « trop » ou « peu ». */
+  tasting?: Tasting | null;
 }
 
 export const RANKING = [
@@ -130,8 +137,14 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
     const citedNow = recipe.additions.some((a) => cites(hopRef(a.hopKey)?.varietyId ?? '', f));
     const note = crans < 0 && !citedNow ? `${FAMILY_NAMES[f]} : aucun ajout actuel n’est cité pour cette famille dans les fiches (Beer Maverick, Hopsteiner) ; aucune voie ne peut établir une baisse. La cause perçue peut venir d’ailleurs (malt torréfié, levure, oxydation) : non modélisé.` : null;
     if (note) notes.push(note);
-    return { family: f, name: FAMILY_NAMES[f], crans, status: fs.status, delta, cran: round(fs.cran), width: fs.width, current,
-      targetAbsolute: current.central !== undefined ? round(Math.max(0, Math.min(100, current.central + delta))) : null, note };
+    // Décision du pilote : si la dégustation juge la famille « trop » (ou « peu ») face au style, la
+    // cible est le retour dans la bande (bord le plus proche) ; sinon repère du modèle ± crans.
+    const perceived = options.tasting?.axes.find((a) => a.family === f)?.perceivedRange;
+    const tasted = perceived && fs.band ? valueVerdict({ range: perceived }, fs).verdict : null;
+    const byTasting = tasted === 'trop' || tasted === 'hors style' ? fs.band![1] : tasted === 'peu' ? fs.band![0] : null;
+    const targetAbsolute = byTasting !== null ? byTasting : current.central !== undefined ? round(Math.max(0, Math.min(100, current.central + delta))) : null;
+    const targetFrom: DirectedTarget['targetFrom'] = byTasting !== null ? 'dégustation' : targetAbsolute !== null ? 'modèle' : null;
+    return { family: f, name: FAMILY_NAMES[f], crans, status: fs.status, delta, cran: round(fs.cran), width: fs.width, current, targetAbsolute, targetFrom, note };
   });
 
   // Stock libre = stock − ajouts de la recette (hors ajout remplacé ou modifié).
