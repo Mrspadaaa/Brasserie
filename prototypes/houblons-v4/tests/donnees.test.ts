@@ -1,7 +1,39 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { FAMILIES, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary } from '../src/engine';
-import { S1_DIRECTION, S1_TASTING, s1Recipe } from '../src/pack/buildPack';
+import { FAMILIES, QUICK_ADD_RULE, additionIbu, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
+import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
+
+describe('Ajout en un toucher (ajoutsRapides)', () => {
+  const keyOf = (r: QuickAdd) => [['usage attesté', 'cohérent', 'peu documenté', 'non documenté', 'hors style'].indexOf(r.fit), -r.supports.length, r.offStyle.length, -r.stock.free];
+  const ordered = (list: QuickAdd[]) => { for (let i = 1; i < list.length; i++) { const a = keyOf(list[i - 1]), b = keyOf(list[i]); const d = a.findIndex((x, j) => x !== b[j]); if (d >= 0) expect(a[d]).toBeLessThan(b[d]); } };
+
+  it('16D : stock disponible d’abord, épuisés à part, classement selon la règle écrite, 10′ et 10 g plafonnés au stock libre', () => {
+    const q = quickAdds(s1Recipe(), getStyleScale('16D'));
+    expect(q.rule).toEqual(QUICK_ADD_RULE);
+    expect(q.disponibles.every((r) => r.stock.free > 0)).toBe(true);
+    expect(q.epuises.every((r) => r.stock.free <= 0)).toBe(true);
+    expect(q.disponibles.length + q.epuises.length).toBe(16);
+    ordered(q.disponibles); ordered(q.epuises);
+    for (const r of q.disponibles) {
+      expect(r.moment).toBe('b10');
+      expect(r.dose!.grams).toBe(Math.min(10, r.stock.free));
+      expect(r.ibuAdded!.value).toBeCloseTo(additionIbu({ id: 'q', hopKey: r.key, moment: 'b10', grams: r.dose!.grams }, s1Recipe()).value, 1);
+      expect(r.cited.every((c) => c.level !== 'non décrit')).toBe(true);
+    }
+    expect(q.disponibles.find((r) => r.name === 'Target')!.dose).toMatchObject({ grams: 5, rule: 'tout le stock libre' });
+  });
+
+  it('3B, recette sans houblon : 60′ et la dose qui amène l’IBU au milieu de la bande', () => {
+    const recipe = s2Recipe(), scale = getStyleScale('3B');
+    const q = quickAdds(recipe, scale);
+    const mid = (scale.ibu![0] + scale.ibu![1]) / 2;
+    for (const r of q.disponibles) {
+      expect(r.moment).toBe('b60');
+      expect(Math.abs(r.ibuAdded!.value - mid)).toBeLessThanOrEqual(0.5);
+    }
+    ordered(q.disponibles);
+  });
+});
 
 describe('Lecture commune (reading)', () => {
   it('S1 : une entrée par famille dans l’ordre du style, la dégustation prime, comptes et phrases calculés', () => {

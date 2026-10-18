@@ -3,7 +3,7 @@
 import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
-  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary,
+  proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -24,6 +24,11 @@ export function s1Recipe(): Recipe {
     additions: [{ id: 'a1', hopKey: 'beermaverick-nugget', moment: 'b60', grams: 46 }] };
 }
 export const S1_DIRECTION = { floral: 1, resin: -1 } as const;
+/** Recette S2 pour l'ajout rapide : lager tchèque premium 3B, 20 L, DI 1,052 (milieu de 1,044–1,060),
+ * levure LalBrew Diamond, encore sans houblon. */
+export function s2Recipe(): Recipe {
+  return { name: 'Lager tchèque premium', styleCode: '3B', volumeL: 20, og: 1.052, boilMin: 60, yeastId: 'lalbrew-diamond', additions: [] };
+}
 /** Ce que le brasseur a dit lui-même (brief v4, § 1, 18.10.2026) : « trop résineuses » → résine marquée.
  * « je la veux plus floral » est une direction, pas un niveau perçu : floral reste null. */
 export const S1_TASTING = tastingFrom({ resin: 'marqué' }, {
@@ -100,6 +105,8 @@ export function buildPack() {
   const reading1 = readBeer(r1.before.profile, S1_TASTING, getStyleScale('16D'));
   const summary1 = readingSummary(reading1), voies1 = voiesSummary(r1);
   Object.assign(S1, { reading: reading1, readingSummary: { counts: summary1.counts, sentence: summary1.sentence, voies: voies1.byFamily, voiesSentence: voies1.sentence } });
+  // Ajout en un toucher (comme l'étape Malts) : houblons du stock classés pour le style, règle écrite.
+  Object.assign(S1, { ajoutsRapides: { style: '16D', ...quickAdds(s1Recipe(), getStyleScale('16D')) } });
 
   // S2 : Czech Premium Pale Lager 3B (floral attendu 33–68), trois houblons floraux du catalogue,
   // levure de lager LalBrew Diamond, sans profil dans V5.5 : enveloppe inconnue, gardée telle quelle.
@@ -126,6 +133,8 @@ export function buildPack() {
     // (non situés) ; une lecture par houblon n'écrirait que « non situé ».
     readingSummary: { ...gapSummary(trio.map((h) => h.name), pairs),
       note: 'Profils à la référence : plages pleines, non situées ; seul l’écart entre houblons se lit.' },
+    // Même forme que S1.ajoutsRapides, pour une recette 3B encore sans houblon (mode amertume).
+    ajoutsRapides: { style: '3B', recipe: s2Recipe(), ...quickAdds(s2Recipe(), s3b) },
     illustration: (() => {
       // « Un écart faible pour une ipa peut être très grand pour un autre style » : un cran du floral de la 3B, arrondi.
       const gap = Math.round(s3b.families.floral.cran);

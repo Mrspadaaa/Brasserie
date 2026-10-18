@@ -105,6 +105,22 @@ yeastInfo(id) -> 'caractérisée' | 'inconnue' | 'absente' ; matrixContext(recip
 - **Voie d'amertume** : diminuer jusqu'au bas de la bande d'IBU du style, en plus des
   facteurs fixes.
 
+## Ajout en un toucher (`quickAdds`, `S1.ajoutsRapides`, `S2.ajoutsRapides`)
+
+Règle (`QUICK_ADD_RULE`, testée dans `tests/donnees.test.ts`) :
+
+1. Candidats : les houblons du stock ; disponibles (stock libre > 0) d'abord, épuisés à part.
+2. Classement documentaire, comme `styleFit` (S3) : usage attesté, cohérent, peu documenté,
+   non documenté, hors style (famille indésirable citée) ; puis familles attendues citées
+   (plus d'abord), familles neutres citées (moins d'abord), stock libre, nom. Égalité de
+   toutes les clés : même rang. Aucun score.
+3. Moment et dose : si l'IBU de la recette est sous la bande du style, 60′ et la dose qui
+   l'amène au milieu de la bande ; sinon 10′ et la plus petite dose de recherche du solveur
+   V5.5 à 10′ (0,5 g/L, soit 10 g pour 20 L), plafonnée au stock libre.
+4. IBU ajoutés : `BrewingMath.hopIbu`, alpha du lot sinon plage variétale.
+
+Chaque entrée donne aussi le stock libre et les familles citées avec leur niveau.
+
 ## Hypothèses [H] et limites
 
 - Table mots → bandes, cran, seuil, plancher de 15 points, recouvrement de 50 % :
