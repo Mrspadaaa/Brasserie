@@ -6,7 +6,7 @@ import { AXES } from './data';
 import { FAMILY_NAMES, type FamilyId } from './families';
 import { describeFamilies } from './hops';
 import type { Profile } from './recipe';
-import type { Tasting } from './tasting';
+import { tastingMention, type Tasting } from './tasting';
 import type { FamilyEffect } from './voies';
 import type { FamilyStatus, StyleScale } from '../style/scale';
 
@@ -32,12 +32,14 @@ export interface BeerLevel {
   source: 'dégustation' | 'modèle' | 'non situé';
   /** Ce qui a été converti : classe perçue, ou repère central V5.5 (points 0–100). */
   basis: { perceived?: string; central?: number; range?: { min: number; max: number } } | null;
+  /** Origine d'un niveau dégusté : « brassin du … », sinon la phrase datée du brasseur. */
+  mention?: string;
 }
 export function beerLevels(profile: Profile, tasting: Tasting | null, scale: StyleScale): BeerLevel[] {
   return scale.order.map((f) => {
     const base = { family: f, name: FAMILY_NAMES[f], status: scale.families[f].status };
     const t = tasting?.axes.find((a) => a.family === f);
-    if (t?.perceived && t.perceivedRange) return { ...base, level: PERCEIVED[t.perceived], source: 'dégustation', basis: { perceived: t.perceived, range: t.perceivedRange } };
+    if (t?.perceived && t.perceivedRange) return { ...base, level: PERCEIVED[t.perceived], source: 'dégustation', basis: { perceived: t.perceived, range: t.perceivedRange }, mention: tastingMention(tasting!) };
     const e = profile[f];
     if (e.status === 'estimé' && e.range && e.range.max <= ABSENT_MAX) return { ...base, level: 0, source: 'modèle', basis: { range: e.range } };
     if (e.status === 'inconnu' || !e.situated || e.central === undefined) return { ...base, level: null, source: 'non situé', basis: null };

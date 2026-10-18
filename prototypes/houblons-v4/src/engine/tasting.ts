@@ -14,7 +14,16 @@ export interface TastingAxis {
   perceivedRange: { min: number; max: number } | null;
   source: string | null;
 }
-export interface Tasting { origin: string; date: string; quote: string | null; axes: TastingAxis[] }
+export interface Tasting {
+  origin: string; date: string; quote: string | null; axes: TastingAxis[];
+  /** Brassin dégusté, si la donnée existe (sinon la mention cite la phrase du brasseur). */
+  batch?: { id: string; date: string } | null;
+}
+/** Mention d'origine d'un niveau dégusté : « brassin du … » si le brassin est connu, sinon la phrase datée. */
+export function tastingMention(t: Tasting): string {
+  const d = (iso: string) => { const [, m, day] = iso.split('-'); return `${day}.${m}`; };
+  return t.batch ? `brassin du ${d(t.batch.date)}` : `dégustation du brasseur, ${d(t.date)}${t.quote ? ` : « ${t.quote} »` : ''}`;
+}
 
 /** Classe de l'axe V5.5 pour un niveau perçu (convention de l'app : lowMax, mediumMax). */
 export function levelRange(family: FamilyId, level: PerceivedLevel): { min: number; max: number } {

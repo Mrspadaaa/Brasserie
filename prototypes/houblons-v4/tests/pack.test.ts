@@ -61,6 +61,12 @@ describe('Pack des mini-prototypes', () => {
       expect(q.rule.length).toBeGreaterThan(0);
       expect(q.disponibles[0]).toEqual(expect.objectContaining({ rank: 1, moment: expect.any(String), dose: expect.objectContaining({ grams: expect.any(Number), gramsPerLitre: expect.any(Number) }) }));
     }
+    for (const s of [stored.scenarios.S4, stored.scenarios.S5]) {
+      for (const k of ['recetteHoublons', 'ajoutsRapides', 'profilBiere', 'cibleStyle', 'readingSummary']) expect(s).toHaveProperty(k);
+      expect(s.tasting).toBeNull();
+    }
+    expect(stored.scenarios.S4.ibu).toBe(0);
+    expect(stored.scenarios.S5.recetteHoublons).toHaveLength(4);
     expect(stored.scenarios.S2.pairs).toHaveLength(3);
     expect(stored.scenarios.S3.ranked.length).toBe(stored.stock.length);
     // JSON simple : il se relit et se réécrit à l'identique (aucune valeur non sérialisable).

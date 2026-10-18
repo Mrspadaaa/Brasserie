@@ -36,7 +36,8 @@ export interface QuickAdd {
   moment: MomentId; momentLabel: string;
   dose: { grams: number; gramsPerLitre: number; rule: string } | null;
   ibuAdded: { value: number; min: number; max: number } | null;
-  cited: { family: FamilyId; name: string; status: string; level: string; sources: number; of: number }[];
+  /** Familles citées (niveau, N fiches sur M) ; nom et statut dans families et cibleStyle du pack. */
+  cited: { family: FamilyId; level: string; sources: number; of: number }[];
   /** IBU à la dose proposée et par gramme, pour chaque moment que V5.5 sait traiter (BrewingMath.hopIbu). */
   ibuParMoment: IbuAtMoment[];
 }
@@ -60,11 +61,11 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
     let dose: QuickAdd['dose'] = null;
     if (bitter) {
       const g = gramsForIbu((scale.ibu![0] + scale.ibu![1]) / 2 - ibu0, ref, 'b60', recipe);
-      if (g !== null) dose = { grams: round(g), gramsPerLitre: round(g / recipe.volumeL, 2), rule: 'IBU au milieu de la bande du style' };
+      if (g !== null) dose = { grams: round(g), gramsPerLitre: round(g / recipe.volumeL, 2), rule: 'milieu de la bande d’IBU' };
     } else {
       const preset = searchDoses('b10')[0] * recipe.volumeL;
       const g = free > 0 ? Math.min(preset, free) : preset;
-      dose = { grams: round(g), gramsPerLitre: round(g / recipe.volumeL, 2), rule: g < preset ? 'tout le stock libre' : 'plus petite dose de recherche du solveur à 10′' };
+      dose = { grams: round(g), gramsPerLitre: round(g / recipe.volumeL, 2), rule: g < preset ? 'stock libre' : 'dose de recherche 10′' };
     }
     const ibu = dose ? additionIbu({ id: 'quick', hopKey: s.key, moment, grams: dose.grams }, recipe) : null;
     return {
@@ -73,7 +74,7 @@ export function quickAdds(recipe: Recipe, scale: StyleScale, tasting: Tasting | 
       stock: { grams: s.grams, free, status: s.grams <= 0 ? 'épuisé' : dose && free >= dose.grams ? 'suffisant' : 'manque' },
       moment, momentLabel: MOMENTS[moment].label, dose,
       ibuAdded: ibu && !ibu.unknown.length ? { value: round(ibu.value), min: round(ibu.min), max: round(ibu.max) } : null,
-      cited: FAMILIES.filter((f) => desc[f].level !== 'non décrit').map((f) => ({ family: f, name: FAMILY_NAMES[f], status: scale.families[f].status, level: desc[f].level, sources: desc[f].sources, of: desc[f].of })),
+      cited: FAMILIES.filter((f) => desc[f].level !== 'non décrit').map((f) => ({ family: f, level: desc[f].level, sources: desc[f].sources, of: desc[f].of })),
       ibuParMoment: ibuByMoment(s.key, dose?.grams ?? 0, recipe),
     };
   });

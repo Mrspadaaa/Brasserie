@@ -6,11 +6,12 @@ export {
   type MomentId, type Moment, type Recipe, type Addition, type FamilyEstimate, type Profile, type RecipeProfile, type YeastInfo, type MatrixContext, type Ibu,
 } from './recipe';
 export { hopProfile, styleFit, citations, describeFamilies, REFERENCE, stockKeys, type HopProfile, type StyleFit, type FitClass, type Citation, type Reference, type DescriptionLevel, type FamilyDescription } from './hops';
-export { tastingFrom, situateBeer, levelRange, TASTING_USAGE, type Tasting, type TastingAxis, type PerceivedLevel, type SituatedFamily } from './tasting';
+export { tastingFrom, situateBeer, levelRange, tastingMention, TASTING_USAGE, type Tasting, type TastingAxis, type PerceivedLevel, type SituatedFamily } from './tasting';
 export { offModelLeads, type OffModelLead } from './leads';
 export { readBeer, readingSummary, voiesSummary, gapSummary, type ReadingEntry, type ReadingVerdict } from './reading';
 export { quickAdds, quickAddKey, QUICK_ADD_RULE, type QuickAdd } from './quickAdd';
 export { ibuByMoment, momentCatalogue, IBU_MOMENTS, type IbuAtMoment, type MomentInfo } from './ibuMoments';
+export { loadedRecipe, recipeLines, LOADED_RECIPE_RULE } from './cases';
 export { beerLevels, targetLevels, afterLevels, ficheLevels, classOf, LEVEL_RULE, type Level, type BeerLevel, type TargetLevel, type AfterLevel, type FicheLevel } from './levels';
 export { proposeVoies, compareVoies, compareRankKeys, applyVoie, RANKING, type Direction, type Voie, type VoieType, type Action, type VoieResult, type FamilyEffect, type DirectedTarget, type StyleOverflow } from './voies';
 export { getStyleScale, documentedStyleCodes, SCALE_PARAMETERS, type StyleScale, type FamilyScale, type FamilyStatus } from '../style/scale';

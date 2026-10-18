@@ -4,7 +4,7 @@ import { HOP_RECIPE_ENGINE_VERSION } from '@functions/hopRecipePrediction';
 import {
   CATALOGUE, FAMILIES, FAMILY_NAMES, REFERENCE, SCALE_PARAMETERS, STOCK, STOCK_SOURCE, gapVerdict, getStyleScale, hopProfile, hopRef, valueVerdict,
   proposeVoies, styleFit, trackShare, tastingFrom, situateBeer, offModelLeads, TASTING_USAGE, readBeer, readingSummary, voiesSummary, gapSummary, quickAdds, ibuByMoment, momentCatalogue,
-  beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE,
+  beerLevels, targetLevels, afterLevels, ficheLevels, recipeProfile, LEVEL_RULE, recipeIbu, loadedRecipe, recipeLines, LOADED_RECIPE_RULE,
   type FamilyEstimate, type FamilyId, type HopProfile, type Profile, type Recipe, type StyleScale, type Voie, type FicheLevel,
 } from '../engine';
 import facts from '../../data/faits-cites.json';
@@ -169,6 +169,35 @@ export function buildPack() {
     })(),
   };
 
+  // S4 (K2) : la même stout, sans houblon, jamais brassée. S5 (K3) : la même stout, chargée par règle.
+  const caseScenario = (question: string, recipe: Recipe, notes: Record<string, string>) => {
+    const prof = recipeProfile(recipe);
+    const reading = readBeer(prof.profile, null, s16d), summary = readingSummary(reading);
+    const ibuTotal = recipeIbu(recipe);
+    return {
+      question, recipe, style: '16D', yeast: prof.yeast,
+      ibu: round(ibuTotal.value), ibuStyle: s16d.ibu, ibuRange: { min: round(ibuTotal.min), max: round(ibuTotal.max) },
+      recetteHoublons: recipeLines(recipe).map((line) => ({ ...line, ibuParMoment: ibuByMoment(line.hopKey, line.grams, recipe) })),
+      ajoutsRapides: { style: '16D', ...quickAdds(recipe, s16d, null) },
+      tasting: null,
+      echelles: LEVEL_RULE, profilBiere: beerLevels(prof.profile, null, s16d), cibleStyle: targetLevels(s16d),
+      readingSummary: { counts: summary.counts, sentence: summary.sentence },
+      voies: [], ...notes,
+    };
+  };
+  const s4 = { ...s1Recipe(), name: 'Stout export (nouvelle)', additions: [] };
+  const S4 = caseScenario('Nouvelle stout export, aucun houblon : par où commencer ?', s4, {
+    ibuNote: `IBU 0 face à ${s16d.ibu![0]}–${s16d.ibu![1]} : il manque l’amertume.`,
+    ajoutsRapidesNote: `Recette sous la bande d’IBU : la règle propose 60′ et la dose qui amène l’IBU au milieu de la bande (${(s16d.ibu![0] + s16d.ibu![1]) / 2} IBU).`,
+    profilNote: 'Rien de dégusté (jamais brassée) ; sans houblon, le modèle ne voit que le fond de levure US-05.',
+    voiesNote: 'Pas de voie : aucune dégustation ni direction ; commencer par l’amertume (ajouts rapides).',
+  });
+  const s5 = loadedRecipe({ ...s1Recipe(), name: 'Stout export (chargée)' }, s16d);
+  const S5 = { ...caseScenario('Stout export chargée : chaque ajout, son IBU, le profil prévu.', s5, {
+    profilNote: 'Pas de dégustation : profil prévu par le modèle seul, ou « non situé ».',
+    voiesNote: 'Pas de voie : aucune direction posée.',
+  }), composition: LOADED_RECIPE_RULE };
+
   // S3 : American IPA, tout le stock classé par adéquation documentaire au style.
   const S3 = {
     question: 'IPA : tous mes houblons, du plus au moins adapté.',
@@ -207,7 +236,7 @@ export function buildPack() {
     styles,
     stock,
     catalogue,
-    scenarios: { S1, S2, S3 },
+    scenarios: { S1, S2, S3, S4, S5 },
   };
 }
 export const catalogueSize = () => CATALOGUE.length;

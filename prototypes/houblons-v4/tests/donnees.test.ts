@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import facts from '../data/faits-cites.json';
-import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, momentCatalogue, quickAddKey, targetLevels, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
+import { FAMILIES, IBU_MOMENTS, QUICK_ADD_RULE, additionIbu, afterLevels, beerLevels, ficheLevels, ibuByMoment, loadedRecipe, momentCatalogue, quickAddKey, recipeIbu, recipeLines, targetLevels, tastingMention, describeFamilies, gapSummary, getStyleScale, hopProfile, offModelLeads, proposeVoies, quickAdds, readBeer, readingSummary, recipeProfile, situateBeer, tastingFrom, voiesSummary, type QuickAdd } from '../src/engine';
 import { S1_DIRECTION, S1_TASTING, s1Recipe, s2Recipe } from '../src/pack/buildPack';
 
 describe('Les quatre objets de l’écran (niveaux)', () => {
@@ -39,6 +39,38 @@ describe('Les quatre objets de l’écran (niveaux)', () => {
     for (const f of ficheLevels('beermaverick-nugget', s16d)) expect([0, 1, 2]).toContain(f.level);
     expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'resin')).toMatchObject({ level: 2, sources: 2, of: 4 });
     expect(ficheLevels('beermaverick-nugget', s16d).find((f) => f.family === 'stoneFruit')).toMatchObject({ level: 0, sources: 0 });
+  });
+});
+
+describe('Cas de figure S4 (sans houblon) et S5 (recette chargée)', () => {
+  const s16d = getStyleScale('16D');
+
+  it('S4 : IBU 0, ajouts rapides à 60′ pour atteindre le milieu de la bande, aucun niveau dégusté', () => {
+    const recipe = { ...s1Recipe(), additions: [] };
+    expect(recipeIbu(recipe).value).toBe(0);
+    const q = quickAdds(recipe, s16d, null);
+    for (const r of q.disponibles) { expect(r.moment).toBe('b60'); expect(Math.abs(r.ibuAdded!.value - 60)).toBeLessThanOrEqual(0.5); }
+    expect(beerLevels(recipeProfile(recipe).profile, null, s16d).filter((b) => b.source === 'dégustation')).toEqual([]);
+  });
+
+  it('S5 : quatre ajouts par règle (60′, 10′, whirlpool, à froid J+3), IBU total au milieu de la bande', () => {
+    const recipe = loadedRecipe(s1Recipe(), s16d);
+    const lines = recipeLines(recipe);
+    expect(lines.map((l) => [l.type, l.moment])).toEqual([['ébullition', 'b60'], ['ébullition', 'b10'], ['whirlpool', 'wp'], ['à froid', 'dryActive']]);
+    expect(lines[0].hopKey).toBe('beermaverick-nugget');
+    expect(lines[3]).toMatchObject({ day: 3, dayLabel: 'J+3', ibu: null });
+    expect(new Set(lines.slice(1).map((l) => l.hopKey)).size).toBe(3);
+    for (const l of lines.slice(1)) expect(l.stock.status).toBe('suffisant');
+    expect(Math.abs(recipeIbu(recipe).value - 60)).toBeLessThanOrEqual(0.5);
+    const sum = lines.reduce((s, l) => s + (l.ibu?.value ?? 0), 0);
+    expect(sum).toBeCloseTo(recipeIbu(recipe).value, 0);
+  });
+
+  it('mention d’un niveau dégusté : brassin si connu, sinon la phrase datée du brasseur', () => {
+    const resin = beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).find((b) => b.family === 'resin')!;
+    expect(resin.mention).toMatch(/^dégustation du brasseur, 18\.10 : « ma stout est trop résineuses/);
+    expect(tastingMention({ ...S1_TASTING, batch: { id: 'B-12', date: '2026-09-30' } })).toBe('brassin du 30.09');
+    expect(beerLevels(recipeProfile(s1Recipe()).profile, S1_TASTING, s16d).filter((b) => b.source !== 'dégustation').every((b) => b.mention === undefined)).toBe(true);
   });
 });
 
@@ -99,7 +131,7 @@ describe('Ajout en un toucher (ajoutsRapides)', () => {
       expect(r.ibuAdded!.value).toBeCloseTo(additionIbu({ id: 'q', hopKey: r.key, moment: 'b10', grams: r.dose!.grams }, s1Recipe()).value, 1);
       expect(r.cited.every((c) => c.level !== 'non décrit')).toBe(true);
     }
-    expect(q.disponibles.find((r) => r.name === 'Target')!.dose).toMatchObject({ grams: 5, rule: 'tout le stock libre' });
+    expect(q.disponibles.find((r) => r.name === 'Target')!.dose).toMatchObject({ grams: 5, rule: 'stock libre' });
   });
 
   it('3B, recette sans houblon : 60′ et la dose qui amène l’IBU au milieu de la bande', () => {

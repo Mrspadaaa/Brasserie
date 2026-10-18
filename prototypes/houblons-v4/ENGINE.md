@@ -148,6 +148,18 @@ Règle (`LEVEL_RULE`, testée) :
 - S2 (3B) : cible et fiches calculées ; profil de la bière tout « non situé » (recette sans
   houblon, levure sans profil V5.5, pas de dégustation) ; pas de voies, donc pas d'après.
 
+## Cas de figure (`work/refonte-frontend/v4/ecran-1/CAS.md`)
+
+- **S4, recette sans houblon** (K2) : la stout S1 sans ajout ni dégustation. IBU 0 face à
+  50–70 ; les ajouts rapides passent en mode amertume (60′, dose pour le milieu de la bande).
+- **S5, recette chargée** (K3, `loadedRecipe`, `LOADED_RECIPE_RULE`) : Nugget à 60′, puis 10′,
+  whirlpool et à froid J+3 (fermentation active) ; chaque ajout d'arôme prend le premier
+  houblon des ajouts rapides du style, différent des précédents, dont le stock libre couvre la
+  plus petite dose de recherche du solveur ; Nugget complète l'IBU jusqu'au milieu de la bande
+  (à 0,5 IBU près). `recipeLines` donne type, moment, jour, dose, IBU à son moment, stock.
+- **Mention d'un niveau dégusté** (`tastingMention`) : « brassin du jj.mm » si le brassin est
+  connu, sinon « dégustation du brasseur, jj.mm : « sa phrase » ».
+
 ## IBU par moment (`ibuByMoment`, `momentCatalogue`)
 
 Pour le houblon de la recette (`S1.recetteHoublons`) et chaque ajout rapide (`ibuParMoment`) :

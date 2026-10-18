@@ -25,7 +25,11 @@ export const MOMENTS: Record<MomentId, Moment> = {
 export const searchDoses = (m: MomentId) => POLICY.defaults[MOMENTS[m].timing].searchDosesGL.map((p) => p.central);
 
 // ---------- Recette ----------
-export interface Addition { id: string; hopKey: string; moment: MomentId; grams: number }
+export interface Addition {
+  id: string; hopKey: string; moment: MomentId; grams: number;
+  /** Jour d'un houblonnage à cru (J+n de fermentation) : noté, non utilisé par le modèle V5.5 du prototype. */
+  day?: number;
+}
 export interface Recipe {
   name: string; styleCode: string; volumeL: number; og: number; boilMin: number; yeastId: string | null;
   /** Contexte de la bière (R41), facultatif : couleur, densité finale, alcool, acidité. */
