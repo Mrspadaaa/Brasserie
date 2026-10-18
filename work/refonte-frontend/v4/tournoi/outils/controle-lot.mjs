@@ -31,6 +31,11 @@ const recette = needRecette ? run('controle-recette.mjs', []).stdout : '';
 const radar = needRadar ? run('controle-radar.mjs', []).stdout : '';
 // D14 (suite) : tous les éléments interactifs touchés un à un, pas seulement les data-booster.
 const fuite = run('fuite-touchers.mjs', []).stdout;
+// D33 : avec --palette, une seule couleur d'alerte et aucun contour de focus après un toucher
+// (en option : le lot 4 garde la baseline p03, qui ne le passe pas, hors de ses composants).
+const palette = args.includes('--palette') ? run('controle-palette.mjs', []).stdout : 'PALETTE OK';
+// D31, D32 : avec --detail, Ma bière au style + vue absolue, écarts chiffrés, gestes par famille.
+const detail = args.includes('--detail') ? run('controle-detail.mjs', []).stdout : '';
 // D27, D28 : avec --rail, la levure est une étape du rail et le moment se glisse le long du rail.
 const rail = args.includes('--rail') ? run('controle-rail.mjs', []).stdout : '';
 // D25 : avec --fiche, l'appui long (et le survol long à l'ordinateur) ouvre la fiche du houblon.
@@ -79,6 +84,8 @@ for (const id of ids) {
   console.log(id + ' · mots A ' + mA[id] + ' B ' + (mB[id] ?? '–') + ' · remplissage A ' + c.w390?.fill + ' B ' + (c.b390?.fill ?? '–') + ' · boosters ' + ok.length);
 }
 if (!/FUITE OK/.test(fuite)) for (const l of fuite.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D14 fuite)');
+if (!/PALETTE OK/.test(palette)) for (const l of palette.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D33 palette)');
+if (args.includes('--detail') && !/DETAIL OK/.test(detail)) for (const l of detail.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D31-D32 détail)');
 if (args.includes('--rail') && !/RAIL OK/.test(rail)) for (const l of rail.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D27-D28 rail)');
 if (args.includes('--fiche') && !/FICHE OK/.test(fiche)) for (const l of fiche.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D25 fiche)');
 if (baseArg && !/BASELINE OK/.test(baseline)) for (const l of baseline.split('\n').filter((x) => /^  /.test(x))) problems.push(l.trim() + ' (D26 baseline)');

@@ -57,6 +57,12 @@
   .corbeille::after { transform: rotate(-45deg); }
   .l2 { display: flex; align-items: center; gap: 6px; font-size: 12px; min-height: 20px; }
   .st { font-size: 12px; font-weight: 400; color: var(--gris2); white-space: nowrap; }
+  .alpha { font-size: 12px; font-weight: 650; color: var(--encre); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .role { font-size: 12px; color: var(--gris2); white-space: nowrap; }
+  .ic-stock { width: 10px; height: 10px; border-radius: 5px; border: 1.5px solid #9a9a9a; flex: none; display: inline-block; position: relative; }
+  .ic-manque { border-style: dashed; }
+  .ic-a-racheter::after { content: ''; position: absolute; left: 2px; top: 2px; width: 3px; height: 3px; border-radius: 2px; background: #9a9a9a; }
+  .ic-a-acheter { border-radius: 2px; }
   .pt-manque { width: 8px; height: 8px; border-radius: 4px; border: 1.5px dashed var(--gris2); flex: none; }
   .cite { height: 20px; padding: 0 7px; border: 1px solid var(--acc); color: var(--acc); border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; white-space: nowrap; }
   .effet { height: 20px; padding: 0 7px; border: 1px solid var(--encre); border-radius: 10px; display: inline-flex; align-items: center; white-space: nowrap; font-weight: 600; }
@@ -241,13 +247,20 @@
   .vide-l.survol .rail-l, .rail-l.plein.survol { background: var(--encre); border-color: var(--encre); }
   .rail-l.plein.survol { color: #fff; }
   .poignee.survol .quand { box-shadow: 0 0 0 3px #d4d4d4; }
+  .vide-l.cran { min-height: 14px; }
+  .vide-l.cran .rail-l { width: 6px; height: 6px; margin-top: 4px; border-radius: 3px; }
+  .vide-l.cran .drop { height: 14px; }
+  .note-ibu { padding: 8px 0 4px; }
+  .rapide { min-height: 48px; }
+  .vide-l.cran .drop::after { display: none; }
+  .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 44px; margin: -2px 0; }
 
 </style>
 </head>
 <body data-variante="consolide" data-vue="etape" data-ouvre="" data-lentille="barres" data-dirs="">
 <main class="ecran" id="app"></main>
 <script>
-const D = {"scen":"S5","nom":"Stout export (chargée)","code":"16D","ibuStyle":[50,70],"og":"1,066","ebc":70,"ordre":["floral","herbal","earthy","citrus","tropical","stoneFruit","pomeFruit","berries","melon","resin","spice","green"],"court":{"floral":"Floral","herbal":"Herbacé","earthy":"Terreux","citrus":"Agrumes","tropical":"Tropicaux","stoneFruit":"Noyau","pomeFruit":"Pépins","berries":"Baies","melon":"Melon","resin":"Résineux","spice":"Épicé","green":"Végétal"},"long":{"citrus":"Agrumes","tropical":"Fruits tropicaux","stoneFruit":"Fruits à noyau","pomeFruit":"Pomme et poire","berries":"Petits fruits","melon":"Melon","floral":"Floral","herbal":"Herbacé aromatique","resin":"Boisé et résineux","spice":"Épicé","green":"Végétal vert","earthy":"Terreux"},"attendues":["floral","herbal","earthy"],"profil":[{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null}],"cible":[{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"}],"degustation":null,"phrase":"12 non situées","voiesResume":[],"lignes":[{"id":"a60","cle":"beermaverick-nugget","nom":"Nugget","moment":"b60","g":42.5,"jour":3,"ibuPG":{"fwh":1.43,"b60":1.3,"b30":1,"b15":0.64,"b10":0.47,"b5":0.26,"b0":0,"wp":0.2,"dryActive":null,"dryPost":null},"ibu0":{"moment":"b60","g":42.5,"v":55.2},"libre":0,"achat":false,"citation":"résine 2/4","fiche":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"signaux":[]},{"id":"a10","cle":"beermaverick-motueka","nom":"Motueka","moment":"b10","g":10,"jour":3,"ibuPG":{"fwh":0.89,"b60":0.81,"b30":0.62,"b15":0.4,"b10":0.29,"b5":0.16,"b0":0,"wp":0.12,"dryActive":null,"dryPost":null},"ibu0":{"moment":"b10","g":10,"v":2.9},"libre":20,"achat":false,"citation":null,"fiche":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"signaux":[]},{"id":"awp","cle":"beermaverick-cascade","nom":"Cascade","moment":"wp","g":20,"jour":3,"ibuPG":{"fwh":0.71,"b60":0.65,"b30":0.5,"b15":0.32,"b10":0.24,"b5":0.13,"b0":0,"wp":0.1,"dryActive":null,"dryPost":null},"ibu0":{"moment":"wp","g":20,"v":2},"libre":60,"achat":false,"citation":"résine 1/2","fiche":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"signaux":[]},{"id":"adry","cle":"beermaverick-citra:cryo","nom":"Citra cryo","moment":"dryActive","g":40,"jour":3,"ibuPG":{"fwh":2.72,"b60":2.48,"b30":1.9,"b15":1.23,"b10":0.9,"b5":0.49,"b0":0,"wp":0.38,"dryActive":null,"dryPost":null},"ibu0":{"moment":"dryActive","g":40,"v":null},"libre":65,"achat":false,"citation":null,"fiche":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"signaux":[{"titre":"Géraniol → citronellol","court":"géraniol","statut":"non évaluable"},{"titre":"Libération de thiols","court":"thiols","statut":"possible"},{"titre":"Hop creep","court":"hop creep","statut":"possible"}]}],"rapides":{"stock":[{"cle":"beermaverick-motueka","nom":"Motueka","groupe":"stock","moment":"b10","g":10,"ibu":2.9,"ibuPG":{"fwh":0.89,"b60":0.81,"b30":0.62,"b15":0.4,"b10":0.29,"b5":0.16,"b0":0,"wp":0.12,"dryActive":null,"dryPost":null},"libre":10,"statut":"suffisant","fiche":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"effet":null},{"cle":"beermaverick-cascade","nom":"Cascade","groupe":"stock","moment":"b10","g":10,"ibu":2.4,"ibuPG":{"fwh":0.71,"b60":0.65,"b30":0.5,"b15":0.32,"b10":0.24,"b5":0.13,"b0":0,"wp":0.1,"dryActive":null,"dryPost":null},"libre":40,"statut":"suffisant","fiche":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"effet":null},{"cle":"beermaverick-target","nom":"Target","groupe":"stock","moment":"b10","g":5,"ibu":2,"ibuPG":{"fwh":1.24,"b60":1.13,"b30":0.87,"b15":0.56,"b10":0.41,"b5":0.23,"b0":0,"wp":0.17,"dryActive":null,"dryPost":null},"libre":5,"statut":"suffisant","fiche":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"effet":null},{"cle":"beermaverick-sabro","nom":"Sabro","groupe":"stock","moment":"b10","g":10,"ibu":4.9,"ibuPG":{"fwh":1.47,"b60":1.34,"b30":1.03,"b15":0.66,"b10":0.49,"b5":0.27,"b0":0,"wp":0.2,"dryActive":null,"dryPost":null},"libre":30,"statut":"suffisant","fiche":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"effet":null},{"cle":"beermaverick-citra:cryo","nom":"Citra cryo","groupe":"stock","moment":"b10","g":10,"ibu":9,"ibuPG":{"fwh":2.72,"b60":2.48,"b30":1.9,"b15":1.23,"b10":0.9,"b5":0.49,"b0":0,"wp":0.38,"dryActive":null,"dryPost":null},"libre":25,"statut":"suffisant","fiche":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-idaho-7","nom":"Idaho 7","groupe":"stock","moment":"b10","g":10,"ibu":4.6,"ibuPG":{"fwh":1.4,"b60":1.27,"b30":0.97,"b15":0.63,"b10":0.46,"b5":0.25,"b0":0,"wp":0.19,"dryActive":null,"dryPost":null},"libre":20,"statut":"suffisant","fiche":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"effet":null},{"cle":"beermaverick-nelson-sauvin","nom":"Nelson Sauvin","groupe":"stock","moment":"b10","g":10,"ibu":3.5,"ibuPG":{"fwh":1.05,"b60":0.96,"b30":0.74,"b15":0.48,"b10":0.35,"b5":0.19,"b0":0,"wp":0.15,"dryActive":null,"dryPost":null},"libre":100,"statut":"suffisant","fiche":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"effet":null},{"cle":"beermaverick-galaxy","nom":"Galaxy","groupe":"stock","moment":"b10","g":10,"ibu":6.2,"ibuPG":{"fwh":1.89,"b60":1.72,"b30":1.32,"b15":0.85,"b10":0.62,"b5":0.34,"b0":0,"wp":0.26,"dryActive":null,"dryPost":null},"libre":60,"statut":"suffisant","fiche":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"effet":null},{"cle":"beermaverick-hallertau-blanc","nom":"Hallertau Blanc","groupe":"stock","moment":"b10","g":10,"ibu":3.4,"ibuPG":{"fwh":1.04,"b60":0.95,"b30":0.73,"b15":0.47,"b10":0.34,"b5":0.19,"b0":0,"wp":0.14,"dryActive":null,"dryPost":null},"libre":30,"statut":"suffisant","fiche":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"effet":null}],"epuises":[{"cle":"beermaverick-east-kent-goldings","nom":"East Kent Goldings","groupe":"epuise","moment":"b10","g":10,"ibu":2,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"effet":null},{"cle":"beermaverick-fuggle","nom":"Fuggle","groupe":"epuise","moment":"b10","g":10,"ibu":1.6,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"effet":null},{"cle":"beermaverick-simcoe","nom":"Simcoe","groupe":"epuise","moment":"b10","g":10,"ibu":4.7,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"effet":null},{"cle":"beermaverick-lotus","nom":"Lotus","groupe":"epuise","moment":"b10","g":10,"ibu":5.4,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"effet":null},{"cle":"beermaverick-nugget","nom":"Nugget","groupe":"epuise","moment":"b10","g":10,"ibu":4.7,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"effet":null},{"cle":"beermaverick-ariana","nom":"Ariana","groupe":"epuise","moment":"b10","g":10,"ibu":4.2,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"effet":null},{"cle":"beermaverick-nectaron","nom":"Nectaron","groupe":"epuise","moment":"b10","g":10,"ibu":4,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"effet":null}],"catalogue":[]},"rapidesMoment":"b10","tousRapidesNoms":["Motueka","Cascade","Target","Sabro","Citra cryo","Idaho 7","Nelson Sauvin","Galaxy","Hallertau Blanc","East Kent Goldings","Fuggle","Simcoe","Lotus","Nugget","Ariana","Nectaron"],"voies":[],"sansHoublon":{},"fiches":{"Nugget":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"Ariana":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"Fuggle":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"Hallertau Blanc":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"Idaho 7":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"Lotus":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"Nectaron":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Simcoe":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"Cascade":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"Target":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"East Kent Goldings":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"Galaxy":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Nelson Sauvin":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"Sabro":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"Motueka":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"Citra cryo":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1}},"comparerDefaut":["Nugget","Motueka","Cascade"],"cles":{"Ariana":"beermaverick-ariana","Fuggle":"beermaverick-fuggle","Hallertau Blanc":"beermaverick-hallertau-blanc","Idaho 7":"beermaverick-idaho-7","Lotus":"beermaverick-lotus","Nectaron":"beermaverick-nectaron","Simcoe":"beermaverick-simcoe","Cascade":"beermaverick-cascade","Target":"beermaverick-target","East Kent Goldings":"beermaverick-east-kent-goldings","Galaxy":"beermaverick-galaxy","Nelson Sauvin":"beermaverick-nelson-sauvin","Sabro":"beermaverick-sabro","Motueka":"beermaverick-motueka","Citra cryo":"beermaverick-citra:cryo","Nugget":"beermaverick-nugget"},"groupes":{"Ariana":"epuise","Fuggle":"epuise","Hallertau Blanc":"stock","Idaho 7":"stock","Lotus":"epuise","Nectaron":"epuise","Simcoe":"epuise","Cascade":"stock","Target":"stock","East Kent Goldings":"epuise","Galaxy":"stock","Nelson Sauvin":"stock","Sabro":"stock","Motueka":"stock","Citra cryo":"stock","Nugget":"epuise"},"candidats":[["Target","stock"],["Sabro","stock"],["Citra cryo","stock"],["Idaho 7","stock"],["Nelson Sauvin","stock"],["Galaxy","stock"],["Hallertau Blanc","stock"],["East Kent Goldings","epuise"],["Fuggle","epuise"],["Simcoe","epuise"],["Lotus","epuise"],["Ariana","epuise"],["Nectaron","epuise"]],"horsModele":[],"levure":{"nom":"SafAle US-05","statut":"caractérisée"},"notes":{"ibu":null,"profil":"Pas de dégustation : profil prévu par le modèle seul, ou « non situé ».","voies":"Pas de voie : aucune direction posée."}};
+const D = {"scen":"S5","nom":"Stout export (chargée)","code":"16D","ibuStyle":[50,70],"og":"1,066","ebc":70,"ordre":["floral","herbal","earthy","citrus","tropical","stoneFruit","pomeFruit","berries","melon","resin","spice","green"],"court":{"floral":"Floral","herbal":"Herbacé","earthy":"Terreux","citrus":"Agrumes","tropical":"Tropicaux","stoneFruit":"Noyau","pomeFruit":"Pépins","berries":"Baies","melon":"Melon","resin":"Résineux","spice":"Épicé","green":"Végétal"},"long":{"citrus":"Agrumes","tropical":"Fruits tropicaux","stoneFruit":"Fruits à noyau","pomeFruit":"Pomme et poire","berries":"Petits fruits","melon":"Melon","floral":"Floral","herbal":"Herbacé aromatique","resin":"Boisé et résineux","spice":"Épicé","green":"Végétal vert","earthy":"Terreux"},"attendues":["floral","herbal","earthy"],"profil":[{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null},{"crans":null,"display":"non situé","source":"non situé","approx":false,"exact":null}],"cible":[{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"attendue"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"},{"min":0,"max":3,"visee":null,"statut":"neutre"}],"degustation":null,"phrase":"12 non situées","voiesResume":[],"lignes":[{"id":"a60","cle":"beermaverick-nugget","nom":"Nugget","moment":"b60","g":42.5,"jour":3,"alpha":{"v":13},"role":"double","ibuPG":{"fwh":1.43,"b60":1.3,"b30":1,"b15":0.64,"b10":0.47,"b5":0.26,"b0":0,"wp":0.2,"dryActive":null,"dryPost":null},"ibu0":{"moment":"b60","g":42.5,"v":55.2},"libre":0,"achat":false,"citation":"résine 2/4","fiche":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"signaux":[]},{"id":"a10","cle":"beermaverick-motueka","nom":"Motueka","moment":"b10","g":10,"jour":3,"alpha":{"v":8.1},"role":"double","ibuPG":{"fwh":0.89,"b60":0.81,"b30":0.62,"b15":0.4,"b10":0.29,"b5":0.16,"b0":0,"wp":0.12,"dryActive":null,"dryPost":null},"ibu0":{"moment":"b10","g":10,"v":2.9},"libre":20,"achat":false,"citation":null,"fiche":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"signaux":[]},{"id":"awp","cle":"beermaverick-cascade","nom":"Cascade","moment":"wp","g":20,"jour":3,"alpha":{"v":6.5},"role":"aromatique","ibuPG":{"fwh":0.71,"b60":0.65,"b30":0.5,"b15":0.32,"b10":0.24,"b5":0.13,"b0":0,"wp":0.1,"dryActive":null,"dryPost":null},"ibu0":{"moment":"wp","g":20,"v":2},"libre":60,"achat":false,"citation":"résine 1/2","fiche":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"signaux":[]},{"id":"adry","cle":"beermaverick-citra:cryo","nom":"Citra cryo","moment":"dryActive","g":40,"jour":3,"alpha":{"v":24.8},"role":"aromatique","ibuPG":{"fwh":2.72,"b60":2.48,"b30":1.9,"b15":1.23,"b10":0.9,"b5":0.49,"b0":0,"wp":0.38,"dryActive":null,"dryPost":null},"ibu0":{"moment":"dryActive","g":40,"v":null},"libre":65,"achat":false,"citation":null,"fiche":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"signaux":[{"titre":"Géraniol → citronellol","court":"géraniol","statut":"non évaluable"},{"titre":"Libération de thiols","court":"thiols","statut":"possible"},{"titre":"Hop creep","court":"hop creep","statut":"possible"}]}],"rapides":{"stock":[{"cle":"beermaverick-motueka","nom":"Motueka","groupe":"stock","moment":"b10","g":10,"ibu":2.9,"ibuPG":{"fwh":0.89,"b60":0.81,"b30":0.62,"b15":0.4,"b10":0.29,"b5":0.16,"b0":0,"wp":0.12,"dryActive":null,"dryPost":null},"libre":10,"statut":"suffisant","fiche":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"effet":null,"alpha":{"v":8.1},"role":"double"},{"cle":"beermaverick-cascade","nom":"Cascade","groupe":"stock","moment":"b10","g":10,"ibu":2.4,"ibuPG":{"fwh":0.71,"b60":0.65,"b30":0.5,"b15":0.32,"b10":0.24,"b5":0.13,"b0":0,"wp":0.1,"dryActive":null,"dryPost":null},"libre":40,"statut":"suffisant","fiche":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"effet":null,"alpha":{"v":6.5},"role":"aromatique"},{"cle":"beermaverick-target","nom":"Target","groupe":"stock","moment":"b10","g":5,"ibu":2,"ibuPG":{"fwh":1.24,"b60":1.13,"b30":0.87,"b15":0.56,"b10":0.41,"b5":0.23,"b0":0,"wp":0.17,"dryActive":null,"dryPost":null},"libre":5,"statut":"suffisant","fiche":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"effet":null,"alpha":{"v":11.3},"role":"aromatique"},{"cle":"beermaverick-sabro","nom":"Sabro","groupe":"stock","moment":"b10","g":10,"ibu":4.9,"ibuPG":{"fwh":1.47,"b60":1.34,"b30":1.03,"b15":0.66,"b10":0.49,"b5":0.27,"b0":0,"wp":0.2,"dryActive":null,"dryPost":null},"libre":30,"statut":"suffisant","fiche":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"effet":null,"alpha":{"v":13.4},"role":"double"},{"cle":"beermaverick-citra:cryo","nom":"Citra cryo","groupe":"stock","moment":"b10","g":10,"ibu":9,"ibuPG":{"fwh":2.72,"b60":2.48,"b30":1.9,"b15":1.23,"b10":0.9,"b5":0.49,"b0":0,"wp":0.38,"dryActive":null,"dryPost":null},"libre":25,"statut":"suffisant","fiche":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"effet":null,"alpha":{"v":24.8},"role":"aromatique"},{"cle":"beermaverick-idaho-7","nom":"Idaho 7","groupe":"stock","moment":"b10","g":10,"ibu":4.6,"ibuPG":{"fwh":1.4,"b60":1.27,"b30":0.97,"b15":0.63,"b10":0.46,"b5":0.25,"b0":0,"wp":0.19,"dryActive":null,"dryPost":null},"libre":20,"statut":"suffisant","fiche":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"effet":null,"alpha":{"v":12.7},"role":"double"},{"cle":"beermaverick-nelson-sauvin","nom":"Nelson Sauvin","groupe":"stock","moment":"b10","g":10,"ibu":3.5,"ibuPG":{"fwh":1.05,"b60":0.96,"b30":0.74,"b15":0.48,"b10":0.35,"b5":0.19,"b0":0,"wp":0.15,"dryActive":null,"dryPost":null},"libre":100,"statut":"suffisant","fiche":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"effet":null,"alpha":{"v":9.6},"role":"double"},{"cle":"beermaverick-galaxy","nom":"Galaxy","groupe":"stock","moment":"b10","g":10,"ibu":6.2,"ibuPG":{"fwh":1.89,"b60":1.72,"b30":1.32,"b15":0.85,"b10":0.62,"b5":0.34,"b0":0,"wp":0.26,"dryActive":null,"dryPost":null},"libre":60,"statut":"suffisant","fiche":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"effet":null,"alpha":{"v":17.2},"role":"double"},{"cle":"beermaverick-hallertau-blanc","nom":"Hallertau Blanc","groupe":"stock","moment":"b10","g":10,"ibu":3.4,"ibuPG":{"fwh":1.04,"b60":0.95,"b30":0.73,"b15":0.47,"b10":0.34,"b5":0.19,"b0":0,"wp":0.14,"dryActive":null,"dryPost":null},"libre":30,"statut":"suffisant","fiche":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"effet":null,"alpha":{"v":9.5},"role":"double"}],"epuises":[{"cle":"beermaverick-east-kent-goldings","nom":"East Kent Goldings","groupe":"epuise","moment":"b10","g":10,"ibu":2,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"effet":null,"alpha":{"v":5.5},"role":"amérisant"},{"cle":"beermaverick-fuggle","nom":"Fuggle","groupe":"epuise","moment":"b10","g":10,"ibu":1.6,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"effet":null,"alpha":{"v":4.5},"role":"aromatique"},{"cle":"beermaverick-simcoe","nom":"Simcoe","groupe":"epuise","moment":"b10","g":10,"ibu":4.7,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"effet":null,"alpha":{"v":13},"role":"amérisant"},{"cle":"beermaverick-lotus","nom":"Lotus","groupe":"epuise","moment":"b10","g":10,"ibu":5.4,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"effet":null,"alpha":{"v":15},"role":"double"},{"cle":"beermaverick-nugget","nom":"Nugget","groupe":"epuise","moment":"b10","g":10,"ibu":4.7,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"effet":null,"alpha":{"v":13},"role":"double"},{"cle":"beermaverick-ariana","nom":"Ariana","groupe":"epuise","moment":"b10","g":10,"ibu":4.2,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"effet":null,"alpha":{"v":11.5},"role":"double"},{"cle":"beermaverick-nectaron","nom":"Nectaron","groupe":"epuise","moment":"b10","g":10,"ibu":4,"ibuPG":{},"libre":0,"statut":"épuisé","fiche":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"effet":null,"alpha":{"v":11},"role":"aromatique"}],"catalogue":[]},"rapidesMoment":"b10","tousRapidesNoms":["Motueka","Cascade","Target","Sabro","Citra cryo","Idaho 7","Nelson Sauvin","Galaxy","Hallertau Blanc","East Kent Goldings","Fuggle","Simcoe","Lotus","Nugget","Ariana","Nectaron"],"voies":[],"sansHoublon":{},"fiches":{"Motueka":{"niv":[1,0,0,2,1,0,0,0,0,0,0,0],"n":[1,0,0,2,1,0,0,0,0,0,0,0],"of":2},"Citra cryo":{"niv":[1,0,0,2,1,1,0,0,1,0,0,0],"n":[1,0,0,1,1,1,0,0,1,0,0,0],"of":1},"Cascade":{"niv":[1,1,0,2,0,0,0,1,0,1,1,0],"n":[1,1,0,2,0,0,0,1,0,1,1,0],"of":2},"Target":{"niv":[1,2,0,2,0,0,0,0,0,2,1,0],"n":[1,2,0,1,0,0,0,0,0,1,1,0],"of":2},"Sabro":{"niv":[0,1,0,2,1,1,0,0,0,1,0,0],"n":[0,1,0,1,1,1,0,0,0,1,0,0],"of":1},"Idaho 7":{"niv":[1,1,1,1,1,1,0,2,0,1,0,0],"n":[1,1,1,1,1,1,0,1,0,1,0,0],"of":1},"Nelson Sauvin":{"niv":[0,0,0,1,0,0,0,0,0,0,1,0],"n":[0,0,0,1,0,0,0,0,0,0,1,0],"of":2},"Galaxy":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Hallertau Blanc":{"niv":[0,0,0,1,2,0,0,1,0,0,1,0],"n":[0,0,0,1,1,0,0,1,0,0,1,0],"of":2},"East Kent Goldings":{"niv":[2,1,1,1,0,0,0,0,0,0,2,0],"n":[1,1,1,1,0,0,0,0,0,0,1,0],"of":2},"Lotus":{"niv":[1,0,0,2,2,0,0,2,0,0,0,0],"n":[1,0,0,2,2,0,0,2,0,0,0,0],"of":2},"Fuggle":{"niv":[0,2,1,0,0,0,0,0,0,2,1,2],"n":[0,2,1,0,0,0,0,0,0,2,1,2],"of":2},"Simcoe":{"niv":[0,0,1,1,1,1,0,1,0,1,0,0],"n":[0,0,1,1,1,1,0,1,0,1,0,0],"of":1},"Nugget":{"niv":[2,2,1,1,2,0,0,0,0,2,2,0],"n":[2,2,1,1,2,0,0,0,0,2,1,0],"of":4},"Ariana":{"niv":[2,1,0,2,2,1,1,2,0,1,0,0],"n":[2,1,0,2,2,1,1,1,0,1,0,0],"of":2},"Nectaron":{"niv":[0,0,0,1,2,1,0,0,0,0,0,0],"n":[0,0,0,1,1,1,0,0,0,0,0,0],"of":1},"Saaz Late":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Spalt":{"niv":[1,1,1,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Whitbread Golding Variety (WGV)":{"niv":[1,1,2,0,0,0,0,0,0,0,0,0],"n":[1,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Pahto":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Wild Wolf":{"niv":[0,1,1,0,0,0,0,0,0,0,0,0],"n":[0,1,1,0,0,0,0,0,0,0,0,0],"of":1},"Yakima Cluster":{"niv":[1,0,2,0,0,0,0,0,0,0,0,0],"n":[1,0,1,0,0,0,0,0,0,0,0,0],"of":1},"Marco Polo":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Sun":{"niv":[0,2,0,0,0,0,0,0,0,0,0,0],"n":[0,1,0,0,0,0,0,0,0,0,0,0],"of":1},"Teamaker":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1},"Ultra":{"niv":[1,0,0,0,0,0,0,0,0,0,0,0],"n":[1,0,0,0,0,0,0,0,0,0,0,0],"of":1}},"comparerDefaut":["Nugget","Motueka","Cascade"],"cles":{"Ariana":"beermaverick-ariana","Fuggle":"beermaverick-fuggle","Hallertau Blanc":"beermaverick-hallertau-blanc","Idaho 7":"beermaverick-idaho-7","Lotus":"beermaverick-lotus","Nectaron":"beermaverick-nectaron","Simcoe":"beermaverick-simcoe","Cascade":"beermaverick-cascade","Target":"beermaverick-target","East Kent Goldings":"beermaverick-east-kent-goldings","Galaxy":"beermaverick-galaxy","Nelson Sauvin":"beermaverick-nelson-sauvin","Sabro":"beermaverick-sabro","Motueka":"beermaverick-motueka","Citra cryo":"beermaverick-citra:cryo","Nugget":"beermaverick-nugget"},"groupes":{"Ariana":"epuise","Fuggle":"epuise","Hallertau Blanc":"stock","Idaho 7":"stock","Lotus":"epuise","Nectaron":"epuise","Simcoe":"epuise","Cascade":"stock","Target":"stock","East Kent Goldings":"epuise","Galaxy":"stock","Nelson Sauvin":"stock","Sabro":"stock","Motueka":"stock","Citra cryo":"stock","Nugget":"epuise"},"candidats":[["Target","stock"],["Sabro","stock"],["Citra cryo","stock"],["Idaho 7","stock"],["Nelson Sauvin","stock"],["Galaxy","stock"],["Hallertau Blanc","stock"],["East Kent Goldings","epuise"],["Fuggle","epuise"],["Simcoe","epuise"],["Lotus","epuise"],["Ariana","epuise"],["Nectaron","epuise"]],"horsModele":[],"levure":{"nom":"SafAle US-05","statut":"caractérisée"},"notes":{"ibu":null,"profil":"Pas de dégustation : profil prévu par le modèle seul, ou « non situé ».","voies":"Pas de voie : aucune direction posée."}};
 /* Lot 3, variantes de p3 (p02, p03) : logique commune. Données : pack-mini-protos (const D).
    Quatre objets (MODELE.md) : 1 ma bière et 2 la cible (crans du style), 3 les fiches des
    houblons (citations 0 à 2), 4 les voies du moteur (avant / après en crans). Aucun chiffre
@@ -302,10 +315,10 @@ const nomCourt = (f) => D.court[f];
 const MOMENTS = [
   { code: 'fwh', type: 'premier moût', quand: 'moût', vide: 'premier moût' },
   { code: 'b60', type: 'ébullition', quand: '60′' },
-  { code: 'b30', type: 'ébullition', quand: '30′' },
-  { code: 'b15', type: 'ébullition', quand: '15′' },
+  { code: 'b30', type: 'ébullition', quand: '30′', cran: true },
+  { code: 'b15', type: 'ébullition', quand: '15′', cran: true },
   { code: 'b10', type: 'ébullition', quand: '10′' },
-  { code: 'b5', type: 'ébullition', quand: '5′' },
+  { code: 'b5', type: 'ébullition', quand: '5′', cran: true },
   { code: 'b0', type: 'ébullition', quand: '0′' },
   { code: 'wp', type: 'whirlpool', quand: '80 °C', vide: 'whirlpool' },
   { code: 'dryActive', type: 'à froid', quand: 'J+3', vide: 'fermentation' },
@@ -330,13 +343,13 @@ let VARIANTE = null;
 
 /* IBU : valeur du pack au moment et à la dose de la recette, sinon IBU par gramme du pack × dose. */
 function ibuLigne(l) {
-  const pg = l.ibuPG[l.moment];
-  if (pg == null) return null;
   if (l.ibu0 && l.ibu0.v != null && l.ibu0.moment === l.moment && l.ibu0.g === l.g) return l.ibu0.v;
-  return pg * l.g;
+  const pg = l.ibuPG[l.moment];
+  return pg == null ? null : pg * l.g;
 }
 const ibuTotal = () => ETAT.lignes.reduce((s, l) => s + (ibuLigne(l) || 0), 0);
 function ibuEl(l) {
+  if (!(l.moment in l.ibuPG) && !(l.ibu0 && l.ibu0.moment === l.moment && l.ibu0.g === l.g) && mom(l.moment).type !== 'à froid') return h('span', { class: 'ibu-l' }, 'IBU à recalculer');
   const v = ibuLigne(l);
   // À froid : le pack ne donne aucun IBU Tinseth (moments[].ibuModel : « aucun »).
   return v == null ? h('span', { class: 'ibu-l' }, 'aucun IBU') : h('span', { class: 'ibu-l' }, ibuTexte(v) + ' IBU');
@@ -345,12 +358,12 @@ function ibuEl(l) {
 function etatsStock() {
   const pris = {};
   return ETAT.lignes.map((l) => {
-    if (l.achat) return { txt: 'à acheter', manque: l.g };
+    if (l.achat) return { code: 'a-acheter', txt: 'à acheter', manque: l.g };
     const deja = pris[l.cle] || 0;
     pris[l.cle] = deja + l.g;
     const reste = Math.max(0, l.libre - deja), manque = Math.max(0, l.g - reste);
-    if (reste <= 0 && manque > 0.05) return { txt: 'à racheter', manque };
-    return manque > 0.05 ? { txt: 'manque ' + grammes(manque), manque } : { txt: '', manque: 0 };
+    if (reste <= 0 && manque > 0.05) return { code: 'a-racheter', txt: 'à racheter, manque ' + grammes(manque), manque };
+    return manque > 0.05 ? { code: 'manque', txt: 'manque ' + grammes(manque), manque } : { code: '', txt: '', manque: 0 };
   });
 }
 /* Effet d'un ajout : celui de la voie du moteur au même houblon, moment et dose ; sinon « non établi ». */
@@ -394,7 +407,7 @@ let SEQ = 0;
 function ajouter(r, moment) {
   const id = 'n' + (++SEQ);
   ETAT.lignes.push({
-    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
+    id, cle: r.cle, nom: r.nom, moment: moment || r.moment, g: r.g, alpha: r.alpha, role: r.role, jour: 3, ibuPG: r.ibuPG, ibu0: { moment: r.moment, g: r.g, v: r.ibu },
     libre: r.libre, achat: r.groupe === 'catalogue', citation: null, fiche: r.fiche, effet: r.effet, effetCle: { moment: r.moment, g: r.g }, nouveau: true, signaux: [],
   });
   ETAT.effet = id;
@@ -446,21 +459,35 @@ function goutsLigne() {
 function rapidesVisibles(n) {
   const pris = new Set(ETAT.lignes.map((l) => l.cle));
   const ok = (r) => !pris.has(r.cle) && !ETAT.gouts.exclut.has(r.nom);
+  // Recette vide : la liste du moteur telle quelle ; un amérisant choisi retire l'autre (au choix).
+  if (D.rapides.construction) {
+    const choisi = D.rapides.construction.some((r) => r.alternative && pris.has(r.cle));
+    return D.rapides.construction.filter((r) => ok(r) && !(choisi && r.alternative)).slice(0, n);
+  }
   const st = D.rapides.stock.filter(ok), ep = D.rapides.epuises.filter(ok), ca = D.rapides.catalogue.filter(ok);
   const autres = [ca[0]].filter(Boolean);
   return [...st.slice(0, n - autres.length), ...autres];
 }
+/* Stock (D23 ter) : plus un mot sur l'étape, une petite icône grise data-stock avec son détail
+   au survol et au lecteur d'écran ; le détail complet vit dans la fiche du houblon. */
 function stockEl(txt) { return txt ? h('span', { class: 'st' }, txt) : null; }
+function stockIcone(code, detail) { return code ? h('span', { class: 'ic-stock ic-' + code, 'data-stock': code, role: 'img', title: detail, 'aria-label': 'Stock : ' + detail }) : null; }
 function statutRapide(r) {
-  if (r.groupe === 'catalogue') return stockEl('à acheter');
-  if (r.groupe === 'epuise') return stockEl('à racheter');
-  // Proposition plus grande que le stock : un repère discret, le détail au lecteur d'écran.
-  if (r.libre < r.g) return h('span', { class: 'pt-manque', role: 'img', 'aria-label': 'stock : manque ' + grammes(r.g - r.libre), title: 'manque ' + grammes(r.g - r.libre) });
+  if (r.groupe === 'catalogue') return stockIcone('a-acheter', 'à acheter');
+  if (r.groupe === 'epuise') return stockIcone('a-racheter', 'à racheter');
+  if (r.libre < r.g) return stockIcone('manque', 'manque ' + grammes(r.g - r.libre));
   return null;
 }
+/* Acides alpha du pack (« 11,5 % α », ou la plage variétale « 6–9 % α »), en premier sur la carte. */
+function alphaEl(a) {
+  if (!a) return null;
+  const t = a.v != null ? virgule(a.v, 1) : virgule(a.min, 1) + '–' + virgule(a.max, 1);
+  return h('span', { class: 'alpha', 'aria-label': t + ' % d\'acides alpha', title: t + ' % d\'acides alpha' }, 'α ' + t);
+}
+function roleEl(role) { return role ? h('span', { class: 'role', 'data-role': 'role' }, role) : null; }
 function miniProfil(fiche, nom) {
   const cites = D.ordre.filter((f, i) => fiche.niv[i] > 0).map((f) => nomCourt(f).toLowerCase());
-  const w = h('span', { class: 'mini', role: 'img', 'aria-label': 'Fiches de ' + nom + ' : ' + (cites.join(', ') || 'non décrit') });
+  const w = h('span', { class: 'mini', role: 'img', 'data-role': 'aromes', 'aria-label': 'Arômes cités par les fiches de ' + nom + ' : ' + (cites.join(', ') || 'non décrit') });
   D.ordre.forEach((f, i) => {
     const lv = fiche.niv[i];
     const trop = D.profil[i].crans === 4;
@@ -475,7 +502,7 @@ function rapideLigne(r, premier, colonne) {
   const corps = colonne
     ? [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)), h('span', { class: 'r2' }, miniProfil(r.fiche, r.nom))),
       h('span', { class: 'col-ibu' }, h('b', { class: 'plus-ibu' }, ibu), h('span', { class: 'dose-r' }, grammes(r.g)))]
-    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), statutRapide(r)),
+    : [h('span', { class: 'txt' }, h('span', { class: 'r1' }, h('b', { 'data-houblon': r.cle }, r.nom), alphaEl(r.alpha), roleEl(r.role), statutRapide(r)),
       h('span', { class: 'r2' }, h('span', { class: 'dose-r fl' }, grammes(r.g)), h('span', { class: 'plus-ibu' }, ibu), miniProfil(r.fiche, r.nom)))];
   return h('li', { class: 'rapide-l' },
     h('button', {
@@ -524,11 +551,12 @@ function noteIbu() {
   // Jauge à la largeur de son conteneur (pourcentages) : 0 à 90 IBU, bande du style, IBU actuel.
   const [lo, hi] = D.ibuStyle, max = hi + (hi - lo), pc = (v) => (2 + Math.max(0, Math.min(1, v / max)) * 96).toFixed(2) + '%';
   const v = ibuTotal();
-  const s = sv('svg', { width: '100%', height: 26, role: 'img', 'aria-label': 'IBU ' + Math.round(v) + ' face à la bande du style, ' + lo + ' à ' + hi });
+  const s = sv('svg', { width: '100%', height: 30, role: 'img', 'aria-label': 'IBU ' + Math.round(v) + ' face à la bande du style, ' + lo + ' à ' + hi });
   sv('rect', { x: '2%', y: 9, width: '96%', height: 8, rx: 4, fill: '#ececec' }, s);
   sv('rect', { x: pc(lo), y: 9, width: ((hi - lo) / max * 96).toFixed(2) + '%', height: 8, fill: '#bdbdbd' }, s);
   sv('rect', { x: pc(v), y: 3, width: 4, height: 20, rx: 1, fill: v < lo || v > hi ? ACC : '#111', transform: 'translate(-2,0)' }, s);
-  return h('div', { class: 'note-ibu' }, h('p', { class: 'note-acc p' }, D.notes.ibu), s);
+  s.setAttribute('aria-label', D.notes.ibu);
+  return h('div', { class: 'note-ibu', title: D.notes.ibu }, s);
 }
 function levure() {
   return h('div', { class: 'levure', 'data-role': 'levure', 'aria-label': 'Levure de la recette : ' + D.levure.nom + ', ' + D.levure.statut },
@@ -1090,8 +1118,7 @@ document.addEventListener('click', (e) => { if (performance.now() < IGNORE_CLIC)
 /* Pendant le glisser : moment, type et IBU de l'étape survolée, sans rien enregistrer. */
 function apercuGlisse(carte, l, code) {
   const fictif = { ...l, moment: code };
-  const v = ibuLigne(fictif);
-  carte.querySelector('.ibu-l').textContent = v == null ? 'aucun IBU' : ibuTexte(v) + ' IBU';
+  carte.querySelector('.ibu-l').textContent = ibuEl(fictif).textContent;
   carte.querySelector('[data-role="quand"]').textContent = quand(fictif);
   carte.querySelector('[data-role="type-ajout"]').textContent = mom(code).type;
 }
@@ -1101,7 +1128,7 @@ function brancherGlisser(poignee, carte, l) {
     if (e.button > 0) return;
     const r = poignee.getBoundingClientRect();
     const etapes = [...document.querySelectorAll('[data-etape]')].filter((x) => x.dataset.etape !== 'levure')
-      .map((x) => { const b = x.getBoundingClientRect(); return { code: x.dataset.etape, y: b.top + b.height / 2, el: x }; });
+      .map((x) => { const b = (x.querySelector('.rail-l') || x).getBoundingClientRect(); return { code: x.dataset.etape, y: b.top + b.height / 2, el: x }; });
     g = { y0: e.clientY, cy: r.top + r.height / 2, bouge: false, etapes, code: l.moment };
     try { poignee.setPointerCapture(e.pointerId); } catch (x) { /* rien */ }
   });
@@ -1160,26 +1187,34 @@ function blocRail(l, i, st, etape) {
           h('output', { class: 'dose' }, grammes(l.g)),
           h('button', { class: 'plus', 'data-k': 'd' + l.id, 'data-booster': premier ? 'dose au pas' : null, 'aria-label': 'Ajouter 2 g de ' + l.nom, onclick: () => { ETAT.focusK = 'd' + l.id; doser(l, 2); } })),
         h('button', { class: 'corbeille', 'aria-label': 'Retirer ' + l.nom + ' de la recette', onclick: () => retirer(l) })),
-      h('div', { class: 'l2' }, stockEl(st.txt), citationTag(l), effetTag(l), ibuEl(l)),
+      h('div', { class: 'l2' }, alphaEl(l.alpha), roleEl(l.role), stockIcone(st.code, st.txt), citationTag(l), effetTag(l), ibuEl(l)),
       h('div', { class: 'l3' }, miniProfil(l.fiche, l.nom)),
       m.type === 'à froid' ? bioEl(l) : null));
   brancherGlisser(poignee, carte, l);
   return carte;
 }
-function zoneRapides(code, marque) {
-  return h('div', { class: 'rap-zone' },
-    marque ? h('span', { class: 'rail-l plein', 'data-etape': code }, mom(code).quand) : h('span'),
+/* Les ajouts proposés se rangent sous l'étape de leur moment (amérisants à 60′, aromatiques
+   tardifs) ; sans carte au-dessus, la zone porte elle-même data-etape. */
+function zoneRapides(code, liste, marque, tete, premier) {
+  return h('div', { class: 'rap-zone', 'data-etape': marque ? code : null },
+    marque ? h('span', { class: 'rail-l plein' }, mom(code).quand) : h('span'),
     h('div', { class: 'rap-corps' },
-      noteIbu(),
-      champ(),
+      tete ? noteIbu() : null,
+      tete ? champ() : null,
       h('ul', { class: 'rapides', 'aria-label': 'Ajouts proposés à ' + mom(code).quand + ', selon le moteur' },
-        rapidesVisibles(ETAT.lignes.length ? Math.max(1, Math.min(4, 5 - ETAT.lignes.length)) : 5).map((r, n) => rapideLigne(r, n === 0, false)))));
+        // Deux amérisants « au choix » (un seul suffit pour l'IBU visé) : un « ou » les sépare.
+        liste.flatMap((r, n) => [rapideLigne(r, premier && n === 0, false), r.alternative && liste[n + 1] && liste[n + 1].alternative ? h('li', { class: 'ou' }, 'ou') : null]).filter(Boolean))));
 }
 VARIANTE = {
   etape(app) {
     app.append(enTete(), resume());
     const fr = h('section', { class: 'frise', 'data-role': 'houblons-recette', 'aria-label': 'Houblons de la recette, posés sur le rail du brassage' }, h('i', { class: 'axe', 'aria-hidden': 'true' }));
     const et = etatsStock();
+    // Propositions selon la place : 5 pour une recette vide, puis 3, 2, 1, et aucune au-delà de 3 ajouts (le champ reste).
+    const n = ETAT.lignes.length;
+    const proposes = rapidesVisibles(n === 0 ? 5 : Math.max(0, 4 - n));
+    const parMoment = (c) => proposes.filter((r) => r.moment === c);
+    const premiereZone = ETAPES.find((c) => parMoment(c).length) || D.rapidesMoment;
     for (const code of ETAPES) {
       if (code === 'levure') {
         // D28 : la levure est une étape du rail, avant le dry hop en fermentation active.
@@ -1189,8 +1224,13 @@ VARIANTE = {
       const blocs = ETAT.lignes.map((l, i) => [l, i]).filter(([l]) => l.moment === code);
       const co = h('ul', { class: 'couloir', 'aria-label': 'Étape ' + quandLong({ moment: code, jour: 3 }) });
       blocs.forEach(([l, i], k) => co.append(blocRail(l, i, et[i], k === 0 ? code : null)));
-      if (code === D.rapidesMoment) co.append(h('li', {}, zoneRapides(code, !blocs.length)));
-      else if (!blocs.length) co.append(h('li', { class: 'vide-l', 'data-etape': code }, h('span', { class: 'rail-l' }), h('span', { class: 'drop' }, mom(code).vide || mom(code).quand)));
+      if (parMoment(code).length || code === premiereZone) co.append(h('li', {}, zoneRapides(code, parMoment(code), !blocs.length, code === premiereZone, code === premiereZone)));
+      else if (!blocs.length) {
+        // Crans intermédiaires (30′, 15′, 5′) : un simple repère du rail ; on lit leur nom sur la pastille en glissant.
+        const m = mom(code);
+        co.append(h('li', { class: 'vide-l' + (m.cran ? ' cran' : ''), 'data-etape': code, 'aria-label': 'Étape vide : ' + quandLong({ moment: code, jour: 3 }) },
+          h('span', { class: 'rail-l' }), h('span', { class: 'drop' }, m.cran ? null : m.vide || m.quand)));
+      }
       fr.append(co);
     }
     app.append(...[fr, goutsLigne(), panLigne()].filter(Boolean));

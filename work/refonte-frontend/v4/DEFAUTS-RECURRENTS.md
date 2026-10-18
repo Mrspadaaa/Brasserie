@@ -67,6 +67,10 @@ maquette. Et le brasseur ne voyait le résultat qu'à la fin.
 
 | D30 | « Toujours pensé comme un brasseur » (18.10, soir) | non mesurable seul : question fermée du jury, posée pour chaque écran : « un brasseur qui construit ou corrige cette recette trouve-t-il au premier plan ce qu'il utilise pour décider (α, rôle, arômes, moment, dose), avant l'IBU et le stock ? » ; le jury lit `SPEC-BRASSEUR.md` et la mémoire « penser en brasseur » | oui | lot 3 p02, recette vide → non |
 
+| D31 | « Tropicale 4/5 sur une ipa et 4/5 sur une Lager ça doit pas correspondre sur une Lager c'est très subtil alors que sur une ipa c'est tout ce que la bière est quasiment. » ; « Reste sur une échelle par style mais avoir en tout cas une vue qui affiche l'échelle en absolue. Car j'aime bien expérimenté et ai je veux une lager super tropical genre 50/100 ça sera pas vraiment affiché » (18.10, soir) | `controle-detail.mjs` (`--detail`) : biere.html au style avec bascule `lentille absolue` et écart chiffré hors zone (jamais écrasé au bord) ; biere-absolu.html sur une piste commune 0–3, zone et bière à leur place (tolérance 0,06) | tous | vue en crans du lot 3 (`scratchpad/temoin-detail/p01`) → 5 échecs ; version juste (`p02`) → OK |
+| D32 | « je sais pas comment bannir une contraintes ou réduire une autre » (18.10, soir) | `controle-detail.mjs` : `data-action` bannir, réduire, augmenter sur chaque famille (sur la ligne ou après un toucher) ; bannir → `data-visee="0"` ; augmenter élève la visée | présents et efficaces | lot 3 p02, p08 → échec |
+| D33 | « il y a des truc jaune ?? » (18.10, soir : le focus posé par script sur une ligne, entouré de jaune par la vue web du téléphone) | `controle-palette.mjs` (`--palette`) : surlignage du toucher neutralisé ; après un toucher, aucun contour ni focus sur un élément qui n'est pas une commande ; une seule teinte saturée hors arômes et radars | 0 | lot 3 p02 → échec |
+
 D18 est désormais vérifié par le même script, partie par partie.
 
 Commande (toutes les mesures D1 à D7, D10, D13, D14, D16 à D19) :

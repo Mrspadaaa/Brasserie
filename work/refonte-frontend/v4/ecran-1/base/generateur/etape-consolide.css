@@ -1,0 +1,49 @@
+  /* Version consolidée : rail des étapes de p2, levure sur le rail (D28), moment à glisser (D27) */
+  .frise { position: relative; display: flex; flex-direction: column; gap: 3px; }
+  .axe { position: absolute; left: 21px; top: 8px; bottom: 8px; width: 2px; background: #cfcfcf; }
+  .couloir { display: flex; flex-direction: column; gap: 4px; }
+  .blk, .rap-zone, .vide-l, .etape-levure { display: grid; grid-template-columns: 44px 1fr; align-items: start; column-gap: 2px; }
+  .poignee { justify-self: center; position: relative; z-index: 1; margin-top: 5px; touch-action: none; cursor: grab; border-radius: 15px; }
+  .quand, .rail-l.plein { justify-self: center; position: relative; z-index: 1; min-width: 40px; height: 26px; padding: 0 5px; border-radius: 13px; background: #fff; border: 1.5px solid var(--encre); font-size: 12px; font-weight: 650; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; }
+  .rail-l.plein { margin-top: 5px; }
+  .quand { cursor: grab; touch-action: none; }
+  /* Repère de la poignée : on la glisse de haut en bas. */
+  .poignee::before, .poignee::after { content: ''; position: absolute; left: 50%; margin-left: -3px; border: 3px solid transparent; }
+  .poignee::before { top: -6px; border-bottom-color: #9a9a9a; }
+  .poignee::after { bottom: -6px; border-top-color: #9a9a9a; }
+  .rail-l { justify-self: center; position: relative; z-index: 1; width: 10px; height: 10px; margin-top: 5px; border-radius: 5px; background: #fff; border: 1.5px solid #9a9a9a; }
+  .corps-b { background: var(--fond); border-radius: 12px; padding: 7px 6px 8px 8px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .corps-b .l2 { min-height: 24px; }
+  .l1 { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .l1 .nom { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  /* Étapes vides : fines, le rail ne doit pas déborder de l'écran. */
+  .vide-l { min-height: 20px; }
+  .drop { display: flex; align-items: center; gap: 8px; height: 20px; font-size: 12px; color: var(--gris2); }
+  .drop::after { content: ''; flex: 1; border-top: 1.5px dashed #d0d0d0; }
+  .rap-corps { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .rap-corps .champ { flex: 1; min-width: 0; }
+  .rap-corps .champ input { height: 30px; }
+  .l3 { display: flex; align-items: center; min-height: 16px; }
+  .l3 .mini .c { width: 9px; height: 10px; }
+  .l3 .mini { gap: 2px; }
+  .l3 .mini .c.sep { margin-left: 6px; }
+  /* La levure, étape pleine du rail (comme p8). */
+  .etape-levure { align-items: center; margin: 2px 0; }
+  .rail-lev { justify-self: center; position: relative; z-index: 1; width: 14px; height: 14px; border-radius: 7px; background: var(--encre); }
+  .etape-levure .levure { background: #fff; border: 1.5px solid var(--trait); min-height: 34px; }
+  /* Glisser : la carte suit le doigt, l'étape survolée s'éclaire. */
+  .blk.glisse { position: relative; z-index: 5; }
+  .blk.glisse .corps-b { box-shadow: 0 6px 18px rgba(0,0,0,.22); background: #fff; }
+  .blk.glisse .quand { background: var(--encre); color: #fff; }
+  .vide-l.survol .drop { color: var(--encre); font-weight: 650; }
+  .vide-l.survol .drop::after { border-top-color: var(--encre); }
+  .vide-l.survol .rail-l, .rail-l.plein.survol { background: var(--encre); border-color: var(--encre); }
+  .rail-l.plein.survol { color: #fff; }
+  .poignee.survol .quand { box-shadow: 0 0 0 3px #d4d4d4; }
+  .vide-l.cran { min-height: 14px; }
+  .vide-l.cran .rail-l { width: 6px; height: 6px; margin-top: 4px; border-radius: 3px; }
+  .vide-l.cran .drop { height: 14px; }
+  .note-ibu { padding: 8px 0 4px; }
+  .rapide { min-height: 48px; }
+  .vide-l.cran .drop::after { display: none; }
+  .rapides .ou { font-size: 12px; color: var(--gris2); padding-left: 44px; margin: -2px 0; }

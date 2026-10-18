@@ -424,6 +424,23 @@ rail, au doigt comme à la souris, IBU en direct depuis le pack. Contrôles D27 
 levure mal placée → échec ; page qui fonctionne → RAIL OK. Sortie : `ecran-1/base/consolide/`.
 Le lot 4 (radars, fiche) garde la baseline p03 : ses composants se greffent ensuite sur la base.
 
+## D30 — Ma bière : au style par défaut, absolu en bascule ; Suggestions et Comparer à refaire (18.10.2026, soir)
+
+Le brasseur garde l'aperçu compact à 12 familles de p2 (« super car très compact et facile »),
+juge le détail de p2 confus (« je sais pas comment bannir une contraintes ou réduire une
+autre, il y a des truc jaune ?? »), préfère celui de p8, et rappelle l'échelle : « Tropicale
+4/5 sur une ipa et 4/5 sur une Lager ça doit pas correspondre » ; « Reste sur une échelle par
+style mais avoir en tout cas une vue qui affiche l'échelle en absolue ». Le moteur le confirme :
+la bande tropicale vaut 0–30 pour la lager tchèque et 0–100 pour l'IPA ; en crans, les deux se
+dessinent pareil.
+
+Choix : « Ma bière et la cible » au style par défaut (crans, écart chiffré hors zone, jamais
+écrasé au bord), avec une bascule vers une vue absolue commune 0–3 (`biere-absolu.html`) ;
+gestes bannir, réduire, augmenter par famille ; plus de focus posé par script (le cadre jaune
+de la vue web). Contrôles D31, D32, D33, prouvés dans les deux sens. Suggestions et Comparer :
+« très mauvaise et […] pas terminé » ; d'accord : un lot dédié, pensé en brasseur, après la
+base consolidée.
+
 ## D7 — Issue de suivi de la mission (17.10.2026)
 
 Une issue GitHub suit la mission, liée à #115 et #116, et reçoit l'état de

@@ -55,6 +55,17 @@ dans `exigences-retrouvees.md` ; le corpus complet dans `docs/besoins/corpus-dem
   D23 ter).
 - **Critique des barres** : « Je peux aussi faire déjà la critique des barre ou c'est trop tôt ? »
   — 18.10, soir (réponse : oui, les barres de p2, p3, p8 sont stables).
+- **Les barres** (page partagée, 18.10, soir) : « Je trouve cette vue des barre super car très
+  compact et facile. Mais le détail c'est un peu n'importe quoi, je sais pas comment bannir une
+  contraintes ou réduire une autre, il y a des truc jaune ?? » ; « La p8 est plus fonctionnelle
+  même si quelques améliorations sont nécessaires... » (D32, D33).
+- **Absolu et style** : « Parcontre toujours attention !!! Tropicale 4/5 sur une ipa et 4/5 sur
+  une Lager ça doit pas correspondre sur une Lager c'est très subtil alors que sur une ipa c'est
+  tout ce que la bière est quasiment. » ; « Reste sur une échelle par style mais avoir en tout
+  cas une vue qui affiche l'échelle en absolue. Car j'aime bien expérimenté et ai je veux une
+  lager super tropical genre 50/100 ça sera pas vraiment affiché » — 18.10, soir (D31).
+- **Suggestions et comparaison** : « Parcontre tout ce qui est suggestions et comparaison, c'est
+  très mauvaise et de mon point de vu pas terminé on est d'accord » — 18.10, soir (lot dédié).
 - **La baseline** : « Je comprends pas ces nouveaux screen, on avait établi une Baseline, ça
   différent complètement ? » — 18.10, soir (D26).
 - **Levure et biotransformation** : « Et tout ce qui est biotransformation avec levures, dry
